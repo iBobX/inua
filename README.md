@@ -41,7 +41,7 @@ More on each: [the shell in detail](docs/features.md) and
 
 - Ubuntu 26.04 (or another distribution with the same packages)
 - Hyprland 0.53, GTK 4.22, gtk4-layer-shell 1.3
-- Go 1.24 or later to build
+- Go 1.26 or later to build
 
 System features use the services you probably already run: NetworkManager,
 BlueZ, UPower, power-profiles-daemon, PipeWire. Without one, its part of the

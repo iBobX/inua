@@ -272,11 +272,14 @@ func readImage(v dbus.Variant) *Image {
 	if alpha {
 		want = 4
 	}
-	if bits != 8 || channels != want || w <= 0 || h <= 0 || stride < w*want ||
-		len(data) < int(stride)*(int(h)-1)+int(w*want) {
+	if bits != 8 || channels != want {
 		return nil
 	}
-	return &Image{Width: int(w), Height: int(h), Stride: int(stride), Alpha: alpha, Data: data}
+	img := &Image{Width: int(w), Height: int(h), Stride: int(stride), Alpha: alpha, Data: data}
+	if img.Pixels() == nil { // sizes that do not add up, worked out without overflow
+		return nil
+	}
+	return img
 }
 
 // filePath turns a file:// URI into a path; a path stays, anything else is

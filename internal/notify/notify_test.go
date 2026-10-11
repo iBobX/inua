@@ -250,3 +250,32 @@ func TestServer(t *testing.T) {
 		}
 	}
 }
+
+func TestImageSizes(t *testing.T) {
+	variant := func(w, h, stride int32, alpha bool, bits, channels int32, data []byte) dbus.Variant {
+		return dbus.MakeVariant([]any{w, h, stride, alpha, bits, channels, data})
+	}
+	ok := variant(2, 2, 8, true, 8, 4, make([]byte, 16))
+	if img := readImage(ok); img == nil || len(img.Pixels()) != 16 {
+		t.Fatalf("a 2×2 RGBA image: %+v", img)
+	}
+	for name, v := range map[string]dbus.Variant{
+		// w*4 overflows int32 to a small number: once passed, then the
+		// renderer sliced past the data.
+		"overflowing width": variant(1<<30, 1, 4, true, 8, 4, make([]byte, 16)),
+		"overflowing rows":  variant(4, 1<<30, 16, true, 8, 4, make([]byte, 64)),
+		"short data":        variant(4, 4, 16, true, 8, 4, make([]byte, 63)),
+		"short stride":      variant(4, 4, 15, true, 8, 4, make([]byte, 64)),
+		"negative stride":   variant(4, 4, -16, true, 8, 4, make([]byte, 64)),
+		"huge":              variant(MaxImageSide+1, 1, (MaxImageSide+1)*3, false, 8, 3, make([]byte, (MaxImageSide+1)*3)),
+		"16-bit":            variant(2, 2, 8, true, 16, 4, make([]byte, 16)),
+	} {
+		if img := readImage(v); img != nil {
+			t.Errorf("%s: kept %dx%d stride %d", name, img.Width, img.Height, img.Stride)
+		}
+	}
+	// Pixels checks on its own too, for an Image made elsewhere.
+	if (&Image{Width: 1 << 30, Height: 1, Stride: 4, Alpha: true, Data: make([]byte, 16)}).Pixels() != nil {
+		t.Error("Pixels kept an image larger than its data")
+	}
+}

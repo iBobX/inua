@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/apps/calc"
+	"github.com/lyricat/inua/internal/rundir"
 )
 
 // Answer is a result to show and what Enter copies.
@@ -454,8 +455,11 @@ func fetchECB(ctx context.Context, c *http.Client) (*Rates, error) {
 // CachePath is where rates are kept between runs.
 func CachePath() string {
 	dir, err := os.UserCacheDir()
-	if err != nil {
-		dir = os.TempDir()
+	if err != nil { // no home: the runtime directory, checked
+		if dir, err = rundir.Dir(); err != nil {
+			return ""
+		}
+		return filepath.Join(dir, "rates.json")
 	}
 	return filepath.Join(dir, "inua", "rates.json")
 }

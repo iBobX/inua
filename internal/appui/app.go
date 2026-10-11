@@ -25,6 +25,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 	layouts "github.com/lyricat/inua/ui"
 )
@@ -216,8 +217,11 @@ func (c *Ctx) loadIcons() {
 	if system == appIconTheme {
 		system = "Adwaita"
 	}
-	dir := filepath.Join(cmp.Or(os.Getenv("XDG_RUNTIME_DIR"), os.TempDir()), "inua", "app-icons")
-	if err := c.writeIconTheme(dir, system); err != nil {
+	dir, err := rundir.Sub("app-icons")
+	if err == nil {
+		err = c.writeIconTheme(dir, system)
+	}
+	if err != nil {
 		log.Printf("icons: %v", err)
 		return
 	}

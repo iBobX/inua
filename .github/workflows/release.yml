@@ -18,7 +18,10 @@ jobs:
           fetch-depth: 0 # the changelog
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          # The newest Go, not go.mod's minimum: releases get the standard
+          # library's latest security fixes.
+          go-version: stable
+          check-latest: true
       - name: Tests
         run: go test ./...
       - uses: goreleaser/goreleaser-action@v6

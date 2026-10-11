@@ -3,6 +3,7 @@ package ui
 import (
 	"cmp"
 	"fmt"
+	"github.com/lyricat/inua/internal/rundir"
 	"log"
 	"os"
 	"path/filepath"
@@ -54,7 +55,13 @@ func (s *shellUI) loadIcons() {
 // puts it on the icon search path.
 func (s *shellUI) writeIconTheme() error {
 	ic := &s.icons
-	dir := cmp.Or(ic.dir, filepath.Join(cmp.Or(os.Getenv("XDG_RUNTIME_DIR"), os.TempDir()), "inua", "icons"))
+	dir := ic.dir
+	if dir == "" {
+		var err error
+		if dir, err = rundir.Sub("icons"); err != nil {
+			return err
+		}
+	}
 	theme := filepath.Join(dir, iconThemeName)
 	if err := os.MkdirAll(filepath.Join(theme, "symbolic"), 0o700); err != nil {
 		return err

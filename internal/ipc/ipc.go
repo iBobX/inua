@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/lyricat/inua/internal/rundir"
 	"net"
 	"os"
 	"path/filepath"
@@ -32,19 +33,19 @@ type Response struct {
 // HandlerFunc serves one request. It runs on its own goroutine.
 type HandlerFunc func(context.Context, Request) Response
 
-// SocketPath returns the socket for a shell instance name.
+// SocketPath returns the socket for a shell instance name, in the runtime
+// directory (internal/rundir).
 func SocketPath(instance string) string {
-	dir := os.Getenv("XDG_RUNTIME_DIR")
-	if dir == "" {
-		dir = os.TempDir()
-	}
-	return filepath.Join(dir, "inua", instance+".sock")
+	return filepath.Join(rundir.Path(), instance+".sock")
 }
 
 // Serve listens on path until ctx ends. A stale socket left by a dead process
 // is replaced; a live one is an error so two shells do not share a name.
 func Serve(ctx context.Context, path string, h HandlerFunc) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return err
+	}
+	if err := rundir.Check(filepath.Dir(path)); err != nil { // no one else's socket, nor a link to one
 		return err
 	}
 	if conn, err := net.Dial("unix", path); err == nil {
@@ -92,6 +93,11 @@ func serveConn(ctx context.Context, conn net.Conn, h HandlerFunc) {
 
 // Call sends one request to the shell at path.
 func Call(ctx context.Context, path string, req Request) (Response, error) {
+	// A socket in someone else's directory could be theirs, listening for
+	// what is sent (a passphrase, from inua-pinentry).
+	if err := rundir.Check(filepath.Dir(path)); err != nil {
+		return Response{}, err
+	}
 	var d net.Dialer
 	conn, err := d.DialContext(ctx, "unix", path)
 	if err != nil {

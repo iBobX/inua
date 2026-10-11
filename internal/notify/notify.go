@@ -37,6 +37,31 @@ type Image struct {
 	Data                  []byte
 }
 
+// MaxImageSide is the largest width or height of an image-data hint kept;
+// a notification shows it at 44 pixels.
+const MaxImageSide = 4096
+
+// Pixels are the bytes the image's rows take, nil when its sizes do not
+// add up: rows of Stride bytes, the last only Width pixels long.
+func (img *Image) Pixels() []byte {
+	if img == nil || img.Width <= 0 || img.Height <= 0 || img.Width > MaxImageSide || img.Height > MaxImageSide {
+		return nil
+	}
+	px := int64(3)
+	if img.Alpha {
+		px = 4
+	}
+	row, stride := int64(img.Width)*px, int64(img.Stride)
+	if stride < row || stride > row+4096 { // rows are padded a little at most
+		return nil
+	}
+	size := stride*int64(img.Height-1) + row
+	if size > int64(len(img.Data)) {
+		return nil
+	}
+	return img.Data[:size]
+}
+
 // Notification is one notification as the app sent it.
 type Notification struct {
 	ID      uint32    `json:"id"`

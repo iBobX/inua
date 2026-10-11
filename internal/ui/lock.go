@@ -21,6 +21,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/lock"
+	"github.com/lyricat/inua/internal/rundir"
 )
 
 // locker is the lock screen. It holds the compositor's session lock
@@ -301,12 +302,21 @@ func userName() string {
 	return os.Getenv("USER")
 }
 
-// lockMarker is the file that says this instance's screen is locked.
+// lockMarker is the file that says this instance's screen is locked, in
+// the runtime directory.
 func (s *shellUI) lockMarker() string {
-	return filepath.Join(cmp.Or(os.Getenv("XDG_RUNTIME_DIR"), os.TempDir()), "inua-locked-"+cmp.Or(s.opts.Instance, "default"))
+	dir, err := rundir.Dir()
+	if err != nil {
+		log.Printf("lock: %v", err)
+		return "" // no marker rather than one somewhere else
+	}
+	return filepath.Join(dir, "locked-"+cmp.Or(s.opts.Instance, "default"))
 }
 
 func (s *shellUI) markLocked(on bool) {
+	if s.lockMarker() == "" {
+		return
+	}
 	if !on {
 		os.Remove(s.lockMarker())
 		return

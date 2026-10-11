@@ -438,11 +438,11 @@ func imageTexture(img *notify.Image) *gdk.MemoryTexture {
 	if img.Alpha {
 		format = gdk.MemoryR8g8b8a8Value
 	}
-	size := img.Stride*(img.Height-1) + img.Width*3
-	if img.Alpha {
-		size = img.Stride*(img.Height-1) + img.Width*4
+	px := img.Pixels() // what the server checked, checked again
+	if px == nil {
+		return nil
 	}
-	bytes := glib.NewBytes(img.Data[:size], uint(size))
+	bytes := glib.NewBytes(px, uint(len(px)))
 	defer bytes.Unref()
 	return gdk.NewMemoryTexture(int32(img.Width), int32(img.Height), format, bytes, uint(img.Stride))
 }

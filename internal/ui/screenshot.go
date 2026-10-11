@@ -22,6 +22,7 @@ import (
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/notify"
+	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 )
 
@@ -794,15 +795,8 @@ func (s *shellUI) shotNoteAction(n notify.Notification, key string) {
 func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'" }
 
 // shotTempDir is a private directory for captures, in the runtime
-// directory when there is one.
-func shotTempDir() (string, error) {
-	base := os.Getenv("XDG_RUNTIME_DIR")
-	if base == "" {
-		base = os.TempDir()
-	}
-	dir := filepath.Join(base, "inua-shots")
-	return dir, os.MkdirAll(dir, 0o700)
-}
+// directory.
+func shotTempDir() (string, error) { return rundir.Sub("shots") }
 
 func pngBounds(path string) (image.Rectangle, error) {
 	f, err := os.Open(path)

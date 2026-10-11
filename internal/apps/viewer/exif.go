@@ -77,8 +77,10 @@ func trimFloat(f float64, prec int) string {
 	return s
 }
 
-// ReadExif reads the EXIF of a JPEG, PNG, WebP or TIFF file.
-func ReadExif(path string) (Exif, error) {
+// ReadExif reads the EXIF of a JPEG, PNG, WebP or TIFF file. A file made
+// to trip the parser is an error, never a crash.
+func ReadExif(path string) (e Exif, err error) {
+	defer recoverMalformed("EXIF", &err)
 	f, err := os.Open(path)
 	if err != nil {
 		return Exif{}, err
@@ -124,8 +126,8 @@ func findTIFF(b []byte) ([]byte, error) {
 			if marker == 0xDA || marker == 0xD9 { // the pixels start: no EXIF before them
 				return nil, errNoExif
 			}
-			l := int(binary.BigEndian.Uint16(b[i+2:]))
-			if i+2+l > len(b) {
+			l := int(binary.BigEndian.Uint16(b[i+2:])) // its own two bytes and the segment's
+			if l < 2 || i+2+l > len(b) {
 				return nil, errNoExif
 			}
 			seg := b[i+4 : i+2+l]
@@ -189,6 +191,9 @@ const (
 
 // ParseTIFF reads the tags the panel shows from a TIFF structure.
 func ParseTIFF(t []byte) (Exif, error) {
+	if len(t) < 8 { // the byte order, 42, and where IFD0 is
+		return Exif{}, errNoExif
+	}
 	var bo binary.ByteOrder
 	switch {
 	case bytes.HasPrefix(t, []byte("II*\x00")):

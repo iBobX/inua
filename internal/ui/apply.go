@@ -14,6 +14,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/layershell"
+	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 )
 
@@ -80,13 +81,13 @@ func writeTile(field string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	dir := filepath.Join(cmp.Or(os.Getenv("XDG_RUNTIME_DIR"), os.TempDir()), "inua")
+	dir, err := rundir.Dir()
+	if err != nil {
+		return "", err
+	}
 	path := filepath.Join(dir, "field-"+strings.TrimPrefix(field, "#")+".png")
 	if _, err := os.Stat(path); err == nil {
 		return path, nil
-	}
-	if err := os.MkdirAll(dir, 0o700); err != nil {
-		return "", err
 	}
 	return path, os.WriteFile(path, data, 0o644)
 }

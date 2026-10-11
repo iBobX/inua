@@ -3,6 +3,7 @@ package viewer
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -78,10 +79,15 @@ func (GoAllocator) Free([]byte)        {}
 // Decode reads an image file into pixels, at full size, as stored: the
 // EXIF orientation is left to whoever draws them. A GIF of more than one
 // frame is ErrAnimated.
-func Decode(path string, al Allocator) (Pixels, error) {
+func Decode(path string, al Allocator) (px Pixels, err error) {
+	defer recoverMalformed("image", &err)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return Pixels{}, err
+	}
+	// A header claiming a huge image is refused before decoding it.
+	if c, _, err := image.DecodeConfig(bytes.NewReader(data)); err == nil && int64(c.Width)*int64(c.Height) > MaxPixels {
+		return Pixels{}, fmt.Errorf("image: %d×%d is too large", c.Width, c.Height)
 	}
 	if IsJPEG(path) && TurboAvailable() {
 		if px, _, _, err := DecodeJPEGTurbo(data, 1, al); err == nil {
@@ -106,7 +112,8 @@ func Decode(path string, al Allocator) (Pixels, error) {
 }
 
 // DecodeThumb reads a small JPEG (an EXIF thumbnail) into pixels.
-func DecodeThumb(data []byte, al Allocator) (Pixels, error) {
+func DecodeThumb(data []byte, al Allocator) (px Pixels, err error) {
+	defer recoverMalformed("thumbnail", &err)
 	img, err := jpeg.Decode(bytes.NewReader(data))
 	if err != nil {
 		return Pixels{}, err
@@ -116,6 +123,7 @@ func DecodeThumb(data []byte, al Allocator) (Pixels, error) {
 
 // Size reads an image's size from its header, without decoding it.
 func ImageSize(path string) (w, h int, err error) {
+	defer recoverMalformed("image", &err)
 	f, err := os.Open(path)
 	if err != nil {
 		return 0, 0, err
@@ -123,6 +131,18 @@ func ImageSize(path string) (w, h int, err error) {
 	defer f.Close()
 	c, _, err := image.DecodeConfig(io.LimitReader(f, 1<<20))
 	return c.Width, c.Height, err
+}
+
+// MaxPixels is the most pixels Viewer decodes: 256 megapixels, a gigabyte
+// of RGBA.
+const MaxPixels = 256 << 20
+
+// recoverMalformed turns a decoder's panic on a malformed file into an
+// error: Viewer opens files from anywhere.
+func recoverMalformed(what string, err *error) {
+	if r := recover(); r != nil {
+		*err = fmt.Errorf("%s: malformed file (%v)", what, r)
+	}
 }
 
 // Convert lays an image out as Pixels, in bands of rows on every core.
