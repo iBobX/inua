@@ -131,6 +131,11 @@ func (s *Server) Serve(ctx context.Context, owner func(bool)) error {
 			if !ok {
 				return nil
 			}
+			// The bus also says NameAcquired for the connection's own
+			// unique name when it joins; only Name's count.
+			if len(sig.Body) == 0 || sig.Body[0] != Name {
+				continue
+			}
 			switch sig.Name {
 			case "org.freedesktop.DBus.NameAcquired":
 				s.setOwner(true, owner)
