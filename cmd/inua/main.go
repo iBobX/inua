@@ -34,6 +34,9 @@ import (
 	"github.com/lyricat/inua/internal/ipc"
 )
 
+// version is the release, set by the release build (-X main.version).
+var version = "dev"
+
 func main() {
 	if len(os.Args) < 2 {
 		usage()
@@ -48,6 +51,8 @@ func main() {
 		err = cmdConfig(os.Args[2:])
 	case "init":
 		err = cmdInit(os.Args[2:])
+	case "version", "--version", "-v":
+		fmt.Println("inua", version)
 	default:
 		usage()
 	}
@@ -65,7 +70,8 @@ func usage() {
   inua config check [path] | path
   inua config hyprland [path]
   inua config apply
-  inua init [-force] [-dir dir]`)
+  inua init [-force] [-dir dir]
+  inua version`)
 	os.Exit(2)
 }
 
@@ -329,7 +335,7 @@ func cmdInit(args []string) error {
 	if failed {
 		return fmt.Errorf("the configuration has problems (see above)")
 	}
-	fmt.Println("\nLog into the Inua session (make install-session); Super+Space opens the launcher.")
+	fmt.Println("\nLog out and choose the Inua session; Super+Space opens the launcher.")
 	return nil
 }
 

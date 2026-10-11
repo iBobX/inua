@@ -143,11 +143,8 @@
 
   <section class="col rv" id="install">
     <div class="label" data-i18n="inst">Install</div>
-    <h2 data-i18n="inst_h">Three commands.</h2>
-<pre id="cmds">git clone https://github.com/lyricat/inua
-cd inua
-make deps deps-desktop
-make install-session
+    <h2 data-i18n="inst_h">One command.</h2>
+<pre id="cmds">curl -fsSL https://inua.lyric.im/install.sh | sh
 <span class="c" data-i18n="cmt"># then log out and choose Inua</span></pre>
     <button class="copy" id="copy" type="button" data-i18n="copy">Copy</button>
     <p class="note" data-i18n="note">If you already use Hyprland, keep your config and add <code>exec-once = inua-shell</code> and, as the last line, <code>source = ./inua.conf</code>.</p>

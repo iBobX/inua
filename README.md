@@ -51,15 +51,29 @@ shell says "Unavailable" instead. The full list is in
 ## Install
 
 ```sh
+curl -fsSL https://inua.lyric.im/install.sh | sh
+```
+
+Then log out and pick **Inua** at the login screen. The script installs the
+latest release for amd64 or arm64 (checking its checksum) into `~/.local`,
+offers to install the packages inua needs with apt, writes your
+configuration with `inua init` (never replacing your files), and adds the
+Inua login session (sudo). If you log in with GDM, SDDM or another login
+manager, it asks whether to switch to greetd + tuigreet, the login screen
+inua recommends; the answer defaults to no. Run it again to update;
+`INUA_VERSION=v0.1.2` picks a release. The companions the sample config uses
+(a terminal, a file manager, screenshot tools …) are in
+[docs/design.md](docs/design.md#packages).
+
+From source:
+
+```sh
 git clone https://github.com/lyricat/inua
 cd inua
 make deps deps-desktop   # packages (sudo)
 make install-session     # build, install to ~/.local/bin (and the apps' launchers), write the sample config,
                          # and add the "Inua" login session (sudo for that part)
 ```
-
-Then log out and pick **Inua** at the login screen. The recommended login
-manager is greetd with tuigreet (`make deps-dm`); GDM and SDDM work too.
 
 `make install-session` runs three steps: `make install` (the programs),
 `make install-config` (`inua init`, your configuration) and, with sudo,
@@ -137,6 +151,10 @@ make run         # run it in the current Hyprland session
 - `inua-shell -ui-dir ui` reads layouts and styles from disk.
 - `inua call shell snapshot DIR` renders the shell's windows to PNG files.
 - `inua call shell restart` re-executes the shell in place after a rebuild.
+
+Releases: tag a version (`git tag v0.1.2 && git push --tags`) and GitHub
+Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
+`goreleaser release --snapshot --clean` tries it locally.
 
 | Path | |
 | --- | --- |

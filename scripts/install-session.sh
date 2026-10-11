@@ -4,13 +4,13 @@
 set -eu
 
 if [ "$#" -gt 2 ]; then
-    echo "usage: $0 [greetd|gdm|sddm] [staging-root]" >&2
+    echo "usage: $0 [greetd|gdm|sddm|other] [staging-root]" >&2
     exit 2
 fi
 dm=${1:-greetd}
 case "$dm" in
-    greetd|gdm|sddm) ;;
-    *) echo "inua: unsupported display manager: $dm (use greetd, gdm or sddm)" >&2; exit 2 ;;
+    greetd|gdm|sddm|other) ;; # other: any login manager reading wayland-sessions
+    *) echo "inua: unsupported display manager: $dm (use greetd, gdm, sddm or other)" >&2; exit 2 ;;
 esac
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 dest=${2:-/}

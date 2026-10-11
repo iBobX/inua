@@ -1,0 +1,30 @@
+# Builds the Linux releases (amd64, arm64) with GoReleaser and publishes
+# them on GitHub when a version is tagged: git tag v0.1.2 && git push --tags
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the changelog
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Tests
+        run: go test ./...
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

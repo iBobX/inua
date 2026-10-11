@@ -1,11 +1,12 @@
 # Publishes website/ to GitHub Pages (inua.lyric.im) on every push to master
-# that changes it. The domain is set in the repository's Pages settings.
+# that changes it, with scripts/install.sh as /install.sh. The domain is set
+# in the repository's Pages settings.
 name: Website
 
 on:
   push:
     branches: [master]
-    paths: ["website/**", ".github/workflows/pages.yml"]
+    paths: ["website/**", "scripts/install.sh", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -26,8 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Site
+        run: |
+          mkdir _site
+          cp -r website/. _site/
+          cp scripts/install.sh _site/install.sh
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: website
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -1,0 +1,61 @@
+# Releases for Linux, amd64 and arm64, built by GitHub Actions on a tag
+# (v0.1.2; .github/workflows/release.yml). Try it locally with
+#   goreleaser release --snapshot --clean
+version: 2
+project_name: inua
+
+before:
+  hooks:
+    - go vet ./...
+
+builds:
+  - &build
+    id: inua-shell
+    main: ./cmd/inua-shell
+    binary: inua-shell
+    env: [CGO_ENABLED=0]
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags: ["-s -w -X main.version={{ .Version }}"]
+  - <<: *build
+    id: inua
+    main: ./cmd/inua
+    binary: inua
+  - <<: *build
+    id: inua-apps
+    main: ./cmd/inua-apps
+    binary: inua-apps
+  - <<: *build
+    id: inua-pinentry
+    main: ./cmd/inua-pinentry
+    binary: inua-pinentry
+
+archives:
+  - formats: [tar.gz]
+    # No version in the name: releases/latest/download/inua_linux_amd64.tar.gz
+    # always fetches the newest (scripts/install.sh).
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    files:
+      - LICENSE
+      - README.md
+      - config/apps/*
+      - config/session/*
+      - scripts/inua-session
+      - scripts/install-session.sh
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude: ["^Merge"]
+
+release:
+  github:
+    owner: lyricat
+    name: inua
+  footer: |
+    Install or update: `curl -fsSL https://inua.lyric.im/install.sh | sh`
