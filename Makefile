@@ -1,0 +1,90 @@
+# inua: Hyprland desktop shell in Go + GTK4 (docs/architecture.md).
+#
+#   make           build bin/inua-shell (the shell), bin/inua (command line),
+#                  bin/inua-apps (light apps) and bin/inua-pinentry (gpg's prompt)
+#   make deps      install what inua needs to run, build and test
+#                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
+#   make deps-desktop
+#                  install the companions the sample hyprland.conf starts
+#                  and the tools behind the control center's buttons
+#   make deps-dm   install the recommended greetd + tuigreet (Ubuntu 26.04)
+#   make generate  recompile ui/*.blp to ui/*.ui (needs blueprint-compiler)
+#   make test      go vet + unit tests
+#   make nested    run the shell in a nested Hyprland window (from GNOME)
+#   make run       run the shell in the current Hyprland session
+#   make install   copy the binaries to $(PREFIX)/bin (default ~/.local/bin),
+#                  and the light apps' launchers and icons
+#   make install-config
+#                  write the sample config into ~/.config with `inua init`
+#                  (never overwrites existing files) and set gpg's pinentry
+#   make install-fcitx
+#                  copy the Fcitx 5 themes (inua-light, inua-dark) into
+#                  ~/.local/share/fcitx5/themes; pick them in Fcitx's settings
+#   make install-session
+#                  install binaries, user config and a Wayland session entry
+#                  (sudo only for the shared launcher and session entry)
+#                  DM=greetd (default), gdm or sddm; never switches services
+
+export CGO_ENABLED = 0
+
+PREFIX ?= $(HOME)/.local
+CONFIG_HOME ?= $(or $(XDG_CONFIG_HOME),$(HOME)/.config)
+DM ?= greetd
+
+.PHONY: all build deps deps-desktop deps-dm generate test nested run install install-config install-fcitx install-session clean
+
+all: build
+
+build:
+	go build -o bin/inua-shell ./cmd/inua-shell
+	go build -o bin/inua ./cmd/inua
+	go build -o bin/inua-apps ./cmd/inua-apps
+	go build -o bin/inua-pinentry ./cmd/inua-pinentry
+
+deps:
+	sudo apt install -y hyprland libgtk-4-1 libgtk4-layer-shell0 \
+		golang-go gcc dbus-daemon blueprint-compiler python3
+
+deps-desktop:
+	sudo apt install -y kitty nautilus hypridle wf-recorder libturbojpeg0 \
+		xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
+		grim slurp wl-clipboard brightnessctl playerctl fcitx5 xdg-terminal-exec \
+		fonts-ibm-plex fonts-noto-cjk
+
+deps-dm:
+	sudo apt install -y greetd tuigreet
+
+generate:
+	go generate ./ui
+
+test:
+	python3 scripts/test-session.py
+	go vet ./...
+	CGO_ENABLED=1 go test -race ./...
+
+nested: build
+	scripts/spike.sh shell nested
+
+run: build
+	bin/inua-shell
+
+DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
+
+install: build
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-pinentry
+	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
+	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
+
+install-config: build
+	PATH="$(PREFIX)/bin:$$PATH" bin/inua init -dir "$(CONFIG_HOME)"
+
+install-fcitx:
+	mkdir -p "$(DATA_HOME)/fcitx5/themes"
+	cp -r config/fcitx5/themes/* "$(DATA_HOME)/fcitx5/themes/"
+
+install-session: install
+	$(MAKE) install-config
+	sudo sh scripts/install-session.sh "$(DM)"
+
+clean:
+	rm -rf bin

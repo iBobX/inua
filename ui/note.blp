@@ -1,0 +1,83 @@
+// One notification, as a banner or in the notification center. Go names the
+// card and its buttons after the notification ("note:ID", "close:ID",
+// "act:ID:N"); one handler serves them all.
+using Gtk 4.0;
+
+Box note {
+  styles ["note"]
+  orientation: vertical;
+  spacing: 6;
+
+  Box {
+    spacing: 8;
+
+    Image app_icon {
+      pixel-size: 16;
+      valign: center;
+    }
+
+    Label app {
+      styles ["note-app"]
+      hexpand: true;
+      xalign: 0;
+      ellipsize: end;
+    }
+
+    Label time {
+      styles ["readout"]
+    }
+
+    Button close {
+      styles ["plain", "note-close"]
+      icon-name: "window-close-symbolic";
+      valign: center;
+    }
+  }
+
+  Box {
+    spacing: 12;
+
+    Box {
+      orientation: vertical;
+      hexpand: true;
+      spacing: 2;
+
+      Label summary {
+        styles ["note-summary"]
+        xalign: 0;
+        wrap: true;
+        wrap-mode: word_char;
+        lines: 2;
+        ellipsize: end;
+        // A wrapping label asks for its whole text on one line unless
+        // capped; uncapped, a long one widens every banner.
+        max-width-chars: 36;
+      }
+
+      Label body {
+        styles ["note-body"]
+        xalign: 0;
+        wrap: true;
+        wrap-mode: word_char;
+        lines: 4;
+        ellipsize: end;
+        max-width-chars: 36;
+        use-markup: true;
+      }
+    }
+
+    // The notification's own picture (a photo, an avatar).
+    Image picture {
+      pixel-size: 44;
+      valign: start;
+      visible: false;
+    }
+  }
+
+  Box actions {
+    styles ["note-actions"]
+    spacing: 6;
+    homogeneous: true;
+    visible: false;
+  }
+}

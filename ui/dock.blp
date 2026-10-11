@@ -1,0 +1,34 @@
+// The app dock, one per monitor, in a layer surface along the bottom edge.
+// Go fills `items` with a button per app. With autohide, the revealer is
+// closed and the thin `edge` along the screen edge brings it back.
+using Gtk 4.0;
+
+ApplicationWindow dock {
+  styles ["dock-window"]
+
+  Box {
+    orientation: vertical;
+
+    Revealer reveal {
+      transition-type: slide_up;
+      transition-duration: 220;
+      reveal-child: true;
+
+      Box island {
+        styles ["dock"]
+        halign: center;
+        margin-bottom: 6;
+
+        Box items {
+          spacing: 4;
+        }
+      }
+    }
+
+    Box edge {
+      styles ["dock-edge"]
+      height-request: 3;
+      visible: false;
+    }
+  }
+}

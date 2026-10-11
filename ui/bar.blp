@@ -1,0 +1,137 @@
+// Top bar, one per monitor: a slim strip inset 4 px from the screen edges.
+// Workspace and tray buttons are added from Go.
+using Gtk 4.0;
+
+ApplicationWindow bar {
+  styles ["bar"]
+
+  CenterBox {
+    styles ["island"]
+    margin-top: 4;
+    margin-start: 4;
+    margin-end: 4;
+    height-request: 30;
+
+    start-widget: Box {
+      spacing: 14;
+
+      Box workspaces {
+        styles ["workspaces"]
+        spacing: 5;
+        valign: center;
+      }
+
+      Label title {
+        styles ["title"]
+        ellipsize: end;
+        max-width-chars: 48;
+      }
+    };
+
+    // The clock opens Calendar.
+    center-widget: Button clock_button {
+      styles ["clock-button"]
+      name: "calendar";
+      focusable: false;
+      tooltip-text: "Calendar";
+
+      Label clock {
+        styles ["clock"]
+      }
+    };
+
+    end-widget: Box {
+      spacing: 6;
+
+      Box tray {
+        styles ["tray"]
+        spacing: 2;
+        valign: center;
+      }
+
+      // While the screen is being recorded: a red square and the time so
+      // far; a click stops the recording.
+      Button rec {
+        styles ["rec"]
+        name: "rec";
+        focusable: false;
+        visible: false;
+        tooltip-text: "Stop recording";
+
+        Box {
+          spacing: 6;
+
+          Box {
+            styles ["rec-mark"]
+            valign: center;
+          }
+
+          Label rec_time {
+            styles ["numeric"]
+          }
+        }
+      }
+
+      // Opens the notification center: a bell, a moon while Focus is on,
+      // and a square for unread notifications.
+      Button notes {
+        styles ["notes"]
+        name: "notes";
+        focusable: false;
+        tooltip-text: "Notifications";
+
+        Box {
+          spacing: 5;
+
+          Image notes_icon {
+            icon-name: "preferences-system-notifications-symbolic";
+          }
+
+          Box unread {
+            styles ["unread"]
+            valign: center;
+            visible: false;
+          }
+        }
+      }
+
+      // Opens the control center.
+      Button status {
+        styles ["status"]
+        name: "status";
+        focusable: false;
+        tooltip-text: "Control Center";
+
+        Box {
+          spacing: 9;
+
+          Image net_icon {
+            icon-name: "network-offline-symbolic";
+          }
+
+          Image bt_icon {
+            icon-name: "bluetooth-disabled-symbolic";
+            visible: false;
+          }
+
+          Image vol_icon {
+            icon-name: "audio-volume-muted-symbolic";
+          }
+
+          Box battery {
+            spacing: 3;
+            visible: false;
+
+            Image bat_icon {
+              icon-name: "battery-level-50-symbolic";
+            }
+
+            Label bat_label {
+              styles ["numeric"]
+            }
+          }
+        }
+      }
+    };
+  }
+}

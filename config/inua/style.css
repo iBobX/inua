@@ -1,0 +1,33 @@
+/* inua-shell style overrides. Copy to ~/.config/inua/style.css.
+
+   Loaded after the built-in style (ui/style.css in the repository), so
+   anything here wins. GTK4 CSS: https://docs.gtk.org/gtk4/css-properties.html
+   Changes take effect on restart: `inua call shell restart`.
+
+   Colours come from the theme (`style.theme` in config.toml). These are
+   the tokens it defines, with the yoru values; uncomment and change one to
+   recolour everything that uses it. */
+
+/*
+@define-color app #0B1012;       window grounds (bar)
+@define-color surface #121A1C;   panels (launcher, control center)
+@define-color surface2 #172124;  wells (album art)
+@define-color t0 #E7E4DA;        primary text
+@define-color t1 #B3B6AF;        secondary text, icons
+@define-color t2 #7F8F8C;        tertiary text, hollow marks
+@define-color line #243134;      hairlines
+@define-color accent #9FC3C9;    selection, active, on
+@define-color danger #E0694F;    errors, urgent
+*/
+
+/* Examples:
+
+   A larger clock:
+.bar .clock { font-size: 1.1em; }
+
+   Square bar corners:
+.bar .island { border-radius: 0; }
+
+   A different font everywhere:
+window { font-family: "Inter", "Noto Sans CJK SC", sans-serif; }
+*/

@@ -1,0 +1,99 @@
+// Calendar: one column. The month (arrows step through months, Today goes
+// back), its grid with week numbers, then the chosen day: where it is from
+// today, its week and day of the year. Go fills the grid.
+using Gtk 4.0;
+
+ApplicationWindow calendar {
+  default-width: 440;
+  default-height: 600;
+
+  Box {
+    styles ["calendarapp"]
+    orientation: vertical;
+
+    Box {
+      styles ["header"]
+      spacing: 4;
+
+      Label month {
+        styles ["month"]
+        hexpand: true;
+        xalign: 0;
+      }
+
+      Button today {
+        styles ["text"]
+        name: "today";
+        label: "Today";
+        valign: center;
+      }
+
+      Button prev {
+        styles ["plain"]
+        name: "prev";
+        icon-name: "go-previous-symbolic";
+        tooltip-text: "Previous month";
+        valign: center;
+      }
+
+      Button next {
+        styles ["plain"]
+        name: "next";
+        icon-name: "go-next-symbolic";
+        tooltip-text: "Next month";
+        valign: center;
+      }
+    }
+
+    // Week numbers, then the seven days.
+    Grid grid {
+      styles ["month-grid"]
+      vexpand: true;
+      column-homogeneous: false;
+      row-homogeneous: false;
+    }
+
+    // The chosen day.
+    Box {
+      styles ["day-info"]
+      orientation: vertical;
+      spacing: 4;
+
+      Label day_title {
+        styles ["day-title"]
+        xalign: 0;
+      }
+
+      Label day_sub {
+        styles ["readout"]
+        xalign: 0;
+      }
+    }
+
+    Box {
+      styles ["composer"]
+      spacing: 12;
+
+      Label {
+        styles ["kicker"]
+        label: "WEEKS START ON";
+        hexpand: true;
+        xalign: 0;
+        valign: center;
+      }
+
+      Box {
+        styles ["segmented", "linked"]
+
+        ToggleButton start_mon {
+          label: "Mon";
+        }
+
+        ToggleButton start_sun {
+          label: "Sun";
+          group: start_mon;
+        }
+      }
+    }
+  }
+}

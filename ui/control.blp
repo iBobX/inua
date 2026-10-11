@@ -1,0 +1,554 @@
+// Control center: a full-screen overlay whose backdrop closes it on click,
+// with the card in the top-right corner. Buttons carry a `name` that Go uses
+// to tell them apart (they share one handler). Go adds `on` to a tile that
+// is on; its square mark fills.
+using Gtk 4.0;
+
+ApplicationWindow control {
+  styles ["control"]
+
+  Box backdrop {
+    styles ["backdrop"]
+
+    Revealer reveal {
+      halign: end;
+      valign: start;
+      hexpand: true;
+      margin-top: 42;
+      margin-end: 6;
+      transition-type: slide_down;
+      transition-duration: 260;
+
+      Box card {
+        styles ["card"]
+        orientation: vertical;
+        spacing: 14;
+        width-request: 340;
+
+        // Battery (or the date) on the left; settings, screenshot, lock and
+        // power on the right.
+        Box {
+          spacing: 8;
+
+          Image cc_bat_icon {
+            styles ["dim-icon"]
+            icon-name: "battery-level-50-symbolic";
+          }
+
+          Label cc_bat_label {
+            styles ["readout"]
+            hexpand: true;
+            xalign: 0;
+          }
+
+          Button open_settings {
+            styles ["plain"]
+            name: "settings";
+            icon-name: "emblem-system-symbolic";
+            tooltip-text: "Settings";
+          }
+
+          Button screenshot {
+            styles ["plain"]
+            name: "screenshot";
+            icon-name: "applets-screenshooter-symbolic";
+            tooltip-text: "Screenshot an area";
+          }
+
+          Button lock {
+            styles ["plain"]
+            name: "lock";
+            icon-name: "system-lock-screen-symbolic";
+            tooltip-text: "Lock";
+          }
+
+          ToggleButton power {
+            styles ["plain"]
+            icon-name: "system-shutdown-symbolic";
+            tooltip-text: "Suspend, restart, shut down, log out";
+          }
+        }
+
+        // Power: suspend locks the screen first; restart, shut down and log
+        // out ask for a second click.
+        Revealer power_reveal {
+          transition-type: slide_down;
+          transition-duration: 180;
+
+          Box {
+            styles ["power-row"]
+            spacing: 6;
+            homogeneous: true;
+
+            Button suspend {
+              styles ["power"]
+              name: "suspend";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Image {
+                  icon-name: "system-suspend-symbolic";
+                }
+
+                Label suspend_label {
+                  label: "Suspend";
+                }
+              }
+            }
+
+            Button reboot {
+              styles ["power"]
+              name: "reboot";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Image {
+                  icon-name: "system-reboot-symbolic";
+                }
+
+                Label reboot_label {
+                  label: "Restart";
+                }
+              }
+            }
+
+            Button poweroff {
+              styles ["power"]
+              name: "poweroff";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Image {
+                  icon-name: "system-shutdown-symbolic";
+                }
+
+                Label poweroff_label {
+                  label: "Shut down";
+                }
+              }
+            }
+
+            Button logout {
+              styles ["power"]
+              name: "logout";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Image {
+                  icon-name: "system-log-out-symbolic";
+                }
+
+                Label logout_label {
+                  label: "Log out";
+                }
+              }
+            }
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 8;
+
+          Box {
+            spacing: 8;
+            homogeneous: true;
+
+            Button wifi {
+              styles ["tile"]
+              name: "wifi";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Box {
+                  Image wifi_icon {
+                    icon-name: "network-wireless-signal-excellent-symbolic";
+                    hexpand: true;
+                    halign: start;
+                  }
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+                }
+
+                Label {
+                  styles ["title"]
+                  label: "Wi-Fi";
+                  xalign: 0;
+                }
+
+                Label wifi_sub {
+                  styles ["sub"]
+                  xalign: 0;
+                  ellipsize: end;
+                  max-width-chars: 16;
+                }
+              }
+            }
+
+            Button bt {
+              styles ["tile"]
+              name: "bt";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Box {
+                  Image {
+                    icon-name: "bluetooth-active-symbolic";
+                    hexpand: true;
+                    halign: start;
+                  }
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+                }
+
+                Label {
+                  styles ["title"]
+                  label: "Bluetooth";
+                  xalign: 0;
+                }
+
+                Label bt_sub {
+                  styles ["sub"]
+                  xalign: 0;
+                  ellipsize: end;
+                  max-width-chars: 16;
+                }
+              }
+            }
+          }
+
+          Box {
+            spacing: 8;
+            homogeneous: true;
+
+            Button saver {
+              styles ["tile"]
+              name: "saver";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Box {
+                  Image {
+                    icon-name: "power-profile-power-saver-symbolic";
+                    hexpand: true;
+                    halign: start;
+                  }
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+                }
+
+                Label {
+                  styles ["title"]
+                  label: "Low Power";
+                  xalign: 0;
+                }
+
+                Label saver_sub {
+                  styles ["sub"]
+                  xalign: 0;
+                  ellipsize: end;
+                  max-width-chars: 16;
+                }
+              }
+            }
+
+            Button dnd {
+              styles ["tile"]
+              name: "dnd";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Box {
+                  Image dnd_icon {
+                    icon-name: "weather-clear-night-symbolic";
+                    hexpand: true;
+                    halign: start;
+                  }
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+                }
+
+                Label {
+                  styles ["title"]
+                  label: "Focus";
+                  xalign: 0;
+                }
+
+                Label dnd_sub {
+                  styles ["sub"]
+                  xalign: 0;
+                  ellipsize: end;
+                  max-width-chars: 16;
+                }
+              }
+            }
+          }
+
+          // Tailscale, half the width like the tiles above: the tile
+          // connects and disconnects, the arrow opens the app. Hidden when
+          // Tailscale is not installed.
+          Box vpn_row {
+            spacing: 8;
+            homogeneous: true;
+            visible: false;
+
+            Box {
+              spacing: 4;
+
+              Button vpn {
+                styles ["tile"]
+                name: "vpn";
+                hexpand: true;
+
+                Box {
+                  orientation: vertical;
+                  spacing: 6;
+
+                  Box {
+                    Image {
+                      icon-name: "network-vpn-symbolic";
+                      hexpand: true;
+                      halign: start;
+                    }
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+                  }
+
+                  Label {
+                    styles ["title"]
+                    label: "Tailscale";
+                    xalign: 0;
+                  }
+
+                  Label vpn_sub {
+                    styles ["sub"]
+                    xalign: 0;
+                    ellipsize: end;
+                    max-width-chars: 12;
+                  }
+                }
+              }
+
+              Button vpn_open {
+                styles ["tile", "tile-more"]
+                name: "vpn-open";
+                tooltip-text: "Open Tailscale";
+
+                Image {
+                  icon-name: "go-next-symbolic";
+                }
+              }
+            }
+
+            // The other half, empty.
+            Box {}
+          }
+        }
+
+        // Sections: a kicker on a hairline, the value as a readout.
+        Box display {
+          orientation: vertical;
+          spacing: 8;
+
+          Box {
+            spacing: 10;
+
+            Label {
+              styles ["kicker"]
+              label: "Display";
+            }
+
+            Separator {
+              hexpand: true;
+              valign: center;
+            }
+
+            Label bright_value {
+              styles ["readout"]
+            }
+          }
+
+          Box {
+            spacing: 10;
+
+            // As wide as the mute button below, so the icons and the
+            // sliders line up. It brightens with the screen (lv0–lv10).
+            Image bright_icon {
+              styles ["bright-icon"]
+              icon-name: "display-brightness-symbolic";
+              width-request: 28;
+              height-request: 28;
+            }
+
+            Scale brightness {
+              name: "brightness";
+              hexpand: true;
+              draw-value: false;
+
+              adjustment: Adjustment {
+                lower: 0;
+                upper: 100;
+                step-increment: 5;
+                page-increment: 10;
+              };
+            }
+          }
+        }
+
+        Box sound {
+          orientation: vertical;
+          spacing: 8;
+
+          Box {
+            spacing: 10;
+
+            Label {
+              styles ["kicker"]
+              label: "Sound";
+            }
+
+            Separator {
+              hexpand: true;
+              valign: center;
+            }
+
+            Label vol_value {
+              styles ["readout"]
+            }
+          }
+
+          Box {
+            spacing: 10;
+
+            // Mutes; its icon shows the level, or muted.
+            Button mute {
+              styles ["plain", "mute"]
+              name: "mute";
+              tooltip-text: "Mute";
+
+              Image vol_icon {
+                icon-name: "audio-volume-high-symbolic";
+              }
+            }
+
+            Scale volume {
+              name: "volume";
+              hexpand: true;
+              draw-value: false;
+
+              adjustment: Adjustment {
+                lower: 0;
+                upper: 100;
+                step-increment: 5;
+                page-increment: 10;
+              };
+            }
+          }
+        }
+
+        Box media {
+          orientation: vertical;
+          spacing: 8;
+          visible: false;
+
+          Box {
+            spacing: 10;
+
+            Label {
+              styles ["kicker"]
+              label: "Now playing";
+            }
+
+            Separator {
+              hexpand: true;
+              valign: center;
+            }
+          }
+
+          Box {
+            styles ["media"]
+            spacing: 12;
+
+            Image media_art {
+              styles ["art"]
+              icon-name: "audio-x-generic-symbolic";
+              pixel-size: 18;
+            }
+
+            Box {
+              orientation: vertical;
+              valign: center;
+              hexpand: true;
+
+              Label media_title {
+                styles ["title"]
+                xalign: 0;
+                ellipsize: end;
+                max-width-chars: 20;
+              }
+
+              Label media_artist {
+                styles ["sub"]
+                xalign: 0;
+                ellipsize: end;
+                max-width-chars: 20;
+              }
+            }
+
+            Button media_prev {
+              styles ["plain"]
+              name: "prev";
+              icon-name: "media-skip-backward-symbolic";
+              valign: center;
+            }
+
+            Button media_play {
+              styles ["plain"]
+              name: "play";
+              icon-name: "media-playback-start-symbolic";
+              valign: center;
+            }
+
+            Button media_next {
+              styles ["plain"]
+              name: "next";
+              icon-name: "media-skip-forward-symbolic";
+              valign: center;
+            }
+          }
+        }
+      }
+    }
+  }
+}

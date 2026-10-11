@@ -1,0 +1,8 @@
+# Ubuntu/Debian: the greetd package creates _greetd and uses tty7.
+# Other distributions may use greeter and a different VT; match their service.
+[terminal]
+vt = 7
+
+[default_session]
+command = "/usr/bin/tuigreet --time --sessions /usr/share/wayland-sessions --cmd /usr/local/bin/inua-session"
+user = "_greetd"

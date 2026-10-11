@@ -1,0 +1,192 @@
+// The screenshot tool: one layer surface per monitor, over everything,
+// showing the monitor as it was when the tool opened. Go places the dim
+// panes around the selection, the selection's frame and its size; the
+// toolbar picks what a click takes (an area, a window or a screen) and
+// whether it is a picture or a recording, or leaves for the drawer of
+// recent ones (shotdrawer.blp). Picking a colour uses the same still,
+// with a loupe under the pointer.
+using Gtk 4.0;
+
+ApplicationWindow screenshot {
+  styles ["screenshot"]
+
+  Overlay {
+    child: Picture frozen {
+      content-fit: fill;
+      can-shrink: true;
+    };
+
+    // Takes the pointer: drags, hovers and clicks.
+    [overlay]
+    Fixed marks {
+      Box dim_top {
+        styles ["shot-dim"]
+        can-target: false;
+      }
+
+      Box dim_bottom {
+        styles ["shot-dim"]
+        can-target: false;
+      }
+
+      Box dim_left {
+        styles ["shot-dim"]
+        can-target: false;
+      }
+
+      Box dim_right {
+        styles ["shot-dim"]
+        can-target: false;
+      }
+
+      Box frame {
+        styles ["shot-frame"]
+        can-target: false;
+        visible: false;
+      }
+
+      Label size {
+        styles ["shot-size"]
+        can-target: false;
+        visible: false;
+      }
+
+      // Picking a colour: the pixels around the pointer, magnified, and
+      // the colour under it.
+      Box loupe {
+        styles ["shot-loupe"]
+        orientation: vertical;
+        can-target: false;
+        visible: false;
+
+        Picture loupe_pixels {
+          can-shrink: false;
+        }
+
+        Box {
+          spacing: 6;
+
+          Picture loupe_swatch {
+            styles ["shot-swatch"]
+            can-shrink: false;
+            valign: center;
+          }
+
+          Label loupe_hex {
+            styles ["shot-hex"]
+          }
+        }
+      }
+    }
+
+    [overlay]
+    Box toolbar {
+      styles ["shot-bar"]
+      halign: center;
+      valign: end;
+      margin-bottom: 48;
+      spacing: 4;
+
+      ToggleButton mode_area {
+        styles ["shot-mode"]
+        name: "area";
+        tooltip-text: "Drag to take an area (Space switches to windows)";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "edit-select-all-symbolic";
+          }
+
+          Label {
+            label: "Area";
+          }
+        }
+      }
+
+      ToggleButton mode_window {
+        styles ["shot-mode"]
+        name: "window";
+        group: mode_area;
+        tooltip-text: "Click a window";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "focus-windows-symbolic";
+          }
+
+          Label {
+            label: "Window";
+          }
+        }
+      }
+
+      ToggleButton mode_screen {
+        styles ["shot-mode"]
+        name: "screen";
+        group: mode_area;
+        tooltip-text: "Click a screen";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "video-display-symbolic";
+          }
+
+          Label {
+            label: "Screen";
+          }
+        }
+      }
+
+      Separator mode_sep {
+        orientation: vertical;
+      }
+
+      ToggleButton record {
+        styles ["shot-mode", "shot-record"]
+        tooltip-text: "Record the screen instead of taking a picture";
+
+        Box {
+          spacing: 7;
+
+          Box {
+            styles ["rec-mark"]
+            valign: center;
+          }
+
+          Label {
+            label: "Record";
+          }
+        }
+      }
+
+      Separator record_sep {
+        orientation: vertical;
+      }
+
+      Label hint {
+        styles ["shot-hint"]
+      }
+
+      // Leaves the still for the recent screenshots and recordings
+      // (shotdrawer.blp), to drag into an app.
+      Button drawer {
+        styles ["plain"]
+        icon-name: "image-x-generic-symbolic";
+        tooltip-text: "Recent screenshots and recordings, to drag into an app";
+      }
+
+      Button cancel {
+        styles ["plain"]
+        name: "cancel";
+        icon-name: "window-close-symbolic";
+        tooltip-text: "Cancel (Esc)";
+      }
+    }
+  }
+}

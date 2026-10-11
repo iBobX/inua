@@ -1,0 +1,86 @@
+// Color Picker: the chosen colour large, its forms with a copy button
+// each, the button that picks from the screen (the shell does it: the
+// screenshot tool's still, with a loupe), and the colours picked before.
+using Gtk 4.0;
+
+ApplicationWindow colorpicker {
+  default-width: 400;
+  default-height: 600;
+
+  Box {
+    styles ["colorapp"]
+    orientation: vertical;
+
+    Picture swatch {
+      styles ["swatch"]
+      content-fit: fill;
+      can-shrink: true;
+      height-request: 150;
+    }
+
+    Box {
+      styles ["list"]
+      orientation: vertical;
+
+      Box forms {
+        styles ["rows"]
+        orientation: vertical;
+      }
+
+      Button pick {
+        styles ["primary", "pick"]
+        halign: start;
+
+        Box {
+          spacing: 8;
+
+          Image {
+            icon-name: "color-select-symbolic";
+          }
+
+          Label {
+            label: "Pick a colour";
+          }
+        }
+      }
+    }
+
+    Box {
+      styles ["block"]
+      orientation: vertical;
+      vexpand: true;
+
+      Box {
+        Label {
+          styles ["kicker", "block-title"]
+          label: "PICKED BEFORE";
+          hexpand: true;
+          xalign: 0;
+        }
+
+        Button clear {
+          styles ["text"]
+          label: "Clear";
+          valign: center;
+        }
+      }
+
+      FlowBox history {
+        styles ["history"]
+        selection-mode: none;
+        homogeneous: true;
+        max-children-per-line: 10;
+        min-children-per-line: 6;
+        column-spacing: 6;
+        row-spacing: 6;
+        halign: start;
+        valign: start;
+      }
+
+      Label history_empty {
+        styles ["empty"]
+        label: "Colours you pick show here.";
+      }
+    }
+  }
+}

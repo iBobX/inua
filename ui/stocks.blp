@@ -1,0 +1,235 @@
+// Stocks in the settings window's language: your list in the index
+// (search adds a symbol), the chosen one's quote, chart and day in
+// sections.
+using Gtk 4.0;
+
+ApplicationWindow stocks {
+  default-width: 880;
+  default-height: 580;
+
+  Box {
+    // The index keeps its width whatever the page beside it asks for: a
+    // scrolled window that does not pass on its contents' natural width.
+    Box index {
+      styles ["index"]
+      orientation: vertical;
+      // Set, so the rows' expanding does not spread up to the index and
+      // have it share the page's spare width.
+      hexpand: false;
+
+      ScrolledWindow {
+        hscrollbar-policy: never;
+        vscrollbar-policy: never;
+        vexpand: true;
+
+        Box {
+          orientation: vertical;
+          width-request: 280;
+
+          Label {
+            styles ["index-title"]
+            label: "Stocks";
+            xalign: 0;
+          }
+
+          SearchEntry symbol_search {
+            styles ["index-search"]
+            placeholder-text: "Add a symbol";
+          }
+
+          ScrolledWindow {
+            vexpand: true;
+            hscrollbar-policy: never;
+
+            Box {
+              orientation: vertical;
+
+              Box results {
+                styles ["index-list"]
+                orientation: vertical;
+                visible: false;
+              }
+
+              Box list {
+                styles ["index-list"]
+                orientation: vertical;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    Stack detail {
+      hexpand: true;
+      transition-type: crossfade;
+      transition-duration: 120;
+      StackPage {
+        name: "quote";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["page"]
+            orientation: vertical;
+            // [QUOTE]
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Box {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  use-markup: true;
+                  label: "<span alpha='55%'>[</span>QUOTE<span alpha='55%'>]</span>";
+                }
+
+                Label symbol {
+                  styles ["section-meta"]
+                  label: "";
+                  hexpand: true;
+                  xalign: 0;
+                  ellipsize: end;
+                }
+
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["row"]
+                  orientation: vertical;
+                  spacing: 4;
+
+                  Label name {
+                    styles ["title", "name"]
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  Box {
+                    spacing: 12;
+
+                    Label price {
+                      styles ["price"]
+                    }
+
+                    Label change {
+                      styles ["change"]
+                      valign: baseline;
+                    }
+                  }
+                }
+
+                Box ranges {
+                  styles ["segmented", "linked", "ranges"]
+                  halign: start;
+                }
+
+                Picture chart {
+                  styles ["chart"]
+                  can-shrink: true;
+                  content-fit: fill;
+                  height-request: 220;
+                }
+              }
+            }
+
+            // [TODAY]
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Box {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  use-markup: true;
+                  label: "<span alpha='55%'>[</span>TODAY<span alpha='55%'>]</span>";
+                }
+
+                Label updated {
+                  styles ["section-meta"]
+                  label: "";
+                  hexpand: true;
+                  xalign: 0;
+                  ellipsize: end;
+                }
+
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Grid stats {
+                  styles ["cells"]
+                  column-homogeneous: true;
+                  column-spacing: 8;
+                }
+              }
+            }
+
+            Box {
+              styles ["foot"]
+              spacing: 12;
+
+              Label {
+                styles ["sub"]
+                label: "Prices from Yahoo Finance, delayed";
+                hexpand: true;
+                xalign: 0;
+              }
+
+              Button remove {
+                styles ["outlined"]
+                name: "remove";
+                label: "Remove";
+              }
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "message";
+
+        child: Box {
+          orientation: vertical;
+          valign: center;
+          spacing: 12;
+
+          Label message {
+            styles ["empty"]
+            wrap: true;
+            justify: center;
+          }
+
+          Button message_action {
+            styles ["outlined"]
+            name: "message";
+            halign: center;
+          }
+        };
+      }
+    }
+  }
+}

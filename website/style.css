@@ -1,0 +1,285 @@
+/* inua website. The colour tokens of each colourway are below; a script in
+   the page's head picks one (data-way on <html>) before the first paint,
+   so the page never flashes another colour. */
+:root {
+  --app: #F2EDE2; --surface: #FAF7F0; --t0: #1E1E20; --t1: #4A4843; --t2: #696662; --line: #D6CFBF; --accent: #2F4A6D;
+  color-scheme: light;
+  --mono: "Geist Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --sans: "Zen Kaku Gothic New", "Noto Sans CJK JP", system-ui, sans-serif;
+  --title: "IBM Plex Sans", "Zen Kaku Gothic New", system-ui, sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Without the script: night in dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-way]) { --app: #0B1012; --surface: #121A1C; --t0: #E7E4DA; --t1: #B3B6AF; --t2: #7F8F8C; --line: #243134; --accent: #9FC3C9; color-scheme: dark; }
+}
+:root[data-way="washi"] { --app: #F2EDE2; --surface: #FAF7F0; --t0: #1E1E20; --t1: #4A4843; --t2: #696662; --line: #D6CFBF; --accent: #2F4A6D; color-scheme: light; }
+:root[data-way="aojashin"] { --app: #F1F4F8; --surface: #F9FBFD; --t0: #0E2C57; --t1: #34507A; --t2: #566A8A; --line: #C8D4E4; --accent: #2463AE; color-scheme: light; }
+:root[data-way="yoru"] { --app: #0B1012; --surface: #121A1C; --t0: #E7E4DA; --t1: #B3B6AF; --t2: #7F8F8C; --line: #243134; --accent: #9FC3C9; color-scheme: dark; }
+:root[data-way="suimen"] { --app: #041417; --surface: #082125; --t0: #D6FFF6; --t1: #9CCFC6; --t2: #5FA79C; --line: #12403F; --accent: #22F2D0; color-scheme: dark; }
+:root[data-way="rinko"] { --app: #03100E; --surface: #061A16; --t0: #CFFFE8; --t1: #8FD9B6; --t2: #4E9C7C; --line: #0F3A32; --accent: #7CFFC4; color-scheme: dark; }
+:root[data-way="bunko"] { --app: #07080F; --surface: #0E111D; --t0: #F2F7FF; --t1: #AEB6CC; --t2: #7D85A1; --line: #1C2342; --accent: #1FE5FF; color-scheme: dark; }
+:root[data-way="denko"] { --app: #0B0A1A; --surface: #13102A; --t0: #E6F9FF; --t1: #A9B6D6; --t2: #8380A4; --line: #2A2046; --accent: #4DF3FF; color-scheme: dark; }
+
+/* While the page waits to be translated, its text stays hidden (never its
+   background); it shows anyway after 1.5 s should a script fail. */
+@keyframes inua-show { to { visibility: visible; } }
+.i18n-wait body { visibility: hidden; animation: inua-show 0s 1.5s forwards; }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--app);
+  color: var(--t1);
+  font: 400 16px/1.8 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 600ms var(--ease), color 600ms var(--ease);
+}
+a { color: var(--t0); text-decoration: none; border-bottom: 1px solid var(--line); transition: border-color 200ms; }
+a:hover { border-color: var(--t0); }
+::selection { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+
+.col { width: min(640px, calc(100% - 48px)); margin: 0 auto; }
+
+/* A label: the square mark and small capitals. */
+.label {
+  display: flex; align-items: center; gap: 12px;
+  font: 400 11px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--t2);
+}
+.label::before { content: ""; width: 5px; height: 5px; background: var(--accent); flex: none; }
+
+header.top { padding: 40px 0 0; }
+header.top .col { display: flex; justify-content: space-between; align-items: center; }
+.name { font: 400 15px/1 var(--mono); letter-spacing: 0.06em; color: var(--t0); border: 0; }
+
+.intro { padding: clamp(96px, 20vh, 220px) 0 0; }
+h1 {
+  margin: 26px 0 30px;
+  font: 300 clamp(36px, 6vw, 56px)/1.04 var(--title);
+  letter-spacing: -0.045em;
+  color: var(--t0);
+}
+.intro p { margin: 0 0 1.2em; max-width: 34em; }
+.links { display: flex; gap: 28px; margin-top: 36px; font: 400 13px/1 var(--mono); letter-spacing: 0.04em; }
+
+/* The drawing: hairlines in the text colours, the accent on two details. */
+figure.desk { margin: clamp(88px, 13vh, 150px) auto 0; width: min(880px, calc(100% - 48px)); }
+figure.desk svg { display: block; width: 100%; height: auto; overflow: visible; }
+.d-line { fill: none; stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; transition: stroke 600ms var(--ease); }
+.d-dim { fill: none; stroke: var(--t2); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: 0.55; }
+.d-fill { fill: var(--t2); opacity: 0.35; }
+.d-text { fill: var(--t2); font: 400 7px var(--mono); letter-spacing: 0.14em; }
+.d-acc { fill: var(--accent); transition: fill 600ms var(--ease); }
+.d-focus { fill: none; stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; transition: opacity 900ms var(--ease); }
+.d-win { fill: var(--app); stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; transition: fill 600ms var(--ease), stroke 600ms var(--ease); }
+.ws-on { transition: transform 900ms var(--ease); }
+
+section { padding: clamp(110px, 16vh, 180px) 0 0; }
+h2 { margin: 24px 0 30px; font: 300 clamp(26px, 3.4vw, 32px)/1.12 var(--title); letter-spacing: -0.04em; color: var(--t0); }
+
+/* What is in it: a list on hairlines. */
+dl.parts { margin: 0; border-top: 1px solid var(--line); }
+dl.parts > div { display: grid; grid-template-columns: 9.5em 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+dl.parts dt { font: 400 11px/2.2 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--t0); }
+dl.parts dd { margin: 0; }
+
+ol.ideas { list-style: none; margin: 0; padding: 0; counter-reset: idea; }
+ol.ideas li { counter-increment: idea; display: grid; grid-template-columns: 3.2em 1fr; gap: 12px; margin: 0 0 30px; }
+ol.ideas li::before { content: counter(idea, decimal-leading-zero); font: 400 11px/2.3 var(--mono); color: var(--accent); letter-spacing: 0.1em; }
+ol.ideas b { display: block; font-weight: 500; color: var(--t0); }
+
+.ways { display: flex; flex-wrap: wrap; gap: 18px 22px; }
+.way {
+  display: grid; justify-items: start; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 400 13px/1 var(--sans); color: var(--t2); transition: color 200ms;
+}
+.way i { display: block; width: 46px; height: 30px; border: 1px solid; position: relative; transition: transform 300ms var(--ease); }
+.way i::after { content: ""; position: absolute; left: 6px; bottom: 6px; width: 5px; height: 5px; background: var(--a); }
+.way small { font: 400 10px/1 var(--mono); letter-spacing: 0.1em; opacity: 0.8; }
+.way:hover { color: var(--t0); }
+.way:hover i { transform: translateY(-2px); }
+.way.on { color: var(--t0); }
+.way.on i { outline: 1px solid var(--t0); outline-offset: 3px; }
+
+pre {
+  margin: 0; padding: 22px 24px; overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--line);
+  font: 400 13px/1.9 var(--mono); color: var(--t0);
+  transition: background-color 600ms var(--ease);
+}
+pre .c { color: var(--t2); }
+.note { margin-top: 22px; font-size: 15px; }
+code { font: 400 0.88em var(--mono); color: var(--t0); }
+.copy { margin-top: 12px; padding: 0; border: 0; background: none; cursor: pointer; font: 400 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--t2); }
+.copy:hover { color: var(--t0); }
+
+
+/* --- the apps page --------------------------------------------------- */
+
+/* A screenshot in each tone: the colourway's (data-tone) shows. */
+.shot { display: block; }
+.shot img { display: block; width: 100%; height: auto; }
+[data-tone="light"] .shot .d, [data-tone="dark"] .shot .l { display: none; }
+:root:not([data-tone]) .shot .d { display: none; }
+
+/* A window: a hairline, a soft shadow, the corners of the shell's. */
+.frame, .st {
+  display: block; overflow: hidden; border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--line) 80%, var(--t2));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 12px 28px -8px rgba(0, 0, 0, 0.22), 0 36px 80px -24px rgba(0, 0, 0, 0.28);
+  background: var(--surface);
+}
+[data-tone="dark"] .frame, [data-tone="dark"] .st { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 32px -8px rgba(0, 0, 0, 0.6), 0 40px 90px -24px rgba(0, 0, 0, 0.7); }
+
+/* The stage: five windows on a faint grid under a wash of the accent. */
+.stage {
+  position: relative; margin: clamp(80px, 12vh, 130px) auto 0; width: min(1080px, calc(100% - 48px)); aspect-ratio: 16 / 9.4;
+  border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 70% 30%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    linear-gradient(color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px) 0 0 / 40px 40px,
+    var(--app);
+  background-blend-mode: normal;
+}
+.stage::after { /* the grid fades toward the edges */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(80% 80% at 50% 45%, transparent 55%, var(--app) 100%);
+}
+.st { position: absolute; z-index: 1; transform: translateY(var(--drift, 0px)); transition: transform 120ms linear; will-change: transform; }
+.st-weather  { left: 7%;  top: 11%; width: 21%; }
+.st-calendar { left: 60%; top: 6%;  width: 22%; z-index: 0; }
+.st-tailscale{ left: 71%; top: 27%; width: 21%; }
+.st-clock    { left: 34%; top: 14%; width: 25%; z-index: 2; }
+.st-color    { left: 22%; top: 40%; width: 17%; z-index: 3; }
+
+/* Each app: its words beside its window, sides alternating; wide apps
+   take the whole width under their words. */
+.col-wide { width: min(960px, calc(100% - 48px)); margin: 0 auto; }
+section.app { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
+section.app.flip .app-text { order: 2; }
+section.app .num { font: 400 11px/1 var(--mono); letter-spacing: 0.16em; color: var(--accent); }
+section.app h2 { margin: 18px 0 18px; }
+section.app p { margin: 0; max-width: 26em; }
+.app-art { position: relative; display: flex; justify-content: center; padding: 28px 0; }
+.app-art .win { position: relative; width: min(100%, 340px); }
+.app-art .frame { position: relative; z-index: 1; }
+/* An offset block in the accent behind the window. */
+.app-art .win::before {
+  content: ""; position: absolute; z-index: 0; inset: 22px -22px -22px 22px; border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+section.app.flip .app-art .win::before { inset: 22px 22px -22px -22px; }
+/* Behind each window: a field of dots, and the accent's square. */
+.app-art::before {
+  content: ""; position: absolute; inset: 0 8% 0 8%;
+  background: radial-gradient(color-mix(in srgb, var(--t2) 45%, transparent) 1px, transparent 1.5px) 0 0 / 16px 16px;
+  -webkit-mask: radial-gradient(70% 70% at 50% 50%, #000 40%, transparent 75%); mask: radial-gradient(70% 70% at 50% 50%, #000 40%, transparent 75%);
+}
+section.app.wide { grid-template-columns: 1fr; gap: 28px; }
+section.app.wide .app-text { display: grid; grid-template-columns: 5em 1fr 1.2fr; align-items: baseline; gap: 0 24px; }
+section.app.wide .app-text h2 { margin: 0; }
+section.app.wide .app-art .win { width: calc(100% - 24px); }
+main.apps section.app { padding-top: clamp(96px, 14vh, 150px); }
+
+footer { padding: clamp(120px, 18vh, 200px) 0 56px; }
+footer .col { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font: 400 11px/1.6 var(--mono); letter-spacing: 0.06em; color: var(--t2); }
+footer a { color: var(--t2); }
+/* The language picker in the top bar: a quiet button that opens a
+   hairline list below it; the current language carries the square mark. */
+.lang { position: relative; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 400 12px/1 var(--mono); letter-spacing: 0.06em; color: var(--t2); transition: color 200ms;
+}
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--t0); }
+.lang-btn svg { width: 9px; height: 6px; transition: transform 300ms var(--ease); }
+.lang-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.lang-btn span { font-family: var(--sans); letter-spacing: 0.02em; font-size: 13px; }
+.lang-list {
+  position: absolute; right: 0; top: calc(100% + 14px); z-index: 10; min-width: 168px;
+  margin: 0; padding: 6px 0; list-style: none;
+  background: var(--surface); border: 1px solid var(--line);
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity 220ms var(--ease), transform 220ms var(--ease), visibility 0s 220ms;
+}
+.lang-list.open { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.lang-list li {
+  display: flex; align-items: center; gap: 12px; padding: 7px 16px; cursor: pointer;
+  font: 400 13px/1.4 var(--sans); letter-spacing: 0; color: var(--t1);
+}
+.lang-list li::before { content: ""; width: 5px; height: 5px; flex: none; }
+.lang-list li[aria-selected="true"] { color: var(--t0); }
+.lang-list li[aria-selected="true"]::before { background: var(--accent); }
+.lang-list li.active { background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--t0); }
+.lang-list:focus { outline: none; }
+
+/* Chinese and Korean take their own typefaces (loaded when chosen); CJK
+   headings drop the tight Latin tracking. */
+:lang(zh-Hant) { --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; --title: "Noto Sans TC", "PingFang TC", sans-serif; }
+:lang(zh-Hans) { --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; --title: "Noto Sans SC", "PingFang SC", sans-serif; }
+:lang(ko) { --sans: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; --title: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
+:lang(ja) { --title: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif; }
+:lang(ja) h1, :lang(zh) h1, :lang(ko) h1 { letter-spacing: 0; line-height: 1.25; font-weight: 400; }
+/* Headings break between words, never inside one, and balance their lines. */
+h1, h2 { text-wrap: balance; }
+:lang(ja) h1, :lang(ja) h2, :lang(ko) h1, :lang(ko) h2 { word-break: keep-all; overflow-wrap: anywhere; }
+:lang(ja) h2, :lang(zh) h2, :lang(ko) h2 { letter-spacing: 0; line-height: 1.45; font-weight: 400; }
+/* A long Japanese heading breaks as Japanese does, never before 、 or 。 */
+:lang(ja) main.apps h1 { word-break: normal; line-break: strict; }
+:lang(ja) body, :lang(zh) body, :lang(ko) body { line-height: 1.9; }
+
+.rv { opacity: 0; transform: translateY(10px); transition: opacity 1200ms var(--ease), transform 1200ms var(--ease); }
+.rv.in { opacity: 1; transform: none; }
+
+/* Phones: tighter spacing, a wider drawing, larger tap targets, an even
+   grid of colourways, and commands that fit. */
+@media (max-width: 560px) {
+  body { font-size: 15.5px; line-height: 1.75; }
+  .col { width: calc(100% - 40px); }
+  header.top { padding-top: 22px; }
+  .intro { padding-top: 64px; }
+  h1 { margin: 20px 0 22px; }
+  .links { margin-top: 24px; gap: 8px 22px; }
+  /* Finger-sized hit areas that do not move the underlines. */
+  .links a, .lang-btn, .copy { position: relative; }
+  .links a::after, .lang-btn::after, .copy::after { content: ""; position: absolute; inset: -12px -8px; }
+  figure.desk { margin-top: 64px; width: calc(100% - 20px); }
+  section { padding-top: 92px; }
+  h2 { margin: 18px 0 22px; }
+  dl.parts > div { grid-template-columns: 1fr; gap: 2px; padding: 16px 0; }
+  ol.ideas li { grid-template-columns: 2.4em 1fr; }
+  .ways { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 10px; }
+  .way i { width: 100%; max-width: 64px; height: 34px; }
+  .way small { letter-spacing: 0.04em; }
+  pre { padding: 18px; font-size: 12.5px; line-height: 1.85; }
+  .copy { margin-top: 14px; }
+  .lang-list { min-width: 180px; }
+  .lang-list li { padding: 10px 18px; font-size: 14px; }
+  footer { padding: 100px 0 40px; }
+}
+@media (max-width: 760px) {
+  section.app, section.app.wide { grid-template-columns: 1fr; gap: 20px; }
+  section.app.flip .app-text { order: 0; }
+  section.app.wide .app-text { grid-template-columns: 1fr; }
+  section.app.wide .app-text h2 { margin: 14px 0 14px; }
+  .app-art .win { width: min(76%, 320px); }
+  .app-art .win::before { inset: 14px -14px -14px 14px; }
+  section.app.flip .app-art .win::before { inset: 14px 14px -14px -14px; }
+  .stage { aspect-ratio: 4 / 3.4; }
+  .st-weather  { left: 2%;  top: 10%; width: 30%; }
+  .st-calendar { display: none; }
+  .st-tailscale{ left: 66%; top: 16%; width: 32%; }
+  .st-clock    { left: 30%; top: 8%;  width: 38%; }
+  .st-color    { left: 12%; top: 50%; width: 27%; }
+}
+@media (max-width: 360px) {
+  .ways { grid-template-columns: repeat(3, 1fr); }
+  pre { font-size: 11.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .rv { opacity: 1; transform: none; }
+}

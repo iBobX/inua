@@ -1,0 +1,98 @@
+// Notification center: a full-screen overlay whose backdrop closes it on
+// click, with the card down the right side. Go fills `list` with groups.
+using Gtk 4.0;
+
+ApplicationWindow center {
+  styles ["center"]
+
+  Box backdrop {
+    styles ["backdrop"]
+
+    Revealer reveal {
+      halign: end;
+      hexpand: true;
+      margin-top: 42;
+      margin-bottom: 6;
+      margin-end: 6;
+      transition-type: slide_left;
+      transition-duration: 260;
+
+      Box card {
+        styles ["card"]
+        orientation: vertical;
+        spacing: 12;
+        width-request: 380;
+
+        Box {
+          spacing: 10;
+
+          Box {
+            styles ["mark"]
+            valign: center;
+          }
+
+          Label {
+            styles ["tag"]
+            label: "[NOTIFICATIONS]";
+          }
+
+          Label count {
+            styles ["readout"]
+            hexpand: true;
+            xalign: 0;
+          }
+
+          // Focus: banners stay quiet; Go adds `on`.
+          Button focus {
+            styles ["plain", "focus"]
+            name: "focus";
+            icon-name: "weather-clear-night-symbolic";
+            tooltip-text: "Focus";
+          }
+
+          Button clear_all {
+            styles ["plain", "link"]
+            name: "clear_all";
+            label: "Clear all";
+          }
+        }
+
+        Label focus_note {
+          styles ["sub"]
+          label: "Focus is on: banners stay quiet.";
+          xalign: 0;
+          visible: false;
+        }
+
+        ScrolledWindow scroll {
+          vexpand: true;
+          hscrollbar-policy: never;
+
+          Box list {
+            orientation: vertical;
+            spacing: 18;
+          }
+        }
+
+        Box empty {
+          orientation: vertical;
+          vexpand: true;
+          valign: center;
+          spacing: 8;
+          visible: false;
+
+          Image {
+            styles ["dim-icon"]
+            icon-name: "preferences-system-notifications-symbolic";
+            pixel-size: 28;
+          }
+
+          Label {
+            styles ["sub"]
+            label: "No notifications";
+          }
+        }
+      }
+    }
+  }
+}

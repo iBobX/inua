@@ -1,0 +1,55 @@
+// One app's notifications in the notification center: the newest card, or
+// all of them when the stack is open, under a head when there are several. Go names the buttons
+// after the app ("more:KEY", "clear:KEY").
+using Gtk 4.0;
+
+Box group {
+  styles ["group"]
+  orientation: vertical;
+  spacing: 6;
+
+  // Only for a stack (more than one).
+  Box head {
+    styles ["group-head"]
+    spacing: 8;
+
+    Image icon {
+      pixel-size: 16;
+      valign: center;
+    }
+
+    Label name {
+      styles ["group-name"]
+      hexpand: true;
+      xalign: 0;
+      ellipsize: end;
+    }
+
+    // "3 more" or "Show less".
+    Button more {
+      styles ["plain", "link"]
+      visible: false;
+    }
+
+    Button clear {
+      styles ["plain"]
+      icon-name: "window-close-symbolic";
+      tooltip-text: "Clear";
+    }
+  }
+
+  // The cards under the top one show as an edge hanging from it.
+  Box {
+    orientation: vertical;
+
+    Box items {
+      orientation: vertical;
+      spacing: 6;
+    }
+
+    Box stack_edge {
+      styles ["stack-edge"]
+      visible: false;
+    }
+  }
+}

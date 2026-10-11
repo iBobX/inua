@@ -1,0 +1,95 @@
+// Launcher. Result rows come from row.blp; Go fills `results`.
+using Gtk 4.0;
+
+ApplicationWindow launcher {
+  styles ["launcher"]
+
+  Box {
+    orientation: vertical;
+    // Fixed size, so the surface does not resize (and move) with the results.
+    width-request: 640;
+    height-request: 520;
+
+    // The head reads like a section head: the square mark, the mode as a
+    // mono label in brackets, its name, and the key that switches modes.
+    Box {
+      styles ["head"]
+      spacing: 10;
+
+      Box {
+        styles ["mark"]
+        valign: center;
+      }
+
+      Label mode {
+        styles ["tag"]
+      }
+
+      Label mode_desc {
+        styles ["dim"]
+        hexpand: true;
+        xalign: 0;
+      }
+
+      Label {
+        styles ["kicker"]
+        label: "Tab  switch";
+      }
+    }
+
+    Entry query {
+      styles ["query"]
+      placeholder-text: "Search, or ask: 10 km to mi";
+    }
+
+    Box results {
+      styles ["results"]
+      orientation: vertical;
+    }
+
+    // Why the list is empty, or what went wrong with the last action. The
+    // tag ([ERROR]) shows only for failures.
+    Box message_box {
+      styles ["notice"]
+      spacing: 8;
+      visible: false;
+
+      Label message_tag {
+        styles ["tag", "error"]
+        label: "[ERROR]";
+      }
+
+      Label message {
+        styles ["dim"]
+        hexpand: true;
+        xalign: 0;
+        ellipsize: end;
+      }
+    }
+
+    // The rest of the fixed height, so the notice follows the list.
+    Box {
+      vexpand: true;
+    }
+
+    Box {
+      styles ["foot"]
+      spacing: 18;
+
+      Label {
+        styles ["kicker"]
+        label: "↑↓  choose";
+      }
+
+      Label {
+        styles ["kicker"]
+        label: "↵  open";
+      }
+
+      Label {
+        styles ["kicker"]
+        label: "Esc  close";
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+// Banners: new notifications, newest on top, in a layer surface at the top
+// right that is only as big as they are. Go adds each in a revealer.
+using Gtk 4.0;
+
+ApplicationWindow banners {
+  styles ["banners"]
+
+  Box stack {
+    orientation: vertical;
+    spacing: 8;
+    width-request: 360;
+  }
+}

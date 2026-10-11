@@ -1,0 +1,127 @@
+// The password dialog for polkit, when a program asks for rights the user
+// must authenticate for: over the whole focused monitor, a shade and a
+// card with what is asked, who answers, the helper's prompt and its
+// messages. Go fills it (internal/ui/polkit.go). gpg's pinentry asks in
+// it too (internal/ui/askpass.go), without the user row, with a second
+// field for a new passphrase and a third button for some questions.
+using Gtk 4.0;
+
+Window polkit_dialog {
+  styles ["polkit"]
+
+  Box {
+    Box card {
+      styles ["polkit-card"]
+      orientation: vertical;
+      halign: center;
+      valign: center;
+      hexpand: true;
+      width-request: 380;
+      spacing: 10;
+
+      Image icon {
+        styles ["polkit-icon"]
+        icon-name: "dialog-password-symbolic";
+        pixel-size: 28;
+        halign: start;
+      }
+
+      Label title {
+        styles ["polkit-title"]
+        label: "Authentication Required";
+        xalign: 0;
+      }
+
+      Label message {
+        styles ["polkit-message"]
+        xalign: 0;
+        wrap: true;
+        max-width-chars: 46;
+      }
+
+      // The command pkexec would run.
+      Label command {
+        styles ["polkit-command"]
+        xalign: 0;
+        wrap: true;
+        wrap-mode: word_char;
+        max-width-chars: 46;
+        selectable: true;
+        visible: false;
+      }
+
+      Box who {
+        styles ["polkit-who"]
+        spacing: 8;
+
+        Label {
+          styles ["kicker"]
+          label: "AS";
+        }
+
+        Label user {
+          styles ["polkit-user"]
+          hexpand: true;
+          xalign: 0;
+          ellipsize: end;
+        }
+
+        // Another user, when more than one may answer.
+        Button switch_user {
+          styles ["plain"]
+          icon-name: "system-users-symbolic";
+          tooltip-text: "Another user";
+          visible: false;
+        }
+      }
+
+      Label prompt {
+        styles ["polkit-prompt"]
+        xalign: 0;
+        visible: false;
+      }
+
+      PasswordEntry password {
+        styles ["polkit-password"]
+        placeholder-text: "Password";
+        show-peek-icon: true;
+      }
+
+      PasswordEntry password2 {
+        styles ["polkit-password"]
+        show-peek-icon: true;
+        visible: false;
+      }
+
+      // The helper's messages: a fingerprint reader's, a wrong password.
+      Label info {
+        styles ["polkit-info"]
+        xalign: 0;
+        wrap: true;
+        max-width-chars: 46;
+        visible: false;
+      }
+
+      Box {
+        spacing: 8;
+        halign: end;
+        margin-top: 6;
+
+        Button notok {
+          styles ["outlined"]
+          visible: false;
+        }
+
+        Button cancel {
+          styles ["outlined"]
+          label: "Cancel";
+        }
+
+        Button ok {
+          styles ["suggested-action"]
+          label: "Authenticate";
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+// The screenshot tool's drawer, shown once a picture or a recording is
+// taken: the recent ones, newest first, over a small toolbar where the
+// tool's was. The still is gone by then, so the windows are live and take
+// a dragged item. Area, Window and Screen take another; Go fills the row.
+using Gtk 4.0;
+
+ApplicationWindow shot_drawer {
+  styles ["shot-drawer-win"]
+
+  Box {
+    styles ["shot-panel"]
+    orientation: vertical;
+    spacing: 10;
+
+    Box {
+      styles ["shot-drawer"]
+      orientation: vertical;
+      spacing: 8;
+
+      Box {
+        Label {
+          styles ["kicker"]
+          label: "RECENT";
+          hexpand: true;
+          xalign: 0;
+        }
+
+        Label {
+          styles ["shot-drawer-hint"]
+          label: "Drag into an app · click to open";
+        }
+      }
+
+      ScrolledWindow {
+        hscrollbar-policy: automatic;
+        vscrollbar-policy: never;
+        propagate-natural-width: true;
+        max-content-width: 760;
+
+        Box drawer_items {
+          spacing: 8;
+        }
+      }
+
+      Label drawer_empty {
+        styles ["shot-drawer-empty"]
+        label: "Screenshots and recordings you take show here.";
+        visible: false;
+        xalign: 0;
+      }
+    }
+
+    Box drawer_bar {
+      styles ["shot-bar"]
+      halign: center;
+      spacing: 4;
+
+      Button take_area {
+        styles ["shot-mode"]
+        name: "area";
+        tooltip-text: "Take an area";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "edit-select-all-symbolic";
+          }
+
+          Label {
+            label: "Area";
+          }
+        }
+      }
+
+      Button take_window {
+        styles ["shot-mode"]
+        name: "window";
+        tooltip-text: "Take a window";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "focus-windows-symbolic";
+          }
+
+          Label {
+            label: "Window";
+          }
+        }
+      }
+
+      Button take_screen {
+        styles ["shot-mode"]
+        name: "screen";
+        tooltip-text: "Take a screen";
+
+        Box {
+          spacing: 7;
+
+          Image {
+            icon-name: "video-display-symbolic";
+          }
+
+          Label {
+            label: "Screen";
+          }
+        }
+      }
+
+      Separator {
+        orientation: vertical;
+      }
+
+      ToggleButton take_record {
+        styles ["shot-mode", "shot-record"]
+        tooltip-text: "Record the screen instead of taking a picture";
+
+        Box {
+          spacing: 7;
+
+          Box {
+            styles ["rec-mark"]
+            valign: center;
+          }
+
+          Label {
+            label: "Record";
+          }
+        }
+      }
+
+      Separator {
+        orientation: vertical;
+      }
+
+      Label drawer_bar_hint {
+        styles ["shot-hint"]
+        label: "Take another";
+      }
+
+      Button drawer_close {
+        styles ["plain"]
+        icon-name: "window-close-symbolic";
+        tooltip-text: "Close (Esc)";
+      }
+    }
+  }
+}

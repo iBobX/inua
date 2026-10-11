@@ -1,0 +1,66 @@
+// The lock screen: one window per monitor, each a session-lock surface.
+// The wallpaper behind a shade, the time and date, and the password.
+// Popups do not show while the screen is locked, so nothing here uses one.
+using Gtk 4.0;
+
+Window lock {
+  styles ["lock"]
+
+  Overlay {
+    child: Box {
+      styles ["lock-ground"]
+    };
+
+    [overlay]
+    Box {
+      styles ["lock-shade"]
+      can-target: false;
+    }
+
+    [overlay]
+    Box {
+      orientation: vertical;
+      halign: center;
+
+      Label date {
+        styles ["lock-date"]
+        margin-top: 120;
+      }
+
+      Label time {
+        styles ["lock-time"]
+      }
+
+      Box {
+        vexpand: true;
+      }
+
+      Box auth {
+        styles ["lock-auth"]
+        orientation: vertical;
+        spacing: 10;
+        margin-bottom: 120;
+        halign: center;
+
+        Label user {
+          styles ["lock-user"]
+        }
+
+        PasswordEntry password {
+          styles ["lock-password"]
+          width-request: 280;
+          placeholder-text: "Password";
+          show-peek-icon: true;
+        }
+
+        // Why the last password was not taken, or that it is being checked.
+        Label message {
+          styles ["lock-message"]
+          wrap: true;
+          justify: center;
+          max-width-chars: 36;
+        }
+      }
+    }
+  }
+}

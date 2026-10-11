@@ -1,0 +1,38 @@
+// One launcher result. The `selected` style class is toggled from Go.
+using Gtk 4.0;
+
+Box row {
+  spacing: 12;
+  styles ["row"]
+
+  Image icon {
+    pixel-size: 24;
+    valign: center;
+  }
+
+  // An emoji or symbol, shown instead of the icon.
+  Label glyph {
+    styles ["glyph"]
+    width-chars: 2;
+    valign: center;
+    visible: false;
+  }
+
+  Box {
+    orientation: vertical;
+    valign: center;
+    hexpand: true;
+
+    Label title {
+      styles ["title"]
+      xalign: 0;
+      ellipsize: end;
+    }
+
+    Label detail {
+      styles ["detail"]
+      xalign: 0;
+      ellipsize: end;
+    }
+  }
+}

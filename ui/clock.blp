@@ -1,0 +1,326 @@
+// Clock: one column, four tabs under a hairline: World (the time here,
+// then other cities), Alarms (rung by the shell, even with Clock closed),
+// Stopwatch and Timer. Go fills the lists and the time pickers.
+using Gtk 4.0;
+
+ApplicationWindow clock {
+  default-width: 440;
+  default-height: 640;
+
+  Box {
+    styles ["clockapp"]
+    orientation: vertical;
+
+    StackSwitcher {
+      styles ["tabs"]
+      stack: pages;
+      halign: center;
+    }
+
+    Stack pages {
+      vexpand: true;
+      transition-type: crossfade;
+      transition-duration: 140;
+
+      StackPage {
+        name: "world";
+        title: "WORLD";
+
+        child: Box {
+          orientation: vertical;
+
+          Box {
+            styles ["hero"]
+            orientation: vertical;
+
+            Box {
+              halign: center;
+
+              Label local_time {
+                styles ["hero-time"]
+              }
+
+              Label local_seconds {
+                styles ["hero-seconds"]
+                valign: start;
+              }
+            }
+
+            Label local_date {
+              styles ["kicker"]
+              halign: center;
+            }
+          }
+
+          ScrolledWindow {
+            vexpand: true;
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["list"]
+              orientation: vertical;
+
+              Box zone_results {
+                styles ["rows"]
+                orientation: vertical;
+                visible: false;
+              }
+
+              Box world_list {
+                styles ["rows"]
+                orientation: vertical;
+              }
+
+              Label world_empty {
+                styles ["empty"]
+                label: "No other cities yet.";
+              }
+            }
+          }
+
+          // Adding a city: type its name.
+          Box {
+            styles ["composer"]
+
+            SearchEntry zone_search {
+              hexpand: true;
+              placeholder-text: "Add a city";
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "alarms";
+        title: "ALARMS";
+
+        child: Box {
+          orientation: vertical;
+
+          Box {
+            styles ["bar"]
+
+            Label {
+              styles ["kicker"]
+              label: "RUNG BY INUA, EVEN WITH CLOCK CLOSED";
+              hexpand: true;
+              xalign: 0;
+              ellipsize: end;
+            }
+
+            Button alarm_add {
+              styles ["outlined", "small"]
+              label: "New alarm";
+            }
+          }
+
+          Revealer editor_reveal {
+            transition-type: slide_down;
+            transition-duration: 180;
+
+            Box {
+              styles ["editor"]
+              orientation: vertical;
+              spacing: 14;
+
+              Box alarm_picker {
+                halign: center;
+              }
+
+              Entry alarm_label {
+                placeholder-text: "Label";
+              }
+
+              Box {
+                orientation: vertical;
+                spacing: 8;
+
+                Box {
+                  Label {
+                    styles ["kicker"]
+                    label: "REPEAT";
+                    hexpand: true;
+                    xalign: 0;
+                  }
+
+                  Label alarm_repeat {
+                    styles ["sub"]
+                  }
+                }
+
+                Box alarm_days {
+                  styles ["days"]
+                  spacing: 6;
+                  homogeneous: true;
+                }
+              }
+
+              Box {
+                spacing: 8;
+
+                Button alarm_delete {
+                  styles ["text", "danger"]
+                  label: "Delete";
+                }
+
+                Box {
+                  hexpand: true;
+                }
+
+                Button alarm_cancel {
+                  styles ["outlined"]
+                  label: "Cancel";
+                }
+
+                Button alarm_save {
+                  styles ["primary"]
+                  label: "Save";
+                }
+              }
+            }
+          }
+
+          ScrolledWindow {
+            vexpand: true;
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["list"]
+              orientation: vertical;
+
+              Box alarm_list {
+                styles ["rows"]
+                orientation: vertical;
+              }
+
+              Label alarm_empty {
+                styles ["empty"]
+                label: "No alarms.";
+              }
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "stopwatch";
+        title: "STOPWATCH";
+
+        child: Box {
+          orientation: vertical;
+
+          Box {
+            styles ["hero"]
+            orientation: vertical;
+            spacing: 22;
+
+            Label sw_time {
+              styles ["hero-time", "mono-digits"]
+              label: "00:00.00";
+            }
+
+            Box {
+              spacing: 10;
+              halign: center;
+              homogeneous: true;
+
+              Button sw_lap {
+                styles ["outlined", "wide"]
+                label: "Lap";
+                sensitive: false;
+              }
+
+              Button sw_start {
+                styles ["primary", "wide"]
+                label: "Start";
+              }
+            }
+          }
+
+          ScrolledWindow {
+            vexpand: true;
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["list"]
+              orientation: vertical;
+
+              Box sw_laps {
+                styles ["rows"]
+                orientation: vertical;
+              }
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "timer";
+        title: "TIMER";
+
+        child: Box {
+          orientation: vertical;
+
+          Box timer_set {
+            styles ["hero"]
+            orientation: vertical;
+            spacing: 22;
+
+            Box timer_picker {
+              halign: center;
+            }
+
+            // Ready-made durations, in minutes.
+            Box timer_presets {
+              styles ["presets"]
+              spacing: 6;
+              halign: center;
+            }
+
+            Button timer_start {
+              styles ["primary", "wide"]
+              label: "Start";
+              halign: center;
+            }
+          }
+
+          Box timer_run {
+            styles ["hero"]
+            orientation: vertical;
+            spacing: 14;
+            visible: false;
+
+            Label timer_left {
+              styles ["hero-time", "mono-digits"]
+            }
+
+            ProgressBar timer_progress {
+              styles ["thin"]
+            }
+
+            Label timer_ends {
+              styles ["kicker"]
+            }
+
+            Box {
+              spacing: 10;
+              halign: center;
+              homogeneous: true;
+              margin-top: 8;
+
+              Button timer_cancel {
+                styles ["outlined", "wide"]
+                label: "Cancel";
+              }
+
+              Button timer_pause {
+                styles ["primary", "wide"]
+                label: "Pause";
+              }
+            }
+          }
+        };
+      }
+    }
+  }
+}

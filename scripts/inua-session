@@ -1,0 +1,22 @@
+#!/bin/sh
+# Used by display managers and by users logging in on a TTY.
+set -eu
+
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+for program in inua-shell inua start-hyprland; do
+    if ! command -v "$program" >/dev/null 2>&1; then
+        echo "inua-session: $program is not on PATH; install Inua and Hyprland first" >&2
+        exit 1
+    fi
+done
+
+# Let Hyprland resolve its default configuration, including XDG_CONFIG_HOME.
+# An existing config that never starts inua-shell (inua init leaves one
+# alone) would give a session without the shell; refuse and say why.
+config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf"
+if [ -e "$config" ] && ! report=$(inua config hyprland "$config" 2>&1); then
+    printf '%s\n' "$report" >&2
+    echo "inua-session: not starting; the Hyprland session is unaffected" >&2
+    exit 1
+fi
+exec start-hyprland

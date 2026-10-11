@@ -1,0 +1,197 @@
+// Tailscale: whether this device is connected, with a switch; a notice
+// when something is in the way (the daemon not running, logged out, or
+// not yet allowed to change it); and three tabs. Devices: the tailnet's,
+// online first, each opening to its addresses, connection and actions,
+// and taking files dropped on it (Taildrop). Exit Node: none or a peer.
+// This Device: its settings, received files and logging out. Go fills
+// them.
+using Gtk 4.0;
+
+ApplicationWindow tailscale {
+  default-width: 460;
+  default-height: 700;
+
+  Box {
+    styles ["tailscaleapp"]
+    orientation: vertical;
+
+    Box {
+      styles ["ts-hero"]
+      spacing: 16;
+
+      Box {
+        orientation: vertical;
+        hexpand: true;
+        valign: center;
+        spacing: 4;
+
+        Label state_title {
+          styles ["ts-state"]
+          xalign: 0;
+          label: "—";
+        }
+
+        Label state_sub {
+          styles ["sub"]
+          xalign: 0;
+          ellipsize: end;
+        }
+      }
+
+      Switch connect {
+        valign: center;
+        tooltip-text: "Connect this device to the tailnet";
+      }
+    }
+
+    // What is in the way, and the one thing that clears it.
+    Box notice {
+      styles ["ts-notice"]
+      spacing: 12;
+      visible: false;
+
+      Label notice_text {
+        hexpand: true;
+        xalign: 0;
+        wrap: true;
+      }
+
+      Button notice_button {
+        styles ["outlined"]
+        valign: center;
+      }
+    }
+
+    Label note {
+      styles ["ts-note"]
+      visible: false;
+      xalign: 0;
+      wrap: true;
+    }
+
+    StackSwitcher {
+      styles ["tabs"]
+      stack: pages;
+      halign: center;
+    }
+
+    Stack pages {
+      vexpand: true;
+      transition-type: crossfade;
+      transition-duration: 140;
+
+      StackPage {
+        name: "devices";
+        title: "DEVICES";
+
+        child: Stack dev_pages {
+          transition-type: slide_left_right;
+          transition-duration: 160;
+
+          StackPage {
+            name: "list";
+
+            child: Box {
+              orientation: vertical;
+
+              Box {
+                styles ["composer"]
+
+                SearchEntry filter {
+                  hexpand: true;
+                  placeholder-text: "Filter by name, address, OS or tag";
+                }
+              }
+
+              ScrolledWindow {
+                vexpand: true;
+                hscrollbar-policy: never;
+
+                Box devices {
+                  styles ["list", "rows"]
+                  orientation: vertical;
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "detail";
+
+            child: Box detail_page {
+              orientation: vertical;
+
+              Box {
+                styles ["bar", "detail-bar"]
+                spacing: 8;
+
+                Button back {
+                  styles ["plain"]
+                  icon-name: "go-previous-symbolic";
+                  tooltip-text: "All devices (Escape)";
+                  valign: center;
+                }
+
+                Box {
+                  orientation: vertical;
+                  hexpand: true;
+                  valign: center;
+
+                  Label detail_name {
+                    styles ["detail-name"]
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  Label detail_sub {
+                    styles ["kicker"]
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+              }
+
+              ScrolledWindow {
+                vexpand: true;
+                hscrollbar-policy: never;
+
+                Box detail {
+                  styles ["list", "detail"]
+                  orientation: vertical;
+                }
+              }
+            };
+          }
+        };
+      }
+
+      StackPage {
+        name: "exit";
+        title: "EXIT NODE";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box exits {
+            styles ["list"]
+            orientation: vertical;
+          }
+        };
+      }
+
+      StackPage {
+        name: "device";
+        title: "THIS DEVICE";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box this_device {
+            styles ["list"]
+            orientation: vertical;
+          }
+        };
+      }
+    }
+  }
+}

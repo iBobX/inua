@@ -1,0 +1,1761 @@
+// Settings: a normal window (not a layer surface) that edits config.toml,
+// in two columns: an index of the sections (its row names the page shown),
+// and the chosen one's page.
+// Pages hold sections (a head with a mark, a [LABEL] and a description on a
+// hairline) of rows: text with a control at the end, or a labelled field.
+// Changes apply to the running shell at once and are saved a moment later.
+// Controls carry a `name` that Go uses to tell them apart; theme swatches
+// are added to `themes` from Go.
+using Gtk 4.0;
+
+ApplicationWindow settings {
+  styles ["settings"]
+  title: "inua Settings";
+  default-width: 860;
+  default-height: 620;
+
+  Box {
+    // --- index ---
+    Box {
+      styles ["index"]
+      orientation: vertical;
+      width-request: 220;
+
+      Label {
+        styles ["index-title"]
+        label: "Settings";
+        xalign: 0;
+      }
+
+      StackSidebar {
+        vexpand: true;
+        stack: pages;
+      }
+
+      // Why saving failed; hidden otherwise.
+      Label status {
+        styles ["status"]
+        visible: false;
+        xalign: 0;
+        wrap: true;
+      }
+
+    }
+
+    Stack pages {
+      hexpand: true;
+      transition-type: crossfade;
+      transition-duration: 120;
+
+      StackPage {
+        name: "appearance";
+        title: "Appearance";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_appearance {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [THEME]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>THEME<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The bar, launcher, control center and this window";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  FlowBox themes {
+                    selection-mode: none;
+                    homogeneous: true;
+                    min-children-per-line: 3;
+                    max-children-per-line: 4;
+                    row-spacing: 8;
+                    column-spacing: 8;
+                  }
+                }
+              }
+
+              // [ICONS]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>ICONS<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The bar, control center, launcher and settings";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Icon set";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "App icons always come from the system";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown icons {
+                      name: "icons";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Phosphor",
+                          "System theme",
+                        ]
+                      };
+                    }
+                  }
+                }
+              }
+
+
+              // [PICTURE]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>PICTURE<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Behind your windows, on every monitor";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Draw the wallpaper";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Off leaves the background to another program";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch bg_enable {
+                      name: "bg_enable";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Image";
+                      xalign: 0;
+                    }
+
+                    Box {
+                      spacing: 8;
+
+                      Entry bg_image {
+                        name: "bg_image";
+                        hexpand: true;
+                        placeholder-text: "none: a fine texture";
+                      }
+
+                      Button bg_choose {
+                        styles ["outlined"]
+                        name: "bg_choose";
+                        label: "Choose…";
+                      }
+
+                      Button bg_clear {
+                        styles ["plain"]
+                        name: "bg_clear";
+                        icon-name: "edit-clear-symbolic";
+                        tooltip-text: "No image";
+                      }
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Fit";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "How the picture fills each monitor";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown bg_fit {
+                      name: "bg_fit";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Cover: fill, cropping",
+                          "Contain: show it all",
+                          "Tile: repeat",
+                          "Center: actual size",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Colour";
+                      xalign: 0;
+                    }
+
+                    Entry bg_color {
+                      name: "bg_color";
+                      styles ["mono-entry"]
+                      halign: start;
+                      width-chars: 10;
+                      max-length: 7;
+                      placeholder-text: "theme";
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: "#rrggbb, shown around the image. Empty: the theme's ground";
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_appearance {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "bar";
+        title: "Bar & Dock";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_bar {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [BAR]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>BAR<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The bar along the top of each monitor";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Show the bar";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch bar_enable {
+                      name: "bar_enable";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Clock";
+                      xalign: 0;
+                    }
+
+                    Box {
+                      spacing: 12;
+
+                      Entry clock {
+                        styles ["mono-entry"]
+                        name: "clock";
+                        width-chars: 20;
+                      }
+
+                      Label clock_preview {
+                        styles ["readout"]
+                        hexpand: true;
+                        xalign: 0;
+                        ellipsize: end;
+                      }
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: "strftime: %a weekday, %b month, %-d day, %H:%M time";
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Workspaces";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Which workspaces each bar shows";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown ws {
+                      name: "ws";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "This monitor's",
+                          "All monitors'",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Window title";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "The focused window's title";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch title {
+                      name: "title";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Tray icons";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Status icons from apps";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch tray {
+                      name: "tray";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+
+              // [DOCK]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>DOCK<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Apps along the bottom of each monitor";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Show the dock";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Pinned apps, then the others with open windows";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch dock_enable {
+                      name: "dock_enable";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Hide automatically";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Comes back when the pointer reaches the bottom edge";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch dock_autohide {
+                      name: "dock_autohide";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Icon size";
+                        xalign: 0;
+                      }
+                    }
+
+                    DropDown dock_size {
+                      name: "dock_size";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Smaller",
+                          "Small",
+                          "Medium",
+                          "Large",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Apps drawer";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "A button at the end for Clock, Weather, Stocks and Calculator";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch dock_drawer {
+                      name: "dock_drawer";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [PINNED]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>PINNED<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Right-click an app on the dock to keep it there";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // One row per pinned app, from Go.
+                  Box dock_pinned {
+                    orientation: vertical;
+                  }
+                }
+              }
+
+
+              // [CONTROL CENTER]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>CONTROL CENTER<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Shell commands behind the control center's buttons";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Lock";
+                      xalign: 0;
+                    }
+
+                    Entry lock {
+                      name: "lock";
+                      styles ["mono-entry"]
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Screenshot";
+                      xalign: 0;
+                    }
+
+                    Entry screenshot {
+                      name: "screenshot";
+                      styles ["mono-entry"]
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_bar {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "launcher";
+        title: "Launcher";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_launcher {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [LAUNCHER]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>LAUNCHER<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Super+Space finds apps and open windows";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Opens with";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "What Super+Space shows first; Tab switches";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown launch_mode {
+                      name: "launch_mode";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Apps",
+                          "Windows",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label: "Terminal";
+                      xalign: 0;
+                    }
+
+                    Entry terminal {
+                      name: "terminal";
+                      styles ["mono-entry"]
+                      placeholder-text: "$TERMINAL, then xdg-terminal-exec";
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: "Runs apps marked Terminal=true";
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_launcher {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "notifications";
+        title: "Notifications";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_notifications {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [NOTIFICATIONS]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Banners, then the notification center";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Show notifications";
+                        xalign: 0;
+                      }
+
+                      // Serving, waiting for another daemon, or off.
+                      Label notify_state {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch notify_enable {
+                      name: "notify_enable";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Banner duration";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "How long a banner shows; critical ones stay";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown banner {
+                      name: "banner";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "3 seconds",
+                          "5 seconds",
+                          "8 seconds",
+                          "12 seconds",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Critical during Focus";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Critical notifications still show banners";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch critical_focus {
+                      name: "critical_focus";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_notifications {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "shortcuts";
+        title: "Shortcuts";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_shortcuts {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // Why these settings do nothing: hyprland.conf does not source
+              // inua.conf, or sets them again after it.
+              Label sc_warn {
+                styles ["warn"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+              }
+
+              // While recording: what to press.
+              Label sc_recording {
+                styles ["recording"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+                label: "Press the new shortcut. Esc cancels; Backspace turns it off.";
+              }
+
+              // [INUA]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The shell's own actions";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // A row per action, from Go.
+                  Box sc_inua {
+                    orientation: vertical;
+                  }
+                }
+              }
+
+              // [SCREENSHOTS]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "With grim and slurp";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // A row per screenshot action, from Go.
+                  Box sc_shots {
+                    orientation: vertical;
+                  }
+                }
+              }
+
+              // [CUSTOM]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Your own commands";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // A row per command, from Go.
+                  Box sc_custom {
+                    orientation: vertical;
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 8;
+
+                    Entry sc_new_name {
+                      name: "sc_new_name";
+                      width-chars: 14;
+                      placeholder-text: "Name";
+                    }
+
+                    Entry sc_new_cmd {
+                      styles ["mono-entry"]
+                      name: "sc_new_cmd";
+                      hexpand: true;
+                      placeholder-text: "Command, e.g. kitty";
+                    }
+
+                    Button sc_add {
+                      styles ["outlined"]
+                      name: "sc_add";
+                      label: "Add…";
+                      tooltip-text: "Add, then press its shortcut";
+                    }
+                  }
+                }
+              }
+
+              // [HYPRLAND]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Other shortcuts, from hyprland.conf";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // Read-only rows, from Go.
+                  Box sc_hypr {
+                    orientation: vertical;
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_shortcuts {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "keyboard";
+        title: "Keyboard";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_keyboard {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // Why these settings do nothing: hyprland.conf does not source
+              // inua.conf, or sets them again after it.
+              Label kb_warn {
+                styles ["warn"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+              }
+
+              // [KEYS]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Every keyboard";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Swap Ctrl and Alt";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Alt acts as Ctrl, and Ctrl as Alt";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown swap {
+                      name: "swap";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Off",
+                          "Left side",
+                          "Both sides",
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Caps Lock";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "What the Caps Lock key does";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown caps {
+                      name: "caps";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "Caps Lock",
+                          "Escape",
+                          "Ctrl",
+                        ]
+                      };
+                    }
+                  }
+                }
+              }
+
+              // [SOURCE]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "inua writes these to Hyprland's inua.conf";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label kb_state {
+                        styles ["title"]
+                        xalign: 0;
+                      }
+
+                      // The XKB options in effect.
+                      Label kb_readout {
+                        styles ["readout"]
+                        xalign: 0;
+                        ellipsize: end;
+                      }
+                    }
+
+                    Button kb_reset {
+                      styles ["outlined"]
+                      name: "kb_reset";
+                      valign: center;
+                      label: "Use hyprland.conf";
+                      tooltip-text: "Stop setting keyboard options in inua";
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_keyboard {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "mouse";
+        title: "Mouse & Touch";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_mouse {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // Why these settings do nothing: hyprland.conf does not source
+              // inua.conf, or sets them again after it.
+              Label tp_warn {
+                styles ["warn"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+              }
+
+              // [POINTER]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Every touchpad";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      valign: center;
+                      width-request: 150;
+
+                      Label {
+                        styles ["title"]
+                        label: "Pointer speed";
+                        xalign: 0;
+                      }
+
+                      Label tp_value {
+                        styles ["readout"]
+                        xalign: 0;
+                      }
+                    }
+
+                    Scale tp_speed {
+                      name: "tp_speed";
+                      hexpand: true;
+                      valign: center;
+                      draw-value: false;
+
+                      adjustment: Adjustment {
+                        lower: -1;
+                        upper: 1;
+                        step-increment: 0.05;
+                        page-increment: 0.25;
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Acceleration";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Faster swipes move the pointer further";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch tp_accel {
+                      name: "tp_accel";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [SOURCE]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "inua writes these to Hyprland's inua.conf";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Label tp_state {
+                      styles ["title"]
+                      hexpand: true;
+                      xalign: 0;
+                    }
+
+                    Button tp_reset {
+                      styles ["outlined"]
+                      name: "tp_reset";
+                      valign: center;
+                      label: "Use hyprland.conf";
+                      tooltip-text: "Stop setting the touchpad in inua";
+                    }
+                  }
+                }
+              }
+  }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_mouse {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+    }
+  }
+}

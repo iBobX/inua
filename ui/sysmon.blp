@@ -1,0 +1,179 @@
+// System Monitor: three tabs. Overview: CPU (each core too), memory, GPU,
+// network, disk and battery, the busy ones with their last minute drawn.
+// Processes: the running ones by CPU, memory or name; one opens to its
+// details and the ways to end it. System: the computer, its processor,
+// graphics, storage, network and sensors. Go fills them.
+using Gtk 4.0;
+
+ApplicationWindow sysmon {
+  default-width: 460;
+  default-height: 680;
+
+  Box {
+    styles ["sysmonapp"]
+    orientation: vertical;
+
+    StackSwitcher {
+      styles ["tabs"]
+      stack: pages;
+      halign: center;
+    }
+
+    Stack pages {
+      vexpand: true;
+      transition-type: crossfade;
+      transition-duration: 140;
+
+      StackPage {
+        name: "overview";
+        title: "OVERVIEW";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box meters {
+            styles ["list", "meters"]
+            orientation: vertical;
+          }
+        };
+      }
+
+      StackPage {
+        name: "processes";
+        title: "PROCESSES";
+
+        // The list, and one process opened from it.
+        child: Stack proc_pages {
+          transition-type: slide_left_right;
+          transition-duration: 160;
+
+          StackPage {
+            name: "list";
+
+            child: Box {
+              orientation: vertical;
+
+              Box {
+                styles ["bar"]
+
+                Label proc_count {
+                  styles ["kicker"]
+                  hexpand: true;
+                  xalign: 0;
+                }
+
+                Box {
+                  styles ["segmented", "linked"]
+
+                  ToggleButton by_cpu {
+                    label: "CPU";
+                    active: true;
+                  }
+
+                  ToggleButton by_mem {
+                    label: "Memory";
+                    group: by_cpu;
+                  }
+
+                  ToggleButton by_name {
+                    label: "Name";
+                    group: by_cpu;
+                  }
+                }
+              }
+
+              // Only the processes whose name, PID or user has this in it.
+              Box {
+                styles ["composer"]
+
+                SearchEntry filter {
+                  hexpand: true;
+                  placeholder-text: "Filter by name, PID or user";
+                }
+              }
+
+              Label proc_note {
+                styles ["proc-note"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+              }
+
+              ScrolledWindow {
+                vexpand: true;
+                hscrollbar-policy: never;
+
+                Box procs {
+                  styles ["list", "rows"]
+                  orientation: vertical;
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "detail";
+
+            child: Box {
+              orientation: vertical;
+
+              Box {
+                styles ["bar", "detail-bar"]
+                spacing: 8;
+
+                Button back {
+                  styles ["plain"]
+                  icon-name: "go-previous-symbolic";
+                  tooltip-text: "All processes (Escape)";
+                  valign: center;
+                }
+
+                Box {
+                  orientation: vertical;
+                  hexpand: true;
+                  valign: center;
+
+                  Label detail_name {
+                    styles ["detail-name"]
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  Label detail_sub {
+                    styles ["kicker"]
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+              }
+
+              ScrolledWindow {
+                vexpand: true;
+                hscrollbar-policy: never;
+
+                Box detail {
+                  styles ["list", "detail"]
+                  orientation: vertical;
+                }
+              }
+            };
+          }
+        };
+      }
+
+      StackPage {
+        name: "system";
+        title: "SYSTEM";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box system {
+            styles ["list", "system"]
+            orientation: vertical;
+          }
+        };
+      }
+    }
+  }
+}

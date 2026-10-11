@@ -1,0 +1,220 @@
+// Viewer: a thin toolbar over the picture, which fits the window
+// until zoomed; arrows at the sides step through the folder, and the
+// details slide in at the right. Go names the buttons and does the rest.
+using Gtk 4.0;
+
+ApplicationWindow viewer {
+  default-width: 1100;
+  default-height: 760;
+
+  Box {
+    orientation: vertical;
+
+    Box toolbar {
+      styles ["viewer-bar"]
+      spacing: 4;
+
+      Box {
+        orientation: vertical;
+        valign: center;
+        hexpand: true;
+
+        Label name {
+          styles ["viewer-name"]
+          xalign: 0;
+          ellipsize: middle;
+        }
+
+        Label meta {
+          styles ["readout", "viewer-meta"]
+          xalign: 0;
+          ellipsize: end;
+        }
+      }
+
+      // Says "Copied" and the like for a moment.
+      Label status {
+        styles ["readout", "viewer-status"]
+      }
+
+      Button open {
+        styles ["plain"]
+        icon-name: "folder-open-symbolic";
+        tooltip-text: "Open… (Ctrl+O)";
+      }
+
+      Separator {
+        styles ["viewer-sep"]
+      }
+
+      Button zoom_out {
+        styles ["plain"]
+        icon-name: "zoom-out-symbolic";
+        tooltip-text: "Zoom out (−)";
+      }
+
+      // The zoom; a click switches between fitting and actual size.
+      Button zoom_level {
+        styles ["link", "viewer-zoom"]
+        tooltip-text: "Fit (0) or actual size (1)";
+      }
+
+      Button zoom_in {
+        styles ["plain"]
+        icon-name: "zoom-in-symbolic";
+        tooltip-text: "Zoom in (+)";
+      }
+
+      Separator {
+        styles ["viewer-sep"]
+      }
+
+      Button rotate {
+        styles ["plain"]
+        icon-name: "object-rotate-right-symbolic";
+        tooltip-text: "Rotate (R, Shift+R the other way)";
+      }
+
+      Button copy {
+        styles ["plain"]
+        icon-name: "edit-copy-symbolic";
+        tooltip-text: "Copy the image (Ctrl+C)";
+      }
+
+      Button wallpaper {
+        styles ["plain"]
+        icon-name: "preferences-desktop-wallpaper-symbolic";
+        tooltip-text: "Set as wallpaper";
+      }
+
+      Button folder {
+        styles ["plain"]
+        icon-name: "folder-symbolic";
+        tooltip-text: "Show in folder";
+      }
+
+      // A second click within a few seconds moves the image to the trash.
+      Button trash {
+        styles ["plain", "viewer-trash"]
+        tooltip-text: "Move to Trash (Delete)";
+
+        Box {
+          spacing: 6;
+          halign: center;
+
+          Image {
+            icon-name: "user-trash-symbolic";
+          }
+
+          Label trash_label {
+            visible: false;
+            label: "Trash?";
+          }
+        }
+      }
+
+      Separator {
+        styles ["viewer-sep"]
+      }
+
+      ToggleButton details_toggle {
+        styles ["plain"]
+        icon-name: "dialog-information-symbolic";
+        tooltip-text: "Details (I)";
+      }
+
+      Button fullscreen {
+        styles ["plain"]
+        icon-name: "view-fullscreen-symbolic";
+        tooltip-text: "Full screen (F)";
+      }
+    }
+
+    Box {
+      vexpand: true;
+
+      Overlay {
+        hexpand: true;
+
+        child: ScrolledWindow scroller {
+          styles ["viewer-stage"]
+
+          // The picture at its own size, scaled as a whole by Go (a
+          // transform): its shape never changes, and the canvas is as big
+          // as the picture shown.
+          Fixed canvas {
+            halign: center;
+            valign: center;
+
+            Picture picture {
+              can-shrink: false;
+              content-fit: fill;
+            }
+          }
+        };
+
+        [overlay]
+        Button prev {
+          styles ["viewer-edge"]
+          halign: start;
+          valign: center;
+          icon-name: "go-previous-symbolic";
+          tooltip-text: "Previous (←)";
+        }
+
+        [overlay]
+        Button next {
+          styles ["viewer-edge"]
+          halign: end;
+          valign: center;
+          icon-name: "go-next-symbolic";
+          tooltip-text: "Next (→)";
+        }
+
+        // Nothing open, or the image could not be read.
+        [overlay]
+        Box empty {
+          styles ["viewer-empty"]
+          orientation: vertical;
+          spacing: 12;
+          halign: center;
+          valign: center;
+          visible: false;
+
+          Image {
+            icon-name: "image-x-generic-symbolic";
+            pixel-size: 48;
+          }
+
+          Label empty_label {
+            styles ["empty"]
+            justify: center;
+            wrap: true;
+            max-width-chars: 40;
+          }
+
+          Button open_empty {
+            styles ["primary"]
+            label: "Open an Image…";
+            halign: center;
+          }
+        }
+      }
+
+      Revealer details_reveal {
+        transition-type: slide_left;
+        transition-duration: 200;
+
+        ScrolledWindow {
+          styles ["viewer-details"]
+          hscrollbar-policy: never;
+          width-request: 280;
+
+          Box details {
+            orientation: vertical;
+          }
+        }
+      }
+    }
+  }
+}

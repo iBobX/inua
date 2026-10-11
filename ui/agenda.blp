@@ -1,0 +1,83 @@
+// The calendar panel: the bar's clock opens it under the clock, and a click
+// on the backdrop (the clock too) or Escape closes it, like the control
+// center. Today, and the month with week numbers; Go fills the grid.
+using Gtk 4.0;
+
+ApplicationWindow agenda {
+  styles ["agenda"]
+
+  Box backdrop {
+    styles ["backdrop"]
+
+    Revealer reveal {
+      halign: center;
+      valign: start;
+      hexpand: true;
+      margin-top: 42;
+      transition-type: slide_down;
+      transition-duration: 260;
+
+      Box card {
+        styles ["card"]
+        orientation: vertical;
+        spacing: 12;
+        width-request: 340;
+
+        // The head, as the notification center's: mark, tag, and today.
+        Box {
+          spacing: 10;
+
+          Box {
+            styles ["mark"]
+            valign: center;
+          }
+
+          Label {
+            styles ["tag"]
+            label: "[CALENDAR]";
+          }
+
+          Label today {
+            styles ["readout"]
+            hexpand: true;
+            xalign: 1;
+          }
+        }
+
+        // The month shown, and its way back and forth.
+        Box {
+          styles ["agenda-month-bar"]
+          spacing: 2;
+
+          Label month {
+            styles ["readout"]
+            hexpand: true;
+            xalign: 0;
+          }
+
+          Button back_today {
+            styles ["link"]
+            label: "Today";
+          }
+
+          Button prev {
+            styles ["plain"]
+            icon-name: "go-previous-symbolic";
+            tooltip-text: "Previous month";
+          }
+
+          Button next {
+            styles ["plain"]
+            icon-name: "go-next-symbolic";
+            tooltip-text: "Next month";
+          }
+        }
+
+        Grid grid {
+          styles ["agenda-grid"]
+          column-homogeneous: true;
+        }
+      }
+    }
+  }
+}
