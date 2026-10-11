@@ -211,7 +211,8 @@ produce (`internal/hyprconf`).
 
 ## Dock and bar
 
-The dock sits at the bottom of each monitor: the pinned apps first
+The dock sits on the selected screen edge of each monitor (`dock.position`:
+`bottom`, `top`, `left` or `right`; default `bottom`): the pinned apps first
 (`dock.pinned`, by desktop ID, in order), then, after a separator, the other
 apps with windows. A square marks running apps, and an accent bar the one in
 front. Click: launch an app that is not running; otherwise bring its most
@@ -222,9 +223,9 @@ to apps by `StartupWMClass`, desktop ID, or the last part of a reverse-DNS ID
 (`nautilus` for `org.gnome.Nautilus`).
 
 With `dock.autohide = true` the dock stays hidden until the pointer reaches
-the bottom edge; otherwise windows make room for it. The Dock page turns the
-dock on and off and sets autohide and the icon size, and reorders or removes
-pinned apps. On the Bar page, "Show the bar" turns the bar off
+its selected edge; otherwise windows make room for it. The Dock page turns
+the dock on and off, sets its position, autohide and icon size, and reorders
+or removes pinned apps. On the Bar page, "Show the bar" turns the bar off
 (`bar.enable = false`); Super+Space, Super+A and Super+N still open the
 launcher, control center and notifications.
 

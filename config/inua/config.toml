@@ -171,12 +171,15 @@ banner_seconds = 5
 critical_in_focus = true
 
 [dock]
-# Show the app dock along the bottom of each monitor: pinned apps, then the
-# others with open windows. Click to open or bring forward (again to cycle
-# through its windows); right-click to pin, open a new window or quit.
+# Show the app dock on each monitor: pinned apps, then the others with open
+# windows. Click to open or bring forward (again to cycle through its windows);
+# right-click to pin, open a new window or quit.
 enable = true
 
-# Hide the dock until the pointer reaches the bottom edge. false: windows
+# Screen edge for the dock: bottom, top, left or right.
+position = "bottom"
+
+# Hide the dock until the pointer reaches its screen edge. false: windows
 # make room for it.
 autohide = false
 

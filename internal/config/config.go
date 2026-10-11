@@ -169,11 +169,13 @@ var keysRe = regexp.MustCompile(`^((SUPER|CTRL|ALT|SHIFT)\+)*[A-Za-z0-9_]+$`)
 // empty (off).
 func ValidKeys(s string) bool { return s == "" || keysRe.MatchString(s) }
 
-// Dock is the app dock along the bottom of each monitor.
+// Dock is the app dock along a screen edge of each monitor.
 type Dock struct {
 	Enable bool `toml:"enable"`
+	// Position is the screen edge the dock occupies.
+	Position string `toml:"position"`
 	// Autohide keeps the dock out of sight until the pointer reaches the
-	// bottom edge; otherwise windows make room for it.
+	// selected edge; otherwise windows make room for it.
 	Autohide bool `toml:"autohide"`
 	// Size is the icons' size in pixels, one of DockSizes.
 	Size int `toml:"size"`
@@ -186,6 +188,9 @@ type Dock struct {
 
 // DockSizes are the icon sizes the settings window offers.
 var DockSizes = []int{28, 36, 44, 56}
+
+// DockPositions are the edges offered in the dock settings.
+var DockPositions = []string{"bottom", "top", "left", "right"}
 
 // Notify is the notification center (internal/notify).
 type Notify struct {
@@ -248,7 +253,7 @@ func Default() Config {
 		Background: Background{Enable: true, Fit: "cover"},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
-		Dock:       Dock{Enable: true, Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
+		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 	}
 }
 
@@ -385,6 +390,10 @@ func (c *Config) validate() []string {
 		}
 		return bad != ""
 	})
+	if !slices.Contains(DockPositions, c.Dock.Position) {
+		w = append(w, fmt.Sprintf("dock.position = %q: want bottom, top, left or right; using %q", c.Dock.Position, d.Dock.Position))
+		c.Dock.Position = d.Dock.Position
+	}
 	if c.Dock.Size < 24 || c.Dock.Size > 96 {
 		w = append(w, fmt.Sprintf("dock.size = %d: want 24 to 96; using %d", c.Dock.Size, d.Dock.Size))
 		c.Dock.Size = d.Dock.Size

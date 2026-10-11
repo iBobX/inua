@@ -514,6 +514,8 @@ button.link:hover { color: @t0; }
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .dock button.dock-item:hover image { transform: translateY(-4px) scale(1.1); }
+.dock.dock-side button.dock-item:hover image { transform: translateX(4px) scale(1.1); }
+.dock.dock-right button.dock-item:hover image { transform: translateX(-4px) scale(1.1); }
 .dock button.dock-item:active image {
   transform: translateY(-2px) scale(1.04);
   transition-duration: 90ms;
@@ -585,6 +587,7 @@ button.drawer-app:hover image { transform: translateY(-2px); }
 /* No drop highlight: the gap the apps open shows where it lands. */
 .dock box:drop(active), .dock button:drop(active) { box-shadow: none; outline: none; border-color: transparent; }
 separator.dock-sep { margin: 6px 4px 8px; background: alpha(@line, 0.9); min-width: 1px; }
+.dock.dock-side separator.dock-sep { margin: 4px 6px; min-width: 0; min-height: 1px; }
 .dock-edge { background: transparent; }
 
 /* --- tray menus ------------------------------------------------------ */

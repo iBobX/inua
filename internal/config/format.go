@@ -22,7 +22,7 @@ func Format(c Config) string {
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus,
-		c.Dock.Enable, c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
+		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		shortcuts(c.Shortcuts))
 }
 
@@ -273,12 +273,15 @@ banner_seconds = %d
 critical_in_focus = %t
 
 [dock]
-# Show the app dock along the bottom of each monitor: pinned apps, then the
-# others with open windows. Click to open or bring forward (again to cycle
-# through its windows); right-click to pin, open a new window or quit.
+# Show the app dock on each monitor: pinned apps, then the others with open
+# windows. Click to open or bring forward (again to cycle through its windows);
+# right-click to pin, open a new window or quit.
 enable = %t
 
-# Hide the dock until the pointer reaches the bottom edge. false: windows
+# Screen edge for the dock: bottom, top, left or right.
+position = %s
+
+# Hide the dock until the pointer reaches its screen edge. false: windows
 # make room for it.
 autohide = %t
 

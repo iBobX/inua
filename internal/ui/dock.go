@@ -24,7 +24,7 @@ import (
 	"github.com/lyricat/inua/internal/shell"
 )
 
-// The app dock, after macOS's: one per monitor along the bottom edge, the
+// The app dock: one per monitor along a configurable screen edge, the
 // pinned apps and then the others with windows. Clicking opens an app or
 // brings it forward (again: its next window); right-clicking offers a new
 // window, pinning and quitting. It lives with its monitor's bar.
@@ -37,18 +37,22 @@ const (
 )
 
 type dock struct {
-	win     gtk.ApplicationWindow
-	reveal  gtk.Revealer
-	items   gtk.Box
-	edge    gtk.Box
-	refs    gtkx.Scope
-	shown   string                 // the apps and icons shown (dockSignature)
-	buttons map[string]*dockButton // by app, borrowed from items
-	size    int
-	hide    bool // autohide
-	hover   bool
-	hideGen uintptr
-	drawer  *gtk.Button // the drawer's button, borrowed from items; nil without one
+	win      gtk.ApplicationWindow
+	root     gtk.Box
+	reveal   gtk.Revealer
+	island   gtk.Box
+	items    gtk.Box
+	edge     gtk.Box
+	refs     gtkx.Scope
+	shown    string                 // the apps and icons shown (dockSignature)
+	buttons  map[string]*dockButton // by app, borrowed from items
+	size     int
+	position string
+	vertical bool // apps stack along a vertical screen edge
+	hide     bool // autohide
+	hover    bool
+	hideGen  uintptr
+	drawer   *gtk.Button // the drawer's button, borrowed from items; nil without one
 
 	// Dragging an app: its button is hidden while it is away, and the
 	// others move aside to leave a gap where it would land (see setGap).
@@ -79,11 +83,11 @@ type dockState struct {
 }
 
 // syncDock gives a bar's monitor a dock, or takes it away, following
-// dock.enable; a change of size or autohide builds it anew.
+// dock.enable; a change of size, position or autohide builds it anew.
 func (s *shellUI) syncDock(b *bar) {
 	c := s.cfg.Dock
 	want := c.Enable && s.layer
-	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide) {
+	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position) {
 		dropDock(b)
 	}
 	if want && b.dock == nil {
@@ -104,13 +108,48 @@ func dropDock(b *bar) {
 }
 
 func (s *shellUI) newDock(b *bar) *dock {
-	d := &dock{size: s.cfg.Dock.Size, hide: s.cfg.Dock.Autohide}
+	position := s.cfg.Dock.Position
+	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide}
 	ui := s.load("dock.ui", &d.refs)
 	ui.Get("dock", &d.win)
+	ui.Get("root", &d.root)
 	ui.Get("reveal", &d.reveal)
+	ui.Get("island", &d.island)
 	ui.Get("items", &d.items)
 	ui.Get("edge", &d.edge)
 	ui.Close()
+	if d.vertical {
+		d.root.SetOrientation(gtk.OrientationHorizontalValue)
+		d.items.SetOrientation(gtk.OrientationVerticalValue)
+		d.island.SetValign(gtk.AlignCenterValue)
+		d.island.SetMarginBottom(0)
+		d.reveal.SetVexpand(true)
+		if position == "left" {
+			d.island.SetMarginStart(6)
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
+		} else {
+			d.island.SetMarginEnd(6)
+			d.island.AddCssClass("dock-right")
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
+		}
+		d.edge.Widget.SetSizeRequest(3, -1)
+		d.island.AddCssClass("dock-side")
+	} else {
+		d.root.SetOrientation(gtk.OrientationVerticalValue)
+		d.items.SetOrientation(gtk.OrientationHorizontalValue)
+		d.reveal.SetHexpand(true)
+		if position == "top" {
+			d.island.SetMarginBottom(0)
+			d.island.SetMarginTop(6)
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
+		} else {
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
+		}
+		d.edge.Widget.SetSizeRequest(-1, 3)
+	}
+	if position == "top" || position == "left" {
+		d.root.ReorderChildAfter(&d.edge.Widget, &gtk.Widget{})
+	}
 	drop := gtk.NewDropTarget(types.GType(gobject.TypeStringVal), gdk.ActionMoveValue)
 	drop.ConnectMotion(&s.onDockDropMotion)
 	drop.ConnectLeave(&s.onDockDropLeave)
@@ -122,15 +161,34 @@ func (s *shellUI) newDock(b *bar) *dock {
 	layershell.SetNamespace(w, "inua-dock")
 	layershell.SetLayer(w, layershell.LayerTop)
 	layershell.SetMonitor(w, b.mon.GoPointer())
-	layershell.SetAnchor(w, layershell.EdgeBottom, true)
+	switch position {
+	case "top":
+		layershell.SetAnchor(w, layershell.EdgeTop, true)
+		layershell.SetAnchor(w, layershell.EdgeLeft, true)
+		layershell.SetAnchor(w, layershell.EdgeRight, true)
+	case "left":
+		layershell.SetAnchor(w, layershell.EdgeLeft, true)
+		layershell.SetAnchor(w, layershell.EdgeTop, true)
+		layershell.SetAnchor(w, layershell.EdgeBottom, true)
+	case "right":
+		layershell.SetAnchor(w, layershell.EdgeRight, true)
+		layershell.SetAnchor(w, layershell.EdgeTop, true)
+		layershell.SetAnchor(w, layershell.EdgeBottom, true)
+	default:
+		layershell.SetAnchor(w, layershell.EdgeBottom, true)
+		layershell.SetAnchor(w, layershell.EdgeLeft, true)
+		layershell.SetAnchor(w, layershell.EdgeRight, true)
+	}
 	if d.hide {
 		layershell.SetExclusiveZone(w, 0)
 		d.reveal.SetRevealChild(false)
 		d.edge.SetVisible(true)
-		motion := gtk.NewEventControllerMotion()
-		motion.ConnectEnter(&s.onDockEnter)
-		motion.ConnectLeave(&s.onDockLeave)
-		d.win.AddController(&motion.EventController)
+		for _, widget := range []*gtk.Widget{&d.edge.Widget, &d.island.Widget} {
+			motion := gtk.NewEventControllerMotion()
+			motion.ConnectEnter(&s.onDockEnter)
+			motion.ConnectLeave(&s.onDockLeave)
+			widget.AddController(&motion.EventController)
+		}
 	} else {
 		layershell.AutoExclusiveZone(w)
 	}
@@ -184,7 +242,11 @@ func (s *shellUI) renderDock(b *bar) {
 		for i, it := range items {
 			if !it.Pinned && !sepDone && i > 0 { // between the pinned and the rest
 				sepDone = true
-				sep := gtk.NewSeparator(gtk.OrientationVerticalValue)
+				orientation := gtk.OrientationVerticalValue
+				if d.vertical {
+					orientation = gtk.OrientationHorizontalValue
+				}
+				sep := gtk.NewSeparator(orientation)
 				sep.AddCssClass("dock-sep")
 				gtkx.Append(&d.items, &sep.Widget)
 			}
@@ -195,7 +257,11 @@ func (s *shellUI) renderDock(b *bar) {
 		}
 		d.drawer = nil
 		if drawer {
-			sep := gtk.NewSeparator(gtk.OrientationVerticalValue)
+			orientation := gtk.OrientationVerticalValue
+			if d.vertical {
+				orientation = gtk.OrientationHorizontalValue
+			}
+			sep := gtk.NewSeparator(orientation)
 			sep.AddCssClass("dock-sep")
 			gtkx.Append(&d.items, &sep.Widget)
 			d.drawer = s.drawerButton(d.size)
@@ -425,12 +491,13 @@ func (s *shellUI) bindDockHandlers() {
 		}
 		return false
 	}
-	s.onDockDropMotion = func(dt gtk.DropTarget, x, _ float64) gdk.DragAction {
+	s.onDockDropMotion = func(dt gtk.DropTarget, x, y float64) gdk.DragAction {
 		if d := s.dockOfItems(dt.GetWidget()); d != nil {
-			if s.unpinZone(d, x) {
+			axis := dockAxis(d, x, y)
+			if s.unpinZone(d, axis) {
 				s.setGap(d, "-", false)
 			} else {
-				s.setGap(d, s.dropBefore(d, x), false)
+				s.setGap(d, s.dropBefore(d, axis), false)
 			}
 		}
 		return gdk.ActionMoveValue
@@ -450,7 +517,7 @@ func (s *shellUI) bindDockHandlers() {
 		s.dockState.gapTicking = moving
 		return moving
 	}
-	s.onDockDrop = func(dt gtk.DropTarget, _ uintptr, x, _ float64) bool {
+	s.onDockDrop = func(dt gtk.DropTarget, _ uintptr, x, y float64) bool {
 		d := s.dockOfItems(dt.GetWidget())
 		v := dt.GetValue()
 		if d == nil || v == nil {
@@ -460,11 +527,12 @@ func (s *shellUI) bindDockHandlers() {
 		if _, ok := s.dockItem(key); !ok {
 			return false
 		}
-		if s.unpinZone(d, x) {
+		axis := dockAxis(d, x, y)
+		if s.unpinZone(d, axis) {
 			s.unpin(key)
 			return true
 		}
-		before := s.dropBefore(d, x)
+		before := s.dropBefore(d, axis)
 		c := s.cfg
 		c.Dock.Pinned = shell.MovePinned(c.Dock.Pinned, key, before)
 		s.changeSettings(c)
@@ -513,7 +581,7 @@ func (s *shellUI) showDock(d *dock) {
 
 func (s *shellUI) dockOf(w *gtk.Widget) *dock {
 	for _, b := range s.bars {
-		if b.dock != nil && w != nil && b.dock.win.GoPointer() == w.GoPointer() {
+		if b.dock != nil && w != nil && (b.dock.win.GoPointer() == w.GoPointer() || b.dock.edge.GoPointer() == w.GoPointer() || b.dock.island.GoPointer() == w.GoPointer()) {
 			return b.dock
 		}
 	}
@@ -576,9 +644,17 @@ func (s *shellUI) dockOfItems(w *gtk.Widget) *dock {
 	return nil
 }
 
-// dropBefore is the pinned app a drop at x in the item box goes before, ""
+// dockAxis picks the along-the-dock coordinate for drag operations.
+func dockAxis(d *dock, x, y float64) float64 {
+	if d.vertical {
+		return y
+	}
+	return x
+}
+
+// dropBefore chooses the pinned app a drop along the dock goes before, ""
 // for the end of the pinned apps.
-func (s *shellUI) dropBefore(d *dock, x float64) string {
+func (s *shellUI) dropBefore(d *dock, axis float64) string {
 	for _, it := range s.dockState.items {
 		db := d.buttons[it.Key]
 		if !it.Pinned || db == nil {
@@ -589,21 +665,24 @@ func (s *shellUI) dropBefore(d *dock, x float64) string {
 			continue
 		}
 		f := *(*[4]float32)(unsafe.Pointer(&r)) // x, y, width, height
-		if float32(x) < f[0]+f[2]/2 {
+		start, extent := f[0], f[2]
+		if d.vertical {
+			start, extent = f[1], f[3]
+		}
+		if float32(axis) < start+extent/2 {
 			return it.Key
 		}
 	}
 	return ""
 }
 
-// unpinZone reports whether a drop at x takes the dragged app off the
-// pinned ones: it is pinned, and x is past them (over the separator, the
-// apps with windows or the drawer's button).
-func (s *shellUI) unpinZone(d *dock, x float64) bool {
+// unpinZone reports whether a drop past the pinned apps takes the dragged app off
+// its pinned apps.
+func (s *shellUI) unpinZone(d *dock, axis float64) bool {
 	if d.dragKey == "" || !s.pinned(d.dragKey) {
 		return false
 	}
-	right := 0.0
+	end := 0.0
 	for _, it := range s.dockState.items {
 		db := d.buttons[it.Key]
 		if !it.Pinned || it.Key == d.dragKey || db == nil {
@@ -612,13 +691,17 @@ func (s *shellUI) unpinZone(d *dock, x float64) bool {
 		var r graphene.Rect
 		if db.btn.ComputeBounds(&d.items.Widget, &r) {
 			f := *(*[4]float32)(unsafe.Pointer(&r))
-			right = float64(f[0]+f[2]) + db.end // and the gap after it
+			if d.vertical {
+				end = float64(f[1]+f[3]) + db.end
+			} else {
+				end = float64(f[0]+f[2]) + db.end
+			}
 		}
 	}
-	if right == 0 { // the only pinned app: its own place
-		right = float64(d.size) + 12
+	if end == 0 {
+		end = float64(d.size) + 12
 	}
-	return x > right+4
+	return axis > end+4
 }
 
 func (s *shellUI) pinned(key string) bool { return slices.Contains(s.cfg.Dock.Pinned, key) }
@@ -640,11 +723,16 @@ func (s *shellUI) setGap(d *dock, before string, now bool) {
 			last = it.Key
 		}
 	}
-	slot := 0.0 // an app's width with its padding, and the item box's spacing
+	slot := 0.0 // an app's extent with its padding, and the item box's spacing
 	for key, db := range d.buttons {
 		var r graphene.Rect
 		if key != d.dragKey && db.btn.ComputeBounds(&d.items.Widget, &r) {
-			slot = float64((*(*[4]float32)(unsafe.Pointer(&r)))[2]) + 4
+			f := *(*[4]float32)(unsafe.Pointer(&r))
+			if d.vertical {
+				slot = float64(f[3]) + 4
+			} else {
+				slot = float64(f[2]) + 4
+			}
 			break
 		}
 	}
@@ -658,13 +746,22 @@ func (s *shellUI) setGap(d *dock, before string, now bool) {
 		}
 		if now {
 			db.start, db.end = db.toStart, db.toEnd
-			db.btn.SetMarginStart(int32(db.start))
-			db.btn.SetMarginEnd(int32(db.end))
+			setDockGap(d, db, db.start, db.end)
 		}
 	}
 	if !s.dockState.gapTicking {
 		s.dockState.gapTicking = true
 		glib.TimeoutAdd(16, &s.onDockGapTick, 0)
+	}
+}
+
+func setDockGap(d *dock, db *dockButton, start, end float64) {
+	if d.vertical {
+		db.btn.SetMarginTop(int32(math.Round(start)))
+		db.btn.SetMarginBottom(int32(math.Round(end)))
+	} else {
+		db.btn.SetMarginStart(int32(math.Round(start)))
+		db.btn.SetMarginEnd(int32(math.Round(end)))
 	}
 }
 
@@ -683,8 +780,7 @@ func stepGap(d *dock) bool {
 		start, end := step(db.start, db.toStart), step(db.end, db.toEnd)
 		if start != db.start || end != db.end {
 			db.start, db.end = start, end
-			db.btn.SetMarginStart(int32(math.Round(start)))
-			db.btn.SetMarginEnd(int32(math.Round(end)))
+			setDockGap(d, db, start, end)
 		}
 	}
 	return moving

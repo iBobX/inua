@@ -36,7 +36,7 @@ type settings struct {
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus gtk.Switch
 	barOn, dockOn, dockHide, dockDrawer                 gtk.Switch
-	dockSize                                            gtk.DropDown
+	dockSize, dockPosition                              gtk.DropDown
 	dockPinned                                          gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
 	bgFit, ws, launchMode, swap, caps, icons, banner    gtk.DropDown
@@ -136,6 +136,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			if i >= 0 && i < len(config.DockSizes) {
 				c.Dock.Size = config.DockSizes[i]
 			}
+		case "dock_position":
+			c.Dock.Position = pick(config.DockPositions, i, c.Dock.Position)
 		case "banner":
 			if i >= 0 && i < len(config.BannerChoices) {
 				c.Notify.Banner = config.BannerChoices[i]
@@ -274,6 +276,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("dock_autohide", &st.dockHide)
 	ui.Get("dock_drawer", &st.dockDrawer)
 	ui.Get("dock_size", &st.dockSize)
+	ui.Get("dock_position", &st.dockPosition)
 	ui.Get("dock_pinned", &st.dockPinned)
 	ui.Get("sc_inua", &st.sc.inua)
 	ui.Get("sc_shots", &st.sc.shots)
@@ -313,7 +316,7 @@ func (s *shellUI) openSettings() {
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
 	st.drops = map[uintptr]*gtk.DropDown{}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize, &st.dockPosition} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
@@ -604,6 +607,7 @@ func (s *shellUI) showDockSettings() {
 	st.dockHide.SetActive(c.Dock.Autohide)
 	st.dockDrawer.SetActive(c.Dock.Drawer)
 	st.dockSize.SetSelected(uint32(max(0, slices.Index(config.DockSizes, c.Dock.Size))))
+	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))
 	gtkx.Clear(&st.dockPinned)
 	if len(c.Dock.Pinned) == 0 {
 		l := gtk.NewLabel("Nothing pinned")
@@ -635,8 +639,8 @@ func (s *shellUI) showDockSettings() {
 			action, icon, tip string
 			ok                bool
 		}{
-			{"up", "pan-up-symbolic", "Move left", i > 0},
-			{"down", "pan-down-symbolic", "Move right", i < len(c.Dock.Pinned)-1},
+			{"up", "pan-up-symbolic", "Move earlier", i > 0},
+			{"down", "pan-down-symbolic", "Move later", i < len(c.Dock.Pinned)-1},
 			{"remove", "window-close-symbolic", "Remove from the dock", true},
 		} {
 			btn := gtk.NewButtonFromIconName(b.icon)

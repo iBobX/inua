@@ -589,7 +589,7 @@ ApplicationWindow settings {
 
                   Label {
                     styles ["section-meta"]
-                    label: "Apps along the bottom of each monitor";
+                    label: "Apps along the chosen screen edge on each monitor";
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -646,7 +646,7 @@ ApplicationWindow settings {
                       }
                       Label {
                         styles ["sub"]
-                        label: "Comes back when the pointer reaches the bottom edge";
+                        label: "Comes back when the pointer reaches the dock's screen edge";
                         xalign: 0;
                         wrap: true;
                       }
@@ -655,6 +655,40 @@ ApplicationWindow settings {
                     Switch dock_autohide {
                       name: "dock_autohide";
                       valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Position";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Choose a screen edge for the dock";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown dock_position {
+                      name: "dock_position";
+                      valign: center;
+
+                      model: StringList {
+                        strings ["Bottom", "Top", "Left", "Right"]
+                      };
                     }
                   }
 
