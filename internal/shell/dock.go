@@ -205,7 +205,7 @@ func MovePinned(pinned []string, key, before string) []string {
 }
 
 // LightAppGroups are inua's light apps' desktop IDs, in the drawer's
-// groups and order: the day's things, then tools.
+// groups and order: everyday apps, tools, network and games.
 var LightAppGroups = []struct {
 	Title string
 	IDs   []string
@@ -224,6 +224,9 @@ var LightAppGroups = []struct {
 	}},
 	{"NETWORK", []string{
 		"io.github.lyricat.Inua.Tailscale",
+	}},
+	{"PLAY", []string{
+		"io.github.lyricat.Inua.Games",
 	}},
 }
 

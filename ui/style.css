@@ -1446,3 +1446,41 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .day-info { margin: 0 18px; padding: 16px 12px 18px; border-top: 1px solid alpha(@line, 0.55); }
 .day-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 15px; letter-spacing: 0.04em; color: @t0; }
 .day-info .readout { font-size: 11px; color: @t2; }
+
+/* Games share the apps' paper, ink and accent; the board is the focus. */
+.gamesapp { background: @app; }
+.game-header { padding: 18px 24px; border-bottom: 1px solid @line; }
+.game-heading { font-family: "IBM Plex Sans", sans-serif; font-size: 22px; font-weight: 500; }
+.game-content { padding: 22px 28px 28px; }
+.game-intro { margin: 8px 0 24px; }
+.game-intro .title { font-size: 30px; font-weight: 300; }
+.game-intro .sub { margin-top: 8px; }
+.settings button.game-entry { padding: 15px 4px; border-bottom: 1px solid @line; border-radius: 0; }
+.game-entry .title { font-size: 17px; }
+.game-entry .sub { margin-top: 4px; font-size: 13px; }
+.game-rules { font-size: 14px; color: @t1; }
+.game-stats { font-size: 13px; color: @accent; font-weight: 600; font-feature-settings: "tnum"; }
+.game-status { font-size: 14px; color: @t0; padding: 12px 0; border-top: 1px solid @line; }
+.game-status.win { color: @ok; }
+.game-status.loss { color: @danger; }
+.game-help { font-size: 12px; color: @t2; }
+.settings button.game-tile {
+  min-width: 46px; min-height: 46px; padding: 4px;
+  border: 1px solid @line; border-radius: 3px;
+  background: @surface; color: @t0; box-shadow: none;
+  font-size: 18px; font-feature-settings: "tnum";
+}
+.settings button.game-tile:hover { background: @surface2; border-color: @accent; }
+.settings button.game-tile:focus-visible { outline: 2px solid @accent; outline-offset: 1px; }
+.settings button.game-tile.player, .settings button.game-tile.selected { background: @accent; color: @surface; }
+.settings button.game-tile.gold { color: @warn; background: alpha(@warn, 0.12); }
+.settings button.game-tile.exit, .settings button.game-tile.owner { color: @ok; background: alpha(@ok, 0.14); }
+.settings button.game-tile.danger, .settings button.game-tile.computer { color: @danger; background: alpha(@danger, 0.12); }
+.settings button.game-tile.blocked { background: @surface2; color: @t2; border-color: transparent; }
+.settings button.game-tile.cold { color: @accent; background: alpha(@accent, 0.08); }
+.settings button.game-tile.filled { color: @surface; background: @accent; }
+.settings button.game-tile.revealed { background: @app; border-color: alpha(@line, 0.5); color: @accent; }
+.settings button.game-tile.small { min-width: 26px; min-height: 26px; padding: 3px; font-size: 12px; }
+.settings button.game-tile.word { min-width: 125px; min-height: 50px; padding: 8px; font-size: 13px; font-weight: 500; }
+.settings button.game-tile:disabled { opacity: 0.8; }
+.game-field { background: @surface; border: 1px solid @line; border-radius: 3px; }

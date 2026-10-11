@@ -1,6 +1,7 @@
 // Package appui runs inua's light apps: Clock, Weather, Stocks,
 // Calculator, Calendar, Color Picker, System Monitor, Tailscale and
-// Viewer. Each runs as its own process with its own application ID, so
+// Viewer, plus Games and its nine games. Each runs as its own process
+// with its own application ID, so
 // the launcher, the dock and the compositor see it as an app, but in the
 // shell's look: the theme and style from inua's settings, followed as
 // they change, and the shell's icons.
@@ -65,6 +66,16 @@ var Apps = map[string]struct {
 	"system-monitor": {"SystemMonitor", "System Monitor", func() view { return &sysmonApp{} }, false},
 	"tailscale":      {"Tailscale", "Tailscale", func() view { return &tailscaleApp{} }, false},
 	"viewer":         {"Viewer", "Viewer", func() view { return &viewerApp{} }, true},
+	"games":          {"Games", "Games", func() view { return &gamesApp{} }, false},
+	"last-tile":      {"LastTile", "Last Tile", func() view { return &gamesApp{initial: "last-tile"} }, false},
+	"full-fridge":    {"FullFridge", "Full Fridge", func() view { return &gamesApp{initial: "full-fridge"} }, false},
+	"clock-out":      {"ClockOut", "Clock Out", func() view { return &gamesApp{initial: "clock-out"} }, false},
+	"harbor":         {"Harbor", "One-button Harbor", func() view { return &gamesApp{initial: "harbor"} }, false},
+	"dice-shop":      {"DiceShop", "Three Dice Shop", func() view { return &gamesApp{initial: "dice-shop"} }, false},
+	"odd-groups":     {"OddGroups", "Odd Groups", func() view { return &gamesApp{initial: "odd-groups"} }, false},
+	"minesweeper":    {"Minesweeper", "Minesweeper", func() view { return &gamesApp{initial: "minesweeper"} }, false},
+	"space-pinball":  {"SpacePinball", "Space Pinball", func() view { return &gamesApp{initial: "space-pinball"} }, false},
+	"small-fortune":  {"SmallFortune", "Small Fortune", func() view { return &gamesApp{initial: "small-fortune"} }, false},
 }
 
 // Ctx is what the views share: the application, the layouts and the

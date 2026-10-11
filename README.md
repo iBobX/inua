@@ -31,6 +31,7 @@ and a settings window, in one calm visual language. It works with
 | **Screenshots** | Areas, windows and screens, recordings, and a drawer of recent shots to drag into apps. |
 | **Passwords** | inua asks for administrator passwords (it is the Polkit agent) and gpg's passphrases. |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
+| **Games** | Nine offline light games, including Minesweeper, Space Pinball and a short property game against the computer. Open Games from the dock or run `inua-apps games`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
 
