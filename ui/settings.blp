@@ -2126,6 +2126,200 @@ ApplicationWindow settings {
           }
         };
       }
+
+      StackPage {
+        name: "about";
+        title: "About";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_about {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [INUA]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The version, and new releases";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Version";
+                        xalign: 0;
+                      }
+
+                      Label about_version {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Updates";
+                        xalign: 0;
+                      }
+
+                      Label about_state {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    // The same size side by side.
+                    Box {
+                      spacing: 8;
+                      homogeneous: true;
+                      valign: center;
+
+                      Button about_upgrade {
+                        styles ["primary"]
+                        name: "about_upgrade";
+                        visible: false;
+                        label: "Upgrade";
+                      }
+
+                      Button about_check {
+                        styles ["outlined"]
+                        name: "about_check";
+                        label: "Check for updates";
+                      }
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Check every day";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "A notification says when a new release is out, with a button to upgrade";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch about_daily {
+                      name: "about_daily";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [CHANGELOG]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "What the latest release changed";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box about_changelog {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_about {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
     }
   }
 }

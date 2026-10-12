@@ -78,7 +78,7 @@ again). `-version v0.1.2` installs a
 given release. Running the install script again also updates. The shell
 checks for a new release a random 1 to 10 minutes after you log in, then
 once a day, and tells you in a notification with an **Upgrade** button;
-`updates = false` under `[notifications]` in `config.toml` turns that off.
+Settings → About shows the version, checks for a new release on demand, upgrades, and lists what the latest release changed; its switch (`updates` under `[notifications]` in `config.toml`) turns the daily check off.
 
 The companions the sample config uses (a terminal, a file manager,
 screenshot tools …) are in [docs/design.md](docs/design.md#packages).

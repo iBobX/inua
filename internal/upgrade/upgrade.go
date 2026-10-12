@@ -35,9 +35,11 @@ const maxDownload = 256 << 20
 
 var errNotFound = errors.New("not found")
 
-// Source fetches releases from Base (Repo) with Client.
+// Source fetches releases from Base (Repo) with Client, and their notes
+// from API (APIBase when empty).
 type Source struct {
 	Base   string
+	API    string
 	Client *http.Client
 }
 

@@ -247,3 +247,26 @@ func TestStillOld(t *testing.T) {
 		t.Errorf("left out: %v", got)
 	}
 }
+
+func TestReleasesAndChanges(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/releases" || r.URL.Query().Get("per_page") != "5" {
+			http.NotFound(w, r)
+			return
+		}
+		w.Write([]byte(`[{"tag_name":"v0.0.2","name":"v0.0.2","published_at":"2026-10-11T14:23:31Z",
+			"html_url":"https://example.com/v0.0.2",
+			"body":"## Changelog\n* e02ccd41912ab497edcaabcce9b17f22b5854a09 Fix two crashes\n* 9216ab8 Notifications: names\n\nInstall or update: ` + "`curl … | sh`" + `\n"}]`))
+	}))
+	defer srv.Close()
+	rs, err := (Source{API: srv.URL, Client: srv.Client()}).Releases(context.Background(), 5)
+	if err != nil || len(rs) != 1 || rs[0].Tag != "v0.0.2" || rs[0].Date.Day() != 11 {
+		t.Fatalf("%+v %v", rs, err)
+	}
+	if got := Changes(rs[0].Body); !slices.Equal(got, []string{"Fix two crashes", "Notifications: names"}) {
+		t.Errorf("changes %q", got)
+	}
+	if got := Changes("A first release.\n\nWith `code`."); !slices.Equal(got, []string{"A first release.", "With code."}) {
+		t.Errorf("plain notes %q", got)
+	}
+}

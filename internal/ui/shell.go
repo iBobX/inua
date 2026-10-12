@@ -132,6 +132,8 @@ type shellUI struct {
 	onSettingsEntry        func(uintptr, uintptr)
 	onSettingsSwitch       func(gtk.Switch, bool) bool
 	onSettingsDrop         func(uintptr, uintptr, uintptr)
+	onSettingsPage         func(uintptr, uintptr, uintptr)
+	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
 	onSettingsClose        func(gtk.Window) bool
 	onSettingsKey          func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -333,6 +335,7 @@ func (s *shellUI) start() {
 	s.bindRecordHandlers()
 	s.bindTrayHandlers()
 	s.bindSettingsHandlers()
+	s.bindAboutHandlers()
 	s.bindNotifyHandlers()
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()
