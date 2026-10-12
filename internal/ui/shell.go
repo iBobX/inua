@@ -239,7 +239,7 @@ func Run(opts Options) int {
 		log.Printf("gtk4-layer-shell %s preloaded", layershell.Version())
 	}
 
-	app := gtk.NewApplication("io.github.lyricat.Inua", gio.GApplicationNonUniqueValue)
+	app := gtk.NewApplication(shell.AppID, gio.GApplicationNonUniqueValue)
 	s := &shellUI{opts: opts, cfg: opts.Config, app: app, bars: map[uintptr]*bar{}}
 	s.pass.slot = make(chan struct{}, 1) // before the control socket serves
 	activate := func(gio.Application) { s.start() }
@@ -403,6 +403,8 @@ func (s *shellUI) bindHandlers() {
 		if b := s.barOf(c.GetWidget()); b != nil {
 			reach, _ := b.statusReach(x, y)
 			toggle(&b.status.Widget, "hover", reach)
+			notes, _ := b.notesReach(x, y)
+			toggle(&b.notes.Widget, "hover", notes && !reach)
 			clock, _ := b.clockReach(x, y)
 			toggle(&b.clockButton.Widget, "hover", clock)
 		}
@@ -410,6 +412,7 @@ func (s *shellUI) bindHandlers() {
 	s.onBarLeave = func(c gtk.EventControllerMotion) {
 		if b := s.barOf(c.GetWidget()); b != nil {
 			toggle(&b.status.Widget, "hover", false)
+			toggle(&b.notes.Widget, "hover", false)
 			toggle(&b.clockButton.Widget, "hover", false)
 		}
 	}
@@ -419,8 +422,13 @@ func (s *shellUI) bindHandlers() {
 			return
 		}
 		clock, onClock := b.clockReach(x, y)
-		if reach, onButton := b.statusReach(x, y); reach && !onButton {
-			s.controlAction("status")
+		notes, onNotes := b.notesReach(x, y)
+		if reach, onButton := b.statusReach(x, y); reach {
+			if !onButton {
+				s.controlAction("status")
+			}
+		} else if notes && !onNotes {
+			s.toggleCenter()
 		} else if clock && !onClock {
 			s.toggleAgenda()
 		}
