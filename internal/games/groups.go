@@ -15,6 +15,8 @@ var GroupPuzzles = [][3]WordGroup{
 	{{"Moon landmarks", [4]string{"CRATER", "MARE", "RILLE", "HIGHLANDS"}}, {"Coffee drinks", [4]string{"ESPRESSO", "LATTE", "MOCHA", "CAPPUCCINO"}}, {"Musical tempos", [4]string{"ADAGIO", "LARGO", "ALLEGRO", "PRESTO"}}},
 	{{"Git commands", [4]string{"COMMIT", "REBASE", "FETCH", "CLONE"}}, {"Kitchen tools", [4]string{"WHISK", "LADLE", "SIEVE", "SPATULA"}}, {"Japanese scripts / writing", [4]string{"HIRAGANA", "KATAKANA", "KANJI", "ROMAJI"}}},
 	{{"Board games", [4]string{"CHESS", "GO", "REVERSI", "CHECKERS"}}, {"Citrus fruit", [4]string{"LEMON", "LIME", "POMELO", "MANDARIN"}}, {"Planetary rings", [4]string{"JUPITER", "SATURN", "URANUS", "NEPTUNE"}}},
+	{{"Bridge designs", [4]string{"SUSPENSION", "ARCH", "BEAM", "CANTILEVER"}}, {"Constellations", [4]string{"ORION", "LYRA", "CYGNUS", "DRACO"}}, {"Breads", [4]string{"BAGEL", "NAAN", "PITA", "BRIOCHE"}}},
+	{{"Units of length", [4]string{"METRE", "INCH", "FATHOM", "FURLONG"}}, {"Teas", [4]string{"OOLONG", "SENCHA", "DARJEELING", "ASSAM"}}, {"Shades of blue", [4]string{"NAVY", "COBALT", "AZURE", "CERULEAN"}}},
 	{{"Fabric weaves", [4]string{"PLAIN", "TWILL", "SATIN", "BASKET"}}, {"Percussion instruments", [4]string{"TIMPANI", "MARIMBA", "BONGO", "CYMBAL"}}, {"Web protocols", [4]string{"HTTP", "HTTPS", "WEBSOCKET", "WEBRTC"}}},
 }
 

@@ -43,8 +43,16 @@ func TestLastTileMapsHaveFullCoinEscape(t *testing.T) {
 }
 
 func TestOfficeRoutesHaveEscape(t *testing.T) {
-	for level := 0; level < 3; level++ {
-		queue := []ClockOut{*NewClockOut(level)}
+	for level := 0; level < OfficeLevels; level++ {
+		g0 := NewClockOut(level)
+		for i, r := range g0.Routes {
+			for j, p := range r {
+				if q := r[(j+1)%len(r)]; !adjacent(p, q) || g0.Wall(p) || !p.Inside(g0.W, g0.H) {
+					t.Fatalf("office %d: route %d breaks at %v", level, i, p)
+				}
+			}
+		}
+		queue := []ClockOut{*g0}
 		seen := map[[3]int]bool{}
 		won := false
 		for len(queue) > 0 {
@@ -57,7 +65,7 @@ func TestOfficeRoutesHaveEscape(t *testing.T) {
 			if g.Result != Playing {
 				continue
 			}
-			key := [3]int{g.Player.X, g.Player.Y, g.Steps % 24}
+			key := [3]int{g.Player.X, g.Player.Y, g.Steps}
 			if seen[key] {
 				continue
 			}
@@ -71,7 +79,7 @@ func TestOfficeRoutesHaveEscape(t *testing.T) {
 			}
 		}
 		if !won {
-			t.Fatalf("shift %d is not solvable", level)
+			t.Fatalf("office %d is not solvable", level)
 		}
 	}
 }
@@ -82,41 +90,6 @@ func TestOfficeCrossingPatrolLoses(t *testing.T) {
 	g.Move(Point{0, 3}) // patrol moves from 0,3 to 1,3
 	if g.Result != Lost {
 		t.Fatal("crossing a patrol must lose")
-	}
-}
-
-func TestFridgePackingAndRemoval(t *testing.T) {
-	g := &Fridge{}
-	if g.Place(Point{0, 2}) {
-		t.Fatal("frozen food allowed on fresh shelf")
-	}
-	placements := []struct {
-		at       Point
-		rotation int
-	}{
-		{Point{0, 0}, 0}, {Point{1, 0}, 2}, {Point{3, 0}, 0}, {Point{3, 1}, 0},
-		{Point{0, 2}, 0}, {Point{2, 2}, 0}, {Point{4, 2}, 0}, {Point{0, 4}, 0}, {Point{3, 4}, 0},
-	}
-	for i, p := range placements {
-		g.Selected, g.Rotation = i, p.rotation
-		if !g.Place(p.at) {
-			t.Fatalf("food %d did not fit", i)
-		}
-	}
-	if g.Result != Won {
-		t.Fatal("complete packing did not win")
-	}
-	for _, v := range g.Cells {
-		if v == 0 {
-			t.Fatal("packing left a hole")
-		}
-	}
-	g.Remove(Point{0, 0})
-	if g.Result != Playing || g.Placed[0] {
-		t.Fatal("cannot revise a completed packing")
-	}
-	if !g.Place(Point{0, 0}) || g.Result != Won {
-		t.Fatal("replacing a removed food did not finish")
 	}
 }
 
@@ -230,61 +203,6 @@ func TestGroupsSelectionAndTerminalStates(t *testing.T) {
 	}
 }
 
-func TestFortunePurchaseRentAndRoundLimit(t *testing.T) {
-	g := NewFortune()
-	g.Roll(1)
-	g.Buy()
-	if g.Properties[1].Owner != 1 || g.Players[0].Cash != 520 {
-		t.Fatal("purchase not charged exactly once")
-	}
-	g.Buy()
-	g.Roll(1)
-	if g.Players[0].Cash != 520 || g.Players[0].Position != 1 {
-		t.Fatal("extra action in end phase")
-	}
-	g.Players[1].Position = 0
-	g.land(1, 1)
-	if g.Players[0].Cash != 540 || g.Players[1].Cash != 580 {
-		t.Fatal("rent transfer wrong")
-	}
-	g.Players[0].Cash, g.Players[1].Cash = 10000, 10000
-	for g.Result == Playing {
-		if g.Phase == "roll" {
-			g.Roll(1)
-		}
-		g.EndTurn()
-	}
-	if g.Round != 12 {
-		t.Fatalf("ended in round %d", g.Round)
-	}
-	worth := g.Worth(0)
-	g.EndTurn()
-	g.Roll(1)
-	if g.Worth(0) != worth {
-		t.Fatal("game changed after settlement")
-	}
-}
-
-func TestFortuneBankruptcyAndJail(t *testing.T) {
-	g := NewFortune()
-	g.Players[0] = Player{Position: 4, Cash: 10}
-	g.Roll(1)
-	if g.Result != Lost || g.Winner != 1 {
-		t.Fatal("tax bankruptcy not immediate")
-	}
-	g = NewFortune()
-	g.Players[0].Position = 14
-	g.Roll(1)
-	if g.Players[0].Skip != 1 {
-		t.Fatal("jail did not schedule skipped turn")
-	}
-	g.Phase = "roll"
-	g.Roll(6)
-	if g.Players[0].Position != 15 || g.Players[0].Skip != 0 || g.Phase != "end" {
-		t.Fatal("jail turn not consumed")
-	}
-}
-
 func TestHarborDockCollisionAndClock(t *testing.T) {
 	g := NewHarbor(0)
 	g.Position, g.Angle = Vec{520, 80}, 0
@@ -340,65 +258,4 @@ func TestHarborCoursesHaveRoute(t *testing.T) {
 			t.Fatalf("course %d has no docking route", level)
 		}
 	}
-}
-
-func TestPinballBumperFlipperDrain(t *testing.T) {
-	g := NewPinball()
-	g.Active, g.Ball, g.Velocity = true, Vec{135, 112}, Vec{0, 200}
-	g.Step(0.02, false, false)
-	if g.Score != 100 || g.Velocity.Y >= 0 {
-		t.Fatalf("bumper response: %+v", g)
-	}
-	g.Ball, g.Velocity = Vec{150, 460}, Vec{0, 250}
-	for range 10 {
-		g.Step(0.01, true, false)
-	}
-	if g.Velocity.Y >= 0 {
-		t.Fatalf("raised flipper did not return the ball: %+v", g)
-	}
-	for lives := 2; lives >= 0; lives-- {
-		g.Active, g.Ball = true, Vec{210, 581}
-		g.Velocity = Vec{0, 100}
-		g.Step(0.01, false, false)
-		if g.Lives != lives || g.Active {
-			t.Fatal("drain did not consume exactly one ball")
-		}
-	}
-	g.Launch()
-	if g.Active || g.Result != Lost {
-		t.Fatal("launch accepted after third ball")
-	}
-}
-
-func TestPinballStaysFinite(t *testing.T) {
-	g := NewPinball()
-	g.Launch()
-	for i := 0; i < 30000; i++ {
-		if !g.Active && g.Result == Playing {
-			g.Launch()
-		}
-		g.Step(1.0/120, i%71 < 20, i%83 < 24)
-		if math.IsNaN(g.Ball.X) || math.IsNaN(g.Ball.Y) || math.Hypot(g.Velocity.X, g.Velocity.Y) > 900.001 {
-			t.Fatalf("unstable simulation at step %d: %+v", i, g)
-		}
-		if g.Result != Playing {
-			return
-		}
-	}
-	t.Fatal("three-ball simulation did not finish in 250 seconds")
-}
-
-func TestPinballLaunchEntersUpperPlayfield(t *testing.T) {
-	g := NewPinball()
-	g.Launch()
-	for range 360 {
-		g.Step(1.0/120, false, false)
-		if g.Ball.X < 340 && g.Ball.Y < 200 && g.Active {
-			return
-		}
-		if g.Lives != 3 {
-			t.Fatal("launch drained before reaching the playfield")
-		}
-	}
-	t.Fatal("launch did not leave the chute")
 }

@@ -78,7 +78,8 @@ src=$tmp/$name
 
 # --- the programs and launchers --------------------------------------------
 
-for bin in inua-shell inua inua-apps inua-pinentry; do
+for bin in inua-shell inua inua-apps inua-games inua-pinentry; do
+    [ -f "$src/$bin" ] || continue # inua-games came after v0.0.2
     install -Dm755 "$src/$bin" "$prefix/bin/$bin"
 done
 install -Dm644 -t "$data/applications" "$src"/config/apps/*.desktop

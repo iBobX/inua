@@ -1447,40 +1447,80 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .day-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 15px; letter-spacing: 0.04em; color: @t0; }
 .day-info .readout { font-size: 11px; color: @t2; }
 
-/* Games share the apps' paper, ink and accent; the board is the focus. */
-.gamesapp { background: @app; }
-.game-header { padding: 18px 24px; border-bottom: 1px solid @line; }
-.game-heading { font-family: "IBM Plex Sans", sans-serif; font-size: 22px; font-weight: 500; }
-.game-content { padding: 22px 28px 28px; }
-.game-intro { margin: 8px 0 24px; }
-.game-intro .title { font-size: 30px; font-weight: 300; }
-.game-intro .sub { margin-top: 8px; }
-.settings button.game-entry { padding: 15px 4px; border-bottom: 1px solid @line; border-radius: 0; }
-.game-entry .title { font-size: 17px; }
-.game-entry .sub { margin-top: 4px; font-size: 13px; }
-.game-rules { font-size: 14px; color: @t1; }
-.game-stats { font-size: 13px; color: @accent; font-weight: 600; font-feature-settings: "tnum"; }
-.game-status { font-size: 14px; color: @t0; padding: 12px 0; border-top: 1px solid @line; }
-.game-status.win { color: @ok; }
-.game-status.loss { color: @danger; }
-.game-help { font-size: 12px; color: @t2; }
-.settings button.game-tile {
-  min-width: 46px; min-height: 46px; padding: 4px;
-  border: 1px solid @line; border-radius: 3px;
-  background: @surface; color: @t0; box-shadow: none;
-  font-size: 18px; font-feature-settings: "tnum";
+/* A game's window (game.ui): the name and a line of what is happening,
+   the numbers in mono figures, the board, then the keys. */
+.gamewin { background: @app; }
+.game-head { padding: 16px 22px 14px; border-bottom: 1px solid @line; }
+.game-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 19px; font-weight: 500; color: @t0; }
+.game-line { font-size: 13px; color: @t1; min-height: 18px; }
+.game-line.good { color: @ok; }
+.game-line.bad { color: @danger; }
+.game-stats .kicker { font-size: 9.5px; }
+.game-stat {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-feature-settings: "tnum";
+  font-size: 17px; font-weight: 500; color: @t0;
 }
-.settings button.game-tile:hover { background: @surface2; border-color: @accent; }
-.settings button.game-tile:focus-visible { outline: 2px solid @accent; outline-offset: 1px; }
-.settings button.game-tile.player, .settings button.game-tile.selected { background: @accent; color: @surface; }
-.settings button.game-tile.gold { color: @warn; background: alpha(@warn, 0.12); }
-.settings button.game-tile.exit, .settings button.game-tile.owner { color: @ok; background: alpha(@ok, 0.14); }
-.settings button.game-tile.danger, .settings button.game-tile.computer { color: @danger; background: alpha(@danger, 0.12); }
-.settings button.game-tile.blocked { background: @surface2; color: @t2; border-color: transparent; }
-.settings button.game-tile.cold { color: @accent; background: alpha(@accent, 0.08); }
-.settings button.game-tile.filled { color: @surface; background: @accent; }
-.settings button.game-tile.revealed { background: @app; border-color: alpha(@line, 0.5); color: @accent; }
-.settings button.game-tile.small { min-width: 26px; min-height: 26px; padding: 3px; font-size: 12px; }
-.settings button.game-tile.word { min-width: 125px; min-height: 50px; padding: 8px; font-size: 13px; font-weight: 500; }
-.settings button.game-tile:disabled { opacity: 0.8; }
-.game-field { background: @surface; border: 1px solid @line; border-radius: 3px; }
+.settings menubutton.game-help > button { min-width: 30px; min-height: 30px; padding: 0; background: transparent; border: none; box-shadow: none; color: @t2; }
+.settings menubutton.game-help > button:hover { color: @t0; background: alpha(@t0, 0.06); }
+.game-rules { padding: 6px 4px; font-size: 13px; line-height: 1.4; color: @t1; }
+.game-body { padding: 10px 14px; }
+.game-keys {
+  padding: 10px 22px 14px; border-top: 1px solid alpha(@line, 0.6);
+  font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11px; color: @t2;
+}
+
+/* Small Fortune's panel: players, the square in focus, the turn, news. */
+.fortune-panel { padding: 4px 6px 0 0; }
+.fortune-kicker { margin: 16px 0 6px; }
+.fortune-kicker:first-child { margin-top: 2px; }
+.fortune-player { padding: 7px 0; border-bottom: 1px solid alpha(@line, 0.6); font-size: 14px; color: @t0; }
+.fortune-player.out { opacity: 0.45; }
+.fortune-cash { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-feature-settings: "tnum"; font-size: 14px; color: @t0; }
+.fortune-card-title { font-size: 16px; font-weight: 500; color: @t0; }
+.fortune-card { margin-top: 4px; font-size: 12.5px; line-height: 1.45; color: @t1; }
+.fortune-buttons { margin-top: 10px; }
+.settings button.fortune-main { min-height: 38px; font-weight: 500; }
+.settings button.fortune-main:disabled { background: transparent; border-color: @line; }
+.settings button.fortune-main:disabled label { color: @t2; }
+.fortune-log { font-size: 12px; color: @t2; }
+.fortune-log.latest { color: @t1; }
+.fortune-log.good { color: alpha(@ok, 0.85); }
+.fortune-log.bad { color: alpha(@danger, 0.85); }
+.fortune-rivals { margin: 12px 0 4px; padding-top: 10px; border-top: 1px solid alpha(@line, 0.6); font-size: 12.5px; }
+.settings button.fortune-rival { min-width: 30px; min-height: 26px; padding: 0 8px; }
+.settings button.fortune-rival.on { border-color: @accent; color: @accent; }
+
+/* A row of choices above a board: sizes, maps, courses. */
+.game-choices { margin: 2px 0 12px; }
+.settings button.game-choice { min-height: 28px; padding: 0 12px; font-size: 12.5px; }
+.settings button.game-choice.on { border-color: @accent; color: @accent; background: alpha(@accent, 0.08); }
+
+/* Three Dice Shop: the forecast, the button, the week so far. */
+.shop-foot { margin-top: 10px; }
+.shop-forecast { font-size: 13.5px; font-feature-settings: "tnum"; color: @t0; }
+.shop-ledger { margin-top: 4px; font-size: 12px; color: @t2; }
+
+/* Odd Groups: word tiles, found groups as bars, guesses as dots. */
+.groups { min-width: 560px; }
+.settings button.word {
+  min-height: 62px; min-width: 132px; padding: 0 6px;
+  border: 1px solid @line; border-radius: 4px; background: @surface; box-shadow: none;
+  font-family: "IBM Plex Sans", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: @t0;
+}
+.settings button.word:hover { background: mix(@surface, @accent, 0.06); border-color: alpha(@accent, 0.4); }
+.settings button.word.on { background: @t0; border-color: @t0; }
+.settings button.word.on label { color: @app; }
+.group-bar { min-height: 62px; padding: 8px 12px; border-radius: 4px; }
+.group-bar.tone-0 { background: mix(@surface, @warn, 0.38); }
+.group-bar.tone-1 { background: mix(@surface, @ok, 0.38); }
+.group-bar.tone-2 { background: mix(@surface, @accent, 0.38); }
+.group-bar.tone-3 { background: @surface2; }
+.group-title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; color: @t0; }
+.group-words { font-size: 12.5px; color: @t0; }
+.group-bar.missed .group-title, .group-bar.missed .group-words { color: @t1; }
+.group-dots { margin: 10px 0 2px; }
+.group-dot { min-width: 10px; min-height: 10px; border-radius: 5px; background: @surface2; }
+.group-dot.on { background: @t1; }
+.group-actions { margin-top: 6px; }
+.gamewin button.primary:disabled { opacity: 0.35; }

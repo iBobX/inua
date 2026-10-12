@@ -1,7 +1,8 @@
 # inua: Hyprland desktop shell in Go + GTK4 (docs/architecture.md).
 #
 #   make           build bin/inua-shell (the shell), bin/inua (command line),
-#                  bin/inua-apps (light apps) and bin/inua-pinentry (gpg's prompt)
+#                  bin/inua-apps (light apps), bin/inua-games (light games)
+#                  and bin/inua-pinentry (gpg's prompt)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -39,6 +40,7 @@ build:
 	go build -o bin/inua-shell ./cmd/inua-shell
 	go build -o bin/inua ./cmd/inua
 	go build -o bin/inua-apps ./cmd/inua-apps
+	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 
 deps:
@@ -71,7 +73,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-pinentry
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-games bin/inua-pinentry
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
 	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
 

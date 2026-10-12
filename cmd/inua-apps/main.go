@@ -19,8 +19,6 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-apps [-ui-dir DIR] clock|weather|stocks|calculator|calendar|color-picker|system-monitor [page]")
 		fmt.Fprintln(os.Stderr, "       inua-apps [-ui-dir DIR] viewer [file|folder]...")
-		fmt.Fprintln(os.Stderr, "       inua-apps [-ui-dir DIR] games [last-tile|full-fridge|clock-out|harbor|dice-shop|odd-groups|minesweeper|space-pinball|small-fortune]")
-		fmt.Fprintln(os.Stderr, "       Each game can also be opened directly: inua-apps minesweeper")
 	}
 	flag.Parse()
 	if flag.NArg() < 1 || (flag.Arg(0) != "viewer" && flag.NArg() > 2) {

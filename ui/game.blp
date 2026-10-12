@@ -1,0 +1,43 @@
+using Gtk 4.0;
+
+// One game's window: its name and a line of what is happening, its
+// numbers, then the board; the keys along the bottom.
+ApplicationWindow game {
+  default-width: 560;
+  default-height: 860;
+
+  Box {
+    styles ["gamewin"]
+    orientation: vertical;
+
+    Box {
+      styles ["game-head"]
+      orientation: vertical;
+      spacing: 6;
+
+      Box {
+        spacing: 20;
+        Label heading { styles ["game-title"] xalign: 0; hexpand: true; valign: center; }
+        Box stats { styles ["game-stats"] spacing: 22; valign: center; }
+
+        MenuButton help {
+          styles ["game-help"]
+          icon-name: "dialog-information-symbolic";
+          tooltip-text: "How to play";
+          valign: center;
+          popover: Popover {
+            Label rules { styles ["game-rules"] wrap: true; max-width-chars: 46; xalign: 0; }
+          };
+        }
+
+        Button restart { styles ["outlined"] label: "New game"; valign: center; }
+      }
+
+      Label status { styles ["game-line"] xalign: 0; wrap: true; }
+    }
+
+    Box body { styles ["game-body"] orientation: vertical; vexpand: true; }
+
+    Label hint { styles ["game-keys"] wrap: true; justify: center; }
+  }
+}

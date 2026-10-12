@@ -31,7 +31,7 @@ and a settings window, in one calm visual language. It works with
 | **Screenshots** | Areas, windows and screens, recordings, and a drawer of recent shots to drag into apps. |
 | **Passwords** | inua asks for administrator passwords (it is the Polkit agent) and gpg's passphrases. |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
-| **Games** | Nine offline light games, including Minesweeper, Space Pinball and a short property game against the computer. Open Games from the dock or run `inua-apps games`. |
+| **Games** | Nine offline light games, including Minesweeper, Space Pinball and a short property game against the computer. Each has its own launcher, or run `inua-games minesweeper`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
 
@@ -85,6 +85,7 @@ the login session. What ends up where:
 | `inua-shell` | `~/.local/bin` | The shell |
 | `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check` |
 | `inua-apps` | `~/.local/bin` | The light apps (`inua-apps clock`) |
+| `inua-games` | `~/.local/bin` | The light games (`inua-games minesweeper`) |
 | `inua-pinentry` | `~/.local/bin` | gpg's passphrase prompt, asking in inua's dialog |
 | Light app launchers and icons | `~/.local/share/applications`, `~/.local/share/icons` | So the launcher and dock list them |
 | Sample configuration | `~/.config/hypr`, `~/.config/inua` | Written by `inua init`, which never replaces your files (unless `-force`, keeping `.bak`) and points gpg-agent at `inua-pinentry` |
@@ -142,7 +143,7 @@ Restyle anything with `~/.config/inua/style.css`.
 ## Development
 
 ```sh
-make             # bin/inua-shell, bin/inua, bin/inua-apps and bin/inua-pinentry
+make             # bin/inua-shell, bin/inua, bin/inua-apps, bin/inua-games and bin/inua-pinentry
 make test        # session script tests, go vet, unit tests with -race
 make generate    # ui/*.blp → ui/*.ui (needs blueprint-compiler)
 make nested      # run the shell in a nested Hyprland window
@@ -159,7 +160,7 @@ Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
 
 | Path | |
 | --- | --- |
-| `cmd/inua-shell`, `cmd/inua`, `cmd/inua-apps`, `cmd/inua-pinentry` | The shell, the command line, the light apps, gpg's pinentry |
+| `cmd/inua-shell`, `cmd/inua`, `cmd/inua-apps`, `cmd/inua-games`, `cmd/inua-pinentry` | The shell, the command line, the light apps, the light games, gpg's pinentry |
 | `internal/shell` | Shell state: launcher, workspaces, dock (no GTK, unit tested) |
 | `internal/ui` | The GTK views |
 | `internal/hypr` | Hyprland IPC: requests, events, snapshots |

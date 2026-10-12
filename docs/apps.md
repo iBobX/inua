@@ -14,31 +14,28 @@ Their data is kept in `~/.local/share/inua`.
 
 ## Games
 
-Open **Games** from the dock's Play section or run `inua-apps games`.
-Each game also has its own launcher and command. All nine run offline.
-Boards follow the desktop theme; every game includes its rules, controls,
-a result, and a restart button. Progress lasts until the game is restarted,
-switched, or closed.
+Nine small games, each its own app with its own launcher in the dock's
+Play section, run by `inua-games` (`inua-games minesweeper`). All nine run
+offline and draw their boards in the desktop theme. Every window has the
+rules behind its ⓘ button, its keys along the bottom, and New game (N).
 
-| Game | Command | Rules |
+| Game | Command | What it is |
 | --- | --- | --- |
-| Last Tile (最后一格) | `inua-apps last-tile` | Escape a collapsing 5×5 floor in ten moves, collecting four coins. Ten repeatable maps. Arrow keys, WASD, or click a neighboring tile. |
-| Full Fridge (冰箱塞不下) | `inua-apps full-fridge` | Pack nine shaped groceries into cold and fresh shelves. Select a food, rotate with R or the button, then click the top-left corner of its preview to place. Use Pick up food to remove an item. |
-| Clock Out (下班前十步) | `inua-apps clock-out` | Reach the office exit while avoiding moving colleagues. Arrows or WASD move; Space waits. The board marks their next positions. Three patrol timings. |
-| One-button Harbor (一键靠岸) | `inua-apps harbor` | Hold Space or the sea to turn clockwise; release to sail straight. Avoid rocks and dock heading right within 60 seconds. Three courses. |
-| Three Dice Shop (三骰小店) | `inua-apps dice-shop` | Allocate three dice to stock, sales, and repairs. Pay daily rent and finish seven days with at least $65 cash. |
-| Odd Groups (奇怪的分类) | `inua-apps odd-groups` | Find three groups of four words, with four mistakes allowed. Six English puzzles; answers appear at the end. |
-| Minesweeper (扫雷) | `inua-apps minesweeper` | Clear a 9×9 or 12×12 field. The first reveal and its neighbors are safe. Right-click to flag, or toggle Flag mode with F; click a revealed number to open its neighbors when enough flags are placed. |
-| Space Pinball (太空弹球) | `inua-apps space-pinball` | Space launches; A/Left and D/Right control the flippers. Holding either half of the table also controls its flipper. Three balls, 100 points per bumper hit. |
-| Small Fortune (大富翁) | `inua-apps small-fortune` | Play twelve rounds against the computer: buy streets, build houses, collect rent, and draw chance events. Bankruptcy ends the game; otherwise, cash plus property value decides the winner. |
+| Last Tile (最后一格) | `inua-games last-tile` | A 5×5 floor that falls away behind you: reach the exit within ten moves with as many of the four coins as you can. Ten maps; the best haul on each is kept. Arrows or WASD, or click a tile. |
+| Full Fridge (冰箱塞不下) | `inua-games full-fridge` | Pack every grocery: frozen food in the freezer, the rest on the shelves, with exactly enough room. Pick a food from the bag, turn it (R or right-click), and put it where its shadow fits. Three fridges. |
+| Clock Out (下班前十步) | `inua-games clock-out` | Cross the office to the exit while colleagues walk their rounds, one step for each of yours; the board shows where they step next. Space waits. Six offices. |
+| One-button Harbor (一键靠岸) | `inua-games harbor` | Hold Space (or the sea) to turn right, let go to sail straight; dock in the berth heading right within a minute. Three courses; best times are kept. |
+| Three Dice Shop (三骰小店) | `inua-games dice-shop` | Each morning, give three dice to stock, sales and repairs; the day's outcome shows before you open. Have $75 by the end of day seven. |
+| Odd Groups (奇怪的分类) | `inua-games odd-groups` | Twelve words, three groups of four, four mistakes allowed. Eight puzzles. |
+| Minesweeper (扫雷) | `inua-games minesweeper` | 9×9, 16×16 or 30×16. The first square is always safe; right-click flags; click a number with its flags placed to open around it. Best times are kept. |
+| Space Pinball (太空弹球) | `inua-games space-pinball` | A table under a dome: pop bumpers, slingshots, a bank of drop targets and three rollover lanes that raise a multiplier up to ×5. Hold Space to pull the plunger; A/← and D/→ work the flippers, or hold the table's halves. Ball save at the start of each ball; three balls; the best score is kept. |
+| Small Fortune (大富翁) | `inua-games small-fortune` | A property game against one to three computer players on a 24-square board: two dice (doubles roll again), eight pairs of streets, houses on full pairs, chance cards, jail, and a fountain that collects taxes and fines. 20 rounds, or until one player is left; the most worth wins. |
 
-Harbor and Pinball start on request. P pauses; switching away from their
-window pauses automatically. Resume with the button or P. Game state is
-kept in memory; these games do not use accounts, network services, or a
-database. Small Fortune is a short property game with its own board and
-rules, rather than a reproduction of a commercial board game.
-
-`inua-apps games minesweeper` opens a game within the Games window.
+Harbor and Pinball pause with P, and on their own when their window is
+left. Games are kept in memory; best scores are kept in
+`~/.local/share/inua/games.json`. No accounts, network or database.
+Small Fortune is a property game with its own board and rules, not a
+copy of a commercial one.
 
 ## Clock
 

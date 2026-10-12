@@ -226,7 +226,15 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Tailscale",
 	}},
 	{"PLAY", []string{
-		"io.github.lyricat.Inua.Games",
+		"io.github.lyricat.Inua.Minesweeper",
+		"io.github.lyricat.Inua.SpacePinball",
+		"io.github.lyricat.Inua.SmallFortune",
+		"io.github.lyricat.Inua.OddGroups",
+		"io.github.lyricat.Inua.LastTile",
+		"io.github.lyricat.Inua.ClockOut",
+		"io.github.lyricat.Inua.FullFridge",
+		"io.github.lyricat.Inua.Harbor",
+		"io.github.lyricat.Inua.DiceShop",
 	}},
 }
 
