@@ -647,9 +647,10 @@ func (s *shellUI) markLaunching(key string) {
 	glib.TimeoutAdd(dockLaunchMS, &s.onDockLaunched, 0)
 }
 
-// focusWindowHere focuses a window without moving the pointer to it, as
-// focuswindow does unless cursor:no_warps is set: the pointer stays on the
-// dock, where the user clicked.
+// focusWindowHere focuses a window selected from the dock while keeping the
+// pointer on the dock. Hyprland 0.55 takes Lua dispatchers; temporarily
+// disable cursor warping for this focus operation and restore the user's
+// setting immediately afterward.
 func (s *shellUI) focusWindowHere(addr string) {
 	if s.client == nil {
 		return
@@ -657,13 +658,10 @@ func (s *shellUI) focusWindowHere(addr string) {
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		focus := "focuswindow address:" + addr
-		reply, err := s.client.Request(ctx, "j/getoption cursor:no_warps")
-		if err == nil && strings.Contains(string(reply), `"int": 0`) {
-			// One batch, so the setting is back before anything else runs.
-			_, err = s.client.Request(ctx, "[[BATCH]]keyword cursor:no_warps 1;dispatch "+focus+";keyword cursor:no_warps 0")
-		} else {
-			err = s.client.Dispatch(ctx, focus)
+		script := fmt.Sprintf(`local noWarps = hl.get_config("cursor.no_warps"); hl.config({cursor={no_warps=true}}); local ok, err = pcall(function() hl.dispatch(hl.dsp.focus({window=%q})) end); hl.config({cursor={no_warps=noWarps}}); if not ok then error(err) end`, "address:"+addr)
+		reply, err := s.client.Request(ctx, "eval "+script)
+		if err == nil && strings.TrimSpace(string(reply)) != "ok" {
+			err = fmt.Errorf("eval: %s", strings.TrimSpace(string(reply)))
 		}
 		if err != nil {
 			log.Printf("dock: focus %s: %v", addr, err)
