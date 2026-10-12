@@ -1,6 +1,5 @@
 // Command inua-games runs one of inua's light games, each its own app
-// with its own window: inua-games last-tile | full-fridge | clock-out |
-// harbor | dice-shop | odd-groups | minesweeper | space-pinball |
+// with its own window: inua-games minesweeper | space-pinball |
 // small-fortune.
 package main
 

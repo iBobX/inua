@@ -1495,38 +1495,11 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .settings button.fortune-rival { min-width: 30px; min-height: 26px; padding: 0 8px; }
 .settings button.fortune-rival.on { border-color: @accent; color: @accent; }
 
-/* A row of choices above a board: sizes, maps, courses. */
+/* A row of choices above a board: Minesweeper's sizes. */
 .game-choices { margin: 2px 0 12px; }
 .settings button.game-choice { min-height: 28px; padding: 0 12px; font-size: 12.5px; }
 .settings button.game-choice.on { border-color: @accent; color: @accent; background: alpha(@accent, 0.08); }
 
-/* Three Dice Shop: the forecast, the button, the week so far. */
-.shop-foot { margin-top: 10px; }
-.shop-forecast { font-size: 13.5px; font-feature-settings: "tnum"; color: @t0; }
-.shop-ledger { margin-top: 4px; font-size: 12px; color: @t2; }
-
-/* Odd Groups: word tiles, found groups as bars, guesses as dots. */
-.groups { min-width: 560px; }
-.settings button.word {
-  min-height: 62px; min-width: 132px; padding: 0 6px;
-  border: 1px solid @line; border-radius: 4px; background: @surface; box-shadow: none;
-  font-family: "IBM Plex Sans", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: @t0;
-}
-.settings button.word:hover { background: mix(@surface, @accent, 0.06); border-color: alpha(@accent, 0.4); }
-.settings button.word.on { background: @t0; border-color: @t0; }
-.settings button.word.on label { color: @app; }
-.group-bar { min-height: 62px; padding: 8px 12px; border-radius: 4px; }
-.group-bar.tone-0 { background: mix(@surface, @warn, 0.38); }
-.group-bar.tone-1 { background: mix(@surface, @ok, 0.38); }
-.group-bar.tone-2 { background: mix(@surface, @accent, 0.38); }
-.group-bar.tone-3 { background: @surface2; }
-.group-title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; color: @t0; }
-.group-words { font-size: 12.5px; color: @t0; }
-.group-bar.missed .group-title, .group-bar.missed .group-words { color: @t1; }
-.group-dots { margin: 10px 0 2px; }
-.group-dot { min-width: 10px; min-height: 10px; border-radius: 5px; background: @surface2; }
-.group-dot.on { background: @t1; }
-.group-actions { margin-top: 6px; }
 .gamewin button.primary:disabled { opacity: 0.35; }
 
 .overview-scrim { background: alpha(@app, 0.78); padding: 28px 48px; }
