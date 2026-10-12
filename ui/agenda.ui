@@ -112,6 +112,84 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="column-homogeneous">true</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkButton" id="weather">
+                    <style>
+                      <class name="agenda-weather"/>
+                    </style>
+                    <property name="tooltip-text">Open Weather</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="spacing">12</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="spacing">12</property>
+                            <child>
+                              <object class="GtkImage" id="weather_icon">
+                                <property name="pixel-size">30</property>
+                                <property name="valign">3</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
+                                <property name="valign">3</property>
+                                <property name="hexpand">true</property>
+                                <child>
+                                  <object class="GtkLabel" id="weather_temp">
+                                    <style>
+                                      <class name="agenda-weather-temp"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="weather_text">
+                                    <style>
+                                      <class name="agenda-weather-text"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="ellipsize">3</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
+                                <property name="valign">3</property>
+                                <child>
+                                  <object class="GtkLabel" id="weather_place">
+                                    <style>
+                                      <class name="readout"/>
+                                    </style>
+                                    <property name="xalign">1</property>
+                                    <property name="ellipsize">3</property>
+                                    <property name="max-width-chars">18</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="weather_range">
+                                    <style>
+                                      <class name="agenda-weather-text"/>
+                                    </style>
+                                    <property name="xalign">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="weather_days">
+                            <property name="homogeneous">true</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

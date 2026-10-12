@@ -1,6 +1,7 @@
 // The calendar panel: the bar's clock opens it under the clock, and a click
 // on the backdrop (the clock too) or Escape closes it, like the control
-// center. Today, and the month with week numbers; Go fills the grid.
+// center. Today, the month with week numbers, and the weather where the
+// Weather app is set; Go fills the grid and the weather.
 using Gtk 4.0;
 
 ApplicationWindow agenda {
@@ -76,6 +77,65 @@ ApplicationWindow agenda {
         Grid grid {
           styles ["agenda-grid"]
           column-homogeneous: true;
+        }
+
+        // The weather at the Weather app's place: now, then the next days.
+        // A click opens the app.
+        Button weather {
+          styles ["agenda-weather"]
+          tooltip-text: "Open Weather";
+
+          Box {
+            orientation: vertical;
+            spacing: 12;
+
+            Box {
+              spacing: 12;
+
+              Image weather_icon {
+                pixel-size: 30;
+                valign: center;
+              }
+
+              Box {
+                orientation: vertical;
+                valign: center;
+                hexpand: true;
+
+                Label weather_temp {
+                  styles ["agenda-weather-temp"]
+                  xalign: 0;
+                }
+
+                Label weather_text {
+                  styles ["agenda-weather-text"]
+                  xalign: 0;
+                  ellipsize: end;
+                }
+              }
+
+              Box {
+                orientation: vertical;
+                valign: center;
+
+                Label weather_place {
+                  styles ["readout"]
+                  xalign: 1;
+                  ellipsize: end;
+                  max-width-chars: 18;
+                }
+
+                Label weather_range {
+                  styles ["agenda-weather-text"]
+                  xalign: 1;
+                }
+              }
+            }
+
+            Box weather_days {
+              homogeneous: true;
+            }
+          }
         }
       }
     }

@@ -290,6 +290,20 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
   color: @t0;
 }
 .agenda-day.outside { color: alpha(@t2, 0.55); }
+/* The weather under the month, a button that opens the Weather app. */
+button.agenda-weather {
+  padding: 12px 6px 4px;
+  border: none;
+  border-top: 1px solid alpha(@line, 0.7);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+button.agenda-weather:hover { background: alpha(@accent, 0.05); }
+button.agenda-weather image { color: @accent; }
+.agenda-weather-temp { font-size: 22px; font-weight: 300; font-feature-settings: "tnum"; color: @t0; }
+.agenda-weather-text { font-size: 11.5px; font-feature-settings: "tnum"; color: @t1; }
+button.agenda-weather .agenda-weather-day image { color: @t1; }
 /* Today: the selection style. */
 .agenda-day.today {
   border-color: alpha(@accent, 0.38);

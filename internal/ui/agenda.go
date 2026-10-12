@@ -1,8 +1,10 @@
 package ui
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +15,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/calendar"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/apps/weather"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/layershell"
 )
@@ -20,7 +23,8 @@ import (
 // agenda is the calendar panel under the bar's clock. Like the control
 // center, its window (agenda.ui) is built on every open and destroyed on
 // close, and it covers the screen, the bar too, so a click anywhere else
-// (the clock too) closes it.
+// (the clock too) closes it. Under the month, the weather where the
+// Weather app is set, from a forecast kept for a while between opens.
 type agenda struct {
 	open    bool
 	closing bool
@@ -35,7 +39,27 @@ type agenda struct {
 
 	shown       time.Time // the first of the month shown
 	mondayFirst bool      // as set in the Calendar app
+
+	weather                       gtk.Button
+	wxIcon                        gtk.Image
+	wxTemp, wxText, wxPlace, wxHL gtk.Label
+	wxDays                        gtk.Box
+
+	// The last forecast, for the place and unit it was read for.
+	wx        weather.Forecast
+	wxFor     weather.Place
+	wxF       bool
+	wxAt      time.Time
+	wxLoading bool
+	wxErr     error
 }
+
+// agendaWeatherAge is how long a forecast is shown without reading it
+// again.
+const agendaWeatherAge = 15 * time.Minute
+
+// weatherApp is the Weather app's desktop ID.
+const weatherApp = "io.github.lyricat.Inua.Weather"
 
 func (s *shellUI) bindAgendaHandlers() {
 	s.onClockButton = func(gtk.Button) { s.toggleAgenda() }
@@ -50,6 +74,12 @@ func (s *shellUI) bindAgendaHandlers() {
 			a.shown = firstOfMonth(time.Now())
 		}
 		s.showAgenda()
+	}
+	s.onAgendaWeather = func(gtk.Button) {
+		s.closeAgenda()
+		if e := s.dockState.apps.ByID(weatherApp); e != nil {
+			s.launchApp(e)
+		}
 	}
 	s.onAgendaPressed = func(g gtk.GestureClick, _ int32, x, y float64) {
 		a := &s.agenda
@@ -103,6 +133,7 @@ func (s *shellUI) openAgenda() {
 	s.buildAgenda()
 	a.open = true
 	s.showAgenda()
+	s.agendaWeather()
 	a.win.Present()
 	a.reveal.SetRevealChild(true) // after Present, so it slides in
 	s.refocusPointer()
@@ -133,6 +164,13 @@ func (s *shellUI) buildAgenda() {
 	ui.Get("today", &a.today)
 	ui.Get("month", &a.month)
 	ui.Get("grid", &a.grid)
+	ui.Get("weather", &a.weather)
+	ui.Get("weather_icon", &a.wxIcon)
+	ui.Get("weather_temp", &a.wxTemp)
+	ui.Get("weather_text", &a.wxText)
+	ui.Get("weather_place", &a.wxPlace)
+	ui.Get("weather_range", &a.wxHL)
+	ui.Get("weather_days", &a.wxDays)
 	var prev, next, today gtk.Button
 	ui.Get("prev", &prev)
 	ui.Get("next", &next)
@@ -145,6 +183,7 @@ func (s *shellUI) buildAgenda() {
 	for _, b := range []*gtk.Button{&prev, &next, &today} {
 		b.ConnectClicked(&s.onAgendaButton)
 	}
+	a.weather.ConnectClicked(&s.onAgendaWeather)
 
 	click := gtk.NewGestureClick()
 	click.ConnectPressed(&s.onAgendaPressed)
@@ -218,4 +257,104 @@ func (s *shellUI) showAgenda() {
 
 func firstOfMonth(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, time.Local)
+}
+
+// agendaWeather shows the weather where the Weather app is set: the last
+// forecast at once, read again in the background when it is old.
+func (s *shellUI) agendaWeather() {
+	a := &s.agenda
+	var data weather.Data
+	if err := store.Load(weather.StoreName, &data); err != nil {
+		log.Printf("calendar: weather: %v", err)
+	}
+	if len(data.Places) == 0 {
+		a.wxFor = weather.Place{}
+		s.showAgendaWeather(false)
+		return
+	}
+	p := data.Places[max(0, min(data.Selected, len(data.Places)-1))]
+	same := p == a.wxFor && data.Fahrenheit == a.wxF && !a.wxAt.IsZero()
+	s.showAgendaWeather(true)
+	if same && time.Since(a.wxAt) < agendaWeatherAge || a.wxLoading {
+		return
+	}
+	if !same {
+		a.wxAt = time.Time{} // another place: nothing to show meanwhile
+		a.wxFor, a.wxF = p, data.Fahrenheit
+		s.showAgendaWeather(true)
+	}
+	a.wxLoading = true
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+		defer cancel()
+		f, err := weather.Get(ctx, &http.Client{}, p, data.Fahrenheit)
+		gtkx.Post(func() {
+			a.wxLoading = false
+			if p != a.wxFor {
+				return // the place changed meanwhile
+			}
+			a.wxErr = err
+			if err == nil {
+				a.wx, a.wxAt = f, time.Now()
+			} else {
+				log.Printf("calendar: weather: %v", err)
+			}
+			if a.open && !a.closing {
+				s.showAgendaWeather(true)
+			}
+		})
+	}()
+}
+
+// showAgendaWeather fills the weather under the month: now and the next
+// five days, a line while it is read, or how to add a place.
+func (s *shellUI) showAgendaWeather(havePlace bool) {
+	a := &s.agenda
+	gtkx.Clear(&a.wxDays)
+	a.wxDays.SetVisible(false)
+	if !havePlace {
+		a.wxIcon.SetFromIconName("weather-few-clouds-symbolic")
+		a.wxTemp.SetText("Weather")
+		a.wxText.SetText("Add a place in Weather to see it here")
+		a.wxPlace.SetText("")
+		a.wxHL.SetText("")
+		return
+	}
+	a.wxPlace.SetText(strings.ToUpper(a.wxFor.Name))
+	if a.wxAt.IsZero() {
+		a.wxIcon.SetFromIconName("weather-few-clouds-symbolic")
+		a.wxTemp.SetText("—")
+		a.wxHL.SetText("")
+		if a.wxErr != nil && !a.wxLoading {
+			a.wxText.SetText("No forecast: offline?")
+		} else {
+			a.wxText.SetText("Reading the forecast…")
+		}
+		return
+	}
+	f := a.wx
+	text, icon := weather.Describe(f.Now.Code, f.Now.Day)
+	a.wxIcon.SetFromIconName(icon)
+	a.wxTemp.SetText(weather.Temp(f.Now.Temp))
+	a.wxText.SetText(fmt.Sprintf("%s · feels %s", text, weather.Temp(f.Now.Feels)))
+	a.wxHL.SetText("")
+	if len(f.Days) > 0 {
+		a.wxHL.SetText(fmt.Sprintf("H %s  L %s", weather.Temp(f.Days[0].Max), weather.Temp(f.Days[0].Min)))
+	}
+	for _, d := range f.Days[min(1, len(f.Days)):min(6, len(f.Days))] {
+		col := gtk.NewBox(gtk.OrientationVerticalValue, 3)
+		col.AddCssClass("agenda-weather-day")
+		name := gtk.NewLabel(strings.ToUpper(d.Date.Format("Mon")))
+		name.AddCssClass("grid-head")
+		gtkx.Append(col, &name.Widget)
+		_, icon := weather.Describe(d.Code, true)
+		img := gtk.NewImageFromIconName(icon)
+		img.SetPixelSize(16)
+		gtkx.Append(col, &img.Widget)
+		t := gtk.NewLabel(fmt.Sprintf("%s %s", weather.Temp(d.Max), weather.Temp(d.Min)))
+		t.AddCssClass("agenda-weather-text")
+		gtkx.Append(col, &t.Widget)
+		gtkx.Append(&a.wxDays, &col.Widget)
+		a.wxDays.SetVisible(true)
+	}
 }

@@ -161,6 +161,7 @@ type shellUI struct {
 	onRecButton            func(gtk.Button)
 	onClockButton          func(gtk.Button)
 	onAgendaButton         func(gtk.Button)
+	onAgendaWeather        func(gtk.Button)
 	onAgendaPressed        func(gtk.GestureClick, int32, float64, float64)
 	onAgendaKey            func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onAgendaGone           glib.SourceFunc
