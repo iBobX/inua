@@ -83,7 +83,7 @@ func (s *shellUI) showOverview() {
 		s.closeOverview(false)
 		return
 	}
-	if !s.overviewOK {
+	if !s.hyprLua {
 		// Hyprland without Lua (before 0.55): the launcher's windows
 		// instead, what Super+Tab opened before the overview.
 		s.showLauncher(shell.Windows)

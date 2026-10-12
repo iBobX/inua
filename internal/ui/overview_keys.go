@@ -137,25 +137,26 @@ end,{description="Inua overview previous workspace"})
 end
 `
 
-// probeOverview finds out whether Hyprland runs Lua: 0.53 answers
-// "unknown request" to eval, and has none of the dispatchers the overview
-// uses (hl.dsp.*).
-func (s *shellUI) probeOverview() {
+// probeLua finds out whether Hyprland runs Lua (0.55 and later), whose
+// dispatchers (hl.dsp.*) the overview needs and the dock and launcher use
+// when there; 0.53 answers "unknown request" to eval, and takes the
+// classic dispatchers instead.
+func (s *shellUI) probeLua() {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	reply, err := s.client.Request(ctx, "eval _G.inuaOverviewProbe=true")
 	ok := err == nil && strings.TrimSpace(string(reply)) == "ok"
-	if ok != s.overviewOK {
-		log.Printf("overview: on=%v (Hyprland runs Lua: %v)", ok, ok)
+	if ok != s.hyprLua {
+		log.Printf("hyprland: runs Lua: %v (the overview is on with it)", ok)
 	}
-	s.overviewOK = ok
+	s.hyprLua = ok
 }
 
 func (s *shellUI) installOverviewKeys() {
 	if s.client == nil {
 		return
 	}
-	if s.probeOverview(); !s.overviewOK {
+	if s.probeLua(); !s.hyprLua {
 		return
 	}
 	client := s.client
@@ -250,7 +251,7 @@ func (s *shellUI) commitOverview() {
 // Stop observers before process replacement or normal shutdown. Bindings are
 // reinstalled by the next shell connection, without reloading the compositor.
 func (s *shellUI) pauseOverviewKeys() {
-	if s.client == nil || !s.overviewOK {
+	if s.client == nil || !s.hyprLua {
 		return
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)

@@ -18,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -66,13 +67,14 @@ type shellUI struct {
 	client    *hypr.Client
 	snap      hypr.Snapshot
 	connected bool
-	// overviewOK: Hyprland runs Lua (0.55 and later), which the overview
-	// switches and moves with; without it the overview is off.
-	overviewOK bool
-	hyprApply  hyprApply // writing hypr/inua.conf; see applyHyprland
-	notes      notes
-	dockState  dockState
-	icons      icons
+	// hyprLua: Hyprland runs Lua (0.55 and later; probeLua). The overview
+	// needs it, and focusing and switching use its dispatchers when there,
+	// the classic ones otherwise.
+	hyprLua   bool
+	hyprApply hyprApply // writing hypr/inua.conf; see applyHyprland
+	notes     notes
+	dockState dockState
+	icons     icons
 
 	bars      map[uintptr]*bar // by GdkMonitor
 	styles    styles
@@ -317,7 +319,7 @@ func (s *shellUI) start() {
 	s.bindLauncherHandlers()
 	s.bindOverviewHandlers()
 	s.onWorkspaceOverview = func(g gtk.GestureClick, _ int32, _, _ float64) {
-		if !s.overviewOK {
+		if !s.hyprLua {
 			return
 		}
 		s.showOverview()
@@ -429,7 +431,7 @@ func (s *shellUI) bindHandlers() {
 	s.onWorkspaceClicked = func(b gtk.Button) {
 		// Hyprland answers an error for switching to the current workspace.
 		if id := b.GetName(); !s.isFocusedWorkspace(id) {
-			s.dispatch("workspace " + id)
+			s.switchWorkspace(id)
 		}
 	}
 	s.onWorkspaceSettle = func(uintptr) bool {
@@ -558,6 +560,41 @@ func (s *shellUI) dispatch(arg string) {
 			log.Printf("hyprland: %s: %v", arg, err)
 		}
 	}()
+}
+
+// dispatchEither runs a Lua dispatcher expression (hl.dsp.…) when Hyprland
+// runs Lua, else the classic dispatcher; lua "" always runs the classic.
+func (s *shellUI) dispatchEither(classic, lua string) {
+	if !s.hyprLua || lua == "" {
+		s.dispatch(classic)
+		return
+	}
+	if s.client == nil {
+		log.Printf("hyprland: not connected, dropping %q", lua)
+		return
+	}
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		if err := s.client.LuaDispatch(ctx, lua); err != nil {
+			log.Printf("hyprland: %v", err)
+		}
+	}()
+}
+
+// focusWindow focuses a window by address ("0x…").
+func (s *shellUI) focusWindow(addr string) {
+	s.dispatchEither("focuswindow address:"+addr, fmt.Sprintf(`hl.dsp.focus({window=%q})`, "address:"+addr))
+}
+
+// switchWorkspace shows a workspace by ID. Only numeric IDs have a Lua
+// form here (a quoted one would name a new workspace).
+func (s *shellUI) switchWorkspace(id string) {
+	lua := ""
+	if _, err := strconv.Atoi(id); err == nil {
+		lua = "hl.dsp.focus({workspace=" + id + "})"
+	}
+	s.dispatchEither("workspace "+id, lua)
 }
 
 // focusedMonitor is the GDK monitor Hyprland has focused, nil if unknown.

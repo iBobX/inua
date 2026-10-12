@@ -88,7 +88,7 @@ func (s *shellUI) cancelLauncher() {
 	a := s.launcher.st.Cancel()
 	s.syncLauncher()
 	if a.Kind == shell.Focus {
-		s.dispatch("focuswindow address:" + a.Address)
+		s.focusWindow(a.Address)
 	}
 }
 
@@ -112,7 +112,7 @@ func (s *shellUI) executeLauncher() {
 		}
 	case shell.Focus:
 		log.Printf("launcher: focus %s", a.Address)
-		s.dispatch("focuswindow address:" + a.Address)
+		s.focusWindow(a.Address)
 		l.st.Done(nil)
 	case shell.Fill:
 		l.query.SetText(a.Text)
@@ -176,7 +176,7 @@ func (s *shellUI) runCommand(id, arg, window string) {
 			log.Printf("restart: %v", err)
 		}
 	case "workspace":
-		s.dispatch("workspace " + arg)
+		s.switchWorkspace(arg)
 	case "move-window":
 		s.dispatch("movetoworkspace " + arg + "," + w)
 	case "close-window":
