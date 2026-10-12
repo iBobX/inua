@@ -3,9 +3,11 @@ package gamesui
 import (
 	"image/color"
 	"math"
+	"math/rand/v2"
 	"strconv"
 	"strings"
 	"sync"
+	"unsafe"
 
 	"codeberg.org/puregotk/purego"
 	"codeberg.org/puregotk/puregotk/v4/cairo"
@@ -36,6 +38,16 @@ var cr struct {
 	addStop                           func(p uintptr, offset, r, g, b, a float64)
 	setSource                         func(c, p uintptr)
 	destroyPattern                    func(p uintptr)
+	linear                            func(x0, y0, x1, y1 float64) uintptr
+	imageSurface                      func(format, w, h int32) uintptr
+	create                            func(s uintptr) unsafe.Pointer
+	destroy, destroySurface           func(p uintptr)
+	flushSurface, dirtySurface        func(s uintptr)
+	surfaceData                       func(s uintptr) unsafe.Pointer
+	surfaceStride                     func(s uintptr) int32
+	surfacePattern                    func(s uintptr) uintptr
+	setExtend, setFilter              func(p uintptr, v int32)
+	userToDeviceDistance              func(c uintptr, dx, dy *float64)
 }
 
 func loadCairo() {
@@ -56,6 +68,12 @@ func loadCairo() {
 			"cairo_set_line_join": &cr.setLineJoin, "cairo_set_dash": &cr.setDash,
 			"cairo_pattern_create_radial": &cr.radial, "cairo_pattern_add_color_stop_rgba": &cr.addStop,
 			"cairo_set_source": &cr.setSource, "cairo_pattern_destroy": &cr.destroyPattern,
+			"cairo_pattern_create_linear": &cr.linear, "cairo_image_surface_create": &cr.imageSurface,
+			"cairo_create": &cr.create, "cairo_destroy": &cr.destroy, "cairo_surface_destroy": &cr.destroySurface,
+			"cairo_surface_flush": &cr.flushSurface, "cairo_surface_mark_dirty": &cr.dirtySurface,
+			"cairo_image_surface_get_data": &cr.surfaceData, "cairo_image_surface_get_stride": &cr.surfaceStride,
+			"cairo_pattern_create_for_surface": &cr.surfacePattern, "cairo_pattern_set_extend": &cr.setExtend,
+			"cairo_pattern_set_filter": &cr.setFilter, "cairo_user_to_device_distance": &cr.userToDeviceDistance,
 		} {
 			purego.RegisterLibFunc(f, lib, name)
 		}
@@ -150,6 +168,105 @@ func (p pen) Glow(x, y, r float64, c color.NRGBA, a float64) {
 	p.Circle(x, y, r)
 	p.Fill()
 	cr.destroyPattern(pat)
+}
+
+// Gradient sets a linear gradient as the source, from c0 at x0, y0 to c1
+// at x1, y1, for the next fill or stroke.
+func (p pen) Gradient(x0, y0, x1, y1 float64, c0, c1 color.NRGBA) {
+	pat := cr.linear(x0, y0, x1, y1)
+	f := func(v uint8) float64 { return float64(v) / 255 }
+	cr.addStop(pat, 0, f(c0.R), f(c0.G), f(c0.B), f(c0.A))
+	cr.addStop(pat, 1, f(c1.R), f(c1.G), f(c1.B), f(c1.A))
+	cr.setSource(p.c, pat)
+	cr.destroyPattern(pat) // the context holds it now
+}
+
+// DeviceScale is how many device pixels one unit is, as the pen draws now.
+func (p pen) DeviceScale() float64 {
+	dx, dy := 1.0, 0.0
+	cr.userToDeviceDistance(p.c, &dx, &dy)
+	return math.Hypot(dx, dy)
+}
+
+// image is a picture drawn once off screen and painted from then on.
+type image struct {
+	s    uintptr
+	w, h int
+}
+
+// newImage makes a transparent image of w by h pixels; Free frees it.
+func newImage(w, h int) *image {
+	loadCairo()
+	return &image{cr.imageSurface(0, int32(w), int32(h)), w, h} // CAIRO_FORMAT_ARGB32
+}
+
+func (im *image) Free() { cr.destroySurface(im.s) }
+
+// Draw gives a pen on the image to draw with, in pixels.
+func (im *image) Draw(draw func(pn pen)) {
+	c := cr.create(im.s)
+	draw(pen{uintptr(c), (*cairo.Context)(c)})
+	cr.destroy(uintptr(c))
+	cr.flushSurface(im.s)
+}
+
+// Speckle scatters n dots of c over the image, each at a random fraction
+// of alpha a: paper's grain.
+func (im *image) Speckle(r *rand.Rand, n int, c color.NRGBA, a float64) {
+	cr.flushSurface(im.s)
+	stride := int(cr.surfaceStride(im.s))
+	px := unsafe.Slice((*byte)(cr.surfaceData(im.s)), stride*im.h)
+	for range n {
+		x, y := r.IntN(im.w), r.IntN(im.h)
+		al := a * (0.3 + 0.7*r.Float64())
+		i := y*stride + x*4 // premultiplied BGRA, little-endian ARGB32
+		over := func(dst *byte, v uint8) { *dst = uint8(float64(v)*al + float64(*dst)*(1-al)) }
+		over(&px[i], c.B)
+		over(&px[i+1], c.G)
+		over(&px[i+2], c.R)
+		px[i+3] = uint8(al*255 + float64(px[i+3])*(1-al))
+	}
+	cr.dirtySurface(im.s)
+}
+
+// Image paints im at x, y, scaled by k (pixels to units), smoothly.
+func (p pen) Image(im *image, x, y, k float64) {
+	p.Save()
+	p.Translate(x, y)
+	p.Scale(k, k)
+	pat := cr.surfacePattern(im.s)
+	cr.setFilter(pat, 1) // CAIRO_FILTER_GOOD
+	cr.setSource(p.c, pat)
+	cr.destroyPattern(pat)
+	p.Rect(0, 0, float64(im.w), float64(im.h))
+	p.Fill()
+	p.Restore()
+}
+
+// Blit lays im at the origin, k units to its pixel: without smoothing,
+// for an image drawn at the scale it is laid at, or else smoothed simply.
+func (p pen) Blit(im *image, k float64, smooth bool) {
+	p.Save()
+	p.Scale(k, k)
+	pat := cr.surfacePattern(im.s)
+	cr.setFilter(pat, map[bool]int32{false: 0, true: 4}[smooth]) // CAIRO_FILTER_FAST, _BILINEAR
+	cr.setSource(p.c, pat)
+	cr.destroyPattern(pat)
+	p.Rect(0, 0, float64(im.w), float64(im.h))
+	p.Fill()
+	p.Restore()
+}
+
+// Texture fills the current path with im repeated, k units to its pixel.
+func (p pen) Texture(im *image, k float64) {
+	p.Save()
+	p.Scale(k, k)
+	pat := cr.surfacePattern(im.s)
+	cr.setExtend(pat, 1) // CAIRO_EXTEND_REPEAT
+	cr.setSource(p.c, pat)
+	cr.destroyPattern(pat)
+	p.Fill() // the path keeps the place it was given; the scale is the texture's
+	p.Restore()
 }
 
 // Text sets s in font (a Pango description: "IBM Plex Sans 12") at x, y,
