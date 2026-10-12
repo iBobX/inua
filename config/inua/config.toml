@@ -81,6 +81,12 @@ keyword = "tr"
 name = "Google Translate"
 url = "https://translate.google.com/?text=%s"
 
+[overview]
+# Sort workspaces by recent window focus instead of their numeric order.
+mru = false
+# Show each display's workspaces on its own overview surface.
+per_monitor = true
+
 [control]
 # Shell commands run by the control center's buttons.
 lock = "inua call lock now"
@@ -112,6 +118,10 @@ theme = "yoru"
 #   "system"    the system's icon theme
 # App icons in the launcher and the tray always come from the system's.
 icons = "phosphor"
+
+# A small gap between the screen edges and the bar and dock. false puts
+# them flush against the edges.
+edge_gaps = true
 
 # Extra stylesheet loaded after the built-in one, relative to this file's
 # directory. Ignored if the file does not exist. See style.css next to this
@@ -170,32 +180,84 @@ banner_seconds = 5
 # Not Disturb), which otherwise keeps banners quiet.
 critical_in_focus = true
 
+# Check once a day for a new inua release, a few minutes after you log in,
+# and tell you in a notification, with a button to upgrade (inua upgrade).
+updates = true
+
 [dock]
-# Show the app dock along the bottom of each monitor: pinned apps, then the
-# others with open windows. Click to open or bring forward (again to cycle
-# through its windows); right-click to pin, open a new window or quit.
+# Show the app dock on each monitor: pinned apps, then the others with open
+# windows. Click to open or bring forward (again to cycle through its windows);
+# right-click to pin, open a new window or quit.
 enable = true
 
-# Hide the dock until the pointer reaches the bottom edge. false: windows
+# Screen edge for the dock: bottom, top, left or right.
+position = "bottom"
+
+# Hide the dock until the pointer reaches its screen edge. false: windows
 # make room for it.
 autohide = false
 
 # Icon size in pixels (24 to 96).
 size = 36
 
-# A button at the dock's end that opens inua's light apps (Clock, Weather,
-# Stocks, Calculator).
+# A button at the dock's end that opens Settings, the launcher, Screenshot,
+# the Assistant and inua's light apps (Clock, Weather, Stocks, Calculator).
 drawer = true
 
 # Apps always on the dock, by desktop ID (the .desktop file's name without
 # .desktop), in order. Missing ones are skipped.
 pinned = ["firefox", "org.gnome.Nautilus", "kitty"]
 
+[assistant]
+# The assistant (inua-assistant, the launcher's "Ask"): an agent with
+# inua's tools, run by Mister Morph. Nothing runs until you ask.
+enable = true
+
+# The profile that answers, and the profiles tried in turn when it fails
+# (an outage, a rate limit). The window can switch to another profile for
+# a conversation.
+profile = "openai"
+fallback = []
+
+# Mister Morph's built-in tools to add to inua's: "web_search", "url_fetch",
+# and, asking before each use, "read_file" and "bash".
+tools = ["web_search", "url_fetch"]
+
+# Ask before changing anything (Wi-Fi, volume, windows …). Power, ending a
+# process and closing a window always ask.
+ask_before_changes = true
+
+# The models, as Mister Morph's profiles: a name, a provider ("openai",
+# "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",
+# "mistermorph_pro", or "openai_chat_compatible", "openai_response_compatible",
+# "anthropic_compatible" with an endpoint), the model, an endpoint ("" for
+# the provider's own), the environment variable holding the API key, and
+# the reasoning effort ("minimal" to "high"; "" for the model's default).
+# A key typed in the settings window (AI) is kept in the keyring (the
+# Secret Service; inua-keyring keeps it in pass) instead, or without one
+# in ~/.local/share/inua/keys.json, readable only by you; keys are never
+# written here.
+
+[[assistant.profiles]]
+name = "openai"
+provider = "openai"
+model = "gpt-5.2"
+endpoint = ""
+api_key_env = "OPENAI_API_KEY"
+reasoning = ""
+
+[keyring]
+# inua-keyring keeps apps' secrets (the Secret Service: browsers' keys,
+# Wi-Fi passwords, the assistant's API keys) in pass, under this folder
+# of the password store (PASSWORD_STORE_DIR, else ~/.password-store).
+# inua keyring status|import|enable|disable: see docs/feat/keyring.md.
+folder = "inua-keyring"
+
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions
 # without an entry keep their hyprland.conf shortcuts. An action is one of
-#   launcher windows control notifications focus settings restart lock
+#   launcher windows overview control notifications focus settings restart lock
 #   shot-area shot-screen shot-window shot-record color
 # or "exec" with a command. keys = "" turns the action's shortcut off.
 #

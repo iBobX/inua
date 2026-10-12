@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -412,5 +413,67 @@ url = "https://example.com/"
 	d.Launcher.Quicklinks = nil
 	if c, w, err := Load(write(t, Format(d))); err != nil || len(w) != 0 || len(c.Launcher.Quicklinks) != 0 {
 		t.Errorf("empty round trip: %v %q %+v", err, w, c.Launcher.Quicklinks)
+	}
+}
+
+func TestDockPosition(t *testing.T) {
+	c, w, err := Load(write(t, "[dock]\nposition = \"left\"\n[style]\nedge_gaps = false\n"))
+	if err != nil || len(w) != 0 || c.Dock.Position != "left" || c.Style.EdgeGaps {
+		t.Fatalf("left: %q gaps=%v %v %v", c.Dock.Position, c.Style.EdgeGaps, w, err)
+	}
+	c, w, _ = Load(write(t, "[dock]\nposition = \"middle\"\n"))
+	if len(w) != 1 || c.Dock.Position != "bottom" || !c.Style.EdgeGaps {
+		t.Errorf("middle: %q gaps=%v %v", c.Dock.Position, c.Style.EdgeGaps, w)
+	}
+}
+
+func TestAssistantProfiles(t *testing.T) {
+	c, w, err := Load(write(t, `[assistant]
+profile = "gone"
+fallback = ["local", "work", "local", "nope"]
+
+[[assistant.profiles]]
+name = "work"
+provider = "anthropic"
+model = "claude-sonnet-5-5"
+api_key_env = "ANTHROPIC_API_KEY"
+
+[[assistant.profiles]]
+name = "local"
+provider = "openai_chat_compatible"
+model = "qwen3"
+endpoint = "http://127.0.0.1:11434/v1"
+
+[[assistant.profiles]]
+name = "default"
+provider = "openai"
+model = "gpt-5.2"
+
+[[assistant.profiles]]
+name = "work"
+provider = "openai"
+model = "gpt-5.2"
+
+[[assistant.profiles]]
+name = "odd"
+provider = "nobody"
+model = "x"
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := c.Assistant
+	var names []string
+	for _, p := range a.Profiles {
+		names = append(names, p.Name)
+	}
+	// "default" is Mister Morph's, a name twice and an unknown provider are
+	// left out; the profile falls back to the first; fallbacks are the
+	// others, once each.
+	if fmt.Sprint(names) != "[work local]" || a.Profile != "work" || fmt.Sprint(a.Fallback) != "[local]" {
+		t.Errorf("%+v", a)
+	}
+	if len(w) != 7 {
+		t.Errorf("warnings %q", w)
 	}
 }

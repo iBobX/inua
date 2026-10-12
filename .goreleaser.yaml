@@ -34,6 +34,14 @@ builds:
     id: inua-pinentry
     main: ./cmd/inua-pinentry
     binary: inua-pinentry
+  - <<: *build
+    id: inua-assistant
+    main: ./cmd/inua-assistant
+    binary: inua-assistant
+  - <<: *build
+    id: inua-keyring
+    main: ./cmd/inua-keyring
+    binary: inua-keyring
 
 archives:
   - formats: [tar.gz]
@@ -62,4 +70,5 @@ release:
     owner: lyricat
     name: inua
   footer: |
-    Install or update: `curl -fsSL https://inua.lyric.im/install.sh | sh`
+    Install: `curl -fsSL https://inua.lyric.im/install.sh | sh`
+    Update: `inua upgrade`

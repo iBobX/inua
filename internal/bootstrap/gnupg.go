@@ -19,6 +19,23 @@ func GnuPGHome() string {
 	return filepath.Join(home, ".gnupg")
 }
 
+// Pinentry is the pinentry-program gpg-agent.conf under dir names, "" when
+// it names none (gpg-agent then runs the system's).
+func Pinentry(dir string) string {
+	data, err := os.ReadFile(filepath.Join(dir, "gpg-agent.conf"))
+	if err != nil {
+		return ""
+	}
+	prog := ""
+	sc := bufio.NewScanner(strings.NewReader(string(data)))
+	for sc.Scan() {
+		if key, val, _ := strings.Cut(strings.TrimSpace(sc.Text()), " "); key == "pinentry-program" {
+			prog = strings.TrimSpace(val)
+		}
+	}
+	return prog
+}
+
 // SetPinentry makes gpg-agent ask for passphrases with program (inua's
 // pinentry), in gpg-agent.conf under dir. The rest of the file is kept. A
 // pinentry-program already naming another is left alone unless force is

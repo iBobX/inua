@@ -38,6 +38,7 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | Path | What | State |
 | --- | --- | --- |
 | `internal/hypr` | Hyprland requests, events, snapshots, the state store | Done, tested |
+| `internal/capture/hyprland` | Standalone Wayland client for Hyprland's toplevel export protocol; streams SHM frames to the workspace overview | Implemented; runtime verification needs Hyprland |
 | `internal/desktop` | `.desktop` parsing, Exec expansion, launching | Done, tested |
 | `internal/ipc` | The control socket | Done, tested |
 | `internal/sni` | Tray: StatusNotifierWatcher (when no one else provides it), host, dbusmenu menus | Done, tested (private dbus-daemon) |
@@ -47,6 +48,8 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/apps/calc`, `clock`, `weather`, `stocks`, `calendar`, `colors`, `sysmon`, `tailscale`, `viewer`, `chart`, `store` | The light apps' logic without GTK: expression evaluation; alarms, zones and time formats; Open-Meteo and Yahoo Finance clients; month grids and days' distance from today; colour forms; meters and processes from /proc and /sys, and signals to processes; tailscaled's local API (status, settings, pings, Taildrop); image lists, decoding of the common formats (libjpeg-turbo through purego when it is installed) and EXIF; line charts drawn in Go (`golang.org/x/image/vector`); JSON data in `~/.local/share/inua` | Done, tested |
 | `internal/appui`, `cmd/inua-apps` | The light apps' windows: one process and application ID per app, the shell's theme and icons followed while open | Done |
 | `internal/games`, `internal/gamesui`, `cmd/inua-games` | The light games: their rules without GTK, and their windows, each game a light app of its own (`appui.Register`) | Done, tested |
+| `internal/assistant`, `internal/assistantui`, `cmd/inua-assistant` | The assistant ([feat/assistant.md](feat/assistant.md)): Mister Morph's runtime with inua's tools (windows, apps, system settings through the control socket, notifications, clipboard, processes, Tailscale, weather), approvals and a streamed answer, without GTK and tested against a scripted model; its window, a light app in a binary of its own; `--ask` reaches an open window through its GApplication action on D-Bus | Done, tested |
+| `internal/keyring`, `cmd/inua-keyring` | The Secret Service (`org.freedesktop.secrets`) kept in pass ([feat/keyring.md](feat/keyring.md)): each item a pass entry under `inua-keyring/`, labels and attributes in an index beside them (re-read when changed, written under a lock); sessions `plain` and `dh-ietf1024-sha256-aes128-cbc-pkcs7`; collections, aliases, the in-memory session collection; a client for importing from gnome-keyring and for the assistant's keys; started by D-Bus activation | Done, tested (fake and real pass, libsecret, private dbus-daemon) |
 | `internal/emoji` | The launcher's emoji and symbols: Unicode's emoji list and CLDR's English names and keywords (`scripts/emoji.py` rebuilds the table), searched by name and keyword | Done, tested |
 | `internal/pinentry` | gpg-agent's pinentry protocol (Assuan) for `inua-pinentry`: the requests, the answers and gpg's error codes | Done, tested |
 | `internal/polkit` | The session's polkit authentication agent: registering with polkitd for the shell's login session, `BeginAuthentication`/`CancelAuthentication`, and the conversation with polkit's helper (its socket, else the setuid program) that checks the password through PAM | Done, tested (private dbus-daemon, fake helper) |
@@ -60,8 +63,9 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/bootstrap` | `inua init`: writes the embedded samples without overwriting (`-force` keeps a `.bak`); checks that Hyprland starts the shell and sources `inua.conf` | Done, tested |
 | `internal/ui` | GTK4 views: bar and dock (per monitor), wallpaper, launcher, control center, notification banners and center, tray, settings window (with shortcut recording), screenshot tool, lock screen (on the session lock protocol; the screen stays locked if the shell stops, and a restarted shell takes the lock back), the Clock app's alarms, snapshots | Done |
 | `ui/` | Blueprint layouts, generated `.ui`, `style.css`, colour themes, Phosphor icons; embedded as `ui.FS` | Done |
+| `internal/upgrade` | `inua upgrade`: the newest release's tag (from where `releases/latest` redirects), its archive checked against `checksums.txt`, the programs, launchers and icons staged next to their targets and then renamed into place | Done, tested |
 | `cmd/inua-shell` | The shell | Done |
-| `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init` | Done |
+| `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init`, `upgrade` | Done |
 | `config/` | Samples (`hypr/hyprland.conf`, `hypr/inua.conf`, `inua/config.toml`, `inua/style.css`), the login session and greetd template, Fcitx themes ([README](../config/README.md)) | Done; greetd + tuigreet recommended, GDM and SDDM supported |
 | `scripts/` | `blueprint.sh` (`.blp` → `.ui`), `spike.sh` (nested Hyprland, stress), `phosphor-icons.sh`, `fcitx-themes.py`, the session scripts and their tests | Done |
 | `spike/gtk4-layershell` | Notes from the toolkit experiment; its code became the packages above | Record |
@@ -124,7 +128,7 @@ Creating a window: take the `ApplicationWindow` from its `.ui` →
 | --- | --- | --- | --- | --- | --- |
 | Wallpaper | Background | All edges, exclusive zone -1 | None | `inua-background` | One per monitor |
 | Bar | Top | Top, left, right; automatic exclusive zone | None | `inua-bar` | One per monitor; hidden when `bar.enable` is off |
-| Dock | Top | Bottom; automatic exclusive zone, or 0 with autohide | None | `inua-dock` | One per monitor while `dock.enable` |
+| Dock | Top | Selected edge; automatic exclusive zone, or 0 with autohide | None | `inua-dock` | One per monitor while `dock.enable` |
 | Launcher | Overlay | None (centred) | Exclusive | `inua-launcher` | Built on every open, destroyed on close |
 | Control center | Overlay | All edges (full screen, zone -1) | Exclusive | `inua-control` | As the launcher; closes on a backdrop click or Esc; the card slides in a GtkRevealer |
 | Notification center | Overlay | All edges | Exclusive | `inua-center` | As the control center |
@@ -178,7 +182,7 @@ Control from outside: Hyprland shortcuts run `inua call …` (`internal/ipc`,
 one socket per instance, named by `-n`, default `$INUA_INSTANCE` or
 `default`). `inua show` lists the targets:
 
-`launcher toggle|apps|windows|close`, `control toggle|open|close`,
+`launcher toggle|apps|windows|close`, `overview toggle|open|close`, `control toggle|open|close`,
 `settings toggle|open [PAGE]|close`,
 `notifications toggle|open|close|clear|focus [on|off]`,
 `shell state|close|reload|restart|snapshot DIR|tray-menu N`.

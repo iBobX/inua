@@ -51,6 +51,8 @@ const (
 	keyKPEnter    = 0xff8d
 	keyUp         = 0xff52
 	keyDown       = 0xff54
+	keyLeft       = 0xff51
+	keyRight      = 0xff53
 	keyPageUp     = 0xff55
 	keyPageDown   = 0xff56
 	keyTab        = 0xff09
@@ -86,7 +88,7 @@ func (s *shellUI) cancelLauncher() {
 	a := s.launcher.st.Cancel()
 	s.syncLauncher()
 	if a.Kind == shell.Focus {
-		s.dispatch("focuswindow address:" + a.Address)
+		s.focusWindow(a.Address)
 	}
 }
 
@@ -110,7 +112,7 @@ func (s *shellUI) executeLauncher() {
 		}
 	case shell.Focus:
 		log.Printf("launcher: focus %s", a.Address)
-		s.dispatch("focuswindow address:" + a.Address)
+		s.focusWindow(a.Address)
 		l.st.Done(nil)
 	case shell.Fill:
 		l.query.SetText(a.Text)
@@ -119,6 +121,13 @@ func (s *shellUI) executeLauncher() {
 		log.Printf("launcher: open %s", a.Text)
 		if err := desktop.Spawn([]string{"xdg-open", a.Text}, ""); err != nil {
 			l.st.Done(fmt.Errorf("could not open it: %v", err))
+		} else {
+			l.st.Done(nil)
+		}
+	case shell.Ask:
+		log.Printf("launcher: ask the assistant")
+		if err := desktop.Spawn([]string{"inua-assistant", "--ask", a.Text}, ""); err != nil {
+			l.st.Done(fmt.Errorf("could not start the assistant: %v", err))
 		} else {
 			l.st.Done(nil)
 		}
@@ -167,7 +176,7 @@ func (s *shellUI) runCommand(id, arg, window string) {
 			log.Printf("restart: %v", err)
 		}
 	case "workspace":
-		s.dispatch("workspace " + arg)
+		s.switchWorkspace(arg)
 	case "move-window":
 		s.dispatch("movetoworkspace " + arg + "," + w)
 	case "close-window":
@@ -185,8 +194,11 @@ func (s *shellUI) runCommand(id, arg, window string) {
 	}
 }
 
-// applyLauncherWeb gives the launcher the web search and quicklinks.
+// applyLauncherWeb gives the launcher the web search and quicklinks, and
+// the assistant's row when it is installed and on.
 func (s *shellUI) applyLauncherWeb() {
+	_, err := exec.LookPath("inua-assistant")
+	s.launcher.st.SetAssistant(s.cfg.Assistant.Enable && err == nil)
 	var links []shell.Quicklink
 	for _, q := range s.cfg.Launcher.Quicklinks {
 		links = append(links, shell.Quicklink{Keyword: q.Keyword, Name: q.Name, URL: q.URL})

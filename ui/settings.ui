@@ -823,7 +823,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Apps along the bottom of each monitor</property>
+                                        <property name="label">Apps along the chosen screen edge on each monitor</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -905,7 +905,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Comes back when the pointer reaches the bottom edge</property>
+                                                <property name="label">Comes back when the pointer reaches the dock's screen edge</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -915,6 +915,99 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <child>
                                           <object class="GtkSwitch" id="dock_autohide">
                                             <property name="name">dock_autohide</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Position</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Choose a screen edge for the dock</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="dock_position">
+                                            <property name="name">dock_position</property>
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item>Bottom</item>
+                                                  <item>Top</item>
+                                                  <item>Left</item>
+                                                  <item>Right</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Remove screen edge gaps</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Remove the screen-edge margins around the dock and top bar</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="dock_flush_bar">
+                                            <property name="name">dock_flush_bar</property>
                                             <property name="valign">3</property>
                                           </object>
                                         </child>
@@ -1354,6 +1447,430 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     </property>
                     <child type="overlay">
                       <object class="GtkBox" id="sticky_launcher">
+                        <style>
+                          <class name="section-head"/>
+                          <class name="sticky"/>
+                        </style>
+                        <property name="spacing">10</property>
+                        <property name="valign">1</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">ai</property>
+                <property name="title">AI</property>
+                <property name="child">
+                  <object class="GtkOverlay">
+                    <property name="child">
+                      <object class="GtkScrolledWindow" id="scroll_ai">
+                        <property name="hscrollbar-policy">2</property>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="page"/>
+                            </style>
+                            <property name="orientation">1</property>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;ASSISTANT&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label">An agent with inua's tools, run by Mister Morph</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Assistant</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Ask it from the launcher (the last row, or ? first) or open Assistant</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="ai_enable">
+                                            <property name="name">ai_enable</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Answers with</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="ai_route">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">The profile asked first; the assistant's window can switch for a conversation</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="ai_profile">
+                                            <property name="name">ai_profile</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Ask before changes</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="ai_ask">
+                                            <property name="name">ai_ask</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Search the web</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Mister Morph's web search and page reading</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="ai_web">
+                                            <property name="name">ai_web</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Read files</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">Any file you can read; asks each time</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="ai_files">
+                                            <property name="name">ai_files</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label">Run commands</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label">A shell, as you; asks each time</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="ai_bash">
+                                            <property name="name">ai_bash</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;PROFILES&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label">The models it can use; fallbacks answer when the first fails</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox" id="ai_profiles">
+                                        <property name="orientation">1</property>
+                                        <property name="spacing">10</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="spacing">8</property>
+                                        <child>
+                                          <object class="GtkButton" id="ai_add">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">ai_add</property>
+                                            <property name="label">Add Profile</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="ai_keys_note">
+                                            <style>
+                                              <class name="sub"/>
+                                            </style>
+                                            <property name="hexpand">true</property>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <child type="overlay">
+                      <object class="GtkBox" id="sticky_ai">
                         <style>
                           <class name="section-head"/>
                           <class name="sticky"/>

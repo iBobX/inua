@@ -7,12 +7,15 @@
 //	inua config check [path] | path                  check the settings file
 //	inua config hyprland [path]                      check that Hyprland starts inua-shell and sources inua.conf
 //	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
-//	inua init [-force] [-dir dir]                    write the sample configuration
+//	inua init [-force] [-pinentry ask|replace|keep] [-dir dir]  write the sample configuration
+//	inua keyring status|import|enable|disable|replace  the Secret Service kept in pass
+//	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
 package main
 
 import (
+	"bufio"
 	"cmp"
 	"context"
 	"encoding/json"
@@ -51,6 +54,10 @@ func main() {
 		err = cmdConfig(os.Args[2:])
 	case "init":
 		err = cmdInit(os.Args[2:])
+	case "keyring":
+		err = cmdKeyring(os.Args[2:])
+	case "upgrade":
+		err = cmdUpgrade(os.Args[2:])
 	case "version", "--version", "-v":
 		fmt.Println("inua", version)
 	default:
@@ -70,7 +77,9 @@ func usage() {
   inua config check [path] | path
   inua config hyprland [path]
   inua config apply
-  inua init [-force] [-dir dir]
+  inua init [-force] [-pinentry ask|replace|keep] [-dir dir]
+  inua keyring status|import [-n]|enable|disable|replace
+  inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua version`)
 	os.Exit(2)
 }
@@ -290,9 +299,10 @@ func checkConfig(path string) error {
 func cmdInit(args []string) error {
 	fs := flag.NewFlagSet("init", flag.ExitOnError)
 	force := fs.Bool("force", false, "replace files that differ from the samples, keeping the old ones as .bak")
+	pinentry := fs.String("pinentry", "ask", "when gpg-agent uses another pinentry: ask, replace it with inua-pinentry, or keep it")
 	dir := fs.String("dir", filepath.Dir(filepath.Dir(config.DefaultPath())), "config directory to write into")
 	fs.Parse(args)
-	if fs.NArg() != 0 {
+	if fs.NArg() != 0 || (*pinentry != "ask" && *pinentry != "replace" && *pinentry != "keep") {
 		usage()
 	}
 	results, err := bootstrap.Install(samples.FS, samples.Files, *dir, *force)
@@ -303,7 +313,7 @@ func cmdInit(args []string) error {
 		return err
 	}
 	if *dir == filepath.Dir(filepath.Dir(config.DefaultPath())) { // the user's own setup
-		if err := initPinentry(*force); err != nil {
+		if err := initPinentry(*pinentry, *force); err != nil {
 			fmt.Println("gpg:", err)
 		}
 	}
@@ -340,8 +350,14 @@ func cmdInit(args []string) error {
 }
 
 // initPinentry has gpg-agent ask for passphrases in inua's dialog, and
-// reloads it if that changed.
-func initPinentry(force bool) error {
+// reloads it if that changed. Another pinentry already set is replaced
+// when the user says so (mode "ask", the default answer yes), "replace"
+// or -force; "keep" leaves gpg-agent as it is.
+func initPinentry(mode string, force bool) error {
+	if mode == "keep" {
+		fmt.Println("gpg-agent left as it is (-pinentry keep)")
+		return nil
+	}
 	prog, err := exec.LookPath("inua-pinentry")
 	if err != nil {
 		fmt.Println("inua-pinentry is not on PATH (make install); gpg-agent left as it is")
@@ -350,7 +366,15 @@ func initPinentry(force bool) error {
 	if prog, err = filepath.Abs(prog); err != nil {
 		return err
 	}
-	changed, msg, err := bootstrap.SetPinentry(bootstrap.GnuPGHome(), prog, force)
+	replace := force || mode == "replace"
+	if cur := bootstrap.Pinentry(bootstrap.GnuPGHome()); !replace && cur != prog {
+		replace = askYes(fmt.Sprintf("gpg asks for passphrases with %s. Ask in inua's dialog instead?", cmp.Or(cur, "the system's pinentry")))
+		if !replace {
+			fmt.Println("gpg-agent left as it is")
+			return nil
+		}
+	}
+	changed, msg, err := bootstrap.SetPinentry(bootstrap.GnuPGHome(), prog, replace)
 	if err != nil {
 		return err
 	}
@@ -363,6 +387,21 @@ func initPinentry(force bool) error {
 		}
 	}
 	return nil
+}
+
+// askYes asks a yes-or-no question on the terminal, yes by default. It
+// reads /dev/tty, as the installer runs inua down a pipe; without a
+// terminal the default stands.
+func askYes(question string) bool {
+	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
+	if err != nil {
+		return true
+	}
+	defer tty.Close()
+	fmt.Fprintf(tty, "%s [Y/n] ", question)
+	answer, _ := bufio.NewReader(tty).ReadString('\n')
+	answer = strings.ToLower(strings.TrimSpace(answer))
+	return !strings.HasPrefix(answer, "n")
 }
 
 func lastLines(s string, n int) string {

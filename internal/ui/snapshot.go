@@ -75,6 +75,18 @@ func (s *shellUI) snapshot(dir string) ([]string, error) {
 			return files, err
 		}
 	}
+	for monitor, view := range s.overview.views {
+		if view.win != nil {
+			if err := save("overview-"+monitor, &view.win.Window); err != nil {
+				return files, err
+			}
+		}
+	}
+	if s.overview.win != nil {
+		if err := save("overview", &s.overview.win.Window); err != nil {
+			return files, err
+		}
+	}
 	return files, nil
 }
 

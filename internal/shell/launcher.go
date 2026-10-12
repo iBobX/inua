@@ -53,7 +53,8 @@ func (m Mode) Label() string {
 }
 
 // Result is one launcher row: an app to launch, a window to focus, an
-// answer or emoji to copy, a command to run, or a web address to open.
+// answer or emoji to copy, a command to run, a web address to open, or a
+// question for the assistant.
 type Result struct {
 	Title, Detail string
 	Icon          string         // icon name: the app's icon, or the window class
@@ -64,6 +65,7 @@ type Result struct {
 	Command, Arg  string         // set for commands: Command's ID, and its argument
 	URL           string         // set for quicklinks and web searches
 	Fill          string         // Enter puts this in the search field instead
+	Ask           string         // set for the assistant's row: the question
 
 	score   int
 	history int // windows: Hyprland's focus history, 0 = most recent
@@ -80,6 +82,7 @@ const (
 	Open              // open the web address Action.Text
 	Run               // run command Action.Text with Action.Arg, on window Action.Address
 	Fill              // put Action.Text in the search field (the query is set already)
+	Ask               // ask the assistant Action.Text
 )
 
 // Action is a side effect for the view to carry out; the launcher itself
@@ -111,6 +114,16 @@ type Launcher struct {
 	webSearch string         // the web search's address, %s for the words
 	links     []Quicklink
 	armed     string // the command that asked for Enter again
+	assistant bool   // the assistant is installed and on
+}
+
+// SetAssistant offers the assistant: a last row for any query, and a
+// query starting with "?" asks it at once.
+func (l *Launcher) SetAssistant(on bool) {
+	l.assistant = on
+	if l.Open && l.Mode == Apps {
+		l.search(false)
+	}
 }
 
 // SetWeb sets the web search and the quicklinks.
@@ -217,6 +230,8 @@ func (l *Launcher) Execute() Action {
 	}
 	r := l.Results[l.Selected]
 	switch {
+	case r.Ask != "":
+		return Action{Kind: Ask, Text: r.Ask}
 	case r.Copy != "":
 		return Action{Kind: Copy, Text: r.Copy}
 	case r.Fill != "":
@@ -264,6 +279,8 @@ func (l *Launcher) Message() string {
 		return ""
 	}
 	switch {
+	case l.Mode == Apps && l.assistant && strings.HasPrefix(strings.TrimSpace(l.Query), "?"):
+		return "Ask the assistant anything"
 	case l.Mode == Apps && strings.HasPrefix(strings.TrimSpace(l.Query), ":"):
 		return "No emoji or symbol matches"
 	case l.Mode == Apps && !l.appsReady:
@@ -310,6 +327,11 @@ func (l *Launcher) search(keep bool) {
 			l.Selected = 0
 			return
 		}
+		if question, ok := strings.CutPrefix(strings.TrimSpace(l.Query), "?"); ok && l.assistant {
+			l.Results = askResults(strings.TrimSpace(question), "Enter asks")
+			l.Selected = 0
+			return
+		}
 		// Apps and commands, best first; on a tie the app.
 		l.Results = append(searchApps(l.apps, q), searchCommands(q, l.windowTitle(l.previous))...)
 		slices.SortStableFunc(l.Results, func(a, b Result) int { return b.score - a.score })
@@ -317,6 +339,9 @@ func (l *Launcher) search(keep bool) {
 		// quicklink or a web address; the web search comes last.
 		first, last := webResults(l.Query, l.webSearch, l.links)
 		l.Results = append(append(first, l.Results...), last...)
+		if l.assistant && q != "" {
+			l.Results = append(l.Results, askResults(strings.TrimSpace(l.Query), "or start with ?")...)
+		}
 		if a, ok := convert.Evaluate(l.Query, l.rates); ok {
 			l.Results = append([]Result{{Title: a.Text, Detail: a.Detail + " · Enter copies", Icon: "accessories-calculator-symbolic", Copy: a.Copy}}, l.Results...)
 		}
@@ -335,6 +360,17 @@ func (l *Launcher) search(keep bool) {
 	if l.Mode == Windows && q == "" && len(l.Results) > 1 && l.Results[0].Address == l.snap.ActiveToplevel {
 		l.Selected = 1
 	}
+}
+
+// AssistantIcon is the assistant's app icon (config/apps).
+const AssistantIcon = "io.github.lyricat.Inua.Assistant"
+
+// askResults is the assistant's row for a question; none for no question.
+func askResults(question, hint string) []Result {
+	if question == "" {
+		return nil
+	}
+	return []Result{{Title: "Ask the assistant", Detail: question + " · " + hint, Icon: AssistantIcon, Ask: question}}
 }
 
 func searchApps(apps []*desktop.Entry, q string) []Result {

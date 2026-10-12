@@ -36,6 +36,7 @@ type Workspace struct {
 // Toplevel mirrors the fields of Quickshell's HyprlandToplevel.
 type Toplevel struct {
 	Address     string // "0x..." form, always lower case
+	PID         int
 	Title       string
 	Class       string
 	WorkspaceID int
@@ -95,6 +96,7 @@ type rawWorkspace struct {
 
 type rawClient struct {
 	Address   string `json:"address"`
+	PID       int    `json:"pid"`
 	Mapped    bool   `json:"mapped"`
 	Title     string `json:"title"`
 	Class     string `json:"class"`
@@ -212,7 +214,7 @@ func BuildSnapshot(q QueryResult, urgent map[string]bool) (Snapshot, error) {
 			urgentWs[c.Workspace.ID] = true
 		}
 		s.Toplevels = append(s.Toplevels, Toplevel{
-			Address: addr, Title: c.Title, Class: c.Class,
+			Address: addr, PID: c.PID, Title: c.Title, Class: c.Class,
 			WorkspaceID: c.Workspace.ID, Monitor: monName[c.Monitor],
 			Activated: addr == s.ActiveToplevel, Urgent: u,
 			Raw: clientMaps[i],

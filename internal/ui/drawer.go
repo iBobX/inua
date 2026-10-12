@@ -2,7 +2,10 @@ package ui
 
 import (
 	"log"
+	"os/exec"
+	"slices"
 	"strings"
+	"time"
 	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -28,11 +31,16 @@ const drawerColumns = 4
 // drawerRevealMS matches the revealer's transition below.
 const drawerRevealMS = 220
 
+// assistantApp is the assistant's desktop entry, in the drawer when the
+// assistant is on.
+const assistantApp = "io.github.lyricat.Inua.Assistant"
+
 type drawerPanel struct {
 	win      gtk.ApplicationWindow
 	backdrop *gtk.Box // borrowed from win
 	reveal   *gtk.Revealer
 	closing  bool
+	then     func() // a shell tool to open once the drawer is gone
 }
 
 func (s *shellUI) bindDrawerHandlers() {
@@ -46,6 +54,13 @@ func (s *shellUI) bindDrawerHandlers() {
 	}
 	s.onDrawerApp = func(b gtk.Button) {
 		id := strings.TrimPrefix(b.GetName(), "drawer:")
+		if strings.HasPrefix(id, "inua:") {
+			if p := s.dockState.drawer; p != nil {
+				p.then = func() { s.drawerShellApp(id) }
+			}
+			gtkx.Post(s.closeDrawer)
+			return
+		}
 		gtkx.Post(s.closeDrawer) // the button is in the drawer
 		for _, e := range shell.LightApps(s.dockState.apps) {
 			if e.ID == id {
@@ -80,8 +95,46 @@ func (s *shellUI) bindDrawerHandlers() {
 			s.dockState.drawer = nil
 			p.win.Destroy()
 			s.hideDocksSoon()
+			if p.then != nil {
+				p.then()
+			}
 		}
 		return false
+	}
+}
+
+// drawerSections are the drawer's groups, without the assistant when it
+// is off or its program is missing (as the launcher's row).
+func (s *shellUI) drawerSections() []shell.AppGroup {
+	_, err := exec.LookPath("inua-assistant")
+	if s.cfg.Assistant.Enable && err == nil {
+		return shell.LightAppSections(s.dockState.apps)
+	}
+	var out []shell.AppGroup
+	for _, g := range shell.LightAppSections(s.dockState.apps) {
+		g.Apps = slices.DeleteFunc(g.Apps, func(e *desktop.Entry) bool { return e.ID == assistantApp })
+		if len(g.Apps) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// drawerShellApp opens one of the shell's tools, the drawer gone.
+func (s *shellUI) drawerShellApp(id string) {
+	switch id {
+	case "inua:settings":
+		s.openSettings()
+	case "inua:launcher":
+		if !s.launcher.st.Open {
+			m, _ := shell.ParseMode(s.cfg.Launcher.Mode) // validated by config.Load
+			s.showLauncher(m)
+		}
+	case "inua:screenshot":
+		go func() {
+			time.Sleep(150 * time.Millisecond) // the last frame of the drawer, off the screen
+			gtkx.Post(func() { s.screenshotRequest("area") })
+		}()
 	}
 }
 
@@ -135,7 +188,7 @@ func (s *shellUI) toggleDrawer(b *bar) {
 // drawerColumns, every cell as wide as the others, so a long name wraps
 // instead of widening the row.
 func (s *shellUI) drawerContent() *gtk.Box {
-	sections := shell.LightAppSections(s.dockState.apps)
+	sections := s.drawerSections()
 	content := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	content.AddCssClass("drawer")
 	for _, g := range sections {
@@ -182,7 +235,7 @@ func (s *shellUI) drawerContent() *gtk.Box {
 		}
 		gtkx.Append(content, &grid.Widget)
 	}
-	if len(sections) == 0 {
+	if len(shell.LightApps(s.dockState.apps)) == len(shell.ShellApps) {
 		l := gtk.NewLabel("The light apps are not installed (make install).")
 		l.AddCssClass("drawer-empty")
 		gtkx.Append(content, &l.Widget)
@@ -190,7 +243,7 @@ func (s *shellUI) drawerContent() *gtk.Box {
 	return content
 }
 
-// openDrawer slides the drawer up over the drawer button of a bar's dock.
+// openDrawer slides the launcher out from the dock edge, beside its button.
 func (s *shellUI) openDrawer(b *bar) {
 	d := b.dock
 	if d == nil || d.drawer == nil {
@@ -202,11 +255,9 @@ func (s *shellUI) openDrawer(b *bar) {
 	backdrop.SetHexpand(true)
 	backdrop.SetVexpand(true)
 	reveal := gtk.NewRevealer()
-	reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
 	reveal.SetTransitionDuration(drawerRevealMS)
 	reveal.SetHalign(gtk.AlignStartValue)
-	reveal.SetValign(gtk.AlignEndValue)
-	reveal.SetVexpand(true)
+	reveal.SetValign(gtk.AlignStartValue)
 	card := s.drawerContent()
 	reveal.SetChild(&card.Widget)
 	gtkx.Append(backdrop, &reveal.Widget)
@@ -215,21 +266,53 @@ func (s *shellUI) openDrawer(b *bar) {
 	card.Unref()
 	p.backdrop, p.reveal = backdrop, reveal
 
-	// Over the drawer button: the dock is centred on its monitor.
+	// Beside the drawer button: the dock is centred along its edge.
 	var cardSize gtk.Requisition
 	card.GetPreferredSize(nil, &cardSize)
 	var geo gdk.Rectangle
 	b.mon.GetGeometry(&geo)
 	var r graphene.Rect
-	center := float32(geo.Width) / 2
-	if d.drawer.ComputeBounds(&d.win.Widget, &r) {
-		f := *(*[4]float32)(unsafe.Pointer(&r))
-		center = (float32(geo.Width)-float32(d.win.GetWidth()))/2 + f[0] + f[2]/2
+	var f [4]float32
+	hasBounds := d.drawer.ComputeBounds(&d.win.Widget, &r)
+	if hasBounds {
+		f = *(*[4]float32)(unsafe.Pointer(&r))
 	}
-	x := int32(center) - cardSize.Width/2
-	x = max(8, min(x, geo.Width-cardSize.Width-8))
-	reveal.SetMarginStart(x)
-	reveal.SetMarginBottom(int32(d.win.GetHeight()) + 2)
+	position := d.position
+	switch position {
+	case "left":
+		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
+		reveal.SetMarginStart(int32(d.win.GetWidth()) + 2)
+		y := float32(geo.Height-cardSize.Height) / 2
+		if hasBounds { // the dock is centred on its edge
+			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
+		}
+		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
+	case "right":
+		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
+		x := geo.Width - d.win.GetWidth() - cardSize.Width - 2
+		reveal.SetMarginStart(max(0, x))
+		y := float32(geo.Height-cardSize.Height) / 2
+		if hasBounds { // the dock is centred on its edge
+			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
+		}
+		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
+	case "top":
+		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
+		x := float32(geo.Width-cardSize.Width) / 2
+		if hasBounds {
+			x = (float32(geo.Width)-float32(d.win.GetWidth()))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
+		}
+		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
+		reveal.SetMarginTop(int32(d.win.GetHeight()) + 2)
+	default: // bottom
+		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
+		x := float32(geo.Width-cardSize.Width) / 2
+		if hasBounds {
+			x = (float32(geo.Width)-float32(d.win.GetWidth()))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
+		}
+		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
+		reveal.SetMarginBottom(int32(d.win.GetHeight()) + 2)
+	}
 
 	click := gtk.NewGestureClick()
 	click.ConnectPressed(&s.onDrawerBackdrop)
@@ -251,6 +334,12 @@ func (s *shellUI) openDrawer(b *bar) {
 	s.dockState.drawer = p
 	p.win.Present()
 	reveal.SetRevealChild(true) // after Present, so it slides in
+}
+
+// clampDrawerOffset keeps a card inside a monitor with a small breathing edge.
+func clampDrawerOffset(offset float32, extent, card int32) int32 {
+	maxOffset := max(0, extent-card-8)
+	return max(8, min(int32(offset), maxOffset))
 }
 
 // closeDrawer slides the drawer away; the window goes when it is down.

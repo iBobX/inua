@@ -35,8 +35,8 @@ type settings struct {
 	swatches             map[string]*gtk.Button // by theme, owned by the flow box
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus gtk.Switch
-	barOn, dockOn, dockHide, dockDrawer                 gtk.Switch
-	dockSize                                            gtk.DropDown
+	barOn, dockOn, dockHide, dockDrawer, dockFlushBar   gtk.Switch
+	dockSize, dockPosition                              gtk.DropDown
 	dockPinned                                          gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
 	bgFit, ws, launchMode, swap, caps, icons, banner    gtk.DropDown
@@ -52,6 +52,7 @@ type settings struct {
 	hyprKb string
 
 	sc shortcutState // the Shortcuts page
+	ai aiSettings    // the AI page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -105,6 +106,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Dock.Drawer = on
 		case "dock_autohide":
 			c.Dock.Autohide = on
+		case "dock_flush_bar":
+			c.Style.EdgeGaps = !on
 		case "notify_enable":
 			c.Notify.Enable = on
 		case "critical_focus":
@@ -114,6 +117,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			if on {
 				c.Input.TouchpadAccel = "adaptive"
 			}
+		default:
+			s.aiSwitch(sw.GetName(), on, &c)
 		}
 		s.changeSettings(c)
 		return false // let the switch move
@@ -136,6 +141,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			if i >= 0 && i < len(config.DockSizes) {
 				c.Dock.Size = config.DockSizes[i]
 			}
+		case "dock_position":
+			c.Dock.Position = pick(config.DockPositions, i, c.Dock.Position)
 		case "banner":
 			if i >= 0 && i < len(config.BannerChoices) {
 				c.Notify.Banner = config.BannerChoices[i]
@@ -148,12 +155,16 @@ func (s *shellUI) bindSettingsHandlers() {
 		case "caps":
 			opts := shell.SetCapsLock(s.kbOptions(), pick(capsChoices, i, ""))
 			c.Input.KbOptions = &opts
+		default:
+			if strings.HasPrefix(d.GetName(), "ai") {
+				s.aiDrop(d.GetName(), i, &c)
+			}
 		}
 		s.changeSettings(c)
 	}
 	s.onSettingsButton = func(b gtk.Button) {
 		name := b.GetName()
-		if s.shortcutButton(name) {
+		if s.shortcutButton(name) || s.aiButton(name) {
 			return
 		}
 		c := s.cfg
@@ -272,8 +283,10 @@ func (s *shellUI) openSettings() {
 	ui.Get("bar_enable", &st.barOn)
 	ui.Get("dock_enable", &st.dockOn)
 	ui.Get("dock_autohide", &st.dockHide)
+	ui.Get("dock_flush_bar", &st.dockFlushBar)
 	ui.Get("dock_drawer", &st.dockDrawer)
 	ui.Get("dock_size", &st.dockSize)
+	ui.Get("dock_position", &st.dockPosition)
 	ui.Get("dock_pinned", &st.dockPinned)
 	ui.Get("sc_inua", &st.sc.inua)
 	ui.Get("sc_shots", &st.sc.shots)
@@ -305,19 +318,20 @@ func (s *shellUI) openSettings() {
 	ui.Get("bg_choose", &choose)
 	ui.Get("bg_clear", &clearImage)
 	s.buildStickyHeads(ui)
+	st.entries = map[uintptr]*gtk.Entry{}
+	st.drops = map[uintptr]*gtk.DropDown{}
+	s.getAISettings(ui)
 	ui.Close()
 
-	st.entries = map[uintptr]*gtk.Entry{}
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot} {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	st.drops = map[uintptr]*gtk.DropDown{}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize, &st.dockPosition} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset} {
@@ -342,7 +356,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "notifications", "shortcuts", "keyboard", "mouse"}
+var settingsPages = []string{"appearance", "bar", "launcher", "ai", "notifications", "shortcuts", "keyboard", "mouse"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -458,6 +472,7 @@ func (s *shellUI) showSettings() {
 	s.showNotifySettings()
 	s.showDockSettings()
 	s.showShortcuts()
+	s.showAISettings()
 	st.clockPreview.SetText(config.Strftime(c.Bar.Clock, time.Now()))
 	for _, e := range st.entries {
 		e.RemoveCssClass("invalid")
@@ -479,6 +494,9 @@ func (s *shellUI) settingsEntryChanged(e *gtk.Entry) {
 	text := e.GetText()
 	c := s.cfg
 	valid := true
+	if strings.HasPrefix(e.GetName(), "ai-key:") {
+		return // saved with its button
+	}
 	switch e.GetName() {
 	case "clock":
 		valid = strings.TrimSpace(text) != ""
@@ -493,6 +511,10 @@ func (s *shellUI) settingsEntryChanged(e *gtk.Entry) {
 	case "bg_color":
 		valid = config.ValidColor(text)
 		c.Background.Color = text
+	default:
+		if strings.HasPrefix(e.GetName(), "ai-") {
+			valid = s.aiEntryChanged(e.GetName(), text, &c)
+		}
 	case "bg_image":
 		c.Background.Image = text
 		if p := c.ImagePath(); p != "" {
@@ -525,6 +547,7 @@ func (s *shellUI) saveSettings() {
 	}
 	s.setStatus("", false)
 	s.applyHyprland()
+	s.applyKeyRenames()
 }
 
 func (s *shellUI) setStatus(text string, failed bool) {
@@ -602,8 +625,10 @@ func (s *shellUI) showDockSettings() {
 	st.barOn.SetActive(c.Bar.Enable)
 	st.dockOn.SetActive(c.Dock.Enable)
 	st.dockHide.SetActive(c.Dock.Autohide)
+	st.dockFlushBar.SetActive(!c.Style.EdgeGaps)
 	st.dockDrawer.SetActive(c.Dock.Drawer)
 	st.dockSize.SetSelected(uint32(max(0, slices.Index(config.DockSizes, c.Dock.Size))))
+	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))
 	gtkx.Clear(&st.dockPinned)
 	if len(c.Dock.Pinned) == 0 {
 		l := gtk.NewLabel("Nothing pinned")
@@ -635,8 +660,8 @@ func (s *shellUI) showDockSettings() {
 			action, icon, tip string
 			ok                bool
 		}{
-			{"up", "pan-up-symbolic", "Move left", i > 0},
-			{"down", "pan-down-symbolic", "Move right", i < len(c.Dock.Pinned)-1},
+			{"up", "pan-up-symbolic", "Move earlier", i > 0},
+			{"down", "pan-down-symbolic", "Move later", i < len(c.Dock.Pinned)-1},
 			{"remove", "window-close-symbolic", "Remove from the dock", true},
 		} {
 			btn := gtk.NewButtonFromIconName(b.icon)

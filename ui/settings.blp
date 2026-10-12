@@ -589,7 +589,7 @@ ApplicationWindow settings {
 
                   Label {
                     styles ["section-meta"]
-                    label: "Apps along the bottom of each monitor";
+                    label: "Apps along the chosen screen edge on each monitor";
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -646,7 +646,7 @@ ApplicationWindow settings {
                       }
                       Label {
                         styles ["sub"]
-                        label: "Comes back when the pointer reaches the bottom edge";
+                        label: "Comes back when the pointer reaches the dock's screen edge";
                         xalign: 0;
                         wrap: true;
                       }
@@ -654,6 +654,68 @@ ApplicationWindow settings {
 
                     Switch dock_autohide {
                       name: "dock_autohide";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Position";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Choose a screen edge for the dock";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown dock_position {
+                      name: "dock_position";
+                      valign: center;
+
+                      model: StringList {
+                        strings ["Bottom", "Top", "Left", "Right"]
+                      };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Remove screen edge gaps";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Remove the screen-edge margins around the dock and top bar";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch dock_flush_bar {
+                      name: "dock_flush_bar";
                       valign: center;
                     }
                   }
@@ -963,6 +1025,314 @@ ApplicationWindow settings {
           // The head of the section scrolled under the top edge.
           [overlay]
           Box sticky_launcher {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "ai";
+        title: "AI";
+
+        child: Overlay {
+          child: ScrolledWindow scroll_ai {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [ASSISTANT]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "An agent with inua's tools, run by Mister Morph";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Assistant";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Ask it from the launcher (the last row, or ? first) or open Assistant";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_enable {
+                      name: "ai_enable";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Answers with";
+                        xalign: 0;
+                      }
+
+                      Label ai_route {
+                        styles ["sub"]
+                        label: "The profile asked first; the assistant's window can switch for a conversation";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown ai_profile {
+                      name: "ai_profile";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Ask before changes";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_ask {
+                      name: "ai_ask";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Search the web";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Mister Morph's web search and page reading";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_web {
+                      name: "ai_web";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Read files";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Any file you can read; asks each time";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_files {
+                      name: "ai_files";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Run commands";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "A shell, as you; asks each time";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_bash {
+                      name: "ai_bash";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [PROFILES]: Go fills ai_profiles, a card for each.
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "The models it can use; fallbacks answer when the first fails";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+                  spacing: 10;
+
+                  Box ai_profiles {
+                    orientation: vertical;
+                    spacing: 10;
+                  }
+
+                  Box {
+                    spacing: 8;
+
+                    Button ai_add {
+                      styles ["outlined"]
+                      name: "ai_add";
+                      label: "Add Profile";
+                    }
+
+                    // Where keys go: the keyring, or a file.
+                    Label ai_keys_note {
+                      styles ["sub"]
+                      hexpand: true;
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_ai {
             styles ["section-head", "sticky"]
             spacing: 10;
             valign: start;

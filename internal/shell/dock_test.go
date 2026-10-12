@@ -29,7 +29,7 @@ func TestDock(t *testing.T) {
 		},
 		ActiveToplevel: "0x4",
 	}
-	items := Dock([]string{"firefox", "missing.app", "kitty", "firefox"}, apps, snap)
+	items := Dock([]string{"firefox", "missing.app", "kitty", "firefox"}, apps, snap, nil)
 	var keys []string
 	for _, it := range items {
 		keys = append(keys, it.Key)
@@ -72,6 +72,49 @@ func TestDock(t *testing.T) {
 	}
 }
 
+func TestDockSkipsFcitxWindows(t *testing.T) {
+	apps := NewAppIndex([]*desktop.Entry{
+		{ID: "org.fcitx.Fcitx5", Name: "Fcitx 5", Icon: "fcitx", Command: []string{"fcitx5"}},
+	})
+	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{
+		dockWin("0x1", "fcitx", 0),
+		dockWin("0x2", "fcitx5", 1),
+		dockWin("0x3", "org.fcitx.Fcitx5", 2),
+		dockWin("0x4", "fcitx5-wayland-launcher", 3),
+		dockWin("0x5", "fcitx-rime", 4),
+	}}
+
+	if got := Dock(nil, apps, snap, nil); len(got) != 0 {
+		t.Errorf("Dock() = %+v, want no input-method items", got)
+	}
+}
+
+// A window of the input method's process is left out whatever its class.
+func TestDockSkips(t *testing.T) {
+	telegram := dockWin("0x1", "org.telegram.desktop", 1)
+	popup := dockWin("0x2", "org.telegram.desktop", 0)
+	popup.PID = 42
+	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{telegram, popup}}
+	got := Dock(nil, NewAppIndex(nil), snap, func(t hypr.Toplevel) bool { return t.PID == 42 })
+	if len(got) != 1 || len(got[0].Windows) != 1 || got[0].Windows[0].Address != "0x1" {
+		t.Errorf("Dock() = %+v, want Telegram's own window only", got)
+	}
+}
+
+func TestIsInputMethodProgram(t *testing.T) {
+	for name, want := range map[string]bool{
+		"fcitx":           true,
+		"fcitx5":          true,
+		"fcitx5\n":        true,
+		"fcitx5-config-q": false, // comm keeps 15 characters
+		"telegram-deskto": false,
+	} {
+		if got := IsInputMethodProgram(name); got != want {
+			t.Errorf("IsInputMethodProgram(%q) = %v, want %v", name, got, want)
+		}
+	}
+}
+
 func TestPin(t *testing.T) {
 	p := Pin([]string{"a", "b"}, "c", true)
 	p = Pin(p, "a", false)
@@ -109,9 +152,12 @@ func TestLightApps(t *testing.T) {
 		{ID: "io.github.lyricat.Inua.Clock", Name: "Clock"},
 		{ID: "firefox", Name: "Firefox"},
 	})
-	got := LightApps(apps)
-	if len(got) != 2 || got[0].Name != "Clock" || got[1].Name != "Calculator" {
-		t.Fatalf("LightApps = %v", got)
+	var names []string
+	for _, e := range LightApps(apps) {
+		names = append(names, e.Name)
+	}
+	if got := strings.Join(names, ","); got != "Clock,Calculator,Screenshot,Settings,Launcher" {
+		t.Fatalf("LightApps = %s", got)
 	}
 }
 
@@ -122,11 +168,13 @@ func TestLightAppSections(t *testing.T) {
 		{ID: "io.github.lyricat.Inua.Clock", Name: "Clock"},
 	})
 	got := LightAppSections(apps)
-	if len(got) != 2 || got[0].Title != "EVERYDAY" || len(got[0].Apps) != 2 || got[0].Apps[0].Name != "Clock" ||
-		got[1].Title != "TOOLS" || len(got[1].Apps) != 1 {
+	if len(got) != 3 || got[0].Title != "EVERYDAY" || len(got[0].Apps) != 2 || got[0].Apps[0].Name != "Clock" ||
+		got[1].Title != "TOOLS" || len(got[1].Apps) != 2 || got[1].Apps[0].Name != "Screenshot" ||
+		got[2].Title != "SYSTEM" || len(got[2].Apps) != 2 {
 		t.Fatalf("LightAppSections = %+v", got)
 	}
-	if got := LightAppSections(NewAppIndex(nil)); len(got) != 0 {
+	// The shell's tools are there with no light app installed.
+	if got := LightAppSections(NewAppIndex(nil)); len(got) != 2 || got[0].Title != "TOOLS" || got[1].Title != "SYSTEM" {
 		t.Errorf("none installed: %+v", got)
 	}
 }

@@ -84,3 +84,16 @@ func (c *Client) Dispatch(ctx context.Context, args string) error {
 	}
 	return nil
 }
+
+// LuaDispatch issues a dispatcher expression for Hyprland 0.55+, whose IPC
+// dispatch interface accepts Lua expressions instead of the legacy text form.
+func (c *Client) LuaDispatch(ctx context.Context, expression string) error {
+	out, err := c.Request(ctx, "dispatch "+expression)
+	if err != nil {
+		return err
+	}
+	if reply := strings.TrimSpace(string(out)); reply != "ok" {
+		return fmt.Errorf("lua dispatch %q: %s", expression, reply)
+	}
+	return nil
+}

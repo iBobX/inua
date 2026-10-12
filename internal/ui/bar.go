@@ -25,6 +25,7 @@ type bar struct {
 	wallpaper   *gtk.ApplicationWindow // this monitor's background, if inua draws it
 	dock        *dock                  // this monitor's dock, if shown
 	win         gtk.ApplicationWindow
+	island      gtk.CenterBox
 	workspaces  gtk.Box
 	title       gtk.Label
 	clock       gtk.Label
@@ -113,7 +114,13 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b := &bar{mon: mon, ws: map[int]*gtk.Button{}, fresh: map[int]bool{}}
 	ui := s.load("bar.ui", &b.refs)
 	ui.Get("bar", &b.win)
+	ui.Get("island", &b.island)
 	ui.Get("workspaces", &b.workspaces)
+	overviewClick := gtk.NewGestureClick()
+	overviewClick.SetButton(3)
+	overviewClick.SetPropagationPhase(gtk.PhaseCaptureValue)
+	overviewClick.ConnectPressed(&s.onWorkspaceOverview)
+	b.workspaces.AddController(&overviewClick.EventController)
 	ui.Get("title", &b.title)
 	ui.Get("clock", &b.clock)
 	ui.Get("notes", &b.notes)
@@ -131,6 +138,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("bat_icon", &b.batIcon)
 	ui.Get("bat_label", &b.batLabel)
 	ui.Close()
+	b.setEdgeGap(s.cfg.Style.EdgeGaps)
 	b.status.ConnectClicked(&s.onControlButton)
 	b.notes.ConnectClicked(&s.onNotesButton)
 	b.rec.ConnectClicked(&s.onRecButton)
@@ -181,6 +189,18 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	return b
 }
 
+// setEdgeGap insets the bar from the screen edges by 4 px, or not
+// (style.edge_gaps).
+func (b *bar) setEdgeGap(gaps bool) {
+	margin := int32(0)
+	if gaps {
+		margin = 4
+	}
+	b.island.SetMarginTop(margin)
+	b.island.SetMarginStart(margin)
+	b.island.SetMarginEnd(margin)
+}
+
 func (b *bar) setClock(s *shellUI, now time.Time) {
 	b.clock.SetText(config.Strftime(s.cfg.Bar.Clock, now))
 }
@@ -188,7 +208,9 @@ func (b *bar) setClock(s *shellUI, now time.Time) {
 func (b *bar) setHypr(s *shellUI, snap hypr.Snapshot) {
 	name := b.connector()
 	b.title.SetText(shell.BarTitle(snap, name))
-	b.setWorkspaces(s, shell.BarWorkspaces(snap, name, s.cfg.Bar.Workspaces == "all"))
+	order := s.overview.st
+	order.MRU = s.cfg.Overview.MRU
+	b.setWorkspaces(s, order.BarWorkspaces(snap, name, s.cfg.Bar.Workspaces == "all"))
 }
 
 // setWorkspaces adds and removes workspace buttons in place. Buttons that
@@ -222,6 +244,14 @@ func (b *bar) setWorkspaces(s *shellUI, wss []hypr.Workspace) {
 			added = true
 		} else {
 			b.workspaces.ReorderChildAfter(&btn.Widget, prev)
+		}
+		if s.cfg.Overview.MRU {
+			btn.SetLabel("·")
+			if w.Focused || w.Active {
+				btn.SetLabel("WORKSPACE")
+			}
+		} else {
+			btn.SetLabel(w.Name)
 		}
 		prev = &btn.Widget
 	}

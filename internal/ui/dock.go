@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"maps"
 	"math"
+	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 	"unsafe"
@@ -20,11 +23,12 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
 
-// The app dock, after macOS's: one per monitor along the bottom edge, the
+// The app dock: one per monitor along a configurable screen edge, the
 // pinned apps and then the others with windows. Clicking opens an app or
 // brings it forward (again: its next window); right-clicking offers a new
 // window, pinning and quitting. It lives with its monitor's bar.
@@ -37,18 +41,23 @@ const (
 )
 
 type dock struct {
-	win     gtk.ApplicationWindow
-	reveal  gtk.Revealer
-	items   gtk.Box
-	edge    gtk.Box
-	refs    gtkx.Scope
-	shown   string                 // the apps and icons shown (dockSignature)
-	buttons map[string]*dockButton // by app, borrowed from items
-	size    int
-	hide    bool // autohide
-	hover   bool
-	hideGen uintptr
-	drawer  *gtk.Button // the drawer's button, borrowed from items; nil without one
+	win      gtk.ApplicationWindow
+	root     gtk.Box
+	reveal   gtk.Revealer
+	island   gtk.Box
+	items    gtk.Box
+	edge     gtk.Box
+	refs     gtkx.Scope
+	shown    string                 // the apps and icons shown (dockSignature)
+	buttons  map[string]*dockButton // by app, borrowed from items
+	size     int
+	position string
+	gaps     bool // style.edge_gaps
+	vertical bool // apps stack along a vertical screen edge
+	hide     bool // autohide
+	hover    bool
+	hideGen  uintptr
+	drawer   *gtk.Button // the drawer's button, borrowed from items; nil without one
 
 	// Dragging an app: its button is hidden while it is away, and the
 	// others move aside to leave a gap where it would land (see setGap).
@@ -76,14 +85,15 @@ type dockState struct {
 	menu       *gtk.Popover    // borrowed from its button
 	gapTicking bool            // onDockGapTick is running
 	drawer     *drawerPanel    // the open drawer, nil when closed
+	programs   map[int]string  // /proc/PID/comm of windows' processes, by PID
 }
 
 // syncDock gives a bar's monitor a dock, or takes it away, following
-// dock.enable; a change of size or autohide builds it anew.
+// dock.enable; a change of size, position or autohide builds it anew.
 func (s *shellUI) syncDock(b *bar) {
 	c := s.cfg.Dock
 	want := c.Enable && s.layer
-	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide) {
+	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position || b.dock.gaps != s.cfg.Style.EdgeGaps) {
 		dropDock(b)
 	}
 	if want && b.dock == nil {
@@ -104,13 +114,57 @@ func dropDock(b *bar) {
 }
 
 func (s *shellUI) newDock(b *bar) *dock {
-	d := &dock{size: s.cfg.Dock.Size, hide: s.cfg.Dock.Autohide}
+	position := s.cfg.Dock.Position
+	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide, gaps: s.cfg.Style.EdgeGaps}
 	ui := s.load("dock.ui", &d.refs)
 	ui.Get("dock", &d.win)
+	ui.Get("root", &d.root)
 	ui.Get("reveal", &d.reveal)
+	ui.Get("island", &d.island)
 	ui.Get("items", &d.items)
 	ui.Get("edge", &d.edge)
 	ui.Close()
+	if d.vertical {
+		d.root.SetOrientation(gtk.OrientationHorizontalValue)
+		d.items.SetOrientation(gtk.OrientationVerticalValue)
+		d.island.SetValign(gtk.AlignCenterValue)
+		d.island.SetMarginBottom(0)
+		d.reveal.SetVexpand(true)
+		if position == "left" {
+			if d.gaps {
+				d.island.SetMarginStart(6)
+			}
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
+		} else {
+			if d.gaps {
+				d.island.SetMarginEnd(6)
+			}
+			d.island.AddCssClass("dock-right")
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
+		}
+		d.edge.Widget.SetSizeRequest(3, -1)
+		d.island.AddCssClass("dock-side")
+	} else {
+		d.root.SetOrientation(gtk.OrientationVerticalValue)
+		d.items.SetOrientation(gtk.OrientationHorizontalValue)
+		d.reveal.SetHexpand(true)
+		if position == "top" {
+			d.island.SetMarginBottom(0)
+			if d.gaps {
+				d.island.SetMarginTop(6)
+			}
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
+		} else {
+			if !d.gaps {
+				d.island.SetMarginBottom(0)
+			}
+			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
+		}
+		d.edge.Widget.SetSizeRequest(-1, 3)
+	}
+	if position == "top" || position == "left" {
+		d.root.ReorderChildAfter(&d.edge.Widget, &gtk.Widget{})
+	}
 	drop := gtk.NewDropTarget(types.GType(gobject.TypeStringVal), gdk.ActionMoveValue)
 	drop.ConnectMotion(&s.onDockDropMotion)
 	drop.ConnectLeave(&s.onDockDropLeave)
@@ -122,7 +176,18 @@ func (s *shellUI) newDock(b *bar) *dock {
 	layershell.SetNamespace(w, "inua-dock")
 	layershell.SetLayer(w, layershell.LayerTop)
 	layershell.SetMonitor(w, b.mon.GoPointer())
-	layershell.SetAnchor(w, layershell.EdgeBottom, true)
+	// Only the dock's own edge: the surface is as long as the dock and
+	// centred along that edge, so the screen beside it stays clickable.
+	edge := layershell.EdgeBottom
+	switch position {
+	case "top":
+		edge = layershell.EdgeTop
+	case "left":
+		edge = layershell.EdgeLeft
+	case "right":
+		edge = layershell.EdgeRight
+	}
+	layershell.SetAnchor(w, edge, true)
 	if d.hide {
 		layershell.SetExclusiveZone(w, 0)
 		d.reveal.SetRevealChild(false)
@@ -145,6 +210,7 @@ func (s *shellUI) dockApps(entries []*desktop.Entry) {
 }
 
 func (s *shellUI) renderDocks() {
+	s.forgetPrograms()
 	for _, b := range s.bars {
 		if b.dock != nil {
 			s.renderDock(b)
@@ -163,9 +229,38 @@ func dockSignature(items []shell.DockItem, size int, drawer bool) string {
 	return sb.String()
 }
 
+// inputMethodWindow reports whether a window belongs to the input method
+// (Fcitx's candidate popup, whatever class it gets), by the program that
+// owns it. Names are read from /proc/PID/comm once per PID and forgotten
+// when the PID has no window left.
+func (s *shellUI) inputMethodWindow(t hypr.Toplevel) bool {
+	if t.PID <= 0 { // unknown, as for some XWayland windows
+		return false
+	}
+	if s.dockState.programs == nil {
+		s.dockState.programs = map[int]string{}
+	}
+	name, ok := s.dockState.programs[t.PID]
+	if !ok {
+		b, _ := os.ReadFile("/proc/" + strconv.Itoa(t.PID) + "/comm")
+		name = strings.TrimSpace(string(b))
+		s.dockState.programs[t.PID] = name
+	}
+	return shell.IsInputMethodProgram(name)
+}
+
+// forgetPrograms drops the names of processes without windows.
+func (s *shellUI) forgetPrograms() {
+	live := map[int]bool{}
+	for _, t := range s.snap.Toplevels {
+		live[t.PID] = true
+	}
+	maps.DeleteFunc(s.dockState.programs, func(pid int, _ string) bool { return !live[pid] })
+}
+
 func (s *shellUI) renderDock(b *bar) {
 	d := b.dock
-	items := shell.Dock(s.cfg.Dock.Pinned, s.dockState.apps, s.snap)
+	items := shell.Dock(s.cfg.Dock.Pinned, s.dockState.apps, s.snap, s.inputMethodWindow)
 	s.dockState.items = items
 	for _, it := range items {
 		if len(it.Windows) > 0 {
@@ -184,7 +279,11 @@ func (s *shellUI) renderDock(b *bar) {
 		for i, it := range items {
 			if !it.Pinned && !sepDone && i > 0 { // between the pinned and the rest
 				sepDone = true
-				sep := gtk.NewSeparator(gtk.OrientationVerticalValue)
+				orientation := gtk.OrientationVerticalValue
+				if d.vertical {
+					orientation = gtk.OrientationHorizontalValue
+				}
+				sep := gtk.NewSeparator(orientation)
 				sep.AddCssClass("dock-sep")
 				gtkx.Append(&d.items, &sep.Widget)
 			}
@@ -195,7 +294,11 @@ func (s *shellUI) renderDock(b *bar) {
 		}
 		d.drawer = nil
 		if drawer {
-			sep := gtk.NewSeparator(gtk.OrientationVerticalValue)
+			orientation := gtk.OrientationVerticalValue
+			if d.vertical {
+				orientation = gtk.OrientationHorizontalValue
+			}
+			sep := gtk.NewSeparator(orientation)
 			sep.AddCssClass("dock-sep")
 			gtkx.Append(&d.items, &sep.Widget)
 			d.drawer = s.drawerButton(d.size)
@@ -425,12 +528,13 @@ func (s *shellUI) bindDockHandlers() {
 		}
 		return false
 	}
-	s.onDockDropMotion = func(dt gtk.DropTarget, x, _ float64) gdk.DragAction {
+	s.onDockDropMotion = func(dt gtk.DropTarget, x, y float64) gdk.DragAction {
 		if d := s.dockOfItems(dt.GetWidget()); d != nil {
-			if s.unpinZone(d, x) {
+			axis := dockAxis(d, x, y)
+			if s.unpinZone(d, axis) {
 				s.setGap(d, "-", false)
 			} else {
-				s.setGap(d, s.dropBefore(d, x), false)
+				s.setGap(d, s.dropBefore(d, axis), false)
 			}
 		}
 		return gdk.ActionMoveValue
@@ -450,7 +554,7 @@ func (s *shellUI) bindDockHandlers() {
 		s.dockState.gapTicking = moving
 		return moving
 	}
-	s.onDockDrop = func(dt gtk.DropTarget, _ uintptr, x, _ float64) bool {
+	s.onDockDrop = func(dt gtk.DropTarget, _ uintptr, x, y float64) bool {
 		d := s.dockOfItems(dt.GetWidget())
 		v := dt.GetValue()
 		if d == nil || v == nil {
@@ -460,11 +564,12 @@ func (s *shellUI) bindDockHandlers() {
 		if _, ok := s.dockItem(key); !ok {
 			return false
 		}
-		if s.unpinZone(d, x) {
+		axis := dockAxis(d, x, y)
+		if s.unpinZone(d, axis) {
 			s.unpin(key)
 			return true
 		}
-		before := s.dropBefore(d, x)
+		before := s.dropBefore(d, axis)
 		c := s.cfg
 		c.Dock.Pinned = shell.MovePinned(c.Dock.Pinned, key, before)
 		s.changeSettings(c)
@@ -543,22 +648,36 @@ func (s *shellUI) markLaunching(key string) {
 }
 
 // focusWindowHere focuses a window without moving the pointer to it, as
-// focuswindow does unless cursor:no_warps is set: the pointer stays on the
-// dock, where the user clicked.
+// focusing does unless cursor:no_warps is set: the pointer stays on the
+// dock, where the user clicked. The setting is turned on for the focus
+// only, and back as it was: in one Lua script where Hyprland runs Lua
+// (0.55 and later), else in one batch of classic commands.
 func (s *shellUI) focusWindowHere(addr string) {
 	if s.client == nil {
 		return
 	}
+	lua := s.hyprLua
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		focus := "focuswindow address:" + addr
-		reply, err := s.client.Request(ctx, "j/getoption cursor:no_warps")
-		if err == nil && strings.Contains(string(reply), `"int": 0`) {
-			// One batch, so the setting is back before anything else runs.
-			_, err = s.client.Request(ctx, "[[BATCH]]keyword cursor:no_warps 1;dispatch "+focus+";keyword cursor:no_warps 0")
+		var err error
+		if lua {
+			script := fmt.Sprintf(`local noWarps = hl.get_config("cursor.no_warps"); hl.config({cursor={no_warps=true}}); local ok, err = pcall(function() hl.dispatch(hl.dsp.focus({window=%q})) end); hl.config({cursor={no_warps=noWarps}}); if not ok then error(err) end`, "address:"+addr)
+			var reply []byte
+			reply, err = s.client.Request(ctx, "eval "+script)
+			if err == nil && strings.TrimSpace(string(reply)) != "ok" {
+				err = fmt.Errorf("eval: %s", strings.TrimSpace(string(reply)))
+			}
 		} else {
-			err = s.client.Dispatch(ctx, focus)
+			focus := "focuswindow address:" + addr
+			var reply []byte
+			reply, err = s.client.Request(ctx, "j/getoption cursor:no_warps")
+			if err == nil && strings.Contains(string(reply), `"int": 0`) {
+				// One batch, so the setting is back before anything else runs.
+				_, err = s.client.Request(ctx, "[[BATCH]]keyword cursor:no_warps 1;dispatch "+focus+";keyword cursor:no_warps 0")
+			} else {
+				err = s.client.Dispatch(ctx, focus)
+			}
 		}
 		if err != nil {
 			log.Printf("dock: focus %s: %v", addr, err)
@@ -576,9 +695,17 @@ func (s *shellUI) dockOfItems(w *gtk.Widget) *dock {
 	return nil
 }
 
-// dropBefore is the pinned app a drop at x in the item box goes before, ""
+// dockAxis picks the along-the-dock coordinate for drag operations.
+func dockAxis(d *dock, x, y float64) float64 {
+	if d.vertical {
+		return y
+	}
+	return x
+}
+
+// dropBefore chooses the pinned app a drop along the dock goes before, ""
 // for the end of the pinned apps.
-func (s *shellUI) dropBefore(d *dock, x float64) string {
+func (s *shellUI) dropBefore(d *dock, axis float64) string {
 	for _, it := range s.dockState.items {
 		db := d.buttons[it.Key]
 		if !it.Pinned || db == nil {
@@ -589,21 +716,24 @@ func (s *shellUI) dropBefore(d *dock, x float64) string {
 			continue
 		}
 		f := *(*[4]float32)(unsafe.Pointer(&r)) // x, y, width, height
-		if float32(x) < f[0]+f[2]/2 {
+		start, extent := f[0], f[2]
+		if d.vertical {
+			start, extent = f[1], f[3]
+		}
+		if float32(axis) < start+extent/2 {
 			return it.Key
 		}
 	}
 	return ""
 }
 
-// unpinZone reports whether a drop at x takes the dragged app off the
-// pinned ones: it is pinned, and x is past them (over the separator, the
-// apps with windows or the drawer's button).
-func (s *shellUI) unpinZone(d *dock, x float64) bool {
+// unpinZone reports whether a drop past the pinned apps takes the dragged app off
+// its pinned apps.
+func (s *shellUI) unpinZone(d *dock, axis float64) bool {
 	if d.dragKey == "" || !s.pinned(d.dragKey) {
 		return false
 	}
-	right := 0.0
+	end := 0.0
 	for _, it := range s.dockState.items {
 		db := d.buttons[it.Key]
 		if !it.Pinned || it.Key == d.dragKey || db == nil {
@@ -612,13 +742,17 @@ func (s *shellUI) unpinZone(d *dock, x float64) bool {
 		var r graphene.Rect
 		if db.btn.ComputeBounds(&d.items.Widget, &r) {
 			f := *(*[4]float32)(unsafe.Pointer(&r))
-			right = float64(f[0]+f[2]) + db.end // and the gap after it
+			if d.vertical {
+				end = float64(f[1]+f[3]) + db.end
+			} else {
+				end = float64(f[0]+f[2]) + db.end
+			}
 		}
 	}
-	if right == 0 { // the only pinned app: its own place
-		right = float64(d.size) + 12
+	if end == 0 {
+		end = float64(d.size) + 12
 	}
-	return x > right+4
+	return axis > end+4
 }
 
 func (s *shellUI) pinned(key string) bool { return slices.Contains(s.cfg.Dock.Pinned, key) }
@@ -640,11 +774,16 @@ func (s *shellUI) setGap(d *dock, before string, now bool) {
 			last = it.Key
 		}
 	}
-	slot := 0.0 // an app's width with its padding, and the item box's spacing
+	slot := 0.0 // an app's extent with its padding, and the item box's spacing
 	for key, db := range d.buttons {
 		var r graphene.Rect
 		if key != d.dragKey && db.btn.ComputeBounds(&d.items.Widget, &r) {
-			slot = float64((*(*[4]float32)(unsafe.Pointer(&r)))[2]) + 4
+			f := *(*[4]float32)(unsafe.Pointer(&r))
+			if d.vertical {
+				slot = float64(f[3]) + 4
+			} else {
+				slot = float64(f[2]) + 4
+			}
 			break
 		}
 	}
@@ -658,13 +797,22 @@ func (s *shellUI) setGap(d *dock, before string, now bool) {
 		}
 		if now {
 			db.start, db.end = db.toStart, db.toEnd
-			db.btn.SetMarginStart(int32(db.start))
-			db.btn.SetMarginEnd(int32(db.end))
+			setDockGap(d, db, db.start, db.end)
 		}
 	}
 	if !s.dockState.gapTicking {
 		s.dockState.gapTicking = true
 		glib.TimeoutAdd(16, &s.onDockGapTick, 0)
+	}
+}
+
+func setDockGap(d *dock, db *dockButton, start, end float64) {
+	if d.vertical {
+		db.btn.SetMarginTop(int32(math.Round(start)))
+		db.btn.SetMarginBottom(int32(math.Round(end)))
+	} else {
+		db.btn.SetMarginStart(int32(math.Round(start)))
+		db.btn.SetMarginEnd(int32(math.Round(end)))
 	}
 }
 
@@ -683,8 +831,7 @@ func stepGap(d *dock) bool {
 		start, end := step(db.start, db.toStart), step(db.end, db.toEnd)
 		if start != db.start || end != db.end {
 			db.start, db.end = start, end
-			db.btn.SetMarginStart(int32(math.Round(start)))
-			db.btn.SetMarginEnd(int32(math.Round(end)))
+			setDockGap(d, db, start, end)
 		}
 	}
 	return moving

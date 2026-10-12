@@ -1,0 +1,106 @@
+// The assistant (cmd/inua-assistant): who answers (a profile to switch
+// to, when there are several), the conversation (your
+// questions, a line for each thing it does, a card when it asks first, its
+// answers as they arrive) and the question field. Go fills the
+// conversation (internal/assistantui).
+using Gtk 4.0;
+
+ApplicationWindow assistant {
+  default-width: 480;
+  default-height: 700;
+
+  Box {
+    styles ["assistantapp"]
+    orientation: vertical;
+
+    Box {
+      styles ["as-head"]
+      spacing: 12;
+
+      Box {
+        orientation: vertical;
+        hexpand: true;
+        valign: center;
+        spacing: 2;
+
+        Label {
+          styles ["as-title"]
+          label: "Assistant";
+          xalign: 0;
+        }
+
+        Label model {
+          styles ["sub"]
+          xalign: 0;
+          ellipsize: end;
+        }
+      }
+
+      // The profiles, when there are several: who answers this conversation.
+      DropDown profile {
+        valign: center;
+        visible: false;
+        tooltip-text: "Who answers";
+      }
+
+      Button settings {
+        styles ["plain"]
+        icon-name: "emblem-system-symbolic";
+        tooltip-text: "AI settings";
+        valign: center;
+      }
+
+      Button reset {
+        styles ["plain"]
+        icon-name: "list-add-symbolic";
+        tooltip-text: "New conversation";
+        valign: center;
+      }
+    }
+
+    // Why it cannot answer: turned off, or no API key.
+    Box notice_box {
+      styles ["as-notice"]
+      orientation: vertical;
+      spacing: 10;
+      visible: false;
+
+      Label notice {
+        xalign: 0;
+        wrap: true;
+      }
+
+      Button open_settings {
+        styles ["outlined"]
+        label: "Open AI Settings";
+        halign: start;
+      }
+    }
+
+    ScrolledWindow scroll {
+      vexpand: true;
+      hscrollbar-policy: never;
+
+      Box talk {
+        styles ["as-talk"]
+        orientation: vertical;
+        spacing: 14;
+      }
+    }
+
+    Box {
+      styles ["as-composer"]
+      spacing: 8;
+
+      Entry question {
+        hexpand: true;
+        placeholder-text: "Ask, or tell me what to do";
+      }
+
+      Button send {
+        styles ["suggested-action"]
+        label: "Ask";
+      }
+    }
+  }
+}

@@ -115,8 +115,8 @@ func (a AppIndex) ForClass(class string) *desktop.Entry {
 
 // Dock lists the dock's apps: the pinned ones in order (those not
 // installed are skipped), then the others with windows, in the order their
-// first window appeared.
-func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
+// first window appeared. Windows skip reports are left out (nil: none).
+func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Toplevel) bool) []DockItem {
 	var items []DockItem
 	at := map[string]int{}
 	add := func(it DockItem) {
@@ -137,9 +137,13 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		if t.Class == "" {
 			continue
 		}
+		entry := apps.ForClass(t.Class)
+		if isFcitxWindow(t.Class, entry) || (skip != nil && skip(t)) {
+			continue
+		}
 		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
-		if e := apps.ForClass(t.Class); e != nil {
-			key, item = e.ID, DockItem{Key: e.ID, Name: e.Name, Icon: e.Icon, Entry: e}
+		if entry != nil {
+			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
 		}
 		j, ok := at[key]
 		if !ok {
@@ -159,6 +163,29 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		})
 	}
 	return items
+}
+
+// isFcitxWindow tells the input method's candidate popup by its class:
+// Hyprland lists it as a window while composing, but it is not an app to
+// launch or switch to.
+func isFcitxWindow(class string, entry *desktop.Entry) bool {
+	if entry != nil && strings.EqualFold(entry.ID, "org.fcitx.Fcitx5") {
+		return true
+	}
+	class = strings.ToLower(strings.TrimSpace(class))
+	return class == "fcitx" || class == "fcitx5" || class == "fcitx5-wayland-launcher" ||
+		strings.HasPrefix(class, "fcitx-") || strings.HasPrefix(class, "org.fcitx.")
+}
+
+// IsInputMethodProgram reports whether a program, by its name in
+// /proc/PID/comm (at most 15 characters), is the input method, whose
+// windows the dock leaves out whatever their class.
+func IsInputMethodProgram(name string) bool {
+	switch strings.TrimSpace(name) {
+	case "fcitx", "fcitx5":
+		return true
+	}
+	return false
 }
 
 // DockTarget is what clicking an app does: launch it when it has no
@@ -205,7 +232,8 @@ func MovePinned(pinned []string, key, before string) []string {
 }
 
 // LightAppGroups are inua's light apps' desktop IDs, in the drawer's
-// groups and order: everyday apps, tools, network and games.
+// groups and order: everyday apps, tools, network, games, then the
+// shell's own. An "inua:" ID is one of ShellApps.
 var LightAppGroups = []struct {
 	Title string
 	IDs   []string
@@ -215,10 +243,12 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Calendar",
 		"io.github.lyricat.Inua.Weather",
 		"io.github.lyricat.Inua.Stocks",
+		"io.github.lyricat.Inua.Assistant",
 	}},
 	{"TOOLS", []string{
 		"io.github.lyricat.Inua.Calculator",
 		"io.github.lyricat.Inua.ColorPicker",
+		"inua:screenshot",
 		"io.github.lyricat.Inua.Viewer",
 		"io.github.lyricat.Inua.SystemMonitor",
 	}},
@@ -236,6 +266,18 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Harbor",
 		"io.github.lyricat.Inua.DiceShop",
 	}},
+	{"SYSTEM", []string{
+		"inua:settings",
+		"inua:launcher",
+	}},
+}
+
+// ShellApps are the shell's own tools in the drawer. They are not desktop
+// entries: the shell opens them itself, by their "inua:" IDs.
+var ShellApps = []*desktop.Entry{
+	{ID: "inua:settings", Name: "Settings", Comment: "inua's settings", Icon: "io.github.lyricat.Inua.Settings"},
+	{ID: "inua:launcher", Name: "Launcher", Comment: "Find apps, windows and answers", Icon: "io.github.lyricat.Inua.Launcher"},
+	{ID: "inua:screenshot", Name: "Screenshot", Comment: "Capture an area, a window or a screen", Icon: "io.github.lyricat.Inua.Screenshot"},
 }
 
 // AppGroup is a titled group of installed apps.
@@ -244,14 +286,19 @@ type AppGroup struct {
 	Apps  []*desktop.Entry
 }
 
-// LightAppSections are the drawer's groups of the light apps that are
-// installed; a group with none of them is left out.
+// LightAppSections are the drawer's groups of the shell's tools and the
+// light apps that are installed; a group with none of them is left out.
 func LightAppSections(apps AppIndex) []AppGroup {
 	var out []AppGroup
 	for _, g := range LightAppGroups {
 		var es []*desktop.Entry
 		for _, id := range g.IDs {
-			if e := apps.ByID(strings.ToLower(id)); e != nil {
+			e := apps.ByID(strings.ToLower(id))
+			if strings.HasPrefix(id, "inua:") {
+				i := slices.IndexFunc(ShellApps, func(e *desktop.Entry) bool { return e.ID == id })
+				e = ShellApps[i]
+			}
+			if e != nil {
 				es = append(es, e)
 			}
 		}

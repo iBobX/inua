@@ -23,12 +23,15 @@ import (
 type Config struct {
 	Bar        Bar        `toml:"bar"`
 	Launcher   Launcher   `toml:"launcher"`
+	Overview   Overview   `toml:"overview"`
 	Control    Control    `toml:"control"`
 	Style      Style      `toml:"style"`
 	Background Background `toml:"background"`
 	Input      Input      `toml:"input"`
 	Notify     Notify     `toml:"notifications"`
 	Dock       Dock       `toml:"dock"`
+	Assistant  Assistant  `toml:"assistant"`
+	Keyring    Keyring    `toml:"keyring"`
 	Screenshot Screenshot `toml:"screenshot"`
 	Shortcuts  []Shortcut `toml:"shortcuts"`
 
@@ -62,6 +65,11 @@ type Launcher struct {
 	// Quicklinks search a site when the query starts with their keyword
 	// ("gh inua").
 	Quicklinks []Quicklink `toml:"quicklinks"`
+}
+
+type Overview struct {
+	MRU        bool `toml:"mru"`
+	PerMonitor bool `toml:"per_monitor"`
 }
 
 // Quicklink is a site the launcher searches by keyword.
@@ -112,6 +120,9 @@ type Style struct {
 	CSS string `toml:"css"`
 	// Icons is the icon set of the shell's own icons, one of IconSets.
 	Icons string `toml:"icons"`
+	// EdgeGaps leaves a small gap between the screen edges and the bar and
+	// dock; off puts them flush against the edges.
+	EdgeGaps bool `toml:"edge_gaps"`
 }
 
 type Background struct {
@@ -145,7 +156,7 @@ type Shortcut struct {
 // ShortcutActions are the actions a shortcut can run besides "exec"; the
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
-	"launcher", "windows", "control", "notifications", "focus", "settings", "restart", "lock",
+	"launcher", "windows", "overview", "control", "notifications", "focus", "settings", "restart", "lock",
 	"shot-area", "shot-screen", "shot-window", "shot-record", "color",
 }
 
@@ -169,11 +180,156 @@ var keysRe = regexp.MustCompile(`^((SUPER|CTRL|ALT|SHIFT)\+)*[A-Za-z0-9_]+$`)
 // empty (off).
 func ValidKeys(s string) bool { return s == "" || keysRe.MatchString(s) }
 
-// Dock is the app dock along the bottom of each monitor.
+// Assistant is the agent in inua-assistant (docs/feat/assistant.md).
+type Assistant struct {
+	Enable bool `toml:"enable"`
+	// Profile names the profile that answers; the window can switch to
+	// another for a conversation.
+	Profile string `toml:"profile"`
+	// Fallback are profiles tried in turn when the one answering fails
+	// (an outage, a rate limit): Mister Morph's main_loop route.
+	Fallback []string `toml:"fallback"`
+	// Tools are Mister Morph's built-in tools to add to inua's.
+	Tools []string `toml:"tools"`
+	// AskBeforeChanges makes the assistant ask before changing anything;
+	// power, ending processes and closing windows always ask.
+	AskBeforeChanges bool `toml:"ask_before_changes"`
+	// Profiles are the models it can use, as Mister Morph's llm.profiles.
+	Profiles []AIProfile `toml:"profiles"`
+}
+
+// AIProfile is one model the assistant can use.
+type AIProfile struct {
+	Name string `toml:"name"`
+	// Provider is Mister Morph's inference provider (AIProviders).
+	Provider string `toml:"provider"`
+	Model    string `toml:"model"`
+	// Endpoint is the API's address, for a compatible server or a proxy;
+	// "" for the provider's own.
+	Endpoint string `toml:"endpoint"`
+	// APIKeyEnv names the environment variable holding the API key. A key
+	// typed in the settings window is kept outside this file instead
+	// (internal/assistant/keys).
+	APIKeyEnv string `toml:"api_key_env"`
+	// Reasoning is the reasoning effort (ReasoningEfforts); "" for the
+	// model's default.
+	Reasoning string `toml:"reasoning"`
+}
+
+// ProfileNamed returns the profile named, or false.
+func (a Assistant) ProfileNamed(name string) (AIProfile, bool) {
+	for _, p := range a.Profiles {
+		if p.Name == name {
+			return p, true
+		}
+	}
+	return AIProfile{}, false
+}
+
+// AIProviders are the inference providers Mister Morph knows, as the
+// settings window offers them, with the variable their key is usually in.
+var AIProviders = []struct{ ID, Name, KeyEnv string }{
+	{"openai", "OpenAI", "OPENAI_API_KEY"},
+	{"anthropic", "Anthropic", "ANTHROPIC_API_KEY"},
+	{"gemini", "Google Gemini", "GEMINI_API_KEY"},
+	{"xai", "xAI", "XAI_API_KEY"},
+	{"deepseek", "DeepSeek", "DEEPSEEK_API_KEY"},
+	{"kimi", "Kimi (Moonshot)", "MOONSHOT_API_KEY"},
+	{"openrouter", "OpenRouter", "OPENROUTER_API_KEY"},
+	{"groq", "Groq", "GROQ_API_KEY"},
+	{"mistermorph_pro", "Mister Morph Pro", "MISTER_MORPH_LLM_API_KEY"},
+	{"openai_chat_compatible", "OpenAI-compatible (Chat Completions)", ""},
+	{"openai_response_compatible", "OpenAI-compatible (Responses)", ""},
+	{"anthropic_compatible", "Anthropic-compatible", ""},
+}
+
+// AIProviderIDs lists AIProviders' IDs.
+func AIProviderIDs() []string {
+	ids := make([]string, len(AIProviders))
+	for i, p := range AIProviders {
+		ids[i] = p.ID
+	}
+	return ids
+}
+
+// ReasoningEfforts are the reasoning efforts a profile may ask for.
+var ReasoningEfforts = []string{"", "minimal", "low", "medium", "high"}
+
+// profileNameRe is a profile's name: Mister Morph's route keys.
+var profileNameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
+
+// ValidProfileName reports whether a profile may be named so: lowercase
+// letters, digits, "-" and "_", and not Mister Morph's "default".
+func ValidProfileName(name string) bool { return profileNameRe.MatchString(name) && name != "default" }
+
+// validate drops profiles without a usable name, provider or model, and
+// points Profile and Fallback at profiles that exist.
+func (a *Assistant) validate(d Assistant) []string {
+	var w []string
+	seen := map[string]bool{}
+	a.Profiles = slices.DeleteFunc(a.Profiles, func(p AIProfile) bool {
+		var why string
+		switch {
+		case !ValidProfileName(p.Name):
+			why = `want a name of lowercase letters, digits, "-" and "_", not "default"`
+		case seen[p.Name]:
+			why = "named twice"
+		case !slices.Contains(AIProviderIDs(), p.Provider):
+			why = "want a provider of " + strings.Join(AIProviderIDs(), ", ")
+		case strings.TrimSpace(p.Model) == "":
+			why = "want a model"
+		case !slices.Contains(ReasoningEfforts, p.Reasoning):
+			why = "want reasoning of " + strings.Join(ReasoningEfforts[1:], ", ") + ` or ""`
+		}
+		if why != "" {
+			w = append(w, fmt.Sprintf("assistant.profiles %q: %s; leaving it out", p.Name, why))
+			return true
+		}
+		seen[p.Name] = true
+		return false
+	})
+	if len(a.Profiles) == 0 {
+		a.Profiles = slices.Clone(d.Profiles)
+	}
+	if _, ok := a.ProfileNamed(a.Profile); !ok {
+		if a.Profile != "" {
+			w = append(w, fmt.Sprintf("assistant.profile %q: no such profile; using %q", a.Profile, a.Profiles[0].Name))
+		}
+		a.Profile = a.Profiles[0].Name
+	}
+	used := map[string]bool{a.Profile: true}
+	a.Fallback = slices.DeleteFunc(a.Fallback, func(name string) bool {
+		if _, ok := a.ProfileNamed(name); ok && !used[name] {
+			used[name] = true
+			return false
+		}
+		w = append(w, fmt.Sprintf("assistant.fallback %q: not another profile; leaving it out", name))
+		return true
+	})
+	if len(a.Fallback) == 0 {
+		a.Fallback = nil // as a file with "fallback = []" reads
+	}
+	return w
+}
+
+// AssistantTools are the built-in tools the assistant may add, the first
+// two by default; the rest read files or run commands, and ask each time.
+var AssistantTools = []string{"web_search", "url_fetch", "read_file", "bash"}
+
+// Keyring is inua-keyring, the Secret Service kept in pass
+// (docs/feat/keyring.md).
+type Keyring struct {
+	// Folder is the password store's folder for its items.
+	Folder string `toml:"folder"`
+}
+
+// Dock is the app dock along a screen edge of each monitor.
 type Dock struct {
 	Enable bool `toml:"enable"`
+	// Position is the screen edge the dock occupies.
+	Position string `toml:"position"`
 	// Autohide keeps the dock out of sight until the pointer reaches the
-	// bottom edge; otherwise windows make room for it.
+	// selected edge; otherwise windows make room for it.
 	Autohide bool `toml:"autohide"`
 	// Size is the icons' size in pixels, one of DockSizes.
 	Size int `toml:"size"`
@@ -187,6 +343,9 @@ type Dock struct {
 // DockSizes are the icon sizes the settings window offers.
 var DockSizes = []int{28, 36, 44, 56}
 
+// DockPositions are the edges offered in the dock settings.
+var DockPositions = []string{"bottom", "top", "left", "right"}
+
 // Notify is the notification center (internal/notify).
 type Notify struct {
 	// Enable makes the shell the notification server. Off leaves
@@ -197,6 +356,9 @@ type Notify struct {
 	Banner int `toml:"banner_seconds"`
 	// CriticalInFocus lets critical notifications show banners in Focus.
 	CriticalInFocus bool `toml:"critical_in_focus"`
+	// Updates checks once a day for a new inua release and says so in a
+	// notification (internal/upgrade).
+	Updates bool `toml:"updates"`
 }
 
 // BannerChoices are the banner durations the settings window offers.
@@ -240,15 +402,19 @@ func Default() Config {
 			Tray:       true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
+		Overview: Overview{MRU: false, PerMonitor: true},
 		Control: Control{
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor"},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true},
 		Background: Background{Enable: true, Fit: "cover"},
-		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true},
+		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
-		Dock:       Dock{Enable: true, Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
+		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
+		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true,
+			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2", APIKeyEnv: "OPENAI_API_KEY"}}},
+		Keyring: Keyring{Folder: "inua-keyring"},
 	}
 }
 
@@ -306,6 +472,18 @@ func (c *Config) validate() []string {
 		w = append(w, fmt.Sprintf("launcher.search = %q: want a web address with %%s for the words; using %q", c.Launcher.Search, d.Launcher.Search))
 		c.Launcher.Search = d.Launcher.Search
 	}
+	w = append(w, c.Assistant.validate(d.Assistant)...)
+	if f := c.Keyring.Folder; f == "" || filepath.IsAbs(f) || slices.Contains(strings.Split(filepath.ToSlash(f), "/"), "..") {
+		w = append(w, fmt.Sprintf("keyring.folder = %q: want a folder inside the password store; using %q", f, d.Keyring.Folder))
+		c.Keyring.Folder = d.Keyring.Folder
+	}
+	c.Assistant.Tools = slices.DeleteFunc(c.Assistant.Tools, func(t string) bool {
+		if slices.Contains(AssistantTools, t) {
+			return false
+		}
+		w = append(w, fmt.Sprintf("assistant.tools %q: want one of %s; leaving it out", t, strings.Join(AssistantTools, ", ")))
+		return true
+	})
 	keywords := map[string]bool{}
 	c.Launcher.Quicklinks = slices.DeleteFunc(c.Launcher.Quicklinks, func(l Quicklink) bool {
 		var why string
@@ -385,6 +563,10 @@ func (c *Config) validate() []string {
 		}
 		return bad != ""
 	})
+	if !slices.Contains(DockPositions, c.Dock.Position) {
+		w = append(w, fmt.Sprintf("dock.position = %q: want bottom, top, left or right; using %q", c.Dock.Position, d.Dock.Position))
+		c.Dock.Position = d.Dock.Position
+	}
 	if c.Dock.Size < 24 || c.Dock.Size > 96 {
 		w = append(w, fmt.Sprintf("dock.size = %d: want 24 to 96; using %d", c.Dock.Size, d.Dock.Size))
 		c.Dock.Size = d.Dock.Size
