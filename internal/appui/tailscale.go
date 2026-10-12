@@ -69,7 +69,8 @@ type tailscaleApp struct {
 	c                      *Ctx
 	client                 *tailscale.Client
 	user                   string
-	pages, devPages        gtk.Stack
+	pages                  gtk.Stack
+	detailReveal           gtk.Revealer
 	stateTitle, stateSub   gtk.Label
 	connect                gtk.Switch
 	notice                 gtk.Box
@@ -94,13 +95,12 @@ type tailscaleApp struct {
 	onTick                 glib.SourceFunc
 	onConnect, onSwitch    func(gtk.Switch, bool) bool
 	onButton               func(gtk.Button)
-	onCopy                 func(gio.SimpleAction, uintptr) // ts.copy, "ip:ID" or "name:ID"
-	devicesShown           string                          // what the list shows, to rebuild it only on a change
-	mores                  []*gtk.MenuButton               // the rows' menus, owned by the list
+	devicesShown           string // what the list shows, to rebuild it only on a change
 	onFilter, onStopFilter func(gtk.SearchEntry)
 	onPage                 func(uintptr, uintptr, uintptr)
 	onDrop                 func(gtk.DropTarget, uintptr, float64, float64) bool
 	onKey                  func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	panel                  sidePanel
 }
 
 func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
@@ -116,7 +116,7 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui := c.Load("tailscale.ui")
 	ui.Get("tailscale", win)
 	ui.Get("pages", &a.pages)
-	ui.Get("dev_pages", &a.devPages)
+	ui.Get("detail_reveal", &a.detailReveal)
 	ui.Get("state_title", &a.stateTitle)
 	ui.Get("state_sub", &a.stateSub)
 	ui.Get("connect", &a.connect)
@@ -134,19 +134,6 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui.Get("this_device", &a.thisDevice)
 	ui.Get("back", &back)
 	ui.Close()
-
-	a.onCopy = func(_ gio.SimpleAction, param uintptr) {
-		v := (*glib.Variant)(unsafe.Add(unsafe.Pointer(nil), param))
-		kind, id, _ := strings.Cut(v.GetString(nil), ":")
-		a.copyPeer(a.st.PeerByID(id), kind == "name")
-	}
-	actions := gio.NewSimpleActionGroup()
-	copyAct := gio.NewSimpleAction("copy", glib.NewVariantType("s"))
-	copyAct.ConnectActivate(&a.onCopy)
-	actions.AddAction(copyAct)
-	copyAct.Unref()
-	win.InsertActionGroup("ts", actions)
-	actions.Unref()
 
 	a.onTick = func(uintptr) bool {
 		a.fetch()
@@ -210,6 +197,7 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	drop.ConnectDrop(&a.onDrop)
 	detailPage.AddController(&drop.EventController)
+	a.panel.init(win, &a.detailReveal)
 
 	keys := gtk.NewEventControllerKey()
 	keys.SetPropagationPhase(gtk.PhaseCaptureValue)
@@ -219,7 +207,6 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 			a.closeDevice()
 		case state&gdk.ControlMaskValue != 0 && (keyval == 'f' || keyval == 'F'):
 			a.pages.SetVisibleChildName("devices")
-			a.closeDevice()
 			a.filter.GrabFocus()
 		default:
 			return false
@@ -420,13 +407,7 @@ func (a *tailscaleApp) showDevices() {
 	if key.String() == a.devicesShown {
 		return
 	}
-	for _, m := range a.mores {
-		if m.GetActive() {
-			return // after the menu closes, the next status redraws it
-		}
-	}
 	a.devicesShown = key.String()
-	a.mores = a.mores[:0]
 	gtkx.Clear(&a.devices)
 	if len(peers) == 0 {
 		msg := "No device matches."
@@ -462,23 +443,12 @@ func (a *tailscaleApp) showDevices() {
 		b := rowButton("open:"+p.ID, &inner.Widget, &a.onButton)
 		b.SetTooltipText("Details, ping, exit node and sending files")
 		b.SetHexpand(true)
-		// Beside the row (a button holds no buttons): a menu to copy its
-		// address or MagicDNS name.
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 2)
 		row.AddCssClass("ts-row")
+		if a.open != nil && a.open.id == p.ID {
+			row.AddCssClass("open") // its panel is showing
+		}
 		gtkx.Append(row, &b.Widget)
-		menu := gio.NewMenu()
-		menu.Append("Copy IP: "+p.IPv4(), "ts.copy::ip:"+p.ID)
-		menu.Append("Copy DNS: "+cmpOr(p.MagicDNS(), p.Name()), "ts.copy::name:"+p.ID)
-		more := gtk.NewMenuButton()
-		more.SetIconName("view-more-symbolic")
-		more.SetMenuModel(&menu.MenuModel)
-		menu.Unref()
-		more.AddCssClass("ts-more")
-		more.SetTooltipText("Copy its address")
-		more.SetValign(gtk.AlignCenterValue)
-		a.mores = append(a.mores, more)
-		gtkx.Append(row, &more.Widget)
 		gtkx.Append(&a.devices, &row.Widget)
 	}
 }
@@ -503,10 +473,15 @@ func (a *tailscaleApp) openDevice(id string) {
 	if a.st.PeerByID(id) == nil {
 		return
 	}
+	if a.open != nil && a.open.id == id { // its row again: the panel goes
+		a.closeDevice()
+		return
+	}
 	a.open = &tsDetail{id: id, facts: map[string]*gtk.Label{}}
 	a.buildDevice()
 	a.showDevice()
-	a.devPages.SetVisibleChildName("detail")
+	a.panel.open()
+	a.showDevices() // marks its row
 }
 
 func (a *tailscaleApp) closeDevice() {
@@ -514,7 +489,7 @@ func (a *tailscaleApp) closeDevice() {
 		return
 	}
 	a.open = nil
-	a.devPages.SetVisibleChildName("list")
+	a.panel.close()
 	a.showDevices()
 }
 
@@ -522,18 +497,22 @@ func (a *tailscaleApp) closeDevice() {
 func (a *tailscaleApp) buildDevice() {
 	v := a.open
 	gtkx.Clear(&a.detail)
-	acts := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	// Two rows, to fit the panel: copying and ping, then the exit node.
+	acts := gtk.NewBox(gtk.OrientationVerticalValue, 8)
 	acts.AddCssClass("actions")
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	for _, b := range [][2]string{{"copy-ip", "Copy IP"}, {"copy-name", "Copy Name"}, {"ping", "Ping"}} {
 		btn := gtk.NewButtonWithLabel(b[1])
 		btn.AddCssClass("outlined")
 		btn.SetName(b[0])
 		btn.ConnectClicked(&a.onButton)
-		gtkx.Append(acts, &btn.Widget)
+		gtkx.Append(row, &btn.Widget)
 	}
+	gtkx.Append(acts, &row.Widget)
 	exit := gtk.NewButtonWithLabel("Use as Exit Node")
 	exit.AddCssClass("outlined")
 	exit.SetName("use-exit")
+	exit.SetHalign(gtk.AlignStartValue)
 	exit.ConnectClicked(&a.onButton)
 	v.exitBtn = exit
 	gtkx.Append(acts, &exit.Widget)
@@ -587,7 +566,7 @@ func (a *tailscaleApp) showDevice() {
 	set("Traffic", fmt.Sprintf("received %s · sent %s", sysmon.Bytes(uint64(max(0, p.RxBytes))), sysmon.Bytes(uint64(max(0, p.TxBytes)))))
 	set("Key expires", cmpOr(p.Expiry(now), "never"))
 	set("Tags", cmpOr(strings.Join(p.Tags, ", "), "none"))
-	set("drop", fmt.Sprintf("Drop files on this page to send them to %s with Taildrop. They wait on it until saved.", p.Name()))
+	set("drop", fmt.Sprintf("Drop files on this panel to send them to %s with Taildrop. They wait on it until saved.", p.Name()))
 	v.exitBtn.SetVisible(p.ExitNodeOption)
 	if p.ExitNode {
 		v.exitBtn.SetLabel("Stop Using as Exit Node")

@@ -1255,7 +1255,9 @@ progressbar.thin progress { min-height: 2px; border-radius: 1px; background: @ac
 .range-fill { min-height: 4px; border-radius: 2px; background: @accent; }
 .settings .details { margin-bottom: 4px; }
 /* Scoped: the launcher's rows have a .detail label too. */
-.details > .detail, .sysmonapp box.detail, .tailscaleapp box.detail { padding: 14px 0; }
+.details > .detail { padding: 14px 0; }
+/* A device's or a process's page: a list, with its side margins. */
+.sysmonapp box.detail, .tailscaleapp box.detail { padding: 14px 28px; }
 .details > .detail.right { padding-left: 18px; border-left: 1px solid alpha(@line, 0.55); }
 .details > .detail.lower { border-top: 1px solid alpha(@line, 0.55); }
 .detail-value { font-size: 24px; }
@@ -1404,6 +1406,11 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .sysmonapp .cores { margin-top: 10px; }
 .sysmonapp .range.core { min-height: 3px; }
 .sysmonapp .range.core .range-fill { min-height: 3px; }
+/* The open process or device, in a panel at the right; its row in the
+   list stays marked. */
+.sysmonapp.proc-panel, .tailscaleapp.ts-panel { background: @panel; border-left: 1px solid alpha(@line, 0.55); }
+.settings .proc-panel .detail-bar, .settings .ts-panel .detail-bar { padding: 22px 14px 4px 28px; }
+.settings .rows > .row.proc.open > button.row-button, .settings .rows > .ts-row.open > button.row-button { background: alpha(@accent, 0.09); }
 .sysmonapp .proc-note { margin: 0 28px 10px; font-size: 12px; color: @t1; }
 .sysmonapp .detail .proc-note { margin: 0 0 8px; }
 .sysmonapp .proc-note.error { color: @danger; }
@@ -1441,8 +1448,6 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .tailscaleapp .ts-switch-row { padding: 10px 0; }
 .tailscaleapp .actions { padding: 14px 0 2px; }
 .settings .rows > .ts-row > button.row-button { min-height: 44px; padding: 8px 6px; }
-.tailscaleapp .ts-more > button { min-height: 0; padding: 6px; border: none; background: transparent; box-shadow: none; color: @t2; }
-.tailscaleapp .ts-more > button:hover, .tailscaleapp .ts-more > button:checked { color: @t0; background: alpha(@accent, 0.08); }
 .tailscaleapp .ts-drop { padding: 18px 14px; border: 1px dashed alpha(@line, 1); border-radius: 3px; }
 
 /* Calendar */

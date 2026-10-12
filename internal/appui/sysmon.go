@@ -77,7 +77,8 @@ type detailView struct {
 
 type sysmonApp struct {
 	c                          *Ctx
-	pages, procPages           gtk.Stack
+	pages                      gtk.Stack
+	detailReveal               gtk.Revealer
 	meters, procs, detail, sys gtk.Box
 	procCount, procNote        gtk.Label
 	detailName, detailSub      gtk.Label
@@ -102,11 +103,12 @@ type sysmonApp struct {
 	noteAt                     time.Time
 	onTick                     glib.SourceFunc
 	onSort                     func(gtk.ToggleButton)
-	onQuit, onOpen, onAct      func(gtk.Button)
+	onOpen, onAct              func(gtk.Button)
 	onBack                     func(gtk.Button)
 	onPage                     func(uintptr, uintptr, uintptr)
 	onFilter, onStopFilter     func(gtk.SearchEntry)
 	onKey                      func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	panel                      sidePanel
 	uid                        int
 }
 
@@ -119,7 +121,7 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui := c.Load("sysmon.ui")
 	ui.Get("sysmon", win)
 	ui.Get("pages", &a.pages)
-	ui.Get("proc_pages", &a.procPages)
+	ui.Get("detail_reveal", &a.detailReveal)
 	ui.Get("meters", &a.meters)
 	ui.Get("procs", &a.procs)
 	ui.Get("detail", &a.detail)
@@ -162,10 +164,6 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 			a.showProcesses()
 		}
 	}
-	a.onQuit = func(b gtk.Button) {
-		pid, _ := strconv.Atoi(strings.TrimPrefix(b.GetName(), "quit:"))
-		a.listQuit(pid)
-	}
 	a.onOpen = func(b gtk.Button) {
 		pid, _ := strconv.Atoi(strings.TrimPrefix(b.GetName(), "open:"))
 		a.openProcess(pid)
@@ -187,11 +185,11 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 		}
 	}
 	gtkx.ConnectNotify(&a.pages, "visible-child", &a.onPage)
-	// Ctrl+F: the processes, filtered. Escape: back from a process.
+	// Ctrl+F: the processes, filtered. Escape: the open process's panel goes.
 	keys := gtk.NewEventControllerKey()
 	keys.SetPropagationPhase(gtk.PhaseCaptureValue)
 	a.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
-		if keyval == uint32(gdk.KEY_Escape) && a.open != nil && a.pages.GetVisibleChildName() == "processes" {
+		if keyval == uint32(gdk.KEY_Escape) && a.open != nil {
 			a.closeProcess()
 			return true
 		}
@@ -199,12 +197,12 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 			return false
 		}
 		a.pages.SetVisibleChildName("processes")
-		a.closeProcess()
 		a.filter.GrabFocus()
 		return true
 	}
 	keys.ConnectKeyPressed(&a.onKey)
 	win.AddController(&keys.EventController)
+	a.panel.init(win, &a.detailReveal)
 	byCPU.ConnectToggled(&a.onSort)
 	a.byMem.ConnectToggled(&a.onSort)
 	a.byName.ConnectToggled(&a.onSort)
@@ -542,7 +540,10 @@ func (a *sysmonApp) showProcesses() {
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		row.AddCssClass("row")
 		row.AddCssClass("proc")
-		// The name and figures open the process; Quit sits beside them.
+		if a.open != nil && a.open.pid == p.PID {
+			row.AddCssClass("open") // its panel is showing
+		}
+		// The name and figures open the process.
 		inner := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 		sub := "PID " + strconv.Itoa(p.PID)
 		if p.UID != a.uid && p.User != "" {
@@ -566,45 +567,10 @@ func (a *sysmonApp) showProcesses() {
 		gtkx.Append(inner, &mem.Widget)
 		open := rowButton("open:"+strconv.Itoa(p.PID), &inner.Widget, &a.onOpen)
 		open.SetHexpand(true)
-		open.SetTooltipText("Details and more ways to end " + p.Name)
+		open.SetTooltipText("Details and the ways to end " + p.Name)
 		gtkx.Append(row, &open.Widget)
-		if p.UID == a.uid {
-			b := gtk.NewButtonWithLabel("Quit")
-			b.AddCssClass("text")
-			if a.armed == "list:"+strconv.Itoa(p.PID) {
-				b.SetLabel("Quit?")
-				b.AddCssClass("danger")
-			}
-			b.SetName("quit:" + strconv.Itoa(p.PID))
-			b.SetTooltipText("Ask " + p.Name + " to quit")
-			b.SetValign(gtk.AlignCenterValue)
-			b.SetSizeRequest(56, -1)
-			b.ConnectClicked(&a.onQuit)
-			gtkx.Append(row, &b.Widget)
-		} else {
-			pad := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-			pad.SetSizeRequest(56, -1)
-			gtkx.Append(row, &pad.Widget)
-		}
 		gtkx.Append(&a.procs, &row.Widget)
 	}
-}
-
-// listQuit asks one of the user's processes to quit, on a second click
-// within a few seconds.
-func (a *sysmonApp) listQuit(pid int) {
-	p, ok := a.process(pid)
-	if !ok {
-		return
-	}
-	if key := "list:" + strconv.Itoa(pid); a.armed != key {
-		a.armed, a.armedAt = key, time.Now()
-		a.showProcesses()
-		return
-	}
-	a.armed = ""
-	a.send(syscall.SIGTERM, []int{pid}, "Asked "+p.Name+" to quit.")
-	a.showProcesses()
 }
 
 // own reports whether a process is the user's, so it can be signalled
@@ -665,6 +631,10 @@ func (a *sysmonApp) note(text string, bad bool) {
 // --- one process ---
 
 func (a *sysmonApp) openProcess(pid int) {
+	if a.open != nil && a.open.pid == pid { // its row again: the panel goes
+		a.closeProcess()
+		return
+	}
 	a.armed = ""
 	a.open = &detailView{pid: pid, facts: map[string]*gtk.Label{}, acts: map[string]*actionRow{}}
 	if !a.readDetail() {
@@ -674,7 +644,8 @@ func (a *sysmonApp) openProcess(pid int) {
 	}
 	a.buildDetail()
 	a.showDetail()
-	a.procPages.SetVisibleChildName("detail")
+	a.panel.open()
+	a.showProcesses() // marks its row
 }
 
 func (a *sysmonApp) closeProcess() {
@@ -683,7 +654,7 @@ func (a *sysmonApp) closeProcess() {
 	}
 	a.open = nil
 	a.armed = ""
-	a.procPages.SetVisibleChildName("list")
+	a.panel.close()
 	a.showProcesses()
 }
 
