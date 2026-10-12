@@ -23,6 +23,7 @@ import (
 type Config struct {
 	Bar        Bar        `toml:"bar"`
 	Launcher   Launcher   `toml:"launcher"`
+	Overview   Overview   `toml:"overview"`
 	Control    Control    `toml:"control"`
 	Style      Style      `toml:"style"`
 	Background Background `toml:"background"`
@@ -62,6 +63,11 @@ type Launcher struct {
 	// Quicklinks search a site when the query starts with their keyword
 	// ("gh inua").
 	Quicklinks []Quicklink `toml:"quicklinks"`
+}
+
+type Overview struct {
+	MRU        bool `toml:"mru"`
+	PerMonitor bool `toml:"per_monitor"`
 }
 
 // Quicklink is a site the launcher searches by keyword.
@@ -148,7 +154,7 @@ type Shortcut struct {
 // ShortcutActions are the actions a shortcut can run besides "exec"; the
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
-	"launcher", "windows", "control", "notifications", "focus", "settings", "restart", "lock",
+	"launcher", "windows", "overview", "control", "notifications", "focus", "settings", "restart", "lock",
 	"shot-area", "shot-screen", "shot-window", "shot-record", "color",
 }
 
@@ -248,6 +254,7 @@ func Default() Config {
 			Tray:       true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
+		Overview: Overview{MRU: false, PerMonitor: true},
 		Control: Control{
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",

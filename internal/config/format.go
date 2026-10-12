@@ -15,7 +15,7 @@ import (
 func Format(c Config) string {
 	return fmt.Sprintf(template,
 		c.Bar.Enable, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray,
-		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks),
+		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
 		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, q(c.Style.CSS),
@@ -183,6 +183,12 @@ search = %s
 # Quicklinks: a query starting with a keyword searches that site
 # ("gh inua"). Add your own; quicklinks = [] turns them off.%s
 
+[overview]
+# Sort workspaces by recent window focus instead of their numeric order.
+mru = %t
+# Show each display's workspaces on its own overview surface.
+per_monitor = %t
+
 [control]
 # Shell commands run by the control center's buttons.
 lock = %s
@@ -304,7 +310,7 @@ pinned = %s
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions
 # without an entry keep their hyprland.conf shortcuts. An action is one of
-#   launcher windows control notifications focus settings restart lock
+#   launcher windows overview control notifications focus settings restart lock
 #   shot-area shot-screen shot-window shot-record color
 # or "exec" with a command. keys = "" turns the action's shortcut off.
 #

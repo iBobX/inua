@@ -68,7 +68,7 @@ func (s *shellUI) loadWallpaper() {
 		}
 		w.Tile = path
 	}
-	s.styles.wallpaper.LoadFromString(w.CSS())
+	s.styles.wallpaper.LoadFromString(w.CSS() + strings.ReplaceAll(w.CSS(), "window.wallpaper, window.lock .lock-ground", ".overview .overview-workspace-background"))
 }
 
 // shellThemeColors reads a theme's colour tokens.
@@ -131,6 +131,9 @@ func dropWallpaper(b *bar) {
 func (s *shellUI) applyConfig(c config.Config) {
 	old := s.cfg
 	s.cfg = c
+	if old.Overview != c.Overview {
+		s.installOverviewKeys()
+	}
 	if old.Style != c.Style {
 		s.loadStyles()
 	}
@@ -160,6 +163,8 @@ func (s *shellUI) applyConfig(c config.Config) {
 		s.restartClock()
 	}
 	s.applyLauncherWeb()
+	s.overview.st.SetMRU(c.Overview.MRU)
+	s.renderOverview()
 	if s.settings.win != nil {
 		s.showSettings()
 	}
