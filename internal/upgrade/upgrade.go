@@ -144,13 +144,31 @@ func Verify(data, sums []byte, name string) error {
 	return fmt.Errorf("no checksum for %s", name)
 }
 
+// Dev is the version of a build from source.
+const Dev = "dev"
+
+// IsRelease reports whether v is a release's version, not a build from
+// source.
+func IsRelease(v string) bool {
+	_, _, ok := parse(v)
+	return ok
+}
+
 // Compare orders two versions, "v0.1.2" or "0.1.2", with or without a
-// "-suffix" (which comes before the release it names). ok is false if
-// either is not such a version, as for "dev", a build from source.
+// "-suffix" (which comes before the release it names). Dev, a build from
+// source, comes before every release. ok is false if either is something
+// else.
 func Compare(a, b string) (cmp int, ok bool) {
 	pa, sa, okA := parse(a)
 	pb, sb, okB := parse(b)
-	if !okA || !okB {
+	switch {
+	case a == Dev && b == Dev:
+		return 0, true
+	case a == Dev && okB:
+		return -1, true
+	case b == Dev && okA:
+		return 1, true
+	case !okA || !okB:
 		return 0, false
 	}
 	for i := range pa {
@@ -338,6 +356,24 @@ type State struct {
 	Running  string    `json:"running"`  // the version the shell last ran
 }
 
+// Decide says whether to install release tag over version have. force
+// installs it anyway; pinned is a release named on purpose (-version),
+// taken even when older. why says why there is nothing to do; err
+// refuses a version that cannot be compared.
+func Decide(have, tag string, force, pinned bool) (install bool, why string, err error) {
+	order, known := Compare(have, tag)
+	switch {
+	case force:
+	case !known:
+		return false, "", fmt.Errorf("cannot compare inua %s with release %s: install it anyway with inua upgrade -force", have, tag)
+	case order == 0:
+		return false, fmt.Sprintf("inua %s is already installed.", strings.TrimPrefix(have, "v")), nil
+	case order > 0 && !pinned:
+		return false, fmt.Sprintf("inua %s is newer than the latest release (%s); nothing to do.", strings.TrimPrefix(have, "v"), tag), nil
+	}
+	return true, "", nil
+}
+
 // Due reports whether it is time to check again: a day after the last
 // check, or at once if the clock went back.
 func (st State) Due(now time.Time) bool {
@@ -345,8 +381,9 @@ func (st State) Due(now time.Time) bool {
 }
 
 // Announce reports whether to tell someone running version about release
-// tag: when it is newer and has not been announced before.
+// tag: when it is newer and has not been announced before. A build from
+// source is not told.
 func (st State) Announce(version, tag string) bool {
 	order, ok := Compare(version, tag)
-	return ok && order < 0 && st.Notified != tag
+	return IsRelease(version) && ok && order < 0 && st.Notified != tag
 }

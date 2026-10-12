@@ -30,6 +30,7 @@ type aboutSettings struct {
 	checked   time.Time
 	checking  bool
 	upgrading bool
+	said      string // what an upgrade that left the shell running said
 	err       error
 }
 
@@ -66,9 +67,9 @@ func (s *shellUI) aboutButton(name string) bool {
 		s.showAboutSettings()
 		tag := a.latest
 		go func() {
-			s.runUpgrade(tag) // the shell restarts on the new version
+			said := s.runUpgrade(tag) // installed, the shell restarts on the new version
 			gtkx.Post(func() {
-				a.upgrading = false
+				a.upgrading, a.said = false, said
 				s.showAboutSettings()
 			})
 		}()
@@ -85,7 +86,7 @@ func (s *shellUI) checkReleases() {
 	if a.checking {
 		return
 	}
-	a.checking = true
+	a.checking, a.said = true, ""
 	s.showAboutSettings()
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -119,31 +120,32 @@ func (s *shellUI) showAboutSettings() {
 	}
 	v := s.opts.Version
 	order, known := upgrade.Compare(v, a.latest)
-	if _, release := upgrade.Compare(v, v); release {
+	if upgrade.IsRelease(v) {
 		a.version.SetText("inua " + strings.TrimPrefix(v, "v"))
 	} else {
 		a.version.SetText(fmt.Sprintf("inua %s, built from source", v))
 	}
 	a.daily.SetActive(s.cfg.Notify.Updates)
 	a.check.SetSensitive(!a.checking && !a.upgrading)
-	// A build from source can take the release too (inua upgrade -version).
-	a.upgrade.SetVisible(a.latest != "" && (!known || order < 0))
+	// A build from source comes before every release, so it can take one.
+	a.upgrade.SetVisible(a.latest != "" && known && order < 0)
 	a.upgrade.SetSensitive(!a.upgrading)
 	a.upgrade.SetLabel("Upgrade to " + strings.TrimPrefix(a.latest, "v"))
-	if !known {
-		a.upgrade.SetLabel("Install " + a.latest)
-	}
 	switch {
 	case a.upgrading:
 		a.state.SetText("Upgrading… the shell restarts on the new version")
 	case a.checking:
 		a.state.SetText("Checking…")
+	case a.said != "":
+		a.state.SetText(a.said)
 	case a.err != nil:
 		a.state.SetText("Could not reach GitHub: " + a.err.Error())
 	case a.latest == "":
 		a.state.SetText("Not checked yet")
 	case !known:
-		a.state.SetText(fmt.Sprintf("The latest release is %s. Installing it replaces this build from source; git pull and make install bring a build from source back.", a.latest))
+		a.state.SetText(fmt.Sprintf("The latest release is %s; this version cannot be compared with it", a.latest))
+	case order < 0 && !upgrade.IsRelease(v):
+		a.state.SetText(fmt.Sprintf("inua %s is out; upgrading replaces this build from source", strings.TrimPrefix(a.latest, "v")))
 	case order < 0:
 		a.state.SetText(fmt.Sprintf("inua %s is out", strings.TrimPrefix(a.latest, "v")))
 	case order == 0:

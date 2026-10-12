@@ -30,13 +30,43 @@ func TestCompare(t *testing.T) {
 		{"0.0.3-SNAPSHOT-abc", "v0.0.3", -1, true},
 		{"v0.0.3", "0.0.3-rc1", 1, true},
 		{"0.0.3-rc1", "0.0.3-rc2", -1, true},
-		{"dev", "v0.0.2", 0, false},
+		{"dev", "v0.0.1", -1, true}, // a build from source comes before every release
+		{"v0.0.1", "dev", 1, true},
+		{"dev", "0.0.1-rc1", -1, true},
+		{"dev", "dev", 0, true},
+		{"abc", "v0.0.2", 0, false},
 		{"v0.0.2", "v0.2", 0, false},
 	} {
 		got, ok := Compare(c.a, c.b)
 		if got != c.want || ok != c.ok {
 			t.Errorf("Compare(%q, %q) = %d, %v; want %d, %v", c.a, c.b, got, ok, c.want, c.ok)
 		}
+	}
+}
+
+func TestDecide(t *testing.T) {
+	for _, c := range []struct {
+		have, tag      string
+		force, pinned  bool
+		install, fails bool
+	}{
+		{"dev", "v0.0.3", false, false, true, false}, // the latest, over a build from source
+		{"dev", "v0.0.3", false, true, true, false},  // the settings' button: -version
+		{"v0.0.2", "v0.0.3", false, false, true, false},
+		{"v0.0.3", "v0.0.3", false, true, false, false},
+		{"v0.0.3", "v0.0.3", true, true, true, false},
+		{"v0.0.4", "v0.0.3", false, false, false, false},
+		{"v0.0.4", "v0.0.3", false, true, true, false}, // an older release, asked for
+		{"abc", "v0.0.3", false, true, false, true},
+		{"abc", "v0.0.3", true, false, true, false},
+	} {
+		install, why, err := Decide(c.have, c.tag, c.force, c.pinned)
+		if install != c.install || (err != nil) != c.fails || (!install && err == nil && why == "") {
+			t.Errorf("Decide(%q, %q, force=%v, pinned=%v) = %v, %q, %v", c.have, c.tag, c.force, c.pinned, install, why, err)
+		}
+	}
+	if IsRelease("dev") || !IsRelease("v0.0.3") {
+		t.Error("IsRelease")
 	}
 }
 

@@ -31,7 +31,7 @@ const updatesStore = "updates"
 // of logging in. A build from source never checks.
 func (s *shellUI) startUpdates() {
 	v := s.opts.Version
-	if _, ok := upgrade.Compare(v, v); !ok {
+	if !upgrade.IsRelease(v) {
 		return
 	}
 	s.noteInstalled(v)
@@ -148,7 +148,7 @@ func (s *shellUI) updateNoteAction(n notify.Notification, key string) {
 	}
 }
 
-func (s *shellUI) runUpgrade(tag string) {
+func (s *shellUI) runUpgrade(tag string) (said string) {
 	prog := "inua" // next to inua-shell, else on PATH
 	if exe, err := executable(); err == nil {
 		if p := filepath.Join(filepath.Dir(exe), "inua"); fileExists(p) {
@@ -157,11 +157,14 @@ func (s *shellUI) runUpgrade(tag string) {
 	}
 	log.Printf("updates: %s upgrade -version %s", prog, tag)
 	out, err := exec.Command(prog, "upgrade", "-version", tag).CombinedOutput()
-	if err == nil {
-		return // the shell restarts on the new version, and says so
-	}
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
 	msg := strings.TrimPrefix(lines[len(lines)-1], "inua: ")
+	if err == nil {
+		// Installed, the shell restarts on the new version and says so;
+		// still here, there was nothing to do, and msg says why.
+		log.Printf("updates: upgrade: %s", msg)
+		return msg
+	}
 	log.Printf("updates: upgrade: %v %s", err, msg)
 	gtkx.Post(func() {
 		if s.notes.srv == nil {
@@ -172,6 +175,7 @@ func (s *shellUI) runUpgrade(tag string) {
 			Summary: "inua could not upgrade", Body: notify.Markup(cmp.Or(msg, err.Error())), Urgency: notify.Normal, Time: time.Now(),
 		})
 	})
+	return "Could not upgrade: " + cmp.Or(msg, err.Error())
 }
 
 func fileExists(p string) bool {

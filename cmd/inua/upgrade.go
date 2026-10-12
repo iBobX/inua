@@ -48,7 +48,7 @@ func cmdUpgrade(args []string) error {
 	if *check {
 		switch {
 		case !known:
-			fmt.Printf("This inua (%s) is built from source; the latest release is %s:\n%s\n", version, tag, src.ReleaseURL(tag))
+			fmt.Printf("This inua (%s) cannot be compared with the latest release, %s:\n%s\n", version, tag, src.ReleaseURL(tag))
 		case order < 0:
 			fmt.Printf("inua %s is out; you have %s. What's new:\n%s\nInstall it with: inua upgrade\n", strings.TrimPrefix(tag, "v"), version, src.ReleaseURL(tag))
 		default:
@@ -56,16 +56,12 @@ func cmdUpgrade(args []string) error {
 		}
 		return nil
 	}
-	switch {
-	case *force:
-	case !known && *want == "":
-		return fmt.Errorf("this inua (%s) is built from source: update it with git pull and make install, "+
-			"or replace it with release %s: inua upgrade -force", version, tag)
-	case order == 0:
-		fmt.Printf("inua %s is already installed.\n", version)
-		return nil
-	case order > 0 && *want == "":
-		fmt.Printf("inua %s is newer than the latest release (%s); nothing to do.\n", version, tag)
+	install, why, err := upgrade.Decide(version, tag, *force, *want != "")
+	if err != nil {
+		return err
+	}
+	if !install {
+		fmt.Println(why)
 		return nil
 	}
 
