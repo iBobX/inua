@@ -2,6 +2,7 @@ package hypr
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -103,6 +104,17 @@ func TestDispatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(f.dispatched) != 1 || f.dispatched[0] != "focuswindow address:0xaa" {
+		t.Fatalf("dispatched %q", f.dispatched)
+	}
+}
+
+func TestPlaceWindow(t *testing.T) {
+	f := newFakeHyprland(t)
+	if err := NewClient(f.paths).PlaceWindow(context.Background(), 42, Rect{100, 80, 460, 700}); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"resizewindowpixel exact 460 700,pid:42", "movewindowpixel exact 100 80,pid:42"}
+	if strings.Join(f.dispatched, "|") != strings.Join(want, "|") {
 		t.Fatalf("dispatched %q", f.dispatched)
 	}
 }

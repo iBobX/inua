@@ -27,3 +27,17 @@ func TestBringHere(t *testing.T) {
 		t.Error("no window, no error")
 	}
 }
+
+func TestWindowOf(t *testing.T) {
+	clients := []byte(`[
+	  {"pid": 10, "mapped": false, "at": [0, 0], "size": [1, 1]},
+	  {"pid": 10, "mapped": true, "at": [1300, 80], "size": [840, 700]},
+	  {"pid": 20, "mapped": true, "at": [5, 6], "size": [7, 8]}
+	]`)
+	if r, err := windowOf(clients, 10); err != nil || r != (Rect{1300, 80, 840, 700}) {
+		t.Errorf("windowOf(10) = %+v, %v", r, err)
+	}
+	if _, err := windowOf(clients, 30); err == nil {
+		t.Error("a window for a process without one")
+	}
+}
