@@ -21,6 +21,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -296,6 +297,33 @@ func unpack(archive []byte, binDir, dataDir string) ([]file, error) {
 		files = append(files, f)
 	}
 	return files, nil
+}
+
+// StillOld lists the programs among installed that still run from the
+// binaries Install replaced in binDir (the kernel marks them "(deleted)"),
+// leaving out those named in except and this process. It looks only at the user's own
+// processes; others' cannot be read.
+func StillOld(binDir string, installed []string, except ...string) []string {
+	procs, _ := filepath.Glob("/proc/[0-9]*/exe")
+	seen := map[string]bool{}
+	var out []string
+	self := fmt.Sprintf("/proc/%d/exe", os.Getpid()) // inua upgrade itself
+	for _, p := range procs {
+		exe, err := os.Readlink(p)
+		if err != nil || p == self {
+			continue
+		}
+		path, deleted := strings.CutSuffix(exe, " (deleted)")
+		dir, name := filepath.Split(path)
+		if !deleted || filepath.Clean(dir) != filepath.Clean(binDir) || seen[name] ||
+			!slices.Contains(installed, name) || slices.Contains(except, name) {
+			continue
+		}
+		seen[name] = true
+		out = append(out, name)
+	}
+	slices.Sort(out)
+	return out
 }
 
 // CheckEvery is how often the shell looks for a new release.

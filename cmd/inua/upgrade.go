@@ -88,6 +88,8 @@ func cmdUpgrade(args []string) error {
 	}
 	home, _ := os.UserHomeDir()
 	data := cmp.Or(os.Getenv("XDG_DATA_HOME"), filepath.Join(home, ".local", "share"))
+	_, statErr := os.Stat(filepath.Join(binDir, "inua-keyring"))
+	hadKeyring := statErr == nil
 	programs, err := upgrade.Install(archive, binDir, data)
 	if errors.Is(err, fs.ErrPermission) {
 		return fmt.Errorf("cannot write to %s, where inua is installed (%w); "+
@@ -104,9 +106,34 @@ func cmdUpgrade(args []string) error {
 	if slices.Contains(programs, "inua-shell") {
 		restartShell()
 	}
-	fmt.Println("Light apps that are open keep the old version until you close them.\n" +
-		"To add the release's new sample settings, if any, run: inua init")
+	if old := upgrade.StillOld(binDir, programs, "inua-shell"); len(old) > 0 {
+		fmt.Println("These keep running the old version:")
+		for _, name := range old {
+			switch name {
+			case "inua-keyring":
+				// Stopping it would end the sessions apps hold with it,
+				// and libsecret does not open a new one.
+				fmt.Println("  inua-keyring, until you log in again")
+			default:
+				fmt.Printf("  %s, until you close it\n", name)
+			}
+		}
+	}
+	if slices.Contains(programs, "inua-keyring") && !hadKeyring {
+		fmt.Println(keyringHint())
+	}
+	fmt.Println("To add the release's new sample settings, if any, run: inua init")
 	return nil
+}
+
+// keyringHint says how to start using inua-keyring, which a release
+// brought: the install script asks, an upgrade only says so.
+func keyringHint() string {
+	if _, err := exec.LookPath("pass"); err != nil {
+		return "This release adds inua-keyring, which keeps apps' secrets in pass: install pass and gnupg\n" +
+			"(sudo apt install pass gnupg), set up a store with pass init, then run: inua keyring replace"
+	}
+	return "This release adds inua-keyring, which keeps apps' secrets in pass. To use it: inua keyring replace"
 }
 
 // restartShell has a running inua-shell re-execute itself, which runs the

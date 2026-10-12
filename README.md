@@ -67,7 +67,9 @@ release.
 To update, run `inua upgrade`; `inua upgrade -check` only says whether a
 newer release is out. It downloads the release (checking its checksum),
 replaces the programs where `inua` is installed and the light apps'
-launchers, and restarts the shell in place. `-version v0.1.2` installs a
+launchers, and restarts the shell in place; it lists the programs that keep
+running the old version until they restart (inua-keyring until you log in
+again). `-version v0.1.2` installs a
 given release. Running the install script again also updates. The shell
 checks for a new release a random 1 to 10 minutes after you log in, then
 once a day, and tells you in a notification with an **Upgrade** button;

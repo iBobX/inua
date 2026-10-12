@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"testing"
@@ -202,5 +203,47 @@ func TestState(t *testing.T) {
 	}
 	if !st.Announce("0.0.2", "v0.0.4") {
 		t.Error("the next release not announced")
+	}
+}
+
+// A program still running from a binary that was replaced is listed; one
+// left out, or not running, is not.
+func TestStillOld(t *testing.T) {
+	// A copy of sh, waiting for its sleep (sleep itself may be a
+	// multi-call binary that would not run under another name).
+	sh, err := exec.LookPath("sh")
+	if err != nil {
+		t.Skip("no sh")
+	}
+	dir := t.TempDir()
+	data, err := os.ReadFile(sh)
+	if err != nil {
+		t.Fatal(err)
+	}
+	prog := filepath.Join(dir, "inua-keyring")
+	if err := os.WriteFile(prog, data, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command(prog, "-c", "sleep 30; :")
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { cmd.Process.Kill(); cmd.Wait() }()
+	installed := []string{"inua-keyring", "inua-apps"}
+	if got := StillOld(dir, installed); len(got) != 0 {
+		t.Errorf("before replacing: %v", got)
+	}
+	// Replaced as Install does: a new file renamed over it.
+	if err := os.WriteFile(prog+".new", data, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(prog+".new", prog); err != nil {
+		t.Fatal(err)
+	}
+	if got := StillOld(dir, installed); !slices.Equal(got, []string{"inua-keyring"}) {
+		t.Errorf("after replacing: %v", got)
+	}
+	if got := StillOld(dir, installed, "inua-keyring"); len(got) != 0 {
+		t.Errorf("left out: %v", got)
 	}
 }
