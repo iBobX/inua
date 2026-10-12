@@ -826,18 +826,25 @@ func (a *tailscaleApp) ping() {
 		defer cancel()
 		r, err := a.client.Ping(ctx, ip)
 		gtkx.Post(func() {
-			switch {
-			case err != nil:
+			if err != nil {
 				a.fail(err)
-			case r.Err != "":
-				a.say(name+": "+r.Err, true)
-			default:
-				how := "direct, " + r.Endpoint
-				if r.Endpoint == "" {
-					how = "relayed through " + r.DERPRegionCode
-				}
-				a.say(fmt.Sprintf("%s answered in %.0f ms, %s.", name, r.LatencySeconds*1000, how), false)
+				return
 			}
+			a.say("", false)
+			// The answer comes as a notification, which replaces the last.
+			var n *gio.Notification
+			if r.Err != "" {
+				n = gio.NewNotification(name + " did not answer")
+				n.SetBody(r.Err)
+			} else {
+				n = gio.NewNotification(fmt.Sprintf("%s answered in %.0f ms", name, r.LatencySeconds*1000))
+				n.SetBody("Direct, " + r.Endpoint)
+				if r.Endpoint == "" {
+					n.SetBody("Relayed through " + r.DERPRegionCode)
+				}
+			}
+			a.c.App.SendNotification("ping", n)
+			n.Unref()
 		})
 	}()
 }
