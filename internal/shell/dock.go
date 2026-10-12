@@ -142,6 +142,9 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Top
 			continue
 		}
 		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
+		if t.Class == AppID { // the shell's own windows: Settings and its dialogs
+			item.Name, item.Icon = ShellApps[0].Name, ShellApps[0].Icon
+		}
 		if entry != nil {
 			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
 		}
@@ -265,6 +268,9 @@ var LightAppGroups = []struct {
 		"inua:launcher",
 	}},
 }
+
+// AppID is the shell's application ID, the class of its windows.
+const AppID = "io.github.lyricat.Inua"
 
 // ShellApps are the shell's own tools in the drawer. They are not desktop
 // entries: the shell opens them itself, by their "inua:" IDs.

@@ -89,6 +89,16 @@ func TestDockSkipsFcitxWindows(t *testing.T) {
 	}
 }
 
+// The shell's own windows (Settings and its dialogs) show as Settings,
+// with its icon, instead of an icon named after the class.
+func TestDockShellWindows(t *testing.T) {
+	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{dockWin("0x1", AppID, 0)}}
+	got := Dock(nil, NewAppIndex(nil), snap, nil)
+	if len(got) != 1 || got[0].Name != "Settings" || got[0].Icon != "io.github.lyricat.Inua.Settings" || got[0].Entry != nil {
+		t.Errorf("Dock() = %+v", got)
+	}
+}
+
 // A window of the input method's process is left out whatever its class.
 func TestDockSkips(t *testing.T) {
 	telegram := dockWin("0x1", "org.telegram.desktop", 1)
