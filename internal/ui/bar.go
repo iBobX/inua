@@ -133,7 +133,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("bat_icon", &b.batIcon)
 	ui.Get("bat_label", &b.batLabel)
 	ui.Close()
-	b.setEdgeGap(s.cfg.Dock.FlushBar)
+	b.setEdgeGap(s.cfg.Style.EdgeGaps)
 	b.status.ConnectClicked(&s.onControlButton)
 	b.notes.ConnectClicked(&s.onNotesButton)
 	b.rec.ConnectClicked(&s.onRecButton)
@@ -184,10 +184,12 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	return b
 }
 
-func (b *bar) setEdgeGap(remove bool) {
-	margin := int32(4)
-	if remove {
-		margin = 0
+// setEdgeGap insets the bar from the screen edges by 4 px, or not
+// (style.edge_gaps).
+func (b *bar) setEdgeGap(gaps bool) {
+	margin := int32(0)
+	if gaps {
+		margin = 4
 	}
 	b.island.SetMarginTop(margin)
 	b.island.SetMarginStart(margin)

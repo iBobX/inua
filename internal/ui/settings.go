@@ -106,7 +106,7 @@ func (s *shellUI) bindSettingsHandlers() {
 		case "dock_autohide":
 			c.Dock.Autohide = on
 		case "dock_flush_bar":
-			c.Dock.FlushBar = on
+			c.Style.EdgeGaps = !on
 		case "notify_enable":
 			c.Notify.Enable = on
 		case "critical_focus":
@@ -608,7 +608,7 @@ func (s *shellUI) showDockSettings() {
 	st.barOn.SetActive(c.Bar.Enable)
 	st.dockOn.SetActive(c.Dock.Enable)
 	st.dockHide.SetActive(c.Dock.Autohide)
-	st.dockFlushBar.SetActive(c.Dock.FlushBar)
+	st.dockFlushBar.SetActive(!c.Style.EdgeGaps)
 	st.dockDrawer.SetActive(c.Dock.Drawer)
 	st.dockSize.SetSelected(uint32(max(0, slices.Index(config.DockSizes, c.Dock.Size))))
 	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))

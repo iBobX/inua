@@ -112,6 +112,9 @@ type Style struct {
 	CSS string `toml:"css"`
 	// Icons is the icon set of the shell's own icons, one of IconSets.
 	Icons string `toml:"icons"`
+	// EdgeGaps leaves a small gap between the screen edges and the bar and
+	// dock; off puts them flush against the edges.
+	EdgeGaps bool `toml:"edge_gaps"`
 }
 
 type Background struct {
@@ -177,8 +180,6 @@ type Dock struct {
 	// Autohide keeps the dock out of sight until the pointer reaches the
 	// selected edge; otherwise windows make room for it.
 	Autohide bool `toml:"autohide"`
-	// FlushBar removes the dock and top bar margins at the screen edges.
-	FlushBar bool `toml:"flush_bar"`
 	// Size is the icons' size in pixels, one of DockSizes.
 	Size int `toml:"size"`
 	// Drawer shows a button at the dock's end that opens inua's light apps.
@@ -251,7 +252,7 @@ func Default() Config {
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor"},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true},
 		Background: Background{Enable: true, Fit: "cover"},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},

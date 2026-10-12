@@ -18,11 +18,11 @@ func Format(c Config) string {
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks),
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
-		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.CSS),
+		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus,
-		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.FlushBar, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
+		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		shortcuts(c.Shortcuts))
 }
 
@@ -215,6 +215,10 @@ theme = %s
 # App icons in the launcher and the tray always come from the system's.
 icons = %s
 
+# A small gap between the screen edges and the bar and dock. false puts
+# them flush against the edges.
+edge_gaps = %t
+
 # Extra stylesheet loaded after the built-in one, relative to this file's
 # directory. Ignored if the file does not exist. See style.css next to this
 # file for the colors you can override.
@@ -284,9 +288,6 @@ position = %s
 # Hide the dock until the pointer reaches its screen edge. false: windows
 # make room for it.
 autohide = %t
-
-# Remove screen-edge margins around the dock and top bar.
-flush_bar = %t
 
 # Icon size in pixels (24 to 96).
 size = %d

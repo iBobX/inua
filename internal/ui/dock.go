@@ -48,7 +48,7 @@ type dock struct {
 	buttons  map[string]*dockButton // by app, borrowed from items
 	size     int
 	position string
-	flushBar bool
+	gaps     bool // style.edge_gaps
 	vertical bool // apps stack along a vertical screen edge
 	hide     bool // autohide
 	hover    bool
@@ -88,7 +88,7 @@ type dockState struct {
 func (s *shellUI) syncDock(b *bar) {
 	c := s.cfg.Dock
 	want := c.Enable && s.layer
-	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position || b.dock.flushBar != c.FlushBar) {
+	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position || b.dock.gaps != s.cfg.Style.EdgeGaps) {
 		dropDock(b)
 	}
 	if want && b.dock == nil {
@@ -110,7 +110,7 @@ func dropDock(b *bar) {
 
 func (s *shellUI) newDock(b *bar) *dock {
 	position := s.cfg.Dock.Position
-	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide, flushBar: s.cfg.Dock.FlushBar}
+	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide, gaps: s.cfg.Style.EdgeGaps}
 	ui := s.load("dock.ui", &d.refs)
 	ui.Get("dock", &d.win)
 	ui.Get("root", &d.root)
@@ -126,12 +126,12 @@ func (s *shellUI) newDock(b *bar) *dock {
 		d.island.SetMarginBottom(0)
 		d.reveal.SetVexpand(true)
 		if position == "left" {
-			if !d.flushBar {
+			if d.gaps {
 				d.island.SetMarginStart(6)
 			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
 		} else {
-			if !d.flushBar {
+			if d.gaps {
 				d.island.SetMarginEnd(6)
 			}
 			d.island.AddCssClass("dock-right")
@@ -145,12 +145,12 @@ func (s *shellUI) newDock(b *bar) *dock {
 		d.reveal.SetHexpand(true)
 		if position == "top" {
 			d.island.SetMarginBottom(0)
-			if !d.flushBar {
+			if d.gaps {
 				d.island.SetMarginTop(6)
 			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
 		} else {
-			if d.flushBar {
+			if !d.gaps {
 				d.island.SetMarginBottom(0)
 			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
@@ -171,34 +171,26 @@ func (s *shellUI) newDock(b *bar) *dock {
 	layershell.SetNamespace(w, "inua-dock")
 	layershell.SetLayer(w, layershell.LayerTop)
 	layershell.SetMonitor(w, b.mon.GoPointer())
+	// Only the dock's own edge: the surface is as long as the dock and
+	// centred along that edge, so the screen beside it stays clickable.
+	edge := layershell.EdgeBottom
 	switch position {
 	case "top":
-		layershell.SetAnchor(w, layershell.EdgeTop, true)
-		layershell.SetAnchor(w, layershell.EdgeLeft, true)
-		layershell.SetAnchor(w, layershell.EdgeRight, true)
+		edge = layershell.EdgeTop
 	case "left":
-		layershell.SetAnchor(w, layershell.EdgeLeft, true)
-		layershell.SetAnchor(w, layershell.EdgeTop, true)
-		layershell.SetAnchor(w, layershell.EdgeBottom, true)
+		edge = layershell.EdgeLeft
 	case "right":
-		layershell.SetAnchor(w, layershell.EdgeRight, true)
-		layershell.SetAnchor(w, layershell.EdgeTop, true)
-		layershell.SetAnchor(w, layershell.EdgeBottom, true)
-	default:
-		layershell.SetAnchor(w, layershell.EdgeBottom, true)
-		layershell.SetAnchor(w, layershell.EdgeLeft, true)
-		layershell.SetAnchor(w, layershell.EdgeRight, true)
+		edge = layershell.EdgeRight
 	}
+	layershell.SetAnchor(w, edge, true)
 	if d.hide {
 		layershell.SetExclusiveZone(w, 0)
 		d.reveal.SetRevealChild(false)
 		d.edge.SetVisible(true)
-		for _, widget := range []*gtk.Widget{&d.edge.Widget, &d.island.Widget} {
-			motion := gtk.NewEventControllerMotion()
-			motion.ConnectEnter(&s.onDockEnter)
-			motion.ConnectLeave(&s.onDockLeave)
-			widget.AddController(&motion.EventController)
-		}
+		motion := gtk.NewEventControllerMotion()
+		motion.ConnectEnter(&s.onDockEnter)
+		motion.ConnectLeave(&s.onDockLeave)
+		d.win.AddController(&motion.EventController)
 	} else {
 		layershell.AutoExclusiveZone(w)
 	}
@@ -591,7 +583,7 @@ func (s *shellUI) showDock(d *dock) {
 
 func (s *shellUI) dockOf(w *gtk.Widget) *dock {
 	for _, b := range s.bars {
-		if b.dock != nil && w != nil && (b.dock.win.GoPointer() == w.GoPointer() || b.dock.edge.GoPointer() == w.GoPointer() || b.dock.island.GoPointer() == w.GoPointer()) {
+		if b.dock != nil && w != nil && b.dock.win.GoPointer() == w.GoPointer() {
 			return b.dock
 		}
 	}

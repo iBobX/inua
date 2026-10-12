@@ -213,9 +213,7 @@ func (s *shellUI) openDrawer(b *bar) {
 	card.Unref()
 	p.backdrop, p.reveal = backdrop, reveal
 
-	// Position the launcher next to its button. The old layout always
-	// placed it above a bottom dock; on a vertical dock that bottom margin
-	// was the height of the whole monitor, which pushed the card to the top.
+	// Beside the drawer button: the dock is centred along its edge.
 	var cardSize gtk.Requisition
 	card.GetPreferredSize(nil, &cardSize)
 	var geo gdk.Rectangle
@@ -231,18 +229,18 @@ func (s *shellUI) openDrawer(b *bar) {
 	case "left":
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
 		reveal.SetMarginStart(int32(d.win.GetWidth()) + 2)
-		y := (float32(d.win.GetHeight()) - float32(cardSize.Height)) / 2
-		if hasBounds {
-			y = f[1] + f[3]/2 - float32(cardSize.Height)/2
+		y := float32(geo.Height-cardSize.Height) / 2
+		if hasBounds { // the dock is centred on its edge
+			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
 		}
 		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
 	case "right":
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
 		x := geo.Width - d.win.GetWidth() - cardSize.Width - 2
 		reveal.SetMarginStart(max(0, x))
-		y := (float32(d.win.GetHeight()) - float32(cardSize.Height)) / 2
-		if hasBounds {
-			y = f[1] + f[3]/2 - float32(cardSize.Height)/2
+		y := float32(geo.Height-cardSize.Height) / 2
+		if hasBounds { // the dock is centred on its edge
+			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
 		}
 		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
 	case "top":

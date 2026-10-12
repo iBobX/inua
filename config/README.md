@@ -225,9 +225,8 @@ to apps by `StartupWMClass`, desktop ID, or the last part of a reverse-DNS ID
 With `dock.autohide = true` the dock stays hidden until the pointer reaches
 its selected edge; otherwise windows make room for it. The Dock page turns
 the dock on and off, sets its position, autohide and icon size, and reorders
-or removes pinned apps. `dock.flush_bar = true` removes the screen-edge margins
-around the dock and top bar without changing the dock's configured position;
-the Dock page has the same switch.
+or removes pinned apps. `style.edge_gaps = false` puts the dock and the bar flush
+against the screen edges (the Dock page's "Remove screen edge gaps").
 On the Bar page, "Show the bar" turns the bar off
 (`bar.enable = false`); Super+Space, Super+A and Super+N still open the
 launcher, control center and notifications.
