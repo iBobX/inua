@@ -18,7 +18,7 @@ const (
 	 {"id":1,"name":"1","monitor":"eDP-1","hasfullscreen":false},
 	 {"id":2,"name":"2","monitor":"eDP-1","hasfullscreen":false}]`
 	clientsJSON = `[
-	 {"address":"0xAA","mapped":true,"title":"Terminal, 1","class":"kitty","monitor":0,"workspace":{"id":1,"name":"1"}},
+	 {"address":"0xAA","pid":12345,"mapped":true,"title":"Terminal, 1","class":"kitty","monitor":0,"workspace":{"id":1,"name":"1"}},
 	 {"address":"0xbb","mapped":true,"title":"Browser","class":"firefox","monitor":1,"workspace":{"id":3,"name":"3"}},
 	 {"address":"0xcc","mapped":false,"title":"hidden","class":"x","monitor":0,"workspace":{"id":2,"name":"2"}}]`
 )
@@ -66,7 +66,7 @@ func TestBuildSnapshot(t *testing.T) {
 		t.Fatalf("unmapped client kept: %+v", s.Toplevels)
 	}
 	tl := s.Toplevels[0]
-	if tl.Address != "0xaa" || !tl.Activated || tl.Monitor != "eDP-1" || tl.Raw["class"] != "kitty" {
+	if tl.Address != "0xaa" || tl.PID != 12345 || !tl.Activated || tl.Monitor != "eDP-1" || tl.Raw["class"] != "kitty" {
 		t.Fatalf("toplevel: %+v", tl)
 	}
 	if !s.Toplevels[1].Urgent || s.Toplevels[0].Urgent {

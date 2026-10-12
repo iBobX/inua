@@ -45,6 +45,9 @@ func (s *shellUI) scheduleRestart() error {
 	go func() {
 		time.Sleep(restartDelay)
 		gtkx.Post(func() {
+			s.closeOverview(false)
+			s.guardOverviewMouse(false)
+			s.pauseOverviewKeys()
 			log.Printf("restarting %s", exe)
 			err := syscall.Exec(exe, os.Args, os.Environ())
 			log.Printf("restart: %v", err) // Exec only returns on failure

@@ -51,6 +51,8 @@ const (
 	keyKPEnter    = 0xff8d
 	keyUp         = 0xff52
 	keyDown       = 0xff54
+	keyLeft       = 0xff51
+	keyRight      = 0xff53
 	keyPageUp     = 0xff55
 	keyPageDown   = 0xff56
 	keyTab        = 0xff09
