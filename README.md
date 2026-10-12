@@ -22,7 +22,7 @@ and a settings window, in one calm visual language. It works with
 | --- | --- |
 | **Bar** | Workspaces, the focused window's title, the clock and its calendar, the tray, notifications and the control center. One per monitor. |
 | **Launcher** | One search for apps, windows and the system's commands; it answers arithmetic, units, currencies and crypto, searches the web and sites by keyword, and finds emoji after `:` (Super+Space). |
-| **Workspace overview** | Live window previews across monitors; tap Win, or cycle with Win+Tab. Drag to move, middle click to close, / to search. |
+| **Workspace overview** | Live window previews across monitors; tap Win, or cycle with Win+Tab. Drag to move, middle click to close, / to search. Needs Hyprland 0.55 or later (its Lua interface); before that, Super+Tab switches windows in the launcher. |
 | **Control center** | Wi-Fi, Bluetooth, power saver, Focus and Tailscale tiles; brightness, volume and media; power. |
 | **Notifications** | inua is the notification server: banners, then a notification center grouped by app. |
 | **Dock** | Pinned and running apps; drag to reorder or to unpin; a drawer of the light apps. |
@@ -109,7 +109,7 @@ source = ./inua.conf      # keep this last
 | Keys | |
 | --- | --- |
 | Super+Space | Launcher |
-| Super+Tab | Workspace overview |
+| Super+Tab | Workspace overview (Hyprland 0.55+; before, switch windows) |
 | Super+A | Control center |
 | Super+N | Notification center |
 | Super+Comma | Settings |

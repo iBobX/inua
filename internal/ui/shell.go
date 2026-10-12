@@ -63,10 +63,13 @@ type shellUI struct {
 	client    *hypr.Client
 	snap      hypr.Snapshot
 	connected bool
-	hyprApply hyprApply // writing hypr/inua.conf; see applyHyprland
-	notes     notes
-	dockState dockState
-	icons     icons
+	// overviewOK: Hyprland runs Lua (0.55 and later), which the overview
+	// switches and moves with; without it the overview is off.
+	overviewOK bool
+	hyprApply  hyprApply // writing hypr/inua.conf; see applyHyprland
+	notes      notes
+	dockState  dockState
+	icons      icons
 
 	bars      map[uintptr]*bar // by GdkMonitor
 	styles    styles
@@ -311,6 +314,9 @@ func (s *shellUI) start() {
 	s.bindLauncherHandlers()
 	s.bindOverviewHandlers()
 	s.onWorkspaceOverview = func(g gtk.GestureClick, _ int32, _, _ float64) {
+		if !s.overviewOK {
+			return
+		}
 		s.showOverview()
 		g.SetState(gtk.EventSequenceClaimedValue)
 	}

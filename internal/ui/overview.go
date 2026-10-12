@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/glib"
@@ -82,6 +81,12 @@ type queuedOverviewFrame struct {
 func (s *shellUI) showOverview() {
 	if s.overview.st.Open {
 		s.closeOverview(false)
+		return
+	}
+	if !s.overviewOK {
+		// Hyprland without Lua (before 0.55): the launcher's windows
+		// instead, what Super+Tab opened before the overview.
+		s.showLauncher(shell.Windows)
 		return
 	}
 	if s.launcher.st.Open {
@@ -346,13 +351,16 @@ func (s *shellUI) bindOverviewHandlers() {
 			w.Unref()
 		}
 	}
-	s.onOverviewDrop = func(dt gtk.DropTarget, valuePtr uintptr, x, y float64) bool {
+	s.onOverviewDrop = func(dt gtk.DropTarget, _ uintptr, x, y float64) bool {
 		target := dt.GetWidget()
-		if target == nil || valuePtr == 0 {
+		if target == nil {
 			return false
 		}
 		defer target.Unref()
-		value := (*gobject.Value)(unsafe.Pointer(valuePtr))
+		value := dt.GetValue()
+		if value == nil {
+			return false
+		}
 		address := value.GetString()
 		dest, ok := s.overview.targets[target.GoPointer()]
 		if !ok || address == "" {
