@@ -201,6 +201,8 @@ func (s *shellUI) invokeNote(n notify.Notification, key string) {
 		s.alarmNoteAction(n, key)
 	case n.Entry == recordingEntry:
 		s.recordingNoteAction(n, key)
+	case n.Entry == updateEntry:
+		s.updateNoteAction(n, key)
 	case nt.srv != nil:
 		nt.srv.Invoke(n.ID, key, activationToken())
 	}

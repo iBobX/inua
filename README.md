@@ -66,10 +66,21 @@ first, and the answer defaults to yes: gpg's pinentry (with
 `inua-pinentry`), the keyring apps keep secrets in (gnome-keyring, with
 `inua-keyring`, after copying its items into pass), and the login manager
 (GDM, SDDM … with greetd + tuigreet, the login screen inua recommends; the
-old one stays installed). Run it again to update;
-`INUA_VERSION=v0.1.2` picks a release. The companions the sample config uses
-(a terminal, a file manager, screenshot tools …) are in
-[docs/design.md](docs/design.md#packages).
+old one stays installed). `INUA_VERSION=v0.1.2` picks a release.
+
+To update, run `inua upgrade`; `inua upgrade -check` only says whether a
+newer release is out. It downloads the release (checking its checksum),
+replaces the programs where `inua` is installed and the light apps'
+launchers, and restarts the shell in place; it lists the programs that keep
+running the old version until they restart (inua-keyring until you log in
+again). `-version v0.1.2` installs a
+given release. Running the install script again also updates. The shell
+checks for a new release a random 1 to 10 minutes after you log in, then
+once a day, and tells you in a notification with an **Upgrade** button;
+`updates = false` under `[notifications]` in `config.toml` turns that off.
+
+The companions the sample config uses (a terminal, a file manager,
+screenshot tools …) are in [docs/design.md](docs/design.md#packages).
 
 From source:
 
@@ -88,7 +99,7 @@ the login session. What ends up where:
 | | Installed to | |
 | --- | --- | --- |
 | `inua-shell` | `~/.local/bin` | The shell |
-| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check` |
+| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check`, `inua upgrade` |
 | `inua-apps` | `~/.local/bin` | The light apps (`inua-apps clock`) |
 | `inua-pinentry` | `~/.local/bin` | gpg's passphrase prompt, asking in inua's dialog |
 | Light app launchers and icons | `~/.local/share/applications`, `~/.local/share/icons` | So the launcher and dock list them |

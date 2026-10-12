@@ -9,6 +9,7 @@
 //	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
 //	inua init [-force] [-pinentry ask|replace|keep] [-dir dir]  write the sample configuration
 //	inua keyring status|import|enable|disable|replace  the Secret Service kept in pass
+//	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
 package main
@@ -55,6 +56,8 @@ func main() {
 		err = cmdInit(os.Args[2:])
 	case "keyring":
 		err = cmdKeyring(os.Args[2:])
+	case "upgrade":
+		err = cmdUpgrade(os.Args[2:])
 	case "version", "--version", "-v":
 		fmt.Println("inua", version)
 	default:
@@ -76,6 +79,7 @@ func usage() {
   inua config apply
   inua init [-force] [-pinentry ask|replace|keep] [-dir dir]
   inua keyring status|import [-n]|enable|disable|replace
+  inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua version`)
 	os.Exit(2)
 }
