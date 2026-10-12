@@ -67,6 +67,37 @@ var Apps = map[string]struct {
 	"viewer":         {"Viewer", "Viewer", func() view { return &viewerApp{} }, true},
 }
 
+// View is a light app's window from another package: cmd/inua-assistant
+// registers one so that inua-apps never links what it needs.
+type View interface {
+	// Build makes the window from its layout; called once, on activate.
+	Build(c *Ctx) *gtk.ApplicationWindow
+	// ThemeChanged runs after the theme's colours change.
+	ThemeChanged()
+}
+
+// Opener is a View that takes the arguments of its first start.
+type Opener interface{ Open(args []string) }
+
+type external struct{ v View }
+
+func (e external) build(c *Ctx) *gtk.ApplicationWindow { return e.v.Build(c) }
+func (e external) themeChanged()                       { e.v.ThemeChanged() }
+func (e external) open(args []string) {
+	if o, ok := e.v.(Opener); ok {
+		o.Open(args)
+	}
+}
+
+// Register adds a light app from another package, for Run.
+func Register(name, id, title string, make func() View) {
+	Apps[name] = struct {
+		ID, Title string
+		make      func() view
+		many      bool
+	}{id, title, func() view { return external{make()} }, false}
+}
+
 // Ctx is what the views share: the application, the layouts and the
 // theme.
 type Ctx struct {

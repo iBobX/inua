@@ -453,3 +453,35 @@ func TestEmojiMode(t *testing.T) {
 		t.Errorf("none: %q %q", titles(l.Results), l.Message())
 	}
 }
+
+func TestAssistant(t *testing.T) {
+	var l Launcher
+	l.SetApps(testApps())
+	l.SetWeb("https://www.google.com/search?q=%s", nil)
+	l.Show(Apps)
+	l.SetQuery("firefox")
+	if last := l.Results[len(l.Results)-1]; last.Ask != "" {
+		t.Errorf("no assistant, no row: %+v", last)
+	}
+
+	l.SetAssistant(true)
+	if last := l.Results[len(l.Results)-1]; last.Ask != "firefox" || last.Icon != AssistantIcon {
+		t.Errorf("the last row asks: %+v", last)
+	}
+	if r := l.Results[0]; r.Title != "Firefox" {
+		t.Errorf("an app still comes first: %+v", r)
+	}
+
+	// "?" asks at once: the only row.
+	l.SetQuery("? why is the fan loud")
+	if len(l.Results) != 1 {
+		t.Fatalf("?: %q", titles(l.Results))
+	}
+	if a := l.Execute(); a.Kind != Ask || a.Text != "why is the fan loud" {
+		t.Errorf("asks: %+v", a)
+	}
+	l.SetQuery("?")
+	if len(l.Results) != 0 || l.Message() != "Ask the assistant anything" {
+		t.Errorf("? alone: %q %q", titles(l.Results), l.Message())
+	}
+}

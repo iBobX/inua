@@ -52,6 +52,7 @@ type settings struct {
 	hyprKb string
 
 	sc shortcutState // the Shortcuts page
+	ai aiSettings    // the AI page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -114,6 +115,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			if on {
 				c.Input.TouchpadAccel = "adaptive"
 			}
+		default:
+			s.aiSwitch(sw.GetName(), on, &c)
 		}
 		s.changeSettings(c)
 		return false // let the switch move
@@ -148,12 +151,16 @@ func (s *shellUI) bindSettingsHandlers() {
 		case "caps":
 			opts := shell.SetCapsLock(s.kbOptions(), pick(capsChoices, i, ""))
 			c.Input.KbOptions = &opts
+		default:
+			if strings.HasPrefix(d.GetName(), "ai") {
+				s.aiDrop(d.GetName(), i, &c)
+			}
 		}
 		s.changeSettings(c)
 	}
 	s.onSettingsButton = func(b gtk.Button) {
 		name := b.GetName()
-		if s.shortcutButton(name) {
+		if s.shortcutButton(name) || s.aiButton(name) {
 			return
 		}
 		c := s.cfg
@@ -305,14 +312,15 @@ func (s *shellUI) openSettings() {
 	ui.Get("bg_choose", &choose)
 	ui.Get("bg_clear", &clearImage)
 	s.buildStickyHeads(ui)
+	st.entries = map[uintptr]*gtk.Entry{}
+	st.drops = map[uintptr]*gtk.DropDown{}
+	s.getAISettings(ui)
 	ui.Close()
 
-	st.entries = map[uintptr]*gtk.Entry{}
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot} {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	st.drops = map[uintptr]*gtk.DropDown{}
 	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
@@ -342,7 +350,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "notifications", "shortcuts", "keyboard", "mouse"}
+var settingsPages = []string{"appearance", "bar", "launcher", "ai", "notifications", "shortcuts", "keyboard", "mouse"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -458,6 +466,7 @@ func (s *shellUI) showSettings() {
 	s.showNotifySettings()
 	s.showDockSettings()
 	s.showShortcuts()
+	s.showAISettings()
 	st.clockPreview.SetText(config.Strftime(c.Bar.Clock, time.Now()))
 	for _, e := range st.entries {
 		e.RemoveCssClass("invalid")
@@ -479,6 +488,9 @@ func (s *shellUI) settingsEntryChanged(e *gtk.Entry) {
 	text := e.GetText()
 	c := s.cfg
 	valid := true
+	if strings.HasPrefix(e.GetName(), "ai-key:") {
+		return // saved with its button
+	}
 	switch e.GetName() {
 	case "clock":
 		valid = strings.TrimSpace(text) != ""
@@ -493,6 +505,10 @@ func (s *shellUI) settingsEntryChanged(e *gtk.Entry) {
 	case "bg_color":
 		valid = config.ValidColor(text)
 		c.Background.Color = text
+	default:
+		if strings.HasPrefix(e.GetName(), "ai-") {
+			valid = s.aiEntryChanged(e.GetName(), text, &c)
+		}
 	case "bg_image":
 		c.Background.Image = text
 		if p := c.ImagePath(); p != "" {
@@ -525,6 +541,7 @@ func (s *shellUI) saveSettings() {
 	}
 	s.setStatus("", false)
 	s.applyHyprland()
+	s.applyKeyRenames()
 }
 
 func (s *shellUI) setStatus(text string, failed bool) {

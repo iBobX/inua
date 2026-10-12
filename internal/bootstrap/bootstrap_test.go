@@ -214,6 +214,9 @@ func TestFindSource(t *testing.T) {
 func TestSetPinentry(t *testing.T) {
 	dir := t.TempDir()
 	prog := "/home/u/.local/bin/inua-pinentry"
+	if got := Pinentry(dir); got != "" {
+		t.Errorf("no file: Pinentry = %q", got)
+	}
 	// No file: written with the line.
 	if changed, _, err := SetPinentry(dir, prog, false); err != nil || !changed {
 		t.Fatalf("fresh: %v %v", changed, err)
@@ -225,8 +228,14 @@ func TestSetPinentry(t *testing.T) {
 	if changed, _, _ := SetPinentry(dir, prog, false); changed {
 		t.Error("rewrote a current file")
 	}
+	if got := Pinentry(dir); got != prog {
+		t.Errorf("Pinentry = %q", got)
+	}
 	// Another pinentry: kept unless forced; the other lines stay.
 	os.WriteFile(filepath.Join(dir, "gpg-agent.conf"), []byte("default-cache-ttl 600\npinentry-program /usr/bin/pinentry-qt\n"), 0o600)
+	if got := Pinentry(dir); got != "/usr/bin/pinentry-qt" {
+		t.Errorf("Pinentry = %q", got)
+	}
 	if changed, msg, _ := SetPinentry(dir, prog, false); changed || !strings.Contains(msg, "pinentry-qt") {
 		t.Errorf("replaced another pinentry without -force: %q", msg)
 	}

@@ -122,6 +122,13 @@ func (s *shellUI) executeLauncher() {
 		} else {
 			l.st.Done(nil)
 		}
+	case shell.Ask:
+		log.Printf("launcher: ask the assistant")
+		if err := desktop.Spawn([]string{"inua-assistant", "--ask", a.Text}, ""); err != nil {
+			l.st.Done(fmt.Errorf("could not start the assistant: %v", err))
+		} else {
+			l.st.Done(nil)
+		}
 	case shell.Run:
 		log.Printf("launcher: %s %s", a.Text, a.Arg)
 		l.st.Done(nil)
@@ -185,8 +192,11 @@ func (s *shellUI) runCommand(id, arg, window string) {
 	}
 }
 
-// applyLauncherWeb gives the launcher the web search and quicklinks.
+// applyLauncherWeb gives the launcher the web search and quicklinks, and
+// the assistant's row when it is installed and on.
 func (s *shellUI) applyLauncherWeb() {
+	_, err := exec.LookPath("inua-assistant")
+	s.launcher.st.SetAssistant(s.cfg.Assistant.Enable && err == nil)
 	var links []shell.Quicklink
 	for _, q := range s.cfg.Launcher.Quicklinks {
 		links = append(links, shell.Quicklink{Keyword: q.Keyword, Name: q.Name, URL: q.URL})

@@ -6,9 +6,11 @@
 # It puts the programs in ~/.local/bin and the light apps' launchers in
 # ~/.local/share, checks the packages inua needs, writes your configuration
 # with `inua init` (never replacing your files), and, with sudo, adds the
-# Inua login session. If you log in with another login manager (GDM, SDDM,
-# LightDM …) it asks whether to switch to greetd + tuigreet; the answer
-# defaults to no. Run it again to update.
+# Inua login session. Where inua replaces something you have, it asks
+# first, and the answer defaults to yes: gpg's pinentry (inua-pinentry),
+# the keyring apps keep secrets in (inua-keyring, in pass), and the login
+# manager (GDM, SDDM, LightDM … → greetd + tuigreet). Run it again to
+# update.
 #
 # Environment:
 #   INUA_VERSION=v0.1.2   a release instead of the latest
@@ -78,7 +80,8 @@ src=$tmp/$name
 
 # --- the programs and launchers --------------------------------------------
 
-for bin in inua-shell inua inua-apps inua-pinentry; do
+for bin in inua-shell inua inua-apps inua-pinentry inua-assistant inua-keyring; do
+    [ -f "$src/$bin" ] || continue # inua-assistant and inua-keyring came with v0.0.3
     install -Dm755 "$src/$bin" "$prefix/bin/$bin"
 done
 install -Dm644 -t "$data/applications" "$src"/config/apps/*.desktop
@@ -97,6 +100,9 @@ have Hyprland || have hyprland || missing="$missing hyprland"
 lib() { ldconfig -p 2>/dev/null | grep -q "$1"; }
 lib libgtk-4.so.1 || missing="$missing libgtk-4-1"
 lib libgtk4-layer-shell.so || missing="$missing libgtk4-layer-shell0"
+# inua-keyring keeps apps' secrets in pass (docs/feat/keyring.md)
+have pass || missing="$missing pass"
+have gpg || missing="$missing gnupg"
 if [ -n "$missing" ]; then
     say "inua also needs:$missing"
     if have apt-get && ask "Install them with apt (sudo)?" y; then
@@ -109,7 +115,23 @@ fi
 
 # --- your configuration -----------------------------------------------------
 
+# inua init asks before replacing gpg's pinentry with inua-pinentry.
 PATH="$prefix/bin:$PATH" "$prefix/bin/inua" init || say "inua init reported problems (above); fix them, then run: inua init"
+
+# --- the keyring ------------------------------------------------------------
+
+# inua keyring replace asks before replacing the running keyring
+# (gnome-keyring …), copying its items into pass first.
+if [ -x "$prefix/bin/inua-keyring" ] && have pass; then
+    if [ ! -f "${PASSWORD_STORE_DIR:-$HOME/.password-store}/.gpg-id" ]; then
+        say "pass has no password store yet; for inua-keyring, run: pass init YOUR-GPG-KEY-ID, then: inua keyring replace"
+    elif [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ ! -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
+        say "no desktop session here; for inua-keyring, run in one: inua keyring replace"
+    else
+        PATH="$prefix/bin:$PATH" "$prefix/bin/inua" keyring replace </dev/null ||
+            say "the keyring was not replaced (above); try again with: inua keyring replace"
+    fi
+fi
 
 # --- the login session ------------------------------------------------------
 
@@ -126,12 +148,12 @@ case $current in
     greetd) mode=greetd ;;
     "")
         mode=other
-        ask "No login manager runs. Install greetd + tuigreet, the login screen inua recommends?" n && switch=yes
+        ask "No login manager runs. Install greetd + tuigreet, the login screen inua recommends?" y && switch=yes
         ;;
     *)
         mode=other
         say "you log in with $current; Inua will be in its session list"
-        ask "Switch to greetd + tuigreet, the login screen inua recommends? $current stays installed" n && switch=yes
+        ask "Replace $current with greetd + tuigreet, the login screen inua recommends? $current stays installed" y && switch=yes
         ;;
 esac
 if [ "$switch" = yes ]; then

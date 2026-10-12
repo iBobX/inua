@@ -543,7 +543,7 @@ func (s *shellUI) barNames() []string {
 //	shell    state|close|reload|restart|snapshot DIR|tray-menu N
 func (s *shellUI) request(req ipc.Request) ipc.Response {
 	if req.Op == "show" {
-		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
+		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
 	}
 	if req.Op != "call" {
 		return ipc.Response{Error: "unknown op " + req.Op}
@@ -618,8 +618,12 @@ func (s *shellUI) request(req ipc.Request) ipc.Response {
 		if !s.screenshotRequest(req.Function) {
 			return bad
 		}
+	case "system":
+		return s.systemRequest(req.Function, req.Args)
 	case "notifications":
 		switch req.Function {
+		case "list":
+			return s.notificationList()
 		case "toggle":
 			s.toggleCenter()
 		case "open":

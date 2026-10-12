@@ -23,6 +23,9 @@ func Format(c Config) string {
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus,
 		c.Dock.Enable, c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
+		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
+		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges, aiProfiles(c.Assistant.Profiles),
+		q(c.Keyring.Folder),
 		shortcuts(c.Shortcuts))
 }
 
@@ -59,6 +62,17 @@ func quicklinks(all []Quicklink) string {
 	var b strings.Builder
 	for _, l := range all {
 		fmt.Fprintf(&b, "\n\n[[launcher.quicklinks]]\nkeyword = %s\nname = %s\nurl = %s", q(l.Keyword), q(l.Name), q(l.URL))
+	}
+	return b.String()
+}
+
+// aiProfiles renders the assistant's profiles as an array of tables
+// under [assistant].
+func aiProfiles(all []AIProfile) string {
+	var b strings.Builder
+	for _, p := range all {
+		fmt.Fprintf(&b, "\n\n[[assistant.profiles]]\nname = %s\nprovider = %s\nmodel = %s\nendpoint = %s\napi_key_env = %s\nreasoning = %s",
+			q(p.Name), q(p.Provider), q(p.Model), q(p.Endpoint), q(p.APIKeyEnv), q(p.Reasoning))
 	}
 	return b.String()
 }
@@ -292,6 +306,43 @@ drawer = %t
 # Apps always on the dock, by desktop ID (the .desktop file's name without
 # .desktop), in order. Missing ones are skipped.
 pinned = %s
+
+[assistant]
+# The assistant (inua-assistant, the launcher's "Ask"): an agent with
+# inua's tools, run by Mister Morph. Nothing runs until you ask.
+enable = %t
+
+# The profile that answers, and the profiles tried in turn when it fails
+# (an outage, a rate limit). The window can switch to another profile for
+# a conversation.
+profile = %s
+fallback = %s
+
+# Mister Morph's built-in tools to add to inua's: "web_search", "url_fetch",
+# and, asking before each use, "read_file" and "bash".
+tools = %s
+
+# Ask before changing anything (Wi-Fi, volume, windows …). Power, ending a
+# process and closing a window always ask.
+ask_before_changes = %t
+
+# The models, as Mister Morph's profiles: a name, a provider ("openai",
+# "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",
+# "mistermorph_pro", or "openai_chat_compatible", "openai_response_compatible",
+# "anthropic_compatible" with an endpoint), the model, an endpoint ("" for
+# the provider's own), the environment variable holding the API key, and
+# the reasoning effort ("minimal" to "high"; "" for the model's default).
+# A key typed in the settings window (AI) is kept in the keyring (the
+# Secret Service; inua-keyring keeps it in pass) instead, or without one
+# in ~/.local/share/inua/keys.json, readable only by you; keys are never
+# written here.%s
+
+[keyring]
+# inua-keyring keeps apps' secrets (the Secret Service: browsers' keys,
+# Wi-Fi passwords, the assistant's API keys) in pass, under this folder
+# of the password store (PASSWORD_STORE_DIR, else ~/.password-store).
+# inua keyring status|import|enable|disable: see docs/feat/keyring.md.
+folder = %s
 
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything

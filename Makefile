@@ -1,7 +1,9 @@
 # inua: Hyprland desktop shell in Go + GTK4 (docs/architecture.md).
 #
 #   make           build bin/inua-shell (the shell), bin/inua (command line),
-#                  bin/inua-apps (light apps) and bin/inua-pinentry (gpg's prompt)
+#                  bin/inua-apps (light apps), bin/inua-pinentry (gpg's prompt)
+#                  bin/inua-assistant (the assistant) and bin/inua-keyring
+#                  (the Secret Service kept in pass)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -40,16 +42,18 @@ build:
 	go build -o bin/inua ./cmd/inua
 	go build -o bin/inua-apps ./cmd/inua-apps
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
+	go build -o bin/inua-assistant ./cmd/inua-assistant
+	go build -o bin/inua-keyring ./cmd/inua-keyring
 
 deps:
 	sudo apt install -y hyprland libgtk-4-1 libgtk4-layer-shell0 \
-		golang-go gcc dbus-daemon blueprint-compiler python3
+		golang-go gcc dbus-daemon blueprint-compiler python3 pass gnupg
 
 deps-desktop:
 	sudo apt install -y kitty nautilus hypridle wf-recorder libturbojpeg0 \
 		xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
 		grim slurp wl-clipboard brightnessctl playerctl fcitx5 xdg-terminal-exec \
-		fonts-ibm-plex fonts-noto-cjk
+		pass gnupg fonts-ibm-plex fonts-noto-cjk
 
 deps-dm:
 	sudo apt install -y greetd tuigreet
@@ -71,7 +75,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-pinentry
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-pinentry bin/inua-assistant bin/inua-keyring
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
 	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
 

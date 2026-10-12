@@ -21,7 +21,7 @@ and a settings window, in one calm visual language. It works with
 | | |
 | --- | --- |
 | **Bar** | Workspaces, the focused window's title, the clock and its calendar, the tray, notifications and the control center. One per monitor. |
-| **Launcher** | One search for apps, windows and the system's commands; it answers arithmetic, units, currencies and crypto, searches the web and sites by keyword, and finds emoji after `:` (Super+Space). |
+| **Launcher** | One search for apps, windows and the system's commands; it answers arithmetic, units, currencies and crypto, searches the web and sites by keyword, finds emoji after `:`, and asks the assistant after `?` (Super+Space). |
 | **Control center** | Wi-Fi, Bluetooth, power saver, Focus and Tailscale tiles; brightness, volume and media; power. |
 | **Notifications** | inua is the notification server: banners, then a notification center grouped by app. |
 | **Dock** | Pinned and running apps; drag to reorder or to unpin; a drawer of the light apps. |
@@ -30,6 +30,8 @@ and a settings window, in one calm visual language. It works with
 | **Lock screen** | On the compositor's session lock: if the shell stops, the screen stays locked. |
 | **Screenshots** | Areas, windows and screens, recordings, and a drawer of recent shots to drag into apps. |
 | **Passwords** | inua asks for administrator passwords (it is the Polkit agent) and gpg's passphrases. |
+| **Keyring** | `inua-keyring` serves apps' secrets (the Secret Service: browsers, Wi-Fi, the assistant's keys) from pass, after importing gnome-keyring's. |
+| **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
@@ -58,9 +60,12 @@ Then log out and pick **Inua** at the login screen. The script installs the
 latest release for amd64 or arm64 (checking its checksum) into `~/.local`,
 offers to install the packages inua needs with apt, writes your
 configuration with `inua init` (never replacing your files), and adds the
-Inua login session (sudo). If you log in with GDM, SDDM or another login
-manager, it asks whether to switch to greetd + tuigreet, the login screen
-inua recommends; the answer defaults to no. Run it again to update;
+Inua login session (sudo). Where inua replaces something you have, it asks
+first, and the answer defaults to yes: gpg's pinentry (with
+`inua-pinentry`), the keyring apps keep secrets in (gnome-keyring, with
+`inua-keyring`, after copying its items into pass), and the login manager
+(GDM, SDDM … with greetd + tuigreet, the login screen inua recommends; the
+old one stays installed). Run it again to update;
 `INUA_VERSION=v0.1.2` picks a release. The companions the sample config uses
 (a terminal, a file manager, screenshot tools …) are in
 [docs/design.md](docs/design.md#packages).
@@ -86,7 +91,7 @@ the login session. What ends up where:
 | `inua-apps` | `~/.local/bin` | The light apps (`inua-apps clock`) |
 | `inua-pinentry` | `~/.local/bin` | gpg's passphrase prompt, asking in inua's dialog |
 | Light app launchers and icons | `~/.local/share/applications`, `~/.local/share/icons` | So the launcher and dock list them |
-| Sample configuration | `~/.config/hypr`, `~/.config/inua` | Written by `inua init`, which never replaces your files (unless `-force`, keeping `.bak`) and points gpg-agent at `inua-pinentry` |
+| Sample configuration | `~/.config/hypr`, `~/.config/inua` | Written by `inua init`, which never replaces your files (unless `-force`, keeping `.bak`) and points gpg-agent at `inua-pinentry` (asking first when it uses another pinentry; `-pinentry replace` or `keep` answers ahead) |
 | `inua-session`, `inua.desktop` | `/usr/local/bin`, `/usr/share/wayland-sessions` | The login session (sudo); with greetd, also `/etc/greetd/config.toml` |
 
 Installed only the programs (`make install`)? Run `inua init` once for
