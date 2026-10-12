@@ -378,7 +378,9 @@ func (s *shellUI) showSettingsPage(name string) bool {
 	if st.win == nil || !slices.Contains(settingsPages, name) {
 		return false
 	}
-	st.pages.SetVisibleChildName(name)
+	// At once: a crossfade begun before a new window's first frame stays
+	// on the old page.
+	st.pages.SetVisibleChildFull(name, gtk.StackTransitionTypeNoneValue)
 	return true
 }
 
