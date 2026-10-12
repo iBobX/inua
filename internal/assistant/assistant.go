@@ -60,7 +60,7 @@ func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error)
 		return s, fmt.Errorf("assistant: no profile %q", c.Profile)
 	}
 	resolve := func(p config.AIProfile) (Profile, bool) {
-		key := cmp.Or(saved[p.Name], strings.TrimSpace(os.Getenv(cmp.Or(p.APIKeyEnv, "-"))))
+		key := saved[p.Name]
 		if key == "" && slices.Contains(keyless, p.Provider) {
 			key = "none"
 		}
@@ -68,11 +68,7 @@ func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error)
 	}
 	first, ok := resolve(primary)
 	if !ok {
-		how := "type one in Settings → AI"
-		if primary.APIKeyEnv != "" {
-			how += " or set " + primary.APIKeyEnv
-		}
-		return s, fmt.Errorf("%w for %s: %s", ErrNoKey, primary.Name, how)
+		return s, fmt.Errorf("%w for %s: type one in Settings → AI", ErrNoKey, primary.Name)
 	}
 	s.Profiles = []Profile{first}
 	for _, p := range c.Profiles {

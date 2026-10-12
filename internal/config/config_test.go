@@ -436,7 +436,7 @@ fallback = ["local", "work", "local", "nope"]
 name = "work"
 provider = "anthropic"
 model = "claude-sonnet-5-5"
-api_key_env = "ANTHROPIC_API_KEY"
+api_key_env = "ANTHROPIC_API_KEY" # from older configs: ignored, without a warning
 
 [[assistant.profiles]]
 name = "local"

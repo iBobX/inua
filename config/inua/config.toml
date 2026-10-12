@@ -231,19 +231,17 @@ ask_before_changes = true
 # "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",
 # "mistermorph_pro", or "openai_chat_compatible", "openai_response_compatible",
 # "anthropic_compatible" with an endpoint), the model, an endpoint ("" for
-# the provider's own), the environment variable holding the API key, and
-# the reasoning effort ("minimal" to "high"; "" for the model's default).
-# A key typed in the settings window (AI) is kept in the keyring (the
-# Secret Service; inua-keyring keeps it in pass) instead, or without one
-# in ~/.local/share/inua/keys.json, readable only by you; keys are never
-# written here.
+# the provider's own), and the reasoning effort ("minimal" to "high"; ""
+# for the model's default). The API key is typed in the settings window
+# (AI) and kept in the keyring (the Secret Service; inua-keyring keeps it
+# in pass), or without one in ~/.local/share/inua/keys.json, readable only
+# by you; keys are never written here.
 
 [[assistant.profiles]]
 name = "openai"
 provider = "openai"
 model = "gpt-5.2"
 endpoint = ""
-api_key_env = "OPENAI_API_KEY"
 reasoning = ""
 
 [keyring]

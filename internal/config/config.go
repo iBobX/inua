@@ -207,10 +207,6 @@ type AIProfile struct {
 	// Endpoint is the API's address, for a compatible server or a proxy;
 	// "" for the provider's own.
 	Endpoint string `toml:"endpoint"`
-	// APIKeyEnv names the environment variable holding the API key. A key
-	// typed in the settings window is kept outside this file instead
-	// (internal/assistant/keys).
-	APIKeyEnv string `toml:"api_key_env"`
 	// Reasoning is the reasoning effort (ReasoningEfforts); "" for the
 	// model's default.
 	Reasoning string `toml:"reasoning"`
@@ -227,20 +223,20 @@ func (a Assistant) ProfileNamed(name string) (AIProfile, bool) {
 }
 
 // AIProviders are the inference providers Mister Morph knows, as the
-// settings window offers them, with the variable their key is usually in.
-var AIProviders = []struct{ ID, Name, KeyEnv string }{
-	{"openai", "OpenAI", "OPENAI_API_KEY"},
-	{"anthropic", "Anthropic", "ANTHROPIC_API_KEY"},
-	{"gemini", "Google Gemini", "GEMINI_API_KEY"},
-	{"xai", "xAI", "XAI_API_KEY"},
-	{"deepseek", "DeepSeek", "DEEPSEEK_API_KEY"},
-	{"kimi", "Kimi (Moonshot)", "MOONSHOT_API_KEY"},
-	{"openrouter", "OpenRouter", "OPENROUTER_API_KEY"},
-	{"groq", "Groq", "GROQ_API_KEY"},
-	{"mistermorph_pro", "Mister Morph Pro", "MISTER_MORPH_LLM_API_KEY"},
-	{"openai_chat_compatible", "OpenAI-compatible (Chat Completions)", ""},
-	{"openai_response_compatible", "OpenAI-compatible (Responses)", ""},
-	{"anthropic_compatible", "Anthropic-compatible", ""},
+// settings window offers them.
+var AIProviders = []struct{ ID, Name string }{
+	{"openai", "OpenAI"},
+	{"anthropic", "Anthropic"},
+	{"gemini", "Google Gemini"},
+	{"xai", "xAI"},
+	{"deepseek", "DeepSeek"},
+	{"kimi", "Kimi (Moonshot)"},
+	{"openrouter", "OpenRouter"},
+	{"groq", "Groq"},
+	{"mistermorph_pro", "Mister Morph Pro"},
+	{"openai_chat_compatible", "OpenAI-compatible (Chat Completions)"},
+	{"openai_response_compatible", "OpenAI-compatible (Responses)"},
+	{"anthropic_compatible", "Anthropic-compatible"},
 }
 
 // AIProviderIDs lists AIProviders' IDs.
@@ -413,7 +409,7 @@ func Default() Config {
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true,
-			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2", APIKeyEnv: "OPENAI_API_KEY"}}},
+			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring"},
 	}
 }
@@ -449,6 +445,9 @@ func Load(path string) (Config, []string, error) {
 	}
 	var warnings []string
 	for _, k := range md.Undecoded() {
+		if k.String() == "assistant.profiles.api_key_env" {
+			continue // keys were once read from a variable; now only the keyring holds them
+		}
 		warnings = append(warnings, fmt.Sprintf("unknown setting %s", k))
 	}
 	warnings = append(warnings, c.validate()...)

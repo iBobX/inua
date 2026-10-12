@@ -113,8 +113,8 @@ Set it up in Settings → AI. Each profile is a model: a provider
 compatible server such as one on this computer), the model, and its key,
 typed there (kept in the keyring, the Secret Service: in pass with
 inua-keyring, see the shell's features; without one, in
-`~/.local/share/inua/keys.json`, readable only by you) or read from an
-environment variable; never in `config.toml`. One
+`~/.local/share/inua/keys.json`, readable only by you); never in
+`config.toml`. One
 profile answers first; others marked Fallback take over, in order, when it
 fails, and the window's drop-down switches profile for a conversation.
 What the tools read is sent to the provider answering. The design:

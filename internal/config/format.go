@@ -71,8 +71,8 @@ func quicklinks(all []Quicklink) string {
 func aiProfiles(all []AIProfile) string {
 	var b strings.Builder
 	for _, p := range all {
-		fmt.Fprintf(&b, "\n\n[[assistant.profiles]]\nname = %s\nprovider = %s\nmodel = %s\nendpoint = %s\napi_key_env = %s\nreasoning = %s",
-			q(p.Name), q(p.Provider), q(p.Model), q(p.Endpoint), q(p.APIKeyEnv), q(p.Reasoning))
+		fmt.Fprintf(&b, "\n\n[[assistant.profiles]]\nname = %s\nprovider = %s\nmodel = %s\nendpoint = %s\nreasoning = %s",
+			q(p.Name), q(p.Provider), q(p.Model), q(p.Endpoint), q(p.Reasoning))
 	}
 	return b.String()
 }
@@ -347,12 +347,11 @@ ask_before_changes = %t
 # "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",
 # "mistermorph_pro", or "openai_chat_compatible", "openai_response_compatible",
 # "anthropic_compatible" with an endpoint), the model, an endpoint ("" for
-# the provider's own), the environment variable holding the API key, and
-# the reasoning effort ("minimal" to "high"; "" for the model's default).
-# A key typed in the settings window (AI) is kept in the keyring (the
-# Secret Service; inua-keyring keeps it in pass) instead, or without one
-# in ~/.local/share/inua/keys.json, readable only by you; keys are never
-# written here.%s
+# the provider's own), and the reasoning effort ("minimal" to "high"; ""
+# for the model's default). The API key is typed in the settings window
+# (AI) and kept in the keyring (the Secret Service; inua-keyring keeps it
+# in pass), or without one in ~/.local/share/inua/keys.json, readable only
+# by you; keys are never written here.%s
 
 [keyring]
 # inua-keyring keeps apps' secrets (the Secret Service: browsers' keys,

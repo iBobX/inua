@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"log"
-	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -50,8 +49,6 @@ type aiCard struct {
 
 // reasoningNames are config.ReasoningEfforts as the drop-down shows them.
 var reasoningNames = []string{"Model default", "Minimal", "Low", "Medium", "High"}
-
-var envNameRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 
 func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	a := &s.settings.ai
@@ -161,7 +158,7 @@ func (s *shellUI) buildAICards(n int) {
 	st := &s.settings
 	a := &st.ai
 	for _, card := range a.cards { // their widgets go with the box's children
-		for _, e := range []*gtk.Entry{card.name, card.model, card.endpoint, card.env, card.key} {
+		for _, e := range []*gtk.Entry{card.name, card.model, card.endpoint, card.key} {
 			delete(st.entries, e.GoPointer())
 		}
 		delete(st.drops, card.provider.GoPointer())
@@ -230,8 +227,6 @@ func (s *shellUI) buildAICards(n int) {
 		card.provider = drop("provider", providers)
 		card.model = entry("model", "the model's ID")
 		card.endpoint = entry("endpoint", "the provider's own")
-		card.env = entry("env", "none")
-		card.env.AddCssClass("mono-entry")
 		card.reasoning = drop("reasoning", reasoningNames)
 		card.key = entry("key", "Paste a key, then Save")
 		card.key.SetVisibility(false)
@@ -250,8 +245,7 @@ func (s *shellUI) buildAICards(n int) {
 		field("Provider", &card.provider.Widget, 1, 0, 1)
 		field("Model", &card.model.Widget, 0, 1, 1)
 		field("Reasoning", &card.reasoning.Widget, 1, 1, 1)
-		field("Endpoint", &card.endpoint.Widget, 0, 2, 1)
-		field("Key from the variable", &card.env.Widget, 1, 2, 1)
+		field("Endpoint", &card.endpoint.Widget, 0, 2, 2)
 		keyRow := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		keyRow.Append(&card.key.Widget)
 		card.save = gtk.NewButtonWithLabel("Save")
@@ -282,7 +276,7 @@ func (s *shellUI) buildAICards(n int) {
 
 		gtkx.Append(&a.list, &box.Widget)
 		// The card's box owns them now; the card keeps pointers.
-		for _, o := range []interface{ Unref() }{&card.title, &card.state, card.name, card.model, card.endpoint, card.env,
+		for _, o := range []interface{ Unref() }{&card.title, &card.state, card.name, card.model, card.endpoint,
 			card.key, card.provider, card.reasoning, card.fallback, card.fallbackRow, card.up, card.down, card.remove,
 			card.save, card.forget} { // texts and grid went with gtkx.Append
 			o.Unref()
@@ -299,7 +293,6 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	setEntry(card.name, p.Name)
 	setEntry(card.model, p.Model)
 	setEntry(card.endpoint, p.Endpoint)
-	setEntry(card.env, p.APIKeyEnv)
 	card.provider.SetSelected(uint32(max(0, slices.Index(config.AIProviderIDs(), p.Provider))))
 	card.reasoning.SetSelected(uint32(max(0, slices.Index(config.ReasoningEfforts, p.Reasoning))))
 	card.fallback.SetActive(slices.Contains(c.Fallback, p.Name))
@@ -316,13 +309,11 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 		role = fmt.Sprintf("Fallback %d. ", slices.Index(c.Fallback, p.Name)+1)
 	}
 	var key string
-	switch src := keys.Source(saved, p.Name, p.APIKeyEnv); {
+	switch {
 	case err != nil:
 		key = "The saved keys cannot be read: " + err.Error()
-	case src == "saved":
+	case saved[p.Name] != 0:
 		key = "Key saved"
-	case src != "":
-		key = "Key from $" + src
 	case strings.HasSuffix(p.Provider, "_compatible"):
 		key = "No key (a local server may want none)"
 	case p.Name == c.Profile:
@@ -338,15 +329,6 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	} else {
 		card.key.SetPlaceholderText("Paste a key, then Save")
 	}
-}
-
-func providerKeyEnv(id string) string {
-	for _, p := range config.AIProviders {
-		if p.ID == id {
-			return p.KeyEnv
-		}
-	}
-	return ""
 }
 
 // aiIndex is the profile a control named "ai-FIELD:N" is for.
@@ -410,11 +392,6 @@ func (s *shellUI) aiEntryChanged(name, text string, c *config.Config) bool {
 		p.Model = text
 	case "endpoint":
 		p.Endpoint = text
-	case "env":
-		if text != "" && !envNameRe.MatchString(text) {
-			return false
-		}
-		p.APIKeyEnv = text
 	case "key":
 		return true // saved with its button
 	}
@@ -441,10 +418,6 @@ func (s *shellUI) aiDrop(name string, i int, c *config.Config) {
 	case "provider":
 		if i < 0 || i >= len(config.AIProviders) {
 			return
-		}
-		// The variable follows the provider unless it was set by hand.
-		if p.APIKeyEnv == "" || p.APIKeyEnv == providerKeyEnv(p.Provider) {
-			p.APIKeyEnv = config.AIProviders[i].KeyEnv
 		}
 		p.Provider = config.AIProviders[i].ID
 	case "reasoning":

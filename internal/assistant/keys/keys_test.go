@@ -27,10 +27,8 @@ func TestFile(t *testing.T) {
 	if v, _ := k.Get("work"); v != "sk-1" {
 		t.Errorf("renamed: %q", v)
 	}
-	saved, _ := k.Saved()
-	t.Setenv("INUA_TEST_KEY", "sk-env")
-	if Source(saved, "work", "") != "saved" || Source(saved, "x", "INUA_TEST_KEY") != "INUA_TEST_KEY" || Source(saved, "x", "NOPE_NOT_SET") != "" {
-		t.Error("source")
+	if saved, _ := k.Saved(); saved["work"] == 0 || saved["x"] != 0 {
+		t.Errorf("saved: %v", saved)
 	}
 	k.Set("work", "")
 	if saved, _ := k.Saved(); len(saved) != 0 {

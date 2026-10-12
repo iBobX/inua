@@ -269,15 +269,3 @@ func write(path string, keys map[string]string) error {
 	}
 	return os.Rename(tmp.Name(), path)
 }
-
-// Source says where a profile's key comes from: "saved", the variable's
-// name, or "" when there is none.
-func Source(saved map[string]uint64, profile, env string) string {
-	switch {
-	case saved[profile] != 0:
-		return "saved"
-	case env != "" && strings.TrimSpace(os.Getenv(env)) != "":
-		return env
-	}
-	return ""
-}

@@ -246,11 +246,7 @@ func (v *view) setUp() {
 	set, err := assistant.SettingsFrom(cfg.Assistant, saved)
 	if errors.Is(err, assistant.ErrNoKey) {
 		p, _ := cfg.Assistant.ProfileNamed(cfg.Assistant.Profile)
-		msg := fmt.Sprintf("No API key for %s (%s): type one in Settings → AI", p.Name, p.Model)
-		if p.APIKeyEnv != "" {
-			msg += fmt.Sprintf(", or set %s in your environment (~/.config/environment.d/) and log in again", p.APIKeyEnv)
-		}
-		say(msg + ".")
+		say(fmt.Sprintf("No API key for %s (%s): type one in Settings → AI.", p.Name, p.Model))
 		return
 	}
 	if err != nil {

@@ -198,11 +198,10 @@ func TestDeclined(t *testing.T) {
 }
 
 func TestSettings(t *testing.T) {
-	t.Setenv("INUA_TEST_KEY", "")
 	c := config.Default().Assistant
 	c.Profiles = []config.AIProfile{
-		{Name: "main", Provider: "openai", Model: "gpt-5.2", APIKeyEnv: "INUA_TEST_KEY"},
-		{Name: "cheap", Provider: "openai", Model: "gpt-5-mini", APIKeyEnv: "INUA_TEST_KEY"},
+		{Name: "main", Provider: "openai", Model: "gpt-5.2"},
+		{Name: "cheap", Provider: "openai", Model: "gpt-5-mini"},
 		{Name: "claude", Provider: "anthropic", Model: "claude-sonnet-5-5"},
 		{Name: "local", Provider: "openai_chat_compatible", Model: "qwen3", Endpoint: "http://127.0.0.1:11434/v1"},
 	}
@@ -210,8 +209,8 @@ func TestSettings(t *testing.T) {
 	if _, err := SettingsFrom(c, nil); !errors.Is(err, ErrNoKey) {
 		t.Errorf("no key for the answering profile: %v", err)
 	}
-	t.Setenv("INUA_TEST_KEY", "sk-env")
-	s, err := SettingsFrom(c, map[string]string{"main": "sk-saved"})
+	t.Setenv("OPENAI_API_KEY", "sk-env") // keys come only from the keyring
+	s, err := SettingsFrom(c, map[string]string{"main": "sk-saved", "cheap": "sk-cheap"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -219,9 +218,9 @@ func TestSettings(t *testing.T) {
 	for _, p := range s.Profiles {
 		names = append(names, p.Name)
 	}
-	// The saved key wins; claude has none and is left out, also as a
+	// claude has none and is left out, also as a
 	// fallback; a local server needs none.
-	if s.Profiles[0].APIKey != "sk-saved" || s.Profiles[1].APIKey != "sk-env" || fmt.Sprint(names) != "[main cheap local]" ||
+	if s.Profiles[0].APIKey != "sk-saved" || s.Profiles[1].APIKey != "sk-cheap" || fmt.Sprint(names) != "[main cheap local]" ||
 		fmt.Sprint(s.Missing) != "[claude]" || fmt.Sprint(s.Fallback) != "[local]" {
 		t.Errorf("%+v", s)
 	}
