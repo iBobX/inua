@@ -200,6 +200,8 @@ func (o *oddGroups) update() {
 		o.f.say("Out of guesses. These were the groups.", "bad")
 	case g.Message == "One word away.":
 		o.f.say("One word away…", "bad")
+	case g.Message == "Already tried.":
+		o.f.say("Already tried, and not a group: change a word.", "bad")
 	case strings.HasPrefix(g.Message, "Not a group"):
 		o.f.say("Not a group. Look for another connection.", "bad")
 	case g.Message != "" && solved > 0:

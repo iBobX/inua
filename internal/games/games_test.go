@@ -191,7 +191,16 @@ func TestGroupsSelectionAndTerminalStates(t *testing.T) {
 	for _, id := range []int{0, 1, 2, 4} {
 		g.Toggle(id)
 	}
-	for range 4 {
+	g.Submit()
+	g.Submit() // the same guess again: pointed out, not counted
+	if g.Mistakes != 1 || g.Message != "Already tried." {
+		t.Fatalf("a repeated guess: %d mistakes, %q", g.Mistakes, g.Message)
+	}
+	for _, other := range []int{5, 6, 8} { // three more, each different
+		g.Selected = [12]bool{}
+		for _, id := range []int{0, 1, 2, other} {
+			g.Toggle(id)
+		}
 		g.Submit()
 	}
 	if g.Result != Lost || g.Mistakes != 4 {

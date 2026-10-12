@@ -1,6 +1,9 @@
 package games
 
-import "math/rand/v2"
+import (
+	"math/rand/v2"
+	"slices"
+)
 
 type WordGroup struct {
 	Title string
@@ -27,6 +30,8 @@ type Groups struct {
 	Solved           [3]bool
 	Result           Outcome
 	Message          string
+	// Tried are the wrong guesses made: the same one again costs nothing.
+	Tried [][12]bool
 }
 
 func NewGroups(puzzle int) *Groups {
@@ -84,6 +89,11 @@ func (g *Groups) Submit() {
 			return
 		}
 	}
+	if slices.Contains(g.Tried, g.Selected) {
+		g.Message = "Already tried."
+		return
+	}
+	g.Tried = append(g.Tried, g.Selected)
 	g.Mistakes++
 	g.Message = "Not a group. Try another connection."
 	for _, count := range counts {
