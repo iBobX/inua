@@ -12,7 +12,7 @@ corner). One per monitor.
 
 ## Launcher
 
-One search for apps and open windows (Super+Space, Super+Tab), ranked by
+One search for apps and open windows (Super+Space; Tab switches modes), ranked by
 prefix, word starts and subsequences; Enter launches or focuses, Esc
 returns focus where it was. It also answers: arithmetic (`2^10 + 3`),
 units (`10 km to mi`, `32 f in c`) and currencies (`100 usd to jpy`, ECB
@@ -25,6 +25,28 @@ screenshots and recording, Pick a Colour, Clear Notifications, Focus, Wi-Fi
 and Bluetooth, Restart inua; and for the window you came from, Close,
 Toggle Floating, Toggle Fullscreen and Center. `workspace 3` goes there,
 `move to workspace 3` takes the window along.
+
+## Workspace overview
+
+Tap Win to toggle a full-screen workspace chooser. Win+Tab and Win+Shift+Tab
+cycle workspaces; releasing Win commits the selection. It groups Hyprland's current
+workspaces by monitor, shows live window thumbnails at their real positions, and lets you move
+between workspaces with the arrow keys. Search filters workspace names,
+monitor names, app classes and window titles; the MRU button toggles recent
+workspace ordering and saves that choice. Empty workspaces are always hidden. Each display has its own independent
+workspace order, and its preview shows only that display's workspaces. Drag a window thumbnail to another
+workspace to move it, including across monitors. Enter switches to the selected
+workspace (or focuses its first window); Escape restores the window that was
+focused before opening. Click a workspace or window to switch directly.
+
+Window thumbnails are captured from Hyprland's toplevel-export protocol.
+Drag onto an existing or new workspace on either display; floating windows
+can also be repositioned inside their workspace. Middle click closes a client.
+Ctrl+Shift+X arms addressed-client force termination; Escape/right click cancels.
+Arrows, Tab/Shift+Tab and the wheel navigate. Press / or start typing to
+filter the overview to windows whose title or app class matches the query. MRU
+and per-monitor scope are saved settings. Win+number always follows the focused display's slots; the slots use MRU
+order when MRU is on and ascending workspace IDs when it is off. Right-click the workspace bar to open.
 
 Every query ends with a web search (`launcher.search`). A quicklink's
 keyword searches its site: `gh inua`, `yt`, `wiki`, `maps`, `tr` … (your
