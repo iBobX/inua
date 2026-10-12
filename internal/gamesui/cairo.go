@@ -192,6 +192,26 @@ func (p pen) TextBox(s, font string, x, y, w float64, c color.NRGBA) float64 {
 	return float64(lh)
 }
 
+// TextWrap sets s wrapped to width w, left aligned, with its top left at
+// x, y; it returns the height it took.
+func (p pen) TextWrap(s, font string, x, y, w float64, c color.NRGBA) float64 {
+	l := pangocairo.CreateLayout(p.ctx)
+	defer l.Unref()
+	d := pango.FontDescriptionFromString(font)
+	l.SetFontDescription(d)
+	d.Free()
+	l.SetWidth(int32(w * float64(pango.SCALE)))
+	l.SetWrap(pango.WrapWordValue)
+	l.SetText(s, -1)
+	var lw, lh int32
+	l.GetPixelSize(&lw, &lh)
+	p.Color(c)
+	p.MoveTo(x, y)
+	pangocairo.ShowLayout(p.ctx, l)
+	p.NewPath()
+	return float64(lh)
+}
+
 // hexColor is a theme colour, "#rrggbb".
 func hexColor(s string) color.NRGBA {
 	v, err := strconv.ParseUint(strings.TrimPrefix(s, "#"), 16, 32)

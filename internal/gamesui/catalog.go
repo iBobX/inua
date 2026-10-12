@@ -19,10 +19,14 @@ var catalog = []entry{
 		"click opens  ·  right-click flags  ·  click a number with its flags placed to open around it  ·  arrows, Space, F",
 		func() play { return &mines{} }},
 	{"space-pinball", "SpacePinball", "Space Pinball",
-		"Keep the ball on the table with the two flippers. Pop bumpers score 100, slingshots 10, each drop target 250, and the whole bank of three 1,500. " +
-			"Rolling through a lane under the dome lights it; light all three to raise the multiplier, up to ×5, for the rest of the ball. A flipper press moves the lit lanes along. " +
-			"For the first seconds of each ball, ball save gives a drained ball back. Three balls a game; your best score is kept.",
-		"A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  P pause  ·  N new game  ·  or hold the table's halves and the lane",
+		"Fly missions to climb the ranks, from Cadet to Fleet Admiral. Hit the three yellow mission targets to light a mission, " +
+			"then shoot the launch ramp (right) to accept it; the display shows what to shoot and the time left. Missions burn fuel: " +
+			"roll through the inlanes and the re-entry lanes to refuel. The hyperspace ramp (left) climbs five levels, lighting an extra " +
+			"ball at the third and paying a jackpot at the fifth. The booster bank lights Lock: lock two balls in the black hole for " +
+			"multiball, where the launch ramp is the jackpot. The wormhole lets the ball out of the black hole. Light all three " +
+			"re-entry lanes to raise the field multiplier. The plunger's pull picks the lane a launch drops into: hit the blinking " +
+			"one for the skill shot. Nudge to save a ball, but not too often: the table tilts. Three balls; your best score is kept.",
+		"A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  X . ↑ nudge  ·  M sound  ·  P pause  ·  N new game",
 		func() play { return &pinball{} }},
 	{"small-fortune", "SmallFortune", "Small Fortune",
 		"A short property game against one to three computer players. Roll two dice and walk the board; a double rolls again, three in a row go to jail. " +
