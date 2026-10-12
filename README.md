@@ -171,6 +171,11 @@ make run         # run it in the current Hyprland session
 - `inua call shell snapshot DIR` renders the shell's windows to PNG files.
 - `inua call shell restart` re-executes the shell in place after a rebuild.
 
+Pull requests and pushes to `master` run Go formatting checks, regenerate
+Blueprint layouts and check for differences, run `make test`, and build all
+programs on Ubuntu 26.04. Desktop interactions still need a manual check
+in a Hyprland session.
+
 Releases: tag a version (`git tag v0.1.2 && git push --tags`) and GitHub
 Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
 `goreleaser release --snapshot --clean` tries it locally.
