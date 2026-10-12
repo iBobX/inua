@@ -59,7 +59,10 @@ Every query ends with a web search (`launcher.search`). A quicklink's
 keyword searches its site: `gh inua`, `yt`, `wiki`, `maps`, `tr` … (your
 own in `launcher.quicklinks`); the keyword alone fills itself in. A web
 address opens as typed. After `:` the launcher finds emoji and symbols by
-name and keyword (`:heart`, `:arrow`, `:check`); Enter copies one.
+name and keyword (`:heart`, `:arrow`, `:check`); Enter copies one. With
+the assistant on (`[assistant]`), every query ends with "Ask the
+assistant", and after `?` the query is a question for it at once
+(`?why is the fan loud`).
 
 ## Control center
 
@@ -86,8 +89,8 @@ its window to the current workspace.
 ## Settings
 
 A two-column settings window for everything: appearance and wallpaper, bar
-and dock, launcher, notifications, shortcuts, keyboard, mouse and
-touchpad. Changes apply as you make them.
+and dock, launcher, AI (the assistant's models), notifications, shortcuts,
+keyboard, mouse and touchpad. Changes apply as you make them.
 
 ## Shortcuts
 
@@ -118,6 +121,18 @@ rights (pkexec, a system setting) gets inua's password dialog, and the
 system's helper checks the password. gpg asks for passphrases in the same
 dialog through `inua-pinentry`, which `inua init` sets up. The shell keeps
 none of it.
+
+## Keyring
+
+`inua-keyring` is a Secret Service (what apps use through libsecret:
+browsers' keys, Wi-Fi passwords, the assistant's API keys) that keeps
+every secret in pass, under `inua-keyring/` in the password store, so
+they are gpg-encrypted and synced like the rest. `inua keyring import`
+copies gnome-keyring's items (`-n` lists them first), `inua keyring
+enable` lets D-Bus start inua-keyring instead of gnome-keyring, and
+`inua keyring status` says who serves now. gpg asks for the passphrase,
+through inua's dialog, when a secret is read and gpg-agent has not
+cached it. The design: [feat/keyring.md](feat/keyring.md).
 
 ## Keyboard and touchpad
 

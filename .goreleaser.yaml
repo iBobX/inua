@@ -30,6 +30,14 @@ builds:
     id: inua-pinentry
     main: ./cmd/inua-pinentry
     binary: inua-pinentry
+  - <<: *build
+    id: inua-assistant
+    main: ./cmd/inua-assistant
+    binary: inua-assistant
+  - <<: *build
+    id: inua-keyring
+    main: ./cmd/inua-keyring
+    binary: inua-keyring
 
 archives:
   - formats: [tar.gz]

@@ -8,7 +8,8 @@ icons.
 Open them from the launcher, from the drawer at the end of the dock, or
 with `inua-apps NAME` (`inua-apps clock`, `inua-apps tailscale` …). An app
 runs once: starting it again brings its window to the current workspace.
-Viewer is the exception, with a window for each image opened.
+Viewer is the exception, with a window for each image opened. The
+Assistant is a program of its own, `inua-assistant`.
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -73,6 +74,32 @@ A notice says what is in the way and offers the fix: starting the daemon,
 logging in, an admin's approval, or (once, with an administrator's
 password) letting your user change Tailscale. The control center has a
 Tailscale tile to connect and disconnect.
+
+## Assistant
+
+An agent with inua's tools, in a program of its own (`inua-assistant`), on
+[Mister Morph](https://github.com/quailyquaily/mistermorph)'s runtime. Ask
+it about this computer ("what is using the CPU?", "what did I miss?",
+"which devices on my tailnet are online?") or to do something ("turn on
+Focus and set the volume to 30%", "move Firefox to workspace 2"); it can
+also search the web. The answer streams in, with a line for each thing it
+does; anything that changes the system waits for Allow, and powering off,
+ending processes, closing windows and the opt-in file and shell tools ask
+every time. Ask from the launcher (the last row, or `?` before the query)
+or with `inua-assistant --ask "…"`; questions go to the open window and
+keep its conversation, and + starts a new one.
+
+Set it up in Settings → AI. Each profile is a model: a provider
+(OpenAI, Anthropic, Gemini, xAI, DeepSeek, Kimi, OpenRouter, Groq, or a
+compatible server such as one on this computer), the model, and its key,
+typed there (kept in the keyring, the Secret Service: in pass with
+inua-keyring, see the shell's features; without one, in
+`~/.local/share/inua/keys.json`, readable only by you) or read from an
+environment variable; never in `config.toml`. One
+profile answers first; others marked Fallback take over, in order, when it
+fails, and the window's drop-down switches profile for a conversation.
+What the tools read is sent to the provider answering. The design:
+[feat/assistant.md](feat/assistant.md).
 
 ## Viewer
 

@@ -30,6 +30,8 @@ type Config struct {
 	Input      Input      `toml:"input"`
 	Notify     Notify     `toml:"notifications"`
 	Dock       Dock       `toml:"dock"`
+	Assistant  Assistant  `toml:"assistant"`
+	Keyring    Keyring    `toml:"keyring"`
 	Screenshot Screenshot `toml:"screenshot"`
 	Shortcuts  []Shortcut `toml:"shortcuts"`
 
@@ -178,6 +180,149 @@ var keysRe = regexp.MustCompile(`^((SUPER|CTRL|ALT|SHIFT)\+)*[A-Za-z0-9_]+$`)
 // empty (off).
 func ValidKeys(s string) bool { return s == "" || keysRe.MatchString(s) }
 
+// Assistant is the agent in inua-assistant (docs/feat/assistant.md).
+type Assistant struct {
+	Enable bool `toml:"enable"`
+	// Profile names the profile that answers; the window can switch to
+	// another for a conversation.
+	Profile string `toml:"profile"`
+	// Fallback are profiles tried in turn when the one answering fails
+	// (an outage, a rate limit): Mister Morph's main_loop route.
+	Fallback []string `toml:"fallback"`
+	// Tools are Mister Morph's built-in tools to add to inua's.
+	Tools []string `toml:"tools"`
+	// AskBeforeChanges makes the assistant ask before changing anything;
+	// power, ending processes and closing windows always ask.
+	AskBeforeChanges bool `toml:"ask_before_changes"`
+	// Profiles are the models it can use, as Mister Morph's llm.profiles.
+	Profiles []AIProfile `toml:"profiles"`
+}
+
+// AIProfile is one model the assistant can use.
+type AIProfile struct {
+	Name string `toml:"name"`
+	// Provider is Mister Morph's inference provider (AIProviders).
+	Provider string `toml:"provider"`
+	Model    string `toml:"model"`
+	// Endpoint is the API's address, for a compatible server or a proxy;
+	// "" for the provider's own.
+	Endpoint string `toml:"endpoint"`
+	// APIKeyEnv names the environment variable holding the API key. A key
+	// typed in the settings window is kept outside this file instead
+	// (internal/assistant/keys).
+	APIKeyEnv string `toml:"api_key_env"`
+	// Reasoning is the reasoning effort (ReasoningEfforts); "" for the
+	// model's default.
+	Reasoning string `toml:"reasoning"`
+}
+
+// ProfileNamed returns the profile named, or false.
+func (a Assistant) ProfileNamed(name string) (AIProfile, bool) {
+	for _, p := range a.Profiles {
+		if p.Name == name {
+			return p, true
+		}
+	}
+	return AIProfile{}, false
+}
+
+// AIProviders are the inference providers Mister Morph knows, as the
+// settings window offers them, with the variable their key is usually in.
+var AIProviders = []struct{ ID, Name, KeyEnv string }{
+	{"openai", "OpenAI", "OPENAI_API_KEY"},
+	{"anthropic", "Anthropic", "ANTHROPIC_API_KEY"},
+	{"gemini", "Google Gemini", "GEMINI_API_KEY"},
+	{"xai", "xAI", "XAI_API_KEY"},
+	{"deepseek", "DeepSeek", "DEEPSEEK_API_KEY"},
+	{"kimi", "Kimi (Moonshot)", "MOONSHOT_API_KEY"},
+	{"openrouter", "OpenRouter", "OPENROUTER_API_KEY"},
+	{"groq", "Groq", "GROQ_API_KEY"},
+	{"mistermorph_pro", "Mister Morph Pro", "MISTER_MORPH_LLM_API_KEY"},
+	{"openai_chat_compatible", "OpenAI-compatible (Chat Completions)", ""},
+	{"openai_response_compatible", "OpenAI-compatible (Responses)", ""},
+	{"anthropic_compatible", "Anthropic-compatible", ""},
+}
+
+// AIProviderIDs lists AIProviders' IDs.
+func AIProviderIDs() []string {
+	ids := make([]string, len(AIProviders))
+	for i, p := range AIProviders {
+		ids[i] = p.ID
+	}
+	return ids
+}
+
+// ReasoningEfforts are the reasoning efforts a profile may ask for.
+var ReasoningEfforts = []string{"", "minimal", "low", "medium", "high"}
+
+// profileNameRe is a profile's name: Mister Morph's route keys.
+var profileNameRe = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
+
+// ValidProfileName reports whether a profile may be named so: lowercase
+// letters, digits, "-" and "_", and not Mister Morph's "default".
+func ValidProfileName(name string) bool { return profileNameRe.MatchString(name) && name != "default" }
+
+// validate drops profiles without a usable name, provider or model, and
+// points Profile and Fallback at profiles that exist.
+func (a *Assistant) validate(d Assistant) []string {
+	var w []string
+	seen := map[string]bool{}
+	a.Profiles = slices.DeleteFunc(a.Profiles, func(p AIProfile) bool {
+		var why string
+		switch {
+		case !ValidProfileName(p.Name):
+			why = `want a name of lowercase letters, digits, "-" and "_", not "default"`
+		case seen[p.Name]:
+			why = "named twice"
+		case !slices.Contains(AIProviderIDs(), p.Provider):
+			why = "want a provider of " + strings.Join(AIProviderIDs(), ", ")
+		case strings.TrimSpace(p.Model) == "":
+			why = "want a model"
+		case !slices.Contains(ReasoningEfforts, p.Reasoning):
+			why = "want reasoning of " + strings.Join(ReasoningEfforts[1:], ", ") + ` or ""`
+		}
+		if why != "" {
+			w = append(w, fmt.Sprintf("assistant.profiles %q: %s; leaving it out", p.Name, why))
+			return true
+		}
+		seen[p.Name] = true
+		return false
+	})
+	if len(a.Profiles) == 0 {
+		a.Profiles = slices.Clone(d.Profiles)
+	}
+	if _, ok := a.ProfileNamed(a.Profile); !ok {
+		if a.Profile != "" {
+			w = append(w, fmt.Sprintf("assistant.profile %q: no such profile; using %q", a.Profile, a.Profiles[0].Name))
+		}
+		a.Profile = a.Profiles[0].Name
+	}
+	used := map[string]bool{a.Profile: true}
+	a.Fallback = slices.DeleteFunc(a.Fallback, func(name string) bool {
+		if _, ok := a.ProfileNamed(name); ok && !used[name] {
+			used[name] = true
+			return false
+		}
+		w = append(w, fmt.Sprintf("assistant.fallback %q: not another profile; leaving it out", name))
+		return true
+	})
+	if len(a.Fallback) == 0 {
+		a.Fallback = nil // as a file with "fallback = []" reads
+	}
+	return w
+}
+
+// AssistantTools are the built-in tools the assistant may add, the first
+// two by default; the rest read files or run commands, and ask each time.
+var AssistantTools = []string{"web_search", "url_fetch", "read_file", "bash"}
+
+// Keyring is inua-keyring, the Secret Service kept in pass
+// (docs/feat/keyring.md).
+type Keyring struct {
+	// Folder is the password store's folder for its items.
+	Folder string `toml:"folder"`
+}
+
 // Dock is the app dock along a screen edge of each monitor.
 type Dock struct {
 	Enable bool `toml:"enable"`
@@ -267,6 +412,9 @@ func Default() Config {
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
+		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true,
+			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2", APIKeyEnv: "OPENAI_API_KEY"}}},
+		Keyring: Keyring{Folder: "inua-keyring"},
 	}
 }
 
@@ -324,6 +472,18 @@ func (c *Config) validate() []string {
 		w = append(w, fmt.Sprintf("launcher.search = %q: want a web address with %%s for the words; using %q", c.Launcher.Search, d.Launcher.Search))
 		c.Launcher.Search = d.Launcher.Search
 	}
+	w = append(w, c.Assistant.validate(d.Assistant)...)
+	if f := c.Keyring.Folder; f == "" || filepath.IsAbs(f) || slices.Contains(strings.Split(filepath.ToSlash(f), "/"), "..") {
+		w = append(w, fmt.Sprintf("keyring.folder = %q: want a folder inside the password store; using %q", f, d.Keyring.Folder))
+		c.Keyring.Folder = d.Keyring.Folder
+	}
+	c.Assistant.Tools = slices.DeleteFunc(c.Assistant.Tools, func(t string) bool {
+		if slices.Contains(AssistantTools, t) {
+			return false
+		}
+		w = append(w, fmt.Sprintf("assistant.tools %q: want one of %s; leaving it out", t, strings.Join(AssistantTools, ", ")))
+		return true
+	})
 	keywords := map[string]bool{}
 	c.Launcher.Quicklinks = slices.DeleteFunc(c.Launcher.Quicklinks, func(l Quicklink) bool {
 		var why string

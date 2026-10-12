@@ -77,6 +77,7 @@ part shows "Unavailable" or hides. Ubuntu Desktop usually has the first five.
 | `wf-recorder` | Recording the screen from the screenshot tool |
 | `libturbojpeg0` | Optional: Viewer decodes JPEG with it, several times faster, and at a smaller size for a quick first look; without it, Go decodes |
 | `xdg-terminal-exec` | Launching `Terminal=true` apps when neither `launcher.terminal` nor `$TERMINAL` is set |
+| `pass`, `gnupg` | `inua-keyring`, the Secret Service kept in the password store (`pass init` sets one up); without pass, apps keep using gnome-keyring and the assistant's keys stay in its file |
 
 Brightness is set through systemd-logind; no extra package.
 
@@ -87,6 +88,7 @@ Brightness is set through systemd-logind; no extra package.
 | `golang-go` | Building (Go ≥ 1.24; 26.04 has 1.26) |
 | `gcc` | `make test`'s `-race` needs cgo (the build itself is `CGO_ENABLED=0`) |
 | `dbus-daemon` | Private buses in tests (`internal/dbustest`) |
+| `pass`, `gnupg` | `internal/keyring`'s test on the real pass (skipped without them) |
 | `blueprint-compiler` | Regenerating `.ui` after editing `ui/*.blp` (`make generate`) |
 | `python3` | `scripts/spike.sh … nested`, and Pillow for `scripts/fcitx-themes.py` |
 
