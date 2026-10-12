@@ -101,10 +101,12 @@ func Register(name, id, title string, make func() View) {
 // Ctx is what the views share: the application, the layouts and the
 // theme.
 type Ctx struct {
-	App    *gtk.Application
-	UIDir  string // read layouts from here instead of the embedded copy
-	Colors map[string]string
-	refs   gtkx.Scope
+	App *gtk.Application
+	// StartHidden keeps a background app's first window out of the way.
+	StartHidden bool
+	UIDir       string // read layouts from here instead of the embedded copy
+	Colors      map[string]string
+	refs        gtkx.Scope
 
 	cfgPath  string
 	cfgMod   time.Time
@@ -150,7 +152,9 @@ func Run(name string, args []string, uiDir string) int {
 		c.win.AddCssClass("app")
 		c.win.AddCssClass("settings") // the settings window's controls and sections
 		c.win.AddCssClass(name)
-		c.win.Present()
+		if !c.StartHidden {
+			c.win.Present()
+		}
 		if o, ok := c.v.(opener); ok {
 			o.open(args)
 		} else if p, ok := c.v.(pager); ok && len(args) > 0 {

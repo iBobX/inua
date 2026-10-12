@@ -32,7 +32,7 @@ and a settings window, in one calm visual language. It works with
 | **Screenshots** | Areas, windows and screens, recordings, and a drawer of recent shots to drag into apps. |
 | **Passwords** | inua asks for administrator passwords (it is the Polkit agent) and gpg's passphrases. |
 | **Keyring** | `inua-keyring` serves apps' secrets (the Secret Service: browsers, Wi-Fi, the assistant's keys) from pass, after importing gnome-keyring's. |
-| **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. |
+| **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. It stays running with the desktop and can serve as an [endpoint for other Consoles](docs/apps.md#console-endpoint). |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
 | **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer. Each has its own launcher, or run `inua-games minesweeper`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |

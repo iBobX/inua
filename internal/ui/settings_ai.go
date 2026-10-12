@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"log"
+	"net"
 	"slices"
 	"strconv"
 	"strings"
@@ -29,6 +30,11 @@ type aiSettings struct {
 	keysNote                      gtk.Label
 	cards                         []*aiCard
 	names                         []string // the profile drop-down's
+	listen, endpoint, token       gtk.Entry
+	serve                         gtk.Switch
+	serveNote                     gtk.Label
+	tokenShow, tokenCopy, urlCopy gtk.Button
+	tokenBusy                     bool
 
 	keys     *keys.Keys
 	saved    map[string]uint64 // profiles with a saved key
@@ -61,6 +67,20 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	ui.Get("ai_route", &a.route)
 	ui.Get("ai_profiles", &a.list)
 	ui.Get("ai_keys_note", &a.keysNote)
+	ui.Get("ai_serve_listen", &a.listen)
+	ui.Get("ai_serve_enable", &a.serve)
+	a.serve.ConnectStateSet(&s.onSettingsSwitch)
+	ui.Get("ai_serve_url", &a.endpoint)
+	ui.Get("ai_serve_token", &a.token)
+	ui.Get("ai_serve_note", &a.serveNote)
+	ui.Get("ai_token_show", &a.tokenShow)
+	ui.Get("ai_token_copy", &a.tokenCopy)
+	ui.Get("ai_url_copy", &a.urlCopy)
+	s.settings.entries[a.listen.GoPointer()] = &a.listen
+	gtkx.ConnectChanged(&a.listen, &s.onSettingsEntry)
+	for _, b := range []*gtk.Button{&a.tokenShow, &a.tokenCopy, &a.urlCopy} {
+		b.ConnectClicked(&s.onSettingsButton)
+	}
 	var add gtk.Button
 	ui.Get("ai_add", &add)
 	add.ConnectClicked(&s.onSettingsButton)
@@ -127,6 +147,42 @@ func (s *shellUI) showAISettings() {
 	a.web.SetActive(slices.Contains(c.Tools, "web_search"))
 	a.files.SetActive(slices.Contains(c.Tools, "read_file"))
 	a.bash.SetActive(slices.Contains(c.Tools, "bash"))
+	setEntry(&a.listen, c.ServeListen)
+	a.serve.SetActive(c.ServeEnable)
+	endpoint := ""
+	if host, port, err := net.SplitHostPort(c.ServeListen); err == nil {
+		switch host {
+		case "", "0.0.0.0":
+			host = "127.0.0.1"
+		case "::":
+			host = "::1"
+		}
+		endpoint = "http://" + net.JoinHostPort(host, port) + "/runtime"
+	}
+	setEntry(&a.endpoint, endpoint)
+	a.urlCopy.SetSensitive(endpoint != "")
+	note := "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
+	switch {
+	case !c.Enable:
+		note = "Turn on Assistant to serve this endpoint."
+	case !c.ServeEnable:
+		note = "HTTP serving is off. The assistant still runs in the background."
+	case a.saved[keys.ServeTokenKey] == 0:
+		note = "Create a token to allow Console connections."
+	}
+	a.serveNote.SetText(note)
+	a.tokenShow.SetSensitive(!a.tokenBusy)
+	a.tokenCopy.SetSensitive(!a.tokenBusy && a.saved[keys.ServeTokenKey] != 0)
+	switch {
+	case a.tokenBusy:
+		a.tokenShow.SetLabel("Reading keyring…")
+	case a.token.GetVisibility() && a.token.GetText() != "":
+		a.tokenShow.SetLabel("Hide token")
+	case a.saved[keys.ServeTokenKey] == 0:
+		a.tokenShow.SetLabel("Create token")
+	default:
+		a.tokenShow.SetLabel("Show token")
+	}
 
 	names := make([]string, len(c.Profiles))
 	for i, p := range c.Profiles {
@@ -340,6 +396,16 @@ func aiIndex(name string, c config.Assistant) (string, int, bool) {
 
 // aiEntryChanged applies a profile's text field; false marks it invalid.
 func (s *shellUI) aiEntryChanged(name, text string, c *config.Config) bool {
+	if name == "ai-serve-listen" {
+		text = strings.TrimSpace(text)
+		_, port, err := net.SplitHostPort(text)
+		n, portErr := strconv.Atoi(port)
+		if err != nil || portErr != nil || n < 1 || n > 65535 {
+			return false
+		}
+		c.Assistant.ServeListen = text
+		return true
+	}
 	field, i, ok := aiIndex(name, c.Assistant)
 	if !ok {
 		return false
@@ -440,6 +506,8 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 	switch name {
 	case "ai_enable":
 		a.Enable = on
+	case "ai_serve_enable":
+		a.ServeEnable = on
 	case "ai_ask":
 		a.AskBeforeChanges = on
 	case "ai_web":
@@ -470,6 +538,58 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 
 // aiButton carries out the AI page's buttons; false for a button not its.
 func (s *shellUI) aiButton(name string) bool {
+	if name == "ai_url_copy" {
+		clip := s.settings.win.GetClipboard()
+		clip.SetText(s.settings.ai.endpoint.GetText())
+		clip.Unref()
+		s.setStatus("Endpoint URL copied", false)
+		return true
+	}
+	if name == "ai_token_show" || name == "ai_token_copy" {
+		a := &s.settings.ai
+		if a.tokenBusy {
+			return true
+		}
+		if name == "ai_token_show" && a.token.GetVisibility() && a.token.GetText() != "" {
+			a.token.SetText("")
+			a.token.SetVisibility(false)
+			s.showSettings()
+			return true
+		}
+		a.tokenBusy = true
+		s.showSettings()
+		win, k := s.settings.win, a.keys
+		go func() {
+			token, err := k.ServeToken(name == "ai_token_show")
+			saved, savedErr := k.Saved()
+			gtkx.Post(func() {
+				a.tokenBusy = false
+				a.saved, a.savedErr = saved, savedErr
+				if s.settings.win == nil {
+					return
+				}
+				if s.settings.win == win {
+					switch {
+					case err != nil:
+						s.setStatus("Cannot read the Console token: "+err.Error(), true)
+					case token == "":
+						s.setStatus("No Console token. Create one first.", true)
+					case name == "ai_token_copy":
+						clip := win.GetClipboard()
+						clip.SetText(token)
+						clip.Unref()
+						s.setStatus("Token copied", false)
+					default:
+						a.token.SetText(token)
+						a.token.SetVisibility(true)
+						s.setStatus("", false)
+					}
+				}
+				s.showSettings()
+			})
+		}()
+		return true
+	}
 	c := s.cfg
 	a := &c.Assistant
 	if name == "ai_add" {

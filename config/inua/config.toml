@@ -210,7 +210,8 @@ pinned = ["firefox", "org.gnome.Nautilus", "kitty"]
 
 [assistant]
 # The assistant (inua-assistant, the launcher's "Ask"): an agent with
-# inua's tools, run by Mister Morph. Nothing runs until you ask.
+# inua's tools, run by Mister Morph. The shell starts it in the background;
+# model calls only run when you or a connected Console submit a task.
 enable = true
 
 # The profile that answers, and the profiles tried in turn when it fails
@@ -226,6 +227,14 @@ tools = ["web_search", "url_fetch"]
 # Ask before changing anything (Wi-Fi, volume, windows …). Power, ending a
 # process and closing a window always ask.
 ask_before_changes = true
+
+# Console Runtime API: turn on in Settings → AI, which also creates and
+# copies its token. The token stays in the Secret Service (inua-keyring
+# keeps it in pass); inua-assistant --serve-token also prints it.
+# Console uses http://ADDRESS/runtime. Turning serving off keeps the
+# address and token; the assistant continues running in the background.
+serve_enable = false
+serve_listen = "127.0.0.1:8794"
 
 # The models, as Mister Morph's profiles: a name, a provider ("openai",
 # "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",

@@ -1269,6 +1269,184 @@ ApplicationWindow settings {
                 }
               }
 
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>";
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: "Connect other Consoles to this desktop";
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Serve endpoint";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Allow Console connections; the assistant keeps running when this is off";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch ai_serve_enable {
+                      name: "ai_serve_enable";
+                      tooltip-text: "Serve endpoint";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Listen address";
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: "Host:port; kept when serving is off";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Entry ai_serve_listen {
+                      name: "ai-serve-listen";
+                      placeholder-text: "127.0.0.1:8794";
+                      tooltip-text: "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.";
+                      width-chars: 23;
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    orientation: vertical;
+                    spacing: 8;
+
+                    Label {
+                      styles ["title"]
+                      label: "Endpoint URL";
+                      xalign: 0;
+                    }
+
+                    Box {
+                      spacing: 8;
+
+                      Entry ai_serve_url {
+                        editable: false;
+                        hexpand: true;
+                        placeholder-text: "Set a listen address first";
+                      }
+
+                      Button ai_url_copy {
+                        styles ["outlined"]
+                        name: "ai_url_copy";
+                        label: "Copy URL";
+                      }
+                    }
+
+                    Label ai_serve_note {
+                      styles ["sub"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    orientation: vertical;
+                    spacing: 8;
+
+                    Label {
+                      styles ["title"]
+                      label: "Access token";
+                      xalign: 0;
+                    }
+
+                    Box {
+                      spacing: 8;
+
+                      Entry ai_serve_token {
+                        editable: false;
+                        visibility: false;
+                        hexpand: true;
+                        placeholder-text: "Token hidden";
+                      }
+
+                      Button ai_token_show {
+                        styles ["outlined"]
+                        name: "ai_token_show";
+                        label: "Create token";
+                      }
+
+                      Button ai_token_copy {
+                        styles ["outlined"]
+                        name: "ai_token_copy";
+                        label: "Copy token";
+                      }
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.";
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+                }
+              }
+
               // [PROFILES]: Go fills ai_profiles, a card for each.
               Box {
                 styles ["section"]

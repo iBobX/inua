@@ -131,6 +131,9 @@ func dropWallpaper(b *bar) {
 func (s *shellUI) applyConfig(c config.Config) {
 	old := s.cfg
 	s.cfg = c
+	if !old.Assistant.Enable && c.Assistant.Enable {
+		s.startAssistant()
+	}
 	if old.Overview != c.Overview {
 		s.installOverviewKeys()
 	}

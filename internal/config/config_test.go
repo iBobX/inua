@@ -210,6 +210,8 @@ func TestFormatRoundTrip(t *testing.T) {
 	c.Background.Image = "/usr/share/backgrounds/a b.png"
 	c.Background.Fit = "tile"
 	c.Background.Color = "#102030"
+	c.Assistant.ServeEnable = true
+	c.Assistant.ServeListen = "127.0.0.1:9876"
 	path := filepath.Join(t.TempDir(), "inua", "config.toml")
 	if err := Save(path, c); err != nil {
 		t.Fatal(err)

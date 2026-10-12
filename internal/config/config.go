@@ -194,6 +194,9 @@ type Assistant struct {
 	// AskBeforeChanges makes the assistant ask before changing anything;
 	// power, ending processes and closing windows always ask.
 	AskBeforeChanges bool `toml:"ask_before_changes"`
+	// ServeEnable controls the Console Runtime API independently of its address.
+	ServeEnable bool   `toml:"serve_enable"`
+	ServeListen string `toml:"serve_listen"`
 	// Profiles are the models it can use, as Mister Morph's llm.profiles.
 	Profiles []AIProfile `toml:"profiles"`
 }
@@ -408,7 +411,7 @@ func Default() Config {
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
-		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true,
+		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring"},
 	}

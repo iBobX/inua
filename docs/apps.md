@@ -97,7 +97,10 @@ Tailscale tile to connect and disconnect.
 ## Assistant
 
 An agent with inua's tools, in a program of its own (`inua-assistant`), on
-[Mister Morph](https://github.com/quailyquaily/mistermorph)'s runtime. Ask
+[Mister Morph](https://github.com/quailyquaily/mistermorph)'s runtime. While
+enabled, it starts with the shell and stays running in the background,
+whether or not its Console endpoint is enabled. Closing its window hides
+it; opening it again returns to the same conversation. Ask
 it about this computer ("what is using the CPU?", "what did I miss?",
 "which devices on my tailnet are online?") or to do something ("turn on
 Focus and set the volume to 30%", "move Firefox to workspace 2"); it can
@@ -117,8 +120,72 @@ inua-keyring, see the shell's features; without one, in
 `config.toml`. One
 profile answers first; others marked Fallback take over, in order, when it
 fails, and the window's drop-down switches profile for a conversation.
-What the tools read is sent to the provider answering. The design:
-[feat/assistant.md](feat/assistant.md).
+What the tools read is sent to the provider answering.
+
+### Console endpoint
+
+Other Mister Morph Consoles can connect to this desktop as a Runtime API
+endpoint. Configure the assistant's model first, then create its access
+token in **Settings → AI → Console endpoint** with **Create token**.
+Set **Listen address** to `127.0.0.1:8794` for a Console on this computer
+and turn on **Serve endpoint**, then use **Copy URL** and **Copy token**
+to fill in Console's endpoint settings. **Show token** reads the saved token; **Hide token** clears it
+from the field. Closing settings hides it too. Turn off **Serve endpoint**
+to stop HTTP serving while keeping the address, token and assistant.
+
+You can also create or read the same token from the command line:
+
+```sh
+inua-assistant --serve-token
+```
+
+The command prints the existing token, or creates one if missing. It stores
+the token in the Secret Service; with inua-keyring, the secret is encrypted
+in pass. A Secret Service is required: this token never falls back to
+`keys.json` and is never written to `config.toml`. Keep the printed value
+for the Console's endpoint settings.
+
+Set the listening address under the existing `[assistant]` section in
+`config.toml`:
+
+```toml
+[assistant]
+serve_enable = true
+serve_listen = "127.0.0.1:8794"
+```
+
+`serve_enable = false` (the default) disables HTTP serving while the
+assistant continues running. The address above accepts connections from this
+computer. For a Console on another computer, use the desktop's reachable
+address, such as its Tailscale IP, and that address in the endpoint URL.
+
+In the other Console, add an endpoint with:
+
+- **URL:** `http://127.0.0.1:8794/runtime` (replace the address for a remote desktop).
+- **Auth token:** the value printed by `inua-assistant --serve-token`.
+
+The API uses `Authorization: Bearer TOKEN`. Console can submit tasks, read
+their status and results, continue a topic, and cancel tasks. Local tasks
+run while HTTP serving is enabled are also saved for Console to list;
+remote topics keep their own history. Changing the local window's model
+does not change a remote topic's model selection.
+
+Remote tasks use the same desktop tools and confirmation rules as local
+ones. When a tool needs approval, the assistant window appears with a
+**Remote Console** card; approval happens on the desktop. Canceling the
+task cancels its pending card. File attachments and remote approval of
+these desktop cards are not supported by this endpoint.
+
+Settings and saved keys are checked while the assistant runs. A reload
+stops the old endpoint and cancels its remote tasks before starting the
+replacement. A local answer finishes before settings reload. Missing
+keys or listener errors are shown in the assistant window. Closing that
+window leaves the process running; disabling the assistant stops its
+endpoint. `SIGINT` or `SIGTERM` stops remote tasks and exits the process.
+
+The shell starts it with `inua-assistant --background`; running this command
+again reaches the existing process without showing its window. Starting
+`inua-assistant` normally, or choosing it in the dock, shows the window.
 
 ## Viewer
 

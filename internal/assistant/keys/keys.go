@@ -9,6 +9,7 @@ package keys
 import (
 	"cmp"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -25,6 +26,36 @@ import (
 
 // Schema names the assistant's items in the Secret Service.
 const Schema = "io.github.lyricat.Inua.Assistant"
+
+// ServeTokenKey cannot be a model profile name.
+const ServeTokenKey = "@runtime-api"
+
+// ServeToken reads the endpoint's token, optionally creating it. Endpoint
+// tokens require the Secret Service; they never fall back to keys.json.
+func (k *Keys) ServeToken(create bool) (string, error) {
+	c, done, err := k.service()
+	if err != nil {
+		return "", err
+	}
+	if c == nil {
+		return "", errors.New("the Console token needs a Secret Service; enable inua-keyring first")
+	}
+	defer done()
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	v, found, err := c.Lookup(ctx, attrs(ServeTokenKey))
+	if err != nil {
+		return "", err
+	}
+	if found || !create {
+		return strings.TrimSpace(string(v)), nil
+	}
+	token := rand.Text()
+	if err := c.Store(ctx, "inua assistant: Console token", attrs(ServeTokenKey), []byte(token)); err != nil {
+		return "", err
+	}
+	return token, nil
+}
 
 // Keys is where the keys are kept.
 type Keys struct {

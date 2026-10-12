@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"slices"
@@ -21,6 +22,7 @@ import (
 	"github.com/quailyquaily/mistermorph/llm"
 	"github.com/quailyquaily/mistermorph/tools"
 
+	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
 )
 
@@ -43,6 +45,8 @@ type Settings struct {
 	StateDir         string // Mister Morph's files; empty for inua's defaults
 	CacheDir         string
 	MaxSteps         int
+	ServeListen      string
+	ServeToken       string
 }
 
 // keyless are the providers for servers that may want no key (a model
@@ -55,6 +59,16 @@ var keyless = []string{"openai_chat_compatible", "openai_response_compatible", "
 // the answering profile without one.
 func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error) {
 	s := Settings{Tools: c.Tools, AskBeforeChanges: c.AskBeforeChanges}
+	if c.ServeEnable {
+		s.ServeListen = strings.TrimSpace(c.ServeListen)
+		if _, _, err := net.SplitHostPort(s.ServeListen); err != nil {
+			return s, fmt.Errorf("assistant.serve_listen: want host:port: %w", err)
+		}
+		s.ServeToken = strings.TrimSpace(saved[keys.ServeTokenKey])
+		if s.ServeToken == "" {
+			return s, errors.New("assistant: create the Console token in Settings → AI or with inua-assistant --serve-token before enabling the endpoint")
+		}
+	}
 	primary, ok := c.ProfileNamed(c.Profile)
 	if !ok {
 		return s, fmt.Errorf("assistant: no profile %q", c.Profile)
@@ -132,7 +146,6 @@ type Assistant struct {
 
 	mu      sync.Mutex
 	history []llm.Message
-	ev      Events // the question being answered
 	busy    bool
 }
 
@@ -194,6 +207,8 @@ func New(set Settings, own []Tool, approve Approver) (*Assistant, error) {
 	cfg.Set("file_cache_dir", cacheDir)
 	cfg.Set("max_steps", cmp.Or(set.MaxSteps, 24))
 	cfg.Set("tool_repeat_limit", 3)
+	cfg.Set("server.listen", set.ServeListen)
+	cfg.Set("server.auth_token", set.ServeToken)
 	cfg.AddPromptBlock(prompt)
 	rt, err := integration.NewChecked(cfg)
 	if err != nil {
@@ -246,8 +261,8 @@ func (a *Assistant) UseProfile(name string) error {
 	if a.busy {
 		return ErrBusy
 	}
-	if err := a.rt.SetLLMProfile(name); err != nil {
-		return fmt.Errorf("assistant: %w", err)
+	if !slices.ContainsFunc(a.set.Profiles, func(p Profile) bool { return p.Name == name }) {
+		return fmt.Errorf("assistant: no profile %q", name)
 	}
 	a.profile = name
 	return nil
@@ -301,18 +316,22 @@ func (a *Assistant) Ask(ctx context.Context, question string, ev Events) (string
 		a.mu.Unlock()
 		return "", ErrBusy
 	}
-	a.busy, a.ev = true, ev
+	a.busy = true
 	history := slices.Clone(a.history)
+	profile := a.profile
 	a.mu.Unlock()
 	defer func() {
 		a.mu.Lock()
-		a.busy, a.ev = false, Events{}
+		a.busy = false
 		a.mu.Unlock()
 	}()
 
 	var stream answerStream
+	ctx = context.WithValue(ctx, eventsKey{}, ev)
 	res, err := a.rt.RunTaskWithOptions(ctx, question, integration.RunTaskOptions{
-		Registry: a.reg,
+		Registry:    a.reg,
+		LLMProfile:  profile,
+		PersistTask: a.set.ServeListen != "",
 		Agent: agent.RunOptions{
 			History: history,
 			OnStream: func(e llm.StreamEvent) error {
@@ -372,11 +391,8 @@ func finalText(f *agent.Final) string {
 	}
 }
 
-func (a *Assistant) events() Events {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	return a.ev
-}
+// Tool events belong to the local question, not to concurrent Console tasks.
+type eventsKey struct{}
 
 // wrapped is a tool the window sees run, which asks first when it must.
 type wrapped struct {
@@ -396,7 +412,7 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 	if w.describe != nil {
 		doing = w.describe(args)
 	}
-	ev := w.a.events()
+	ev, local := ctx.Value(eventsKey{}).(Events)
 	if ev.Tool != nil {
 		ev.Tool(w.name, doing)
 	}
@@ -404,7 +420,11 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 		ok := false
 		if w.a.approve != nil {
 			var err error
-			if ok, err = w.a.approve(ctx, w.name, doing); err != nil {
+			prompt := doing
+			if !local {
+				prompt = "Remote Console: " + prompt
+			}
+			if ok, err = w.a.approve(ctx, w.name, prompt); err != nil {
 				return "", err
 			}
 		}
@@ -415,6 +435,9 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 			// Not an error: the agent tells the user rather than retrying.
 			return `{"declined": true, "note": "The user declined this. Do not try it another way."}`, nil
 		}
+	}
+	if err := ctx.Err(); err != nil {
+		return "", err
 	}
 	out, err := w.inner.Execute(ctx, args)
 	if err != nil && ev.Error != nil {

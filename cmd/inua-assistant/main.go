@@ -4,34 +4,55 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/godbus/dbus/v5"
 
 	"github.com/lyricat/inua/internal/appui"
+	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/assistantui"
 )
 
 func main() {
 	ask := flag.String("ask", "", "a question to ask")
+	background := flag.Bool("background", false, "start the assistant without showing its window")
+	serveToken := flag.Bool("serve-token", false, "print the Console token from the keyring, creating it if missing")
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory")
 	flag.Parse()
-	if *ask != "" && askRunning(*ask) {
+	if *serveToken {
+		token, err := keys.New().ServeToken(true)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "inua-assistant:", err)
+			os.Exit(1)
+		}
+		fmt.Println(token)
 		return
 	}
-	assistantui.Register()
+	if *ask != "" && activateRunning("ask", []dbus.Variant{dbus.MakeVariant(*ask)}) {
+		return
+	}
+	if *background && *ask == "" && activateRunning("background", nil) {
+		return
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	assistantui.Register(ctx, *background)
 	var args []string
 	if *ask != "" {
 		args = []string{"--ask", *ask}
 	}
-	os.Exit(appui.Run("assistant", args, *uiDir))
+	code := appui.Run("assistant", args, *uiDir)
+	stop()
+	os.Exit(code)
 }
 
-// askRunning gives the question to an open assistant through its "ask"
-// action (GApplication puts actions on D-Bus); false when none is open.
-func askRunning(q string) bool {
+// activateRunning reaches the existing process without showing its window
+// for a background start (including after the shell restarts).
+func activateRunning(action string, params []dbus.Variant) bool {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		return false
@@ -43,7 +64,7 @@ func askRunning(q string) bool {
 		return false
 	}
 	obj := conn.Object(name, "/io/github/lyricat/Inua/Assistant")
-	err = obj.Call("org.gtk.Actions.Activate", 0, "ask", []dbus.Variant{dbus.MakeVariant(q)}, map[string]dbus.Variant{}).Err
+	err = obj.Call("org.gtk.Actions.Activate", 0, action, params, map[string]dbus.Variant{}).Err
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "inua-assistant:", err)
 		return false

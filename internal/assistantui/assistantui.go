@@ -38,8 +38,10 @@ import (
 )
 
 // Register adds the assistant to the light apps, as "assistant".
-func Register() {
-	appui.Register("assistant", "Assistant", "Assistant", func() appui.View { return &view{} })
+func Register(ctx context.Context, background bool) {
+	appui.Register("assistant", "Assistant", "Assistant", func() appui.View {
+		return &view{ctx: ctx, background: background}
+	})
 }
 
 // suggestions start an empty conversation.
@@ -52,25 +54,33 @@ var suggestions = []string{
 }
 
 type view struct {
-	c        *appui.Ctx
-	model    gtk.Label
-	notice   gtk.Label
-	noticeBx gtk.Box
-	profile  gtk.DropDown
-	talk     gtk.Box
-	scroll   gtk.ScrolledWindow
-	question gtk.Entry
-	send     gtk.Button
+	c          *appui.Ctx
+	win        *gtk.ApplicationWindow
+	ctx        context.Context
+	background bool
+	enabled    bool
+	model      gtk.Label
+	notice     gtk.Label
+	noticeBx   gtk.Box
+	profile    gtk.DropDown
+	talk       gtk.Box
+	scroll     gtk.ScrolledWindow
+	question   gtk.Entry
+	send       gtk.Button
 
-	as      *assistant.Assistant
-	stamp   string   // config.toml's and the keys' times when as was made
-	names   []string // the profile drop-down's
-	running bool
-	cancel  context.CancelFunc
-	answer  *gtk.Label // the answer being streamed
-	first   []string   // the question of the first start (--ask)
+	as        *assistant.Assistant
+	stamp     string   // config.toml's and the keys' times when as was made
+	names     []string // the profile drop-down's
+	running   bool
+	cancel    context.CancelFunc
+	answer    *gtk.Label // the answer being streamed
+	first     []string   // the question of the first start (--ask)
+	apiCancel context.CancelFunc
+	apiDone   chan struct{}
+	reloading bool
+	closed    bool
+	built     bool // Build has run; before, the window is not shown yet
 
-	mu        sync.Mutex
 	approvals map[string]chan bool // by card, while a tool waits
 	nextCard  int
 
@@ -80,12 +90,18 @@ type view struct {
 	onActivate                            func(gtk.Entry)
 	onKey                                 func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onAsk                                 func(gio.SimpleAction, uintptr)
+	onClose                               func(gtk.Window) bool
+	onShutdown                            func(gio.Application)
+	onBackground                          func(gio.SimpleAction, uintptr)
+	onRefresh                             glib.SourceFunc
 }
 
 func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	v.c = c
+	c.StartHidden = v.background
 	v.approvals = map[string]chan bool{}
 	win := &gtk.ApplicationWindow{}
+	v.win = win
 	var reset, settings, openSettings gtk.Button
 	ui := c.Load("assistant.ui")
 	ui.Get("assistant", win)
@@ -130,7 +146,7 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	}
 	v.onActivate = func(gtk.Entry) { v.submit() }
 	v.onReset = func(gtk.Button) {
-		if v.running || v.as == nil {
+		if v.running || v.as == nil || len(v.approvals) != 0 {
 			return
 		}
 		v.as.Reset()
@@ -140,23 +156,10 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	v.onSuggestion = func(b gtk.Button) { v.ask(b.GetName()) }
 	v.onCard = func(b gtk.Button) {
 		verb, id, _ := strings.Cut(b.GetName(), ":")
-		v.mu.Lock()
 		ch := v.approvals[id]
 		delete(v.approvals, id)
-		v.mu.Unlock()
 		if ch != nil {
 			ch <- verb == "allow"
-		}
-		// The buttons give way to what was decided.
-		if row := b.GetParent(); row != nil {
-			if card := row.GetParent(); card != nil {
-				l := gtk.NewLabel(map[bool]string{true: "Allowed", false: "Not allowed"}[verb == "allow"])
-				l.AddCssClass("as-tool")
-				l.SetXalign(0)
-				box := gtk.BoxNewFromInternalPtr(card.GoPointer())
-				box.Remove(row)
-				gtkx.Append(box, &l.Widget)
-			}
 		}
 	}
 	v.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
@@ -171,6 +174,29 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		win.Present()
 		v.ask(q)
 	}
+	v.onClose = func(gtk.Window) bool {
+		if v.enabled || v.reloading {
+			win.SetVisible(false)
+			return true
+		}
+		return false
+	}
+	v.onShutdown = func(gio.Application) {
+		v.closed = true
+		if v.cancel != nil {
+			v.cancel()
+		}
+		if v.apiCancel != nil {
+			v.apiCancel()
+		}
+	}
+	win.ConnectCloseRequest(&v.onClose)
+	c.App.ConnectShutdown(&v.onShutdown)
+	v.onBackground = func(gio.SimpleAction, uintptr) { v.refresh() }
+	background := gio.NewSimpleAction("background", nil)
+	background.ConnectActivate(&v.onBackground)
+	c.App.AddAction(background)
+	background.Unref()
 	v.send.ConnectClicked(&v.onSend)
 	settings.ConnectClicked(&v.onSettings)
 	openSettings.ConnectClicked(&v.onSettings)
@@ -187,12 +213,40 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ask.Unref()
 
 	v.setUp()
+	v.built = true
 	v.showSuggestions()
 	v.question.GrabFocus()
+	v.onRefresh = func(uintptr) bool {
+		if v.closed {
+			return false
+		}
+		v.refresh()
+		return true
+	}
+	glib.TimeoutAdd(2000, &v.onRefresh, 0)
+	go func() {
+		<-v.ctx.Done()
+		gtkx.Post(func() {
+			v.closed = true
+			if v.cancel != nil {
+				v.cancel()
+			}
+			if v.apiCancel != nil {
+				v.apiCancel()
+			}
+			done := v.apiDone
+			go func() {
+				if done != nil {
+					<-done
+				}
+				gtkx.Post(func() { c.App.Quit() })
+			}()
+		})
+	}()
 	return win
 }
 
-func (v *view) ThemeChanged() {}
+func (v *view) ThemeChanged() { v.refresh() }
 
 // Open takes `--ask QUESTION` from the first start.
 func (v *view) Open(args []string) {
@@ -207,11 +261,13 @@ func (v *view) Open(args []string) {
 // setUp makes the assistant from config.toml and the saved keys, or says
 // why it cannot. A conversation going on carries over to the new one.
 func (v *view) setUp() {
+	v.apiCancel = nil
 	v.stamp = stamp()
 	cfg, _, err := config.Load(config.DefaultPath())
 	if err != nil {
 		cfg = config.Default()
 	}
+	v.enabled = cfg.Assistant.Enable
 	old := v.as
 	v.as = nil
 	say := func(msg string) {
@@ -224,6 +280,11 @@ func (v *view) setUp() {
 	}
 	if !cfg.Assistant.Enable {
 		say("The assistant is turned off. Turn it on in Settings → AI.")
+		// Hidden, it has nothing to do: a background start, or a closed
+		// window when it was turned off. A window opened says so instead.
+		if !v.win.GetVisible() && (v.built || v.background) {
+			v.c.App.Quit()
+		}
 		return
 	}
 	// The keyring may ask for its passphrase (pass: gpg's) here.
@@ -240,6 +301,12 @@ func (v *view) setUp() {
 		}
 		if saved[p.Name], err = k.Get(p.Name); err != nil {
 			say(fmt.Sprintf("Cannot read the key of %s: %v", p.Name, err))
+			return
+		}
+	}
+	if cfg.Assistant.ServeEnable {
+		if saved[keys.ServeTokenKey], err = k.ServeToken(false); err != nil {
+			say("Cannot read the Console token: " + err.Error())
 			return
 		}
 	}
@@ -271,12 +338,53 @@ func (v *view) setUp() {
 	list.Unref()
 	v.profile.SetSelected(0)
 	v.profile.SetVisible(len(v.names) > 1)
+	if set.ServeListen != "" {
+		ctx, cancel := context.WithCancel(v.ctx)
+		v.apiCancel = cancel
+		done := make(chan struct{})
+		v.apiDone = done
+		as := v.as
+		go func() {
+			err := as.Serve(ctx)
+			close(done)
+			gtkx.Post(func() {
+				if v.closed || v.apiDone != done || ctx.Err() != nil {
+					return
+				}
+				v.apiCancel = nil
+				if err != nil {
+					log.Printf("assistant endpoint: %v", err)
+					v.notice.SetText("Could not start the Console endpoint: " + err.Error())
+					v.noticeBx.SetVisible(true)
+					v.win.Present()
+				}
+			})
+		}()
+	}
 }
 
 // refresh makes the assistant again when its settings changed, between
 // answers.
 func (v *view) refresh() {
-	if v.running || stamp() == v.stamp {
+	if v.closed || v.running || v.reloading || stamp() == v.stamp {
+		return
+	}
+	if v.apiCancel != nil {
+		v.reloading = true
+		v.question.SetSensitive(false)
+		v.send.SetSensitive(false)
+		v.apiCancel()
+		done := v.apiDone
+		go func() {
+			<-done
+			gtkx.Post(func() {
+				if v.closed {
+					return
+				}
+				v.setUp()
+				v.reloading = false
+			})
+		}()
 		return
 	}
 	hadNone := v.as == nil
@@ -363,6 +471,10 @@ func (v *view) ask(q string) {
 		return
 	}
 	v.refresh()
+	if v.reloading {
+		v.question.SetText(q)
+		return
+	}
 	if v.as == nil {
 		return
 	}
@@ -376,7 +488,7 @@ func (v *view) ask(q string) {
 	v.answer = v.line("as-answer", "…")
 	v.running = true
 	v.send.SetLabel("Stop")
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(v.ctx)
 	v.cancel = cancel
 	v.profile.SetSensitive(false)
 	ev := assistant.Events{
@@ -388,6 +500,9 @@ func (v *view) ask(q string) {
 	go func() {
 		answer, err := v.as.Ask(ctx, q, ev)
 		gtkx.Post(func() {
+			if v.closed {
+				return
+			}
 			v.running = false
 			v.cancel()
 			v.send.SetLabel("Ask")
@@ -409,15 +524,20 @@ func (v *view) ask(q string) {
 }
 
 // approve shows a card and waits for Allow or Deny.
-func (v *view) approve(ctx context.Context, _, doing string) (bool, error) {
+func (v *view) approve(ctx context.Context, _, doing string) (allowed bool, err error) {
 	ch := make(chan bool, 1)
+	var card *gtk.Box
+	var id string
 	gtkx.Post(func() {
-		v.mu.Lock()
+		if v.closed || ctx.Err() != nil {
+			return
+		}
+		v.win.Present()
+		v.dropSuggestions()
 		v.nextCard++
-		id := fmt.Sprint(v.nextCard)
+		id = fmt.Sprint(v.nextCard)
 		v.approvals[id] = ch
-		v.mu.Unlock()
-		card := gtk.NewBox(gtk.OrientationVerticalValue, 10)
+		card = gtk.NewBox(gtk.OrientationVerticalValue, 10)
 		card.AddCssClass("as-card")
 		l := gtk.NewLabel(doing + "?")
 		l.SetXalign(0)
@@ -434,8 +554,31 @@ func (v *view) approve(ctx context.Context, _, doing string) (bool, error) {
 		}
 		gtkx.Append(card, &row.Widget)
 		v.insertBeforeAnswer(&card.Widget)
-		card.Unref()
 	})
+	defer func() {
+		gtkx.Post(func() {
+			delete(v.approvals, id)
+			if card == nil {
+				return
+			}
+			defer card.Unref()
+			if v.closed {
+				return
+			}
+			gtkx.Clear(card)
+			status := "Not allowed"
+			if err != nil {
+				status = "Canceled"
+			} else if allowed {
+				status = "Allowed"
+			}
+			l := gtk.NewLabel(doing + " — " + status)
+			l.AddCssClass("as-tool")
+			l.SetXalign(0)
+			l.SetWrap(true)
+			gtkx.Append(card, &l.Widget)
+		})
+	}()
 	select {
 	case ok := <-ch:
 		return ok, nil
@@ -465,6 +608,9 @@ func (v *view) line(class, text string) *gtk.Label {
 
 // toolLine goes before the answer being streamed, which stays last.
 func (v *view) toolLine(text string) {
+	if v.closed {
+		return
+	}
 	l := gtk.NewLabel(text)
 	l.AddCssClass("as-tool")
 	l.SetXalign(0)
@@ -488,7 +634,7 @@ func (v *view) insertBeforeAnswer(w *gtk.Widget) {
 }
 
 func (v *view) setAnswer(text string) {
-	if v.answer != nil {
+	if !v.closed && v.answer != nil {
 		v.answer.SetText(text)
 		v.toBottom()
 	}

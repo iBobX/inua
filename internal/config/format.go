@@ -24,7 +24,8 @@ func Format(c Config) string {
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates,
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
-		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges, aiProfiles(c.Assistant.Profiles),
+		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
+		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
 		q(c.Keyring.Folder),
 		shortcuts(c.Shortcuts))
 }
@@ -326,7 +327,8 @@ pinned = %s
 
 [assistant]
 # The assistant (inua-assistant, the launcher's "Ask"): an agent with
-# inua's tools, run by Mister Morph. Nothing runs until you ask.
+# inua's tools, run by Mister Morph. The shell starts it in the background;
+# model calls only run when you or a connected Console submit a task.
 enable = %t
 
 # The profile that answers, and the profiles tried in turn when it fails
@@ -342,6 +344,14 @@ tools = %s
 # Ask before changing anything (Wi-Fi, volume, windows …). Power, ending a
 # process and closing a window always ask.
 ask_before_changes = %t
+
+# Console Runtime API: turn on in Settings → AI, which also creates and
+# copies its token. The token stays in the Secret Service (inua-keyring
+# keeps it in pass); inua-assistant --serve-token also prints it.
+# Console uses http://ADDRESS/runtime. Turning serving off keeps the
+# address and token; the assistant continues running in the background.
+serve_enable = %t
+serve_listen = %s
 
 # The models, as Mister Morph's profiles: a name, a provider ("openai",
 # "anthropic", "gemini", "xai", "deepseek", "kimi", "openrouter", "groq",

@@ -114,6 +114,16 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 - Slow work (dispatcher requests, launching apps, writing `inua.conf`) moves
   to a goroutine; results come back as Hyprland events.
 
+The assistant is a separate process, started with `--background` while
+enabled. Its hidden window keeps the application alive; opening or closing
+the window does not start or stop the agent service. The optional Runtime
+API uses Mister Morph's `ServeRuntimeAPI` with inua's wrapped tool registry.
+Each local question carries its UI callbacks in its context, so remote
+tasks cannot write into a local answer. Remote topics and local conversation
+history are separate. Both paths use the desktop's approval cards; endpoint
+cancellation releases pending approvals. Reloading configuration waits for
+the old remote tasks in a goroutine before replacing the runtime.
+
 ## 6. Layer shell
 
 gtk4-layer-shell must load before libwayland-client, but puregotk loads GTK

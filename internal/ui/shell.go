@@ -357,6 +357,7 @@ func (s *shellUI) start() {
 	s.startAlarms()
 	s.startUpdates()
 	s.startSystem()
+	s.startAssistant()
 	if s.layer { // elsewhere (GNOME) the desktop has its own agent
 		s.startPolkit()
 	}
