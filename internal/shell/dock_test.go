@@ -72,6 +72,37 @@ func TestDock(t *testing.T) {
 	}
 }
 
+func TestDockSkipsFcitxWindows(t *testing.T) {
+	apps := NewAppIndex([]*desktop.Entry{
+		{ID: "org.fcitx.Fcitx5", Name: "Fcitx 5", Icon: "fcitx", Command: []string{"fcitx5"}},
+	})
+	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{
+		dockWin("0x1", "fcitx", 0),
+		dockWin("0x2", "fcitx5", 1),
+		dockWin("0x3", "org.fcitx.Fcitx5", 2),
+		dockWin("0x4", "fcitx5-wayland-launcher", 3),
+		dockWin("0x5", "fcitx-rime", 4),
+	}}
+
+	if got := Dock(nil, apps, snap); len(got) != 0 {
+		t.Errorf("Dock() = %+v, want no input-method items", got)
+	}
+}
+
+func TestIsFcitxProcess(t *testing.T) {
+	for name, want := range map[string]bool{
+		"fcitx":                   true,
+		"fcitx5":                  true,
+		"fcitx5-wayland-launcher": true,
+		"fcitx5-configtool":       false,
+		"telegram-desktop":        false,
+	} {
+		if got := isFcitxExecutable(name); got != want {
+			t.Errorf("isFcitxExecutable(%q) = %v, want %v", name, got, want)
+		}
+	}
+}
+
 func TestPin(t *testing.T) {
 	p := Pin([]string{"a", "b"}, "c", true)
 	p = Pin(p, "a", false)

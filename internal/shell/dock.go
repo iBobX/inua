@@ -1,8 +1,10 @@
 package shell
 
 import (
+	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/lyricat/inua/internal/desktop"
@@ -137,9 +139,13 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		if t.Class == "" {
 			continue
 		}
+		entry := apps.ForClass(t.Class)
+		if isFcitxWindow(t.Class, entry) || isFcitxProcess(t.PID) {
+			continue
+		}
 		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
-		if e := apps.ForClass(t.Class); e != nil {
-			key, item = e.ID, DockItem{Key: e.ID, Name: e.Name, Icon: e.Icon, Entry: e}
+		if entry != nil {
+			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
 		}
 		j, ok := at[key]
 		if !ok {
@@ -159,6 +165,39 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		})
 	}
 	return items
+}
+
+// isFcitxWindow excludes the input method's candidate surface from the app
+// dock. Hyprland reports it as a client while composing, but it is not an app
+// window users can launch or switch to from the dock.
+func isFcitxWindow(class string, entry *desktop.Entry) bool {
+	if entry != nil && strings.EqualFold(entry.ID, "org.fcitx.Fcitx5") {
+		return true
+	}
+	class = strings.ToLower(strings.TrimSpace(class))
+	return class == "fcitx" || class == "fcitx5" || class == "fcitx5-wayland-launcher" ||
+		strings.HasPrefix(class, "fcitx-") || strings.HasPrefix(class, "org.fcitx.")
+}
+
+func isFcitxProcess(pid int) bool {
+	if pid <= 0 {
+		return false
+	}
+	exe, err := os.Readlink(filepath.Join("/proc", strconv.Itoa(pid), "exe"))
+	if err != nil {
+		return false
+	}
+	name := strings.ToLower(filepath.Base(exe))
+	return isFcitxExecutable(name)
+}
+
+func isFcitxExecutable(name string) bool {
+	switch strings.ToLower(strings.TrimSpace(name)) {
+	case "fcitx", "fcitx5", "fcitx5-wayland-launcher":
+		return true
+	default:
+		return false
+	}
 }
 
 // DockTarget is what clicking an app does: launch it when it has no
