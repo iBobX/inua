@@ -8,6 +8,7 @@
 //	inua config hyprland [path]                      check that Hyprland starts inua-shell and sources inua.conf
 //	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
 //	inua init [-force] [-dir dir]                    write the sample configuration
+//	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
 package main
@@ -51,6 +52,8 @@ func main() {
 		err = cmdConfig(os.Args[2:])
 	case "init":
 		err = cmdInit(os.Args[2:])
+	case "upgrade":
+		err = cmdUpgrade(os.Args[2:])
 	case "version", "--version", "-v":
 		fmt.Println("inua", version)
 	default:
@@ -71,6 +74,7 @@ func usage() {
   inua config hyprland [path]
   inua config apply
   inua init [-force] [-dir dir]
+  inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua version`)
 	os.Exit(2)
 }

@@ -47,6 +47,9 @@ type Options struct {
 	UIDir string
 	// Instance names the control socket.
 	Instance string
+	// Version is the release the shell is ("dev" when built from source),
+	// for the daily check for a new one.
+	Version string
 	// Config is the settings file's content (internal/config), read from
 	// ConfigPath; the settings window and `shell reload` write and reread
 	// that file.
@@ -319,6 +322,7 @@ func (s *shellUI) start() {
 	log.Printf("started: layer=%v bars=%s", s.layer, strings.Join(s.barNames(), ","))
 	s.startNotify()
 	s.startAlarms()
+	s.startUpdates()
 	s.startSystem()
 	if s.layer { // elsewhere (GNOME) the desktop has its own agent
 		s.startPolkit()

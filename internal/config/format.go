@@ -21,7 +21,7 @@ func Format(c Config) string {
 		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
-		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus,
+		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates,
 		c.Dock.Enable, c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		shortcuts(c.Shortcuts))
 }
@@ -271,6 +271,10 @@ banner_seconds = %d
 # Show banners for critical notifications in Focus (the control center's Do
 # Not Disturb), which otherwise keeps banners quiet.
 critical_in_focus = %t
+
+# Check once a day for a new inua release, a few minutes after you log in,
+# and tell you in a notification, with a button to upgrade (inua upgrade).
+updates = %t
 
 [dock]
 # Show the app dock along the bottom of each monitor: pinned apps, then the

@@ -29,6 +29,9 @@ import (
 	"github.com/lyricat/inua/internal/ui"
 )
 
+// version is the release, set by the release build (-X main.version).
+var version = "dev"
+
 func main() {
 	instance := flag.String("n", cmp.Or(os.Getenv("INUA_INSTANCE"), "default"), "instance name; names the control socket (default $INUA_INSTANCE, else \"default\")")
 	noLayer := flag.Bool("no-layer", false, "use normal windows (for compositors without layer-shell, e.g. GNOME)")
@@ -47,5 +50,5 @@ func main() {
 	for _, w := range warnings {
 		log.Printf("config: %s", w)
 	}
-	os.Exit(ui.Run(ui.Options{NoLayer: *noLayer, UIDir: *uiDir, Instance: *instance, Config: cfg, ConfigPath: *configPath}))
+	os.Exit(ui.Run(ui.Options{NoLayer: *noLayer, UIDir: *uiDir, Instance: *instance, Version: version, Config: cfg, ConfigPath: *configPath}))
 }

@@ -59,8 +59,9 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/bootstrap` | `inua init`: writes the embedded samples without overwriting (`-force` keeps a `.bak`); checks that Hyprland starts the shell and sources `inua.conf` | Done, tested |
 | `internal/ui` | GTK4 views: bar and dock (per monitor), wallpaper, launcher, control center, notification banners and center, tray, settings window (with shortcut recording), screenshot tool, lock screen (on the session lock protocol; the screen stays locked if the shell stops, and a restarted shell takes the lock back), the Clock app's alarms, snapshots | Done |
 | `ui/` | Blueprint layouts, generated `.ui`, `style.css`, colour themes, Phosphor icons; embedded as `ui.FS` | Done |
+| `internal/upgrade` | `inua upgrade`: the newest release's tag (from where `releases/latest` redirects), its archive checked against `checksums.txt`, the programs, launchers and icons staged next to their targets and then renamed into place | Done, tested |
 | `cmd/inua-shell` | The shell | Done |
-| `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init` | Done |
+| `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init`, `upgrade` | Done |
 | `config/` | Samples (`hypr/hyprland.conf`, `hypr/inua.conf`, `inua/config.toml`, `inua/style.css`), the login session and greetd template, Fcitx themes ([README](../config/README.md)) | Done; greetd + tuigreet recommended, GDM and SDDM supported |
 | `scripts/` | `blueprint.sh` (`.blp` → `.ui`), `spike.sh` (nested Hyprland, stress), `phosphor-icons.sh`, `fcitx-themes.py`, the session scripts and their tests | Done |
 | `spike/gtk4-layershell` | Notes from the toolkit experiment; its code became the packages above | Record |

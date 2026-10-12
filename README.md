@@ -60,10 +60,20 @@ offers to install the packages inua needs with apt, writes your
 configuration with `inua init` (never replacing your files), and adds the
 Inua login session (sudo). If you log in with GDM, SDDM or another login
 manager, it asks whether to switch to greetd + tuigreet, the login screen
-inua recommends; the answer defaults to no. Run it again to update;
-`INUA_VERSION=v0.1.2` picks a release. The companions the sample config uses
-(a terminal, a file manager, screenshot tools …) are in
-[docs/design.md](docs/design.md#packages).
+inua recommends; the answer defaults to no. `INUA_VERSION=v0.1.2` picks a
+release.
+
+To update, run `inua upgrade`; `inua upgrade -check` only says whether a
+newer release is out. It downloads the release (checking its checksum),
+replaces the programs where `inua` is installed and the light apps'
+launchers, and restarts the shell in place. `-version v0.1.2` installs a
+given release. Running the install script again also updates. The shell
+checks for a new release a random 1 to 10 minutes after you log in, then
+once a day, and tells you in a notification with an **Upgrade** button;
+`updates = false` under `[notifications]` in `config.toml` turns that off.
+
+The companions the sample config uses (a terminal, a file manager,
+screenshot tools …) are in [docs/design.md](docs/design.md#packages).
 
 From source:
 
@@ -82,7 +92,7 @@ the login session. What ends up where:
 | | Installed to | |
 | --- | --- | --- |
 | `inua-shell` | `~/.local/bin` | The shell |
-| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check` |
+| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check`, `inua upgrade` |
 | `inua-apps` | `~/.local/bin` | The light apps (`inua-apps clock`) |
 | `inua-pinentry` | `~/.local/bin` | gpg's passphrase prompt, asking in inua's dialog |
 | Light app launchers and icons | `~/.local/share/applications`, `~/.local/share/icons` | So the launcher and dock list them |

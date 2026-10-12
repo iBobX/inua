@@ -197,6 +197,9 @@ type Notify struct {
 	Banner int `toml:"banner_seconds"`
 	// CriticalInFocus lets critical notifications show banners in Focus.
 	CriticalInFocus bool `toml:"critical_in_focus"`
+	// Updates checks once a day for a new inua release and says so in a
+	// notification (internal/upgrade).
+	Updates bool `toml:"updates"`
 }
 
 // BannerChoices are the banner durations the settings window offers.
@@ -246,7 +249,7 @@ func Default() Config {
 		},
 		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor"},
 		Background: Background{Enable: true, Fit: "cover"},
-		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true},
+		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Dock:       Dock{Enable: true, Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 	}
