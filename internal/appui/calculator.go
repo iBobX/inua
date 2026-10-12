@@ -1,6 +1,7 @@
 package appui
 
 import (
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -8,31 +9,47 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/calc"
+	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/gtkx"
 )
 
 // calcApp is the calculator. The expression is kept as shown (× ÷ −);
 // the result below previews it while it is typed and becomes the answer
 // on =. After =, a number starts a new expression and an operator goes on
-// from the answer.
+// from the answer. Each answer goes into the history (calc-history.json),
+// listed in a panel at the right that History slides in; an entry
+// recalls its result into the expression.
 type calcApp struct {
 	expr, result     gtk.Label
 	sci, deg         gtk.ToggleButton
 	scikeys, keys    gtk.Grid
+	history          gtk.ToggleButton
+	historyReveal    gtk.Revealer
+	historyList      gtk.Box
+	historyClear     gtk.Button
 	text             string
 	answered         bool
 	answer           string
+	past             []calc.Entry // newest first
 	onKey            func(gtk.Button)
+	onRecall         func(gtk.Button)
+	onClearHistory   func(gtk.Button)
 	onKeyPress       func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onSci, onDegrees func(gtk.ToggleButton)
+	onHistory        func(gtk.ToggleButton)
 }
 
-// The keys: label, input, style. Inputs starting with "op:" are commands.
-var calcKeys = [][]struct{ label, input, style string }{
-	{{"AC", "op:clear", "fn"}, {"⌫", "op:back", "fn"}, {"%", "%", "fn"}, {"÷", "÷", "op"}},
-	{{"7", "7", ""}, {"8", "8", ""}, {"9", "9", ""}, {"×", "×", "op"}},
-	{{"4", "4", ""}, {"5", "5", ""}, {"6", "6", ""}, {"−", "−", "op"}},
-	{{"1", "1", ""}, {"2", "2", ""}, {"3", "3", ""}, {"+", "+", "op"}},
-	{{"±", "op:negate", ""}, {"0", "0", ""}, {".", ".", ""}, {"=", "op:equals", "eq"}},
+// calcHistory is the history's file in the apps' data.
+const calcHistory = "calc-history"
+
+// The keys: label (or a Phosphor icon from ui/icons, with the label as its
+// tooltip), input, style. Inputs starting with "op:" are commands.
+var calcKeys = [][]struct{ label, input, style, icon string }{
+	{{"AC", "op:clear", "fn", ""}, {"Delete", "op:back", "fn", "calc-backspace-symbolic"}, {"%", "%", "fn", ""}, {"÷", "÷", "op", ""}},
+	{{"7", "7", "", ""}, {"8", "8", "", ""}, {"9", "9", "", ""}, {"×", "×", "op", ""}},
+	{{"4", "4", "", ""}, {"5", "5", "", ""}, {"6", "6", "", ""}, {"−", "−", "op", ""}},
+	{{"1", "1", "", ""}, {"2", "2", "", ""}, {"3", "3", "", ""}, {"+", "+", "op", ""}},
+	{{"Change sign", "op:negate", "", "calc-plus-minus-symbolic"}, {"0", "0", "", ""}, {".", ".", "", ""}, {"=", "op:equals", "eq", ""}},
 }
 
 var calcSciKeys = [][]struct{ label, input string }{
@@ -53,7 +70,32 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui.Get("deg", &a.deg)
 	ui.Get("scikeys", &a.scikeys)
 	ui.Get("keys", &a.keys)
+	ui.Get("history", &a.history)
+	ui.Get("history_reveal", &a.historyReveal)
+	ui.Get("history_list", &a.historyList)
+	ui.Get("history_clear", &a.historyClear)
 	ui.Close()
+	store.Load(calcHistory, &a.past)
+	a.onRecall = func(b gtk.Button) {
+		i, err := strconv.Atoi(b.GetName())
+		if err != nil || i >= len(a.past) {
+			return
+		}
+		a.text = calc.Recall(a.text, a.past[i].Result, a.answered)
+		a.answered = false
+		a.show()
+	}
+	a.onClearHistory = func(gtk.Button) {
+		a.past = nil
+		store.Save(calcHistory, a.past)
+		a.fillHistory()
+	}
+	a.historyClear.ConnectClicked(&a.onClearHistory)
+	a.onHistory = func(b gtk.ToggleButton) { a.historyReveal.SetRevealChild(b.GetActive()) }
+	a.history.ConnectToggled(&a.onHistory)
+	a.history.SetCanFocus(false)
+	a.historyClear.SetCanFocus(false)
+	a.fillHistory()
 
 	a.onKey = func(b gtk.Button) { a.input(b.GetName()) }
 	a.onSci = func(b gtk.ToggleButton) { a.scikeys.SetVisible(b.GetActive()) }
@@ -61,8 +103,12 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.onKeyPress = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
 		return a.typed(keyval, state)
 	}
-	key := func(grid *gtk.Grid, label, input, style string, col, row int) {
+	key := func(grid *gtk.Grid, label, input, style, icon string, col, row int) {
 		b := gtk.NewButtonWithLabel(label)
+		if icon != "" {
+			b = gtk.NewButtonFromIconName(icon)
+			b.SetTooltipText(label)
+		}
 		b.AddCssClass("calc-key")
 		if style != "" {
 			b.AddCssClass(style)
@@ -75,12 +121,12 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	for r, row := range calcKeys {
 		for col, k := range row {
-			key(&a.keys, k.label, k.input, k.style, col, r)
+			key(&a.keys, k.label, k.input, k.style, k.icon, col, r)
 		}
 	}
 	for r, row := range calcSciKeys {
 		for col, k := range row {
-			key(&a.scikeys, k.label, k.input, "sci", col, r)
+			key(&a.scikeys, k.label, k.input, "sci", "", col, r)
 		}
 	}
 	a.sci.ConnectToggled(&a.onSci)
@@ -156,6 +202,9 @@ func (a *calcApp) input(in string) {
 			return
 		}
 		a.answer = calc.Format(v)
+		a.past = calc.Remember(a.past, calc.Entry{Expr: a.text, Result: a.answer})
+		store.Save(calcHistory, a.past)
+		a.fillHistory()
 		a.expr.SetText(a.text + " =")
 		a.result.SetText(a.answer)
 		a.result.RemoveCssClass("preview")
@@ -173,6 +222,43 @@ func (a *calcApp) input(in string) {
 		a.text += in
 	}
 	a.show()
+}
+
+// fillHistory lists the history in its panel: each calculation a button
+// that recalls its result.
+func (a *calcApp) fillHistory() {
+	gtkx.Clear(&a.historyList)
+	a.historyClear.SetVisible(len(a.past) > 0)
+	if len(a.past) == 0 {
+		l := gtk.NewLabel("No calculations yet")
+		l.AddCssClass("calc-history-empty")
+		gtkx.Append(&a.historyList, &l.Widget)
+		return
+	}
+	for i, e := range a.past {
+		col := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+		ex := gtk.NewLabel(e.Expr + " =")
+		ex.AddCssClass("calc-history-expr")
+		ex.SetXalign(1)
+		ex.SetEllipsize(1) // start
+		ex.SetMaxWidthChars(28)
+		gtkx.Append(col, &ex.Widget)
+		res := gtk.NewLabel(e.Result)
+		res.AddCssClass("calc-history-result")
+		res.SetXalign(1)
+		res.SetEllipsize(1)
+		res.SetMaxWidthChars(20)
+		gtkx.Append(col, &res.Widget)
+		b := gtk.NewButton()
+		b.AddCssClass("calc-history-entry")
+		b.SetName(strconv.Itoa(i))
+		b.SetTooltipText("Use " + e.Result)
+		b.SetChild(&col.Widget)
+		col.Unref()
+		b.SetFocusOnClick(false) // Enter stays with the calculator
+		b.ConnectClicked(&a.onRecall)
+		gtkx.Append(&a.historyList, &b.Widget)
+	}
 }
 
 // trimLast removes the last thing typed: a function name with its

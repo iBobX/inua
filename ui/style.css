@@ -1326,6 +1326,17 @@ button.calc-key.sci { min-width: 52px; background: transparent; color: @t1; font
 button.calc-key.op { color: @accent; font-size: 20px; }
 button.calc-key.eq { background: @primary; border-color: @primary; color: @app; font-size: 20px; }
 button.calc-key.eq:hover { background: mix(@primary, @app, 0.12); }
+button.calc-key image { -gtk-icon-size: 20px; }
+.settings button.calc-toggle image { -gtk-icon-size: 14px; }
+/* History: a panel at the right, as the viewer's details. */
+.calc-history { padding: 14px 12px 16px; background: @panel; border-left: 1px solid alpha(@line, 0.55); }
+.calc-history > .kicker { margin: 4px 8px 10px; }
+.calc-history > button { margin: 10px 8px 0; }
+button.calc-history-entry { padding: 6px 8px; border: none; border-radius: 2px; background: transparent; box-shadow: none; }
+button.calc-history-entry:hover { background: alpha(@accent, 0.09); }
+.calc-history-expr { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; color: @t2; }
+.calc-history-result { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 18px; font-weight: 300; font-feature-settings: "tnum"; color: @t0; }
+.calc-history-empty { padding: 6px 8px; color: @t2; font-size: 12.5px; }
 
 /* The screenshot tool's Record toggle and colour loupe. */
 button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alpha(@danger, 0.5); color: @danger; }

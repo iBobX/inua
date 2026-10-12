@@ -128,5 +128,9 @@ view-restore                          corners-in
 dialog-information                    info
 preferences-desktop-wallpaper         image-square
 image-x-generic                       image
+# calculator
+calc-backspace                        backspace
+calc-plus-minus                       plus-minus
+document-open-recent                  clock-counter-clockwise
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

@@ -1,6 +1,8 @@
 // Calculator: the expression and its result, then the keys. The
 // scientific keys sit to the left and show when Scientific is on. Every
-// key carries its input in `name` ("k:7", "k:sin(", "op:=").
+// key carries its input in `name` ("k:7", "k:sin(", "op:="). History
+// slides in a panel at the right listing recent calculations; one
+// recalls its result.
 using Gtk 4.0;
 
 ApplicationWindow calculator {
@@ -8,69 +10,122 @@ ApplicationWindow calculator {
   default-height: 520;
 
   Box {
-    styles ["calc"]
-    orientation: vertical;
-
     Box {
-      styles ["calc-modes"]
-      spacing: 6;
+      styles ["calc"]
+      orientation: vertical;
+      hexpand: true;
 
-      ToggleButton sci {
-        styles ["calc-toggle"]
-        label: "Scientific";
-      }
+      Box {
+        styles ["calc-modes"]
+        spacing: 6;
 
-      ToggleButton deg {
-        styles ["calc-toggle"]
-        label: "Deg";
-        active: true;
-        tooltip-text: "Trigonometry in degrees (off: radians)";
+        ToggleButton sci {
+          styles ["calc-toggle"]
+          label: "Scientific";
+        }
+
+        ToggleButton deg {
+          styles ["calc-toggle"]
+          label: "Deg";
+          active: true;
+          tooltip-text: "Trigonometry in degrees (off: radians)";
+        }
+
+        Box {
+          hexpand: true;
+        }
+
+        ToggleButton history {
+          styles ["calc-toggle"]
+          tooltip-text: "Recent calculations";
+
+          Box {
+            spacing: 5;
+
+            Image {
+              icon-name: "document-open-recent-symbolic";
+            }
+
+            Label {
+              label: "History";
+            }
+          }
+        }
       }
 
       Box {
-        hexpand: true;
+        styles ["calc-display"]
+        orientation: vertical;
+        vexpand: true;
+        valign: end;
+
+        Label expression {
+          styles ["calc-expr"]
+          xalign: 1;
+          ellipsize: start;
+        }
+
+        Label result {
+          styles ["calc-result"]
+          xalign: 1;
+          ellipsize: start;
+          label: "0";
+        }
+      }
+
+      Box {
+        styles ["calc-keys"]
+        spacing: 8;
+        homogeneous: false;
+
+        Grid scikeys {
+          visible: false;
+          row-spacing: 8;
+          column-spacing: 8;
+          row-homogeneous: true;
+          column-homogeneous: true;
+        }
+
+        Grid keys {
+          hexpand: true;
+          row-spacing: 8;
+          column-spacing: 8;
+          row-homogeneous: true;
+          column-homogeneous: true;
+        }
       }
     }
 
-    Box {
-      styles ["calc-display"]
-      orientation: vertical;
-      vexpand: true;
-      valign: end;
+    Revealer history_reveal {
+      transition-type: slide_left;
+      transition-duration: 200;
 
-      Label expression {
-        styles ["calc-expr"]
-        xalign: 1;
-        ellipsize: start;
-      }
+      Box {
+        styles ["calc-history"]
+        orientation: vertical;
+        width-request: 260;
 
-      Label result {
-        styles ["calc-result"]
-        xalign: 1;
-        ellipsize: start;
-        label: "0";
-      }
-    }
+        Label {
+          styles ["kicker"]
+          label: "HISTORY";
+          xalign: 0;
+        }
 
-    Box {
-      styles ["calc-keys"]
-      spacing: 8;
-      homogeneous: false;
+        ScrolledWindow {
+          hscrollbar-policy: never;
+          vexpand: true;
 
-      Grid scikeys {
-        visible: false;
-        row-spacing: 8;
-        column-spacing: 8;
-        row-homogeneous: true;
-        column-homogeneous: true;
-      }
+          Box history_list {
+            orientation: vertical;
+            spacing: 2;
+          }
+        }
 
-      Grid keys {
-        hexpand: true;
-        row-spacing: 8;
-        column-spacing: 8;
-        row-homogeneous: true;
-        column-homogeneous: true;
+        Button history_clear {
+          styles ["calc-toggle"]
+          label: "Clear history";
+          halign: start;
+        }
       }
     }
   }
