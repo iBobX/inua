@@ -102,10 +102,12 @@ Window polkit_dialog {
         visible: false;
       }
 
+      // The buttons, all one width.
       Box {
         spacing: 8;
         halign: end;
         margin-top: 6;
+        homogeneous: true;
 
         Button notok {
           styles ["outlined"]
