@@ -20,6 +20,7 @@ type Action struct {
 var Actions = []Action{
 	{ID: "launcher", Label: "Launcher"},
 	{ID: "windows", Label: "Switch windows"},
+	{ID: "overview", Label: "Workspace overview"},
 	{ID: "control", Label: "Control center"},
 	{ID: "notifications", Label: "Notification center"},
 	{ID: "focus", Label: "Focus on or off"},
@@ -40,6 +41,8 @@ func Command(c config.Config, action string) string {
 		return "inua call launcher toggle"
 	case "windows":
 		return "inua call launcher windows"
+	case "overview":
+		return "inua call overview toggle"
 	case "control":
 		return "inua call control toggle"
 	case "notifications":

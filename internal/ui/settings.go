@@ -35,8 +35,8 @@ type settings struct {
 	swatches             map[string]*gtk.Button // by theme, owned by the flow box
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus gtk.Switch
-	barOn, dockOn, dockHide, dockDrawer                 gtk.Switch
-	dockSize                                            gtk.DropDown
+	barOn, dockOn, dockHide, dockDrawer, dockFlushBar   gtk.Switch
+	dockSize, dockPosition                              gtk.DropDown
 	dockPinned                                          gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
 	bgFit, ws, launchMode, swap, caps, icons, banner    gtk.DropDown
@@ -106,6 +106,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Dock.Drawer = on
 		case "dock_autohide":
 			c.Dock.Autohide = on
+		case "dock_flush_bar":
+			c.Style.EdgeGaps = !on
 		case "notify_enable":
 			c.Notify.Enable = on
 		case "critical_focus":
@@ -139,6 +141,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			if i >= 0 && i < len(config.DockSizes) {
 				c.Dock.Size = config.DockSizes[i]
 			}
+		case "dock_position":
+			c.Dock.Position = pick(config.DockPositions, i, c.Dock.Position)
 		case "banner":
 			if i >= 0 && i < len(config.BannerChoices) {
 				c.Notify.Banner = config.BannerChoices[i]
@@ -279,8 +283,10 @@ func (s *shellUI) openSettings() {
 	ui.Get("bar_enable", &st.barOn)
 	ui.Get("dock_enable", &st.dockOn)
 	ui.Get("dock_autohide", &st.dockHide)
+	ui.Get("dock_flush_bar", &st.dockFlushBar)
 	ui.Get("dock_drawer", &st.dockDrawer)
 	ui.Get("dock_size", &st.dockSize)
+	ui.Get("dock_position", &st.dockPosition)
 	ui.Get("dock_pinned", &st.dockPinned)
 	ui.Get("sc_inua", &st.sc.inua)
 	ui.Get("sc_shots", &st.sc.shots)
@@ -321,11 +327,11 @@ func (s *shellUI) openSettings() {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize, &st.dockPosition} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset} {
@@ -619,8 +625,10 @@ func (s *shellUI) showDockSettings() {
 	st.barOn.SetActive(c.Bar.Enable)
 	st.dockOn.SetActive(c.Dock.Enable)
 	st.dockHide.SetActive(c.Dock.Autohide)
+	st.dockFlushBar.SetActive(!c.Style.EdgeGaps)
 	st.dockDrawer.SetActive(c.Dock.Drawer)
 	st.dockSize.SetSelected(uint32(max(0, slices.Index(config.DockSizes, c.Dock.Size))))
+	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))
 	gtkx.Clear(&st.dockPinned)
 	if len(c.Dock.Pinned) == 0 {
 		l := gtk.NewLabel("Nothing pinned")
@@ -652,8 +660,8 @@ func (s *shellUI) showDockSettings() {
 			action, icon, tip string
 			ok                bool
 		}{
-			{"up", "pan-up-symbolic", "Move left", i > 0},
-			{"down", "pan-down-symbolic", "Move right", i < len(c.Dock.Pinned)-1},
+			{"up", "pan-up-symbolic", "Move earlier", i > 0},
+			{"down", "pan-down-symbolic", "Move later", i < len(c.Dock.Pinned)-1},
 			{"remove", "window-close-symbolic", "Remove from the dock", true},
 		} {
 			btn := gtk.NewButtonFromIconName(b.icon)

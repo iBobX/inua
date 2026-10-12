@@ -115,8 +115,8 @@ func (a AppIndex) ForClass(class string) *desktop.Entry {
 
 // Dock lists the dock's apps: the pinned ones in order (those not
 // installed are skipped), then the others with windows, in the order their
-// first window appeared.
-func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
+// first window appeared. Windows skip reports are left out (nil: none).
+func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Toplevel) bool) []DockItem {
 	var items []DockItem
 	at := map[string]int{}
 	add := func(it DockItem) {
@@ -137,9 +137,13 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		if t.Class == "" {
 			continue
 		}
+		entry := apps.ForClass(t.Class)
+		if isFcitxWindow(t.Class, entry) || (skip != nil && skip(t)) {
+			continue
+		}
 		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
-		if e := apps.ForClass(t.Class); e != nil {
-			key, item = e.ID, DockItem{Key: e.ID, Name: e.Name, Icon: e.Icon, Entry: e}
+		if entry != nil {
+			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
 		}
 		j, ok := at[key]
 		if !ok {
@@ -159,6 +163,29 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot) []DockItem {
 		})
 	}
 	return items
+}
+
+// isFcitxWindow tells the input method's candidate popup by its class:
+// Hyprland lists it as a window while composing, but it is not an app to
+// launch or switch to.
+func isFcitxWindow(class string, entry *desktop.Entry) bool {
+	if entry != nil && strings.EqualFold(entry.ID, "org.fcitx.Fcitx5") {
+		return true
+	}
+	class = strings.ToLower(strings.TrimSpace(class))
+	return class == "fcitx" || class == "fcitx5" || class == "fcitx5-wayland-launcher" ||
+		strings.HasPrefix(class, "fcitx-") || strings.HasPrefix(class, "org.fcitx.")
+}
+
+// IsInputMethodProgram reports whether a program, by its name in
+// /proc/PID/comm (at most 15 characters), is the input method, whose
+// windows the dock leaves out whatever their class.
+func IsInputMethodProgram(name string) bool {
+	switch strings.TrimSpace(name) {
+	case "fcitx", "fcitx5":
+		return true
+	}
+	return false
 }
 
 // DockTarget is what clicking an app does: launch it when it has no

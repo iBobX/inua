@@ -416,6 +416,17 @@ url = "https://example.com/"
 	}
 }
 
+func TestDockPosition(t *testing.T) {
+	c, w, err := Load(write(t, "[dock]\nposition = \"left\"\n[style]\nedge_gaps = false\n"))
+	if err != nil || len(w) != 0 || c.Dock.Position != "left" || c.Style.EdgeGaps {
+		t.Fatalf("left: %q gaps=%v %v %v", c.Dock.Position, c.Style.EdgeGaps, w, err)
+	}
+	c, w, _ = Load(write(t, "[dock]\nposition = \"middle\"\n"))
+	if len(w) != 1 || c.Dock.Position != "bottom" || !c.Style.EdgeGaps {
+		t.Errorf("middle: %q gaps=%v %v", c.Dock.Position, c.Style.EdgeGaps, w)
+	}
+}
+
 func TestAssistantProfiles(t *testing.T) {
 	c, w, err := Load(write(t, `[assistant]
 profile = "gone"

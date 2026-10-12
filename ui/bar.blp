@@ -1,11 +1,11 @@
-// Top bar, one per monitor: a slim strip inset 4 px from the screen edges.
+// Top bar, one per monitor: a slim strip with a small screen-edge margin.
 // Workspace and tray buttons are added from Go.
 using Gtk 4.0;
 
 ApplicationWindow bar {
   styles ["bar"]
 
-  CenterBox {
+  CenterBox island {
     styles ["island"]
     margin-top: 4;
     margin-start: 4;

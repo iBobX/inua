@@ -38,6 +38,7 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | Path | What | State |
 | --- | --- | --- |
 | `internal/hypr` | Hyprland requests, events, snapshots, the state store | Done, tested |
+| `internal/capture/hyprland` | Standalone Wayland client for Hyprland's toplevel export protocol; streams SHM frames to the workspace overview | Implemented; runtime verification needs Hyprland |
 | `internal/desktop` | `.desktop` parsing, Exec expansion, launching | Done, tested |
 | `internal/ipc` | The control socket | Done, tested |
 | `internal/sni` | Tray: StatusNotifierWatcher (when no one else provides it), host, dbusmenu menus | Done, tested (private dbus-daemon) |
@@ -125,7 +126,7 @@ Creating a window: take the `ApplicationWindow` from its `.ui` →
 | --- | --- | --- | --- | --- | --- |
 | Wallpaper | Background | All edges, exclusive zone -1 | None | `inua-background` | One per monitor |
 | Bar | Top | Top, left, right; automatic exclusive zone | None | `inua-bar` | One per monitor; hidden when `bar.enable` is off |
-| Dock | Top | Bottom; automatic exclusive zone, or 0 with autohide | None | `inua-dock` | One per monitor while `dock.enable` |
+| Dock | Top | Selected edge; automatic exclusive zone, or 0 with autohide | None | `inua-dock` | One per monitor while `dock.enable` |
 | Launcher | Overlay | None (centred) | Exclusive | `inua-launcher` | Built on every open, destroyed on close |
 | Control center | Overlay | All edges (full screen, zone -1) | Exclusive | `inua-control` | As the launcher; closes on a backdrop click or Esc; the card slides in a GtkRevealer |
 | Notification center | Overlay | All edges | Exclusive | `inua-center` | As the control center |
@@ -179,7 +180,7 @@ Control from outside: Hyprland shortcuts run `inua call …` (`internal/ipc`,
 one socket per instance, named by `-n`, default `$INUA_INSTANCE` or
 `default`). `inua show` lists the targets:
 
-`launcher toggle|apps|windows|close`, `control toggle|open|close`,
+`launcher toggle|apps|windows|close`, `overview toggle|open|close`, `control toggle|open|close`,
 `settings toggle|open [PAGE]|close`,
 `notifications toggle|open|close|clear|focus [on|off]`,
 `shell state|close|reload|restart|snapshot DIR|tray-menu N`.

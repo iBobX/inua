@@ -23,6 +23,7 @@ import (
 type Config struct {
 	Bar        Bar        `toml:"bar"`
 	Launcher   Launcher   `toml:"launcher"`
+	Overview   Overview   `toml:"overview"`
 	Control    Control    `toml:"control"`
 	Style      Style      `toml:"style"`
 	Background Background `toml:"background"`
@@ -64,6 +65,11 @@ type Launcher struct {
 	// Quicklinks search a site when the query starts with their keyword
 	// ("gh inua").
 	Quicklinks []Quicklink `toml:"quicklinks"`
+}
+
+type Overview struct {
+	MRU        bool `toml:"mru"`
+	PerMonitor bool `toml:"per_monitor"`
 }
 
 // Quicklink is a site the launcher searches by keyword.
@@ -114,6 +120,9 @@ type Style struct {
 	CSS string `toml:"css"`
 	// Icons is the icon set of the shell's own icons, one of IconSets.
 	Icons string `toml:"icons"`
+	// EdgeGaps leaves a small gap between the screen edges and the bar and
+	// dock; off puts them flush against the edges.
+	EdgeGaps bool `toml:"edge_gaps"`
 }
 
 type Background struct {
@@ -147,7 +156,7 @@ type Shortcut struct {
 // ShortcutActions are the actions a shortcut can run besides "exec"; the
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
-	"launcher", "windows", "control", "notifications", "focus", "settings", "restart", "lock",
+	"launcher", "windows", "overview", "control", "notifications", "focus", "settings", "restart", "lock",
 	"shot-area", "shot-screen", "shot-window", "shot-record", "color",
 }
 
@@ -314,11 +323,13 @@ type Keyring struct {
 	Folder string `toml:"folder"`
 }
 
-// Dock is the app dock along the bottom of each monitor.
+// Dock is the app dock along a screen edge of each monitor.
 type Dock struct {
 	Enable bool `toml:"enable"`
+	// Position is the screen edge the dock occupies.
+	Position string `toml:"position"`
 	// Autohide keeps the dock out of sight until the pointer reaches the
-	// bottom edge; otherwise windows make room for it.
+	// selected edge; otherwise windows make room for it.
 	Autohide bool `toml:"autohide"`
 	// Size is the icons' size in pixels, one of DockSizes.
 	Size int `toml:"size"`
@@ -331,6 +342,9 @@ type Dock struct {
 
 // DockSizes are the icon sizes the settings window offers.
 var DockSizes = []int{28, 36, 44, 56}
+
+// DockPositions are the edges offered in the dock settings.
+var DockPositions = []string{"bottom", "top", "left", "right"}
 
 // Notify is the notification center (internal/notify).
 type Notify struct {
@@ -385,15 +399,16 @@ func Default() Config {
 			Tray:       true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
+		Overview: Overview{MRU: false, PerMonitor: true},
 		Control: Control{
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor"},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true},
 		Background: Background{Enable: true, Fit: "cover"},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
-		Dock:       Dock{Enable: true, Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
+		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true,
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2", APIKeyEnv: "OPENAI_API_KEY"}}},
 		Keyring: Keyring{Folder: "inua-keyring"},
@@ -545,6 +560,10 @@ func (c *Config) validate() []string {
 		}
 		return bad != ""
 	})
+	if !slices.Contains(DockPositions, c.Dock.Position) {
+		w = append(w, fmt.Sprintf("dock.position = %q: want bottom, top, left or right; using %q", c.Dock.Position, d.Dock.Position))
+		c.Dock.Position = d.Dock.Position
+	}
 	if c.Dock.Size < 24 || c.Dock.Size > 96 {
 		w = append(w, fmt.Sprintf("dock.size = %d: want 24 to 96; using %d", c.Dock.Size, d.Dock.Size))
 		c.Dock.Size = d.Dock.Size
