@@ -29,7 +29,7 @@ func TestDock(t *testing.T) {
 		},
 		ActiveToplevel: "0x4",
 	}
-	items := Dock([]string{"firefox", "missing.app", "kitty", "firefox"}, apps, snap)
+	items := Dock([]string{"firefox", "missing.app", "kitty", "firefox"}, apps, snap, nil)
 	var keys []string
 	for _, it := range items {
 		keys = append(keys, it.Key)
@@ -84,21 +84,33 @@ func TestDockSkipsFcitxWindows(t *testing.T) {
 		dockWin("0x5", "fcitx-rime", 4),
 	}}
 
-	if got := Dock(nil, apps, snap); len(got) != 0 {
+	if got := Dock(nil, apps, snap, nil); len(got) != 0 {
 		t.Errorf("Dock() = %+v, want no input-method items", got)
 	}
 }
 
-func TestIsFcitxProcess(t *testing.T) {
+// A window of the input method's process is left out whatever its class.
+func TestDockSkips(t *testing.T) {
+	telegram := dockWin("0x1", "org.telegram.desktop", 1)
+	popup := dockWin("0x2", "org.telegram.desktop", 0)
+	popup.PID = 42
+	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{telegram, popup}}
+	got := Dock(nil, NewAppIndex(nil), snap, func(t hypr.Toplevel) bool { return t.PID == 42 })
+	if len(got) != 1 || len(got[0].Windows) != 1 || got[0].Windows[0].Address != "0x1" {
+		t.Errorf("Dock() = %+v, want Telegram's own window only", got)
+	}
+}
+
+func TestIsInputMethodProgram(t *testing.T) {
 	for name, want := range map[string]bool{
-		"fcitx":                   true,
-		"fcitx5":                  true,
-		"fcitx5-wayland-launcher": true,
-		"fcitx5-configtool":       false,
-		"telegram-desktop":        false,
+		"fcitx":           true,
+		"fcitx5":          true,
+		"fcitx5\n":        true,
+		"fcitx5-config-q": false, // comm keeps 15 characters
+		"telegram-deskto": false,
 	} {
-		if got := isFcitxExecutable(name); got != want {
-			t.Errorf("isFcitxExecutable(%q) = %v, want %v", name, got, want)
+		if got := IsInputMethodProgram(name); got != want {
+			t.Errorf("IsInputMethodProgram(%q) = %v, want %v", name, got, want)
 		}
 	}
 }

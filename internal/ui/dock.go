@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"maps"
 	"math"
+	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 	"unsafe"
@@ -20,6 +23,7 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -81,6 +85,7 @@ type dockState struct {
 	menu       *gtk.Popover    // borrowed from its button
 	gapTicking bool            // onDockGapTick is running
 	drawer     *drawerPanel    // the open drawer, nil when closed
+	programs   map[int]string  // /proc/PID/comm of windows' processes, by PID
 }
 
 // syncDock gives a bar's monitor a dock, or takes it away, following
@@ -205,6 +210,7 @@ func (s *shellUI) dockApps(entries []*desktop.Entry) {
 }
 
 func (s *shellUI) renderDocks() {
+	s.forgetPrograms()
 	for _, b := range s.bars {
 		if b.dock != nil {
 			s.renderDock(b)
@@ -223,9 +229,38 @@ func dockSignature(items []shell.DockItem, size int, drawer bool) string {
 	return sb.String()
 }
 
+// inputMethodWindow reports whether a window belongs to the input method
+// (Fcitx's candidate popup, whatever class it gets), by the program that
+// owns it. Names are read from /proc/PID/comm once per PID and forgotten
+// when the PID has no window left.
+func (s *shellUI) inputMethodWindow(t hypr.Toplevel) bool {
+	if t.PID <= 0 { // unknown, as for some XWayland windows
+		return false
+	}
+	if s.dockState.programs == nil {
+		s.dockState.programs = map[int]string{}
+	}
+	name, ok := s.dockState.programs[t.PID]
+	if !ok {
+		b, _ := os.ReadFile("/proc/" + strconv.Itoa(t.PID) + "/comm")
+		name = strings.TrimSpace(string(b))
+		s.dockState.programs[t.PID] = name
+	}
+	return shell.IsInputMethodProgram(name)
+}
+
+// forgetPrograms drops the names of processes without windows.
+func (s *shellUI) forgetPrograms() {
+	live := map[int]bool{}
+	for _, t := range s.snap.Toplevels {
+		live[t.PID] = true
+	}
+	maps.DeleteFunc(s.dockState.programs, func(pid int, _ string) bool { return !live[pid] })
+}
+
 func (s *shellUI) renderDock(b *bar) {
 	d := b.dock
-	items := shell.Dock(s.cfg.Dock.Pinned, s.dockState.apps, s.snap)
+	items := shell.Dock(s.cfg.Dock.Pinned, s.dockState.apps, s.snap, s.inputMethodWindow)
 	s.dockState.items = items
 	for _, it := range items {
 		if len(it.Windows) > 0 {
