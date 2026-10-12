@@ -22,6 +22,12 @@ jobs:
           # library's latest security fixes.
           go-version: stable
           check-latest: true
+      # The GTK views' tests load GTK's libraries, found through
+      # pkg-config, though they draw nothing on a screen.
+      - name: Test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev
       - name: Tests
         run: go test ./...
       - uses: goreleaser/goreleaser-action@v6
