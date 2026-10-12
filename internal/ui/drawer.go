@@ -26,7 +26,7 @@ import (
 // an app started. The dock stays up while it is open.
 
 // drawerColumns is how many apps a row of the drawer holds.
-const drawerColumns = 4
+const drawerColumns = 6
 
 // drawerRevealMS matches the revealer's transition below.
 const drawerRevealMS = 220
@@ -190,7 +190,6 @@ func (s *shellUI) toggleDrawer(b *bar) {
 func (s *shellUI) drawerContent() *gtk.Box {
 	sections := s.drawerSections()
 	content := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	content.AddCssClass("drawer")
 	for _, g := range sections {
 		title := gtk.NewLabel(g.Title)
 		title.AddCssClass("drawer-title")
@@ -258,7 +257,18 @@ func (s *shellUI) openDrawer(b *bar) {
 	reveal.SetTransitionDuration(drawerRevealMS)
 	reveal.SetHalign(gtk.AlignStartValue)
 	reveal.SetValign(gtk.AlignStartValue)
-	card := s.drawerContent()
+	// The card scrolls once the groups are taller than the room between
+	// the bar and the dock.
+	card := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	card.AddCssClass("drawer")
+	scroll := gtk.NewScrolledWindow()
+	scroll.SetPolicy(gtk.PolicyNeverValue, gtk.PolicyAutomaticValue)
+	scroll.SetPropagateNaturalWidth(true)
+	scroll.SetPropagateNaturalHeight(true)
+	content := s.drawerContent()
+	scroll.SetChild(&content.Widget)
+	content.Unref()
+	gtkx.Append(card, &scroll.Widget)
 	reveal.SetChild(&card.Widget)
 	gtkx.Append(backdrop, &reveal.Widget)
 	p.win.SetChild(&backdrop.Widget)
@@ -267,10 +277,26 @@ func (s *shellUI) openDrawer(b *bar) {
 	p.backdrop, p.reveal = backdrop, reveal
 
 	// Beside the drawer button: the dock is centred along its edge.
-	var cardSize gtk.Requisition
-	card.GetPreferredSize(nil, &cardSize)
 	var geo gdk.Rectangle
 	b.mon.GetGeometry(&geo)
+	barH := int32(0) // the bar takes the top of the screen
+	if s.cfg.Bar.Enable {
+		barH = int32(b.win.GetHeight())
+	}
+	dockW, dockH := int32(d.win.GetWidth()), int32(d.win.GetHeight())
+	// The tallest the card may be: the screen less the bar, the dock
+	// when it is at the top or bottom, and a gap.
+	room := geo.Height - barH - 2*drawerGap
+	if d.position == "top" || d.position == "bottom" || d.position == "" {
+		room -= dockH + 2
+	}
+	var cardSize, contentSize gtk.Requisition
+	card.GetPreferredSize(nil, &cardSize)
+	content.GetPreferredSize(nil, &contentSize)
+	if cardSize.Height > room { // scroll the rest
+		scroll.SetMaxContentHeight(max(120, room-(cardSize.Height-contentSize.Height)))
+		card.GetPreferredSize(nil, &cardSize)
+	}
 	var r graphene.Rect
 	var f [4]float32
 	hasBounds := d.drawer.ComputeBounds(&d.win.Widget, &r)
@@ -281,37 +307,39 @@ func (s *shellUI) openDrawer(b *bar) {
 	switch position {
 	case "left":
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
-		reveal.SetMarginStart(int32(d.win.GetWidth()) + 2)
+		reveal.SetMarginStart(dockW + 2)
 		y := float32(geo.Height-cardSize.Height) / 2
 		if hasBounds { // the dock is centred on its edge
-			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
+			y = (float32(geo.Height)-float32(dockH))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
 		}
-		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
+		reveal.SetMarginTop(barH + clampDrawerOffset(y-float32(barH), geo.Height-barH, cardSize.Height))
 	case "right":
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
-		x := geo.Width - d.win.GetWidth() - cardSize.Width - 2
+		x := geo.Width - dockW - cardSize.Width - 2
 		reveal.SetMarginStart(max(0, x))
 		y := float32(geo.Height-cardSize.Height) / 2
 		if hasBounds { // the dock is centred on its edge
-			y = (float32(geo.Height)-float32(d.win.GetHeight()))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
+			y = (float32(geo.Height)-float32(dockH))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
 		}
-		reveal.SetMarginTop(clampDrawerOffset(y, geo.Height, cardSize.Height))
+		reveal.SetMarginTop(barH + clampDrawerOffset(y-float32(barH), geo.Height-barH, cardSize.Height))
 	case "top":
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
 		x := float32(geo.Width-cardSize.Width) / 2
 		if hasBounds {
-			x = (float32(geo.Width)-float32(d.win.GetWidth()))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
+			x = (float32(geo.Width)-float32(dockW))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
 		}
 		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
-		reveal.SetMarginTop(int32(d.win.GetHeight()) + 2)
+		reveal.SetMarginTop(barH + dockH + 2) // the dock sits under the bar
 	default: // bottom
 		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
+		reveal.SetValign(gtk.AlignEndValue)
+		reveal.SetVexpand(true) // so that it has the room to sit at the end
 		x := float32(geo.Width-cardSize.Width) / 2
 		if hasBounds {
-			x = (float32(geo.Width)-float32(d.win.GetWidth()))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
+			x = (float32(geo.Width)-float32(dockW))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
 		}
 		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
-		reveal.SetMarginBottom(int32(d.win.GetHeight()) + 2)
+		reveal.SetMarginBottom(dockH + 2)
 	}
 
 	click := gtk.NewGestureClick()
@@ -335,6 +363,9 @@ func (s *shellUI) openDrawer(b *bar) {
 	p.win.Present()
 	reveal.SetRevealChild(true) // after Present, so it slides in
 }
+
+// drawerGap is the least space between the drawer and the screen's edges.
+const drawerGap = 8
 
 // clampDrawerOffset keeps a card inside a monitor with a small breathing edge.
 func clampDrawerOffset(offset float32, extent, card int32) int32 {
