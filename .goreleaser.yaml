@@ -27,6 +27,10 @@ builds:
     main: ./cmd/inua-apps
     binary: inua-apps
   - <<: *build
+    id: inua-games
+    main: ./cmd/inua-games
+    binary: inua-games
+  - <<: *build
     id: inua-pinentry
     main: ./cmd/inua-pinentry
     binary: inua-pinentry

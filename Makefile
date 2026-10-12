@@ -1,9 +1,9 @@
 # inua: Hyprland desktop shell in Go + GTK4 (docs/architecture.md).
 #
 #   make           build bin/inua-shell (the shell), bin/inua (command line),
-#                  bin/inua-apps (light apps), bin/inua-pinentry (gpg's prompt)
-#                  bin/inua-assistant (the assistant) and bin/inua-keyring
-#                  (the Secret Service kept in pass)
+#                  bin/inua-apps (light apps), bin/inua-games (light games),
+#                  bin/inua-pinentry (gpg's prompt), bin/inua-assistant (the
+#                  assistant) and bin/inua-keyring (the Secret Service kept in pass)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -41,6 +41,7 @@ build:
 	go build -o bin/inua-shell ./cmd/inua-shell
 	go build -o bin/inua ./cmd/inua
 	go build -o bin/inua-apps ./cmd/inua-apps
+	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant
 	go build -o bin/inua-keyring ./cmd/inua-keyring
@@ -75,7 +76,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-pinentry bin/inua-assistant bin/inua-keyring
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
 	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
 
