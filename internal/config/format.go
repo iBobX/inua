@@ -22,7 +22,7 @@ func Format(c Config) string {
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus,
-		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
+		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.FlushBar, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		shortcuts(c.Shortcuts))
 }
 
@@ -284,6 +284,9 @@ position = %s
 # Hide the dock until the pointer reaches its screen edge. false: windows
 # make room for it.
 autohide = %t
+
+# Remove screen-edge margins around the dock and top bar.
+flush_bar = %t
 
 # Icon size in pixels (24 to 96).
 size = %d

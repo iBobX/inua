@@ -692,6 +692,34 @@ ApplicationWindow settings {
                     }
                   }
 
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: "Remove screen edge gaps";
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label: "Remove the screen-edge margins around the dock and top bar";
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch dock_flush_bar {
+                      name: "dock_flush_bar";
+                      valign: center;
+                    }
+                  }
+
                   Separator {}
 
                   Box {

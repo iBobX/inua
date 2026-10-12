@@ -48,6 +48,7 @@ type dock struct {
 	buttons  map[string]*dockButton // by app, borrowed from items
 	size     int
 	position string
+	flushBar bool
 	vertical bool // apps stack along a vertical screen edge
 	hide     bool // autohide
 	hover    bool
@@ -87,7 +88,7 @@ type dockState struct {
 func (s *shellUI) syncDock(b *bar) {
 	c := s.cfg.Dock
 	want := c.Enable && s.layer
-	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position) {
+	if b.dock != nil && (!want || b.dock.size != c.Size || b.dock.hide != c.Autohide || b.dock.position != c.Position || b.dock.flushBar != c.FlushBar) {
 		dropDock(b)
 	}
 	if want && b.dock == nil {
@@ -109,7 +110,7 @@ func dropDock(b *bar) {
 
 func (s *shellUI) newDock(b *bar) *dock {
 	position := s.cfg.Dock.Position
-	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide}
+	d := &dock{size: s.cfg.Dock.Size, position: position, vertical: position == "left" || position == "right", hide: s.cfg.Dock.Autohide, flushBar: s.cfg.Dock.FlushBar}
 	ui := s.load("dock.ui", &d.refs)
 	ui.Get("dock", &d.win)
 	ui.Get("root", &d.root)
@@ -125,10 +126,14 @@ func (s *shellUI) newDock(b *bar) *dock {
 		d.island.SetMarginBottom(0)
 		d.reveal.SetVexpand(true)
 		if position == "left" {
-			d.island.SetMarginStart(6)
+			if !d.flushBar {
+				d.island.SetMarginStart(6)
+			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
 		} else {
-			d.island.SetMarginEnd(6)
+			if !d.flushBar {
+				d.island.SetMarginEnd(6)
+			}
 			d.island.AddCssClass("dock-right")
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
 		}
@@ -140,9 +145,14 @@ func (s *shellUI) newDock(b *bar) *dock {
 		d.reveal.SetHexpand(true)
 		if position == "top" {
 			d.island.SetMarginBottom(0)
-			d.island.SetMarginTop(6)
+			if !d.flushBar {
+				d.island.SetMarginTop(6)
+			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
 		} else {
+			if d.flushBar {
+				d.island.SetMarginBottom(0)
+			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
 		}
 		d.edge.Widget.SetSizeRequest(-1, 3)

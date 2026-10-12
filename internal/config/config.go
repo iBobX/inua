@@ -177,6 +177,8 @@ type Dock struct {
 	// Autohide keeps the dock out of sight until the pointer reaches the
 	// selected edge; otherwise windows make room for it.
 	Autohide bool `toml:"autohide"`
+	// FlushBar removes the dock and top bar margins at the screen edges.
+	FlushBar bool `toml:"flush_bar"`
 	// Size is the icons' size in pixels, one of DockSizes.
 	Size int `toml:"size"`
 	// Drawer shows a button at the dock's end that opens inua's light apps.

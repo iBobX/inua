@@ -35,7 +35,7 @@ type settings struct {
 	swatches             map[string]*gtk.Button // by theme, owned by the flow box
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus gtk.Switch
-	barOn, dockOn, dockHide, dockDrawer                 gtk.Switch
+	barOn, dockOn, dockHide, dockDrawer, dockFlushBar   gtk.Switch
 	dockSize, dockPosition                              gtk.DropDown
 	dockPinned                                          gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
@@ -105,6 +105,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Dock.Drawer = on
 		case "dock_autohide":
 			c.Dock.Autohide = on
+		case "dock_flush_bar":
+			c.Dock.FlushBar = on
 		case "notify_enable":
 			c.Notify.Enable = on
 		case "critical_focus":
@@ -274,6 +276,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("bar_enable", &st.barOn)
 	ui.Get("dock_enable", &st.dockOn)
 	ui.Get("dock_autohide", &st.dockHide)
+	ui.Get("dock_flush_bar", &st.dockFlushBar)
 	ui.Get("dock_drawer", &st.dockDrawer)
 	ui.Get("dock_size", &st.dockSize)
 	ui.Get("dock_position", &st.dockPosition)
@@ -320,7 +323,7 @@ func (s *shellUI) openSettings() {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset} {
@@ -605,6 +608,7 @@ func (s *shellUI) showDockSettings() {
 	st.barOn.SetActive(c.Bar.Enable)
 	st.dockOn.SetActive(c.Dock.Enable)
 	st.dockHide.SetActive(c.Dock.Autohide)
+	st.dockFlushBar.SetActive(c.Dock.FlushBar)
 	st.dockDrawer.SetActive(c.Dock.Drawer)
 	st.dockSize.SetSelected(uint32(max(0, slices.Index(config.DockSizes, c.Dock.Size))))
 	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))

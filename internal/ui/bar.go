@@ -25,6 +25,7 @@ type bar struct {
 	wallpaper   *gtk.ApplicationWindow // this monitor's background, if inua draws it
 	dock        *dock                  // this monitor's dock, if shown
 	win         gtk.ApplicationWindow
+	island      gtk.CenterBox
 	workspaces  gtk.Box
 	title       gtk.Label
 	clock       gtk.Label
@@ -113,6 +114,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b := &bar{mon: mon, ws: map[int]*gtk.Button{}, fresh: map[int]bool{}}
 	ui := s.load("bar.ui", &b.refs)
 	ui.Get("bar", &b.win)
+	ui.Get("island", &b.island)
 	ui.Get("workspaces", &b.workspaces)
 	ui.Get("title", &b.title)
 	ui.Get("clock", &b.clock)
@@ -131,6 +133,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("bat_icon", &b.batIcon)
 	ui.Get("bat_label", &b.batLabel)
 	ui.Close()
+	b.setEdgeGap(s.cfg.Dock.FlushBar)
 	b.status.ConnectClicked(&s.onControlButton)
 	b.notes.ConnectClicked(&s.onNotesButton)
 	b.rec.ConnectClicked(&s.onRecButton)
@@ -179,6 +182,16 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	s.syncWallpaper(b)
 	s.syncDock(b)
 	return b
+}
+
+func (b *bar) setEdgeGap(remove bool) {
+	margin := int32(4)
+	if remove {
+		margin = 0
+	}
+	b.island.SetMarginTop(margin)
+	b.island.SetMarginStart(margin)
+	b.island.SetMarginEnd(margin)
 }
 
 func (b *bar) setClock(s *shellUI, now time.Time) {
