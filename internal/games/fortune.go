@@ -6,14 +6,18 @@ import (
 	"slices"
 )
 
-// Small Fortune is a short property game for one player against one to
-// three computer players, on a board of its own: 24 squares, eight pairs
-// of streets. Owning both streets of a pair doubles their rent and lets
-// houses be built on them, up to three. Taxes and fines go into the
-// fountain's pot, which the next player to land there takes. A player who
-// cannot pay sells houses, then streets, back to the bank at half price;
-// one who still cannot is out. The game ends when one player is left, or
-// after its last round, with the most worth (cash, streets and houses).
+// Small Fortune is a property game for one player against one to three
+// computer players, on a board of its own: 40 squares, 22 streets in eight
+// colour groups, four ferry piers and two utilities. Each street of
+// theirs a player's pawn passes or lands on in a turn may go up one level
+// that turn: house by house to four, then a hotel; owning a whole group
+// doubles its bare rent and adds half to its built rents.
+// Piers pay more the more of them one owns; utilities charge by the dice.
+// Taxes and fines go into the fountain's pot, which the next player to
+// land there takes. A player who cannot pay sells buildings, then
+// property, back to the bank at half price; one who still cannot is out.
+// The game ends when one player is left, or after its last round, with
+// the most worth (cash, property and buildings).
 
 type SquareKind uint8
 
@@ -25,57 +29,80 @@ const (
 	GoToJail
 	ChanceSquare
 	TaxSquare
+	Pier    // a ferry pier: rent by how many piers the owner has
+	Utility // rent by the dice
 )
 
 type Square struct {
 	Name  string
 	Kind  SquareKind
-	Group int // a street's pair, 0–7
-	Price int // a street's price, or a tax
+	Group int // a street's colour group, 0–7
+	Price int // a property's price, or a tax
 }
 
-var Board = [24]Square{
+var Board = [40]Square{
 	{"Start", StartSquare, -1, 0},
 	{"Willow Lane", Street, 0, 60},
-	{"Birch Row", Street, 0, 70},
 	{"Chance", ChanceSquare, -1, 0},
-	{"Mill Street", Street, 1, 90},
+	{"Birch Row", Street, 0, 60},
+	{"Income Tax", TaxSquare, -1, 150},
+	{"North Pier", Pier, -1, 200},
+	{"Mill Street", Street, 1, 100},
+	{"Chance", ChanceSquare, -1, 0},
 	{"Ferry Road", Street, 1, 100},
+	{"Weaver's Yard", Street, 1, 120},
 	{"Jail", JailSquare, -1, 0},
-	{"Lantern Alley", Street, 2, 120},
-	{"Paper Market", Street, 2, 130},
-	{"Income Tax", TaxSquare, -1, 100},
-	{"Tea House Row", Street, 3, 150},
-	{"Bell Tower", Street, 3, 160},
-	{"Fountain", Fountain, -1, 0},
-	{"Garden Gate", Street, 4, 180},
-	{"Orchard Hill", Street, 4, 190},
+	{"Lantern Alley", Street, 2, 140},
+	{"Power Station", Utility, -1, 150},
+	{"Paper Market", Street, 2, 140},
+	{"Ink Court", Street, 2, 160},
+	{"East Pier", Pier, -1, 200},
+	{"Tea House Row", Street, 3, 180},
 	{"Chance", ChanceSquare, -1, 0},
-	{"Harbor Front", Street, 5, 210},
-	{"Lighthouse", Street, 5, 220},
+	{"Bell Tower", Street, 3, 180},
+	{"Clock Square", Street, 3, 200},
+	{"Fountain", Fountain, -1, 0},
+	{"Garden Gate", Street, 4, 220},
+	{"Chance", ChanceSquare, -1, 0},
+	{"Orchard Hill", Street, 4, 220},
+	{"Vineyard Way", Street, 4, 240},
+	{"South Pier", Pier, -1, 200},
+	{"Harbor Front", Street, 5, 260},
+	{"Lighthouse", Street, 5, 260},
+	{"Water Works", Utility, -1, 150},
+	{"Coral Bay", Street, 5, 280},
 	{"Go to Jail", GoToJail, -1, 0},
-	{"Observatory", Street, 6, 240},
-	{"Museum Mile", Street, 6, 250},
-	{"Luxury Tax", TaxSquare, -1, 75},
-	{"Sky Terrace", Street, 7, 280},
-	{"Summit Plaza", Street, 7, 300},
+	{"Observatory", Street, 6, 300},
+	{"Museum Mile", Street, 6, 300},
+	{"Chance", ChanceSquare, -1, 0},
+	{"Opera House", Street, 6, 320},
+	{"West Pier", Pier, -1, 200},
+	{"Chance", ChanceSquare, -1, 0},
+	{"Sky Terrace", Street, 7, 350},
+	{"Luxury Tax", TaxSquare, -1, 100},
+	{"Summit Plaza", Street, 7, 400},
 }
 
 const (
-	JailAt      = 6
+	JailAt      = 10
 	startPay    = 200
 	startCash   = 1500
 	bail        = 50
-	maxHouses   = 3
+	Hotel       = 5 // buildings on a street: four houses, then a hotel
 	cpuReserve  = 150
-	FortuneDays = 20 // rounds in a game
+	FortuneDays = 30 // rounds in a game
 )
 
-// HouseCost is the price of one house on a street.
+// HouseCost is the price of one building on a street: a house, or the
+// hotel that replaces the four.
 func HouseCost(sq int) int { return Board[sq].Price / 2 / 10 * 10 }
 
-// Rent multipliers: bare, both of the pair, then one to three houses.
-var rentTimes = [...]int{1, 2, 5, 14, 30}
+// Rent multipliers of a street's tenth of its price: bare, then one to
+// four houses, then a hotel.
+var rentTimes = [...]int{1, 5, 15, 40, 60, 80}
+
+// pierRent is a pier's rent by how many piers its owner has.
+var pierRent = [...]int{0, 25, 50, 100, 200}
 
 type FortunePlayer struct {
 	Name      string
@@ -111,8 +138,8 @@ type FortuneView struct {
 	Cash   []int
 	At     []int
 	InJail []bool
-	Owner  [24]int // -1 for the bank
-	Houses [24]int
+	Owner  [len(Board)]int // -1 for the bank
+	Houses [len(Board)]int
 	Pot    int
 }
 
@@ -129,8 +156,8 @@ type FortuneEvent struct {
 
 type Fortune struct {
 	Players []FortunePlayer
-	Owner   [24]int
-	Houses  [24]int
+	Owner   [len(Board)]int
+	Houses  [len(Board)]int
 	Turn    int // whose turn it is
 	Round   int
 	Phase   FortunePhase
@@ -139,6 +166,9 @@ type Fortune struct {
 	Doubles int
 	Winner  int
 	Result  Outcome // for the human player, once the game is over
+	// CanRaise are the streets of theirs the player whose turn it is
+	// passed or landed on this turn, each of which may go up a level.
+	CanRaise [len(Board)]bool
 
 	// Events since Take; the board replays them.
 	events []FortuneEvent
@@ -201,44 +231,82 @@ func (g *Fortune) note(p int, good, bad bool, format string, args ...any) {
 	g.emit(FortuneEvent{Kind: EvNote, Player: p, Text: fmt.Sprintf(format, args...), Good: good, Bad: bad})
 }
 
-// Rent is what landing on a street costs, as it stands.
+// Rent is what landing on a property costs, as it stands; a utility's
+// depends on the dice, the last roll here.
 func (g *Fortune) Rent(sq int) int {
-	if Board[sq].Kind != Street || g.Owner[sq] < 0 {
+	o := g.Owner[sq]
+	if o < 0 {
 		return 0
 	}
-	return Board[sq].Price / 10 * rentTimes[g.rentLevel(sq)]
-}
-
-// RentAt is a street's rent at a level: 0 bare, 1 the pair, 2–4 houses.
-func RentAt(sq, level int) int { return Board[sq].Price / 10 * rentTimes[level] }
-
-func (g *Fortune) rentLevel(sq int) int {
-	if g.Houses[sq] > 0 {
-		return 1 + g.Houses[sq]
-	}
-	if g.HasPair(g.Owner[sq], Board[sq].Group) {
-		return 1
+	switch Board[sq].Kind {
+	case Street:
+		return RentAt(sq, g.Houses[sq], g.HasGroup(o, Board[sq].Group))
+	case Pier:
+		return pierRent[g.count(o, Pier)]
+	case Utility:
+		return UtilityTimes(g.count(o, Utility)) * (g.Dice[0] + g.Dice[1])
 	}
 	return 0
 }
 
-// Pair is the two streets of a group.
-func Pair(group int) [2]int {
-	var out [2]int
+// RentAt is a street's rent with so many buildings (Hotel for a hotel),
+// and with its whole group or not.
+func RentAt(sq, buildings int, group bool) int {
+	r := Board[sq].Price / 10 * rentTimes[buildings]
+	switch {
+	case group && buildings == 0:
+		r *= 2
+	case group:
+		r += r / 2
+	}
+	return r
+}
+
+// PierRent is a pier's rent when its owner has n piers.
+func PierRent(n int) int { return pierRent[n] }
+
+// UtilityTimes is what a utility charges per point of the dice when its
+// owner has n utilities.
+func UtilityTimes(n int) int { return map[int]int{1: 4, 2: 10}[n] }
+
+func (g *Fortune) count(player int, kind SquareKind) int {
 	n := 0
+	for sq, o := range g.Owner {
+		if o == player && Board[sq].Kind == kind {
+			n++
+		}
+	}
+	return n
+}
+
+// Group is the streets of a colour group.
+func Group(group int) []int {
+	var out []int
 	for i, s := range Board {
 		if s.Kind == Street && s.Group == group {
-			out[n] = i
-			n++
+			out = append(out, i)
 		}
 	}
 	return out
 }
 
-// HasPair reports whether player owns both streets of group.
-func (g *Fortune) HasPair(player, group int) bool {
-	p := Pair(group)
-	return player >= 0 && g.Owner[p[0]] == player && g.Owner[p[1]] == player
+// HasGroup reports whether player owns every street of group.
+func (g *Fortune) HasGroup(player, group int) bool {
+	if player < 0 {
+		return false
+	}
+	for _, sq := range Group(group) {
+		if g.Owner[sq] != player {
+			return false
+		}
+	}
+	return true
+}
+
+// IsProperty reports whether a square can be bought.
+func IsProperty(sq int) bool {
+	k := Board[sq].Kind
+	return k == Street || k == Pier || k == Utility
 }
 
 // Worth is a player's cash, streets and houses at their prices.
@@ -253,11 +321,12 @@ func (g *Fortune) Worth(player int) int {
 }
 
 // CanBuild reports whether the player whose turn it is may build on sq
-// now.
+// now: a street of theirs they passed or landed on this turn, not yet
+// raised, short of a hotel.
 func (g *Fortune) CanBuild(sq int) bool {
 	p := g.Turn
-	return (g.Phase == PhaseRoll || g.Phase == PhaseEnd) && Board[sq].Kind == Street &&
-		g.HasPair(p, Board[sq].Group) && g.Houses[sq] < maxHouses && g.Players[p].Cash >= HouseCost(sq)
+	return (g.Phase == PhaseRoll || g.Phase == PhaseEnd) && g.CanRaise[sq] && Board[sq].Kind == Street &&
+		g.Owner[sq] == p && g.Houses[sq] < Hotel && g.Players[p].Cash >= HouseCost(sq)
 }
 
 // CanSell reports whether the player whose turn it is may sell a house
@@ -266,14 +335,19 @@ func (g *Fortune) CanSell(sq int) bool {
 	return (g.Phase == PhaseRoll || g.Phase == PhaseEnd) && g.Owner[sq] == g.Turn && g.Houses[sq] > 0
 }
 
-// Build puts a house on sq.
+// Build puts a house on sq, or the hotel on its fourth house.
 func (g *Fortune) Build(sq int) bool {
 	if !g.CanBuild(sq) {
 		return false
 	}
 	g.Players[g.Turn].Cash -= HouseCost(sq)
 	g.Houses[sq]++
-	g.note(g.Turn, false, false, "%s built a house on %s ($%d).", g.Players[g.Turn].Name, Board[sq].Name, HouseCost(sq))
+	g.CanRaise[sq] = false // one level a turn
+	what := "a house"
+	if g.Houses[sq] == Hotel {
+		what = "a hotel"
+	}
+	g.note(g.Turn, false, false, "%s built %s on %s ($%d).", g.Players[g.Turn].Name, what, Board[sq].Name, HouseCost(sq))
 	return true
 }
 
@@ -284,7 +358,7 @@ func (g *Fortune) Sell(sq int) bool {
 	}
 	g.Houses[sq]--
 	g.Players[g.Turn].Cash += HouseCost(sq) / 2
-	g.note(g.Turn, false, false, "%s sold a house on %s for $%d.", g.Players[g.Turn].Name, Board[sq].Name, HouseCost(sq)/2)
+	g.note(g.Turn, false, false, "%s sold a building on %s for $%d.", g.Players[g.Turn].Name, Board[sq].Name, HouseCost(sq)/2)
 	return true
 }
 
@@ -392,6 +466,11 @@ func (g *Fortune) roll(a, b int) {
 func (g *Fortune) walk(pi, steps int) {
 	p := &g.Players[pi]
 	from := p.At
+	for k := 1; k <= steps; k++ { // the streets of theirs it passes, and the one it lands on
+		if sq := (from + k) % len(Board); g.Owner[sq] == pi && Board[sq].Kind == Street {
+			g.CanRaise[sq] = true
+		}
+	}
 	p.At = (p.At + steps) % len(Board)
 	if p.At < from || steps >= len(Board) {
 		p.Cash += startPay
@@ -428,7 +507,7 @@ func (g *Fortune) land(pi int) {
 	sq := Board[p.At]
 	g.Phase = PhaseEnd
 	switch sq.Kind {
-	case Street:
+	case Street, Pier, Utility:
 		owner := g.Owner[p.At]
 		switch {
 		case owner < 0 && p.Cash >= sq.Price:
@@ -442,6 +521,7 @@ func (g *Fortune) land(pi int) {
 			return
 		case owner < 0:
 			g.note(pi, false, false, "%s cannot afford %s.", p.Name, sq.Name)
+
 		case owner != pi:
 			rent := g.Rent(p.At)
 			if !g.charge(pi, rent, owner) {
@@ -503,14 +583,20 @@ var chanceCards = []struct {
 	{"Your bicycle needs a new chain: pay $40.", -40, 0, -1, 0, 0},
 	{"Go back three squares.", 0, -3, -1, 0, 0},
 	{"It is your birthday: every player gives you $25.", 0, 0, -1, 25, 0},
-	{"Roof repairs: pay $25 for each house.", 0, 0, -1, 0, -25},
+	{"Roof repairs: pay $25 for each building.", 0, 0, -1, 0, -25},
 	{"A refund from the tax office: collect $80.", 80, 0, -1, 0, 0},
-	{"Take the ferry to Harbor Front.", 0, 0, 16, 0, 0},
+	{"Take the ferry to the next pier.", 0, 0, nextPier, 0, 0},
+	{"An evening at the opera: go to Opera House.", 0, 0, 34, 0, 0},
+	{"Your shares paid a dividend: collect $100.", 100, 0, -1, 0, 0},
+	{"Hotel inspection: pay $40 for each building.", 0, 0, -1, 0, -40},
 	{"A parking fine: pay $30.", -30, 0, -1, 0, 0},
 	{"You won a crossword: collect $50.", 50, 0, -1, 0, 0},
 	{"Buy everyone lunch: pay each player $15.", 0, 0, -1, -15, 0},
 	{"Caught jaywalking: go to jail.", 0, 0, JailAt, 0, 0},
 }
+
+// nextPier is a chance card's destination: the next pier ahead.
+const nextPier = -2
 
 func (g *Fortune) shuffle() {
 	g.deck = g.rng.Perm(len(chanceCards))
@@ -528,6 +614,13 @@ func (g *Fortune) chance(pi int) bool {
 	switch {
 	case c.to == JailAt:
 		g.jail(pi)
+		return false
+	case c.to == nextPier:
+		steps := 1
+		for Board[(p.At+steps)%len(Board)].Kind != Pier {
+			steps++
+		}
+		g.walk(pi, steps)
 		return false
 	case c.to >= 0:
 		steps := (c.to - p.At + len(Board)) % len(Board)
@@ -649,7 +742,7 @@ func (g *Fortune) bankrupt(pi int) {
 }
 
 func (g *Fortune) next() {
-	g.Doubles = 0
+	g.Doubles, g.CanRaise = 0, [len(Board)]bool{}
 	for {
 		g.Turn = (g.Turn + 1) % len(g.Players)
 		if g.Turn == 0 {
@@ -710,35 +803,46 @@ func (g *Fortune) PlayCPU() bool {
 }
 
 // cpuWants: buy when the cash after it stays above a reserve, or when
-// the street completes a pair.
+// the street adds to a group it has started.
 func (g *Fortune) cpuWants(pi, sq int) bool {
 	p := g.Players[pi]
-	pair := Pair(Board[sq].Group)
-	other := pair[0]
-	if other == sq {
-		other = pair[1]
-	}
-	if g.Owner[other] == pi {
-		return p.Cash >= Board[sq].Price
+	if Board[sq].Kind == Street {
+		for _, o := range Group(Board[sq].Group) {
+			if o != sq && g.Owner[o] == pi {
+				return p.Cash >= Board[sq].Price
+			}
+		}
 	}
 	return p.Cash-Board[sq].Price >= cpuReserve
 }
 
-// cpuBuild builds up to two houses, on the cheapest of its pairs first,
-// keeping a reserve.
+// cpuBuild raises the streets it passed this turn a level each, keeping
+// a reserve: its whole groups first, then the least built and cheapest;
+// lone streets only when it is well off.
 func (g *Fortune) cpuBuild(pi int) {
-	for range 2 {
-		var sqs []int
-		for sq, o := range g.Owner {
-			if o == pi && g.HasPair(pi, Board[sq].Group) && g.Houses[sq] < maxHouses {
-				sqs = append(sqs, sq)
-			}
+	var sqs []int
+	for sq := range g.CanRaise {
+		if g.CanRaise[sq] && g.Owner[sq] == pi && g.Houses[sq] < Hotel {
+			sqs = append(sqs, sq)
 		}
-		slices.SortFunc(sqs, func(a, b int) int { return g.Houses[a]*1000 + HouseCost(a) - g.Houses[b]*1000 - HouseCost(b) })
-		if len(sqs) == 0 || g.Players[pi].Cash-HouseCost(sqs[0]) < cpuReserve+100 {
-			return
+	}
+	score := func(sq int) int {
+		s := g.Houses[sq]*1000 + HouseCost(sq)
+		if !g.HasGroup(pi, Board[sq].Group) {
+			s += 10000
 		}
-		g.Phase = PhaseEnd
-		g.Build(sqs[0])
+		return s
+	}
+	slices.SortFunc(sqs, func(a, b int) int { return score(a) - score(b) })
+	g.Phase = PhaseEnd
+	for _, sq := range sqs {
+		reserve := cpuReserve + 100
+		if !g.HasGroup(pi, Board[sq].Group) {
+			reserve = cpuReserve + 300
+		}
+		if g.Players[pi].Cash-HouseCost(sq) < reserve {
+			continue
+		}
+		g.Build(sq)
 	}
 }

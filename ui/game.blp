@@ -33,7 +33,7 @@ ApplicationWindow game {
         Button restart { styles ["outlined"] label: "New game"; valign: center; }
       }
 
-      Label status { styles ["game-line"] xalign: 0; wrap: true; }
+      Label status { styles ["game-line"] xalign: 0; wrap: true; lines: 2; ellipsize: end; }
     }
 
     Box body { styles ["game-body"] orientation: vertical; vexpand: true; }

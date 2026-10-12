@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"html"
 	"image/color"
-	"math"
 	"math/rand/v2"
-	"slices"
 	"strings"
 	"time"
 
@@ -54,15 +52,7 @@ type logLine struct {
 	good, bad bool
 }
 
-// The board: 700 units square, corners of 96, five squares between.
-const (
-	fBoard  = 700.0
-	fCorner = 96.0
-	fEdge   = (fBoard - 2*fCorner) / 5
-	fBand   = 15.0
-)
-
-// The streets' pairs, in calm versions of their usual colours.
+// The streets' colour groups, in calm versions of their usual colours.
 var groupColors = [8]color.NRGBA{
 	{0xB0, 0x7A, 0x5A, 255}, {0x7F, 0xA6, 0xC9, 255}, {0xC9, 0x8F, 0xB0, 255}, {0xD9, 0xA4, 0x41, 255},
 	{0x8D, 0xB8, 0x6B, 255}, {0x4E, 0x9C, 0x9A, 255}, {0x8C, 0x7F, 0xC9, 255}, {0xD9, 0x6A, 0x55, 255},
@@ -75,12 +65,12 @@ func (p *fortune) playerColor(i int) color.NRGBA {
 
 func (p *fortune) setup(f *frame) {
 	p.f, p.rivals, p.selected, p.hover = f, 2, -1, -1
-	f.win.SetDefaultSize(1080, 820)
+	f.win.SetDefaultSize(1440, 900)
 	p.round = f.stat("ROUND")
 	p.pot = f.stat("FOUNTAIN")
 
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 18)
-	p.cv = newCanvas(fBoard, fBoard, p.paint)
+	p.cv = newCanvas(isoW, isoH, p.paint)
 	gtkx.Append(row, &p.cv.area.Widget)
 	panel := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	panel.AddCssClass("fortune-panel")
@@ -104,6 +94,8 @@ func (p *fortune) setup(f *frame) {
 	p.cardTitle = gtk.NewLabel("")
 	p.cardTitle.AddCssClass("fortune-card-title")
 	p.cardTitle.SetXalign(0)
+	p.cardTitle.SetEllipsize(3) // end
+	p.cardTitle.SetMaxWidthChars(28)
 	gtkx.Append(panel, &p.cardTitle.Widget)
 	p.cardBody = gtk.NewLabel("")
 	p.cardBody.AddCssClass("fortune-card")
@@ -111,13 +103,14 @@ func (p *fortune) setup(f *frame) {
 	p.cardBody.SetWrap(true)
 	p.cardBody.SetMaxWidthChars(36)
 	gtkx.Append(panel, &p.cardBody.Widget)
-	p.cardButtons = *gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-	p.cardButtons.SetHomogeneous(true)
+	// Stacked, so that a long label never widens the panel (and shrinks
+	// the board).
+	p.cardButtons = *gtk.NewBox(gtk.OrientationVerticalValue, 6)
 	p.cardButtons.AddCssClass("fortune-buttons")
 	p.onBuild = func(gtk.Button) { p.act(func() bool { return p.g.Build(p.focus()) }) }
 	p.onSell = func(gtk.Button) { p.act(func() bool { return p.g.Sell(p.focus()) }) }
 	p.build = button("Build a house", &p.onBuild)
-	p.sell = button("Sell a house", &p.onSell)
+	p.sell = button("Sell", &p.onSell)
 	gtkx.Append(&p.cardButtons, &p.build.Widget)
 	gtkx.Append(&p.cardButtons, &p.sell.Widget)
 	gtkx.Append(panel, &p.cardButtons.Widget)
@@ -170,7 +163,7 @@ func (p *fortune) setup(f *frame) {
 
 	f.keyDown = p.key
 	p.onClick = func(_ gtk.GestureClick, _ int32, x, y float64) {
-		if sq := squareAt(p.cv.at(x, y)); sq >= 0 {
+		if sq := squareAtScreen(p.cv.at(x, y)); sq >= 0 {
 			p.selected = sq
 			p.refresh()
 		}
@@ -179,7 +172,7 @@ func (p *fortune) setup(f *frame) {
 	click.ConnectPressed(&p.onClick)
 	p.cv.area.AddController(&click.EventController)
 	p.onMotion = func(_ gtk.EventControllerMotion, x, y float64) {
-		if sq := squareAt(p.cv.at(x, y)); sq != p.hover {
+		if sq := squareAtScreen(p.cv.at(x, y)); sq != p.hover {
 			p.hover = sq
 			p.cv.redraw()
 		}
@@ -372,325 +365,18 @@ func (p *fortune) step(dt float64) bool {
 	return true
 }
 
-// squareRect is a square's place on the board, and the side of it that
-// faces the middle: 0 up, 1 right, 2 down, 3 left; -1 for a corner.
-func squareRect(i int) (x, y, w, h float64, side int) {
-	switch {
-	case i == 0:
-		return fBoard - fCorner, fBoard - fCorner, fCorner, fCorner, -1
-	case i < 6:
-		return fBoard - fCorner - float64(i)*fEdge, fBoard - fCorner, fEdge, fCorner, 0
-	case i == 6:
-		return 0, fBoard - fCorner, fCorner, fCorner, -1
-	case i < 12:
-		return 0, fBoard - fCorner - float64(i-6)*fEdge, fCorner, fEdge, 1
-	case i == 12:
-		return 0, 0, fCorner, fCorner, -1
-	case i < 18:
-		return fCorner + float64(i-13)*fEdge, 0, fEdge, fCorner, 2
-	case i == 18:
-		return fBoard - fCorner, 0, fCorner, fCorner, -1
-	default:
-		return fBoard - fCorner, fCorner + float64(i-19)*fEdge, fCorner, fEdge, 3
+// raisable counts the streets the player may raise a level now.
+func (p *fortune) raisable() int {
+	n := 0
+	if p.g.Turn != 0 || p.busy() {
+		return 0
 	}
-}
-
-func squareAt(v games.Vec) int {
-	for i := range games.Board {
-		x, y, w, h, _ := squareRect(i)
-		if v.X >= x && v.X < x+w && v.Y >= y && v.Y < y+h {
-			return i
+	for sq := range games.Board {
+		if p.g.CanBuild(sq) {
+			n++
 		}
 	}
-	return -1
-}
-
-// tokenAt is where player pi's token stands on square sq: each player
-// has a place of its own there. In jail, it is behind the bars.
-func tokenAt(sq, pi int, jailed bool) games.Vec {
-	x, y, w, h, side := squareRect(sq)
-	off := [4]games.Vec{{X: -12, Y: -12}, {X: 12, Y: -12}, {X: -12, Y: 12}, {X: 12, Y: 12}}[pi]
-	if side < 0 {
-		if jailed {
-			return games.Vec{X: x + w - 23 + off.X*0.7, Y: y + 23 + off.Y*0.7}
-		}
-		return games.Vec{X: x + w/2 + off.X, Y: y + 64 + off.Y}
-	}
-	cx, cy := x+w/2, y+h/2
-	switch side { // clear of the colour band
-	case 0:
-		cy += fBand / 2
-	case 1:
-		cx -= fBand / 2
-	case 2:
-		cy -= fBand / 2
-	case 3:
-		cx += fBand / 2
-	}
-	return games.Vec{X: cx + (float64(pi)-1.5)*19, Y: cy + 4}
-}
-
-// token is where a player's token is drawn now, and how high it hops.
-func (p *fortune) token(pi int) (games.Vec, float64) {
-	e := p.cur
-	if e != nil && e.Player == pi {
-		switch e.Kind {
-		case games.EvWalk:
-			s := min(p.t/hopTime, float64(e.Steps))
-			n := int(s)
-			a := (e.From + n) % len(games.Board)
-			b := (a + 1) % len(games.Board)
-			frac := s - float64(n)
-			return tokenAt(a, pi, false).Lerp(tokenAt(b, pi, false), frac), math.Sin(frac*math.Pi) * 10
-		case games.EvJump:
-			frac := min(1, p.t/jumpTime)
-			frac = frac * frac * (3 - 2*frac)
-			return tokenAt(e.From, pi, false).Lerp(tokenAt(e.To, pi, e.View.InJail[pi]), frac), math.Sin(frac*math.Pi) * 40
-		}
-	}
-	return tokenAt(p.shown.At[pi], pi, p.shown.InJail[pi]), 0
-}
-
-func (p *fortune) paint(pn pen) {
-	c := p.f.col
-	v := p.shown
-	// The board's middle.
-	pn.Color(c.surface)
-	pn.Rect(0, 0, fBoard, fBoard)
-	pn.Fill()
-
-	for i, sq := range games.Board {
-		x, y, w, h, side := squareRect(i)
-		bg := c.surface
-		if o := v.Owner[i]; o >= 0 {
-			bg = mix(c.surface, p.playerColor(o), 0.13)
-		}
-		if i == p.hover || i == p.focus() && p.selected >= 0 {
-			bg = mix(bg, c.t0, 0.06)
-		}
-		pn.Color(bg)
-		pn.Rect(x, y, w, h)
-		pn.Fill()
-
-		// Inside the colour band.
-		ix, iy, iw, ih := x, y, w, h
-		if sq.Kind == games.Street {
-			bx, by, bw, bh := x, y, w, h
-			switch side {
-			case 0:
-				bh = fBand
-				iy, ih = y+fBand, h-fBand
-			case 1:
-				bx, bw = x+w-fBand, fBand
-				iw = w - fBand
-			case 2:
-				by, bh = y+h-fBand, fBand
-				ih = h - fBand
-			case 3:
-				bw = fBand
-				ix, iw = x+fBand, w-fBand
-			}
-			pn.Color(mix(c.surface, groupColors[sq.Group], 0.85))
-			pn.Rect(bx, by, bw, bh)
-			pn.Fill()
-			for n := range v.Houses[i] {
-				hx, hy := bx+bw/2, by+bh/2
-				d := (float64(n) - float64(v.Houses[i]-1)/2) * 14
-				if side == 0 || side == 2 {
-					hx += d
-				} else {
-					hy += d
-				}
-				pn.Color(c.app)
-				pn.RoundRect(hx-5, hy-5, 10, 10, 2)
-				pn.Fill()
-				pn.Color(c.t0)
-				pn.RoundRect(hx-3.5, hy-3.5, 7, 7, 1.5)
-				pn.Fill()
-			}
-		}
-		cx := ix + iw/2
-		switch sq.Kind {
-		case games.Street:
-			pn.TextBox(sq.Name, "IBM Plex Sans Medium 9", cx, iy+6, iw-8, c.t0)
-			if o := v.Owner[i]; o >= 0 {
-				pn.Color(p.playerColor(o))
-				pn.Circle(cx-24, iy+ih-12, 3.5)
-				pn.Fill()
-				pn.Text(fmt.Sprintf("rent $%d", rentOf(v, i)), "Geist Mono, IBM Plex Mono 8.5", cx+4, iy+ih-6, 0.5, 1, c.t1)
-			} else {
-				pn.Text(fmt.Sprintf("$%d", sq.Price), "Geist Mono, IBM Plex Mono 9", cx, iy+ih-6, 0.5, 1, c.t2)
-			}
-		case games.ChanceSquare:
-			pn.Text("?", "IBM Plex Sans Bold 24", cx, iy+24, 0.5, 0.5, c.accent)
-			pn.Text("Chance", "IBM Plex Sans 9", cx, iy+ih-6, 0.5, 1, c.t1)
-		case games.TaxSquare:
-			pn.TextBox(sq.Name, "IBM Plex Sans Medium 9.5", cx, iy+10, iw-10, c.t0)
-			pn.Text(fmt.Sprintf("pay $%d", sq.Price), "Geist Mono, IBM Plex Mono 9", cx, iy+ih-6, 0.5, 1, c.danger)
-		case games.StartSquare:
-			pn.Text("← START", "IBM Plex Sans Bold 13", cx, y+18, 0.5, 0.5, c.ok)
-			pn.Text("collect $200", "IBM Plex Sans 8.5", cx, y+34, 0.5, 0.5, c.t1)
-		case games.JailSquare:
-			pn.Color(mix(c.surface, c.t2, 0.25))
-			pn.Rect(x+w-46, y, 46, 46)
-			pn.Fill()
-			pn.Width(2)
-			pn.Color(c.t2)
-			for b := range 4 {
-				bx := x + w - 40 + float64(b)*11
-				pn.Line(bx, y+4, bx, y+42)
-			}
-			pn.Text("JAIL", "IBM Plex Sans Bold 10", x+8, y+10, 0, 0, c.t1)
-			pn.Text("just visiting", "IBM Plex Sans 8", x+w/2, y+h-4, 0.5, 1, c.t2)
-		case games.Fountain:
-			pn.Text("FOUNTAIN", "IBM Plex Sans Bold 9.5", cx, y+16, 0.5, 0.5, c.t0)
-			pn.Text(fmt.Sprintf("$%d", v.Pot), "Geist Mono, IBM Plex Mono Bold 10", cx, y+31, 0.5, 0.5, c.accent)
-			pn.Width(1.5)
-			pn.Alpha(c.accent, 0.5)
-			pn.Arc(cx, y+64, 26, 0.15*math.Pi, 0.85*math.Pi)
-			pn.Stroke()
-		case games.GoToJail:
-			pn.Text("GO TO", "IBM Plex Sans Bold 11", cx, y+16, 0.5, 0.5, c.danger)
-			pn.Text("JAIL ↙", "IBM Plex Sans Bold 11", cx, y+32, 0.5, 0.5, c.danger)
-		}
-		pn.Width(1)
-		pn.Color(c.line)
-		pn.Rect(x+0.5, y+0.5, w-1, h-1)
-		pn.Stroke()
-	}
-	if f := p.focus(); p.selected >= 0 {
-		x, y, w, h, _ := squareRect(f)
-		pn.Width(2.5)
-		pn.Color(c.accent)
-		pn.Rect(x+1.5, y+1.5, w-3, h-3)
-		pn.Stroke()
-	}
-
-	p.paintMiddle(pn)
-
-	// Tokens, the one whose turn it is on top.
-	order := []int{}
-	for i := range p.g.Players {
-		if i != p.g.Turn {
-			order = append(order, i)
-		}
-	}
-	order = append(order, p.g.Turn)
-	for _, i := range order {
-		if p.g.Players[i].Out && (p.cur == nil || p.cur.Player != i) {
-			continue
-		}
-		at, lift := p.token(i)
-		pn.Alpha(c.app, 0.35)
-		pn.Circle(at.X+1.5, at.Y+2.5, 9)
-		pn.Fill()
-		at.Y -= lift
-		if i == p.g.Turn && p.g.Phase != games.PhaseOver {
-			pn.Color(c.t0)
-			pn.Circle(at.X, at.Y, 11)
-			pn.Fill()
-		}
-		pn.Color(p.playerColor(i))
-		pn.Circle(at.X, at.Y, 9)
-		pn.Fill()
-		pn.Text(p.g.Players[i].Name[:1], "IBM Plex Sans Bold 8.5", at.X, at.Y, 0.5, 0.5, c.app)
-	}
-}
-
-// paintMiddle draws the board's middle: the name, the dice, and the
-// latest news; at the end, the standings.
-func (p *fortune) paintMiddle(pn pen) {
-	c := p.f.col
-	m := fBoard / 2
-	pn.Text("S M A L L   F O R T U N E", "IBM Plex Sans Bold 15", m, 150, 0.5, 0.5, mix(c.surface, c.t2, 0.7))
-
-	if p.g.Phase == games.PhaseOver && !p.busy() {
-		w := p.g.Winner
-		title, tone := fmt.Sprintf("%s won.", p.g.Players[w].Name), c.danger
-		if w == 0 {
-			title, tone = "You won!", c.ok
-		}
-		pn.Text(title, "IBM Plex Sans Bold 30", m, 230, 0.5, 0.5, tone)
-		idx := []int{}
-		for i := range p.g.Players {
-			idx = append(idx, i)
-		}
-		slices.SortFunc(idx, func(a, b int) int { return p.g.Worth(b) - p.g.Worth(a) })
-		for n, i := range idx {
-			y := 290 + float64(n)*34
-			pn.Color(p.playerColor(i))
-			pn.Circle(m-120, y, 7)
-			pn.Fill()
-			name := p.g.Players[i].Name
-			if p.g.Players[i].Out {
-				name += " (bankrupt)"
-			}
-			pn.Text(name, "IBM Plex Sans 13", m-104, y, 0, 0.5, c.t0)
-			pn.Text("$"+thousands(p.g.Worth(i)), "Geist Mono, IBM Plex Mono 13", m+130, y, 1, 0.5, c.t0)
-		}
-		pn.Text("Press N or Space for a new game", "IBM Plex Sans 11", m, 450, 0.5, 0.5, c.t2)
-		return
-	}
-
-	// Dice.
-	if p.dice[0] > 0 {
-		for i, d := range p.dice {
-			x := m - 70 + float64(i)*84
-			pn.Alpha(c.app, 0.4)
-			pn.RoundRect(x+2, 248, 56, 56, 10)
-			pn.Fill()
-			pn.Color(c.t0)
-			pn.RoundRect(x, 244, 56, 56, 10)
-			pn.Fill()
-			pn.Color(c.app)
-			for _, pip := range pips[d] {
-				pn.Circle(x+28+pip[0]*15, 272+pip[1]*15, 4.8)
-				pn.Fill()
-			}
-		}
-	}
-
-	// The latest news, and whose turn it is.
-	if len(p.log) > 0 {
-		l := p.log[0]
-		col := c.t1
-		if l.good {
-			col = c.ok
-		} else if l.bad {
-			col = c.danger
-		}
-		pn.TextBox(l.text, "IBM Plex Sans 13", m, 330, 380, col)
-	}
-	turn := p.g.Players[p.g.Turn]
-	who := "Your turn"
-	if turn.CPU {
-		who = turn.Name + "'s turn"
-	}
-	pn.Color(p.playerColor(p.g.Turn))
-	pn.Circle(m-50, 470, 6)
-	pn.Fill()
-	pn.Text(who, "IBM Plex Sans Medium 12", m-38, 470, 0, 0.5, c.t0)
-	pn.Text(fmt.Sprintf("Round %d of %d", p.g.Round, games.FortuneDays), "Geist Mono, IBM Plex Mono 10", m, 496, 0.5, 0.5, c.t2)
-}
-
-var pips = [7][][2]float64{
-	{}, {{0, 0}}, {{-1, -1}, {1, 1}}, {{-1, -1}, {0, 0}, {1, 1}},
-	{{-1, -1}, {1, -1}, {-1, 1}, {1, 1}}, {{-1, -1}, {1, -1}, {0, 0}, {-1, 1}, {1, 1}},
-	{{-1, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {1, 1}},
-}
-
-// rentOf is a street's rent as the view shows it.
-func rentOf(v games.FortuneView, sq int) int {
-	level := 0
-	if v.Houses[sq] > 0 {
-		level = 1 + v.Houses[sq]
-	} else {
-		pair := games.Pair(games.Board[sq].Group)
-		if v.Owner[pair[0]] == v.Owner[pair[1]] {
-			level = 1
-		}
-	}
-	return games.RentAt(sq, level)
+	return n
 }
 
 // refresh sets the header and the panel from the board as shown.
@@ -731,20 +417,41 @@ func (p *fortune) refresh() {
 	var b strings.Builder
 	switch s.Kind {
 	case games.Street:
-		pair := games.Pair(s.Group)
-		other := pair[0]
-		if other == sq {
-			other = pair[1]
+		var group []string
+		for _, o := range games.Group(s.Group) {
+			if o != sq {
+				group = append(group, games.Board[o].Name)
+			}
 		}
-		fmt.Fprintf(&b, "Price $%d · house $%d · pairs with %s\n", s.Price, games.HouseCost(sq), games.Board[other].Name)
-		fmt.Fprintf(&b, "Rent $%d, with the pair $%d\nWith 1, 2, 3 houses: $%d, $%d, $%d", games.RentAt(sq, 0), games.RentAt(sq, 1),
-			games.RentAt(sq, 2), games.RentAt(sq, 3), games.RentAt(sq, 4))
+		fmt.Fprintf(&b, "Price $%d · each building $%d\nGroup: %s\n", s.Price, games.HouseCost(sq), strings.Join(group, ", "))
+		fmt.Fprintf(&b, "Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)",
+			games.RentAt(sq, 0, false), games.RentAt(sq, 0, true), games.RentAt(sq, 1, false), games.RentAt(sq, 2, false),
+			games.RentAt(sq, 3, false), games.RentAt(sq, 4, false), games.RentAt(sq, games.Hotel, false))
 		if o := v.Owner[sq]; o >= 0 {
 			fmt.Fprintf(&b, "\nOwned by %s", g.Players[o].Name)
-			if v.Houses[sq] > 0 {
-				fmt.Fprintf(&b, ", %d house%s", v.Houses[sq], map[bool]string{true: "s"}[v.Houses[sq] > 1])
+			switch h := v.Houses[sq]; {
+			case h == games.Hotel:
+				b.WriteString(", with a hotel")
+			case h > 0:
+				fmt.Fprintf(&b, ", %d house%s", h, map[bool]string{true: "s"}[h > 1])
 			}
 			fmt.Fprintf(&b, ": rent now $%d", rentOf(v, sq))
+		} else {
+			b.WriteString("\nFor sale")
+		}
+	case games.Pier:
+		fmt.Fprintf(&b, "Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers.", s.Price,
+			games.PierRent(1), games.PierRent(2), games.PierRent(3), games.PierRent(4))
+		if o := v.Owner[sq]; o >= 0 {
+			fmt.Fprintf(&b, "\nOwned by %s: rent now $%d", g.Players[o].Name, rentOf(v, sq))
+		} else {
+			b.WriteString("\nFor sale")
+		}
+	case games.Utility:
+		fmt.Fprintf(&b, "Price $%d. Rent is the dice times %d, or times %d with both utilities.", s.Price,
+			games.UtilityTimes(1), games.UtilityTimes(2))
+		if o := v.Owner[sq]; o >= 0 {
+			fmt.Fprintf(&b, "\nOwned by %s", g.Players[o].Name)
 		} else {
 			b.WriteString("\nFor sale")
 		}
@@ -767,10 +474,13 @@ func (p *fortune) refresh() {
 	idle := !p.busy() && g.Turn == 0
 	p.build.SetSensitive(idle && g.CanBuild(sq))
 	p.sell.SetSensitive(idle && g.CanSell(sq))
-	if mine && !g.HasPair(0, s.Group) {
-		p.build.SetTooltipText("Own both streets of the pair to build")
-	} else {
-		p.build.SetTooltipText("")
+	switch h := v.Houses[sq]; {
+	case h == games.Hotel:
+		p.build.SetLabel("Hotel built")
+	case h == games.Hotel-1:
+		p.build.SetLabel(fmt.Sprintf("Build a hotel ($%d)", games.HouseCost(sq)))
+	default:
+		p.build.SetLabel(fmt.Sprintf("Build a house ($%d)", games.HouseCost(sq)))
 	}
 
 	// What can be done.
@@ -796,7 +506,7 @@ func (p *fortune) refresh() {
 		}
 	case g.Phase == games.PhaseBuy:
 		at := g.Players[0].At
-		p.primary.SetLabel(fmt.Sprintf("Buy %s for $%d", games.Board[at].Name, games.Board[at].Price))
+		p.primary.SetLabel(fmt.Sprintf("Buy it for $%d", games.Board[at].Price)) // short: the panel keeps its width
 		p.primary.SetSensitive(true)
 		p.secondary.SetLabel("Pass")
 		p.secondary.SetVisible(true)
@@ -841,8 +551,11 @@ func (p *fortune) refresh() {
 		}
 	case g.Phase == games.PhaseBuy:
 		p.f.say("Buy the street, or pass and leave it to the bank.", "")
+	case p.raisable() > 0:
+		p.f.say(fmt.Sprintf("You passed %d street%s of yours (outlined): click one to build a level on it, one a turn each, or end your turn.",
+			p.raisable(), map[bool]string{true: "s"}[p.raisable() > 1]), "good")
 	case g.Phase == games.PhaseEnd:
-		p.f.say("Click a street of yours to build on it, or end your turn.", "")
+		p.f.say("End your turn. Streets of yours you pass go up a level each, if you pay.", "")
 	case g.Players[0].InJail:
 		p.f.say("You are in jail: roll for a double, or pay $50 and roll.", "")
 	default:

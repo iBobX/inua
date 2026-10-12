@@ -29,11 +29,12 @@ var catalog = []entry{
 		"A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  X . ↑ nudge  ·  M sound  ·  P pause  ·  N new game",
 		func() play { return &pinball{} }},
 	{"small-fortune", "SmallFortune", "Small Fortune",
-		"A short property game against one to three computer players. Roll two dice and walk the board; a double rolls again, three in a row go to jail. " +
-			"Buy the streets you land on. Rivals landing there pay you rent, doubled once you own both streets of a pair; then build up to three houses on them for much more. " +
-			"Passing Start pays $200. Taxes and fines fill the fountain, and whoever lands there takes it. Who cannot pay sells houses and streets at half price, or is out. " +
-			"After 20 rounds, or when one player is left, the most worth wins: cash, streets and houses.",
-		"Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game",
+		"A property game against one to three computer players on a board of 40 squares. Roll two dice and walk the board; a double rolls again, three in a row go to jail. " +
+			"Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; " +
+			"owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. " +
+			"Passing Start pays $200. Taxes and fines fill the fountain, and whoever lands there takes it. Who cannot pay sells buildings and property at half price, or is out. " +
+			"After 30 rounds, or when one player is left, the most worth wins: cash, property and buildings.",
+		"Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  click a square to see it",
 		func() play { return &fortune{} }},
 }
 
