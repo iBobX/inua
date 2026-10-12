@@ -1,0 +1,588 @@
+msgid ""
+msgstr ""
+"Language: zh_CN\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: internal/apps/sysmon/process.go:46
+msgid "running"
+msgstr "运行中"
+
+#: internal/apps/sysmon/process.go:48
+msgid "sleeping"
+msgstr "休眠"
+
+#: internal/apps/sysmon/process.go:50
+msgid "waiting on a disk"
+msgstr "等待磁盘"
+
+#: internal/apps/sysmon/process.go:52
+msgid "stopped"
+msgstr "已停止"
+
+#: internal/apps/sysmon/process.go:54
+msgid "stopped by a debugger"
+msgstr "被调试器停止"
+
+#: internal/apps/sysmon/process.go:56
+msgid "zombie"
+msgstr "僵尸"
+
+#: internal/apps/sysmon/process.go:58
+msgid "idle"
+msgstr "空闲"
+
+#: internal/apps/sysmon/process.go:60
+msgid "dead"
+msgstr "已终止"
+
+#: internal/apps/sysmon/process.go:196
+msgid "under a minute"
+msgstr "不到一分钟"
+
+#: internal/apps/sysmon/sysmon.go:400
+msgid "%d d %d h"
+msgstr "%d 天 %d 小时"
+
+#: internal/apps/sysmon/sysmon.go:402
+msgid "%d h %d min"
+msgstr "%d 小时 %d 分钟"
+
+#: internal/apps/sysmon/sysmon.go:404
+msgid "%d min"
+msgstr "%d 分钟"
+
+#: internal/appui/app.go:66
+msgid "System Monitor"
+msgstr "系统监视器"
+
+#: internal/appui/sysmon.go:52
+#: internal/appui/sysmon.go:52
+msgid "Quit"
+msgstr "退出"
+
+#: internal/appui/sysmon.go:52
+msgid "Asks it to quit. It can save its work first."
+msgstr "请它退出，它可以先保存工作。"
+
+#: internal/appui/sysmon.go:53
+#: internal/appui/sysmon.go:53
+msgid "Interrupt"
+msgstr "中断"
+
+#: internal/appui/sysmon.go:53
+msgid "As Ctrl+C in a terminal."
+msgstr "如同在终端里按 Ctrl+C。"
+
+#: internal/appui/sysmon.go:54
+#: internal/appui/sysmon.go:54
+msgid "Hang Up"
+msgstr "挂断"
+
+#: internal/appui/sysmon.go:54
+msgid "As closing its terminal. Many services reload instead."
+msgstr "如同关闭它的终端。许多服务会改为重新加载。"
+
+#: internal/appui/sysmon.go:55
+#: internal/appui/sysmon.go:55
+msgid "Pause"
+msgstr "暂停"
+
+#: internal/appui/sysmon.go:55
+msgid "Stops it running until it is resumed."
+msgstr "让它停下，直到继续运行。"
+
+#: internal/appui/sysmon.go:56
+#: internal/appui/sysmon.go:56
+msgid "Force Quit"
+msgstr "强制退出"
+
+#: internal/appui/sysmon.go:56
+msgid "Ends it at once. Work it has not saved is lost."
+msgstr "立即结束。未保存的工作会丢失。"
+
+#: internal/appui/sysmon.go:57
+msgid "Quit with Children"
+msgstr "连同子进程退出"
+
+#: internal/appui/sysmon.go:57
+#: internal/appui/sysmon.go:58
+msgid "Quit All"
+msgstr "全部退出"
+
+#: internal/appui/sysmon.go:58
+msgid "Quit All by Name"
+msgstr "按名称全部退出"
+
+#: internal/appui/sysmon.go:142
+#: internal/appui/sysmon.go:720
+#: ui/sysmon.ui:84
+msgid "CPU"
+msgstr "CPU"
+
+#: internal/appui/sysmon.go:144
+#: internal/appui/sysmon.go:720
+#: internal/appui/sysmon.go:781
+#: internal/appui/sysmon.go:985
+msgid "MEMORY"
+msgstr "内存"
+
+#: internal/appui/sysmon.go:146
+msgid "GPU"
+msgstr "GPU"
+
+#: internal/appui/sysmon.go:148
+#: internal/appui/sysmon.go:1031
+msgid "NETWORK"
+msgstr "网络"
+
+#: internal/appui/sysmon.go:149
+msgid "DISK"
+msgstr "磁盘"
+
+#: internal/appui/sysmon.go:151
+msgid "BATTERY"
+msgstr "电池"
+
+#: internal/appui/sysmon.go:384
+msgid "%d threads"
+msgstr "%d 个线程"
+
+#: internal/appui/sysmon.go:389
+msgid "load %.2f %.2f %.2f"
+msgstr "负载 %.2f %.2f %.2f"
+
+#: internal/appui/sysmon.go:399
+msgid "CPU %d: %.0f%%"
+msgstr "CPU %d：%.0f%%"
+
+#: internal/appui/sysmon.go:408
+msgid "of %s · cache %s"
+msgstr "共 %s · 缓存 %s"
+
+#: internal/appui/sysmon.go:410
+msgid " · swap %s of %s"
+msgstr " · 交换 %s / %s"
+
+#: internal/appui/sysmon.go:425
+msgid " · video memory %s of %s"
+msgstr " · 显存 %s / %s"
+
+#: internal/appui/sysmon.go:437
+msgid "↑ %s · received %s, sent %s"
+msgstr "↑ %s · 已接收 %s，已发送 %s"
+
+#: internal/appui/sysmon.go:444
+msgid "of %s on / · %s free"
+msgstr "/ 共 %s · 可用 %s"
+
+#: internal/appui/sysmon.go:446
+msgid " · read %s · write %s"
+msgstr " · 读 %s · 写 %s"
+
+#: internal/appui/sysmon.go:462
+msgid "health %.0f%%"
+msgstr "健康度 %.0f%%"
+
+#: internal/appui/sysmon.go:467
+msgid "UP %s"
+msgstr "已运行 %s"
+
+#: internal/appui/sysmon.go:529
+msgid "%d PROCESSES"
+msgstr "%d 个进程"
+
+#: internal/appui/sysmon.go:531
+msgid "%d OF %d PROCESSES"
+msgstr "%d / %d 个进程"
+
+#: internal/appui/sysmon.go:535
+msgid "No process matches."
+msgstr "没有匹配的进程。"
+
+#: internal/appui/sysmon.go:571
+msgid "Details and the ways to end %s"
+msgstr "%s 的详情与结束方式"
+
+#: internal/appui/sysmon.go:599
+msgid "Not sent: an administrator's password is needed."
+msgstr "未发送：需要管理员密码。"
+
+#: internal/appui/sysmon.go:643
+msgid "Process %d has ended."
+msgstr "进程 %d 已结束。"
+
+#: internal/appui/sysmon.go:720
+msgid "THREADS"
+msgstr "线程"
+
+#: internal/appui/sysmon.go:736
+msgid "END OR PAUSE"
+msgstr "结束或暂停"
+
+#: internal/appui/sysmon.go:777
+msgid "PROCESS"
+msgstr "进程"
+
+#: internal/appui/sysmon.go:778
+msgid "Parent"
+msgstr "父进程"
+
+#: internal/appui/sysmon.go:778
+msgid "User"
+msgstr "用户"
+
+#: internal/appui/sysmon.go:778
+msgid "State"
+msgstr "状态"
+
+#: internal/appui/sysmon.go:778
+msgid "Started"
+msgstr "启动于"
+
+#: internal/appui/sysmon.go:778
+msgid "CPU time"
+msgstr "CPU 时间"
+
+#: internal/appui/sysmon.go:778
+msgid "Priority"
+msgstr "优先级"
+
+#: internal/appui/sysmon.go:778
+msgid "Unit"
+msgstr "单元"
+
+#: internal/appui/sysmon.go:782
+msgid "Resident"
+msgstr "常驻"
+
+#: internal/appui/sysmon.go:782
+msgid "Private"
+msgstr "私有"
+
+#: internal/appui/sysmon.go:782
+msgid "Shared"
+msgstr "共享"
+
+#: internal/appui/sysmon.go:782
+msgid "Swapped out"
+msgstr "已换出"
+
+#: internal/appui/sysmon.go:782
+msgid "Peak"
+msgstr "峰值"
+
+#: internal/appui/sysmon.go:785
+msgid "FILES"
+msgstr "文件"
+
+#: internal/appui/sysmon.go:786
+msgid "Command"
+msgstr "命令"
+
+#: internal/appui/sysmon.go:786
+msgid "Program"
+msgstr "程序"
+
+#: internal/appui/sysmon.go:786
+msgid "Folder"
+msgstr "目录"
+
+#: internal/appui/sysmon.go:786
+msgid "Open files"
+msgstr "打开的文件"
+
+#: internal/appui/sysmon.go:786
+msgid "Disk read"
+msgstr "磁盘读取"
+
+#: internal/appui/sysmon.go:786
+msgid "Disk written"
+msgstr "磁盘写入"
+
+#: internal/appui/sysmon.go:800
+msgid "PID %d · %s"
+msgstr "PID %d · %s"
+
+#: internal/appui/sysmon.go:802
+msgid "PID %d · ENDED"
+msgstr "PID %d · 已结束"
+
+#: internal/appui/sysmon.go:813
+#: internal/appui/sysmon.go:1096
+#: internal/appui/sysmon.go:1103
+msgid "Not readable: not your process"
+msgstr "无法读取：不是你的进程"
+
+#: internal/appui/sysmon.go:836
+msgid "%s · %s ago"
+msgstr "%s · %s 前"
+
+#: internal/appui/sysmon.go:836
+msgid "Jan 2 15:04:05"
+msgstr "1月2日 15:04:05"
+
+#: internal/appui/sysmon.go:839
+msgid "nice %d"
+msgstr "nice %d"
+
+#: internal/appui/sysmon.go:863
+#: internal/appui/sysmon.go:863
+msgid "Resume"
+msgstr "继续"
+
+#: internal/appui/sysmon.go:863
+msgid "It is paused. Lets it go on."
+msgstr "它已暂停。让它继续运行。"
+
+#: internal/appui/sysmon.go:867
+msgid "Also its %d child process, the youngest first."
+msgid_plural "Also its %d child processes, the youngest first."
+msgstr[0] "还有它的 %d 个子进程，从最新的开始。"
+
+#: internal/appui/sysmon.go:870
+msgid "All %d processes named %s."
+msgstr "名为 %[2]s 的全部 %[1]d 个进程。"
+
+#: internal/appui/sysmon.go:892
+msgid "This process has ended."
+msgstr "这个进程已结束。"
+
+#: internal/appui/sysmon.go:923
+msgid "Asked %s to quit."
+msgstr "已请 %s 退出。"
+
+#: internal/appui/sysmon.go:925
+msgid "Interrupted %s."
+msgstr "已中断 %s。"
+
+#: internal/appui/sysmon.go:927
+msgid "Hung up on %s."
+msgstr "已挂断 %s。"
+
+#: internal/appui/sysmon.go:929
+msgid "Ended %s."
+msgstr "已结束 %s。"
+
+#: internal/appui/sysmon.go:931
+msgid "Paused %s."
+msgstr "已暂停 %s。"
+
+#: internal/appui/sysmon.go:933
+msgid "Resumed %s."
+msgstr "已继续 %s。"
+
+#: internal/appui/sysmon.go:937
+msgid "Asked %s and its %d child to quit."
+msgid_plural "Asked %s and its %d children to quit."
+msgstr[0] "已请 %s 和它的 %d 个子进程退出。"
+
+#: internal/appui/sysmon.go:940
+msgid "Asked %d processes named %s to quit."
+msgstr "已请名为 %[2]s 的 %[1]d 个进程退出。"
+
+#: internal/appui/sysmon.go:958
+msgid "COMPUTER"
+msgstr "电脑"
+
+#: internal/appui/sysmon.go:959
+#: internal/appui/sysmon.go:971
+msgid "Model"
+msgstr "型号"
+
+#: internal/appui/sysmon.go:960
+#: ui/sysmon.ui:96
+msgid "Name"
+msgstr "名称"
+
+#: internal/appui/sysmon.go:961
+msgid "System"
+msgstr "系统"
+
+#: internal/appui/sysmon.go:962
+msgid "Kernel"
+msgstr "内核"
+
+#: internal/appui/sysmon.go:965
+msgid "%s · since %s"
+msgstr "%s · 自 %s 起"
+
+#: internal/appui/sysmon.go:965
+msgid "Jan 2 15:04"
+msgstr "1月2日 15:04"
+
+#: internal/appui/sysmon.go:967
+msgid "Up"
+msgstr "已运行"
+
+#: internal/appui/sysmon.go:970
+msgid "PROCESSOR"
+msgstr "处理器"
+
+#: internal/appui/sysmon.go:972
+msgid "Cores"
+msgstr "核心"
+
+#: internal/appui/sysmon.go:972
+msgid "%s, %s"
+msgstr "%s，%s"
+
+#: internal/appui/sysmon.go:972
+msgid "%d core"
+msgid_plural "%d cores"
+msgstr[0] "%d 个核心"
+
+#: internal/appui/sysmon.go:972
+msgid "%d thread"
+msgid_plural "%d threads"
+msgstr[0] "%d 个线程"
+
+#: internal/appui/sysmon.go:975
+msgid "up to %s"
+msgstr "最高 %s"
+
+#: internal/appui/sysmon.go:978
+msgid "now %s"
+msgstr "当前 %s"
+
+#: internal/appui/sysmon.go:981
+msgid "Speed"
+msgstr "频率"
+
+#: internal/appui/sysmon.go:986
+msgid "Installed"
+msgstr "总量"
+
+#: internal/appui/sysmon.go:987
+msgid "In use"
+msgstr "已用"
+
+#: internal/appui/sysmon.go:988
+msgid "Cache"
+msgstr "缓存"
+
+#: internal/appui/sysmon.go:988
+msgid "%s · given back when needed"
+msgstr "%s · 需要时会释放"
+
+#: internal/appui/sysmon.go:989
+msgid "Free"
+msgstr "可用"
+
+#: internal/appui/sysmon.go:991
+msgid "Swap"
+msgstr "交换"
+
+#: internal/appui/sysmon.go:991
+#: internal/appui/sysmon.go:1003
+#: internal/appui/sysmon.go:1017
+msgid "%s of %s"
+msgstr "%s / %s"
+
+#: internal/appui/sysmon.go:995
+msgid "GRAPHICS"
+msgstr "显卡"
+
+#: internal/appui/sysmon.go:997
+msgid "Card"
+msgstr "显卡"
+
+#: internal/appui/sysmon.go:998
+msgid "Driver"
+msgstr "驱动"
+
+#: internal/appui/sysmon.go:1000
+msgid "Busy"
+msgstr "占用"
+
+#: internal/appui/sysmon.go:1003
+msgid "Video memory"
+msgstr "显存"
+
+#: internal/appui/sysmon.go:1009
+msgid "STORAGE"
+msgstr "存储"
+
+#: internal/appui/sysmon.go:1033
+msgid "wired"
+msgstr "有线"
+
+#: internal/appui/sysmon.go:1035
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: internal/appui/sysmon.go:1037
+msgid "down"
+msgstr "未连接"
+
+#: internal/appui/sysmon.go:1039
+msgid "up"
+msgstr "已连接"
+
+#: internal/appui/sysmon.go:1043
+msgid "Addresses"
+msgstr "地址"
+
+#: internal/appui/sysmon.go:1046
+msgid "Hardware"
+msgstr "硬件地址"
+
+#: internal/appui/sysmon.go:1049
+msgid "Traffic"
+msgstr "流量"
+
+#: internal/appui/sysmon.go:1049
+msgid "received %s · sent %s"
+msgstr "已接收 %s · 已发送 %s"
+
+#: internal/appui/sysmon.go:1055
+msgid "SENSORS"
+msgstr "传感器"
+
+#: internal/appui/sysmon.go:1074
+msgid "Charging"
+msgstr "充电中"
+
+#: internal/appui/sysmon.go:1074
+msgid "Discharging"
+msgstr "放电中"
+
+#: internal/appui/sysmon.go:1074
+msgid "Full"
+msgstr "已充满"
+
+#: internal/appui/sysmon.go:1075
+msgid "Not charging"
+msgstr "未充电"
+
+#: internal/appui/sysmon.go:1075
+msgid "Unknown"
+msgstr "未知"
+
+#: internal/appui/sysmon.go:1082
+msgid "%.1f s"
+msgstr "%.1f 秒"
+
+#: ui/sysmon.ui:38
+msgid "OVERVIEW"
+msgstr "概览"
+
+#: ui/sysmon.ui:58
+msgid "PROCESSES"
+msgstr "进程"
+
+#: ui/sysmon.ui:90
+msgid "Memory"
+msgstr "内存"
+
+#: ui/sysmon.ui:112
+msgid "Filter by name, PID or user"
+msgstr "按名称、PID 或用户筛选"
+
+#: ui/sysmon.ui:149
+msgid "SYSTEM"
+msgstr "系统"
+
+#: ui/sysmon.ui:220
+msgid "Close (Escape)"
+msgstr "关闭（Esc）"

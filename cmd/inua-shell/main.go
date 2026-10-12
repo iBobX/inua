@@ -26,6 +26,7 @@ import (
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ui"
 )
 
@@ -40,6 +41,7 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lmicroseconds)
 	desktop.ReapInherited()
+	i18n.Init() // the language, from the environment
 
 	// A broken settings file never keeps the shell from starting: problems
 	// are logged (and shown by `inua config check`) and defaults fill in.

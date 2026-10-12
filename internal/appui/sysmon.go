@@ -19,6 +19,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/chart"
 	"github.com/lyricat/inua/internal/apps/sysmon"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // history is how many seconds the meters draw.
@@ -48,13 +49,13 @@ type action struct {
 }
 
 var actions = []action{
-	{"quit", "Quit", "Asks it to quit. It can save its work first.", "Quit", syscall.SIGTERM, true, false},
-	{"interrupt", "Interrupt", "As Ctrl+C in a terminal.", "Interrupt", syscall.SIGINT, true, false},
-	{"hangup", "Hang Up", "As closing its terminal. Many services reload instead.", "Hang Up", syscall.SIGHUP, true, false},
-	{"pause", "Pause", "Stops it running until it is resumed.", "Pause", syscall.SIGSTOP, false, false},
-	{"kill", "Force Quit", "Ends it at once. Work it has not saved is lost.", "Force Quit", syscall.SIGKILL, true, true},
-	{"tree", "Quit with Children", "", "Quit All", syscall.SIGTERM, true, false},
-	{"named", "Quit All by Name", "", "Quit All", syscall.SIGTERM, true, false},
+	{"quit", i18n.M("Quit"), i18n.M("Asks it to quit. It can save its work first."), i18n.M("Quit"), syscall.SIGTERM, true, false},
+	{"interrupt", i18n.M("Interrupt"), i18n.M("As Ctrl+C in a terminal."), i18n.M("Interrupt"), syscall.SIGINT, true, false},
+	{"hangup", i18n.M("Hang Up"), i18n.M("As closing its terminal. Many services reload instead."), i18n.M("Hang Up"), syscall.SIGHUP, true, false},
+	{"pause", i18n.M("Pause"), i18n.M("Stops it running until it is resumed."), i18n.M("Pause"), syscall.SIGSTOP, false, false},
+	{"kill", i18n.M("Force Quit"), i18n.M("Ends it at once. Work it has not saved is lost."), i18n.M("Force Quit"), syscall.SIGKILL, true, true},
+	{"tree", i18n.M("Quit with Children"), "", i18n.M("Quit All"), syscall.SIGTERM, true, false},
+	{"named", i18n.M("Quit All by Name"), "", i18n.M("Quit All"), syscall.SIGTERM, true, false},
 }
 
 // actionRow is an action's row on the detail page.
@@ -138,16 +139,16 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui.Close()
 
 	a.cpuInfo = sysmon.ReadCPUInfo()
-	a.cpu = a.newMeter("CPU", true, 0, 100)
+	a.cpu = a.newMeter(i18n.M("CPU"), true, 0, 100)
 	a.buildCores()
-	a.mem = a.newMeter("MEMORY", true, 0, 100)
+	a.mem = a.newMeter(i18n.M("MEMORY"), true, 0, 100)
 	if g := sysmon.ReadGPUs(); len(g) > 0 && g[0].Busy >= 0 {
-		a.gpu = a.newMeter("GPU", true, 0, 100)
+		a.gpu = a.newMeter(i18n.M("GPU"), true, 0, 100)
 	}
-	a.net = a.newMeter("NETWORK", true, 0, 0)
-	a.disk = a.newMeter("DISK", false, 0, 0)
+	a.net = a.newMeter(i18n.M("NETWORK"), true, 0, 0)
+	a.disk = a.newMeter(i18n.M("DISK"), false, 0, 0)
 	if sysmon.ReadBattery().Present {
-		a.bat = a.newMeter("BATTERY", false, 0, 0)
+		a.bat = a.newMeter(i18n.M("BATTERY"), false, 0, 0)
 	}
 	a.foot = gtk.NewLabel("")
 	a.foot.AddCssClass("foot")
@@ -247,7 +248,7 @@ func (a *sysmonApp) newMeter(name string, withChart bool, lo, hi float64) *meter
 	m.box = gtk.NewBox(gtk.OrientationVerticalValue, 4)
 	m.box.AddCssClass("meter")
 	head := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
-	k := gtk.NewLabel(name)
+	k := gtk.NewLabel(i18n.T(name))
 	k.AddCssClass("kicker")
 	k.SetHexpand(true)
 	k.SetXalign(0)
@@ -380,12 +381,12 @@ func (a *sysmonApp) sample() {
 	a.lastCPU = cpu
 	a.cpu.push(use)
 	a.cpu.value.SetText(fmt.Sprintf("%.0f%%", use))
-	parts := []string{fmt.Sprintf("%d threads", threads)}
+	parts := []string{i18n.Tf("%d threads", threads)}
 	if mhz := sysmon.ReadFrequency(); mhz > 0 {
 		parts = append(parts, ghz(mhz))
 	}
 	load := sysmon.Load()
-	parts = append(parts, fmt.Sprintf("load %.2f %.2f %.2f", load[0], load[1], load[2]))
+	parts = append(parts, i18n.Tf("load %.2f %.2f %.2f", load[0], load[1], load[2]))
 	if t := sysmon.ReadTemperature(); t > 0 {
 		parts = append(parts, fmt.Sprintf("%.0f °C", t))
 	}
@@ -395,7 +396,7 @@ func (a *sysmonApp) sample() {
 		if i < len(cores) && i < len(a.lastCores) {
 			u := sysmon.Usage(a.lastCores[i], cores[i])
 			fillTo(fill, coreWidth, u/100)
-			fill.GetParent().SetTooltipText(fmt.Sprintf("CPU %d: %.0f%%", i, u))
+			fill.GetParent().SetTooltipText(i18n.Tf("CPU %d: %.0f%%", i, u))
 		}
 	}
 	a.lastCores = cores
@@ -404,9 +405,9 @@ func (a *sysmonApp) sample() {
 	if mem.Total > 0 {
 		a.mem.push(100 * float64(mem.Used()) / float64(mem.Total))
 		a.mem.value.SetText(sysmon.Bytes(mem.Used()))
-		sub := "of " + sysmon.Bytes(mem.Total) + " · cache " + sysmon.Bytes(mem.Cache())
+		sub := i18n.Tf("of %s · cache %s", sysmon.Bytes(mem.Total), sysmon.Bytes(mem.Cache()))
 		if mem.SwapTotal > 0 {
-			sub += fmt.Sprintf(" · swap %s of %s", sysmon.Bytes(mem.SwapTotal-mem.SwapFree), sysmon.Bytes(mem.SwapTotal))
+			sub += i18n.Tf(" · swap %s of %s", sysmon.Bytes(mem.SwapTotal-mem.SwapFree), sysmon.Bytes(mem.SwapTotal))
 		}
 		a.mem.sub.SetText(sub)
 	}
@@ -421,7 +422,7 @@ func (a *sysmonApp) sample() {
 				sub = g.Driver
 			}
 			if g.VRAMTotal > 0 {
-				sub += fmt.Sprintf(" · video memory %s of %s", sysmon.Bytes(g.VRAMUsed), sysmon.Bytes(g.VRAMTotal))
+				sub += i18n.Tf(" · video memory %s of %s", sysmon.Bytes(g.VRAMUsed), sysmon.Bytes(g.VRAMTotal))
 			}
 			a.gpu.sub.SetText(sub)
 		}
@@ -433,16 +434,16 @@ func (a *sysmonApp) sample() {
 		tx := float64(n.Tx-a.lastNet.Tx) / dt
 		a.net.push(rx)
 		a.net.value.SetText("↓ " + sysmon.Rate(rx))
-		a.net.sub.SetText("↑ " + sysmon.Rate(tx) + " · received " + sysmon.Bytes(n.Rx) + ", sent " + sysmon.Bytes(n.Tx))
+		a.net.sub.SetText(i18n.Tf("↑ %s · received %s, sent %s", sysmon.Rate(tx), sysmon.Bytes(n.Rx), sysmon.Bytes(n.Tx)))
 	}
 	a.lastNet = n
 
 	io := sysmon.ReadDiskIO()
 	if d, err := sysmon.ReadDisk("/"); err == nil && d.Total > 0 {
 		a.disk.value.SetText(sysmon.Bytes(d.Used()))
-		sub := fmt.Sprintf("of %s on / · %s free", sysmon.Bytes(d.Total), sysmon.Bytes(d.Free))
+		sub := i18n.Tf("of %s on / · %s free", sysmon.Bytes(d.Total), sysmon.Bytes(d.Free))
 		if dt > 0 && io.Read >= a.lastDisk.Read && io.Written >= a.lastDisk.Written {
-			sub += fmt.Sprintf(" · read %s · write %s",
+			sub += i18n.Tf(" · read %s · write %s",
 				sysmon.Rate(float64(io.Read-a.lastDisk.Read)/dt), sysmon.Rate(float64(io.Written-a.lastDisk.Written)/dt))
 		}
 		a.disk.sub.SetText(sub)
@@ -453,17 +454,17 @@ func (a *sysmonApp) sample() {
 	if a.bat != nil {
 		b := sysmon.ReadBattery()
 		a.bat.value.SetText(fmt.Sprintf("%d%%", b.Percent))
-		parts := []string{b.Status}
+		parts := []string{i18n.T(cmpOr(batteryStates[b.Status], b.Status))}
 		if b.Watts > 0 {
 			parts = append(parts, fmt.Sprintf("%.1f W", b.Watts))
 		}
 		if b.Capacity > 0 {
-			parts = append(parts, fmt.Sprintf("health %.0f%%", b.Capacity))
+			parts = append(parts, i18n.Tf("health %.0f%%", b.Capacity))
 		}
 		a.bat.sub.SetText(strings.Join(parts, " · "))
 		a.bat.setBar(float64(b.Percent) / 100)
 	}
-	a.foot.SetText("UP " + strings.ToUpper(sysmon.Duration(sysmon.Uptime())))
+	a.foot.SetText(i18n.Tf("UP %s", strings.ToUpper(sysmon.Duration(sysmon.Uptime()))))
 
 	for _, m := range []*meter{a.cpu, a.mem, a.gpu, a.net} {
 		a.drawChart(m)
@@ -525,13 +526,13 @@ func (a *sysmonApp) process(pid int) (sysmon.Process, bool) {
 func (a *sysmonApp) showProcesses() {
 	ps := sysmon.Filter(a.ps, a.filter.GetText())
 	if len(ps) == len(a.ps) {
-		a.procCount.SetText(fmt.Sprintf("%d PROCESSES", len(ps)))
+		a.procCount.SetText(i18n.Tf("%d PROCESSES", len(ps)))
 	} else {
-		a.procCount.SetText(fmt.Sprintf("%d OF %d PROCESSES", len(ps), len(a.ps)))
+		a.procCount.SetText(i18n.Tf("%d OF %d PROCESSES", len(ps), len(a.ps)))
 	}
 	gtkx.Clear(&a.procs)
 	if len(ps) == 0 && len(a.ps) > 0 {
-		l := gtk.NewLabel("No process matches.")
+		l := gtk.NewLabel(i18n.T("No process matches."))
 		l.AddCssClass("empty")
 		l.SetXalign(0)
 		gtkx.Append(&a.procs, &l.Widget)
@@ -567,7 +568,7 @@ func (a *sysmonApp) showProcesses() {
 		gtkx.Append(inner, &mem.Widget)
 		open := rowButton("open:"+strconv.Itoa(p.PID), &inner.Widget, &a.onOpen)
 		open.SetHexpand(true)
-		open.SetTooltipText("Details and the ways to end " + p.Name)
+		open.SetTooltipText(i18n.Tf("Details and the ways to end %s", p.Name))
 		gtkx.Append(row, &open.Widget)
 		gtkx.Append(&a.procs, &row.Widget)
 	}
@@ -595,7 +596,7 @@ func (a *sysmonApp) send(sig syscall.Signal, pids []int, done string) {
 		gtkx.Post(func() {
 			switch {
 			case errors.Is(err, sysmon.ErrCanceled):
-				a.note("Not sent: an administrator's password is needed.", true)
+				a.note(i18n.T("Not sent: an administrator's password is needed."), true)
 			case err != nil:
 				a.note(err.Error(), true)
 			default:
@@ -639,7 +640,7 @@ func (a *sysmonApp) openProcess(pid int) {
 	a.open = &detailView{pid: pid, facts: map[string]*gtk.Label{}, acts: map[string]*actionRow{}}
 	if !a.readDetail() {
 		a.open = nil
-		a.note(fmt.Sprintf("Process %d has ended.", pid), false)
+		a.note(i18n.Tf("Process %d has ended.", pid), false)
 		return
 	}
 	a.buildDetail()
@@ -674,20 +675,21 @@ func (a *sysmonApp) readDetail() bool {
 	return true
 }
 
-// section adds a heading to box.
+// section adds a heading to box, translated.
 func section(box *gtk.Box, name string) {
-	k := gtk.NewLabel(name)
+	k := gtk.NewLabel(i18n.T(name))
 	k.AddCssClass("kicker")
 	k.AddCssClass("section-head")
 	k.SetXalign(0)
 	gtkx.Append(box, &k.Widget)
 }
 
-// fact adds a name and its value to box, returning the value's label.
+// fact adds a name, translated, and its value to box, returning the
+// value's label.
 func fact(box *gtk.Box, name, value string, selectable bool) *gtk.Label {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	row.AddCssClass("fact")
-	k := gtk.NewLabel(name)
+	k := gtk.NewLabel(i18n.T(name))
 	k.AddCssClass("fact-key")
 	k.SetXalign(0)
 	k.SetYalign(0)
@@ -715,10 +717,10 @@ func (a *sysmonApp) buildDetail() {
 	cells.SetColumnSpacing(8)
 	cells.SetRowSpacing(8)
 	cells.SetColumnHomogeneous(true)
-	for i, k := range []string{"CPU", "MEMORY", "THREADS"} {
+	for i, k := range []string{i18n.M("CPU"), i18n.M("MEMORY"), i18n.M("THREADS")} {
 		c := gtk.NewBox(gtk.OrientationVerticalValue, 4)
 		c.AddCssClass("cell")
-		name := gtk.NewLabel(k)
+		name := gtk.NewLabel(i18n.T(k))
 		name.AddCssClass("label")
 		name.SetXalign(0)
 		gtkx.Append(c, &name.Widget)
@@ -731,7 +733,7 @@ func (a *sysmonApp) buildDetail() {
 	}
 	gtkx.Append(&a.detail, &cells.Widget)
 
-	section(&a.detail, "END OR PAUSE")
+	section(&a.detail, i18n.M("END OR PAUSE"))
 	v.note = gtk.NewLabel("")
 	v.note.AddCssClass("proc-note")
 	v.note.SetXalign(0)
@@ -747,17 +749,17 @@ func (a *sysmonApp) buildDetail() {
 		box := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		box.SetHexpand(true)
 		box.SetValign(gtk.AlignCenterValue)
-		title := gtk.NewLabel(ac.title)
+		title := gtk.NewLabel(i18n.T(ac.title))
 		title.AddCssClass("title")
 		title.SetXalign(0)
 		gtkx.Append(box, &title.Widget)
-		sub := gtk.NewLabel(ac.sub)
+		sub := gtk.NewLabel(i18n.T(ac.sub))
 		sub.AddCssClass("sub")
 		sub.SetXalign(0)
 		sub.SetWrap(true)
 		gtkx.Append(box, &sub.Widget)
 		gtkx.Append(row, &box.Widget)
-		b := gtk.NewButtonWithLabel(ac.button)
+		b := gtk.NewButtonWithLabel(i18n.T(ac.button))
 		b.AddCssClass("outlined")
 		if ac.danger {
 			b.AddCssClass("danger")
@@ -772,16 +774,16 @@ func (a *sysmonApp) buildDetail() {
 	}
 	gtkx.Append(&a.detail, &acts.Widget)
 
-	section(&a.detail, "PROCESS")
-	for _, k := range []string{"Parent", "User", "State", "Started", "CPU time", "Priority", "Unit"} {
+	section(&a.detail, i18n.M("PROCESS"))
+	for _, k := range []string{i18n.M("Parent"), i18n.M("User"), i18n.M("State"), i18n.M("Started"), i18n.M("CPU time"), i18n.M("Priority"), i18n.M("Unit")} {
 		v.facts[k] = fact(&a.detail, k, "", true)
 	}
-	section(&a.detail, "MEMORY")
-	for _, k := range []string{"Resident", "Private", "Shared", "Swapped out", "Peak"} {
+	section(&a.detail, i18n.M("MEMORY"))
+	for _, k := range []string{i18n.M("Resident"), i18n.M("Private"), i18n.M("Shared"), i18n.M("Swapped out"), i18n.M("Peak")} {
 		v.facts[k] = fact(&a.detail, k, "", false)
 	}
-	section(&a.detail, "FILES")
-	for _, k := range []string{"Command", "Program", "Folder", "Open files", "Disk read", "Disk written"} {
+	section(&a.detail, i18n.M("FILES"))
+	for _, k := range []string{i18n.M("Command"), i18n.M("Program"), i18n.M("Folder"), i18n.M("Open files"), i18n.M("Disk read"), i18n.M("Disk written")} {
 		v.facts[k] = fact(&a.detail, k, "", true)
 	}
 }
@@ -795,9 +797,9 @@ func (a *sysmonApp) showDetail() {
 	d := v.d
 	p, listed := a.process(v.pid)
 	a.detailName.SetText(d.Name)
-	sub := fmt.Sprintf("PID %d · %s", d.PID, strings.ToUpper(sysmon.StateName(d.State)))
+	sub := i18n.Tf("PID %d · %s", d.PID, strings.ToUpper(sysmon.StateName(d.State)))
 	if v.gone {
-		sub = fmt.Sprintf("PID %d · ENDED", d.PID)
+		sub = i18n.Tf("PID %d · ENDED", d.PID)
 	}
 	a.detailSub.SetText(sub)
 
@@ -808,7 +810,7 @@ func (a *sysmonApp) showDetail() {
 	}
 	unknown := func(s string) string {
 		if s == "" {
-			return "Not readable: not your process"
+			return i18n.T("Not readable: not your process")
 		}
 		return s
 	}
@@ -831,10 +833,10 @@ func (a *sysmonApp) showDetail() {
 	set("User", fmt.Sprintf("%s (%d)", user, d.UID))
 	set("State", sysmon.StateName(d.State))
 	if !d.Started.IsZero() {
-		set("Started", d.Started.Format("Jan 2 15:04:05")+" · "+sysmon.Elapsed(d.Started)+" ago")
+		set("Started", i18n.Tf("%s · %s ago", d.Started.Format(i18n.T("Jan 2 15:04:05")), sysmon.Elapsed(d.Started)))
 	}
 	set("CPU time", cpuTime(d.CPUTime))
-	set("Priority", fmt.Sprintf("nice %d", d.Nice))
+	set("Priority", i18n.Tf("nice %d", d.Nice))
 	set("Unit", cmpOr(d.Unit, "—"))
 	set("Resident", sysmon.Bytes(d.RSS))
 	set("Private", sysmon.Bytes(d.Anon))
@@ -858,14 +860,14 @@ func (a *sysmonApp) showDetail() {
 		switch ac.key {
 		case "pause":
 			if d.State == 'T' || d.State == 't' {
-				title, sub, label = "Resume", "It is paused. Lets it go on.", "Resume"
+				title, sub, label = i18n.M("Resume"), i18n.M("It is paused. Lets it go on."), i18n.M("Resume")
 			}
 		case "tree":
 			visible = visible && len(kids) > 0
-			sub = fmt.Sprintf("Also its %s, the youngest first.", plural(len(kids), "child process", "child processes"))
+			sub = i18n.Nf("Also its %d child process, the youngest first.", "Also its %d child processes, the youngest first.", len(kids), len(kids))
 		case "named":
 			visible = visible && len(named) > 1
-			sub = fmt.Sprintf("All %d processes named %s.", len(named), d.Name)
+			sub = i18n.Tf("All %d processes named %s.", len(named), d.Name)
 		}
 		if !ours && visible {
 			sub += " Asks for an administrator's password."
@@ -887,7 +889,7 @@ func (a *sysmonApp) showDetail() {
 		return // keep the action's note
 	}
 	if v.gone {
-		a.note("This process has ended.", false)
+		a.note(i18n.T("This process has ended."), false)
 	}
 }
 
@@ -918,24 +920,24 @@ func (a *sysmonApp) act(key string) {
 	sig, pids, done := ac.sig, []int{d.PID}, ""
 	switch key {
 	case "quit":
-		done = "Asked " + d.Name + " to quit."
+		done = i18n.Tf("Asked %s to quit.", d.Name)
 	case "interrupt":
-		done = "Interrupted " + d.Name + "."
+		done = i18n.Tf("Interrupted %s.", d.Name)
 	case "hangup":
-		done = "Hung up on " + d.Name + "."
+		done = i18n.Tf("Hung up on %s.", d.Name)
 	case "kill":
-		done = "Ended " + d.Name + "."
+		done = i18n.Tf("Ended %s.", d.Name)
 	case "pause":
-		done = "Paused " + d.Name + "."
+		done = i18n.Tf("Paused %s.", d.Name)
 		if d.State == 'T' || d.State == 't' {
-			sig, done = syscall.SIGCONT, "Resumed "+d.Name+"."
+			sig, done = syscall.SIGCONT, i18n.Tf("Resumed %s.", d.Name)
 		}
 	case "tree":
 		pids = append(sysmon.Descendants(a.ps, d.PID), d.PID)
-		done = fmt.Sprintf("Asked %s and its %s to quit.", d.Name, plural(len(pids)-1, "child", "children"))
+		done = i18n.Nf("Asked %s and its %d child to quit.", "Asked %s and its %d children to quit.", len(pids)-1, d.Name, len(pids)-1)
 	case "named":
 		pids = sysmon.Named(a.ps, d.Name, d.UID)
-		done = fmt.Sprintf("Asked %d processes named %s to quit.", len(pids), d.Name)
+		done = i18n.Tf("Asked %d processes named %s to quit.", len(pids), d.Name)
 	}
 	a.send(sig, pids, done)
 	a.showDetail()
@@ -953,58 +955,58 @@ func (a *sysmonApp) showSystem() {
 	}
 
 	si := sysmon.ReadSystemInfo()
-	section(&a.sys, "COMPUTER")
-	fact(&a.sys, "Model", cmpOr(si.Model, "—"), true)
-	fact(&a.sys, "Name", si.Host, true)
-	fact(&a.sys, "System", cmpOr(si.OS, "—"), true)
-	fact(&a.sys, "Kernel", si.Kernel, true)
+	section(&a.sys, i18n.M("COMPUTER"))
+	fact(&a.sys, i18n.M("Model"), cmpOr(si.Model, "—"), true)
+	fact(&a.sys, i18n.M("Name"), si.Host, true)
+	fact(&a.sys, i18n.M("System"), cmpOr(si.OS, "—"), true)
+	fact(&a.sys, i18n.M("Kernel"), si.Kernel, true)
 	up := sysmon.Duration(sysmon.Uptime())
 	if !si.Boot.IsZero() {
-		up += " · since " + si.Boot.Format("Jan 2 15:04")
+		up = i18n.Tf("%s · since %s", up, si.Boot.Format(i18n.T("Jan 2 15:04"))) // a Go time layout, in the language's order
 	}
-	fact(&a.sys, "Up", up, false)
+	fact(&a.sys, i18n.M("Up"), up, false)
 
 	c := a.cpuInfo
-	section(&a.sys, "PROCESSOR")
-	fact(&a.sys, "Model", cmpOr(c.Model, "—"), true)
-	fact(&a.sys, "Cores", fmt.Sprintf("%s, %s", plural(c.Cores, "core", "cores"), plural(c.Threads, "thread", "threads")), false)
-	speed := ""
+	section(&a.sys, i18n.M("PROCESSOR"))
+	fact(&a.sys, i18n.M("Model"), cmpOr(c.Model, "—"), true)
+	fact(&a.sys, i18n.M("Cores"), i18n.Tf("%s, %s", i18n.Nf("%d core", "%d cores", c.Cores, c.Cores), i18n.Nf("%d thread", "%d threads", c.Threads, c.Threads)), false)
+	var speed []string
 	if c.MaxMHz > 0 {
-		speed = "up to " + ghz(c.MaxMHz)
+		speed = append(speed, i18n.Tf("up to %s", ghz(c.MaxMHz)))
 	}
 	if now := sysmon.ReadFrequency(); now > 0 {
-		speed = strings.TrimPrefix(speed+" · now "+ghz(now), " · ")
+		speed = append(speed, i18n.Tf("now %s", ghz(now)))
 	}
-	if speed != "" {
-		fact(&a.sys, "Speed", speed, false)
+	if len(speed) > 0 {
+		fact(&a.sys, i18n.M("Speed"), strings.Join(speed, " · "), false)
 	}
 
 	mem := sysmon.ParseMemory(sysmon.ReadFile("proc/meminfo"))
-	section(&a.sys, "MEMORY")
-	fact(&a.sys, "Installed", sysmon.Bytes(mem.Total), false)
-	fact(&a.sys, "In use", sysmon.Bytes(mem.Used()), false)
-	fact(&a.sys, "Cache", sysmon.Bytes(mem.Cache())+" · given back when needed", false)
-	fact(&a.sys, "Free", sysmon.Bytes(mem.Free), false)
+	section(&a.sys, i18n.M("MEMORY"))
+	fact(&a.sys, i18n.M("Installed"), sysmon.Bytes(mem.Total), false)
+	fact(&a.sys, i18n.M("In use"), sysmon.Bytes(mem.Used()), false)
+	fact(&a.sys, i18n.M("Cache"), i18n.Tf("%s · given back when needed", sysmon.Bytes(mem.Cache())), false)
+	fact(&a.sys, i18n.M("Free"), sysmon.Bytes(mem.Free), false)
 	if mem.SwapTotal > 0 {
-		fact(&a.sys, "Swap", fmt.Sprintf("%s of %s", sysmon.Bytes(mem.SwapTotal-mem.SwapFree), sysmon.Bytes(mem.SwapTotal)), false)
+		fact(&a.sys, i18n.M("Swap"), i18n.Tf("%s of %s", sysmon.Bytes(mem.SwapTotal-mem.SwapFree), sysmon.Bytes(mem.SwapTotal)), false)
 	}
 
 	if gs := sysmon.ReadGPUs(); len(gs) > 0 {
-		section(&a.sys, "GRAPHICS")
+		section(&a.sys, i18n.M("GRAPHICS"))
 		for _, g := range gs {
-			fact(&a.sys, "Card", cmpOr(g.Name, g.Driver), true)
-			fact(&a.sys, "Driver", g.Driver, false)
+			fact(&a.sys, i18n.M("Card"), cmpOr(g.Name, g.Driver), true)
+			fact(&a.sys, i18n.M("Driver"), g.Driver, false)
 			if g.Busy >= 0 {
-				fact(&a.sys, "Busy", fmt.Sprintf("%.0f%%", g.Busy), false)
+				fact(&a.sys, i18n.M("Busy"), fmt.Sprintf("%.0f%%", g.Busy), false)
 			}
 			if g.VRAMTotal > 0 {
-				fact(&a.sys, "Video memory", fmt.Sprintf("%s of %s", sysmon.Bytes(g.VRAMUsed), sysmon.Bytes(g.VRAMTotal)), false)
+				fact(&a.sys, i18n.M("Video memory"), i18n.Tf("%s of %s", sysmon.Bytes(g.VRAMUsed), sysmon.Bytes(g.VRAMTotal)), false)
 			}
 		}
 	}
 
 	if fss := sysmon.ReadFilesystems(); len(fss) > 0 {
-		section(&a.sys, "STORAGE")
+		section(&a.sys, i18n.M("STORAGE"))
 		for _, fs := range fss {
 			box := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 			box.AddCssClass("volume")
@@ -1012,7 +1014,7 @@ func (a *sysmonApp) showSystem() {
 			t := text(fs.Mount, fs.Device+" · "+fs.Type)
 			t.SetHexpand(true)
 			gtkx.Append(head, &t.Widget)
-			r := gtk.NewLabel(fmt.Sprintf("%s of %s", sysmon.Bytes(fs.Used()), sysmon.Bytes(fs.Total)))
+			r := gtk.NewLabel(i18n.Tf("%s of %s", sysmon.Bytes(fs.Used()), sysmon.Bytes(fs.Total)))
 			r.AddCssClass("readout")
 			gtkx.Append(head, &r.Widget)
 			gtkx.Append(box, &head.Widget)
@@ -1026,31 +1028,31 @@ func (a *sysmonApp) showSystem() {
 	}
 
 	if ifs := sysmon.ReadInterfaces(); len(ifs) > 0 {
-		section(&a.sys, "NETWORK")
+		section(&a.sys, i18n.M("NETWORK"))
 		for _, it := range ifs {
-			kind := "wired"
+			kind := i18n.T("wired")
 			if it.Wireless {
-				kind = "Wi-Fi"
+				kind = i18n.T("Wi-Fi")
 			}
-			state := "down"
+			state := i18n.T("down")
 			if it.Up {
-				state = "up"
+				state = i18n.T("up")
 			}
 			fact(&a.sys, it.Name, fmt.Sprintf("%s · %s", kind, state), false)
 			if len(it.Addrs) > 0 {
-				fact(&a.sys, "Addresses", strings.Join(it.Addrs, "\n"), true)
+				fact(&a.sys, i18n.M("Addresses"), strings.Join(it.Addrs, "\n"), true)
 			}
 			if it.MAC != "" {
-				fact(&a.sys, "Hardware", it.MAC, true)
+				fact(&a.sys, i18n.M("Hardware"), it.MAC, true)
 			}
 			if it.Traffic.Rx > 0 || it.Traffic.Tx > 0 {
-				fact(&a.sys, "Traffic", fmt.Sprintf("received %s · sent %s", sysmon.Bytes(it.Traffic.Rx), sysmon.Bytes(it.Traffic.Tx)), false)
+				fact(&a.sys, i18n.M("Traffic"), i18n.Tf("received %s · sent %s", sysmon.Bytes(it.Traffic.Rx), sysmon.Bytes(it.Traffic.Tx)), false)
 			}
 		}
 	}
 
 	if ss := sysmon.ReadSensors(); len(ss) > 0 {
-		section(&a.sys, "SENSORS")
+		section(&a.sys, i18n.M("SENSORS"))
 		for _, s := range ss {
 			value := fmt.Sprintf("%.0f °C", s.Value)
 			if s.Fan {
@@ -1066,11 +1068,18 @@ func (a *sysmonApp) showSystem() {
 
 // --- words ---
 
+// batteryStates are the kernel's words for a battery's state, marked for
+// translation.
+var batteryStates = map[string]string{
+	"Charging": i18n.M("Charging"), "Discharging": i18n.M("Discharging"), "Full": i18n.M("Full"),
+	"Not charging": i18n.M("Not charging"), "Unknown": i18n.M("Unknown"),
+}
+
 func ghz(mhz float64) string { return fmt.Sprintf("%.1f GHz", mhz/1000) }
 
 func cpuTime(d time.Duration) string {
 	if d < time.Minute {
-		return fmt.Sprintf("%.1f s", d.Seconds())
+		return i18n.Tf("%.1f s", d.Seconds())
 	}
 	return sysmon.Duration(d)
 }
@@ -1084,14 +1093,14 @@ func plural(n int, one, many string) string {
 
 func count(n int) string {
 	if n < 0 {
-		return "Not readable: not your process"
+		return i18n.T("Not readable: not your process")
 	}
 	return strconv.Itoa(n)
 }
 
 func bytesOrUnknown(n int64) string {
 	if n < 0 {
-		return "Not readable: not your process"
+		return i18n.T("Not readable: not your process")
 	}
 	return sysmon.Bytes(uint64(n))
 }

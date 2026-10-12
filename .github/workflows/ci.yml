@@ -40,6 +40,10 @@ jobs:
           make generate
           git add --intent-to-add -- ui/
           git diff --exit-code -- ui/
+      - name: Check the translation template and catalogs
+        run: |
+          make i18n
+          git diff --exit-code -- po/ internal/i18n/locales/
       - name: Tests and vet
         run: make test
       - name: Build all programs

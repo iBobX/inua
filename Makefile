@@ -33,7 +33,7 @@ PREFIX ?= $(HOME)/.local
 CONFIG_HOME ?= $(or $(XDG_CONFIG_HOME),$(HOME)/.config)
 DM ?= greetd
 
-.PHONY: all build deps deps-desktop deps-dm generate test nested run install install-config install-fcitx install-session clean
+.PHONY: all build deps deps-desktop deps-dm generate i18n test nested run install install-config install-fcitx install-session clean
 
 all: build
 
@@ -61,6 +61,11 @@ deps-dm:
 
 generate:
 	go generate ./ui
+
+# Gather the text to translate into po/inua.pot and bring the catalogs in
+# internal/i18n/locales up to date with it.
+i18n:
+	go run ./internal/i18n/extract
 
 test:
 	python3 scripts/test-session.py

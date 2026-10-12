@@ -29,7 +29,7 @@ ApplicationWindow sysmon {
 
         StackPage {
           name: "overview";
-          title: "OVERVIEW";
+          title: _("OVERVIEW");
 
           child: ScrolledWindow {
             hscrollbar-policy: never;
@@ -43,7 +43,7 @@ ApplicationWindow sysmon {
 
         StackPage {
           name: "processes";
-          title: "PROCESSES";
+          title: _("PROCESSES");
 
           child: Box {
             orientation: vertical;
@@ -61,17 +61,17 @@ ApplicationWindow sysmon {
                 styles ["segmented", "linked"]
 
                 ToggleButton by_cpu {
-                  label: "CPU";
+                  label: _("CPU");
                   active: true;
                 }
 
                 ToggleButton by_mem {
-                  label: "Memory";
+                  label: _("Memory");
                   group: by_cpu;
                 }
 
                 ToggleButton by_name {
-                  label: "Name";
+                  label: _("Name");
                   group: by_cpu;
                 }
               }
@@ -83,7 +83,7 @@ ApplicationWindow sysmon {
 
               SearchEntry filter {
                 hexpand: true;
-                placeholder-text: "Filter by name, PID or user";
+                placeholder-text: _("Filter by name, PID or user");
               }
             }
 
@@ -108,7 +108,7 @@ ApplicationWindow sysmon {
 
         StackPage {
           name: "system";
-          title: "SYSTEM";
+          title: _("SYSTEM");
 
           child: ScrolledWindow {
             hscrollbar-policy: never;
@@ -157,7 +157,7 @@ ApplicationWindow sysmon {
           Button back {
             styles ["plain"]
             icon-name: "window-close-symbolic";
-            tooltip-text: "Close (Escape)";
+            tooltip-text: _("Close (Escape)");
             valign: center;
           }
         }

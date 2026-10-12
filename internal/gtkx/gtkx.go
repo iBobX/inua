@@ -16,6 +16,8 @@
 package gtkx
 
 import (
+	"github.com/lyricat/inua/internal/i18n"
+
 	"fmt"
 	"sync"
 	"time"
@@ -114,7 +116,7 @@ type Builder struct {
 // Load parses a .ui definition. Close the Builder after fetching objects.
 func Load(ui string, scope *Scope) (*Builder, error) {
 	b := gtk.NewBuilder()
-	if _, err := b.AddFromString(ui, -1); err != nil {
+	if _, err := b.AddFromString(i18n.UI(ui), -1); err != nil { // its marked strings in the language in use
 		b.Unref()
 		return nil, err
 	}

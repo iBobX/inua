@@ -13,6 +13,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Root is where /proc and /sys are; tests point it elsewhere.
@@ -395,11 +397,11 @@ func Duration(d time.Duration) string {
 	m := int(d.Minutes())
 	switch days, hours := m/1440, m/60%24; {
 	case days > 0:
-		return fmt.Sprintf("%d d %d h", days, hours)
+		return i18n.Tf("%d d %d h", days, hours)
 	case m >= 60:
-		return fmt.Sprintf("%d h %d min", m/60, m%60)
+		return i18n.Tf("%d h %d min", m/60, m%60)
 	}
-	return fmt.Sprintf("%d min", m)
+	return i18n.Tf("%d min", m)
 }
 
 // ReadFile reads a /proc or /sys file as text, "" if it cannot.

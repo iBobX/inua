@@ -25,6 +25,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 	layouts "github.com/lyricat/inua/ui"
@@ -62,7 +63,7 @@ var Apps = map[string]struct {
 	"calculator":     {"Calculator", "Calculator", func() view { return &calcApp{} }, false},
 	"calendar":       {"Calendar", "Calendar", func() view { return &calendarApp{} }, false},
 	"color-picker":   {"ColorPicker", "Color Picker", func() view { return &colorApp{} }, false},
-	"system-monitor": {"SystemMonitor", "System Monitor", func() view { return &sysmonApp{} }, false},
+	"system-monitor": {"SystemMonitor", i18n.M("System Monitor"), func() view { return &sysmonApp{} }, false},
 	"tailscale":      {"Tailscale", "Tailscale", func() view { return &tailscaleApp{} }, false},
 	"viewer":         {"Viewer", "Viewer", func() view { return &viewerApp{} }, true},
 }
@@ -123,6 +124,7 @@ type Ctx struct {
 // same app brings its window forward instead, unless the app has many.
 // args are a page to open, or files for an opener.
 func Run(name string, args []string, uiDir string) int {
+	i18n.Init()
 	a, ok := Apps[name]
 	if !ok {
 		names := make([]string, 0, len(Apps))
@@ -148,7 +150,7 @@ func Run(name string, args []string, uiDir string) int {
 		c.loadIcons()
 		c.win = c.v.build(c)
 		c.win.SetApplication(app)
-		c.win.SetTitle(a.Title)
+		c.win.SetTitle(i18n.T(a.Title))
 		c.win.AddCssClass("app")
 		c.win.AddCssClass("settings") // the settings window's controls and sections
 		c.win.AddCssClass(name)

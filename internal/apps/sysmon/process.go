@@ -9,6 +9,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 var users struct {
@@ -41,21 +43,21 @@ func ParsePasswd(s string) map[int]string {
 func StateName(s byte) string {
 	switch s {
 	case 'R':
-		return "running"
+		return i18n.T("running")
 	case 'S':
-		return "sleeping"
+		return i18n.T("sleeping")
 	case 'D':
-		return "waiting on a disk"
+		return i18n.T("waiting on a disk")
 	case 'T':
-		return "stopped"
+		return i18n.T("stopped")
 	case 't':
-		return "stopped by a debugger"
+		return i18n.T("stopped by a debugger")
 	case 'Z':
-		return "zombie"
+		return i18n.T("zombie")
 	case 'I':
-		return "idle"
+		return i18n.T("idle")
 	case 'X':
-		return "dead"
+		return i18n.T("dead")
 	}
 	return string(s)
 }
@@ -191,7 +193,7 @@ func Elapsed(t time.Time) string {
 	case t.IsZero():
 		return ""
 	case d < time.Minute:
-		return "under a minute"
+		return i18n.T("under a minute")
 	default:
 		return Duration(d)
 	}

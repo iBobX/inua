@@ -173,8 +173,14 @@ make run         # run it in the current Hyprland session
 - `inua call shell snapshot DIR` renders the shell's windows to PNG files.
 - `inua call shell restart` re-executes the shell in place after a rebuild.
 
+Translations are gettext catalogs in `internal/i18n/locales`, keyed by
+the English text; `make i18n` gathers the text to translate into
+`po/inua.pot` and updates them. System Monitor speaks Simplified Chinese
+so far (`LANGUAGE=zh_CN inua-apps system-monitor`): see
+[docs/i18n.md](docs/i18n.md).
+
 Pull requests and pushes to `master` run Go formatting checks, regenerate
-Blueprint layouts and check for differences, run `make test`, and build all
+Blueprint layouts and the translation catalogs and check for differences, run `make test`, and build all
 programs on Ubuntu 26.04. Desktop interactions still need a manual check
 in a Hyprland session.
 
