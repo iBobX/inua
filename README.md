@@ -60,7 +60,8 @@ curl -fsSL https://inua.lyric.im/install.sh | sh
 
 Then log out and pick **Inua** at the login screen. The script installs the
 latest release for amd64 or arm64 (checking its checksum) into `~/.local`,
-offers to install the packages inua needs with apt, writes your
+offers to install the packages inua needs with apt, pacman, dnf or zypper
+(under each one's names), writes your
 configuration with `inua init` (never replacing your files), and adds the
 Inua login session (sudo). Where inua replaces something you have, it asks
 first, and the answer defaults to yes: gpg's pinentry (with
