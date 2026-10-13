@@ -157,7 +157,8 @@ selection to `inua clipboard capture`; it keeps the newest
 `~/.local/state/inua/clipboard-history.json`, images in
 `clipboard-images/` next to it, readable only by you. Text over 1 MiB and
 images over 32 MiB are not kept, nor a password manager's copies when it
-marks them as sensitive (`CLIPBOARD_STATE=sensitive`). Deleting, clearing
+marks them as sensitive (the `x-kde-passwordManagerHint` type, as
+KeePassXC and inua's Pass offer, or `CLIPBOARD_STATE=sensitive`). Deleting, clearing
 or falling past the limit removes an image's file too.
 
 Copies from the programs and window classes in

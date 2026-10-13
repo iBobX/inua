@@ -195,10 +195,25 @@ func cmdClipboardCapture(args []string) error {
 		return nil
 	}
 	from := clipboard.FindSource(focusedWindow(), c.Clipboard.SensitiveSources)
+	if clipboard.MarkedSensitive(offeredTypes()) {
+		from.Sensitive = true // a password manager's secret
+	}
 	if from.Sensitive {
 		io.Copy(io.Discard, os.Stdin) // and Capture keeps nothing
 	}
 	return clipboard.Capture(path, c.Clipboard.Limit, from, os.Stdin)
+}
+
+// offeredTypes are the types the clipboard's owner offers now; none when
+// wl-paste cannot say in time.
+func offeredTypes() []string {
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+	out, err := exec.CommandContext(ctx, "wl-paste", "--list-types").Output()
+	if err != nil {
+		return nil
+	}
+	return strings.Split(strings.TrimSpace(string(out)), "\n")
 }
 
 // focusedWindow is the window focused now, as Hyprland names it; none

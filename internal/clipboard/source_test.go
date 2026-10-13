@@ -85,3 +85,12 @@ func TestCaptureSensitiveSource(t *testing.T) {
 		t.Errorf("%+v", entries)
 	}
 }
+
+func TestMarkedSensitive(t *testing.T) {
+	if !MarkedSensitive([]string{"text/plain;charset=utf-8", "text/plain", "x-kde-passwordManagerHint"}) {
+		t.Error("the hint missed")
+	}
+	if MarkedSensitive([]string{"text/plain", "UTF8_STRING"}) || MarkedSensitive(nil) {
+		t.Error("plain text taken for a secret")
+	}
+}

@@ -372,9 +372,9 @@ type Clipboard struct {
 }
 
 // DefaultSensitiveSources are the password managers whose copies are not
-// recorded unless the settings say otherwise. KeePassXC also marks its
-// copies as sensitive.
-var DefaultSensitiveSources = []string{"pass", "gopass", "passmenu", "rofi-pass", "keepassxc", "org.keepassxc.KeePassXC", "bitwarden", "1password"}
+// recorded unless the settings say otherwise. KeePassXC and inua's Pass
+// also mark their copies as sensitive.
+var DefaultSensitiveSources = []string{"pass", "gopass", "passmenu", "rofi-pass", "keepassxc", "org.keepassxc.KeePassXC", "bitwarden", "1password", "io.github.lyricat.Inua.Pass"}
 
 // ClipboardLimitChoices are the history limits the settings window offers.
 var ClipboardLimitChoices = []int{50, 100, 300, 500}

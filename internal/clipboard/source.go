@@ -89,3 +89,15 @@ func primary(args []string) bool {
 		return a == "--primary" || len(a) > 1 && a[0] == '-' && a[1] != '-' && strings.ContainsRune(a, 'p')
 	})
 }
+
+// PasswordHint is the type a password manager offers beside a secret it
+// copies (KeePassXC, inua's Pass), asking clipboard histories to leave it
+// out. wl-paste is meant to say so as CLIPBOARD_STATE=sensitive, but not
+// every version does.
+const PasswordHint = "x-kde-passwordManagerHint"
+
+// MarkedSensitive reports whether a selection's offered types (wl-paste
+// --list-types) mark it as a password manager's secret.
+func MarkedSensitive(types []string) bool {
+	return slices.ContainsFunc(types, func(t string) bool { return strings.TrimSpace(t) == PasswordHint })
+}
