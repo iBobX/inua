@@ -21,6 +21,7 @@ import (
 	"golang.org/x/image/draw"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -156,9 +157,9 @@ func (s *shellUI) showDrawerRecord(d *shotDrawer) {
 	on := d.record.GetActive()
 	toggle(&d.bar.Widget, "recording", on)
 	if on {
-		d.hint.SetText("Record another")
+		d.hint.SetText(i18n.T("Record another"))
 	} else {
-		d.hint.SetText("Take another")
+		d.hint.SetText(i18n.T("Take another"))
 	}
 }
 
@@ -212,7 +213,7 @@ func (s *shellUI) buildShotDrawer() {
 		layershell.SetMargin(w, layershell.EdgeBottom, 48-16)
 		layershell.SetMonitor(w, mon.GoPointer())
 	} else {
-		d.win.SetTitle("inua recent screenshots")
+		d.win.SetTitle(i18n.T("inua recent screenshots"))
 	}
 	sh.drawer = d
 	d.win.Present()
@@ -323,9 +324,9 @@ func shotWhen(t, now time.Time) string {
 		return t.Format("15:04")
 	}
 	if t.Year() == now.Year() {
-		return t.Format("Jan 2 15:04")
+		return i18n.Time(t, "Jan 2 15:04")
 	}
-	return t.Format("Jan 2 2006")
+	return i18n.Time(t, "Jan 2 2006")
 }
 
 // shotThumb is a small picture of a screenshot or a recording's first

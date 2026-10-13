@@ -10,6 +10,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/polkit"
 	"github.com/lyricat/inua/internal/system"
@@ -174,7 +175,7 @@ func (s *shellUI) openAuth(d *authDialog) {
 			layershell.SetMonitor(w, mon.GoPointer())
 		}
 	} else {
-		d.win.SetTitle("Authentication Required")
+		d.win.SetTitle(i18n.T("Authentication Required"))
 	}
 	s.auth.cur = d
 	d.win.Present()
@@ -203,7 +204,7 @@ func (s *shellUI) startAuthAttempt(d *authDialog) {
 			if err != nil {
 				if !d.closed {
 					log.Printf("polkit: %v", err)
-					s.showAuthInfo(d, "The password cannot be checked: polkit's helper did not answer.", true)
+					s.showAuthInfo(d, i18n.T("The password cannot be checked: polkit's helper did not answer."), true)
 					d.ok.SetSensitive(true) // to try again
 				}
 				return
@@ -239,7 +240,7 @@ func (s *shellUI) authEvent(d *authDialog, conv *polkit.Conversation, ev polkit.
 		log.Printf("polkit: %v", err)
 		d.conv = nil
 		conv.Close()
-		s.showAuthInfo(d, "The password could not be checked.", true)
+		s.showAuthInfo(d, i18n.T("The password could not be checked."), true)
 		d.ok.SetSensitive(true)
 	case ev.Kind == polkit.Prompt || ev.Kind == polkit.Question:
 		text := strings.TrimSpace(ev.Text)
@@ -264,7 +265,7 @@ func (s *shellUI) authEvent(d *authDialog, conv *polkit.Conversation, ev polkit.
 		d.conv = nil
 		conv.Close()
 		if !d.problem {
-			s.showAuthInfo(d, "Sorry, that didn't work. Try again.", true)
+			s.showAuthInfo(d, i18n.T("Sorry, that didn't work. Try again."), true)
 		}
 		d.password.SetText("")
 		s.startAuthAttempt(d)
@@ -290,7 +291,7 @@ func (s *shellUI) answerAuth() {
 	d.answering = false
 	d.password.SetSensitive(false)
 	d.ok.SetSensitive(false)
-	s.showAuthInfo(d, "Checking…", false)
+	s.showAuthInfo(d, i18n.T("Checking…"), false)
 	conv := d.conv
 	go func() {
 		if err := conv.Respond(answer); err != nil {

@@ -25,7 +25,7 @@ ApplicationWindow assistant {
 
         Label {
           styles ["as-title"]
-          label: "Assistant";
+          label:  _("Assistant");
           xalign: 0;
         }
 
@@ -40,20 +40,20 @@ ApplicationWindow assistant {
       DropDown profile {
         valign: center;
         visible: false;
-        tooltip-text: "Who answers";
+        tooltip-text:  _("Who answers");
       }
 
       Button settings {
         styles ["plain"]
         icon-name: "emblem-system-symbolic";
-        tooltip-text: "AI settings";
+        tooltip-text:  _("AI settings");
         valign: center;
       }
 
       Button reset {
         styles ["plain"]
         icon-name: "list-add-symbolic";
-        tooltip-text: "New conversation";
+        tooltip-text:  _("New conversation");
         valign: center;
       }
     }
@@ -72,7 +72,7 @@ ApplicationWindow assistant {
 
       Button open_settings {
         styles ["outlined"]
-        label: "Open AI Settings";
+        label:  _("Open AI Settings");
         halign: start;
       }
     }
@@ -94,12 +94,12 @@ ApplicationWindow assistant {
 
       Entry question {
         hexpand: true;
-        placeholder-text: "Ask, or tell me what to do";
+        placeholder-text:  _("Ask, or tell me what to do");
       }
 
       Button send {
         styles ["suggested-action"]
-        label: "Ask";
+        label:  _("Ask");
       }
     }
   }

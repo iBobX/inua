@@ -28,7 +28,7 @@ Window polkit_dialog {
 
       Label title {
         styles ["polkit-title"]
-        label: "Authentication Required";
+        label:  _("Authentication Required");
         xalign: 0;
       }
 
@@ -56,7 +56,7 @@ Window polkit_dialog {
 
         Label {
           styles ["kicker"]
-          label: "AS";
+          label:  _("AS");
         }
 
         Label user {
@@ -70,7 +70,7 @@ Window polkit_dialog {
         Button switch_user {
           styles ["plain"]
           icon-name: "system-users-symbolic";
-          tooltip-text: "Another user";
+          tooltip-text:  _("Another user");
           visible: false;
         }
       }
@@ -83,7 +83,7 @@ Window polkit_dialog {
 
       PasswordEntry password {
         styles ["polkit-password"]
-        placeholder-text: "Password";
+        placeholder-text:  _("Password");
         show-peek-icon: true;
       }
 
@@ -116,12 +116,12 @@ Window polkit_dialog {
 
         Button cancel {
           styles ["outlined"]
-          label: "Cancel";
+          label:  _("Cancel");
         }
 
         Button ok {
           styles ["suggested-action"]
-          label: "Authenticate";
+          label:  _("Authenticate");
         }
       }
     }

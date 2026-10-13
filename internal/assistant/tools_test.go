@@ -117,7 +117,7 @@ func TestSystemTools(t *testing.T) {
 	// Describe says what a call is about to do.
 	for _, tool := range Tools(d) {
 		if tool.Name == "set_system" {
-			if got := tool.Describe(map[string]any{"setting": "focus", "value": "on"}); got != "Turning focus on" {
+			if got := tool.Describe(map[string]any{"setting": "focus", "value": "on"}); got != "Turning Focus on" {
 				t.Errorf("describe %q", got)
 			}
 		}

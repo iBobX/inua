@@ -24,7 +24,7 @@ ApplicationWindow calendar {
       Button today {
         styles ["text"]
         name: "today";
-        label: "Today";
+        label:  _("Today");
         valign: center;
       }
 
@@ -32,7 +32,7 @@ ApplicationWindow calendar {
         styles ["plain"]
         name: "prev";
         icon-name: "go-previous-symbolic";
-        tooltip-text: "Previous month";
+        tooltip-text:  _("Previous month");
         valign: center;
       }
 
@@ -40,7 +40,7 @@ ApplicationWindow calendar {
         styles ["plain"]
         name: "next";
         icon-name: "go-next-symbolic";
-        tooltip-text: "Next month";
+        tooltip-text:  _("Next month");
         valign: center;
       }
     }
@@ -76,7 +76,7 @@ ApplicationWindow calendar {
 
       Label {
         styles ["kicker"]
-        label: "WEEKS START ON";
+        label:  _("WEEKS START ON");
         hexpand: true;
         xalign: 0;
         valign: center;
@@ -86,11 +86,11 @@ ApplicationWindow calendar {
         styles ["segmented", "linked"]
 
         ToggleButton start_mon {
-          label: "Mon";
+          label:  _("Mon");
         }
 
         ToggleButton start_sun {
-          label: "Sun";
+          label:  _("Sun");
           group: start_mon;
         }
       }

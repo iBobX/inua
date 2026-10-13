@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Small Fortune's board: a printed washi board seen square-on from above
@@ -880,13 +881,13 @@ func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt,
 		pn.Arc(0, -6, 13, 0.4, 2*math.Pi-0.2)
 		pn.Stroke()
 		pn.Text(art.chance, minchoBold+" 14", 0, -6, 0.5, 0.5, washiShu)
-		pn.Text("Chance", mincho+" 6.4", 0, across/2-12, 0.5, 0.5, washiInk)
+		pn.Text(i18n.T("Chance"), mincho+" 6.4", 0, across/2-12, 0.5, 0.5, washiInk)
 	case games.TaxSquare:
 		label()
 		pn.Text(art.tax, minchoBold+" 13", 0, 8, 0.5, 0.5, washiInk)
 	case games.StartSquare, games.JailSquare, games.Fountain, games.GoToJail:
 		word := art.corners[i]
-		sub := map[games.SquareKind]string{games.StartSquare: "START\ncollect $200", games.JailSquare: "JAIL\njust visiting", games.Fountain: "FOUNTAIN\ntake the pot", games.GoToJail: "GO TO\nJAIL"}[sq.Kind]
+		sub := map[games.SquareKind]string{games.StartSquare: i18n.T("START\ncollect $200"), games.JailSquare: i18n.T("JAIL\njust visiting"), games.Fountain: i18n.T("FOUNTAIN\ntake the pot"), games.GoToJail: i18n.T("GO TO\nJAIL")}[sq.Kind]
 		// Toward the middle the city's word and the English; then the
 		// pawns; outside, Start's arrow, the cell, the basin.
 		pn.Text(word, art.cornerFont, 0, -across/2+11, 0.5, 0.5, washiShu)
@@ -1061,9 +1062,9 @@ func (p *fortune) paintMiddle(pn pen) {
 		m = boardMiddle // the standings, over the middle of the board
 		slip(m.X-200, m.Y-150, 400, 260)
 		w := p.g.Winner
-		title := fmt.Sprintf("%s won.", p.g.Players[w].Name)
+		title := i18n.Tf("%s won.", p.g.Players[w].Name)
 		if w == 0 {
-			title = "You won!"
+			title = i18n.T("You won!")
 		}
 		pn.Text(title, minchoBold+" 26", m.X, m.Y-112, 0.5, 0.5, washiShu)
 		idx := []int{}
@@ -1083,13 +1084,13 @@ func (p *fortune) paintMiddle(pn pen) {
 			pn.Text(name, mincho+" 13", m.X-134, y, 0, 0.5, washiInk)
 			pn.Text("$"+thousands(p.g.Worth(i)), mincho+" Medium 13", m.X+160, y, 1, 0.5, washiInk)
 		}
-		pn.Text("Press N or Space for a new game", mincho+" 11", m.X, m.Y+86, 0.5, 0.5, shade(washiInk, 2.4))
+		pn.Text(i18n.T("Press N or Space for a new game"), mincho+" 11", m.X, m.Y+86, 0.5, 0.5, shade(washiInk, 2.4))
 		return
 	}
 	turn := p.g.Players[p.g.Turn]
-	who := "Your turn"
+	who := i18n.T("Your turn")
 	if turn.CPU {
-		who = turn.Name + "'s turn"
+		who = i18n.Tf("%s's turn", turn.Name)
 	}
 	h := 30.0
 	if len(p.log) > 0 {
@@ -1112,5 +1113,5 @@ func (p *fortune) paintMiddle(pn pen) {
 	pn.RoundRect(m.X-96, y-5, 10, 10, 1.5)
 	pn.Fill()
 	pn.Text(who, mincho+" Medium 9.5", m.X-80, y, 0, 0.5, washiInk)
-	pn.Text(fmt.Sprintf("round %d of %d", p.g.Round, p.g.Rounds), mincho+" 8.5", m.X+100, y, 1, 0.5, shade(washiInk, 2.4))
+	pn.Text(i18n.Tf("round %d of %d", p.g.Round, p.g.Rounds), mincho+" 8.5", m.X+100, y, 1, 0.5, shade(washiInk, 2.4))
 }

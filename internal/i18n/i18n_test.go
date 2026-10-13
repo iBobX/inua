@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestWanted(t *testing.T) {
@@ -34,8 +35,8 @@ func TestTranslate(t *testing.T) {
 	if Use("de", "en") != "" || T("Pause") != "Pause" {
 		t.Fatal("English is not the source")
 	}
-	if Use("xx", "zh") != "" { // a language alone, without its catalog
-		t.Error("loaded zh, which has no catalog of its own")
+	if Use("xx", "zh") != "zh_CN" {
+		t.Error("zh should select Simplified Chinese")
 	}
 	if Use("xx", "zh_CN") != "zh_CN" || Lang() != "zh_CN" {
 		t.Fatalf("zh_CN not loaded: %q", Lang())
@@ -104,7 +105,7 @@ func TestParsePO(t *testing.T) {
 // Every catalog reads, and each translation takes its message's
 // arguments: the same verbs, so none is dropped or misread.
 func TestCatalogs(t *testing.T) {
-	verb := regexp.MustCompile(`%(?:\[\d+\])?[-+# 0]*[\d.]*[a-zA-Z%]`)
+	verb := regexp.MustCompile(`%(?:\[\d+\])?[-+# 0]*[\d.]*(?:\[\d+\])?[a-zA-Z%]`)
 	verbs := func(s string) []string {
 		var out []string
 		for _, v := range verb.FindAllString(s, -1) {
@@ -136,6 +137,86 @@ func TestCatalogs(t *testing.T) {
 				if s != "" && !slices.Equal(verbs(s), verbs(src)) {
 					t.Errorf("%s: %q: %q takes other arguments", f, e.ID, s)
 				}
+			}
+		}
+	}
+}
+
+// Each translated date layout still shows what its message shows: the
+// year, the day, the time, the month (by name, or by number as Chinese
+// writes it) and the weekday.
+func TestLayouts(t *testing.T) {
+	defer Use()
+	layout := regexp.MustCompile(`^(?:January|Jan|Monday|Mon|2006|15|04|05|PM|2|[ ,:])+$`)
+	d := time.Date(2031, 11, 23, 17, 48, 39, 0, time.UTC)
+	for _, lang := range []string{"zh_CN", "zh_TW", "ja", "es", "fr", "ko"} {
+		data, _ := locales.ReadFile("locales/" + lang + ".po")
+		entries, err := ParsePO(string(data))
+		if err != nil {
+			t.Fatal(err)
+		}
+		Use(lang)
+		for _, e := range entries {
+			id := e.ID
+			if !layout.MatchString(id) || !strings.ContainsAny(id, "0123456789JM") {
+				continue
+			}
+			got := Time(d, id)
+			var want []string
+			if strings.Contains(id, "2006") {
+				want = append(want, "2031")
+			}
+			if strings.Contains(strings.ReplaceAll(id, "2006", ""), "2") {
+				want = append(want, "23")
+			}
+			if strings.Contains(id, "15:04") {
+				want = append(want, "17:48")
+			}
+			if strings.Contains(id, "January") {
+				want = append(want, T("November")+"|11")
+			} else if strings.Contains(id, "Jan") {
+				want = append(want, T("Nov")+"|11")
+			}
+			if strings.Contains(id, "Monday") {
+				want = append(want, T("Sunday"))
+			} else if strings.Contains(id, "Mon") {
+				want = append(want, T("Sun"))
+			}
+			for _, w := range want { // "a|b": either, as a month by name or number
+				a, b, _ := strings.Cut(w, "|")
+				if !strings.Contains(got, a) && (b == "" || !strings.Contains(got, b)) {
+					t.Errorf("%s: %q shows %q, without %q", lang, id, got, w)
+				}
+			}
+		}
+	}
+}
+
+// A desktop launcher's keywords keep their separators in translation: one
+// semicolon after each, no commas, no spaces around them, none repeated.
+func TestKeywords(t *testing.T) {
+	files, _ := fs.Glob(locales, "locales/*.po")
+	for _, f := range files {
+		data, _ := locales.ReadFile(f)
+		entries, err := ParsePO(string(data))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, e := range entries {
+			if !strings.HasSuffix(e.ID, ";") || strings.Count(e.ID, ";") < 2 || len(e.Str) == 0 {
+				continue
+			}
+			s := e.Str[0]
+			words := strings.Split(strings.TrimSuffix(s, ";"), ";")
+			if !strings.HasSuffix(s, ";") || strings.ContainsAny(s, ",、，。") {
+				t.Errorf("%s: %q: %q is not a list of keywords", f, e.ID, s)
+			}
+			seen := map[string]bool{}
+			for _, w := range words {
+				if w == "" || w != strings.TrimSpace(w) || seen[strings.ToLower(w)] {
+					t.Errorf("%s: %q: keyword %q in %q", f, e.ID, w, s)
+				}
+				seen[strings.ToLower(w)] = true
 			}
 		}
 	}

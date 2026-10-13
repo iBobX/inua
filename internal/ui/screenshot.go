@@ -20,6 +20,7 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/rundir"
@@ -412,7 +413,7 @@ func (s *shellUI) buildShotSurface(sf *shotSurface, mon *gdk.Monitor) {
 		layershell.SetExclusiveZone(w, -1)
 		layershell.SetMonitor(w, mon.GoPointer())
 	} else {
-		sf.win.SetTitle("inua screenshot")
+		sf.win.SetTitle(i18n.T("inua screenshot"))
 		sf.win.SetDefaultSize(int32(sf.w), int32(sf.h))
 	}
 }
@@ -430,16 +431,16 @@ func (s *shellUI) shotSurfaceOf(w *gtk.Widget) *shotSurface {
 }
 
 var shotHints = map[string]string{
-	"area":   "Drag to take an area",
-	"window": "Click a window",
-	"screen": "Click a screen",
-	"color":  "Click to copy a colour",
+	"area":   i18n.M("Drag to take an area"),
+	"window": i18n.M("Click a window"),
+	"screen": i18n.M("Click a screen"),
+	"color":  i18n.M("Click to copy a colour"),
 }
 
 var recordHints = map[string]string{
-	"area":   "Drag to record an area",
-	"window": "Click a window to record",
-	"screen": "Click a screen to record",
+	"area":   i18n.M("Drag to record an area"),
+	"window": i18n.M("Click a window to record"),
+	"screen": i18n.M("Click a screen to record"),
 }
 
 func (s *shellUI) setShotMode(mode string) {
@@ -467,7 +468,7 @@ func (s *shellUI) setShotMode(mode string) {
 		if sh.record && !color {
 			hint = recordHints[mode]
 		}
-		sf.hint.SetText(hint)
+		sf.hint.SetText(i18n.T(hint))
 		toggle(&sf.toolbar.Widget, "recording", sh.record && !color)
 		sf.hover = shell.WindowAt(sf.windows, sf.px, sf.py)
 		s.drawShot(sf)
@@ -750,19 +751,19 @@ func wlCopy(stdin *os.File, args ...string) error {
 // click opens it, and "Show in Folder" shows where it is.
 func (s *shellUI) shotNote(path string, saved, copied bool) {
 	summary := map[[2]bool]string{
-		{true, true}:   "Screenshot saved and copied",
-		{true, false}:  "Screenshot saved",
-		{false, true}:  "Screenshot copied",
-		{false, false}: "Screenshot taken",
+		{true, true}:   i18n.T("Screenshot saved and copied"),
+		{true, false}:  i18n.T("Screenshot saved"),
+		{false, true}:  i18n.T("Screenshot copied"),
+		{false, false}: i18n.T("Screenshot taken"),
 	}[[2]bool{saved, copied}]
 	n := notify.Notification{
-		App: "Screenshot", Entry: shotEntry, Icon: "applets-screenshooter-symbolic",
+		App: i18n.T("Screenshot"), Entry: shotEntry, Icon: "applets-screenshooter-symbolic",
 		Summary: summary, ImgPath: path, Default: true, Time: time.Now(),
 		Transient: !saved, // nothing to come back to
 	}
 	if saved {
 		n.Body = notify.Markup(filepath.Base(path))
-		n.Actions = []notify.Action{{Key: "folder", Label: "Show in Folder"}}
+		n.Actions = []notify.Action{{Key: "folder", Label: i18n.T("Show in Folder")}}
 	}
 	if s.notes.srv == nil { // another notification daemon shows them
 		go run(fmt.Sprintf("notify-send -a Screenshot -i %s %s", shellQuote(path), shellQuote(summary)))

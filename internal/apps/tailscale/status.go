@@ -1,10 +1,11 @@
 package tailscale
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Status is what the local API's status says, as much as the app uses.
@@ -139,23 +140,23 @@ func (p *Peer) MagicDNS() string { return strings.TrimSuffix(p.DNSName, ".") }
 func (p *Peer) Connection() string {
 	switch {
 	case !p.Online:
-		return "offline"
+		return i18n.T("offline")
 	case p.CurAddr != "":
-		return "direct, " + p.CurAddr
+		return i18n.Tf("direct, %s", p.CurAddr)
 	case p.Relay != "":
-		return "relayed through " + p.Relay
+		return i18n.Tf("relayed through %s", p.Relay)
 	}
-	return "idle"
+	return i18n.T("idle")
 }
 
 // Seen says when a peer was last online: "online", "5 min ago",
 // "3 d ago", or "" when never known.
 func (p *Peer) Seen(now time.Time) string {
 	if p.Online {
-		return "online"
+		return i18n.T("online")
 	}
 	if p.LastSeen.IsZero() || p.LastSeen.Year() < 2000 {
-		return "offline"
+		return i18n.T("offline")
 	}
 	return Ago(now.Sub(p.LastSeen))
 }
@@ -164,15 +165,15 @@ func (p *Peer) Seen(now time.Time) string {
 func Ago(d time.Duration) string {
 	switch {
 	case d < time.Minute:
-		return "just now"
+		return i18n.T("just now")
 	case d < time.Hour:
-		return fmt.Sprintf("%d min ago", int(d.Minutes()))
+		return i18n.Tf("%d min ago", int(d.Minutes()))
 	case d < 24*time.Hour:
-		return fmt.Sprintf("%d h ago", int(d.Hours()))
+		return i18n.Tf("%d h ago", int(d.Hours()))
 	case d < 60*24*time.Hour:
-		return fmt.Sprintf("%d d ago", int(d.Hours()/24))
+		return i18n.Tf("%d d ago", int(d.Hours()/24))
 	}
-	return fmt.Sprintf("%d mo ago", int(d.Hours()/24/30))
+	return i18n.Tf("%d mo ago", int(d.Hours()/24/30))
 }
 
 // Expiry says when a device's key expires, "" when it does not.
@@ -183,11 +184,11 @@ func (p *Peer) Expiry(now time.Time) string {
 	d := p.KeyExpiry.Sub(now)
 	switch {
 	case d < 0:
-		return "expired " + Ago(-d)
+		return i18n.Tf("expired %s", Ago(-d))
 	case d < 48*time.Hour:
-		return fmt.Sprintf("in %d h", int(d.Hours()))
+		return i18n.Tf("in %d h", int(d.Hours()))
 	}
-	return fmt.Sprintf("in %d d", int(d.Hours()/24))
+	return i18n.Tf("in %d d", int(d.Hours()/24))
 }
 
 // Peers are the peers that match a query, any case, in their name, an
@@ -261,17 +262,17 @@ func (st Status) PeerByID(id string) *Peer {
 func (st Status) State() (string, bool) {
 	switch st.BackendState {
 	case "Running":
-		return "Connected", true
+		return i18n.T("Connected"), true
 	case "Stopped":
-		return "Disconnected", false
+		return i18n.T("Disconnected"), false
 	case "NeedsLogin":
-		return "Logged out", false
+		return i18n.T("Logged out"), false
 	case "NeedsMachineAuth":
-		return "Waiting for approval", false
+		return i18n.T("Waiting for approval"), false
 	case "Starting":
-		return "Connecting…", false
+		return i18n.T("Connecting…"), false
 	case "":
-		return "Not running", false
+		return i18n.T("Not running"), false
 	}
 	return st.BackendState, false
 }

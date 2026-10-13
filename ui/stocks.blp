@@ -28,13 +28,13 @@ ApplicationWindow stocks {
 
           Label {
             styles ["index-title"]
-            label: "Stocks";
+            label:  _("Stocks");
             xalign: 0;
           }
 
           SearchEntry symbol_search {
             styles ["index-search"]
-            placeholder-text: "Add a symbol";
+            placeholder-text:  _("Add a symbol");
           }
 
           ScrolledWindow {
@@ -90,7 +90,7 @@ ApplicationWindow stocks {
                 Label {
                   styles ["section-label"]
                   use-markup: true;
-                  label: "<span alpha='55%'>[</span>QUOTE<span alpha='55%'>]</span>";
+                  label:  _("<span alpha='55%'>[</span>QUOTE<span alpha='55%'>]</span>");
                 }
 
                 Label symbol {
@@ -163,7 +163,7 @@ ApplicationWindow stocks {
                 Label {
                   styles ["section-label"]
                   use-markup: true;
-                  label: "<span alpha='55%'>[</span>TODAY<span alpha='55%'>]</span>";
+                  label:  _("<span alpha='55%'>[</span>TODAY<span alpha='55%'>]</span>");
                 }
 
                 Label updated {
@@ -194,7 +194,7 @@ ApplicationWindow stocks {
 
               Label {
                 styles ["sub"]
-                label: "Prices from Yahoo Finance, delayed";
+                label:  _("Prices from Yahoo Finance, delayed");
                 hexpand: true;
                 xalign: 0;
               }
@@ -202,7 +202,7 @@ ApplicationWindow stocks {
               Button remove {
                 styles ["outlined"]
                 name: "remove";
-                label: "Remove";
+                label:  _("Remove");
               }
             }
           }

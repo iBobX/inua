@@ -13,6 +13,7 @@ import (
 
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // fortune is Small Fortune: the board on a canvas, where the dice roll
@@ -101,8 +102,8 @@ func (p *fortune) setup(f *frame) {
 	f.win.SetDefaultSize(1440, 900)
 	f.status.SetVisible(false) // the board and the panel say it all
 	f.hint.SetVisible(false)
-	p.round = f.stat("ROUND")
-	p.pot = f.stat("FOUNTAIN")
+	p.round = f.stat(i18n.T("ROUND"))
+	p.pot = f.stat(i18n.T("FOUNTAIN"))
 
 	p.pages = gtk.NewStack()
 	p.pages.SetTransitionType(gtk.StackTransitionTypeCrossfadeValue)
@@ -144,12 +145,12 @@ func (p *fortune) setup(f *frame) {
 		gtkx.Append(box, &sw.Widget)
 	}
 
-	players := section("PLAYERS")
+	players := section(i18n.T("PLAYERS"))
 	p.players = *gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	scroll(players, &p.players.Widget)
 	p.players.Unref()
 
-	square := section("SQUARE")
+	square := section(i18n.T("SQUARE"))
 	card := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	p.cardTitle = gtk.NewLabel("")
 	p.cardTitle.AddCssClass("fortune-card-title")
@@ -171,8 +172,8 @@ func (p *fortune) setup(f *frame) {
 	p.cardButtons.SetHomogeneous(true)
 	p.onBuild = func(gtk.Button) { p.act(func() bool { return p.g.Build(p.focus()) }) }
 	p.onSell = func(gtk.Button) { p.act(func() bool { return p.g.Sell(p.focus()) }) }
-	p.build = button("Build a house", &p.onBuild)
-	p.sell = button("Sell", &p.onSell)
+	p.build = button(i18n.T("Build a house"), &p.onBuild)
+	p.sell = button(i18n.T("Sell"), &p.onSell)
 	gtkx.Append(&p.cardButtons, &p.build.Widget)
 	gtkx.Append(&p.cardButtons, &p.sell.Widget)
 	gtkx.Append(square, &p.cardButtons.Widget)
@@ -181,7 +182,7 @@ func (p *fortune) setup(f *frame) {
 	acts.SetHomogeneous(true)
 	p.onPrimary = func(gtk.Button) { p.main() }
 	p.onSecondary = func(gtk.Button) { p.other() }
-	p.primary = button("Roll the dice", &p.onPrimary)
+	p.primary = button(i18n.T("Roll the dice"), &p.onPrimary)
 	p.primary.RemoveCssClass("outlined")
 	p.primary.AddCssClass("primary")
 	p.primary.AddCssClass("fortune-main")
@@ -191,7 +192,7 @@ func (p *fortune) setup(f *frame) {
 	gtkx.Append(acts, &p.secondary.Widget)
 	gtkx.Append(square, &acts.Widget)
 
-	happened := section("WHAT HAPPENED")
+	happened := section(i18n.T("WHAT HAPPENED"))
 	p.logBox = *gtk.NewBox(gtk.OrientationVerticalValue, 4)
 	scroll(happened, &p.logBox.Widget)
 	p.logBox.Unref()
@@ -231,7 +232,7 @@ func (p *fortune) setupPage() *gtk.Box {
 	page.AddCssClass("fortune-setup")
 	page.SetHalign(gtk.AlignCenterValue)
 	page.SetValign(gtk.AlignCenterValue)
-	head := gtk.NewLabel("Where do you play?")
+	head := gtk.NewLabel(i18n.T("Where do you play?"))
 	head.AddCssClass("fortune-setup-title")
 	head.SetXalign(0)
 	gtkx.Append(page, &head.Widget)
@@ -255,7 +256,7 @@ func (p *fortune) setupPage() *gtk.Box {
 		case "dice":
 			p.settings.Dice = i + 1
 		}
-		p.start.SetLabel("Start in " + games.FortuneCities[p.settings.City].Name)
+		p.start.SetLabel(i18n.Tf("Start in %s", i18n.T(games.FortuneCities[p.settings.City].Name)))
 	}
 	pick := func(kind string, i int, active bool, child *gtk.Widget) *gtk.ToggleButton {
 		b := gtk.NewToggleButton()
@@ -285,15 +286,15 @@ func (p *fortune) setupPage() *gtk.Box {
 		pieces.area.SetFocusable(false)
 		p.cities = append(p.cities, pieces)
 		gtkx.Append(card, &pieces.area.Widget)
-		name := gtk.NewLabel(c.Name)
+		name := gtk.NewLabel(i18n.T(c.Name))
 		if c.Local != c.Name {
-			name.SetText(c.Local + "  " + c.Name)
+			name.SetText(c.Local + "  " + i18n.T(c.Name))
 		}
 		name.AddCssClass("fortune-city-name")
 		name.SetXalign(0)
 		gtkx.Append(card, &name.Widget)
 		art := cityArts[i]
-		sub := gtk.NewLabel(art.houseWord + " and " + art.hotelWord)
+		sub := gtk.NewLabel(i18n.Tf("%s and %s", i18n.T(art.houseWord), i18n.T(art.hotelWord)))
 		sub.AddCssClass("fortune-city-sub")
 		sub.SetXalign(0)
 		gtkx.Append(card, &sub.Widget)
@@ -328,11 +329,11 @@ func (p *fortune) setupPage() *gtk.Box {
 	for _, c := range games.FortuneCash {
 		cash = append(cash, "$"+thousands(c))
 	}
-	row(0, "Rounds", "rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds))
-	row(1, "Starting money", "cash", cash, slices.Index(games.FortuneCash, p.settings.Cash))
-	row(2, "Rivals", "rivals", []string{"Mika", "Mika, Ren", "Mika, Ren, Sol"}, p.settings.Rivals-1)
-	row(3, "Dice", "dice", []string{"One die", "Two dice"}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
-	l := gtk.NewLabel("Build the day you buy")
+	row(0, i18n.T("Rounds"), "rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds))
+	row(1, i18n.T("Starting money"), "cash", cash, slices.Index(games.FortuneCash, p.settings.Cash))
+	row(2, i18n.T("Rivals"), "rivals", []string{i18n.T("Mika"), i18n.T("Mika, Ren"), i18n.T("Mika, Ren, Sol")}, p.settings.Rivals-1)
+	row(3, i18n.T("Dice"), "dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
+	l := gtk.NewLabel(i18n.T("Build the day you buy"))
 	l.AddCssClass("fortune-option")
 	l.SetXalign(0)
 	opts.Attach(&l.Widget, 0, 4, 1, 1)
@@ -346,14 +347,14 @@ func (p *fortune) setupPage() *gtk.Box {
 	}
 	sw.ConnectStateSet(&p.onBuildRule)
 	gtkx.Append(build, &sw.Widget)
-	note := gtk.NewLabel("A street you buy may go up a level that same turn")
+	note := gtk.NewLabel(i18n.T("A street you buy may go up a level that same turn"))
 	note.AddCssClass("fortune-city-sub")
 	gtkx.Append(build, &note.Widget)
 	opts.Attach(&build.Widget, 1, 4, 1, 1)
 	gtkx.Append(page, &opts.Widget)
 
 	p.onStart = func(gtk.Button) { p.begin() }
-	p.start = button("Start in "+games.FortuneCities[p.settings.City].Name, &p.onStart)
+	p.start = button(i18n.Tf("Start in %s", i18n.T(games.FortuneCities[p.settings.City].Name)), &p.onStart)
 	p.start.RemoveCssClass("outlined")
 	p.start.AddCssClass("primary")
 	p.start.AddCssClass("fortune-start")
@@ -600,12 +601,12 @@ func (p *fortune) refresh() {
 	// Players.
 	for i, pl := range g.Players {
 		col := p.playerColor(i)
-		status := fmt.Sprintf("worth $%s", thousands(v.Worth(i)))
+		status := i18n.Tf("worth $%s", thousands(v.Worth(i)))
 		switch {
 		case pl.Out:
-			status = "bankrupt"
+			status = i18n.T("bankrupt")
 		case pl.InJail:
-			status += " · in jail"
+			status += i18n.T(" · in jail")
 		}
 		mark := ""
 		if i == g.Turn && g.Phase != games.PhaseOver {
@@ -642,51 +643,51 @@ func (p *fortune) refresh() {
 				group = append(group, g.SquareName(o))
 			}
 		}
-		fmt.Fprintf(&b, "Price $%d · each building $%d\nGroup: %s\n", s.Price, games.HouseCost(sq), strings.Join(group, ", "))
-		fmt.Fprintf(&b, "Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)",
+		fmt.Fprintf(&b, i18n.T("Price $%d · each building $%d\nGroup: %s\n"), s.Price, games.HouseCost(sq), strings.Join(group, ", "))
+		fmt.Fprintf(&b, i18n.T("Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)"),
 			games.RentAt(sq, 0, false), games.RentAt(sq, 0, true), games.RentAt(sq, 1, false), games.RentAt(sq, 2, false),
 			games.RentAt(sq, 3, false), games.RentAt(sq, 4, false), games.RentAt(sq, games.Hotel, false))
 		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, "\nOwned by %s", g.Players[o].Name)
+			fmt.Fprintf(&b, i18n.T("\nOwned by %s"), g.Players[o].Name)
 			switch h := v.Houses[sq]; {
 			case h == games.Hotel:
-				b.WriteString(", with a hotel")
+				b.WriteString(i18n.T(", with a hotel"))
 			case h > 0:
-				fmt.Fprintf(&b, ", %d house%s", h, map[bool]string{true: "s"}[h > 1])
+				b.WriteString(i18n.Nf(", %d house", ", %d houses", h, h))
 			}
-			fmt.Fprintf(&b, ": rent now $%d", rentOf(v, sq))
+			fmt.Fprintf(&b, i18n.T(": rent now $%d"), rentOf(v, sq))
 		} else {
-			b.WriteString("\nFor sale")
+			b.WriteString(i18n.T("\nFor sale"))
 		}
 	case games.Pier:
-		fmt.Fprintf(&b, "Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers.", s.Price,
+		fmt.Fprintf(&b, i18n.T("Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers."), s.Price,
 			games.PierRent(1), games.PierRent(2), games.PierRent(3), games.PierRent(4))
 		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, "\nOwned by %s: rent now $%d", g.Players[o].Name, rentOf(v, sq))
+			fmt.Fprintf(&b, i18n.T("\nOwned by %s: rent now $%d"), g.Players[o].Name, rentOf(v, sq))
 		} else {
-			b.WriteString("\nFor sale")
+			b.WriteString(i18n.T("\nFor sale"))
 		}
 	case games.Utility:
-		fmt.Fprintf(&b, "Price $%d. Rent is the dice times %d, or times %d with both utilities.", s.Price,
+		fmt.Fprintf(&b, i18n.T("Price $%d. Rent is the dice times %d, or times %d with both utilities."), s.Price,
 			games.UtilityTimes(1), games.UtilityTimes(2))
 		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, "\nOwned by %s", g.Players[o].Name)
+			fmt.Fprintf(&b, i18n.T("\nOwned by %s"), g.Players[o].Name)
 		} else {
-			b.WriteString("\nFor sale")
+			b.WriteString(i18n.T("\nFor sale"))
 		}
 	case games.StartSquare:
-		b.WriteString("Collect $200 every time you pass.")
+		b.WriteString(i18n.T("Collect $200 every time you pass."))
 	case games.JailSquare:
-		fmt.Fprintf(&b, "Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go.",
-			map[bool]string{false: "a double", true: "a six"}[g.OneDie])
+		fmt.Fprintf(&b, i18n.T("Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go."),
+			map[bool]string{false: i18n.T("a double"), true: i18n.T("a six")}[g.OneDie])
 	case games.Fountain:
-		fmt.Fprintf(&b, "Taxes and fines go into the fountain; the next player to land here takes it all: $%d now.", v.Pot)
+		fmt.Fprintf(&b, i18n.T("Taxes and fines go into the fountain; the next player to land here takes it all: $%d now."), v.Pot)
 	case games.GoToJail:
-		b.WriteString("Straight to jail, without passing Start.")
+		b.WriteString(i18n.T("Straight to jail, without passing Start."))
 	case games.ChanceSquare:
-		b.WriteString("Draw a card: money, a fine, or a trip.")
+		b.WriteString(i18n.T("Draw a card: money, a fine, or a trip."))
 	case games.TaxSquare:
-		fmt.Fprintf(&b, "Pay $%d into the fountain.", s.Price)
+		fmt.Fprintf(&b, i18n.T("Pay $%d into the fountain."), s.Price)
 	}
 	p.cardBody.SetText(b.String())
 	mine := s.Kind == games.Street && v.Owner[sq] == 0
@@ -696,43 +697,43 @@ func (p *fortune) refresh() {
 	p.sell.SetSensitive(idle && g.CanSell(sq))
 	switch h := v.Houses[sq]; {
 	case h == games.Hotel:
-		p.build.SetLabel("Hotel built")
+		p.build.SetLabel(i18n.T("Hotel built"))
 	case h == games.Hotel-1:
-		p.build.SetLabel(fmt.Sprintf("Build a hotel ($%d)", games.HouseCost(sq)))
+		p.build.SetLabel(i18n.Tf("Build a hotel ($%d)", games.HouseCost(sq)))
 	default:
-		p.build.SetLabel(fmt.Sprintf("Build a house ($%d)", games.HouseCost(sq)))
+		p.build.SetLabel(i18n.Tf("Build a house ($%d)", games.HouseCost(sq)))
 	}
 
 	// What can be done.
 	p.secondary.SetVisible(false)
 	switch {
 	case g.Phase == games.PhaseOver && !p.busy():
-		p.primary.SetLabel("New game")
+		p.primary.SetLabel(i18n.T("New game"))
 		p.primary.SetSensitive(true)
 	case p.busy() || g.Players[g.Turn].CPU:
-		p.primary.SetLabel(g.Players[g.Turn].Name + " is playing…")
+		p.primary.SetLabel(i18n.Tf("%s is playing…", g.Players[g.Turn].Name))
 		if g.Turn == 0 {
 			p.primary.SetLabel("…")
 		}
 		p.primary.SetSensitive(false)
 	case g.Phase == games.PhaseRoll:
-		p.primary.SetLabel("Roll the dice")
+		p.primary.SetLabel(i18n.T("Roll the dice"))
 		p.primary.SetSensitive(true)
 		if g.Players[0].InJail {
-			p.primary.SetLabel(map[bool]string{false: "Roll for a double", true: "Roll for a six"}[g.OneDie])
-			p.secondary.SetLabel("Pay $50 bail")
+			p.primary.SetLabel(map[bool]string{false: i18n.T("Roll for a double"), true: i18n.T("Roll for a six")}[g.OneDie])
+			p.secondary.SetLabel(i18n.T("Pay $50 bail"))
 			p.secondary.SetVisible(true)
 			p.secondary.SetSensitive(g.Players[0].Cash >= 50)
 		}
 	case g.Phase == games.PhaseBuy:
 		at := g.Players[0].At
-		p.primary.SetLabel(fmt.Sprintf("Buy it for $%d", games.Board[at].Price)) // short: the panel keeps its width
+		p.primary.SetLabel(i18n.Tf("Buy it for $%d", games.Board[at].Price)) // short: the panel keeps its width
 		p.primary.SetSensitive(true)
-		p.secondary.SetLabel("Pass")
+		p.secondary.SetLabel(i18n.T("Pass"))
 		p.secondary.SetVisible(true)
 		p.secondary.SetSensitive(true)
 	case g.Phase == games.PhaseEnd:
-		p.primary.SetLabel("End turn")
+		p.primary.SetLabel(i18n.T("End turn"))
 		p.primary.SetSensitive(true)
 	}
 

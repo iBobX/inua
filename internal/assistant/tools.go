@@ -18,6 +18,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/tailscale"
 	"github.com/lyricat/inua/internal/apps/weather"
 	"github.com/lyricat/inua/internal/desktop"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Desktop is what inua's tools reach: the shell's control socket, Hyprland,
@@ -168,19 +169,21 @@ const windowArg = `"window":{"type":"string","description":"A window's id from l
 
 func windowTools(d Desktop) []Tool {
 	named := func(verb string) func(map[string]any) string {
-		return func(a map[string]any) string { return verb + " " + cmp.Or(str(a, "window"), "the focused window") }
+		return func(a map[string]any) string {
+			return i18n.Tf(verb, cmp.Or(str(a, "window"), i18n.T("the focused window")))
+		}
 	}
 	return []Tool{
 		{
 			Name: "list_windows", Description: "Lists the open windows: id, title, app and workspace, and which is focused.",
-			Describe: func(map[string]any) string { return "Looking at the windows" },
+			Describe: func(map[string]any) string { return i18n.T("Looking at the windows") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				return windows(ctx, d)
 			},
 		},
 		{
 			Name: "focus_window", Description: "Brings a window forward and focuses it.", Schema: schema(windowArg),
-			Describe: named("Focusing"),
+			Describe: named(i18n.M("Focusing %s")),
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				w, err := findWindow(ctx, d, str(a, "window"))
 				if err != nil {
@@ -193,7 +196,7 @@ func windowTools(d Desktop) []Tool {
 			Name: "move_window", Description: "Moves a window to a workspace (a number or a name).",
 			Schema: schema(windowArg+`,"workspace":{"type":"string"}`, "workspace"), Risk: Change,
 			Describe: func(a map[string]any) string {
-				return fmt.Sprintf("Moving %s to workspace %s", cmp.Or(str(a, "window"), "the focused window"), str(a, "workspace"))
+				return i18n.Tf("Moving %s to workspace %s", cmp.Or(str(a, "window"), i18n.T("the focused window")), str(a, "workspace"))
 			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				w, err := findWindow(ctx, d, str(a, "window"))
@@ -209,7 +212,7 @@ func windowTools(d Desktop) []Tool {
 		},
 		{
 			Name: "close_window", Description: "Closes a window (its app may ask to save).", Schema: schema(windowArg),
-			Risk: Always, Describe: named("Closing"),
+			Risk: Always, Describe: named(i18n.M("Closing %s")),
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				w, err := findWindow(ctx, d, str(a, "window"))
 				if err != nil {
@@ -221,7 +224,7 @@ func windowTools(d Desktop) []Tool {
 		{
 			Name: "switch_workspace", Description: "Shows a workspace (a number or a name).",
 			Schema:   schema(`"workspace":{"type":"string"}`, "workspace"),
-			Describe: func(a map[string]any) string { return "Going to workspace " + str(a, "workspace") },
+			Describe: func(a map[string]any) string { return i18n.Tf("Going to workspace %s", str(a, "workspace")) },
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				ws := str(a, "workspace")
 				if ws == "" || strings.ContainsAny(ws, ",\n") {
@@ -270,7 +273,7 @@ func appTools(d Desktop) []Tool {
 		{
 			Name: "list_apps", Description: "Lists installed apps (name, id, what it is), those matching the words when given.",
 			Schema:   schema(`"query":{"type":"string"}`),
-			Describe: func(map[string]any) string { return "Looking at the apps" },
+			Describe: func(map[string]any) string { return i18n.T("Looking at the apps") },
 			Run: func(_ context.Context, a map[string]any) (any, error) {
 				q := strings.ToLower(str(a, "query"))
 				type app struct{ Name, ID, About string }
@@ -286,7 +289,7 @@ func appTools(d Desktop) []Tool {
 		{
 			Name: "open_app", Description: "Starts an installed app, by its name or id.",
 			Schema:   schema(`"app":{"type":"string"}`, "app"),
-			Describe: func(a map[string]any) string { return "Opening " + str(a, "app") },
+			Describe: func(a map[string]any) string { return i18n.Tf("Opening %s", str(a, "app")) },
 			Run: func(_ context.Context, a map[string]any) (any, error) {
 				e, err := findApp(d, str(a, "app"))
 				if err != nil {
@@ -318,7 +321,7 @@ func systemTools(d Desktop) []Tool {
 	return []Tool{
 		{
 			Name: "system_status", Description: "Battery, Wi-Fi, Bluetooth, volume, brightness, power saver, Focus (quiet notifications), the time.",
-			Describe: func(map[string]any) string { return "Looking at the system" },
+			Describe: func(map[string]any) string { return i18n.T("Looking at the system") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				return call(ctx, "system", "status")
 			},
@@ -328,11 +331,22 @@ func systemTools(d Desktop) []Tool {
 			Schema: schema(`"setting":{"type":"string","enum":["wifi","bluetooth","volume","mute","brightness","focus","saver"]},"value":{"type":"string"}`, "setting", "value"),
 			Risk:   Change,
 			Describe: func(a map[string]any) string {
-				s, v := str(a, "setting"), str(a, "value")
-				if s == "volume" || s == "brightness" {
-					return fmt.Sprintf("Setting %s to %s%%", s, strings.TrimSuffix(v, "%"))
+				// Whole sentences: word order differs between languages.
+				s, v := str(a, "setting"), strings.TrimSuffix(str(a, "value"), "%")
+				switch s {
+				case "volume":
+					return i18n.Tf("Setting the volume to %s%%", v)
+				case "brightness":
+					return i18n.Tf("Setting the brightness to %s%%", v)
 				}
-				return fmt.Sprintf("Turning %s %s", s, v)
+				said := map[string]string{
+					"wifi on": i18n.T("Turning Wi-Fi on"), "wifi off": i18n.T("Turning Wi-Fi off"),
+					"bluetooth on": i18n.T("Turning Bluetooth on"), "bluetooth off": i18n.T("Turning Bluetooth off"),
+					"mute on": i18n.T("Muting the sound"), "mute off": i18n.T("Unmuting the sound"),
+					"focus on": i18n.T("Turning Focus on"), "focus off": i18n.T("Turning Focus off"),
+					"saver on": i18n.T("Turning power saver on"), "saver off": i18n.T("Turning power saver off"),
+				}[s+" "+v]
+				return cmp.Or(said, i18n.Tf("Setting %s to %s", s, v))
 			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				s, v := str(a, "setting"), strings.TrimSuffix(str(a, "value"), "%")
@@ -344,13 +358,21 @@ func systemTools(d Desktop) []Tool {
 		},
 		{
 			Name: "lock_screen", Description: "Locks the screen.", Risk: Change,
-			Describe: func(map[string]any) string { return "Locking the screen" },
+			Describe: func(map[string]any) string { return i18n.T("Locking the screen") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "lock", "now") },
 		},
 		{
 			Name: "screenshot", Description: `Takes a screenshot, saved and copied: "window" (the focused one) or "screen" at once, or "area" for the user to drag out.`,
-			Schema:   schema(`"of":{"type":"string","enum":["area","window","screen"]}`),
-			Describe: func(a map[string]any) string { return "Taking a screenshot of the " + cmp.Or(str(a, "of"), "area") },
+			Schema: schema(`"of":{"type":"string","enum":["area","window","screen"]}`),
+			Describe: func(a map[string]any) string {
+				switch str(a, "of") {
+				case "window":
+					return i18n.T("Taking a screenshot of the focused window")
+				case "screen":
+					return i18n.T("Taking a screenshot of the screen")
+				}
+				return i18n.T("Taking a screenshot of an area")
+			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				of := cmp.Or(str(a, "of"), "area")
 				if !slices.Contains([]string{"area", "window", "screen"}, of) {
@@ -364,7 +386,7 @@ func systemTools(d Desktop) []Tool {
 			Schema: schema(`"action":{"type":"string","enum":["suspend","reboot","poweroff","logout"]}`, "action"),
 			Risk:   Always,
 			Describe: func(a map[string]any) string {
-				return map[string]string{"suspend": "Suspending", "reboot": "Restarting the computer", "poweroff": "Shutting down", "logout": "Logging out"}[str(a, "action")]
+				return map[string]string{"suspend": i18n.T("Suspending"), "reboot": i18n.T("Restarting the computer"), "poweroff": i18n.T("Shutting down"), "logout": i18n.T("Logging out")}[str(a, "action")]
 			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				act := str(a, "action")
@@ -376,17 +398,17 @@ func systemTools(d Desktop) []Tool {
 		},
 		{
 			Name: "list_notifications", Description: "The notifications waiting in the notification center, newest first: app, summary, body, time.",
-			Describe: func(map[string]any) string { return "Reading the notifications" },
+			Describe: func(map[string]any) string { return i18n.T("Reading the notifications") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "notifications", "list") },
 		},
 		{
 			Name: "clear_notifications", Description: "Clears every notification.", Risk: Change,
-			Describe: func(map[string]any) string { return "Clearing the notifications" },
+			Describe: func(map[string]any) string { return i18n.T("Clearing the notifications") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "notifications", "clear") },
 		},
 		{
 			Name: "clipboard_read", Description: "The text on the clipboard.",
-			Describe: func(map[string]any) string { return "Reading the clipboard" },
+			Describe: func(map[string]any) string { return i18n.T("Reading the clipboard") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				t, err := d.ClipRead(ctx)
 				if len(t) > 20000 {
@@ -401,9 +423,9 @@ func systemTools(d Desktop) []Tool {
 			Describe: func(a map[string]any) string {
 				t := []rune(str(a, "text"))
 				if len(t) > 40 {
-					return "Copying “" + string(t[:40]) + "…”"
+					return i18n.Tf("Copying “%s…”", string(t[:40]))
 				}
-				return "Copying “" + string(t) + "”"
+				return i18n.Tf("Copying “%s”", string(t))
 			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				return "ok", d.ClipWrite(ctx, str(a, "text"))
@@ -425,7 +447,7 @@ func infoTools(d Desktop) []Tool {
 		{
 			Name: "processes", Description: "The busiest processes: by CPU (over half a second) or by memory.",
 			Schema:   schema(`"by":{"type":"string","enum":["cpu","memory"]},"limit":{"type":"integer"}`),
-			Describe: func(a map[string]any) string { return "Looking at the processes" },
+			Describe: func(a map[string]any) string { return i18n.T("Looking at the processes") },
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				limit, _ := num(a, "limit")
 				limit = min(max(cmp.Or(limit, 8), 1), 30)
@@ -474,9 +496,9 @@ func infoTools(d Desktop) []Tool {
 					}
 				}
 				if f, _ := boolean(a, "force"); f {
-					return fmt.Sprintf("Killing %s(%d)", name, pid)
+					return i18n.Tf("Killing %s(%d)", name, pid)
 				}
-				return fmt.Sprintf("Asking %s(%d) to quit", name, pid)
+				return i18n.Tf("Asking %s(%d) to quit", name, pid)
 			},
 			Run: func(_ context.Context, a map[string]any) (any, error) {
 				pid, ok := num(a, "pid")
@@ -497,7 +519,7 @@ func infoTools(d Desktop) []Tool {
 		},
 		{
 			Name: "tailscale_status", Description: "Tailscale: connected or not, this device, the devices of the tailnet (name, address, online, OS), the exit node.",
-			Describe: func(map[string]any) string { return "Looking at Tailscale" },
+			Describe: func(map[string]any) string { return i18n.T("Looking at Tailscale") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				st, err := d.Tailscale.Status(ctx)
 				if err != nil {
@@ -527,14 +549,14 @@ func infoTools(d Desktop) []Tool {
 			Describe: func(a map[string]any) string {
 				if e := str(a, "exit_node"); e != "" {
 					if e == "none" {
-						return "Stopping the Tailscale exit node"
+						return i18n.T("Stopping the Tailscale exit node")
 					}
-					return "Using " + e + " as Tailscale exit node"
+					return i18n.Tf("Using %s as Tailscale exit node", e)
 				}
 				if c, _ := boolean(a, "connect"); c {
-					return "Connecting Tailscale"
+					return i18n.T("Connecting Tailscale")
 				}
-				return "Disconnecting Tailscale"
+				return i18n.T("Disconnecting Tailscale")
 			},
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				if e := str(a, "exit_node"); e != "" {
@@ -567,7 +589,7 @@ func infoTools(d Desktop) []Tool {
 		{
 			Name: "weather", Description: "The weather now, the next 12 hours and the next 4 days for a place (Open-Meteo).",
 			Schema:   schema(`"place":{"type":"string","description":"A city, e.g. Kyoto"}`, "place"),
-			Describe: func(a map[string]any) string { return "Looking up the weather in " + str(a, "place") },
+			Describe: func(a map[string]any) string { return i18n.Tf("Looking up the weather in %s", str(a, "place")) },
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				places, err := weather.Search(ctx, d.HTTP, str(a, "place"))
 				if err != nil {

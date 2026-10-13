@@ -53,7 +53,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <child>
                   <object class="GtkSwitch" id="connect">
                     <property name="valign">3</property>
-                    <property name="tooltip-text">Connect this device to the tailnet</property>
+                    <property name="tooltip-text" translatable="yes">Connect this device to the tailnet</property>
                   </object>
                 </child>
               </object>
@@ -109,7 +109,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <child>
                   <object class="GtkStackPage">
                     <property name="name">devices</property>
-                    <property name="title">DEVICES</property>
+                    <property name="title" translatable="yes">DEVICES</property>
                     <property name="child">
                       <object class="GtkBox">
                         <property name="orientation">1</property>
@@ -121,7 +121,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <child>
                               <object class="GtkSearchEntry" id="filter">
                                 <property name="hexpand">true</property>
-                                <property name="placeholder-text">Filter by name, address, OS or tag</property>
+                                <property name="placeholder-text" translatable="yes">Filter by name, address, OS or tag</property>
                               </object>
                             </child>
                           </object>
@@ -148,7 +148,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <child>
                   <object class="GtkStackPage">
                     <property name="name">exit</property>
-                    <property name="title">EXIT NODE</property>
+                    <property name="title" translatable="yes">EXIT NODE</property>
                     <property name="child">
                       <object class="GtkScrolledWindow">
                         <property name="hscrollbar-policy">2</property>
@@ -167,7 +167,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <child>
                   <object class="GtkStackPage">
                     <property name="name">device</property>
-                    <property name="title">THIS DEVICE</property>
+                    <property name="title" translatable="yes">THIS DEVICE</property>
                     <property name="child">
                       <object class="GtkScrolledWindow">
                         <property name="hscrollbar-policy">2</property>
@@ -237,7 +237,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           <class name="plain"/>
                         </style>
                         <property name="icon-name">window-close-symbolic</property>
-                        <property name="tooltip-text">Close (Escape)</property>
+                        <property name="tooltip-text" translatable="yes">Close (Escape)</property>
                         <property name="valign">3</property>
                       </object>
                     </child>

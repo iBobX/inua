@@ -3,6 +3,126 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: internal/apps/calendar/calendar.go:69
+#: internal/appui/clock.go:218
+#: internal/ui/control.go:299
+#: internal/ui/lock.go:217
+msgid "Monday, January 2"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:79
+msgid "TODAY"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:81
+msgid "TOMORROW"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:83
+msgid "YESTERDAY"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:85
+msgid "IN %d DAYS"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:87
+msgid "%d DAYS AGO"
+msgstr ""
+
+#: internal/apps/calendar/calendar.go:90
+msgid "%s · WEEK %d · DAY %d"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+#: ui/calendar.ui:132
+msgid "Sun"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/appui/weather.go:357
+#: internal/config/strftime.go:50
+#: internal/i18n/time.go:11
+#: internal/shell/notify.go:28
+#: internal/ui/agenda.go:348
+#: ui/calendar.ui:127
+msgid "Mon"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Tue"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Wed"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Thu"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Fri"
+msgstr ""
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Sat"
+msgstr ""
+
+#: internal/apps/clock/clock.go:78
+msgid "Once"
+msgstr ""
+
+#: internal/apps/clock/clock.go:80
+msgid "Every day"
+msgstr ""
+
+#: internal/apps/clock/clock.go:82
+msgid "Weekdays"
+msgstr ""
+
+#: internal/apps/clock/clock.go:84
+msgid "Weekends"
+msgstr ""
+
+#: internal/apps/clock/clock.go:112
+#: internal/appui/weather.go:359
+#: ui/agenda.ui:84
+#: ui/calendar.ui:39
+msgid "Today"
+msgstr ""
+
+#: internal/apps/clock/clock.go:117
+msgid "Tomorrow"
+msgstr ""
+
+#: internal/apps/clock/clock.go:119
+#: internal/shell/notify.go:26
+msgid "Yesterday"
+msgstr ""
+
+#: internal/apps/clock/clock.go:122
+msgid "%s, same time"
+msgstr ""
+
+#: internal/apps/clock/clock.go:130
+msgid "%s, %s%d h"
+msgstr ""
+
+#: internal/apps/clock/clock.go:132
+msgid "%s, %s%d h %d min"
+msgstr ""
+
+#: internal/apps/clock/clock.go:140
+msgid "UTC"
+msgstr ""
+
 #: internal/apps/sysmon/process.go:46
 msgid "running"
 msgstr ""
@@ -28,6 +148,7 @@ msgid "zombie"
 msgstr ""
 
 #: internal/apps/sysmon/process.go:58
+#: internal/apps/tailscale/status.go:149
 msgid "idle"
 msgstr ""
 
@@ -48,15 +169,426 @@ msgid "%d h %d min"
 msgstr ""
 
 #: internal/apps/sysmon/sysmon.go:404
+#: internal/appui/clock.go:156
 msgid "%d min"
 msgstr ""
 
+#: internal/apps/tailscale/status.go:143
+#: internal/apps/tailscale/status.go:159
+msgid "offline"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:145
+msgid "direct, %s"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:147
+msgid "relayed through %s"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:156
+msgid "online"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:168
+msgid "just now"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:170
+msgid "%d min ago"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:172
+msgid "%d h ago"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:174
+msgid "%d d ago"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:176
+msgid "%d mo ago"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:187
+msgid "expired %s"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:189
+msgid "in %d h"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:191
+msgid "in %d d"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:265
+msgid "Connected"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:267
+msgid "Disconnected"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:269
+#: internal/shell/status.go:124
+msgid "Logged out"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:271
+msgid "Waiting for approval"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:273
+#: internal/appui/tailscale.go:152
+#: internal/shell/status.go:128
+msgid "Connecting…"
+msgstr ""
+
+#: internal/apps/tailscale/status.go:275
+#: internal/shell/status.go:116
+msgid "Not running"
+msgstr ""
+
+#: internal/apps/weather/weather.go:192
+msgid "Clear sky"
+msgstr ""
+
+#: internal/apps/weather/weather.go:194
+msgid "Mostly clear"
+msgstr ""
+
+#: internal/apps/weather/weather.go:196
+msgid "Partly cloudy"
+msgstr ""
+
+#: internal/apps/weather/weather.go:198
+msgid "Cloudy"
+msgstr ""
+
+#: internal/apps/weather/weather.go:200
+msgid "Fog"
+msgstr ""
+
+#: internal/apps/weather/weather.go:202
+msgid "Drizzle"
+msgstr ""
+
+#: internal/apps/weather/weather.go:204
+msgid "Rain"
+msgstr ""
+
+#: internal/apps/weather/weather.go:206
+msgid "Heavy rain"
+msgstr ""
+
+#: internal/apps/weather/weather.go:208
+msgid "Snow"
+msgstr ""
+
+#: internal/apps/weather/weather.go:210
+msgid "Heavy snow"
+msgstr ""
+
+#: internal/apps/weather/weather.go:212
+msgid "Thunderstorm"
+msgstr ""
+
+#: internal/apps/weather/weather.go:214
+#: internal/appui/sysmon.go:1075
+msgid "Unknown"
+msgstr ""
+
+#: internal/appui/app.go:60
+#: internal/ui/alarms.go:106
+#: ui/settings.ui:611
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:3
+msgid "Clock"
+msgstr ""
+
+#: internal/appui/app.go:61
+#: internal/appui/weather.go:223
+#: internal/ui/agenda.go:318
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:3
+msgid "Weather"
+msgstr ""
+
+#: internal/appui/app.go:62
+#: ui/stocks.ui:35
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
+msgid "Stocks"
+msgstr ""
+
+#: internal/appui/app.go:63
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
+msgid "Calculator"
+msgstr ""
+
+#: internal/appui/app.go:64
+#: ui/bar.ui:52
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
+msgid "Calendar"
+msgstr ""
+
+#: internal/appui/app.go:65
+#: internal/ui/picker.go:148
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
+msgid "Color Picker"
+msgstr ""
+
 #: internal/appui/app.go:66
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
+msgstr ""
+
+#: internal/appui/app.go:67
+#: ui/control.ui:474
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
+msgid "Tailscale"
+msgstr ""
+
+#: internal/appui/app.go:68
+#: internal/appui/viewer.go:571
+#: internal/appui/viewer.go:572
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
+msgid "Viewer"
+msgstr ""
+
+#: internal/appui/calculator.go:49
+#: ui/clock.ui:231
+msgid "Delete"
+msgstr ""
+
+#: internal/appui/calculator.go:53
+msgid "Change sign"
+msgstr ""
+
+#: internal/appui/calculator.go:200
+msgid "Error"
+msgstr ""
+
+#: internal/appui/calculator.go:234
+msgid "No calculations yet"
+msgstr ""
+
+#: internal/appui/calculator.go:256
+msgid "Use %s"
+msgstr ""
+
+#: internal/appui/calendar.go:131
+#: internal/ui/agenda.go:223
+msgid "January 2006"
+msgstr ""
+
+#: internal/appui/calendar.go:133
+#: internal/ui/agenda.go:236
+msgid "WK"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Su"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Mo"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Tu"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "We"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Th"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Fr"
+msgstr ""
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Sa"
+msgstr ""
+
+#: internal/appui/clock.go:145
+msgid "HRS"
+msgstr ""
+
+#: internal/appui/clock.go:145
+msgid "MIN"
+msgstr ""
+
+#: internal/appui/clock.go:145
+msgid "SEC"
+msgstr ""
+
+#: internal/appui/clock.go:259
+msgid "Day"
+msgstr ""
+
+#: internal/appui/clock.go:262
+msgid "Night"
+msgstr ""
+
+#: internal/appui/clock.go:337
+msgid "No city by that name"
+msgstr ""
+
+#: internal/appui/clock.go:369
+#: internal/appui/weather.go:246
+msgid "Remove %s"
+msgstr ""
+
+#: internal/appui/clock.go:402
+msgid "Edit"
+msgstr ""
+
+#: internal/appui/clock.go:491
+#: internal/games/fortune.go:50
+#: ui/clock.ui:339
+#: ui/clock.ui:406
+msgid "Start"
+msgstr ""
+
+#: internal/appui/clock.go:492
+msgid "Reset"
+msgstr ""
+
+#: internal/appui/clock.go:496
+#: internal/assistantui/assistantui.go:491
+#: internal/ui/alarms.go:108
+msgid "Stop"
+msgstr ""
+
+#: internal/appui/clock.go:497
+#: internal/appui/clock.go:506
+#: ui/clock.ui:329
+msgid "Lap"
+msgstr ""
+
+#: internal/appui/clock.go:545
+msgid "LAP %d"
+msgstr ""
+
+#: internal/appui/clock.go:565
+#: internal/appui/clock.go:575
+#: internal/appui/sysmon.go:55
+#: internal/appui/sysmon.go:55
+#: ui/clock.ui:463
+msgid "Pause"
+msgstr ""
+
+#: internal/appui/clock.go:568
+#: internal/appui/clock.go:576
+msgid "ENDS AT %s"
+msgstr ""
+
+#: internal/appui/clock.go:581
+#: internal/appui/sysmon.go:863
+#: internal/appui/sysmon.go:863
+msgid "Resume"
+msgstr ""
+
+#: internal/appui/clock.go:582
+#: internal/gamesui/pinball.go:241
+msgid "PAUSED"
+msgstr ""
+
+#: internal/appui/clock.go:593
+msgid "Timer done"
+msgstr ""
+
+#: internal/appui/clock.go:594
+msgid "Your timer has ended."
+msgstr ""
+
+#: internal/appui/colorpicker.go:120
+msgid "HEX"
+msgstr ""
+
+#: internal/appui/colorpicker.go:120
+msgid "RGB"
+msgstr ""
+
+#: internal/appui/colorpicker.go:120
+msgid "HSL"
+msgstr ""
+
+#: internal/appui/colorpicker.go:134
+msgid "Copy %s"
+msgstr ""
+
+#: internal/appui/colorpicker.go:139
+msgid "No colour yet. Pick one from anywhere on the screen."
+msgstr ""
+
+#: internal/appui/stocks.go:274
+msgid "Search for a symbol to add it."
+msgstr ""
+
+#: internal/appui/stocks.go:281
+msgid "Loading %s…"
+msgstr ""
+
+#: internal/appui/stocks.go:294
+msgid "%s could not be read.\n%s"
+msgstr ""
+
+#: internal/appui/stocks.go:317
+msgid "Previous close"
+msgstr ""
+
+#: internal/appui/stocks.go:319
+msgid "Range start"
+msgstr ""
+
+#: internal/appui/stocks.go:322
+#: internal/ui/settings_ai.go:58
+msgid "High"
+msgstr ""
+
+#: internal/appui/stocks.go:322
+#: internal/ui/settings_ai.go:58
+msgid "Low"
+msgstr ""
+
+#: internal/appui/stocks.go:328
+msgid "As of %s"
+msgstr ""
+
+#: internal/appui/stocks.go:328
+msgid "Jan 2, 15:04"
+msgstr ""
+
+#: internal/appui/stocks.go:404
+msgid "Nothing by that name"
+msgstr ""
+
+#: internal/appui/stocks.go:406
+#: internal/appui/weather.go:472
+msgid "Could not search: %s"
 msgstr ""
 
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
+#: internal/ui/dock.go:402
 msgid "Quit"
 msgstr ""
 
@@ -80,11 +612,6 @@ msgstr ""
 
 #: internal/appui/sysmon.go:54
 msgid "As closing its terminal. Many services reload instead."
-msgstr ""
-
-#: internal/appui/sysmon.go:55
-#: internal/appui/sysmon.go:55
-msgid "Pause"
 msgstr ""
 
 #: internal/appui/sysmon.go:55
@@ -132,6 +659,7 @@ msgstr ""
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
+#: internal/shell/dock.go:259
 msgid "NETWORK"
 msgstr ""
 
@@ -284,6 +812,7 @@ msgid "Program"
 msgstr ""
 
 #: internal/appui/sysmon.go:786
+#: internal/appui/viewer.go:814
 msgid "Folder"
 msgstr ""
 
@@ -323,11 +852,6 @@ msgstr ""
 
 #: internal/appui/sysmon.go:839
 msgid "nice %d"
-msgstr ""
-
-#: internal/appui/sysmon.go:863
-#: internal/appui/sysmon.go:863
-msgid "Resume"
 msgstr ""
 
 #: internal/appui/sysmon.go:863
@@ -388,15 +912,22 @@ msgstr ""
 
 #: internal/appui/sysmon.go:959
 #: internal/appui/sysmon.go:971
+#: internal/ui/settings_ai.go:307
 msgid "Model"
 msgstr ""
 
 #: internal/appui/sysmon.go:960
+#: internal/appui/tailscale.go:628
+#: internal/appui/viewer.go:813
+#: internal/ui/settings_ai.go:305
+#: ui/settings.ui:2576
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr ""
 
 #: internal/appui/sysmon.go:961
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:564
 msgid "System"
 msgstr ""
 
@@ -409,6 +940,7 @@ msgid "%s · since %s"
 msgstr ""
 
 #: internal/appui/sysmon.go:965
+#: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr ""
 
@@ -511,6 +1043,7 @@ msgid "wired"
 msgstr ""
 
 #: internal/appui/sysmon.go:1035
+#: ui/control.ui:249
 msgid "Wi-Fi"
 msgstr ""
 
@@ -523,6 +1056,7 @@ msgid "up"
 msgstr ""
 
 #: internal/appui/sysmon.go:1043
+#: internal/appui/tailscale.go:630
 msgid "Addresses"
 msgstr ""
 
@@ -531,6 +1065,8 @@ msgid "Hardware"
 msgstr ""
 
 #: internal/appui/sysmon.go:1049
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:567
 msgid "Traffic"
 msgstr ""
 
@@ -558,12 +1094,5273 @@ msgstr ""
 msgid "Not charging"
 msgstr ""
 
-#: internal/appui/sysmon.go:1075
-msgid "Unknown"
-msgstr ""
-
 #: internal/appui/sysmon.go:1082
 msgid "%.1f s"
+msgstr ""
+
+#: internal/appui/tailscale.go:40
+msgid "Use Tailscale DNS"
+msgstr ""
+
+#: internal/appui/tailscale.go:40
+msgid "MagicDNS names and the tailnet's DNS settings."
+msgstr ""
+
+#: internal/appui/tailscale.go:43
+msgid "Use subnet routes"
+msgstr ""
+
+#: internal/appui/tailscale.go:43
+msgid "Reach the networks other devices offer."
+msgstr ""
+
+#: internal/appui/tailscale.go:48
+msgid "Block incoming connections"
+msgstr ""
+
+#: internal/appui/tailscale.go:48
+msgid "Other devices cannot reach this one; it can still reach them."
+msgstr ""
+
+#: internal/appui/tailscale.go:53
+msgid "Offer as exit node"
+msgstr ""
+
+#: internal/appui/tailscale.go:53
+msgid "Others may send their traffic through this device, once the admin approves."
+msgstr ""
+
+#: internal/appui/tailscale.go:56
+msgid "Tailscale SSH"
+msgstr ""
+
+#: internal/appui/tailscale.go:56
+msgid "Let the tailnet's SSH rules reach this device's SSH server."
+msgstr ""
+
+#: internal/appui/tailscale.go:152
+msgid "Disconnected."
+msgstr ""
+
+#: internal/appui/tailscale.go:164
+msgid "Local network reachable through the exit node."
+msgstr ""
+
+#: internal/appui/tailscale.go:164
+msgid "Local network goes through the exit node too."
+msgstr ""
+
+#: internal/appui/tailscale.go:169
+msgid "%s on."
+msgstr ""
+
+#: internal/appui/tailscale.go:169
+msgid "%s off."
+msgstr ""
+
+#: internal/appui/tailscale.go:301
+msgid "Not changed: allow this app to manage Tailscale first."
+msgstr ""
+
+#: internal/appui/tailscale.go:303
+msgid "Tailscale is not running."
+msgstr ""
+
+#: internal/appui/tailscale.go:345
+#: internal/shell/status.go:69
+#: internal/shell/status.go:86
+#: internal/shell/status.go:101
+msgid "Unavailable"
+msgstr ""
+
+#: internal/appui/tailscale.go:356
+msgid "%d of %d devices online"
+msgstr ""
+
+#: internal/appui/tailscale.go:369
+msgid "Tailscale's service is not running."
+msgstr ""
+
+#: internal/appui/tailscale.go:369
+msgid "Start…"
+msgstr ""
+
+#: internal/appui/tailscale.go:370
+msgid "Started Tailscale."
+msgstr ""
+
+#: internal/appui/tailscale.go:374
+msgid "This device is logged out of its tailnet."
+msgstr ""
+
+#: internal/appui/tailscale.go:374
+msgid "Log In"
+msgstr ""
+
+#: internal/appui/tailscale.go:377
+msgid "An admin of the tailnet has to approve this device."
+msgstr ""
+
+#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:664
+msgid "Admin Console"
+msgstr ""
+
+#: internal/appui/tailscale.go:380
+msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
+msgstr ""
+
+#: internal/appui/tailscale.go:380
+msgid "Allow…"
+msgstr ""
+
+#: internal/appui/tailscale.go:382
+msgid "This app may now manage Tailscale."
+msgstr ""
+
+#: internal/appui/tailscale.go:414
+msgid "No device matches."
+msgstr ""
+
+#: internal/appui/tailscale.go:416
+msgid "No other devices in the tailnet yet."
+msgstr ""
+
+#: internal/appui/tailscale.go:433
+msgid "exit node in use"
+msgstr ""
+
+#: internal/appui/tailscale.go:435
+msgid "exit node"
+msgstr ""
+
+#: internal/appui/tailscale.go:445
+msgid "Details, ping, exit node and sending files"
+msgstr ""
+
+#: internal/appui/tailscale.go:467
+#: internal/appui/viewer.go:395
+msgid "Copied"
+msgstr ""
+
+#: internal/appui/tailscale.go:505
+msgid "Copy IP"
+msgstr ""
+
+#: internal/appui/tailscale.go:505
+msgid "Copy Name"
+msgstr ""
+
+#: internal/appui/tailscale.go:505
+msgid "Ping"
+msgstr ""
+
+#: internal/appui/tailscale.go:513
+#: internal/appui/tailscale.go:575
+msgid "Use as Exit Node"
+msgstr ""
+
+#: internal/appui/tailscale.go:522
+msgid "DEVICE"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:561
+#: internal/appui/tailscale.go:629
+msgid "MagicDNS"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:562
+msgid "IPv4"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:563
+msgid "IPv6"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:565
+msgid "Status"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:566
+msgid "Connection"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:568
+msgid "Key expires"
+msgstr ""
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:569
+msgid "Tags"
+msgstr ""
+
+#: internal/appui/tailscale.go:526
+msgid "SEND FILES"
+msgstr ""
+
+#: internal/appui/tailscale.go:542
+msgid "NO LONGER IN THE TAILNET"
+msgstr ""
+
+#: internal/appui/tailscale.go:564
+msgid "%s · host name %s"
+msgstr ""
+
+#: internal/appui/tailscale.go:570
+msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
+msgstr ""
+
+#: internal/appui/tailscale.go:573
+msgid "Stop Using as Exit Node"
+msgstr ""
+
+#: internal/appui/tailscale.go:582
+msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
+msgstr ""
+
+#: internal/appui/tailscale.go:592
+msgid "IN USE"
+msgstr ""
+
+#: internal/appui/tailscale.go:599
+#: internal/ui/shortcuts.go:140
+msgid "None"
+msgstr ""
+
+#: internal/appui/tailscale.go:599
+msgid "Traffic goes out from this device as usual."
+msgstr ""
+
+#: internal/appui/tailscale.go:607
+msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
+msgstr ""
+
+#: internal/appui/tailscale.go:614
+msgid "Allow local network access"
+msgstr ""
+
+#: internal/appui/tailscale.go:615
+msgid "Reach printers and other devices on this network while the exit node carries the rest."
+msgstr ""
+
+#: internal/appui/tailscale.go:626
+#: ui/tailscale.ui:170
+msgid "THIS DEVICE"
+msgstr ""
+
+#: internal/appui/tailscale.go:633
+msgid "Tailnet"
+msgstr ""
+
+#: internal/appui/tailscale.go:635
+msgid "SETTINGS"
+msgstr ""
+
+#: internal/appui/tailscale.go:644
+msgid "RECEIVED FILES"
+msgstr ""
+
+#: internal/appui/tailscale.go:647
+msgid "Files sent to this device show here once this app may manage Tailscale."
+msgstr ""
+
+#: internal/appui/tailscale.go:651
+msgid "None waiting. Files other devices send with Taildrop show here."
+msgstr ""
+
+#: internal/appui/tailscale.go:656
+msgid "Save to Downloads"
+msgstr ""
+
+#: internal/appui/tailscale.go:659
+msgid "ACCOUNT"
+msgstr ""
+
+#: internal/appui/tailscale.go:660
+#: internal/shell/commands.go:31
+msgid "Log Out"
+msgstr ""
+
+#: internal/appui/tailscale.go:662
+msgid "Sure?"
+msgstr ""
+
+#: internal/appui/tailscale.go:747
+msgid "No exit node: traffic goes out from this device."
+msgstr ""
+
+#: internal/appui/tailscale.go:749
+#: internal/appui/tailscale.go:760
+msgid "Traffic now goes through %s."
+msgstr ""
+
+#: internal/appui/tailscale.go:758
+msgid "Stopped using %s as exit node."
+msgstr ""
+
+#: internal/appui/tailscale.go:780
+msgid "Logged out."
+msgstr ""
+
+#: internal/appui/tailscale.go:803
+msgid "Pinging %s…"
+msgstr ""
+
+#: internal/appui/tailscale.go:817
+msgid "%s did not answer"
+msgstr ""
+
+#: internal/appui/tailscale.go:820
+msgid "%s answered in %.0f ms"
+msgstr ""
+
+#: internal/appui/tailscale.go:821
+msgid "Direct, %s"
+msgstr ""
+
+#: internal/appui/tailscale.go:823
+msgid "Relayed through %s"
+msgstr ""
+
+#: internal/appui/tailscale.go:839
+msgid "Sending %s to %s…"
+msgstr ""
+
+#: internal/appui/tailscale.go:864
+msgid "Sent %s to %s."
+msgstr ""
+
+#: internal/appui/tailscale.go:901
+msgid "Saved %s to %s."
+msgstr ""
+
+#: internal/appui/tailscale.go:912
+msgid "Opening the login page…"
+msgstr ""
+
+#: internal/appui/tailscale.go:939
+msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
+msgstr ""
+
+#: internal/appui/tailscale.go:941
+msgid "not done: no administrator's password was given"
+msgstr ""
+
+#: internal/appui/viewer.go:199
+msgid "%s is not an image the viewer knows."
+msgstr ""
+
+#: internal/appui/viewer.go:393
+msgid "Could not copy"
+msgstr ""
+
+#: internal/appui/viewer.go:414
+msgid "Could not move to Trash"
+msgstr ""
+
+#: internal/appui/viewer.go:421
+msgid "Moved to Trash"
+msgstr ""
+
+#: internal/appui/viewer.go:424
+msgid "No images left here."
+msgstr ""
+
+#: internal/appui/viewer.go:456
+msgid "Open an Image"
+msgstr ""
+
+#: internal/appui/viewer.go:482
+msgid "Open an image to view it."
+msgstr ""
+
+#: internal/appui/viewer.go:544
+msgid "Could not open %s.\n%v"
+msgstr ""
+
+#: internal/appui/viewer.go:711
+msgid "Fit · %s"
+msgstr ""
+
+#: internal/appui/viewer.go:715
+msgid "Actual size (1)"
+msgstr ""
+
+#: internal/appui/viewer.go:717
+msgid "Fit the window (0)"
+msgstr ""
+
+#: internal/appui/viewer.go:812
+msgid "FILE"
+msgstr ""
+
+#: internal/appui/viewer.go:819
+msgid "Size"
+msgstr ""
+
+#: internal/appui/viewer.go:828
+msgid "Dimensions"
+msgstr ""
+
+#: internal/appui/viewer.go:829
+msgid "Type"
+msgstr ""
+
+#: internal/appui/viewer.go:831
+msgid "Modified"
+msgstr ""
+
+#: internal/appui/viewer.go:831
+#: internal/appui/viewer.go:839
+msgid "Jan 2, 2006  15:04"
+msgstr ""
+
+#: internal/appui/viewer.go:834
+msgid "CAMERA"
+msgstr ""
+
+#: internal/appui/viewer.go:835
+msgid "Camera"
+msgstr ""
+
+#: internal/appui/viewer.go:836
+msgid "Lens"
+msgstr ""
+
+#: internal/appui/viewer.go:837
+msgid "Exposure"
+msgstr ""
+
+#: internal/appui/viewer.go:839
+msgid "Taken"
+msgstr ""
+
+#: internal/appui/viewer.go:856
+msgid "Could not set the wallpaper"
+msgstr ""
+
+#: internal/appui/viewer.go:860
+#: ui/viewer.ui:129
+msgid "Set as wallpaper"
+msgstr ""
+
+#: internal/appui/weather.go:255
+msgid "Add a city to see its weather."
+msgstr ""
+
+#: internal/appui/weather.go:255
+#: ui/clock.ui:122
+#: ui/weather.ui:95
+msgid "Add a city"
+msgstr ""
+
+#: internal/appui/weather.go:261
+msgid "Reading the weather…"
+msgstr ""
+
+#: internal/appui/weather.go:273
+msgid "The weather could not be read.\n%s"
+msgstr ""
+
+#: internal/appui/weather.go:273
+msgid "Try again"
+msgstr ""
+
+#: internal/appui/weather.go:322
+msgid "H %s   L %s"
+msgstr ""
+
+#: internal/appui/weather.go:331
+msgid "NOW"
+msgstr ""
+
+#: internal/appui/weather.go:394
+msgid "FEELS LIKE"
+msgstr ""
+
+#: internal/appui/weather.go:395
+msgid "HUMIDITY"
+msgstr ""
+
+#: internal/appui/weather.go:396
+msgid "WIND"
+msgstr ""
+
+#: internal/appui/weather.go:397
+msgid "RAIN"
+msgstr ""
+
+#: internal/appui/weather.go:402
+msgid "SUNRISE"
+msgstr ""
+
+#: internal/appui/weather.go:403
+msgid "SUNSET"
+msgstr ""
+
+#: internal/appui/weather.go:425
+msgid "UPDATED %s · OPEN-METEO"
+msgstr ""
+
+#: internal/appui/weather.go:470
+msgid "No place by that name"
+msgstr ""
+
+#: internal/assistant/assistant.go:426
+msgid "Remote Console: %s"
+msgstr ""
+
+#: internal/assistant/tools.go:173
+#: internal/assistant/tools.go:199
+msgid "the focused window"
+msgstr ""
+
+#: internal/assistant/tools.go:179
+msgid "Looking at the windows"
+msgstr ""
+
+#: internal/assistant/tools.go:186
+msgid "Focusing %s"
+msgstr ""
+
+#: internal/assistant/tools.go:199
+msgid "Moving %s to workspace %s"
+msgstr ""
+
+#: internal/assistant/tools.go:215
+msgid "Closing %s"
+msgstr ""
+
+#: internal/assistant/tools.go:227
+msgid "Going to workspace %s"
+msgstr ""
+
+#: internal/assistant/tools.go:276
+msgid "Looking at the apps"
+msgstr ""
+
+#: internal/assistant/tools.go:292
+msgid "Opening %s"
+msgstr ""
+
+#: internal/assistant/tools.go:324
+msgid "Looking at the system"
+msgstr ""
+
+#: internal/assistant/tools.go:338
+msgid "Setting the volume to %s%%"
+msgstr ""
+
+#: internal/assistant/tools.go:340
+msgid "Setting the brightness to %s%%"
+msgstr ""
+
+#: internal/assistant/tools.go:343
+msgid "Turning Wi-Fi on"
+msgstr ""
+
+#: internal/assistant/tools.go:343
+msgid "Turning Wi-Fi off"
+msgstr ""
+
+#: internal/assistant/tools.go:344
+msgid "Turning Bluetooth on"
+msgstr ""
+
+#: internal/assistant/tools.go:344
+msgid "Turning Bluetooth off"
+msgstr ""
+
+#: internal/assistant/tools.go:345
+msgid "Muting the sound"
+msgstr ""
+
+#: internal/assistant/tools.go:345
+msgid "Unmuting the sound"
+msgstr ""
+
+#: internal/assistant/tools.go:346
+msgid "Turning Focus on"
+msgstr ""
+
+#: internal/assistant/tools.go:346
+msgid "Turning Focus off"
+msgstr ""
+
+#: internal/assistant/tools.go:347
+msgid "Turning power saver on"
+msgstr ""
+
+#: internal/assistant/tools.go:347
+msgid "Turning power saver off"
+msgstr ""
+
+#: internal/assistant/tools.go:349
+msgid "Setting %s to %s"
+msgstr ""
+
+#: internal/assistant/tools.go:361
+msgid "Locking the screen"
+msgstr ""
+
+#: internal/assistant/tools.go:370
+msgid "Taking a screenshot of the focused window"
+msgstr ""
+
+#: internal/assistant/tools.go:372
+msgid "Taking a screenshot of the screen"
+msgstr ""
+
+#: internal/assistant/tools.go:374
+msgid "Taking a screenshot of an area"
+msgstr ""
+
+#: internal/assistant/tools.go:389
+msgid "Suspending"
+msgstr ""
+
+#: internal/assistant/tools.go:389
+msgid "Restarting the computer"
+msgstr ""
+
+#: internal/assistant/tools.go:389
+msgid "Shutting down"
+msgstr ""
+
+#: internal/assistant/tools.go:389
+msgid "Logging out"
+msgstr ""
+
+#: internal/assistant/tools.go:401
+msgid "Reading the notifications"
+msgstr ""
+
+#: internal/assistant/tools.go:406
+msgid "Clearing the notifications"
+msgstr ""
+
+#: internal/assistant/tools.go:411
+msgid "Reading the clipboard"
+msgstr ""
+
+#: internal/assistant/tools.go:426
+msgid "Copying “%s…”"
+msgstr ""
+
+#: internal/assistant/tools.go:428
+msgid "Copying “%s”"
+msgstr ""
+
+#: internal/assistant/tools.go:450
+msgid "Looking at the processes"
+msgstr ""
+
+#: internal/assistant/tools.go:499
+msgid "Killing %s(%d)"
+msgstr ""
+
+#: internal/assistant/tools.go:501
+msgid "Asking %s(%d) to quit"
+msgstr ""
+
+#: internal/assistant/tools.go:522
+msgid "Looking at Tailscale"
+msgstr ""
+
+#: internal/assistant/tools.go:552
+msgid "Stopping the Tailscale exit node"
+msgstr ""
+
+#: internal/assistant/tools.go:554
+msgid "Using %s as Tailscale exit node"
+msgstr ""
+
+#: internal/assistant/tools.go:557
+msgid "Connecting Tailscale"
+msgstr ""
+
+#: internal/assistant/tools.go:559
+msgid "Disconnecting Tailscale"
+msgstr ""
+
+#: internal/assistant/tools.go:592
+msgid "Looking up the weather in %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:43
+#: ui/assistant.ui:35
+#: ui/settings.ui:1542
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
+msgid "Assistant"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:50
+msgid "What is using the most CPU right now?"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:51
+msgid "Turn on Focus and set the volume to 30%"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:52
+msgid "What did I miss? Sum up my notifications"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:53
+msgid "Which devices on my tailnet are online?"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:54
+msgid "What is the weather this afternoon in Kyoto?"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:140
+msgid "%s answers from here"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:283
+msgid "The assistant is turned off. Turn it on in Settings → AI."
+msgstr ""
+
+#: internal/assistantui/assistantui.go:295
+msgid "Cannot read the saved keys: %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:304
+msgid "Cannot read the key of %s: %v"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:310
+#: internal/ui/settings_ai.go:579
+msgid "Cannot read the Console token: %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:317
+msgid "No API key for %s (%s): type one in Settings → AI."
+msgstr ""
+
+#: internal/assistantui/assistantui.go:358
+msgid "Could not start the Console endpoint: %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:498
+msgid "✕ Not done: %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:509
+#: ui/assistant.ui:136
+msgid "Ask"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:513
+msgid "Stopped."
+msgstr ""
+
+#: internal/assistantui/assistantui.go:516
+msgid "Something went wrong: %s"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:519
+msgid "(no answer)"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:549
+msgid "Don't"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:549
+msgid "Allow"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:570
+msgid "Not allowed"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:572
+msgid "Canceled"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:574
+msgid "Allowed"
+msgstr ""
+
+#: internal/assistantui/assistantui.go:663
+msgid "TRY"
+msgstr ""
+
+#: internal/config/strftime.go:52
+#: internal/i18n/time.go:10
+msgid "Monday"
+msgstr ""
+
+#: internal/config/strftime.go:54
+#: internal/i18n/time.go:9
+msgid "Jan"
+msgstr ""
+
+#: internal/config/strftime.go:56
+#: internal/i18n/time.go:8
+msgid "January"
+msgstr ""
+
+#: internal/config/strftime.go:82
+#: internal/i18n/time.go:24
+msgid "PM"
+msgstr ""
+
+#: internal/convert/convert.go:97
+msgid "millimetres"
+msgstr ""
+
+#: internal/convert/convert.go:98
+msgid "centimetres"
+msgstr ""
+
+#: internal/convert/convert.go:99
+msgid "metres"
+msgstr ""
+
+#: internal/convert/convert.go:100
+msgid "kilometres"
+msgstr ""
+
+#: internal/convert/convert.go:101
+msgid "inches"
+msgstr ""
+
+#: internal/convert/convert.go:102
+msgid "feet"
+msgstr ""
+
+#: internal/convert/convert.go:103
+msgid "yards"
+msgstr ""
+
+#: internal/convert/convert.go:104
+msgid "miles"
+msgstr ""
+
+#: internal/convert/convert.go:105
+msgid "nautical miles"
+msgstr ""
+
+#: internal/convert/convert.go:107
+msgid "milligrams"
+msgstr ""
+
+#: internal/convert/convert.go:108
+msgid "grams"
+msgstr ""
+
+#: internal/convert/convert.go:109
+msgid "kilograms"
+msgstr ""
+
+#: internal/convert/convert.go:110
+msgid "tonnes"
+msgstr ""
+
+#: internal/convert/convert.go:111
+msgid "ounces"
+msgstr ""
+
+#: internal/convert/convert.go:112
+msgid "pounds"
+msgstr ""
+
+#: internal/convert/convert.go:113
+msgid "stone"
+msgstr ""
+
+#: internal/convert/convert.go:115
+msgid "millilitres"
+msgstr ""
+
+#: internal/convert/convert.go:116
+msgid "litres"
+msgstr ""
+
+#: internal/convert/convert.go:117
+msgid "cubic metres"
+msgstr ""
+
+#: internal/convert/convert.go:118
+msgid "US gallons"
+msgstr ""
+
+#: internal/convert/convert.go:119
+msgid "US quarts"
+msgstr ""
+
+#: internal/convert/convert.go:120
+msgid "US pints"
+msgstr ""
+
+#: internal/convert/convert.go:121
+msgid "US cups"
+msgstr ""
+
+#: internal/convert/convert.go:122
+msgid "US fluid ounces"
+msgstr ""
+
+#: internal/convert/convert.go:123
+msgid "tablespoons"
+msgstr ""
+
+#: internal/convert/convert.go:124
+msgid "teaspoons"
+msgstr ""
+
+#: internal/convert/convert.go:126
+msgid "square metres"
+msgstr ""
+
+#: internal/convert/convert.go:127
+msgid "square kilometres"
+msgstr ""
+
+#: internal/convert/convert.go:128
+msgid "hectares"
+msgstr ""
+
+#: internal/convert/convert.go:129
+msgid "acres"
+msgstr ""
+
+#: internal/convert/convert.go:130
+msgid "square feet"
+msgstr ""
+
+#: internal/convert/convert.go:131
+msgid "square miles"
+msgstr ""
+
+#: internal/convert/convert.go:133
+msgid "metres per second"
+msgstr ""
+
+#: internal/convert/convert.go:134
+msgid "kilometres per hour"
+msgstr ""
+
+#: internal/convert/convert.go:135
+msgid "miles per hour"
+msgstr ""
+
+#: internal/convert/convert.go:136
+msgid "knots"
+msgstr ""
+
+#: internal/convert/convert.go:137
+msgid "feet per second"
+msgstr ""
+
+#: internal/convert/convert.go:139
+msgid "bytes"
+msgstr ""
+
+#: internal/convert/convert.go:140
+msgid "kilobytes"
+msgstr ""
+
+#: internal/convert/convert.go:141
+msgid "megabytes"
+msgstr ""
+
+#: internal/convert/convert.go:142
+msgid "gigabytes"
+msgstr ""
+
+#: internal/convert/convert.go:143
+msgid "terabytes"
+msgstr ""
+
+#: internal/convert/convert.go:144
+msgid "kibibytes"
+msgstr ""
+
+#: internal/convert/convert.go:145
+msgid "mebibytes"
+msgstr ""
+
+#: internal/convert/convert.go:146
+msgid "gibibytes"
+msgstr ""
+
+#: internal/convert/convert.go:147
+msgid "tebibytes"
+msgstr ""
+
+#: internal/convert/convert.go:148
+msgid "bits"
+msgstr ""
+
+#: internal/convert/convert.go:149
+msgid "kilobits"
+msgstr ""
+
+#: internal/convert/convert.go:150
+msgid "megabits"
+msgstr ""
+
+#: internal/convert/convert.go:151
+msgid "gigabits"
+msgstr ""
+
+#: internal/convert/convert.go:153
+msgid "milliseconds"
+msgstr ""
+
+#: internal/convert/convert.go:154
+msgid "seconds"
+msgstr ""
+
+#: internal/convert/convert.go:155
+msgid "minutes"
+msgstr ""
+
+#: internal/convert/convert.go:156
+msgid "hours"
+msgstr ""
+
+#: internal/convert/convert.go:157
+msgid "days"
+msgstr ""
+
+#: internal/convert/convert.go:158
+msgid "weeks"
+msgstr ""
+
+#: internal/convert/convert.go:159
+msgid "years"
+msgstr ""
+
+#: internal/convert/convert.go:166
+msgid "degrees Celsius"
+msgstr ""
+
+#: internal/convert/convert.go:167
+msgid "degrees Fahrenheit"
+msgstr ""
+
+#: internal/convert/convert.go:168
+msgid "kelvin"
+msgstr ""
+
+#: internal/convert/convert.go:277
+msgid "%s %s in %s"
+msgstr ""
+
+#: internal/convert/convert.go:309
+msgid "rates of %s"
+msgstr ""
+
+#: internal/convert/convert.go:311
+msgid "prices from Coinbase · %s"
+msgstr ""
+
+#: internal/convert/convert.go:315
+msgid "%s %s in %s · %s"
+msgstr ""
+
+#: internal/games/fortune.go:51
+msgid "Willow Lane"
+msgstr ""
+
+#: internal/games/fortune.go:52
+#: internal/games/fortune.go:57
+#: internal/games/fortune.go:67
+#: internal/games/fortune.go:72
+#: internal/games/fortune.go:83
+#: internal/games/fortune.go:86
+#: internal/games/fortune.go:93
+#: internal/games/fortune.go:96
+#: internal/games/fortune.go:102
+#: internal/games/fortune.go:105
+#: internal/gamesui/fortune_board.go:884
+msgid "Chance"
+msgstr ""
+
+#: internal/games/fortune.go:53
+msgid "Birch Row"
+msgstr ""
+
+#: internal/games/fortune.go:54
+msgid "Income Tax"
+msgstr ""
+
+#: internal/games/fortune.go:55
+msgid "North Pier"
+msgstr ""
+
+#: internal/games/fortune.go:56
+msgid "Mill Street"
+msgstr ""
+
+#: internal/games/fortune.go:58
+msgid "Ferry Road"
+msgstr ""
+
+#: internal/games/fortune.go:59
+msgid "Weaver's Yard"
+msgstr ""
+
+#: internal/games/fortune.go:60
+msgid "Jail"
+msgstr ""
+
+#: internal/games/fortune.go:61
+msgid "Lantern Alley"
+msgstr ""
+
+#: internal/games/fortune.go:62
+msgid "Power Station"
+msgstr ""
+
+#: internal/games/fortune.go:63
+msgid "Paper Market"
+msgstr ""
+
+#: internal/games/fortune.go:64
+msgid "Ink Court"
+msgstr ""
+
+#: internal/games/fortune.go:65
+msgid "East Pier"
+msgstr ""
+
+#: internal/games/fortune.go:66
+msgid "Tea House Row"
+msgstr ""
+
+#: internal/games/fortune.go:68
+msgid "Bell Tower"
+msgstr ""
+
+#: internal/games/fortune.go:69
+msgid "Clock Square"
+msgstr ""
+
+#: internal/games/fortune.go:70
+msgid "Fountain"
+msgstr ""
+
+#: internal/games/fortune.go:71
+msgid "Garden Gate"
+msgstr ""
+
+#: internal/games/fortune.go:73
+msgid "Orchard Hill"
+msgstr ""
+
+#: internal/games/fortune.go:74
+msgid "Vineyard Way"
+msgstr ""
+
+#: internal/games/fortune.go:75
+msgid "South Pier"
+msgstr ""
+
+#: internal/games/fortune.go:76
+msgid "Harbor Front"
+msgstr ""
+
+#: internal/games/fortune.go:77
+msgid "Lighthouse"
+msgstr ""
+
+#: internal/games/fortune.go:78
+msgid "Water Works"
+msgstr ""
+
+#: internal/games/fortune.go:79
+msgid "Coral Bay"
+msgstr ""
+
+#: internal/games/fortune.go:80
+msgid "Go to Jail"
+msgstr ""
+
+#: internal/games/fortune.go:81
+msgid "Observatory"
+msgstr ""
+
+#: internal/games/fortune.go:82
+msgid "Museum Mile"
+msgstr ""
+
+#: internal/games/fortune.go:84
+msgid "Opera House"
+msgstr ""
+
+#: internal/games/fortune.go:85
+msgid "West Pier"
+msgstr ""
+
+#: internal/games/fortune.go:87
+msgid "Sky Terrace"
+msgstr ""
+
+#: internal/games/fortune.go:88
+msgid "Luxury Tax"
+msgstr ""
+
+#: internal/games/fortune.go:89
+msgid "Summit Plaza"
+msgstr ""
+
+#: internal/games/fortune.go:91
+msgid "Rope Walk"
+msgstr ""
+
+#: internal/games/fortune.go:92
+msgid "Cooper Lane"
+msgstr ""
+
+#: internal/games/fortune.go:94
+msgid "Kiln Street"
+msgstr ""
+
+#: internal/games/fortune.go:95
+msgid "Glass Row"
+msgstr ""
+
+#: internal/games/fortune.go:97
+msgid "Printers' Court"
+msgstr ""
+
+#: internal/games/fortune.go:98
+msgid "Organ Yard"
+msgstr ""
+
+#: internal/games/fortune.go:100
+msgid "Harbour Steps"
+msgstr ""
+
+#: internal/games/fortune.go:101
+msgid "Sailmakers' Row"
+msgstr ""
+
+#: internal/games/fortune.go:103
+msgid "Captain's Walk"
+msgstr ""
+
+#: internal/games/fortune.go:104
+msgid "Mint Street"
+msgstr ""
+
+#: internal/games/fortune.go:106
+msgid "Guild Hall"
+msgstr ""
+
+#: internal/games/fortune.go:107
+msgid "Crown Gardens"
+msgstr ""
+
+#: internal/games/fortune.go:256
+#: internal/gamesui/fortune.go:334
+msgid "Mika"
+msgstr ""
+
+#: internal/games/fortune.go:256
+msgid "Ren"
+msgstr ""
+
+#: internal/games/fortune.go:256
+msgid "Sol"
+msgstr ""
+
+#: internal/games/fortune.go:267
+msgid "You"
+msgstr ""
+
+#: internal/games/fortune.go:428
+msgid "a house"
+msgstr ""
+
+#: internal/games/fortune.go:430
+msgid "a hotel"
+msgstr ""
+
+#: internal/games/fortune.go:432
+msgid "%s built %s on %s ($%d)."
+msgstr ""
+
+#: internal/games/fortune.go:443
+msgid "%s sold a building on %s for $%d."
+msgstr ""
+
+#: internal/games/fortune.go:481
+msgid "%s paid $%d bail."
+msgstr ""
+
+#: internal/games/fortune.go:517
+msgid "%s bought %s for $%d."
+msgstr ""
+
+#: internal/games/fortune.go:531
+#: internal/gamesui/fortune.go:682
+msgid "a double"
+msgstr ""
+
+#: internal/games/fortune.go:533
+#: internal/gamesui/fortune.go:682
+msgid "a six"
+msgstr ""
+
+#: internal/games/fortune.go:535
+msgid "%s rolled %s and walked out of jail."
+msgstr ""
+
+#: internal/games/fortune.go:538
+msgid "%s stays in jail."
+msgstr ""
+
+#: internal/games/fortune.go:542
+msgid "%s paid $%d bail after three tries."
+msgstr ""
+
+#: internal/games/fortune.go:550
+msgid "Three doubles in a row: %s goes to jail."
+msgstr ""
+
+#: internal/games/fortune.go:611
+msgid "%s took the road through %s."
+msgstr ""
+
+#: internal/games/fortune.go:614
+msgid "%s passed Start: +$%d."
+msgstr ""
+
+#: internal/games/fortune.go:657
+msgid "%s cannot afford %s."
+msgstr ""
+
+#: internal/games/fortune.go:664
+msgid "%s paid %s $%d rent for %s."
+msgstr ""
+
+#: internal/games/fortune.go:670
+msgid "%s paid $%d %s into the fountain."
+msgstr ""
+
+#: internal/games/fortune.go:673
+msgid "%s took $%d from the fountain."
+msgstr ""
+
+#: internal/games/fortune.go:677
+msgid "The fountain is empty."
+msgstr ""
+
+#: internal/games/fortune.go:680
+msgid "%s goes to jail."
+msgstr ""
+
+#: internal/games/fortune.go:701
+msgid "A double: roll again."
+msgstr ""
+
+#: internal/games/fortune.go:715
+msgid "A street fair pays out: collect $60."
+msgstr ""
+
+#: internal/games/fortune.go:716
+msgid "Advance to Start."
+msgstr ""
+
+#: internal/games/fortune.go:717
+msgid "Your bicycle needs a new chain: pay $40."
+msgstr ""
+
+#: internal/games/fortune.go:718
+msgid "Go back three squares."
+msgstr ""
+
+#: internal/games/fortune.go:719
+msgid "It is your birthday: every player gives you $25."
+msgstr ""
+
+#: internal/games/fortune.go:720
+msgid "Roof repairs: pay $25 for each building."
+msgstr ""
+
+#: internal/games/fortune.go:721
+msgid "A refund from the tax office: collect $80."
+msgstr ""
+
+#: internal/games/fortune.go:722
+msgid "Catch a ride to the next station or pier."
+msgstr ""
+
+#: internal/games/fortune.go:723
+msgid "A night out: go to %s."
+msgstr ""
+
+#: internal/games/fortune.go:724
+msgid "Your shares paid a dividend: collect $100."
+msgstr ""
+
+#: internal/games/fortune.go:725
+msgid "Hotel inspection: pay $40 for each building."
+msgstr ""
+
+#: internal/games/fortune.go:726
+msgid "A parking fine: pay $30."
+msgstr ""
+
+#: internal/games/fortune.go:727
+msgid "You won a crossword: collect $50."
+msgstr ""
+
+#: internal/games/fortune.go:728
+msgid "Buy everyone lunch: pay each player $15."
+msgstr ""
+
+#: internal/games/fortune.go:729
+msgid "Caught jaywalking: go to jail."
+msgstr ""
+
+#: internal/games/fortune.go:751
+msgid "Chance for %s: %s"
+msgstr ""
+
+#: internal/games/fortune.go:849
+msgid "%s sold a house on %s for $%d."
+msgstr ""
+
+#: internal/games/fortune.go:853
+msgid "%s sold %s to the bank for $%d."
+msgstr ""
+
+#: internal/games/fortune.go:866
+msgid "%s is bankrupt and out of the game."
+msgstr ""
+
+#: internal/games/fortune.go:915
+msgid "%s won with $%d in worth."
+msgstr ""
+
+#: internal/games/fortune_cities.go:19
+msgid "Tokyo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:20
+msgid "Sugamo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:20
+msgid "Kitasenju"
+msgstr ""
+
+#: internal/games/fortune_cities.go:21
+msgid "Ueno Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:22
+msgid "Asakusa"
+msgstr ""
+
+#: internal/games/fortune_cities.go:22
+msgid "Yanaka"
+msgstr ""
+
+#: internal/games/fortune_cities.go:22
+msgid "Nippori"
+msgstr ""
+
+#: internal/games/fortune_cities.go:23
+msgid "Kanda"
+msgstr ""
+
+#: internal/games/fortune_cities.go:23
+msgid "Tokyo Power"
+msgstr ""
+
+#: internal/games/fortune_cities.go:23
+msgid "Jimbocho"
+msgstr ""
+
+#: internal/games/fortune_cities.go:23
+msgid "Akihabara"
+msgstr ""
+
+#: internal/games/fortune_cities.go:24
+msgid "Tokyo Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:25
+msgid "Harajuku"
+msgstr ""
+
+#: internal/games/fortune_cities.go:25
+msgid "Omotesando"
+msgstr ""
+
+#: internal/games/fortune_cities.go:25
+msgid "Shibuya"
+msgstr ""
+
+#: internal/games/fortune_cities.go:26
+msgid "Nakameguro"
+msgstr ""
+
+#: internal/games/fortune_cities.go:26
+msgid "Daikanyama"
+msgstr ""
+
+#: internal/games/fortune_cities.go:26
+msgid "Ebisu"
+msgstr ""
+
+#: internal/games/fortune_cities.go:27
+msgid "Shinagawa Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:28
+msgid "Kagurazaka"
+msgstr ""
+
+#: internal/games/fortune_cities.go:28
+msgid "Yotsuya"
+msgstr ""
+
+#: internal/games/fortune_cities.go:28
+msgid "Tokyo Waterworks"
+msgstr ""
+
+#: internal/games/fortune_cities.go:28
+msgid "Shinjuku"
+msgstr ""
+
+#: internal/games/fortune_cities.go:29
+msgid "Toranomon"
+msgstr ""
+
+#: internal/games/fortune_cities.go:29
+msgid "Akasaka"
+msgstr ""
+
+#: internal/games/fortune_cities.go:29
+msgid "Roppongi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:30
+msgid "Shimbashi Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:31
+msgid "Marunouchi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:31
+msgid "Ginza"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Okachimachi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Yushima"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Hongo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Ochanomizu"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Suidobashi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:32
+msgid "Iidabashi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Azabu-Juban"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Hiroo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Shirokane"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Takanawa"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Mita"
+msgstr ""
+
+#: internal/games/fortune_cities.go:33
+msgid "Hamamatsucho"
+msgstr ""
+
+#: internal/games/fortune_cities.go:35
+#: internal/games/fortune_cities.go:35
+msgid "New York"
+msgstr ""
+
+#: internal/games/fortune_cities.go:36
+msgid "Harlem"
+msgstr ""
+
+#: internal/games/fortune_cities.go:36
+msgid "Washington Heights"
+msgstr ""
+
+#: internal/games/fortune_cities.go:37
+msgid "Penn Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:38
+msgid "Chinatown"
+msgstr ""
+
+#: internal/games/fortune_cities.go:38
+msgid "Little Italy"
+msgstr ""
+
+#: internal/games/fortune_cities.go:38
+msgid "Lower East Side"
+msgstr ""
+
+#: internal/games/fortune_cities.go:39
+msgid "Williamsburg"
+msgstr ""
+
+#: internal/games/fortune_cities.go:39
+msgid "Con Edison"
+msgstr ""
+
+#: internal/games/fortune_cities.go:39
+msgid "DUMBO"
+msgstr ""
+
+#: internal/games/fortune_cities.go:39
+msgid "Brooklyn Heights"
+msgstr ""
+
+#: internal/games/fortune_cities.go:40
+msgid "Grand Central"
+msgstr ""
+
+#: internal/games/fortune_cities.go:41
+msgid "Greenwich Village"
+msgstr ""
+
+#: internal/games/fortune_cities.go:41
+msgid "SoHo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:41
+msgid "Tribeca"
+msgstr ""
+
+#: internal/games/fortune_cities.go:42
+msgid "Chelsea"
+msgstr ""
+
+#: internal/games/fortune_cities.go:42
+msgid "Gramercy"
+msgstr ""
+
+#: internal/games/fortune_cities.go:42
+msgid "Flatiron"
+msgstr ""
+
+#: internal/games/fortune_cities.go:43
+msgid "Staten Island Ferry"
+msgstr ""
+
+#: internal/games/fortune_cities.go:44
+msgid "Broadway"
+msgstr ""
+
+#: internal/games/fortune_cities.go:44
+msgid "Times Square"
+msgstr ""
+
+#: internal/games/fortune_cities.go:44
+msgid "City Water Tunnel"
+msgstr ""
+
+#: internal/games/fortune_cities.go:44
+msgid "Rockefeller Center"
+msgstr ""
+
+#: internal/games/fortune_cities.go:45
+msgid "Upper West Side"
+msgstr ""
+
+#: internal/games/fortune_cities.go:45
+msgid "Upper East Side"
+msgstr ""
+
+#: internal/games/fortune_cities.go:45
+msgid "Central Park South"
+msgstr ""
+
+#: internal/games/fortune_cities.go:46
+msgid "Hudson Pier"
+msgstr ""
+
+#: internal/games/fortune_cities.go:47
+msgid "Wall Street"
+msgstr ""
+
+#: internal/games/fortune_cities.go:47
+msgid "Fifth Avenue"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "Hell's Kitchen"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "Garment District"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "Koreatown"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "NoMad"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "Murray Hill"
+msgstr ""
+
+#: internal/games/fortune_cities.go:48
+msgid "Kips Bay"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "Battery Park City"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "Financial District"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "Seaport"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "Two Bridges"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "Bowery"
+msgstr ""
+
+#: internal/games/fortune_cities.go:49
+msgid "NoLIta"
+msgstr ""
+
+#: internal/games/fortune_cities.go:51
+msgid "Shanghai"
+msgstr ""
+
+#: internal/games/fortune_cities.go:52
+msgid "Zhabei"
+msgstr ""
+
+#: internal/games/fortune_cities.go:52
+msgid "Hongkou"
+msgstr ""
+
+#: internal/games/fortune_cities.go:53
+msgid "Railway Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:54
+msgid "Old City"
+msgstr ""
+
+#: internal/games/fortune_cities.go:54
+msgid "Yuyuan Garden"
+msgstr ""
+
+#: internal/games/fortune_cities.go:54
+msgid "City God Temple"
+msgstr ""
+
+#: internal/games/fortune_cities.go:55
+msgid "Changle Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:55
+msgid "Nanshi Power"
+msgstr ""
+
+#: internal/games/fortune_cities.go:55
+msgid "Wukang Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:55
+msgid "Jing'an Temple"
+msgstr ""
+
+#: internal/games/fortune_cities.go:56
+msgid "Hongqiao Station"
+msgstr ""
+
+#: internal/games/fortune_cities.go:57
+msgid "Tianzifang"
+msgstr ""
+
+#: internal/games/fortune_cities.go:57
+msgid "Huaihai Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:57
+msgid "Xintiandi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:58
+msgid "Fuxing Park"
+msgstr ""
+
+#: internal/games/fortune_cities.go:58
+msgid "Sinan Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:58
+msgid "Hengshan Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:59
+msgid "Shiliupu Ferry"
+msgstr ""
+
+#: internal/games/fortune_cities.go:60
+msgid "Jiangning Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:60
+msgid "People's Square"
+msgstr ""
+
+#: internal/games/fortune_cities.go:60
+msgid "Yangshupu Waterworks"
+msgstr ""
+
+#: internal/games/fortune_cities.go:60
+msgid "Nanjing Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:61
+msgid "Jinqiao"
+msgstr ""
+
+#: internal/games/fortune_cities.go:61
+msgid "Century Avenue"
+msgstr ""
+
+#: internal/games/fortune_cities.go:61
+msgid "Lujiazui"
+msgstr ""
+
+#: internal/games/fortune_cities.go:62
+msgid "Bund Ferry"
+msgstr ""
+
+#: internal/games/fortune_cities.go:63
+msgid "Peace Hotel"
+msgstr ""
+
+#: internal/games/fortune_cities.go:63
+msgid "The Bund"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Suzhou Creek"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Moganshan Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Changshou Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Caoyang"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Zhongshan Park"
+msgstr ""
+
+#: internal/games/fortune_cities.go:64
+msgid "Gubei"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Dongjiadu"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Laoximen"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Dajing Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Fangbang Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Henan Road"
+msgstr ""
+
+#: internal/games/fortune_cities.go:65
+msgid "Yu Garden"
+msgstr ""
+
+#: internal/games/fortune_cities.go:67
+msgid "Rome"
+msgstr ""
+
+#: internal/games/fortune_cities.go:67
+msgid "Roma"
+msgstr ""
+
+#: internal/games/fortune_cities.go:68
+msgid "Ostiense"
+msgstr ""
+
+#: internal/games/fortune_cities.go:68
+msgid "Testaccio"
+msgstr ""
+
+#: internal/games/fortune_cities.go:69
+msgid "Roma Termini"
+msgstr ""
+
+#: internal/games/fortune_cities.go:70
+msgid "San Lorenzo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:70
+msgid "Monti"
+msgstr ""
+
+#: internal/games/fortune_cities.go:70
+msgid "Trastevere"
+msgstr ""
+
+#: internal/games/fortune_cities.go:71
+msgid "Borgo Pio"
+msgstr ""
+
+#: internal/games/fortune_cities.go:71
+msgid "Centrale Elettrica"
+msgstr ""
+
+#: internal/games/fortune_cities.go:71
+msgid "Prati"
+msgstr ""
+
+#: internal/games/fortune_cities.go:71
+msgid "Via Cola di Rienzo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:72
+msgid "Stazione Tiburtina"
+msgstr ""
+
+#: internal/games/fortune_cities.go:73
+msgid "Campo de' Fiori"
+msgstr ""
+
+#: internal/games/fortune_cities.go:73
+msgid "Pantheon"
+msgstr ""
+
+#: internal/games/fortune_cities.go:73
+msgid "Piazza Navona"
+msgstr ""
+
+#: internal/games/fortune_cities.go:74
+msgid "Via del Corso"
+msgstr ""
+
+#: internal/games/fortune_cities.go:74
+msgid "Fontana di Trevi"
+msgstr ""
+
+#: internal/games/fortune_cities.go:74
+msgid "Piazza di Spagna"
+msgstr ""
+
+#: internal/games/fortune_cities.go:75
+msgid "Porto di Ostia"
+msgstr ""
+
+#: internal/games/fortune_cities.go:76
+msgid "Aventino"
+msgstr ""
+
+#: internal/games/fortune_cities.go:76
+msgid "Palatino"
+msgstr ""
+
+#: internal/games/fortune_cities.go:76
+msgid "Acquedotto"
+msgstr ""
+
+#: internal/games/fortune_cities.go:76
+msgid "Circo Massimo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:77
+msgid "Parioli"
+msgstr ""
+
+#: internal/games/fortune_cities.go:77
+msgid "Via Veneto"
+msgstr ""
+
+#: internal/games/fortune_cities.go:77
+msgid "Villa Borghese"
+msgstr ""
+
+#: internal/games/fortune_cities.go:78
+msgid "Stazione Trastevere"
+msgstr ""
+
+#: internal/games/fortune_cities.go:79
+msgid "Via Condotti"
+msgstr ""
+
+#: internal/games/fortune_cities.go:79
+msgid "Colosseo"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Esquilino"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Piazza Vittorio"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Pigneto"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Porta Maggiore"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Nomentano"
+msgstr ""
+
+#: internal/games/fortune_cities.go:80
+msgid "Salario"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Garbatella"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Piramide"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Roseto"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Bocca della Verità"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Ghetto"
+msgstr ""
+
+#: internal/games/fortune_cities.go:81
+msgid "Isola Tiberina"
+msgstr ""
+
+#: internal/games/pinball_rules.go:63
+msgid "Cadet"
+msgstr ""
+
+#: internal/games/pinball_rules.go:63
+msgid "Ensign"
+msgstr ""
+
+#: internal/games/pinball_rules.go:63
+msgid "Lieutenant"
+msgstr ""
+
+#: internal/games/pinball_rules.go:63
+msgid "Captain"
+msgstr ""
+
+#: internal/games/pinball_rules.go:63
+msgid "Lt. Commander"
+msgstr ""
+
+#: internal/games/pinball_rules.go:64
+msgid "Commander"
+msgstr ""
+
+#: internal/games/pinball_rules.go:64
+msgid "Commodore"
+msgstr ""
+
+#: internal/games/pinball_rules.go:64
+msgid "Admiral"
+msgstr ""
+
+#: internal/games/pinball_rules.go:64
+msgid "Fleet Admiral"
+msgstr ""
+
+#: internal/games/pinball_rules.go:86
+msgid "Target Practice"
+msgstr ""
+
+#: internal/games/pinball_rules.go:86
+msgid "Hit the attack bumpers 8 times."
+msgstr ""
+
+#: internal/games/pinball_rules.go:87
+msgid "Launch Training"
+msgstr ""
+
+#: internal/games/pinball_rules.go:87
+msgid "Shoot the launch ramp 3 times."
+msgstr ""
+
+#: internal/games/pinball_rules.go:88
+msgid "Re-entry Training"
+msgstr ""
+
+#: internal/games/pinball_rules.go:88
+msgid "Roll through the re-entry lanes 3 times."
+msgstr ""
+
+#: internal/games/pinball_rules.go:89
+msgid "Science Run"
+msgstr ""
+
+#: internal/games/pinball_rules.go:89
+msgid "Knock down all the booster targets."
+msgstr ""
+
+#: internal/games/pinball_rules.go:90
+msgid "Stray Comet"
+msgstr ""
+
+#: internal/games/pinball_rules.go:90
+msgid "Shoot the hyperspace ramp twice."
+msgstr ""
+
+#: internal/games/pinball_rules.go:91
+msgid "Into the Black Hole"
+msgstr ""
+
+#: internal/games/pinball_rules.go:91
+msgid "Sink the black hole twice."
+msgstr ""
+
+#: internal/games/pinball_rules.go:92
+msgid "Wormhole Survey"
+msgstr ""
+
+#: internal/games/pinball_rules.go:92
+msgid "Enter the wormhole, then sink the black hole."
+msgstr ""
+
+#: internal/games/pinball_rules.go:94
+msgid "Bug Hunt"
+msgstr ""
+
+#: internal/games/pinball_rules.go:94
+msgid "Hit 15 targets or slingshots."
+msgstr ""
+
+#: internal/games/pinball_rules.go:95
+msgid "Satellite Retrieval"
+msgstr ""
+
+#: internal/games/pinball_rules.go:95
+msgid "Two launch ramps, then the black hole."
+msgstr ""
+
+#: internal/games/pinball_rules.go:97
+msgid "Rescue"
+msgstr ""
+
+#: internal/games/pinball_rules.go:97
+msgid "Hyperspace, then the launch ramp, then the wormhole."
+msgstr ""
+
+#: internal/games/pinball_rules.go:99
+msgid "Radiation Storm"
+msgstr ""
+
+#: internal/games/pinball_rules.go:99
+msgid "Hit the bumpers 20 times, then shoot hyperspace."
+msgstr ""
+
+#: internal/games/pinball_rules.go:101
+msgid "Doomsday Machine"
+msgstr ""
+
+#: internal/games/pinball_rules.go:101
+msgid "The booster bank, both ramps, the wormhole, then the black hole."
+msgstr ""
+
+#: internal/games/pinball_rules.go:107
+msgid "Bumpers"
+msgstr ""
+
+#: internal/games/pinball_rules.go:107
+msgid "Launch ramp"
+msgstr ""
+
+#: internal/games/pinball_rules.go:107
+msgid "Re-entry lanes"
+msgstr ""
+
+#: internal/games/pinball_rules.go:108
+msgid "Booster bank"
+msgstr ""
+
+#: internal/games/pinball_rules.go:108
+msgid "Hyperspace"
+msgstr ""
+
+#: internal/games/pinball_rules.go:108
+msgid "Black hole"
+msgstr ""
+
+#: internal/games/pinball_rules.go:109
+msgid "Wormhole"
+msgstr ""
+
+#: internal/games/pinball_rules.go:109
+msgid "Targets"
+msgstr ""
+
+#: internal/games/pinball_rules.go:314
+msgid "OUT OF FUEL"
+msgstr ""
+
+#: internal/games/pinball_rules.go:316
+msgid "MISSION FAILED"
+msgstr ""
+
+#: internal/games/pinball_rules.go:331
+msgid "BUMPERS AT LEVEL %d"
+msgstr ""
+
+#: internal/games/pinball_rules.go:357
+msgid "MISSION LIT: %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:370
+msgid "BOOSTER BANK: LOCK IS LIT"
+msgstr ""
+
+#: internal/games/pinball_rules.go:372
+msgid "BOOSTER BANK"
+msgstr ""
+
+#: internal/games/pinball_rules.go:383
+msgid "SKILL SHOT"
+msgstr ""
+
+#: internal/games/pinball_rules.go:396
+msgid "FIELD MULTIPLIER ×%d"
+msgstr ""
+
+#: internal/games/pinball_rules.go:399
+msgid "RE-DEPLOY: BALL SAVE LIT"
+msgstr ""
+
+#: internal/games/pinball_rules.go:417
+msgid "HYPERSPACE 3"
+msgstr ""
+
+#: internal/games/pinball_rules.go:421
+msgid "HYPERSPACE 3: EXTRA BALL LIT"
+msgstr ""
+
+#: internal/games/pinball_rules.go:423
+msgid "HYPERSPACE JACKPOT %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:426
+msgid "HYPERSPACE %d"
+msgstr ""
+
+#: internal/games/pinball_rules.go:437
+msgid "JACKPOT %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:442
+msgid "REFUEL FIRST: ROLL THE LANES"
+msgstr ""
+
+#: internal/games/pinball_rules.go:448
+msgid "MISSION: %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:465
+#: internal/gamesui/pinball.go:462
+msgid "WORMHOLE"
+msgstr ""
+
+#: internal/games/pinball_rules.go:476
+#: internal/gamesui/pinball.go:457
+#: internal/gamesui/pinball.go:754
+msgid "EXTRA BALL"
+msgstr ""
+
+#: internal/games/pinball_rules.go:482
+msgid "BALL %d LOCKED"
+msgstr ""
+
+#: internal/games/pinball_rules.go:486
+msgid "MULTIBALL"
+msgstr ""
+
+#: internal/games/pinball_rules.go:492
+msgid "BLACK HOLE"
+msgstr ""
+
+#: internal/games/pinball_rules.go:512
+msgid "%s next"
+msgstr ""
+
+#: internal/games/pinball_rules.go:520
+msgid "MISSION COMPLETE: %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:525
+msgid "PROMOTED TO %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:545
+msgid "Shoot the launch ramp to accept"
+msgstr ""
+
+#: internal/games/pinball_rules.go:547
+msgid "Light the three mission targets"
+msgstr ""
+
+#: internal/games/pinball_rules.go:561
+#: internal/gamesui/pinball.go:785
+msgid "TILT"
+msgstr ""
+
+#: internal/games/pinball_rules.go:564
+msgid "DANGER"
+msgstr ""
+
+#: internal/games/pinball_rules.go:573
+msgid "MULTIBALL OVER"
+msgstr ""
+
+#: internal/games/pinball_rules.go:581
+msgid "BALL SAVED"
+msgstr ""
+
+#: internal/games/pinball_rules.go:590
+msgid "BONUS %s"
+msgstr ""
+
+#: internal/games/pinball_rules.go:599
+msgid "SHOOT AGAIN"
+msgstr ""
+
+#: internal/games/pinball_rules.go:604
+msgid "GAME OVER"
+msgstr ""
+
+#: internal/gamesui/catalog.go:18
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:3
+msgid "Minesweeper"
+msgstr ""
+
+#: internal/gamesui/catalog.go:19
+msgid "Open every square without a mine. A number tells how many of the eight squares around it hide mines. The first square you open is always safe. Three sizes; best times are kept."
+msgstr ""
+
+#: internal/gamesui/catalog.go:20
+msgid "click opens  ·  right-click flags  ·  click a number with its flags placed to open around it  ·  arrows, Space, F"
+msgstr ""
+
+#: internal/gamesui/catalog.go:22
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:3
+msgid "Space Pinball"
+msgstr ""
+
+#: internal/gamesui/catalog.go:23
+msgid "Fly missions to climb the ranks, from Cadet to Fleet Admiral. Hit the three yellow mission targets to light a mission, then shoot the launch ramp (right) to accept it; the display shows what to shoot and the time left. Missions burn fuel: roll through the inlanes and the re-entry lanes to refuel. The hyperspace ramp (left) climbs five levels, lighting an extra ball at the third and paying a jackpot at the fifth. The booster bank lights Lock: lock two balls in the black hole for multiball, where the launch ramp is the jackpot. The wormhole lets the ball out of the black hole. Light all three re-entry lanes to raise the field multiplier. The plunger's pull picks the lane a launch drops into: hit the blinking one for the skill shot. Nudge to save a ball, but not too often: the table tilts. Three balls; your best score is kept."
+msgstr ""
+
+#: internal/gamesui/catalog.go:24
+msgid "A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  X . ↑ nudge  ·  M sound  ·  P pause  ·  N new game"
+msgstr ""
+
+#: internal/gamesui/catalog.go:26
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:3
+msgid "Small Fortune"
+msgstr ""
+
+#: internal/gamesui/catalog.go:27
+msgid "A property game against one to three computer players on a ring of 40 squares with two branch roads (at a fork, chance picks the road), in Tokyo, New York, Shanghai or Rome: choose the city, the rounds, the starting money, your rivals and the rules (one die or two; building on a street the turn you buy it) before you start. Roll the dice and walk the board; with two, a double rolls again and three in a row go to jail. Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. Passing Start pays $200. Taxes and fines fill the fountain, and whoever lands there takes it. Who cannot pay sells buildings and property at half price, or is out. After the last round, or when one player is left, the most worth wins: cash, property and buildings. Keys: Space the main action, R roll, B buy, X pass, E end turn, J pay bail, H build on the square in focus, N a new game."
+msgstr ""
+
+#: internal/gamesui/catalog.go:28
+msgid "Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  click a square to see it"
+msgstr ""
+
+#: internal/gamesui/fortune.go:105
+msgid "ROUND"
+msgstr ""
+
+#: internal/gamesui/fortune.go:106
+msgid "FOUNTAIN"
+msgstr ""
+
+#: internal/gamesui/fortune.go:148
+msgid "PLAYERS"
+msgstr ""
+
+#: internal/gamesui/fortune.go:153
+msgid "SQUARE"
+msgstr ""
+
+#: internal/gamesui/fortune.go:175
+msgid "Build a house"
+msgstr ""
+
+#: internal/gamesui/fortune.go:176
+msgid "Sell"
+msgstr ""
+
+#: internal/gamesui/fortune.go:185
+#: internal/gamesui/fortune.go:720
+msgid "Roll the dice"
+msgstr ""
+
+#: internal/gamesui/fortune.go:195
+msgid "WHAT HAPPENED"
+msgstr ""
+
+#: internal/gamesui/fortune.go:235
+msgid "Where do you play?"
+msgstr ""
+
+#: internal/gamesui/fortune.go:259
+#: internal/gamesui/fortune.go:357
+msgid "Start in %s"
+msgstr ""
+
+#: internal/gamesui/fortune.go:297
+msgid "%s and %s"
+msgstr ""
+
+#: internal/gamesui/fortune.go:332
+msgid "Rounds"
+msgstr ""
+
+#: internal/gamesui/fortune.go:333
+msgid "Starting money"
+msgstr ""
+
+#: internal/gamesui/fortune.go:334
+msgid "Rivals"
+msgstr ""
+
+#: internal/gamesui/fortune.go:334
+msgid "Mika, Ren"
+msgstr ""
+
+#: internal/gamesui/fortune.go:334
+msgid "Mika, Ren, Sol"
+msgstr ""
+
+#: internal/gamesui/fortune.go:335
+msgid "Dice"
+msgstr ""
+
+#: internal/gamesui/fortune.go:335
+msgid "One die"
+msgstr ""
+
+#: internal/gamesui/fortune.go:335
+msgid "Two dice"
+msgstr ""
+
+#: internal/gamesui/fortune.go:336
+msgid "Build the day you buy"
+msgstr ""
+
+#: internal/gamesui/fortune.go:350
+msgid "A street you buy may go up a level that same turn"
+msgstr ""
+
+#: internal/gamesui/fortune.go:604
+msgid "worth $%s"
+msgstr ""
+
+#: internal/gamesui/fortune.go:607
+msgid "bankrupt"
+msgstr ""
+
+#: internal/gamesui/fortune.go:609
+msgid " · in jail"
+msgstr ""
+
+#: internal/gamesui/fortune.go:646
+msgid "Price $%d · each building $%d\nGroup: %s\n"
+msgstr ""
+
+#: internal/gamesui/fortune.go:647
+msgid "Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)"
+msgstr ""
+
+#: internal/gamesui/fortune.go:651
+#: internal/gamesui/fortune.go:674
+msgid "\nOwned by %s"
+msgstr ""
+
+#: internal/gamesui/fortune.go:654
+msgid ", with a hotel"
+msgstr ""
+
+#: internal/gamesui/fortune.go:656
+msgid ", %d house"
+msgid_plural ", %d houses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/gamesui/fortune.go:658
+msgid ": rent now $%d"
+msgstr ""
+
+#: internal/gamesui/fortune.go:660
+#: internal/gamesui/fortune.go:668
+#: internal/gamesui/fortune.go:676
+msgid "\nFor sale"
+msgstr ""
+
+#: internal/gamesui/fortune.go:663
+msgid "Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers."
+msgstr ""
+
+#: internal/gamesui/fortune.go:666
+msgid "\nOwned by %s: rent now $%d"
+msgstr ""
+
+#: internal/gamesui/fortune.go:671
+msgid "Price $%d. Rent is the dice times %d, or times %d with both utilities."
+msgstr ""
+
+#: internal/gamesui/fortune.go:679
+msgid "Collect $200 every time you pass."
+msgstr ""
+
+#: internal/gamesui/fortune.go:681
+msgid "Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go."
+msgstr ""
+
+#: internal/gamesui/fortune.go:684
+msgid "Taxes and fines go into the fountain; the next player to land here takes it all: $%d now."
+msgstr ""
+
+#: internal/gamesui/fortune.go:686
+msgid "Straight to jail, without passing Start."
+msgstr ""
+
+#: internal/gamesui/fortune.go:688
+msgid "Draw a card: money, a fine, or a trip."
+msgstr ""
+
+#: internal/gamesui/fortune.go:690
+msgid "Pay $%d into the fountain."
+msgstr ""
+
+#: internal/gamesui/fortune.go:700
+msgid "Hotel built"
+msgstr ""
+
+#: internal/gamesui/fortune.go:702
+msgid "Build a hotel ($%d)"
+msgstr ""
+
+#: internal/gamesui/fortune.go:704
+msgid "Build a house ($%d)"
+msgstr ""
+
+#: internal/gamesui/fortune.go:711
+#: ui/game.ui:76
+msgid "New game"
+msgstr ""
+
+#: internal/gamesui/fortune.go:714
+msgid "%s is playing…"
+msgstr ""
+
+#: internal/gamesui/fortune.go:723
+msgid "Roll for a double"
+msgstr ""
+
+#: internal/gamesui/fortune.go:723
+msgid "Roll for a six"
+msgstr ""
+
+#: internal/gamesui/fortune.go:724
+msgid "Pay $50 bail"
+msgstr ""
+
+#: internal/gamesui/fortune.go:730
+msgid "Buy it for $%d"
+msgstr ""
+
+#: internal/gamesui/fortune.go:732
+msgid "Pass"
+msgstr ""
+
+#: internal/gamesui/fortune.go:736
+msgid "End turn"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:890
+msgid "START\ncollect $200"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:890
+msgid "JAIL\njust visiting"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:890
+msgid "FOUNTAIN\ntake the pot"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:890
+msgid "GO TO\nJAIL"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1065
+msgid "%s won."
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1067
+msgid "You won!"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1087
+msgid "Press N or Space for a new game"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1091
+msgid "Your turn"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1093
+msgid "%s's turn"
+msgstr ""
+
+#: internal/gamesui/fortune_board.go:1116
+msgid "round %d of %d"
+msgstr ""
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "Closer (+)"
+msgstr ""
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "Further (−)"
+msgstr ""
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "The whole board (0)"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:40
+msgid "machiya"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:40
+msgid "ryokan"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:47
+msgid "brownstones"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:47
+msgid "towers"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:54
+msgid "shikumen"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:54
+msgid "Bund hotels"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:61
+msgid "villas"
+msgstr ""
+
+#: internal/gamesui/fortune_city.go:61
+msgid "palazzi"
+msgstr ""
+
+#: internal/gamesui/mines.go:37
+msgid "Small · 9 × 9"
+msgstr ""
+
+#: internal/gamesui/mines.go:38
+msgid "Medium · 16 × 16"
+msgstr ""
+
+#: internal/gamesui/mines.go:39
+msgid "Large · 30 × 16"
+msgstr ""
+
+#: internal/gamesui/mines.go:46
+msgid "MINES"
+msgstr ""
+
+#: internal/gamesui/mines.go:47
+msgid "TIME"
+msgstr ""
+
+#: internal/gamesui/mines.go:48
+#: internal/gamesui/pinball.go:48
+msgid "BEST"
+msgstr ""
+
+#: internal/gamesui/mines.go:188
+msgid "Cleared in %.1f seconds. N for another field."
+msgstr ""
+
+#: internal/gamesui/mines.go:190
+msgid "A mine went off. N for a new field."
+msgstr ""
+
+#: internal/gamesui/mines.go:193
+msgid "Click any square to start: the first one is always safe."
+msgstr ""
+
+#: internal/gamesui/mines.go:195
+msgid "Right-click to flag. Click a number with all its flags placed to open around it."
+msgstr ""
+
+#: internal/gamesui/pinball.go:46
+msgid "SCORE"
+msgstr ""
+
+#: internal/gamesui/pinball.go:47
+msgid "BALL"
+msgstr ""
+
+#: internal/gamesui/pinball.go:189
+msgid "Game over as %s: %s points, a new best. N plays again."
+msgstr ""
+
+#: internal/gamesui/pinball.go:191
+msgid "Game over as %s: %s points. N plays again."
+msgstr ""
+
+#: internal/gamesui/pinball.go:194
+msgid "Paused. Press P, or any control, to play on."
+msgstr ""
+
+#: internal/gamesui/pinball.go:196
+msgid "Tilt: the flippers are dead until this ball drains."
+msgstr ""
+
+#: internal/gamesui/pinball.go:200
+msgid "Ball %d: hold Space and let go. The skill shot is the %s lane: pull light for the right, harder for the left."
+msgstr ""
+
+#: internal/gamesui/pinball.go:202
+msgid "Ball %d: hold Space to pull the plunger, let go to launch."
+msgstr ""
+
+#: internal/gamesui/pinball.go:205
+msgid "Multiball: the launch ramp is the jackpot, %s."
+msgstr ""
+
+#: internal/gamesui/pinball.go:207
+msgid "%s: %s %d / %d, %.0f s left."
+msgstr ""
+
+#: internal/gamesui/pinball.go:209
+msgid "Mission lit: %s. Shoot the launch ramp to accept it."
+msgstr ""
+
+#: internal/gamesui/pinball.go:211
+msgid "Hit the three yellow mission targets to light a mission; the hyperspace ramp is on the left."
+msgstr ""
+
+#: internal/gamesui/pinball.go:242
+msgid "P or any control plays on"
+msgstr ""
+
+#: internal/gamesui/pinball.go:350
+#: internal/gamesui/pinball.go:705
+msgid "MISSION"
+msgstr ""
+
+#: internal/gamesui/pinball.go:403
+#: internal/gamesui/pinball.go:747
+msgid "HYPERSPACE"
+msgstr ""
+
+#: internal/gamesui/pinball.go:412
+msgid "LAUNCH"
+msgstr ""
+
+#: internal/gamesui/pinball.go:414
+#: internal/gamesui/pinball.go:754
+msgid "JACKPOT"
+msgstr ""
+
+#: internal/gamesui/pinball.go:429
+msgid "RE-ENTRY"
+msgstr ""
+
+#: internal/gamesui/pinball.go:455
+msgid "LOCK"
+msgstr ""
+
+#: internal/gamesui/pinball.go:527
+msgid "BOOSTER"
+msgstr ""
+
+#: internal/gamesui/pinball.go:559
+msgid "RE-DEPLOY"
+msgstr ""
+
+#: internal/gamesui/pinball.go:628
+msgid "Press N for a new game"
+msgstr ""
+
+#: internal/gamesui/pinball.go:690
+msgid "RANK"
+msgstr ""
+
+#: internal/gamesui/pinball.go:701
+msgid "%d mission flown"
+msgid_plural "%d missions flown"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/gamesui/pinball.go:706
+msgid "selected"
+msgstr ""
+
+#: internal/gamesui/pinball.go:709
+msgid "in flight"
+msgstr ""
+
+#: internal/gamesui/pinball.go:711
+msgid "lit"
+msgstr ""
+
+#: internal/gamesui/pinball.go:729
+#: internal/gamesui/pinball.go:780
+msgid "%.0f s"
+msgstr ""
+
+#: internal/gamesui/pinball.go:738
+msgid "FUEL"
+msgstr ""
+
+#: internal/gamesui/pinball.go:758
+msgid "TABLE"
+msgstr ""
+
+#: internal/gamesui/pinball.go:767
+msgid "Field multiplier"
+msgstr ""
+
+#: internal/gamesui/pinball.go:768
+msgid "Bumper level"
+msgstr ""
+
+#: internal/gamesui/pinball.go:771
+msgid "lit · %s"
+msgstr ""
+
+#: internal/gamesui/pinball.go:774
+msgid "multiball"
+msgstr ""
+
+#: internal/gamesui/pinball.go:776
+#: ui/control.ui:82
+#: ui/settings.ui:1223
+msgid "Lock"
+msgstr ""
+
+#: internal/gamesui/pinball.go:777
+msgid "Extra ball"
+msgstr ""
+
+#: internal/gamesui/pinball.go:782
+msgid "Ball save"
+msgstr ""
+
+#: internal/gamesui/pinball.go:783
+msgid "steady"
+msgstr ""
+
+#: internal/gamesui/pinball.go:787
+msgid "danger"
+msgstr ""
+
+#: internal/gamesui/pinball.go:789
+msgid "Table"
+msgstr ""
+
+#: internal/gamesui/pinball.go:790
+msgid "Bonus"
+msgstr ""
+
+#: internal/gamesui/pinball.go:793
+msgid "LOG"
+msgstr ""
+
+#: internal/gamesui/pinball.go:805
+msgid "M mutes the sound"
+msgstr ""
+
+#: internal/gamesui/pinball.go:808
+msgid "no sound (pw-cat not found)"
+msgstr ""
+
+#: internal/gamesui/pinball.go:810
+msgid "sound off: M turns it on"
+msgstr ""
+
+#: internal/gamesui/pinball.go:812
+msgid "SPACE PINBALL"
+msgstr ""
+
+#: internal/hyprconf/keys.go:22
+#: internal/shell/dock.go:280
+#: ui/settings.ui:1292
+msgid "Launcher"
+msgstr ""
+
+#: internal/hyprconf/keys.go:23
+#: internal/shell/launcher.go:56
+msgid "Switch windows"
+msgstr ""
+
+#: internal/hyprconf/keys.go:24
+msgid "Workspace overview"
+msgstr ""
+
+#: internal/hyprconf/keys.go:25
+msgid "Control center"
+msgstr ""
+
+#: internal/hyprconf/keys.go:26
+msgid "Notification center"
+msgstr ""
+
+#: internal/hyprconf/keys.go:27
+msgid "Focus on or off"
+msgstr ""
+
+#: internal/hyprconf/keys.go:28
+#: internal/shell/commands.go:33
+#: internal/shell/dock.go:279
+#: ui/control.ui:62
+#: ui/settings.ui:30
+msgid "Settings"
+msgstr ""
+
+#: internal/hyprconf/keys.go:29
+msgid "Restart the shell"
+msgstr ""
+
+#: internal/hyprconf/keys.go:30
+msgid "Lock the screen"
+msgstr ""
+
+#: internal/hyprconf/keys.go:31
+msgid "Take a screenshot"
+msgstr ""
+
+#: internal/hyprconf/keys.go:32
+msgid "The whole screen, at once"
+msgstr ""
+
+#: internal/hyprconf/keys.go:33
+msgid "The focused window, at once"
+msgstr ""
+
+#: internal/hyprconf/keys.go:34
+msgid "Record the screen (again: stop)"
+msgstr ""
+
+#: internal/hyprconf/keys.go:35
+#: ui/colorpicker.ui:59
+msgid "Pick a colour"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "February"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "March"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "April"
+msgstr ""
+
+#: internal/i18n/time.go:8
+#: internal/i18n/time.go:9
+msgid "May"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "June"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "July"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "August"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "September"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "October"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "November"
+msgstr ""
+
+#: internal/i18n/time.go:8
+msgid "December"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Feb"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Mar"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Apr"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Jun"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Jul"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Aug"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Sep"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Oct"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Nov"
+msgstr ""
+
+#: internal/i18n/time.go:9
+msgid "Dec"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Sunday"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Tuesday"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Wednesday"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Thursday"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Friday"
+msgstr ""
+
+#: internal/i18n/time.go:10
+msgid "Saturday"
+msgstr ""
+
+#: internal/i18n/time.go:22
+msgid "AM"
+msgstr ""
+
+#: internal/shell/commands.go:27
+msgid "Lock Screen"
+msgstr ""
+
+#: internal/shell/commands.go:27
+msgid "Lock now"
+msgstr ""
+
+#: internal/shell/commands.go:28
+msgid "Sleep"
+msgstr ""
+
+#: internal/shell/commands.go:28
+msgid "Suspend, locking first"
+msgstr ""
+
+#: internal/shell/commands.go:29
+#: internal/ui/control.go:478
+#: ui/control.ui:148
+msgid "Restart"
+msgstr ""
+
+#: internal/shell/commands.go:29
+msgid "Restart the computer"
+msgstr ""
+
+#: internal/shell/commands.go:29
+msgid "Press Enter again to restart"
+msgstr ""
+
+#: internal/shell/commands.go:30
+msgid "Shut Down"
+msgstr ""
+
+#: internal/shell/commands.go:30
+msgid "Turn the computer off"
+msgstr ""
+
+#: internal/shell/commands.go:30
+msgid "Press Enter again to shut down"
+msgstr ""
+
+#: internal/shell/commands.go:31
+msgid "End this session"
+msgstr ""
+
+#: internal/shell/commands.go:31
+msgid "Press Enter again to log out"
+msgstr ""
+
+#: internal/shell/commands.go:32
+msgid "Empty Trash"
+msgstr ""
+
+#: internal/shell/commands.go:32
+msgid "Delete what is in the Trash for good"
+msgstr ""
+
+#: internal/shell/commands.go:32
+msgid "Press Enter again to empty the Trash"
+msgstr ""
+
+#: internal/shell/commands.go:33
+#: internal/shell/dock.go:279
+msgid "inua's settings"
+msgstr ""
+
+#: internal/shell/commands.go:34
+msgid "Screenshot Area"
+msgstr ""
+
+#: internal/shell/commands.go:34
+msgid "Drag out an area"
+msgstr ""
+
+#: internal/shell/commands.go:35
+msgid "Screenshot Window"
+msgstr ""
+
+#: internal/shell/commands.go:35
+#: internal/ui/screenshot.go:435
+#: ui/screenshot.ui:151
+msgid "Click a window"
+msgstr ""
+
+#: internal/shell/commands.go:36
+msgid "Screenshot Screen"
+msgstr ""
+
+#: internal/shell/commands.go:36
+#: internal/ui/screenshot.go:436
+#: ui/screenshot.ui:176
+msgid "Click a screen"
+msgstr ""
+
+#: internal/shell/commands.go:37
+msgid "Record Screen"
+msgstr ""
+
+#: internal/shell/commands.go:37
+msgid "Record an area, a window or a screen"
+msgstr ""
+
+#: internal/shell/commands.go:38
+msgid "Pick a Colour"
+msgstr ""
+
+#: internal/shell/commands.go:38
+msgid "From anywhere on the screen"
+msgstr ""
+
+#: internal/shell/commands.go:39
+msgid "Clear Notifications"
+msgstr ""
+
+#: internal/shell/commands.go:39
+msgid "All of them"
+msgstr ""
+
+#: internal/shell/commands.go:40
+#: internal/ui/notify.go:822
+#: ui/center.ui:71
+#: ui/control.ui:411
+msgid "Focus"
+msgstr ""
+
+#: internal/shell/commands.go:40
+msgid "Quiet notifications, or not"
+msgstr ""
+
+#: internal/shell/commands.go:41
+msgid "Toggle Wi-Fi"
+msgstr ""
+
+#: internal/shell/commands.go:41
+msgid "Turn Wi-Fi on or off"
+msgstr ""
+
+#: internal/shell/commands.go:42
+msgid "Toggle Bluetooth"
+msgstr ""
+
+#: internal/shell/commands.go:42
+msgid "Turn Bluetooth on or off"
+msgstr ""
+
+#: internal/shell/commands.go:43
+msgid "Restart inua"
+msgstr ""
+
+#: internal/shell/commands.go:43
+msgid "Start the shell again"
+msgstr ""
+
+#: internal/shell/commands.go:44
+msgid "Close Window"
+msgstr ""
+
+#: internal/shell/commands.go:45
+msgid "Toggle Floating"
+msgstr ""
+
+#: internal/shell/commands.go:46
+msgid "Toggle Fullscreen"
+msgstr ""
+
+#: internal/shell/commands.go:47
+msgid "Center Window"
+msgstr ""
+
+#: internal/shell/commands.go:72
+msgid "Go to Workspace %s"
+msgstr ""
+
+#: internal/shell/commands.go:72
+msgid "Workspace"
+msgstr ""
+
+#: internal/shell/commands.go:74
+msgid "Move Window to Workspace %s"
+msgstr ""
+
+#: internal/shell/commands.go:131
+msgid "the web"
+msgstr ""
+
+#: internal/shell/commands.go:153
+#: internal/shell/commands.go:167
+msgid "Search %s for “%s”"
+msgstr ""
+
+#: internal/shell/commands.go:155
+msgid "Type %s and words to search"
+msgstr ""
+
+#: internal/shell/commands.go:161
+#: internal/shell/commands.go:163
+msgid "Open %s"
+msgstr ""
+
+#: internal/shell/commands.go:161
+#: internal/shell/commands.go:163
+msgid "Web address"
+msgstr ""
+
+#: internal/shell/commands.go:167
+msgid "Web search"
+msgstr ""
+
+#: internal/shell/dock.go:245
+msgid "EVERYDAY"
+msgstr ""
+
+#: internal/shell/dock.go:252
+msgid "TOOLS"
+msgstr ""
+
+#: internal/shell/dock.go:262
+msgid "PLAY"
+msgstr ""
+
+#: internal/shell/dock.go:267
+#: ui/sysmon.ui:149
+msgid "SYSTEM"
+msgstr ""
+
+#: internal/shell/dock.go:280
+msgid "Find apps, windows and answers"
+msgstr ""
+
+#: internal/shell/dock.go:281
+#: internal/ui/screenshot.go:760
+#: ui/settings.ui:1252
+msgid "Screenshot"
+msgstr ""
+
+#: internal/shell/dock.go:281
+msgid "Capture an area, a window or a screen"
+msgstr ""
+
+#: internal/shell/launcher.go:48
+msgid "[WINDOWS]"
+msgstr ""
+
+#: internal/shell/launcher.go:50
+msgid "[APPS]"
+msgstr ""
+
+#: internal/shell/launcher.go:58
+msgid "Launch apps"
+msgstr ""
+
+#: internal/shell/launcher.go:262
+msgid "That window has closed"
+msgstr ""
+
+#: internal/shell/launcher.go:289
+msgid "Ask the assistant anything"
+msgstr ""
+
+#: internal/shell/launcher.go:291
+msgid "No emoji or symbol matches"
+msgstr ""
+
+#: internal/shell/launcher.go:293
+msgid "Reading apps…"
+msgstr ""
+
+#: internal/shell/launcher.go:295
+msgid "No app matches"
+msgstr ""
+
+#: internal/shell/launcher.go:297
+msgid "Not connected to Hyprland"
+msgstr ""
+
+#: internal/shell/launcher.go:299
+msgid "No windows open"
+msgstr ""
+
+#: internal/shell/launcher.go:301
+msgid "No window matches"
+msgstr ""
+
+#: internal/shell/launcher.go:337
+msgid "Enter asks"
+msgstr ""
+
+#: internal/shell/launcher.go:349
+msgid "or start with ?"
+msgstr ""
+
+#: internal/shell/launcher.go:352
+msgid "%s · Enter copies"
+msgstr ""
+
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr ""
+
+#: internal/shell/launcher.go:416
+msgid "%s · workspace %s"
+msgstr ""
+
+#: internal/shell/notify.go:16
+msgid "now"
+msgstr ""
+
+#: internal/shell/notify.go:18
+msgid "%dm"
+msgstr ""
+
+#: internal/shell/notify.go:20
+msgid "%dh"
+msgstr ""
+
+#: internal/shell/notify.go:30
+msgid "Jan 2"
+msgstr ""
+
+#: internal/shell/notify.go:32
+#: internal/ui/settings_about.go:181
+msgid "Jan 2, 2006"
+msgstr ""
+
+#: internal/shell/notify.go:40
+msgid "Needs notifications"
+msgstr ""
+
+#: internal/shell/notify.go:42
+msgid "Banners quiet"
+msgstr ""
+
+#: internal/shell/notify.go:44
+#: internal/shell/status.go:73
+#: internal/shell/status.go:88
+#: internal/shell/status.go:107
+#: internal/shell/status.go:122
+#: ui/settings.ui:2793
+msgid "Off"
+msgstr ""
+
+#: internal/shell/status.go:47
+msgid "Offline"
+msgstr ""
+
+#: internal/shell/status.go:71
+msgid "No Wi-Fi device"
+msgstr ""
+
+#: internal/shell/status.go:79
+msgid "Not connected"
+msgstr ""
+
+#: internal/shell/status.go:92
+msgid "%d devices"
+msgstr ""
+
+#: internal/shell/status.go:94
+#: internal/shell/status.go:103
+msgid "On"
+msgstr ""
+
+#: internal/shell/status.go:105
+msgid "Performance"
+msgstr ""
+
+#: internal/shell/status.go:118
+msgid "via %s"
+msgstr ""
+
+#: internal/shell/status.go:120
+msgid "%d online"
+msgstr ""
+
+#: internal/shell/status.go:126
+msgid "Needs approval"
+msgstr ""
+
+#: internal/shell/status.go:186
+msgid "Fully charged"
+msgstr ""
+
+#: internal/shell/status.go:188
+msgid "%.0f%% · Charging"
+msgstr ""
+
+#: internal/ui/agenda.go:212
+msgid "inua calendar"
+msgstr ""
+
+#: internal/ui/agenda.go:222
+msgid "%s · WK %d"
+msgstr ""
+
+#: internal/ui/agenda.go:222
+msgid "Mon Jan 2"
+msgstr ""
+
+#: internal/ui/agenda.go:319
+msgid "Add a place in Weather to see it here"
+msgstr ""
+
+#: internal/ui/agenda.go:330
+msgid "No forecast: offline?"
+msgstr ""
+
+#: internal/ui/agenda.go:332
+msgid "Reading the forecast…"
+msgstr ""
+
+#: internal/ui/agenda.go:340
+msgid "%s · feels %s"
+msgstr ""
+
+#: internal/ui/agenda.go:343
+msgid "H %s  L %s"
+msgstr ""
+
+#: internal/ui/alarms.go:104
+msgid "Alarm · %02d:%02d"
+msgstr ""
+
+#: internal/ui/alarms.go:108
+msgid "Snooze"
+msgstr ""
+
+#: internal/ui/askpass.go:47
+msgid "password: want one JSON request"
+msgstr ""
+
+#: internal/ui/askpass.go:89
+msgid "not ok"
+msgstr ""
+
+#: internal/ui/askpass.go:128
+msgid "Passphrase Required"
+msgstr ""
+
+#: internal/ui/askpass.go:128
+msgid "Confirm"
+msgstr ""
+
+#: internal/ui/askpass.go:128
+msgid "Message"
+msgstr ""
+
+#: internal/ui/askpass.go:141
+msgid "Passphrase"
+msgstr ""
+
+#: internal/ui/askpass.go:163
+msgid "OK"
+msgstr ""
+
+#: internal/ui/askpass.go:164
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/polkit.ui:161
+msgid "Cancel"
+msgstr ""
+
+#: internal/ui/askpass.go:231
+msgid "The passphrases do not match."
+msgstr ""
+
+#: internal/ui/bar.go:239
+msgid "Workspace %s"
+msgstr ""
+
+#: internal/ui/bar.go:252
+msgid "WORKSPACE"
+msgstr ""
+
+#: internal/ui/control.go:276
+msgid "inua control center"
+msgstr ""
+
+#: internal/ui/control.go:477
+#: ui/control.ui:124
+msgid "Suspend"
+msgstr ""
+
+#: internal/ui/control.go:478
+msgid "Restart?"
+msgstr ""
+
+#: internal/ui/control.go:479
+#: ui/control.ui:172
+msgid "Shut down"
+msgstr ""
+
+#: internal/ui/control.go:479
+msgid "Shut down?"
+msgstr ""
+
+#: internal/ui/control.go:480
+#: ui/control.ui:196
+msgid "Log out"
+msgstr ""
+
+#: internal/ui/control.go:480
+msgid "Log out?"
+msgstr ""
+
+#: internal/ui/dock.go:394
+msgid "New Window"
+msgstr ""
+
+#: internal/ui/dock.go:396
+msgid "Remove from Dock"
+msgstr ""
+
+#: internal/ui/dock.go:398
+msgid "Keep in Dock"
+msgstr ""
+
+#: internal/ui/dock.go:404
+msgid "Quit (%d windows)"
+msgstr ""
+
+#: internal/ui/drawer.go:148
+#: ui/settings.ui:1391
+msgid "Apps"
+msgstr ""
+
+#: internal/ui/drawer.go:243
+msgid "The light apps are not installed (make install)."
+msgstr ""
+
+#: internal/ui/input.go:55
+msgid "Not applied to Hyprland: %s"
+msgstr ""
+
+#: internal/ui/input.go:113
+#: internal/ui/input.go:130
+msgid "Set by inua"
+msgstr ""
+
+#: internal/ui/input.go:115
+#: internal/ui/input.go:132
+msgid "Set in hyprland.conf"
+msgstr ""
+
+#: internal/ui/input.go:117
+msgid "no XKB options"
+msgstr ""
+
+#: internal/ui/input.go:125
+#: internal/ui/shortcuts.go:93
+msgid "From hyprland.conf"
+msgstr ""
+
+#: internal/ui/input.go:147
+msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
+msgstr ""
+
+#: internal/ui/input.go:151
+msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
+msgstr ""
+
+#: internal/ui/launcher.go:284
+msgid "inua launcher"
+msgstr ""
+
+#: internal/ui/lock.go:108
+msgid "the compositor does not support session locks"
+msgstr ""
+
+#: internal/ui/lock.go:133
+msgid "could not take the session lock"
+msgstr ""
+
+#: internal/ui/lock.go:222
+msgid "Wrong password. Try again in %d s"
+msgstr ""
+
+#: internal/ui/lock.go:225
+#: internal/ui/lock.go:275
+msgid "Wrong password"
+msgstr ""
+
+#: internal/ui/lock.go:248
+#: internal/ui/polkit.go:294
+#: internal/ui/settings_about.go:138
+msgid "Checking…"
+msgstr ""
+
+#: internal/ui/lock.go:279
+msgid "The password could not be checked"
+msgstr ""
+
+#: internal/ui/notify.go:291
+#: ui/bar.ui:112
+#: ui/settings.ui:2142
+msgid "Notifications"
+msgstr ""
+
+#: internal/ui/notify.go:293
+msgid "Notifications (Focus is on)"
+msgstr ""
+
+#: internal/ui/notify.go:377
+msgid "Hide"
+msgstr ""
+
+#: internal/ui/notify.go:379
+#: ui/colorpicker.ui:93
+#: ui/group.ui:52
+msgid "Clear"
+msgstr ""
+
+#: internal/ui/notify.go:421
+msgid "Notification"
+msgstr ""
+
+#: internal/ui/notify.go:611
+#: internal/ui/notify.go:800
+msgid "inua notifications"
+msgstr ""
+
+#: internal/ui/notify.go:822
+msgid "Focus is on"
+msgstr ""
+
+#: internal/ui/notify.go:865
+msgid "Show less"
+msgstr ""
+
+#: internal/ui/notify.go:867
+msgid "%d more"
+msgstr ""
+
+#: internal/ui/overview.go:172
+msgid "restore focus"
+msgstr ""
+
+#: internal/ui/overview.go:284
+msgid "kill window"
+msgstr ""
+
+#: internal/ui/overview.go:412
+msgid "MRU: ON"
+msgstr ""
+
+#: internal/ui/overview.go:412
+msgid "MRU: OFF"
+msgstr ""
+
+#: internal/ui/overview.go:413
+msgid "This monitor"
+msgstr ""
+
+#: internal/ui/overview.go:413
+msgid "All monitors"
+msgstr ""
+
+#: internal/ui/overview.go:425
+#: internal/ui/overview.go:878
+msgid "TYPE TO FILTER WINDOWS"
+msgstr ""
+
+#: internal/ui/overview.go:427
+msgid "NO MATCHING WINDOWS"
+msgstr ""
+
+#: internal/ui/overview.go:429
+msgid "%d MATCHING WINDOWS"
+msgstr ""
+
+#: internal/ui/overview.go:443
+msgid "No workspaces"
+msgstr ""
+
+#: internal/ui/overview.go:445
+msgid "No matches"
+msgstr ""
+
+#: internal/ui/overview.go:547
+msgid "＋\nNew workspace"
+msgstr ""
+
+#: internal/ui/overview.go:862
+msgid "Filter by window title or app"
+msgstr ""
+
+#: internal/ui/overview.go:891
+msgid "Type or / to filter windows   Esc · clear / close   Arrows / Tab · select   Middle click · close   Ctrl+Shift+X · kill   Drag · move"
+msgstr ""
+
+#: internal/ui/overview.go:935
+msgid "inua overview"
+msgstr ""
+
+#: internal/ui/overview_manage.go:123
+msgid "close window"
+msgstr ""
+
+#: internal/ui/overview_manage.go:163
+msgid "%s · %s · Middle click: close"
+msgstr ""
+
+#: internal/ui/overview_manage.go:200
+msgid "Click a window to force-terminate ONLY that client · Esc / right click cancels"
+msgstr ""
+
+#: internal/ui/overview_manage.go:204
+msgid "Arrows / Tab · select    Type or / · search    Middle click · close    Ctrl+Shift+X · kill    Drag · move"
+msgstr ""
+
+#: internal/ui/overview_manage.go:242
+msgid "position floating window"
+msgstr ""
+
+#: internal/ui/picker.go:143
+msgid "Colour copied"
+msgstr ""
+
+#: internal/ui/picker.go:145
+msgid "Colour picked"
+msgstr ""
+
+#: internal/ui/polkit.go:178
+#: ui/polkit.ui:41
+msgid "Authentication Required"
+msgstr ""
+
+#: internal/ui/polkit.go:207
+msgid "The password cannot be checked: polkit's helper did not answer."
+msgstr ""
+
+#: internal/ui/polkit.go:243
+msgid "The password could not be checked."
+msgstr ""
+
+#: internal/ui/polkit.go:268
+msgid "Sorry, that didn't work. Try again."
+msgstr ""
+
+#: internal/ui/record.go:68
+msgid "Recording needs wf-recorder"
+msgstr ""
+
+#: internal/ui/record.go:68
+msgid "Install it: sudo apt install wf-recorder"
+msgstr ""
+
+#: internal/ui/record.go:111
+msgid "The recording failed"
+msgstr ""
+
+#: internal/ui/record.go:114
+msgid "Recording saved"
+msgstr ""
+
+#: internal/ui/record.go:153
+msgid "Screen recording"
+msgstr ""
+
+#: internal/ui/record.go:157
+msgid "Open"
+msgstr ""
+
+#: internal/ui/record.go:157
+#: internal/ui/screenshot.go:766
+msgid "Show in Folder"
+msgstr ""
+
+#: internal/ui/screenshot.go:416
+msgid "inua screenshot"
+msgstr ""
+
+#: internal/ui/screenshot.go:434
+msgid "Drag to take an area"
+msgstr ""
+
+#: internal/ui/screenshot.go:437
+msgid "Click to copy a colour"
+msgstr ""
+
+#: internal/ui/screenshot.go:441
+msgid "Drag to record an area"
+msgstr ""
+
+#: internal/ui/screenshot.go:442
+msgid "Click a window to record"
+msgstr ""
+
+#: internal/ui/screenshot.go:443
+msgid "Click a screen to record"
+msgstr ""
+
+#: internal/ui/screenshot.go:754
+msgid "Screenshot saved and copied"
+msgstr ""
+
+#: internal/ui/screenshot.go:755
+msgid "Screenshot saved"
+msgstr ""
+
+#: internal/ui/screenshot.go:756
+msgid "Screenshot copied"
+msgstr ""
+
+#: internal/ui/screenshot.go:757
+msgid "Screenshot taken"
+msgstr ""
+
+#: internal/ui/settings.go:553
+msgid "Not saved: %s"
+msgstr ""
+
+#: internal/ui/settings.go:579
+msgid "Choose a wallpaper"
+msgstr ""
+
+#: internal/ui/settings.go:581
+msgid "Images"
+msgstr ""
+
+#: internal/ui/settings.go:620
+msgid "Off: another notification daemon can show them"
+msgstr ""
+
+#: internal/ui/settings.go:622
+msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
+msgstr ""
+
+#: internal/ui/settings.go:624
+msgid "Waiting: another notification daemon is running"
+msgstr ""
+
+#: internal/ui/settings.go:642
+msgid "Nothing pinned"
+msgstr ""
+
+#: internal/ui/settings.go:658
+msgid "%s (not installed)"
+msgstr ""
+
+#: internal/ui/settings.go:671
+msgid "Move earlier"
+msgstr ""
+
+#: internal/ui/settings.go:672
+msgid "Move later"
+msgstr ""
+
+#: internal/ui/settings.go:673
+msgid "Remove from the dock"
+msgstr ""
+
+#: internal/ui/settings_about.go:126
+msgid "inua %s, built from source"
+msgstr ""
+
+#: internal/ui/settings_about.go:133
+msgid "Upgrade to %s"
+msgstr ""
+
+#: internal/ui/settings_about.go:136
+msgid "Upgrading… the shell restarts on the new version"
+msgstr ""
+
+#: internal/ui/settings_about.go:142
+msgid "Could not reach GitHub: %s"
+msgstr ""
+
+#: internal/ui/settings_about.go:144
+msgid "Not checked yet"
+msgstr ""
+
+#: internal/ui/settings_about.go:146
+msgid "The latest release is %s; this version cannot be compared with it"
+msgstr ""
+
+#: internal/ui/settings_about.go:148
+msgid "inua %s is out; upgrading replaces this build from source"
+msgstr ""
+
+#: internal/ui/settings_about.go:150
+#: internal/ui/updates.go:90
+msgid "inua %s is out"
+msgstr ""
+
+#: internal/ui/settings_about.go:152
+msgid "Up to date: %s is the latest release (checked %s)"
+msgstr ""
+
+#: internal/ui/settings_about.go:154
+msgid "Newer than the latest release, %s"
+msgstr ""
+
+#: internal/ui/settings_about.go:164
+msgid "Shown once the releases are read"
+msgstr ""
+
+#: internal/ui/settings_about.go:166
+msgid "Reading the releases…"
+msgstr ""
+
+#: internal/ui/settings_about.go:187
+msgid "installed"
+msgstr ""
+
+#: internal/ui/settings_about.go:191
+msgid "On GitHub"
+msgstr ""
+
+#: internal/ui/settings_ai.go:58
+msgid "Model default"
+msgstr ""
+
+#: internal/ui/settings_ai.go:58
+msgid "Minimal"
+msgstr ""
+
+#: internal/ui/settings_ai.go:58
+#: ui/settings.ui:1050
+msgid "Medium"
+msgstr ""
+
+#: internal/ui/settings_ai.go:97
+msgid "Keys typed here are kept in %s"
+msgstr ""
+
+#: internal/ui/settings_ai.go:136
+msgid "key not moved"
+msgstr ""
+
+#: internal/ui/settings_ai.go:165
+msgid "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
+msgstr ""
+
+#: internal/ui/settings_ai.go:168
+msgid "Turn on Assistant to serve this endpoint."
+msgstr ""
+
+#: internal/ui/settings_ai.go:170
+msgid "HTTP serving is off. The assistant still runs in the background."
+msgstr ""
+
+#: internal/ui/settings_ai.go:172
+msgid "Create a token to allow Console connections."
+msgstr ""
+
+#: internal/ui/settings_ai.go:179
+msgid "Reading keyring…"
+msgstr ""
+
+#: internal/ui/settings_ai.go:181
+msgid "Hide token"
+msgstr ""
+
+#: internal/ui/settings_ai.go:183
+#: ui/settings.ui:2007
+msgid "Create token"
+msgstr ""
+
+#: internal/ui/settings_ai.go:185
+msgid "Show token"
+msgstr ""
+
+#: internal/ui/settings_ai.go:200
+msgid "Then, when it fails: %s"
+msgstr ""
+
+#: internal/ui/settings_ai.go:202
+msgid "The profile asked first; turn on Fallback on others to try them when it fails"
+msgstr ""
+
+#: internal/ui/settings_ai.go:258
+msgid "Move up (fallbacks are tried in this order)"
+msgstr ""
+
+#: internal/ui/settings_ai.go:259
+msgid "Move down"
+msgstr ""
+
+#: internal/ui/settings_ai.go:260
+msgid "Remove this profile"
+msgstr ""
+
+#: internal/ui/settings_ai.go:283
+msgid "a name: work, fast, local …"
+msgstr ""
+
+#: internal/ui/settings_ai.go:285
+msgid "the model's ID"
+msgstr ""
+
+#: internal/ui/settings_ai.go:286
+msgid "the provider's own"
+msgstr ""
+
+#: internal/ui/settings_ai.go:292
+#: internal/ui/settings_ai.go:391
+msgid "Paste a key, then Save"
+msgstr ""
+
+#: internal/ui/settings_ai.go:306
+msgid "Provider"
+msgstr ""
+
+#: internal/ui/settings_ai.go:308
+msgid "Reasoning"
+msgstr ""
+
+#: internal/ui/settings_ai.go:309
+msgid "Endpoint"
+msgstr ""
+
+#: internal/ui/settings_ai.go:312
+#: ui/clock.ui:252
+msgid "Save"
+msgstr ""
+
+#: internal/ui/settings_ai.go:313
+msgid "Forget"
+msgstr ""
+
+#: internal/ui/settings_ai.go:321
+msgid "API key"
+msgstr ""
+
+#: internal/ui/settings_ai.go:326
+msgid "Fallback: answers when the profiles above it fail"
+msgstr ""
+
+#: internal/ui/settings_ai.go:368
+msgid "Answers first. "
+msgstr ""
+
+#: internal/ui/settings_ai.go:370
+msgid "Fallback %d. "
+msgstr ""
+
+#: internal/ui/settings_ai.go:375
+msgid "The saved keys cannot be read: %s"
+msgstr ""
+
+#: internal/ui/settings_ai.go:377
+msgid "Key saved"
+msgstr ""
+
+#: internal/ui/settings_ai.go:379
+msgid "No key (a local server may want none)"
+msgstr ""
+
+#: internal/ui/settings_ai.go:381
+msgid "No key yet: the assistant cannot answer"
+msgstr ""
+
+#: internal/ui/settings_ai.go:383
+msgid "No key yet: this profile is skipped"
+msgstr ""
+
+#: internal/ui/settings_ai.go:389
+msgid "Saved; paste another to replace it"
+msgstr ""
+
+#: internal/ui/settings_ai.go:550
+msgid "Endpoint URL copied"
+msgstr ""
+
+#: internal/ui/settings_ai.go:581
+msgid "No Console token. Create one first."
+msgstr ""
+
+#: internal/ui/settings_ai.go:586
+msgid "Token copied"
+msgstr ""
+
+#: internal/ui/settings_ai.go:651
+msgid "key not removed"
+msgstr ""
+
+#: internal/ui/settings_ai.go:662
+msgid "key not saved"
+msgstr ""
+
+#: internal/ui/shortcuts.go:88
+msgid "Set in inua"
+msgstr ""
+
+#: internal/ui/shortcuts.go:90
+msgid "Turned off in inua"
+msgstr ""
+
+#: internal/ui/shortcuts.go:181
+msgid "Click, then press the new shortcut"
+msgstr ""
+
+#: internal/ui/shortcuts.go:186
+msgid "Press keys…"
+msgstr ""
+
+#: internal/ui/shortcuts.go:190
+msgid "Not set"
+msgstr ""
+
+#: internal/ui/shortcuts.go:216
+msgid "Remove this command"
+msgstr ""
+
+#: internal/ui/shortcuts.go:218
+msgid "Use hyprland.conf's shortcut again"
+msgstr ""
+
+#: internal/ui/shortcuts.go:220
+msgid "Turn the shortcut off"
+msgstr ""
+
+#: internal/ui/shotdrawer.go:160
+msgid "Record another"
+msgstr ""
+
+#: internal/ui/shotdrawer.go:162
+#: ui/shotdrawer.ui:195
+msgid "Take another"
+msgstr ""
+
+#: internal/ui/shotdrawer.go:216
+msgid "inua recent screenshots"
+msgstr ""
+
+#: internal/ui/shotdrawer.go:329
+msgid "Jan 2 2006"
+msgstr ""
+
+#: internal/ui/updates.go:91
+msgid "You have %s."
+msgstr ""
+
+#: internal/ui/updates.go:93
+msgid "%s Upgrade with: inua upgrade"
+msgstr ""
+
+#: internal/ui/updates.go:99
+#: ui/settings.ui:3382
+msgid "Upgrade"
+msgstr ""
+
+#: internal/ui/updates.go:99
+#: internal/ui/updates.go:127
+msgid "What's new"
+msgstr ""
+
+#: internal/ui/updates.go:126
+msgid "inua %s is installed"
+msgstr ""
+
+#: internal/ui/updates.go:176
+msgid "inua could not upgrade"
+msgstr ""
+
+#: internal/ui/updates.go:179
+msgid "Could not upgrade: %s"
+msgstr ""
+
+#: ui/agenda.ui:50
+msgid "[CALENDAR]"
+msgstr ""
+
+#: ui/agenda.ui:93
+#: ui/calendar.ui:50
+msgid "Previous month"
+msgstr ""
+
+#: ui/agenda.ui:102
+#: ui/calendar.ui:61
+msgid "Next month"
+msgstr ""
+
+#: ui/agenda.ui:120
+msgid "Open Weather"
+msgstr ""
+
+#: ui/assistant.ui:54
+msgid "Who answers"
+msgstr ""
+
+#: ui/assistant.ui:63
+msgid "AI settings"
+msgstr ""
+
+#: ui/assistant.ui:73
+msgid "New conversation"
+msgstr ""
+
+#: ui/assistant.ui:98
+msgid "Open AI Settings"
+msgstr ""
+
+#: ui/assistant.ui:128
+msgid "Ask, or tell me what to do"
+msgstr ""
+
+#: ui/bar.ui:82
+msgid "Stop recording"
+msgstr ""
+
+#: ui/bar.ui:141
+msgid "Control Center"
+msgstr ""
+
+#: ui/calculator.ui:32
+msgid "Scientific"
+msgstr ""
+
+#: ui/calculator.ui:40
+msgid "Deg"
+msgstr ""
+
+#: ui/calculator.ui:42
+msgid "Trigonometry in degrees (off: radians)"
+msgstr ""
+
+#: ui/calculator.ui:55
+msgid "Recent calculations"
+msgstr ""
+
+#: ui/calculator.ui:66
+msgid "History"
+msgstr ""
+
+#: ui/calculator.ui:149
+msgid "HISTORY"
+msgstr ""
+
+#: ui/calculator.ui:170
+msgid "Clear history"
+msgstr ""
+
+#: ui/calendar.ui:113
+msgid "WEEKS START ON"
+msgstr ""
+
+#: ui/center.ui:51
+msgid "[NOTIFICATIONS]"
+msgstr ""
+
+#: ui/center.ui:81
+msgid "Clear all"
+msgstr ""
+
+#: ui/center.ui:91
+msgid "Focus is on: banners stay quiet."
+msgstr ""
+
+#: ui/center.ui:129
+msgid "No notifications"
+msgstr ""
+
+#: ui/clock.ui:35
+msgid "WORLD"
+msgstr ""
+
+#: ui/clock.ui:107
+msgid "No other cities yet."
+msgstr ""
+
+#: ui/clock.ui:134
+msgid "ALARMS"
+msgstr ""
+
+#: ui/clock.ui:148
+msgid "RUNG BY INUA, EVEN WITH CLOCK CLOSED"
+msgstr ""
+
+#: ui/clock.ui:160
+msgid "New alarm"
+msgstr ""
+
+#: ui/clock.ui:183
+msgid "Label"
+msgstr ""
+
+#: ui/clock.ui:197
+msgid "REPEAT"
+msgstr ""
+
+#: ui/clock.ui:284
+msgid "No alarms."
+msgstr ""
+
+#: ui/clock.ui:298
+msgid "STOPWATCH"
+msgstr ""
+
+#: ui/clock.ui:375
+msgid "TIMER"
+msgstr ""
+
+#: ui/colorpicker.ui:83
+msgid "PICKED BEFORE"
+msgstr ""
+
+#: ui/colorpicker.ui:119
+msgid "Colours you pick show here."
+msgstr ""
+
+#: ui/control.ui:72
+msgid "Screenshot an area"
+msgstr ""
+
+#: ui/control.ui:91
+msgid "Suspend, restart, shut down, log out"
+msgstr ""
+
+#: ui/control.ui:301
+msgid "Bluetooth"
+msgstr ""
+
+#: ui/control.ui:359
+msgid "Low Power"
+msgstr ""
+
+#: ui/control.ui:499
+msgid "Open Tailscale"
+msgstr ""
+
+#: ui/control.ui:528
+msgid "Display"
+msgstr ""
+
+#: ui/control.ui:590
+msgid "Sound"
+msgstr ""
+
+#: ui/control.ui:618
+msgid "Mute"
+msgstr ""
+
+#: ui/control.ui:658
+msgid "Now playing"
+msgstr ""
+
+#: ui/game.ui:53
+msgid "How to play"
+msgstr ""
+
+#: ui/launcher.ui:53
+msgid "Tab  switch"
+msgstr ""
+
+#: ui/launcher.ui:63
+msgid "Search, or ask: 10 km to mi"
+msgstr ""
+
+#: ui/launcher.ui:87
+msgid "[ERROR]"
+msgstr ""
+
+#: ui/launcher.ui:118
+msgid "↑↓  choose"
+msgstr ""
+
+#: ui/launcher.ui:126
+msgid "↵  open"
+msgstr ""
+
+#: ui/launcher.ui:134
+msgid "Esc  close"
+msgstr ""
+
+#: ui/lock.ui:76
+#: ui/polkit.ui:118
+msgid "Password"
+msgstr ""
+
+#: ui/polkit.ui:79
+msgid "AS"
+msgstr ""
+
+#: ui/polkit.ui:98
+msgid "Another user"
+msgstr ""
+
+#: ui/polkit.ui:169
+msgid "Authenticate"
+msgstr ""
+
+#: ui/screenshot.ui:126
+msgid "Drag to take an area (Space switches to windows)"
+msgstr ""
+
+#: ui/screenshot.ui:137
+#: ui/shotdrawer.ui:98
+msgid "Area"
+msgstr ""
+
+#: ui/screenshot.ui:162
+#: ui/shotdrawer.ui:122
+msgid "Window"
+msgstr ""
+
+#: ui/screenshot.ui:187
+#: ui/shotdrawer.ui:146
+msgid "Screen"
+msgstr ""
+
+#: ui/screenshot.ui:205
+#: ui/shotdrawer.ui:164
+msgid "Record the screen instead of taking a picture"
+msgstr ""
+
+#: ui/screenshot.ui:219
+#: ui/shotdrawer.ui:178
+msgid "Record"
+msgstr ""
+
+#: ui/screenshot.ui:244
+msgid "Recent screenshots and recordings, to drag into an app"
+msgstr ""
+
+#: ui/screenshot.ui:254
+msgid "Cancel (Esc)"
+msgstr ""
+
+#: ui/settings.ui:13
+msgid "inua Settings"
+msgstr ""
+
+#: ui/settings.ui:60
+msgid "Appearance"
+msgstr ""
+
+#: ui/settings.ui:98
+msgid "<span alpha='55%'>[</span>THEME<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:106
+msgid "The bar, launcher, control center and this window"
+msgstr ""
+
+#: ui/settings.ui:160
+msgid "<span alpha='55%'>[</span>ICONS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:168
+msgid "The bar, control center, launcher and settings"
+msgstr ""
+
+#: ui/settings.ui:198
+msgid "Icon set"
+msgstr ""
+
+#: ui/settings.ui:207
+msgid "App icons always come from the system"
+msgstr ""
+
+#: ui/settings.ui:221
+msgid "Phosphor"
+msgstr ""
+
+#: ui/settings.ui:222
+msgid "System theme"
+msgstr ""
+
+#: ui/settings.ui:260
+msgid "<span alpha='55%'>[</span>PICTURE<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:268
+msgid "Behind your windows, on every monitor"
+msgstr ""
+
+#: ui/settings.ui:298
+msgid "Draw the wallpaper"
+msgstr ""
+
+#: ui/settings.ui:307
+msgid "Off leaves the background to another program"
+msgstr ""
+
+#: ui/settings.ui:337
+msgid "Image"
+msgstr ""
+
+#: ui/settings.ui:348
+msgid "none: a fine texture"
+msgstr ""
+
+#: ui/settings.ui:357
+msgid "Choose…"
+msgstr ""
+
+#: ui/settings.ui:367
+msgid "No image"
+msgstr ""
+
+#: ui/settings.ui:393
+msgid "Fit"
+msgstr ""
+
+#: ui/settings.ui:402
+msgid "How the picture fills each monitor"
+msgstr ""
+
+#: ui/settings.ui:416
+msgid "Cover: fill, cropping"
+msgstr ""
+
+#: ui/settings.ui:417
+msgid "Contain: show it all"
+msgstr ""
+
+#: ui/settings.ui:418
+msgid "Tile: repeat"
+msgstr ""
+
+#: ui/settings.ui:419
+msgid "Center: actual size"
+msgstr ""
+
+#: ui/settings.ui:442
+msgid "Colour"
+msgstr ""
+
+#: ui/settings.ui:455
+msgid "theme"
+msgstr ""
+
+#: ui/settings.ui:463
+msgid "#rrggbb, shown around the image. Empty: the theme's ground"
+msgstr ""
+
+#: ui/settings.ui:496
+msgid "Bar & Dock"
+msgstr ""
+
+#: ui/settings.ui:534
+msgid "<span alpha='55%'>[</span>BAR<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:542
+msgid "The bar along the top of each monitor"
+msgstr ""
+
+#: ui/settings.ui:572
+msgid "Show the bar"
+msgstr ""
+
+#: ui/settings.ui:581
+msgid "Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications"
+msgstr ""
+
+#: ui/settings.ui:644
+msgid "strftime: %a weekday, %b month, %-d day, %H:%M time"
+msgstr ""
+
+#: ui/settings.ui:670
+msgid "Workspaces"
+msgstr ""
+
+#: ui/settings.ui:679
+msgid "Which workspaces each bar shows"
+msgstr ""
+
+#: ui/settings.ui:693
+msgid "This monitor's"
+msgstr ""
+
+#: ui/settings.ui:694
+msgid "All monitors'"
+msgstr ""
+
+#: ui/settings.ui:721
+msgid "Window title"
+msgstr ""
+
+#: ui/settings.ui:730
+msgid "The focused window's title"
+msgstr ""
+
+#: ui/settings.ui:764
+msgid "Tray icons"
+msgstr ""
+
+#: ui/settings.ui:773
+msgid "Status icons from apps"
+msgstr ""
+
+#: ui/settings.ui:818
+msgid "<span alpha='55%'>[</span>DOCK<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:826
+msgid "Apps along the chosen screen edge on each monitor"
+msgstr ""
+
+#: ui/settings.ui:856
+msgid "Show the dock"
+msgstr ""
+
+#: ui/settings.ui:865
+msgid "Pinned apps, then the others with open windows"
+msgstr ""
+
+#: ui/settings.ui:899
+msgid "Hide automatically"
+msgstr ""
+
+#: ui/settings.ui:908
+msgid "Comes back when the pointer reaches the dock's screen edge"
+msgstr ""
+
+#: ui/settings.ui:942
+msgid "Position"
+msgstr ""
+
+#: ui/settings.ui:951
+msgid "Choose a screen edge for the dock"
+msgstr ""
+
+#: ui/settings.ui:965
+msgid "Bottom"
+msgstr ""
+
+#: ui/settings.ui:966
+msgid "Top"
+msgstr ""
+
+#: ui/settings.ui:967
+msgid "Left"
+msgstr ""
+
+#: ui/settings.ui:968
+msgid "Right"
+msgstr ""
+
+#: ui/settings.ui:992
+msgid "Remove screen edge gaps"
+msgstr ""
+
+#: ui/settings.ui:1001
+msgid "Remove the screen-edge margins around the dock and top bar"
+msgstr ""
+
+#: ui/settings.ui:1035
+msgid "Icon size"
+msgstr ""
+
+#: ui/settings.ui:1048
+msgid "Smaller"
+msgstr ""
+
+#: ui/settings.ui:1049
+msgid "Small"
+msgstr ""
+
+#: ui/settings.ui:1051
+msgid "Large"
+msgstr ""
+
+#: ui/settings.ui:1078
+msgid "Apps drawer"
+msgstr ""
+
+#: ui/settings.ui:1087
+msgid "A button at the end for Clock, Weather, Stocks and Calculator"
+msgstr ""
+
+#: ui/settings.ui:1132
+msgid "<span alpha='55%'>[</span>PINNED<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:1140
+msgid "Right-click an app on the dock to keep it there"
+msgstr ""
+
+#: ui/settings.ui:1189
+msgid "<span alpha='55%'>[</span>CONTROL CENTER<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:1197
+msgid "Shell commands behind the control center's buttons"
+msgstr ""
+
+#: ui/settings.ui:1330
+msgid "<span alpha='55%'>[</span>LAUNCHER<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:1338
+msgid "Super+Space finds apps and open windows"
+msgstr ""
+
+#: ui/settings.ui:1368
+msgid "Opens with"
+msgstr ""
+
+#: ui/settings.ui:1377
+msgid "What Super+Space shows first; Tab switches"
+msgstr ""
+
+#: ui/settings.ui:1392
+msgid "Windows"
+msgstr ""
+
+#: ui/settings.ui:1415
+msgid "Terminal"
+msgstr ""
+
+#: ui/settings.ui:1425
+msgid "$TERMINAL, then xdg-terminal-exec"
+msgstr ""
+
+#: ui/settings.ui:1433
+msgid "Runs apps marked Terminal=true"
+msgstr ""
+
+#: ui/settings.ui:1466
+msgid "AI"
+msgstr ""
+
+#: ui/settings.ui:1504
+msgid "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:1512
+msgid "An agent with inua's tools, run by Mister Morph"
+msgstr ""
+
+#: ui/settings.ui:1551
+msgid "Ask it from the launcher (the last row, or ? first) or open Assistant"
+msgstr ""
+
+#: ui/settings.ui:1585
+msgid "Answers with"
+msgstr ""
+
+#: ui/settings.ui:1594
+msgid "The profile asked first; the assistant's window can switch for a conversation"
+msgstr ""
+
+#: ui/settings.ui:1628
+msgid "Ask before changes"
+msgstr ""
+
+#: ui/settings.ui:1637
+msgid "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask"
+msgstr ""
+
+#: ui/settings.ui:1671
+msgid "Search the web"
+msgstr ""
+
+#: ui/settings.ui:1680
+msgid "Mister Morph's web search and page reading"
+msgstr ""
+
+#: ui/settings.ui:1714
+msgid "Read files"
+msgstr ""
+
+#: ui/settings.ui:1723
+msgid "Any file you can read; asks each time"
+msgstr ""
+
+#: ui/settings.ui:1757
+msgid "Run commands"
+msgstr ""
+
+#: ui/settings.ui:1766
+msgid "A shell, as you; asks each time"
+msgstr ""
+
+#: ui/settings.ui:1811
+msgid "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:1819
+msgid "Connect other Consoles to this desktop"
+msgstr ""
+
+#: ui/settings.ui:1849
+#: ui/settings.ui:1868
+msgid "Serve endpoint"
+msgstr ""
+
+#: ui/settings.ui:1858
+msgid "Allow Console connections; the assistant keeps running when this is off"
+msgstr ""
+
+#: ui/settings.ui:1893
+msgid "Listen address"
+msgstr ""
+
+#: ui/settings.ui:1902
+msgid "Host:port; kept when serving is off"
+msgstr ""
+
+#: ui/settings.ui:1913
+msgid "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port."
+msgstr ""
+
+#: ui/settings.ui:1935
+msgid "Endpoint URL"
+msgstr ""
+
+#: ui/settings.ui:1946
+msgid "Set a listen address first"
+msgstr ""
+
+#: ui/settings.ui:1955
+msgid "Copy URL"
+msgstr ""
+
+#: ui/settings.ui:1986
+msgid "Access token"
+msgstr ""
+
+#: ui/settings.ui:1998
+msgid "Token hidden"
+msgstr ""
+
+#: ui/settings.ui:2016
+msgid "Copy token"
+msgstr ""
+
+#: ui/settings.ui:2026
+msgid "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase."
+msgstr ""
+
+#: ui/settings.ui:2063
+msgid "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2071
+msgid "The models it can use; fallbacks answer when the first fails"
+msgstr ""
+
+#: ui/settings.ui:2101
+msgid "Add Profile"
+msgstr ""
+
+#: ui/settings.ui:2180
+msgid "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2188
+msgid "Banners, then the notification center"
+msgstr ""
+
+#: ui/settings.ui:2218
+msgid "Show notifications"
+msgstr ""
+
+#: ui/settings.ui:2260
+msgid "Banner duration"
+msgstr ""
+
+#: ui/settings.ui:2269
+msgid "How long a banner shows; critical ones stay"
+msgstr ""
+
+#: ui/settings.ui:2283
+msgid "3 seconds"
+msgstr ""
+
+#: ui/settings.ui:2284
+msgid "5 seconds"
+msgstr ""
+
+#: ui/settings.ui:2285
+msgid "8 seconds"
+msgstr ""
+
+#: ui/settings.ui:2286
+msgid "12 seconds"
+msgstr ""
+
+#: ui/settings.ui:2313
+msgid "Critical during Focus"
+msgstr ""
+
+#: ui/settings.ui:2322
+msgid "Critical notifications still show banners"
+msgstr ""
+
+#: ui/settings.ui:2363
+msgid "Shortcuts"
+msgstr ""
+
+#: ui/settings.ui:2393
+msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
+msgstr ""
+
+#: ui/settings.ui:2422
+#: ui/settings.ui:3281
+msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2430
+msgid "The shell's own actions"
+msgstr ""
+
+#: ui/settings.ui:2479
+msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2487
+msgid "With grim and slurp"
+msgstr ""
+
+#: ui/settings.ui:2536
+msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2544
+msgid "Your own commands"
+msgstr ""
+
+#: ui/settings.ui:2586
+msgid "Command, e.g. kitty"
+msgstr ""
+
+#: ui/settings.ui:2595
+msgid "Add…"
+msgstr ""
+
+#: ui/settings.ui:2596
+msgid "Add, then press its shortcut"
+msgstr ""
+
+#: ui/settings.ui:2631
+msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2639
+msgid "Other shortcuts, from hyprland.conf"
+msgstr ""
+
+#: ui/settings.ui:2684
+msgid "Keyboard"
+msgstr ""
+
+#: ui/settings.ui:2732
+msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2740
+msgid "Every keyboard"
+msgstr ""
+
+#: ui/settings.ui:2770
+msgid "Swap Ctrl and Alt"
+msgstr ""
+
+#: ui/settings.ui:2779
+msgid "Alt acts as Ctrl, and Ctrl as Alt"
+msgstr ""
+
+#: ui/settings.ui:2794
+msgid "Left side"
+msgstr ""
+
+#: ui/settings.ui:2795
+msgid "Both sides"
+msgstr ""
+
+#: ui/settings.ui:2822
+#: ui/settings.ui:2845
+msgid "Caps Lock"
+msgstr ""
+
+#: ui/settings.ui:2831
+msgid "What the Caps Lock key does"
+msgstr ""
+
+#: ui/settings.ui:2846
+msgid "Escape"
+msgstr ""
+
+#: ui/settings.ui:2847
+msgid "Ctrl"
+msgstr ""
+
+#: ui/settings.ui:2885
+#: ui/settings.ui:3167
+msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2893
+#: ui/settings.ui:3175
+msgid "inua writes these to Hyprland's inua.conf"
+msgstr ""
+
+#: ui/settings.ui:2944
+#: ui/settings.ui:3211
+msgid "Use hyprland.conf"
+msgstr ""
+
+#: ui/settings.ui:2945
+msgid "Stop setting keyboard options in inua"
+msgstr ""
+
+#: ui/settings.ui:2976
+msgid "Mouse & Touch"
+msgstr ""
+
+#: ui/settings.ui:3024
+msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:3032
+msgid "Every touchpad"
+msgstr ""
+
+#: ui/settings.ui:3062
+msgid "Pointer speed"
+msgstr ""
+
+#: ui/settings.ui:3113
+msgid "Acceleration"
+msgstr ""
+
+#: ui/settings.ui:3122
+msgid "Faster swipes move the pointer further"
+msgstr ""
+
+#: ui/settings.ui:3212
+msgid "Stop setting the touchpad in inua"
+msgstr ""
+
+#: ui/settings.ui:3243
+msgid "About"
+msgstr ""
+
+#: ui/settings.ui:3289
+msgid "The version, and new releases"
+msgstr ""
+
+#: ui/settings.ui:3319
+msgid "Version"
+msgstr ""
+
+#: ui/settings.ui:3355
+msgid "Updates"
+msgstr ""
+
+#: ui/settings.ui:3391
+msgid "Check for updates"
+msgstr ""
+
+#: ui/settings.ui:3417
+msgid "Check every day"
+msgstr ""
+
+#: ui/settings.ui:3426
+msgid "A notification says when a new release is out, with a button to upgrade"
+msgstr ""
+
+#: ui/settings.ui:3471
+msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:3479
+msgid "What the latest release changed"
+msgstr ""
+
+#: ui/shotdrawer.ui:34
+msgid "RECENT"
+msgstr ""
+
+#: ui/shotdrawer.ui:44
+msgid "Drag into an app · click to open"
+msgstr ""
+
+#: ui/shotdrawer.ui:67
+msgid "Screenshots and recordings you take show here."
+msgstr ""
+
+#: ui/shotdrawer.ui:87
+msgid "Take an area"
+msgstr ""
+
+#: ui/shotdrawer.ui:111
+msgid "Take a window"
+msgstr ""
+
+#: ui/shotdrawer.ui:135
+msgid "Take a screen"
+msgstr ""
+
+#: ui/shotdrawer.ui:204
+msgid "Close (Esc)"
+msgstr ""
+
+#: ui/stocks.ui:44
+msgid "Add a symbol"
+msgstr ""
+
+#: ui/stocks.ui:124
+msgid "<span alpha='55%'>[</span>QUOTE<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/stocks.ui:235
+msgid "<span alpha='55%'>[</span>TODAY<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/stocks.ui:281
+msgid "Prices from Yahoo Finance, delayed"
+msgstr ""
+
+#: ui/stocks.ui:292
+msgid "Remove"
 msgstr ""
 
 #: ui/sysmon.ui:38
@@ -582,10 +6379,213 @@ msgstr ""
 msgid "Filter by name, PID or user"
 msgstr ""
 
-#: ui/sysmon.ui:149
-msgid "SYSTEM"
+#: ui/sysmon.ui:220
+#: ui/tailscale.ui:240
+msgid "Close (Escape)"
 msgstr ""
 
-#: ui/sysmon.ui:220
-msgid "Close (Escape)"
+#: ui/tailscale.ui:56
+msgid "Connect this device to the tailnet"
+msgstr ""
+
+#: ui/tailscale.ui:112
+msgid "DEVICES"
+msgstr ""
+
+#: ui/tailscale.ui:124
+msgid "Filter by name, address, OS or tag"
+msgstr ""
+
+#: ui/tailscale.ui:151
+msgid "EXIT NODE"
+msgstr ""
+
+#: ui/viewer.ui:61
+msgid "Open… (Ctrl+O)"
+msgstr ""
+
+#: ui/viewer.ui:77
+msgid "Zoom out (−)"
+msgstr ""
+
+#: ui/viewer.ui:86
+msgid "Fit (0) or actual size (1)"
+msgstr ""
+
+#: ui/viewer.ui:95
+msgid "Zoom in (+)"
+msgstr ""
+
+#: ui/viewer.ui:111
+msgid "Rotate (R, Shift+R the other way)"
+msgstr ""
+
+#: ui/viewer.ui:120
+msgid "Copy the image (Ctrl+C)"
+msgstr ""
+
+#: ui/viewer.ui:138
+msgid "Show in folder"
+msgstr ""
+
+#: ui/viewer.ui:147
+msgid "Move to Trash (Delete)"
+msgstr ""
+
+#: ui/viewer.ui:160
+msgid "Trash?"
+msgstr ""
+
+#: ui/viewer.ui:180
+msgid "Details (I)"
+msgstr ""
+
+#: ui/viewer.ui:189
+msgid "Full screen (F)"
+msgstr ""
+
+#: ui/viewer.ui:227
+msgid "Previous (←)"
+msgstr ""
+
+#: ui/viewer.ui:238
+msgid "Next (→)"
+msgstr ""
+
+#: ui/viewer.ui:272
+msgid "Open an Image…"
+msgstr ""
+
+#: ui/weather.ui:30
+msgid "Previous place"
+msgstr ""
+
+#: ui/weather.ui:66
+msgid "Next place"
+msgstr ""
+
+#: ui/weather.ui:76
+msgid "Places"
+msgstr ""
+
+#: ui/weather.ui:122
+msgid "UNITS"
+msgstr ""
+
+#: ui/weather.ui:135
+msgid "°C"
+msgstr ""
+
+#: ui/weather.ui:141
+msgid "°F"
+msgstr ""
+
+#: ui/weather.ui:216
+msgid "NEXT 24 HOURS"
+msgstr ""
+
+#: ui/weather.ui:246
+msgid "7 DAYS"
+msgstr ""
+
+#: ui/weather.ui:272
+msgid "DETAILS"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:10
+msgid "Ask questions and get things done on this computer"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:20
+msgid "ai;agent;chat;ask;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:10
+msgid "Arithmetic and scientific calculations"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:20
+msgid "math;calc;arithmetic;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:10
+msgid "The month, week numbers and your events"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:20
+msgid "date;event;month;schedule;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:10
+msgid "World clocks, alarms, a stopwatch and a timer"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:20
+msgid "time;alarm;timer;stopwatch;world;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:10
+msgid "Pick a colour from anywhere on the screen"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
+msgid "colour;color;hex;rgb;eyedropper;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
+msgid "Reveal safe squares and flag hidden mines"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:20
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:20
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
+msgid "games;arcade;puzzle;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
+msgid "Buy streets, build houses and outlast up to three computer players"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:10
+msgid "Three balls, two flippers, one more orbit"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:10
+msgid "Prices and charts of stocks and indices"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:20
+msgid "shares;market;quotes;finance;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:10
+msgid "CPU, memory, network, disk, battery and processes"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:20
+msgid "cpu;memory;process;task;usage;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:10
+msgid "Your tailnet's devices, exit nodes and this device's Tailscale settings"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
+msgid "vpn;tailnet;network;exit node;taildrop;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
+msgid "Look through pictures"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:20
+msgid "image;picture;photo;viewer;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:10
+msgid "The weather now and the coming days"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:20
+msgid "forecast;temperature;rain;"
 msgstr ""

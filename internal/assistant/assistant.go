@@ -24,6 +24,7 @@ import (
 
 	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // ErrNoKey is a configuration without an API key in the environment.
@@ -422,7 +423,7 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 			var err error
 			prompt := doing
 			if !local {
-				prompt = "Remote Console: " + prompt
+				prompt = i18n.Tf("Remote Console: %s", prompt)
 			}
 			if ok, err = w.a.approve(ctx, w.name, prompt); err != nil {
 				return "", err

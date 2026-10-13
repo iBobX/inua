@@ -16,6 +16,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 )
 
@@ -119,7 +120,7 @@ func (s *shellUI) bindOverviewManagement() {
 		}
 		defer widget.Unref()
 		address := strings.TrimPrefix(widget.GetName(), "window:")
-		s.dispatchOverview("close window", fmt.Sprintf(`hl.dsp.window.close({window=%q})`, "address:"+address))
+		s.dispatchOverview(i18n.T("close window"), fmt.Sprintf(`hl.dsp.window.close({window=%q})`, "address:"+address))
 		g.SetState(gtk.EventSequenceClaimedValue)
 	}
 	o.onOverviewScroll = func(_ gtk.EventControllerScroll, _, dy float64) bool {
@@ -159,7 +160,7 @@ func (s *shellUI) bindOverviewManagement() {
 						}
 					}
 					if o.hint != nil {
-						o.hint.SetText(w.Title + "    ·    " + w.Class + "    ·    Middle click: close")
+						o.hint.SetText(i18n.Tf("%s · %s · Middle click: close", w.Title, w.Class))
 					}
 					return
 				}
@@ -196,11 +197,11 @@ func (s *shellUI) setOverviewKillMode(armed bool) {
 		if armed {
 			view.win.SetCursorFromName("none")
 			view.win.AddCssClass("kill-mode")
-			view.hint.SetText("Click a window to force-terminate ONLY that client · Esc / right click cancels")
+			view.hint.SetText(i18n.T("Click a window to force-terminate ONLY that client · Esc / right click cancels"))
 		} else {
 			view.win.SetCursorFromName("default")
 			view.win.RemoveCssClass("kill-mode")
-			view.hint.SetText("Arrows / Tab · select    Type or / · search    Middle click · close    Ctrl+Shift+X · kill    Drag · move")
+			view.hint.SetText(i18n.T("Arrows / Tab · select    Type or / · search    Middle click · close    Ctrl+Shift+X · kill    Drag · move"))
 		}
 	}
 }
@@ -238,7 +239,7 @@ func (s *shellUI) moveOverviewWindow(address string, target overviewDropTarget, 
 		}
 		scale := max(0.001, target.Scale)
 		px, py := max(0, (x-s.overview.dragX)/scale), max(0, (y-s.overview.dragY)/scale)
-		s.dispatchOverview("position floating window", fmt.Sprintf(`hl.dsp.window.move({window=%q,x=%q,y=%q})`, "address:"+address, strconv.Itoa(int(px)), strconv.Itoa(int(py))))
+		s.dispatchOverview(i18n.T("position floating window"), fmt.Sprintf(`hl.dsp.window.move({window=%q,x=%q,y=%q})`, "address:"+address, strconv.Itoa(int(px)), strconv.Itoa(int(py))))
 		return true
 	}
 	// window.move takes a numeric workspace ID. A quoted string is a name and

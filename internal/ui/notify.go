@@ -17,6 +17,7 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/shell"
@@ -287,9 +288,9 @@ func (s *shellUI) showUnread() {
 // showNotesButton shows a bell, or a moon while Focus is on, marked while
 // the center holds notifications the user has not seen.
 func (s *shellUI) showNotesButton(b *bar) {
-	icon, tip := "preferences-system-notifications-symbolic", "Notifications"
+	icon, tip := "preferences-system-notifications-symbolic", i18n.T("Notifications")
 	if s.notes.c.Focus {
-		icon, tip = "weather-clear-night-symbolic", "Notifications (Focus is on)"
+		icon, tip = "weather-clear-night-symbolic", i18n.T("Notifications (Focus is on)")
 	}
 	b.notesIcon.SetFromIconName(icon)
 	b.notes.SetTooltipText(tip)
@@ -373,9 +374,9 @@ func (s *shellUI) buildNote(n notify.Notification, inBanner bool) *gtk.Box {
 	closeB.SetName("close:" + id)
 	if inBanner {
 		closeB.SetName("hide:" + id)
-		closeB.SetTooltipText("Hide")
+		closeB.SetTooltipText(i18n.T("Hide"))
 	} else {
-		closeB.SetTooltipText("Clear")
+		closeB.SetTooltipText(i18n.T("Clear"))
 	}
 	closeB.ConnectClicked(&s.onNoteButton)
 	for i, a := range n.Actions {
@@ -417,7 +418,7 @@ func (s *shellUI) noteApp(n notify.Notification) (name, icon string) {
 		icon = strings.ToLower(n.App)
 	}
 	if name == "" {
-		name = "Notification"
+		name = i18n.T("Notification")
 	}
 	if !s.hasIcon(icon) {
 		icon = "preferences-system-notifications-symbolic"
@@ -607,7 +608,7 @@ func (s *shellUI) ensureBannerWindow() {
 		layershell.SetMargin(w, layershell.EdgeTop, 6) // below the bar's exclusive zone
 		layershell.SetMargin(w, layershell.EdgeRight, 6)
 	} else {
-		nt.bwin.SetTitle("inua notifications")
+		nt.bwin.SetTitle(i18n.T("inua notifications"))
 	}
 }
 
@@ -796,7 +797,7 @@ func (s *shellUI) buildCenter() {
 			layershell.SetMonitor(w, mon.GoPointer())
 		}
 	} else {
-		nt.win.SetTitle("inua notifications")
+		nt.win.SetTitle(i18n.T("inua notifications"))
 		nt.win.SetDefaultSize(400, 640)
 	}
 }
@@ -818,7 +819,7 @@ func (s *shellUI) fillCenter() {
 		nt.count.SetText(strconv.Itoa(total))
 	}
 	setOn(&nt.focus, nt.c.Focus)
-	nt.focus.SetTooltipText(map[bool]string{true: "Focus is on", false: "Focus"}[nt.c.Focus])
+	nt.focus.SetTooltipText(map[bool]string{true: i18n.T("Focus is on"), false: i18n.T("Focus")}[nt.c.Focus])
 	nt.focusNote.SetVisible(nt.c.Focus)
 	nt.clearAll.SetVisible(total > 0)
 	nt.empty.SetVisible(total == 0)
@@ -861,9 +862,9 @@ func (s *shellUI) fillCenter() {
 			more.SetName("more:" + g.Key)
 			more.SetVisible(true)
 			if open {
-				more.SetLabel("Show less")
+				more.SetLabel(i18n.T("Show less"))
 			} else {
-				more.SetLabel(fmt.Sprintf("%d more", len(g.Items)-1))
+				more.SetLabel(i18n.Tf("%d more", len(g.Items)-1))
 			}
 			more.ConnectClicked(&s.onNoteButton)
 		}

@@ -24,7 +24,7 @@ ApplicationWindow clock {
 
       StackPage {
         name: "world";
-        title: "WORLD";
+        title:  _("WORLD");
 
         child: Box {
           orientation: vertical;
@@ -73,7 +73,7 @@ ApplicationWindow clock {
 
               Label world_empty {
                 styles ["empty"]
-                label: "No other cities yet.";
+                label:  _("No other cities yet.");
               }
             }
           }
@@ -84,7 +84,7 @@ ApplicationWindow clock {
 
             SearchEntry zone_search {
               hexpand: true;
-              placeholder-text: "Add a city";
+              placeholder-text:  _("Add a city");
             }
           }
         };
@@ -92,7 +92,7 @@ ApplicationWindow clock {
 
       StackPage {
         name: "alarms";
-        title: "ALARMS";
+        title:  _("ALARMS");
 
         child: Box {
           orientation: vertical;
@@ -102,7 +102,7 @@ ApplicationWindow clock {
 
             Label {
               styles ["kicker"]
-              label: "RUNG BY INUA, EVEN WITH CLOCK CLOSED";
+              label:  _("RUNG BY INUA, EVEN WITH CLOCK CLOSED");
               hexpand: true;
               xalign: 0;
               ellipsize: end;
@@ -110,7 +110,7 @@ ApplicationWindow clock {
 
             Button alarm_add {
               styles ["outlined", "small"]
-              label: "New alarm";
+              label:  _("New alarm");
             }
           }
 
@@ -128,7 +128,7 @@ ApplicationWindow clock {
               }
 
               Entry alarm_label {
-                placeholder-text: "Label";
+                placeholder-text:  _("Label");
               }
 
               Box {
@@ -138,7 +138,7 @@ ApplicationWindow clock {
                 Box {
                   Label {
                     styles ["kicker"]
-                    label: "REPEAT";
+                    label:  _("REPEAT");
                     hexpand: true;
                     xalign: 0;
                   }
@@ -160,7 +160,7 @@ ApplicationWindow clock {
 
                 Button alarm_delete {
                   styles ["text", "danger"]
-                  label: "Delete";
+                  label:  _("Delete");
                 }
 
                 Box {
@@ -169,12 +169,12 @@ ApplicationWindow clock {
 
                 Button alarm_cancel {
                   styles ["outlined"]
-                  label: "Cancel";
+                  label:  _("Cancel");
                 }
 
                 Button alarm_save {
                   styles ["primary"]
-                  label: "Save";
+                  label:  _("Save");
                 }
               }
             }
@@ -195,7 +195,7 @@ ApplicationWindow clock {
 
               Label alarm_empty {
                 styles ["empty"]
-                label: "No alarms.";
+                label:  _("No alarms.");
               }
             }
           }
@@ -204,7 +204,7 @@ ApplicationWindow clock {
 
       StackPage {
         name: "stopwatch";
-        title: "STOPWATCH";
+        title:  _("STOPWATCH");
 
         child: Box {
           orientation: vertical;
@@ -226,13 +226,13 @@ ApplicationWindow clock {
 
               Button sw_lap {
                 styles ["outlined", "wide"]
-                label: "Lap";
+                label:  _("Lap");
                 sensitive: false;
               }
 
               Button sw_start {
                 styles ["primary", "wide"]
-                label: "Start";
+                label:  _("Start");
               }
             }
           }
@@ -256,7 +256,7 @@ ApplicationWindow clock {
 
       StackPage {
         name: "timer";
-        title: "TIMER";
+        title:  _("TIMER");
 
         child: Box {
           orientation: vertical;
@@ -279,7 +279,7 @@ ApplicationWindow clock {
 
             Button timer_start {
               styles ["primary", "wide"]
-              label: "Start";
+              label:  _("Start");
               halign: center;
             }
           }
@@ -310,12 +310,12 @@ ApplicationWindow clock {
 
               Button timer_cancel {
                 styles ["outlined", "wide"]
-                label: "Cancel";
+                label:  _("Cancel");
               }
 
               Button timer_pause {
                 styles ["primary", "wide"]
-                label: "Pause";
+                label:  _("Pause");
               }
             }
           }

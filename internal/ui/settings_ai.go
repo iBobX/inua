@@ -13,6 +13,7 @@ import (
 	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // The AI page: the assistant's switches, which profile answers, and a
@@ -54,7 +55,7 @@ type aiCard struct {
 }
 
 // reasoningNames are config.ReasoningEfforts as the drop-down shows them.
-var reasoningNames = []string{"Model default", "Minimal", "Low", "Medium", "High"}
+var reasoningNames = []string{i18n.M("Model default"), i18n.M("Minimal"), i18n.M("Low"), i18n.M("Medium"), i18n.M("High")}
 
 func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	a := &s.settings.ai
@@ -93,7 +94,7 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	if a.keys == nil {
 		a.keys = keys.New()
 	}
-	a.keysNote.SetText("Keys typed here are kept in " + a.keys.Where())
+	a.keysNote.SetText(i18n.Tf("Keys typed here are kept in %s", a.keys.Where()))
 	a.refreshSaved()
 }
 
@@ -132,7 +133,7 @@ func (s *shellUI) applyKeyRenames() {
 	a.renames = nil
 	for _, r := range renames {
 		if r[0] != r[1] && a.keys != nil {
-			s.keysDo("key not moved", func(k *keys.Keys) error { return k.Rename(r[0], r[1]) })
+			s.keysDo(i18n.T("key not moved"), func(k *keys.Keys) error { return k.Rename(r[0], r[1]) })
 		}
 	}
 }
@@ -161,27 +162,27 @@ func (s *shellUI) showAISettings() {
 	}
 	setEntry(&a.endpoint, endpoint)
 	a.urlCopy.SetSensitive(endpoint != "")
-	note := "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
+	note := i18n.T("Use this URL and the token in Console. From another computer, use this desktop's reachable address.")
 	switch {
 	case !c.Enable:
-		note = "Turn on Assistant to serve this endpoint."
+		note = i18n.T("Turn on Assistant to serve this endpoint.")
 	case !c.ServeEnable:
-		note = "HTTP serving is off. The assistant still runs in the background."
+		note = i18n.T("HTTP serving is off. The assistant still runs in the background.")
 	case a.saved[keys.ServeTokenKey] == 0:
-		note = "Create a token to allow Console connections."
+		note = i18n.T("Create a token to allow Console connections.")
 	}
 	a.serveNote.SetText(note)
 	a.tokenShow.SetSensitive(!a.tokenBusy)
 	a.tokenCopy.SetSensitive(!a.tokenBusy && a.saved[keys.ServeTokenKey] != 0)
 	switch {
 	case a.tokenBusy:
-		a.tokenShow.SetLabel("Reading keyring…")
+		a.tokenShow.SetLabel(i18n.T("Reading keyring…"))
 	case a.token.GetVisibility() && a.token.GetText() != "":
-		a.tokenShow.SetLabel("Hide token")
+		a.tokenShow.SetLabel(i18n.T("Hide token"))
 	case a.saved[keys.ServeTokenKey] == 0:
-		a.tokenShow.SetLabel("Create token")
+		a.tokenShow.SetLabel(i18n.T("Create token"))
 	default:
-		a.tokenShow.SetLabel("Show token")
+		a.tokenShow.SetLabel(i18n.T("Show token"))
 	}
 
 	names := make([]string, len(c.Profiles))
@@ -196,9 +197,9 @@ func (s *shellUI) showAISettings() {
 	}
 	a.profile.SetSelected(uint32(max(0, slices.Index(names, c.Profile))))
 	if len(c.Fallback) > 0 {
-		a.route.SetText("Then, when it fails: " + strings.Join(c.Fallback, ", "))
+		a.route.SetText(i18n.Tf("Then, when it fails: %s", strings.Join(c.Fallback, ", ")))
 	} else {
-		a.route.SetText("The profile asked first; turn on Fallback on others to try them when it fails")
+		a.route.SetText(i18n.T("The profile asked first; turn on Fallback on others to try them when it fails"))
 	}
 
 	if len(a.cards) != len(c.Profiles) {
@@ -254,9 +255,9 @@ func (s *shellUI) buildAICards(n int) {
 			head.Append(&b.Widget)
 			return b // unreferenced with the card's other widgets
 		}
-		card.up = button("up", "pan-up-symbolic", "Move up (fallbacks are tried in this order)")
-		card.down = button("down", "pan-down-symbolic", "Move down")
-		card.remove = button("remove", "window-close-symbolic", "Remove this profile")
+		card.up = button("up", "pan-up-symbolic", i18n.T("Move up (fallbacks are tried in this order)"))
+		card.down = button("down", "pan-down-symbolic", i18n.T("Move down"))
+		card.remove = button("remove", "window-close-symbolic", i18n.T("Remove this profile"))
 		gtkx.Append(box, &head.Widget)
 
 		grid := gtk.NewGrid()
@@ -279,12 +280,16 @@ func (s *shellUI) buildAICards(n int) {
 			gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 			return d
 		}
-		card.name = entry("name", "a name: work, fast, local …")
+		card.name = entry("name", i18n.T("a name: work, fast, local …"))
 		card.provider = drop("provider", providers)
-		card.model = entry("model", "the model's ID")
-		card.endpoint = entry("endpoint", "the provider's own")
-		card.reasoning = drop("reasoning", reasoningNames)
-		card.key = entry("key", "Paste a key, then Save")
+		card.model = entry("model", i18n.T("the model's ID"))
+		card.endpoint = entry("endpoint", i18n.T("the provider's own"))
+		translatedReasoning := make([]string, len(reasoningNames))
+		for j, name := range reasoningNames {
+			translatedReasoning[j] = i18n.T(name)
+		}
+		card.reasoning = drop("reasoning", translatedReasoning)
+		card.key = entry("key", i18n.T("Paste a key, then Save"))
 		card.key.SetVisibility(false)
 		card.key.AddCssClass("mono-entry")
 		field := func(label string, w *gtk.Widget, col, row, width int) {
@@ -297,15 +302,15 @@ func (s *shellUI) buildAICards(n int) {
 			grid.Attach(&f.Widget, int32(col), int32(row), int32(width), 1)
 			f.Unref()
 		}
-		field("Name", &card.name.Widget, 0, 0, 1)
-		field("Provider", &card.provider.Widget, 1, 0, 1)
-		field("Model", &card.model.Widget, 0, 1, 1)
-		field("Reasoning", &card.reasoning.Widget, 1, 1, 1)
-		field("Endpoint", &card.endpoint.Widget, 0, 2, 2)
+		field(i18n.T("Name"), &card.name.Widget, 0, 0, 1)
+		field(i18n.T("Provider"), &card.provider.Widget, 1, 0, 1)
+		field(i18n.T("Model"), &card.model.Widget, 0, 1, 1)
+		field(i18n.T("Reasoning"), &card.reasoning.Widget, 1, 1, 1)
+		field(i18n.T("Endpoint"), &card.endpoint.Widget, 0, 2, 2)
 		keyRow := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		keyRow.Append(&card.key.Widget)
-		card.save = gtk.NewButtonWithLabel("Save")
-		card.forget = gtk.NewButtonWithLabel("Forget")
+		card.save = gtk.NewButtonWithLabel(i18n.T("Save"))
+		card.forget = gtk.NewButtonWithLabel(i18n.T("Forget"))
 		for _, b := range []*gtk.Button{card.save, card.forget} {
 			b.AddCssClass("outlined")
 			keyRow.Append(&b.Widget)
@@ -313,12 +318,12 @@ func (s *shellUI) buildAICards(n int) {
 		}
 		card.save.SetName(fmt.Sprintf("ai-keysave:%d", i))
 		card.forget.SetName(fmt.Sprintf("ai-keyforget:%d", i))
-		field("API key", &keyRow.Widget, 0, 3, 2)
+		field(i18n.T("API key"), &keyRow.Widget, 0, 3, 2)
 		keyRow.Unref()
 		gtkx.Append(box, &grid.Widget)
 
 		card.fallbackRow = gtk.NewBox(gtk.OrientationHorizontalValue, 16)
-		l := gtk.NewLabel("Fallback: answers when the profiles above it fail")
+		l := gtk.NewLabel(i18n.T("Fallback: answers when the profiles above it fail"))
 		l.AddCssClass("sub")
 		l.SetXalign(0)
 		l.SetHexpand(true)
@@ -360,30 +365,30 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	role := ""
 	switch {
 	case p.Name == c.Profile:
-		role = "Answers first. "
+		role = i18n.T("Answers first. ")
 	case slices.Contains(c.Fallback, p.Name):
-		role = fmt.Sprintf("Fallback %d. ", slices.Index(c.Fallback, p.Name)+1)
+		role = i18n.Tf("Fallback %d. ", slices.Index(c.Fallback, p.Name)+1)
 	}
 	var key string
 	switch {
 	case err != nil:
-		key = "The saved keys cannot be read: " + err.Error()
+		key = i18n.Tf("The saved keys cannot be read: %s", err.Error())
 	case saved[p.Name] != 0:
-		key = "Key saved"
+		key = i18n.T("Key saved")
 	case strings.HasSuffix(p.Provider, "_compatible"):
-		key = "No key (a local server may want none)"
+		key = i18n.T("No key (a local server may want none)")
 	case p.Name == c.Profile:
-		key = "No key yet: the assistant cannot answer"
+		key = i18n.T("No key yet: the assistant cannot answer")
 	default:
-		key = "No key yet: this profile is skipped"
+		key = i18n.T("No key yet: this profile is skipped")
 	}
 	card.state.SetText(role + key)
-	toggle(&card.state.Widget, "missing", err != nil || (key[0] == 'N' && !strings.HasSuffix(p.Provider, "_compatible")))
+	toggle(&card.state.Widget, "missing", err != nil || (saved[p.Name] == 0 && !strings.HasSuffix(p.Provider, "_compatible")))
 	card.forget.SetVisible(saved[p.Name] != 0)
 	if saved[p.Name] != 0 {
-		card.key.SetPlaceholderText("Saved; paste another to replace it")
+		card.key.SetPlaceholderText(i18n.T("Saved; paste another to replace it"))
 	} else {
-		card.key.SetPlaceholderText("Paste a key, then Save")
+		card.key.SetPlaceholderText(i18n.T("Paste a key, then Save"))
 	}
 }
 
@@ -542,7 +547,7 @@ func (s *shellUI) aiButton(name string) bool {
 		clip := s.settings.win.GetClipboard()
 		clip.SetText(s.settings.ai.endpoint.GetText())
 		clip.Unref()
-		s.setStatus("Endpoint URL copied", false)
+		s.setStatus(i18n.T("Endpoint URL copied"), false)
 		return true
 	}
 	if name == "ai_token_show" || name == "ai_token_copy" {
@@ -571,14 +576,14 @@ func (s *shellUI) aiButton(name string) bool {
 				if s.settings.win == win {
 					switch {
 					case err != nil:
-						s.setStatus("Cannot read the Console token: "+err.Error(), true)
+						s.setStatus(i18n.Tf("Cannot read the Console token: %s", err.Error()), true)
 					case token == "":
-						s.setStatus("No Console token. Create one first.", true)
+						s.setStatus(i18n.T("No Console token. Create one first."), true)
 					case name == "ai_token_copy":
 						clip := win.GetClipboard()
 						clip.SetText(token)
 						clip.Unref()
-						s.setStatus("Token copied", false)
+						s.setStatus(i18n.T("Token copied"), false)
 					default:
 						a.token.SetText(token)
 						a.token.SetVisibility(true)
@@ -643,7 +648,7 @@ func (s *shellUI) aiButton(name string) bool {
 		if a.Profile == p.Name {
 			a.Profile = a.Profiles[0].Name
 		}
-		s.keysDo("key not removed", func(k *keys.Keys) error { return k.Set(p.Name, "") })
+		s.keysDo(i18n.T("key not removed"), func(k *keys.Keys) error { return k.Set(p.Name, "") })
 	case "keysave", "keyforget":
 		key := ""
 		if field == "keysave" {
@@ -654,7 +659,7 @@ func (s *shellUI) aiButton(name string) bool {
 		}
 		s.settings.ai.cards[i].key.SetText("")
 		s.setStatus("", false)
-		s.keysDo("key not saved", func(k *keys.Keys) error { return k.Set(p.Name, key) })
+		s.keysDo(i18n.T("key not saved"), func(k *keys.Keys) error { return k.Set(p.Name, key) })
 		return true
 	}
 	s.changeSettings(c)

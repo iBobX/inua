@@ -10,6 +10,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // pinball is Space Pinball (docs/feat/pinball.md): the table drawn on a
@@ -42,9 +43,9 @@ func (p *pinball) setup(f *frame) {
 	f.win.SetDefaultSize(780, 1040)
 	p.cv = newCanvas(games.TableW+panelGap+panelW+2*pinMargin, games.TableH+2*pinMargin, p.paint)
 	gtkx.Append(&f.body, &p.cv.area.Widget)
-	p.score = f.stat("SCORE")
-	p.ball = f.stat("BALL")
-	p.best = f.stat("BEST")
+	p.score = f.stat(i18n.T("SCORE"))
+	p.ball = f.stat(i18n.T("BALL"))
+	p.best = f.stat(i18n.T("BEST"))
 	p.record = loadBest("space-pinball")
 	p.snd = newSynth()
 	f.keyDown = func(k uint32) bool { return p.key(k, true) }
@@ -185,29 +186,29 @@ func (p *pinball) update() {
 	switch {
 	case g.Result != games.Playing:
 		if g.Score >= p.record && g.Score > 0 {
-			p.f.say(fmt.Sprintf("Game over as %s: %s points, a new best. N plays again.", g.RankName(), thousands(g.Score)), "good")
+			p.f.say(i18n.Tf("Game over as %s: %s points, a new best. N plays again.", g.RankName(), thousands(g.Score)), "good")
 		} else {
-			p.f.say(fmt.Sprintf("Game over as %s: %s points. N plays again.", g.RankName(), thousands(g.Score)), "")
+			p.f.say(i18n.Tf("Game over as %s: %s points. N plays again.", g.RankName(), thousands(g.Score)), "")
 		}
 	case p.paused:
-		p.f.say("Paused. Press P, or any control, to play on.", "")
+		p.f.say(i18n.T("Paused. Press P, or any control, to play on."), "")
 	case g.Tilted:
-		p.f.say("Tilt: the flippers are dead until this ball drains.", "bad")
+		p.f.say(i18n.T("Tilt: the flippers are dead until this ball drains."), "bad")
 	case !p.playing():
 		lanes := [3]string{"left", "middle", "right"}
 		if g.Skill >= 0 {
-			p.f.say(fmt.Sprintf("Ball %d: hold Space and let go. The skill shot is the %s lane: pull light for the right, harder for the left.", g.BallNo, lanes[g.Skill]), "")
+			p.f.say(i18n.Tf("Ball %d: hold Space and let go. The skill shot is the %s lane: pull light for the right, harder for the left.", g.BallNo, lanes[g.Skill]), "")
 		} else {
-			p.f.say(fmt.Sprintf("Ball %d: hold Space to pull the plunger, let go to launch.", g.BallNo), "")
+			p.f.say(i18n.Tf("Ball %d: hold Space to pull the plunger, let go to launch.", g.BallNo), "")
 		}
 	case g.Multiball:
-		p.f.say(fmt.Sprintf("Multiball: the launch ramp is the jackpot, %s.", thousands(g.Jackpot*g.FieldMult)), "good")
+		p.f.say(i18n.Tf("Multiball: the launch ramp is the jackpot, %s.", thousands(g.Jackpot*g.FieldMult)), "good")
 	case g.Mission >= 0:
-		p.f.say(fmt.Sprintf("%s: %s %d / %d, %.0f s left.", name, todo, done, of, math.Max(0, g.MissionLeft)), "")
+		p.f.say(i18n.Tf("%s: %s %d / %d, %.0f s left.", name, todo, done, of, math.Max(0, g.MissionLeft)), "")
 	case g.MissionLit:
-		p.f.say(fmt.Sprintf("Mission lit: %s. Shoot the launch ramp to accept it.", name), "good")
+		p.f.say(i18n.Tf("Mission lit: %s. Shoot the launch ramp to accept it.", name), "good")
 	default:
-		p.f.say("Hit the three yellow mission targets to light a mission; the hyperspace ramp is on the left.", "")
+		p.f.say(i18n.T("Hit the three yellow mission targets to light a mission; the hyperspace ramp is on the left."), "")
 	}
 }
 
@@ -237,8 +238,8 @@ func (p *pinball) paint(pn pen) {
 		pn.Alpha(c.app, 0.6)
 		pn.Rect(0, 0, w, h)
 		pn.Fill()
-		pn.Text("PAUSED", "IBM Plex Sans Bold 24", w/2, h/2-14, 0.5, 0.5, c.t0)
-		pn.Text("P or any control plays on", "IBM Plex Sans 12", w/2, h/2+16, 0.5, 0.5, c.t1)
+		pn.Text(i18n.T("PAUSED"), "IBM Plex Sans Bold 24", w/2, h/2-14, 0.5, 0.5, c.t0)
+		pn.Text(i18n.T("P or any control plays on"), "IBM Plex Sans 12", w/2, h/2+16, 0.5, 0.5, c.t1)
 	}
 }
 
@@ -346,7 +347,7 @@ func (p *pinball) paintTable(pn pen) {
 	// The mission lamp and the fuel gauge's lamps, down the middle.
 	missionOn := g.Mission >= 0 || g.MissionLit && blink
 	light(pn, 215, 546, 7, missionOn, pinYellow, dim)
-	pn.Text("MISSION", "Geist Mono, IBM Plex Mono 7", 215, 560, 0.5, 0, dim)
+	pn.Text(i18n.T("MISSION"), "Geist Mono, IBM Plex Mono 7", 215, 560, 0.5, 0, dim)
 
 	// Walls, the dome, posts and the launch lane.
 	pn.Width(8)
@@ -399,7 +400,7 @@ func (p *pinball) paintTable(pn pen) {
 	pn.Save()
 	pn.Translate(48, 384)
 	pn.Rotate(-math.Pi/2 - 0.12)
-	pn.Text("HYPERSPACE", "Geist Mono, IBM Plex Mono Bold 8", 0, 0, 0.5, 0.5, mix(dim, pinBlue, 0.5))
+	pn.Text(i18n.T("HYPERSPACE"), "Geist Mono, IBM Plex Mono Bold 8", 0, 0, 0.5, 0.5, mix(dim, pinBlue, 0.5))
 	pn.Restore()
 	// The launch ramp's mouth: lit to accept a mission, or the jackpot.
 	lm := games.LaunchMouth[0].Lerp(games.LaunchMouth[1], 0.5)
@@ -408,9 +409,9 @@ func (p *pinball) paintTable(pn pen) {
 		launchOn = int(g.RampFlash[games.LaunchRamp]*12)%2 == 0
 	}
 	arrow(pn, lm.X-8, lm.Y+66, 10, -math.Pi/2+0.25, launchOn && blink || g.RampFlash[games.LaunchRamp] > 0 && launchOn, pinYellow, dim)
-	label := "LAUNCH"
+	label := i18n.T("LAUNCH")
 	if g.Multiball {
-		label = "JACKPOT"
+		label = i18n.T("JACKPOT")
 	}
 	pn.Text(label, "Geist Mono, IBM Plex Mono Bold 8", lm.X-12, lm.Y+92, 0.5, 0.5, mix(dim, pinYellow, 0.5))
 
@@ -425,7 +426,7 @@ func (p *pinball) paintTable(pn pen) {
 		}
 		light(pn, x, y, 5, on, col, dim)
 	}
-	pn.Text("RE-ENTRY", "Geist Mono, IBM Plex Mono 7", 230, 80, 0.5, 0.5, dim)
+	pn.Text(i18n.T("RE-ENTRY"), "Geist Mono, IBM Plex Mono 7", 230, 80, 0.5, 0.5, dim)
 
 	// The wormhole and the black hole, swirling.
 	for i, s := range games.Saucers {
@@ -451,14 +452,14 @@ func (p *pinball) paintTable(pn pen) {
 	}
 	bh := games.Saucers[games.BlackHole].At
 	light(pn, bh.X+34, bh.Y-14, 5, g.LockLit && blink, c.accent, dim)
-	pn.Text("LOCK", "Geist Mono, IBM Plex Mono 7", bh.X+44, bh.Y-14, 0, 0.5, dim)
+	pn.Text(i18n.T("LOCK"), "Geist Mono, IBM Plex Mono 7", bh.X+44, bh.Y-14, 0, 0.5, dim)
 	light(pn, bh.X+34, bh.Y+4, 5, g.ExtraLit && blink, c.ok, dim)
-	pn.Text("EXTRA BALL", "Geist Mono, IBM Plex Mono 7", bh.X+44, bh.Y+4, 0, 0.5, dim)
+	pn.Text(i18n.T("EXTRA BALL"), "Geist Mono, IBM Plex Mono 7", bh.X+44, bh.Y+4, 0, 0.5, dim)
 	for i := range 2 {
 		light(pn, bh.X-6+float64(i)*12, bh.Y+28, 3.5, i < g.Locked, c.accent, dim)
 	}
 	wh := games.Saucers[games.Wormhole].At
-	pn.Text("WORMHOLE", "Geist Mono, IBM Plex Mono 7", wh.X, wh.Y+22, 0.5, 0, dim)
+	pn.Text(i18n.T("WORMHOLE"), "Geist Mono, IBM Plex Mono 7", wh.X, wh.Y+22, 0.5, 0, dim)
 
 	// Attack bumpers, with their level lamps.
 	for i, b := range games.Bumpers {
@@ -523,7 +524,7 @@ func (p *pinball) paintTable(pn pen) {
 	pn.Save()
 	pn.Translate(394, 472)
 	pn.Rotate(math.Pi / 2)
-	pn.Text("BOOSTER", "Geist Mono, IBM Plex Mono 7", 0, 0, 0.5, 0.5, dim)
+	pn.Text(i18n.T("BOOSTER"), "Geist Mono, IBM Plex Mono 7", 0, 0, 0.5, 0.5, dim)
 	pn.Restore()
 
 	// Flippers: tapered, from a round pivot to a round tip.
@@ -555,7 +556,7 @@ func (p *pinball) paintTable(pn pen) {
 	if g.Save > 0 && (g.Save > 2 || blink) {
 		save = c.ok
 	}
-	pn.Text("RE-DEPLOY", "Geist Mono, IBM Plex Mono Bold 8", 215, 812, 0.5, 0.5, save)
+	pn.Text(i18n.T("RE-DEPLOY"), "Geist Mono, IBM Plex Mono Bold 8", 215, 812, 0.5, 0.5, save)
 
 	// The plunger, its spring squeezed as it is pulled.
 	pull := g.Charge * 24
@@ -624,7 +625,7 @@ func (p *pinball) paintTable(pn pen) {
 		pn.Fill()
 		pn.Text(g.Message, "IBM Plex Sans Bold 19", 215, 611, 0.5, 0.5, t)
 		if g.Result != games.Playing {
-			pn.Text("Press N for a new game", "IBM Plex Sans 11", 215, 650, 0.5, 0.5, c.t1)
+			pn.Text(i18n.T("Press N for a new game"), "IBM Plex Sans 11", 215, 650, 0.5, 0.5, c.t1)
 		}
 	}
 }
@@ -686,7 +687,7 @@ func (p *pinball) paintPanel(pn pen) {
 	}
 
 	// The rank, with its insignia: a bar for each rank earned.
-	kicker(18, "RANK")
+	kicker(18, i18n.T("RANK"))
 	pn.Text(g.RankName(), "IBM Plex Sans Bold 17", x, 34, 0, 0, c.t0)
 	for i := range len(games.Ranks) - 1 {
 		col := dim
@@ -697,17 +698,17 @@ func (p *pinball) paintPanel(pn pen) {
 		pn.RoundRect(x+float64(i)*(w/8), 62, w/8-4, 5, 2)
 		pn.Fill()
 	}
-	pn.Text(fmt.Sprintf("%d missions flown", g.MissionsWon), "IBM Plex Sans 10", x, 74, 0, 0, c.t2)
+	pn.Text(i18n.Nf("%d mission flown", "%d missions flown", g.MissionsWon, g.MissionsWon), "IBM Plex Sans 10", x, 74, 0, 0, c.t2)
 
 	// The mission.
 	name, todo, done, of := g.MissionStatus()
-	kicker(110, "MISSION")
-	state := "selected"
+	kicker(110, i18n.T("MISSION"))
+	state := i18n.T("selected")
 	switch {
 	case g.Mission >= 0:
-		state = "in flight"
+		state = i18n.T("in flight")
 	case g.MissionLit:
-		state = "lit"
+		state = i18n.T("lit")
 	}
 	pn.Text(state, "Geist Mono, IBM Plex Mono 8", x+w, 110, 1, 0, map[bool]color.NRGBA{true: pinYellow, false: c.t2}[g.Mission >= 0 || g.MissionLit])
 	pn.Text(name, "IBM Plex Sans Bold 14", x, 126, 0, 0, c.t0)
@@ -715,7 +716,7 @@ func (p *pinball) paintPanel(pn pen) {
 	if g.Mission >= 0 {
 		m = games.Missions[g.Mission]
 	}
-	h := pn.TextWrap(m.Brief, "IBM Plex Sans 10.5", x, 148, w, c.t1)
+	h := pn.TextWrap(i18n.T(m.Brief), "IBM Plex Sans 10.5", x, 148, w, c.t1)
 	y := 156 + h
 	if g.Mission >= 0 {
 		pn.Text(fmt.Sprintf("%s  %d / %d", todo, done, of), "Geist Mono, IBM Plex Mono 9", x, y, 0, 0, c.t0)
@@ -725,7 +726,7 @@ func (p *pinball) paintPanel(pn pen) {
 		if left < 10 && int(g.Clock*4)%2 == 0 {
 			tcol = pinRed
 		}
-		pn.Text(fmt.Sprintf("%.0f s", left), "Geist Mono, IBM Plex Mono Bold 9", x+w, y, 1, 0, tcol)
+		pn.Text(i18n.Tf("%.0f s", left), "Geist Mono, IBM Plex Mono Bold 9", x+w, y, 1, 0, tcol)
 	} else {
 		pn.Text(todo, "IBM Plex Sans 10", x, y, 0, 0, c.t2)
 		for i, on := range g.Targets {
@@ -734,7 +735,7 @@ func (p *pinball) paintPanel(pn pen) {
 	}
 
 	// Fuel.
-	kicker(262, "FUEL")
+	kicker(262, i18n.T("FUEL"))
 	fcol := c.ok
 	if g.Fuel < 25 {
 		fcol = pinRed
@@ -743,18 +744,18 @@ func (p *pinball) paintPanel(pn pen) {
 	bar(278, g.Fuel/100, fcol)
 
 	// Hyperspace.
-	kicker(306, "HYPERSPACE")
+	kicker(306, i18n.T("HYPERSPACE"))
 	for i := range 5 {
 		on := i < g.HyperLevel
 		pn.Color(map[bool]color.NRGBA{true: pinBlue, false: c.surface2}[on])
 		pn.RoundRect(x+float64(i)*(w/5), 322, w/5-4, 8, 3)
 		pn.Fill()
 	}
-	next := []string{"10K", "25K", "EXTRA BALL", "100K", "JACKPOT"}[g.HyperLevel]
+	next := []string{"10K", "25K", i18n.T("EXTRA BALL"), "100K", i18n.T("JACKPOT")}[g.HyperLevel]
 	pn.Text("next: "+next, "IBM Plex Sans 10", x, 336, 0, 0, c.t2)
 
 	// The table's state, lamp by lamp.
-	kicker(370, "TABLE")
+	kicker(370, i18n.T("TABLE"))
 	row := func(y float64, label, value string, on bool) {
 		pn.Text(label, "IBM Plex Sans 11", x, y, 0, 0, c.t1)
 		col := c.t2
@@ -763,33 +764,33 @@ func (p *pinball) paintPanel(pn pen) {
 		}
 		pn.Text(value, "Geist Mono, IBM Plex Mono Bold 10", x+w, y, 1, 0, col)
 	}
-	row(386, "Field multiplier", fmt.Sprintf("×%d", g.FieldMult), g.FieldMult > 1)
-	row(406, "Bumper level", fmt.Sprint(g.BumperLevel()), g.BumperLevel() > 1)
+	row(386, i18n.T("Field multiplier"), fmt.Sprintf("×%d", g.FieldMult), g.FieldMult > 1)
+	row(406, i18n.T("Bumper level"), fmt.Sprint(g.BumperLevel()), g.BumperLevel() > 1)
 	lock := fmt.Sprintf("%d / 2", g.Locked)
 	if g.LockLit {
-		lock = "lit · " + lock
+		lock = i18n.Tf("lit · %s", lock)
 	}
 	if g.Multiball {
-		lock = "multiball"
+		lock = i18n.T("multiball")
 	}
-	row(426, "Lock", lock, g.LockLit || g.Multiball)
-	row(446, "Extra ball", map[bool]string{true: "lit", false: "—"}[g.ExtraLit], g.ExtraLit)
+	row(426, i18n.T("Lock"), lock, g.LockLit || g.Multiball)
+	row(446, i18n.T("Extra ball"), map[bool]string{true: "lit", false: "—"}[g.ExtraLit], g.ExtraLit)
 	saveText := "—"
 	if g.Save > 0 {
-		saveText = fmt.Sprintf("%.0f s", g.Save)
+		saveText = i18n.Tf("%.0f s", g.Save)
 	}
-	row(466, "Ball save", saveText, g.Save > 0)
-	tilt := "steady"
+	row(466, i18n.T("Ball save"), saveText, g.Save > 0)
+	tilt := i18n.T("steady")
 	if g.Tilted {
-		tilt = "TILT"
+		tilt = i18n.T("TILT")
 	} else if g.TiltMeter >= 2 {
-		tilt = "danger"
+		tilt = i18n.T("danger")
 	}
-	row(486, "Table", tilt, g.Tilted || g.TiltMeter >= 2)
-	row(506, "Bonus", thousands(g.Bonus*g.FieldMult), g.Bonus > 0)
+	row(486, i18n.T("Table"), tilt, g.Tilted || g.TiltMeter >= 2)
+	row(506, i18n.T("Bonus"), thousands(g.Bonus*g.FieldMult), g.Bonus > 0)
 
 	// The log, newest first.
-	kicker(546, "LOG")
+	kicker(546, i18n.T("LOG"))
 	for i, s := range g.Log {
 		a := 1 - float64(i)*0.17
 		t := c.t1
@@ -801,14 +802,14 @@ func (p *pinball) paintPanel(pn pen) {
 	}
 
 	// Sound.
-	sound := "M mutes the sound"
+	sound := i18n.T("M mutes the sound")
 	switch {
 	case !p.snd.available():
-		sound = "no sound (pw-cat not found)"
+		sound = i18n.T("no sound (pw-cat not found)")
 	case p.muted:
-		sound = "sound off: M turns it on"
+		sound = i18n.T("sound off: M turns it on")
 	}
-	pn.Text("SPACE PINBALL", "Geist Mono, IBM Plex Mono Bold 9", x, games.TableH-46, 0, 0, dim)
+	pn.Text(i18n.T("SPACE PINBALL"), "Geist Mono, IBM Plex Mono Bold 9", x, games.TableH-46, 0, 0, dim)
 	pn.Text(sound, "IBM Plex Sans 9.5", x, games.TableH-28, 0, 0, c.t2)
 }
 

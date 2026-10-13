@@ -15,6 +15,7 @@ import (
 	"github.com/lyricat/inua/internal/convert"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -280,7 +281,7 @@ func (s *shellUI) buildLauncher() {
 		}
 		// No anchors: the compositor centers the surface.
 	} else {
-		l.win.SetTitle("inua launcher")
+		l.win.SetTitle(i18n.T("inua launcher"))
 	}
 
 	// Keys are handled in the capture phase, before the entry sees them.

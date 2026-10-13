@@ -33,7 +33,7 @@ ApplicationWindow center {
 
           Label {
             styles ["tag"]
-            label: "[NOTIFICATIONS]";
+            label:  _("[NOTIFICATIONS]");
           }
 
           Label count {
@@ -47,19 +47,19 @@ ApplicationWindow center {
             styles ["plain", "focus"]
             name: "focus";
             icon-name: "weather-clear-night-symbolic";
-            tooltip-text: "Focus";
+            tooltip-text:  _("Focus");
           }
 
           Button clear_all {
             styles ["plain", "link"]
             name: "clear_all";
-            label: "Clear all";
+            label:  _("Clear all");
           }
         }
 
         Label focus_note {
           styles ["sub"]
-          label: "Focus is on: banners stay quiet.";
+          label:  _("Focus is on: banners stay quiet.");
           xalign: 0;
           visible: false;
         }
@@ -89,7 +89,7 @@ ApplicationWindow center {
 
           Label {
             styles ["sub"]
-            label: "No notifications";
+            label:  _("No notifications");
           }
         }
       }

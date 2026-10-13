@@ -18,6 +18,7 @@ import (
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/shell"
 )
 
@@ -549,7 +550,7 @@ func (s *shellUI) saveSettings() {
 	st.dirty = false
 	if err := config.Save(s.opts.ConfigPath, s.cfg); err != nil {
 		log.Printf("settings: %v", err)
-		s.setStatus("not saved: "+err.Error(), true)
+		s.setStatus(i18n.Tf("Not saved: %s", err.Error()), true)
 		return
 	}
 	s.setStatus("", false)
@@ -575,9 +576,9 @@ func (s *shellUI) chooseImage() {
 		return
 	}
 	d := gtk.NewFileDialog()
-	d.SetTitle("Choose a wallpaper")
+	d.SetTitle(i18n.T("Choose a wallpaper"))
 	filter := gtk.NewFileFilter()
-	filter.SetName("Images")
+	filter.SetName(i18n.T("Images"))
 	filter.AddMimeType("image/*")
 	d.SetDefaultFilter(filter)
 	filter.Unref()
@@ -616,11 +617,11 @@ func (s *shellUI) showNotifySettings() {
 	st.banner.SetSelected(uint32(max(0, slices.Index(config.BannerChoices, c.Banner))))
 	switch {
 	case !c.Enable:
-		st.notifyState.SetText("Off: another notification daemon can show them")
+		st.notifyState.SetText(i18n.T("Off: another notification daemon can show them"))
 	case s.notesNative():
-		st.notifyState.SetText("Banners, then the notification center (the bell in the bar, or Super+N)")
+		st.notifyState.SetText(i18n.T("Banners, then the notification center (the bell in the bar, or Super+N)"))
 	default:
-		st.notifyState.SetText("Waiting: another notification daemon is running")
+		st.notifyState.SetText(i18n.T("Waiting: another notification daemon is running"))
 	}
 }
 
@@ -638,7 +639,7 @@ func (s *shellUI) showDockSettings() {
 	st.dockPosition.SetSelected(uint32(max(0, slices.Index(config.DockPositions, c.Dock.Position))))
 	gtkx.Clear(&st.dockPinned)
 	if len(c.Dock.Pinned) == 0 {
-		l := gtk.NewLabel("Nothing pinned")
+		l := gtk.NewLabel(i18n.T("Nothing pinned"))
 		l.AddCssClass("sub")
 		l.SetXalign(0)
 		l.AddCssClass("row")
@@ -654,7 +655,7 @@ func (s *shellUI) showDockSettings() {
 			name = e.Name
 		} else {
 			img.SetFromIconName("application-x-executable-symbolic")
-			name = id + " (not installed)"
+			name = i18n.Tf("%s (not installed)", id)
 		}
 		img.SetPixelSize(24)
 		gtkx.Append(row, &img.Widget)
@@ -667,9 +668,9 @@ func (s *shellUI) showDockSettings() {
 			action, icon, tip string
 			ok                bool
 		}{
-			{"up", "pan-up-symbolic", "Move earlier", i > 0},
-			{"down", "pan-down-symbolic", "Move later", i < len(c.Dock.Pinned)-1},
-			{"remove", "window-close-symbolic", "Remove from the dock", true},
+			{"up", "pan-up-symbolic", i18n.T("Move earlier"), i > 0},
+			{"down", "pan-down-symbolic", i18n.T("Move later"), i < len(c.Dock.Pinned)-1},
+			{"remove", "window-close-symbolic", i18n.T("Remove from the dock"), true},
 		} {
 			btn := gtk.NewButtonFromIconName(b.icon)
 			btn.AddCssClass("plain")

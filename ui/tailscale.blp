@@ -43,7 +43,7 @@ ApplicationWindow tailscale {
 
         Switch connect {
           valign: center;
-          tooltip-text: "Connect this device to the tailnet";
+          tooltip-text:  _("Connect this device to the tailnet");
         }
       }
 
@@ -85,7 +85,7 @@ ApplicationWindow tailscale {
 
         StackPage {
           name: "devices";
-          title: "DEVICES";
+          title:  _("DEVICES");
 
           child: Box {
             orientation: vertical;
@@ -95,7 +95,7 @@ ApplicationWindow tailscale {
 
               SearchEntry filter {
                 hexpand: true;
-                placeholder-text: "Filter by name, address, OS or tag";
+                placeholder-text:  _("Filter by name, address, OS or tag");
               }
             }
 
@@ -113,7 +113,7 @@ ApplicationWindow tailscale {
 
         StackPage {
           name: "exit";
-          title: "EXIT NODE";
+          title:  _("EXIT NODE");
 
           child: ScrolledWindow {
             hscrollbar-policy: never;
@@ -127,7 +127,7 @@ ApplicationWindow tailscale {
 
         StackPage {
           name: "device";
-          title: "THIS DEVICE";
+          title:  _("THIS DEVICE");
 
           child: ScrolledWindow {
             hscrollbar-policy: never;
@@ -176,7 +176,7 @@ ApplicationWindow tailscale {
           Button back {
             styles ["plain"]
             icon-name: "window-close-symbolic";
-            tooltip-text: "Close (Escape)";
+            tooltip-text:  _("Close (Escape)");
             valign: center;
           }
         }

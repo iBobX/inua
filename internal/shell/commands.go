@@ -1,13 +1,13 @@
 package shell
 
 import (
-	"fmt"
 	"net/url"
 	"regexp"
 	"slices"
 	"strings"
 
 	"github.com/lyricat/inua/internal/emoji"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Command is something the launcher can do besides opening apps: the
@@ -24,27 +24,27 @@ type Command struct {
 
 // Commands are the launcher's commands, matched like apps.
 var Commands = []Command{
-	{ID: "lock", Title: "Lock Screen", Detail: "Lock now", Icon: "system-lock-screen-symbolic", Keywords: []string{"lock"}},
-	{ID: "suspend", Title: "Sleep", Detail: "Suspend, locking first", Icon: "system-suspend-symbolic", Keywords: []string{"suspend", "sleep"}},
-	{ID: "reboot", Title: "Restart", Detail: "Restart the computer", Icon: "system-reboot-symbolic", Keywords: []string{"reboot"}, Confirm: "restart"},
-	{ID: "poweroff", Title: "Shut Down", Detail: "Turn the computer off", Icon: "system-shutdown-symbolic", Keywords: []string{"shutdown", "power off", "turn off"}, Confirm: "shut down"},
-	{ID: "logout", Title: "Log Out", Detail: "End this session", Icon: "system-log-out-symbolic", Keywords: []string{"logout", "sign out", "exit"}, Confirm: "log out"},
-	{ID: "trash", Title: "Empty Trash", Detail: "Delete what is in the Trash for good", Icon: "user-trash-symbolic", Keywords: []string{"trash", "bin", "recycle"}, Confirm: "empty the Trash"},
-	{ID: "settings", Title: "Settings", Detail: "inua's settings", Icon: "emblem-system-symbolic", Keywords: []string{"preferences", "config"}},
-	{ID: "shot-area", Title: "Screenshot Area", Detail: "Drag out an area", Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture", "snip"}},
-	{ID: "shot-window", Title: "Screenshot Window", Detail: "Click a window", Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture"}},
-	{ID: "shot-screen", Title: "Screenshot Screen", Detail: "Click a screen", Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture"}},
-	{ID: "record", Title: "Record Screen", Detail: "Record an area, a window or a screen", Icon: "media-record-symbolic", Keywords: []string{"screencast", "video", "capture"}},
-	{ID: "color", Title: "Pick a Colour", Detail: "From anywhere on the screen", Icon: "color-select-symbolic", Keywords: []string{"color", "eyedropper", "picker"}},
-	{ID: "clear-notes", Title: "Clear Notifications", Detail: "All of them", Icon: "preferences-system-notifications-symbolic", Keywords: []string{"notifications", "dismiss"}},
-	{ID: "focus", Title: "Focus", Detail: "Quiet notifications, or not", Icon: "weather-clear-night-symbolic", Keywords: []string{"do not disturb", "dnd", "quiet"}},
-	{ID: "wifi", Title: "Toggle Wi-Fi", Detail: "Turn Wi-Fi on or off", Icon: "network-wireless-signal-excellent-symbolic", Keywords: []string{"wireless", "network", "wifi"}},
-	{ID: "bluetooth", Title: "Toggle Bluetooth", Detail: "Turn Bluetooth on or off", Icon: "bluetooth-active-symbolic", Keywords: []string{"bluetooth"}},
-	{ID: "restart-shell", Title: "Restart inua", Detail: "Start the shell again", Icon: "system-reboot-symbolic", Keywords: []string{"reload", "shell"}},
-	{ID: "close-window", Title: "Close Window", Icon: "window-close-symbolic", Keywords: []string{"quit", "kill"}, Window: true},
-	{ID: "float", Title: "Toggle Floating", Icon: "view-restore-symbolic", Keywords: []string{"float", "tile", "tiling"}, Window: true},
-	{ID: "fullscreen", Title: "Toggle Fullscreen", Icon: "view-fullscreen-symbolic", Keywords: []string{"maximize", "maximise"}, Window: true},
-	{ID: "center", Title: "Center Window", Icon: "view-restore-symbolic", Keywords: []string{"centre", "middle"}, Window: true},
+	{ID: "lock", Title: i18n.M("Lock Screen"), Detail: i18n.M("Lock now"), Icon: "system-lock-screen-symbolic", Keywords: []string{"lock"}},
+	{ID: "suspend", Title: i18n.M("Sleep"), Detail: i18n.M("Suspend, locking first"), Icon: "system-suspend-symbolic", Keywords: []string{"suspend", "sleep"}},
+	{ID: "reboot", Title: i18n.M("Restart"), Detail: i18n.M("Restart the computer"), Icon: "system-reboot-symbolic", Keywords: []string{"reboot"}, Confirm: i18n.M("Press Enter again to restart")},
+	{ID: "poweroff", Title: i18n.M("Shut Down"), Detail: i18n.M("Turn the computer off"), Icon: "system-shutdown-symbolic", Keywords: []string{"shutdown", "power off", "turn off"}, Confirm: i18n.M("Press Enter again to shut down")},
+	{ID: "logout", Title: i18n.M("Log Out"), Detail: i18n.M("End this session"), Icon: "system-log-out-symbolic", Keywords: []string{"logout", "sign out", "exit"}, Confirm: i18n.M("Press Enter again to log out")},
+	{ID: "trash", Title: i18n.M("Empty Trash"), Detail: i18n.M("Delete what is in the Trash for good"), Icon: "user-trash-symbolic", Keywords: []string{"trash", "bin", "recycle"}, Confirm: i18n.M("Press Enter again to empty the Trash")},
+	{ID: "settings", Title: i18n.M("Settings"), Detail: i18n.M("inua's settings"), Icon: "emblem-system-symbolic", Keywords: []string{"preferences", "config"}},
+	{ID: "shot-area", Title: i18n.M("Screenshot Area"), Detail: i18n.M("Drag out an area"), Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture", "snip"}},
+	{ID: "shot-window", Title: i18n.M("Screenshot Window"), Detail: i18n.M("Click a window"), Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture"}},
+	{ID: "shot-screen", Title: i18n.M("Screenshot Screen"), Detail: i18n.M("Click a screen"), Icon: "applets-screenshooter-symbolic", Keywords: []string{"screenshot", "capture"}},
+	{ID: "record", Title: i18n.M("Record Screen"), Detail: i18n.M("Record an area, a window or a screen"), Icon: "media-record-symbolic", Keywords: []string{"screencast", "video", "capture"}},
+	{ID: "color", Title: i18n.M("Pick a Colour"), Detail: i18n.M("From anywhere on the screen"), Icon: "color-select-symbolic", Keywords: []string{"color", "eyedropper", "picker"}},
+	{ID: "clear-notes", Title: i18n.M("Clear Notifications"), Detail: i18n.M("All of them"), Icon: "preferences-system-notifications-symbolic", Keywords: []string{"notifications", "dismiss"}},
+	{ID: "focus", Title: i18n.M("Focus"), Detail: i18n.M("Quiet notifications, or not"), Icon: "weather-clear-night-symbolic", Keywords: []string{"do not disturb", "dnd", "quiet"}},
+	{ID: "wifi", Title: i18n.M("Toggle Wi-Fi"), Detail: i18n.M("Turn Wi-Fi on or off"), Icon: "network-wireless-signal-excellent-symbolic", Keywords: []string{"wireless", "network", "wifi"}},
+	{ID: "bluetooth", Title: i18n.M("Toggle Bluetooth"), Detail: i18n.M("Turn Bluetooth on or off"), Icon: "bluetooth-active-symbolic", Keywords: []string{"bluetooth"}},
+	{ID: "restart-shell", Title: i18n.M("Restart inua"), Detail: i18n.M("Start the shell again"), Icon: "system-reboot-symbolic", Keywords: []string{"reload", "shell"}},
+	{ID: "close-window", Title: i18n.M("Close Window"), Icon: "window-close-symbolic", Keywords: []string{"quit", "kill"}, Window: true},
+	{ID: "float", Title: i18n.M("Toggle Floating"), Icon: "view-restore-symbolic", Keywords: []string{"float", "tile", "tiling"}, Window: true},
+	{ID: "fullscreen", Title: i18n.M("Toggle Fullscreen"), Icon: "view-fullscreen-symbolic", Keywords: []string{"maximize", "maximise"}, Window: true},
+	{ID: "center", Title: i18n.M("Center Window"), Icon: "view-restore-symbolic", Keywords: []string{"centre", "middle"}, Window: true},
 }
 
 // CommandByID finds a command.
@@ -69,9 +69,9 @@ func searchCommands(q, window string) []Result {
 	var rs []Result
 	if m := workspaceRe.FindStringSubmatch(q); m != nil {
 		if m[1] == "" {
-			rs = append(rs, Result{Title: "Go to Workspace " + m[2], Detail: "Workspace", Icon: "view-app-grid-symbolic", Command: "workspace", Arg: m[2], score: 1000})
+			rs = append(rs, Result{Title: i18n.Tf("Go to Workspace %s", m[2]), Detail: i18n.T("Workspace"), Icon: "view-app-grid-symbolic", Command: "workspace", Arg: m[2], score: 1000})
 		} else if window != "" {
-			rs = append(rs, Result{Title: "Move Window to Workspace " + m[2], Detail: window, Icon: "view-app-grid-symbolic", Command: "move-window", Arg: m[2], score: 1000})
+			rs = append(rs, Result{Title: i18n.Tf("Move Window to Workspace %s", m[2]), Detail: window, Icon: "view-app-grid-symbolic", Command: "move-window", Arg: m[2], score: 1000})
 		}
 	}
 	for _, c := range Commands {
@@ -82,11 +82,11 @@ func searchCommands(q, window string) []Result {
 		if score == 0 {
 			continue
 		}
-		detail := c.Detail
+		detail := i18n.T(c.Detail)
 		if c.Window {
 			detail = window
 		}
-		rs = append(rs, Result{Title: c.Title, Detail: detail, Icon: c.Icon, Command: c.ID, score: score})
+		rs = append(rs, Result{Title: i18n.T(c.Title), Detail: detail, Icon: c.Icon, Command: c.ID, score: score})
 	}
 	return rs
 }
@@ -96,8 +96,11 @@ func searchCommands(q, window string) []Result {
 // Screen" are no reason to offer it for "code".
 func commandScore(q string, c Command) int {
 	best := 0
-	if m := match(c.Title, q); m >= wordStart {
+	if m := match(i18n.T(c.Title), q); m >= wordStart {
 		best = 2 * m
+	}
+	if m := match(c.Title, q); m >= wordStart {
+		best = max(best, 2*m)
 	}
 	for _, k := range c.Keywords {
 		if m := match(k, q); m >= prefix {
@@ -125,7 +128,7 @@ func engineName(template string, links []Quicklink) string {
 	if u, err := url.Parse(template); err == nil && u.Host != "" {
 		return strings.TrimPrefix(u.Host, "www.")
 	}
-	return "the web"
+	return i18n.T("the web")
 }
 
 // A web address typed as is: a scheme, or a domain with a dot and letters
@@ -147,21 +150,21 @@ func webResults(query, search string, links []Quicklink) (first, last []Result) 
 	for _, l := range links {
 		switch {
 		case strings.EqualFold(word, l.Keyword) && rest != "":
-			first = append(first, Result{Title: fmt.Sprintf("Search %s for “%s”", l.Name, rest), Detail: l.Keyword + " · " + hostOf(l.URL), Icon: "system-search-symbolic", URL: SearchLink(l.URL, rest)})
+			first = append(first, Result{Title: i18n.Tf("Search %s for “%s”", l.Name, rest), Detail: l.Keyword + " · " + hostOf(l.URL), Icon: "system-search-symbolic", URL: SearchLink(l.URL, rest)})
 		case rest == "" && (strings.EqualFold(q, l.Keyword) || rank(strings.ToLower(q), l.Name) >= 2*prefix):
-			first = append(first, Result{Title: l.Name, Detail: fmt.Sprintf("Type %s and words to search", l.Keyword), Icon: "system-search-symbolic", Fill: l.Keyword + " "})
+			first = append(first, Result{Title: l.Name, Detail: i18n.Tf("Type %s and words to search", l.Keyword), Icon: "system-search-symbolic", Fill: l.Keyword + " "})
 		}
 	}
 	if !strings.Contains(q, " ") {
 		switch {
 		case schemeRe.MatchString(q):
-			first = append(first, Result{Title: "Open " + q, Detail: "Web address", Icon: "system-search-symbolic", URL: q})
+			first = append(first, Result{Title: i18n.Tf("Open %s", q), Detail: i18n.T("Web address"), Icon: "system-search-symbolic", URL: q})
 		case domainRe.MatchString(q) && !strings.Contains(q, ".desktop"):
-			first = append(first, Result{Title: "Open " + q, Detail: "Web address", Icon: "system-search-symbolic", URL: "https://" + q})
+			first = append(first, Result{Title: i18n.Tf("Open %s", q), Detail: i18n.T("Web address"), Icon: "system-search-symbolic", URL: "https://" + q})
 		}
 	}
 	if search != "" {
-		last = append(last, Result{Title: fmt.Sprintf("Search %s for “%s”", engineName(search, links), q), Detail: "Web search", Icon: "system-search-symbolic", URL: SearchLink(search, q)})
+		last = append(last, Result{Title: i18n.Tf("Search %s for “%s”", engineName(search, links), q), Detail: i18n.T("Web search"), Icon: "system-search-symbolic", URL: SearchLink(search, q)})
 	}
 	return first, last
 }

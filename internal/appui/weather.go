@@ -16,6 +16,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/apps/weather"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // refreshEvery is how often the forecast is read again.
@@ -219,7 +220,7 @@ func (a *weatherApp) showPlaces() {
 	if p, ok := a.selected(); ok {
 		a.place.SetText(p.Name)
 	} else {
-		a.place.SetText("Weather")
+		a.place.SetText(i18n.T("Weather"))
 	}
 
 	gtkx.Clear(&a.placeList)
@@ -242,7 +243,7 @@ func (a *weatherApp) showPlaces() {
 		body.Unref()
 		b.SetHexpand(true)
 		gtkx.Append(row, &b.Widget)
-		gtkx.Append(row, &plainIcon("place-remove:"+strconv.Itoa(i), "window-close-symbolic", "Remove "+p.Name, &a.onButton).Widget)
+		gtkx.Append(row, &plainIcon("place-remove:"+strconv.Itoa(i), "window-close-symbolic", i18n.Tf("Remove %s", p.Name), &a.onButton).Widget)
 		gtkx.Append(&a.placeList, &row.Widget)
 	}
 }
@@ -251,13 +252,13 @@ func (a *weatherApp) showPlaces() {
 func (a *weatherApp) refresh() {
 	p, ok := a.selected()
 	if !ok {
-		a.showMessage("Add a city to see its weather.", "Add a city")
+		a.showMessage(i18n.T("Add a city to see its weather."), i18n.T("Add a city"))
 		return
 	}
 	a.loading++
 	gen, fahrenheit, idx := a.loading, a.data.Fahrenheit, a.data.Selected
 	if a.pages.GetVisibleChildName() != "forecast" {
-		a.showMessage("Reading the weather…", "")
+		a.showMessage(i18n.T("Reading the weather…"), "")
 	}
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -269,7 +270,7 @@ func (a *weatherApp) refresh() {
 			}
 			if err != nil {
 				log.Printf("weather: %v", err)
-				a.showMessage("The weather could not be read.\n"+shortErr(err), "Try again")
+				a.showMessage(i18n.Tf("The weather could not be read.\n%s", shortErr(err)), i18n.T("Try again"))
 				return
 			}
 			a.fetched = time.Now()
@@ -318,7 +319,7 @@ func (a *weatherApp) showForecast(f weather.Forecast) {
 	a.nowText.SetText(desc)
 	a.nowIcon.SetFromIconName(icon)
 	if len(f.Days) > 0 {
-		a.nowRange.SetText(fmt.Sprintf("H %s   L %s", weather.Temp(f.Days[0].Max), weather.Temp(f.Days[0].Min)))
+		a.nowRange.SetText(i18n.Tf("H %s   L %s", weather.Temp(f.Days[0].Max), weather.Temp(f.Days[0].Min)))
 	}
 
 	gtkx.Clear(&a.hours)
@@ -327,7 +328,7 @@ func (a *weatherApp) showForecast(f weather.Forecast) {
 		col.AddCssClass("hour")
 		label := h.Time.Format("15")
 		if i == 0 {
-			label = "NOW"
+			label = i18n.T("NOW")
 			col.AddCssClass("now")
 		}
 		t := gtk.NewLabel(label)
@@ -353,9 +354,9 @@ func (a *weatherApp) showForecast(f weather.Forecast) {
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 		row.AddCssClass("row")
 		row.AddCssClass("day")
-		name := d.Date.Format("Mon")
+		name := i18n.Time(d.Date, "Mon")
 		if i == 0 {
-			name = "Today"
+			name = i18n.T("Today")
 		}
 		n := gtk.NewLabel(name)
 		n.AddCssClass("title")
@@ -390,16 +391,16 @@ func (a *weatherApp) showForecast(f weather.Forecast) {
 
 	clearGrid(&a.details)
 	cells := [][2]string{
-		{"FEELS LIKE", weather.Temp(f.Now.Feels)},
-		{"HUMIDITY", fmt.Sprintf("%d%%", f.Now.Humidity)},
-		{"WIND", fmt.Sprintf("%.0f %s", f.Now.Wind, f.Wind)},
-		{"RAIN", "—"},
+		{i18n.T("FEELS LIKE"), weather.Temp(f.Now.Feels)},
+		{i18n.T("HUMIDITY"), fmt.Sprintf("%d%%", f.Now.Humidity)},
+		{i18n.T("WIND"), fmt.Sprintf("%.0f %s", f.Now.Wind, f.Wind)},
+		{i18n.T("RAIN"), "—"},
 	}
 	if len(f.Days) > 0 {
 		cells[3][1] = fmt.Sprintf("%d%%", f.Days[0].Rain)
 		cells = append(cells,
-			[2]string{"SUNRISE", f.Days[0].Sunrise.Format("15:04")},
-			[2]string{"SUNSET", f.Days[0].Sunset.Format("15:04")})
+			[2]string{i18n.T("SUNRISE"), f.Days[0].Sunrise.Format("15:04")},
+			[2]string{i18n.T("SUNSET"), f.Days[0].Sunset.Format("15:04")})
 	}
 	for i, c := range cells {
 		box := gtk.NewBox(gtk.OrientationVerticalValue, 6)
@@ -421,7 +422,7 @@ func (a *weatherApp) showForecast(f weather.Forecast) {
 		a.details.Attach(&box.Widget, int32(i%2), int32(i/2), 1, 1)
 		box.Unref()
 	}
-	a.updated.SetText("UPDATED " + time.Now().Format("15:04") + " · OPEN-METEO")
+	a.updated.SetText(i18n.Tf("UPDATED %s · OPEN-METEO", time.Now().Format("15:04")))
 	a.pages.SetVisibleChildName("forecast")
 }
 
@@ -466,9 +467,9 @@ func (a *weatherApp) search(q string) {
 			gtkx.Clear(&a.placeResults)
 			a.results = places
 			if err != nil || len(places) == 0 {
-				msg := "No place by that name"
+				msg := i18n.T("No place by that name")
 				if err != nil {
-					msg = "Could not search: " + shortErr(err)
+					msg = i18n.Tf("Could not search: %s", shortErr(err))
 				}
 				l := gtk.NewLabel(msg)
 				l.AddCssClass("empty")

@@ -14,6 +14,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/colors"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // colorApp is the Color Picker. The shell picks (inua call screenshot
@@ -116,7 +117,7 @@ func (a *colorApp) show() {
 		tex := colorTexture(c)
 		a.swatch.SetPaintable(tex)
 		tex.Unref()
-		for _, f := range [][2]string{{"HEX", c.Hex()}, {"RGB", c.RGB()}, {"HSL", c.HSL()}} {
+		for _, f := range [][2]string{{i18n.T("HEX"), c.Hex()}, {i18n.T("RGB"), c.RGB()}, {i18n.T("HSL"), c.HSL()}} {
 			row := gtk.NewBox(gtk.OrientationHorizontalValue, 14)
 			row.AddCssClass("row")
 			k := gtk.NewLabel(f[0])
@@ -130,12 +131,12 @@ func (a *colorApp) show() {
 			v.SetXalign(0)
 			v.SetSelectable(true)
 			gtkx.Append(row, &v.Widget)
-			gtkx.Append(row, &plainIcon("copy:"+f[1], "edit-copy-symbolic", "Copy "+f[1], &a.onButton).Widget)
+			gtkx.Append(row, &plainIcon("copy:"+f[1], "edit-copy-symbolic", i18n.Tf("Copy %s", f[1]), &a.onButton).Widget)
 			gtkx.Append(&a.forms, &row.Widget)
 		}
 	} else {
 		noPaintable(&a.swatch)
-		l := gtk.NewLabel("No colour yet. Pick one from anywhere on the screen.")
+		l := gtk.NewLabel(i18n.T("No colour yet. Pick one from anywhere on the screen."))
 		l.AddCssClass("empty")
 		l.SetWrap(true)
 		l.SetXalign(0)

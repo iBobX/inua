@@ -2,7 +2,6 @@ package ui
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
@@ -12,6 +11,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/upgrade"
 )
 
@@ -123,35 +123,35 @@ func (s *shellUI) showAboutSettings() {
 	if upgrade.IsRelease(v) {
 		a.version.SetText("inua " + strings.TrimPrefix(v, "v"))
 	} else {
-		a.version.SetText(fmt.Sprintf("inua %s, built from source", v))
+		a.version.SetText(i18n.Tf("inua %s, built from source", v))
 	}
 	a.daily.SetActive(s.cfg.Notify.Updates)
 	a.check.SetSensitive(!a.checking && !a.upgrading)
 	// A build from source comes before every release, so it can take one.
 	a.upgrade.SetVisible(a.latest != "" && known && order < 0)
 	a.upgrade.SetSensitive(!a.upgrading)
-	a.upgrade.SetLabel("Upgrade to " + strings.TrimPrefix(a.latest, "v"))
+	a.upgrade.SetLabel(i18n.Tf("Upgrade to %s", strings.TrimPrefix(a.latest, "v")))
 	switch {
 	case a.upgrading:
-		a.state.SetText("Upgrading… the shell restarts on the new version")
+		a.state.SetText(i18n.T("Upgrading… the shell restarts on the new version"))
 	case a.checking:
-		a.state.SetText("Checking…")
+		a.state.SetText(i18n.T("Checking…"))
 	case a.said != "":
 		a.state.SetText(a.said)
 	case a.err != nil:
-		a.state.SetText("Could not reach GitHub: " + a.err.Error())
+		a.state.SetText(i18n.Tf("Could not reach GitHub: %s", a.err.Error()))
 	case a.latest == "":
-		a.state.SetText("Not checked yet")
+		a.state.SetText(i18n.T("Not checked yet"))
 	case !known:
-		a.state.SetText(fmt.Sprintf("The latest release is %s; this version cannot be compared with it", a.latest))
+		a.state.SetText(i18n.Tf("The latest release is %s; this version cannot be compared with it", a.latest))
 	case order < 0 && !upgrade.IsRelease(v):
-		a.state.SetText(fmt.Sprintf("inua %s is out; upgrading replaces this build from source", strings.TrimPrefix(a.latest, "v")))
+		a.state.SetText(i18n.Tf("inua %s is out; upgrading replaces this build from source", strings.TrimPrefix(a.latest, "v")))
 	case order < 0:
-		a.state.SetText(fmt.Sprintf("inua %s is out", strings.TrimPrefix(a.latest, "v")))
+		a.state.SetText(i18n.Tf("inua %s is out", strings.TrimPrefix(a.latest, "v")))
 	case order == 0:
-		a.state.SetText(fmt.Sprintf("Up to date: %s is the latest release (checked %s)", a.latest, a.checked.Format("15:04")))
+		a.state.SetText(i18n.Tf("Up to date: %s is the latest release (checked %s)", a.latest, a.checked.Format("15:04")))
 	default:
-		a.state.SetText(fmt.Sprintf("Newer than the latest release, %s", a.latest))
+		a.state.SetText(i18n.Tf("Newer than the latest release, %s", a.latest))
 	}
 	s.showChangelog()
 }
@@ -161,9 +161,9 @@ func (s *shellUI) showChangelog() {
 	a := &s.settings.about
 	gtkx.Clear(&a.changelog)
 	if len(a.releases) == 0 {
-		l := gtk.NewLabel("Shown once the releases are read")
+		l := gtk.NewLabel(i18n.T("Shown once the releases are read"))
 		if a.checking {
-			l.SetText("Reading the releases…")
+			l.SetText(i18n.T("Reading the releases…"))
 		}
 		l.AddCssClass("sub")
 		l.SetXalign(0)
@@ -178,17 +178,17 @@ func (s *shellUI) showChangelog() {
 		tag := gtk.NewLabel(r.Tag)
 		tag.AddCssClass("title")
 		gtkx.Append(head, &tag.Widget)
-		date := gtk.NewLabel(r.Date.Local().Format("Jan 2, 2006"))
+		date := gtk.NewLabel(i18n.Time(r.Date.Local(), "Jan 2, 2006"))
 		date.AddCssClass("readout")
 		date.SetHexpand(true)
 		date.SetXalign(0)
 		gtkx.Append(head, &date.Widget)
 		if r.Tag == s.opts.Version || "v"+s.opts.Version == r.Tag {
-			now := gtk.NewLabel("installed")
+			now := gtk.NewLabel(i18n.T("installed"))
 			now.AddCssClass("tag")
 			gtkx.Append(head, &now.Widget)
 		}
-		link := gtk.NewButtonWithLabel("On GitHub")
+		link := gtk.NewButtonWithLabel(i18n.T("On GitHub"))
 		link.AddCssClass("link")
 		link.SetName("about_url:" + r.URL)
 		link.ConnectClicked(&s.onAboutLink)

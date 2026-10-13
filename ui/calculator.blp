@@ -21,14 +21,14 @@ ApplicationWindow calculator {
 
         ToggleButton sci {
           styles ["calc-toggle"]
-          label: "Scientific";
+          label:  _("Scientific");
         }
 
         ToggleButton deg {
           styles ["calc-toggle"]
-          label: "Deg";
+          label:  _("Deg");
           active: true;
-          tooltip-text: "Trigonometry in degrees (off: radians)";
+          tooltip-text:  _("Trigonometry in degrees (off: radians)");
         }
 
         Box {
@@ -37,7 +37,7 @@ ApplicationWindow calculator {
 
         ToggleButton history {
           styles ["calc-toggle"]
-          tooltip-text: "Recent calculations";
+          tooltip-text:  _("Recent calculations");
 
           Box {
             spacing: 5;
@@ -47,7 +47,7 @@ ApplicationWindow calculator {
             }
 
             Label {
-              label: "History";
+              label:  _("History");
             }
           }
         }
@@ -107,7 +107,7 @@ ApplicationWindow calculator {
 
         Label {
           styles ["kicker"]
-          label: "HISTORY";
+          label:  _("HISTORY");
           xalign: 0;
         }
 
@@ -123,7 +123,7 @@ ApplicationWindow calculator {
 
         Button history_clear {
           styles ["calc-toggle"]
-          label: "Clear history";
+          label:  _("Clear history");
           halign: start;
         }
       }

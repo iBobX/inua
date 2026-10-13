@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/notify"
 )
 
@@ -64,7 +65,7 @@ func (s *shellUI) startScreenRecording(args []string) {
 		return
 	}
 	if _, err := exec.LookPath("wf-recorder"); err != nil {
-		s.recordNote("Recording needs wf-recorder", "Install it: sudo apt install wf-recorder", "")
+		s.recordNote(i18n.T("Recording needs wf-recorder"), i18n.T("Install it: sudo apt install wf-recorder"), "")
 		return
 	}
 	folder := s.cfg.RecordingFolder()
@@ -107,10 +108,10 @@ func (s *shellUI) recordingEnded(err error, stderr string) {
 	s.showRecording()
 	if st, statErr := os.Stat(file); statErr != nil || st.Size() == 0 {
 		log.Printf("record: %v %v %s", err, statErr, strings.TrimSpace(stderr))
-		s.recordNote("The recording failed", lastLine(stderr), "")
+		s.recordNote(i18n.T("The recording failed"), lastLine(stderr), "")
 		return
 	}
-	s.recordNote("Recording saved", fmt.Sprintf("%s · %s", filepath.Base(file), clockDuration(took)), file)
+	s.recordNote(i18n.T("Recording saved"), fmt.Sprintf("%s · %s", filepath.Base(file), clockDuration(took)), file)
 	// The drawer, the recording first, to drag into an app; not while
 	// another capture is open or over a locked screen.
 	sh := &s.shot
@@ -149,11 +150,11 @@ func lastLine(s string) string {
 // shows it in its folder.
 func (s *shellUI) recordNote(summary, body, file string) {
 	n := notify.Notification{
-		App: "Screen recording", Entry: recordingEntry, Icon: "media-record-symbolic",
+		App: i18n.T("Screen recording"), Entry: recordingEntry, Icon: "media-record-symbolic",
 		Summary: summary, Body: notify.Markup(body), Time: time.Now(), Transient: file == "",
 	}
 	if file != "" {
-		n.Actions = []notify.Action{{Key: "open:" + file, Label: "Open"}, {Key: "folder:" + file, Label: "Show in Folder"}}
+		n.Actions = []notify.Action{{Key: "open:" + file, Label: i18n.T("Open")}, {Key: "folder:" + file, Label: i18n.T("Show in Folder")}}
 	}
 	if s.notes.srv == nil {
 		go run(fmt.Sprintf("notify-send -a 'Screen recording' %s %s", shellQuote(summary), shellQuote(body)))

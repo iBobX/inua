@@ -17,6 +17,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/apps/weather"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 )
 
@@ -208,7 +209,7 @@ func (s *shellUI) buildAgenda() {
 			layershell.SetMonitor(w, mon.GoPointer())
 		}
 	} else {
-		a.win.SetTitle("inua calendar")
+		a.win.SetTitle(i18n.T("inua calendar"))
 		a.win.SetDefaultSize(360, 420)
 	}
 }
@@ -218,8 +219,8 @@ func (s *shellUI) showAgenda() {
 	a := &s.agenda
 	now := time.Now()
 	_, week := now.ISOWeek()
-	a.today.SetText(fmt.Sprintf("%s · WK %d", strings.ToUpper(now.Format("Mon Jan 2")), week))
-	a.month.SetText(strings.ToUpper(a.shown.Format("January 2006")))
+	a.today.SetText(i18n.Tf("%s · WK %d", strings.ToUpper(i18n.Time(now, "Mon Jan 2")), week))
+	a.month.SetText(strings.ToUpper(i18n.Time(a.shown, "January 2006")))
 
 	for ch := a.grid.GetFirstChild(); ch != nil; ch = a.grid.GetFirstChild() {
 		a.grid.Remove(ch)
@@ -232,8 +233,8 @@ func (s *shellUI) showAgenda() {
 		a.grid.Attach(&l.Widget, int32(col), int32(row), 1, 1)
 		l.Unref()
 	}
-	cell("WK", 0, 0, "grid-head", "week")
-	names := []string{"S", "M", "T", "W", "T", "F", "S"}
+	cell(i18n.T("WK"), 0, 0, "grid-head", "week")
+	names := []string{i18n.T("Su"), i18n.T("Mo"), i18n.T("Tu"), i18n.T("We"), i18n.T("Th"), i18n.T("Fr"), i18n.T("Sa")}
 	if a.mondayFirst {
 		names = append(names[1:], names[0])
 	}
@@ -314,8 +315,8 @@ func (s *shellUI) showAgendaWeather(havePlace bool) {
 	a.wxDays.SetVisible(false)
 	if !havePlace {
 		a.wxIcon.SetFromIconName("weather-few-clouds-symbolic")
-		a.wxTemp.SetText("Weather")
-		a.wxText.SetText("Add a place in Weather to see it here")
+		a.wxTemp.SetText(i18n.T("Weather"))
+		a.wxText.SetText(i18n.T("Add a place in Weather to see it here"))
 		a.wxPlace.SetText("")
 		a.wxHL.SetText("")
 		return
@@ -326,9 +327,9 @@ func (s *shellUI) showAgendaWeather(havePlace bool) {
 		a.wxTemp.SetText("—")
 		a.wxHL.SetText("")
 		if a.wxErr != nil && !a.wxLoading {
-			a.wxText.SetText("No forecast: offline?")
+			a.wxText.SetText(i18n.T("No forecast: offline?"))
 		} else {
-			a.wxText.SetText("Reading the forecast…")
+			a.wxText.SetText(i18n.T("Reading the forecast…"))
 		}
 		return
 	}
@@ -336,15 +337,15 @@ func (s *shellUI) showAgendaWeather(havePlace bool) {
 	text, icon := weather.Describe(f.Now.Code, f.Now.Day)
 	a.wxIcon.SetFromIconName(icon)
 	a.wxTemp.SetText(weather.Temp(f.Now.Temp))
-	a.wxText.SetText(fmt.Sprintf("%s · feels %s", text, weather.Temp(f.Now.Feels)))
+	a.wxText.SetText(i18n.Tf("%s · feels %s", text, weather.Temp(f.Now.Feels)))
 	a.wxHL.SetText("")
 	if len(f.Days) > 0 {
-		a.wxHL.SetText(fmt.Sprintf("H %s  L %s", weather.Temp(f.Days[0].Max), weather.Temp(f.Days[0].Min)))
+		a.wxHL.SetText(i18n.Tf("H %s  L %s", weather.Temp(f.Days[0].Max), weather.Temp(f.Days[0].Min)))
 	}
 	for _, d := range f.Days[min(1, len(f.Days)):min(6, len(f.Days))] {
 		col := gtk.NewBox(gtk.OrientationVerticalValue, 3)
 		col.AddCssClass("agenda-weather-day")
-		name := gtk.NewLabel(strings.ToUpper(d.Date.Format("Mon")))
+		name := gtk.NewLabel(strings.ToUpper(i18n.Time(d.Date, "Mon")))
 		name.AddCssClass("grid-head")
 		gtkx.Append(col, &name.Widget)
 		_, icon := weather.Describe(d.Code, true)

@@ -19,6 +19,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/lock"
 	"github.com/lyricat/inua/internal/rundir"
@@ -104,7 +105,7 @@ func (s *shellUI) lockScreen() error {
 		return nil
 	}
 	if !s.layer || !layershell.LockSupported() {
-		return errors.New("the compositor does not support session locks")
+		return errors.New(i18n.T("the compositor does not support session locks"))
 	}
 	if _, err := os.Stat(lock.Helper); err != nil {
 		return fmt.Errorf("cannot check passwords: %w", err)
@@ -129,7 +130,7 @@ func (s *shellUI) lockScreen() error {
 	l.locking, l.failures, l.notBefore = true, 0, time.Time{}
 	if !layershell.Lock(l.inst) {
 		// ::failed has already run, or will.
-		return errors.New("could not take the session lock")
+		return errors.New(i18n.T("could not take the session lock"))
 	}
 	if !layershell.AtLeast(1, 2) { // no ::monitor: every monitor now
 		mons := gdk.DisplayGetDefault().GetMonitors()
@@ -213,15 +214,15 @@ func (s *shellUI) showLockClock() {
 	now := time.Now()
 	for _, sf := range s.lock.surfaces {
 		sf.clock.SetText(now.Format("15:04"))
-		sf.date.SetText(strings.ToUpper(now.Format("Monday, January 2")))
+		sf.date.SetText(strings.ToUpper(i18n.Time(now, "Monday, January 2")))
 	}
 	l := &s.lock
 	if !l.checking && l.failures > 0 && !l.notBefore.IsZero() {
 		if wait := time.Until(l.notBefore); wait > 0 {
-			s.showLockMessage(fmt.Sprintf("Wrong password. Try again in %d s", int(wait.Seconds()+0.99)), true)
+			s.showLockMessage(i18n.Tf("Wrong password. Try again in %d s", int(wait.Seconds()+0.99)), true)
 		} else {
 			l.notBefore = time.Time{}
-			s.showLockMessage("Wrong password", true)
+			s.showLockMessage(i18n.T("Wrong password"), true)
 		}
 	}
 }
@@ -244,7 +245,7 @@ func (s *shellUI) tryUnlock(password string) {
 		return
 	}
 	l.checking = true
-	s.showLockMessage("Checking…", false)
+	s.showLockMessage(i18n.T("Checking…"), false)
 	for _, sf := range l.surfaces {
 		sf.password.SetSensitive(false)
 	}
@@ -271,11 +272,11 @@ func (s *shellUI) tryUnlock(password string) {
 				if wait := lock.Backoff(l.failures); wait > 0 {
 					l.notBefore = time.Now().Add(wait)
 				}
-				s.showLockMessage("Wrong password", true)
+				s.showLockMessage(i18n.T("Wrong password"), true)
 				s.showLockClock() // the wait, if there is one
 			default:
 				log.Printf("lock: %v", err)
-				s.showLockMessage("The password could not be checked", true)
+				s.showLockMessage(i18n.T("The password could not be checked"), true)
 			}
 			for _, sf := range l.surfaces {
 				if sf.win.IsActive() {

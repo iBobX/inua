@@ -176,8 +176,9 @@ make run         # run it in the current Hyprland session
 
 Translations are gettext catalogs in `internal/i18n/locales`, keyed by
 the English text; `make i18n` gathers the text to translate into
-`po/inua.pot` and updates them. System Monitor speaks Simplified Chinese
-so far (`LANGUAGE=zh_CN inua-apps system-monitor`): see
+`po/inua.pot` and updates them, including desktop launchers. The interface
+supports Simplified Chinese, Traditional Chinese, Japanese, Spanish, French
+and Korean (`LANGUAGE=zh-hant inua-apps clock`): see
 [docs/i18n.md](docs/i18n.md).
 
 Pull requests and pushes to `master` run Go formatting checks, regenerate

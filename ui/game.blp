@@ -23,14 +23,14 @@ ApplicationWindow game {
         MenuButton help {
           styles ["game-help"]
           icon-name: "dialog-information-symbolic";
-          tooltip-text: "How to play";
+          tooltip-text:  _("How to play");
           valign: center;
           popover: Popover {
             Label rules { styles ["game-rules"] wrap: true; max-width-chars: 46; xalign: 0; }
           };
         }
 
-        Button restart { styles ["outlined"] label: "New game"; valign: center; }
+        Button restart { styles ["outlined"] label:  _("New game"); valign: center; }
       }
 
       Label status { styles ["game-line"] xalign: 0; wrap: true; lines: 2; ellipsize: end; }

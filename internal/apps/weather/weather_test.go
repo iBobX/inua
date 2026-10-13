@@ -63,7 +63,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestDescribe(t *testing.T) {
-	if text, icon := Describe(0, false); text != "Clear" || icon != "weather-clear-night-symbolic" {
+	if text, icon := Describe(0, false); text != "Clear sky" || icon != "weather-clear-night-symbolic" {
 		t.Error(text, icon)
 	}
 	if text, _ := Describe(95, true); text != "Thunderstorm" {

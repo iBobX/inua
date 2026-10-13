@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Strftime formats t like strftime(3), for the subset a clock needs:
@@ -16,7 +18,7 @@ import (
 //	%F %T %R  %Y-%m-%d, %H:%M:%S, %H:%M
 //	%%     a percent sign
 //
-// A '-' after % drops the padding (%-d, %-H, %-I, %-m). Names are English.
+// A '-' after % drops the padding (%-d, %-H, %-I, %-m). Names follow the interface language.
 // Unknown directives are kept as written.
 func Strftime(format string, t time.Time) string {
 	var b strings.Builder
@@ -45,13 +47,13 @@ func Strftime(format string, t time.Time) string {
 		}
 		switch format[i] {
 		case 'a':
-			b.WriteString(t.Format("Mon"))
+			b.WriteString(i18n.Time(t, "Mon"))
 		case 'A':
-			b.WriteString(t.Format("Monday"))
+			b.WriteString(i18n.Time(t, "Monday"))
 		case 'b', 'h':
-			b.WriteString(t.Format("Jan"))
+			b.WriteString(i18n.Time(t, "Jan"))
 		case 'B':
-			b.WriteString(t.Format("January"))
+			b.WriteString(i18n.Time(t, "January"))
 		case 'd':
 			num(t.Day(), 2)
 		case 'e':
@@ -77,7 +79,7 @@ func Strftime(format string, t time.Time) string {
 		case 'S':
 			num(t.Second(), 2)
 		case 'p':
-			b.WriteString(t.Format("PM"))
+			b.WriteString(i18n.Time(t, "PM"))
 		case 'Z':
 			b.WriteString(t.Format("MST"))
 		case 'z':

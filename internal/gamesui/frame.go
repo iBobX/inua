@@ -12,6 +12,7 @@ import (
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // play is one game in its window.
@@ -87,9 +88,9 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	u.Get("body", &f.body)
 	u.Get("restart", &f.restart)
 	u.Close()
-	f.heading.SetText(v.info.Title)
-	f.rules.SetText(v.info.Rules)
-	f.hint.SetText(v.info.Keys)
+	f.heading.SetText(i18n.T(v.info.Title))
+	f.rules.SetText(i18n.T(v.info.Rules))
+	f.hint.SetText(i18n.T(v.info.Keys))
 	f.loadColors()
 	f.onRestart = func(gtk.Button) { v.g.reset() }
 	f.restart.ConnectClicked(&f.onRestart)

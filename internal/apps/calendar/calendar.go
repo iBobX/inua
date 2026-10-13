@@ -3,9 +3,10 @@
 package calendar
 
 import (
-	"fmt"
 	"strings"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // StoreName is the app's file in the store.
@@ -65,7 +66,7 @@ func Month(year int, month time.Month, mondayFirst bool, today time.Time) []Week
 // DayInfo says where a day is from today, and its week and day of the
 // year: "WEDNESDAY, OCTOBER 14", "IN 4 DAYS · WEEK 42 · DAY 287".
 func DayInfo(day, today time.Time) (title, sub string) {
-	title = strings.ToUpper(day.Format("Monday, January 2"))
+	title = strings.ToUpper(i18n.Time(day, "Monday, January 2"))
 	if day.Year() != today.Year() {
 		title += day.Format(", 2006")
 	}
@@ -75,16 +76,16 @@ func DayInfo(day, today time.Time) (title, sub string) {
 	var when string
 	switch {
 	case n == 0:
-		when = "TODAY"
+		when = i18n.T("TODAY")
 	case n == 1:
-		when = "TOMORROW"
+		when = i18n.T("TOMORROW")
 	case n == -1:
-		when = "YESTERDAY"
+		when = i18n.T("YESTERDAY")
 	case n > 1:
-		when = fmt.Sprintf("IN %d DAYS", n)
+		when = i18n.Tf("IN %d DAYS", n)
 	default:
-		when = fmt.Sprintf("%d DAYS AGO", -n)
+		when = i18n.Tf("%d DAYS AGO", -n)
 	}
 	_, week := day.ISOWeek()
-	return title, fmt.Sprintf("%s · WEEK %d · DAY %d", when, week, day.YearDay())
+	return title, i18n.Tf("%s · WEEK %d · DAY %d", when, week, day.YearDay())
 }

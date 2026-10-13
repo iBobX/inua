@@ -36,7 +36,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <class name="text"/>
                 </style>
                 <property name="name">today</property>
-                <property name="label">Today</property>
+                <property name="label" translatable="yes">Today</property>
                 <property name="valign">3</property>
               </object>
             </child>
@@ -47,7 +47,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </style>
                 <property name="name">prev</property>
                 <property name="icon-name">go-previous-symbolic</property>
-                <property name="tooltip-text">Previous month</property>
+                <property name="tooltip-text" translatable="yes">Previous month</property>
                 <property name="valign">3</property>
               </object>
             </child>
@@ -58,7 +58,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </style>
                 <property name="name">next</property>
                 <property name="icon-name">go-next-symbolic</property>
-                <property name="tooltip-text">Next month</property>
+                <property name="tooltip-text" translatable="yes">Next month</property>
                 <property name="valign">3</property>
               </object>
             </child>
@@ -110,7 +110,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <style>
                   <class name="kicker"/>
                 </style>
-                <property name="label">WEEKS START ON</property>
+                <property name="label" translatable="yes">WEEKS START ON</property>
                 <property name="hexpand">true</property>
                 <property name="xalign">0</property>
                 <property name="valign">3</property>
@@ -124,12 +124,12 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </style>
                 <child>
                   <object class="GtkToggleButton" id="start_mon">
-                    <property name="label">Mon</property>
+                    <property name="label" translatable="yes">Mon</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="start_sun">
-                    <property name="label">Sun</property>
+                    <property name="label" translatable="yes">Sun</property>
                     <property name="group">start_mon</property>
                   </object>
                 </child>

@@ -69,6 +69,17 @@ func Use(langs ...string) string {
 	defer mu.Unlock()
 	cat = nil
 	for _, l := range langs {
+		l = strings.ReplaceAll(strings.ToLower(strings.Split(strings.Split(l, ".")[0], "@")[0]), "-", "_")
+		switch {
+		case l == "zh" || l == "zh_cn" || l == "zh_sg" || strings.HasPrefix(l, "zh_hans"):
+			l = "zh_CN"
+		case l == "zh_tw" || l == "zh_hk" || l == "zh_mo" || strings.HasPrefix(l, "zh_hant"):
+			l = "zh_TW"
+		case l == "kr" || strings.HasPrefix(l, "kr_"):
+			l = "ko"
+		default:
+			l, _, _ = strings.Cut(l, "_")
+		}
 		if strings.HasPrefix(l, "en") { // English is the source: nothing to load
 			return ""
 		}

@@ -20,6 +20,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/stocks"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // quotesEvery is how often prices are read again.
@@ -270,14 +271,14 @@ func (a *stocksApp) loadShown() {
 	}
 	a.filling = false
 	if sym == "" {
-		a.message.SetText("Search for a symbol to add it.")
+		a.message.SetText(i18n.T("Search for a symbol to add it."))
 		a.detail.SetVisibleChildName("message")
 		return
 	}
 	a.shownGen++
 	gen := a.shownGen
 	if a.shown.Symbol != sym {
-		a.message.SetText("Loading " + displaySymbol(sym) + "…")
+		a.message.SetText(i18n.Tf("Loading %s…", displaySymbol(sym)))
 		a.detail.SetVisibleChildName("message")
 	}
 	go func() {
@@ -290,7 +291,7 @@ func (a *stocksApp) loadShown() {
 			}
 			if err != nil {
 				log.Printf("stocks: %v", err)
-				a.message.SetText(displaySymbol(sym) + " could not be read.\n" + shortErr(err))
+				a.message.SetText(i18n.Tf("%s could not be read.\n%s", displaySymbol(sym), shortErr(err)))
 				a.detail.SetVisibleChildName("message")
 				return
 			}
@@ -313,18 +314,18 @@ func (a *stocksApp) showQuote() {
 	a.drawChart()
 
 	clearGrid(&a.stats)
-	base := "Previous close"
+	base := i18n.T("Previous close")
 	if a.data.Range != "1d" {
-		base = "Range start"
+		base = i18n.T("Range start")
 	}
 	for i, c := range [][2]string{
-		{"High", stocks.Price(q.High)}, {"Low", stocks.Price(q.Low)}, {base, stocks.Price(q.Base)},
+		{i18n.T("High"), stocks.Price(q.High)}, {i18n.T("Low"), stocks.Price(q.Low)}, {base, stocks.Price(q.Base)},
 	} {
 		box := cell(c[0], c[1])
 		a.stats.Attach(&box.Widget, int32(i), 0, 1, 1)
 		box.Unref()
 	}
-	a.updated.SetText("As of " + q.Time.Local().Format("Jan 2, 15:04"))
+	a.updated.SetText(i18n.Tf("As of %s", i18n.Time(q.Time.Local(), "Jan 2, 15:04")))
 	a.detail.SetVisibleChildName("quote")
 }
 
@@ -400,9 +401,9 @@ func (a *stocksApp) find(q string) {
 			gtkx.Clear(&a.results)
 			a.matches = ms
 			if err != nil || len(ms) == 0 {
-				msg := "Nothing by that name"
+				msg := i18n.T("Nothing by that name")
 				if err != nil {
-					msg = "Could not search: " + shortErr(err)
+					msg = i18n.Tf("Could not search: %s", shortErr(err))
 				}
 				l := gtk.NewLabel(msg)
 				l.AddCssClass("index-note")

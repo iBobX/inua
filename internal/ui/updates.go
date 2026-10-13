@@ -14,6 +14,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/upgrade"
 )
@@ -86,16 +87,16 @@ func (s *shellUI) checkUpdates(v string) {
 // noteUpdate says a new release is out, with buttons to upgrade and to
 // read what is new.
 func (s *shellUI) noteUpdate(v, tag string) {
-	summary := fmt.Sprintf("inua %s is out", strings.TrimPrefix(tag, "v"))
-	body := fmt.Sprintf("You have %s.", v)
+	summary := i18n.Tf("inua %s is out", strings.TrimPrefix(tag, "v"))
+	body := i18n.Tf("You have %s.", v)
 	if s.notes.srv == nil {
-		go run(fmt.Sprintf("notify-send -a inua %s %s", shellQuote(summary), shellQuote(body+" Upgrade with: inua upgrade")))
+		go run(fmt.Sprintf("notify-send -a inua %s %s", shellQuote(summary), shellQuote(i18n.Tf("%s Upgrade with: inua upgrade", body))))
 		return
 	}
 	s.postNote(notify.Notification{
 		ID: s.notes.srv.NewID(), App: "inua", Entry: updateEntry, Icon: "software-update-available-symbolic",
 		Summary: summary, Body: notify.Markup(body), Urgency: notify.Normal, Time: time.Now(),
-		Default: true, Actions: []notify.Action{{Key: "upgrade:" + tag, Label: "Upgrade"}, {Key: "notes:" + tag, Label: "What's new"}},
+		Default: true, Actions: []notify.Action{{Key: "upgrade:" + tag, Label: i18n.T("Upgrade")}, {Key: "notes:" + tag, Label: i18n.T("What's new")}},
 	})
 }
 
@@ -122,8 +123,8 @@ func (s *shellUI) noteInstalled(v string) {
 		tag := "v" + strings.TrimPrefix(v, "v")
 		s.postNote(notify.Notification{
 			ID: s.notes.srv.NewID(), App: "inua", Entry: updateEntry, Icon: "software-update-available-symbolic",
-			Summary: fmt.Sprintf("inua %s is installed", v), Urgency: notify.Low, Time: time.Now(),
-			Default: true, Actions: []notify.Action{{Key: "notes:" + tag, Label: "What's new"}},
+			Summary: i18n.Tf("inua %s is installed", v), Urgency: notify.Low, Time: time.Now(),
+			Default: true, Actions: []notify.Action{{Key: "notes:" + tag, Label: i18n.T("What's new")}},
 		})
 	}
 }
@@ -172,10 +173,10 @@ func (s *shellUI) runUpgrade(tag string) (said string) {
 		}
 		s.postNote(notify.Notification{
 			ID: s.notes.srv.NewID(), App: "inua", Entry: updateEntry, Icon: "dialog-warning-symbolic",
-			Summary: "inua could not upgrade", Body: notify.Markup(cmp.Or(msg, err.Error())), Urgency: notify.Normal, Time: time.Now(),
+			Summary: i18n.T("inua could not upgrade"), Body: notify.Markup(cmp.Or(msg, err.Error())), Urgency: notify.Normal, Time: time.Now(),
 		})
 	})
-	return "Could not upgrade: " + cmp.Or(msg, err.Error())
+	return i18n.Tf("Could not upgrade: %s", cmp.Or(msg, err.Error()))
 }
 
 func fileExists(p string) bool {

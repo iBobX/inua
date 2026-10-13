@@ -14,6 +14,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/colors"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/notify"
 )
 
@@ -139,12 +140,12 @@ func (s *shellUI) pickColor(sf *shotSurface) {
 		log.Printf("color: %v", err)
 	}
 	copied := copyText(hex) == nil
-	summary := "Colour copied"
+	summary := i18n.T("Colour copied")
 	if !copied {
-		summary = "Colour picked"
+		summary = i18n.T("Colour picked")
 	}
 	n := notify.Notification{
-		App: "Color Picker", Entry: "io.github.lyricat.Inua.ColorPicker", Icon: "color-select-symbolic",
+		App: i18n.T("Color Picker"), Entry: "io.github.lyricat.Inua.ColorPicker", Icon: "color-select-symbolic",
 		Summary: summary, Body: notify.Markup(hex + "   " + col.RGB()), Time: time.Now(), Transient: true,
 	}
 	if p, err := swatchFile(c); err == nil {

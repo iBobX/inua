@@ -12,6 +12,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/calendar"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 type calendarApp struct {
@@ -127,14 +128,14 @@ func (a *calendarApp) button(name string) {
 
 // showMonth draws the month's grid, then the chosen day.
 func (a *calendarApp) showMonth() {
-	a.month.SetText(a.shown.Format("January 2006"))
+	a.month.SetText(i18n.Time(a.shown, "January 2006"))
 	clearGrid(&a.grid)
-	head := gtk.NewLabel("WK")
+	head := gtk.NewLabel(i18n.T("WK"))
 	head.AddCssClass("grid-head")
 	head.AddCssClass("week")
 	a.grid.Attach(&head.Widget, 0, 0, 1, 1)
 	head.Unref()
-	names := []string{"S", "M", "T", "W", "T", "F", "S"}
+	names := []string{i18n.T("Su"), i18n.T("Mo"), i18n.T("Tu"), i18n.T("We"), i18n.T("Th"), i18n.T("Fr"), i18n.T("Sa")}
 	if a.data.MondayFirst {
 		names = append(names[1:], names[0])
 	}

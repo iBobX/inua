@@ -126,6 +126,13 @@ func parse(text string) (*catalog, error) {
 		if e.ID == "" { // the header
 			if pf := header(e, "Plural-Forms"); strings.Contains(pf, "nplurals=1") {
 				c.plural = func(int) int { return 0 }
+			} else if strings.Contains(pf, "n > 1") {
+				c.plural = func(n int) int {
+					if n > 1 {
+						return 1
+					}
+					return 0
+				}
 			}
 			continue
 		}

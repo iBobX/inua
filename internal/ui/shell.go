@@ -32,6 +32,7 @@ import (
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
@@ -375,7 +376,11 @@ func (s *shellUI) start() {
 	// shell was not running); Hyprland reloads only if it changed.
 	s.applyHyprland()
 	go func() {
-		entries := desktop.Scan(desktop.DataDirs(), os.Getenv("LANG"))
+		locale := os.Getenv("LANG")
+		if selected := i18n.Lang(); selected != "" {
+			locale = selected
+		}
+		entries := desktop.Scan(desktop.DataDirs(), locale)
 		gtkx.Post(func() {
 			s.launcher.st.SetApps(entries)
 			s.dockApps(entries)

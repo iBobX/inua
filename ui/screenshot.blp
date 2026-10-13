@@ -90,7 +90,7 @@ ApplicationWindow screenshot {
       ToggleButton mode_area {
         styles ["shot-mode"]
         name: "area";
-        tooltip-text: "Drag to take an area (Space switches to windows)";
+        tooltip-text:  _("Drag to take an area (Space switches to windows)");
 
         Box {
           spacing: 7;
@@ -100,7 +100,7 @@ ApplicationWindow screenshot {
           }
 
           Label {
-            label: "Area";
+            label:  _("Area");
           }
         }
       }
@@ -109,7 +109,7 @@ ApplicationWindow screenshot {
         styles ["shot-mode"]
         name: "window";
         group: mode_area;
-        tooltip-text: "Click a window";
+        tooltip-text:  _("Click a window");
 
         Box {
           spacing: 7;
@@ -119,7 +119,7 @@ ApplicationWindow screenshot {
           }
 
           Label {
-            label: "Window";
+            label:  _("Window");
           }
         }
       }
@@ -128,7 +128,7 @@ ApplicationWindow screenshot {
         styles ["shot-mode"]
         name: "screen";
         group: mode_area;
-        tooltip-text: "Click a screen";
+        tooltip-text:  _("Click a screen");
 
         Box {
           spacing: 7;
@@ -138,7 +138,7 @@ ApplicationWindow screenshot {
           }
 
           Label {
-            label: "Screen";
+            label:  _("Screen");
           }
         }
       }
@@ -149,7 +149,7 @@ ApplicationWindow screenshot {
 
       ToggleButton record {
         styles ["shot-mode", "shot-record"]
-        tooltip-text: "Record the screen instead of taking a picture";
+        tooltip-text:  _("Record the screen instead of taking a picture");
 
         Box {
           spacing: 7;
@@ -160,7 +160,7 @@ ApplicationWindow screenshot {
           }
 
           Label {
-            label: "Record";
+            label:  _("Record");
           }
         }
       }
@@ -178,14 +178,14 @@ ApplicationWindow screenshot {
       Button drawer {
         styles ["plain"]
         icon-name: "image-x-generic-symbolic";
-        tooltip-text: "Recent screenshots and recordings, to drag into an app";
+        tooltip-text:  _("Recent screenshots and recordings, to drag into an app");
       }
 
       Button cancel {
         styles ["plain"]
         name: "cancel";
         icon-name: "window-close-symbolic";
-        tooltip-text: "Cancel (Esc)";
+        tooltip-text:  _("Cancel (Esc)");
       }
     }
   }

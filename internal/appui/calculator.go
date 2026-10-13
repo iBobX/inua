@@ -11,6 +11,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/calc"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // calcApp is the calculator. The expression is kept as shown (× ÷ −);
@@ -45,11 +46,11 @@ const calcHistory = "calc-history"
 // The keys: label (or a Phosphor icon from ui/icons, with the label as its
 // tooltip), input, style. Inputs starting with "op:" are commands.
 var calcKeys = [][]struct{ label, input, style, icon string }{
-	{{"AC", "op:clear", "fn", ""}, {"Delete", "op:back", "fn", "calc-backspace-symbolic"}, {"%", "%", "fn", ""}, {"÷", "÷", "op", ""}},
+	{{"AC", "op:clear", "fn", ""}, {i18n.M("Delete"), "op:back", "fn", "calc-backspace-symbolic"}, {"%", "%", "fn", ""}, {"÷", "÷", "op", ""}},
 	{{"7", "7", "", ""}, {"8", "8", "", ""}, {"9", "9", "", ""}, {"×", "×", "op", ""}},
 	{{"4", "4", "", ""}, {"5", "5", "", ""}, {"6", "6", "", ""}, {"−", "−", "op", ""}},
 	{{"1", "1", "", ""}, {"2", "2", "", ""}, {"3", "3", "", ""}, {"+", "+", "op", ""}},
-	{{"Change sign", "op:negate", "", "calc-plus-minus-symbolic"}, {"0", "0", "", ""}, {".", ".", "", ""}, {"=", "op:equals", "eq", ""}},
+	{{i18n.M("Change sign"), "op:negate", "", "calc-plus-minus-symbolic"}, {"0", "0", "", ""}, {".", ".", "", ""}, {"=", "op:equals", "eq", ""}},
 }
 
 var calcSciKeys = [][]struct{ label, input string }{
@@ -107,7 +108,7 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 		b := gtk.NewButtonWithLabel(label)
 		if icon != "" {
 			b = gtk.NewButtonFromIconName(icon)
-			b.SetTooltipText(label)
+			b.SetTooltipText(i18n.T(label))
 		}
 		b.AddCssClass("calc-key")
 		if style != "" {
@@ -196,7 +197,7 @@ func (a *calcApp) input(in string) {
 		if a.text == "" || err != nil {
 			a.show()
 			if a.text != "" {
-				a.result.SetText("Error")
+				a.result.SetText(i18n.T("Error"))
 				a.result.RemoveCssClass("preview")
 			}
 			return
@@ -230,7 +231,7 @@ func (a *calcApp) fillHistory() {
 	gtkx.Clear(&a.historyList)
 	a.historyClear.SetVisible(len(a.past) > 0)
 	if len(a.past) == 0 {
-		l := gtk.NewLabel("No calculations yet")
+		l := gtk.NewLabel(i18n.T("No calculations yet"))
 		l.AddCssClass("calc-history-empty")
 		gtkx.Append(&a.historyList, &l.Widget)
 		return
@@ -252,7 +253,7 @@ func (a *calcApp) fillHistory() {
 		b := gtk.NewButton()
 		b.AddCssClass("calc-history-entry")
 		b.SetName(strconv.Itoa(i))
-		b.SetTooltipText("Use " + e.Result)
+		b.SetTooltipText(i18n.Tf("Use %s", e.Result))
 		b.SetChild(&col.Widget)
 		col.Unref()
 		b.SetFocusOnClick(false) // Enter stays with the calculator

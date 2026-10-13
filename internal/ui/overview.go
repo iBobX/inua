@@ -18,6 +18,7 @@ import (
 	"github.com/lyricat/inua/internal/capture/hyprland"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -168,7 +169,7 @@ func (s *shellUI) closeOverview(restore bool) {
 	if restore && previous != "" {
 		for _, w := range s.snap.Toplevels {
 			if w.Address == previous {
-				s.dispatchOverview("restore focus", fmt.Sprintf(`hl.dsp.focus({ window = %q })`, "address:"+previous))
+				s.dispatchOverview(i18n.T("restore focus"), fmt.Sprintf(`hl.dsp.focus({ window = %q })`, "address:"+previous))
 				break
 			}
 		}
@@ -280,7 +281,7 @@ func (s *shellUI) bindOverviewHandlers() {
 		if strings.HasPrefix(key, "window:") {
 			addr := strings.TrimPrefix(key, "window:")
 			if s.overview.killMode {
-				s.dispatchOverview("kill window", fmt.Sprintf(`hl.dsp.window.kill({ window = %q })`, "address:"+addr))
+				s.dispatchOverview(i18n.T("kill window"), fmt.Sprintf(`hl.dsp.window.kill({ window = %q })`, "address:"+addr))
 				s.setOverviewKillMode(false)
 				s.closeOverview(false)
 				return
@@ -408,8 +409,8 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		o.query.SetText(o.st.Query)
 		s.overview.syncingQuery = false
 	}
-	o.mru.SetLabel(map[bool]string{true: "MRU: ON", false: "MRU: OFF"}[o.st.MRU])
-	o.scope.SetLabel(map[bool]string{true: "This monitor", false: "All monitors"}[s.cfg.Overview.PerMonitor])
+	o.mru.SetLabel(map[bool]string{true: i18n.T("MRU: ON"), false: i18n.T("MRU: OFF")}[o.st.MRU])
+	o.scope.SetLabel(map[bool]string{true: i18n.T("This monitor"), false: i18n.T("All monitors")}[s.cfg.Overview.PerMonitor])
 	o.images = make(map[string]*gtk.Picture)
 
 	gtkx.Clear(&o.cards)
@@ -421,11 +422,11 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		matching += len(card.Windows)
 	}
 	if o.st.Query == "" {
-		o.searchStatus.SetText("TYPE TO FILTER WINDOWS")
+		o.searchStatus.SetText(i18n.T("TYPE TO FILTER WINDOWS"))
 	} else if matching == 0 {
-		o.searchStatus.SetText("NO MATCHING WINDOWS")
+		o.searchStatus.SetText(i18n.T("NO MATCHING WINDOWS"))
 	} else {
-		o.searchStatus.SetText(fmt.Sprintf("%d MATCHING WINDOWS", matching))
+		o.searchStatus.SetText(i18n.Tf("%d MATCHING WINDOWS", matching))
 	}
 	o.queryClear.SetVisible(o.st.Query != "")
 	type indexedCard struct {
@@ -439,9 +440,9 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		}
 	}
 	if len(cards) == 0 {
-		message := "No workspaces"
+		message := i18n.T("No workspaces")
 		if o.st.Query != "" {
-			message = "No matches"
+			message = i18n.T("No matches")
 		}
 		label := gtk.NewLabel(message)
 		label.AddCssClass("overview-empty")
@@ -543,7 +544,7 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 
 		if card.New {
 			background.SetName("new-workspace:" + card.Workspace.Monitor)
-			background.SetLabel("＋\nNew workspace")
+			background.SetLabel(i18n.T("＋\nNew workspace"))
 		}
 		canvas.SetChild(&background.Widget)
 		background.Unref()
@@ -858,7 +859,7 @@ func (s *shellUI) buildOverview(o *workspaceOverview) {
 	o.scope.ConnectClicked(&s.onOverviewButton)
 	gtkx.Append(toolbar, &o.scope.Widget)
 	o.query = *gtk.NewEntry()
-	o.query.SetPlaceholderText("Filter by window title or app")
+	o.query.SetPlaceholderText(i18n.T("Filter by window title or app"))
 	o.query.SetSizeRequest(400, -1)
 	o.query.AddCssClass("overview-query")
 	search := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -874,7 +875,7 @@ func (s *shellUI) buildOverview(o *workspaceOverview) {
 	o.queryClear.ConnectClicked(&s.onOverviewButton)
 	gtkx.Append(search, &o.queryClear.Widget)
 	gtkx.Append(toolbar, &search.Widget)
-	o.searchStatus = *gtk.NewLabel("TYPE TO FILTER WINDOWS")
+	o.searchStatus = *gtk.NewLabel(i18n.T("TYPE TO FILTER WINDOWS"))
 	o.searchStatus.AddCssClass("overview-search-status")
 	gtkx.Append(toolbar, &o.searchStatus.Widget)
 	gtkx.Append(&o.root, &toolbar.Widget)
@@ -887,7 +888,7 @@ func (s *shellUI) buildOverview(o *workspaceOverview) {
 	scroll.SetChild(&o.cards.Widget)
 	o.cards.Unref()
 	gtkx.Append(&o.root, &scroll.Widget)
-	hint := gtk.NewLabel("Type or / to filter windows   Esc · clear / close   Arrows / Tab · select   Middle click · close   Ctrl+Shift+X · kill   Drag · move")
+	hint := gtk.NewLabel(i18n.T("Type or / to filter windows   Esc · clear / close   Arrows / Tab · select   Middle click · close   Ctrl+Shift+X · kill   Drag · move"))
 	o.hint = hint
 	hint.AddCssClass("overview-hint")
 	gtkx.Append(&o.root, &hint.Widget)
@@ -931,7 +932,7 @@ func (s *shellUI) buildOverview(o *workspaceOverview) {
 			}
 		}
 	} else {
-		o.win.SetTitle("inua overview")
+		o.win.SetTitle(i18n.T("inua overview"))
 		o.win.SetDefaultSize(900, 700)
 	}
 	keys := gtk.NewEventControllerKey()

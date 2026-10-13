@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/apps/calc"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/rundir"
 )
 
@@ -93,78 +94,78 @@ func add(kind string, factor float64, name, symbol string, aliases ...string) {
 }
 
 func init() {
-	add("length", 0.001, "millimetres", "mm", "millimeter", "millimeters", "millimetre")
-	add("length", 0.01, "centimetres", "cm", "centimeter", "centimeters", "centimetre")
-	add("length", 1, "metres", "m", "meter", "meters", "metre", "metres")
-	add("length", 1000, "kilometres", "km", "kilometer", "kilometers", "kilometre", "kilometres")
-	add("length", 0.0254, "inches", "in", "inch", "inches", `"`)
-	add("length", 0.3048, "feet", "ft", "foot", "feet", "'")
-	add("length", 0.9144, "yards", "yd", "yard", "yards")
-	add("length", 1609.344, "miles", "mi", "mile", "miles")
-	add("length", 1852, "nautical miles", "nmi", "nautical mile")
+	add("length", 0.001, i18n.M("millimetres"), "mm", "millimeter", "millimeters", "millimetre")
+	add("length", 0.01, i18n.M("centimetres"), "cm", "centimeter", "centimeters", "centimetre")
+	add("length", 1, i18n.M("metres"), "m", "meter", "meters", "metre", "metres")
+	add("length", 1000, i18n.M("kilometres"), "km", "kilometer", "kilometers", "kilometre", "kilometres")
+	add("length", 0.0254, i18n.M("inches"), "in", "inch", "inches", `"`)
+	add("length", 0.3048, i18n.M("feet"), "ft", "foot", "feet", "'")
+	add("length", 0.9144, i18n.M("yards"), "yd", "yard", "yards")
+	add("length", 1609.344, i18n.M("miles"), "mi", "mile", "miles")
+	add("length", 1852, i18n.M("nautical miles"), "nmi", "nautical mile")
 
-	add("mass", 1e-6, "milligrams", "mg", "milligram", "milligrams")
-	add("mass", 0.001, "grams", "g", "gram", "grams")
-	add("mass", 1, "kilograms", "kg", "kilo", "kilos", "kilogram", "kilograms")
-	add("mass", 1000, "tonnes", "t", "tonne", "tonnes")
-	add("mass", 0.028349523125, "ounces", "oz", "ounce", "ounces")
-	add("mass", 0.45359237, "pounds", "lb", "lbs", "pound", "pounds")
-	add("mass", 6.35029318, "stone", "st", "stone", "stones")
+	add("mass", 1e-6, i18n.M("milligrams"), "mg", "milligram", "milligrams")
+	add("mass", 0.001, i18n.M("grams"), "g", "gram", "grams")
+	add("mass", 1, i18n.M("kilograms"), "kg", "kilo", "kilos", "kilogram", "kilograms")
+	add("mass", 1000, i18n.M("tonnes"), "t", "tonne", "tonnes")
+	add("mass", 0.028349523125, i18n.M("ounces"), "oz", "ounce", "ounces")
+	add("mass", 0.45359237, i18n.M("pounds"), "lb", "lbs", "pound", "pounds")
+	add("mass", 6.35029318, i18n.M("stone"), "st", "stone", "stones")
 
-	add("volume", 0.001, "millilitres", "ml", "milliliter", "milliliters", "millilitre")
-	add("volume", 1, "litres", "l", "liter", "liters", "litre", "litres")
-	add("volume", 1000, "cubic metres", "m3", "m³")
-	add("volume", 3.785411784, "US gallons", "gal", "gallon", "gallons")
-	add("volume", 0.946352946, "US quarts", "qt", "quart", "quarts")
-	add("volume", 0.473176473, "US pints", "pt", "pint", "pints")
-	add("volume", 0.2365882365, "US cups", "cup", "cups")
-	add("volume", 0.0295735295625, "US fluid ounces", "fl oz", "floz")
-	add("volume", 0.01478676478125, "tablespoons", "tbsp", "tablespoon", "tablespoons")
-	add("volume", 0.00492892159375, "teaspoons", "tsp", "teaspoon", "teaspoons")
+	add("volume", 0.001, i18n.M("millilitres"), "ml", "milliliter", "milliliters", "millilitre")
+	add("volume", 1, i18n.M("litres"), "l", "liter", "liters", "litre", "litres")
+	add("volume", 1000, i18n.M("cubic metres"), "m3", "m³")
+	add("volume", 3.785411784, i18n.M("US gallons"), "gal", "gallon", "gallons")
+	add("volume", 0.946352946, i18n.M("US quarts"), "qt", "quart", "quarts")
+	add("volume", 0.473176473, i18n.M("US pints"), "pt", "pint", "pints")
+	add("volume", 0.2365882365, i18n.M("US cups"), "cup", "cups")
+	add("volume", 0.0295735295625, i18n.M("US fluid ounces"), "fl oz", "floz")
+	add("volume", 0.01478676478125, i18n.M("tablespoons"), "tbsp", "tablespoon", "tablespoons")
+	add("volume", 0.00492892159375, i18n.M("teaspoons"), "tsp", "teaspoon", "teaspoons")
 
-	add("area", 1, "square metres", "m2", "m²", "sqm")
-	add("area", 1e6, "square kilometres", "km2", "km²")
-	add("area", 1e4, "hectares", "ha", "hectare", "hectares")
-	add("area", 4046.8564224, "acres", "ac", "acre", "acres")
-	add("area", 0.09290304, "square feet", "ft2", "ft²", "sqft")
-	add("area", 2589988.110336, "square miles", "mi2", "mi²")
+	add("area", 1, i18n.M("square metres"), "m2", "m²", "sqm")
+	add("area", 1e6, i18n.M("square kilometres"), "km2", "km²")
+	add("area", 1e4, i18n.M("hectares"), "ha", "hectare", "hectares")
+	add("area", 4046.8564224, i18n.M("acres"), "ac", "acre", "acres")
+	add("area", 0.09290304, i18n.M("square feet"), "ft2", "ft²", "sqft")
+	add("area", 2589988.110336, i18n.M("square miles"), "mi2", "mi²")
 
-	add("speed", 1, "metres per second", "m/s", "mps")
-	add("speed", 1/3.6, "kilometres per hour", "km/h", "kmh", "kph")
-	add("speed", 0.44704, "miles per hour", "mph")
-	add("speed", 1852.0/3600, "knots", "kn", "knot", "knots")
-	add("speed", 0.3048, "feet per second", "ft/s", "fps")
+	add("speed", 1, i18n.M("metres per second"), "m/s", "mps")
+	add("speed", 1/3.6, i18n.M("kilometres per hour"), "km/h", "kmh", "kph")
+	add("speed", 0.44704, i18n.M("miles per hour"), "mph")
+	add("speed", 1852.0/3600, i18n.M("knots"), "kn", "knot", "knots")
+	add("speed", 0.3048, i18n.M("feet per second"), "ft/s", "fps")
 
-	add("data", 1, "bytes", "B", "b", "byte", "bytes")
-	add("data", 1e3, "kilobytes", "KB", "kb", "kilobyte", "kilobytes")
-	add("data", 1e6, "megabytes", "MB", "mb", "megabyte", "megabytes")
-	add("data", 1e9, "gigabytes", "GB", "gb", "gigabyte", "gigabytes")
-	add("data", 1e12, "terabytes", "TB", "tb", "terabyte", "terabytes")
-	add("data", 1024, "kibibytes", "KiB", "kib")
-	add("data", 1<<20, "mebibytes", "MiB", "mib")
-	add("data", 1<<30, "gibibytes", "GiB", "gib")
-	add("data", 1<<40, "tebibytes", "TiB", "tib")
-	add("data", 0.125, "bits", "bit", "bits")
-	add("data", 125, "kilobits", "kbit", "kbps")
-	add("data", 125e3, "megabits", "Mbit", "mbit", "mbps")
-	add("data", 125e6, "gigabits", "Gbit", "gbit", "gbps")
+	add("data", 1, i18n.M("bytes"), "B", "b", "byte", "bytes")
+	add("data", 1e3, i18n.M("kilobytes"), "KB", "kb", "kilobyte", "kilobytes")
+	add("data", 1e6, i18n.M("megabytes"), "MB", "mb", "megabyte", "megabytes")
+	add("data", 1e9, i18n.M("gigabytes"), "GB", "gb", "gigabyte", "gigabytes")
+	add("data", 1e12, i18n.M("terabytes"), "TB", "tb", "terabyte", "terabytes")
+	add("data", 1024, i18n.M("kibibytes"), "KiB", "kib")
+	add("data", 1<<20, i18n.M("mebibytes"), "MiB", "mib")
+	add("data", 1<<30, i18n.M("gibibytes"), "GiB", "gib")
+	add("data", 1<<40, i18n.M("tebibytes"), "TiB", "tib")
+	add("data", 0.125, i18n.M("bits"), "bit", "bits")
+	add("data", 125, i18n.M("kilobits"), "kbit", "kbps")
+	add("data", 125e3, i18n.M("megabits"), "Mbit", "mbit", "mbps")
+	add("data", 125e6, i18n.M("gigabits"), "Gbit", "gbit", "gbps")
 
-	add("time", 0.001, "milliseconds", "ms", "millisecond", "milliseconds")
-	add("time", 1, "seconds", "s", "sec", "secs", "second", "seconds")
-	add("time", 60, "minutes", "min", "mins", "minute", "minutes")
-	add("time", 3600, "hours", "h", "hr", "hrs", "hour", "hours")
-	add("time", 86400, "days", "d", "day", "days")
-	add("time", 604800, "weeks", "wk", "week", "weeks")
-	add("time", 31557600, "years", "yr", "year", "years") // Julian years
+	add("time", 0.001, i18n.M("milliseconds"), "ms", "millisecond", "milliseconds")
+	add("time", 1, i18n.M("seconds"), "s", "sec", "secs", "second", "seconds")
+	add("time", 60, i18n.M("minutes"), "min", "mins", "minute", "minutes")
+	add("time", 3600, i18n.M("hours"), "h", "hr", "hrs", "hour", "hours")
+	add("time", 86400, i18n.M("days"), "d", "day", "days")
+	add("time", 604800, i18n.M("weeks"), "wk", "week", "weeks")
+	add("time", 31557600, i18n.M("years"), "yr", "year", "years") // Julian years
 
 	for _, t := range []struct {
 		factor, offset float64
 		name, symbol   string
 		aliases        []string
 	}{
-		{1, 0, "degrees Celsius", "°C", []string{"c", "°c", "celsius", "degc"}},
-		{5.0 / 9, -32 * 5.0 / 9, "degrees Fahrenheit", "°F", []string{"f", "°f", "fahrenheit", "degf"}},
-		{1, -273.15, "kelvin", "K", []string{"k", "kelvin"}},
+		{1, 0, i18n.M("degrees Celsius"), "°C", []string{"c", "°c", "celsius", "degc"}},
+		{5.0 / 9, -32 * 5.0 / 9, i18n.M("degrees Fahrenheit"), "°F", []string{"f", "°f", "fahrenheit", "degf"}},
+		{1, -273.15, i18n.M("kelvin"), "K", []string{"k", "kelvin"}},
 	} {
 		u := unit{kind: "temperature", factor: t.factor, offset: t.offset, name: t.name, symbol: t.symbol}
 		for _, a := range t.aliases {
@@ -273,7 +274,7 @@ func conversion(q string, rates *Rates) (Answer, bool) {
 	s := number(out)
 	return Answer{
 		Text:   s + " " + tu.symbol,
-		Detail: fmt.Sprintf("%s %s in %s", number(v), fu.symbol, tu.name),
+		Detail: i18n.Tf("%s %s in %s", number(v), fu.symbol, i18n.T(tu.name)),
 		Copy:   s,
 	}, true
 }
@@ -305,13 +306,13 @@ func currency(v float64, from, to string, rates *Rates) (Answer, bool) {
 		return Answer{}, false
 	}
 	s := amount(v / fr * tr)
-	source := "rates of " + rates.Date
+	source := i18n.Tf("rates of %s", rates.Date)
 	if cb1 || cb2 {
-		source = "prices from Coinbase · " + rates.MoreGot.Local().Format("15:04")
+		source = i18n.Tf("prices from Coinbase · %s", rates.MoreGot.Local().Format("15:04"))
 	}
 	return Answer{
 		Text:   s + " " + tc,
-		Detail: fmt.Sprintf("%s %s in %s · %s", amount(v), fc, tc, source),
+		Detail: i18n.Tf("%s %s in %s · %s", amount(v), fc, tc, source),
 		Copy:   strings.ReplaceAll(s, ",", ""),
 	}, true
 }

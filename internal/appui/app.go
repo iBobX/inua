@@ -57,15 +57,15 @@ var Apps = map[string]struct {
 	make      func() view
 	many      bool
 }{
-	"clock":          {"Clock", "Clock", func() view { return &clockApp{} }, false},
-	"weather":        {"Weather", "Weather", func() view { return &weatherApp{} }, false},
-	"stocks":         {"Stocks", "Stocks", func() view { return &stocksApp{} }, false},
-	"calculator":     {"Calculator", "Calculator", func() view { return &calcApp{} }, false},
-	"calendar":       {"Calendar", "Calendar", func() view { return &calendarApp{} }, false},
-	"color-picker":   {"ColorPicker", "Color Picker", func() view { return &colorApp{} }, false},
+	"clock":          {"Clock", i18n.M("Clock"), func() view { return &clockApp{} }, false},
+	"weather":        {"Weather", i18n.M("Weather"), func() view { return &weatherApp{} }, false},
+	"stocks":         {"Stocks", i18n.M("Stocks"), func() view { return &stocksApp{} }, false},
+	"calculator":     {"Calculator", i18n.M("Calculator"), func() view { return &calcApp{} }, false},
+	"calendar":       {"Calendar", i18n.M("Calendar"), func() view { return &calendarApp{} }, false},
+	"color-picker":   {"ColorPicker", i18n.M("Color Picker"), func() view { return &colorApp{} }, false},
 	"system-monitor": {"SystemMonitor", i18n.M("System Monitor"), func() view { return &sysmonApp{} }, false},
-	"tailscale":      {"Tailscale", "Tailscale", func() view { return &tailscaleApp{} }, false},
-	"viewer":         {"Viewer", "Viewer", func() view { return &viewerApp{} }, true},
+	"tailscale":      {"Tailscale", i18n.M("Tailscale"), func() view { return &tailscaleApp{} }, false},
+	"viewer":         {"Viewer", i18n.M("Viewer"), func() view { return &viewerApp{} }, true},
 }
 
 // View is a light app's window from another package: cmd/inua-assistant

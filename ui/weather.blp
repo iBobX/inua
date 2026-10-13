@@ -19,7 +19,7 @@ ApplicationWindow weather {
         styles ["plain"]
         name: "prev";
         icon-name: "go-previous-symbolic";
-        tooltip-text: "Previous place";
+        tooltip-text:  _("Previous place");
         valign: center;
       }
 
@@ -45,14 +45,14 @@ ApplicationWindow weather {
         styles ["plain"]
         name: "next";
         icon-name: "go-next-symbolic";
-        tooltip-text: "Next place";
+        tooltip-text:  _("Next place");
         valign: center;
       }
 
       ToggleButton places_toggle {
         styles ["plain"]
         icon-name: "view-list-symbolic";
-        tooltip-text: "Places";
+        tooltip-text:  _("Places");
         valign: center;
       }
     }
@@ -67,7 +67,7 @@ ApplicationWindow weather {
         spacing: 10;
 
         SearchEntry place_search {
-          placeholder-text: "Add a city";
+          placeholder-text:  _("Add a city");
         }
 
         Box place_results {
@@ -84,7 +84,7 @@ ApplicationWindow weather {
         Box {
           Label {
             styles ["kicker"]
-            label: "UNITS";
+            label:  _("UNITS");
             hexpand: true;
             xalign: 0;
           }
@@ -93,12 +93,12 @@ ApplicationWindow weather {
             styles ["segmented", "linked"]
 
             ToggleButton unit_c {
-              label: "°C";
+              label:  _("°C");
               active: true;
             }
 
             ToggleButton unit_f {
-              label: "°F";
+              label:  _("°F");
               group: unit_c;
             }
           }
@@ -148,7 +148,7 @@ ApplicationWindow weather {
 
               Label {
                 styles ["kicker", "block-title"]
-                label: "NEXT 24 HOURS";
+                label:  _("NEXT 24 HOURS");
                 xalign: 0;
               }
 
@@ -167,7 +167,7 @@ ApplicationWindow weather {
 
               Label {
                 styles ["kicker", "block-title"]
-                label: "7 DAYS";
+                label:  _("7 DAYS");
                 xalign: 0;
               }
 
@@ -183,7 +183,7 @@ ApplicationWindow weather {
 
               Label {
                 styles ["kicker", "block-title"]
-                label: "DETAILS";
+                label:  _("DETAILS");
                 xalign: 0;
               }
 

@@ -68,11 +68,19 @@ func main() {
 				if !ok {
 					return true
 				}
-				sel, ok := call.Fun.(*ast.SelectorExpr)
-				if !ok {
-					return true
-				}
-				if pkg, ok := sel.X.(*ast.Ident); !ok || pkg.Name != "i18n" {
+				var function string
+				switch fn := call.Fun.(type) {
+				case *ast.SelectorExpr:
+					if pkg, ok := fn.X.(*ast.Ident); !ok || pkg.Name != "i18n" {
+						return true
+					}
+					function = fn.Sel.Name
+				case *ast.Ident:
+					if f.Name.Name != "i18n" {
+						return true
+					}
+					function = fn.Name
+				default:
 					return true
 				}
 				lit := func(i int) string {
@@ -87,7 +95,9 @@ func main() {
 					return s
 				}
 				where := fmt.Sprintf("%s:%d", path, fset.Position(call.Pos()).Line)
-				switch sel.Sel.Name {
+				switch function {
+				case "Time":
+					add(lit(1), "", where)
 				case "T", "Tf", "M":
 					add(lit(0), "", where)
 				case "N", "Nf":
@@ -119,6 +129,22 @@ func main() {
 	}
 
 	// The template.
+	// Desktop launchers use the same catalog as the application windows.
+	desktops, _ := filepath.Glob("config/apps/*.desktop")
+	desktopKeys := map[string]bool{"Name": true, "GenericName": true, "Comment": true, "Keywords": true}
+	for _, path := range desktops {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for n, line := range strings.Split(string(data), "\n") {
+			key, value, ok := strings.Cut(line, "=")
+			if ok && desktopKeys[key] {
+				add(value, "", fmt.Sprintf("%s:%d", path, n+1))
+			}
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("# inua's translatable text: made by make i18n, not edited by hand.\n")
 	b.WriteString("msgid \"\"\nmsgstr \"\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n")
@@ -145,6 +171,7 @@ func main() {
 
 	// The catalogs.
 	pos, _ := filepath.Glob(filepath.Join(localesDir, "*.po"))
+	translations := map[string]map[string]string{}
 	for _, path := range pos {
 		data, err := os.ReadFile(path)
 		if err != nil {
@@ -168,6 +195,8 @@ func main() {
 			forms = 1
 		}
 		var out strings.Builder
+		lang := strings.TrimSuffix(filepath.Base(path), ".po")
+		translations[lang] = map[string]string{}
 		writeEntry(&out, head, nil, forms)
 		done, todo := 0, 0
 		for _, id := range order {
@@ -187,11 +216,43 @@ func main() {
 			}
 			out.WriteString("\n")
 			writeEntry(&out, e, m.where, forms)
+			if !i18n.Fuzzy(e) && len(e.Str) > 0 && e.Str[0] != "" {
+				translations[lang][e.ID] = e.Str[0]
+			}
 		}
 		if err := os.WriteFile(path, []byte(out.String()), 0o644); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Printf("%s: %d translated, %d to do\n", path, done, todo)
+	}
+	for _, path := range desktops {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var out strings.Builder
+		for _, line := range strings.SplitAfter(string(data), "\n") {
+			key, value, ok := strings.Cut(strings.TrimSuffix(line, "\n"), "=")
+			if base, suffix, localized := strings.Cut(key, "["); localized && desktopKeys[base] {
+				if _, managed := translations[strings.TrimSuffix(suffix, "]")]; managed {
+					continue
+				}
+			}
+			out.WriteString(line)
+			if !ok || !desktopKeys[key] {
+				continue
+			}
+			for _, po := range pos {
+				lang := strings.TrimSuffix(filepath.Base(po), ".po")
+				if translated := translations[lang][value]; translated != "" {
+					translated = strings.NewReplacer("\\", "\\\\", "\n", "\\n", "\r", "\\r").Replace(translated)
+					fmt.Fprintf(&out, "%s[%s]=%s\n", key, lang, translated)
+				}
+			}
+		}
+		if err := os.WriteFile(path, []byte(out.String()), 0o644); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

@@ -15,6 +15,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -235,7 +236,7 @@ func (b *bar) setWorkspaces(s *shellUI, wss []hypr.Workspace) {
 			btn.SetName(fmt.Sprint(w.ID))
 			btn.SetFocusable(false)
 			btn.SetValign(gtk.AlignCenterValue)
-			btn.SetTooltipText(fmt.Sprintf("Workspace %s", w.Name))
+			btn.SetTooltipText(i18n.Tf("Workspace %s", w.Name))
 			btn.ConnectClicked(&s.onWorkspaceClicked)
 			b.workspaces.InsertChildAfter(&btn.Widget, prev)
 			btn.Unref() // the box holds it
@@ -248,7 +249,7 @@ func (b *bar) setWorkspaces(s *shellUI, wss []hypr.Workspace) {
 		if s.cfg.Overview.MRU {
 			btn.SetLabel("·")
 			if w.Focused || w.Active {
-				btn.SetLabel("WORKSPACE")
+				btn.SetLabel(i18n.T("WORKSPACE"))
 			}
 		} else {
 			btn.SetLabel(w.Name)

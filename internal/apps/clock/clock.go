@@ -11,6 +11,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // StoreName is the file the app and the shell share.
@@ -64,7 +66,7 @@ func Due(alarms []Alarm, since, now time.Time) []Alarm {
 // DaysLabel describes an alarm's days: "Once", "Every day", "Weekdays",
 // "Weekends", or the days' short names.
 func DaysLabel(days [7]bool) string {
-	names := []string{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
+	names := []string{i18n.T("Sun"), i18n.T("Mon"), i18n.T("Tue"), i18n.T("Wed"), i18n.T("Thu"), i18n.T("Fri"), i18n.T("Sat")}
 	var on []string
 	for i, d := range days {
 		if d {
@@ -73,13 +75,13 @@ func DaysLabel(days [7]bool) string {
 	}
 	switch {
 	case len(on) == 0:
-		return "Once"
+		return i18n.T("Once")
 	case len(on) == 7:
-		return "Every day"
+		return i18n.T("Every day")
 	case len(on) == 5 && !days[0] && !days[6]:
-		return "Weekdays"
+		return i18n.T("Weekdays")
 	case len(on) == 2 && days[0] && days[6]:
-		return "Weekends"
+		return i18n.T("Weekends")
 	}
 	return strings.Join(on, " ")
 }
@@ -107,17 +109,17 @@ func Difference(loc *time.Location, t time.Time) string {
 	_, off := there.Zone()
 	_, here := t.Zone()
 	d := time.Duration(off-here) * time.Second
-	day := "Today"
+	day := i18n.T("Today")
 	ty, tm, td := t.Date()
 	y, m, dd := there.Date()
 	switch c := time.Date(y, m, dd, 0, 0, 0, 0, time.UTC).Compare(time.Date(ty, tm, td, 0, 0, 0, 0, time.UTC)); {
 	case c > 0:
-		day = "Tomorrow"
+		day = i18n.T("Tomorrow")
 	case c < 0:
-		day = "Yesterday"
+		day = i18n.T("Yesterday")
 	}
 	if d == 0 {
-		return day + ", same time"
+		return i18n.Tf("%s, same time", day)
 	}
 	sign := "+"
 	if d < 0 {
@@ -125,9 +127,9 @@ func Difference(loc *time.Location, t time.Time) string {
 	}
 	h, min := int(d.Hours()), int(d.Minutes())%60
 	if min == 0 {
-		return fmt.Sprintf("%s, %s%d h", day, sign, h)
+		return i18n.Tf("%s, %s%d h", day, sign, h)
 	}
-	return fmt.Sprintf("%s, %s%d h %d min", day, sign, h, min)
+	return i18n.Tf("%s, %s%d h %d min", day, sign, h, min)
 }
 
 // Zones lists the time zones to choose from, from the system's tzdata
@@ -135,7 +137,7 @@ func Difference(loc *time.Location, t time.Time) string {
 func Zones() []string {
 	f, err := os.Open("/usr/share/zoneinfo/zone1970.tab")
 	if err != nil {
-		return []string{"UTC"}
+		return []string{i18n.T("UTC")}
 	}
 	defer f.Close()
 	var zones []string

@@ -22,6 +22,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/viewer"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // viewerApp is the Viewer: one window per start, showing an image
@@ -195,7 +196,7 @@ func (a *viewerApp) themeChanged() {}
 func (a *viewerApp) open(args []string) {
 	a.files, a.index = viewer.List(args)
 	if len(args) > 0 && len(a.files) == 0 {
-		a.showEmpty(fmt.Sprintf("%s is not an image the viewer knows.", filepath.Base(args[0])))
+		a.showEmpty(i18n.Tf("%s is not an image the viewer knows.", filepath.Base(args[0])))
 		return
 	}
 	a.show(a.index)
@@ -389,9 +390,9 @@ func (a *viewerApp) action(name string) {
 			gtkx.Post(func() {
 				if err != nil {
 					log.Printf("viewer: copy: %v", err)
-					a.flash("Could not copy")
+					a.flash(i18n.T("Could not copy"))
 				} else {
-					a.flash("Copied")
+					a.flash(i18n.T("Copied"))
 				}
 			})
 		}()
@@ -410,17 +411,17 @@ func (a *viewerApp) action(name string) {
 		a.disarmTrash()
 		if _, err := gio.FileNewForPath(path).Trash(nil); err != nil {
 			log.Printf("viewer: trash: %v", err)
-			a.flash("Could not move to Trash")
+			a.flash(i18n.T("Could not move to Trash"))
 			return
 		}
 		if s := a.cache[path]; s != nil {
 			a.drop(s)
 		}
 		a.files = slices.Delete(a.files, a.index, a.index+1)
-		a.flash("Moved to Trash")
+		a.flash(i18n.T("Moved to Trash"))
 		if len(a.files) == 0 {
 			a.clearImage()
-			a.showEmpty("No images left here.")
+			a.showEmpty(i18n.T("No images left here."))
 			return
 		}
 		a.show(min(a.index, len(a.files)-1))
@@ -452,7 +453,7 @@ func (a *viewerApp) choose() {
 		return
 	}
 	d := gtk.NewFileDialog()
-	d.SetTitle("Open an Image")
+	d.SetTitle(i18n.T("Open an Image"))
 	filter := gtk.NewFileFilter()
 	filter.SetName("Images")
 	for _, m := range viewer.Exts {
@@ -478,7 +479,7 @@ func (a *viewerApp) choose() {
 func (a *viewerApp) show(i int) {
 	if i < 0 || i >= len(a.files) {
 		if len(a.files) == 0 {
-			a.showEmpty("Open an image to view it.")
+			a.showEmpty(i18n.T("Open an image to view it."))
 		}
 		return
 	}
@@ -540,7 +541,7 @@ func (a *viewerApp) display() {
 		a.texW, a.texH = s.texW, s.texH
 		a.geometry()
 	case s.err != nil:
-		a.showEmpty(fmt.Sprintf("Could not open %s.\n%v", filepath.Base(s.path), s.err))
+		a.showEmpty(i18n.Tf("Could not open %s.\n%v", filepath.Base(s.path), s.err))
 	}
 	a.showMeta()
 	a.showDetails()
@@ -567,8 +568,8 @@ func (a *viewerApp) showEmpty(text string) {
 	a.emptyLabel.SetText(text)
 	a.empty.SetVisible(true)
 	if len(a.files) == 0 {
-		a.name.SetText("Viewer")
-		a.win.SetTitle("Viewer")
+		a.name.SetText(i18n.T("Viewer"))
+		a.win.SetTitle(i18n.T("Viewer"))
 		a.meta.SetText("")
 		a.prev.SetVisible(false)
 		a.next.SetVisible(false)
@@ -707,13 +708,13 @@ func (a *viewerApp) applyZoom() {
 	a.canvas.QueueResize() // its size is the scaled picture's
 	label := viewer.Percent(a.zoom)
 	if a.fit {
-		label = "Fit · " + label
+		label = i18n.Tf("Fit · %s", label)
 	}
 	a.zoomLevel.SetLabel(label)
 	if a.fit {
-		a.zoomLevel.SetTooltipText("Actual size (1)")
+		a.zoomLevel.SetTooltipText(i18n.T("Actual size (1)"))
 	} else {
-		a.zoomLevel.SetTooltipText("Fit the window (0)")
+		a.zoomLevel.SetTooltipText(i18n.T("Fit the window (0)"))
 	}
 }
 
@@ -808,14 +809,14 @@ func (a *viewerApp) showDetails() {
 		gtkx.Append(box, &v.Widget)
 		gtkx.Append(&a.details, &box.Widget)
 	}
-	section("FILE")
-	row("Name", filepath.Base(path))
-	row("Folder", shortHome(filepath.Dir(path)))
+	section(i18n.T("FILE"))
+	row(i18n.T("Name"), filepath.Base(path))
+	row(i18n.T("Folder"), shortHome(filepath.Dir(path)))
 	s := a.cur
 	if s == nil {
 		return
 	}
-	row("Size", viewer.Size(s.size))
+	row(i18n.T("Size"), viewer.Size(s.size))
 	ow, oh := s.fullW, s.fullH // as it stands, before any turns asked for
 	if t, _ := viewer.Orientation(s.orient); t%2 == 1 {
 		ow, oh = oh, ow
@@ -824,18 +825,18 @@ func (a *viewerApp) showDetails() {
 	if mp := viewer.Megapixels(ow, oh); mp != "" {
 		dims += "  ·  " + mp
 	}
-	row("Dimensions", dims)
-	row("Type", viewer.Mime(path))
+	row(i18n.T("Dimensions"), dims)
+	row(i18n.T("Type"), viewer.Mime(path))
 	if !s.mod.IsZero() {
-		row("Modified", s.mod.Format("Jan 2, 2006  15:04"))
+		row(i18n.T("Modified"), i18n.Time(s.mod, "Jan 2, 2006  15:04"))
 	}
 	if e := s.exif; !e.Empty() {
-		section("CAMERA")
-		row("Camera", e.Camera())
-		row("Lens", e.Lens)
-		row("Exposure", e.Settings())
+		section(i18n.T("CAMERA"))
+		row(i18n.T("Camera"), e.Camera())
+		row(i18n.T("Lens"), e.Lens)
+		row(i18n.T("Exposure"), e.Settings())
 		if !e.Taken.IsZero() {
-			row("Taken", e.Taken.Format("Jan 2, 2006  15:04"))
+			row(i18n.T("Taken"), i18n.Time(e.Taken, "Jan 2, 2006  15:04"))
 		}
 	}
 }
@@ -852,11 +853,11 @@ func (a *viewerApp) setWallpaper(path string) {
 	cfg.Background.Image = shortHome(path)
 	if err := config.Save(cfgPath, cfg); err != nil {
 		log.Printf("viewer: wallpaper: %v", err)
-		a.flash("Could not set the wallpaper")
+		a.flash(i18n.T("Could not set the wallpaper"))
 		return
 	}
 	go exec.Command("inua", "call", "shell", "reload").Run()
-	a.flash("Set as wallpaper")
+	a.flash(i18n.T("Set as wallpaper"))
 }
 
 // showInFolder opens the file manager at the file, or its folder.

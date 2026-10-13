@@ -22,6 +22,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/sysmon"
 	"github.com/lyricat/inua/internal/apps/tailscale"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // adminConsole is where a tailnet's devices are approved and managed.
@@ -36,23 +37,23 @@ type tsSwitch struct {
 }
 
 var tsSwitches = []tsSwitch{
-	{"dns", "Use Tailscale DNS", "MagicDNS names and the tailnet's DNS settings.",
+	{"dns", i18n.M("Use Tailscale DNS"), i18n.M("MagicDNS names and the tailnet's DNS settings."),
 		func(p tailscale.Prefs) bool { return p.CorpDNS },
 		func(_ tailscale.Prefs, on bool) tailscale.Edit { return tailscale.Edit{CorpDNS: on, CorpDNSSet: true} }},
-	{"routes", "Use subnet routes", "Reach the networks other devices offer.",
+	{"routes", i18n.M("Use subnet routes"), i18n.M("Reach the networks other devices offer."),
 		func(p tailscale.Prefs) bool { return p.RouteAll },
 		func(_ tailscale.Prefs, on bool) tailscale.Edit {
 			return tailscale.Edit{RouteAll: on, RouteAllSet: true}
 		}},
-	{"shields", "Block incoming connections", "Other devices cannot reach this one; it can still reach them.",
+	{"shields", i18n.M("Block incoming connections"), i18n.M("Other devices cannot reach this one; it can still reach them."),
 		func(p tailscale.Prefs) bool { return p.ShieldsUp },
 		func(_ tailscale.Prefs, on bool) tailscale.Edit {
 			return tailscale.Edit{ShieldsUp: on, ShieldsUpSet: true}
 		}},
-	{"exit", "Offer as exit node", "Others may send their traffic through this device, once the admin approves.",
+	{"exit", i18n.M("Offer as exit node"), i18n.M("Others may send their traffic through this device, once the admin approves."),
 		func(p tailscale.Prefs) bool { return p.OffersExit() },
 		func(p tailscale.Prefs, on bool) tailscale.Edit { return p.OfferExit(on) }},
-	{"ssh", "Tailscale SSH", "Let the tailnet's SSH rules reach this device's SSH server.",
+	{"ssh", i18n.M("Tailscale SSH"), i18n.M("Let the tailnet's SSH rules reach this device's SSH server."),
 		func(p tailscale.Prefs) bool { return p.RunSSH },
 		func(_ tailscale.Prefs, on bool) tailscale.Edit { return tailscale.Edit{RunSSH: on, RunSSHSet: true} }},
 }
@@ -148,7 +149,7 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	a.onConnect = func(_ gtk.Switch, on bool) bool {
 		if !a.filling {
-			a.edit(tailscale.Edit{WantRunning: on, WantRunningSet: true}, map[bool]string{true: "Connecting…", false: "Disconnected."}[on])
+			a.edit(tailscale.Edit{WantRunning: on, WantRunningSet: true}, map[bool]string{true: i18n.T("Connecting…"), false: i18n.T("Disconnected.")}[on])
 		}
 		return false
 	}
@@ -160,12 +161,12 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 		key := strings.TrimPrefix(sw.GetName(), "pref:")
 		if key == "lan" {
 			a.edit(tailscale.Edit{ExitNodeAllowLANAccess: on, ExitNodeAllowLANAccessSet: true},
-				map[bool]string{true: "Local network reachable through the exit node.", false: "Local network goes through the exit node too."}[on])
+				map[bool]string{true: i18n.T("Local network reachable through the exit node."), false: i18n.T("Local network goes through the exit node too.")}[on])
 			return false
 		}
 		for _, s := range tsSwitches {
 			if s.key == key {
-				a.edit(s.edit(a.prefs, on), s.title+map[bool]string{true: " on.", false: " off."}[on])
+				a.edit(s.edit(a.prefs, on), i18n.Tf(map[bool]string{true: i18n.M("%s on."), false: i18n.M("%s off.")}[on], i18n.T(s.title)))
 			}
 		}
 		return false
@@ -297,9 +298,9 @@ func (a *tailscaleApp) edit(e tailscale.Edit, done string) {
 func (a *tailscaleApp) fail(err error) {
 	switch {
 	case errors.Is(err, tailscale.ErrPermission):
-		a.say("Not changed: allow this app to manage Tailscale first.", true)
+		a.say(i18n.T("Not changed: allow this app to manage Tailscale first."), true)
 	case errors.Is(err, tailscale.ErrNotRunning):
-		a.say("Tailscale is not running.", true)
+		a.say(i18n.T("Tailscale is not running."), true)
 	default:
 		a.say(err.Error(), true)
 	}
@@ -341,7 +342,7 @@ func (a *tailscaleApp) show() {
 func (a *tailscaleApp) showHeader() {
 	state, on := a.st.State()
 	if a.stErr != nil && !errors.Is(a.stErr, tailscale.ErrNotRunning) {
-		state = "Unavailable"
+		state = i18n.T("Unavailable")
 	}
 	a.stateTitle.SetText(state)
 	setClass(&a.stateTitle.Widget, "on", on)
@@ -352,7 +353,7 @@ func (a *tailscaleApp) showHeader() {
 			sub = append(sub, ip)
 		}
 		if on {
-			sub = append(sub, fmt.Sprintf("%d of %d devices online", a.st.Online(), len(a.st.Peer)))
+			sub = append(sub, i18n.Tf("%d of %d devices online", a.st.Online(), len(a.st.Peer)))
 		}
 	}
 	a.stateSub.SetText(strings.Join(sub, " · "))
@@ -365,20 +366,20 @@ func (a *tailscaleApp) showHeader() {
 	text, button := "", ""
 	switch {
 	case errors.Is(a.stErr, tailscale.ErrNotRunning):
-		text, button = "Tailscale's service is not running.", "Start…"
-		a.noticeAction = func() { a.runAsAdmin("Started Tailscale.", "systemctl", "start", "tailscaled") }
+		text, button = i18n.T("Tailscale's service is not running."), i18n.T("Start…")
+		a.noticeAction = func() { a.runAsAdmin(i18n.T("Started Tailscale."), "systemctl", "start", "tailscaled") }
 	case a.stErr != nil:
 		text = a.stErr.Error()
 	case a.st.BackendState == "NeedsLogin":
-		text, button = "This device is logged out of its tailnet.", "Log In"
+		text, button = i18n.T("This device is logged out of its tailnet."), i18n.T("Log In")
 		a.noticeAction = a.logIn
 	case a.st.BackendState == "NeedsMachineAuth":
-		text, button = "An admin of the tailnet has to approve this device.", "Admin Console"
+		text, button = i18n.T("An admin of the tailnet has to approve this device."), i18n.T("Admin Console")
 		a.noticeAction = func() { openURL(adminConsole) }
 	case !a.operator():
-		text, button = "To change Tailscale from here, allow it once; it asks for an administrator's password.", "Allow…"
+		text, button = i18n.T("To change Tailscale from here, allow it once; it asks for an administrator's password."), i18n.T("Allow…")
 		a.noticeAction = func() {
-			a.runAsAdmin("This app may now manage Tailscale.", "tailscale", "set", "--operator="+a.user)
+			a.runAsAdmin(i18n.T("This app may now manage Tailscale."), "tailscale", "set", "--operator="+a.user)
 		}
 	}
 	for _, h := range a.st.Health {
@@ -410,9 +411,9 @@ func (a *tailscaleApp) showDevices() {
 	a.devicesShown = key.String()
 	gtkx.Clear(&a.devices)
 	if len(peers) == 0 {
-		msg := "No device matches."
+		msg := i18n.T("No device matches.")
 		if len(a.st.Peer) == 0 {
-			msg = "No other devices in the tailnet yet."
+			msg = i18n.T("No other devices in the tailnet yet.")
 		}
 		l := gtk.NewLabel(msg)
 		l.AddCssClass("empty")
@@ -429,9 +430,9 @@ func (a *tailscaleApp) showDevices() {
 		gtkx.Append(inner, &dot.Widget)
 		parts := []string{p.OS, p.Seen(now)}
 		if p.ExitNode {
-			parts = append(parts, "exit node in use")
+			parts = append(parts, i18n.T("exit node in use"))
 		} else if p.ExitNodeOption {
-			parts = append(parts, "exit node")
+			parts = append(parts, i18n.T("exit node"))
 		}
 		parts = append(parts, p.Tags...)
 		t := text(p.Name(), strings.Join(parts, " · "))
@@ -441,7 +442,7 @@ func (a *tailscaleApp) showDevices() {
 		ip.AddCssClass("readout")
 		gtkx.Append(inner, &ip.Widget)
 		b := rowButton("open:"+p.ID, &inner.Widget, &a.onButton)
-		b.SetTooltipText("Details, ping, exit node and sending files")
+		b.SetTooltipText(i18n.T("Details, ping, exit node and sending files"))
 		b.SetHexpand(true)
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 2)
 		row.AddCssClass("ts-row")
@@ -463,7 +464,7 @@ func (a *tailscaleApp) copyPeer(p *tailscale.Peer, name bool) {
 		s = cmpOr(p.MagicDNS(), p.Name())
 	}
 	go exec.Command("wl-copy", "--", s).Run()
-	n := gio.NewNotification("Copied")
+	n := gio.NewNotification(i18n.T("Copied"))
 	n.SetBody(s)
 	a.c.App.SendNotification("copied", n) // replaces the last one
 	n.Unref()
@@ -501,7 +502,7 @@ func (a *tailscaleApp) buildDevice() {
 	acts := gtk.NewBox(gtk.OrientationVerticalValue, 8)
 	acts.AddCssClass("actions")
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-	for _, b := range [][2]string{{"copy-ip", "Copy IP"}, {"copy-name", "Copy Name"}, {"ping", "Ping"}} {
+	for _, b := range [][2]string{{"copy-ip", i18n.T("Copy IP")}, {"copy-name", i18n.T("Copy Name")}, {"ping", i18n.T("Ping")}} {
 		btn := gtk.NewButtonWithLabel(b[1])
 		btn.AddCssClass("outlined")
 		btn.SetName(b[0])
@@ -509,7 +510,7 @@ func (a *tailscaleApp) buildDevice() {
 		gtkx.Append(row, &btn.Widget)
 	}
 	gtkx.Append(acts, &row.Widget)
-	exit := gtk.NewButtonWithLabel("Use as Exit Node")
+	exit := gtk.NewButtonWithLabel(i18n.T("Use as Exit Node"))
 	exit.AddCssClass("outlined")
 	exit.SetName("use-exit")
 	exit.SetHalign(gtk.AlignStartValue)
@@ -518,11 +519,11 @@ func (a *tailscaleApp) buildDevice() {
 	gtkx.Append(acts, &exit.Widget)
 	gtkx.Append(&a.detail, &acts.Widget)
 
-	section(&a.detail, "DEVICE")
-	for _, k := range []string{"MagicDNS", "IPv4", "IPv6", "System", "Status", "Connection", "Traffic", "Key expires", "Tags"} {
+	section(&a.detail, i18n.T("DEVICE"))
+	for _, k := range []string{i18n.T("MagicDNS"), i18n.T("IPv4"), i18n.T("IPv6"), i18n.T("System"), i18n.T("Status"), i18n.T("Connection"), i18n.T("Traffic"), i18n.T("Key expires"), i18n.T("Tags")} {
 		v.facts[k] = fact(&a.detail, k, "", true)
 	}
-	section(&a.detail, "SEND FILES")
+	section(&a.detail, i18n.T("SEND FILES"))
 	drop := gtk.NewBox(gtk.OrientationVerticalValue, 4)
 	drop.AddCssClass("ts-drop")
 	l := gtk.NewLabel("")
@@ -538,7 +539,7 @@ func (a *tailscaleApp) showDevice() {
 	v := a.open
 	p := a.st.PeerByID(v.id)
 	if p == nil {
-		a.detailSub.SetText("NO LONGER IN THE TAILNET")
+		a.detailSub.SetText(i18n.T("NO LONGER IN THE TAILNET"))
 		return
 	}
 	now := time.Now()
@@ -557,28 +558,28 @@ func (a *tailscaleApp) showDevice() {
 			v4 = append(v4, ip)
 		}
 	}
-	set("MagicDNS", cmpOr(p.MagicDNS(), "—"))
-	set("IPv4", cmpOr(strings.Join(v4, "\n"), "—"))
-	set("IPv6", cmpOr(strings.Join(v6, "\n"), "—"))
-	set("System", p.OS+" · host name "+p.HostName)
-	set("Status", p.Seen(now))
-	set("Connection", p.Connection())
-	set("Traffic", fmt.Sprintf("received %s · sent %s", sysmon.Bytes(uint64(max(0, p.RxBytes))), sysmon.Bytes(uint64(max(0, p.TxBytes)))))
-	set("Key expires", cmpOr(p.Expiry(now), "never"))
-	set("Tags", cmpOr(strings.Join(p.Tags, ", "), "none"))
-	set("drop", fmt.Sprintf("Drop files on this panel to send them to %s with Taildrop. They wait on it until saved.", p.Name()))
+	set(i18n.T("MagicDNS"), cmpOr(p.MagicDNS(), "—"))
+	set(i18n.T("IPv4"), cmpOr(strings.Join(v4, "\n"), "—"))
+	set(i18n.T("IPv6"), cmpOr(strings.Join(v6, "\n"), "—"))
+	set(i18n.T("System"), i18n.Tf("%s · host name %s", p.OS, p.HostName))
+	set(i18n.T("Status"), p.Seen(now))
+	set(i18n.T("Connection"), p.Connection())
+	set(i18n.T("Traffic"), fmt.Sprintf("received %s · sent %s", sysmon.Bytes(uint64(max(0, p.RxBytes))), sysmon.Bytes(uint64(max(0, p.TxBytes)))))
+	set(i18n.T("Key expires"), cmpOr(p.Expiry(now), "never"))
+	set(i18n.T("Tags"), cmpOr(strings.Join(p.Tags, ", "), "none"))
+	set("drop", i18n.Tf("Drop files on this panel to send them to %s with Taildrop. They wait on it until saved.", p.Name()))
 	v.exitBtn.SetVisible(p.ExitNodeOption)
 	if p.ExitNode {
-		v.exitBtn.SetLabel("Stop Using as Exit Node")
+		v.exitBtn.SetLabel(i18n.T("Stop Using as Exit Node"))
 	} else {
-		v.exitBtn.SetLabel("Use as Exit Node")
+		v.exitBtn.SetLabel(i18n.T("Use as Exit Node"))
 	}
 }
 
 // showExits lists None and the peers offering to be an exit node.
 func (a *tailscaleApp) showExits() {
 	gtkx.Clear(&a.exits)
-	section(&a.exits, "SEND THIS DEVICE'S TRAFFIC THROUGH")
+	section(&a.exits, i18n.T("SEND THIS DEVICE'S TRAFFIC THROUGH"))
 	rows := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	rows.AddCssClass("rows")
 	add := func(id, title, sub string, current bool) {
@@ -588,14 +589,14 @@ func (a *tailscaleApp) showExits() {
 		gtkx.Append(inner, &t.Widget)
 		mark := gtk.NewLabel("")
 		if current {
-			mark.SetText("IN USE")
+			mark.SetText(i18n.T("IN USE"))
 			mark.AddCssClass("kicker")
 			mark.AddCssClass("ts-current")
 		}
 		gtkx.Append(inner, &mark.Widget)
 		gtkx.Append(rows, &rowButton("exit:"+id, &inner.Widget, &a.onButton).Widget)
 	}
-	add("", "None", "Traffic goes out from this device as usual.", a.prefs.ExitNodeID == "")
+	add("", i18n.T("None"), i18n.T("Traffic goes out from this device as usual."), a.prefs.ExitNodeID == "")
 	now := time.Now()
 	nodes := a.st.ExitNodes()
 	for _, p := range nodes {
@@ -603,15 +604,15 @@ func (a *tailscaleApp) showExits() {
 	}
 	gtkx.Append(&a.exits, &rows.Widget)
 	if len(nodes) == 0 {
-		l := gtk.NewLabel("No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console.")
+		l := gtk.NewLabel(i18n.T("No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."))
 		l.AddCssClass("empty")
 		l.SetXalign(0)
 		l.SetWrap(true)
 		gtkx.Append(&a.exits, &l.Widget)
 	}
 	if a.prefs.ExitNodeID != "" {
-		row := a.switchRow("lan", "Allow local network access",
-			"Reach printers and other devices on this network while the exit node carries the rest.",
+		row := a.switchRow("lan", i18n.T("Allow local network access"),
+			i18n.T("Reach printers and other devices on this network while the exit node carries the rest."),
 			a.prefs.ExitNodeAllowLANAccess, a.operator())
 		gtkx.Append(&a.exits, &row.Widget)
 	}
@@ -622,45 +623,45 @@ func (a *tailscaleApp) showExits() {
 func (a *tailscaleApp) showThisDevice() {
 	gtkx.Clear(&a.thisDevice)
 	self := a.st.Self
-	section(&a.thisDevice, "THIS DEVICE")
+	section(&a.thisDevice, i18n.T("THIS DEVICE"))
 	if self != nil {
-		fact(&a.thisDevice, "Name", self.Name(), true)
-		fact(&a.thisDevice, "MagicDNS", cmpOr(self.MagicDNS(), "—"), true)
-		fact(&a.thisDevice, "Addresses", cmpOr(strings.Join(self.TailscaleIPs, "\n"), "—"), true)
+		fact(&a.thisDevice, i18n.T("Name"), self.Name(), true)
+		fact(&a.thisDevice, i18n.T("MagicDNS"), cmpOr(self.MagicDNS(), "—"), true)
+		fact(&a.thisDevice, i18n.T("Addresses"), cmpOr(strings.Join(self.TailscaleIPs, "\n"), "—"), true)
 	}
 	if t := a.st.CurrentTailnet; t != nil {
-		fact(&a.thisDevice, "Tailnet", t.Name, true)
+		fact(&a.thisDevice, i18n.T("Tailnet"), t.Name, true)
 	}
-	section(&a.thisDevice, "SETTINGS")
+	section(&a.thisDevice, i18n.T("SETTINGS"))
 	rows := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	rows.AddCssClass("rows")
 	for _, s := range tsSwitches {
-		row := a.switchRow("pref:"+s.key, s.title, s.sub, s.on(a.prefs), a.prefsErr == nil && a.operator())
+		row := a.switchRow("pref:"+s.key, i18n.T(s.title), i18n.T(s.sub), s.on(a.prefs), a.prefsErr == nil && a.operator())
 		gtkx.Append(rows, &row.Widget)
 	}
 	gtkx.Append(&a.thisDevice, &rows.Widget)
 
-	section(&a.thisDevice, "RECEIVED FILES")
+	section(&a.thisDevice, i18n.T("RECEIVED FILES"))
 	switch {
 	case errors.Is(a.waitingErr, tailscale.ErrPermission):
-		a.line(&a.thisDevice, "Files sent to this device show here once this app may manage Tailscale.")
+		a.line(&a.thisDevice, i18n.T("Files sent to this device show here once this app may manage Tailscale."))
 	case a.waitingErr != nil:
 		a.line(&a.thisDevice, a.waitingErr.Error())
 	case len(a.waiting) == 0:
-		a.line(&a.thisDevice, "None waiting. Files other devices send with Taildrop show here.")
+		a.line(&a.thisDevice, i18n.T("None waiting. Files other devices send with Taildrop show here."))
 	default:
 		for _, f := range a.waiting {
 			fact(&a.thisDevice, sysmon.Bytes(uint64(max(0, f.Size))), f.Name, true)
 		}
-		a.buttons(&a.thisDevice, [][2]string{{"save-files", "Save to Downloads"}})
+		a.buttons(&a.thisDevice, [][2]string{{"save-files", i18n.T("Save to Downloads")}})
 	}
 
-	section(&a.thisDevice, "ACCOUNT")
-	logout := "Log Out"
+	section(&a.thisDevice, i18n.T("ACCOUNT"))
+	logout := i18n.T("Log Out")
 	if a.armed == "logout" {
-		logout = "Sure?"
+		logout = i18n.T("Sure?")
 	}
-	a.buttons(&a.thisDevice, [][2]string{{"logout", logout}, {"admin", "Admin Console"}})
+	a.buttons(&a.thisDevice, [][2]string{{"logout", logout}, {"admin", i18n.T("Admin Console")}})
 	foot := gtk.NewLabel("")
 	foot.AddCssClass("foot")
 	gtkx.Append(&a.thisDevice, &foot.Widget)
@@ -680,7 +681,7 @@ func (a *tailscaleApp) buttons(box *gtk.Box, bs [][2]string) {
 	for _, b := range bs {
 		btn := gtk.NewButtonWithLabel(b[1])
 		btn.AddCssClass("outlined")
-		if b[1] == "Sure?" {
+		if b[0] == "logout" && a.armed == "logout" {
 			btn.AddCssClass("danger")
 		}
 		btn.SetName(b[0])
@@ -743,9 +744,9 @@ func (a *tailscaleApp) button(name string) {
 	case strings.HasPrefix(name, "exit:"):
 		id := strings.TrimPrefix(name, "exit:")
 		if id == "" {
-			a.edit(tailscale.UseExitNode(""), "No exit node: traffic goes out from this device.")
+			a.edit(tailscale.UseExitNode(""), i18n.T("No exit node: traffic goes out from this device."))
 		} else if p := a.st.PeerByID(id); p != nil {
-			a.edit(tailscale.UseExitNode(id), "Traffic now goes through "+p.Name()+".")
+			a.edit(tailscale.UseExitNode(id), i18n.Tf("Traffic now goes through %s.", p.Name()))
 		}
 	case name == "copy-ip", name == "copy-name":
 		a.copyPeer(a.openPeer(), name == "copy-name")
@@ -754,9 +755,9 @@ func (a *tailscaleApp) button(name string) {
 	case name == "use-exit":
 		if p := a.openPeer(); p != nil {
 			if p.ExitNode {
-				a.edit(tailscale.UseExitNode(""), "Stopped using "+p.Name()+" as exit node.")
+				a.edit(tailscale.UseExitNode(""), i18n.Tf("Stopped using %s as exit node.", p.Name()))
 			} else {
-				a.edit(tailscale.UseExitNode(p.ID), "Traffic now goes through "+p.Name()+".")
+				a.edit(tailscale.UseExitNode(p.ID), i18n.Tf("Traffic now goes through %s.", p.Name()))
 			}
 		}
 	case name == "save-files":
@@ -776,7 +777,7 @@ func (a *tailscaleApp) button(name string) {
 				if err != nil {
 					a.fail(err)
 				} else {
-					a.say("Logged out.", false)
+					a.say(i18n.T("Logged out."), false)
 				}
 				a.fetch()
 			})
@@ -799,7 +800,7 @@ func (a *tailscaleApp) ping() {
 		return
 	}
 	name, ip := p.Name(), p.IPv4()
-	a.say("Pinging "+name+"…", false)
+	a.say(i18n.Tf("Pinging %s…", name), false)
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -813,13 +814,13 @@ func (a *tailscaleApp) ping() {
 			// The answer comes as a notification, which replaces the last.
 			var n *gio.Notification
 			if r.Err != "" {
-				n = gio.NewNotification(name + " did not answer")
+				n = gio.NewNotification(i18n.Tf("%s did not answer", name))
 				n.SetBody(r.Err)
 			} else {
-				n = gio.NewNotification(fmt.Sprintf("%s answered in %.0f ms", name, r.LatencySeconds*1000))
-				n.SetBody("Direct, " + r.Endpoint)
+				n = gio.NewNotification(i18n.Tf("%s answered in %.0f ms", name, r.LatencySeconds*1000))
+				n.SetBody(i18n.Tf("Direct, %s", r.Endpoint))
 				if r.Endpoint == "" {
-					n.SetBody("Relayed through " + r.DERPRegionCode)
+					n.SetBody(i18n.Tf("Relayed through %s", r.DERPRegionCode))
 				}
 			}
 			a.c.App.SendNotification("ping", n)
@@ -835,7 +836,7 @@ func (a *tailscaleApp) sendFiles(paths []string) {
 		return
 	}
 	id, name := p.ID, p.Name()
-	a.say(fmt.Sprintf("Sending %s to %s…", plural(len(paths), "file", "files"), name), false)
+	a.say(i18n.Tf("Sending %s to %s…", plural(len(paths), "file", "files"), name), false)
 	go func() {
 		var errs []error
 		for _, path := range paths {
@@ -860,7 +861,7 @@ func (a *tailscaleApp) sendFiles(paths []string) {
 				a.fail(err)
 				return
 			}
-			a.say(fmt.Sprintf("Sent %s to %s.", plural(len(paths), "file", "files"), name), false)
+			a.say(i18n.Tf("Sent %s to %s.", plural(len(paths), "file", "files"), name), false)
 		})
 	}()
 }
@@ -897,7 +898,7 @@ func (a *tailscaleApp) saveFiles() {
 			if err := errors.Join(errs...); err != nil {
 				a.fail(err)
 			} else {
-				a.say(fmt.Sprintf("Saved %s to %s.", plural(n, "file", "files"), dir), false)
+				a.say(i18n.Tf("Saved %s to %s.", plural(n, "file", "files"), dir), false)
 			}
 			a.fetchWaiting()
 		})
@@ -908,7 +909,7 @@ func (a *tailscaleApp) saveFiles() {
 // its address.
 func (a *tailscaleApp) logIn() {
 	a.loggingIn = true
-	a.say("Opening the login page…", false)
+	a.say(i18n.T("Opening the login page…"), false)
 	go func() {
 		ctx, cancel := tailscale.Timeout()
 		defer cancel()
@@ -935,9 +936,9 @@ func (a *tailscaleApp) runAsAdmin(done string, cmd ...string) {
 				var exit *exec.ExitError
 				if strings.Contains(string(out), "authentication agent") {
 					// Nothing in the session can ask for the password.
-					err = errors.New("not done: no password prompt is running in this session (a polkit agent); run in a terminal: sudo " + strings.Join(cmd, " "))
+					err = errors.New(i18n.Tf("No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s", strings.Join(cmd, " ")))
 				} else if errors.As(err, &exit) && (exit.ExitCode() == 126 || exit.ExitCode() == 127) {
-					err = errors.New("not done: no administrator's password was given")
+					err = errors.New(i18n.T("not done: no administrator's password was given"))
 				} else if s := strings.TrimSpace(string(out)); s != "" {
 					err = errors.New(s)
 				}

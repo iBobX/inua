@@ -833,7 +833,7 @@ func (a *sysmonApp) showDetail() {
 	set("User", fmt.Sprintf("%s (%d)", user, d.UID))
 	set("State", sysmon.StateName(d.State))
 	if !d.Started.IsZero() {
-		set("Started", i18n.Tf("%s · %s ago", d.Started.Format(i18n.T("Jan 2 15:04:05")), sysmon.Elapsed(d.Started)))
+		set("Started", i18n.Tf("%s · %s ago", i18n.Time(d.Started, "Jan 2 15:04:05"), sysmon.Elapsed(d.Started)))
 	}
 	set("CPU time", cpuTime(d.CPUTime))
 	set("Priority", i18n.Tf("nice %d", d.Nice))
@@ -962,7 +962,7 @@ func (a *sysmonApp) showSystem() {
 	fact(&a.sys, i18n.M("Kernel"), si.Kernel, true)
 	up := sysmon.Duration(sysmon.Uptime())
 	if !si.Boot.IsZero() {
-		up = i18n.Tf("%s · since %s", up, si.Boot.Format(i18n.T("Jan 2 15:04"))) // a Go time layout, in the language's order
+		up = i18n.Tf("%s · since %s", up, i18n.Time(si.Boot, "Jan 2 15:04")) // a Go time layout, in the language's order
 	}
 	fact(&a.sys, i18n.M("Up"), up, false)
 

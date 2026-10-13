@@ -10,6 +10,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // mines is Minesweeper, in three sizes, with a clock and best times.
@@ -33,23 +34,23 @@ var mineSizes = []struct {
 	name       string
 	w, h, mine int
 }{
-	{"Small · 9 × 9", 9, 9, 10},
-	{"Medium · 16 × 16", 16, 16, 40},
-	{"Large · 30 × 16", 30, 16, 99},
+	{i18n.M("Small · 9 × 9"), 9, 9, 10},
+	{i18n.M("Medium · 16 × 16"), 16, 16, 40},
+	{i18n.M("Large · 30 × 16"), 30, 16, 99},
 }
 
 const mineCell = 30.0
 
 func (m *mines) setup(f *frame) {
 	m.f, m.hover = f, -1
-	m.left = f.stat("MINES")
-	m.clock = f.stat("TIME")
-	m.best = f.stat("BEST")
+	m.left = f.stat(i18n.T("MINES"))
+	m.clock = f.stat(i18n.T("TIME"))
+	m.best = f.stat(i18n.T("BEST"))
 	m.cv = newCanvas(1, 1, m.paint)
 	f.add(m.cv)
 	names := []string{}
 	for _, s := range mineSizes {
-		names = append(names, s.name)
+		names = append(names, i18n.T(s.name))
 	}
 	m.sizes = f.choices(names, func(i int) {
 		m.size = i
@@ -184,14 +185,14 @@ func (m *mines) update() {
 	}
 	switch g.Result {
 	case games.Won:
-		m.f.say(fmt.Sprintf("Cleared in %.1f seconds. N for another field.", m.elapsed), "good")
+		m.f.say(i18n.Tf("Cleared in %.1f seconds. N for another field.", m.elapsed), "good")
 	case games.Lost:
-		m.f.say("A mine went off. N for a new field.", "bad")
+		m.f.say(i18n.T("A mine went off. N for a new field."), "bad")
 	default:
 		if !g.Started {
-			m.f.say("Click any square to start: the first one is always safe.", "")
+			m.f.say(i18n.T("Click any square to start: the first one is always safe."), "")
 		} else {
-			m.f.say("Right-click to flag. Click a number with all its flags placed to open around it.", "")
+			m.f.say(i18n.T("Right-click to flag. Click a number with all its flags placed to open around it."), "")
 		}
 	}
 	m.cv.redraw()

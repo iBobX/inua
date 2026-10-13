@@ -1,8 +1,129 @@
+# inua interface translations.
 msgid ""
 msgstr ""
 "Language: zh_CN\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: internal/apps/calendar/calendar.go:69
+#: internal/appui/clock.go:218
+#: internal/ui/control.go:299
+#: internal/ui/lock.go:217
+msgid "Monday, January 2"
+msgstr "1月2日 Monday"
+
+#: internal/apps/calendar/calendar.go:79
+msgid "TODAY"
+msgstr "今天"
+
+#: internal/apps/calendar/calendar.go:81
+msgid "TOMORROW"
+msgstr "明天"
+
+#: internal/apps/calendar/calendar.go:83
+msgid "YESTERDAY"
+msgstr "昨天"
+
+#: internal/apps/calendar/calendar.go:85
+msgid "IN %d DAYS"
+msgstr "%d 天后"
+
+#: internal/apps/calendar/calendar.go:87
+msgid "%d DAYS AGO"
+msgstr "%d 天前"
+
+#: internal/apps/calendar/calendar.go:90
+msgid "%s · WEEK %d · DAY %d"
+msgstr "%[1]s · 周 %[2]d · 日 %[3]d"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+#: ui/calendar.ui:132
+msgid "Sun"
+msgstr "周日"
+
+#: internal/apps/clock/clock.go:69
+#: internal/appui/weather.go:357
+#: internal/config/strftime.go:50
+#: internal/i18n/time.go:11
+#: internal/shell/notify.go:28
+#: internal/ui/agenda.go:348
+#: ui/calendar.ui:127
+msgid "Mon"
+msgstr "周一"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Tue"
+msgstr "周二"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Wed"
+msgstr "周三"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Thu"
+msgstr "周四"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Fri"
+msgstr "周五"
+
+#: internal/apps/clock/clock.go:69
+#: internal/i18n/time.go:11
+msgid "Sat"
+msgstr "周六"
+
+#: internal/apps/clock/clock.go:78
+msgid "Once"
+msgstr "一次"
+
+#: internal/apps/clock/clock.go:80
+msgid "Every day"
+msgstr "每天"
+
+#: internal/apps/clock/clock.go:82
+msgid "Weekdays"
+msgstr "平日"
+
+#: internal/apps/clock/clock.go:84
+msgid "Weekends"
+msgstr "周末"
+
+#: internal/apps/clock/clock.go:112
+#: internal/appui/weather.go:359
+#: ui/agenda.ui:84
+#: ui/calendar.ui:39
+msgid "Today"
+msgstr "今天"
+
+#: internal/apps/clock/clock.go:117
+msgid "Tomorrow"
+msgstr "明天"
+
+#: internal/apps/clock/clock.go:119
+#: internal/shell/notify.go:26
+msgid "Yesterday"
+msgstr "昨天"
+
+#: internal/apps/clock/clock.go:122
+msgid "%s, same time"
+msgstr "%s,同时"
+
+#: internal/apps/clock/clock.go:130
+msgid "%s, %s%d h"
+msgstr "%s，%s%d 小时"
+
+#: internal/apps/clock/clock.go:132
+msgid "%s, %s%d h %d min"
+msgstr "%s，%s%d 小时 %d 分钟"
+
+#: internal/apps/clock/clock.go:140
+msgid "UTC"
+msgstr "UTC"
 
 #: internal/apps/sysmon/process.go:46
 msgid "running"
@@ -29,6 +150,7 @@ msgid "zombie"
 msgstr "僵尸"
 
 #: internal/apps/sysmon/process.go:58
+#: internal/apps/tailscale/status.go:149
 msgid "idle"
 msgstr "空闲"
 
@@ -49,15 +171,426 @@ msgid "%d h %d min"
 msgstr "%d 小时 %d 分钟"
 
 #: internal/apps/sysmon/sysmon.go:404
+#: internal/appui/clock.go:156
 msgid "%d min"
 msgstr "%d 分钟"
 
+#: internal/apps/tailscale/status.go:143
+#: internal/apps/tailscale/status.go:159
+msgid "offline"
+msgstr "离线"
+
+#: internal/apps/tailscale/status.go:145
+msgid "direct, %s"
+msgstr "直接,%s"
+
+#: internal/apps/tailscale/status.go:147
+msgid "relayed through %s"
+msgstr "通过%s中继"
+
+#: internal/apps/tailscale/status.go:156
+msgid "online"
+msgstr "在线"
+
+#: internal/apps/tailscale/status.go:168
+msgid "just now"
+msgstr "刚才"
+
+#: internal/apps/tailscale/status.go:170
+msgid "%d min ago"
+msgstr "%d 分钟前"
+
+#: internal/apps/tailscale/status.go:172
+msgid "%d h ago"
+msgstr "%d 小时前"
+
+#: internal/apps/tailscale/status.go:174
+msgid "%d d ago"
+msgstr "%d 天前"
+
+#: internal/apps/tailscale/status.go:176
+msgid "%d mo ago"
+msgstr "%d 个月前"
+
+#: internal/apps/tailscale/status.go:187
+msgid "expired %s"
+msgstr "过期%s"
+
+#: internal/apps/tailscale/status.go:189
+msgid "in %d h"
+msgstr "%d 小时后"
+
+#: internal/apps/tailscale/status.go:191
+msgid "in %d d"
+msgstr "%d 天后"
+
+#: internal/apps/tailscale/status.go:265
+msgid "Connected"
+msgstr "已连接"
+
+#: internal/apps/tailscale/status.go:267
+msgid "Disconnected"
+msgstr "已断开连接"
+
+#: internal/apps/tailscale/status.go:269
+#: internal/shell/status.go:124
+msgid "Logged out"
+msgstr "已注销"
+
+#: internal/apps/tailscale/status.go:271
+msgid "Waiting for approval"
+msgstr "等待批准"
+
+#: internal/apps/tailscale/status.go:273
+#: internal/appui/tailscale.go:152
+#: internal/shell/status.go:128
+msgid "Connecting…"
+msgstr "正在连接……"
+
+#: internal/apps/tailscale/status.go:275
+#: internal/shell/status.go:116
+msgid "Not running"
+msgstr "未运行"
+
+#: internal/apps/weather/weather.go:192
+msgid "Clear sky"
+msgstr "晴朗"
+
+#: internal/apps/weather/weather.go:194
+msgid "Mostly clear"
+msgstr "大部晴朗"
+
+#: internal/apps/weather/weather.go:196
+msgid "Partly cloudy"
+msgstr "晴间多云"
+
+#: internal/apps/weather/weather.go:198
+msgid "Cloudy"
+msgstr "阴天"
+
+#: internal/apps/weather/weather.go:200
+msgid "Fog"
+msgstr "雾"
+
+#: internal/apps/weather/weather.go:202
+msgid "Drizzle"
+msgstr "细雨"
+
+#: internal/apps/weather/weather.go:204
+msgid "Rain"
+msgstr "雨"
+
+#: internal/apps/weather/weather.go:206
+msgid "Heavy rain"
+msgstr "大雨"
+
+#: internal/apps/weather/weather.go:208
+msgid "Snow"
+msgstr "雪"
+
+#: internal/apps/weather/weather.go:210
+msgid "Heavy snow"
+msgstr "大雪"
+
+#: internal/apps/weather/weather.go:212
+msgid "Thunderstorm"
+msgstr "雷暴"
+
+#: internal/apps/weather/weather.go:214
+#: internal/appui/sysmon.go:1075
+msgid "Unknown"
+msgstr "未知"
+
+#: internal/appui/app.go:60
+#: internal/ui/alarms.go:106
+#: ui/settings.ui:611
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:3
+msgid "Clock"
+msgstr "时钟"
+
+#: internal/appui/app.go:61
+#: internal/appui/weather.go:223
+#: internal/ui/agenda.go:318
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:3
+msgid "Weather"
+msgstr "天气"
+
+#: internal/appui/app.go:62
+#: ui/stocks.ui:35
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
+msgid "Stocks"
+msgstr "股票"
+
+#: internal/appui/app.go:63
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
+msgid "Calculator"
+msgstr "计算器"
+
+#: internal/appui/app.go:64
+#: ui/bar.ui:52
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
+msgid "Calendar"
+msgstr "日历"
+
+#: internal/appui/app.go:65
+#: internal/ui/picker.go:148
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
+msgid "Color Picker"
+msgstr "取色器"
+
 #: internal/appui/app.go:66
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "系统监视器"
 
+#: internal/appui/app.go:67
+#: ui/control.ui:474
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
+msgid "Tailscale"
+msgstr "Tailscale"
+
+#: internal/appui/app.go:68
+#: internal/appui/viewer.go:571
+#: internal/appui/viewer.go:572
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
+msgid "Viewer"
+msgstr "图片查看器"
+
+#: internal/appui/calculator.go:49
+#: ui/clock.ui:231
+msgid "Delete"
+msgstr "删除"
+
+#: internal/appui/calculator.go:53
+msgid "Change sign"
+msgstr "改变符号"
+
+#: internal/appui/calculator.go:200
+msgid "Error"
+msgstr "错误"
+
+#: internal/appui/calculator.go:234
+msgid "No calculations yet"
+msgstr "尚未计算"
+
+#: internal/appui/calculator.go:256
+msgid "Use %s"
+msgstr "使用%s"
+
+#: internal/appui/calendar.go:131
+#: internal/ui/agenda.go:223
+msgid "January 2006"
+msgstr "2006年1月"
+
+#: internal/appui/calendar.go:133
+#: internal/ui/agenda.go:236
+msgid "WK"
+msgstr "周"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Su"
+msgstr "日"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Mo"
+msgstr "一"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Tu"
+msgstr "二"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "We"
+msgstr "三"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Th"
+msgstr "四"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Fr"
+msgstr "五"
+
+#: internal/appui/calendar.go:138
+#: internal/appui/clock.go:148
+#: internal/ui/agenda.go:237
+msgid "Sa"
+msgstr "六"
+
+#: internal/appui/clock.go:145
+msgid "HRS"
+msgstr "小时"
+
+#: internal/appui/clock.go:145
+msgid "MIN"
+msgstr "分钟"
+
+#: internal/appui/clock.go:145
+msgid "SEC"
+msgstr "秒"
+
+#: internal/appui/clock.go:259
+msgid "Day"
+msgstr "日"
+
+#: internal/appui/clock.go:262
+msgid "Night"
+msgstr "夜"
+
+#: internal/appui/clock.go:337
+msgid "No city by that name"
+msgstr "没有同名的城市"
+
+#: internal/appui/clock.go:369
+#: internal/appui/weather.go:246
+msgid "Remove %s"
+msgstr "移除%s"
+
+#: internal/appui/clock.go:402
+msgid "Edit"
+msgstr "编辑"
+
+#: internal/appui/clock.go:491
+#: internal/games/fortune.go:50
+#: ui/clock.ui:339
+#: ui/clock.ui:406
+msgid "Start"
+msgstr "开始"
+
+#: internal/appui/clock.go:492
+msgid "Reset"
+msgstr "重置"
+
+#: internal/appui/clock.go:496
+#: internal/assistantui/assistantui.go:491
+#: internal/ui/alarms.go:108
+msgid "Stop"
+msgstr "停止"
+
+#: internal/appui/clock.go:497
+#: internal/appui/clock.go:506
+#: ui/clock.ui:329
+msgid "Lap"
+msgstr "计次"
+
+#: internal/appui/clock.go:545
+msgid "LAP %d"
+msgstr "第 %d 次"
+
+#: internal/appui/clock.go:565
+#: internal/appui/clock.go:575
+#: internal/appui/sysmon.go:55
+#: internal/appui/sysmon.go:55
+#: ui/clock.ui:463
+msgid "Pause"
+msgstr "暂停"
+
+#: internal/appui/clock.go:568
+#: internal/appui/clock.go:576
+msgid "ENDS AT %s"
+msgstr "结束于%s"
+
+#: internal/appui/clock.go:581
+#: internal/appui/sysmon.go:863
+#: internal/appui/sysmon.go:863
+msgid "Resume"
+msgstr "继续"
+
+#: internal/appui/clock.go:582
+#: internal/gamesui/pinball.go:241
+msgid "PAUSED"
+msgstr "暂停"
+
+#: internal/appui/clock.go:593
+msgid "Timer done"
+msgstr "定时器完成"
+
+#: internal/appui/clock.go:594
+msgid "Your timer has ended."
+msgstr "您的计时器已结束。"
+
+#: internal/appui/colorpicker.go:120
+msgid "HEX"
+msgstr "HEX"
+
+#: internal/appui/colorpicker.go:120
+msgid "RGB"
+msgstr "RGB"
+
+#: internal/appui/colorpicker.go:120
+msgid "HSL"
+msgstr "HSL"
+
+#: internal/appui/colorpicker.go:134
+msgid "Copy %s"
+msgstr "复制 %s"
+
+#: internal/appui/colorpicker.go:139
+msgid "No colour yet. Pick one from anywhere on the screen."
+msgstr "还没有颜色。从屏幕上的任意位置选择一个。"
+
+#: internal/appui/stocks.go:274
+msgid "Search for a symbol to add it."
+msgstr "搜索符号以添加它。"
+
+#: internal/appui/stocks.go:281
+msgid "Loading %s…"
+msgstr "正在加载%s…"
+
+#: internal/appui/stocks.go:294
+msgid "%s could not be read.\n%s"
+msgstr "无法读取%[1]s。\n%[2]s"
+
+#: internal/appui/stocks.go:317
+msgid "Previous close"
+msgstr "上次收盘"
+
+#: internal/appui/stocks.go:319
+msgid "Range start"
+msgstr "范围起始"
+
+#: internal/appui/stocks.go:322
+#: internal/ui/settings_ai.go:58
+msgid "High"
+msgstr "高"
+
+#: internal/appui/stocks.go:322
+#: internal/ui/settings_ai.go:58
+msgid "Low"
+msgstr "低"
+
+#: internal/appui/stocks.go:328
+msgid "As of %s"
+msgstr "更新于 %s"
+
+#: internal/appui/stocks.go:328
+msgid "Jan 2, 15:04"
+msgstr "1月2日 15:04"
+
+#: internal/appui/stocks.go:404
+msgid "Nothing by that name"
+msgstr "没有任何叫这个名字的东西"
+
+#: internal/appui/stocks.go:406
+#: internal/appui/weather.go:472
+msgid "Could not search: %s"
+msgstr "无法搜索:%s"
+
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
+#: internal/ui/dock.go:402
 msgid "Quit"
 msgstr "退出"
 
@@ -82,11 +615,6 @@ msgstr "挂断"
 #: internal/appui/sysmon.go:54
 msgid "As closing its terminal. Many services reload instead."
 msgstr "如同关闭它的终端。许多服务会改为重新加载。"
-
-#: internal/appui/sysmon.go:55
-#: internal/appui/sysmon.go:55
-msgid "Pause"
-msgstr "暂停"
 
 #: internal/appui/sysmon.go:55
 msgid "Stops it running until it is resumed."
@@ -133,6 +661,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
+#: internal/shell/dock.go:259
 msgid "NETWORK"
 msgstr "网络"
 
@@ -285,6 +814,7 @@ msgid "Program"
 msgstr "程序"
 
 #: internal/appui/sysmon.go:786
+#: internal/appui/viewer.go:814
 msgid "Folder"
 msgstr "目录"
 
@@ -325,11 +855,6 @@ msgstr "1月2日 15:04:05"
 #: internal/appui/sysmon.go:839
 msgid "nice %d"
 msgstr "nice %d"
-
-#: internal/appui/sysmon.go:863
-#: internal/appui/sysmon.go:863
-msgid "Resume"
-msgstr "继续"
 
 #: internal/appui/sysmon.go:863
 msgid "It is paused. Lets it go on."
@@ -387,15 +912,22 @@ msgstr "电脑"
 
 #: internal/appui/sysmon.go:959
 #: internal/appui/sysmon.go:971
+#: internal/ui/settings_ai.go:307
 msgid "Model"
-msgstr "型号"
+msgstr "模型"
 
 #: internal/appui/sysmon.go:960
+#: internal/appui/tailscale.go:628
+#: internal/appui/viewer.go:813
+#: internal/ui/settings_ai.go:305
+#: ui/settings.ui:2576
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名称"
 
 #: internal/appui/sysmon.go:961
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:564
 msgid "System"
 msgstr "系统"
 
@@ -408,6 +940,7 @@ msgid "%s · since %s"
 msgstr "%s · 自 %s 起"
 
 #: internal/appui/sysmon.go:965
+#: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1月2日 15:04"
 
@@ -508,6 +1041,7 @@ msgid "wired"
 msgstr "有线"
 
 #: internal/appui/sysmon.go:1035
+#: ui/control.ui:249
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
@@ -520,6 +1054,7 @@ msgid "up"
 msgstr "已连接"
 
 #: internal/appui/sysmon.go:1043
+#: internal/appui/tailscale.go:630
 msgid "Addresses"
 msgstr "地址"
 
@@ -528,6 +1063,8 @@ msgid "Hardware"
 msgstr "硬件地址"
 
 #: internal/appui/sysmon.go:1049
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:567
 msgid "Traffic"
 msgstr "流量"
 
@@ -555,13 +1092,5272 @@ msgstr "已充满"
 msgid "Not charging"
 msgstr "未充电"
 
-#: internal/appui/sysmon.go:1075
-msgid "Unknown"
-msgstr "未知"
-
 #: internal/appui/sysmon.go:1082
 msgid "%.1f s"
 msgstr "%.1f 秒"
+
+#: internal/appui/tailscale.go:40
+msgid "Use Tailscale DNS"
+msgstr "使用 Tailscale DNS"
+
+#: internal/appui/tailscale.go:40
+msgid "MagicDNS names and the tailnet's DNS settings."
+msgstr "MagicDNS名称和尾网的DNS设置。"
+
+#: internal/appui/tailscale.go:43
+msgid "Use subnet routes"
+msgstr "使用子网路由"
+
+#: internal/appui/tailscale.go:43
+msgid "Reach the networks other devices offer."
+msgstr "到达其他设备提供的网络。"
+
+#: internal/appui/tailscale.go:48
+msgid "Block incoming connections"
+msgstr "阻止传入连接"
+
+#: internal/appui/tailscale.go:48
+msgid "Other devices cannot reach this one; it can still reach them."
+msgstr "其他设备无法到达该设备；它仍然可以到达他们。"
+
+#: internal/appui/tailscale.go:53
+msgid "Offer as exit node"
+msgstr "作为出口节点"
+
+#: internal/appui/tailscale.go:53
+msgid "Others may send their traffic through this device, once the admin approves."
+msgstr "一旦管理员批准，其他人就可以通过该设备发送他们的流量。"
+
+#: internal/appui/tailscale.go:56
+msgid "Tailscale SSH"
+msgstr "Tailscale SSH"
+
+#: internal/appui/tailscale.go:56
+msgid "Let the tailnet's SSH rules reach this device's SSH server."
+msgstr "Let the tailnet's SSH rules reach this device's SSH server."
+
+#: internal/appui/tailscale.go:152
+msgid "Disconnected."
+msgstr "断开连接。"
+
+#: internal/appui/tailscale.go:164
+msgid "Local network reachable through the exit node."
+msgstr "Local network reachable through the exit node."
+
+#: internal/appui/tailscale.go:164
+msgid "Local network goes through the exit node too."
+msgstr "Local network goes through the exit node too."
+
+#: internal/appui/tailscale.go:169
+msgid "%s on."
+msgstr "%s上。"
+
+#: internal/appui/tailscale.go:169
+msgid "%s off."
+msgstr "%s 关闭。"
+
+#: internal/appui/tailscale.go:301
+msgid "Not changed: allow this app to manage Tailscale first."
+msgstr "Not changed: allow this app to manage Tailscale first."
+
+#: internal/appui/tailscale.go:303
+msgid "Tailscale is not running."
+msgstr "Tailscale没有运行。"
+
+#: internal/appui/tailscale.go:345
+#: internal/shell/status.go:69
+#: internal/shell/status.go:86
+#: internal/shell/status.go:101
+msgid "Unavailable"
+msgstr "不可用"
+
+#: internal/appui/tailscale.go:356
+msgid "%d of %d devices online"
+msgstr "%[1]d的%[2]d设备上线"
+
+#: internal/appui/tailscale.go:369
+msgid "Tailscale's service is not running."
+msgstr "Tailscale的服务未运行。"
+
+#: internal/appui/tailscale.go:369
+msgid "Start…"
+msgstr "开始……"
+
+#: internal/appui/tailscale.go:370
+msgid "Started Tailscale."
+msgstr "开始Tailscale。"
+
+#: internal/appui/tailscale.go:374
+msgid "This device is logged out of its tailnet."
+msgstr "该设备已从其尾网注销。"
+
+#: internal/appui/tailscale.go:374
+msgid "Log In"
+msgstr "登录"
+
+#: internal/appui/tailscale.go:377
+msgid "An admin of the tailnet has to approve this device."
+msgstr "尾网的管理员必须批准该设备。"
+
+#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:664
+msgid "Admin Console"
+msgstr "管理控制台"
+
+#: internal/appui/tailscale.go:380
+msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
+msgstr "要从此处更改 Tailscale，请允许一次；它要求输入管理员密码。"
+
+#: internal/appui/tailscale.go:380
+msgid "Allow…"
+msgstr "允许……"
+
+#: internal/appui/tailscale.go:382
+msgid "This app may now manage Tailscale."
+msgstr "该应用程序现在可以管理Tailscale。"
+
+#: internal/appui/tailscale.go:414
+msgid "No device matches."
+msgstr "没有设备匹配。"
+
+#: internal/appui/tailscale.go:416
+msgid "No other devices in the tailnet yet."
+msgstr "尾网中还没有其他设备。"
+
+#: internal/appui/tailscale.go:433
+msgid "exit node in use"
+msgstr "出口节点使用中"
+
+#: internal/appui/tailscale.go:435
+msgid "exit node"
+msgstr "出口节点"
+
+#: internal/appui/tailscale.go:445
+msgid "Details, ping, exit node and sending files"
+msgstr "详情、ping、出口节点及发送文件"
+
+#: internal/appui/tailscale.go:467
+#: internal/appui/viewer.go:395
+msgid "Copied"
+msgstr "已复制"
+
+#: internal/appui/tailscale.go:505
+msgid "Copy IP"
+msgstr "复制IP"
+
+#: internal/appui/tailscale.go:505
+msgid "Copy Name"
+msgstr "复制名称"
+
+#: internal/appui/tailscale.go:505
+msgid "Ping"
+msgstr "Ping"
+
+#: internal/appui/tailscale.go:513
+#: internal/appui/tailscale.go:575
+msgid "Use as Exit Node"
+msgstr "用作出口节点"
+
+#: internal/appui/tailscale.go:522
+msgid "DEVICE"
+msgstr "设备"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:561
+#: internal/appui/tailscale.go:629
+msgid "MagicDNS"
+msgstr "MagicDNS"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:562
+msgid "IPv4"
+msgstr "IPv4"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:563
+msgid "IPv6"
+msgstr "IPv6"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:565
+msgid "Status"
+msgstr "状态"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:566
+msgid "Connection"
+msgstr "连接"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:568
+msgid "Key expires"
+msgstr "密钥过期"
+
+#: internal/appui/tailscale.go:523
+#: internal/appui/tailscale.go:569
+msgid "Tags"
+msgstr "标签"
+
+#: internal/appui/tailscale.go:526
+msgid "SEND FILES"
+msgstr "发送文件"
+
+#: internal/appui/tailscale.go:542
+msgid "NO LONGER IN THE TAILNET"
+msgstr "不再在尾网上"
+
+#: internal/appui/tailscale.go:564
+msgid "%s · host name %s"
+msgstr "%[1]s · 主机名 %[2]s"
+
+#: internal/appui/tailscale.go:570
+msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
+msgstr "将文件拖放到该面板上以使用Taildrop将它们发送到%s。他们等待它直到被保存。"
+
+#: internal/appui/tailscale.go:573
+msgid "Stop Using as Exit Node"
+msgstr "停止用作出口节点"
+
+#: internal/appui/tailscale.go:582
+msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
+msgstr "通过该设备发送流量"
+
+#: internal/appui/tailscale.go:592
+msgid "IN USE"
+msgstr "使用中"
+
+#: internal/appui/tailscale.go:599
+#: internal/ui/shortcuts.go:140
+msgid "None"
+msgstr "无"
+
+#: internal/appui/tailscale.go:599
+msgid "Traffic goes out from this device as usual."
+msgstr "Traffic goes out from this device as usual."
+
+#: internal/appui/tailscale.go:607
+msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
+msgstr "尾网中没有设备愿意作为出口节点。在其中之一上启用 Offer 作为出口节点，然后在管理控制台中批准它。"
+
+#: internal/appui/tailscale.go:614
+msgid "Allow local network access"
+msgstr "允许本地网络访问"
+
+#: internal/appui/tailscale.go:615
+msgid "Reach printers and other devices on this network while the exit node carries the rest."
+msgstr "Reach printers and other devices on this network while the exit node carries the rest."
+
+#: internal/appui/tailscale.go:626
+#: ui/tailscale.ui:170
+msgid "THIS DEVICE"
+msgstr "该装置"
+
+#: internal/appui/tailscale.go:633
+msgid "Tailnet"
+msgstr "Tailscale 网络"
+
+#: internal/appui/tailscale.go:635
+msgid "SETTINGS"
+msgstr "设置"
+
+#: internal/appui/tailscale.go:644
+msgid "RECEIVED FILES"
+msgstr "收到的文件"
+
+#: internal/appui/tailscale.go:647
+msgid "Files sent to this device show here once this app may manage Tailscale."
+msgstr "Files sent to this device show here once this app may manage Tailscale."
+
+#: internal/appui/tailscale.go:651
+msgid "None waiting. Files other devices send with Taildrop show here."
+msgstr "无人等待。 Files other devices send with Taildrop show here."
+
+#: internal/appui/tailscale.go:656
+msgid "Save to Downloads"
+msgstr "保存到下载"
+
+#: internal/appui/tailscale.go:659
+msgid "ACCOUNT"
+msgstr "账户"
+
+#: internal/appui/tailscale.go:660
+#: internal/shell/commands.go:31
+msgid "Log Out"
+msgstr "退出登录"
+
+#: internal/appui/tailscale.go:662
+msgid "Sure?"
+msgstr "确认？"
+
+#: internal/appui/tailscale.go:747
+msgid "No exit node: traffic goes out from this device."
+msgstr "No exit node: traffic goes out from this device."
+
+#: internal/appui/tailscale.go:749
+#: internal/appui/tailscale.go:760
+msgid "Traffic now goes through %s."
+msgstr "流量现在经过%s。"
+
+#: internal/appui/tailscale.go:758
+msgid "Stopped using %s as exit node."
+msgstr "停止使用 %s 作为出口节点。"
+
+#: internal/appui/tailscale.go:780
+msgid "Logged out."
+msgstr "已注销。"
+
+#: internal/appui/tailscale.go:803
+msgid "Pinging %s…"
+msgstr "ping %s……"
+
+#: internal/appui/tailscale.go:817
+msgid "%s did not answer"
+msgstr "%s 未接听"
+
+#: internal/appui/tailscale.go:820
+msgid "%s answered in %.0f ms"
+msgstr "%[1]s 在 %.0[2]f 毫秒中回答"
+
+#: internal/appui/tailscale.go:821
+msgid "Direct, %s"
+msgstr "直接,%s"
+
+#: internal/appui/tailscale.go:823
+msgid "Relayed through %s"
+msgstr "通过 %s 中继"
+
+#: internal/appui/tailscale.go:839
+msgid "Sending %s to %s…"
+msgstr "发送%[1]s到%[2]s..."
+
+#: internal/appui/tailscale.go:864
+msgid "Sent %s to %s."
+msgstr "将%[1]s发送至%[2]s。"
+
+#: internal/appui/tailscale.go:901
+msgid "Saved %s to %s."
+msgstr "将 %[1]s 保存到 %[2]s。"
+
+#: internal/appui/tailscale.go:912
+msgid "Opening the login page…"
+msgstr "正在打开登录页面……"
+
+#: internal/appui/tailscale.go:939
+msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
+msgstr "此会话中没有运行密码提示(polkit 代理);在终端中运行: sudo %s"
+
+#: internal/appui/tailscale.go:941
+msgid "not done: no administrator's password was given"
+msgstr "not done: no administrator's password was given"
+
+#: internal/appui/viewer.go:199
+msgid "%s is not an image the viewer knows."
+msgstr "%s不是观看者知道的图像。"
+
+#: internal/appui/viewer.go:393
+msgid "Could not copy"
+msgstr "无法复制"
+
+#: internal/appui/viewer.go:414
+msgid "Could not move to Trash"
+msgstr "无法移至垃圾箱"
+
+#: internal/appui/viewer.go:421
+msgid "Moved to Trash"
+msgstr "已移至垃圾箱"
+
+#: internal/appui/viewer.go:424
+msgid "No images left here."
+msgstr "这里没有留下任何图像。"
+
+#: internal/appui/viewer.go:456
+msgid "Open an Image"
+msgstr "打开图像"
+
+#: internal/appui/viewer.go:482
+msgid "Open an image to view it."
+msgstr "打开图像进行查看。"
+
+#: internal/appui/viewer.go:544
+msgid "Could not open %s.\n%v"
+msgstr "无法打开%[1]s。\n%[2]v"
+
+#: internal/appui/viewer.go:711
+msgid "Fit · %s"
+msgstr "适合·%s"
+
+#: internal/appui/viewer.go:715
+msgid "Actual size (1)"
+msgstr "实际尺寸(1)"
+
+#: internal/appui/viewer.go:717
+msgid "Fit the window (0)"
+msgstr "适应窗口（0）"
+
+#: internal/appui/viewer.go:812
+msgid "FILE"
+msgstr "文件"
+
+#: internal/appui/viewer.go:819
+msgid "Size"
+msgstr "尺寸"
+
+#: internal/appui/viewer.go:828
+msgid "Dimensions"
+msgstr "尺寸"
+
+#: internal/appui/viewer.go:829
+msgid "Type"
+msgstr "类型"
+
+#: internal/appui/viewer.go:831
+msgid "Modified"
+msgstr "修改"
+
+#: internal/appui/viewer.go:831
+#: internal/appui/viewer.go:839
+msgid "Jan 2, 2006  15:04"
+msgstr "2006年1月2日  15:04"
+
+#: internal/appui/viewer.go:834
+msgid "CAMERA"
+msgstr "相机"
+
+#: internal/appui/viewer.go:835
+msgid "Camera"
+msgstr "相机"
+
+#: internal/appui/viewer.go:836
+msgid "Lens"
+msgstr "镜头"
+
+#: internal/appui/viewer.go:837
+msgid "Exposure"
+msgstr "曝光"
+
+#: internal/appui/viewer.go:839
+msgid "Taken"
+msgstr "拍摄时间"
+
+#: internal/appui/viewer.go:856
+msgid "Could not set the wallpaper"
+msgstr "无法设置壁纸"
+
+#: internal/appui/viewer.go:860
+#: ui/viewer.ui:129
+msgid "Set as wallpaper"
+msgstr "设置为壁纸"
+
+#: internal/appui/weather.go:255
+msgid "Add a city to see its weather."
+msgstr "添加城市以查看其天气。"
+
+#: internal/appui/weather.go:255
+#: ui/clock.ui:122
+#: ui/weather.ui:95
+msgid "Add a city"
+msgstr "添加城市"
+
+#: internal/appui/weather.go:261
+msgid "Reading the weather…"
+msgstr "读取天气……"
+
+#: internal/appui/weather.go:273
+msgid "The weather could not be read.\n%s"
+msgstr "无法读取天气。\n%s"
+
+#: internal/appui/weather.go:273
+msgid "Try again"
+msgstr "再试一次"
+
+#: internal/appui/weather.go:322
+msgid "H %s   L %s"
+msgstr "H %[1]s L %[2]s"
+
+#: internal/appui/weather.go:331
+msgid "NOW"
+msgstr "现在"
+
+#: internal/appui/weather.go:394
+msgid "FEELS LIKE"
+msgstr "体感温度"
+
+#: internal/appui/weather.go:395
+msgid "HUMIDITY"
+msgstr "湿度"
+
+#: internal/appui/weather.go:396
+msgid "WIND"
+msgstr "风"
+
+#: internal/appui/weather.go:397
+msgid "RAIN"
+msgstr "雨"
+
+#: internal/appui/weather.go:402
+msgid "SUNRISE"
+msgstr "日出"
+
+#: internal/appui/weather.go:403
+msgid "SUNSET"
+msgstr "日落"
+
+#: internal/appui/weather.go:425
+msgid "UPDATED %s · OPEN-METEO"
+msgstr "更新了 %s·OPEN-METEO"
+
+#: internal/appui/weather.go:470
+msgid "No place by that name"
+msgstr "没有叫这个名字的地方"
+
+#: internal/assistant/assistant.go:426
+msgid "Remote Console: %s"
+msgstr "远程控制台:%s"
+
+#: internal/assistant/tools.go:173
+#: internal/assistant/tools.go:199
+msgid "the focused window"
+msgstr "聚焦窗口"
+
+#: internal/assistant/tools.go:179
+msgid "Looking at the windows"
+msgstr "正在查看窗口"
+
+#: internal/assistant/tools.go:186
+msgid "Focusing %s"
+msgstr "聚焦%s"
+
+#: internal/assistant/tools.go:199
+msgid "Moving %s to workspace %s"
+msgstr "将%[1]s移动到工作区%[2]s"
+
+#: internal/assistant/tools.go:215
+msgid "Closing %s"
+msgstr "关闭%s"
+
+#: internal/assistant/tools.go:227
+msgid "Going to workspace %s"
+msgstr "前往工作区%s"
+
+#: internal/assistant/tools.go:276
+msgid "Looking at the apps"
+msgstr "查看应用程序"
+
+#: internal/assistant/tools.go:292
+msgid "Opening %s"
+msgstr "正在打开 %s"
+
+#: internal/assistant/tools.go:324
+msgid "Looking at the system"
+msgstr "查看系统"
+
+#: internal/assistant/tools.go:338
+msgid "Setting the volume to %s%%"
+msgstr "将音量设为 %s%%"
+
+#: internal/assistant/tools.go:340
+msgid "Setting the brightness to %s%%"
+msgstr "将亮度设为 %s%%"
+
+#: internal/assistant/tools.go:343
+msgid "Turning Wi-Fi on"
+msgstr "正在打开 Wi-Fi"
+
+#: internal/assistant/tools.go:343
+msgid "Turning Wi-Fi off"
+msgstr "正在关闭 Wi-Fi"
+
+#: internal/assistant/tools.go:344
+msgid "Turning Bluetooth on"
+msgstr "正在打开蓝牙"
+
+#: internal/assistant/tools.go:344
+msgid "Turning Bluetooth off"
+msgstr "正在关闭蓝牙"
+
+#: internal/assistant/tools.go:345
+msgid "Muting the sound"
+msgstr "正在静音"
+
+#: internal/assistant/tools.go:345
+msgid "Unmuting the sound"
+msgstr "正在取消静音"
+
+#: internal/assistant/tools.go:346
+msgid "Turning Focus on"
+msgstr "正在开启专注模式"
+
+#: internal/assistant/tools.go:346
+msgid "Turning Focus off"
+msgstr "正在关闭专注模式"
+
+#: internal/assistant/tools.go:347
+msgid "Turning power saver on"
+msgstr "正在开启节能模式"
+
+#: internal/assistant/tools.go:347
+msgid "Turning power saver off"
+msgstr "正在关闭节能模式"
+
+#: internal/assistant/tools.go:349
+msgid "Setting %s to %s"
+msgstr "将 %s 设为 %s"
+
+#: internal/assistant/tools.go:361
+msgid "Locking the screen"
+msgstr "锁定屏幕"
+
+#: internal/assistant/tools.go:370
+msgid "Taking a screenshot of the focused window"
+msgstr "正在截取当前窗口"
+
+#: internal/assistant/tools.go:372
+msgid "Taking a screenshot of the screen"
+msgstr "正在截取整个屏幕"
+
+#: internal/assistant/tools.go:374
+msgid "Taking a screenshot of an area"
+msgstr "正在截取一个区域"
+
+#: internal/assistant/tools.go:389
+msgid "Suspending"
+msgstr "暂停"
+
+#: internal/assistant/tools.go:389
+msgid "Restarting the computer"
+msgstr "重新启动计算机"
+
+#: internal/assistant/tools.go:389
+msgid "Shutting down"
+msgstr "正在关机"
+
+#: internal/assistant/tools.go:389
+msgid "Logging out"
+msgstr "注销"
+
+#: internal/assistant/tools.go:401
+msgid "Reading the notifications"
+msgstr "阅读通知"
+
+#: internal/assistant/tools.go:406
+msgid "Clearing the notifications"
+msgstr "清除通知"
+
+#: internal/assistant/tools.go:411
+msgid "Reading the clipboard"
+msgstr "读取剪贴板"
+
+#: internal/assistant/tools.go:426
+msgid "Copying “%s…”"
+msgstr "正在复制“%s......”"
+
+#: internal/assistant/tools.go:428
+msgid "Copying “%s”"
+msgstr "复制“%s”"
+
+#: internal/assistant/tools.go:450
+msgid "Looking at the processes"
+msgstr "查看进程"
+
+#: internal/assistant/tools.go:499
+msgid "Killing %s(%d)"
+msgstr "杀死%[1]s(%[2]d)"
+
+#: internal/assistant/tools.go:501
+msgid "Asking %s(%d) to quit"
+msgstr "要求%[1]s(%[2]d)退出"
+
+#: internal/assistant/tools.go:522
+msgid "Looking at Tailscale"
+msgstr "正在查看 Tailscale"
+
+#: internal/assistant/tools.go:552
+msgid "Stopping the Tailscale exit node"
+msgstr "停止Tailscale出口节点"
+
+#: internal/assistant/tools.go:554
+msgid "Using %s as Tailscale exit node"
+msgstr "使用%s作为Tailscale出口节点"
+
+#: internal/assistant/tools.go:557
+msgid "Connecting Tailscale"
+msgstr "正在连接 Tailscale"
+
+#: internal/assistant/tools.go:559
+msgid "Disconnecting Tailscale"
+msgstr "正在断开 Tailscale"
+
+#: internal/assistant/tools.go:592
+msgid "Looking up the weather in %s"
+msgstr "查询%s的天气"
+
+#: internal/assistantui/assistantui.go:43
+#: ui/assistant.ui:35
+#: ui/settings.ui:1542
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
+msgid "Assistant"
+msgstr "助手"
+
+#: internal/assistantui/assistantui.go:50
+msgid "What is using the most CPU right now?"
+msgstr "目前CPU使用率最高的是什么？"
+
+#: internal/assistantui/assistantui.go:51
+msgid "Turn on Focus and set the volume to 30%"
+msgstr "打开 Focus 并将音量设置为 30%"
+
+#: internal/assistantui/assistantui.go:52
+msgid "What did I miss? Sum up my notifications"
+msgstr "我错过了什么？总结一下我的通知"
+
+#: internal/assistantui/assistantui.go:53
+msgid "Which devices on my tailnet are online?"
+msgstr "我的尾网上有哪些设备在线？"
+
+#: internal/assistantui/assistantui.go:54
+msgid "What is the weather this afternoon in Kyoto?"
+msgstr "京都今天下午的天气怎么样？"
+
+#: internal/assistantui/assistantui.go:140
+msgid "%s answers from here"
+msgstr "%s 从这里回答"
+
+#: internal/assistantui/assistantui.go:283
+msgid "The assistant is turned off. Turn it on in Settings → AI."
+msgstr "助手关闭。在“设置”→“AI”中将其打开。"
+
+#: internal/assistantui/assistantui.go:295
+msgid "Cannot read the saved keys: %s"
+msgstr "无法读取已保存的密钥:%s"
+
+#: internal/assistantui/assistantui.go:304
+msgid "Cannot read the key of %s: %v"
+msgstr "无法读取%[1]s:%[2]v的密钥"
+
+#: internal/assistantui/assistantui.go:310
+#: internal/ui/settings_ai.go:579
+msgid "Cannot read the Console token: %s"
+msgstr "无法读取控制台令牌：%s"
+
+#: internal/assistantui/assistantui.go:317
+msgid "No API key for %s (%s): type one in Settings → AI."
+msgstr "%[1]s (%[2]s) 没有 API 密钥:在“设置”→“AI”中键入一个。"
+
+#: internal/assistantui/assistantui.go:358
+msgid "Could not start the Console endpoint: %s"
+msgstr "无法启动控制台端点：%s"
+
+#: internal/assistantui/assistantui.go:498
+msgid "✕ Not done: %s"
+msgstr "✕ 未完成:%s"
+
+#: internal/assistantui/assistantui.go:509
+#: ui/assistant.ui:136
+msgid "Ask"
+msgstr "询问"
+
+#: internal/assistantui/assistantui.go:513
+msgid "Stopped."
+msgstr "停止。"
+
+#: internal/assistantui/assistantui.go:516
+msgid "Something went wrong: %s"
+msgstr "出了点问题:%s"
+
+#: internal/assistantui/assistantui.go:519
+msgid "(no answer)"
+msgstr "(无人应答)"
+
+#: internal/assistantui/assistantui.go:549
+msgid "Don't"
+msgstr "拒绝"
+
+#: internal/assistantui/assistantui.go:549
+msgid "Allow"
+msgstr "允许"
+
+#: internal/assistantui/assistantui.go:570
+msgid "Not allowed"
+msgstr "不允许"
+
+#: internal/assistantui/assistantui.go:572
+msgid "Canceled"
+msgstr "已取消"
+
+#: internal/assistantui/assistantui.go:574
+msgid "Allowed"
+msgstr "允许"
+
+#: internal/assistantui/assistantui.go:663
+msgid "TRY"
+msgstr "尝试"
+
+#: internal/config/strftime.go:52
+#: internal/i18n/time.go:10
+msgid "Monday"
+msgstr "星期一"
+
+#: internal/config/strftime.go:54
+#: internal/i18n/time.go:9
+msgid "Jan"
+msgstr "1月"
+
+#: internal/config/strftime.go:56
+#: internal/i18n/time.go:8
+msgid "January"
+msgstr "一月"
+
+#: internal/config/strftime.go:82
+#: internal/i18n/time.go:24
+msgid "PM"
+msgstr "下午"
+
+#: internal/convert/convert.go:97
+msgid "millimetres"
+msgstr "毫米"
+
+#: internal/convert/convert.go:98
+msgid "centimetres"
+msgstr "厘米"
+
+#: internal/convert/convert.go:99
+msgid "metres"
+msgstr "米"
+
+#: internal/convert/convert.go:100
+msgid "kilometres"
+msgstr "公里"
+
+#: internal/convert/convert.go:101
+msgid "inches"
+msgstr "英寸"
+
+#: internal/convert/convert.go:102
+msgid "feet"
+msgstr "英尺"
+
+#: internal/convert/convert.go:103
+msgid "yards"
+msgstr "码"
+
+#: internal/convert/convert.go:104
+msgid "miles"
+msgstr "英里"
+
+#: internal/convert/convert.go:105
+msgid "nautical miles"
+msgstr "海里"
+
+#: internal/convert/convert.go:107
+msgid "milligrams"
+msgstr "毫克"
+
+#: internal/convert/convert.go:108
+msgid "grams"
+msgstr "克"
+
+#: internal/convert/convert.go:109
+msgid "kilograms"
+msgstr "公斤"
+
+#: internal/convert/convert.go:110
+msgid "tonnes"
+msgstr "吨"
+
+#: internal/convert/convert.go:111
+msgid "ounces"
+msgstr "盎司"
+
+#: internal/convert/convert.go:112
+msgid "pounds"
+msgstr "磅"
+
+#: internal/convert/convert.go:113
+msgid "stone"
+msgstr "英石"
+
+#: internal/convert/convert.go:115
+msgid "millilitres"
+msgstr "毫升"
+
+#: internal/convert/convert.go:116
+msgid "litres"
+msgstr "升"
+
+#: internal/convert/convert.go:117
+msgid "cubic metres"
+msgstr "立方米"
+
+#: internal/convert/convert.go:118
+msgid "US gallons"
+msgstr "美​​制加仑"
+
+#: internal/convert/convert.go:119
+msgid "US quarts"
+msgstr "美​​制夸脱"
+
+#: internal/convert/convert.go:120
+msgid "US pints"
+msgstr "美​​品脱"
+
+#: internal/convert/convert.go:121
+msgid "US cups"
+msgstr "美​​杯"
+
+#: internal/convert/convert.go:122
+msgid "US fluid ounces"
+msgstr "美​​式液量盎司"
+
+#: internal/convert/convert.go:123
+msgid "tablespoons"
+msgstr "汤匙"
+
+#: internal/convert/convert.go:124
+msgid "teaspoons"
+msgstr "茶匙"
+
+#: internal/convert/convert.go:126
+msgid "square metres"
+msgstr "平方米"
+
+#: internal/convert/convert.go:127
+msgid "square kilometres"
+msgstr "平方公里"
+
+#: internal/convert/convert.go:128
+msgid "hectares"
+msgstr "公顷"
+
+#: internal/convert/convert.go:129
+msgid "acres"
+msgstr "英亩"
+
+#: internal/convert/convert.go:130
+msgid "square feet"
+msgstr "平方英尺"
+
+#: internal/convert/convert.go:131
+msgid "square miles"
+msgstr "平方英里"
+
+#: internal/convert/convert.go:133
+msgid "metres per second"
+msgstr "米每秒"
+
+#: internal/convert/convert.go:134
+msgid "kilometres per hour"
+msgstr "公里每小时"
+
+#: internal/convert/convert.go:135
+msgid "miles per hour"
+msgstr "英里每小时"
+
+#: internal/convert/convert.go:136
+msgid "knots"
+msgstr "节"
+
+#: internal/convert/convert.go:137
+msgid "feet per second"
+msgstr "英尺每秒"
+
+#: internal/convert/convert.go:139
+msgid "bytes"
+msgstr "字节"
+
+#: internal/convert/convert.go:140
+msgid "kilobytes"
+msgstr "千字节"
+
+#: internal/convert/convert.go:141
+msgid "megabytes"
+msgstr "兆字节"
+
+#: internal/convert/convert.go:142
+msgid "gigabytes"
+msgstr "千兆字节"
+
+#: internal/convert/convert.go:143
+msgid "terabytes"
+msgstr "太字节"
+
+#: internal/convert/convert.go:144
+msgid "kibibytes"
+msgstr "千字节"
+
+#: internal/convert/convert.go:145
+msgid "mebibytes"
+msgstr "兆字节"
+
+#: internal/convert/convert.go:146
+msgid "gibibytes"
+msgstr "千兆字节"
+
+#: internal/convert/convert.go:147
+msgid "tebibytes"
+msgstr "太字节"
+
+#: internal/convert/convert.go:148
+msgid "bits"
+msgstr "位"
+
+#: internal/convert/convert.go:149
+msgid "kilobits"
+msgstr "千比特"
+
+#: internal/convert/convert.go:150
+msgid "megabits"
+msgstr "兆比特"
+
+#: internal/convert/convert.go:151
+msgid "gigabits"
+msgstr "千兆位"
+
+#: internal/convert/convert.go:153
+msgid "milliseconds"
+msgstr "毫秒"
+
+#: internal/convert/convert.go:154
+msgid "seconds"
+msgstr "秒"
+
+#: internal/convert/convert.go:155
+msgid "minutes"
+msgstr "分钟"
+
+#: internal/convert/convert.go:156
+msgid "hours"
+msgstr "小时"
+
+#: internal/convert/convert.go:157
+msgid "days"
+msgstr "天"
+
+#: internal/convert/convert.go:158
+msgid "weeks"
+msgstr "周"
+
+#: internal/convert/convert.go:159
+msgid "years"
+msgstr "年"
+
+#: internal/convert/convert.go:166
+msgid "degrees Celsius"
+msgstr "摄氏度"
+
+#: internal/convert/convert.go:167
+msgid "degrees Fahrenheit"
+msgstr "华氏度"
+
+#: internal/convert/convert.go:168
+msgid "kelvin"
+msgstr "开尔文"
+
+#: internal/convert/convert.go:277
+msgid "%s %s in %s"
+msgstr "%[1]s %[2]s 于 %[3]s"
+
+#: internal/convert/convert.go:309
+msgid "rates of %s"
+msgstr "%s 的汇率"
+
+#: internal/convert/convert.go:311
+msgid "prices from Coinbase · %s"
+msgstr "价格来自 Coinbase · %s"
+
+#: internal/convert/convert.go:315
+msgid "%s %s in %s · %s"
+msgstr "%[1]s %[2]s 于 %[3]s·%[4]s"
+
+#: internal/games/fortune.go:51
+msgid "Willow Lane"
+msgstr "柳巷"
+
+#: internal/games/fortune.go:52
+#: internal/games/fortune.go:57
+#: internal/games/fortune.go:67
+#: internal/games/fortune.go:72
+#: internal/games/fortune.go:83
+#: internal/games/fortune.go:86
+#: internal/games/fortune.go:93
+#: internal/games/fortune.go:96
+#: internal/games/fortune.go:102
+#: internal/games/fortune.go:105
+#: internal/gamesui/fortune_board.go:884
+msgid "Chance"
+msgstr "机会"
+
+#: internal/games/fortune.go:53
+msgid "Birch Row"
+msgstr "桦树行"
+
+#: internal/games/fortune.go:54
+msgid "Income Tax"
+msgstr "所得税"
+
+#: internal/games/fortune.go:55
+msgid "North Pier"
+msgstr "北码头"
+
+#: internal/games/fortune.go:56
+msgid "Mill Street"
+msgstr "米尔街"
+
+#: internal/games/fortune.go:58
+msgid "Ferry Road"
+msgstr "渡口路"
+
+#: internal/games/fortune.go:59
+msgid "Weaver's Yard"
+msgstr "织工的院子"
+
+#: internal/games/fortune.go:60
+msgid "Jail"
+msgstr "监狱"
+
+#: internal/games/fortune.go:61
+msgid "Lantern Alley"
+msgstr "灯笼巷"
+
+#: internal/games/fortune.go:62
+msgid "Power Station"
+msgstr "发电站"
+
+#: internal/games/fortune.go:63
+msgid "Paper Market"
+msgstr "纸品市场"
+
+#: internal/games/fortune.go:64
+msgid "Ink Court"
+msgstr "墨阁"
+
+#: internal/games/fortune.go:65
+msgid "East Pier"
+msgstr "东码头"
+
+#: internal/games/fortune.go:66
+msgid "Tea House Row"
+msgstr "茶馆排"
+
+#: internal/games/fortune.go:68
+msgid "Bell Tower"
+msgstr "钟楼"
+
+#: internal/games/fortune.go:69
+msgid "Clock Square"
+msgstr "时钟广场"
+
+#: internal/games/fortune.go:70
+msgid "Fountain"
+msgstr "喷泉"
+
+#: internal/games/fortune.go:71
+msgid "Garden Gate"
+msgstr "花园门"
+
+#: internal/games/fortune.go:73
+msgid "Orchard Hill"
+msgstr "果园山"
+
+#: internal/games/fortune.go:74
+msgid "Vineyard Way"
+msgstr "葡萄园路"
+
+#: internal/games/fortune.go:75
+msgid "South Pier"
+msgstr "南码头"
+
+#: internal/games/fortune.go:76
+msgid "Harbor Front"
+msgstr "港前"
+
+#: internal/games/fortune.go:77
+msgid "Lighthouse"
+msgstr "灯塔"
+
+#: internal/games/fortune.go:78
+msgid "Water Works"
+msgstr "自来水厂"
+
+#: internal/games/fortune.go:79
+msgid "Coral Bay"
+msgstr "珊瑚湾"
+
+#: internal/games/fortune.go:80
+msgid "Go to Jail"
+msgstr "进监狱"
+
+#: internal/games/fortune.go:81
+msgid "Observatory"
+msgstr "天文台"
+
+#: internal/games/fortune.go:82
+msgid "Museum Mile"
+msgstr "博物馆大道"
+
+#: internal/games/fortune.go:84
+msgid "Opera House"
+msgstr "歌剧院"
+
+#: internal/games/fortune.go:85
+msgid "West Pier"
+msgstr "西码头"
+
+#: internal/games/fortune.go:87
+msgid "Sky Terrace"
+msgstr "摩天台"
+
+#: internal/games/fortune.go:88
+msgid "Luxury Tax"
+msgstr "奢侈税"
+
+#: internal/games/fortune.go:89
+msgid "Summit Plaza"
+msgstr "峰会广场"
+
+#: internal/games/fortune.go:91
+msgid "Rope Walk"
+msgstr "绳索行走"
+
+#: internal/games/fortune.go:92
+msgid "Cooper Lane"
+msgstr "库珀巷"
+
+#: internal/games/fortune.go:94
+msgid "Kiln Street"
+msgstr "窑街"
+
+#: internal/games/fortune.go:95
+msgid "Glass Row"
+msgstr "玻璃排"
+
+#: internal/games/fortune.go:97
+msgid "Printers' Court"
+msgstr "印刷法庭"
+
+#: internal/games/fortune.go:98
+msgid "Organ Yard"
+msgstr "风琴场"
+
+#: internal/games/fortune.go:100
+msgid "Harbour Steps"
+msgstr "港口台阶"
+
+#: internal/games/fortune.go:101
+msgid "Sailmakers' Row"
+msgstr "制帆者行"
+
+#: internal/games/fortune.go:103
+msgid "Captain's Walk"
+msgstr "船长步道"
+
+#: internal/games/fortune.go:104
+msgid "Mint Street"
+msgstr "薄荷街"
+
+#: internal/games/fortune.go:106
+msgid "Guild Hall"
+msgstr "会馆"
+
+#: internal/games/fortune.go:107
+msgid "Crown Gardens"
+msgstr "皇冠花园"
+
+#: internal/games/fortune.go:256
+#: internal/gamesui/fortune.go:334
+msgid "Mika"
+msgstr "米卡"
+
+#: internal/games/fortune.go:256
+msgid "Ren"
+msgstr "任"
+
+#: internal/games/fortune.go:256
+msgid "Sol"
+msgstr "溶胶"
+
+#: internal/games/fortune.go:267
+msgid "You"
+msgstr "你"
+
+#: internal/games/fortune.go:428
+msgid "a house"
+msgstr "房子"
+
+#: internal/games/fortune.go:430
+msgid "a hotel"
+msgstr "某酒店"
+
+#: internal/games/fortune.go:432
+msgid "%s built %s on %s ($%d)."
+msgstr "%[1]s在%[3]s($%[4]d)上构建%[2]s。"
+
+#: internal/games/fortune.go:443
+msgid "%s sold a building on %s for $%d."
+msgstr "%[1]s 以 $%[3]d 的价格出售了 %[2]s 上的建筑物。"
+
+#: internal/games/fortune.go:481
+msgid "%s paid $%d bail."
+msgstr "%[1]s支付了$%[2]d保释金。"
+
+#: internal/games/fortune.go:517
+msgid "%s bought %s for $%d."
+msgstr "%[1]s以$%[3]d购买了%[2]s。"
+
+#: internal/games/fortune.go:531
+#: internal/gamesui/fortune.go:682
+msgid "a double"
+msgstr "双"
+
+#: internal/games/fortune.go:533
+#: internal/gamesui/fortune.go:682
+msgid "a six"
+msgstr "一六"
+
+#: internal/games/fortune.go:535
+msgid "%s rolled %s and walked out of jail."
+msgstr "%[1]s滚动%[2]s并走出监狱。"
+
+#: internal/games/fortune.go:538
+msgid "%s stays in jail."
+msgstr "%s仍在监狱中。"
+
+#: internal/games/fortune.go:542
+msgid "%s paid $%d bail after three tries."
+msgstr "%[1]s在三次尝试后支付了$%[2]d保释金。"
+
+#: internal/games/fortune.go:550
+msgid "Three doubles in a row: %s goes to jail."
+msgstr "Three doubles in a row: %s goes to jail."
+
+#: internal/games/fortune.go:611
+msgid "%s took the road through %s."
+msgstr "%[1]s走的路经过%[2]s。"
+
+#: internal/games/fortune.go:614
+msgid "%s passed Start: +$%d."
+msgstr "%[1]s通过开始:+$%[2]d。"
+
+#: internal/games/fortune.go:657
+msgid "%s cannot afford %s."
+msgstr "%[1]s买不起%[2]s。"
+
+#: internal/games/fortune.go:664
+msgid "%s paid %s $%d rent for %s."
+msgstr "%[1]s为%[4]s支付了%[2]s $%[3]d租金。"
+
+#: internal/games/fortune.go:670
+msgid "%s paid $%d %s into the fountain."
+msgstr "%[1]s向喷泉支付$%[2]d %[3]s。"
+
+#: internal/games/fortune.go:673
+msgid "%s took $%d from the fountain."
+msgstr "%[1]s从喷泉中取出$%[2]d。"
+
+#: internal/games/fortune.go:677
+msgid "The fountain is empty."
+msgstr "喷泉是空的。"
+
+#: internal/games/fortune.go:680
+msgid "%s goes to jail."
+msgstr "%s入狱。"
+
+#: internal/games/fortune.go:701
+msgid "A double: roll again."
+msgstr "双：再次滚动。"
+
+#: internal/games/fortune.go:715
+msgid "A street fair pays out: collect $60."
+msgstr "街头集市支付：收取60美元。"
+
+#: internal/games/fortune.go:716
+msgid "Advance to Start."
+msgstr "提前开始。"
+
+#: internal/games/fortune.go:717
+msgid "Your bicycle needs a new chain: pay $40."
+msgstr "您的自行车需要新链条：支付 40 美元。"
+
+#: internal/games/fortune.go:718
+msgid "Go back three squares."
+msgstr "返回三个方格。"
+
+#: internal/games/fortune.go:719
+msgid "It is your birthday: every player gives you $25."
+msgstr "It is your birthday: every player gives you $25."
+
+#: internal/games/fortune.go:720
+msgid "Roof repairs: pay $25 for each building."
+msgstr "屋顶维修：每栋建筑支付25美元。"
+
+#: internal/games/fortune.go:721
+msgid "A refund from the tax office: collect $80."
+msgstr "A refund from the tax office: collect $80."
+
+#: internal/games/fortune.go:722
+msgid "Catch a ride to the next station or pier."
+msgstr "乘车前往下一站或码头。"
+
+#: internal/games/fortune.go:723
+msgid "A night out: go to %s."
+msgstr "晚上外出：去%s。"
+
+#: internal/games/fortune.go:724
+msgid "Your shares paid a dividend: collect $100."
+msgstr "您的股票已支付股息：收取 100 美元。"
+
+#: internal/games/fortune.go:725
+msgid "Hotel inspection: pay $40 for each building."
+msgstr "酒店考察：每栋楼缴纳40美元。"
+
+#: internal/games/fortune.go:726
+msgid "A parking fine: pay $30."
+msgstr "停车罚款：缴纳30美元。"
+
+#: internal/games/fortune.go:727
+msgid "You won a crossword: collect $50."
+msgstr "您赢得了一个填字游戏：收集 50 美元。"
+
+#: internal/games/fortune.go:728
+msgid "Buy everyone lunch: pay each player $15."
+msgstr "给每个人买午餐：支付每个玩家15美元。"
+
+#: internal/games/fortune.go:729
+msgid "Caught jaywalking: go to jail."
+msgstr "乱穿马路被抓：入狱。"
+
+#: internal/games/fortune.go:751
+msgid "Chance for %s: %s"
+msgstr "%[1]s的机会:%[2]s"
+
+#: internal/games/fortune.go:849
+msgid "%s sold a house on %s for $%d."
+msgstr "%[1]s以$%[3]d的价格出售%[2]s上的房子。"
+
+#: internal/games/fortune.go:853
+msgid "%s sold %s to the bank for $%d."
+msgstr "%[1]s以$%[3]d的价格将%[2]s出售给银行。"
+
+#: internal/games/fortune.go:866
+msgid "%s is bankrupt and out of the game."
+msgstr "%s破产并退出游戏。"
+
+#: internal/games/fortune.go:915
+msgid "%s won with $%d in worth."
+msgstr "%[1]s以$%[2]d的价值获胜。"
+
+#: internal/games/fortune_cities.go:19
+msgid "Tokyo"
+msgstr "东京"
+
+#: internal/games/fortune_cities.go:20
+msgid "Sugamo"
+msgstr "巢鸭"
+
+#: internal/games/fortune_cities.go:20
+msgid "Kitasenju"
+msgstr "北千住"
+
+#: internal/games/fortune_cities.go:21
+msgid "Ueno Station"
+msgstr "上野站"
+
+#: internal/games/fortune_cities.go:22
+msgid "Asakusa"
+msgstr "浅草"
+
+#: internal/games/fortune_cities.go:22
+msgid "Yanaka"
+msgstr "谷中"
+
+#: internal/games/fortune_cities.go:22
+msgid "Nippori"
+msgstr "日暮里"
+
+#: internal/games/fortune_cities.go:23
+msgid "Kanda"
+msgstr "神田"
+
+#: internal/games/fortune_cities.go:23
+msgid "Tokyo Power"
+msgstr "东京电力"
+
+#: internal/games/fortune_cities.go:23
+msgid "Jimbocho"
+msgstr "神保町"
+
+#: internal/games/fortune_cities.go:23
+msgid "Akihabara"
+msgstr "秋叶原"
+
+#: internal/games/fortune_cities.go:24
+msgid "Tokyo Station"
+msgstr "东京站"
+
+#: internal/games/fortune_cities.go:25
+msgid "Harajuku"
+msgstr "原宿"
+
+#: internal/games/fortune_cities.go:25
+msgid "Omotesando"
+msgstr "表参道"
+
+#: internal/games/fortune_cities.go:25
+msgid "Shibuya"
+msgstr "涩谷"
+
+#: internal/games/fortune_cities.go:26
+msgid "Nakameguro"
+msgstr "中目黑"
+
+#: internal/games/fortune_cities.go:26
+msgid "Daikanyama"
+msgstr "代官山"
+
+#: internal/games/fortune_cities.go:26
+msgid "Ebisu"
+msgstr "惠比寿"
+
+#: internal/games/fortune_cities.go:27
+msgid "Shinagawa Station"
+msgstr "品川站"
+
+#: internal/games/fortune_cities.go:28
+msgid "Kagurazaka"
+msgstr "神乐坂"
+
+#: internal/games/fortune_cities.go:28
+msgid "Yotsuya"
+msgstr "四谷"
+
+#: internal/games/fortune_cities.go:28
+msgid "Tokyo Waterworks"
+msgstr "东京自来水厂"
+
+#: internal/games/fortune_cities.go:28
+msgid "Shinjuku"
+msgstr "新宿"
+
+#: internal/games/fortune_cities.go:29
+msgid "Toranomon"
+msgstr "虎之门"
+
+#: internal/games/fortune_cities.go:29
+msgid "Akasaka"
+msgstr "赤坂"
+
+#: internal/games/fortune_cities.go:29
+msgid "Roppongi"
+msgstr "六本木"
+
+#: internal/games/fortune_cities.go:30
+msgid "Shimbashi Station"
+msgstr "新桥站"
+
+#: internal/games/fortune_cities.go:31
+msgid "Marunouchi"
+msgstr "丸之内"
+
+#: internal/games/fortune_cities.go:31
+msgid "Ginza"
+msgstr "银座"
+
+#: internal/games/fortune_cities.go:32
+msgid "Okachimachi"
+msgstr "御徒町"
+
+#: internal/games/fortune_cities.go:32
+msgid "Yushima"
+msgstr "汤岛"
+
+#: internal/games/fortune_cities.go:32
+msgid "Hongo"
+msgstr "本乡"
+
+#: internal/games/fortune_cities.go:32
+msgid "Ochanomizu"
+msgstr "御茶水"
+
+#: internal/games/fortune_cities.go:32
+msgid "Suidobashi"
+msgstr "水道桥"
+
+#: internal/games/fortune_cities.go:32
+msgid "Iidabashi"
+msgstr "饭田桥"
+
+#: internal/games/fortune_cities.go:33
+msgid "Azabu-Juban"
+msgstr "麻布十番"
+
+#: internal/games/fortune_cities.go:33
+msgid "Hiroo"
+msgstr "广尾"
+
+#: internal/games/fortune_cities.go:33
+msgid "Shirokane"
+msgstr "白金"
+
+#: internal/games/fortune_cities.go:33
+msgid "Takanawa"
+msgstr "高轮"
+
+#: internal/games/fortune_cities.go:33
+msgid "Mita"
+msgstr "米塔"
+
+#: internal/games/fortune_cities.go:33
+msgid "Hamamatsucho"
+msgstr "滨松町"
+
+#: internal/games/fortune_cities.go:35
+#: internal/games/fortune_cities.go:35
+msgid "New York"
+msgstr "纽约"
+
+#: internal/games/fortune_cities.go:36
+msgid "Harlem"
+msgstr "哈林区"
+
+#: internal/games/fortune_cities.go:36
+msgid "Washington Heights"
+msgstr "华盛顿高地"
+
+#: internal/games/fortune_cities.go:37
+msgid "Penn Station"
+msgstr "宾夕法尼亚车站"
+
+#: internal/games/fortune_cities.go:38
+msgid "Chinatown"
+msgstr "唐人街"
+
+#: internal/games/fortune_cities.go:38
+msgid "Little Italy"
+msgstr "小意大利"
+
+#: internal/games/fortune_cities.go:38
+msgid "Lower East Side"
+msgstr "下东区"
+
+#: internal/games/fortune_cities.go:39
+msgid "Williamsburg"
+msgstr "威廉斯堡"
+
+#: internal/games/fortune_cities.go:39
+msgid "Con Edison"
+msgstr "联合爱迪生公司"
+
+#: internal/games/fortune_cities.go:39
+msgid "DUMBO"
+msgstr "小飞象"
+
+#: internal/games/fortune_cities.go:39
+msgid "Brooklyn Heights"
+msgstr "布鲁克林高地"
+
+#: internal/games/fortune_cities.go:40
+msgid "Grand Central"
+msgstr "大中央车站"
+
+#: internal/games/fortune_cities.go:41
+msgid "Greenwich Village"
+msgstr "格林威治村"
+
+#: internal/games/fortune_cities.go:41
+msgid "SoHo"
+msgstr "苏豪区"
+
+#: internal/games/fortune_cities.go:41
+msgid "Tribeca"
+msgstr "翠贝卡"
+
+#: internal/games/fortune_cities.go:42
+msgid "Chelsea"
+msgstr "切尔西"
+
+#: internal/games/fortune_cities.go:42
+msgid "Gramercy"
+msgstr "格拉梅西"
+
+#: internal/games/fortune_cities.go:42
+msgid "Flatiron"
+msgstr "熨斗"
+
+#: internal/games/fortune_cities.go:43
+msgid "Staten Island Ferry"
+msgstr "史坦顿岛渡轮"
+
+#: internal/games/fortune_cities.go:44
+msgid "Broadway"
+msgstr "百老汇"
+
+#: internal/games/fortune_cities.go:44
+msgid "Times Square"
+msgstr "时代广场"
+
+#: internal/games/fortune_cities.go:44
+msgid "City Water Tunnel"
+msgstr "城市输水隧道"
+
+#: internal/games/fortune_cities.go:44
+msgid "Rockefeller Center"
+msgstr "洛克菲勒中心"
+
+#: internal/games/fortune_cities.go:45
+msgid "Upper West Side"
+msgstr "上西区"
+
+#: internal/games/fortune_cities.go:45
+msgid "Upper East Side"
+msgstr "上东区"
+
+#: internal/games/fortune_cities.go:45
+msgid "Central Park South"
+msgstr "中央公园南"
+
+#: internal/games/fortune_cities.go:46
+msgid "Hudson Pier"
+msgstr "哈德逊码头"
+
+#: internal/games/fortune_cities.go:47
+msgid "Wall Street"
+msgstr "华尔街"
+
+#: internal/games/fortune_cities.go:47
+msgid "Fifth Avenue"
+msgstr "第五大道"
+
+#: internal/games/fortune_cities.go:48
+msgid "Hell's Kitchen"
+msgstr "地狱厨房"
+
+#: internal/games/fortune_cities.go:48
+msgid "Garment District"
+msgstr "服装区"
+
+#: internal/games/fortune_cities.go:48
+msgid "Koreatown"
+msgstr "韩国城"
+
+#: internal/games/fortune_cities.go:48
+msgid "NoMad"
+msgstr "游牧者"
+
+#: internal/games/fortune_cities.go:48
+msgid "Murray Hill"
+msgstr "默里山"
+
+#: internal/games/fortune_cities.go:48
+msgid "Kips Bay"
+msgstr "基普斯湾"
+
+#: internal/games/fortune_cities.go:49
+msgid "Battery Park City"
+msgstr "炮台公园城"
+
+#: internal/games/fortune_cities.go:49
+msgid "Financial District"
+msgstr "金融区"
+
+#: internal/games/fortune_cities.go:49
+msgid "Seaport"
+msgstr "海港"
+
+#: internal/games/fortune_cities.go:49
+msgid "Two Bridges"
+msgstr "两座桥"
+
+#: internal/games/fortune_cities.go:49
+msgid "Bowery"
+msgstr "包厘街"
+
+#: internal/games/fortune_cities.go:49
+msgid "NoLIta"
+msgstr "诺丽塔"
+
+#: internal/games/fortune_cities.go:51
+msgid "Shanghai"
+msgstr "上海"
+
+#: internal/games/fortune_cities.go:52
+msgid "Zhabei"
+msgstr "闸北"
+
+#: internal/games/fortune_cities.go:52
+msgid "Hongkou"
+msgstr "虹口"
+
+#: internal/games/fortune_cities.go:53
+msgid "Railway Station"
+msgstr "火车站"
+
+#: internal/games/fortune_cities.go:54
+msgid "Old City"
+msgstr "老城区"
+
+#: internal/games/fortune_cities.go:54
+msgid "Yuyuan Garden"
+msgstr "豫园"
+
+#: internal/games/fortune_cities.go:54
+msgid "City God Temple"
+msgstr "城隍庙"
+
+#: internal/games/fortune_cities.go:55
+msgid "Changle Road"
+msgstr "长乐路"
+
+#: internal/games/fortune_cities.go:55
+msgid "Nanshi Power"
+msgstr "南狮动力"
+
+#: internal/games/fortune_cities.go:55
+msgid "Wukang Road"
+msgstr "武康路"
+
+#: internal/games/fortune_cities.go:55
+msgid "Jing'an Temple"
+msgstr "静安寺"
+
+#: internal/games/fortune_cities.go:56
+msgid "Hongqiao Station"
+msgstr "虹桥站"
+
+#: internal/games/fortune_cities.go:57
+msgid "Tianzifang"
+msgstr "田子坊"
+
+#: internal/games/fortune_cities.go:57
+msgid "Huaihai Road"
+msgstr "淮海路"
+
+#: internal/games/fortune_cities.go:57
+msgid "Xintiandi"
+msgstr "新天地"
+
+#: internal/games/fortune_cities.go:58
+msgid "Fuxing Park"
+msgstr "复兴公园"
+
+#: internal/games/fortune_cities.go:58
+msgid "Sinan Road"
+msgstr "思南路"
+
+#: internal/games/fortune_cities.go:58
+msgid "Hengshan Road"
+msgstr "衡山路"
+
+#: internal/games/fortune_cities.go:59
+msgid "Shiliupu Ferry"
+msgstr "十六铺渡轮"
+
+#: internal/games/fortune_cities.go:60
+msgid "Jiangning Road"
+msgstr "江宁路"
+
+#: internal/games/fortune_cities.go:60
+msgid "People's Square"
+msgstr "人民广场"
+
+#: internal/games/fortune_cities.go:60
+msgid "Yangshupu Waterworks"
+msgstr "杨树浦自来水厂"
+
+#: internal/games/fortune_cities.go:60
+msgid "Nanjing Road"
+msgstr "南京路"
+
+#: internal/games/fortune_cities.go:61
+msgid "Jinqiao"
+msgstr "金桥"
+
+#: internal/games/fortune_cities.go:61
+msgid "Century Avenue"
+msgstr "世纪大道"
+
+#: internal/games/fortune_cities.go:61
+msgid "Lujiazui"
+msgstr "陆家嘴"
+
+#: internal/games/fortune_cities.go:62
+msgid "Bund Ferry"
+msgstr "外滩轮渡"
+
+#: internal/games/fortune_cities.go:63
+msgid "Peace Hotel"
+msgstr "和平饭店"
+
+#: internal/games/fortune_cities.go:63
+msgid "The Bund"
+msgstr "外滩"
+
+#: internal/games/fortune_cities.go:64
+msgid "Suzhou Creek"
+msgstr "苏州河"
+
+#: internal/games/fortune_cities.go:64
+msgid "Moganshan Road"
+msgstr "莫干山路"
+
+#: internal/games/fortune_cities.go:64
+msgid "Changshou Road"
+msgstr "长寿路"
+
+#: internal/games/fortune_cities.go:64
+msgid "Caoyang"
+msgstr "曹阳"
+
+#: internal/games/fortune_cities.go:64
+msgid "Zhongshan Park"
+msgstr "中山公园"
+
+#: internal/games/fortune_cities.go:64
+msgid "Gubei"
+msgstr "古北"
+
+#: internal/games/fortune_cities.go:65
+msgid "Dongjiadu"
+msgstr "董家渡"
+
+#: internal/games/fortune_cities.go:65
+msgid "Laoximen"
+msgstr "老西门"
+
+#: internal/games/fortune_cities.go:65
+msgid "Dajing Road"
+msgstr "大境路"
+
+#: internal/games/fortune_cities.go:65
+msgid "Fangbang Road"
+msgstr "方浜路"
+
+#: internal/games/fortune_cities.go:65
+msgid "Henan Road"
+msgstr "河南路"
+
+#: internal/games/fortune_cities.go:65
+msgid "Yu Garden"
+msgstr "豫园"
+
+#: internal/games/fortune_cities.go:67
+msgid "Rome"
+msgstr "罗马"
+
+#: internal/games/fortune_cities.go:67
+msgid "Roma"
+msgstr "罗马"
+
+#: internal/games/fortune_cities.go:68
+msgid "Ostiense"
+msgstr "奥斯蒂恩斯"
+
+#: internal/games/fortune_cities.go:68
+msgid "Testaccio"
+msgstr "泰斯塔西奥"
+
+#: internal/games/fortune_cities.go:69
+msgid "Roma Termini"
+msgstr "罗马特米尼"
+
+#: internal/games/fortune_cities.go:70
+msgid "San Lorenzo"
+msgstr "圣洛伦索"
+
+#: internal/games/fortune_cities.go:70
+msgid "Monti"
+msgstr "蒙蒂"
+
+#: internal/games/fortune_cities.go:70
+msgid "Trastevere"
+msgstr "特拉斯提弗列"
+
+#: internal/games/fortune_cities.go:71
+msgid "Borgo Pio"
+msgstr "博尔戈·皮奥"
+
+#: internal/games/fortune_cities.go:71
+msgid "Centrale Elettrica"
+msgstr "中央电力公司"
+
+#: internal/games/fortune_cities.go:71
+msgid "Prati"
+msgstr "普拉蒂"
+
+#: internal/games/fortune_cities.go:71
+msgid "Via Cola di Rienzo"
+msgstr "科拉迪里埃恩佐大道"
+
+#: internal/games/fortune_cities.go:72
+msgid "Stazione Tiburtina"
+msgstr "提布尔蒂纳车站"
+
+#: internal/games/fortune_cities.go:73
+msgid "Campo de' Fiori"
+msgstr "鲜花广场"
+
+#: internal/games/fortune_cities.go:73
+msgid "Pantheon"
+msgstr "万神殿"
+
+#: internal/games/fortune_cities.go:73
+msgid "Piazza Navona"
+msgstr "纳沃纳广场"
+
+#: internal/games/fortune_cities.go:74
+msgid "Via del Corso"
+msgstr "科尔索大道"
+
+#: internal/games/fortune_cities.go:74
+msgid "Fontana di Trevi"
+msgstr "特莱维喷泉"
+
+#: internal/games/fortune_cities.go:74
+msgid "Piazza di Spagna"
+msgstr "西班牙广场"
+
+#: internal/games/fortune_cities.go:75
+msgid "Porto di Ostia"
+msgstr "奥斯蒂亚港"
+
+#: internal/games/fortune_cities.go:76
+msgid "Aventino"
+msgstr "阿文蒂诺"
+
+#: internal/games/fortune_cities.go:76
+msgid "Palatino"
+msgstr "帕拉蒂诺"
+
+#: internal/games/fortune_cities.go:76
+msgid "Acquedotto"
+msgstr "阿克多托"
+
+#: internal/games/fortune_cities.go:76
+msgid "Circo Massimo"
+msgstr "马西莫马戏团"
+
+#: internal/games/fortune_cities.go:77
+msgid "Parioli"
+msgstr "帕里奥利"
+
+#: internal/games/fortune_cities.go:77
+msgid "Via Veneto"
+msgstr "威尼托大街"
+
+#: internal/games/fortune_cities.go:77
+msgid "Villa Borghese"
+msgstr "博尔盖塞别墅"
+
+#: internal/games/fortune_cities.go:78
+msgid "Stazione Trastevere"
+msgstr "特拉斯提弗列车站"
+
+#: internal/games/fortune_cities.go:79
+msgid "Via Condotti"
+msgstr "通过康多蒂"
+
+#: internal/games/fortune_cities.go:79
+msgid "Colosseo"
+msgstr "斗兽场"
+
+#: internal/games/fortune_cities.go:80
+msgid "Esquilino"
+msgstr "埃斯奎利诺"
+
+#: internal/games/fortune_cities.go:80
+msgid "Piazza Vittorio"
+msgstr "维托里奥广场"
+
+#: internal/games/fortune_cities.go:80
+msgid "Pigneto"
+msgstr "皮内托"
+
+#: internal/games/fortune_cities.go:80
+msgid "Porta Maggiore"
+msgstr "马焦雷门"
+
+#: internal/games/fortune_cities.go:80
+msgid "Nomentano"
+msgstr "诺门塔诺"
+
+#: internal/games/fortune_cities.go:80
+msgid "Salario"
+msgstr "萨拉里奥"
+
+#: internal/games/fortune_cities.go:81
+msgid "Garbatella"
+msgstr "加尔巴特拉"
+
+#: internal/games/fortune_cities.go:81
+msgid "Piramide"
+msgstr "金字塔"
+
+#: internal/games/fortune_cities.go:81
+msgid "Roseto"
+msgstr "罗塞托"
+
+#: internal/games/fortune_cities.go:81
+msgid "Bocca della Verità"
+msgstr "真理之门"
+
+#: internal/games/fortune_cities.go:81
+msgid "Ghetto"
+msgstr "贫民窟"
+
+#: internal/games/fortune_cities.go:81
+msgid "Isola Tiberina"
+msgstr "台贝里纳岛"
+
+#: internal/games/pinball_rules.go:63
+msgid "Cadet"
+msgstr "学员"
+
+#: internal/games/pinball_rules.go:63
+msgid "Ensign"
+msgstr "少尉"
+
+#: internal/games/pinball_rules.go:63
+msgid "Lieutenant"
+msgstr "中尉"
+
+#: internal/games/pinball_rules.go:63
+msgid "Captain"
+msgstr "队长"
+
+#: internal/games/pinball_rules.go:63
+msgid "Lt. Commander"
+msgstr "中尉"
+
+#: internal/games/pinball_rules.go:64
+msgid "Commander"
+msgstr "指挥官"
+
+#: internal/games/pinball_rules.go:64
+msgid "Commodore"
+msgstr "准将"
+
+#: internal/games/pinball_rules.go:64
+msgid "Admiral"
+msgstr "海军上将"
+
+#: internal/games/pinball_rules.go:64
+msgid "Fleet Admiral"
+msgstr "舰队上将"
+
+#: internal/games/pinball_rules.go:86
+msgid "Target Practice"
+msgstr "目标练习"
+
+#: internal/games/pinball_rules.go:86
+msgid "Hit the attack bumpers 8 times."
+msgstr "击中攻击缓冲器8次。"
+
+#: internal/games/pinball_rules.go:87
+msgid "Launch Training"
+msgstr "发射训练"
+
+#: internal/games/pinball_rules.go:87
+msgid "Shoot the launch ramp 3 times."
+msgstr "射击发射坡道3次。"
+
+#: internal/games/pinball_rules.go:88
+msgid "Re-entry Training"
+msgstr "再入训练"
+
+#: internal/games/pinball_rules.go:88
+msgid "Roll through the re-entry lanes 3 times."
+msgstr "滚动通过再进入通道3次。"
+
+#: internal/games/pinball_rules.go:89
+msgid "Science Run"
+msgstr "科学跑"
+
+#: internal/games/pinball_rules.go:89
+msgid "Knock down all the booster targets."
+msgstr "击倒所有助推器目标。"
+
+#: internal/games/pinball_rules.go:90
+msgid "Stray Comet"
+msgstr "流浪彗星"
+
+#: internal/games/pinball_rules.go:90
+msgid "Shoot the hyperspace ramp twice."
+msgstr "射击超空间坡道两次。"
+
+#: internal/games/pinball_rules.go:91
+msgid "Into the Black Hole"
+msgstr "进入黑洞"
+
+#: internal/games/pinball_rules.go:91
+msgid "Sink the black hole twice."
+msgstr "使黑洞下沉两次。"
+
+#: internal/games/pinball_rules.go:92
+msgid "Wormhole Survey"
+msgstr "虫洞调查"
+
+#: internal/games/pinball_rules.go:92
+msgid "Enter the wormhole, then sink the black hole."
+msgstr "进入虫洞，然后沉入黑洞。"
+
+#: internal/games/pinball_rules.go:94
+msgid "Bug Hunt"
+msgstr "寻找虫子"
+
+#: internal/games/pinball_rules.go:94
+msgid "Hit 15 targets or slingshots."
+msgstr "击中15个目标或弹弓。"
+
+#: internal/games/pinball_rules.go:95
+msgid "Satellite Retrieval"
+msgstr "卫星检索"
+
+#: internal/games/pinball_rules.go:95
+msgid "Two launch ramps, then the black hole."
+msgstr "两个发射坡道，然后是黑洞。"
+
+#: internal/games/pinball_rules.go:97
+msgid "Rescue"
+msgstr "救援"
+
+#: internal/games/pinball_rules.go:97
+msgid "Hyperspace, then the launch ramp, then the wormhole."
+msgstr "超空间，然后是发射坡道，然后是虫洞。"
+
+#: internal/games/pinball_rules.go:99
+msgid "Radiation Storm"
+msgstr "辐射风暴"
+
+#: internal/games/pinball_rules.go:99
+msgid "Hit the bumpers 20 times, then shoot hyperspace."
+msgstr "击中保险杠 20 次，然后射击超空间。"
+
+#: internal/games/pinball_rules.go:101
+msgid "Doomsday Machine"
+msgstr "末日机器"
+
+#: internal/games/pinball_rules.go:101
+msgid "The booster bank, both ramps, the wormhole, then the black hole."
+msgstr "助推器组、两个坡道、虫洞、然后是黑洞。"
+
+#: internal/games/pinball_rules.go:107
+msgid "Bumpers"
+msgstr "撞击柱"
+
+#: internal/games/pinball_rules.go:107
+msgid "Launch ramp"
+msgstr "发射坡道"
+
+#: internal/games/pinball_rules.go:107
+msgid "Re-entry lanes"
+msgstr "重返通道"
+
+#: internal/games/pinball_rules.go:108
+msgid "Booster bank"
+msgstr "助推靶组"
+
+#: internal/games/pinball_rules.go:108
+msgid "Hyperspace"
+msgstr "超空间"
+
+#: internal/games/pinball_rules.go:108
+msgid "Black hole"
+msgstr "黑洞"
+
+#: internal/games/pinball_rules.go:109
+msgid "Wormhole"
+msgstr "虫洞"
+
+#: internal/games/pinball_rules.go:109
+msgid "Targets"
+msgstr "目标"
+
+#: internal/games/pinball_rules.go:314
+msgid "OUT OF FUEL"
+msgstr "燃料耗尽"
+
+#: internal/games/pinball_rules.go:316
+msgid "MISSION FAILED"
+msgstr "任务失败"
+
+#: internal/games/pinball_rules.go:331
+msgid "BUMPERS AT LEVEL %d"
+msgstr "%d 水平处的缓冲器"
+
+#: internal/games/pinball_rules.go:357
+msgid "MISSION LIT: %s"
+msgstr "任务点亮:%s"
+
+#: internal/games/pinball_rules.go:370
+msgid "BOOSTER BANK: LOCK IS LIT"
+msgstr "BOOSTER BANK：锁亮起"
+
+#: internal/games/pinball_rules.go:372
+msgid "BOOSTER BANK"
+msgstr "助推器库"
+
+#: internal/games/pinball_rules.go:383
+msgid "SKILL SHOT"
+msgstr "技能射击"
+
+#: internal/games/pinball_rules.go:396
+msgid "FIELD MULTIPLIER ×%d"
+msgstr "场乘法器×%d"
+
+#: internal/games/pinball_rules.go:399
+msgid "RE-DEPLOY: BALL SAVE LIT"
+msgstr "重新部署：救球点亮"
+
+#: internal/games/pinball_rules.go:417
+msgid "HYPERSPACE 3"
+msgstr "超空间3"
+
+#: internal/games/pinball_rules.go:421
+msgid "HYPERSPACE 3: EXTRA BALL LIT"
+msgstr "超空间 3：额外的球点亮"
+
+#: internal/games/pinball_rules.go:423
+msgid "HYPERSPACE JACKPOT %s"
+msgstr "超空间大奖%s"
+
+#: internal/games/pinball_rules.go:426
+msgid "HYPERSPACE %d"
+msgstr "超空间%d"
+
+#: internal/games/pinball_rules.go:437
+msgid "JACKPOT %s"
+msgstr "大奖 %s"
+
+#: internal/games/pinball_rules.go:442
+msgid "REFUEL FIRST: ROLL THE LANES"
+msgstr "首先加油：滚动车道"
+
+#: internal/games/pinball_rules.go:448
+msgid "MISSION: %s"
+msgstr "任务：%s"
+
+#: internal/games/pinball_rules.go:465
+#: internal/gamesui/pinball.go:462
+msgid "WORMHOLE"
+msgstr "虫洞"
+
+#: internal/games/pinball_rules.go:476
+#: internal/gamesui/pinball.go:457
+#: internal/gamesui/pinball.go:754
+msgid "EXTRA BALL"
+msgstr "额外的球"
+
+#: internal/games/pinball_rules.go:482
+msgid "BALL %d LOCKED"
+msgstr "球 %d 已锁定"
+
+#: internal/games/pinball_rules.go:486
+msgid "MULTIBALL"
+msgstr "多球"
+
+#: internal/games/pinball_rules.go:492
+msgid "BLACK HOLE"
+msgstr "黑洞"
+
+#: internal/games/pinball_rules.go:512
+msgid "%s next"
+msgstr "%s下"
+
+#: internal/games/pinball_rules.go:520
+msgid "MISSION COMPLETE: %s"
+msgstr "任务完成：%s"
+
+#: internal/games/pinball_rules.go:525
+msgid "PROMOTED TO %s"
+msgstr "晋升为%s"
+
+#: internal/games/pinball_rules.go:545
+msgid "Shoot the launch ramp to accept"
+msgstr "拍摄发射坡道接受"
+
+#: internal/games/pinball_rules.go:547
+msgid "Light the three mission targets"
+msgstr "点亮三大任务目标"
+
+#: internal/games/pinball_rules.go:561
+#: internal/gamesui/pinball.go:785
+msgid "TILT"
+msgstr "倾斜"
+
+#: internal/games/pinball_rules.go:564
+msgid "DANGER"
+msgstr "危险"
+
+#: internal/games/pinball_rules.go:573
+msgid "MULTIBALL OVER"
+msgstr "多球结束"
+
+#: internal/games/pinball_rules.go:581
+msgid "BALL SAVED"
+msgstr "救球成功"
+
+#: internal/games/pinball_rules.go:590
+msgid "BONUS %s"
+msgstr "奖金%s"
+
+#: internal/games/pinball_rules.go:599
+msgid "SHOOT AGAIN"
+msgstr "再次发射"
+
+#: internal/games/pinball_rules.go:604
+msgid "GAME OVER"
+msgstr "游戏结束"
+
+#: internal/gamesui/catalog.go:18
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:3
+msgid "Minesweeper"
+msgstr "扫雷"
+
+#: internal/gamesui/catalog.go:19
+msgid "Open every square without a mine. A number tells how many of the eight squares around it hide mines. The first square you open is always safe. Three sizes; best times are kept."
+msgstr "打开每个没有地雷的方格。一个数字表明它周围的八个方格中有多少个埋有地雷。你打开的第一个方块总是安全的。三种尺寸；最好的时光被保留。"
+
+#: internal/gamesui/catalog.go:20
+msgid "click opens  ·  right-click flags  ·  click a number with its flags placed to open around it  ·  arrows, Space, F"
+msgstr "单击打开 · 右键单击标志 · 单击一个数字及其周围放置的标志以打开 · 箭头、空格、F"
+
+#: internal/gamesui/catalog.go:22
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:3
+msgid "Space Pinball"
+msgstr "太空弹球"
+
+#: internal/gamesui/catalog.go:23
+msgid "Fly missions to climb the ranks, from Cadet to Fleet Admiral. Hit the three yellow mission targets to light a mission, then shoot the launch ramp (right) to accept it; the display shows what to shoot and the time left. Missions burn fuel: roll through the inlanes and the re-entry lanes to refuel. The hyperspace ramp (left) climbs five levels, lighting an extra ball at the third and paying a jackpot at the fifth. The booster bank lights Lock: lock two balls in the black hole for multiball, where the launch ramp is the jackpot. The wormhole lets the ball out of the black hole. Light all three re-entry lanes to raise the field multiplier. The plunger's pull picks the lane a launch drops into: hit the blinking one for the skill shot. Nudge to save a ball, but not too often: the table tilts. Three balls; your best score is kept."
+msgstr "执行飞行任务以提升军衔，从学员到海军上将。击中三个黄色任务目标即可点燃任务，然后射击发射坡道（右）以接受任务；显示屏显示要拍摄的内容和剩余时间。任务燃烧燃料：穿过内航道和再入航道补充燃料。超空间坡道（左）爬升五层，在第三层额外点亮一个球，并在第五层支付大奖。助推器组灯锁定：将两个球锁定在黑洞中以获得多球，其中发射坡道就是大奖。虫洞让球离开黑洞。点亮所有三个重返通道以提高场倍增器。柱塞的拉力会选择发射所进入的车道：击中闪烁的车道即可进行技能射击。轻推以保存球，但不要太频繁：桌子会倾斜。三个球；您的最好成绩将被保留。"
+
+#: internal/gamesui/catalog.go:24
+msgid "A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  X . ↑ nudge  ·  M sound  ·  P pause  ·  N new game"
+msgstr "A或←左鳍状件·D或→右鳍状件·保持空间以拉动柱塞·X。 ↑ 轻推·M 声音·P 暂停·N 新游戏"
+
+#: internal/gamesui/catalog.go:26
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:3
+msgid "Small Fortune"
+msgstr "小小富翁"
+
+#: internal/gamesui/catalog.go:27
+msgid "A property game against one to three computer players on a ring of 40 squares with two branch roads (at a fork, chance picks the road), in Tokyo, New York, Shanghai or Rome: choose the city, the rounds, the starting money, your rivals and the rules (one die or two; building on a street the turn you buy it) before you start. Roll the dice and walk the board; with two, a double rolls again and three in a row go to jail. Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. Passing Start pays $200. Taxes and fines fill the fountain, and whoever lands there takes it. Who cannot pay sells buildings and property at half price, or is out. After the last round, or when one player is left, the most worth wins: cash, property and buildings. Keys: Space the main action, R roll, B buy, X pass, E end turn, J pay bail, H build on the square in focus, N a new game."
+msgstr "在东京、纽约、上海或罗马，在具有两条分支路（在岔路口，机会选择道路）的40个方格的环上对一到三名计算机玩家进行财产游戏：在开始之前选择城市、回合、起始资金、你的对手和规则（一两个骰子；在你购买的回合中在街道上建造）。掷骰子并走棋盘；如果有两个，则再次掷出双骰，并且连续掷出三个将入狱。购买您登陆的街道、渡轮码头和公用设施；登陆那里的竞争对手付你租金。你的棋子经过或降落的每条街道都可能会上升一层（在棋盘上概述）：逐家到四家，然后是一家酒店；拥有整个色彩组，其裸租金将增加一倍，建成租金将增加一半。你拥有的越多，码头支付的费用就越多；公用事业按骰子收费。通过开始支付 200 美元。税收和罚款填满了喷泉，谁登陆那里就拿走它。无力支付的人将以半价出售建筑物和财产，否则就会被淘汰。最后一轮结束后，或者当只剩下一名玩家时，最有价值的人获胜：现金、财产和建筑物。按键：空间主要行动，R滚动，B购买，X通过，E结束转弯，J支付保释金，H在焦点广场上建造，N新游戏。"
+
+#: internal/gamesui/catalog.go:28
+msgid "Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  click a square to see it"
+msgstr "空间主要动作 · R 滚动 · B 购买 · X 通行证 · E 结束回合 · J 支付保释金 · H 在焦点广场上建造 · N 新游戏 · 单击一个方块查看它"
+
+#: internal/gamesui/fortune.go:105
+msgid "ROUND"
+msgstr "回合"
+
+#: internal/gamesui/fortune.go:106
+msgid "FOUNTAIN"
+msgstr "喷泉"
+
+#: internal/gamesui/fortune.go:148
+msgid "PLAYERS"
+msgstr "玩家"
+
+#: internal/gamesui/fortune.go:153
+msgid "SQUARE"
+msgstr "格子"
+
+#: internal/gamesui/fortune.go:175
+msgid "Build a house"
+msgstr "建造房屋"
+
+#: internal/gamesui/fortune.go:176
+msgid "Sell"
+msgstr "出售"
+
+#: internal/gamesui/fortune.go:185
+#: internal/gamesui/fortune.go:720
+msgid "Roll the dice"
+msgstr "掷骰子"
+
+#: internal/gamesui/fortune.go:195
+msgid "WHAT HAPPENED"
+msgstr "发生了什么"
+
+#: internal/gamesui/fortune.go:235
+msgid "Where do you play?"
+msgstr "你在哪里玩？"
+
+#: internal/gamesui/fortune.go:259
+#: internal/gamesui/fortune.go:357
+msgid "Start in %s"
+msgstr "起始于%s"
+
+#: internal/gamesui/fortune.go:297
+msgid "%s and %s"
+msgstr "%[1]s和%[2]s"
+
+#: internal/gamesui/fortune.go:332
+msgid "Rounds"
+msgstr "回合"
+
+#: internal/gamesui/fortune.go:333
+msgid "Starting money"
+msgstr "起始资金"
+
+#: internal/gamesui/fortune.go:334
+msgid "Rivals"
+msgstr "竞争对手"
+
+#: internal/gamesui/fortune.go:334
+msgid "Mika, Ren"
+msgstr "任米卡"
+
+#: internal/gamesui/fortune.go:334
+msgid "Mika, Ren, Sol"
+msgstr "米卡、任、索尔"
+
+#: internal/gamesui/fortune.go:335
+msgid "Dice"
+msgstr "骰子"
+
+#: internal/gamesui/fortune.go:335
+msgid "One die"
+msgstr "单骰子"
+
+#: internal/gamesui/fortune.go:335
+msgid "Two dice"
+msgstr "两个骰子"
+
+#: internal/gamesui/fortune.go:336
+msgid "Build the day you buy"
+msgstr "构建您购买的那天"
+
+#: internal/gamesui/fortune.go:350
+msgid "A street you buy may go up a level that same turn"
+msgstr "您购买的街道可能会在同一回合上升一个等级"
+
+#: internal/gamesui/fortune.go:604
+msgid "worth $%s"
+msgstr "价值$%s"
+
+#: internal/gamesui/fortune.go:607
+msgid "bankrupt"
+msgstr "破产"
+
+#: internal/gamesui/fortune.go:609
+msgid " · in jail"
+msgstr "·入狱"
+
+#: internal/gamesui/fortune.go:646
+msgid "Price $%d · each building $%d\nGroup: %s\n"
+msgstr "价格$%[1]d·每栋楼$%[2]d\n组:%[3]s\n"
+
+#: internal/gamesui/fortune.go:647
+msgid "Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)"
+msgstr "租金 $%[1]d (全团 $%[2]d)\n1-4 栋房屋:$%[3]d、$%[4]d、$%[5]d、$%[6]d\n酒店:$%[7]d (+50%% 与团)"
+
+#: internal/gamesui/fortune.go:651
+#: internal/gamesui/fortune.go:674
+msgid "\nOwned by %s"
+msgstr "\n由 %s 拥有"
+
+#: internal/gamesui/fortune.go:654
+msgid ", with a hotel"
+msgstr "、设有酒店"
+
+#: internal/gamesui/fortune.go:656
+msgid ", %d house"
+msgid_plural ", %d houses"
+msgstr[0] "、%d房子"
+
+#: internal/gamesui/fortune.go:658
+msgid ": rent now $%d"
+msgstr "：现租$%d"
+
+#: internal/gamesui/fortune.go:660
+#: internal/gamesui/fortune.go:668
+#: internal/gamesui/fortune.go:676
+msgid "\nFor sale"
+msgstr "\n出售"
+
+#: internal/gamesui/fortune.go:663
+msgid "Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers."
+msgstr "价格$%[1]d。出租 $%[2]d、$%[3]d、$%[4]d 或 $%[5]d,因为其所有者拥有 1 至 4 个码头。"
+
+#: internal/gamesui/fortune.go:666
+msgid "\nOwned by %s: rent now $%d"
+msgstr "\n由 %[1]s 拥有:立即出租 $%[2]d"
+
+#: internal/gamesui/fortune.go:671
+msgid "Price $%d. Rent is the dice times %d, or times %d with both utilities."
+msgstr "价格$%[1]d。租金是骰子乘以 %[2]d,或乘以 %[3]d 与两种公用事业。"
+
+#: internal/gamesui/fortune.go:679
+msgid "Collect $200 every time you pass."
+msgstr "每次经过时收取 200 美元。"
+
+#: internal/gamesui/fortune.go:681
+msgid "Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go."
+msgstr "仅限访问，除非发送至此处。在监狱里，滚动 %s 即可离开，或者在滚动前支付 50 美元；尝试三次后你就付钱然后走。"
+
+#: internal/gamesui/fortune.go:684
+msgid "Taxes and fines go into the fountain; the next player to land here takes it all: $%d now."
+msgstr "税收和罚款进入喷泉；下一个登陆这里的玩家将获得一切：现在$%d。"
+
+#: internal/gamesui/fortune.go:686
+msgid "Straight to jail, without passing Start."
+msgstr "没有通过Start就直接入狱。"
+
+#: internal/gamesui/fortune.go:688
+msgid "Draw a card: money, a fine, or a trip."
+msgstr "抽一张牌：钱、罚款或旅行。"
+
+#: internal/gamesui/fortune.go:690
+msgid "Pay $%d into the fountain."
+msgstr "向喷泉支付$%d。"
+
+#: internal/gamesui/fortune.go:700
+msgid "Hotel built"
+msgstr "酒店建成"
+
+#: internal/gamesui/fortune.go:702
+msgid "Build a hotel ($%d)"
+msgstr "建造一座酒店（$%d）"
+
+#: internal/gamesui/fortune.go:704
+msgid "Build a house ($%d)"
+msgstr "建造一座房子($%d)"
+
+#: internal/gamesui/fortune.go:711
+#: ui/game.ui:76
+msgid "New game"
+msgstr "新游戏"
+
+#: internal/gamesui/fortune.go:714
+msgid "%s is playing…"
+msgstr "%s 正在行动…"
+
+#: internal/gamesui/fortune.go:723
+msgid "Roll for a double"
+msgstr "掷出相同点数"
+
+#: internal/gamesui/fortune.go:723
+msgid "Roll for a six"
+msgstr "掷六"
+
+#: internal/gamesui/fortune.go:724
+msgid "Pay $50 bail"
+msgstr "缴纳50美元保释金"
+
+#: internal/gamesui/fortune.go:730
+msgid "Buy it for $%d"
+msgstr "以 $%d 的价格购买"
+
+#: internal/gamesui/fortune.go:732
+msgid "Pass"
+msgstr "跳过"
+
+#: internal/gamesui/fortune.go:736
+msgid "End turn"
+msgstr "结束回合"
+
+#: internal/gamesui/fortune_board.go:890
+msgid "START\ncollect $200"
+msgstr "开始\n收取 200 美元"
+
+#: internal/gamesui/fortune_board.go:890
+msgid "JAIL\njust visiting"
+msgstr "监狱\n刚刚来访"
+
+#: internal/gamesui/fortune_board.go:890
+msgid "FOUNTAIN\ntake the pot"
+msgstr "喷泉\n领取奖金池"
+
+#: internal/gamesui/fortune_board.go:890
+msgid "GO TO\nJAIL"
+msgstr "前往\n监狱"
+
+#: internal/gamesui/fortune_board.go:1065
+msgid "%s won."
+msgstr "%s获胜。"
+
+#: internal/gamesui/fortune_board.go:1067
+msgid "You won!"
+msgstr "你赢了！"
+
+#: internal/gamesui/fortune_board.go:1087
+msgid "Press N or Space for a new game"
+msgstr "按 N 或 Space 开始新游戏"
+
+#: internal/gamesui/fortune_board.go:1091
+msgid "Your turn"
+msgstr "轮到你了"
+
+#: internal/gamesui/fortune_board.go:1093
+msgid "%s's turn"
+msgstr "轮到%s"
+
+#: internal/gamesui/fortune_board.go:1116
+msgid "round %d of %d"
+msgstr "轮%[1]d %[2]d"
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "Closer (+)"
+msgstr "更接近(+)"
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "Further (−)"
+msgstr "进一步(-)"
+
+#: internal/gamesui/fortune_camera.go:136
+msgid "The whole board (0)"
+msgstr "整板(0)"
+
+#: internal/gamesui/fortune_city.go:40
+msgid "machiya"
+msgstr "町屋"
+
+#: internal/gamesui/fortune_city.go:40
+msgid "ryokan"
+msgstr "旅馆"
+
+#: internal/gamesui/fortune_city.go:47
+msgid "brownstones"
+msgstr "赤褐色砂石建筑"
+
+#: internal/gamesui/fortune_city.go:47
+msgid "towers"
+msgstr "塔"
+
+#: internal/gamesui/fortune_city.go:54
+msgid "shikumen"
+msgstr "石库门"
+
+#: internal/gamesui/fortune_city.go:54
+msgid "Bund hotels"
+msgstr "外滩酒店"
+
+#: internal/gamesui/fortune_city.go:61
+msgid "villas"
+msgstr "别墅"
+
+#: internal/gamesui/fortune_city.go:61
+msgid "palazzi"
+msgstr "宫殿"
+
+#: internal/gamesui/mines.go:37
+msgid "Small · 9 × 9"
+msgstr "小·9×9"
+
+#: internal/gamesui/mines.go:38
+msgid "Medium · 16 × 16"
+msgstr "中·16×16"
+
+#: internal/gamesui/mines.go:39
+msgid "Large · 30 × 16"
+msgstr "大号·30×16"
+
+#: internal/gamesui/mines.go:46
+msgid "MINES"
+msgstr "地雷"
+
+#: internal/gamesui/mines.go:47
+msgid "TIME"
+msgstr "时间"
+
+#: internal/gamesui/mines.go:48
+#: internal/gamesui/pinball.go:48
+msgid "BEST"
+msgstr "最佳"
+
+#: internal/gamesui/mines.go:188
+msgid "Cleared in %.1f seconds. N for another field."
+msgstr "在%.1f秒内清除。 N 代表另一个字段。"
+
+#: internal/gamesui/mines.go:190
+msgid "A mine went off. N for a new field."
+msgstr "地雷爆炸了。 N 代表新字段。"
+
+#: internal/gamesui/mines.go:193
+msgid "Click any square to start: the first one is always safe."
+msgstr "单击任意方块开始：第一个方块始终是安全的。"
+
+#: internal/gamesui/mines.go:195
+msgid "Right-click to flag. Click a number with all its flags placed to open around it."
+msgstr "右键单击​​以标记。单击一个已放置所有标志的数字，以在其周围打开。"
+
+#: internal/gamesui/pinball.go:46
+msgid "SCORE"
+msgstr "分数"
+
+#: internal/gamesui/pinball.go:47
+msgid "BALL"
+msgstr "球"
+
+#: internal/gamesui/pinball.go:189
+msgid "Game over as %s: %s points, a new best. N plays again."
+msgstr "游戏结束为%[1]s:%[2]s分,新最好。再次播放N次。"
+
+#: internal/gamesui/pinball.go:191
+msgid "Game over as %s: %s points. N plays again."
+msgstr "游戏结束为%[1]s:%[2]s分。再次播放N次。"
+
+#: internal/gamesui/pinball.go:194
+msgid "Paused. Press P, or any control, to play on."
+msgstr "暂停。按 P 或任何控件即可继续播放。"
+
+#: internal/gamesui/pinball.go:196
+msgid "Tilt: the flippers are dead until this ball drains."
+msgstr "倾斜：鳍状肢是死的，直到该球耗尽。"
+
+#: internal/gamesui/pinball.go:200
+msgid "Ball %d: hold Space and let go. The skill shot is the %s lane: pull light for the right, harder for the left."
+msgstr "球%[1]d:按住Space并放开。技巧击球是%[2]s车道:右侧拉轻,左侧拉重。"
+
+#: internal/gamesui/pinball.go:202
+msgid "Ball %d: hold Space to pull the plunger, let go to launch."
+msgstr "球体%d：按住Space拉动柱塞，松开即可发射。"
+
+#: internal/gamesui/pinball.go:205
+msgid "Multiball: the launch ramp is the jackpot, %s."
+msgstr "多球：发射坡道是大奖，%s。"
+
+#: internal/gamesui/pinball.go:207
+msgid "%s: %s %d / %d, %.0f s left."
+msgstr "%[1]s:%[2]s、%[3]d/%[4]d、%.0[5]f左。"
+
+#: internal/gamesui/pinball.go:209
+msgid "Mission lit: %s. Shoot the launch ramp to accept it."
+msgstr "任务点亮：%s。射击发射坡道以接受它。"
+
+#: internal/gamesui/pinball.go:211
+msgid "Hit the three yellow mission targets to light a mission; the hyperspace ramp is on the left."
+msgstr "击中三个黄色任务目标即可点亮任务；超空间坡道位于左侧。"
+
+#: internal/gamesui/pinball.go:242
+msgid "P or any control plays on"
+msgstr "P或任意控制播放"
+
+#: internal/gamesui/pinball.go:350
+#: internal/gamesui/pinball.go:705
+msgid "MISSION"
+msgstr "任务"
+
+#: internal/gamesui/pinball.go:403
+#: internal/gamesui/pinball.go:747
+msgid "HYPERSPACE"
+msgstr "超空间"
+
+#: internal/gamesui/pinball.go:412
+msgid "LAUNCH"
+msgstr "启动"
+
+#: internal/gamesui/pinball.go:414
+#: internal/gamesui/pinball.go:754
+msgid "JACKPOT"
+msgstr "累积奖金"
+
+#: internal/gamesui/pinball.go:429
+msgid "RE-ENTRY"
+msgstr "再入"
+
+#: internal/gamesui/pinball.go:455
+msgid "LOCK"
+msgstr "锁"
+
+#: internal/gamesui/pinball.go:527
+msgid "BOOSTER"
+msgstr "助推器"
+
+#: internal/gamesui/pinball.go:559
+msgid "RE-DEPLOY"
+msgstr "重新部署"
+
+#: internal/gamesui/pinball.go:628
+msgid "Press N for a new game"
+msgstr "按N开始新游戏"
+
+#: internal/gamesui/pinball.go:690
+msgid "RANK"
+msgstr "军衔"
+
+#: internal/gamesui/pinball.go:701
+msgid "%d mission flown"
+msgid_plural "%d missions flown"
+msgstr[0] "%d 任务飞行"
+
+#: internal/gamesui/pinball.go:706
+msgid "selected"
+msgstr "选定"
+
+#: internal/gamesui/pinball.go:709
+msgid "in flight"
+msgstr "飞行中"
+
+#: internal/gamesui/pinball.go:711
+msgid "lit"
+msgstr "点亮"
+
+#: internal/gamesui/pinball.go:729
+#: internal/gamesui/pinball.go:780
+msgid "%.0f s"
+msgstr "%.0fs"
+
+#: internal/gamesui/pinball.go:738
+msgid "FUEL"
+msgstr "燃料"
+
+#: internal/gamesui/pinball.go:758
+msgid "TABLE"
+msgstr "表"
+
+#: internal/gamesui/pinball.go:767
+msgid "Field multiplier"
+msgstr "场乘数"
+
+#: internal/gamesui/pinball.go:768
+msgid "Bumper level"
+msgstr "撞击柱等级"
+
+#: internal/gamesui/pinball.go:771
+msgid "lit · %s"
+msgstr "点亮·%s"
+
+#: internal/gamesui/pinball.go:774
+msgid "multiball"
+msgstr "多球"
+
+#: internal/gamesui/pinball.go:776
+#: ui/control.ui:82
+#: ui/settings.ui:1223
+msgid "Lock"
+msgstr "锁"
+
+#: internal/gamesui/pinball.go:777
+msgid "Extra ball"
+msgstr "额外的球"
+
+#: internal/gamesui/pinball.go:782
+msgid "Ball save"
+msgstr "救球"
+
+#: internal/gamesui/pinball.go:783
+msgid "steady"
+msgstr "稳定"
+
+#: internal/gamesui/pinball.go:787
+msgid "danger"
+msgstr "危险"
+
+#: internal/gamesui/pinball.go:789
+msgid "Table"
+msgstr "球台"
+
+#: internal/gamesui/pinball.go:790
+msgid "Bonus"
+msgstr "奖金"
+
+#: internal/gamesui/pinball.go:793
+msgid "LOG"
+msgstr "日志"
+
+#: internal/gamesui/pinball.go:805
+msgid "M mutes the sound"
+msgstr "M静音"
+
+#: internal/gamesui/pinball.go:808
+msgid "no sound (pw-cat not found)"
+msgstr "没有声音（未找到pw-cat）"
+
+#: internal/gamesui/pinball.go:810
+msgid "sound off: M turns it on"
+msgstr "声音关闭：M 将其打开"
+
+#: internal/gamesui/pinball.go:812
+msgid "SPACE PINBALL"
+msgstr "太空弹球"
+
+#: internal/hyprconf/keys.go:22
+#: internal/shell/dock.go:280
+#: ui/settings.ui:1292
+msgid "Launcher"
+msgstr "启动器"
+
+#: internal/hyprconf/keys.go:23
+#: internal/shell/launcher.go:56
+msgid "Switch windows"
+msgstr "切换窗口"
+
+#: internal/hyprconf/keys.go:24
+msgid "Workspace overview"
+msgstr "工作区概述"
+
+#: internal/hyprconf/keys.go:25
+msgid "Control center"
+msgstr "控制中心"
+
+#: internal/hyprconf/keys.go:26
+msgid "Notification center"
+msgstr "通知中心"
+
+#: internal/hyprconf/keys.go:27
+msgid "Focus on or off"
+msgstr "聚焦或关闭"
+
+#: internal/hyprconf/keys.go:28
+#: internal/shell/commands.go:33
+#: internal/shell/dock.go:279
+#: ui/control.ui:62
+#: ui/settings.ui:30
+msgid "Settings"
+msgstr "设置"
+
+#: internal/hyprconf/keys.go:29
+msgid "Restart the shell"
+msgstr "重新启动外壳"
+
+#: internal/hyprconf/keys.go:30
+msgid "Lock the screen"
+msgstr "锁定屏幕"
+
+#: internal/hyprconf/keys.go:31
+msgid "Take a screenshot"
+msgstr "截图"
+
+#: internal/hyprconf/keys.go:32
+msgid "The whole screen, at once"
+msgstr "全屏一次"
+
+#: internal/hyprconf/keys.go:33
+msgid "The focused window, at once"
+msgstr "立即聚焦窗口"
+
+#: internal/hyprconf/keys.go:34
+msgid "Record the screen (again: stop)"
+msgstr "录制屏幕（再次：停止）"
+
+#: internal/hyprconf/keys.go:35
+#: ui/colorpicker.ui:59
+msgid "Pick a colour"
+msgstr "选择颜色"
+
+#: internal/i18n/time.go:8
+msgid "February"
+msgstr "二月"
+
+#: internal/i18n/time.go:8
+msgid "March"
+msgstr "三月"
+
+#: internal/i18n/time.go:8
+msgid "April"
+msgstr "四月"
+
+#: internal/i18n/time.go:8
+#: internal/i18n/time.go:9
+msgid "May"
+msgstr "5月"
+
+#: internal/i18n/time.go:8
+msgid "June"
+msgstr "六月"
+
+#: internal/i18n/time.go:8
+msgid "July"
+msgstr "七月"
+
+#: internal/i18n/time.go:8
+msgid "August"
+msgstr "八月"
+
+#: internal/i18n/time.go:8
+msgid "September"
+msgstr "九月"
+
+#: internal/i18n/time.go:8
+msgid "October"
+msgstr "十月"
+
+#: internal/i18n/time.go:8
+msgid "November"
+msgstr "十一月"
+
+#: internal/i18n/time.go:8
+msgid "December"
+msgstr "十二月"
+
+#: internal/i18n/time.go:9
+msgid "Feb"
+msgstr "2月"
+
+#: internal/i18n/time.go:9
+msgid "Mar"
+msgstr "3月"
+
+#: internal/i18n/time.go:9
+msgid "Apr"
+msgstr "4月"
+
+#: internal/i18n/time.go:9
+msgid "Jun"
+msgstr "6月"
+
+#: internal/i18n/time.go:9
+msgid "Jul"
+msgstr "7月"
+
+#: internal/i18n/time.go:9
+msgid "Aug"
+msgstr "8月"
+
+#: internal/i18n/time.go:9
+msgid "Sep"
+msgstr "9月"
+
+#: internal/i18n/time.go:9
+msgid "Oct"
+msgstr "10月"
+
+#: internal/i18n/time.go:9
+msgid "Nov"
+msgstr "11月"
+
+#: internal/i18n/time.go:9
+msgid "Dec"
+msgstr "12月"
+
+#: internal/i18n/time.go:10
+msgid "Sunday"
+msgstr "星期日"
+
+#: internal/i18n/time.go:10
+msgid "Tuesday"
+msgstr "星期二"
+
+#: internal/i18n/time.go:10
+msgid "Wednesday"
+msgstr "星期三"
+
+#: internal/i18n/time.go:10
+msgid "Thursday"
+msgstr "星期四"
+
+#: internal/i18n/time.go:10
+msgid "Friday"
+msgstr "星期五"
+
+#: internal/i18n/time.go:10
+msgid "Saturday"
+msgstr "星期六"
+
+#: internal/i18n/time.go:22
+msgid "AM"
+msgstr "上午"
+
+#: internal/shell/commands.go:27
+msgid "Lock Screen"
+msgstr "锁屏"
+
+#: internal/shell/commands.go:27
+msgid "Lock now"
+msgstr "立即锁定"
+
+#: internal/shell/commands.go:28
+msgid "Sleep"
+msgstr "睡眠"
+
+#: internal/shell/commands.go:28
+msgid "Suspend, locking first"
+msgstr "暂停，先锁定"
+
+#: internal/shell/commands.go:29
+#: internal/ui/control.go:478
+#: ui/control.ui:148
+msgid "Restart"
+msgstr "重启"
+
+#: internal/shell/commands.go:29
+msgid "Restart the computer"
+msgstr "重新启动计算机"
+
+#: internal/shell/commands.go:29
+msgid "Press Enter again to restart"
+msgstr "再次按 Enter 重启"
+
+#: internal/shell/commands.go:30
+msgid "Shut Down"
+msgstr "关机"
+
+#: internal/shell/commands.go:30
+msgid "Turn the computer off"
+msgstr "关闭计算机"
+
+#: internal/shell/commands.go:30
+msgid "Press Enter again to shut down"
+msgstr "再次按 Enter 关机"
+
+#: internal/shell/commands.go:31
+msgid "End this session"
+msgstr "结束本次会话"
+
+#: internal/shell/commands.go:31
+msgid "Press Enter again to log out"
+msgstr "再次按 Enter 退出登录"
+
+#: internal/shell/commands.go:32
+msgid "Empty Trash"
+msgstr "清空垃圾箱"
+
+#: internal/shell/commands.go:32
+msgid "Delete what is in the Trash for good"
+msgstr "永久删除垃圾箱中的内容"
+
+#: internal/shell/commands.go:32
+msgid "Press Enter again to empty the Trash"
+msgstr "再次按 Enter 清空回收站"
+
+#: internal/shell/commands.go:33
+#: internal/shell/dock.go:279
+msgid "inua's settings"
+msgstr "inua的设置"
+
+#: internal/shell/commands.go:34
+msgid "Screenshot Area"
+msgstr "截图区"
+
+#: internal/shell/commands.go:34
+msgid "Drag out an area"
+msgstr "拖出一个区域"
+
+#: internal/shell/commands.go:35
+msgid "Screenshot Window"
+msgstr "截图窗口"
+
+#: internal/shell/commands.go:35
+#: internal/ui/screenshot.go:435
+#: ui/screenshot.ui:151
+msgid "Click a window"
+msgstr "单击窗口"
+
+#: internal/shell/commands.go:36
+msgid "Screenshot Screen"
+msgstr "屏幕截图"
+
+#: internal/shell/commands.go:36
+#: internal/ui/screenshot.go:436
+#: ui/screenshot.ui:176
+msgid "Click a screen"
+msgstr "单击屏幕"
+
+#: internal/shell/commands.go:37
+msgid "Record Screen"
+msgstr "录制屏幕"
+
+#: internal/shell/commands.go:37
+msgid "Record an area, a window or a screen"
+msgstr "记录一个区域、一个窗口或一个屏幕"
+
+#: internal/shell/commands.go:38
+msgid "Pick a Colour"
+msgstr "选择颜色"
+
+#: internal/shell/commands.go:38
+msgid "From anywhere on the screen"
+msgstr "从屏幕上的任何位置"
+
+#: internal/shell/commands.go:39
+msgid "Clear Notifications"
+msgstr "清除通知"
+
+#: internal/shell/commands.go:39
+msgid "All of them"
+msgstr "他们全部"
+
+#: internal/shell/commands.go:40
+#: internal/ui/notify.go:822
+#: ui/center.ui:71
+#: ui/control.ui:411
+msgid "Focus"
+msgstr "专注模式"
+
+#: internal/shell/commands.go:40
+msgid "Quiet notifications, or not"
+msgstr "是否安静通知"
+
+#: internal/shell/commands.go:41
+msgid "Toggle Wi-Fi"
+msgstr "切换 Wi-Fi"
+
+#: internal/shell/commands.go:41
+msgid "Turn Wi-Fi on or off"
+msgstr "打开或关闭Wi-Fi"
+
+#: internal/shell/commands.go:42
+msgid "Toggle Bluetooth"
+msgstr "切换蓝牙"
+
+#: internal/shell/commands.go:42
+msgid "Turn Bluetooth on or off"
+msgstr "打开或关闭蓝牙"
+
+#: internal/shell/commands.go:43
+msgid "Restart inua"
+msgstr "重启inua"
+
+#: internal/shell/commands.go:43
+msgid "Start the shell again"
+msgstr "再次启动shell"
+
+#: internal/shell/commands.go:44
+msgid "Close Window"
+msgstr "关闭窗口"
+
+#: internal/shell/commands.go:45
+msgid "Toggle Floating"
+msgstr "切换浮动"
+
+#: internal/shell/commands.go:46
+msgid "Toggle Fullscreen"
+msgstr "切换全屏"
+
+#: internal/shell/commands.go:47
+msgid "Center Window"
+msgstr "窗口居中"
+
+#: internal/shell/commands.go:72
+msgid "Go to Workspace %s"
+msgstr "转到工作区%s"
+
+#: internal/shell/commands.go:72
+msgid "Workspace"
+msgstr "工作区"
+
+#: internal/shell/commands.go:74
+msgid "Move Window to Workspace %s"
+msgstr "将窗口移动到工作区 %s"
+
+#: internal/shell/commands.go:131
+msgid "the web"
+msgstr "网络"
+
+#: internal/shell/commands.go:153
+#: internal/shell/commands.go:167
+msgid "Search %s for “%s”"
+msgstr "在 %[1]s 中搜索“%[2]s”"
+
+#: internal/shell/commands.go:155
+msgid "Type %s and words to search"
+msgstr "输入 %s 和要搜索的单词"
+
+#: internal/shell/commands.go:161
+#: internal/shell/commands.go:163
+msgid "Open %s"
+msgstr "打开%s"
+
+#: internal/shell/commands.go:161
+#: internal/shell/commands.go:163
+msgid "Web address"
+msgstr "网址"
+
+#: internal/shell/commands.go:167
+msgid "Web search"
+msgstr "网络搜索"
+
+#: internal/shell/dock.go:245
+msgid "EVERYDAY"
+msgstr "日常"
+
+#: internal/shell/dock.go:252
+msgid "TOOLS"
+msgstr "工具"
+
+#: internal/shell/dock.go:262
+msgid "PLAY"
+msgstr "玩"
+
+#: internal/shell/dock.go:267
+#: ui/sysmon.ui:149
+msgid "SYSTEM"
+msgstr "系统"
+
+#: internal/shell/dock.go:280
+msgid "Find apps, windows and answers"
+msgstr "查找应用程序、窗口和答案"
+
+#: internal/shell/dock.go:281
+#: internal/ui/screenshot.go:760
+#: ui/settings.ui:1252
+msgid "Screenshot"
+msgstr "截图"
+
+#: internal/shell/dock.go:281
+msgid "Capture an area, a window or a screen"
+msgstr "捕获区域、窗口或屏幕"
+
+#: internal/shell/launcher.go:48
+msgid "[WINDOWS]"
+msgstr "[窗口]"
+
+#: internal/shell/launcher.go:50
+msgid "[APPS]"
+msgstr "[应用]"
+
+#: internal/shell/launcher.go:58
+msgid "Launch apps"
+msgstr "启动应用程序"
+
+#: internal/shell/launcher.go:262
+msgid "That window has closed"
+msgstr "该窗口已关闭"
+
+#: internal/shell/launcher.go:289
+msgid "Ask the assistant anything"
+msgstr "有什么事情都可以向助理询问"
+
+#: internal/shell/launcher.go:291
+msgid "No emoji or symbol matches"
+msgstr "没有表情符号或符号匹配"
+
+#: internal/shell/launcher.go:293
+msgid "Reading apps…"
+msgstr "阅读应用程序……"
+
+#: internal/shell/launcher.go:295
+msgid "No app matches"
+msgstr "没有应用匹配"
+
+#: internal/shell/launcher.go:297
+msgid "Not connected to Hyprland"
+msgstr "未连接到 Hyprland"
+
+#: internal/shell/launcher.go:299
+msgid "No windows open"
+msgstr "没有打开的窗口"
+
+#: internal/shell/launcher.go:301
+msgid "No window matches"
+msgstr "没有窗口匹配"
+
+#: internal/shell/launcher.go:337
+msgid "Enter asks"
+msgstr "按 Enter 提问"
+
+#: internal/shell/launcher.go:349
+msgid "or start with ?"
+msgstr "或者开始于？"
+
+#: internal/shell/launcher.go:352
+msgid "%s · Enter copies"
+msgstr "%s · 按 Enter 复制"
+
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "询问助理"
+
+#: internal/shell/launcher.go:416
+msgid "%s · workspace %s"
+msgstr "%[1]s·工作空间%[2]s"
+
+#: internal/shell/notify.go:16
+msgid "now"
+msgstr "现在"
+
+#: internal/shell/notify.go:18
+msgid "%dm"
+msgstr "%dm"
+
+#: internal/shell/notify.go:20
+msgid "%dh"
+msgstr "%dh"
+
+#: internal/shell/notify.go:30
+msgid "Jan 2"
+msgstr "1月2日"
+
+#: internal/shell/notify.go:32
+#: internal/ui/settings_about.go:181
+msgid "Jan 2, 2006"
+msgstr "2006年1月2日"
+
+#: internal/shell/notify.go:40
+msgid "Needs notifications"
+msgstr "需要通知"
+
+#: internal/shell/notify.go:42
+msgid "Banners quiet"
+msgstr "横幅通知已静音"
+
+#: internal/shell/notify.go:44
+#: internal/shell/status.go:73
+#: internal/shell/status.go:88
+#: internal/shell/status.go:107
+#: internal/shell/status.go:122
+#: ui/settings.ui:2793
+msgid "Off"
+msgstr "关闭"
+
+#: internal/shell/status.go:47
+msgid "Offline"
+msgstr "离线"
+
+#: internal/shell/status.go:71
+msgid "No Wi-Fi device"
+msgstr "无Wi-Fi设备"
+
+#: internal/shell/status.go:79
+msgid "Not connected"
+msgstr "未连接"
+
+#: internal/shell/status.go:92
+msgid "%d devices"
+msgstr "%d装置"
+
+#: internal/shell/status.go:94
+#: internal/shell/status.go:103
+msgid "On"
+msgstr "开启"
+
+#: internal/shell/status.go:105
+msgid "Performance"
+msgstr "性能"
+
+#: internal/shell/status.go:118
+msgid "via %s"
+msgstr "经由%s"
+
+#: internal/shell/status.go:120
+msgid "%d online"
+msgstr "%d在线"
+
+#: internal/shell/status.go:126
+msgid "Needs approval"
+msgstr "需要批准"
+
+#: internal/shell/status.go:186
+msgid "Fully charged"
+msgstr "充满电"
+
+#: internal/shell/status.go:188
+msgid "%.0f%% · Charging"
+msgstr "%.0f%%·充电中"
+
+#: internal/ui/agenda.go:212
+msgid "inua calendar"
+msgstr "inua日历"
+
+#: internal/ui/agenda.go:222
+msgid "%s · WK %d"
+msgstr "%s · 第 %d 周"
+
+#: internal/ui/agenda.go:222
+msgid "Mon Jan 2"
+msgstr "1月2日 Mon"
+
+#: internal/ui/agenda.go:319
+msgid "Add a place in Weather to see it here"
+msgstr "在天气中添加地点即可在此处查看"
+
+#: internal/ui/agenda.go:330
+msgid "No forecast: offline?"
+msgstr "无预测：离线？"
+
+#: internal/ui/agenda.go:332
+msgid "Reading the forecast…"
+msgstr "阅读预测……"
+
+#: internal/ui/agenda.go:340
+msgid "%s · feels %s"
+msgstr "%[1]s·感觉%[2]s"
+
+#: internal/ui/agenda.go:343
+msgid "H %s  L %s"
+msgstr "H %[1]s L %[2]s"
+
+#: internal/ui/alarms.go:104
+msgid "Alarm · %02d:%02d"
+msgstr "闹钟 · %02d:%02d"
+
+#: internal/ui/alarms.go:108
+msgid "Snooze"
+msgstr "稍后提醒"
+
+#: internal/ui/askpass.go:47
+msgid "password: want one JSON request"
+msgstr "密码：想要一个JSON请求"
+
+#: internal/ui/askpass.go:89
+msgid "not ok"
+msgstr "不行"
+
+#: internal/ui/askpass.go:128
+msgid "Passphrase Required"
+msgstr "需要密码"
+
+#: internal/ui/askpass.go:128
+msgid "Confirm"
+msgstr "确认"
+
+#: internal/ui/askpass.go:128
+msgid "Message"
+msgstr "留言"
+
+#: internal/ui/askpass.go:141
+msgid "Passphrase"
+msgstr "密码"
+
+#: internal/ui/askpass.go:163
+msgid "OK"
+msgstr "好的"
+
+#: internal/ui/askpass.go:164
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/polkit.ui:161
+msgid "Cancel"
+msgstr "取消"
+
+#: internal/ui/askpass.go:231
+msgid "The passphrases do not match."
+msgstr "密码短语不匹配。"
+
+#: internal/ui/bar.go:239
+msgid "Workspace %s"
+msgstr "工作空间%s"
+
+#: internal/ui/bar.go:252
+msgid "WORKSPACE"
+msgstr "工作区"
+
+#: internal/ui/control.go:276
+msgid "inua control center"
+msgstr "inua控制中心"
+
+#: internal/ui/control.go:477
+#: ui/control.ui:124
+msgid "Suspend"
+msgstr "挂起"
+
+#: internal/ui/control.go:478
+msgid "Restart?"
+msgstr "重新启动？"
+
+#: internal/ui/control.go:479
+#: ui/control.ui:172
+msgid "Shut down"
+msgstr "关闭"
+
+#: internal/ui/control.go:479
+msgid "Shut down?"
+msgstr "确认关机？"
+
+#: internal/ui/control.go:480
+#: ui/control.ui:196
+msgid "Log out"
+msgstr "退出"
+
+#: internal/ui/control.go:480
+msgid "Log out?"
+msgstr "确认退出登录？"
+
+#: internal/ui/dock.go:394
+msgid "New Window"
+msgstr "新窗口"
+
+#: internal/ui/dock.go:396
+msgid "Remove from Dock"
+msgstr "从扩展坞中移除"
+
+#: internal/ui/dock.go:398
+msgid "Keep in Dock"
+msgstr "固定到程序坞"
+
+#: internal/ui/dock.go:404
+msgid "Quit (%d windows)"
+msgstr "退出(%d窗口)"
+
+#: internal/ui/drawer.go:148
+#: ui/settings.ui:1391
+msgid "Apps"
+msgstr "应用程序"
+
+#: internal/ui/drawer.go:243
+msgid "The light apps are not installed (make install)."
+msgstr "轻型应用程序未安装(make install)。"
+
+#: internal/ui/input.go:55
+msgid "Not applied to Hyprland: %s"
+msgstr "不适用于 Hyprland:%s"
+
+#: internal/ui/input.go:113
+#: internal/ui/input.go:130
+msgid "Set by inua"
+msgstr "由inua设定"
+
+#: internal/ui/input.go:115
+#: internal/ui/input.go:132
+msgid "Set in hyprland.conf"
+msgstr "在hyprland.conf中设置"
+
+#: internal/ui/input.go:117
+msgid "no XKB options"
+msgstr "无XKB选项"
+
+#: internal/ui/input.go:125
+#: internal/ui/shortcuts.go:93
+msgid "From hyprland.conf"
+msgstr "来自hyprland.conf"
+
+#: internal/ui/input.go:147
+msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
+msgstr "hyprland.conf 不会加载 inua.conf,因此这些设置尚未执行任何操作。将其添加为最后一行:source = ./%s"
+
+#: internal/ui/input.go:151
+msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
+msgstr "hyprland.conf 在加载 inua.conf 后再次设置这些,这赢得了 inua: %s。将源代码行移到它们下方。"
+
+#: internal/ui/launcher.go:284
+msgid "inua launcher"
+msgstr "inua发射器"
+
+#: internal/ui/lock.go:108
+msgid "the compositor does not support session locks"
+msgstr "合成器不支持会话锁"
+
+#: internal/ui/lock.go:133
+msgid "could not take the session lock"
+msgstr "无法获取会话锁"
+
+#: internal/ui/lock.go:222
+msgid "Wrong password. Try again in %d s"
+msgstr "密码错误。在 %d 中重试"
+
+#: internal/ui/lock.go:225
+#: internal/ui/lock.go:275
+msgid "Wrong password"
+msgstr "密码错误"
+
+#: internal/ui/lock.go:248
+#: internal/ui/polkit.go:294
+#: internal/ui/settings_about.go:138
+msgid "Checking…"
+msgstr "正在检查..."
+
+#: internal/ui/lock.go:279
+msgid "The password could not be checked"
+msgstr "无法检查密码"
+
+#: internal/ui/notify.go:291
+#: ui/bar.ui:112
+#: ui/settings.ui:2142
+msgid "Notifications"
+msgstr "通知"
+
+#: internal/ui/notify.go:293
+msgid "Notifications (Focus is on)"
+msgstr "通知（专注模式已开启）"
+
+#: internal/ui/notify.go:377
+msgid "Hide"
+msgstr "隐藏"
+
+#: internal/ui/notify.go:379
+#: ui/colorpicker.ui:93
+#: ui/group.ui:52
+msgid "Clear"
+msgstr "清除"
+
+#: internal/ui/notify.go:421
+msgid "Notification"
+msgstr "通知"
+
+#: internal/ui/notify.go:611
+#: internal/ui/notify.go:800
+msgid "inua notifications"
+msgstr "inua通知"
+
+#: internal/ui/notify.go:822
+msgid "Focus is on"
+msgstr "专注模式已开启"
+
+#: internal/ui/notify.go:865
+msgid "Show less"
+msgstr "显示较少"
+
+#: internal/ui/notify.go:867
+msgid "%d more"
+msgstr "%d更多"
+
+#: internal/ui/overview.go:172
+msgid "restore focus"
+msgstr "恢复焦点"
+
+#: internal/ui/overview.go:284
+msgid "kill window"
+msgstr "杀掉窗口"
+
+#: internal/ui/overview.go:412
+msgid "MRU: ON"
+msgstr "MRU:开"
+
+#: internal/ui/overview.go:412
+msgid "MRU: OFF"
+msgstr "MRU:关闭"
+
+#: internal/ui/overview.go:413
+msgid "This monitor"
+msgstr "该显示器"
+
+#: internal/ui/overview.go:413
+msgid "All monitors"
+msgstr "所有监视器"
+
+#: internal/ui/overview.go:425
+#: internal/ui/overview.go:878
+msgid "TYPE TO FILTER WINDOWS"
+msgstr "输入以筛选窗口"
+
+#: internal/ui/overview.go:427
+msgid "NO MATCHING WINDOWS"
+msgstr "没有匹配的窗口"
+
+#: internal/ui/overview.go:429
+msgid "%d MATCHING WINDOWS"
+msgstr "%d 匹配窗口"
+
+#: internal/ui/overview.go:443
+msgid "No workspaces"
+msgstr "没有工作区"
+
+#: internal/ui/overview.go:445
+msgid "No matches"
+msgstr "没有匹配项"
+
+#: internal/ui/overview.go:547
+msgid "＋\nNew workspace"
+msgstr "＋\n新工作区"
+
+#: internal/ui/overview.go:862
+msgid "Filter by window title or app"
+msgstr "按窗口标题或应用程序过滤"
+
+#: internal/ui/overview.go:891
+msgid "Type or / to filter windows   Esc · clear / close   Arrows / Tab · select   Middle click · close   Ctrl+Shift+X · kill   Drag · move"
+msgstr "键入 或 / 来过滤窗口 Esc · 清除/关闭箭头/ Tab · 选择中键单击 · 关闭 Ctrl+Shift+X · 删除 拖动 · 移动"
+
+#: internal/ui/overview.go:935
+msgid "inua overview"
+msgstr "inua概述"
+
+#: internal/ui/overview_manage.go:123
+msgid "close window"
+msgstr "关闭窗口"
+
+#: internal/ui/overview_manage.go:163
+msgid "%s · %s · Middle click: close"
+msgstr "%[1]s·%[2]s·中键:关闭"
+
+#: internal/ui/overview_manage.go:200
+msgid "Click a window to force-terminate ONLY that client · Esc / right click cancels"
+msgstr "单击窗口仅强制终止该客户端 · Esc/右键单击取消"
+
+#: internal/ui/overview_manage.go:204
+msgid "Arrows / Tab · select    Type or / · search    Middle click · close    Ctrl+Shift+X · kill    Drag · move"
+msgstr "箭头/选项卡·选择类型或/·搜索中键单击·关闭Ctrl+Shift+X·删除拖动·移动"
+
+#: internal/ui/overview_manage.go:242
+msgid "position floating window"
+msgstr "定位浮动窗口"
+
+#: internal/ui/picker.go:143
+msgid "Colour copied"
+msgstr "颜色已复制"
+
+#: internal/ui/picker.go:145
+msgid "Colour picked"
+msgstr "颜色挑选"
+
+#: internal/ui/polkit.go:178
+#: ui/polkit.ui:41
+msgid "Authentication Required"
+msgstr "需要验证"
+
+#: internal/ui/polkit.go:207
+msgid "The password cannot be checked: polkit's helper did not answer."
+msgstr "无法检查密码：polkit的助手没有应答。"
+
+#: internal/ui/polkit.go:243
+msgid "The password could not be checked."
+msgstr "无法检查密码。"
+
+#: internal/ui/polkit.go:268
+msgid "Sorry, that didn't work. Try again."
+msgstr "抱歉，这不起作用。再试一次。"
+
+#: internal/ui/record.go:68
+msgid "Recording needs wf-recorder"
+msgstr "录屏需要wf-recorder"
+
+#: internal/ui/record.go:68
+msgid "Install it: sudo apt install wf-recorder"
+msgstr "安装：sudo apt install wf-recorder"
+
+#: internal/ui/record.go:111
+msgid "The recording failed"
+msgstr "录屏失败"
+
+#: internal/ui/record.go:114
+msgid "Recording saved"
+msgstr "录屏已保存"
+
+#: internal/ui/record.go:153
+msgid "Screen recording"
+msgstr "屏幕录制"
+
+#: internal/ui/record.go:157
+msgid "Open"
+msgstr "打开"
+
+#: internal/ui/record.go:157
+#: internal/ui/screenshot.go:766
+msgid "Show in Folder"
+msgstr "在文件夹中显示"
+
+#: internal/ui/screenshot.go:416
+msgid "inua screenshot"
+msgstr "inua截图"
+
+#: internal/ui/screenshot.go:434
+msgid "Drag to take an area"
+msgstr "拖动以选取一个区域"
+
+#: internal/ui/screenshot.go:437
+msgid "Click to copy a colour"
+msgstr "单击复制颜色"
+
+#: internal/ui/screenshot.go:441
+msgid "Drag to record an area"
+msgstr "拖动记录区域"
+
+#: internal/ui/screenshot.go:442
+msgid "Click a window to record"
+msgstr "点击窗口进行录制"
+
+#: internal/ui/screenshot.go:443
+msgid "Click a screen to record"
+msgstr "点击屏幕进行录制"
+
+#: internal/ui/screenshot.go:754
+msgid "Screenshot saved and copied"
+msgstr "屏幕截图已保存并复制"
+
+#: internal/ui/screenshot.go:755
+msgid "Screenshot saved"
+msgstr "屏幕截图已保存"
+
+#: internal/ui/screenshot.go:756
+msgid "Screenshot copied"
+msgstr "截图已复制"
+
+#: internal/ui/screenshot.go:757
+msgid "Screenshot taken"
+msgstr "截图"
+
+#: internal/ui/settings.go:553
+msgid "Not saved: %s"
+msgstr "未保存：%s"
+
+#: internal/ui/settings.go:579
+msgid "Choose a wallpaper"
+msgstr "选择壁纸"
+
+#: internal/ui/settings.go:581
+msgid "Images"
+msgstr "图像"
+
+#: internal/ui/settings.go:620
+msgid "Off: another notification daemon can show them"
+msgstr "关闭：另一个通知守护进程可以显示它们"
+
+#: internal/ui/settings.go:622
+msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
+msgstr "先显示横幅，再收进通知中心（顶栏铃铛或 Super+N）"
+
+#: internal/ui/settings.go:624
+msgid "Waiting: another notification daemon is running"
+msgstr "等待：另一个通知守护进程正在运行"
+
+#: internal/ui/settings.go:642
+msgid "Nothing pinned"
+msgstr "尚未固定应用"
+
+#: internal/ui/settings.go:658
+msgid "%s (not installed)"
+msgstr "%s(未安装)"
+
+#: internal/ui/settings.go:671
+msgid "Move earlier"
+msgstr "向前移动"
+
+#: internal/ui/settings.go:672
+msgid "Move later"
+msgstr "向后移动"
+
+#: internal/ui/settings.go:673
+msgid "Remove from the dock"
+msgstr "从程序坞移除"
+
+#: internal/ui/settings_about.go:126
+msgid "inua %s, built from source"
+msgstr "inua %s，从源代码构建"
+
+#: internal/ui/settings_about.go:133
+msgid "Upgrade to %s"
+msgstr "升级至%s"
+
+#: internal/ui/settings_about.go:136
+msgid "Upgrading… the shell restarts on the new version"
+msgstr "正在升级... shell 在新版本上重新启动"
+
+#: internal/ui/settings_about.go:142
+msgid "Could not reach GitHub: %s"
+msgstr "无法到达 GitHub：%s"
+
+#: internal/ui/settings_about.go:144
+msgid "Not checked yet"
+msgstr "尚未检查"
+
+#: internal/ui/settings_about.go:146
+msgid "The latest release is %s; this version cannot be compared with it"
+msgstr "最新版本为%s ；这个版本无法与之相比"
+
+#: internal/ui/settings_about.go:148
+msgid "inua %s is out; upgrading replaces this build from source"
+msgstr "inua %s 已发布；升级将替换当前的源码构建版本"
+
+#: internal/ui/settings_about.go:150
+#: internal/ui/updates.go:90
+msgid "inua %s is out"
+msgstr "inua %s 已发布"
+
+#: internal/ui/settings_about.go:152
+msgid "Up to date: %s is the latest release (checked %s)"
+msgstr "最新:%[1]s为最新版本(已检查%[2]s)"
+
+#: internal/ui/settings_about.go:154
+msgid "Newer than the latest release, %s"
+msgstr "比最新版本更新，%s"
+
+#: internal/ui/settings_about.go:164
+msgid "Shown once the releases are read"
+msgstr "读取版本后显示"
+
+#: internal/ui/settings_about.go:166
+msgid "Reading the releases…"
+msgstr "正在读取版本信息…"
+
+#: internal/ui/settings_about.go:187
+msgid "installed"
+msgstr "已安装"
+
+#: internal/ui/settings_about.go:191
+msgid "On GitHub"
+msgstr "在 GitHub 上"
+
+#: internal/ui/settings_ai.go:58
+msgid "Model default"
+msgstr "模型默认"
+
+#: internal/ui/settings_ai.go:58
+msgid "Minimal"
+msgstr "最小"
+
+#: internal/ui/settings_ai.go:58
+#: ui/settings.ui:1050
+msgid "Medium"
+msgstr "中"
+
+#: internal/ui/settings_ai.go:97
+msgid "Keys typed here are kept in %s"
+msgstr "此处输入的密钥保存在%s中"
+
+#: internal/ui/settings_ai.go:136
+msgid "key not moved"
+msgstr "密钥未迁移"
+
+#: internal/ui/settings_ai.go:165
+msgid "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
+msgstr "在控制台中使用该URL和令牌。在另一台计算机上，使用此桌面的可访问地址。"
+
+#: internal/ui/settings_ai.go:168
+msgid "Turn on Assistant to serve this endpoint."
+msgstr "打开助手来服务该端点。"
+
+#: internal/ui/settings_ai.go:170
+msgid "HTTP serving is off. The assistant still runs in the background."
+msgstr "HTTP服务关闭。助手仍在后台运行。"
+
+#: internal/ui/settings_ai.go:172
+msgid "Create a token to allow Console connections."
+msgstr "创建令牌以允许控制台连接。"
+
+#: internal/ui/settings_ai.go:179
+msgid "Reading keyring…"
+msgstr "读取钥匙圈…"
+
+#: internal/ui/settings_ai.go:181
+msgid "Hide token"
+msgstr "隐藏令牌"
+
+#: internal/ui/settings_ai.go:183
+#: ui/settings.ui:2007
+msgid "Create token"
+msgstr "创建令牌"
+
+#: internal/ui/settings_ai.go:185
+msgid "Show token"
+msgstr "显示令牌"
+
+#: internal/ui/settings_ai.go:200
+msgid "Then, when it fails: %s"
+msgstr "那么，失败时：%s"
+
+#: internal/ui/settings_ai.go:202
+msgid "The profile asked first; turn on Fallback on others to try them when it fails"
+msgstr "优先使用的模型配置；为其他配置启用备用，以便失败时依次尝试"
+
+#: internal/ui/settings_ai.go:258
+msgid "Move up (fallbacks are tried in this order)"
+msgstr "向上移动（按此顺序尝试回退）"
+
+#: internal/ui/settings_ai.go:259
+msgid "Move down"
+msgstr "下移"
+
+#: internal/ui/settings_ai.go:260
+msgid "Remove this profile"
+msgstr "删除此模型配置"
+
+#: internal/ui/settings_ai.go:283
+msgid "a name: work, fast, local …"
+msgstr "名字：工作、快速、本地……"
+
+#: internal/ui/settings_ai.go:285
+msgid "the model's ID"
+msgstr "模型 ID"
+
+#: internal/ui/settings_ai.go:286
+msgid "the provider's own"
+msgstr "提供商自己的"
+
+#: internal/ui/settings_ai.go:292
+#: internal/ui/settings_ai.go:391
+msgid "Paste a key, then Save"
+msgstr "粘贴密钥，然后保存"
+
+#: internal/ui/settings_ai.go:306
+msgid "Provider"
+msgstr "服务商"
+
+#: internal/ui/settings_ai.go:308
+msgid "Reasoning"
+msgstr "推理强度"
+
+#: internal/ui/settings_ai.go:309
+msgid "Endpoint"
+msgstr "端点"
+
+#: internal/ui/settings_ai.go:312
+#: ui/clock.ui:252
+msgid "Save"
+msgstr "保存"
+
+#: internal/ui/settings_ai.go:313
+msgid "Forget"
+msgstr "删除密钥"
+
+#: internal/ui/settings_ai.go:321
+msgid "API key"
+msgstr "API 密钥"
+
+#: internal/ui/settings_ai.go:326
+msgid "Fallback: answers when the profiles above it fail"
+msgstr "备用：前面的模型配置失败时使用"
+
+#: internal/ui/settings_ai.go:368
+msgid "Answers first. "
+msgstr "首先回答。 "
+
+#: internal/ui/settings_ai.go:370
+msgid "Fallback %d. "
+msgstr "后备%d。 "
+
+#: internal/ui/settings_ai.go:375
+msgid "The saved keys cannot be read: %s"
+msgstr "保存的密钥无法读取：%s"
+
+#: internal/ui/settings_ai.go:377
+msgid "Key saved"
+msgstr "密钥已保存"
+
+#: internal/ui/settings_ai.go:379
+msgid "No key (a local server may want none)"
+msgstr "没有密钥（本地服务器可能不需要密钥）"
+
+#: internal/ui/settings_ai.go:381
+msgid "No key yet: the assistant cannot answer"
+msgstr "尚未设置密钥，助手无法回答"
+
+#: internal/ui/settings_ai.go:383
+msgid "No key yet: this profile is skipped"
+msgstr "尚未设置密钥，将跳过此配置"
+
+#: internal/ui/settings_ai.go:389
+msgid "Saved; paste another to replace it"
+msgstr "已保存；粘贴另一个来替换它"
+
+#: internal/ui/settings_ai.go:550
+msgid "Endpoint URL copied"
+msgstr "端点 URL 已复制"
+
+#: internal/ui/settings_ai.go:581
+msgid "No Console token. Create one first."
+msgstr "无控制台令牌。先创建一个。"
+
+#: internal/ui/settings_ai.go:586
+msgid "Token copied"
+msgstr "令牌已复制"
+
+#: internal/ui/settings_ai.go:651
+msgid "key not removed"
+msgstr "密钥未删除"
+
+#: internal/ui/settings_ai.go:662
+msgid "key not saved"
+msgstr "密钥未保存"
+
+#: internal/ui/shortcuts.go:88
+msgid "Set in inua"
+msgstr "设置于inua"
+
+#: internal/ui/shortcuts.go:90
+msgid "Turned off in inua"
+msgstr "在inua中关闭"
+
+#: internal/ui/shortcuts.go:181
+msgid "Click, then press the new shortcut"
+msgstr "单击，然后按新的快捷键"
+
+#: internal/ui/shortcuts.go:186
+msgid "Press keys…"
+msgstr "按键……"
+
+#: internal/ui/shortcuts.go:190
+msgid "Not set"
+msgstr "未设置"
+
+#: internal/ui/shortcuts.go:216
+msgid "Remove this command"
+msgstr "删除该命令"
+
+#: internal/ui/shortcuts.go:218
+msgid "Use hyprland.conf's shortcut again"
+msgstr "再次使用hyprland.conf的快捷方式"
+
+#: internal/ui/shortcuts.go:220
+msgid "Turn the shortcut off"
+msgstr "关闭快捷方式"
+
+#: internal/ui/shotdrawer.go:160
+msgid "Record another"
+msgstr "再记录一次"
+
+#: internal/ui/shotdrawer.go:162
+#: ui/shotdrawer.ui:195
+msgid "Take another"
+msgstr "再截一张"
+
+#: internal/ui/shotdrawer.go:216
+msgid "inua recent screenshots"
+msgstr "inua近期截图"
+
+#: internal/ui/shotdrawer.go:329
+msgid "Jan 2 2006"
+msgstr "2006年1月2日"
+
+#: internal/ui/updates.go:91
+msgid "You have %s."
+msgstr "你有 %s。"
+
+#: internal/ui/updates.go:93
+msgid "%s Upgrade with: inua upgrade"
+msgstr "%s 升级方式:inua 升级"
+
+#: internal/ui/updates.go:99
+#: ui/settings.ui:3382
+msgid "Upgrade"
+msgstr "升级"
+
+#: internal/ui/updates.go:99
+#: internal/ui/updates.go:127
+msgid "What's new"
+msgstr "最新消息"
+
+#: internal/ui/updates.go:126
+msgid "inua %s is installed"
+msgstr "inua %s安装完毕"
+
+#: internal/ui/updates.go:176
+msgid "inua could not upgrade"
+msgstr "inua无法升级"
+
+#: internal/ui/updates.go:179
+msgid "Could not upgrade: %s"
+msgstr "无法升级:%s"
+
+#: ui/agenda.ui:50
+msgid "[CALENDAR]"
+msgstr "[日历]"
+
+#: ui/agenda.ui:93
+#: ui/calendar.ui:50
+msgid "Previous month"
+msgstr "上个月"
+
+#: ui/agenda.ui:102
+#: ui/calendar.ui:61
+msgid "Next month"
+msgstr "下个月"
+
+#: ui/agenda.ui:120
+msgid "Open Weather"
+msgstr "开放天气"
+
+#: ui/assistant.ui:54
+msgid "Who answers"
+msgstr "谁回答"
+
+#: ui/assistant.ui:63
+msgid "AI settings"
+msgstr "AI设置"
+
+#: ui/assistant.ui:73
+msgid "New conversation"
+msgstr "新对话"
+
+#: ui/assistant.ui:98
+msgid "Open AI Settings"
+msgstr "打开AI设置"
+
+#: ui/assistant.ui:128
+msgid "Ask, or tell me what to do"
+msgstr "询问，或告诉我该怎么做"
+
+#: ui/bar.ui:82
+msgid "Stop recording"
+msgstr "停止录制"
+
+#: ui/bar.ui:141
+msgid "Control Center"
+msgstr "控制中心"
+
+#: ui/calculator.ui:32
+msgid "Scientific"
+msgstr "科学"
+
+#: ui/calculator.ui:40
+msgid "Deg"
+msgstr "角度"
+
+#: ui/calculator.ui:42
+msgid "Trigonometry in degrees (off: radians)"
+msgstr "以度为单位的三角函数（关：弧度）"
+
+#: ui/calculator.ui:55
+msgid "Recent calculations"
+msgstr "最近的计算"
+
+#: ui/calculator.ui:66
+msgid "History"
+msgstr "历史"
+
+#: ui/calculator.ui:149
+msgid "HISTORY"
+msgstr "历史"
+
+#: ui/calculator.ui:170
+msgid "Clear history"
+msgstr "清除历史记录"
+
+#: ui/calendar.ui:113
+msgid "WEEKS START ON"
+msgstr "几周开始于"
+
+#: ui/center.ui:51
+msgid "[NOTIFICATIONS]"
+msgstr "[通知]"
+
+#: ui/center.ui:81
+msgid "Clear all"
+msgstr "全部清除"
+
+#: ui/center.ui:91
+msgid "Focus is on: banners stay quiet."
+msgstr "重点在于：横幅保持安静。"
+
+#: ui/center.ui:129
+msgid "No notifications"
+msgstr "无通知"
+
+#: ui/clock.ui:35
+msgid "WORLD"
+msgstr "世界时钟"
+
+#: ui/clock.ui:107
+msgid "No other cities yet."
+msgstr "还没有其他城市。"
+
+#: ui/clock.ui:134
+msgid "ALARMS"
+msgstr "闹钟"
+
+#: ui/clock.ui:148
+msgid "RUNG BY INUA, EVEN WITH CLOCK CLOSED"
+msgstr "即使时钟关闭，INUA 仍发出响铃"
+
+#: ui/clock.ui:160
+msgid "New alarm"
+msgstr "新警报"
+
+#: ui/clock.ui:183
+msgid "Label"
+msgstr "标签"
+
+#: ui/clock.ui:197
+msgid "REPEAT"
+msgstr "重复"
+
+#: ui/clock.ui:284
+msgid "No alarms."
+msgstr "无警报。"
+
+#: ui/clock.ui:298
+msgid "STOPWATCH"
+msgstr "秒表"
+
+#: ui/clock.ui:375
+msgid "TIMER"
+msgstr "倒计时"
+
+#: ui/colorpicker.ui:83
+msgid "PICKED BEFORE"
+msgstr "之前挑选的"
+
+#: ui/colorpicker.ui:119
+msgid "Colours you pick show here."
+msgstr "您选择的颜色显示在这里。"
+
+#: ui/control.ui:72
+msgid "Screenshot an area"
+msgstr "截取区域"
+
+#: ui/control.ui:91
+msgid "Suspend, restart, shut down, log out"
+msgstr "暂停、重启、关闭、注销"
+
+#: ui/control.ui:301
+msgid "Bluetooth"
+msgstr "蓝牙"
+
+#: ui/control.ui:359
+msgid "Low Power"
+msgstr "节能模式"
+
+#: ui/control.ui:499
+msgid "Open Tailscale"
+msgstr "打开 Tailscale"
+
+#: ui/control.ui:528
+msgid "Display"
+msgstr "显示"
+
+#: ui/control.ui:590
+msgid "Sound"
+msgstr "声音"
+
+#: ui/control.ui:618
+msgid "Mute"
+msgstr "静音"
+
+#: ui/control.ui:658
+msgid "Now playing"
+msgstr "正在播放"
+
+#: ui/game.ui:53
+msgid "How to play"
+msgstr "玩法"
+
+#: ui/launcher.ui:53
+msgid "Tab  switch"
+msgstr "选项卡开关"
+
+#: ui/launcher.ui:63
+msgid "Search, or ask: 10 km to mi"
+msgstr "搜索或询问：10 公里 换算为 英里"
+
+#: ui/launcher.ui:87
+msgid "[ERROR]"
+msgstr "[错误]"
+
+#: ui/launcher.ui:118
+msgid "↑↓  choose"
+msgstr "↑↓选择"
+
+#: ui/launcher.ui:126
+msgid "↵  open"
+msgstr "↵打开"
+
+#: ui/launcher.ui:134
+msgid "Esc  close"
+msgstr "Esc 关闭"
+
+#: ui/lock.ui:76
+#: ui/polkit.ui:118
+msgid "Password"
+msgstr "密码"
+
+#: ui/polkit.ui:79
+msgid "AS"
+msgstr "AS"
+
+#: ui/polkit.ui:98
+msgid "Another user"
+msgstr "另一用户"
+
+#: ui/polkit.ui:169
+msgid "Authenticate"
+msgstr "认证"
+
+#: ui/screenshot.ui:126
+msgid "Drag to take an area (Space switches to windows)"
+msgstr "拖动取一个区域（空格切换到窗口）"
+
+#: ui/screenshot.ui:137
+#: ui/shotdrawer.ui:98
+msgid "Area"
+msgstr "区域"
+
+#: ui/screenshot.ui:162
+#: ui/shotdrawer.ui:122
+msgid "Window"
+msgstr "窗口"
+
+#: ui/screenshot.ui:187
+#: ui/shotdrawer.ui:146
+msgid "Screen"
+msgstr "屏幕"
+
+#: ui/screenshot.ui:205
+#: ui/shotdrawer.ui:164
+msgid "Record the screen instead of taking a picture"
+msgstr "录制屏幕而不是拍照"
+
+#: ui/screenshot.ui:219
+#: ui/shotdrawer.ui:178
+msgid "Record"
+msgstr "录制"
+
+#: ui/screenshot.ui:244
+msgid "Recent screenshots and recordings, to drag into an app"
+msgstr "最近的屏幕截图和录屏，拖入应用程序"
+
+#: ui/screenshot.ui:254
+msgid "Cancel (Esc)"
+msgstr "取消 (Esc)"
+
+#: ui/settings.ui:13
+msgid "inua Settings"
+msgstr "inua设置"
+
+#: ui/settings.ui:60
+msgid "Appearance"
+msgstr "外观"
+
+#: ui/settings.ui:98
+msgid "<span alpha='55%'>[</span>THEME<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>主题<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:106
+msgid "The bar, launcher, control center and this window"
+msgstr "栏、启动器、控制中心和此窗口"
+
+#: ui/settings.ui:160
+msgid "<span alpha='55%'>[</span>ICONS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>图标<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:168
+msgid "The bar, control center, launcher and settings"
+msgstr "栏、控制中心、启动器和设置"
+
+#: ui/settings.ui:198
+msgid "Icon set"
+msgstr "图标集"
+
+#: ui/settings.ui:207
+msgid "App icons always come from the system"
+msgstr "应用程序图标始终来自系统"
+
+#: ui/settings.ui:221
+msgid "Phosphor"
+msgstr "Phosphor"
+
+#: ui/settings.ui:222
+msgid "System theme"
+msgstr "系统主题"
+
+#: ui/settings.ui:260
+msgid "<span alpha='55%'>[</span>PICTURE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>图片<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:268
+msgid "Behind your windows, on every monitor"
+msgstr "在每台显示器的窗口后方"
+
+#: ui/settings.ui:298
+msgid "Draw the wallpaper"
+msgstr "绘制壁纸"
+
+#: ui/settings.ui:307
+msgid "Off leaves the background to another program"
+msgstr "关闭将后台留给另一个程序"
+
+#: ui/settings.ui:337
+msgid "Image"
+msgstr "图像"
+
+#: ui/settings.ui:348
+msgid "none: a fine texture"
+msgstr "无图片：显示细纹理背景"
+
+#: ui/settings.ui:357
+msgid "Choose…"
+msgstr "选择……"
+
+#: ui/settings.ui:367
+msgid "No image"
+msgstr "无图像"
+
+#: ui/settings.ui:393
+msgid "Fit"
+msgstr "适应窗口"
+
+#: ui/settings.ui:402
+msgid "How the picture fills each monitor"
+msgstr "图片如何填充每个监视器"
+
+#: ui/settings.ui:416
+msgid "Cover: fill, cropping"
+msgstr "填满并裁剪"
+
+#: ui/settings.ui:417
+msgid "Contain: show it all"
+msgstr "完整显示"
+
+#: ui/settings.ui:418
+msgid "Tile: repeat"
+msgstr "平铺：重复"
+
+#: ui/settings.ui:419
+msgid "Center: actual size"
+msgstr "居中，原始大小"
+
+#: ui/settings.ui:442
+msgid "Colour"
+msgstr "颜色"
+
+#: ui/settings.ui:455
+msgid "theme"
+msgstr "主题"
+
+#: ui/settings.ui:463
+msgid "#rrggbb, shown around the image. Empty: the theme's ground"
+msgstr "#rrggbb，显示在图像周围。空：主题的地面"
+
+#: ui/settings.ui:496
+msgid "Bar & Dock"
+msgstr "顶栏与程序坞"
+
+#: ui/settings.ui:534
+msgid "<span alpha='55%'>[</span>BAR<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>顶栏<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:542
+msgid "The bar along the top of each monitor"
+msgstr "每个显示器顶部的栏"
+
+#: ui/settings.ui:572
+msgid "Show the bar"
+msgstr "显示栏"
+
+#: ui/settings.ui:581
+msgid "Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications"
+msgstr "关闭：Super+Space、Super+A和Super+N仍然打开启动器、控制中心和通知"
+
+#: ui/settings.ui:644
+msgid "strftime: %a weekday, %b month, %-d day, %H:%M time"
+msgstr "strftime: %a 工作日、%b 月份、%-d 日期、%H:%M 时间"
+
+#: ui/settings.ui:670
+msgid "Workspaces"
+msgstr "工作区"
+
+#: ui/settings.ui:679
+msgid "Which workspaces each bar shows"
+msgstr "每个条显示哪些工作区"
+
+#: ui/settings.ui:693
+msgid "This monitor's"
+msgstr "该显示器的"
+
+#: ui/settings.ui:694
+msgid "All monitors'"
+msgstr "所有监视器"
+
+#: ui/settings.ui:721
+msgid "Window title"
+msgstr "窗口标题"
+
+#: ui/settings.ui:730
+msgid "The focused window's title"
+msgstr "聚焦窗口的标题"
+
+#: ui/settings.ui:764
+msgid "Tray icons"
+msgstr "托盘图标"
+
+#: ui/settings.ui:773
+msgid "Status icons from apps"
+msgstr "来自应用程序的状态图标"
+
+#: ui/settings.ui:818
+msgid "<span alpha='55%'>[</span>DOCK<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>程序坞<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:826
+msgid "Apps along the chosen screen edge on each monitor"
+msgstr "每个显示器上沿所选屏幕边缘的应用程序"
+
+#: ui/settings.ui:856
+msgid "Show the dock"
+msgstr "显示坞站"
+
+#: ui/settings.ui:865
+msgid "Pinned apps, then the others with open windows"
+msgstr "固定的应用程序，然后是其他打开的窗口"
+
+#: ui/settings.ui:899
+msgid "Hide automatically"
+msgstr "自动隐藏"
+
+#: ui/settings.ui:908
+msgid "Comes back when the pointer reaches the dock's screen edge"
+msgstr "当指针到达扩展坞的屏幕边缘时返回"
+
+#: ui/settings.ui:942
+msgid "Position"
+msgstr "位置"
+
+#: ui/settings.ui:951
+msgid "Choose a screen edge for the dock"
+msgstr "选择扩展坞的屏幕边缘"
+
+#: ui/settings.ui:965
+msgid "Bottom"
+msgstr "底部"
+
+#: ui/settings.ui:966
+msgid "Top"
+msgstr "顶部"
+
+#: ui/settings.ui:967
+msgid "Left"
+msgstr "左"
+
+#: ui/settings.ui:968
+msgid "Right"
+msgstr "右"
+
+#: ui/settings.ui:992
+msgid "Remove screen edge gaps"
+msgstr "去除屏幕边缘间隙"
+
+#: ui/settings.ui:1001
+msgid "Remove the screen-edge margins around the dock and top bar"
+msgstr "移除扩展坞和顶栏周围的屏幕边缘边距"
+
+#: ui/settings.ui:1035
+msgid "Icon size"
+msgstr "图标尺寸"
+
+#: ui/settings.ui:1048
+msgid "Smaller"
+msgstr "较小"
+
+#: ui/settings.ui:1049
+msgid "Small"
+msgstr "小"
+
+#: ui/settings.ui:1051
+msgid "Large"
+msgstr "大号"
+
+#: ui/settings.ui:1078
+msgid "Apps drawer"
+msgstr "应用程序抽屉"
+
+#: ui/settings.ui:1087
+msgid "A button at the end for Clock, Weather, Stocks and Calculator"
+msgstr "末尾的按钮用于时钟、天气、股票和计算器"
+
+#: ui/settings.ui:1132
+msgid "<span alpha='55%'>[</span>PINNED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>已固定<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:1140
+msgid "Right-click an app on the dock to keep it there"
+msgstr "右键单击扩展坞上的应用程序以将其保留在那里"
+
+#: ui/settings.ui:1189
+msgid "<span alpha='55%'>[</span>CONTROL CENTER<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>控制中心<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:1197
+msgid "Shell commands behind the control center's buttons"
+msgstr "控制中心按钮后面的 Shell 命令"
+
+#: ui/settings.ui:1330
+msgid "<span alpha='55%'>[</span>LAUNCHER<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>启动器<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:1338
+msgid "Super+Space finds apps and open windows"
+msgstr "Super+Space查找应用程序并打开窗口"
+
+#: ui/settings.ui:1368
+msgid "Opens with"
+msgstr "开头为"
+
+#: ui/settings.ui:1377
+msgid "What Super+Space shows first; Tab switches"
+msgstr "Super+Space 默认显示的内容；按 Tab 切换"
+
+#: ui/settings.ui:1392
+msgid "Windows"
+msgstr "窗口"
+
+#: ui/settings.ui:1415
+msgid "Terminal"
+msgstr "终端"
+
+#: ui/settings.ui:1425
+msgid "$TERMINAL, then xdg-terminal-exec"
+msgstr "$TERMINAL，然后是 xdg-terminal-exec"
+
+#: ui/settings.ui:1433
+msgid "Runs apps marked Terminal=true"
+msgstr "运行标记为 Terminal=true 的应用程序"
+
+#: ui/settings.ui:1466
+msgid "AI"
+msgstr "人工智能"
+
+#: ui/settings.ui:1504
+msgid "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>助理<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:1512
+msgid "An agent with inua's tools, run by Mister Morph"
+msgstr "使用 inua 工具的助手，由 Mister Morph 驱动"
+
+#: ui/settings.ui:1551
+msgid "Ask it from the launcher (the last row, or ? first) or open Assistant"
+msgstr "从启动器询问（最后一行，或第一个？）或打开助手"
+
+#: ui/settings.ui:1585
+msgid "Answers with"
+msgstr "回答使用的模型配置"
+
+#: ui/settings.ui:1594
+msgid "The profile asked first; the assistant's window can switch for a conversation"
+msgstr "优先使用的模型配置；可在助手窗口为当前对话切换"
+
+#: ui/settings.ui:1628
+msgid "Ask before changes"
+msgstr "变更前询问"
+
+#: ui/settings.ui:1637
+msgid "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask"
+msgstr "Wi-Fi、音量、窗口、剪贴板……；电源、结束进程和关闭窗口总是询问"
+
+#: ui/settings.ui:1671
+msgid "Search the web"
+msgstr "搜索网络"
+
+#: ui/settings.ui:1680
+msgid "Mister Morph's web search and page reading"
+msgstr "使用 Mister Morph 搜索网络和读取网页"
+
+#: ui/settings.ui:1714
+msgid "Read files"
+msgstr "读取文件"
+
+#: ui/settings.ui:1723
+msgid "Any file you can read; asks each time"
+msgstr "您可以读取的任何文件；每次都会询问"
+
+#: ui/settings.ui:1757
+msgid "Run commands"
+msgstr "运行命令"
+
+#: ui/settings.ui:1766
+msgid "A shell, as you; asks each time"
+msgstr "以您的身份执行 shell 命令，每次都会询问"
+
+#: ui/settings.ui:1811
+msgid "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>控制台端点<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:1819
+msgid "Connect other Consoles to this desktop"
+msgstr "将其他控制台连接到此桌面"
+
+#: ui/settings.ui:1849
+#: ui/settings.ui:1868
+msgid "Serve endpoint"
+msgstr "服务端点"
+
+#: ui/settings.ui:1858
+msgid "Allow Console connections; the assistant keeps running when this is off"
+msgstr "允许控制台连接；关闭时助手会继续运行"
+
+#: ui/settings.ui:1893
+msgid "Listen address"
+msgstr "监听地址"
+
+#: ui/settings.ui:1902
+msgid "Host:port; kept when serving is off"
+msgstr "主机：端口；服务关闭时保留"
+
+#: ui/settings.ui:1913
+msgid "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port."
+msgstr "使用主机:端口，端口范围为1到65535。对于IPv6，使用[地址]:端口。"
+
+#: ui/settings.ui:1935
+msgid "Endpoint URL"
+msgstr "端点URL"
+
+#: ui/settings.ui:1946
+msgid "Set a listen address first"
+msgstr "先设置监听地址"
+
+#: ui/settings.ui:1955
+msgid "Copy URL"
+msgstr "复制网址"
+
+#: ui/settings.ui:1986
+msgid "Access token"
+msgstr "访问令牌"
+
+#: ui/settings.ui:1998
+msgid "Token hidden"
+msgstr "令牌隐藏"
+
+#: ui/settings.ui:2016
+msgid "Copy token"
+msgstr "复制令牌"
+
+#: ui/settings.ui:2026
+msgid "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase."
+msgstr "保存在密钥环中(与inua-keyring一起传递)。创建或阅读它可能会要求您输入密码。"
+
+#: ui/settings.ui:2063
+msgid "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>模型配置<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2071
+msgid "The models it can use; fallbacks answer when the first fails"
+msgstr "可使用的模型；首选模型失败时尝试备用模型"
+
+#: ui/settings.ui:2101
+msgid "Add Profile"
+msgstr "添加模型配置"
+
+#: ui/settings.ui:2180
+msgid "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>通知<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2188
+msgid "Banners, then the notification center"
+msgstr "横幅、接通知中心"
+
+#: ui/settings.ui:2218
+msgid "Show notifications"
+msgstr "显示通知"
+
+#: ui/settings.ui:2260
+msgid "Banner duration"
+msgstr "横幅持续时间"
+
+#: ui/settings.ui:2269
+msgid "How long a banner shows; critical ones stay"
+msgstr "横幅显示多长时间；关键的留下来"
+
+#: ui/settings.ui:2283
+msgid "3 seconds"
+msgstr "3秒"
+
+#: ui/settings.ui:2284
+msgid "5 seconds"
+msgstr "5秒"
+
+#: ui/settings.ui:2285
+msgid "8 seconds"
+msgstr "8秒"
+
+#: ui/settings.ui:2286
+msgid "12 seconds"
+msgstr "12秒"
+
+#: ui/settings.ui:2313
+msgid "Critical during Focus"
+msgstr "专注模式下显示紧急通知"
+
+#: ui/settings.ui:2322
+msgid "Critical notifications still show banners"
+msgstr "重要通知仍然显示横幅"
+
+#: ui/settings.ui:2363
+msgid "Shortcuts"
+msgstr "快捷键"
+
+#: ui/settings.ui:2393
+msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
+msgstr "按新的快捷方式。 Esc 取消；退格键将其关闭。"
+
+#: ui/settings.ui:2422
+#: ui/settings.ui:3281
+msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2430
+msgid "The shell's own actions"
+msgstr "shell自身的动作"
+
+#: ui/settings.ui:2479
+msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>屏幕截图<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2487
+msgid "With grim and slurp"
+msgstr "使用 grim 和 slurp"
+
+#: ui/settings.ui:2536
+msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>自定义<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2544
+msgid "Your own commands"
+msgstr "你自己的命令"
+
+#: ui/settings.ui:2586
+msgid "Command, e.g. kitty"
+msgstr "命令，例如 kitty"
+
+#: ui/settings.ui:2595
+msgid "Add…"
+msgstr "添加……"
+
+#: ui/settings.ui:2596
+msgid "Add, then press its shortcut"
+msgstr "添加，然后按其快捷键"
+
+#: ui/settings.ui:2631
+msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2639
+msgid "Other shortcuts, from hyprland.conf"
+msgstr "其他快捷方式，来自hyprland.conf"
+
+#: ui/settings.ui:2684
+msgid "Keyboard"
+msgstr "键盘"
+
+#: ui/settings.ui:2732
+msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>键<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2740
+msgid "Every keyboard"
+msgstr "每个键盘"
+
+#: ui/settings.ui:2770
+msgid "Swap Ctrl and Alt"
+msgstr "交换 Ctrl 和 Alt"
+
+#: ui/settings.ui:2779
+msgid "Alt acts as Ctrl, and Ctrl as Alt"
+msgstr "Alt充当Ctrl，并且Ctrl充当Alt"
+
+#: ui/settings.ui:2794
+msgid "Left side"
+msgstr "左侧"
+
+#: ui/settings.ui:2795
+msgid "Both sides"
+msgstr "左右两侧"
+
+#: ui/settings.ui:2822
+#: ui/settings.ui:2845
+msgid "Caps Lock"
+msgstr "大写锁定"
+
+#: ui/settings.ui:2831
+msgid "What the Caps Lock key does"
+msgstr "大写锁定键的作用"
+
+#: ui/settings.ui:2846
+msgid "Escape"
+msgstr "Esc"
+
+#: ui/settings.ui:2847
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#: ui/settings.ui:2885
+#: ui/settings.ui:3167
+msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>来源<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2893
+#: ui/settings.ui:3175
+msgid "inua writes these to Hyprland's inua.conf"
+msgstr "inua 将这些写入 Hyprland 的 inua.conf"
+
+#: ui/settings.ui:2944
+#: ui/settings.ui:3211
+msgid "Use hyprland.conf"
+msgstr "使用hyprland.conf"
+
+#: ui/settings.ui:2945
+msgid "Stop setting keyboard options in inua"
+msgstr "停止在inua中设置键盘选项"
+
+#: ui/settings.ui:2976
+msgid "Mouse & Touch"
+msgstr "鼠标与触控板"
+
+#: ui/settings.ui:3024
+msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>指针<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:3032
+msgid "Every touchpad"
+msgstr "每个触摸板"
+
+#: ui/settings.ui:3062
+msgid "Pointer speed"
+msgstr "指针速度"
+
+#: ui/settings.ui:3113
+msgid "Acceleration"
+msgstr "加速度"
+
+#: ui/settings.ui:3122
+msgid "Faster swipes move the pointer further"
+msgstr "更快的滑动使指针移动得更远"
+
+#: ui/settings.ui:3212
+msgid "Stop setting the touchpad in inua"
+msgstr "停止在inua中设置触摸板"
+
+#: ui/settings.ui:3243
+msgid "About"
+msgstr "关于"
+
+#: ui/settings.ui:3289
+msgid "The version, and new releases"
+msgstr "版本及新版本"
+
+#: ui/settings.ui:3319
+msgid "Version"
+msgstr "版本"
+
+#: ui/settings.ui:3355
+msgid "Updates"
+msgstr "更新"
+
+#: ui/settings.ui:3391
+msgid "Check for updates"
+msgstr "检查更新"
+
+#: ui/settings.ui:3417
+msgid "Check every day"
+msgstr "每天检查"
+
+#: ui/settings.ui:3426
+msgid "A notification says when a new release is out, with a button to upgrade"
+msgstr "当新版本发布时会出现通知，并带有升级按钮"
+
+#: ui/settings.ui:3471
+msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>变更日志<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:3479
+msgid "What the latest release changed"
+msgstr "最新版本改变了什么"
+
+#: ui/shotdrawer.ui:34
+msgid "RECENT"
+msgstr "最近"
+
+#: ui/shotdrawer.ui:44
+msgid "Drag into an app · click to open"
+msgstr "拖入应用程序·点击打开"
+
+#: ui/shotdrawer.ui:67
+msgid "Screenshots and recordings you take show here."
+msgstr "您拍摄的屏幕截图和录屏在此显示。"
+
+#: ui/shotdrawer.ui:87
+msgid "Take an area"
+msgstr "取一个区域"
+
+#: ui/shotdrawer.ui:111
+msgid "Take a window"
+msgstr "取窗"
+
+#: ui/shotdrawer.ui:135
+msgid "Take a screen"
+msgstr "截屏"
+
+#: ui/shotdrawer.ui:204
+msgid "Close (Esc)"
+msgstr "关闭 (Esc)"
+
+#: ui/stocks.ui:44
+msgid "Add a symbol"
+msgstr "添加股票代码"
+
+#: ui/stocks.ui:124
+msgid "<span alpha='55%'>[</span>QUOTE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>行情<span alpha='55%'>]</span>"
+
+#: ui/stocks.ui:235
+msgid "<span alpha='55%'>[</span>TODAY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>今天<span alpha='55%'>]</span>"
+
+#: ui/stocks.ui:281
+msgid "Prices from Yahoo Finance, delayed"
+msgstr "来自雅虎财经的价格，延迟"
+
+#: ui/stocks.ui:292
+msgid "Remove"
+msgstr "移除"
 
 #: ui/sysmon.ui:38
 msgid "OVERVIEW"
@@ -579,10 +6375,213 @@ msgstr "内存"
 msgid "Filter by name, PID or user"
 msgstr "按名称、PID 或用户筛选"
 
-#: ui/sysmon.ui:149
-msgid "SYSTEM"
-msgstr "系统"
-
 #: ui/sysmon.ui:220
+#: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "关闭（Esc）"
+
+#: ui/tailscale.ui:56
+msgid "Connect this device to the tailnet"
+msgstr "将此设备连接至尾网"
+
+#: ui/tailscale.ui:112
+msgid "DEVICES"
+msgstr "装置"
+
+#: ui/tailscale.ui:124
+msgid "Filter by name, address, OS or tag"
+msgstr "按名称、地址、操作系统或标签过滤"
+
+#: ui/tailscale.ui:151
+msgid "EXIT NODE"
+msgstr "出口节点"
+
+#: ui/viewer.ui:61
+msgid "Open… (Ctrl+O)"
+msgstr "打开... (Ctrl+O)"
+
+#: ui/viewer.ui:77
+msgid "Zoom out (−)"
+msgstr "缩小(-)"
+
+#: ui/viewer.ui:86
+msgid "Fit (0) or actual size (1)"
+msgstr "适合 (0) 或实际尺寸 (1)"
+
+#: ui/viewer.ui:95
+msgid "Zoom in (+)"
+msgstr "放大(+)"
+
+#: ui/viewer.ui:111
+msgid "Rotate (R, Shift+R the other way)"
+msgstr "旋转（R，Shift+R 另一种方式）"
+
+#: ui/viewer.ui:120
+msgid "Copy the image (Ctrl+C)"
+msgstr "复制图像（Ctrl+C)"
+
+#: ui/viewer.ui:138
+msgid "Show in folder"
+msgstr "在文件夹中显示"
+
+#: ui/viewer.ui:147
+msgid "Move to Trash (Delete)"
+msgstr "移至垃圾箱（删除）"
+
+#: ui/viewer.ui:160
+msgid "Trash?"
+msgstr "移至回收站？"
+
+#: ui/viewer.ui:180
+msgid "Details (I)"
+msgstr "详情（I）"
+
+#: ui/viewer.ui:189
+msgid "Full screen (F)"
+msgstr "全屏(F)"
+
+#: ui/viewer.ui:227
+msgid "Previous (←)"
+msgstr "上一页 (←)"
+
+#: ui/viewer.ui:238
+msgid "Next (→)"
+msgstr "下一个 (→)"
+
+#: ui/viewer.ui:272
+msgid "Open an Image…"
+msgstr "打开图像..."
+
+#: ui/weather.ui:30
+msgid "Previous place"
+msgstr "先前地点"
+
+#: ui/weather.ui:66
+msgid "Next place"
+msgstr "下一个地方"
+
+#: ui/weather.ui:76
+msgid "Places"
+msgstr "地点"
+
+#: ui/weather.ui:122
+msgid "UNITS"
+msgstr "单位"
+
+#: ui/weather.ui:135
+msgid "°C"
+msgstr "°C"
+
+#: ui/weather.ui:141
+msgid "°F"
+msgstr "°F"
+
+#: ui/weather.ui:216
+msgid "NEXT 24 HOURS"
+msgstr "未来 24 小时"
+
+#: ui/weather.ui:246
+msgid "7 DAYS"
+msgstr "7 天"
+
+#: ui/weather.ui:272
+msgid "DETAILS"
+msgstr "详情"
+
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:10
+msgid "Ask questions and get things done on this computer"
+msgstr "在此计算机上提出问题并完成工作"
+
+#: config/apps/io.github.lyricat.Inua.Assistant.desktop:20
+msgid "ai;agent;chat;ask;"
+msgstr "ai;代理;聊天;询问;"
+
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:10
+msgid "Arithmetic and scientific calculations"
+msgstr "算术和科学计算"
+
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:20
+msgid "math;calc;arithmetic;"
+msgstr "数学;计算;算术;"
+
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:10
+msgid "The month, week numbers and your events"
+msgstr "月份、周数和您的事件"
+
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:20
+msgid "date;event;month;schedule;"
+msgstr "日期;事件;月份;日程;"
+
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:10
+msgid "World clocks, alarms, a stopwatch and a timer"
+msgstr "世界时钟、闹钟、秒表和计时器"
+
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:20
+msgid "time;alarm;timer;stopwatch;world;"
+msgstr "时间;闹钟;定时器;秒表;世界;"
+
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:10
+msgid "Pick a colour from anywhere on the screen"
+msgstr "从屏幕上的任意位置选择颜色"
+
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
+msgid "colour;color;hex;rgb;eyedropper;"
+msgstr "颜色;取色;十六进制;rgb;吸管;"
+
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
+msgid "Reveal safe squares and flag hidden mines"
+msgstr "揭示安全方块并标记隐藏的地雷"
+
+#: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:20
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:20
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
+msgid "games;arcade;puzzle;"
+msgstr "游戏;街机;益智;"
+
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
+msgid "Buy streets, build houses and outlast up to three computer players"
+msgstr "购买街道、建造房屋并比最多三个电脑玩家更长寿"
+
+#: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:10
+msgid "Three balls, two flippers, one more orbit"
+msgstr "三个球,两个鳍状肢,多一个轨道"
+
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:10
+msgid "Prices and charts of stocks and indices"
+msgstr "股票和指数的价格和图表"
+
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:20
+msgid "shares;market;quotes;finance;"
+msgstr "股票;市场;行情;金融;"
+
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:10
+msgid "CPU, memory, network, disk, battery and processes"
+msgstr "CPU、内存、网络、磁盘、电池和进程"
+
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:20
+msgid "cpu;memory;process;task;usage;"
+msgstr "cpu;内存;进程;任务;使用情况;"
+
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:10
+msgid "Your tailnet's devices, exit nodes and this device's Tailscale settings"
+msgstr "您的tailnet的设备、出口节点和该设备的Tailscale设置"
+
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
+msgid "vpn;tailnet;network;exit node;taildrop;"
+msgstr "vpn;tailnet;网络;出口节点;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
+msgid "Look through pictures"
+msgstr "翻看图片"
+
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:20
+msgid "image;picture;photo;viewer;"
+msgstr "图像;图片;照片;看图;查看器;"
+
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:10
+msgid "The weather now and the coming days"
+msgstr "现在和未来几天的天气"
+
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:20
+msgid "forecast;temperature;rain;"
+msgstr "预报;气温;雨量;"

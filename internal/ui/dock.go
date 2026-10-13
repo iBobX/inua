@@ -24,6 +24,7 @@ import (
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -390,17 +391,17 @@ func (s *shellUI) showDockMenu(btn *gtk.Widget, it shell.DockItem) {
 		menu.Append(label, "dock."+action)
 	}
 	if it.Entry != nil {
-		add("New Window", "new")
+		add(i18n.T("New Window"), "new")
 		if it.Pinned {
-			add("Remove from Dock", "unpin")
+			add(i18n.T("Remove from Dock"), "unpin")
 		} else {
-			add("Keep in Dock", "pin")
+			add(i18n.T("Keep in Dock"), "pin")
 		}
 	}
 	if len(it.Windows) > 0 {
-		label := "Quit"
+		label := i18n.T("Quit")
 		if len(it.Windows) > 1 {
-			label = fmt.Sprintf("Quit (%d windows)", len(it.Windows))
+			label = i18n.Tf("Quit (%d windows)", len(it.Windows))
 		}
 		add(label, "quit")
 	}

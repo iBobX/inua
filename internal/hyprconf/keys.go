@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Action is something a shortcut can run (config.ShortcutActions).
@@ -18,20 +19,20 @@ type Action struct {
 // Actions are the shell's actions, in the order the settings window shows
 // them.
 var Actions = []Action{
-	{ID: "launcher", Label: "Launcher"},
-	{ID: "windows", Label: "Switch windows"},
-	{ID: "overview", Label: "Workspace overview"},
-	{ID: "control", Label: "Control center"},
-	{ID: "notifications", Label: "Notification center"},
-	{ID: "focus", Label: "Focus on or off"},
-	{ID: "settings", Label: "Settings"},
-	{ID: "restart", Label: "Restart the shell"},
-	{ID: "lock", Label: "Lock the screen"},
-	{ID: "shot-area", Label: "Take a screenshot", Shot: true},
-	{ID: "shot-screen", Label: "The whole screen, at once", Shot: true},
-	{ID: "shot-window", Label: "The focused window, at once", Shot: true},
-	{ID: "shot-record", Label: "Record the screen (again: stop)", Shot: true},
-	{ID: "color", Label: "Pick a colour", Shot: true},
+	{ID: "launcher", Label: i18n.M("Launcher")},
+	{ID: "windows", Label: i18n.M("Switch windows")},
+	{ID: "overview", Label: i18n.M("Workspace overview")},
+	{ID: "control", Label: i18n.M("Control center")},
+	{ID: "notifications", Label: i18n.M("Notification center")},
+	{ID: "focus", Label: i18n.M("Focus on or off")},
+	{ID: "settings", Label: i18n.M("Settings")},
+	{ID: "restart", Label: i18n.M("Restart the shell")},
+	{ID: "lock", Label: i18n.M("Lock the screen")},
+	{ID: "shot-area", Label: i18n.M("Take a screenshot"), Shot: true},
+	{ID: "shot-screen", Label: i18n.M("The whole screen, at once"), Shot: true},
+	{ID: "shot-window", Label: i18n.M("The focused window, at once"), Shot: true},
+	{ID: "shot-record", Label: i18n.M("Record the screen (again: stop)"), Shot: true},
+	{ID: "color", Label: i18n.M("Pick a colour"), Shot: true},
 }
 
 // Command is the shell command behind an action.

@@ -35,7 +35,7 @@ ApplicationWindow agenda {
 
           Label {
             styles ["tag"]
-            label: "[CALENDAR]";
+            label:  _("[CALENDAR]");
           }
 
           Label today {
@@ -58,19 +58,19 @@ ApplicationWindow agenda {
 
           Button back_today {
             styles ["link"]
-            label: "Today";
+            label:  _("Today");
           }
 
           Button prev {
             styles ["plain"]
             icon-name: "go-previous-symbolic";
-            tooltip-text: "Previous month";
+            tooltip-text:  _("Previous month");
           }
 
           Button next {
             styles ["plain"]
             icon-name: "go-next-symbolic";
-            tooltip-text: "Next month";
+            tooltip-text:  _("Next month");
           }
         }
 
@@ -83,7 +83,7 @@ ApplicationWindow agenda {
         // A click opens the app.
         Button weather {
           styles ["agenda-weather"]
-          tooltip-text: "Open Weather";
+          tooltip-text:  _("Open Weather");
 
           Box {
             orientation: vertical;

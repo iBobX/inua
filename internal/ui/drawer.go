@@ -15,6 +15,7 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -144,7 +145,7 @@ func (s *shellUI) drawerButton(size int) *gtk.Button {
 	btn.AddCssClass("dock-item")
 	btn.AddCssClass("dock-drawer")
 	btn.SetName("dock-drawer")
-	btn.SetTooltipText("Apps")
+	btn.SetTooltipText(i18n.T("Apps"))
 	btn.SetFocusable(false)
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 3)
 	frame := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
@@ -191,7 +192,7 @@ func (s *shellUI) drawerContent() *gtk.Box {
 	sections := s.drawerSections()
 	content := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	for _, g := range sections {
-		title := gtk.NewLabel(g.Title)
+		title := gtk.NewLabel(i18n.T(g.Title))
 		title.AddCssClass("drawer-title")
 		title.SetXalign(0)
 		gtkx.Append(content, &title.Widget)
@@ -204,13 +205,17 @@ func (s *shellUI) drawerContent() *gtk.Box {
 			b := gtk.NewButton()
 			b.AddCssClass("drawer-app")
 			b.SetName("drawer:" + e.ID)
-			b.SetTooltipText(e.Comment)
 			col := gtk.NewBox(gtk.OrientationVerticalValue, 7)
 			img := gtk.NewImage()
 			setIcon(img, e.Icon)
 			img.SetPixelSize(44)
 			gtkx.Append(col, &img.Widget)
-			l := gtk.NewLabel(e.Name)
+			name, comment := e.Name, e.Comment
+			if strings.HasPrefix(e.ID, "inua:") {
+				name, comment = i18n.T(name), i18n.T(comment)
+			}
+			b.SetTooltipText(comment)
+			l := gtk.NewLabel(name)
 			l.AddCssClass("drawer-name")
 			l.SetWrap(true)
 			l.SetJustify(gtk.JustifyCenterValue)
@@ -235,7 +240,7 @@ func (s *shellUI) drawerContent() *gtk.Box {
 		gtkx.Append(content, &grid.Widget)
 	}
 	if len(shell.LightApps(s.dockState.apps)) == len(shell.ShellApps) {
-		l := gtk.NewLabel("The light apps are not installed (make install).")
+		l := gtk.NewLabel(i18n.T("The light apps are not installed (make install)."))
 		l.AddCssClass("drawer-empty")
 		gtkx.Append(content, &l.Widget)
 	}

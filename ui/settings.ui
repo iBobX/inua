@@ -10,7 +10,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <style>
       <class name="settings"/>
     </style>
-    <property name="title">inua Settings</property>
+    <property name="title" translatable="yes">inua Settings</property>
     <property name="default-width">860</property>
     <property name="default-height">620</property>
     <child>
@@ -27,7 +27,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <style>
                   <class name="index-title"/>
                 </style>
-                <property name="label">Settings</property>
+                <property name="label" translatable="yes">Settings</property>
                 <property name="xalign">0</property>
               </object>
             </child>
@@ -57,7 +57,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">appearance</property>
-                <property name="title">Appearance</property>
+                <property name="title" translatable="yes">Appearance</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -95,7 +95,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;THEME&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;THEME&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -103,7 +103,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The bar, launcher, control center and this window</property>
+                                        <property name="label" translatable="yes">The bar, launcher, control center and this window</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -157,7 +157,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;ICONS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;ICONS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -165,7 +165,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The bar, control center, launcher and settings</property>
+                                        <property name="label" translatable="yes">The bar, control center, launcher and settings</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -195,7 +195,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Icon set</property>
+                                                <property name="label" translatable="yes">Icon set</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -204,7 +204,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">App icons always come from the system</property>
+                                                <property name="label" translatable="yes">App icons always come from the system</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -218,8 +218,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Phosphor</item>
-                                                  <item>System theme</item>
+                                                  <item translatable="yes">Phosphor</item>
+                                                  <item translatable="yes">System theme</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -257,7 +257,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;PICTURE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;PICTURE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -265,7 +265,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Behind your windows, on every monitor</property>
+                                        <property name="label" translatable="yes">Behind your windows, on every monitor</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -295,7 +295,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Draw the wallpaper</property>
+                                                <property name="label" translatable="yes">Draw the wallpaper</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -304,7 +304,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Off leaves the background to another program</property>
+                                                <property name="label" translatable="yes">Off leaves the background to another program</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -334,7 +334,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Image</property>
+                                            <property name="label" translatable="yes">Image</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -345,7 +345,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                               <object class="GtkEntry" id="bg_image">
                                                 <property name="name">bg_image</property>
                                                 <property name="hexpand">true</property>
-                                                <property name="placeholder-text">none: a fine texture</property>
+                                                <property name="placeholder-text" translatable="yes">none: a fine texture</property>
                                               </object>
                                             </child>
                                             <child>
@@ -354,7 +354,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                   <class name="outlined"/>
                                                 </style>
                                                 <property name="name">bg_choose</property>
-                                                <property name="label">Choose…</property>
+                                                <property name="label" translatable="yes">Choose…</property>
                                               </object>
                                             </child>
                                             <child>
@@ -364,7 +364,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 </style>
                                                 <property name="name">bg_clear</property>
                                                 <property name="icon-name">edit-clear-symbolic</property>
-                                                <property name="tooltip-text">No image</property>
+                                                <property name="tooltip-text" translatable="yes">No image</property>
                                               </object>
                                             </child>
                                           </object>
@@ -390,7 +390,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Fit</property>
+                                                <property name="label" translatable="yes">Fit</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -399,7 +399,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">How the picture fills each monitor</property>
+                                                <property name="label" translatable="yes">How the picture fills each monitor</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -413,10 +413,10 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Cover: fill, cropping</item>
-                                                  <item>Contain: show it all</item>
-                                                  <item>Tile: repeat</item>
-                                                  <item>Center: actual size</item>
+                                                  <item translatable="yes">Cover: fill, cropping</item>
+                                                  <item translatable="yes">Contain: show it all</item>
+                                                  <item translatable="yes">Tile: repeat</item>
+                                                  <item translatable="yes">Center: actual size</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -439,7 +439,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Colour</property>
+                                            <property name="label" translatable="yes">Colour</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -452,7 +452,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="halign">1</property>
                                             <property name="width-chars">10</property>
                                             <property name="max-length">7</property>
-                                            <property name="placeholder-text">theme</property>
+                                            <property name="placeholder-text" translatable="yes">theme</property>
                                           </object>
                                         </child>
                                         <child>
@@ -460,7 +460,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="sub"/>
                                             </style>
-                                            <property name="label">#rrggbb, shown around the image. Empty: the theme's ground</property>
+                                            <property name="label" translatable="yes">#rrggbb, shown around the image. Empty: the theme's ground</property>
                                             <property name="xalign">0</property>
                                             <property name="wrap">true</property>
                                           </object>
@@ -493,7 +493,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">bar</property>
-                <property name="title">Bar &amp; Dock</property>
+                <property name="title" translatable="yes">Bar &amp; Dock</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -531,7 +531,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;BAR&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;BAR&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -539,7 +539,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The bar along the top of each monitor</property>
+                                        <property name="label" translatable="yes">The bar along the top of each monitor</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -569,7 +569,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Show the bar</property>
+                                                <property name="label" translatable="yes">Show the bar</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -578,7 +578,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications</property>
+                                                <property name="label" translatable="yes">Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -608,7 +608,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Clock</property>
+                                            <property name="label" translatable="yes">Clock</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -641,7 +641,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="sub"/>
                                             </style>
-                                            <property name="label">strftime: %a weekday, %b month, %-d day, %H:%M time</property>
+                                            <property name="label" translatable="yes">strftime: %a weekday, %b month, %-d day, %H:%M time</property>
                                             <property name="xalign">0</property>
                                             <property name="wrap">true</property>
                                           </object>
@@ -667,7 +667,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Workspaces</property>
+                                                <property name="label" translatable="yes">Workspaces</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -676,7 +676,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Which workspaces each bar shows</property>
+                                                <property name="label" translatable="yes">Which workspaces each bar shows</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -690,8 +690,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>This monitor's</item>
-                                                  <item>All monitors'</item>
+                                                  <item translatable="yes">This monitor's</item>
+                                                  <item translatable="yes">All monitors'</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -718,7 +718,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Window title</property>
+                                                <property name="label" translatable="yes">Window title</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -727,7 +727,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">The focused window's title</property>
+                                                <property name="label" translatable="yes">The focused window's title</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -761,7 +761,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Tray icons</property>
+                                                <property name="label" translatable="yes">Tray icons</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -770,7 +770,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Status icons from apps</property>
+                                                <property name="label" translatable="yes">Status icons from apps</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -815,7 +815,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;DOCK&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;DOCK&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -823,7 +823,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Apps along the chosen screen edge on each monitor</property>
+                                        <property name="label" translatable="yes">Apps along the chosen screen edge on each monitor</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -853,7 +853,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Show the dock</property>
+                                                <property name="label" translatable="yes">Show the dock</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -862,7 +862,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Pinned apps, then the others with open windows</property>
+                                                <property name="label" translatable="yes">Pinned apps, then the others with open windows</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -896,7 +896,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Hide automatically</property>
+                                                <property name="label" translatable="yes">Hide automatically</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -905,7 +905,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Comes back when the pointer reaches the dock's screen edge</property>
+                                                <property name="label" translatable="yes">Comes back when the pointer reaches the dock's screen edge</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -939,7 +939,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Position</property>
+                                                <property name="label" translatable="yes">Position</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -948,7 +948,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Choose a screen edge for the dock</property>
+                                                <property name="label" translatable="yes">Choose a screen edge for the dock</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -962,10 +962,10 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Bottom</item>
-                                                  <item>Top</item>
-                                                  <item>Left</item>
-                                                  <item>Right</item>
+                                                  <item translatable="yes">Bottom</item>
+                                                  <item translatable="yes">Top</item>
+                                                  <item translatable="yes">Left</item>
+                                                  <item translatable="yes">Right</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -989,7 +989,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Remove screen edge gaps</property>
+                                                <property name="label" translatable="yes">Remove screen edge gaps</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -998,7 +998,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Remove the screen-edge margins around the dock and top bar</property>
+                                                <property name="label" translatable="yes">Remove the screen-edge margins around the dock and top bar</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1032,7 +1032,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Icon size</property>
+                                                <property name="label" translatable="yes">Icon size</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1045,10 +1045,10 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Smaller</item>
-                                                  <item>Small</item>
-                                                  <item>Medium</item>
-                                                  <item>Large</item>
+                                                  <item translatable="yes">Smaller</item>
+                                                  <item translatable="yes">Small</item>
+                                                  <item translatable="yes">Medium</item>
+                                                  <item translatable="yes">Large</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -1075,7 +1075,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Apps drawer</property>
+                                                <property name="label" translatable="yes">Apps drawer</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1084,7 +1084,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">A button at the end for Clock, Weather, Stocks and Calculator</property>
+                                                <property name="label" translatable="yes">A button at the end for Clock, Weather, Stocks and Calculator</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1129,7 +1129,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;PINNED&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;PINNED&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -1137,7 +1137,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Right-click an app on the dock to keep it there</property>
+                                        <property name="label" translatable="yes">Right-click an app on the dock to keep it there</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -1186,7 +1186,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;CONTROL CENTER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;CONTROL CENTER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -1194,7 +1194,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Shell commands behind the control center's buttons</property>
+                                        <property name="label" translatable="yes">Shell commands behind the control center's buttons</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -1220,7 +1220,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Lock</property>
+                                            <property name="label" translatable="yes">Lock</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -1249,7 +1249,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Screenshot</property>
+                                            <property name="label" translatable="yes">Screenshot</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -1289,7 +1289,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">launcher</property>
-                <property name="title">Launcher</property>
+                <property name="title" translatable="yes">Launcher</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -1327,7 +1327,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;LAUNCHER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;LAUNCHER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -1335,7 +1335,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Super+Space finds apps and open windows</property>
+                                        <property name="label" translatable="yes">Super+Space finds apps and open windows</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -1365,7 +1365,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Opens with</property>
+                                                <property name="label" translatable="yes">Opens with</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1374,7 +1374,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">What Super+Space shows first; Tab switches</property>
+                                                <property name="label" translatable="yes">What Super+Space shows first; Tab switches</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1388,8 +1388,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Apps</item>
-                                                  <item>Windows</item>
+                                                  <item translatable="yes">Apps</item>
+                                                  <item translatable="yes">Windows</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -1412,7 +1412,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="label"/>
                                             </style>
-                                            <property name="label">Terminal</property>
+                                            <property name="label" translatable="yes">Terminal</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -1422,7 +1422,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="mono-entry"/>
                                             </style>
-                                            <property name="placeholder-text">$TERMINAL, then xdg-terminal-exec</property>
+                                            <property name="placeholder-text" translatable="yes">$TERMINAL, then xdg-terminal-exec</property>
                                           </object>
                                         </child>
                                         <child>
@@ -1430,7 +1430,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="sub"/>
                                             </style>
-                                            <property name="label">Runs apps marked Terminal=true</property>
+                                            <property name="label" translatable="yes">Runs apps marked Terminal=true</property>
                                             <property name="xalign">0</property>
                                             <property name="wrap">true</property>
                                           </object>
@@ -1463,7 +1463,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">ai</property>
-                <property name="title">AI</property>
+                <property name="title" translatable="yes">AI</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -1501,7 +1501,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;ASSISTANT&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;ASSISTANT&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -1509,7 +1509,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">An agent with inua's tools, run by Mister Morph</property>
+                                        <property name="label" translatable="yes">An agent with inua's tools, run by Mister Morph</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -1539,7 +1539,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Assistant</property>
+                                                <property name="label" translatable="yes">Assistant</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1548,7 +1548,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Ask it from the launcher (the last row, or ? first) or open Assistant</property>
+                                                <property name="label" translatable="yes">Ask it from the launcher (the last row, or ? first) or open Assistant</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1582,7 +1582,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Answers with</property>
+                                                <property name="label" translatable="yes">Answers with</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1591,7 +1591,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">The profile asked first; the assistant's window can switch for a conversation</property>
+                                                <property name="label" translatable="yes">The profile asked first; the assistant's window can switch for a conversation</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1625,7 +1625,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Ask before changes</property>
+                                                <property name="label" translatable="yes">Ask before changes</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1634,7 +1634,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask</property>
+                                                <property name="label" translatable="yes">Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1668,7 +1668,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Search the web</property>
+                                                <property name="label" translatable="yes">Search the web</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1677,7 +1677,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Mister Morph's web search and page reading</property>
+                                                <property name="label" translatable="yes">Mister Morph's web search and page reading</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1711,7 +1711,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Read files</property>
+                                                <property name="label" translatable="yes">Read files</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1720,7 +1720,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Any file you can read; asks each time</property>
+                                                <property name="label" translatable="yes">Any file you can read; asks each time</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1754,7 +1754,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Run commands</property>
+                                                <property name="label" translatable="yes">Run commands</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1763,7 +1763,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">A shell, as you; asks each time</property>
+                                                <property name="label" translatable="yes">A shell, as you; asks each time</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1808,7 +1808,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;CONSOLE ENDPOINT&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;CONSOLE ENDPOINT&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -1816,7 +1816,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Connect other Consoles to this desktop</property>
+                                        <property name="label" translatable="yes">Connect other Consoles to this desktop</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -1846,7 +1846,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Serve endpoint</property>
+                                                <property name="label" translatable="yes">Serve endpoint</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1855,7 +1855,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Allow Console connections; the assistant keeps running when this is off</property>
+                                                <property name="label" translatable="yes">Allow Console connections; the assistant keeps running when this is off</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1865,7 +1865,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <child>
                                           <object class="GtkSwitch" id="ai_serve_enable">
                                             <property name="name">ai_serve_enable</property>
-                                            <property name="tooltip-text">Serve endpoint</property>
+                                            <property name="tooltip-text" translatable="yes">Serve endpoint</property>
                                             <property name="valign">3</property>
                                           </object>
                                         </child>
@@ -1890,7 +1890,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Listen address</property>
+                                                <property name="label" translatable="yes">Listen address</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -1899,7 +1899,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Host:port; kept when serving is off</property>
+                                                <property name="label" translatable="yes">Host:port; kept when serving is off</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -1910,7 +1910,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <object class="GtkEntry" id="ai_serve_listen">
                                             <property name="name">ai-serve-listen</property>
                                             <property name="placeholder-text">127.0.0.1:8794</property>
-                                            <property name="tooltip-text">Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.</property>
+                                            <property name="tooltip-text" translatable="yes">Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.</property>
                                             <property name="width-chars">23</property>
                                             <property name="valign">3</property>
                                           </object>
@@ -1932,7 +1932,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="title"/>
                                             </style>
-                                            <property name="label">Endpoint URL</property>
+                                            <property name="label" translatable="yes">Endpoint URL</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -1943,7 +1943,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                               <object class="GtkEntry" id="ai_serve_url">
                                                 <property name="editable">false</property>
                                                 <property name="hexpand">true</property>
-                                                <property name="placeholder-text">Set a listen address first</property>
+                                                <property name="placeholder-text" translatable="yes">Set a listen address first</property>
                                               </object>
                                             </child>
                                             <child>
@@ -1952,7 +1952,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                   <class name="outlined"/>
                                                 </style>
                                                 <property name="name">ai_url_copy</property>
-                                                <property name="label">Copy URL</property>
+                                                <property name="label" translatable="yes">Copy URL</property>
                                               </object>
                                             </child>
                                           </object>
@@ -1983,7 +1983,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="title"/>
                                             </style>
-                                            <property name="label">Access token</property>
+                                            <property name="label" translatable="yes">Access token</property>
                                             <property name="xalign">0</property>
                                           </object>
                                         </child>
@@ -1995,7 +1995,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <property name="editable">false</property>
                                                 <property name="visibility">false</property>
                                                 <property name="hexpand">true</property>
-                                                <property name="placeholder-text">Token hidden</property>
+                                                <property name="placeholder-text" translatable="yes">Token hidden</property>
                                               </object>
                                             </child>
                                             <child>
@@ -2004,7 +2004,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                   <class name="outlined"/>
                                                 </style>
                                                 <property name="name">ai_token_show</property>
-                                                <property name="label">Create token</property>
+                                                <property name="label" translatable="yes">Create token</property>
                                               </object>
                                             </child>
                                             <child>
@@ -2013,7 +2013,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                   <class name="outlined"/>
                                                 </style>
                                                 <property name="name">ai_token_copy</property>
-                                                <property name="label">Copy token</property>
+                                                <property name="label" translatable="yes">Copy token</property>
                                               </object>
                                             </child>
                                           </object>
@@ -2023,7 +2023,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <style>
                                               <class name="sub"/>
                                             </style>
-                                            <property name="label">Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.</property>
+                                            <property name="label" translatable="yes">Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.</property>
                                             <property name="xalign">0</property>
                                             <property name="wrap">true</property>
                                           </object>
@@ -2060,7 +2060,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;PROFILES&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;PROFILES&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2068,7 +2068,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The models it can use; fallbacks answer when the first fails</property>
+                                        <property name="label" translatable="yes">The models it can use; fallbacks answer when the first fails</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2098,7 +2098,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                               <class name="outlined"/>
                                             </style>
                                             <property name="name">ai_add</property>
-                                            <property name="label">Add Profile</property>
+                                            <property name="label" translatable="yes">Add Profile</property>
                                           </object>
                                         </child>
                                         <child>
@@ -2139,7 +2139,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">notifications</property>
-                <property name="title">Notifications</property>
+                <property name="title" translatable="yes">Notifications</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -2177,7 +2177,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;NOTIFICATIONS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;NOTIFICATIONS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2185,7 +2185,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Banners, then the notification center</property>
+                                        <property name="label" translatable="yes">Banners, then the notification center</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2215,7 +2215,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Show notifications</property>
+                                                <property name="label" translatable="yes">Show notifications</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -2257,7 +2257,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Banner duration</property>
+                                                <property name="label" translatable="yes">Banner duration</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -2266,7 +2266,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">How long a banner shows; critical ones stay</property>
+                                                <property name="label" translatable="yes">How long a banner shows; critical ones stay</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -2280,10 +2280,10 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>3 seconds</item>
-                                                  <item>5 seconds</item>
-                                                  <item>8 seconds</item>
-                                                  <item>12 seconds</item>
+                                                  <item translatable="yes">3 seconds</item>
+                                                  <item translatable="yes">5 seconds</item>
+                                                  <item translatable="yes">8 seconds</item>
+                                                  <item translatable="yes">12 seconds</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -2310,7 +2310,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Critical during Focus</property>
+                                                <property name="label" translatable="yes">Critical during Focus</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -2319,7 +2319,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Critical notifications still show banners</property>
+                                                <property name="label" translatable="yes">Critical notifications still show banners</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -2360,7 +2360,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">shortcuts</property>
-                <property name="title">Shortcuts</property>
+                <property name="title" translatable="yes">Shortcuts</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -2390,7 +2390,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                 <property name="visible">false</property>
                                 <property name="xalign">0</property>
                                 <property name="wrap">true</property>
-                                <property name="label">Press the new shortcut. Esc cancels; Backspace turns it off.</property>
+                                <property name="label" translatable="yes">Press the new shortcut. Esc cancels; Backspace turns it off.</property>
                               </object>
                             </child>
                             <child>
@@ -2419,7 +2419,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;INUA&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;INUA&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2427,7 +2427,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The shell's own actions</property>
+                                        <property name="label" translatable="yes">The shell's own actions</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2476,7 +2476,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;SCREENSHOTS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;SCREENSHOTS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2484,7 +2484,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">With grim and slurp</property>
+                                        <property name="label" translatable="yes">With grim and slurp</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2533,7 +2533,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;CUSTOM&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;CUSTOM&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2541,7 +2541,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Your own commands</property>
+                                        <property name="label" translatable="yes">Your own commands</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2573,7 +2573,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <object class="GtkEntry" id="sc_new_name">
                                             <property name="name">sc_new_name</property>
                                             <property name="width-chars">14</property>
-                                            <property name="placeholder-text">Name</property>
+                                            <property name="placeholder-text" translatable="yes">Name</property>
                                           </object>
                                         </child>
                                         <child>
@@ -2583,7 +2583,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             </style>
                                             <property name="name">sc_new_cmd</property>
                                             <property name="hexpand">true</property>
-                                            <property name="placeholder-text">Command, e.g. kitty</property>
+                                            <property name="placeholder-text" translatable="yes">Command, e.g. kitty</property>
                                           </object>
                                         </child>
                                         <child>
@@ -2592,8 +2592,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                               <class name="outlined"/>
                                             </style>
                                             <property name="name">sc_add</property>
-                                            <property name="label">Add…</property>
-                                            <property name="tooltip-text">Add, then press its shortcut</property>
+                                            <property name="label" translatable="yes">Add…</property>
+                                            <property name="tooltip-text" translatable="yes">Add, then press its shortcut</property>
                                           </object>
                                         </child>
                                       </object>
@@ -2628,7 +2628,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;HYPRLAND&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;HYPRLAND&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2636,7 +2636,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Other shortcuts, from hyprland.conf</property>
+                                        <property name="label" translatable="yes">Other shortcuts, from hyprland.conf</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2681,7 +2681,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">keyboard</property>
-                <property name="title">Keyboard</property>
+                <property name="title" translatable="yes">Keyboard</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -2729,7 +2729,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;KEYS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;KEYS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2737,7 +2737,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Every keyboard</property>
+                                        <property name="label" translatable="yes">Every keyboard</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2767,7 +2767,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Swap Ctrl and Alt</property>
+                                                <property name="label" translatable="yes">Swap Ctrl and Alt</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -2776,7 +2776,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Alt acts as Ctrl, and Ctrl as Alt</property>
+                                                <property name="label" translatable="yes">Alt acts as Ctrl, and Ctrl as Alt</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -2790,9 +2790,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Off</item>
-                                                  <item>Left side</item>
-                                                  <item>Both sides</item>
+                                                  <item translatable="yes">Off</item>
+                                                  <item translatable="yes">Left side</item>
+                                                  <item translatable="yes">Both sides</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -2819,7 +2819,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Caps Lock</property>
+                                                <property name="label" translatable="yes">Caps Lock</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -2828,7 +2828,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">What the Caps Lock key does</property>
+                                                <property name="label" translatable="yes">What the Caps Lock key does</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -2842,9 +2842,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="model">
                                               <object class="GtkStringList">
                                                 <items>
-                                                  <item>Caps Lock</item>
-                                                  <item>Escape</item>
-                                                  <item>Ctrl</item>
+                                                  <item translatable="yes">Caps Lock</item>
+                                                  <item translatable="yes">Escape</item>
+                                                  <item translatable="yes">Ctrl</item>
                                                 </items>
                                               </object>
                                             </property>
@@ -2882,7 +2882,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;SOURCE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;SOURCE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -2890,7 +2890,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">inua writes these to Hyprland's inua.conf</property>
+                                        <property name="label" translatable="yes">inua writes these to Hyprland's inua.conf</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -2941,8 +2941,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             </style>
                                             <property name="name">kb_reset</property>
                                             <property name="valign">3</property>
-                                            <property name="label">Use hyprland.conf</property>
-                                            <property name="tooltip-text">Stop setting keyboard options in inua</property>
+                                            <property name="label" translatable="yes">Use hyprland.conf</property>
+                                            <property name="tooltip-text" translatable="yes">Stop setting keyboard options in inua</property>
                                           </object>
                                         </child>
                                       </object>
@@ -2973,7 +2973,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">mouse</property>
-                <property name="title">Mouse &amp; Touch</property>
+                <property name="title" translatable="yes">Mouse &amp; Touch</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -3021,7 +3021,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;POINTER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;POINTER&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -3029,7 +3029,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">Every touchpad</property>
+                                        <property name="label" translatable="yes">Every touchpad</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -3059,7 +3059,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Pointer speed</property>
+                                                <property name="label" translatable="yes">Pointer speed</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -3110,7 +3110,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Acceleration</property>
+                                                <property name="label" translatable="yes">Acceleration</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -3119,7 +3119,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">Faster swipes move the pointer further</property>
+                                                <property name="label" translatable="yes">Faster swipes move the pointer further</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -3164,7 +3164,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;SOURCE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;SOURCE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -3172,7 +3172,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">inua writes these to Hyprland's inua.conf</property>
+                                        <property name="label" translatable="yes">inua writes these to Hyprland's inua.conf</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -3208,8 +3208,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             </style>
                                             <property name="name">tp_reset</property>
                                             <property name="valign">3</property>
-                                            <property name="label">Use hyprland.conf</property>
-                                            <property name="tooltip-text">Stop setting the touchpad in inua</property>
+                                            <property name="label" translatable="yes">Use hyprland.conf</property>
+                                            <property name="tooltip-text" translatable="yes">Stop setting the touchpad in inua</property>
                                           </object>
                                         </child>
                                       </object>
@@ -3240,7 +3240,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkStackPage">
                 <property name="name">about</property>
-                <property name="title">About</property>
+                <property name="title" translatable="yes">About</property>
                 <property name="child">
                   <object class="GtkOverlay">
                     <property name="child">
@@ -3278,7 +3278,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;INUA&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;INUA&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -3286,7 +3286,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">The version, and new releases</property>
+                                        <property name="label" translatable="yes">The version, and new releases</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -3316,7 +3316,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Version</property>
+                                                <property name="label" translatable="yes">Version</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -3352,7 +3352,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Updates</property>
+                                                <property name="label" translatable="yes">Updates</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -3379,7 +3379,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 </style>
                                                 <property name="name">about_upgrade</property>
                                                 <property name="visible">false</property>
-                                                <property name="label">Upgrade</property>
+                                                <property name="label" translatable="yes">Upgrade</property>
                                               </object>
                                             </child>
                                             <child>
@@ -3388,7 +3388,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                   <class name="outlined"/>
                                                 </style>
                                                 <property name="name">about_check</property>
-                                                <property name="label">Check for updates</property>
+                                                <property name="label" translatable="yes">Check for updates</property>
                                               </object>
                                             </child>
                                           </object>
@@ -3414,7 +3414,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label">Check every day</property>
+                                                <property name="label" translatable="yes">Check every day</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -3423,7 +3423,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label">A notification says when a new release is out, with a button to upgrade</property>
+                                                <property name="label" translatable="yes">A notification says when a new release is out, with a button to upgrade</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -3468,7 +3468,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
-                                        <property name="label">&lt;span alpha='55%'&gt;[&lt;/span&gt;CHANGELOG&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;CHANGELOG&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>
                                     <child>
@@ -3476,7 +3476,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label">What the latest release changed</property>
+                                        <property name="label" translatable="yes">What the latest release changed</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>

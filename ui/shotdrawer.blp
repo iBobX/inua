@@ -20,14 +20,14 @@ ApplicationWindow shot_drawer {
       Box {
         Label {
           styles ["kicker"]
-          label: "RECENT";
+          label:  _("RECENT");
           hexpand: true;
           xalign: 0;
         }
 
         Label {
           styles ["shot-drawer-hint"]
-          label: "Drag into an app · click to open";
+          label:  _("Drag into an app · click to open");
         }
       }
 
@@ -44,7 +44,7 @@ ApplicationWindow shot_drawer {
 
       Label drawer_empty {
         styles ["shot-drawer-empty"]
-        label: "Screenshots and recordings you take show here.";
+        label:  _("Screenshots and recordings you take show here.");
         visible: false;
         xalign: 0;
       }
@@ -58,7 +58,7 @@ ApplicationWindow shot_drawer {
       Button take_area {
         styles ["shot-mode"]
         name: "area";
-        tooltip-text: "Take an area";
+        tooltip-text:  _("Take an area");
 
         Box {
           spacing: 7;
@@ -68,7 +68,7 @@ ApplicationWindow shot_drawer {
           }
 
           Label {
-            label: "Area";
+            label:  _("Area");
           }
         }
       }
@@ -76,7 +76,7 @@ ApplicationWindow shot_drawer {
       Button take_window {
         styles ["shot-mode"]
         name: "window";
-        tooltip-text: "Take a window";
+        tooltip-text:  _("Take a window");
 
         Box {
           spacing: 7;
@@ -86,7 +86,7 @@ ApplicationWindow shot_drawer {
           }
 
           Label {
-            label: "Window";
+            label:  _("Window");
           }
         }
       }
@@ -94,7 +94,7 @@ ApplicationWindow shot_drawer {
       Button take_screen {
         styles ["shot-mode"]
         name: "screen";
-        tooltip-text: "Take a screen";
+        tooltip-text:  _("Take a screen");
 
         Box {
           spacing: 7;
@@ -104,7 +104,7 @@ ApplicationWindow shot_drawer {
           }
 
           Label {
-            label: "Screen";
+            label:  _("Screen");
           }
         }
       }
@@ -115,7 +115,7 @@ ApplicationWindow shot_drawer {
 
       ToggleButton take_record {
         styles ["shot-mode", "shot-record"]
-        tooltip-text: "Record the screen instead of taking a picture";
+        tooltip-text:  _("Record the screen instead of taking a picture");
 
         Box {
           spacing: 7;
@@ -126,7 +126,7 @@ ApplicationWindow shot_drawer {
           }
 
           Label {
-            label: "Record";
+            label:  _("Record");
           }
         }
       }
@@ -137,13 +137,13 @@ ApplicationWindow shot_drawer {
 
       Label drawer_bar_hint {
         styles ["shot-hint"]
-        label: "Take another";
+        label:  _("Take another");
       }
 
       Button drawer_close {
         styles ["plain"]
         icon-name: "window-close-symbolic";
-        tooltip-text: "Close (Esc)";
+        tooltip-text:  _("Close (Esc)");
       }
     }
   }

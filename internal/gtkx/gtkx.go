@@ -16,8 +16,6 @@
 package gtkx
 
 import (
-	"github.com/lyricat/inua/internal/i18n"
-
 	"fmt"
 	"sync"
 	"time"
@@ -25,6 +23,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // --- main loop ---

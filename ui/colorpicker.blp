@@ -39,7 +39,7 @@ ApplicationWindow colorpicker {
           }
 
           Label {
-            label: "Pick a colour";
+            label:  _("Pick a colour");
           }
         }
       }
@@ -53,14 +53,14 @@ ApplicationWindow colorpicker {
       Box {
         Label {
           styles ["kicker", "block-title"]
-          label: "PICKED BEFORE";
+          label:  _("PICKED BEFORE");
           hexpand: true;
           xalign: 0;
         }
 
         Button clear {
           styles ["text"]
-          label: "Clear";
+          label:  _("Clear");
           valign: center;
         }
       }
@@ -79,7 +79,7 @@ ApplicationWindow colorpicker {
 
       Label history_empty {
         styles ["empty"]
-        label: "Colours you pick show here.";
+        label:  _("Colours you pick show here.");
       }
     }
   }

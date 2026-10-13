@@ -10,7 +10,7 @@ using Gtk 4.0;
 
 ApplicationWindow settings {
   styles ["settings"]
-  title: "inua Settings";
+  title:  _("inua Settings");
   default-width: 860;
   default-height: 620;
 
@@ -23,7 +23,7 @@ ApplicationWindow settings {
 
       Label {
         styles ["index-title"]
-        label: "Settings";
+        label:  _("Settings");
         xalign: 0;
       }
 
@@ -49,7 +49,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "appearance";
-        title: "Appearance";
+        title:  _("Appearance");
 
         child: Overlay {
           child: ScrolledWindow scroll_appearance {
@@ -76,12 +76,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>THEME<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>THEME<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The bar, launcher, control center and this window";
+                    label:  _("The bar, launcher, control center and this window");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -120,12 +120,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>ICONS<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>ICONS<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The bar, control center, launcher and settings";
+                    label:  _("The bar, control center, launcher and settings");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -147,12 +147,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Icon set";
+                        label:  _("Icon set");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "App icons always come from the system";
+                        label:  _("App icons always come from the system");
                         xalign: 0;
                         wrap: true;
                       }
@@ -164,8 +164,8 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Phosphor",
-                          "System theme",
+                          _("Phosphor"),
+                          _("System theme"),
                         ]
                       };
                     }
@@ -191,12 +191,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>PICTURE<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>PICTURE<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Behind your windows, on every monitor";
+                    label:  _("Behind your windows, on every monitor");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -218,12 +218,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Draw the wallpaper";
+                        label:  _("Draw the wallpaper");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Off leaves the background to another program";
+                        label:  _("Off leaves the background to another program");
                         xalign: 0;
                         wrap: true;
                       }
@@ -244,7 +244,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Image";
+                      label:  _("Image");
                       xalign: 0;
                     }
 
@@ -254,20 +254,20 @@ ApplicationWindow settings {
                       Entry bg_image {
                         name: "bg_image";
                         hexpand: true;
-                        placeholder-text: "none: a fine texture";
+                        placeholder-text:  _("none: a fine texture");
                       }
 
                       Button bg_choose {
                         styles ["outlined"]
                         name: "bg_choose";
-                        label: "Choose…";
+                        label:  _("Choose…");
                       }
 
                       Button bg_clear {
                         styles ["plain"]
                         name: "bg_clear";
                         icon-name: "edit-clear-symbolic";
-                        tooltip-text: "No image";
+                        tooltip-text:  _("No image");
                       }
                     }
                   }
@@ -285,12 +285,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Fit";
+                        label:  _("Fit");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "How the picture fills each monitor";
+                        label:  _("How the picture fills each monitor");
                         xalign: 0;
                         wrap: true;
                       }
@@ -302,10 +302,10 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Cover: fill, cropping",
-                          "Contain: show it all",
-                          "Tile: repeat",
-                          "Center: actual size",
+                          _("Cover: fill, cropping"),
+                          _("Contain: show it all"),
+                          _("Tile: repeat"),
+                          _("Center: actual size"),
                         ]
                       };
                     }
@@ -320,7 +320,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Colour";
+                      label:  _("Colour");
                       xalign: 0;
                     }
 
@@ -330,12 +330,12 @@ ApplicationWindow settings {
                       halign: start;
                       width-chars: 10;
                       max-length: 7;
-                      placeholder-text: "theme";
+                      placeholder-text:  _("theme");
                     }
 
                     Label {
                       styles ["sub"]
-                      label: "#rrggbb, shown around the image. Empty: the theme's ground";
+                      label:  _("#rrggbb, shown around the image. Empty: the theme's ground");
                       xalign: 0;
                       wrap: true;
                     }
@@ -358,7 +358,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "bar";
-        title: "Bar & Dock";
+        title:  _("Bar & Dock");
 
         child: Overlay {
           child: ScrolledWindow scroll_bar {
@@ -385,12 +385,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>BAR<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>BAR<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The bar along the top of each monitor";
+                    label:  _("The bar along the top of each monitor");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -412,12 +412,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Show the bar";
+                        label:  _("Show the bar");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications";
+                        label:  _("Off: Super+Space, Super+A and Super+N still open the launcher, control center and notifications");
                         xalign: 0;
                         wrap: true;
                       }
@@ -438,7 +438,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Clock";
+                      label:  _("Clock");
                       xalign: 0;
                     }
 
@@ -461,7 +461,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["sub"]
-                      label: "strftime: %a weekday, %b month, %-d day, %H:%M time";
+                      label:  _("strftime: %a weekday, %b month, %-d day, %H:%M time");
                       xalign: 0;
                       wrap: true;
                     }
@@ -480,12 +480,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Workspaces";
+                        label:  _("Workspaces");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Which workspaces each bar shows";
+                        label:  _("Which workspaces each bar shows");
                         xalign: 0;
                         wrap: true;
                       }
@@ -497,8 +497,8 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "This monitor's",
-                          "All monitors'",
+                          _("This monitor's"),
+                          _("All monitors'"),
                         ]
                       };
                     }
@@ -517,12 +517,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Window title";
+                        label:  _("Window title");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "The focused window's title";
+                        label:  _("The focused window's title");
                         xalign: 0;
                         wrap: true;
                       }
@@ -547,12 +547,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Tray icons";
+                        label:  _("Tray icons");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Status icons from apps";
+                        label:  _("Status icons from apps");
                         xalign: 0;
                         wrap: true;
                       }
@@ -584,12 +584,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>DOCK<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>DOCK<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Apps along the chosen screen edge on each monitor";
+                    label:  _("Apps along the chosen screen edge on each monitor");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -611,12 +611,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Show the dock";
+                        label:  _("Show the dock");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Pinned apps, then the others with open windows";
+                        label:  _("Pinned apps, then the others with open windows");
                         xalign: 0;
                         wrap: true;
                       }
@@ -641,12 +641,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Hide automatically";
+                        label:  _("Hide automatically");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Comes back when the pointer reaches the dock's screen edge";
+                        label:  _("Comes back when the pointer reaches the dock's screen edge");
                         xalign: 0;
                         wrap: true;
                       }
@@ -671,12 +671,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Position";
+                        label:  _("Position");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Choose a screen edge for the dock";
+                        label:  _("Choose a screen edge for the dock");
                         xalign: 0;
                         wrap: true;
                       }
@@ -687,7 +687,7 @@ ApplicationWindow settings {
                       valign: center;
 
                       model: StringList {
-                        strings ["Bottom", "Top", "Left", "Right"]
+                        strings [_("Bottom"), _("Top"), _("Left"), _("Right")]
                       };
                     }
                   }
@@ -703,12 +703,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Remove screen edge gaps";
+                        label:  _("Remove screen edge gaps");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Remove the screen-edge margins around the dock and top bar";
+                        label:  _("Remove the screen-edge margins around the dock and top bar");
                         xalign: 0;
                         wrap: true;
                       }
@@ -733,7 +733,7 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Icon size";
+                        label:  _("Icon size");
                         xalign: 0;
                       }
                     }
@@ -744,10 +744,10 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Smaller",
-                          "Small",
-                          "Medium",
-                          "Large",
+                          _("Smaller"),
+                          _("Small"),
+                          _("Medium"),
+                          _("Large"),
                         ]
                       };
                     }
@@ -766,13 +766,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Apps drawer";
+                        label:  _("Apps drawer");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "A button at the end for Clock, Weather, Stocks and Calculator";
+                        label:  _("A button at the end for Clock, Weather, Stocks and Calculator");
                         xalign: 0;
                         wrap: true;
                       }
@@ -803,12 +803,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>PINNED<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>PINNED<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Right-click an app on the dock to keep it there";
+                    label:  _("Right-click an app on the dock to keep it there");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -844,12 +844,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>CONTROL CENTER<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>CONTROL CENTER<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Shell commands behind the control center's buttons";
+                    label:  _("Shell commands behind the control center's buttons");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -867,7 +867,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Lock";
+                      label:  _("Lock");
                       xalign: 0;
                     }
 
@@ -886,7 +886,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Screenshot";
+                      label:  _("Screenshot");
                       xalign: 0;
                     }
 
@@ -913,7 +913,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "launcher";
-        title: "Launcher";
+        title:  _("Launcher");
 
         child: Overlay {
           child: ScrolledWindow scroll_launcher {
@@ -940,12 +940,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>LAUNCHER<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>LAUNCHER<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Super+Space finds apps and open windows";
+                    label:  _("Super+Space finds apps and open windows");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -967,12 +967,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Opens with";
+                        label:  _("Opens with");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "What Super+Space shows first; Tab switches";
+                        label:  _("What Super+Space shows first; Tab switches");
                         xalign: 0;
                         wrap: true;
                       }
@@ -984,8 +984,8 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Apps",
-                          "Windows",
+                          _("Apps"),
+                          _("Windows"),
                         ]
                       };
                     }
@@ -1000,19 +1000,19 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["label"]
-                      label: "Terminal";
+                      label:  _("Terminal");
                       xalign: 0;
                     }
 
                     Entry terminal {
                       name: "terminal";
                       styles ["mono-entry"]
-                      placeholder-text: "$TERMINAL, then xdg-terminal-exec";
+                      placeholder-text:  _("$TERMINAL, then xdg-terminal-exec");
                     }
 
                     Label {
                       styles ["sub"]
-                      label: "Runs apps marked Terminal=true";
+                      label:  _("Runs apps marked Terminal=true");
                       xalign: 0;
                       wrap: true;
                     }
@@ -1035,7 +1035,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "ai";
-        title: "AI";
+        title:  _("AI");
 
         child: Overlay {
           child: ScrolledWindow scroll_ai {
@@ -1062,12 +1062,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "An agent with inua's tools, run by Mister Morph";
+                    label:  _("An agent with inua's tools, run by Mister Morph");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1089,13 +1089,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Assistant";
+                        label:  _("Assistant");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Ask it from the launcher (the last row, or ? first) or open Assistant";
+                        label:  _("Ask it from the launcher (the last row, or ? first) or open Assistant");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1121,13 +1121,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Answers with";
+                        label:  _("Answers with");
                         xalign: 0;
                       }
 
                       Label ai_route {
                         styles ["sub"]
-                        label: "The profile asked first; the assistant's window can switch for a conversation";
+                        label:  _("The profile asked first; the assistant's window can switch for a conversation");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1153,13 +1153,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Ask before changes";
+                        label:  _("Ask before changes");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask";
+                        label:  _("Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1185,13 +1185,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Search the web";
+                        label:  _("Search the web");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Mister Morph's web search and page reading";
+                        label:  _("Mister Morph's web search and page reading");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1217,13 +1217,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Read files";
+                        label:  _("Read files");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Any file you can read; asks each time";
+                        label:  _("Any file you can read; asks each time");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1249,13 +1249,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Run commands";
+                        label:  _("Run commands");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "A shell, as you; asks each time";
+                        label:  _("A shell, as you; asks each time");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1285,12 +1285,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Connect other Consoles to this desktop";
+                    label:  _("Connect other Consoles to this desktop");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1312,13 +1312,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Serve endpoint";
+                        label:  _("Serve endpoint");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Allow Console connections; the assistant keeps running when this is off";
+                        label:  _("Allow Console connections; the assistant keeps running when this is off");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1326,7 +1326,7 @@ ApplicationWindow settings {
 
                     Switch ai_serve_enable {
                       name: "ai_serve_enable";
-                      tooltip-text: "Serve endpoint";
+                      tooltip-text:  _("Serve endpoint");
                       valign: center;
                     }
                   }
@@ -1344,13 +1344,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Listen address";
+                        label:  _("Listen address");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "Host:port; kept when serving is off";
+                        label:  _("Host:port; kept when serving is off");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1359,7 +1359,7 @@ ApplicationWindow settings {
                     Entry ai_serve_listen {
                       name: "ai-serve-listen";
                       placeholder-text: "127.0.0.1:8794";
-                      tooltip-text: "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.";
+                      tooltip-text:  _("Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.");
                       width-chars: 23;
                       valign: center;
                     }
@@ -1374,7 +1374,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["title"]
-                      label: "Endpoint URL";
+                      label:  _("Endpoint URL");
                       xalign: 0;
                     }
 
@@ -1384,13 +1384,13 @@ ApplicationWindow settings {
                       Entry ai_serve_url {
                         editable: false;
                         hexpand: true;
-                        placeholder-text: "Set a listen address first";
+                        placeholder-text:  _("Set a listen address first");
                       }
 
                       Button ai_url_copy {
                         styles ["outlined"]
                         name: "ai_url_copy";
-                        label: "Copy URL";
+                        label:  _("Copy URL");
                       }
                     }
 
@@ -1410,7 +1410,7 @@ ApplicationWindow settings {
 
                     Label {
                       styles ["title"]
-                      label: "Access token";
+                      label:  _("Access token");
                       xalign: 0;
                     }
 
@@ -1421,25 +1421,25 @@ ApplicationWindow settings {
                         editable: false;
                         visibility: false;
                         hexpand: true;
-                        placeholder-text: "Token hidden";
+                        placeholder-text:  _("Token hidden");
                       }
 
                       Button ai_token_show {
                         styles ["outlined"]
                         name: "ai_token_show";
-                        label: "Create token";
+                        label:  _("Create token");
                       }
 
                       Button ai_token_copy {
                         styles ["outlined"]
                         name: "ai_token_copy";
-                        label: "Copy token";
+                        label:  _("Copy token");
                       }
                     }
 
                     Label {
                       styles ["sub"]
-                      label: "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.";
+                      label:  _("Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.");
                       xalign: 0;
                       wrap: true;
                     }
@@ -1464,12 +1464,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The models it can use; fallbacks answer when the first fails";
+                    label:  _("The models it can use; fallbacks answer when the first fails");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1492,7 +1492,7 @@ ApplicationWindow settings {
                     Button ai_add {
                       styles ["outlined"]
                       name: "ai_add";
-                      label: "Add Profile";
+                      label:  _("Add Profile");
                     }
 
                     // Where keys go: the keyring, or a file.
@@ -1521,7 +1521,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "notifications";
-        title: "Notifications";
+        title:  _("Notifications");
 
         child: Overlay {
           child: ScrolledWindow scroll_notifications {
@@ -1548,12 +1548,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Banners, then the notification center";
+                    label:  _("Banners, then the notification center");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1575,7 +1575,7 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Show notifications";
+                        label:  _("Show notifications");
                         xalign: 0;
                       }
 
@@ -1606,12 +1606,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Banner duration";
+                        label:  _("Banner duration");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "How long a banner shows; critical ones stay";
+                        label:  _("How long a banner shows; critical ones stay");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1623,10 +1623,10 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "3 seconds",
-                          "5 seconds",
-                          "8 seconds",
-                          "12 seconds",
+                          _("3 seconds"),
+                          _("5 seconds"),
+                          _("8 seconds"),
+                          _("12 seconds"),
                         ]
                       };
                     }
@@ -1645,12 +1645,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Critical during Focus";
+                        label:  _("Critical during Focus");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Critical notifications still show banners";
+                        label:  _("Critical notifications still show banners");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1679,7 +1679,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "shortcuts";
-        title: "Shortcuts";
+        title:  _("Shortcuts");
 
         child: Overlay {
           child: ScrolledWindow scroll_shortcuts {
@@ -1704,7 +1704,7 @@ ApplicationWindow settings {
                 visible: false;
                 xalign: 0;
                 wrap: true;
-                label: "Press the new shortcut. Esc cancels; Backspace turns it off.";
+                label:  _("Press the new shortcut. Esc cancels; Backspace turns it off.");
               }
 
               // [INUA]
@@ -1724,12 +1724,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The shell's own actions";
+                    label:  _("The shell's own actions");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1764,12 +1764,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "With grim and slurp";
+                    label:  _("With grim and slurp");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1804,12 +1804,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Your own commands";
+                    label:  _("Your own commands");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1834,21 +1834,21 @@ ApplicationWindow settings {
                     Entry sc_new_name {
                       name: "sc_new_name";
                       width-chars: 14;
-                      placeholder-text: "Name";
+                      placeholder-text:  _("Name");
                     }
 
                     Entry sc_new_cmd {
                       styles ["mono-entry"]
                       name: "sc_new_cmd";
                       hexpand: true;
-                      placeholder-text: "Command, e.g. kitty";
+                      placeholder-text:  _("Command, e.g. kitty");
                     }
 
                     Button sc_add {
                       styles ["outlined"]
                       name: "sc_add";
-                      label: "Add…";
-                      tooltip-text: "Add, then press its shortcut";
+                      label:  _("Add…");
+                      tooltip-text:  _("Add, then press its shortcut");
                     }
                   }
                 }
@@ -1871,12 +1871,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Other shortcuts, from hyprland.conf";
+                    label:  _("Other shortcuts, from hyprland.conf");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1909,7 +1909,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "keyboard";
-        title: "Keyboard";
+        title:  _("Keyboard");
 
         child: Overlay {
           child: ScrolledWindow scroll_keyboard {
@@ -1945,12 +1945,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Every keyboard";
+                    label:  _("Every keyboard");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -1972,12 +1972,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Swap Ctrl and Alt";
+                        label:  _("Swap Ctrl and Alt");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Alt acts as Ctrl, and Ctrl as Alt";
+                        label:  _("Alt acts as Ctrl, and Ctrl as Alt");
                         xalign: 0;
                         wrap: true;
                       }
@@ -1989,9 +1989,9 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Off",
-                          "Left side",
-                          "Both sides",
+                          _("Off"),
+                          _("Left side"),
+                          _("Both sides"),
                         ]
                       };
                     }
@@ -2010,12 +2010,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Caps Lock";
+                        label:  _("Caps Lock");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "What the Caps Lock key does";
+                        label:  _("What the Caps Lock key does");
                         xalign: 0;
                         wrap: true;
                       }
@@ -2027,9 +2027,9 @@ ApplicationWindow settings {
 
                       model: StringList {
                         strings [
-                          "Caps Lock",
-                          "Escape",
-                          "Ctrl",
+                          _("Caps Lock"),
+                          _("Escape"),
+                          _("Ctrl"),
                         ]
                       };
                     }
@@ -2054,12 +2054,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "inua writes these to Hyprland's inua.conf";
+                    label:  _("inua writes these to Hyprland's inua.conf");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -2096,8 +2096,8 @@ ApplicationWindow settings {
                       styles ["outlined"]
                       name: "kb_reset";
                       valign: center;
-                      label: "Use hyprland.conf";
-                      tooltip-text: "Stop setting keyboard options in inua";
+                      label:  _("Use hyprland.conf");
+                      tooltip-text:  _("Stop setting keyboard options in inua");
                     }
                   }
                 }
@@ -2118,7 +2118,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "mouse";
-        title: "Mouse & Touch";
+        title:  _("Mouse & Touch");
 
         child: Overlay {
           child: ScrolledWindow scroll_mouse {
@@ -2154,12 +2154,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "Every touchpad";
+                    label:  _("Every touchpad");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -2181,7 +2181,7 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Pointer speed";
+                        label:  _("Pointer speed");
                         xalign: 0;
                       }
 
@@ -2219,12 +2219,12 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Acceleration";
+                        label:  _("Acceleration");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label: "Faster swipes move the pointer further";
+                        label:  _("Faster swipes move the pointer further");
                         xalign: 0;
                         wrap: true;
                       }
@@ -2255,12 +2255,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "inua writes these to Hyprland's inua.conf";
+                    label:  _("inua writes these to Hyprland's inua.conf");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -2285,8 +2285,8 @@ ApplicationWindow settings {
                       styles ["outlined"]
                       name: "tp_reset";
                       valign: center;
-                      label: "Use hyprland.conf";
-                      tooltip-text: "Stop setting the touchpad in inua";
+                      label:  _("Use hyprland.conf");
+                      tooltip-text:  _("Stop setting the touchpad in inua");
                     }
                   }
                 }
@@ -2307,7 +2307,7 @@ ApplicationWindow settings {
 
       StackPage {
         name: "about";
-        title: "About";
+        title:  _("About");
 
         child: Overlay {
           child: ScrolledWindow scroll_about {
@@ -2334,12 +2334,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "The version, and new releases";
+                    label:  _("The version, and new releases");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -2361,7 +2361,7 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Version";
+                        label:  _("Version");
                         xalign: 0;
                       }
 
@@ -2386,7 +2386,7 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Updates";
+                        label:  _("Updates");
                         xalign: 0;
                       }
 
@@ -2407,13 +2407,13 @@ ApplicationWindow settings {
                         styles ["primary"]
                         name: "about_upgrade";
                         visible: false;
-                        label: "Upgrade";
+                        label:  _("Upgrade");
                       }
 
                       Button about_check {
                         styles ["outlined"]
                         name: "about_check";
-                        label: "Check for updates";
+                        label:  _("Check for updates");
                       }
                     }
                   }
@@ -2431,13 +2431,13 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label: "Check every day";
+                        label:  _("Check every day");
                         xalign: 0;
                       }
 
                       Label {
                         styles ["sub"]
-                        label: "A notification says when a new release is out, with a button to upgrade";
+                        label:  _("A notification says when a new release is out, with a button to upgrade");
                         xalign: 0;
                         wrap: true;
                       }
@@ -2468,12 +2468,12 @@ ApplicationWindow settings {
                   Label {
                     styles ["section-label"]
                     use-markup: true;
-                    label: "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>";
+                    label:  _("<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>");
                   }
 
                   Label {
                     styles ["section-meta"]
-                    label: "What the latest release changed";
+                    label:  _("What the latest release changed");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;

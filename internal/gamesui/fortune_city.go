@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // A city's look on the washi board: the words on its corners, the signs on
@@ -36,28 +37,28 @@ var cityArts = []cityArt{
 		chance: "運", tax: "税", middle: tokyoMiddle, outside: tokyoOutside,
 		slip: games.Vec{X: 450, Y: 478}, dice: games.Vec{X: 430, Y: 548},
 		house: machiya, hotel: ryokan, tree: pine, pawn: kokeshi, spout: true, trees: pines,
-		houseWord: "machiya", hotelWord: "ryokan",
+		houseWord: i18n.M("machiya"), hotelWord: i18n.M("ryokan"),
 	},
 	{ // New York
 		corners: map[int]string{0: "GO", 10: "JAIL", 20: "PARK", 30: "COPS"}, cornerFont: minchoBold + " 13",
 		chance: "?", tax: "$", middle: newYorkMiddle, outside: newYorkOutside,
 		slip: games.Vec{X: 616, Y: 674}, dice: games.Vec{X: 655, Y: 585},
 		house: brownstone, hotel: decoTower, tree: roundTree, pawn: turnedPawn, trees: parkTrees,
-		houseWord: "brownstones", hotelWord: "towers",
+		houseWord: i18n.M("brownstones"), hotelWord: i18n.M("towers"),
 	},
 	{ // Shanghai
 		corners: map[int]string{0: "起点", 10: "监狱", 20: "喷泉", 30: "入狱"}, cornerFont: minchoBold + " 17",
 		chance: "运", tax: "税", middle: shanghaiMiddle, outside: shanghaiOutside,
 		slip: games.Vec{X: 450, Y: 522}, dice: games.Vec{X: 370, Y: 300},
 		house: shikumen, hotel: bundHotel, tree: roundTree, pawn: turnedPawn, spout: true, trees: planeTrees,
-		houseWord: "shikumen", hotelWord: "Bund hotels",
+		houseWord: i18n.M("shikumen"), hotelWord: i18n.M("Bund hotels"),
 	},
 	{ // Rome
 		corners: map[int]string{0: "VIA", 10: "CARCERE", 20: "FONTANA", 30: "ARRESTO"}, cornerFont: minchoBold + " 11",
 		chance: "?", tax: "%", middle: romaMiddle, outside: romaOutside,
 		slip: games.Vec{X: 450, Y: 496}, dice: games.Vec{X: 420, Y: 560},
 		house: villa, hotel: palazzo, tree: cypress, pawn: turnedPawn, trees: cypresses,
-		houseWord: "villas", hotelWord: "palazzi",
+		houseWord: i18n.M("villas"), hotelWord: i18n.M("palazzi"),
 	},
 }
 

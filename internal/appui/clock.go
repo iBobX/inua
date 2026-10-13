@@ -19,6 +19,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/clock"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // alarmSound plays when the timer ends (the shell plays it for alarms).
@@ -141,18 +142,18 @@ func (a *clockApp) build(c *Ctx) *gtk.ApplicationWindow {
 
 	a.alarmPick = newPicker(&alarmPicker, []int{23, 59}, []bool{true, true})
 	alarmPicker.AddCssClass("large")
-	a.timerPick = newPicker(&timerPicker, []int{23, 59, 59}, []bool{false, true, true}, "HRS", "MIN", "SEC")
+	a.timerPick = newPicker(&timerPicker, []int{23, 59, 59}, []bool{false, true, true}, i18n.T("HRS"), i18n.T("MIN"), i18n.T("SEC"))
 	timerPicker.AddCssClass("large")
 	a.timerPick.set(1, 5)
-	for i, name := range []string{"S", "M", "T", "W", "T", "F", "S"} {
+	for i, name := range []string{i18n.T("Su"), i18n.T("Mo"), i18n.T("Tu"), i18n.T("We"), i18n.T("Th"), i18n.T("Fr"), i18n.T("Sa")} {
 		t := gtk.NewToggleButtonWithLabel(name)
-		t.SetTooltipText(time.Weekday(i).String())
+		t.SetTooltipText(i18n.T(time.Weekday(i).String()))
 		t.ConnectToggled(&a.onDay)
 		a.alarmDays[i] = t
 		gtkx.Append(&days, &t.Widget)
 	}
 	for _, m := range timerPresets {
-		b := gtk.NewButtonWithLabel(fmt.Sprintf("%d min", m))
+		b := gtk.NewButtonWithLabel(i18n.Tf("%d min", m))
 		b.AddCssClass("chip")
 		b.SetName("preset:" + strconv.Itoa(m))
 		b.ConnectClicked(&a.onButton)
@@ -214,7 +215,7 @@ func (a *clockApp) tick() {
 		a.lastSecond = s
 		a.localTime.SetText(now.Format("15:04"))
 		a.localSeconds.SetText(now.Format("05"))
-		a.localDate.SetText(strings.ToUpper(now.Format("Monday, January 2") + " · " + localCity()))
+		a.localDate.SetText(strings.ToUpper(i18n.Time(now, "Monday, January 2") + " · " + localCity()))
 		for zone, l := range a.worldTimes {
 			if loc, err := time.LoadLocation(zone); err == nil {
 				there := now.In(loc)
@@ -255,10 +256,10 @@ func markDay(mark *gtk.Box, t time.Time) {
 	}
 	if h := t.Hour(); h >= 6 && h < 18 {
 		mark.RemoveCssClass("night")
-		mark.SetTooltipText("Day")
+		mark.SetTooltipText(i18n.T("Day"))
 	} else {
 		mark.AddCssClass("night")
-		mark.SetTooltipText("Night")
+		mark.SetTooltipText(i18n.T("Night"))
 	}
 }
 
@@ -333,7 +334,7 @@ func (a *clockApp) search(q string) {
 		gtkx.Append(&a.zoneResults, &rowButton("zone-add:"+z, &text(clock.City(z), clock.Region(z)).Widget, &a.onButton).Widget)
 	}
 	if n == 0 {
-		l := gtk.NewLabel("No city by that name")
+		l := gtk.NewLabel(i18n.T("No city by that name"))
 		l.AddCssClass("empty")
 		gtkx.Append(&a.zoneResults, &l.Widget)
 	}
@@ -365,7 +366,7 @@ func (a *clockApp) showWorld() {
 		tl.AddCssClass("row-time")
 		a.worldTimes[z] = tl
 		gtkx.Append(row, &tl.Widget)
-		gtkx.Append(row, &plainIcon("zone-remove:"+z, "window-close-symbolic", "Remove "+clock.City(z), &a.onButton).Widget)
+		gtkx.Append(row, &plainIcon("zone-remove:"+z, "window-close-symbolic", i18n.Tf("Remove %s", clock.City(z)), &a.onButton).Widget)
 		gtkx.Append(&a.worldList, &row.Widget)
 	}
 	a.worldEmpty.SetVisible(len(a.data.Zones) == 0 && a.zoneSearch.GetText() == "")
@@ -398,7 +399,7 @@ func (a *clockApp) showAlarms() {
 		gtkx.Append(box, &s.Widget)
 		edit := rowButton("alarm-edit:"+al.ID, &box.Widget, &a.onButton)
 		edit.SetHexpand(true)
-		edit.SetTooltipText("Edit")
+		edit.SetTooltipText(i18n.T("Edit"))
 		gtkx.Append(row, &edit.Widget)
 		sw := gtk.NewSwitch()
 		sw.SetName("alarm-on:" + al.ID)
@@ -487,13 +488,13 @@ func (a *clockApp) toggleStopwatch() {
 	if a.swRunning {
 		a.swBefore += now.Sub(a.swFrom)
 		a.swRunning = false
-		a.swStart.SetLabel("Start")
-		a.swLap.SetLabel("Reset")
+		a.swStart.SetLabel(i18n.T("Start"))
+		a.swLap.SetLabel(i18n.T("Reset"))
 		a.swTime.SetText(clock.Stopwatch(a.swBefore))
 	} else {
 		a.swFrom, a.swRunning = now, true
-		a.swStart.SetLabel("Stop")
-		a.swLap.SetLabel("Lap")
+		a.swStart.SetLabel(i18n.T("Stop"))
+		a.swLap.SetLabel(i18n.T("Lap"))
 	}
 	a.swLap.SetSensitive(true)
 }
@@ -502,7 +503,7 @@ func (a *clockApp) lapOrReset() {
 	if !a.swRunning { // reset
 		a.swBefore, a.laps = 0, nil
 		a.swTime.SetText(clock.Stopwatch(0))
-		a.swLap.SetLabel("Lap")
+		a.swLap.SetLabel(i18n.T("Lap"))
 		a.swLap.SetSensitive(false)
 		a.showLaps()
 		return
@@ -541,7 +542,7 @@ func (a *clockApp) showLaps() {
 		case slow:
 			row.AddCssClass("slowest")
 		}
-		n := gtk.NewLabel(fmt.Sprintf("LAP %d", i+1))
+		n := gtk.NewLabel(i18n.Tf("LAP %d", i+1))
 		n.AddCssClass("kicker")
 		n.SetHexpand(true)
 		n.SetXalign(0)
@@ -561,24 +562,24 @@ func (a *clockApp) startTimer(d time.Duration) {
 	a.timerEnd = time.Now().Add(d)
 	a.timerSet.SetVisible(false)
 	a.timerRun.SetVisible(true)
-	a.timerPause.SetLabel("Pause")
+	a.timerPause.SetLabel(i18n.T("Pause"))
 	a.timerLeft.SetText(clock.Countdown(d))
 	a.timerProgress.SetFraction(1)
-	a.timerEnds.SetText("ENDS AT " + a.timerEnd.Format("15:04"))
+	a.timerEnds.SetText(i18n.Tf("ENDS AT %s", a.timerEnd.Format("15:04")))
 }
 
 func (a *clockApp) pauseTimer() {
 	if a.timerPaused {
 		a.timerPaused = false
 		a.timerEnd = time.Now().Add(a.timerRemaining)
-		a.timerPause.SetLabel("Pause")
-		a.timerEnds.SetText("ENDS AT " + a.timerEnd.Format("15:04"))
+		a.timerPause.SetLabel(i18n.T("Pause"))
+		a.timerEnds.SetText(i18n.Tf("ENDS AT %s", a.timerEnd.Format("15:04")))
 		return
 	}
 	a.timerPaused = true
 	a.timerRemaining = time.Until(a.timerEnd)
-	a.timerPause.SetLabel("Resume")
-	a.timerEnds.SetText("PAUSED")
+	a.timerPause.SetLabel(i18n.T("Resume"))
+	a.timerEnds.SetText(i18n.T("PAUSED"))
 }
 
 func (a *clockApp) stopTimer() {
@@ -589,8 +590,8 @@ func (a *clockApp) stopTimer() {
 
 func (a *clockApp) timerDone() {
 	a.stopTimer()
-	n := gio.NewNotification("Timer done")
-	n.SetBody("Your timer has ended.")
+	n := gio.NewNotification(i18n.T("Timer done"))
+	n.SetBody(i18n.T("Your timer has ended."))
 	n.SetPriority(gio.GNotificationPriorityUrgentValue)
 	a.c.App.SendNotification("timer", n)
 	n.Unref()

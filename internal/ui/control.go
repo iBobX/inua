@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/system"
@@ -272,7 +273,7 @@ func (s *shellUI) buildControl() {
 			layershell.SetMonitor(w, mon.GoPointer())
 		}
 	} else {
-		c.win.SetTitle("inua control center")
+		c.win.SetTitle(i18n.T("inua control center"))
 		c.win.SetDefaultSize(420, 640)
 	}
 }
@@ -295,7 +296,7 @@ func (s *shellUI) applyControl() {
 		c.batIcon.SetFromIconName(shell.BatteryIcon(st.Bat))
 		c.batLabel.SetText(shell.BatteryText(st.Bat))
 	} else {
-		c.batLabel.SetText(time.Now().Format("Monday, January 2"))
+		c.batLabel.SetText(i18n.Time(time.Now(), "Monday, January 2"))
 	}
 
 	n := st.Net
@@ -473,10 +474,10 @@ func run(script string) {
 
 // powerLabel is each power action's label, and what it asks before going.
 var powerLabel = map[string][2]string{
-	"suspend":  {"Suspend", ""},
-	"reboot":   {"Restart", "Restart?"},
-	"poweroff": {"Shut down", "Shut down?"},
-	"logout":   {"Log out", "Log out?"},
+	"suspend":  {i18n.M("Suspend"), ""},
+	"reboot":   {i18n.M("Restart"), i18n.M("Restart?")},
+	"poweroff": {i18n.M("Shut down"), i18n.M("Shut down?")},
+	"logout":   {i18n.M("Log out"), i18n.M("Log out?")},
 }
 
 // powerAction suspends at once (locking the screen first); restart, shut
@@ -486,7 +487,7 @@ func (s *shellUI) powerAction(name string) {
 	if ask := powerLabel[name][1]; ask != "" && c.armed != name {
 		s.disarmPower()
 		c.armed = name
-		c.powerLabels[name].SetText(ask)
+		c.powerLabels[name].SetText(i18n.T(ask))
 		c.powerLabels[name].GetParent().GetParent().AddCssClass("armed")
 		c.armGen++
 		glib.TimeoutAdd(4000, &s.onPowerDisarm, c.armGen)
@@ -524,7 +525,7 @@ func (s *shellUI) disarmPower() {
 		return
 	}
 	if l := c.powerLabels[c.armed]; l != nil {
-		l.SetText(powerLabel[c.armed][0])
+		l.SetText(i18n.T(powerLabel[c.armed][0]))
 		l.GetParent().GetParent().RemoveCssClass("armed")
 	}
 	c.armed = ""

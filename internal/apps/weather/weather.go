@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // StoreName is the app's file in the store.
@@ -187,29 +189,29 @@ func Describe(code int, day bool) (text, icon string) {
 	}
 	switch code {
 	case 0:
-		return "Clear", sky("weather-clear-symbolic", "weather-clear-night-symbolic")
+		return i18n.T("Clear sky"), sky("weather-clear-symbolic", "weather-clear-night-symbolic")
 	case 1:
-		return "Mostly clear", sky("weather-clear-symbolic", "weather-clear-night-symbolic")
+		return i18n.T("Mostly clear"), sky("weather-clear-symbolic", "weather-clear-night-symbolic")
 	case 2:
-		return "Partly cloudy", sky("weather-few-clouds-symbolic", "weather-few-clouds-night-symbolic")
+		return i18n.T("Partly cloudy"), sky("weather-few-clouds-symbolic", "weather-few-clouds-night-symbolic")
 	case 3:
-		return "Cloudy", "weather-overcast-symbolic"
+		return i18n.T("Cloudy"), "weather-overcast-symbolic"
 	case 45, 48:
-		return "Fog", "weather-fog-symbolic"
+		return i18n.T("Fog"), "weather-fog-symbolic"
 	case 51, 53, 55, 56, 57:
-		return "Drizzle", "weather-showers-scattered-symbolic"
+		return i18n.T("Drizzle"), "weather-showers-scattered-symbolic"
 	case 61, 63, 66, 80, 81:
-		return "Rain", "weather-showers-symbolic"
+		return i18n.T("Rain"), "weather-showers-symbolic"
 	case 65, 67, 82:
-		return "Heavy rain", "weather-showers-symbolic"
+		return i18n.T("Heavy rain"), "weather-showers-symbolic"
 	case 71, 73, 77, 85:
-		return "Snow", "weather-snow-symbolic"
+		return i18n.T("Snow"), "weather-snow-symbolic"
 	case 75, 86:
-		return "Heavy snow", "weather-snow-symbolic"
+		return i18n.T("Heavy snow"), "weather-snow-symbolic"
 	case 95, 96, 99:
-		return "Thunderstorm", "weather-storm-symbolic"
+		return i18n.T("Thunderstorm"), "weather-storm-symbolic"
 	}
-	return "Unknown", "weather-severe-alert-symbolic"
+	return i18n.T("Unknown"), "weather-severe-alert-symbolic"
 }
 
 // Temp shows a temperature rounded to a whole degree: "27°", "−3°".

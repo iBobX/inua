@@ -3,6 +3,8 @@ package games
 import (
 	"fmt"
 	"math/rand/v2"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Space Pinball's rules: what the table's shots are worth, the missions
@@ -58,8 +60,8 @@ const (
 )
 
 // Ranks are the career a player climbs by flying missions.
-var Ranks = []string{"Cadet", "Ensign", "Lieutenant", "Captain", "Lt. Commander",
-	"Commander", "Commodore", "Admiral", "Fleet Admiral"}
+var Ranks = []string{i18n.M("Cadet"), i18n.M("Ensign"), i18n.M("Lieutenant"), i18n.M("Captain"), i18n.M("Lt. Commander"),
+	i18n.M("Commander"), i18n.M("Commodore"), i18n.M("Admiral"), i18n.M("Fleet Admiral")}
 
 // promoteAt are the missions done that earn each rank after Cadet.
 var promoteAt = []int{1, 2, 4, 6, 8, 11, 14, 18}
@@ -81,30 +83,30 @@ type Mission struct {
 }
 
 var Missions = []Mission{
-	{"Target Practice", "Hit the attack bumpers 8 times.", 0, []MissionStep{{ShotBumper, 8}}, 60, 15000},
-	{"Launch Training", "Shoot the launch ramp 3 times.", 0, []MissionStep{{ShotLaunch, 3}}, 75, 20000},
-	{"Re-entry Training", "Roll through the re-entry lanes 3 times.", 0, []MissionStep{{ShotLane, 3}}, 75, 15000},
-	{"Science Run", "Knock down all the booster targets.", 1, []MissionStep{{ShotBank, 1}}, 60, 25000},
-	{"Stray Comet", "Shoot the hyperspace ramp twice.", 1, []MissionStep{{ShotHyper, 2}}, 75, 30000},
-	{"Into the Black Hole", "Sink the black hole twice.", 2, []MissionStep{{ShotBlackHole, 2}}, 75, 30000},
-	{"Wormhole Survey", "Enter the wormhole, then sink the black hole.", 2,
+	{i18n.M("Target Practice"), i18n.M("Hit the attack bumpers 8 times."), 0, []MissionStep{{ShotBumper, 8}}, 60, 15000},
+	{i18n.M("Launch Training"), i18n.M("Shoot the launch ramp 3 times."), 0, []MissionStep{{ShotLaunch, 3}}, 75, 20000},
+	{i18n.M("Re-entry Training"), i18n.M("Roll through the re-entry lanes 3 times."), 0, []MissionStep{{ShotLane, 3}}, 75, 15000},
+	{i18n.M("Science Run"), i18n.M("Knock down all the booster targets."), 1, []MissionStep{{ShotBank, 1}}, 60, 25000},
+	{i18n.M("Stray Comet"), i18n.M("Shoot the hyperspace ramp twice."), 1, []MissionStep{{ShotHyper, 2}}, 75, 30000},
+	{i18n.M("Into the Black Hole"), i18n.M("Sink the black hole twice."), 2, []MissionStep{{ShotBlackHole, 2}}, 75, 30000},
+	{i18n.M("Wormhole Survey"), i18n.M("Enter the wormhole, then sink the black hole."), 2,
 		[]MissionStep{{ShotWormhole, 1}, {ShotBlackHole, 1}}, 90, 40000},
-	{"Bug Hunt", "Hit 15 targets or slingshots.", 3, []MissionStep{{ShotAnyTarget, 15}}, 45, 40000},
-	{"Satellite Retrieval", "Two launch ramps, then the black hole.", 3,
+	{i18n.M("Bug Hunt"), i18n.M("Hit 15 targets or slingshots."), 3, []MissionStep{{ShotAnyTarget, 15}}, 45, 40000},
+	{i18n.M("Satellite Retrieval"), i18n.M("Two launch ramps, then the black hole."), 3,
 		[]MissionStep{{ShotLaunch, 2}, {ShotBlackHole, 1}}, 90, 50000},
-	{"Rescue", "Hyperspace, then the launch ramp, then the wormhole.", 4,
+	{i18n.M("Rescue"), i18n.M("Hyperspace, then the launch ramp, then the wormhole."), 4,
 		[]MissionStep{{ShotHyper, 1}, {ShotLaunch, 1}, {ShotWormhole, 1}}, 90, 60000},
-	{"Radiation Storm", "Hit the bumpers 20 times, then shoot hyperspace.", 5,
+	{i18n.M("Radiation Storm"), i18n.M("Hit the bumpers 20 times, then shoot hyperspace."), 5,
 		[]MissionStep{{ShotBumper, 20}, {ShotHyper, 1}}, 90, 75000},
-	{"Doomsday Machine", "The booster bank, both ramps, the wormhole, then the black hole.", 6,
+	{i18n.M("Doomsday Machine"), i18n.M("The booster bank, both ramps, the wormhole, then the black hole."), 6,
 		[]MissionStep{{ShotBank, 1}, {ShotHyper, 1}, {ShotLaunch, 1}, {ShotWormhole, 1}, {ShotBlackHole, 1}}, 120, 150000},
 }
 
 // ShotName names a shot for a mission's progress.
 func ShotName(s Shot) string {
-	return map[Shot]string{ShotBumper: "Bumpers", ShotLaunch: "Launch ramp", ShotLane: "Re-entry lanes",
-		ShotBank: "Booster bank", ShotHyper: "Hyperspace", ShotBlackHole: "Black hole",
-		ShotWormhole: "Wormhole", ShotAnyTarget: "Targets"}[s]
+	return map[Shot]string{ShotBumper: i18n.T("Bumpers"), ShotLaunch: i18n.T("Launch ramp"), ShotLane: i18n.T("Re-entry lanes"),
+		ShotBank: i18n.T("Booster bank"), ShotHyper: i18n.T("Hyperspace"), ShotBlackHole: i18n.T("Black hole"),
+		ShotWormhole: i18n.T("Wormhole"), ShotAnyTarget: i18n.T("Targets")}[s]
 }
 
 // HyperAwards are what the hyperspace ramp's five levels pay.
@@ -237,7 +239,7 @@ func (g *Pinball) score(n int) {
 }
 
 // RankName is the player's rank.
-func (g *Pinball) RankName() string { return Ranks[g.Rank] }
+func (g *Pinball) RankName() string { return i18n.T(Ranks[g.Rank]) }
 
 // BumperLevel is the attack bumpers' value level, 1–5.
 func (g *Pinball) BumperLevel() int { return min(5, 1+g.BumperHits/12) }
@@ -309,9 +311,9 @@ func (g *Pinball) tick(h float64) {
 		g.Fuel = max(0, g.Fuel-fuelBurn*h)
 		switch {
 		case g.Fuel == 0:
-			g.failMission("OUT OF FUEL")
+			g.failMission(i18n.T("OUT OF FUEL"))
 		case g.MissionLeft <= 0:
-			g.failMission("MISSION FAILED")
+			g.failMission(i18n.T("MISSION FAILED"))
 		}
 	}
 }
@@ -326,7 +328,7 @@ func (g *Pinball) hit(s Shot, i int) {
 		g.BumperHits++
 		g.score(500 * g.BumperLevel())
 		if g.BumperHits%12 == 0 && g.BumperLevel() <= 5 && g.BumperHits <= 48 {
-			g.say(fmt.Sprintf("BUMPERS AT LEVEL %d", g.BumperLevel()))
+			g.say(i18n.Tf("BUMPERS AT LEVEL %d", g.BumperLevel()))
 		}
 		if g.Multiball {
 			g.Jackpot += 5000
@@ -352,7 +354,7 @@ func (g *Pinball) hit(s Shot, i int) {
 		}
 		if g.Targets == [3]bool{true, true, true} && g.Mission < 0 && !g.MissionLit {
 			g.MissionLit = true
-			g.say("MISSION LIT: " + Missions[g.Selected].Name)
+			g.say(i18n.Tf("MISSION LIT: %s", i18n.T(Missions[g.Selected].Name)))
 			g.sound(SndMission)
 		}
 		g.progress(ShotAnyTarget)
@@ -365,9 +367,9 @@ func (g *Pinball) hit(s Shot, i int) {
 			g.bankReset = bankResetTime
 			if !g.Multiball && g.Locked < 2 {
 				g.LockLit = true
-				g.say("BOOSTER BANK: LOCK IS LIT")
+				g.say(i18n.T("BOOSTER BANK: LOCK IS LIT"))
 			} else {
-				g.say("BOOSTER BANK")
+				g.say(i18n.T("BOOSTER BANK"))
 			}
 			g.progress(ShotBank)
 		}
@@ -378,7 +380,7 @@ func (g *Pinball) hit(s Shot, i int) {
 		if g.skillLeft > 0 {
 			if i == g.Skill {
 				g.score(25000 * (g.Rank + 1))
-				g.say("SKILL SHOT")
+				g.say(i18n.T("SKILL SHOT"))
 				g.sound(SndSkill)
 			}
 			g.Skill, g.skillLeft = -1, 0
@@ -391,10 +393,10 @@ func (g *Pinball) hit(s Shot, i int) {
 			g.score(2500)
 			if g.FieldMult < 5 {
 				g.FieldMult++
-				g.say(fmt.Sprintf("FIELD MULTIPLIER ×%d", g.FieldMult))
+				g.say(i18n.Tf("FIELD MULTIPLIER ×%d", g.FieldMult))
 			} else {
 				g.Save = redeployTime
-				g.say("RE-DEPLOY: BALL SAVE LIT")
+				g.say(i18n.T("RE-DEPLOY: BALL SAVE LIT"))
 			}
 		}
 		g.progress(ShotLane)
@@ -412,16 +414,16 @@ func (g *Pinball) hit(s Shot, i int) {
 		switch g.HyperLevel {
 		case 2:
 			if g.hyperExtra { // once a game
-				g.say("HYPERSPACE 3")
+				g.say(i18n.T("HYPERSPACE 3"))
 				break
 			}
 			g.ExtraLit, g.hyperExtra = true, true
-			g.say("HYPERSPACE 3: EXTRA BALL LIT")
+			g.say(i18n.T("HYPERSPACE 3: EXTRA BALL LIT"))
 		case 4:
-			g.say(fmt.Sprintf("HYPERSPACE JACKPOT %s", thousands(award*(g.Rank+1)*g.FieldMult)))
+			g.say(i18n.Tf("HYPERSPACE JACKPOT %s", thousands(award*(g.Rank+1)*g.FieldMult)))
 			g.sound(SndJackpot)
 		default:
-			g.say(fmt.Sprintf("HYPERSPACE %d", g.HyperLevel+1))
+			g.say(i18n.Tf("HYPERSPACE %d", g.HyperLevel+1))
 		}
 		g.HyperLevel = (g.HyperLevel + 1) % 5
 		g.progress(ShotHyper)
@@ -432,18 +434,18 @@ func (g *Pinball) hit(s Shot, i int) {
 		switch {
 		case g.Multiball:
 			g.score(g.Jackpot)
-			g.say("JACKPOT " + thousands(g.Jackpot*g.FieldMult))
+			g.say(i18n.Tf("JACKPOT %s", thousands(g.Jackpot*g.FieldMult)))
 			g.sound(SndJackpot)
 			g.Jackpot = jackpotStart
 		case g.MissionLit && g.Mission < 0:
 			if g.Fuel < missionFuel {
-				g.say("REFUEL FIRST: ROLL THE LANES")
+				g.say(i18n.T("REFUEL FIRST: ROLL THE LANES"))
 				break
 			}
 			m := Missions[g.Selected]
 			g.Mission, g.MStep, g.Progress, g.MissionLeft = g.Selected, 0, 0, m.Time
 			g.MissionLit, g.Targets = false, [3]bool{}
-			g.say("MISSION: " + m.Name)
+			g.say(i18n.Tf("MISSION: %s", i18n.T(m.Name)))
 			g.sound(SndMission)
 		default:
 			g.progress(ShotLaunch)
@@ -460,7 +462,7 @@ func (g *Pinball) captured(b *Ball, i int) {
 	g.HoleFlash = 1
 	if i == Wormhole {
 		g.score(5000)
-		g.say("WORMHOLE")
+		g.say(i18n.T("WORMHOLE"))
 		g.sound(SndWormhole)
 		g.progress(ShotWormhole)
 		return
@@ -471,23 +473,23 @@ func (g *Pinball) captured(b *Ball, i int) {
 	case g.ExtraLit:
 		g.ExtraLit = false
 		g.Extra++
-		g.say("EXTRA BALL")
+		g.say(i18n.T("EXTRA BALL"))
 		g.sound(SndExtraBall)
 	case g.LockLit:
 		g.LockLit = false
 		g.Locked++
 		if g.Locked < 2 {
-			g.say(fmt.Sprintf("BALL %d LOCKED", g.Locked))
+			g.say(i18n.Tf("BALL %d LOCKED", g.Locked))
 			break
 		}
 		g.Locked, g.Multiball, g.Jackpot = 0, true, jackpotStart
-		g.say("MULTIBALL")
+		g.say(i18n.T("MULTIBALL"))
 		g.sound(SndMultiball)
 		g.serve(true)
 		g.serve(true)
 		g.Save = ballSaveTime
 	default:
-		g.say("BLACK HOLE")
+		g.say(i18n.T("BLACK HOLE"))
 	}
 	g.progress(ShotBlackHole)
 }
@@ -507,7 +509,7 @@ func (g *Pinball) progress(s Shot) {
 	}
 	g.MStep, g.Progress = g.MStep+1, 0
 	if g.MStep < len(m.Steps) {
-		g.say(ShotName(m.Steps[g.MStep].Shot) + " next")
+		g.say(i18n.Tf("%s next", ShotName(m.Steps[g.MStep].Shot)))
 		return
 	}
 	// Done.
@@ -515,12 +517,12 @@ func (g *Pinball) progress(s Shot) {
 	g.MissionsWon++
 	g.score(m.Reward * (g.Rank + 1))
 	g.Bonus += 10000
-	g.say("MISSION COMPLETE: " + m.Name)
+	g.say(i18n.Tf("MISSION COMPLETE: %s", i18n.T(m.Name)))
 	g.sound(SndComplete)
 	if g.Rank < len(promoteAt) && g.MissionsWon >= promoteAt[g.Rank] {
 		g.Rank++
 		g.score(50000 * g.Rank)
-		g.say("PROMOTED TO " + Ranks[g.Rank])
+		g.say(i18n.Tf("PROMOTED TO %s", i18n.T(Ranks[g.Rank])))
 		g.sound(SndPromotion)
 		if g.Rank%3 == 0 {
 			g.ExtraLit = true
@@ -540,13 +542,13 @@ func (g *Pinball) MissionStatus() (name, todo string, done, of int) {
 	if g.Mission < 0 {
 		m := Missions[g.Selected]
 		if g.MissionLit {
-			return m.Name, "Shoot the launch ramp to accept", 0, 0
+			return i18n.T(m.Name), i18n.T("Shoot the launch ramp to accept"), 0, 0
 		}
-		return m.Name, "Light the three mission targets", 0, 0
+		return i18n.T(m.Name), i18n.T("Light the three mission targets"), 0, 0
 	}
 	m := Missions[g.Mission]
 	st := m.Steps[g.MStep]
-	return m.Name, ShotName(st.Shot), g.Progress, st.Count
+	return i18n.T(m.Name), ShotName(st.Shot), g.Progress, st.Count
 }
 
 // nudged is the table being bumped.
@@ -556,10 +558,10 @@ func (g *Pinball) nudged() {
 	case g.TiltMeter >= tiltLimit:
 		g.Tilted = true
 		g.turn = [2]float64{-1, -1}
-		g.say("TILT")
+		g.say(i18n.T("TILT"))
 		g.sound(SndTilt)
 	case g.TiltMeter >= tiltDanger:
-		g.say("DANGER")
+		g.say(i18n.T("DANGER"))
 	}
 }
 
@@ -568,7 +570,7 @@ func (g *Pinball) drained(n int) {
 	if g.live() > 0 || g.onPlunger() != nil {
 		if g.Multiball && g.live() <= 1 {
 			g.Multiball = false
-			g.say("MULTIBALL OVER")
+			g.say(i18n.T("MULTIBALL OVER"))
 		}
 		return
 	}
@@ -576,7 +578,7 @@ func (g *Pinball) drained(n int) {
 	if g.Save > 0 && !g.Tilted {
 		g.Save = 0
 		g.serve(true)
-		g.say("BALL SAVED")
+		g.say(i18n.T("BALL SAVED"))
 		g.sound(SndSave)
 		return
 	}
@@ -585,7 +587,7 @@ func (g *Pinball) drained(n int) {
 	if !g.Tilted {
 		bonus := (g.Bonus + 5000*g.Rank) * g.FieldMult
 		g.Score += bonus
-		g.say(fmt.Sprintf("BONUS %s", thousands(bonus)))
+		g.say(i18n.Tf("BONUS %s", thousands(bonus)))
 	}
 	g.FieldMult, g.Lanes, g.Bonus = 1, [3]bool{}, 0
 	g.Tilted, g.TiltMeter, g.turn = false, 0, [2]float64{-1, -1}
@@ -594,12 +596,12 @@ func (g *Pinball) drained(n int) {
 		g.Extra--
 		g.serve(false)
 		g.armSkill()
-		g.say("SHOOT AGAIN")
+		g.say(i18n.T("SHOOT AGAIN"))
 		return
 	}
 	if g.BallNo == g.Balls0 {
 		g.Result = Lost
-		g.failMission("GAME OVER")
+		g.failMission(i18n.T("GAME OVER"))
 		g.Mission = -1
 		return
 	}

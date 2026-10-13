@@ -14,6 +14,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/clock"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/notify"
 )
 
@@ -100,11 +101,11 @@ func (s *shellUI) checkAlarms(now time.Time) {
 // ringAlarm shows the alarm's notification and plays the sound until it
 // is stopped, snoozed or cleared, or for five minutes.
 func (s *shellUI) ringAlarm(a clock.Alarm) {
-	summary := fmt.Sprintf("Alarm · %02d:%02d", a.Hour, a.Minute)
+	summary := i18n.Tf("Alarm · %02d:%02d", a.Hour, a.Minute)
 	n := notify.Notification{
-		App: "Clock", Entry: alarmEntry, Icon: "alarm-symbolic",
+		App: i18n.T("Clock"), Entry: alarmEntry, Icon: "alarm-symbolic",
 		Summary: summary, Body: notify.Markup(a.Label), Urgency: notify.Critical, Time: time.Now(),
-		Default: true, Actions: []notify.Action{{Key: "snooze:" + a.ID, Label: "Snooze"}, {Key: "stop", Label: "Stop"}},
+		Default: true, Actions: []notify.Action{{Key: "snooze:" + a.ID, Label: i18n.T("Snooze")}, {Key: "stop", Label: i18n.T("Stop")}},
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	if s.notes.srv != nil {

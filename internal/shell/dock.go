@@ -7,6 +7,7 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // DockItem is one app on the dock.
@@ -143,7 +144,7 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Top
 		}
 		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
 		if t.Class == AppID { // the shell's own windows: Settings and its dialogs
-			item.Name, item.Icon = ShellApps[0].Name, ShellApps[0].Icon
+			item.Name, item.Icon = i18n.T(ShellApps[0].Name), ShellApps[0].Icon
 		}
 		if entry != nil {
 			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
@@ -241,29 +242,29 @@ var LightAppGroups = []struct {
 	Title string
 	IDs   []string
 }{
-	{"EVERYDAY", []string{
+	{i18n.M("EVERYDAY"), []string{
 		"io.github.lyricat.Inua.Clock",
 		"io.github.lyricat.Inua.Calendar",
 		"io.github.lyricat.Inua.Weather",
 		"io.github.lyricat.Inua.Stocks",
 		"io.github.lyricat.Inua.Assistant",
 	}},
-	{"TOOLS", []string{
+	{i18n.M("TOOLS"), []string{
 		"io.github.lyricat.Inua.Calculator",
 		"io.github.lyricat.Inua.ColorPicker",
 		"inua:screenshot",
 		"io.github.lyricat.Inua.Viewer",
 		"io.github.lyricat.Inua.SystemMonitor",
 	}},
-	{"NETWORK", []string{
+	{i18n.M("NETWORK"), []string{
 		"io.github.lyricat.Inua.Tailscale",
 	}},
-	{"PLAY", []string{
+	{i18n.M("PLAY"), []string{
 		"io.github.lyricat.Inua.Minesweeper",
 		"io.github.lyricat.Inua.SpacePinball",
 		"io.github.lyricat.Inua.SmallFortune",
 	}},
-	{"SYSTEM", []string{
+	{i18n.M("SYSTEM"), []string{
 		"inua:settings",
 		"inua:launcher",
 	}},
@@ -275,9 +276,9 @@ const AppID = "io.github.lyricat.Inua"
 // ShellApps are the shell's own tools in the drawer. They are not desktop
 // entries: the shell opens them itself, by their "inua:" IDs.
 var ShellApps = []*desktop.Entry{
-	{ID: "inua:settings", Name: "Settings", Comment: "inua's settings", Icon: "io.github.lyricat.Inua.Settings"},
-	{ID: "inua:launcher", Name: "Launcher", Comment: "Find apps, windows and answers", Icon: "io.github.lyricat.Inua.Launcher"},
-	{ID: "inua:screenshot", Name: "Screenshot", Comment: "Capture an area, a window or a screen", Icon: "io.github.lyricat.Inua.Screenshot"},
+	{ID: "inua:settings", Name: i18n.M("Settings"), Comment: i18n.M("inua's settings"), Icon: "io.github.lyricat.Inua.Settings"},
+	{ID: "inua:launcher", Name: i18n.M("Launcher"), Comment: i18n.M("Find apps, windows and answers"), Icon: "io.github.lyricat.Inua.Launcher"},
+	{ID: "inua:screenshot", Name: i18n.M("Screenshot"), Comment: i18n.M("Capture an area, a window or a screen"), Icon: "io.github.lyricat.Inua.Screenshot"},
 }
 
 // AppGroup is a titled group of installed apps.

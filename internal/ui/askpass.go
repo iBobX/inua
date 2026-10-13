@@ -11,6 +11,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/pinentry"
@@ -43,7 +44,7 @@ type passDialog struct {
 func (s *shellUI) askPassword(req ipc.Request) ipc.Response {
 	var q pinentry.Request
 	if len(req.Args) != 1 || json.Unmarshal([]byte(req.Args[0]), &q) != nil {
-		return ipc.Response{Error: "password: want one JSON request"}
+		return ipc.Response{Error: i18n.T("password: want one JSON request")}
 	}
 	q.Mode = pinentry.Mode(req.Function)
 	switch q.Mode {
@@ -85,7 +86,7 @@ func (s *shellUI) bindPassHandlers() {
 	}
 	s.onPassNotOK = func(gtk.Button) {
 		if d := s.pass.cur; d != nil {
-			later(func() { s.finishPass(d, ipc.Response{Error: "not ok"}) })
+			later(func() { s.finishPass(d, ipc.Response{Error: i18n.T("not ok")}) })
 		}
 	}
 	s.onPassKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
@@ -124,7 +125,7 @@ func (s *shellUI) openPass(d *passDialog) {
 	command.SetVisible(false)
 	title := q.Title
 	if title == "" || strings.EqualFold(title, "pinentry") {
-		title = map[pinentry.Mode]string{pinentry.GetPin: "Passphrase Required", pinentry.Confirm: "Confirm", pinentry.Message: "Message"}[q.Mode]
+		title = map[pinentry.Mode]string{pinentry.GetPin: i18n.T("Passphrase Required"), pinentry.Confirm: i18n.T("Confirm"), pinentry.Message: i18n.T("Message")}[q.Mode]
 	}
 	d.title.SetText(title)
 	d.message.SetText(q.Desc)
@@ -137,7 +138,7 @@ func (s *shellUI) openPass(d *passDialog) {
 	// "Password" does; a longer one stays above it.
 	prompt := strings.TrimSuffix(strings.TrimSpace(q.Prompt), ":")
 	if prompt == "" {
-		prompt = "Passphrase"
+		prompt = i18n.T("Passphrase")
 	}
 	if len(prompt) <= 24 {
 		var v gobject.Value
@@ -159,8 +160,8 @@ func (s *shellUI) openPass(d *passDialog) {
 	d.password2.SetVisible(getpin && q.Repeat != "")
 	s.showPassInfo(d, q.Error, true)
 
-	ok.SetLabel(labelOr(q.OK, "OK"))
-	cancel.SetLabel(labelOr(q.Cancel, "Cancel"))
+	ok.SetLabel(labelOr(q.OK, i18n.T("OK")))
+	cancel.SetLabel(labelOr(q.Cancel, i18n.T("Cancel")))
 	cancel.SetVisible(q.Mode != pinentry.Message)
 	notok.SetLabel(q.NotOK)
 	notok.SetVisible(q.Mode == pinentry.Confirm && q.NotOK != "")
@@ -227,7 +228,7 @@ func (s *shellUI) answerPass() {
 	if d.q.Repeat != "" && pin != d.password2.GetText() {
 		d.password.SetText("")
 		d.password2.SetText("")
-		s.showPassInfo(d, labelOr(d.q.NoMatch, "The passphrases do not match."), true)
+		s.showPassInfo(d, labelOr(d.q.NoMatch, i18n.T("The passphrases do not match.")), true)
 		d.password.GrabFocus()
 		return
 	}

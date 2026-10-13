@@ -13,6 +13,7 @@ import (
 	"github.com/lyricat/inua/internal/convert"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Mode is what the launcher searches.
@@ -42,14 +43,19 @@ func (m Mode) String() string {
 }
 
 // Tag is the mode as a bracketed label in the launcher's head: [APPS].
-func (m Mode) Tag() string { return "[" + strings.ToUpper(m.String()) + "]" }
+func (m Mode) Tag() string {
+	if m == Windows {
+		return i18n.T("[WINDOWS]")
+	}
+	return i18n.T("[APPS]")
+}
 
 // Label is the mode's name beside its tag.
 func (m Mode) Label() string {
 	if m == Windows {
-		return "Switch windows"
+		return i18n.T("Switch windows")
 	}
-	return "Launch apps"
+	return i18n.T("Launch apps")
 }
 
 // Result is one launcher row: an app to launch, a window to focus, an
@@ -242,7 +248,7 @@ func (l *Launcher) Execute() Action {
 	case r.Command != "":
 		if c, ok := CommandByID(r.Command); ok && c.Confirm != "" && l.armed != r.Command {
 			l.armed = r.Command
-			l.notice = "Press Enter again to " + c.Confirm
+			l.notice = i18n.T(c.Confirm)
 			return Action{}
 		}
 		l.armed = ""
@@ -253,7 +259,7 @@ func (l *Launcher) Execute() Action {
 	}
 	if !l.windowExists(r.Address) {
 		l.search(false)
-		l.notice = "That window has closed"
+		l.notice = i18n.T("That window has closed")
 		return Action{}
 	}
 	return Action{Kind: Focus, Address: r.Address}
@@ -280,19 +286,19 @@ func (l *Launcher) Message() string {
 	}
 	switch {
 	case l.Mode == Apps && l.assistant && strings.HasPrefix(strings.TrimSpace(l.Query), "?"):
-		return "Ask the assistant anything"
+		return i18n.T("Ask the assistant anything")
 	case l.Mode == Apps && strings.HasPrefix(strings.TrimSpace(l.Query), ":"):
-		return "No emoji or symbol matches"
+		return i18n.T("No emoji or symbol matches")
 	case l.Mode == Apps && !l.appsReady:
-		return "Reading apps…"
+		return i18n.T("Reading apps…")
 	case l.Mode == Apps:
-		return "No app matches"
+		return i18n.T("No app matches")
 	case !l.connected:
-		return "Not connected to Hyprland"
+		return i18n.T("Not connected to Hyprland")
 	case len(l.snap.Toplevels) == 0:
-		return "No windows open"
+		return i18n.T("No windows open")
 	}
-	return "No window matches"
+	return i18n.T("No window matches")
 }
 
 // Failed reports whether Message is about a failed action rather than an
@@ -328,7 +334,7 @@ func (l *Launcher) search(keep bool) {
 			return
 		}
 		if question, ok := strings.CutPrefix(strings.TrimSpace(l.Query), "?"); ok && l.assistant {
-			l.Results = askResults(strings.TrimSpace(question), "Enter asks")
+			l.Results = askResults(strings.TrimSpace(question), i18n.T("Enter asks"))
 			l.Selected = 0
 			return
 		}
@@ -340,10 +346,10 @@ func (l *Launcher) search(keep bool) {
 		first, last := webResults(l.Query, l.webSearch, l.links)
 		l.Results = append(append(first, l.Results...), last...)
 		if l.assistant && q != "" {
-			l.Results = append(l.Results, askResults(strings.TrimSpace(l.Query), "or start with ?")...)
+			l.Results = append(l.Results, askResults(strings.TrimSpace(l.Query), i18n.T("or start with ?"))...)
 		}
 		if a, ok := convert.Evaluate(l.Query, l.rates); ok {
-			l.Results = append([]Result{{Title: a.Text, Detail: a.Detail + " · Enter copies", Icon: "accessories-calculator-symbolic", Copy: a.Copy}}, l.Results...)
+			l.Results = append([]Result{{Title: a.Text, Detail: i18n.Tf("%s · Enter copies", a.Detail), Icon: "accessories-calculator-symbolic", Copy: a.Copy}}, l.Results...)
 		}
 	} else {
 		l.Results = searchWindows(l.snap, q)
@@ -370,7 +376,7 @@ func askResults(question, hint string) []Result {
 	if question == "" {
 		return nil
 	}
-	return []Result{{Title: "Ask the assistant", Detail: question + " · " + hint, Icon: AssistantIcon, Ask: question}}
+	return []Result{{Title: i18n.T("Ask the assistant"), Detail: question + " · " + hint, Icon: AssistantIcon, Ask: question}}
 }
 
 func searchApps(apps []*desktop.Entry, q string) []Result {
@@ -407,7 +413,7 @@ func searchWindows(snap hypr.Snapshot, q string) []Result {
 		}
 		detail := t.Class
 		if t.WorkspaceID != 0 {
-			detail = fmt.Sprintf("%s · workspace %s", t.Class, workspaceName(snap, t.WorkspaceID))
+			detail = i18n.Tf("%s · workspace %s", t.Class, workspaceName(snap, t.WorkspaceID))
 		}
 		rs = append(rs, Result{
 			Title: cmp.Or(t.Title, t.Class), Detail: detail, Icon: t.Class,

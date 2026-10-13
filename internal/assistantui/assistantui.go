@@ -34,23 +34,24 @@ import (
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 )
 
 // Register adds the assistant to the light apps, as "assistant".
 func Register(ctx context.Context, background bool) {
-	appui.Register("assistant", "Assistant", "Assistant", func() appui.View {
+	appui.Register("assistant", "Assistant", i18n.M("Assistant"), func() appui.View {
 		return &view{ctx: ctx, background: background}
 	})
 }
 
 // suggestions start an empty conversation.
 var suggestions = []string{
-	"What is using the most CPU right now?",
-	"Turn on Focus and set the volume to 30%",
-	"What did I miss? Sum up my notifications",
-	"Which devices on my tailnet are online?",
-	"What is the weather this afternoon in Kyoto?",
+	i18n.M("What is using the most CPU right now?"),
+	i18n.M("Turn on Focus and set the volume to 30%"),
+	i18n.M("What did I miss? Sum up my notifications"),
+	i18n.M("Which devices on my tailnet are online?"),
+	i18n.M("What is the weather this afternoon in Kyoto?"),
 }
 
 type view struct {
@@ -136,7 +137,7 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 			return
 		}
 		v.model.SetText(v.as.Model())
-		v.toolLine(v.names[i] + " answers from here")
+		v.toolLine(i18n.Tf("%s answers from here", v.names[i]))
 	}
 	// Back from the settings: what changed applies to the next question.
 	v.onActive = func(uintptr, uintptr, uintptr) {
@@ -279,7 +280,7 @@ func (v *view) setUp() {
 		v.model.SetText("")
 	}
 	if !cfg.Assistant.Enable {
-		say("The assistant is turned off. Turn it on in Settings → AI.")
+		say(i18n.T("The assistant is turned off. Turn it on in Settings → AI."))
 		// Hidden, it has nothing to do: a background start, or a closed
 		// window when it was turned off. A window opened says so instead.
 		if !v.win.GetVisible() && (v.built || v.background) {
@@ -291,7 +292,7 @@ func (v *view) setUp() {
 	k := keys.New()
 	savedAt, err := k.Saved()
 	if err != nil {
-		say("Cannot read the saved keys: " + err.Error())
+		say(i18n.Tf("Cannot read the saved keys: %s", err.Error()))
 		return
 	}
 	saved := map[string]string{}
@@ -300,20 +301,20 @@ func (v *view) setUp() {
 			continue
 		}
 		if saved[p.Name], err = k.Get(p.Name); err != nil {
-			say(fmt.Sprintf("Cannot read the key of %s: %v", p.Name, err))
+			say(i18n.Tf("Cannot read the key of %s: %v", p.Name, err))
 			return
 		}
 	}
 	if cfg.Assistant.ServeEnable {
 		if saved[keys.ServeTokenKey], err = k.ServeToken(false); err != nil {
-			say("Cannot read the Console token: " + err.Error())
+			say(i18n.Tf("Cannot read the Console token: %s", err.Error()))
 			return
 		}
 	}
 	set, err := assistant.SettingsFrom(cfg.Assistant, saved)
 	if errors.Is(err, assistant.ErrNoKey) {
 		p, _ := cfg.Assistant.ProfileNamed(cfg.Assistant.Profile)
-		say(fmt.Sprintf("No API key for %s (%s): type one in Settings → AI.", p.Name, p.Model))
+		say(i18n.Tf("No API key for %s (%s): type one in Settings → AI.", p.Name, p.Model))
 		return
 	}
 	if err != nil {
@@ -354,7 +355,7 @@ func (v *view) setUp() {
 				v.apiCancel = nil
 				if err != nil {
 					log.Printf("assistant endpoint: %v", err)
-					v.notice.SetText("Could not start the Console endpoint: " + err.Error())
+					v.notice.SetText(i18n.Tf("Could not start the Console endpoint: %s", err.Error()))
 					v.noticeBx.SetVisible(true)
 					v.win.Present()
 				}
@@ -487,14 +488,14 @@ func (v *view) ask(q string) {
 	v.line("as-you", q)
 	v.answer = v.line("as-answer", "…")
 	v.running = true
-	v.send.SetLabel("Stop")
+	v.send.SetLabel(i18n.T("Stop"))
 	ctx, cancel := context.WithCancel(v.ctx)
 	v.cancel = cancel
 	v.profile.SetSensitive(false)
 	ev := assistant.Events{
 		Answer: func(text string) { gtkx.Post(func() { v.setAnswer(text) }) },
 		Tool:   func(_, doing string) { gtkx.Post(func() { v.toolLine("→ " + doing + " …") }) },
-		Denied: func(_, doing string) { gtkx.Post(func() { v.toolLine("✕ Not done: " + doing) }) },
+		Denied: func(_, doing string) { gtkx.Post(func() { v.toolLine(i18n.Tf("✕ Not done: %s", doing)) }) },
 		Error:  func(name string, err error) { gtkx.Post(func() { v.toolLine("! " + name + ": " + err.Error()) }) },
 	}
 	go func() {
@@ -505,17 +506,17 @@ func (v *view) ask(q string) {
 			}
 			v.running = false
 			v.cancel()
-			v.send.SetLabel("Ask")
+			v.send.SetLabel(i18n.T("Ask"))
 			v.profile.SetSensitive(true)
 			switch {
 			case errors.Is(err, context.Canceled):
-				v.setAnswer(cmp.Or(answer, "Stopped."))
+				v.setAnswer(cmp.Or(answer, i18n.T("Stopped.")))
 			case err != nil:
 				log.Printf("assistant: %v", err)
-				v.setAnswer("Something went wrong: " + err.Error())
+				v.setAnswer(i18n.Tf("Something went wrong: %s", err.Error()))
 				v.answer.AddCssClass("as-error")
 			case answer == "":
-				v.setAnswer("(no answer)")
+				v.setAnswer(i18n.T("(no answer)"))
 			}
 			v.answer = nil
 			v.question.GrabFocus()
@@ -545,7 +546,7 @@ func (v *view) approve(ctx context.Context, _, doing string) (allowed bool, err 
 		gtkx.Append(card, &l.Widget)
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		row.SetHalign(gtk.AlignEndValue)
-		for _, b := range [][2]string{{"deny", "Don't"}, {"allow", "Allow"}} {
+		for _, b := range [][2]string{{"deny", i18n.T("Don't")}, {"allow", i18n.T("Allow")}} {
 			btn := gtk.NewButtonWithLabel(b[1])
 			btn.SetName(b[0] + ":" + id)
 			btn.AddCssClass(map[string]string{"deny": "outlined", "allow": "suggested-action"}[b[0]])
@@ -566,11 +567,11 @@ func (v *view) approve(ctx context.Context, _, doing string) (allowed bool, err 
 				return
 			}
 			gtkx.Clear(card)
-			status := "Not allowed"
+			status := i18n.T("Not allowed")
 			if err != nil {
-				status = "Canceled"
+				status = i18n.T("Canceled")
 			} else if allowed {
-				status = "Allowed"
+				status = i18n.T("Allowed")
 			}
 			l := gtk.NewLabel(doing + " — " + status)
 			l.AddCssClass("as-tool")
@@ -659,12 +660,12 @@ func (v *view) showSuggestions() {
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 	box.AddCssClass("as-suggestions")
 	box.SetName("suggestions")
-	head := gtk.NewLabel("TRY")
+	head := gtk.NewLabel(i18n.T("TRY"))
 	head.AddCssClass("kicker")
 	head.SetXalign(0)
 	gtkx.Append(box, &head.Widget)
 	for _, s := range suggestions {
-		b := gtk.NewButtonWithLabel(s)
+		b := gtk.NewButtonWithLabel(i18n.T(s))
 		b.AddCssClass("as-suggestion")
 		b.SetName(s)
 		if l := b.GetChild(); l != nil {

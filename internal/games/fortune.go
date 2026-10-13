@@ -6,6 +6,8 @@ import (
 	"math/rand/v2"
 	"slices"
 	"strings"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Small Fortune is a property game for one player against one to three
@@ -45,64 +47,64 @@ type Square struct {
 }
 
 var Board = [...]Square{
-	{"Start", StartSquare, -1, 0},
-	{"Willow Lane", Street, 0, 60},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Birch Row", Street, 0, 60},
-	{"Income Tax", TaxSquare, -1, 150},
-	{"North Pier", Pier, -1, 200},
-	{"Mill Street", Street, 1, 100},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Ferry Road", Street, 1, 100},
-	{"Weaver's Yard", Street, 1, 120},
-	{"Jail", JailSquare, -1, 0},
-	{"Lantern Alley", Street, 2, 140},
-	{"Power Station", Utility, -1, 150},
-	{"Paper Market", Street, 2, 140},
-	{"Ink Court", Street, 2, 160},
-	{"East Pier", Pier, -1, 200},
-	{"Tea House Row", Street, 3, 180},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Bell Tower", Street, 3, 180},
-	{"Clock Square", Street, 3, 200},
-	{"Fountain", Fountain, -1, 0},
-	{"Garden Gate", Street, 4, 220},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Orchard Hill", Street, 4, 220},
-	{"Vineyard Way", Street, 4, 240},
-	{"South Pier", Pier, -1, 200},
-	{"Harbor Front", Street, 5, 260},
-	{"Lighthouse", Street, 5, 260},
-	{"Water Works", Utility, -1, 150},
-	{"Coral Bay", Street, 5, 280},
-	{"Go to Jail", GoToJail, -1, 0},
-	{"Observatory", Street, 6, 300},
-	{"Museum Mile", Street, 6, 300},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Opera House", Street, 6, 320},
-	{"West Pier", Pier, -1, 200},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Sky Terrace", Street, 7, 350},
-	{"Luxury Tax", TaxSquare, -1, 100},
-	{"Summit Plaza", Street, 7, 400},
+	{i18n.M("Start"), StartSquare, -1, 0},
+	{i18n.M("Willow Lane"), Street, 0, 60},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Birch Row"), Street, 0, 60},
+	{i18n.M("Income Tax"), TaxSquare, -1, 150},
+	{i18n.M("North Pier"), Pier, -1, 200},
+	{i18n.M("Mill Street"), Street, 1, 100},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Ferry Road"), Street, 1, 100},
+	{i18n.M("Weaver's Yard"), Street, 1, 120},
+	{i18n.M("Jail"), JailSquare, -1, 0},
+	{i18n.M("Lantern Alley"), Street, 2, 140},
+	{i18n.M("Power Station"), Utility, -1, 150},
+	{i18n.M("Paper Market"), Street, 2, 140},
+	{i18n.M("Ink Court"), Street, 2, 160},
+	{i18n.M("East Pier"), Pier, -1, 200},
+	{i18n.M("Tea House Row"), Street, 3, 180},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Bell Tower"), Street, 3, 180},
+	{i18n.M("Clock Square"), Street, 3, 200},
+	{i18n.M("Fountain"), Fountain, -1, 0},
+	{i18n.M("Garden Gate"), Street, 4, 220},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Orchard Hill"), Street, 4, 220},
+	{i18n.M("Vineyard Way"), Street, 4, 240},
+	{i18n.M("South Pier"), Pier, -1, 200},
+	{i18n.M("Harbor Front"), Street, 5, 260},
+	{i18n.M("Lighthouse"), Street, 5, 260},
+	{i18n.M("Water Works"), Utility, -1, 150},
+	{i18n.M("Coral Bay"), Street, 5, 280},
+	{i18n.M("Go to Jail"), GoToJail, -1, 0},
+	{i18n.M("Observatory"), Street, 6, 300},
+	{i18n.M("Museum Mile"), Street, 6, 300},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Opera House"), Street, 6, 320},
+	{i18n.M("West Pier"), Pier, -1, 200},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Sky Terrace"), Street, 7, 350},
+	{i18n.M("Luxury Tax"), TaxSquare, -1, 100},
+	{i18n.M("Summit Plaza"), Street, 7, 400},
 	// The first branch road, from North Pier across to East Pier.
-	{"Rope Walk", Street, 8, 110},
-	{"Cooper Lane", Street, 8, 110},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Kiln Street", Street, 8, 130},
-	{"Glass Row", Street, 9, 150},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Printers' Court", Street, 9, 150},
-	{"Organ Yard", Street, 9, 170},
+	{i18n.M("Rope Walk"), Street, 8, 110},
+	{i18n.M("Cooper Lane"), Street, 8, 110},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Kiln Street"), Street, 8, 130},
+	{i18n.M("Glass Row"), Street, 9, 150},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Printers' Court"), Street, 9, 150},
+	{i18n.M("Organ Yard"), Street, 9, 170},
 	// The second, from South Pier across to West Pier.
-	{"Harbour Steps", Street, 10, 270},
-	{"Sailmakers' Row", Street, 10, 270},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Captain's Walk", Street, 10, 290},
-	{"Mint Street", Street, 11, 310},
-	{"Chance", ChanceSquare, -1, 0},
-	{"Guild Hall", Street, 11, 310},
-	{"Crown Gardens", Street, 11, 330},
+	{i18n.M("Harbour Steps"), Street, 10, 270},
+	{i18n.M("Sailmakers' Row"), Street, 10, 270},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Captain's Walk"), Street, 10, 290},
+	{i18n.M("Mint Street"), Street, 11, 310},
+	{i18n.M("Chance"), ChanceSquare, -1, 0},
+	{i18n.M("Guild Hall"), Street, 11, 310},
+	{i18n.M("Crown Gardens"), Street, 11, 330},
 }
 
 // The board's roads: a ring of LoopLen squares from Start, and branch
@@ -251,7 +253,7 @@ type Fortune struct {
 	rng    *rand.Rand
 }
 
-var cpuNames = []string{"Mika", "Ren", "Sol"}
+var cpuNames = []string{i18n.M("Mika"), i18n.M("Ren"), i18n.M("Sol")}
 
 // NewFortune starts a game as s says; what s leaves at zero is
 // DefaultFortune's.
@@ -262,7 +264,7 @@ func NewFortune(s FortuneSettings, seed uint64) *Fortune {
 		OneDie: s.Dice == 1, BuildOnBuy: s.BuildOnBuy,
 		Winner: -1, rng: rand.New(rand.NewPCG(seed, seed^0x5f)), Phase: PhaseRoll}
 	g.choose = func(roads []int) int { return roads[g.rng.IntN(len(roads))] }
-	g.Players = append(g.Players, FortunePlayer{Name: "You", Cash: cash})
+	g.Players = append(g.Players, FortunePlayer{Name: i18n.T("You"), Cash: cash})
 	for i := range rivals {
 		g.Players = append(g.Players, FortunePlayer{Name: cpuNames[i], CPU: true, Cash: cash})
 	}
@@ -423,11 +425,11 @@ func (g *Fortune) Build(sq int) bool {
 	g.Players[g.Turn].Cash -= HouseCost(sq)
 	g.Houses[sq]++
 	g.CanRaise[sq] = false // one level a turn
-	what := "a house"
+	what := i18n.T("a house")
 	if g.Houses[sq] == Hotel {
-		what = "a hotel"
+		what = i18n.T("a hotel")
 	}
-	g.note(g.Turn, false, false, "%s built %s on %s ($%d).", g.Players[g.Turn].Name, what, g.SquareName(sq), HouseCost(sq))
+	g.note(g.Turn, false, false, i18n.T("%s built %s on %s ($%d)."), g.Players[g.Turn].Name, what, g.SquareName(sq), HouseCost(sq))
 	return true
 }
 
@@ -438,7 +440,7 @@ func (g *Fortune) Sell(sq int) bool {
 	}
 	g.Houses[sq]--
 	g.Players[g.Turn].Cash += HouseCost(sq) / 2
-	g.note(g.Turn, false, false, "%s sold a building on %s for $%d.", g.Players[g.Turn].Name, g.SquareName(sq), HouseCost(sq)/2)
+	g.note(g.Turn, false, false, i18n.T("%s sold a building on %s for $%d."), g.Players[g.Turn].Name, g.SquareName(sq), HouseCost(sq)/2)
 	return true
 }
 
@@ -476,7 +478,7 @@ func (g *Fortune) PayBail() bool {
 	}
 	g.payPot(g.Turn, bail)
 	p.InJail, p.JailTries = false, 0
-	g.note(g.Turn, false, false, "%s paid $%d bail.", p.Name, bail)
+	g.note(g.Turn, false, false, i18n.T("%s paid $%d bail."), p.Name, bail)
 	return true
 }
 
@@ -512,7 +514,7 @@ func (g *Fortune) buy(p int) {
 	sq := g.Players[p].At
 	g.Players[p].Cash -= Board[sq].Price
 	g.Owner[sq] = p
-	g.note(p, false, false, "%s bought %s for $%d.", g.Players[p].Name, g.SquareName(sq), Board[sq].Price)
+	g.note(p, false, false, i18n.T("%s bought %s for $%d."), g.Players[p].Name, g.SquareName(sq), Board[sq].Price)
 	if g.BuildOnBuy && Board[sq].Kind == Street {
 		g.CanRaise[sq] = true // it may go up a level this very turn
 	}
@@ -526,18 +528,18 @@ func (g *Fortune) roll(a, b int) {
 	if p.InJail {
 		if double || g.OneDie && a == 6 {
 			p.InJail, p.JailTries = false, 0
-			what := "a double"
+			what := i18n.T("a double")
 			if g.OneDie {
-				what = "a six"
+				what = i18n.T("a six")
 			}
-			g.note(g.Turn, true, false, "%s rolled %s and walked out of jail.", p.Name, what)
+			g.note(g.Turn, true, false, i18n.T("%s rolled %s and walked out of jail."), p.Name, what)
 			double = false // no second roll after leaving jail
 		} else if p.JailTries++; p.JailTries < 3 {
-			g.note(g.Turn, false, false, "%s stays in jail.", p.Name)
+			g.note(g.Turn, false, false, i18n.T("%s stays in jail."), p.Name)
 			g.Phase = PhaseEnd
 			return
 		} else {
-			g.note(g.Turn, false, true, "%s paid $%d bail after three tries.", p.Name, bail)
+			g.note(g.Turn, false, true, i18n.T("%s paid $%d bail after three tries."), p.Name, bail)
 			p.InJail, p.JailTries = false, 0
 			if !g.charge(g.Turn, bail, -1) {
 				return
@@ -545,7 +547,7 @@ func (g *Fortune) roll(a, b int) {
 		}
 	} else if double {
 		if g.Doubles++; g.Doubles == 3 {
-			g.note(g.Turn, false, true, "Three doubles in a row: %s goes to jail.", p.Name)
+			g.note(g.Turn, false, true, i18n.T("Three doubles in a row: %s goes to jail."), p.Name)
 			g.jail(g.Turn)
 			return
 		}
@@ -606,10 +608,10 @@ func (g *Fortune) walkPath(pi int, path []int) {
 	}
 	g.emit(FortuneEvent{Kind: EvWalk, Player: pi, From: from, To: p.At, Steps: len(path), Path: path})
 	if via >= 0 {
-		g.note(pi, false, false, "%s took the road through %s.", p.Name, g.SquareName(via))
+		g.note(pi, false, false, i18n.T("%s took the road through %s."), p.Name, g.SquareName(via))
 	}
 	if passed {
-		g.note(pi, true, false, "%s passed Start: +$%d.", p.Name, startPay)
+		g.note(pi, true, false, i18n.T("%s passed Start: +$%d."), p.Name, startPay)
 	}
 	g.land(pi)
 }
@@ -652,30 +654,30 @@ func (g *Fortune) land(pi int) {
 			}
 			return
 		case owner < 0:
-			g.note(pi, false, false, "%s cannot afford %s.", p.Name, g.SquareName(p.At))
+			g.note(pi, false, false, i18n.T("%s cannot afford %s."), p.Name, g.SquareName(p.At))
 
 		case owner != pi:
 			rent := g.Rent(p.At)
 			if !g.charge(pi, rent, owner) {
 				return
 			}
-			g.note(pi, pi == owner, pi == 0, "%s paid %s $%d rent for %s.", p.Name, g.Players[owner].Name, rent, g.SquareName(p.At))
+			g.note(pi, pi == owner, pi == 0, i18n.T("%s paid %s $%d rent for %s."), p.Name, g.Players[owner].Name, rent, g.SquareName(p.At))
 		}
 	case TaxSquare:
 		if !g.charge(pi, sq.Price, -1) {
 			return
 		}
-		g.note(pi, false, pi == 0, "%s paid $%d %s into the fountain.", p.Name, sq.Price, sq.Name)
+		g.note(pi, false, pi == 0, i18n.T("%s paid $%d %s into the fountain."), p.Name, sq.Price, i18n.T(sq.Name))
 	case Fountain:
 		if g.Pot > 0 {
-			g.note(pi, true, false, "%s took $%d from the fountain.", p.Name, g.Pot)
+			g.note(pi, true, false, i18n.T("%s took $%d from the fountain."), p.Name, g.Pot)
 			p.Cash += g.Pot
 			g.Pot = 0
 		} else {
-			g.note(pi, false, false, "The fountain is empty.")
+			g.note(pi, false, false, "%s", i18n.T("The fountain is empty."))
 		}
 	case GoToJail:
-		g.note(pi, false, pi == 0, "%s goes to jail.", p.Name)
+		g.note(pi, false, pi == 0, i18n.T("%s goes to jail."), p.Name)
 		g.jail(pi)
 		return
 	case ChanceSquare:
@@ -696,7 +698,7 @@ func (g *Fortune) afterMove() {
 	if g.Doubles > 0 && !g.Players[g.Turn].InJail {
 		g.Phase = PhaseRoll
 		if !g.Players[g.Turn].CPU {
-			g.note(g.Turn, false, false, "A double: roll again.")
+			g.note(g.Turn, false, false, "%s", i18n.T("A double: roll again."))
 		}
 	}
 }
@@ -710,21 +712,21 @@ var chanceCards = []struct {
 	each   int // from (positive) or to (negative) every other player
 	house  int // per house owned
 }{
-	{"A street fair pays out: collect $60.", 60, 0, -1, 0, 0},
-	{"Advance to Start.", 0, 0, 0, 0, 0},
-	{"Your bicycle needs a new chain: pay $40.", -40, 0, -1, 0, 0},
-	{"Go back three squares.", 0, -3, -1, 0, 0},
-	{"It is your birthday: every player gives you $25.", 0, 0, -1, 25, 0},
-	{"Roof repairs: pay $25 for each building.", 0, 0, -1, 0, -25},
-	{"A refund from the tax office: collect $80.", 80, 0, -1, 0, 0},
-	{"Catch a ride to the next station or pier.", 0, 0, nextPier, 0, 0},
-	{"A night out: go to %s.", 0, 0, 34, 0, 0},
-	{"Your shares paid a dividend: collect $100.", 100, 0, -1, 0, 0},
-	{"Hotel inspection: pay $40 for each building.", 0, 0, -1, 0, -40},
-	{"A parking fine: pay $30.", -30, 0, -1, 0, 0},
-	{"You won a crossword: collect $50.", 50, 0, -1, 0, 0},
-	{"Buy everyone lunch: pay each player $15.", 0, 0, -1, -15, 0},
-	{"Caught jaywalking: go to jail.", 0, 0, JailAt, 0, 0},
+	{i18n.M("A street fair pays out: collect $60."), 60, 0, -1, 0, 0},
+	{i18n.M("Advance to Start."), 0, 0, 0, 0, 0},
+	{i18n.M("Your bicycle needs a new chain: pay $40."), -40, 0, -1, 0, 0},
+	{i18n.M("Go back three squares."), 0, -3, -1, 0, 0},
+	{i18n.M("It is your birthday: every player gives you $25."), 0, 0, -1, 25, 0},
+	{i18n.M("Roof repairs: pay $25 for each building."), 0, 0, -1, 0, -25},
+	{i18n.M("A refund from the tax office: collect $80."), 80, 0, -1, 0, 0},
+	{i18n.M("Catch a ride to the next station or pier."), 0, 0, nextPier, 0, 0},
+	{i18n.M("A night out: go to %s."), 0, 0, 34, 0, 0},
+	{i18n.M("Your shares paid a dividend: collect $100."), 100, 0, -1, 0, 0},
+	{i18n.M("Hotel inspection: pay $40 for each building."), 0, 0, -1, 0, -40},
+	{i18n.M("A parking fine: pay $30."), -30, 0, -1, 0, 0},
+	{i18n.M("You won a crossword: collect $50."), 50, 0, -1, 0, 0},
+	{i18n.M("Buy everyone lunch: pay each player $15."), 0, 0, -1, -15, 0},
+	{i18n.M("Caught jaywalking: go to jail."), 0, 0, JailAt, 0, 0},
 }
 
 // nextPier is a chance card's destination: the next pier ahead.
@@ -742,11 +744,11 @@ func (g *Fortune) chance(pi int) bool {
 	c := chanceCards[g.deck[0]]
 	g.deck = g.deck[1:]
 	p := &g.Players[pi]
-	text := c.text
+	text := i18n.T(c.text)
 	if strings.Contains(text, "%s") { // a card that names a square
 		text = fmt.Sprintf(text, g.SquareName(c.to))
 	}
-	g.note(pi, c.amount > 0 || c.each > 0, (c.amount < 0 || c.each < 0 || c.house < 0) && pi == 0, "Chance for %s: %s", p.Name, text)
+	g.note(pi, c.amount > 0 || c.each > 0, (c.amount < 0 || c.each < 0 || c.house < 0) && pi == 0, i18n.T("Chance for %s: %s"), p.Name, text)
 	switch {
 	case c.to == JailAt:
 		g.jail(pi)
@@ -844,11 +846,11 @@ func (g *Fortune) raise(pi, amount int) {
 		if house {
 			g.Houses[best]--
 			p.Cash += HouseCost(best) / 2
-			g.note(pi, false, pi == 0, "%s sold a house on %s for $%d.", p.Name, g.SquareName(best), HouseCost(best)/2)
+			g.note(pi, false, pi == 0, i18n.T("%s sold a house on %s for $%d."), p.Name, g.SquareName(best), HouseCost(best)/2)
 		} else {
 			g.Owner[best] = -1
 			p.Cash += Board[best].Price / 2
-			g.note(pi, false, pi == 0, "%s sold %s to the bank for $%d.", p.Name, g.SquareName(best), Board[best].Price/2)
+			g.note(pi, false, pi == 0, i18n.T("%s sold %s to the bank for $%d."), p.Name, g.SquareName(best), Board[best].Price/2)
 		}
 	}
 }
@@ -861,7 +863,7 @@ func (g *Fortune) bankrupt(pi int) {
 			g.Owner[sq], g.Houses[sq] = -1, 0
 		}
 	}
-	g.note(pi, false, pi == 0, "%s is bankrupt and out of the game.", p.Name)
+	g.note(pi, false, pi == 0, i18n.T("%s is bankrupt and out of the game."), p.Name)
 	left := 0
 	for _, q := range g.Players {
 		if !q.Out {
@@ -910,7 +912,7 @@ func (g *Fortune) over() {
 	if best == 0 {
 		g.Result = Won
 	}
-	g.note(best, best == 0, best != 0, "%s won with $%d in worth.", g.Players[best].Name, g.Worth(best))
+	g.note(best, best == 0, best != 0, i18n.T("%s won with $%d in worth."), g.Players[best].Name, g.Worth(best))
 }
 
 // PlayCPU plays the computer player's whole turn.

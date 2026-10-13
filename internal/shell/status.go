@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/system"
 )
 
@@ -43,7 +44,7 @@ func NetTooltip(n system.NetworkState) string {
 	if n.Name != "" {
 		return n.Name
 	}
-	return "Offline"
+	return i18n.T("Offline")
 }
 
 // WifiIcon maps signal strength (0–100) to an icon.
@@ -65,45 +66,45 @@ func WifiIcon(strength int) string {
 func WifiTile(n system.NetworkState) (sub, icon string) {
 	switch {
 	case !n.Available:
-		return "Unavailable", "network-wireless-offline-symbolic"
+		return i18n.T("Unavailable"), "network-wireless-offline-symbolic"
 	case !n.WifiDevice:
-		return "No Wi-Fi device", "network-wireless-offline-symbolic"
+		return i18n.T("No Wi-Fi device"), "network-wireless-offline-symbolic"
 	case !n.WifiEnabled:
-		return "Off", "network-wireless-disabled-symbolic"
+		return i18n.T("Off"), "network-wireless-disabled-symbolic"
 	case n.Kind == "wifi":
 		return n.Name, WifiIcon(n.Strength)
 	case n.Kind != "":
 		return n.Name, "network-wireless-signal-none-symbolic" // wired or VPN; Wi-Fi is on but unused
 	}
-	return "Not connected", "network-wireless-offline-symbolic"
+	return i18n.T("Not connected"), "network-wireless-offline-symbolic"
 }
 
 // BluetoothTile is the subtitle of the Bluetooth tile.
 func BluetoothTile(b system.BluetoothState) string {
 	switch {
 	case !b.Available:
-		return "Unavailable"
+		return i18n.T("Unavailable")
 	case !b.Powered:
-		return "Off"
+		return i18n.T("Off")
 	case len(b.Connected) == 1:
 		return b.Connected[0]
 	case len(b.Connected) > 1:
-		return fmt.Sprintf("%d devices", len(b.Connected))
+		return i18n.Tf("%d devices", len(b.Connected))
 	}
-	return "On"
+	return i18n.T("On")
 }
 
 // SaverTile is the subtitle of the power saver tile.
 func SaverTile(p system.PowerProfileState) string {
 	switch {
 	case !p.Available:
-		return "Unavailable"
+		return i18n.T("Unavailable")
 	case p.Active == "power-saver":
-		return "On"
+		return i18n.T("On")
 	case p.Active == "performance":
-		return "Performance"
+		return i18n.T("Performance")
 	}
-	return "Off"
+	return i18n.T("Off")
 }
 
 // TailscaleTile is the Tailscale tile: its subtitle, whether it shows
@@ -112,19 +113,19 @@ func SaverTile(p system.PowerProfileState) string {
 func TailscaleTile(t system.TailscaleState) (sub string, on, toggles bool) {
 	switch {
 	case !t.Running:
-		return "Not running", false, false
+		return i18n.T("Not running"), false, false
 	case t.Backend == "Running" && t.ExitNode != "":
-		return "via " + t.ExitNode, true, true
+		return i18n.Tf("via %s", t.ExitNode), true, true
 	case t.Backend == "Running":
-		return fmt.Sprintf("%d online", t.Online), true, true
+		return i18n.Tf("%d online", t.Online), true, true
 	case t.Backend == "Stopped":
-		return "Off", false, true
+		return i18n.T("Off"), false, true
 	case t.Backend == "NeedsLogin":
-		return "Logged out", false, false
+		return i18n.T("Logged out"), false, false
 	case t.Backend == "NeedsMachineAuth":
-		return "Needs approval", false, false
+		return i18n.T("Needs approval"), false, false
 	case t.Backend == "Starting":
-		return "Connecting…", true, true
+		return i18n.T("Connecting…"), true, true
 	}
 	return t.Backend, false, false
 }
@@ -182,9 +183,9 @@ func BatteryIcon(b system.BatteryState) string {
 func BatteryText(b system.BatteryState) string {
 	switch {
 	case b.Full:
-		return "Fully charged"
+		return i18n.T("Fully charged")
 	case b.Charging:
-		return fmt.Sprintf("%.0f%% · Charging", b.Percent)
+		return i18n.Tf("%.0f%% · Charging", b.Percent)
 	}
 	return fmt.Sprintf("%.0f%%", b.Percent)
 }

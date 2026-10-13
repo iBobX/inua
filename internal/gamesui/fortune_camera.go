@@ -8,6 +8,7 @@ import (
 
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // The board's camera: the whole board at zoom 1, closer up to zoomMax. The
@@ -132,7 +133,7 @@ func (p *fortune) setupCamera() *gtk.Widget {
 	box.AddCssClass("fortune-zoom")
 	box.SetHalign(gtk.AlignEndValue)
 	box.SetValign(gtk.AlignEndValue)
-	for _, b := range [][3]string{{"in", "zoom-in-symbolic", "Closer (+)"}, {"out", "zoom-out-symbolic", "Further (−)"}, {"fit", "view-fullscreen-symbolic", "The whole board (0)"}} {
+	for _, b := range [][3]string{{"in", "zoom-in-symbolic", i18n.T("Closer (+)")}, {"out", "zoom-out-symbolic", i18n.T("Further (−)")}, {"fit", "view-fullscreen-symbolic", i18n.T("The whole board (0)")}} {
 		btn := gtk.NewButtonFromIconName(b[1])
 		btn.SetName(b[0])
 		btn.SetTooltipText(b[2])
