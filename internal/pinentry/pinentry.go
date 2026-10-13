@@ -39,8 +39,22 @@ type Request struct {
 	// Owner is the process gpg-agent asks for (OPTION owner=PID/UID
 	// HOST): gpg, run by whatever wants the key; 0 when it did not say.
 	Owner int `json:"-"`
-	// Requester says who wants it, for the dialog: "git ← zed".
-	Requester string `json:"requester,omitempty"`
+	// KeyGrip names the key asked for (SETKEYINFO); "" when not a key.
+	KeyGrip string `json:"-"`
+
+	// Who wants it and what for, which inua-pinentry finds, for the
+	// dialog. App is the program ("pass", or the app inua-keyring serves);
+	// Chain what it runs under ("zsh ← ghostty"); Keyring is set when
+	// inua-keyring asks for App.
+	App     string `json:"app,omitempty"`
+	Chain   string `json:"chain,omitempty"`
+	Keyring bool   `json:"keyring,omitempty"`
+	// Entry is the pass entry gpg decrypts ("work/mail"), Secret the
+	// secret inua-keyring was asked for.
+	Entry  string `json:"entry,omitempty"`
+	Secret string `json:"secret,omitempty"`
+	// Key is the key the passphrase unlocks; nil when it is not known.
+	Key *Key `json:"key,omitempty"`
 }
 
 // UserData is how inua-keyring says, in PINENTRY_USER_DATA (gpg-agent
@@ -99,7 +113,10 @@ func Serve(r io.Reader, w io.Writer, ask Asker) error {
 				owner, _ = strconv.Atoi(pid)
 			}
 			err = say("OK")
-		case "NOP", "SETKEYINFO", "SETQUALITYBAR", "SETQUALITYBAR_TT", "SETGENPIN", "SETGENPIN_TT", "CLEARPASSPHRASE":
+		case "SETKEYINFO": // "n/GRIP", "s/GRIP" for ssh, or "--clear"
+			_, st.KeyGrip, _ = strings.Cut(arg, "/")
+			err = say("OK")
+		case "NOP", "SETQUALITYBAR", "SETQUALITYBAR_TT", "SETGENPIN", "SETGENPIN_TT", "CLEARPASSPHRASE":
 			err = say("OK")
 		case "RESET":
 			st = Request{}

@@ -2,8 +2,9 @@
 // must authenticate for: over the whole focused monitor, a shade and a
 // card with what is asked, who answers, the helper's prompt and its
 // messages. Go fills it (internal/ui/polkit.go). gpg's pinentry asks in
-// it too (internal/ui/askpass.go), without the user row, with a second
-// field for a new passphrase and a third button for some questions.
+// it too (internal/ui/askpass.go), without the user row, with the key
+// and who asks for it, a button hiding what is private, a second field
+// for a new passphrase and a third button for some questions.
 using Gtk 4.0;
 
 Window polkit_dialog {
@@ -19,17 +20,62 @@ Window polkit_dialog {
       width-request: 380;
       spacing: 10;
 
-      Image icon {
-        styles ["polkit-icon"]
-        icon-name: "dialog-password-symbolic";
-        pixel-size: 28;
-        halign: start;
+      Box {
+        Image icon {
+          styles ["polkit-icon"]
+          icon-name: "dialog-password-symbolic";
+          pixel-size: 28;
+          halign: start;
+          hexpand: true;
+        }
+
+        // Why the details are hidden when nobody asked: the screen is
+        // being captured. In this row, so the card keeps its height.
+        Box mask_note {
+          styles ["pass-note"]
+          spacing: 8;
+          valign: center;
+          margin-end: 8;
+          visible: false;
+
+          Box {
+            styles ["mark", "on"]
+            valign: center;
+          }
+
+          Label mask_note_text {
+            styles ["pass-meta"]
+            ellipsize: end;
+          }
+        }
+
+        // Hides the key's owner, its fingerprint and the pass entry, for
+        // a screenshot or a shared screen; on its own while recording.
+        Button mask {
+          styles ["plain", "pass-mask"]
+          icon-name: "view-conceal-symbolic";
+          valign: start;
+          visible: false;
+        }
       }
 
-      Label title {
-        styles ["polkit-title"]
-        label:  _("Authentication Required");
-        xalign: 0;
+      Box {
+        orientation: vertical;
+        spacing: 3;
+
+        Label title {
+          styles ["polkit-title"]
+          label:  _("Authentication Required");
+          xalign: 0;
+        }
+
+        Label subtitle {
+          styles ["polkit-message"]
+          xalign: 0;
+          wrap: true;
+          max-width-chars: 46;
+          visible: false;
+        }
       }
 
       Label message {
@@ -48,6 +94,242 @@ Window polkit_dialog {
         max-width-chars: 46;
         selectable: true;
         visible: false;
+      }
+
+      // The key the passphrase unlocks: who owns it, what it is, its
+      // fingerprint and dates, under a section head as Settings has. A
+      // row clicked copies its value.
+      Box key_card {
+        styles ["pass-rows"]
+        orientation: vertical;
+        visible: false;
+
+        Box {
+          styles ["pass-head"]
+          spacing: 10;
+
+          Box {
+            styles ["mark"]
+            valign: center;
+          }
+
+          Label {
+            styles ["pass-section"]
+            use-markup: true;
+            label:  _("<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>");
+          }
+
+          // What the key does: "Encryption subkey".
+          Label key_role {
+            styles ["pass-meta"]
+            hexpand: true;
+            xalign: 1;
+          }
+        }
+
+        Button row_owner {
+          styles ["pass-row"]
+          name: "row_owner";
+
+          Box {
+            spacing: 16;
+
+            Label owner_kicker {
+              styles ["kicker"]
+              label:  _("OWNER");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Box {
+              orientation: vertical;
+              spacing: 2;
+              hexpand: true;
+
+              Label key_name {
+                styles ["pass-value"]
+                xalign: 0;
+                ellipsize: end;
+              }
+
+              Label key_email {
+                styles ["pass-sub", "pass-mono"]
+                xalign: 0;
+                ellipsize: middle;
+              }
+            }
+          }
+        }
+
+        Button row_type {
+          styles ["pass-row"]
+          name: "row_type";
+
+          Box {
+            spacing: 16;
+
+            Label type_kicker {
+              styles ["kicker"]
+              label:  _("TYPE");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label key_algo {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+            }
+          }
+        }
+
+        Button row_fpr {
+          styles ["pass-row"]
+          name: "row_fpr";
+
+          Box {
+            spacing: 16;
+
+            Label fpr_kicker {
+              styles ["kicker"]
+              label:  _("FINGERPRINT");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label key_fpr {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+            }
+          }
+        }
+
+        Button row_primary {
+          styles ["pass-row"]
+          name: "row_primary";
+        visible: false;
+
+          Box {
+            spacing: 16;
+
+            Label primary_kicker {
+              styles ["kicker"]
+              label:  _("PRIMARY");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label key_primary {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+            }
+          }
+        }
+
+        Button row_created {
+          styles ["pass-row"]
+          name: "row_created";
+
+          Box {
+            spacing: 16;
+
+            Label created_kicker {
+              styles ["kicker"]
+              label:  _("CREATED");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label key_dates {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+              wrap: true;
+            }
+          }
+        }
+      }
+
+      // What the key is wanted for and who wants it.
+      Box asks {
+        styles ["pass-rows"]
+        orientation: vertical;
+        visible: false;
+
+        Box {
+          styles ["pass-head"]
+          spacing: 10;
+
+          Box {
+            styles ["mark"]
+            valign: center;
+          }
+
+          Label {
+            styles ["pass-section"]
+            use-markup: true;
+            label:  _("<span alpha='55%'>[</span>REQUEST<span alpha='55%'>]</span>");
+          }
+        }
+
+        Button row_for {
+          styles ["pass-row"]
+          name: "row_for";
+
+          Box {
+            spacing: 16;
+
+            Label for_kicker {
+              styles ["kicker"]
+              label:  _("FOR");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label for_value {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+              ellipsize: middle;
+            }
+          }
+        }
+
+        Button row_asker {
+          styles ["pass-row"]
+          name: "row_asker";
+
+          Box {
+            spacing: 16;
+
+            Label asker_kicker {
+              styles ["kicker"]
+              label:  _("ASKED BY");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Box {
+              spacing: 6;
+              hexpand: true;
+
+              // The program that asked, then what it runs under.
+              Label asker_app {
+                styles ["pass-value", "pass-mono", "pass-strong"]
+                xalign: 0;
+              }
+
+              Label asker_chain {
+                styles ["pass-sub", "pass-mono"]
+                xalign: 0;
+                hexpand: true;
+                ellipsize: start;
+              }
+            }
+          }
+        }
       }
 
       Box who {

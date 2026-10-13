@@ -334,6 +334,9 @@ func TestPassphraseAccess(t *testing.T) {
 	if a.Kind != Passphrase || a.App != "pass" || a.Pass != "work/mail" || a.Secret != "work/mail" || a.PID != gpg || !strings.Contains(a.Command, "mail.gpg") {
 		t.Errorf("for pass: %+v", a)
 	}
+	if strings.HasPrefix(a.Chain, "pass") { // pass's subshell is pass too
+		t.Errorf("pass under pass: chain %q", a.Chain)
+	}
 	a = PassphraseAccess(gpg, "gh (pid 41)\tPassword for 'ann' on 'gh:github.com'", desc, store)
 	if a.App != "gh" || a.Secret != "Password for 'ann' on 'gh:github.com'" || a.Pass != "work/mail" {
 		t.Errorf("for inua-keyring: %+v", a)

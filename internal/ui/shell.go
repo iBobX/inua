@@ -186,6 +186,8 @@ type shellUI struct {
 	onPassActivate         func(gtk.PasswordEntry)
 	onPassKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onAlarmTick            glib.SourceFunc
+	onPassMask             func(gtk.Button)
+	onPassRow              func(gtk.Button)
 	onRecordTimeout        glib.SourceFunc
 	onSettingsSave         glib.SourceFunc
 	onNoteButton           func(gtk.Button)
@@ -517,6 +519,10 @@ func (h hyprHandler) OnSnapshot(snap hypr.Snapshot) { gtkx.Post(func() { h.s.app
 func (h hyprHandler) OnEvent(e hypr.Event) {
 	h.s.overviewEvent(e)
 	if e.Name == "configreloaded" {
+	if e.Name == "screencast" { // "1,OWNER" when a screencast starts, "0,…" when it ends
+		on := strings.HasPrefix(e.Data, "1")
+		gtkx.Post(func() { h.s.passCapture(func(m *shell.PassMask) { m.Screencast(on) }) })
+	}
 		// inua.conf may have changed what is in effect.
 		gtkx.Post(func() {
 			h.s.refreshHyprInput()

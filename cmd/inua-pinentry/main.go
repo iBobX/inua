@@ -21,7 +21,6 @@ import (
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/keyring"
 	"github.com/lyricat/inua/internal/pinentry"
-	"github.com/lyricat/inua/internal/proc"
 )
 
 // fallbacks are the pinentries run without a shell, the first found.
@@ -34,8 +33,14 @@ func main() {
 	}
 	cfg, _, _ := config.Load(config.DefaultPath())
 	i18n.Init(cfg.Language)
+	// inua-keyring names the app and the secret when its pass asks.
+	forKeyring, viaKeyring := strings.CutPrefix(os.Getenv("PINENTRY_USER_DATA"), pinentry.UserData)
+	if !viaKeyring {
+		forKeyring = "" // someone else's
+	}
 	ask := func(q pinentry.Request) (pinentry.Answer, error) {
-		q.Requester = requester(q.Owner)
+		read := keyring.PassphraseAccess(q.Owner, forKeyring, q.Desc, keyring.StoreDir())
+		describe(&q, read, forKeyring, viaKeyring)
 		arg, err := json.Marshal(q)
 		if err != nil {
 			return pinentry.Answer{}, err
@@ -60,7 +65,10 @@ func main() {
 			answer = keyring.Failed
 		}
 		if q.Mode == pinentry.GetPin {
-			record(q, answer)
+			read.Answer = answer
+			if err := keyring.RecordAccess(keyring.AccessPath(), read); err != nil {
+				fmt.Fprintln(os.Stderr, "inua-pinentry: record:", err)
+			}
 		}
 		if answer == keyring.Failed {
 			return a, err
@@ -73,31 +81,24 @@ func main() {
 	}
 }
 
-// requester says who wants the key, for the dialog: the app and secret
-// inua-keyring named, else the process gpg-agent asks for and those it
-// runs under ("gpg ← git ← zed").
-func requester(owner int) string {
-	if v, ok := strings.CutPrefix(os.Getenv("PINENTRY_USER_DATA"), pinentry.UserData); ok {
-		app, secret, _ := strings.Cut(v, "\t")
-		if secret != "" {
-			return i18n.Tf("%s, for the secret “%s”", app, secret)
+// describe tells the dialog who wants the key and what for: the app and
+// secret inua-keyring named, else the program running gpg, what it runs
+// under ("pass", "zsh ← ghostty") and the pass entry gpg decrypts; and
+// the key, from gpg's keyring.
+func describe(q *pinentry.Request, a keyring.Access, forKeyring string, viaKeyring bool) {
+	q.App, q.Chain, q.Entry = a.App, a.Chain, a.Pass
+	if viaKeyring {
+		q.Keyring, q.Chain = true, ""
+		if app, secret, ok := strings.Cut(forKeyring, "\t"); ok {
+			q.Secret = secret
+			forKeyring = app
 		}
-		return app
+		if q.App == "" {
+			q.App, _, _ = strings.Cut(forKeyring, " (pid ")
+		}
 	}
-	return proc.Chain(owner, 4)
-}
-
-// record adds a passphrase asked for to the keyring's record of reads,
-// which Settings → Keyring lists.
-func record(q pinentry.Request, answer string) {
-	forKeyring, ok := strings.CutPrefix(os.Getenv("PINENTRY_USER_DATA"), pinentry.UserData)
-	if !ok {
-		forKeyring = "" // someone else's
-	}
-	a := keyring.PassphraseAccess(q.Owner, forKeyring, q.Desc, keyring.StoreDir())
-	a.Answer = answer
-	if err := keyring.RecordAccess(keyring.AccessPath(), a); err != nil {
-		fmt.Fprintln(os.Stderr, "inua-pinentry: record:", err)
+	if k, ok := pinentry.LookupKey(q.KeyGrip); ok {
+		q.Key = &k
 	}
 }
 

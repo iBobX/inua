@@ -134,5 +134,8 @@ image-x-generic                       image
 calc-backspace                        backspace
 calc-plus-minus                       plus-minus
 document-open-recent                  clock-counter-clockwise
+# password dialog: hide and show the private details
+view-conceal                          eye-slash
+view-reveal                           eye
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

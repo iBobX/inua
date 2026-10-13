@@ -243,7 +243,9 @@ func (s *shellUI) openShot(mode string) {
 	mons := s.snap.Monitors
 	focused := s.snap.FocusedMonitor
 	decode := mode == "color"
+	wait := s.hideForShot()
 	go func() {
+		time.Sleep(wait)
 		dir, err := shotTempDir()
 		var clients []byte
 		if err == nil {
@@ -281,6 +283,7 @@ func (s *shellUI) openShot(mode string) {
 			if err != nil {
 				log.Printf("screenshot: %v", err)
 				removeShotFiles(surfaces, "")
+				s.shotShown()
 				return
 			}
 			s.showShot(surfaces, mode)
@@ -616,6 +619,23 @@ func (s *shellUI) closeCapture(keep string) {
 	sh.refs.Release()
 	removeShotFiles(sh.surfaces, keep)
 	sh.open, sh.surfaces, sh.dragging, sh.record = false, nil, nil, false
+	s.shotShown()
+}
+
+// hideForShot hides the password dialog's private details before a
+// screenshot, and says how long to wait for it to be drawn so; shotShown
+// shows them again after.
+func (s *shellUI) hideForShot() time.Duration {
+	hidden := s.pass.mask.Hidden()
+	s.passCapture(func(m *shell.PassMask) { m.Shooting(true) })
+	if s.pass.cur == nil || hidden {
+		return 0
+	}
+	return 150 * time.Millisecond
+}
+
+func (s *shellUI) shotShown() {
+	s.passCapture(func(m *shell.PassMask) { m.Shooting(false) })
 }
 
 // recordArgs are wf-recorder's arguments for recording r on a surface's
@@ -641,7 +661,10 @@ func removeShotFiles(surfaces []*shotSurface, keep string) {
 // shootNow takes the focused screen or window without the tool.
 func (s *shellUI) shootNow(what string) {
 	focused := s.snap.FocusedMonitor
+	wait := s.hideForShot()
 	go func() {
+		defer gtkx.Post(s.shotShown)
+		time.Sleep(wait)
 		args := []string{"-o", focused}
 		if what == "window" {
 			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

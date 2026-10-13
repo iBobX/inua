@@ -121,10 +121,22 @@ screenshot color` picks a colour from the still with a loupe.
 inua is the session's Polkit agent: a program asking for administrator
 rights (pkexec, a system setting) gets inua's password dialog, and the
 system's helper checks the password. gpg asks for passphrases in the same
-dialog through `inua-pinentry`, which `inua init` sets up; the dialog
-says who asked: the app inua-keyring reads a secret for, or the program
-gpg-agent names and those it runs under ("gpg ← git ← zed"). The shell
-keeps none of it.
+dialog through `inua-pinentry`, which `inua init` sets up. The dialog
+shows the key the passphrase unlocks, found in gpg's public keyring by the
+keygrip gpg-agent gives: its owner and address, whether it is a subkey and
+what for, its algorithm, fingerprint and dates. Below it are what it is
+for (the pass entry gpg decrypts, or the secret inua-keyring reads) and
+who asked: the app inua-keyring reads for, or the program running gpg and
+those it runs under ("pass ← zsh ← ghostty"). The shell keeps none of it.
+
+The eye button in the dialog's corner hides the owner, the address, the
+fingerprints and the pass entry behind dots, for a screenshot or a shared
+screen; the choice lasts until the shell restarts. They are hidden on
+their own while the screen is recorded or shared (Hyprland's screencast
+event, or inua's own recording) and while inua's screenshot tool takes a
+shot, and shown again afterwards; the eye shows them during that capture
+if wanted. A screenshot taken by another program in one frame (`grim`
+bound to a key) cannot be seen coming: hide them first.
 
 ## Clipboard history
 

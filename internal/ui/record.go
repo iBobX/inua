@@ -16,6 +16,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/notify"
+	"github.com/lyricat/inua/internal/shell"
 )
 
 // Recording the screen is the screenshot tool with Record on: the area,
@@ -77,8 +78,12 @@ func (s *shellUI) startScreenRecording(args []string) {
 	cmd := exec.Command("wf-recorder", append(args, "-f", file)...)
 	var out strings.Builder
 	cmd.Stderr = &out
+	// The password dialog's details hidden before the first frame:
+	// wf-recorder takes longer to start than the dialog to redraw.
+	s.passCapture(func(m *shell.PassMask) { m.Recording(true) })
 	if err := cmd.Start(); err != nil {
 		log.Printf("record: %v", err)
+		s.passCapture(func(m *shell.PassMask) { m.Recording(false) })
 		return
 	}
 	r.cmd, r.file, r.started = cmd, file, time.Now()
@@ -106,6 +111,7 @@ func (s *shellUI) recordingEnded(err error, stderr string) {
 	file, took := r.file, time.Since(r.started)
 	r.cmd = nil
 	s.showRecording()
+	s.passCapture(func(m *shell.PassMask) { m.Recording(false) })
 	if st, statErr := os.Stat(file); statErr != nil || st.Size() == 0 {
 		log.Printf("record: %v %v %s", err, statErr, strings.TrimSpace(stderr))
 		s.recordNote(i18n.T("The recording failed"), lastLine(stderr), "")

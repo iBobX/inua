@@ -170,6 +170,9 @@ func PassphraseAccess(owner int, forKeyring, desc, store string) Access {
 			app = proc.Parent(owner)
 		}
 		a.App, a.Chain = proc.Name(app), proc.Chain(proc.Parent(app), 8)
+		for a.App != "" && (a.Chain == a.App || strings.HasPrefix(a.Chain, a.App+" ← ")) {
+			a.Chain = strings.TrimPrefix(strings.TrimPrefix(a.Chain, a.App), " ← ") // pass runs itself again
+		}
 		for _, arg := range proc.Args(owner) {
 			if strings.HasSuffix(arg, ".gpg") {
 				a.Pass = passEntry(arg, store)
