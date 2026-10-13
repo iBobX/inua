@@ -178,7 +178,8 @@ Translations are gettext catalogs in `internal/i18n/locales`, keyed by
 the English text; `make i18n` gathers the text to translate into
 `po/inua.pot` and updates them, including desktop launchers. The interface
 supports Simplified Chinese, Traditional Chinese, Japanese, Spanish, French
-and Korean (`LANGUAGE=zh-hant inua-apps clock`): see
+and Korean, chosen in Settings → Appearance → Language or by the
+environment (`LANGUAGE=zh-hant inua-apps clock`): see
 [docs/i18n.md](docs/i18n.md).
 
 Pull requests and pushes to `master` run Go formatting checks, regenerate

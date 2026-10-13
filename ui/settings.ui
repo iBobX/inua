@@ -257,6 +257,142 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="section-label"/>
                                         </style>
                                         <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;LANGUAGE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">The shell, settings and light apps</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Language</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Programs use it when they start</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="language">
+                                            <property name="name">language</property>
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item translatable="yes">Same as the system</item>
+                                                  <item>English</item>
+                                                  <item>简体中文</item>
+                                                  <item>繁體中文</item>
+                                                  <item>日本語</item>
+                                                  <item>한국어</item>
+                                                  <item>Español</item>
+                                                  <item>Français</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="lang_restart_row">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <property name="visible">false</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="sub"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Restart the shell to use it now; open apps change when you open them again.</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="lang_restart">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">lang_restart</property>
+                                            <property name="label" translatable="yes">Restart the shell</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
                                         <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;PICTURE&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
                                       </object>
                                     </child>

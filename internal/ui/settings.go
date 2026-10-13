@@ -48,6 +48,10 @@ type settings struct {
 	kbState, kbReadout, kbWarn, tpState, tpValue, tpWarn gtk.Label
 	notifyState                                          gtk.Label
 	kbReset, tpReset                                     gtk.Button
+	// The language, and the offer to restart the shell into a new one.
+	language       gtk.DropDown
+	langRestartRow gtk.Box
+	langRestart    gtk.Button
 	// hyprKb is Hyprland's kb_options while inua sets none, so the
 	// controls start from what is in effect.
 	hyprKb string
@@ -153,6 +157,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			}
 		case "icons":
 			c.Style.Icons = pick(config.IconSets, i, c.Style.Icons)
+		case "language":
+			c.Language = pick(config.Languages, i, c.Language)
 		case "swap":
 			opts := shell.SetSwapCtrlAlt(s.kbOptions(), pick(swapChoices, i, ""))
 			c.Input.KbOptions = &opts
@@ -185,6 +191,13 @@ func (s *shellUI) bindSettingsHandlers() {
 			action, id, _ := strings.Cut(strings.TrimPrefix(name, "pin-"), ":")
 			c.Dock.Pinned = movePinned(c.Dock.Pinned, id, action)
 			s.changeSettings(c)
+		case name == "lang_restart":
+			if s.settings.dirty {
+				s.saveSettings() // before the restart reads it
+			}
+			if err := s.scheduleRestart(); err != nil {
+				s.setStatus(i18n.Tf("Not restarted: %s", err.Error()), true)
+			}
 		case name == "kb_reset":
 			c.Input.KbOptions = nil
 			s.changeSettings(c)
@@ -283,6 +296,9 @@ func (s *shellUI) openSettings() {
 	ui.Get("ws", &st.ws)
 	ui.Get("launch_mode", &st.launchMode)
 	ui.Get("icons", &st.icons)
+	ui.Get("language", &st.language)
+	ui.Get("lang_restart_row", &st.langRestartRow)
+	ui.Get("lang_restart", &st.langRestart)
 	ui.Get("banner", &st.banner)
 	ui.Get("bar_enable", &st.barOn)
 	ui.Get("dock_enable", &st.dockOn)
@@ -332,14 +348,14 @@ func (s *shellUI) openSettings() {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.banner, &st.dockSize, &st.dockPosition} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.language, &st.banner, &st.dockSize, &st.dockPosition} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
 	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
-	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset} {
+	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	st.tpSpeed.ConnectChangeValue(&s.onSettingsScale)
@@ -475,6 +491,9 @@ func (s *shellUI) showSettings() {
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
 	st.icons.SetSelected(uint32(max(0, slices.Index(config.IconSets, c.Style.Icons))))
+	st.language.SetSelected(uint32(max(0, slices.Index(config.Languages, c.Language))))
+	// The shell chose its language when it started.
+	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
 	s.showInput()
 	s.showNotifySettings()
 	s.showDockSettings()

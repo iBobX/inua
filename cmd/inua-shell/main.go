@@ -41,8 +41,6 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lmicroseconds)
 	desktop.ReapInherited()
-	i18n.Init() // the language, from the environment
-
 	// A broken settings file never keeps the shell from starting: problems
 	// are logged (and shown by `inua config check`) and defaults fill in.
 	cfg, warnings, err := config.Load(*configPath)
@@ -52,5 +50,6 @@ func main() {
 	for _, w := range warnings {
 		log.Printf("config: %s", w)
 	}
+	i18n.Init(cfg.Language) // the settings' language, else the environment's
 	os.Exit(ui.Run(ui.Options{NoLayer: *noLayer, UIDir: *uiDir, Instance: *instance, Version: version, Config: cfg, ConfigPath: *configPath}))
 }

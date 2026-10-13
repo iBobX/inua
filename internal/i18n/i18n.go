@@ -25,9 +25,16 @@ var (
 	cat *catalog // nil: English
 )
 
-// Init chooses the language from the environment, as gettext does:
+// Init chooses the language: preferred, the settings' choice, when it is
+// set and not "auto"; else from the environment, as gettext does:
 // LANGUAGE (a list), else LC_ALL, LC_MESSAGES, LANG.
-func Init() { Use(Wanted()...) }
+func Init(preferred string) {
+	langs := Wanted()
+	if preferred != "" && preferred != "auto" {
+		langs = append([]string{preferred}, langs...)
+	}
+	Use(langs...)
+}
 
 // Wanted are the languages the environment asks for, most wanted first,
 // each followed by its language alone: "zh_CN.UTF-8" gives zh_CN, zh.

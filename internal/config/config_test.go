@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 var update = flag.Bool("update", false, "rewrite the generated sample config")
@@ -477,5 +479,39 @@ model = "x"
 	}
 	if len(w) != 7 {
 		t.Errorf("warnings %q", w)
+	}
+}
+
+// The language is one of Languages, each with its catalog; another is
+// reported and falls back to the environment's.
+func TestLanguage(t *testing.T) {
+	defer i18n.Use()
+	for _, l := range Languages[2:] {
+		if i18n.Use(l) != l {
+			t.Errorf("no catalog for %s", l)
+		}
+	}
+	path := filepath.Join(t.TempDir(), "config.toml")
+	for _, c := range []struct{ file, want string }{
+		{"", "auto"},
+		{`language = "ja"`, "ja"},
+		{`language = "klingon"`, "auto"},
+	} {
+		if err := os.WriteFile(path, []byte(c.file+"\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		cfg, warnings, err := Load(path)
+		if err != nil || cfg.Language != c.want || (c.file == `language = "klingon"`) != (len(warnings) > 0) {
+			t.Errorf("%q: %q, %v, %v", c.file, cfg.Language, warnings, err)
+		}
+	}
+	// What the settings window saves, it reads back.
+	d := Default()
+	d.Language = "zh_TW"
+	if err := os.WriteFile(path, []byte(Format(d)), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if cfg, _, _ := Load(path); cfg.Language != "zh_TW" {
+		t.Errorf("saved zh_TW, read %q", cfg.Language)
 	}
 }

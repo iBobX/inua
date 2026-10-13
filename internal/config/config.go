@@ -21,6 +21,9 @@ import (
 
 // Config is the shell's settings.
 type Config struct {
+	// Language is the interface's language, one of Languages: "auto"
+	// follows the environment (LANGUAGE, LC_ALL, LC_MESSAGES, LANG).
+	Language   string     `toml:"language"`
 	Bar        Bar        `toml:"bar"`
 	Launcher   Launcher   `toml:"launcher"`
 	Overview   Overview   `toml:"overview"`
@@ -386,6 +389,10 @@ var Fits = []string{"cover", "contain", "tile", "center"}
 // from the system's.
 var IconSets = []string{"phosphor", "system"}
 
+// Languages are the interface's languages: "auto" (the environment's),
+// English, then the catalogs in internal/i18n/locales.
+var Languages = []string{"auto", "en", "zh_CN", "zh_TW", "ja", "ko", "es", "fr"}
+
 // Themes are the built-in colour themes (ui/themes/<name>.css): three
 // everyday ones, then four dark editions.
 var Themes = []string{"yoru", "washi", "aojashin", "suimen", "rinko", "bunko", "denko"}
@@ -393,6 +400,7 @@ var Themes = []string{"yoru", "washi", "aojashin", "suimen", "rinko", "bunko", "
 // Default returns the settings used when the file says nothing.
 func Default() Config {
 	return Config{
+		Language: "auto",
 		Bar: Bar{
 			Enable:     true,
 			Clock:      "%a %b %-d  %H:%M",
@@ -504,6 +512,7 @@ func (c *Config) validate() []string {
 		}
 		return false
 	})
+	oneOf("language", &c.Language, d.Language, Languages...)
 	oneOf("style.theme", &c.Style.Theme, d.Style.Theme, Themes...)
 	oneOf("style.icons", &c.Style.Icons, d.Style.Icons, IconSets...)
 	oneOf("background.fit", &c.Background.Fit, d.Background.Fit, Fits...)

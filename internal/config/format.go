@@ -14,6 +14,7 @@ import (
 // not kept.
 func Format(c Config) string {
 	return fmt.Sprintf(template,
+		q(c.Language),
 		c.Bar.Enable, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray,
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
@@ -159,6 +160,11 @@ var template = strings.TrimLeft(`
 # The settings window (inua call settings open) edits this file and applies
 # changes at once; it rewrites the file in this layout. After editing by
 # hand: `+"`inua call shell reload`"+`.
+
+# The interface's language: "auto" follows the system (LANGUAGE, LC_ALL,
+# LC_MESSAGES, LANG); or "en", "zh_CN", "zh_TW", "ja", "ko", "es", "fr".
+# The shell and apps read it when they start.
+language = %s
 
 [bar]
 # Show the bar along the top of each monitor. Without it the launcher

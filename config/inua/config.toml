@@ -8,6 +8,11 @@
 # changes at once; it rewrites the file in this layout. After editing by
 # hand: `inua call shell reload`.
 
+# The interface's language: "auto" follows the system (LANGUAGE, LC_ALL,
+# LC_MESSAGES, LANG); or "en", "zh_CN", "zh_TW", "ja", "ko", "es", "fr".
+# The shell and apps read it when they start.
+language = "auto"
+
 [bar]
 # Show the bar along the top of each monitor. Without it the launcher
 # (Super+Space), control center (Super+A) and notification center (Super+N)

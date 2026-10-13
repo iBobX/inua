@@ -221,3 +221,20 @@ func TestKeywords(t *testing.T) {
 		}
 	}
 }
+
+// The settings' language comes before the environment's; "auto" leaves
+// the environment's, "en" chooses English.
+func TestInit(t *testing.T) {
+	defer Use()
+	t.Setenv("LANGUAGE", "")
+	t.Setenv("LC_ALL", "")
+	t.Setenv("LC_MESSAGES", "")
+	t.Setenv("LANG", "zh_CN.UTF-8")
+	for _, c := range []struct{ preferred, want string }{
+		{"", "zh_CN"}, {"auto", "zh_CN"}, {"ja", "ja"}, {"en", ""},
+	} {
+		if Init(c.preferred); Lang() != c.want {
+			t.Errorf("Init(%q): %q, want %q", c.preferred, Lang(), c.want)
+		}
+	}
+}

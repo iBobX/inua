@@ -124,7 +124,8 @@ type Ctx struct {
 // same app brings its window forward instead, unless the app has many.
 // args are a page to open, or files for an opener.
 func Run(name string, args []string, uiDir string) int {
-	i18n.Init()
+	cfg, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
+	i18n.Init(cfg.Language)
 	a, ok := Apps[name]
 	if !ok {
 		names := make([]string, 0, len(Apps))
