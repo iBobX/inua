@@ -729,7 +729,7 @@ window.settings { background: @app; font-size: 14px; }
   color: @t0;
 }
 .settings .keycap.waiting { border-color: @accent; color: @accent; }
-.settings .keycap.empty { color: @t2; border-style: dashed; background: transparent; }
+.settings .keycap.unset { color: @t2; border-style: dashed; background: transparent; }
 /* The keys are the button that records new ones. */
 .settings button.keys {
   min-height: 0; padding: 0; border: none; border-radius: 2px;
@@ -739,6 +739,8 @@ window.settings { background: @app; font-size: 14px; }
 /* The icon slot keeps one width whether it holds a button or not. */
 .settings .slot { min-width: 28px; }
 .settings .row.compact { min-height: 0; padding: 6px 0; }
+/* A shortcut's row: as tall as a title and its line under it. */
+.settings .row.shortcut { min-height: 36px; padding: 8px 0; }
 /* The Keyring page's reads: a row is a button opening the side panel. */
 .settings button.keyring-read {
   margin: 0 -10px;

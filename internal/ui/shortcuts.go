@@ -164,6 +164,7 @@ func (s *shellUI) shortcutRow(box *gtk.Box, id, title, sub string, keys []string
 	sc := &s.settings.sc
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	row.AddCssClass("row")
+	row.AddCssClass("shortcut")
 	text := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	text.SetHexpand(true)
 	text.SetValign(gtk.AlignCenterValue)
@@ -198,7 +199,7 @@ func (s *shellUI) shortcutRow(box *gtk.Box, id, title, sub string, keys []string
 		gtkx.Append(caps, &l.Widget)
 	case len(keys) == 0:
 		l := keycapText(i18n.T("Not set"))
-		l.AddCssClass("empty")
+		l.AddCssClass("unset")
 		gtkx.Append(caps, &l.Widget)
 	default:
 		for _, k := range keys {
