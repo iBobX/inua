@@ -61,9 +61,10 @@ manager; they only register the Inua session. `make deps-dm` installs Ubuntu
 26.04's `greetd` and `tuigreet` packages, which may ask which login manager
 should be the default.
 
-The greetd mode also installs `session/greetd.toml`. The template uses
-Ubuntu/Debian's `_greetd` system account and tty7; other distributions need
-the user and VT of their greetd package. It reads sessions from
+The greetd mode also installs `session/greetd.toml`, with the greeter
+account of the greetd package installed (`_greetd` on Debian and Ubuntu,
+`greeter` on Arch, `greetd` on Fedora) and the VT of the config it
+replaces, else tty7. It reads sessions from
 `--sessions /usr/share/wayland-sessions`, runs `inua-session` by default and
 does not log in automatically.
 

@@ -17,12 +17,43 @@ dest=${2:-/}
 
 install -Dm755 "$root/scripts/inua-session" "$dest/usr/local/bin/inua-session"
 install -Dm644 "$root/config/session/inua.desktop" "$dest/usr/share/wayland-sessions/inua.desktop"
+# account NAME: whether the system being installed has that user.
+account() {
+    if [ "$dest" = / ]; then
+        getent passwd "$1" >/dev/null 2>&1
+    else
+        grep -q "^$1:" "$dest/etc/passwd" 2>/dev/null
+    fi
+}
+
 if [ "$dm" = greetd ]; then
     config="$dest/etc/greetd/config.toml"
-    if ! cmp -s "$root/config/session/greetd.toml" "$config"; then
-        install -Dm644 --backup=numbered "$root/config/session/greetd.toml" "$config"
-        echo "tuigreet configured in $config; any previous config is saved as $config.~N~."
+    # The greeter's account and VT are the greetd package's: _greetd on
+    # Debian and Ubuntu, greeter on Arch, greetd on Fedora. Those in the
+    # config the package installed come first.
+    user= vt=
+    if [ -f "$config" ]; then
+        user=$(sed -n 's/^[[:space:]]*user[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$config" | head -n 1)
+        vt=$(sed -n 's/^[[:space:]]*vt[[:space:]]*=[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$config" | head -n 1)
     fi
-    echo "The greetd template targets Ubuntu/Debian (_greetd, tty7). See config/README.md before enabling greetd."
+    if [ -z "$user" ] || ! account "$user"; then
+        user=
+        for name in _greetd greeter greetd; do
+            if account "$name"; then user=$name; break; fi
+        done
+    fi
+    if [ -z "$user" ]; then
+        user=_greetd
+        echo "inua: no greeter account (_greetd, greeter or greetd) yet; assuming _greetd. Install greetd, then run this again." >&2
+    fi
+    tuigreet=$(command -v tuigreet 2>/dev/null || echo /usr/bin/tuigreet)
+    staged=$(mktemp)
+    trap 'rm -f "$staged"' EXIT
+    sed -e "s|^user = .*|user = \"$user\"|" -e "s|^vt = .*|vt = ${vt:-7}|" \
+        -e "s|/usr/bin/tuigreet|$tuigreet|" "$root/config/session/greetd.toml" >"$staged"
+    if ! cmp -s "$staged" "$config"; then
+        install -Dm644 --backup=numbered "$staged" "$config"
+        echo "tuigreet configured in $config for the greeter $user on VT ${vt:-7}; any previous config is saved as $config.~N~."
+    fi
 fi
 echo "Inua session installed. Select Inua in your login screen, or run inua-session from a TTY."

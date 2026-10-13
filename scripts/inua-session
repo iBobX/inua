@@ -3,12 +3,22 @@
 set -eu
 
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
-for program in inua-shell inua start-hyprland; do
+for program in inua-shell inua; do
     if ! command -v "$program" >/dev/null 2>&1; then
         echo "inua-session: $program is not on PATH; install Inua and Hyprland first" >&2
         exit 1
     fi
 done
+# start-hyprland (Hyprland 0.53 and later) watches over the compositor;
+# an older Hyprland is started itself.
+compositor=start-hyprland
+if ! command -v start-hyprland >/dev/null 2>&1; then
+    compositor=Hyprland
+    if ! command -v Hyprland >/dev/null 2>&1; then
+        echo "inua-session: Hyprland is not on PATH; install Inua and Hyprland first" >&2
+        exit 1
+    fi
+fi
 
 # Let Hyprland resolve its default configuration, including XDG_CONFIG_HOME.
 # An existing config that never starts inua-shell (inua init leaves one
@@ -19,4 +29,4 @@ if [ -e "$config" ] && ! report=$(inua config hyprland "$config" 2>&1); then
     echo "inua-session: not starting; the Hyprland session is unaffected" >&2
     exit 1
 fi
-exec start-hyprland
+exec "$compositor"

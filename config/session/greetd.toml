@@ -1,5 +1,6 @@
-# Ubuntu/Debian: the greetd package creates _greetd and uses tty7.
-# Other distributions may use greeter and a different VT; match their service.
+# scripts/install-session.sh writes this with the greeter account and VT
+# of the greetd package installed: _greetd on Debian and Ubuntu, greeter
+# on Arch, greetd on Fedora; the VT of the config it replaces, else 7.
 [terminal]
 vt = 7
 

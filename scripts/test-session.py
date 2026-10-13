@@ -83,6 +83,23 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(result.stdout, "")
         self.assertIn("inua-shell", result.stderr)
 
+    def test_older_hyprland_without_start_hyprland(self):
+        # Only the fakes on PATH: not this machine's start-hyprland.
+        (self.bin / "start-hyprland").unlink()
+        self.executable("Hyprland", '#!/bin/sh\necho plain\nexit 18\n')
+        self.env["PATH"] = str(self.bin)
+        launch = lambda: subprocess.run(
+            ["/bin/sh", str(ROOT / "scripts/inua-session")], env=self.env,
+            text=True, capture_output=True,
+        )
+        result = launch()
+        self.assertEqual(result.returncode, 18, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), ["plain"])
+        (self.bin / "Hyprland").unlink()
+        result = launch()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Hyprland is not on PATH", result.stderr)
+
     def test_install_and_reinstall_preserve_other_sessions(self):
         dest = Path(self.tmp.name) / "staged root"
         sessions = dest / "usr/share/wayland-sessions"
@@ -138,6 +155,35 @@ class SessionTest(unittest.TestCase):
             self.assertEqual(len(list(config.parent.glob("config.toml.~*~"))), number)
         self.assertEqual(config.with_name("config.toml.~1~").read_text(), "# first login settings\n")
         self.assertFalse(config.with_name("config.toml.inua").exists())
+
+    def test_greetd_greeter_account_and_vt_follow_the_package(self):
+        cases = [
+            # Arch: the package's config names greeter and VT 1.
+            ("arch", "greeter:x:964:964::/:/usr/bin/nologin\n",
+             '[terminal]\nvt = 1\n[default_session]\ncommand = "agreety --cmd /bin/sh"\nuser = "greeter"\n', "greeter", 1),
+            # Fedora: the greetd account, no config yet.
+            ("fedora", "greetd:x:975:975::/:/sbin/nologin\n", None, "greetd", 7),
+            # An earlier config of ours naming _greetd where there is none.
+            ("stale", "greeter:x:964:964::/:/usr/bin/nologin\n",
+             '[terminal]\nvt = 7\n[default_session]\ncommand = "tuigreet"\nuser = "_greetd"\n', "greeter", 7),
+        ]
+        for name, passwd, existing, user, vt in cases:
+            with self.subTest(name):
+                dest = Path(self.tmp.name) / name
+                (dest / "etc/greetd").mkdir(parents=True)
+                (dest / "etc/passwd").write_text(passwd)
+                config = dest / "etc/greetd/config.toml"
+                if existing is not None:
+                    config.write_text(existing)
+                result = subprocess.run(
+                    ["sh", str(ROOT / "scripts/install-session.sh"), "greetd", str(dest)],
+                    text=True, capture_output=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                data = tomllib.loads(config.read_text())
+                self.assertEqual(data["default_session"]["user"], user)
+                self.assertEqual(data["terminal"]["vt"], vt)
+                self.assertIn("--cmd /usr/local/bin/inua-session", data["default_session"]["command"])
 
     def test_gdm_and_sddm_do_not_install_greetd_configuration(self):
         for dm in ("gdm", "sddm"):
