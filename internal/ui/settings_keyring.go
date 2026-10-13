@@ -105,12 +105,8 @@ func (s *shellUI) openKeyringRead(i int) {
 	k.detail.SetRevealChild(true)
 }
 
-// keyringFieldText is a field of the side panel: a name, its value, and
-// whether the value is a path or a command, set in a fixed-width face.
-type keyringFieldText struct {
-	name, value string
-	mono        bool
-}
+// keyringFieldText is a field of the side panel: a name and its value.
+type keyringFieldText struct{ name, value string }
 
 // keyringFields is what the side panel says of a row; what the record
 // does not hold (it was written before inua-keyring kept it) is left out.
@@ -146,17 +142,17 @@ func keyringFields(g keyring.Reads) []keyringFieldText {
 		}
 	}
 	fields := []keyringFieldText{
-		{secret, value, false},
-		{i18n.T("Answer"), answer, false},
-		{i18n.T("In pass"), where, g.Pass != ""},
-		{i18n.T("Keyring"), g.Collection, false},
-		{i18n.T("App"), g.App, false},
-		{i18n.T("Program"), g.Exe, true},
-		{i18n.T("Command line"), g.Command, true},
-		{i18n.T("Runs under"), g.Chain, false},
-		{i18n.T("Process"), process, false},
-		{i18n.T("Bus name"), g.Bus, true},
-		{i18n.T("When"), when, false},
+		{secret, value},
+		{i18n.T("Answer"), answer},
+		{i18n.T("In pass"), where},
+		{i18n.T("Keyring"), g.Collection},
+		{i18n.T("App"), g.App},
+		{i18n.T("Program"), g.Exe},
+		{i18n.T("Command line"), g.Command},
+		{i18n.T("Runs under"), g.Chain},
+		{i18n.T("Process"), process},
+		{i18n.T("Bus name"), g.Bus},
+		{i18n.T("When"), when},
 	}
 	out := fields[:0]
 	for _, f := range fields {
@@ -190,9 +186,7 @@ func keyringField(f keyringFieldText) *gtk.Box {
 	gtkx.Append(box, &name.Widget)
 	value := gtk.NewLabel(f.value)
 	value.AddCssClass("title")
-	if f.mono {
-		value.AddCssClass("mono-sub")
-	}
+	value.AddCssClass("mono-sub") // every value alike: paths, commands, names
 	value.SetXalign(0)
 	value.SetWrap(true)
 	value.SetWrapMode(2)       // word or character: paths break anywhere
