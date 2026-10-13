@@ -6,9 +6,11 @@ version; the light apps have [their own page](apps.md).
 ## Bar
 
 Workspaces as square marks, the focused window's title, the clock (a click
-shows the month under it), the tray, a bell for notifications and the
-status button for the control center (whose hit area reaches the screen
-corner). One per monitor.
+shows the month under it), the tray, the clipboard history, a bell for
+notifications and the status button for the control center. The clock and
+the buttons at the end reach up to the screen's top edge and across the
+gaps between them, and the status button into the corner, so the pointer
+thrown at the edge lands on one. One per monitor.
 
 ## Launcher
 

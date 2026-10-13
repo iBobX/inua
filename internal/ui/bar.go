@@ -149,9 +149,9 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b.rec.ConnectClicked(&s.onRecButton)
 	b.clockButton.ConnectClicked(&s.onClockButton)
 	s.showNotesButton(b)
-	// The status button reaches into the screen's corner: the bar's margin
-	// around and beside it hovers and clicks as the button, so the pointer
-	// thrown at the corner lands on it.
+	// The buttons reach to the screen's edges: the bar's margin around and
+	// between them hovers and clicks as the button (endReach, clockReach),
+	// so the pointer thrown at the top or the corner lands on one.
 	motion := gtk.NewEventControllerMotion()
 	motion.ConnectEnter(&s.onBarMotion)
 	motion.ConnectMotion(&s.onBarMotion)
@@ -304,20 +304,36 @@ func (s *shellUI) barOf(w *gtk.Widget) *bar {
 	return nil
 }
 
-// statusReach reports whether a point in the bar's window is in the status
-// button's reach: from the button's left edge to the window's right edge,
-// the window's full height, past the island's margin to the screen edges.
-// onButton is the button itself, which takes its own clicks.
-func (b *bar) statusReach(x, y float64) (reach, onButton bool) {
-	var r graphene.Rect
-	if !b.status.ComputeBounds(&b.win.Widget, &r) {
-		return false, false
+// endButtons are the bar's toggle buttons at its end, left to right, as
+// shown, with their names.
+func (b *bar) endButtons() (names []string, rects []shell.Rect) {
+	for _, c := range []struct {
+		name string
+		btn  *gtk.Button
+	}{{"clipboard", &b.clipboard}, {"notes", &b.notes}, {"status", &b.status}} {
+		var r graphene.Rect
+		if c.btn.IsVisible() && c.btn.ComputeBounds(&b.win.Widget, &r) {
+			f := *(*[4]float32)(unsafe.Pointer(&r)) // x, y, width, height; see rect
+			names = append(names, c.name)
+			rects = append(rects, shell.Rect{X: float64(f[0]), Y: float64(f[1]), W: float64(f[2]), H: float64(f[3])})
+		}
 	}
-	f := *(*[4]float32)(unsafe.Pointer(&r)) // x, y, width, height; see rect
-	px, py := float32(x), float32(y)
-	reach = px >= f[0]
-	onButton = reach && px < f[0]+f[2] && py >= f[1] && py < f[1]+f[3]
-	return reach, onButton
+	return names, rects
+}
+
+// endReach names the toggle button at the bar's end whose reach a point in
+// the bar's window is in ("clipboard", "notes", "status"; "" for none), and
+// whether it is on the button itself, which takes its own clicks. The
+// reaches cover the gaps between them and run up to the screen's edges, so
+// the pointer thrown at the top or the corner lands on one (shell.BarReach).
+func (b *bar) endReach(x, y float64) (name string, onButton bool) {
+	const gap = 6 // the end box's spacing
+	names, rects := b.endButtons()
+	i, on := shell.BarReach(rects, gap, x, y)
+	if i < 0 {
+		return "", false
+	}
+	return names[i], on
 }
 
 // clockReach reports whether a point in the bar's window is in the clock's
@@ -333,23 +349,6 @@ func (b *bar) clockReach(x, y float64) (reach, onButton bool) {
 	const wider = 12
 	px, py := float32(x), float32(y)
 	reach = px >= f[0]-wider && px < f[0]+f[2]+wider
-	onButton = reach && px >= f[0] && px < f[0]+f[2] && py >= f[1] && py < f[1]+f[3]
-	return reach, onButton
-}
-
-// notesReach reports whether a point in the bar's window is in the
-// notification button's reach: its column, from half the gap before it to
-// the status button's reach after it, the window's full height up to the
-// screen's edge. onButton is the button itself, which takes its own clicks.
-func (b *bar) notesReach(x, y float64) (reach, onButton bool) {
-	var r graphene.Rect
-	if !b.notes.IsVisible() || !b.notes.ComputeBounds(&b.win.Widget, &r) {
-		return false, false
-	}
-	f := *(*[4]float32)(unsafe.Pointer(&r))
-	const gap = 6 // the end box's spacing
-	px, py := float32(x), float32(y)
-	reach = px >= f[0]-gap/2 && px < f[0]+f[2]+gap
 	onButton = reach && px >= f[0] && px < f[0]+f[2] && py >= f[1] && py < f[1]+f[3]
 	return reach, onButton
 }

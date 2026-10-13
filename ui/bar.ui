@@ -121,19 +121,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <property name="focusable">false</property>
                 <property name="tooltip-text" translatable="yes">Notifications</property>
                 <child>
-                  <object class="GtkBox">
-                    <property name="spacing">5</property>
+                  <object class="GtkOverlay">
                     <child>
                       <object class="GtkImage" id="notes_icon">
                         <property name="icon-name">preferences-system-notifications-symbolic</property>
                       </object>
                     </child>
-                    <child>
+                    <child type="overlay">
                       <object class="GtkBox" id="unread">
                         <style>
                           <class name="unread"/>
                         </style>
-                        <property name="valign">3</property>
+                        <property name="halign">2</property>
+                        <property name="valign">1</property>
                         <property name="visible">false</property>
                       </object>
                     </child>

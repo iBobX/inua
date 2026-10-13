@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"math"
 	"slices"
 
 	"github.com/lyricat/inua/internal/hypr"
@@ -55,4 +56,29 @@ func BarTitle(snap hypr.Snapshot, connector string) string {
 		}
 	}
 	return title
+}
+
+// BarReach finds which of the bar's buttons at its end, left to right, a
+// point in the bar's window is in the reach of, and whether it is on the
+// button itself (which takes its own clicks). Each reaches over the
+// window's full height, up to the screen's edge, and across from halfway
+// over the gap before it to halfway over the gap after it; the first from
+// half of gap before it, the last to the window's right edge, the
+// screen's corner. -1 for none.
+func BarReach(buttons []Rect, gap, x, y float64) (i int, onButton bool) {
+	for i, b := range buttons {
+		left := b.X - gap/2
+		if i > 0 {
+			p := buttons[i-1]
+			left = (p.X + p.W + b.X) / 2
+		}
+		right := math.Inf(1)
+		if i+1 < len(buttons) {
+			right = (b.X + b.W + buttons[i+1].X) / 2
+		}
+		if x >= left && x < right {
+			return i, b.Contains(x, y)
+		}
+	}
+	return -1, false
 }

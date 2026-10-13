@@ -80,23 +80,24 @@ ApplicationWindow bar {
       }
 
       // Opens the notification center: a bell, a moon while Focus is on,
-      // and a square for unread notifications.
+      // and a square on its corner for unread notifications, so it is as
+      // wide as the other icon buttons.
       Button notes {
         styles ["notes"]
         name: "notes";
         focusable: false;
         tooltip-text:  _("Notifications");
 
-        Box {
-          spacing: 5;
-
+        Overlay {
           Image notes_icon {
             icon-name: "preferences-system-notifications-symbolic";
           }
 
+          [overlay]
           Box unread {
             styles ["unread"]
-            valign: center;
+            halign: end;
+            valign: start;
             visible: false;
           }
         }

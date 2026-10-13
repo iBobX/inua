@@ -177,3 +177,31 @@ func TestSetterKeepsLatest(t *testing.T) {
 		t.Errorf("applied %v", applied)
 	}
 }
+
+func TestBarReach(t *testing.T) {
+	// The bar's end, as measured: clipboard, notifications, status, 6 px
+	// apart, each 24 px tall at y 8 in a 36 px window.
+	buttons := []Rect{{1036, 8, 34, 24}, {1076, 8, 34, 24}, {1116, 8, 150, 24}}
+	cases := []struct {
+		x, y float64
+		i    int
+		on   bool
+	}{
+		{1050, 0, 0, false},   // above the clipboard, at the screen's edge
+		{1050, 20, 0, true},   // on it
+		{1033, 20, 0, false},  // half the gap before the first
+		{1032, 20, -1, false}, // further: nothing
+		{1072.9, 2, 0, false}, // the gap's first half: the clipboard's
+		{1073, 2, 1, false},   // its second half: the notifications'
+		{1279, 35, 2, false},  // the screen's corner: the status button's
+		{1200, 20, 2, true},
+	}
+	for _, c := range cases {
+		if i, on := BarReach(buttons, 6, c.x, c.y); i != c.i || on != c.on {
+			t.Errorf("BarReach(%v, %v) = %d, %v; want %d, %v", c.x, c.y, i, on, c.i, c.on)
+		}
+	}
+	if i, _ := BarReach(nil, 6, 10, 10); i != -1 {
+		t.Errorf("no buttons: %d", i)
+	}
+}

@@ -430,19 +430,19 @@ func (s *shellUI) bindHandlers() {
 	s.onMonitorsChanged = func(uintptr, uint32, uint32, uint32, uintptr) { s.syncBars() }
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		if b := s.barOf(c.GetWidget()); b != nil {
-			reach, _ := b.statusReach(x, y)
-			toggle(&b.status.Widget, "hover", reach)
-			notes, _ := b.notesReach(x, y)
-			toggle(&b.notes.Widget, "hover", notes && !reach)
+			end, _ := b.endReach(x, y)
+			toggle(&b.clipboard.Widget, "hover", end == "clipboard")
+			toggle(&b.notes.Widget, "hover", end == "notes")
+			toggle(&b.status.Widget, "hover", end == "status")
 			clock, _ := b.clockReach(x, y)
-			toggle(&b.clockButton.Widget, "hover", clock)
+			toggle(&b.clockButton.Widget, "hover", clock && end == "")
 		}
 	}
 	s.onBarLeave = func(c gtk.EventControllerMotion) {
 		if b := s.barOf(c.GetWidget()); b != nil {
-			toggle(&b.status.Widget, "hover", false)
-			toggle(&b.notes.Widget, "hover", false)
-			toggle(&b.clockButton.Widget, "hover", false)
+			for _, w := range []*gtk.Widget{&b.clipboard.Widget, &b.notes.Widget, &b.status.Widget, &b.clockButton.Widget} {
+				toggle(w, "hover", false)
+			}
 		}
 	}
 	s.onBarReleased = func(g gtk.GestureClick, _ int32, x, y float64) {
@@ -450,15 +450,18 @@ func (s *shellUI) bindHandlers() {
 		if b == nil {
 			return
 		}
+		// The buttons take their own clicks; those around them are theirs too.
+		end, onEnd := b.endReach(x, y)
 		clock, onClock := b.clockReach(x, y)
-		notes, onNotes := b.notesReach(x, y)
-		if reach, onButton := b.statusReach(x, y); reach {
-			if !onButton {
-				s.controlAction("status")
-			}
-		} else if notes && !onNotes {
+		switch {
+		case onEnd || (end == "" && onClock):
+		case end == "clipboard":
+			s.onClipboardButton(b.clipboard)
+		case end == "notes":
 			s.toggleCenter()
-		} else if clock && !onClock {
+		case end == "status":
+			s.controlAction("status")
+		case clock:
 			s.toggleAgenda()
 		}
 	}
