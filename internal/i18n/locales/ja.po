@@ -1256,7 +1256,7 @@ msgstr "詳細、ping、出口ノード、およびファイルの送信"
 
 #: internal/appui/tailscale.go:467
 #: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:390
+#: internal/ui/askpass.go:386
 msgid "Copied"
 msgstr "コピーしました"
 
@@ -4595,9 +4595,9 @@ msgid "Jan 2"
 msgstr "1月2日"
 
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:306
-#: internal/ui/askpass.go:310
+#: internal/ui/askpass.go:308
 #: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
 #: internal/ui/settings_about.go:185
 msgid "Jan 2, 2006"
 msgstr "2006年1月2日"
@@ -4748,72 +4748,71 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: internal/ui/askpass.go:296
+msgid "Enter the passphrase so inua-keyring can give %s its secret."
+msgstr "inua-keyring が %s にシークレットを渡せるよう、パスフレーズを入力してください。"
+
+#: internal/ui/askpass.go:298
 msgid "Enter the passphrase so %s can use this key."
 msgstr "%s がこの鍵を使えるよう、パスフレーズを入力してください。"
 
-#: internal/ui/askpass.go:298
+#: internal/ui/askpass.go:300
 msgid "Enter the passphrase to use this key."
 msgstr "この鍵を使うには、パスフレーズを入力してください。"
 
-#: internal/ui/askpass.go:310
+#: internal/ui/askpass.go:312
 msgid "%s · expired %s"
 msgstr "%s · %s に期限切れ"
 
-#: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
 msgid "%s · expires %s"
 msgstr "%s · %s に期限切れ予定"
 
-#: internal/ui/askpass.go:324
-#: internal/ui/askpass.go:366
-msgid "through inua-keyring"
-msgstr "inua-keyring 経由"
-
-#: internal/ui/askpass.go:330
+#: internal/ui/askpass.go:329
 #: ui/polkit.ui:401
 msgid "FOR"
 msgstr "対象"
 
-#: internal/ui/askpass.go:332
+#: internal/ui/askpass.go:331
 msgid "SECRET"
 msgstr "シークレット"
 
-#: internal/ui/askpass.go:409
+#: internal/ui/askpass.go:405
 msgid "Encryption subkey"
 msgstr "暗号化用サブ鍵"
 
-#: internal/ui/askpass.go:411
+#: internal/ui/askpass.go:407
 msgid "Signing subkey"
 msgstr "署名用サブ鍵"
 
-#: internal/ui/askpass.go:413
+#: internal/ui/askpass.go:409
 msgid "Authentication subkey"
 msgstr "認証用サブ鍵"
 
-#: internal/ui/askpass.go:415
+#: internal/ui/askpass.go:411
 msgid "Subkey"
 msgstr "サブ鍵"
 
-#: internal/ui/askpass.go:417
+#: internal/ui/askpass.go:413
 msgid "Primary key"
 msgstr "主鍵"
 
-#: internal/ui/askpass.go:464
+#: internal/ui/askpass.go:460
 msgid "Show the private details (Ctrl+H)"
 msgstr "個人情報を表示 (Ctrl+H)"
 
-#: internal/ui/askpass.go:467
+#: internal/ui/askpass.go:463
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "個人情報を隠す: 鍵の所有者、フィンガープリント、pass のエントリ (Ctrl+H)"
 
-#: internal/ui/askpass.go:526
+#: internal/ui/askpass.go:522
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "画面の録画中または共有中は隠しています。"
 
-#: internal/ui/askpass.go:529
+#: internal/ui/askpass.go:525
 msgid "Hidden for the screenshot."
 msgstr "スクリーンショットのため隠しています。"
 
-#: internal/ui/askpass.go:568
+#: internal/ui/askpass.go:564
 msgid "The passphrases do not match."
 msgstr "パスフレーズが一致しません。"
 

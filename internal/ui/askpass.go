@@ -292,6 +292,8 @@ func (s *shellUI) fillPassDetails(d *passDialog) {
 	q := d.q
 	switch {
 	case q.Mode != pinentry.GetPin:
+	case q.App != "" && q.Keyring:
+		d.subtitle.SetText(i18n.Tf("Enter the passphrase so inua-keyring can give %s its secret.", q.App))
 	case q.App != "":
 		d.subtitle.SetText(i18n.Tf("Enter the passphrase so %s can use this key.", q.App))
 	case q.Key != nil:
@@ -315,14 +317,11 @@ func (s *shellUI) fillPassDetails(d *passDialog) {
 	}
 	d.keyCard.SetVisible(q.Key != nil)
 
-	// Who asks: the app and what it runs under, or the app inua-keyring
-	// serves.
+	// Who asks: the program running gpg, or the app inua-keyring reads
+	// for; then what it runs under.
 	d.askerApp.SetText(q.App)
 	chain := ""
-	switch {
-	case q.Keyring:
-		chain = i18n.T("through inua-keyring")
-	case q.Chain != "":
+	if q.Chain != "" {
 		chain = "← " + q.Chain
 	}
 	d.askerChain.SetText(chain)
@@ -361,10 +360,7 @@ func passRowText(q pinentry.Request, row, dates string) string {
 		}
 		return q.Entry
 	case "row_asker":
-		switch {
-		case q.Keyring:
-			return q.App + " " + i18n.T("through inua-keyring")
-		case q.Chain != "":
+		if q.Chain != "" {
 			return q.App + " ← " + q.Chain
 		}
 		return q.App

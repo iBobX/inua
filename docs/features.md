@@ -126,8 +126,9 @@ shows the key the passphrase unlocks, found in gpg's public keyring by the
 keygrip gpg-agent gives: its owner and address, whether it is a subkey and
 what for, its algorithm, fingerprint and dates. Below it are what it is
 for (the pass entry gpg decrypts, or the secret inua-keyring reads) and
-who asked: the app inua-keyring reads for, or the program running gpg and
-those it runs under ("pass ← zsh ← ghostty"). The shell keeps none of it.
+who asked and what it runs under: the program running gpg ("pass ← zsh ←
+ghostty"), or the app inua-keyring reads a secret for, as the reads list
+it ("gh ← claude ← zsh ← ghostty"). The shell keeps none of it.
 
 The eye button in the dialog's corner hides the owner, the address, the
 fingerprints and the pass entry behind dots, for a screenshot or a shared

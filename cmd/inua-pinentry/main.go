@@ -82,13 +82,13 @@ func main() {
 }
 
 // describe tells the dialog who wants the key and what for: the app and
-// secret inua-keyring named, else the program running gpg, what it runs
-// under ("pass", "zsh ← ghostty") and the pass entry gpg decrypts; and
-// the key, from gpg's keyring.
+// secret inua-keyring named, else the program running gpg; what that runs
+// under ("pass", "zsh ← ghostty"); the pass entry gpg decrypts; and the
+// key, from gpg's keyring.
 func describe(q *pinentry.Request, a keyring.Access, forKeyring string, viaKeyring bool) {
 	q.App, q.Chain, q.Entry = a.App, a.Chain, a.Pass
 	if viaKeyring {
-		q.Keyring, q.Chain = true, ""
+		q.Keyring = true
 		if app, secret, ok := strings.Cut(forKeyring, "\t"); ok {
 			q.Secret = secret
 			forKeyring = app

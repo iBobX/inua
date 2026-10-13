@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -170,9 +171,6 @@ func PassphraseAccess(owner int, forKeyring, desc, store string) Access {
 			app = proc.Parent(owner)
 		}
 		a.App, a.Chain = proc.Name(app), proc.Chain(proc.Parent(app), 8)
-		for a.App != "" && (a.Chain == a.App || strings.HasPrefix(a.Chain, a.App+" ← ")) {
-			a.Chain = strings.TrimPrefix(strings.TrimPrefix(a.Chain, a.App), " ← ") // pass runs itself again
-		}
 		for _, arg := range proc.Args(owner) {
 			if strings.HasSuffix(arg, ".gpg") {
 				a.Pass = passEntry(arg, store)
@@ -180,8 +178,17 @@ func PassphraseAccess(owner int, forKeyring, desc, store string) Access {
 		}
 	}
 	if app, secret, ok := strings.Cut(forKeyring, "\t"); ok {
-		name, _, _ := strings.Cut(app, " (pid ")
-		a.App, a.Secret = name, secret
+		// inua-keyring's pass runs gpg: what it runs under is
+		// inua-keyring, not the app. The app waits for the secret
+		// meanwhile, so what it runs under is read from its PID.
+		name, pid, _ := strings.Cut(app, " (pid ")
+		a.App, a.Secret, a.Chain = name, secret, ""
+		if n, err := strconv.Atoi(strings.TrimSuffix(pid, ")")); err == nil && n > 1 {
+			a.Chain = proc.Chain(proc.Parent(n), 8)
+		}
+	}
+	for a.App != "" && (a.Chain == a.App || strings.HasPrefix(a.Chain, a.App+" ← ")) {
+		a.Chain = strings.TrimPrefix(strings.TrimPrefix(a.Chain, a.App), " ← ") // pass runs itself again
 	}
 	if a.Secret == "" {
 		a.Secret = cmp.Or(a.Pass, keyName(desc))

@@ -1,6 +1,7 @@
 package keyring
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -337,9 +338,16 @@ func TestPassphraseAccess(t *testing.T) {
 	if strings.HasPrefix(a.Chain, "pass") { // pass's subshell is pass too
 		t.Errorf("pass under pass: chain %q", a.Chain)
 	}
-	a = PassphraseAccess(gpg, "gh (pid 41)\tPassword for 'ann' on 'gh:github.com'", desc, store)
-	if a.App != "gh" || a.Secret != "Password for 'ann' on 'gh:github.com'" || a.Pass != "work/mail" {
+	// For inua-keyring: the app it named (here the bash that runs the
+	// script, still running), and what that app runs under.
+	app := cmd.Process.Pid
+	a = PassphraseAccess(gpg, fmt.Sprintf("gh (pid %d)\tPassword for 'ann' on 'gh:github.com'", app), desc, store)
+	if a.App != "gh" || a.Secret != "Password for 'ann' on 'gh:github.com'" || a.Pass != "work/mail" ||
+		a.Chain == "" || a.Chain != proc.Chain(proc.Parent(app), 8) {
 		t.Errorf("for inua-keyring: %+v", a)
+	}
+	if a := PassphraseAccess(gpg, "gh (pid x)\tsecret", desc, store); a.Chain != "" {
+		t.Errorf("for inua-keyring, no PID: chain %q, not pass's", a.Chain)
 	}
 	if a := PassphraseAccess(0, "", desc, store); a.Secret != "Ann <ann@example.org>" || a.App != "" {
 		t.Errorf("for no one known: %+v", a)
