@@ -189,7 +189,7 @@ func (a *passApp) showStores() {
 // useStore opens a store and lists it.
 func (a *passApp) useStore(dir string) {
 	a.store = pass.Store{Dir: dir}
-	a.storePath.SetText(dir)
+	a.storePath.SetText(pass.Tilde(dir))
 	a.storePath.SetTooltipText(dir)
 	if dir != "" && dir != a.prefs.Store {
 		a.prefs.Store = dir

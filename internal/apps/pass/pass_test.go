@@ -195,3 +195,14 @@ func TestShortNames(t *testing.T) {
 		t.Errorf("two stores: %q", got)
 	}
 }
+
+func TestTilde(t *testing.T) {
+	home := t.TempDir()
+	t.Setenv("HOME", home)
+	if got := Tilde(filepath.Join(home, ".password-store")); got != "~/.password-store" {
+		t.Errorf("Tilde = %q", got)
+	}
+	if got := Tilde("/srv/store"); got != "/srv/store" {
+		t.Errorf("outside home: %q", got)
+	}
+}

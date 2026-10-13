@@ -92,3 +92,9 @@ func lastParts(dir, home string, n int) string {
 	}
 	return strings.Join(parts, "/")
 }
+
+// Tilde writes a path under the home folder with "~" for it.
+func Tilde(dir string) string {
+	home, _ := os.UserHomeDir()
+	return lastParts(dir, home, 1<<16)
+}
