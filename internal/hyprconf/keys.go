@@ -25,6 +25,7 @@ var Actions = []Action{
 	{ID: "overview", Label: i18n.M("Workspace overview")},
 	{ID: "control", Label: i18n.M("Control center")},
 	{ID: "notifications", Label: i18n.M("Notification center")},
+	{ID: "clipboard", Label: i18n.M("Clipboard history")},
 	{ID: "focus", Label: i18n.M("Focus on or off")},
 	{ID: "settings", Label: i18n.M("Settings")},
 	{ID: "restart", Label: i18n.M("Restart the shell")},
@@ -49,6 +50,8 @@ func Command(c config.Config, action string) string {
 		return "inua call control toggle"
 	case "notifications":
 		return "inua call notifications toggle"
+	case "clipboard":
+		return "inua call clipboard toggle"
 	case "focus":
 		return "inua call notifications focus"
 	case "settings":

@@ -30,6 +30,7 @@ type bar struct {
 	workspaces  gtk.Box
 	title       gtk.Label
 	clock       gtk.Label
+	clipboard   gtk.Button
 	notes       gtk.Button
 	notesIcon   gtk.Image
 	unread      gtk.Box
@@ -125,6 +126,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("title", &b.title)
 	ui.Get("clock", &b.clock)
 	ui.Get("notes", &b.notes)
+	ui.Get("clipboard", &b.clipboard)
 	ui.Get("rec", &b.rec)
 	ui.Get("rec_time", &b.recTime)
 	ui.Get("clock_button", &b.clockButton)
@@ -142,6 +144,8 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b.setEdgeGap(s.cfg.Style.EdgeGaps)
 	b.status.ConnectClicked(&s.onControlButton)
 	b.notes.ConnectClicked(&s.onNotesButton)
+	b.clipboard.ConnectClicked(&s.onClipboardButton)
+	b.clipboard.SetVisible(s.cfg.Clipboard.Enable && s.cfg.Clipboard.Bar)
 	b.rec.ConnectClicked(&s.onRecButton)
 	b.clockButton.ConnectClicked(&s.onClockButton)
 	s.showNotesButton(b)

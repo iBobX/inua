@@ -70,6 +70,7 @@ media-skip-forward                    skip-forward
 # control center buttons and tiles
 system-lock-screen                    lock
 dialog-password                       key
+edit-paste                            clipboard-text
 applets-screenshooter                 selection
 emblem-system                         gear-six
 power-profile-power-saver             leaf

@@ -650,40 +650,42 @@ func (s *shellUI) markLaunching(key string) {
 
 // focusWindowHere focuses a window without moving the pointer to it, as
 // focusing does unless cursor:no_warps is set: the pointer stays on the
-// dock, where the user clicked. The setting is turned on for the focus
-// only, and back as it was: in one Lua script where Hyprland runs Lua
-// (0.55 and later), else in one batch of classic commands.
+// dock, where the user clicked.
 func (s *shellUI) focusWindowHere(addr string) {
 	if s.client == nil {
 		return
 	}
-	lua := s.hyprLua
+	client, lua := s.client, s.hyprLua
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		var err error
-		if lua {
-			script := fmt.Sprintf(`local noWarps = hl.get_config("cursor.no_warps"); hl.config({cursor={no_warps=true}}); local ok, err = pcall(function() hl.dispatch(hl.dsp.focus({window=%q})) end); hl.config({cursor={no_warps=noWarps}}); if not ok then error(err) end`, "address:"+addr)
-			var reply []byte
-			reply, err = s.client.Request(ctx, "eval "+script)
-			if err == nil && strings.TrimSpace(string(reply)) != "ok" {
-				err = fmt.Errorf("eval: %s", strings.TrimSpace(string(reply)))
-			}
-		} else {
-			focus := "focuswindow address:" + addr
-			var reply []byte
-			reply, err = s.client.Request(ctx, "j/getoption cursor:no_warps")
-			if err == nil && strings.Contains(string(reply), `"int": 0`) {
-				// One batch, so the setting is back before anything else runs.
-				_, err = s.client.Request(ctx, "[[BATCH]]keyword cursor:no_warps 1;dispatch "+focus+";keyword cursor:no_warps 0")
-			} else {
-				err = s.client.Dispatch(ctx, focus)
-			}
-		}
-		if err != nil {
+		if err := focusQuietly(ctx, client, lua, addr); err != nil {
 			log.Printf("dock: focus %s: %v", addr, err)
 		}
 	}()
+}
+
+// focusQuietly focuses the window addr with cursor:no_warps turned on for
+// the focus only, and back as it was: in one Lua script where Hyprland
+// runs Lua (0.55 and later), else in one batch of classic commands. It
+// blocks; run it off the main thread.
+func focusQuietly(ctx context.Context, client *hypr.Client, lua bool, addr string) error {
+	if lua {
+		script := fmt.Sprintf(`local noWarps = hl.get_config("cursor.no_warps"); hl.config({cursor={no_warps=true}}); local ok, err = pcall(function() hl.dispatch(hl.dsp.focus({window=%q})) end); hl.config({cursor={no_warps=noWarps}}); if not ok then error(err) end`, "address:"+addr)
+		reply, err := client.Request(ctx, "eval "+script)
+		if err == nil && strings.TrimSpace(string(reply)) != "ok" {
+			err = fmt.Errorf("eval: %s", strings.TrimSpace(string(reply)))
+		}
+		return err
+	}
+	focus := "focuswindow address:" + addr
+	reply, err := client.Request(ctx, "j/getoption cursor:no_warps")
+	if err == nil && strings.Contains(string(reply), `"int": 0`) {
+		// One batch, so the setting is back before anything else runs.
+		_, err = client.Request(ctx, "[[BATCH]]keyword cursor:no_warps 1;dispatch "+focus+";keyword cursor:no_warps 0")
+		return err
+	}
+	return client.Dispatch(ctx, focus)
 }
 
 // dockOfItems is the dock whose item box w is.

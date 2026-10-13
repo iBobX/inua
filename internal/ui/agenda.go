@@ -119,6 +119,7 @@ func (s *shellUI) toggleAgenda() {
 }
 
 func (s *shellUI) openAgenda() {
+	s.closeClipboard()
 	a := &s.agenda
 	if a.open {
 		return

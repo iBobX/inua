@@ -43,6 +43,11 @@ func (s *shellUI) snapshot(dir string) ([]string, error) {
 			}
 		}
 	}
+	if s.clipboard.open {
+		if err := save("clipboard", &s.clipboard.win.Window); err != nil {
+			return files, err
+		}
+	}
 	if s.settings.win != nil {
 		if err := save("settings", &s.settings.win.Window); err != nil {
 			return files, err

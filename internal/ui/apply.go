@@ -24,6 +24,7 @@ type styles struct {
 	base      *gtk.CssProvider // theme tokens + style.css
 	user      *gtk.CssProvider // style.css from the config directory
 	wallpaper *gtk.CssProvider // window.wallpaper
+	clipboard *gtk.CssProvider // clipboard card opacity
 }
 
 func (s *shellUI) theme() string { return cmp.Or(s.cfg.Style.Theme, "yoru") }
@@ -52,6 +53,18 @@ func (s *shellUI) loadStyles() {
 	}
 	st.user.LoadFromString(user)
 	s.loadIcons()
+	s.loadClipboardStyle()
+}
+
+func (s *shellUI) loadClipboardStyle() {
+	st := &s.styles
+	if st.clipboard == nil {
+		st.clipboard = gtk.NewCssProvider()
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.clipboard, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION+1))
+	}
+	// The settings file checks the range (config.validate).
+	css := fmt.Sprintf(".clipboard-panel .clipboard-card { background: alpha(@app, %.2f); }\n", float64(s.cfg.Clipboard.Opacity)/100)
+	st.clipboard.LoadFromString(css)
 }
 
 // loadWallpaper styles the wallpaper windows from the settings. Without an
@@ -153,8 +166,20 @@ func (s *shellUI) applyConfig(c config.Config) {
 		s.syncDock(b)
 		b.title.SetVisible(c.Bar.Title)
 		b.tray.SetVisible(c.Bar.Tray)
+		b.clipboard.SetVisible(c.Clipboard.Enable && c.Clipboard.Bar)
 		b.setHypr(s, s.snap)
 		s.syncWallpaper(b)
+	}
+	if old.Clipboard.Opacity != c.Clipboard.Opacity {
+		s.loadClipboardStyle()
+	}
+	if old.Clipboard.Enable != c.Clipboard.Enable {
+		if c.Clipboard.Enable {
+			s.startClipboardCapture()
+		} else {
+			s.stopClipboardCapture()
+			s.closeClipboard()
+		}
 	}
 	if c.Bar.Tray && s.tray.host == nil {
 		s.startTray()

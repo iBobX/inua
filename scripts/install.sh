@@ -162,8 +162,11 @@ lib libgtk4-layer-shell.so || missing="$missing $(pkg gtk4-layer-shell)"
 # inua-keyring keeps apps' secrets in pass (docs/feat/keyring.md)
 have pass || missing="$missing $(pkg pass)"
 have gpg || missing="$missing $(pkg gnupg)"
+# the clipboard history, Color Picker and Viewer copy with wl-copy; the
+# history reads with wl-paste
+have wl-paste || missing="$missing $(pkg wl-clipboard)"
 if [ -z "$missing" ]; then
-    done_ "Hyprland, GTK 4, gtk4-layer-shell, pass and gpg are all here"
+    done_ "Hyprland, GTK 4, gtk4-layer-shell, pass, gpg and wl-clipboard are all here"
 else
     note "inua also needs:$missing"
     # shellcheck disable=SC2086

@@ -96,6 +96,7 @@ func (s *shellUI) bindLockHandlers() {
 // lockScreen locks the screen. It refuses when it could not unlock again:
 // without session lock support, or without the password helper.
 func (s *shellUI) lockScreen() error {
+	s.closeClipboard()
 	l := &s.lock
 	if l.ending { // the last lock is still being let go
 		l.relock = true

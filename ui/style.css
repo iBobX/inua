@@ -11,10 +11,10 @@
    Translucent surfaces get Hyprland's blur through layer rules (namespaces
    inua-bar, inua-control, inua-launcher). */
 
-window.bar, window.control, window.agenda, window.banners, window.center, window.dock-window, window.shot-drawer-win, window.drawer-overlay { background: transparent; }
+window.bar, window.control, window.agenda, window.banners, window.center, window.dock-window, window.shot-drawer-win, window.drawer-overlay, window.clipboard-panel { background: transparent; }
 window.overview { background: transparent; }
 
-window.bar, window.launcher, window.control, window.agenda, window.banners, window.center, window.settings, window.screenshot, window.shot-drawer-win, window.lock, window.polkit, window.drawer-overlay, popover.menu {
+window.bar, window.launcher, window.control, window.agenda, window.banners, window.center, window.settings, window.screenshot, window.shot-drawer-win, window.lock, window.polkit, window.drawer-overlay, window.clipboard-panel, popover.menu {
   font-family: "Zen Kaku Gothic New", "Noto Sans CJK JP", "Noto Sans CJK SC", sans-serif;
   font-size: 13px;
   color: @t0;
@@ -163,7 +163,7 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
 .bar .workspaces button.focused { min-width: 20px; background: @accent; border-color: @accent; }
 .bar .workspaces button.urgent { background: @danger; border-color: @danger; }
 
-.bar button.status, .bar button.notes, .bar button.clock-button, .bar .tray button {
+.bar button.status, .bar button.clipboard, .bar button.notes, .bar button.clock-button, .bar .tray button {
   min-height: 0;
   padding: 3px 8px;
   margin: 3px 0;
@@ -176,9 +176,9 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
 .bar .tray button { padding: 3px 5px; }
 /* .hover: the pointer is in a button's reach past the island (up to the
    screen's edge); see bar.statusReach, notesReach and clockReach. */
-.bar button.status:hover, .bar button.status.hover, .bar button.notes:hover, .bar button.notes.hover, .bar button.clock-button:hover, .bar button.clock-button.hover, .bar .tray button:hover { background: alpha(@accent, 0.09); }
+.bar button.clipboard:hover, .bar button.status:hover, .bar button.status.hover, .bar button.notes:hover, .bar button.notes.hover, .bar button.clock-button:hover, .bar button.clock-button.hover, .bar .tray button:hover { background: alpha(@accent, 0.09); }
 /* Its panel is open: the selection style. */
-.bar button.status.open, .bar button.notes.open, .bar button.clock-button.open { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
+.bar button.clipboard.open, .bar button.status.open, .bar button.notes.open, .bar button.clock-button.open { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
 
 /* --- launcher -------------------------------------------------------- */
 
@@ -469,15 +469,15 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 }
 .note-actions button.outlined:hover { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
 
-.center .backdrop { background: alpha(@app, 0.18); }
-.center .card {
+.center .backdrop, .clipboard-panel .backdrop { background: alpha(@app, 0.18); }
+.center .card, .clipboard-panel .clipboard-card {
   background: alpha(@app, 0.84);
   border: 1px solid @line;
   border-radius: 4px;
   padding: 14px 16px 16px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
 }
-.center .mark { background: @accent; border-color: @accent; }
+.center .mark, .clipboard-panel .mark { background: @accent; border-color: @accent; }
 .center .sub { font-size: 12px; color: @t2; }
 .center button.focus.on { color: @accent; background: alpha(@accent, 0.09); }
 button.link {
@@ -1691,3 +1691,45 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .settings .ai-card { padding: 12px 14px 14px; border: 1px solid alpha(@line, 0.9); border-radius: 2px; background: alpha(@surface, 0.5); }
 .settings .ai-card .sub.missing { color: @warn; }
 .settings .ai-card dropdown > button { min-width: 0; }
+
+/* Clipboard history uses the active theme's colour tokens. */
+.clipboard-panel entry.search {
+  background: @app;
+  color: @t0;
+  border: 1px solid @line;
+  border-radius: 4px;
+  box-shadow: none;
+  padding: 8px 10px;
+  min-height: 24px;
+}
+.clipboard-panel entry.search text {
+  background: transparent;
+  color: @t0;
+  caret-color: @accent;
+  box-shadow: none;
+}
+.clipboard-panel entry.search:focus-within { border-color: @accent; outline: none; }
+.clipboard-panel entry.search image, .clipboard-panel entry.search text placeholder { color: @t2; }
+.clipboard-panel entry.search text selection { background: @accent; color: @app; }
+.clipboard-panel .clipboard-preview {
+  background: alpha(@t0, 0.025);
+  border: 1px solid @line;
+  border-radius: 4px;
+  padding: 8px;
+}
+.clipboard-panel .clipboard-item {
+  background: transparent;
+  color: @t0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: none;
+  padding: 10px 6px;
+}
+.clipboard-panel .clipboard-item:hover, .clipboard-panel .clipboard-item:focus-visible {
+  background: alpha(@accent, 0.09);
+  border-color: alpha(@accent, 0.38);
+}
+.clipboard-panel .clipboard-row { border-bottom: 1px solid alpha(@line, 0.5); }
+.clipboard-panel scrollbar { background: transparent; border: 0; }
+.clipboard-panel scrollbar slider { background: alpha(@t2, 0.35); border-radius: 4px; min-width: 4px; min-height: 32px; }
+.clipboard-panel scrollbar slider:hover { background: alpha(@accent, 0.65); }

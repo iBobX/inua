@@ -44,7 +44,8 @@ falls back, so 0.53 never sees a request it rejects.
 | What | 0.53 | 0.55 | Where |
 | --- | --- | --- | --- |
 | Dispatchers | `dispatch focuswindow address:0x…`, `dispatch workspace 3` | `dispatch hl.dsp.focus({ window = "address:0x…" })`, `hl.dsp.focus({ workspace = 3 })` | `dispatchEither` in `internal/ui/shell.go`; `hypr.Client.LuaDispatch` |
-| Focusing from the dock without moving the pointer | One `[[BATCH]]`: `keyword cursor:no_warps 1`, the dispatch, `keyword cursor:no_warps 0` | One `eval` script that sets `cursor.no_warps`, focuses, and restores it | `focusWindowHere` in `internal/ui/dock.go` |
+| Focusing from the dock without moving the pointer (`focusQuietly`) | One `[[BATCH]]`: `keyword cursor:no_warps 1`, the dispatch, `keyword cursor:no_warps 0` | One `eval` script that sets `cursor.no_warps`, focuses, and restores it | `focusQuietly` in `internal/ui/dock.go` |
+| Pasting from the clipboard history | The quiet focus above, then `dispatch sendshortcut CTRL, V, address:0x…` | The quiet focus above, then `hl.dsp.send_shortcut({ mods = "CTRL", key = "V", window = "address:0x…" })` | `pasteClipboard` in `internal/ui/clipboard.go` |
 | Moving the pointer back after a surface opens | `dispatch movecursor x y` | `hl.dsp.cursor.move({ x = …, y = … })` | `refocusPointer` in `internal/ui/shell.go` |
 | Recording a shortcut (the empty submap) | `dispatch submap inua-record` | `hl.dsp.submap("inua-record")` | `dispatchSubmap` in `internal/ui/shell.go` |
 | The overview's keys | Not installed | `eval` scripts: a raw keyboard listener for the Super tap, `hl.bind` for Super+Tab and Super+1…0, `hl.dsp.event("inua-overview,…")` back to the shell | `internal/ui/overview_keys.go` |

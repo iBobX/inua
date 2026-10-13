@@ -23,6 +23,7 @@ func Format(c Config) string {
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates,
+		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick,
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
@@ -307,6 +308,26 @@ critical_in_focus = %t
 # and tell you in a notification, with a button to upgrade (inua upgrade).
 updates = %t
 
+[clipboard]
+# Keep a history of what you copy (text and images, with wl-paste from
+# wl-clipboard) in ~/.local/state/inua. A password manager's copies, which
+# it marks as sensitive, are left out. false records nothing.
+enable = %t
+
+# Show the clipboard history button in the top bar; a shortcut set in
+# Shortcuts (Clipboard history) opens the panel too.
+bar = %t
+
+# The panel's opacity, 50 to 100 percent.
+opacity = %d
+
+# How many entries the history keeps, 20 to 1000; the oldest go first.
+limit = %d
+
+# Clicking an entry pastes it into the window you were in; false only
+# copies it.
+paste_on_click = %t
+
 [dock]
 # Show the app dock on each monitor: pinned apps, then the others with open
 # windows. Click to open or bring forward (again to cycle through its windows);
@@ -384,7 +405,7 @@ notify = %t
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions
 # without an entry keep their hyprland.conf shortcuts. An action is one of
-#   launcher windows overview control notifications focus settings restart lock
+#   launcher windows overview control notifications clipboard focus settings restart lock
 #   shot-area shot-screen shot-window shot-record color
 # or "exec" with a command. keys = "" turns the action's shortcut off.
 #

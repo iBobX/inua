@@ -72,6 +72,13 @@ ApplicationWindow bar {
         }
       }
 
+      Button clipboard {
+        styles ["clipboard"]
+        focusable: false;
+        tooltip-text: _("Clipboard history");
+        icon-name: "edit-paste-symbolic";
+      }
+
       // Opens the notification center: a bell, a moon while Focus is on,
       // and a square for unread notifications.
       Button notes {

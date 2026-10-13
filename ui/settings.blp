@@ -1780,6 +1780,253 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "clipboard";
+        title:  _("Clipboard");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_clipboard {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [CLIPBOARD]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>CLIPBOARD<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("History, panel appearance and pasting");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Keep a clipboard history");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("Text and images you copy, kept on this computer; a password manager's copies are left out");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch clip_enable {
+                      name: "clip_enable";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Show in top bar");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("A button in the status area opens the clipboard history");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch clip_bar {
+                      name: "clip_bar";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Paste on click");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("Clicking an entry pastes it into the window you were in; off only copies it");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch clip_paste {
+                      name: "clip_paste";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      width-request: 260;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Panel opacity");
+                        xalign: 0;
+                      }
+                      Label clip_opacity_val {
+                        styles ["readout"]
+                        xalign: 0;
+                      }
+                    }
+
+                    Scale clip_opacity {
+                      name: "clip_opacity";
+                      hexpand: true;
+                      valign: center;
+                      draw-value: false;
+
+                      adjustment: Adjustment {
+                        lower: 50;
+                        upper: 100;
+                        step-increment: 1;
+                        page-increment: 5;
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("History limit");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("How many entries it keeps; the oldest go first");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    // Its choices come from Go (showClipboardSettings).
+                    DropDown clip_limit {
+                      name: "clip_limit";
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("History storage");
+                        xalign: 0;
+                      }
+                      Label clip_stats {
+                        styles ["sub"]
+                        label:  _("Loading history…");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button clip_clear {
+                      name: "clip_clear";
+                      label:  _("Clear the history");
+                      styles ["button-danger"]
+                      valign: center;
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          [overlay]
+          Box sticky_clipboard {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "keyring";
         title:  _("Keyring");
 

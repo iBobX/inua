@@ -22,6 +22,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -31,6 +32,7 @@ import (
 
 	samples "github.com/lyricat/inua/config"
 	"github.com/lyricat/inua/internal/bootstrap"
+	"github.com/lyricat/inua/internal/clipboard"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/hyprconf"
@@ -48,6 +50,11 @@ func main() {
 	switch os.Args[1] {
 	case "call", "show":
 		err = cmdControl(os.Args[1], os.Args[2:])
+	case "clipboard":
+		if len(os.Args) < 3 || len(os.Args) > 4 || os.Args[2] != "capture" {
+			usage()
+		}
+		err = cmdClipboardCapture(os.Args[3:])
 	case "hypr":
 		err = cmdHypr(os.Args[2:])
 	case "config":
@@ -80,6 +87,7 @@ func usage() {
   inua init [-force] [-pinentry ask|replace|keep] [-dir dir]
   inua keyring status|import [-n]|enable|disable|replace
   inua upgrade [-check] [-force] [-version vX.Y.Z]
+  inua clipboard capture [history-path]
   inua version`)
 	os.Exit(2)
 }
@@ -170,6 +178,23 @@ func cmdHypr(args []string) error {
 	}
 	usage()
 	return nil
+}
+
+// cmdClipboardCapture adds the selection on stdin to the clipboard
+// history; the shell runs it through wl-paste --watch. It reads the
+// settings each time, so a new limit, or recording turned off, holds
+// from the next copy.
+func cmdClipboardCapture(args []string) error {
+	path := clipboard.HistoryPath()
+	if len(args) == 1 {
+		path = args[0]
+	}
+	c, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
+	if !c.Clipboard.Enable {
+		io.Copy(io.Discard, os.Stdin)
+		return nil
+	}
+	return clipboard.Capture(path, c.Clipboard.Limit, os.Stdin)
 }
 
 // cmdConfig checks the settings file the way inua-shell reads it.

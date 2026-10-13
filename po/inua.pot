@@ -4,7 +4,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 #: cmd/inua-keyring/main.go:81
-#: ui/settings.ui:2499
+#: ui/settings.ui:2852
 msgid "Keyring"
 msgstr ""
 
@@ -22,8 +22,8 @@ msgstr ""
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:299
-#: internal/ui/lock.go:217
+#: internal/ui/control.go:300
+#: internal/ui/lock.go:218
 msgid "Monday, January 2"
 msgstr ""
 
@@ -62,7 +62,7 @@ msgstr ""
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
 #: internal/shell/notify.go:28
-#: internal/ui/agenda.go:348
+#: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
 msgid "Mon"
 msgstr ""
@@ -325,7 +325,7 @@ msgstr ""
 
 #: internal/appui/app.go:61
 #: internal/appui/weather.go:223
-#: internal/ui/agenda.go:318
+#: internal/ui/agenda.go:319
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr ""
@@ -372,6 +372,7 @@ msgid "Viewer"
 msgstr ""
 
 #: internal/appui/calculator.go:49
+#: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 msgid "Delete"
 msgstr ""
@@ -393,54 +394,54 @@ msgid "Use %s"
 msgstr ""
 
 #: internal/appui/calendar.go:131
-#: internal/ui/agenda.go:223
+#: internal/ui/agenda.go:224
 msgid "January 2006"
 msgstr ""
 
 #: internal/appui/calendar.go:133
-#: internal/ui/agenda.go:236
+#: internal/ui/agenda.go:237
 msgid "WK"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Su"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Mo"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Tu"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "We"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Th"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Fr"
 msgstr ""
 
 #: internal/appui/calendar.go:138
 #: internal/appui/clock.go:148
-#: internal/ui/agenda.go:237
+#: internal/ui/agenda.go:238
 msgid "Sa"
 msgstr ""
 
@@ -937,7 +938,7 @@ msgstr ""
 #: internal/appui/tailscale.go:628
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
-#: ui/settings.ui:2964
+#: ui/settings.ui:3317
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr ""
@@ -4118,10 +4119,15 @@ msgid "Notification center"
 msgstr ""
 
 #: internal/hyprconf/keys.go:28
-msgid "Focus on or off"
+#: ui/bar.ui:111
+msgid "Clipboard history"
 msgstr ""
 
 #: internal/hyprconf/keys.go:29
+msgid "Focus on or off"
+msgstr ""
+
+#: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:279
 #: ui/control.ui:62
@@ -4129,32 +4135,32 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: internal/hyprconf/keys.go:30
+#: internal/hyprconf/keys.go:31
 #: ui/settings.ui:360
 msgid "Restart the shell"
 msgstr ""
 
-#: internal/hyprconf/keys.go:31
+#: internal/hyprconf/keys.go:32
 msgid "Lock the screen"
 msgstr ""
 
-#: internal/hyprconf/keys.go:32
+#: internal/hyprconf/keys.go:33
 msgid "Take a screenshot"
 msgstr ""
 
-#: internal/hyprconf/keys.go:33
+#: internal/hyprconf/keys.go:34
 msgid "The whole screen, at once"
 msgstr ""
 
-#: internal/hyprconf/keys.go:34
+#: internal/hyprconf/keys.go:35
 msgid "The focused window, at once"
 msgstr ""
 
-#: internal/hyprconf/keys.go:35
+#: internal/hyprconf/keys.go:36
 msgid "Record the screen (again: stop)"
 msgstr ""
 
-#: internal/hyprconf/keys.go:36
+#: internal/hyprconf/keys.go:37
 #: ui/colorpicker.ui:59
 msgid "Pick a colour"
 msgstr ""
@@ -4289,7 +4295,7 @@ msgid "Suspend, locking first"
 msgstr ""
 
 #: internal/shell/commands.go:29
-#: internal/ui/control.go:478
+#: internal/ui/control.go:479
 #: ui/control.ui:148
 msgid "Restart"
 msgstr ""
@@ -4392,7 +4398,7 @@ msgid "All of them"
 msgstr ""
 
 #: internal/shell/commands.go:40
-#: internal/ui/notify.go:822
+#: internal/ui/notify.go:823
 #: ui/center.ui:71
 #: ui/control.ui:411
 msgid "Focus"
@@ -4610,7 +4616,7 @@ msgstr ""
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:3181
+#: ui/settings.ui:3534
 msgid "Off"
 msgstr ""
 
@@ -4659,35 +4665,35 @@ msgstr ""
 msgid "%.0f%% · Charging"
 msgstr ""
 
-#: internal/ui/agenda.go:212
+#: internal/ui/agenda.go:213
 msgid "inua calendar"
 msgstr ""
 
-#: internal/ui/agenda.go:222
+#: internal/ui/agenda.go:223
 msgid "%s · WK %d"
 msgstr ""
 
-#: internal/ui/agenda.go:222
+#: internal/ui/agenda.go:223
 msgid "Mon Jan 2"
 msgstr ""
 
-#: internal/ui/agenda.go:319
+#: internal/ui/agenda.go:320
 msgid "Add a place in Weather to see it here"
 msgstr ""
 
-#: internal/ui/agenda.go:330
+#: internal/ui/agenda.go:331
 msgid "No forecast: offline?"
 msgstr ""
 
-#: internal/ui/agenda.go:332
+#: internal/ui/agenda.go:333
 msgid "Reading the forecast…"
 msgstr ""
 
-#: internal/ui/agenda.go:340
+#: internal/ui/agenda.go:341
 msgid "%s · feels %s"
 msgstr ""
 
-#: internal/ui/agenda.go:343
+#: internal/ui/agenda.go:344
 msgid "H %s  L %s"
 msgstr ""
 
@@ -4742,42 +4748,112 @@ msgstr ""
 msgid "The passphrases do not match."
 msgstr ""
 
-#: internal/ui/bar.go:239
+#: internal/ui/bar.go:243
 msgid "Workspace %s"
 msgstr ""
 
-#: internal/ui/bar.go:252
+#: internal/ui/bar.go:256
 msgid "WORKSPACE"
 msgstr ""
 
-#: internal/ui/control.go:276
+#: internal/ui/clipboard.go:81
+msgid "Could not clear the history"
+msgstr ""
+
+#: internal/ui/clipboard.go:94
+msgid "Could not delete it"
+msgstr ""
+
+#: internal/ui/clipboard.go:228
+msgid "[CLIPBOARD]"
+msgstr ""
+
+#: internal/ui/clipboard.go:233
+#: ui/center.ui:81
+msgid "Clear all"
+msgstr ""
+
+#: internal/ui/clipboard.go:240
+msgid "Search clipboard history"
+msgstr ""
+
+#: internal/ui/clipboard.go:335
+#: ui/settings.ui:2499
+msgid "Clipboard"
+msgstr ""
+
+#: internal/ui/clipboard.go:379
+msgid "Could not read the clipboard history"
+msgstr ""
+
+#: internal/ui/clipboard.go:425
+msgid "Image · %s"
+msgstr ""
+
+#: internal/ui/clipboard.go:455
+msgid "Copy without pasting"
+msgstr ""
+
+#: internal/ui/clipboard.go:457
+msgid "Paste the image file's path"
+msgstr ""
+
+#: internal/ui/clipboard.go:463
+msgid "Nothing copied yet"
+msgstr ""
+
+#: internal/ui/clipboard.go:465
+msgid "Nothing matches"
+msgstr ""
+
+#: internal/ui/clipboard.go:474
+msgid "%d entry · click to paste · Escape to close"
+msgid_plural "%d entries · click to paste · Escape to close"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/clipboard.go:476
+msgid "%d entry · click to copy · Escape to close"
+msgid_plural "%d entries · click to copy · Escape to close"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/clipboard.go:496
+msgid "[DETAILS]"
+msgstr ""
+
+#: internal/ui/clipboard.go:498
+msgid "[COPIED %s]"
+msgstr ""
+
+#: internal/ui/control.go:277
 msgid "inua control center"
 msgstr ""
 
-#: internal/ui/control.go:477
+#: internal/ui/control.go:478
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr ""
 
-#: internal/ui/control.go:478
+#: internal/ui/control.go:479
 msgid "Restart?"
 msgstr ""
 
-#: internal/ui/control.go:479
+#: internal/ui/control.go:480
 #: ui/control.ui:172
 msgid "Shut down"
 msgstr ""
 
-#: internal/ui/control.go:479
+#: internal/ui/control.go:480
 msgid "Shut down?"
 msgstr ""
 
-#: internal/ui/control.go:480
+#: internal/ui/control.go:481
 #: ui/control.ui:196
 msgid "Log out"
 msgstr ""
 
-#: internal/ui/control.go:480
+#: internal/ui/control.go:481
 msgid "Log out?"
 msgstr ""
 
@@ -4844,39 +4920,39 @@ msgstr ""
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr ""
 
-#: internal/ui/launcher.go:284
+#: internal/ui/launcher.go:285
 msgid "inua launcher"
 msgstr ""
 
-#: internal/ui/lock.go:108
+#: internal/ui/lock.go:109
 msgid "the compositor does not support session locks"
 msgstr ""
 
-#: internal/ui/lock.go:133
+#: internal/ui/lock.go:134
 msgid "could not take the session lock"
 msgstr ""
 
-#: internal/ui/lock.go:222
+#: internal/ui/lock.go:223
 msgid "Wrong password. Try again in %d s"
 msgstr ""
 
-#: internal/ui/lock.go:225
-#: internal/ui/lock.go:275
+#: internal/ui/lock.go:226
+#: internal/ui/lock.go:276
 msgid "Wrong password"
 msgstr ""
 
-#: internal/ui/lock.go:248
+#: internal/ui/lock.go:249
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:141
 msgid "Checking…"
 msgstr ""
 
-#: internal/ui/lock.go:279
+#: internal/ui/lock.go:280
 msgid "The password could not be checked"
 msgstr ""
 
 #: internal/ui/notify.go:291
-#: ui/bar.ui:112
+#: ui/bar.ui:122
 #: ui/settings.ui:2278
 msgid "Notifications"
 msgstr ""
@@ -4900,85 +4976,85 @@ msgid "Notification"
 msgstr ""
 
 #: internal/ui/notify.go:611
-#: internal/ui/notify.go:800
+#: internal/ui/notify.go:801
 msgid "inua notifications"
 msgstr ""
 
-#: internal/ui/notify.go:822
+#: internal/ui/notify.go:823
 msgid "Focus is on"
 msgstr ""
 
-#: internal/ui/notify.go:865
+#: internal/ui/notify.go:866
 msgid "Show less"
 msgstr ""
 
-#: internal/ui/notify.go:867
+#: internal/ui/notify.go:868
 msgid "%d more"
 msgstr ""
 
-#: internal/ui/overview.go:182
+#: internal/ui/overview.go:183
 msgid "restore focus"
 msgstr ""
 
-#: internal/ui/overview.go:293
+#: internal/ui/overview.go:294
 msgid "kill window"
 msgstr ""
 
-#: internal/ui/overview.go:428
+#: internal/ui/overview.go:429
 msgid "MRU: ON"
 msgstr ""
 
-#: internal/ui/overview.go:428
+#: internal/ui/overview.go:429
 msgid "MRU: OFF"
 msgstr ""
 
-#: internal/ui/overview.go:429
+#: internal/ui/overview.go:430
 msgid "This monitor"
 msgstr ""
 
-#: internal/ui/overview.go:429
+#: internal/ui/overview.go:430
 msgid "All monitors"
 msgstr ""
 
-#: internal/ui/overview.go:438
+#: internal/ui/overview.go:439
 msgid "FILTER"
 msgstr ""
 
-#: internal/ui/overview.go:440
+#: internal/ui/overview.go:441
 msgid "NO MATCHES"
 msgstr ""
 
-#: internal/ui/overview.go:442
+#: internal/ui/overview.go:443
 msgid "%d RESULT"
 msgid_plural "%d RESULTS"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/ui/overview.go:470
+#: internal/ui/overview.go:471
 msgid "No workspaces"
 msgstr ""
 
-#: internal/ui/overview.go:472
+#: internal/ui/overview.go:473
 msgid "No matches"
 msgstr ""
 
-#: internal/ui/overview.go:591
+#: internal/ui/overview.go:592
 msgid "＋  New workspace"
 msgstr ""
 
-#: internal/ui/overview.go:895
+#: internal/ui/overview.go:896
 msgid "Filter by window title or app"
 msgstr ""
 
-#: internal/ui/overview.go:911
+#: internal/ui/overview.go:912
 msgid "TYPE TO FILTER WINDOWS"
 msgstr ""
 
-#: internal/ui/overview.go:924
+#: internal/ui/overview.go:925
 msgid "Type or / to filter windows   Esc · clear / close   Arrows / Tab · select   Middle click · close   Ctrl+Shift+X · kill   Drag · move"
 msgstr ""
 
-#: internal/ui/overview.go:968
+#: internal/ui/overview.go:969
 msgid "inua overview"
 msgstr ""
 
@@ -5096,51 +5172,83 @@ msgstr ""
 msgid "Screenshot taken"
 msgstr ""
 
-#: internal/ui/settings.go:202
+#: internal/ui/settings.go:222
 msgid "Not restarted: %s"
 msgstr ""
 
-#: internal/ui/settings.go:577
+#: internal/ui/settings.go:240
+#: internal/ui/settings.go:559
+msgid "%d%%"
+msgstr ""
+
+#: internal/ui/settings.go:569
+#: internal/ui/settings.go:596
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/settings.go:595
+msgid "%s (%s, %s) · %s"
+msgstr ""
+
+#: internal/ui/settings.go:597
+msgid "%d text"
+msgid_plural "%d texts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/settings.go:598
+msgid "%d image"
+msgid_plural "%d images"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/settings.go:599
+msgid "%.1f KB"
+msgstr ""
+
+#: internal/ui/settings.go:665
 msgid "Not saved: %s"
 msgstr ""
 
-#: internal/ui/settings.go:603
+#: internal/ui/settings.go:691
 msgid "Choose a wallpaper"
 msgstr ""
 
-#: internal/ui/settings.go:605
+#: internal/ui/settings.go:693
 msgid "Images"
 msgstr ""
 
-#: internal/ui/settings.go:644
+#: internal/ui/settings.go:732
 msgid "Off: another notification daemon can show them"
 msgstr ""
 
-#: internal/ui/settings.go:646
+#: internal/ui/settings.go:734
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr ""
 
-#: internal/ui/settings.go:648
+#: internal/ui/settings.go:736
 msgid "Waiting: another notification daemon is running"
 msgstr ""
 
-#: internal/ui/settings.go:666
+#: internal/ui/settings.go:754
 msgid "Nothing pinned"
 msgstr ""
 
-#: internal/ui/settings.go:682
+#: internal/ui/settings.go:770
 msgid "%s (not installed)"
 msgstr ""
 
-#: internal/ui/settings.go:695
+#: internal/ui/settings.go:783
 msgid "Move earlier"
 msgstr ""
 
-#: internal/ui/settings.go:696
+#: internal/ui/settings.go:784
 msgid "Move later"
 msgstr ""
 
-#: internal/ui/settings.go:697
+#: internal/ui/settings.go:785
 msgid "Remove from the dock"
 msgstr ""
 
@@ -5398,7 +5506,7 @@ msgid "The record of reads cannot be read: %s"
 msgstr ""
 
 #: internal/ui/settings_keyring.go:78
-#: ui/settings.ui:2697
+#: ui/settings.ui:3050
 msgid "No app has read a secret yet."
 msgstr ""
 
@@ -5482,7 +5590,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr ""
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:3770
+#: ui/settings.ui:4123
 msgid "Upgrade"
 msgstr ""
 
@@ -5545,7 +5653,7 @@ msgstr ""
 msgid "Stop recording"
 msgstr ""
 
-#: ui/bar.ui:141
+#: ui/bar.ui:151
 msgid "Control Center"
 msgstr ""
 
@@ -5583,10 +5691,6 @@ msgstr ""
 
 #: ui/center.ui:51
 msgid "[NOTIFICATIONS]"
-msgstr ""
-
-#: ui/center.ui:81
-msgid "Clear all"
 msgstr ""
 
 #: ui/center.ui:91
@@ -6249,215 +6353,271 @@ msgid "Critical notifications still show banners"
 msgstr ""
 
 #: ui/settings.ui:2537
-msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
+msgid "<span alpha='55%'>[</span>CLIPBOARD<span alpha='55%'>]</span>"
 msgstr ""
 
 #: ui/settings.ui:2545
-msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
+msgid "History, panel appearance and pasting"
 msgstr ""
 
 #: ui/settings.ui:2575
+msgid "Keep a clipboard history"
+msgstr ""
+
+#: ui/settings.ui:2584
+msgid "Text and images you copy, kept on this computer; a password manager's copies are left out"
+msgstr ""
+
+#: ui/settings.ui:2618
+msgid "Show in top bar"
+msgstr ""
+
+#: ui/settings.ui:2627
+msgid "A button in the status area opens the clipboard history"
+msgstr ""
+
+#: ui/settings.ui:2661
+msgid "Paste on click"
+msgstr ""
+
+#: ui/settings.ui:2670
+msgid "Clicking an entry pastes it into the window you were in; off only copies it"
+msgstr ""
+
+#: ui/settings.ui:2704
+msgid "Panel opacity"
+msgstr ""
+
+#: ui/settings.ui:2755
+msgid "History limit"
+msgstr ""
+
+#: ui/settings.ui:2764
+msgid "How many entries it keeps; the oldest go first"
+msgstr ""
+
+#: ui/settings.ui:2798
+msgid "History storage"
+msgstr ""
+
+#: ui/settings.ui:2807
+msgid "Loading history…"
+msgstr ""
+
+#: ui/settings.ui:2817
+msgid "Clear the history"
+msgstr ""
+
+#: ui/settings.ui:2890
+msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2898
+msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
+msgstr ""
+
+#: ui/settings.ui:2928
 msgid "Secret Service"
 msgstr ""
 
-#: ui/settings.ui:2611
+#: ui/settings.ui:2964
 msgid "Tell when an app reads a secret"
 msgstr ""
 
-#: ui/settings.ui:2620
+#: ui/settings.ui:2973
 msgid "A notification for each app's first read since inua-keyring started"
 msgstr ""
 
-#: ui/settings.ui:2665
+#: ui/settings.ui:3018
 msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2673
+#: ui/settings.ui:3026
 msgid "Every secret inua-keyring handed out, newest first"
 msgstr ""
 
-#: ui/settings.ui:2719
+#: ui/settings.ui:3072
 msgid "Refresh"
 msgstr ""
 
-#: ui/settings.ui:2751
+#: ui/settings.ui:3104
 msgid "Shortcuts"
 msgstr ""
 
-#: ui/settings.ui:2781
+#: ui/settings.ui:3134
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr ""
 
-#: ui/settings.ui:2810
-#: ui/settings.ui:3669
+#: ui/settings.ui:3163
+#: ui/settings.ui:4022
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2818
+#: ui/settings.ui:3171
 msgid "The shell's own actions"
 msgstr ""
 
-#: ui/settings.ui:2867
+#: ui/settings.ui:3220
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2875
+#: ui/settings.ui:3228
 msgid "With grim and slurp"
 msgstr ""
 
-#: ui/settings.ui:2924
+#: ui/settings.ui:3277
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2932
+#: ui/settings.ui:3285
 msgid "Your own commands"
 msgstr ""
 
-#: ui/settings.ui:2974
+#: ui/settings.ui:3327
 msgid "Command, e.g. kitty"
 msgstr ""
 
-#: ui/settings.ui:2983
+#: ui/settings.ui:3336
 msgid "Add…"
 msgstr ""
 
-#: ui/settings.ui:2984
+#: ui/settings.ui:3337
 msgid "Add, then press its shortcut"
 msgstr ""
 
-#: ui/settings.ui:3019
+#: ui/settings.ui:3372
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3027
+#: ui/settings.ui:3380
 msgid "Other shortcuts, from hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:3072
+#: ui/settings.ui:3425
 msgid "Keyboard"
 msgstr ""
 
-#: ui/settings.ui:3120
+#: ui/settings.ui:3473
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3128
+#: ui/settings.ui:3481
 msgid "Every keyboard"
 msgstr ""
 
-#: ui/settings.ui:3158
+#: ui/settings.ui:3511
 msgid "Swap Ctrl and Alt"
 msgstr ""
 
-#: ui/settings.ui:3167
+#: ui/settings.ui:3520
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr ""
 
-#: ui/settings.ui:3182
+#: ui/settings.ui:3535
 msgid "Left side"
 msgstr ""
 
-#: ui/settings.ui:3183
+#: ui/settings.ui:3536
 msgid "Both sides"
 msgstr ""
 
-#: ui/settings.ui:3210
-#: ui/settings.ui:3233
+#: ui/settings.ui:3563
+#: ui/settings.ui:3586
 msgid "Caps Lock"
 msgstr ""
 
-#: ui/settings.ui:3219
+#: ui/settings.ui:3572
 msgid "What the Caps Lock key does"
 msgstr ""
 
-#: ui/settings.ui:3234
+#: ui/settings.ui:3587
 msgid "Escape"
 msgstr ""
 
-#: ui/settings.ui:3235
+#: ui/settings.ui:3588
 msgid "Ctrl"
 msgstr ""
 
-#: ui/settings.ui:3273
-#: ui/settings.ui:3555
+#: ui/settings.ui:3626
+#: ui/settings.ui:3908
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3281
-#: ui/settings.ui:3563
+#: ui/settings.ui:3634
+#: ui/settings.ui:3916
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr ""
 
-#: ui/settings.ui:3332
-#: ui/settings.ui:3599
+#: ui/settings.ui:3685
+#: ui/settings.ui:3952
 msgid "Use hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:3333
+#: ui/settings.ui:3686
 msgid "Stop setting keyboard options in inua"
 msgstr ""
 
-#: ui/settings.ui:3364
+#: ui/settings.ui:3717
 msgid "Mouse & Touch"
 msgstr ""
 
-#: ui/settings.ui:3412
+#: ui/settings.ui:3765
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3420
+#: ui/settings.ui:3773
 msgid "Every touchpad"
 msgstr ""
 
-#: ui/settings.ui:3450
+#: ui/settings.ui:3803
 msgid "Pointer speed"
 msgstr ""
 
-#: ui/settings.ui:3501
+#: ui/settings.ui:3854
 msgid "Acceleration"
 msgstr ""
 
-#: ui/settings.ui:3510
+#: ui/settings.ui:3863
 msgid "Faster swipes move the pointer further"
 msgstr ""
 
-#: ui/settings.ui:3600
+#: ui/settings.ui:3953
 msgid "Stop setting the touchpad in inua"
 msgstr ""
 
-#: ui/settings.ui:3631
+#: ui/settings.ui:3984
 msgid "About"
 msgstr ""
 
-#: ui/settings.ui:3677
+#: ui/settings.ui:4030
 msgid "The version, and new releases"
 msgstr ""
 
-#: ui/settings.ui:3707
+#: ui/settings.ui:4060
 msgid "Version"
 msgstr ""
 
-#: ui/settings.ui:3743
+#: ui/settings.ui:4096
 msgid "Updates"
 msgstr ""
 
-#: ui/settings.ui:3779
+#: ui/settings.ui:4132
 msgid "Check for updates"
 msgstr ""
 
-#: ui/settings.ui:3805
+#: ui/settings.ui:4158
 msgid "Check every day"
 msgstr ""
 
-#: ui/settings.ui:3814
+#: ui/settings.ui:4167
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr ""
 
-#: ui/settings.ui:3859
+#: ui/settings.ui:4212
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3867
+#: ui/settings.ui:4220
 msgid "What the latest release changed"
 msgstr ""
 

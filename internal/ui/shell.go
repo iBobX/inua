@@ -83,6 +83,7 @@ type shellUI struct {
 	launcher  launcher
 	overview  workspaceOverview
 	control   control
+	clipboard clipboardPanel
 	agenda    agenda
 	shot      shooter
 	recording recorder
@@ -199,8 +200,18 @@ type shellUI struct {
 	onCenterGone           glib.SourceFunc
 	onNotesButton          func(gtk.Button)
 	onDockClicked          func(gtk.Button)
+	onClipboardButton      func(gtk.Button)
+	onClipboardSearch      func(gtk.SearchEntry)
+	onClipboardActivate    func(gtk.SearchEntry)
+	onClipboardAction      func(gtk.Button)
+	onClipboardHover       func(gtk.EventControllerMotion, float64, float64)
+	onClipboardLeave       func(gtk.EventControllerMotion)
+	onClipboardBackdrop    func(gtk.GestureClick, int32, float64, float64)
+	onClipboardKey         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onClipboardTick        glib.SourceFunc
 	onDrawerClicked        func(gtk.Button)
 	onDrawerApp            func(gtk.Button)
+	onDrawerSearch         func(gtk.SearchEntry)
 	onDrawerBackdrop       func(gtk.GestureClick, int32, float64, float64)
 	onDrawerKey            func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onDrawerGone           glib.SourceFunc
@@ -252,6 +263,8 @@ func Run(opts Options) int {
 	s.pass.slot = make(chan struct{}, 1) // before the control socket serves
 	activate := func(gio.Application) { s.start() }
 	app.ConnectActivate(&activate)
+	shutdown := func(gio.Application) { s.stopClipboardCapture() }
+	app.ConnectShutdown(&shutdown)
 
 	go func() {
 		log.Printf("ipc: serving on %s", socketPath)
@@ -346,6 +359,7 @@ func (s *shellUI) start() {
 	s.bindNotifyHandlers()
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()
+	s.bindClipboardHandlers()
 	s.bindLockHandlers()
 	s.applyLauncherWeb()
 	s.bindPolkitHandlers()
@@ -365,6 +379,7 @@ func (s *shellUI) start() {
 	s.startUpdates()
 	s.startSystem()
 	s.startAssistant()
+	s.startClipboardCapture()
 	if s.layer { // elsewhere (GNOME) the desktop has its own agent
 		s.startPolkit()
 	}
@@ -680,7 +695,7 @@ func (s *shellUI) barNames() []string {
 //	shell    state|close|reload|restart|snapshot DIR|tray-menu N
 func (s *shellUI) request(req ipc.Request) ipc.Response {
 	if req.Op == "show" {
-		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
+		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\nclipboard: toggle open close\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
 	}
 	if req.Op != "call" {
 		return ipc.Response{Error: "unknown op " + req.Op}
@@ -744,6 +759,21 @@ func (s *shellUI) request(req ipc.Request) ipc.Response {
 			s.openAgenda()
 		case "close":
 			s.closeAgenda()
+		default:
+			return bad
+		}
+	case "clipboard":
+		switch req.Function {
+		case "toggle":
+			if s.clipboard.open {
+				s.closeClipboard()
+			} else {
+				s.openClipboard(nil)
+			}
+		case "open":
+			s.openClipboard(nil)
+		case "close":
+			s.closeClipboard()
 		default:
 			return bad
 		}

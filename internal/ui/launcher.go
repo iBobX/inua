@@ -79,6 +79,7 @@ func (s *shellUI) bindLauncherHandlers() {
 }
 
 func (s *shellUI) showLauncher(m shell.Mode) {
+	s.closeClipboard()
 	s.freshenRates()
 	s.launcher.st.Show(m)
 	s.syncLauncher()
