@@ -7,10 +7,10 @@
 # ~/.local/share, checks the packages inua needs, writes your configuration
 # with `inua init` (never replacing your files), and, with sudo, adds the
 # Inua login session. Where inua replaces something you have, it asks
-# first, and the answer defaults to yes: gpg's pinentry (inua-pinentry),
-# the keyring apps keep secrets in (inua-keyring, in pass), and the login
-# manager (GDM, SDDM, LightDM … → greetd + tuigreet). Run it again to
-# update.
+# first, and the answer defaults to yes for gpg's pinentry (inua-pinentry)
+# and the keyring apps keep secrets in (inua-keyring, in pass); with no
+# login manager it offers greetd + tuigreet (yes), while GDM, SDDM,
+# LightDM … are kept unless you answer yes. Run it again to update.
 #
 # Environment:
 #   INUA_VERSION=v0.1.2   a release instead of the latest
@@ -155,8 +155,21 @@ esac
 
 heading "Checking what inua needs"
 missing=
-have Hyprland || have hyprland || missing="$missing $(pkg hyprland)"
-lib() { ldconfig -p 2>/dev/null | grep -q "$1"; }
+if have Hyprland; then
+    # inua needs 0.53 or later: "Hyprland 0.53.3 built from …"
+    hyprland=$(Hyprland --version 2>/dev/null | sed -n '1s/^Hyprland \([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1.\2/p')
+    case $hyprland in
+        0.[0-9] | 0.[0-4][0-9] | 0.5[0-2]) note "inua needs Hyprland 0.53 or later; this one is $hyprland. Update it before logging in to Inua" ;;
+    esac
+elif [ "$manager" = dnf ] && ! dnf -q repoquery hyprland 2>/dev/null | grep -q .; then
+    # Fedora's own repositories have no Hyprland after Fedora 42.
+    note "Hyprland is not in your repositories; enable a Hyprland COPR (https://wiki.hypr.land/Getting-Started/Installation/), then run this again"
+else
+    missing="$missing $(pkg hyprland)"
+fi
+# ldconfig is in /sbin, which a user's PATH may not have.
+ldconfig=$(command -v ldconfig || echo /sbin/ldconfig)
+lib() { "$ldconfig" -p 2>/dev/null | grep -q "$1"; }
 lib libgtk-4.so.1 || missing="$missing $(pkg gtk4)"
 lib libgtk4-layer-shell.so || missing="$missing $(pkg gtk4-layer-shell)"
 # inua-keyring keeps apps' secrets in pass (docs/feat/keyring.md)
@@ -186,6 +199,15 @@ if PATH="$prefix/bin:$PATH" "$prefix/bin/inua" init; then
 else
     note "inua init reported problems (above); fix them, then run: inua init"
 fi
+# inua init leaves a Hyprland config of yours alone (Omarchy's, say); the
+# Inua session does not start until it starts inua-shell.
+starts=yes
+PATH="$prefix/bin:$PATH" "$prefix/bin/inua" config hyprland >/dev/null 2>&1 || starts=no
+if [ "$starts" = no ]; then
+    note "your Hyprland config does not start inua-shell, so the Inua session will not start yet; inua init said how to add it (above)"
+    [ -d "$HOME/.local/share/omarchy" ] &&
+        note "Omarchy's config also starts waybar and mako, which would run beside inua's bar and notifications"
+fi
 
 # --- the keyring ------------------------------------------------------------
 
@@ -213,6 +235,17 @@ fi
 
 heading "Adding the Inua login session"
 
+# autologin DM: whether that login manager logs someone in by itself, as
+# Omarchy's SDDM does; greetd + tuigreet would ask for the password.
+autologin() {
+    case $1 in
+        sddm) grep -rqsE '^[[:space:]]*User=[^[:space:]]' /etc/sddm.conf /etc/sddm.conf.d ;;
+        gdm | gdm3) grep -qsE '^[[:space:]]*AutomaticLoginEnable[[:space:]]*=[[:space:]]*[Tt]rue' /etc/gdm3/custom.conf /etc/gdm/custom.conf ;;
+        lightdm) grep -rqsE '^[[:space:]]*autologin-user=[^[:space:]]' /etc/lightdm ;;
+        *) false ;;
+    esac
+}
+
 # The login manager systemd starts: gdm3, sddm, lightdm, greetd …, or none.
 current=${INUA_DM-$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null || true)" .service)}
 [ "$current" = display-manager ] && current=
@@ -226,7 +259,10 @@ case $current in
     *)
         mode=other
         say "you log in with $current; Inua will be in its list of sessions"
-        [ -n "$manager" ] && ask "Replace $current with greetd + tuigreet, the login screen inua recommends? $current stays installed" y && switch=yes
+        if autologin "$current"; then
+            note "$current logs you in by itself; greetd + tuigreet would ask for your password. To be logged in to Inua instead, set its session to inua.desktop (Session=inua.desktop for SDDM)"
+        fi
+        [ -n "$manager" ] && ask "Replace $current with greetd + tuigreet, the login screen inua recommends? $current stays installed" n && switch=yes
         ;;
 esac
 if [ "$switch" = yes ]; then

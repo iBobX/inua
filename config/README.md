@@ -54,7 +54,10 @@ The install script (`curl -fsSL https://inua.lyric.im/install.sh | sh`)
 finds the login manager systemd starts. With greetd it installs the greetd
 config; with another it only registers the Inua session, after asking
 whether to switch to greetd + tuigreet (default no; yes installs both,
-disables the current one and enables greetd for the next boot).
+disables the current one and enables greetd for the next boot). With no
+login manager it offers greetd + tuigreet, default yes. When the current
+one logs you in without a password (as Omarchy's SDDM does), it says to set
+its autologin session to `inua.desktop` to be logged in to Inua instead.
 
 The GDM and SDDM commands are for systems that already have that login
 manager; they only register the Inua session. `make deps-dm` installs Ubuntu

@@ -64,11 +64,14 @@ offers to install the packages inua needs with apt, pacman, dnf or zypper
 (under each one's names), writes your
 configuration with `inua init` (never replacing your files), and adds the
 Inua login session (sudo). Where inua replaces something you have, it asks
-first, and the answer defaults to yes: gpg's pinentry (with
-`inua-pinentry`), the keyring apps keep secrets in (gnome-keyring, with
-`inua-keyring`, after copying its items into pass), and the login manager
-(GDM, SDDM … with greetd + tuigreet, the login screen inua recommends; the
-old one stays installed). `INUA_VERSION=v0.1.2` picks a release.
+first, and the answer defaults to yes for gpg's pinentry (with
+`inua-pinentry`) and the keyring apps keep secrets in (gnome-keyring, with
+`inua-keyring`, after copying its items into pass). With no login manager
+it offers greetd + tuigreet, the login screen inua recommends (yes); GDM,
+SDDM … are kept unless you answer yes, and Inua joins their list of
+sessions. On Fedora 43 and later, Hyprland comes from a COPR
+(Fedora's repositories stopped at 0.45); inua needs 0.53 or later.
+`INUA_VERSION=v0.1.2` picks a release.
 
 To update, run `inua upgrade`; `inua upgrade -check` only says whether a
 newer release is out. It downloads the release (checking its checksum),
