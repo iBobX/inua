@@ -1345,7 +1345,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:599
-#: internal/ui/shortcuts.go:140
+#: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "無"
 
@@ -4090,34 +4090,34 @@ msgstr "聲音關閉：M 將其開啟"
 msgid "SPACE PINBALL"
 msgstr "太空彈珠"
 
-#: internal/hyprconf/keys.go:22
+#: internal/hyprconf/keys.go:23
 #: internal/shell/dock.go:280
 #: ui/settings.ui:1428
 msgid "Launcher"
 msgstr "啟動器"
 
-#: internal/hyprconf/keys.go:23
+#: internal/hyprconf/keys.go:24
 #: internal/shell/launcher.go:56
 msgid "Switch windows"
 msgstr "切換窗口"
 
-#: internal/hyprconf/keys.go:24
+#: internal/hyprconf/keys.go:25
 msgid "Workspace overview"
 msgstr "工作區概述"
 
-#: internal/hyprconf/keys.go:25
+#: internal/hyprconf/keys.go:26
 msgid "Control center"
 msgstr "控制中心"
 
-#: internal/hyprconf/keys.go:26
+#: internal/hyprconf/keys.go:27
 msgid "Notification center"
 msgstr "通知中心"
 
-#: internal/hyprconf/keys.go:27
+#: internal/hyprconf/keys.go:28
 msgid "Focus on or off"
 msgstr "聚焦或關閉"
 
-#: internal/hyprconf/keys.go:28
+#: internal/hyprconf/keys.go:29
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:279
 #: ui/control.ui:62
@@ -4125,32 +4125,32 @@ msgstr "聚焦或關閉"
 msgid "Settings"
 msgstr "設定"
 
-#: internal/hyprconf/keys.go:29
+#: internal/hyprconf/keys.go:30
 #: ui/settings.ui:360
 msgid "Restart the shell"
 msgstr "重新啟動外殼"
 
-#: internal/hyprconf/keys.go:30
+#: internal/hyprconf/keys.go:31
 msgid "Lock the screen"
 msgstr "鎖定螢幕"
 
-#: internal/hyprconf/keys.go:31
+#: internal/hyprconf/keys.go:32
 msgid "Take a screenshot"
 msgstr "截圖"
 
-#: internal/hyprconf/keys.go:32
+#: internal/hyprconf/keys.go:33
 msgid "The whole screen, at once"
 msgstr "全螢幕一次"
 
-#: internal/hyprconf/keys.go:33
+#: internal/hyprconf/keys.go:34
 msgid "The focused window, at once"
 msgstr "立即對焦窗口"
 
-#: internal/hyprconf/keys.go:34
+#: internal/hyprconf/keys.go:35
 msgid "Record the screen (again: stop)"
 msgstr "錄製畫面（再次：停止）"
 
-#: internal/hyprconf/keys.go:35
+#: internal/hyprconf/keys.go:36
 #: ui/colorpicker.ui:59
 msgid "Pick a colour"
 msgstr "選擇顏色"
@@ -4821,15 +4821,22 @@ msgid "no XKB options"
 msgstr "無XKB選項"
 
 #: internal/ui/input.go:125
-#: internal/ui/shortcuts.go:93
 msgid "From hyprland.conf"
 msgstr "來自hyprland.conf"
 
-#: internal/ui/input.go:147
+#: internal/ui/input.go:153
+msgid "hyprland.lua does not load inua.lua, so these settings do nothing yet. Add this as its last line: %s"
+msgstr "hyprland.lua 沒有載入 inua.lua,這些設定暫時不會生效。在它的最後加上這一行:%s"
+
+#: internal/ui/input.go:155
 msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
 msgstr "hyprland.conf 不會載入 inua.conf,因此這些設定尚未執行任何操作。將其新增為最後一行:source = ./%s"
 
-#: internal/ui/input.go:151
+#: internal/ui/input.go:159
+msgid "hyprland.lua sets these again after loading inua.lua, which wins over inua: %s. Move the require line below them."
+msgstr "hyprland.lua 在載入 inua.lua 之後又設定了這些,會蓋過 inua 的設定:%s。把 require 那一行移到它們下面。"
+
+#: internal/ui/input.go:161
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyprland.conf 在載入 inua.conf 後再次設定這些,這贏得了 inua: %s。將原始程式碼行移到它們下方。"
 
@@ -5411,27 +5418,35 @@ msgstr "設定於inua"
 msgid "Turned off in inua"
 msgstr "在inua中關閉"
 
-#: internal/ui/shortcuts.go:181
+#: internal/ui/shortcuts.go:93
+msgid "From Hyprland"
+msgstr "來自 Hyprland"
+
+#: internal/ui/shortcuts.go:134
+msgid "Lua function"
+msgstr "Lua 函式"
+
+#: internal/ui/shortcuts.go:191
 msgid "Click, then press the new shortcut"
 msgstr "按一下，然後按新的快速鍵"
 
-#: internal/ui/shortcuts.go:186
+#: internal/ui/shortcuts.go:196
 msgid "Press keys…"
 msgstr "按鍵…"
 
-#: internal/ui/shortcuts.go:190
+#: internal/ui/shortcuts.go:200
 msgid "Not set"
 msgstr "未設定"
 
-#: internal/ui/shortcuts.go:216
+#: internal/ui/shortcuts.go:226
 msgid "Remove this command"
 msgstr "刪除該指令"
 
-#: internal/ui/shortcuts.go:218
+#: internal/ui/shortcuts.go:228
 msgid "Use hyprland.conf's shortcut again"
 msgstr "再次使用hyprland.conf的捷徑"
 
-#: internal/ui/shortcuts.go:220
+#: internal/ui/shortcuts.go:230
 msgid "Turn the shortcut off"
 msgstr "關閉快捷方式"
 

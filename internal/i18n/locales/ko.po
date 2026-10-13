@@ -1345,7 +1345,7 @@ msgid "IN USE"
 msgstr "사용 중"
 
 #: internal/appui/tailscale.go:599
-#: internal/ui/shortcuts.go:140
+#: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "없음"
 
@@ -4090,34 +4090,34 @@ msgstr "소리 꺼짐: M이 켜짐"
 msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
-#: internal/hyprconf/keys.go:22
+#: internal/hyprconf/keys.go:23
 #: internal/shell/dock.go:280
 #: ui/settings.ui:1428
 msgid "Launcher"
 msgstr "실행기"
 
-#: internal/hyprconf/keys.go:23
+#: internal/hyprconf/keys.go:24
 #: internal/shell/launcher.go:56
 msgid "Switch windows"
 msgstr "창 전환"
 
-#: internal/hyprconf/keys.go:24
+#: internal/hyprconf/keys.go:25
 msgid "Workspace overview"
 msgstr "작업공간 개요"
 
-#: internal/hyprconf/keys.go:25
+#: internal/hyprconf/keys.go:26
 msgid "Control center"
 msgstr "제어 센터"
 
-#: internal/hyprconf/keys.go:26
+#: internal/hyprconf/keys.go:27
 msgid "Notification center"
 msgstr "알림 센터"
 
-#: internal/hyprconf/keys.go:27
+#: internal/hyprconf/keys.go:28
 msgid "Focus on or off"
 msgstr "포커스 온 또는 오프"
 
-#: internal/hyprconf/keys.go:28
+#: internal/hyprconf/keys.go:29
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:279
 #: ui/control.ui:62
@@ -4125,32 +4125,32 @@ msgstr "포커스 온 또는 오프"
 msgid "Settings"
 msgstr "설정"
 
-#: internal/hyprconf/keys.go:29
+#: internal/hyprconf/keys.go:30
 #: ui/settings.ui:360
 msgid "Restart the shell"
 msgstr "셸을 다시 시작합니다."
 
-#: internal/hyprconf/keys.go:30
+#: internal/hyprconf/keys.go:31
 msgid "Lock the screen"
 msgstr "화면 잠금"
 
-#: internal/hyprconf/keys.go:31
+#: internal/hyprconf/keys.go:32
 msgid "Take a screenshot"
 msgstr "스크린샷 찍기"
 
-#: internal/hyprconf/keys.go:32
+#: internal/hyprconf/keys.go:33
 msgid "The whole screen, at once"
 msgstr "[11] 전체화면을 한번에"
 
-#: internal/hyprconf/keys.go:33
+#: internal/hyprconf/keys.go:34
 msgid "The focused window, at once"
 msgstr "[12] 집중된 창을 한번에"
 
-#: internal/hyprconf/keys.go:34
+#: internal/hyprconf/keys.go:35
 msgid "Record the screen (again: stop)"
 msgstr "화면 녹화(다시: 중지)"
 
-#: internal/hyprconf/keys.go:35
+#: internal/hyprconf/keys.go:36
 #: ui/colorpicker.ui:59
 msgid "Pick a colour"
 msgstr "색상을 선택하세요"
@@ -4821,15 +4821,22 @@ msgid "no XKB options"
 msgstr "XKB 옵션 없음"
 
 #: internal/ui/input.go:125
-#: internal/ui/shortcuts.go:93
 msgid "From hyprland.conf"
 msgstr "Hyprland.conf에서"
 
-#: internal/ui/input.go:147
+#: internal/ui/input.go:153
+msgid "hyprland.lua does not load inua.lua, so these settings do nothing yet. Add this as its last line: %s"
+msgstr "hyprland.lua가 inua.lua를 불러오지 않아 이 설정은 아직 적용되지 않습니다. 마지막 줄에 다음을 추가하세요: %s"
+
+#: internal/ui/input.go:155
 msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
 msgstr "hyporland.conf는 inua.conf를 로드하지 않으므로 이러한 설정은 아직 아무 작업도 수행하지 않습니다. 마지막 줄에 다음을 추가하세요: source = ./%s"
 
-#: internal/ui/input.go:151
+#: internal/ui/input.go:159
+msgid "hyprland.lua sets these again after loading inua.lua, which wins over inua: %s. Move the require line below them."
+msgstr "hyprland.lua가 inua.lua를 불러온 뒤 이 항목을 다시 설정하여 inua의 설정을 덮어씁니다: %s. require 줄을 그 아래로 옮기세요."
+
+#: internal/ui/input.go:161
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyporland.conf는 inua.conf를 로드한 후 이를 다시 설정하며, 이는 inua: %s를 이깁니다. 소스 줄을 그 아래로 이동하세요."
 
@@ -5411,27 +5418,35 @@ msgstr "이누아에 설정"
 msgid "Turned off in inua"
 msgstr "inua에서는 꺼짐"
 
-#: internal/ui/shortcuts.go:181
+#: internal/ui/shortcuts.go:93
+msgid "From Hyprland"
+msgstr "Hyprland에서"
+
+#: internal/ui/shortcuts.go:134
+msgid "Lua function"
+msgstr "Lua 함수"
+
+#: internal/ui/shortcuts.go:191
 msgid "Click, then press the new shortcut"
 msgstr "클릭한 후 새로운 단축키를 누르세요."
 
-#: internal/ui/shortcuts.go:186
+#: internal/ui/shortcuts.go:196
 msgid "Press keys…"
 msgstr "키를 누른다..."
 
-#: internal/ui/shortcuts.go:190
+#: internal/ui/shortcuts.go:200
 msgid "Not set"
 msgstr "설정되지 않음"
 
-#: internal/ui/shortcuts.go:216
+#: internal/ui/shortcuts.go:226
 msgid "Remove this command"
 msgstr "이 명령을 제거하십시오."
 
-#: internal/ui/shortcuts.go:218
+#: internal/ui/shortcuts.go:228
 msgid "Use hyprland.conf's shortcut again"
 msgstr "Hyprland.conf의 바로가기를 다시 사용하십시오."
 
-#: internal/ui/shortcuts.go:220
+#: internal/ui/shortcuts.go:230
 msgid "Turn the shortcut off"
 msgstr "바로가기를 끄세요"
 

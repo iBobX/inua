@@ -98,6 +98,9 @@ func TestApplyWithoutHyprland(t *testing.T) {
 	if !strings.Contains(string(got), "name = bt-trackpad\n    sensitivity = 0.40") {
 		t.Errorf("got\n%s", got)
 	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(path), LuaName)); !os.IsNotExist(err) {
+		t.Errorf("inua.lua written for hyprland.conf: %v", err)
+	}
 }
 
 func TestPath(t *testing.T) {
@@ -135,18 +138,26 @@ func TestKeys(t *testing.T) {
 		{"modmask": 65, "key": "S", "dispatcher": "exec", "arg": "inua  call screenshot   area", "submap": ""},
 		{"modmask": 0, "key": "Print", "dispatcher": "exec", "arg": "inua call screenshot area", "submap": ""},
 		{"modmask": 64, "key": "mouse:272", "mouse": true, "dispatcher": "movewindow", "arg": ""},
-		{"modmask": 0, "key": "x", "dispatcher": "exec", "arg": "inua call launcher toggle", "submap": "resize"}
+		{"modmask": 0, "key": "x", "dispatcher": "exec", "arg": "inua call launcher toggle", "submap": "resize"},
+		{"modmask": 64, "key": "N", "dispatcher": "__lua", "arg": "", "submap": "", "description": "notification center"}
 	]`
 	binds, err := ParseBinds([]byte(reply))
-	if err != nil || len(binds) != 4 {
+	if err != nil || len(binds) != 5 {
 		t.Fatalf("binds %+v %v", binds, err)
 	}
 	c := config.Default()
-	if k := KeysFor(binds, Command(c, "shot-area")); len(k) != 2 || k[0] != "SUPER+SHIFT+S" || k[1] != "Print" {
+	if k := KeysFor(binds, Command(c, "shot-area"), ""); len(k) != 2 || k[0] != "SUPER+SHIFT+S" || k[1] != "Print" {
 		t.Errorf("KeysFor shot-area: %v", k)
 	}
-	if k := KeysFor(binds, Command(c, "launcher")); len(k) != 1 {
+	if k := KeysFor(binds, Command(c, "launcher"), ""); len(k) != 1 {
 		t.Errorf("KeysFor launcher (submap binds do not count): %v", k)
+	}
+	// A Lua bind is matched by its description, in any case.
+	if k := KeysFor(binds, Command(c, "notifications"), "Notification center"); len(k) != 1 || k[0] != "SUPER+N" {
+		t.Errorf("KeysFor by description: %v", k)
+	}
+	if k := KeysFor(binds, Command(c, "control"), "Control center"); len(k) != 0 {
+		t.Errorf("KeysFor control: %v", k)
 	}
 	for _, a := range Actions {
 		if Command(c, a.ID) == "" {
@@ -197,5 +208,99 @@ func TestRenderShortcuts(t *testing.T) {
 func TestRenderLockRestore(t *testing.T) {
 	if got := Render(config.Default(), nil); !strings.Contains(got, "allow_session_lock_restore = true") {
 		t.Errorf("inua.conf does not let the lock screen take the lock back:\n%s", got)
+	}
+}
+
+// inua.lua for a Lua config sets the same as inua.conf, in Hyprland
+// 0.55's calls.
+func TestRenderLua(t *testing.T) {
+	c := config.Default()
+	c.Input = config.Input{KbOptions: ptr(`caps:escape,"odd"`), TouchpadSpeed: ptr(0.3), TouchpadAccel: "flat"}
+	c.Shortcuts = []config.Shortcut{
+		{Action: "launcher", Keys: "SUPER+D", Replaces: []string{"SUPER+Space"}},
+		{Action: "shot-area", Keys: "", Replaces: []string{"Print"}},
+		{Action: "exec", Keys: "SUPER+SHIFT+Return", Command: `kitty -e sh -c "echo \hi"`, Name: "Terminal"},
+	}
+	got := RenderLua(c, []string{"elan-touchpad"})
+	for _, want := range []string{
+		"hl.config({ misc = { allow_session_lock_restore = true } })\n",
+		`match = { class = "^(io\\.github\\.lyricat\\.Inua\\..+)$" },`,
+		`hl.config({ input = { kb_options = "caps:escape,\"odd\"" } })`,
+		"hl.device({\n    name = \"elan-touchpad\",\n    sensitivity = 0.30,\n    accel_profile = \"flat\",\n})\n",
+		`pcall(hl.unbind, "SUPER + Space")`,
+		`pcall(hl.unbind, "SUPER + SPACE")`,
+		`pcall(hl.unbind, "SUPER + space")`,
+		`pcall(hl.unbind, "Print")`,
+		`hl.bind("SUPER + D", hl.dsp.exec_cmd("inua call launcher toggle"), { description = "Launcher" })`,
+		`hl.bind("SUPER + SHIFT + Return", hl.dsp.exec_cmd("kitty -e sh -c \"echo \\hi\""), { description = "Terminal" })`,
+		`hl.define_submap("` + RecordSubmap + `", function()`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %s in\n%s", want, got)
+		}
+	}
+	if strings.Contains(got, "wl-copy") || strings.Contains(got, "Print\"), {") {
+		t.Error("an action turned off was bound")
+	}
+	if strings.Index(got, `pcall(hl.unbind, "SUPER + D")`) > strings.Index(got, `hl.bind("SUPER + D"`) {
+		t.Error("unbinds must come before binds")
+	}
+	if got := luaString("a\tb\nc\x7f"); got != `"a\009b\nc\127"` {
+		t.Errorf("control characters: %s", got)
+	}
+	if got := RenderLua(config.Config{}, []string{"x-touchpad"}); strings.Contains(got, "hl.device") || !strings.Contains(got, "Nothing set in inua") {
+		t.Errorf("unset settings were written:\n%s", got)
+	}
+}
+
+// Hyprland reads hyprland.lua when it runs Lua and the file is there, or
+// when there is no hyprland.conf; inua writes the file that config loads.
+func TestConfigFile(t *testing.T) {
+	for _, c := range []struct {
+		files   []string
+		runsLua bool
+		want    string
+	}{
+		{nil, false, "hyprland.conf"},
+		{[]string{"hyprland.conf"}, true, "hyprland.conf"},
+		{[]string{"hyprland.lua"}, false, "hyprland.lua"},
+		{[]string{"hyprland.conf", "hyprland.lua"}, false, "hyprland.conf"}, // 0.53, or not known
+		{[]string{"hyprland.conf", "hyprland.lua"}, true, "hyprland.lua"},
+	} {
+		dir := t.TempDir()
+		for _, f := range c.files {
+			os.WriteFile(filepath.Join(dir, f), nil, 0o644)
+		}
+		got := ConfigFile(dir, c.runsLua)
+		if got != filepath.Join(dir, c.want) {
+			t.Errorf("%v, Lua %v: %s", c.files, c.runsLua, got)
+		}
+		wantTarget := map[string]string{"hyprland.conf": Name, "hyprland.lua": LuaName}[c.want]
+		if Target(got) != filepath.Join(dir, wantTarget) {
+			t.Errorf("%s: writes %s", got, Target(got))
+		}
+	}
+}
+
+// For a Lua config only inua.lua is written, and it keeps an unplugged
+// touchpad's settings as inua.conf does.
+func TestApplyLua(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "hypr")
+	path := filepath.Join(dir, LuaName)
+	ctx := context.Background()
+	old := RenderLua(config.Config{Input: config.Input{TouchpadSpeed: ptr(0.1)}}, []string{"bt-trackpad"})
+	os.MkdirAll(dir, 0o755)
+	if err := os.WriteFile(path, []byte(old), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if changed, err := Apply(ctx, config.Config{Input: config.Input{TouchpadSpeed: ptr(0.4)}}, path, nil); err != nil || !changed {
+		t.Fatalf("changed=%v err=%v", changed, err)
+	}
+	got, _ := os.ReadFile(path)
+	if !strings.Contains(string(got), "name = \"bt-trackpad\",\n    sensitivity = 0.40") || strings.Contains(string(got), `name = "inua-light-apps",`+"\n    sensitivity") {
+		t.Errorf("got\n%s", got)
+	}
+	if _, err := os.Stat(filepath.Join(dir, Name)); !os.IsNotExist(err) {
+		t.Errorf("inua.conf written for a Lua config: %v", err)
 	}
 }

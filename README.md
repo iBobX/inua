@@ -122,6 +122,14 @@ exec-once = inua-shell
 source = ./inua.conf      # keep this last
 ```
 
+With a Lua config (`hyprland.lua`, Hyprland 0.55 and later), the same two
+lines are:
+
+```lua
+hl.on("hyprland.start", function() hl.exec_cmd("inua-shell") end)
+pcall(require, "inua")    -- keep this last; loads inua.lua
+```
+
 `inua config hyprland` checks both. Setup in detail:
 [config/README.md](config/README.md).
 
@@ -157,7 +165,8 @@ applies it, `inua config check` checks it). The sample lists every option:
 [config/inua/config.toml](config/inua/config.toml).
 
 Keyboard, touchpad and shortcut settings are Hyprland's, so inua writes them
-to `~/.config/hypr/inua.conf`, which your `hyprland.conf` sources.
+to `~/.config/hypr/inua.conf`, which your `hyprland.conf` sources (or to
+`inua.lua`, which a `hyprland.lua` requires).
 Restyle anything with `~/.config/inua/style.css`.
 
 ## Development

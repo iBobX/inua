@@ -1347,7 +1347,7 @@ msgid "IN USE"
 msgstr ""
 
 #: internal/appui/tailscale.go:599
-#: internal/ui/shortcuts.go:140
+#: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr ""
 
@@ -4094,34 +4094,34 @@ msgstr ""
 msgid "SPACE PINBALL"
 msgstr ""
 
-#: internal/hyprconf/keys.go:22
+#: internal/hyprconf/keys.go:23
 #: internal/shell/dock.go:280
 #: ui/settings.ui:1428
 msgid "Launcher"
 msgstr ""
 
-#: internal/hyprconf/keys.go:23
+#: internal/hyprconf/keys.go:24
 #: internal/shell/launcher.go:56
 msgid "Switch windows"
 msgstr ""
 
-#: internal/hyprconf/keys.go:24
+#: internal/hyprconf/keys.go:25
 msgid "Workspace overview"
 msgstr ""
 
-#: internal/hyprconf/keys.go:25
+#: internal/hyprconf/keys.go:26
 msgid "Control center"
 msgstr ""
 
-#: internal/hyprconf/keys.go:26
+#: internal/hyprconf/keys.go:27
 msgid "Notification center"
 msgstr ""
 
-#: internal/hyprconf/keys.go:27
+#: internal/hyprconf/keys.go:28
 msgid "Focus on or off"
 msgstr ""
 
-#: internal/hyprconf/keys.go:28
+#: internal/hyprconf/keys.go:29
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:279
 #: ui/control.ui:62
@@ -4129,32 +4129,32 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: internal/hyprconf/keys.go:29
+#: internal/hyprconf/keys.go:30
 #: ui/settings.ui:360
 msgid "Restart the shell"
 msgstr ""
 
-#: internal/hyprconf/keys.go:30
+#: internal/hyprconf/keys.go:31
 msgid "Lock the screen"
 msgstr ""
 
-#: internal/hyprconf/keys.go:31
+#: internal/hyprconf/keys.go:32
 msgid "Take a screenshot"
 msgstr ""
 
-#: internal/hyprconf/keys.go:32
+#: internal/hyprconf/keys.go:33
 msgid "The whole screen, at once"
 msgstr ""
 
-#: internal/hyprconf/keys.go:33
+#: internal/hyprconf/keys.go:34
 msgid "The focused window, at once"
 msgstr ""
 
-#: internal/hyprconf/keys.go:34
+#: internal/hyprconf/keys.go:35
 msgid "Record the screen (again: stop)"
 msgstr ""
 
-#: internal/hyprconf/keys.go:35
+#: internal/hyprconf/keys.go:36
 #: ui/colorpicker.ui:59
 msgid "Pick a colour"
 msgstr ""
@@ -4825,15 +4825,22 @@ msgid "no XKB options"
 msgstr ""
 
 #: internal/ui/input.go:125
-#: internal/ui/shortcuts.go:93
 msgid "From hyprland.conf"
 msgstr ""
 
-#: internal/ui/input.go:147
+#: internal/ui/input.go:153
+msgid "hyprland.lua does not load inua.lua, so these settings do nothing yet. Add this as its last line: %s"
+msgstr ""
+
+#: internal/ui/input.go:155
 msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
 msgstr ""
 
-#: internal/ui/input.go:151
+#: internal/ui/input.go:159
+msgid "hyprland.lua sets these again after loading inua.lua, which wins over inua: %s. Move the require line below them."
+msgstr ""
+
+#: internal/ui/input.go:161
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr ""
 
@@ -5417,27 +5424,35 @@ msgstr ""
 msgid "Turned off in inua"
 msgstr ""
 
-#: internal/ui/shortcuts.go:181
+#: internal/ui/shortcuts.go:93
+msgid "From Hyprland"
+msgstr ""
+
+#: internal/ui/shortcuts.go:134
+msgid "Lua function"
+msgstr ""
+
+#: internal/ui/shortcuts.go:191
 msgid "Click, then press the new shortcut"
 msgstr ""
 
-#: internal/ui/shortcuts.go:186
+#: internal/ui/shortcuts.go:196
 msgid "Press keys…"
 msgstr ""
 
-#: internal/ui/shortcuts.go:190
+#: internal/ui/shortcuts.go:200
 msgid "Not set"
 msgstr ""
 
-#: internal/ui/shortcuts.go:216
+#: internal/ui/shortcuts.go:226
 msgid "Remove this command"
 msgstr ""
 
-#: internal/ui/shortcuts.go:218
+#: internal/ui/shortcuts.go:228
 msgid "Use hyprland.conf's shortcut again"
 msgstr ""
 
-#: internal/ui/shortcuts.go:220
+#: internal/ui/shortcuts.go:230
 msgid "Turn the shortcut off"
 msgstr ""
 

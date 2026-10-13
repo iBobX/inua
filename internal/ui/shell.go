@@ -554,6 +554,7 @@ func (s *shellUI) refocusPointer() {
 	if s.client == nil {
 		return
 	}
+	lua := s.hyprLua
 	go func() {
 		time.Sleep(80 * time.Millisecond) // until the surface is on screen
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -566,8 +567,32 @@ func (s *shellUI) refocusPointer() {
 		if json.Unmarshal(b, &p) != nil {
 			return
 		}
-		if err := s.client.Dispatch(ctx, fmt.Sprintf("movecursor %d %d", int(p.X), int(p.Y))); err != nil {
+		if lua {
+			err = s.client.LuaDispatch(ctx, fmt.Sprintf("hl.dsp.cursor.move({ x = %d, y = %d })", int(p.X), int(p.Y)))
+		} else {
+			err = s.client.Dispatch(ctx, fmt.Sprintf("movecursor %d %d", int(p.X), int(p.Y)))
+		}
+		if err != nil {
 			log.Printf("hyprland: movecursor: %v", err)
+		}
+	}()
+}
+
+// dispatchSubmap enters a submap, or leaves it with "reset": in Lua where
+// Hyprland runs it, else with the classic dispatcher.
+func (s *shellUI) dispatchSubmap(name string) {
+	if !s.hyprLua {
+		s.dispatch("submap " + name)
+		return
+	}
+	if s.client == nil {
+		return
+	}
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		if err := s.client.LuaDispatch(ctx, fmt.Sprintf("hl.dsp.submap(%q)", name)); err != nil {
+			log.Printf("hyprland: submap %s: %v", name, err)
 		}
 	}()
 }

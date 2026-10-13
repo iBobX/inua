@@ -1349,7 +1349,7 @@ msgid "IN USE"
 msgstr "EN UTILISATION"
 
 #: internal/appui/tailscale.go:599
-#: internal/ui/shortcuts.go:140
+#: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "Aucun"
 
@@ -4096,34 +4096,34 @@ msgstr "son coupé : M l'allume"
 msgid "SPACE PINBALL"
 msgstr "FLIPPER SPATIAL"
 
-#: internal/hyprconf/keys.go:22
+#: internal/hyprconf/keys.go:23
 #: internal/shell/dock.go:280
 #: ui/settings.ui:1428
 msgid "Launcher"
 msgstr "Lanceur"
 
-#: internal/hyprconf/keys.go:23
+#: internal/hyprconf/keys.go:24
 #: internal/shell/launcher.go:56
 msgid "Switch windows"
 msgstr "Changer de fenêtre"
 
-#: internal/hyprconf/keys.go:24
+#: internal/hyprconf/keys.go:25
 msgid "Workspace overview"
 msgstr "Aperçu de l'espace de travail"
 
-#: internal/hyprconf/keys.go:25
+#: internal/hyprconf/keys.go:26
 msgid "Control center"
 msgstr "Centre de contrôle"
 
-#: internal/hyprconf/keys.go:26
+#: internal/hyprconf/keys.go:27
 msgid "Notification center"
 msgstr "Centre de notifications"
 
-#: internal/hyprconf/keys.go:27
+#: internal/hyprconf/keys.go:28
 msgid "Focus on or off"
 msgstr "Mise au point activée ou désactivée"
 
-#: internal/hyprconf/keys.go:28
+#: internal/hyprconf/keys.go:29
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:279
 #: ui/control.ui:62
@@ -4131,32 +4131,32 @@ msgstr "Mise au point activée ou désactivée"
 msgid "Settings"
 msgstr "Paramètres"
 
-#: internal/hyprconf/keys.go:29
+#: internal/hyprconf/keys.go:30
 #: ui/settings.ui:360
 msgid "Restart the shell"
 msgstr "Redémarrez le shell"
 
-#: internal/hyprconf/keys.go:30
+#: internal/hyprconf/keys.go:31
 msgid "Lock the screen"
 msgstr "Verrouiller l'écran"
 
-#: internal/hyprconf/keys.go:31
+#: internal/hyprconf/keys.go:32
 msgid "Take a screenshot"
 msgstr "Prendre une capture d'écran"
 
-#: internal/hyprconf/keys.go:32
+#: internal/hyprconf/keys.go:33
 msgid "The whole screen, at once"
 msgstr "Tout l'écran, d'un coup"
 
-#: internal/hyprconf/keys.go:33
+#: internal/hyprconf/keys.go:34
 msgid "The focused window, at once"
 msgstr "La fenêtre focalisée, à la fois"
 
-#: internal/hyprconf/keys.go:34
+#: internal/hyprconf/keys.go:35
 msgid "Record the screen (again: stop)"
 msgstr "Enregistrer l'écran (à nouveau : stop)"
 
-#: internal/hyprconf/keys.go:35
+#: internal/hyprconf/keys.go:36
 #: ui/colorpicker.ui:59
 msgid "Pick a colour"
 msgstr "Choisissez une couleur"
@@ -4827,15 +4827,22 @@ msgid "no XKB options"
 msgstr "pas d'options XKB"
 
 #: internal/ui/input.go:125
-#: internal/ui/shortcuts.go:93
 msgid "From hyprland.conf"
 msgstr "Depuis hyprland.conf"
 
-#: internal/ui/input.go:147
+#: internal/ui/input.go:153
+msgid "hyprland.lua does not load inua.lua, so these settings do nothing yet. Add this as its last line: %s"
+msgstr "hyprland.lua ne charge pas inua.lua : ces réglages ne font donc encore rien. Ajoutez ceci en dernière ligne : %s"
+
+#: internal/ui/input.go:155
 msgid "hyprland.conf does not load inua.conf, so these settings do nothing yet. Add this as its last line: source = ./%s"
 msgstr "hyprland.conf ne charge pas inua.conf, donc ces paramètres ne font encore rien. Ajoutez ceci comme dernière ligne : source = ./%s"
 
-#: internal/ui/input.go:151
+#: internal/ui/input.go:159
+msgid "hyprland.lua sets these again after loading inua.lua, which wins over inua: %s. Move the require line below them."
+msgstr "hyprland.lua redéfinit ces réglages après avoir chargé inua.lua, ce qui l’emporte sur inua : %s. Déplacez la ligne require en dessous."
+
+#: internal/ui/input.go:161
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyprland.conf les définit à nouveau après le chargement d'inua.conf, qui l'emporte sur inua : %s. Déplacez la ligne source en dessous d’eux."
 
@@ -5419,27 +5426,35 @@ msgstr "Installé dans Inua"
 msgid "Turned off in inua"
 msgstr "Désactivé dans Inua"
 
-#: internal/ui/shortcuts.go:181
+#: internal/ui/shortcuts.go:93
+msgid "From Hyprland"
+msgstr "Depuis Hyprland"
+
+#: internal/ui/shortcuts.go:134
+msgid "Lua function"
+msgstr "Fonction Lua"
+
+#: internal/ui/shortcuts.go:191
 msgid "Click, then press the new shortcut"
 msgstr "Cliquez, puis appuyez sur le nouveau raccourci"
 
-#: internal/ui/shortcuts.go:186
+#: internal/ui/shortcuts.go:196
 msgid "Press keys…"
 msgstr "Appuyez sur les touches…"
 
-#: internal/ui/shortcuts.go:190
+#: internal/ui/shortcuts.go:200
 msgid "Not set"
 msgstr "Non réglé"
 
-#: internal/ui/shortcuts.go:216
+#: internal/ui/shortcuts.go:226
 msgid "Remove this command"
 msgstr "Supprimer cette commande"
 
-#: internal/ui/shortcuts.go:218
+#: internal/ui/shortcuts.go:228
 msgid "Use hyprland.conf's shortcut again"
 msgstr "Utilisez à nouveau le raccourci de hyprland.conf"
 
-#: internal/ui/shortcuts.go:220
+#: internal/ui/shortcuts.go:230
 msgid "Turn the shortcut off"
 msgstr "Désactivez le raccourci"
 

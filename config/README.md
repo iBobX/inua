@@ -128,6 +128,17 @@ there and not overridden, and the settings window says so too:
 source = ./inua.conf
 ```
 
+With a Lua config (`hyprland.lua`, Hyprland 0.55 and later) inua writes
+`~/.config/hypr/inua.lua` instead, and the last line is the one below; the
+inua-shell line is
+`hl.on("hyprland.start", function() hl.exec_cmd("inua-shell") end)`.
+inua writes `inua.lua` when Hyprland runs Lua and `hyprland.lua` is there,
+or when there is no `hyprland.conf`.
+
+```lua
+pcall(require, "inua")
+```
+
 Hyprland rejects a `source` of a missing file, so `inua init` writes an empty
 `inua.conf`, and `inua-shell` creates it when it starts. When `inua.conf`
 changes, Hyprland reloads by itself (inua asks it to when

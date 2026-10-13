@@ -187,7 +187,7 @@ func cmdConfig(args []string) error {
 			path = args[1]
 		}
 	case args[0] == "hyprland" && len(args) <= 2:
-		hypr := filepath.Join(filepath.Dir(hyprconf.Path(path)), "hyprland.conf")
+		hypr := hyprConfig(path)
 		if len(args) == 2 {
 			hypr = args[1]
 		}
@@ -200,8 +200,22 @@ func cmdConfig(args []string) error {
 	return checkConfig(path)
 }
 
+// hyprConfig is the config Hyprland reads next to the settings file at
+// path: hyprland.lua when the running Hyprland runs it (or there is no
+// hyprland.conf), else hyprland.conf.
+func hyprConfig(path string) string {
+	runsLua := false
+	if paths, err := hypr.PathsFromEnv(); err == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		runsLua = hyprconf.RunsLua(ctx, hypr.NewClient(paths))
+		cancel()
+	}
+	return hyprconf.ConfigFile(filepath.Dir(hyprconf.Path(path)), runsLua)
+}
+
 // checkHyprland reports whether a Hyprland config (or a file it sources)
-// starts inua-shell, and whether it sources inua.conf. Both the Inua and
+// starts inua-shell, and whether it loads inua's file (inua.conf, or
+// inua.lua for hyprland.lua). Both the Inua and
 // the Hyprland session read this config, and inua init never changes an
 // existing one, so without the first line neither session shows inua.
 func checkHyprland(path string) error {
@@ -209,6 +223,10 @@ func checkHyprland(path string) error {
 	switch {
 	case err == nil:
 		fmt.Printf("%s: starts inua-shell (%s)\n", path, where)
+	case errors.Is(err, bootstrap.ErrNoShell) && strings.HasSuffix(path, ".lua"):
+		fmt.Printf("%s does not start inua-shell, so the Inua session would show no bar,\n"+
+			"launcher or wallpaper. Add this line to it:\n\n    %s\n\n", path, bootstrap.LuaShellLine)
+		return fmt.Errorf("%s does not start inua-shell", path)
 	case errors.Is(err, bootstrap.ErrNoShell):
 		fmt.Printf("%s does not start inua-shell, so the Inua session would show no bar,\n"+
 			"launcher or wallpaper. inua init leaves an existing Hyprland config alone;\n"+
@@ -220,31 +238,37 @@ func checkHyprland(path string) error {
 	case err != nil:
 		return err
 	}
-	checkSource(path, filepath.Join(filepath.Dir(path), hyprconf.Name))
+	checkSource(path, hyprconf.Target(path))
 	return nil
 }
 
-// checkSource reports whether a Hyprland config sources inua.conf, and
-// after the settings inua writes there. Without it inua's keyboard and
+// checkSource reports whether a Hyprland config loads inua's file target,
+// and after the settings inua writes there. Without it inua's keyboard and
 // touchpad settings do nothing, but the shell works, so it only warns.
 func checkSource(path, target string) {
 	where, overrides, err := bootstrap.FindSource(path, target)
 	switch {
 	case errors.Is(err, bootstrap.ErrNoSource):
-		fmt.Printf("%s does not source %s, so the keyboard and touchpad\n"+
-			"settings in inua's settings window do nothing. Add this as its last line:\n\n    source = ./%s\n",
-			path, hyprconf.Name, hyprconf.Name)
+		if strings.HasSuffix(path, ".lua") {
+			fmt.Printf("%s does not load %s, so the keyboard and touchpad\n"+
+				"settings in inua's settings window do nothing. Add this as its last line:\n\n    %s\n",
+				path, hyprconf.LuaName, hyprconf.LuaRequire)
+		} else {
+			fmt.Printf("%s does not source %s, so the keyboard and touchpad\n"+
+				"settings in inua's settings window do nothing. Add this as its last line:\n\n    source = ./%s\n",
+				path, hyprconf.Name, hyprconf.Name)
+		}
 	case err != nil:
 		fmt.Printf("%s: %v\n", path, err)
 	default:
-		fmt.Printf("%s: sources %s (%s)\n", path, hyprconf.Name, where)
+		fmt.Printf("%s: loads %s (%s)\n", path, filepath.Base(target), where)
 		for _, o := range overrides {
-			fmt.Printf("%s: set after inua.conf, so it overrides inua's setting; move the source line below it\n", o)
+			fmt.Printf("%s: set after %s, so it overrides inua's setting; move the line that loads it below\n", o, filepath.Base(target))
 		}
 	}
 }
 
-// applyHyprland writes hypr/inua.conf from the settings file and has
+// applyHyprland writes hypr/inua.conf (inua.lua for hyprland.lua) from the settings file and has
 // Hyprland reload it, as the settings window does when it saves.
 func applyHyprland(path string) error {
 	c, warnings, err := config.Load(path)
@@ -258,7 +282,7 @@ func applyHyprland(path string) error {
 	if paths, err := hypr.PathsFromEnv(); err == nil {
 		client = hypr.NewClient(paths)
 	}
-	target := hyprconf.Path(path)
+	target := hyprconf.Target(hyprConfig(path))
 	changed, err := hyprconf.Apply(context.Background(), c, target, client)
 	switch {
 	case err != nil:
@@ -324,7 +348,16 @@ func cmdInit(args []string) error {
 		fmt.Println("inua:", err)
 		failed = true
 	}
-	hyprConf := filepath.Join(*dir, "hypr", "hyprland.conf")
+	hyprConf := hyprconf.ConfigFile(filepath.Join(*dir, "hypr"), false)
+	if target := hyprconf.Target(hyprConf); strings.HasSuffix(target, ".lua") {
+		// A Lua config gets inua.lua now, for the line that loads it.
+		cfg, _, _ := config.Load(filepath.Join(*dir, "inua", "config.toml"))
+		if changed, err := hyprconf.Apply(context.Background(), cfg, target, nil); err != nil {
+			fmt.Printf("%s: %v\n", target, err)
+		} else if changed {
+			fmt.Printf("%s: written\n", target)
+		}
+	}
 	if _, err := exec.LookPath("Hyprland"); err != nil {
 		fmt.Println("Hyprland is not installed (make deps); hyprland.conf not checked")
 	} else {

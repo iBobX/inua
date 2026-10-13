@@ -141,6 +141,8 @@ func TestFindShellStart(t *testing.T) {
 		"# exec-once = inua-shell\n",
 		"exec-once = waybar  # inua-shell later\n",
 		"bind = SUPER, R, exec, inua-shellx\n",
+		"bind = SUPER, R, exec, pkill inua-shell\n",
+		"windowrule = float, title:inua-shell\n",
 		"",
 	} {
 		p := conf("none.conf", content)
@@ -208,6 +210,55 @@ func TestFindSource(t *testing.T) {
 	where, over, err = FindSource(filepath.Join(dir, ".config/hypr/hyprland.conf"), filepath.Join(dir, ".config/hypr/inua.conf"))
 	if err != nil || len(over) != 0 {
 		t.Errorf("sample: %q %v %v", where, over, err)
+	}
+}
+
+// A Lua config (Hyprland 0.55) starts the shell with hl.exec_cmd, and
+// loads inua.lua with require, relative to hyprland.lua in every file.
+func TestFindLua(t *testing.T) {
+	dir := t.TempDir()
+	conf := func(name, content string) string {
+		p := filepath.Join(dir, name)
+		os.MkdirAll(filepath.Dir(p), 0o755)
+		os.WriteFile(p, []byte(content), 0o644)
+		return p
+	}
+	target := conf("inua.lua", "hl.config({ input = { kb_options = \"caps:escape\" } })\n")
+	conf("conf/autostart.lua", "hl.on(\"hyprland.start\", function()\n    hl.exec_cmd(\"/usr/bin/inua-shell\")\nend)\n")
+	conf("conf/input.lua", "require(\"inua\")\n")
+	main := conf("hyprland.lua", "require(\"conf.autostart\") -- the shell\nrequire \"conf/input\"\nhl.config({ input = {\n    kb_options = \"ctrl:nocaps\",\n} })\n")
+	if where, err := FindShellStart(main); err != nil || !strings.HasSuffix(where, "conf/autostart.lua:2") {
+		t.Errorf("start: %q %v", where, err)
+	}
+	where, over, err := FindSource(main, target)
+	if err != nil || !strings.HasSuffix(where, "conf/input.lua:1") || len(over) != 1 || over[0] != main+":4" {
+		t.Errorf("source: %q %v %v", where, over, err)
+	}
+	if where, _, err := FindSource(conf("pcall.lua", "pcall(require, \"inua\")\n"), target); err != nil || !strings.HasSuffix(where, "pcall.lua:1") {
+		t.Errorf("pcall: %q %v", where, err)
+	}
+	for _, content := range []string{
+		"-- require(\"inua\")\n",
+		"hl.exec_cmd(\"echo --\") -- require(\"inua\")\n",
+		"require(\"hypr.inua\")\n", // hypr/hypr/inua.lua
+		"local s = \"require('inua')\" --\n",
+	} {
+		if _, _, err := FindSource(conf("none.lua", content), target); !errors.Is(err, ErrNoSource) {
+			t.Errorf("%q: %v", content, err)
+		}
+	}
+	for _, content := range []string{
+		"hl.bind(\"SUPER + R\", hl.dsp.exec_cmd(\"inua-shell\"))\n",
+		"hl.exec_cmd(\"pkill inua-shell\")\n",
+		"-- hl.exec_cmd(\"inua-shell\")\n",
+		"exec-once = inua-shell\n", // hyprlang, in a .lua file
+	} {
+		if _, err := FindShellStart(conf("none.lua", content)); !errors.Is(err, ErrNoShell) {
+			t.Errorf("%q: %v", content, err)
+		}
+	}
+	if got := stripLuaComment(`hl.exec_cmd("a -- b", 'c\'--') -- d`); got != `hl.exec_cmd("a -- b", 'c\'--') ` {
+		t.Errorf("strings: %q", got)
 	}
 }
 
