@@ -33,7 +33,8 @@ windows and binds its keys through Hyprland's Lua interface (`eval`,
 `hl.dsp.*`). The shell asks Hyprland when it connects; on earlier versions
 (0.53 answers `eval` with "unknown request") the overview is off, Super+Tab
 opens the launcher's windows instead, and none of its key bindings are
-installed.
+installed. Everything that differs between the two versions:
+[hyprland-versions.md](hyprland-versions.md).
 
 Tap Win to toggle a full-screen workspace chooser. Win+Tab and Win+Shift+Tab
 cycle workspaces; releasing Win commits the selection. It groups Hyprland's current
