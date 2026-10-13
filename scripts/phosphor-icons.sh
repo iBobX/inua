@@ -146,5 +146,8 @@ preferences-desktop-keyboard-shortcuts command
 input-keyboard                        keyboard
 input-mouse                           mouse-simple
 help-about                            info
+# Pass: edit, and rename or move
+document-edit                         pencil-simple
+go-jump                               arrow-bend-up-right
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

@@ -74,6 +74,33 @@ without opening the app.
   processes ask for an administrator's password first.
 - **System:** the computer, its processor, memory, graphics and storage.
 
+## Pass
+
+The password store ([pass](https://www.passwordstore.org)) in three
+columns: the categories (each entry's first path segment, `work` of
+`work/mail/ann`), the chosen category's entries (`mail/ann`), and the
+chosen entry. A search above the entries looks through every category.
+
+- An entry opens decrypted: the password, a one-time code (from an
+  `otpauth://totp/` line, with the seconds it stays), its `key: value`
+  fields and its notes. The password, and fields whose name says they are
+  secret (PIN, token, recovery code …), show as dots, with a button to
+  show them; every value has a copy button. A copy is marked as a
+  password manager's, so clipboard histories leave it out, and is taken
+  off the clipboard after 45 seconds.
+- Edit opens the entry's text; Delete asks first. + makes a new entry.
+- A category or an entry can be renamed or moved: another name renames
+  it; another category (or, for a category, a path under one) moves it.
+  inua-keyring's folder is not renamed or moved, as its index names its
+  entries by path.
+- At the foot of the categories: the store in use, a menu when there is
+  more than one (`$PASSWORD_STORE_DIR`, `~/.password-store`, and folders
+  added with the folder button).
+
+Every change goes through `pass`, so git and `.gpg-id` work as on the
+command line; decrypting asks for the passphrase in inua's dialog when
+gpg-agent has not kept it. The design: [feat/pass.md](feat/pass.md).
+
 ## Tailscale
 
 [Tailscale](https://tailscale.com) through tailscaled's local API:

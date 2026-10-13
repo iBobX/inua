@@ -368,6 +368,12 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: ui/pass.ui:27
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:3
+msgid "Pass"
+msgstr "Pass"
+
+#: internal/appui/app.go:69
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -375,8 +381,10 @@ msgid "Viewer"
 msgstr "图片查看器"
 
 #: internal/appui/calculator.go:49
+#: internal/appui/pass.go:658
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/pass.ui:259
 msgid "Delete"
 msgstr "删除"
 
@@ -478,6 +486,7 @@ msgid "Remove %s"
 msgstr "移除%s"
 
 #: internal/appui/clock.go:402
+#: ui/pass.ui:248
 msgid "Edit"
 msgstr "编辑"
 
@@ -559,6 +568,154 @@ msgstr "复制 %s"
 #: internal/appui/colorpicker.go:139
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "还没有颜色。从屏幕上的任意位置选择一个。"
+
+#: internal/appui/pass.go:220
+msgid "A password store: a folder with a .gpg-id"
+msgstr "密码库：含有 .gpg-id 的文件夹"
+
+#: internal/appui/pass.go:228
+msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
+msgstr "%s 不是密码库：没有 .gpg-id（pass init 可以创建）。"
+
+#: internal/appui/pass.go:248
+msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
+msgstr "没有密码库。pass init 你的GPG密钥ID 会在 ~/.password-store 创建一个；也可以在下方添加其他文件夹。"
+
+#: internal/appui/pass.go:275
+msgid "The store is empty. + makes an entry."
+msgstr "密码库是空的。+ 可新建条目。"
+
+#: internal/appui/pass.go:278
+#: internal/appui/pass.go:491
+#: internal/appui/pass.go:572
+#: internal/appui/pass.go:715
+#: internal/appui/pass.go:769
+msgid "Choose an entry."
+msgstr "选择一个条目。"
+
+#: internal/appui/pass.go:284
+msgid "Top level"
+msgstr "顶层"
+
+#: internal/appui/pass.go:292
+#: internal/ui/settings.go:584
+#: internal/ui/settings.go:611
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] "%d 条"
+
+#: internal/appui/pass.go:298
+#: ui/pass.ui:127
+msgid "Rename or move this category"
+msgstr "重命名或移动此类别"
+
+#: internal/appui/pass.go:300
+msgid "inua-keyring's folder: its index names these entries by path"
+msgstr "inua-keyring 的文件夹：它的索引按路径引用这些条目"
+
+#: internal/appui/pass.go:353
+msgid "Decrypting…"
+msgstr "正在解密…"
+
+#: internal/appui/pass.go:367
+msgid "Cannot decrypt it: %s"
+msgstr "无法解密：%s"
+
+#: internal/appui/pass.go:391
+msgid "PASSWORD"
+msgstr "密码"
+
+#: internal/appui/pass.go:396
+#: internal/appui/pass.go:448
+msgid "ONE-TIME CODE"
+msgstr "一次性验证码"
+
+#: internal/appui/pass.go:403
+msgid "NOTES"
+msgstr "备注"
+
+#: internal/appui/pass.go:432
+msgid "Show"
+msgstr "显示"
+
+#: internal/appui/pass.go:434
+#: internal/ui/notify.go:377
+msgid "Hide"
+msgstr "隐藏"
+
+#: internal/appui/pass.go:438
+#: internal/appui/pass.go:463
+#: internal/ui/askpass.go:187
+msgid "Copy"
+msgstr "复制"
+
+#: internal/appui/pass.go:477
+msgid "%d second left"
+msgid_plural "%d seconds left"
+msgstr[0] "剩 %d 秒"
+
+#: internal/appui/pass.go:625
+msgid "Categories…"
+msgstr "类别…"
+
+#: internal/appui/pass.go:634
+#: internal/appui/pass.go:640
+msgid "Rename or move “%s”"
+msgstr "重命名或移动“%s”"
+
+#: internal/appui/pass.go:635
+msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
+msgstr "新路径：换个名字即重命名；放到另一个类别下的路径（archive/work）即移动过去。"
+
+#: internal/appui/pass.go:637
+#: internal/appui/pass.go:644
+msgid "Move"
+msgstr "移动"
+
+#: internal/appui/pass.go:641
+msgid "The same category and a new name renames it; another category moves it."
+msgstr "同一类别下换新名字即重命名；换类别即移动。"
+
+#: internal/appui/pass.go:646
+#: ui/pass.ui:137
+msgid "New entry"
+msgstr "新建条目"
+
+#: internal/appui/pass.go:647
+msgid "Where it goes; then its content."
+msgstr "放在哪里；然后填写内容。"
+
+#: internal/appui/pass.go:654
+msgid "Next"
+msgstr "下一步"
+
+#: internal/appui/pass.go:656
+msgid "Delete “%s”?"
+msgstr "删除“%s”？"
+
+#: internal/appui/pass.go:657
+msgid "pass removes its file; a git store keeps it in its history."
+msgstr "pass 会删除它的文件；git 管理的密码库会在历史中保留。"
+
+#: internal/appui/pass.go:695
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "路径的每一段都要有名字，且不能以点开头。"
+
+#: internal/appui/pass.go:697
+msgid "That is where it is."
+msgstr "它已经在那里了。"
+
+#: internal/appui/pass.go:699
+msgid "%s is already in the store."
+msgstr "%s 已经在密码库里了。"
+
+#: internal/appui/pass.go:701
+msgid "A category cannot move into itself."
+msgstr "类别不能移动到自身内部。"
+
+#: internal/appui/pass.go:703
+msgid "It will be %s"
+msgstr "将成为 %s"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -680,7 +837,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:259
+#: internal/shell/dock.go:260
 msgid "NETWORK"
 msgstr "网络"
 
@@ -3772,8 +3929,8 @@ msgid "Buy it for $%d"
 msgstr "以 $%d 的价格购买"
 
 #: internal/gamesui/fortune.go:732
-msgid "Pass"
-msgstr "跳过"
+msgid "Don't buy"
+msgstr "不买"
 
 #: internal/gamesui/fortune.go:736
 msgid "End turn"
@@ -4096,7 +4253,7 @@ msgid "SPACE PINBALL"
 msgstr "太空弹球"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "启动器"
@@ -4129,7 +4286,7 @@ msgstr "聚焦或关闭"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4341,7 +4498,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空回收站"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 msgid "inua's settings"
 msgstr "inua的设置"
 
@@ -4495,26 +4652,26 @@ msgstr "日常"
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:262
+#: internal/shell/dock.go:263
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:267
+#: internal/shell/dock.go:268
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系统"
 
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "Find apps, windows and answers"
 msgstr "查找应用程序、窗口和答案"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "截图"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Capture an area, a window or a screen"
 msgstr "捕获区域、窗口或屏幕"
 
@@ -4716,10 +4873,6 @@ msgstr "密码：想要一个JSON请求"
 msgid "not ok"
 msgstr "不行"
 
-#: internal/ui/askpass.go:187
-msgid "Copy"
-msgstr "复制"
-
 #: internal/ui/askpass.go:209
 msgid "Passphrase Required"
 msgstr "需要密码"
@@ -4747,6 +4900,8 @@ msgstr "好的"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/pass.ui:359
+#: ui/pass.ui:474
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "取消"
@@ -5035,10 +5190,6 @@ msgstr "通知"
 msgid "Notifications (Focus is on)"
 msgstr "通知（专注模式已开启）"
 
-#: internal/ui/notify.go:377
-msgid "Hide"
-msgstr "隐藏"
-
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
 #: ui/group.ui:52
@@ -5253,12 +5404,6 @@ msgstr "未重新启动：%s"
 #: internal/ui/settings.go:574
 msgid "%d%%"
 msgstr "%d%%"
-
-#: internal/ui/settings.go:584
-#: internal/ui/settings.go:611
-msgid "%d entry"
-msgid_plural "%d entries"
-msgstr[0] "%d 条"
 
 #: internal/ui/settings.go:610
 msgid "%s (%s, %s) · %s"
@@ -5484,6 +5629,7 @@ msgstr "端点"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
+#: ui/pass.ui:368
 msgid "Save"
 msgstr "保存"
 
@@ -5990,6 +6136,38 @@ msgstr "Esc 关闭"
 #: ui/polkit.ui:523
 msgid "Password"
 msgstr "密码"
+
+#: ui/pass.ui:60
+msgid "STORE"
+msgstr "密码库"
+
+#: ui/pass.ui:72
+msgid "Another store: a folder with a .gpg-id"
+msgstr "其他密码库：含有 .gpg-id 的文件夹"
+
+#: ui/pass.ui:147
+msgid "Search every entry"
+msgstr "搜索所有条目"
+
+#: ui/pass.ui:237
+msgid "Rename or move"
+msgstr "重命名或移动"
+
+#: ui/pass.ui:313
+msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
+msgstr "第一行是密码；“键: 值”形式的行是字段；otpauth:// 开头的行是一次性验证码。"
+
+#: ui/pass.ui:414
+msgid "CATEGORY"
+msgstr "类别"
+
+#: ui/pass.ui:428
+msgid "A category there is"
+msgstr "已有的类别"
+
+#: ui/pass.ui:444
+msgid "NAME"
+msgstr "名称"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"
@@ -7072,6 +7250,14 @@ msgstr "揭示安全方块并标记隐藏的地雷"
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "游戏;街机;益智;"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:10
+msgid "Your password store: passwords, one-time codes and notes, by category"
+msgstr "你的密码库：按类别列出密码、一次性验证码和备注"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:14
+msgid "password;pass;gpg;otp;totp;2fa;secret;"
+msgstr "密码;pass;gpg;otp;totp;两步验证;密钥;"
 
 #: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
 msgid "Buy streets, build houses and outlast up to three computer players"

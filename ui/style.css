@@ -1799,3 +1799,49 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .clipboard-panel scrollbar { background: transparent; border: 0; }
 .clipboard-panel scrollbar slider { background: alpha(@t2, 0.35); border-radius: 4px; min-width: 4px; min-height: 32px; }
 .clipboard-panel scrollbar slider:hover { background: alpha(@accent, 0.65); }
+
+/* --- Pass ------------------------------------------------------------ */
+
+/* The middle column: the chosen category's entries. */
+window.pass .pass-entries { background: @app; border-right: 1px solid alpha(@line, 0.7); }
+window.pass .pass-col-head { min-height: 32px; padding: 22px 14px 10px 26px; }
+window.pass .pass-col-title {
+  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
+  font-size: 16px;
+  color: @t0;
+}
+/* The store in use, at the foot of the categories. */
+window.pass .pass-store { padding: 12px 18px 16px 22px; border-top: 1px solid alpha(@line, 0.55); }
+window.pass .pass-path {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t2;
+}
+/* The entry: its name, then a row for each value. */
+window.pass .pass-head { padding-bottom: 14px; border-bottom: 1px solid alpha(@line, 0.55); }
+window.pass .pass-title {
+  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
+  font-size: 18px;
+  color: @t0;
+}
+window.pass .pass-row { min-height: 40px; padding: 12px 0; border-bottom: 1px solid alpha(@line, 0.4); }
+window.pass .pass-value {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 13px;
+  color: @t0;
+}
+window.pass .pass-masked { color: @t2; letter-spacing: 0.2em; }
+window.pass .pass-otp {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-feature-settings: "tnum";
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  color: @t0;
+}
+window.pass .pass-editor { border: 1px solid @line; border-radius: 2px; }
+window.pass .pass-text, window.pass .pass-text text { background: alpha(@surface, 0.6); color: @t0; font-size: 13px; }
+window.pass .pass-error { color: @danger; }
+window.pass button.destructive-action { border: 1px solid @danger; background: @danger; color: @app; }
+window.pass button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
+window.pass button.suggested-action:disabled { opacity: 0.45; }
+window.pass .pass-entries entry.search { margin: 0 14px 8px 14px; }

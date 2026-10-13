@@ -368,6 +368,12 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: ui/pass.ui:27
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:3
+msgid "Pass"
+msgstr "Pass"
+
+#: internal/appui/app.go:69
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -375,8 +381,10 @@ msgid "Viewer"
 msgstr "이미지 뷰어"
 
 #: internal/appui/calculator.go:49
+#: internal/appui/pass.go:658
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/pass.ui:259
 msgid "Delete"
 msgstr "삭제"
 
@@ -478,6 +486,7 @@ msgid "Remove %s"
 msgstr "%s 제거"
 
 #: internal/appui/clock.go:402
+#: ui/pass.ui:248
 msgid "Edit"
 msgstr "편집하다"
 
@@ -559,6 +568,154 @@ msgstr "%s 복사"
 #: internal/appui/colorpicker.go:139
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "아직 색상이 없습니다. 화면 어디에서나 하나를 선택하세요."
+
+#: internal/appui/pass.go:220
+msgid "A password store: a folder with a .gpg-id"
+msgstr "비밀번호 저장소: .gpg-id가 있는 폴더"
+
+#: internal/appui/pass.go:228
+msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
+msgstr "%s은(는) 비밀번호 저장소가 아닙니다: .gpg-id가 없습니다 (pass init으로 만듭니다)."
+
+#: internal/appui/pass.go:248
+msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
+msgstr "비밀번호 저장소가 없습니다. pass init GPG-키-ID로 ~/.password-store에 만들 수 있고, 아래에서 다른 폴더를 추가할 수 있습니다."
+
+#: internal/appui/pass.go:275
+msgid "The store is empty. + makes an entry."
+msgstr "저장소가 비어 있습니다. +로 항목을 만듭니다."
+
+#: internal/appui/pass.go:278
+#: internal/appui/pass.go:491
+#: internal/appui/pass.go:572
+#: internal/appui/pass.go:715
+#: internal/appui/pass.go:769
+msgid "Choose an entry."
+msgstr "항목을 고르세요."
+
+#: internal/appui/pass.go:284
+msgid "Top level"
+msgstr "최상위"
+
+#: internal/appui/pass.go:292
+#: internal/ui/settings.go:584
+#: internal/ui/settings.go:611
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] "%d개"
+
+#: internal/appui/pass.go:298
+#: ui/pass.ui:127
+msgid "Rename or move this category"
+msgstr "이 카테고리 이름 바꾸기 또는 이동"
+
+#: internal/appui/pass.go:300
+msgid "inua-keyring's folder: its index names these entries by path"
+msgstr "inua-keyring의 폴더: 색인이 이 항목들을 경로로 가리킵니다"
+
+#: internal/appui/pass.go:353
+msgid "Decrypting…"
+msgstr "복호화하는 중…"
+
+#: internal/appui/pass.go:367
+msgid "Cannot decrypt it: %s"
+msgstr "복호화할 수 없습니다: %s"
+
+#: internal/appui/pass.go:391
+msgid "PASSWORD"
+msgstr "비밀번호"
+
+#: internal/appui/pass.go:396
+#: internal/appui/pass.go:448
+msgid "ONE-TIME CODE"
+msgstr "일회용 코드"
+
+#: internal/appui/pass.go:403
+msgid "NOTES"
+msgstr "메모"
+
+#: internal/appui/pass.go:432
+msgid "Show"
+msgstr "보기"
+
+#: internal/appui/pass.go:434
+#: internal/ui/notify.go:377
+msgid "Hide"
+msgstr "숨기기"
+
+#: internal/appui/pass.go:438
+#: internal/appui/pass.go:463
+#: internal/ui/askpass.go:187
+msgid "Copy"
+msgstr "복사"
+
+#: internal/appui/pass.go:477
+msgid "%d second left"
+msgid_plural "%d seconds left"
+msgstr[0] "%d초 남음"
+
+#: internal/appui/pass.go:625
+msgid "Categories…"
+msgstr "카테고리…"
+
+#: internal/appui/pass.go:634
+#: internal/appui/pass.go:640
+msgid "Rename or move “%s”"
+msgstr "“%s” 이름 바꾸기 또는 이동"
+
+#: internal/appui/pass.go:635
+msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
+msgstr "새 경로: 다른 이름이면 이름이 바뀌고, 다른 카테고리 아래 경로(archive/work)면 그곳으로 옮겨집니다."
+
+#: internal/appui/pass.go:637
+#: internal/appui/pass.go:644
+msgid "Move"
+msgstr "이동"
+
+#: internal/appui/pass.go:641
+msgid "The same category and a new name renames it; another category moves it."
+msgstr "같은 카테고리에 새 이름이면 이름 바꾸기, 다른 카테고리면 이동입니다."
+
+#: internal/appui/pass.go:646
+#: ui/pass.ui:137
+msgid "New entry"
+msgstr "새 항목"
+
+#: internal/appui/pass.go:647
+msgid "Where it goes; then its content."
+msgstr "놓을 곳, 그다음 내용."
+
+#: internal/appui/pass.go:654
+msgid "Next"
+msgstr "다음"
+
+#: internal/appui/pass.go:656
+msgid "Delete “%s”?"
+msgstr "“%s”을(를) 삭제할까요?"
+
+#: internal/appui/pass.go:657
+msgid "pass removes its file; a git store keeps it in its history."
+msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니다."
+
+#: internal/appui/pass.go:695
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "경로의 각 부분에는 점으로 시작하지 않는 이름이 필요합니다."
+
+#: internal/appui/pass.go:697
+msgid "That is where it is."
+msgstr "이미 그곳에 있습니다."
+
+#: internal/appui/pass.go:699
+msgid "%s is already in the store."
+msgstr "%s은(는) 이미 저장소에 있습니다."
+
+#: internal/appui/pass.go:701
+msgid "A category cannot move into itself."
+msgstr "카테고리를 자기 안으로 옮길 수 없습니다."
+
+#: internal/appui/pass.go:703
+msgid "It will be %s"
+msgstr "새 위치: %s"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -680,7 +837,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:259
+#: internal/shell/dock.go:260
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -3772,8 +3929,8 @@ msgid "Buy it for $%d"
 msgstr "$%d에 구매하세요."
 
 #: internal/gamesui/fortune.go:732
-msgid "Pass"
-msgstr "패스"
+msgid "Don't buy"
+msgstr "사지 않기"
 
 #: internal/gamesui/fortune.go:736
 msgid "End turn"
@@ -4096,7 +4253,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "실행기"
@@ -4129,7 +4286,7 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4341,7 +4498,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -4495,26 +4652,26 @@ msgstr "매일"
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:262
+#: internal/shell/dock.go:263
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:267
+#: internal/shell/dock.go:268
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
@@ -4716,10 +4873,6 @@ msgstr "비밀번호: 하나의 JSON 요청을 원합니다."
 msgid "not ok"
 msgstr "안 괜찮아"
 
-#: internal/ui/askpass.go:187
-msgid "Copy"
-msgstr "복사"
-
 #: internal/ui/askpass.go:209
 msgid "Passphrase Required"
 msgstr "암호가 필요함"
@@ -4747,6 +4900,8 @@ msgstr "OK"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/pass.ui:359
+#: ui/pass.ui:474
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "취소"
@@ -5035,10 +5190,6 @@ msgstr "알림"
 msgid "Notifications (Focus is on)"
 msgstr "알림(집중 모드 켜짐)"
 
-#: internal/ui/notify.go:377
-msgid "Hide"
-msgstr "숨기기"
-
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
 #: ui/group.ui:52
@@ -5253,12 +5404,6 @@ msgstr "다시 시작하지 못함: %s"
 #: internal/ui/settings.go:574
 msgid "%d%%"
 msgstr "%d%%"
-
-#: internal/ui/settings.go:584
-#: internal/ui/settings.go:611
-msgid "%d entry"
-msgid_plural "%d entries"
-msgstr[0] "%d개"
 
 #: internal/ui/settings.go:610
 msgid "%s (%s, %s) · %s"
@@ -5484,6 +5629,7 @@ msgstr "엔드포인트"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
+#: ui/pass.ui:368
 msgid "Save"
 msgstr "저장"
 
@@ -5990,6 +6136,38 @@ msgstr "Esc 닫기"
 #: ui/polkit.ui:523
 msgid "Password"
 msgstr "비밀번호"
+
+#: ui/pass.ui:60
+msgid "STORE"
+msgstr "저장소"
+
+#: ui/pass.ui:72
+msgid "Another store: a folder with a .gpg-id"
+msgstr "다른 저장소: .gpg-id가 있는 폴더"
+
+#: ui/pass.ui:147
+msgid "Search every entry"
+msgstr "모든 항목 검색"
+
+#: ui/pass.ui:237
+msgid "Rename or move"
+msgstr "이름 바꾸기 또는 이동"
+
+#: ui/pass.ui:313
+msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
+msgstr "첫 줄은 비밀번호, “키: 값” 줄은 필드, otpauth:// 줄은 일회용 코드입니다."
+
+#: ui/pass.ui:414
+msgid "CATEGORY"
+msgstr "카테고리"
+
+#: ui/pass.ui:428
+msgid "A category there is"
+msgstr "있는 카테고리"
+
+#: ui/pass.ui:444
+msgid "NAME"
+msgstr "이름"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"
@@ -7072,6 +7250,14 @@ msgstr "안전한 사각형을 드러내고 숨겨진 지뢰를 표시하세요"
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "게임;아케이드;퍼즐;"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:10
+msgid "Your password store: passwords, one-time codes and notes, by category"
+msgstr "비밀번호 저장소: 비밀번호, 일회용 코드, 메모를 카테고리별로"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:14
+msgid "password;pass;gpg;otp;totp;2fa;secret;"
+msgstr "비밀번호;pass;gpg;otp;totp;2단계 인증;비밀;"
 
 #: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
 msgid "Buy streets, build houses and outlast up to three computer players"

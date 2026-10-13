@@ -729,7 +729,7 @@ func (p *fortune) refresh() {
 		at := g.Players[0].At
 		p.primary.SetLabel(i18n.Tf("Buy it for $%d", games.Board[at].Price)) // short: the panel keeps its width
 		p.primary.SetSensitive(true)
-		p.secondary.SetLabel(i18n.T("Pass"))
+		p.secondary.SetLabel(i18n.T("Don't buy"))
 		p.secondary.SetVisible(true)
 		p.secondary.SetSensitive(true)
 	case g.Phase == games.PhaseEnd:

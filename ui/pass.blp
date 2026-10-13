@@ -1,0 +1,363 @@
+// Pass, the password store, in three columns: the categories (the first
+// segment of each entry's path) with the store in use at the bottom; the
+// chosen category's entries, with a filter that searches them all; and
+// the chosen entry, or its editor, or the form that renames, moves,
+// creates or deletes. Go fills them (internal/appui/pass.go).
+using Gtk 4.0;
+
+ApplicationWindow pass {
+  default-width: 1060;
+  default-height: 640;
+
+  Box {
+    // --- categories ---
+    Box {
+      styles ["index"]
+      orientation: vertical;
+      hexpand: false;
+      width-request: 210;
+
+      Label {
+        styles ["index-title"]
+        label:  _("Pass");
+        xalign: 0;
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        Box categories {
+          styles ["index-list"]
+          orientation: vertical;
+        }
+      }
+
+      // The store in use; a menu when there is more than one.
+      Box {
+        styles ["pass-store"]
+        orientation: vertical;
+        spacing: 6;
+
+        Box {
+          spacing: 6;
+
+          Label {
+            styles ["kicker"]
+            label:  _("STORE");
+            xalign: 0;
+            hexpand: true;
+          }
+
+          Button add_store {
+            styles ["plain"]
+            name: "add-store";
+            icon-name: "folder-open-symbolic";
+            tooltip-text:  _("Another store: a folder with a .gpg-id");
+          }
+        }
+
+        DropDown store_menu {
+          visible: false;
+        }
+
+        // The whole path, cut at its start to the column's width.
+        Label store_path {
+          styles ["pass-path"]
+          xalign: 0;
+          ellipsize: start;
+          max-width-chars: 24;
+        }
+      }
+    }
+
+    // --- entries ---
+    Box {
+      styles ["pass-entries"]
+      orientation: vertical;
+      hexpand: false;
+      width-request: 280;
+
+      Box {
+        styles ["pass-col-head"]
+        spacing: 6;
+
+        Label category_title {
+          styles ["pass-col-title"]
+          hexpand: true;
+          xalign: 0;
+          ellipsize: end;
+        }
+
+        Button move_category {
+          styles ["plain"]
+          name: "move-category";
+          icon-name: "document-edit-symbolic";
+          tooltip-text:  _("Rename or move this category");
+        }
+
+        Button new_entry {
+          styles ["plain"]
+          name: "new-entry";
+          icon-name: "list-add-symbolic";
+          tooltip-text:  _("New entry");
+        }
+      }
+
+      SearchEntry filter {
+        styles ["index-search"]
+        placeholder-text:  _("Search every entry");
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        Box entries {
+          styles ["index-list"]
+          orientation: vertical;
+        }
+      }
+    }
+
+    // --- details ---
+    Stack detail {
+      hexpand: true;
+      transition-type: crossfade;
+      transition-duration: 120;
+
+      StackPage {
+        name: "empty";
+
+        child: Label empty_text {
+          styles ["sub"]
+          wrap: true;
+          justify: center;
+          margin-start: 32;
+          margin-end: 32;
+        };
+      }
+
+      StackPage {
+        name: "entry";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["page"]
+            orientation: vertical;
+
+            Box {
+              styles ["pass-head"]
+              spacing: 6;
+
+              Box {
+                orientation: vertical;
+                hexpand: true;
+                spacing: 2;
+
+                Label entry_title {
+                  styles ["pass-title"]
+                  xalign: 0;
+                  ellipsize: middle;
+                }
+
+                Label entry_path {
+                  styles ["pass-path"]
+                  xalign: 0;
+                  ellipsize: start;
+                }
+              }
+
+              Button move_entry {
+                styles ["plain"]
+                name: "move-entry";
+                icon-name: "go-jump-symbolic";
+                tooltip-text:  _("Rename or move");
+                valign: center;
+              }
+
+              Button edit_entry {
+                styles ["plain"]
+                name: "edit";
+                icon-name: "document-edit-symbolic";
+                tooltip-text:  _("Edit");
+                valign: center;
+              }
+
+              Button delete_entry {
+                styles ["plain"]
+                name: "delete";
+                icon-name: "user-trash-symbolic";
+                tooltip-text:  _("Delete");
+                valign: center;
+              }
+            }
+
+            // Decrypting, or why it could not.
+            Label entry_state {
+              styles ["sub"]
+              xalign: 0;
+              wrap: true;
+              visible: false;
+            }
+
+            // The password, the one-time code, the fields and the notes.
+            Box fields {
+              styles ["pass-fields"]
+              orientation: vertical;
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "edit";
+
+        child: Box {
+          styles ["page"]
+          orientation: vertical;
+          spacing: 10;
+
+          Label edit_title {
+            styles ["pass-title"]
+            xalign: 0;
+            ellipsize: middle;
+          }
+
+          Label {
+            styles ["sub"]
+            label:  _("The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code.");
+            xalign: 0;
+            wrap: true;
+          }
+
+          ScrolledWindow {
+            styles ["pass-editor"]
+            vexpand: true;
+
+            TextView editor {
+              styles ["pass-text"]
+              monospace: true;
+              wrap-mode: word_char;
+              top-margin: 10;
+              bottom-margin: 10;
+              left-margin: 12;
+              right-margin: 12;
+            }
+          }
+
+          Label edit_error {
+            styles ["pass-error"]
+            xalign: 0;
+            wrap: true;
+            visible: false;
+          }
+
+          Box {
+            spacing: 8;
+            halign: end;
+
+            Button edit_cancel {
+              styles ["outlined"]
+              name: "edit-cancel";
+              label:  _("Cancel");
+            }
+
+            Button edit_save {
+              styles ["suggested-action"]
+              name: "edit-save";
+              label:  _("Save");
+            }
+          }
+        };
+      }
+
+      // Rename, move, a new entry, or deleting one: what changes and where
+      // it ends up, then Cancel and the action.
+      StackPage {
+        name: "form";
+
+        child: Box {
+          styles ["page"]
+          orientation: vertical;
+          spacing: 12;
+
+          Label form_title {
+            styles ["pass-title"]
+            xalign: 0;
+            wrap: true;
+          }
+
+          Label form_text {
+            styles ["sub"]
+            xalign: 0;
+            wrap: true;
+          }
+
+          Box form_category_box {
+            orientation: vertical;
+            spacing: 6;
+
+            Label form_category_label {
+              styles ["kicker"]
+              label:  _("CATEGORY");
+              xalign: 0;
+            }
+
+            Box {
+              spacing: 8;
+
+              Entry form_category {
+                hexpand: true;
+              }
+
+              DropDown form_categories {
+                tooltip-text:  _("A category there is");
+              }
+            }
+          }
+
+          Box form_sub_box {
+            orientation: vertical;
+            spacing: 6;
+
+            Label form_sub_label {
+              styles ["kicker"]
+              label:  _("NAME");
+              xalign: 0;
+            }
+
+            Entry form_sub {}
+          }
+
+          // Where it ends up, or why it cannot.
+          Label form_result {
+            styles ["pass-path"]
+            xalign: 0;
+            wrap: true;
+            wrap-mode: word_char;
+          }
+
+          Box {
+            spacing: 8;
+            halign: end;
+            margin-top: 6;
+
+            Button form_cancel {
+              styles ["outlined"]
+              name: "form-cancel";
+              label:  _("Cancel");
+            }
+
+            Button form_ok {
+              styles ["suggested-action"]
+              name: "form-ok";
+            }
+          }
+        };
+      }
+    }
+  }
+}

@@ -368,6 +368,12 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: ui/pass.ui:27
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:3
+msgid "Pass"
+msgstr "Pass"
+
+#: internal/appui/app.go:69
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -375,8 +381,10 @@ msgid "Viewer"
 msgstr "Visionneuse d’images"
 
 #: internal/appui/calculator.go:49
+#: internal/appui/pass.go:658
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/pass.ui:259
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -478,6 +486,7 @@ msgid "Remove %s"
 msgstr "Supprimer %s"
 
 #: internal/appui/clock.go:402
+#: ui/pass.ui:248
 msgid "Edit"
 msgstr "Modifier"
 
@@ -559,6 +568,156 @@ msgstr "Copier %s"
 #: internal/appui/colorpicker.go:139
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "Pas encore de couleur. Choisissez-en un n’importe où sur l’écran."
+
+#: internal/appui/pass.go:220
+msgid "A password store: a folder with a .gpg-id"
+msgstr "Un magasin de mots de passe : un dossier avec un .gpg-id"
+
+#: internal/appui/pass.go:228
+msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
+msgstr "%s n’est pas un magasin de mots de passe : il n’a pas de .gpg-id (pass init en crée un)."
+
+#: internal/appui/pass.go:248
+msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
+msgstr "Aucun magasin de mots de passe. pass init VOTRE-ID-DE-CLÉ-GPG en crée un dans ~/.password-store ; un autre dossier peut être ajouté en bas."
+
+#: internal/appui/pass.go:275
+msgid "The store is empty. + makes an entry."
+msgstr "Le magasin est vide. + crée une entrée."
+
+#: internal/appui/pass.go:278
+#: internal/appui/pass.go:491
+#: internal/appui/pass.go:572
+#: internal/appui/pass.go:715
+#: internal/appui/pass.go:769
+msgid "Choose an entry."
+msgstr "Choisissez une entrée."
+
+#: internal/appui/pass.go:284
+msgid "Top level"
+msgstr "Niveau supérieur"
+
+#: internal/appui/pass.go:292
+#: internal/ui/settings.go:584
+#: internal/ui/settings.go:611
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] "%d entrée"
+msgstr[1] "%d entrées"
+
+#: internal/appui/pass.go:298
+#: ui/pass.ui:127
+msgid "Rename or move this category"
+msgstr "Renommer ou déplacer cette catégorie"
+
+#: internal/appui/pass.go:300
+msgid "inua-keyring's folder: its index names these entries by path"
+msgstr "Le dossier d’inua-keyring : son index désigne ces entrées par leur chemin"
+
+#: internal/appui/pass.go:353
+msgid "Decrypting…"
+msgstr "Déchiffrement…"
+
+#: internal/appui/pass.go:367
+msgid "Cannot decrypt it: %s"
+msgstr "Impossible de le déchiffrer : %s"
+
+#: internal/appui/pass.go:391
+msgid "PASSWORD"
+msgstr "MOT DE PASSE"
+
+#: internal/appui/pass.go:396
+#: internal/appui/pass.go:448
+msgid "ONE-TIME CODE"
+msgstr "CODE À USAGE UNIQUE"
+
+#: internal/appui/pass.go:403
+msgid "NOTES"
+msgstr "NOTES"
+
+#: internal/appui/pass.go:432
+msgid "Show"
+msgstr "Afficher"
+
+#: internal/appui/pass.go:434
+#: internal/ui/notify.go:377
+msgid "Hide"
+msgstr "Masquer"
+
+#: internal/appui/pass.go:438
+#: internal/appui/pass.go:463
+#: internal/ui/askpass.go:187
+msgid "Copy"
+msgstr "Copier"
+
+#: internal/appui/pass.go:477
+msgid "%d second left"
+msgid_plural "%d seconds left"
+msgstr[0] "%d seconde restante"
+msgstr[1] "%d secondes restantes"
+
+#: internal/appui/pass.go:625
+msgid "Categories…"
+msgstr "Catégories…"
+
+#: internal/appui/pass.go:634
+#: internal/appui/pass.go:640
+msgid "Rename or move “%s”"
+msgstr "Renommer ou déplacer « %s »"
+
+#: internal/appui/pass.go:635
+msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
+msgstr "Son nouveau chemin : un autre nom la renomme ; un chemin sous une autre catégorie (archive/work) l’y déplace."
+
+#: internal/appui/pass.go:637
+#: internal/appui/pass.go:644
+msgid "Move"
+msgstr "Déplacer"
+
+#: internal/appui/pass.go:641
+msgid "The same category and a new name renames it; another category moves it."
+msgstr "La même catégorie et un nouveau nom la renomment ; une autre catégorie la déplace."
+
+#: internal/appui/pass.go:646
+#: ui/pass.ui:137
+msgid "New entry"
+msgstr "Nouvelle entrée"
+
+#: internal/appui/pass.go:647
+msgid "Where it goes; then its content."
+msgstr "Où elle va ; ensuite, son contenu."
+
+#: internal/appui/pass.go:654
+msgid "Next"
+msgstr "Suivant"
+
+#: internal/appui/pass.go:656
+msgid "Delete “%s”?"
+msgstr "Supprimer « %s » ?"
+
+#: internal/appui/pass.go:657
+msgid "pass removes its file; a git store keeps it in its history."
+msgstr "pass supprime son fichier ; un magasin git le garde dans son historique."
+
+#: internal/appui/pass.go:695
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "Chaque partie du chemin a besoin d’un nom, sans point au début."
+
+#: internal/appui/pass.go:697
+msgid "That is where it is."
+msgstr "Elle y est déjà."
+
+#: internal/appui/pass.go:699
+msgid "%s is already in the store."
+msgstr "%s est déjà dans le magasin."
+
+#: internal/appui/pass.go:701
+msgid "A category cannot move into itself."
+msgstr "Une catégorie ne peut pas se déplacer en elle-même."
+
+#: internal/appui/pass.go:703
+msgid "It will be %s"
+msgstr "Elle deviendra %s"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -680,7 +839,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:259
+#: internal/shell/dock.go:260
 msgid "NETWORK"
 msgstr "RÉSEAU"
 
@@ -3777,8 +3936,8 @@ msgid "Buy it for $%d"
 msgstr "Achetez-le pour $%d"
 
 #: internal/gamesui/fortune.go:732
-msgid "Pass"
-msgstr "Passer"
+msgid "Don't buy"
+msgstr "Ne pas acheter"
 
 #: internal/gamesui/fortune.go:736
 msgid "End turn"
@@ -4102,7 +4261,7 @@ msgid "SPACE PINBALL"
 msgstr "FLIPPER SPATIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "Lanceur"
@@ -4135,7 +4294,7 @@ msgstr "Mise au point activée ou désactivée"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4347,7 +4506,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Appuyez à nouveau sur Entrée pour vider la corbeille"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:279
+#: internal/shell/dock.go:280
 msgid "inua's settings"
 msgstr "Paramètres d'Inua"
 
@@ -4501,26 +4660,26 @@ msgstr "TOUS LES JOURS"
 msgid "TOOLS"
 msgstr "OUTILS"
 
-#: internal/shell/dock.go:262
+#: internal/shell/dock.go:263
 msgid "PLAY"
 msgstr "JOUER"
 
-#: internal/shell/dock.go:267
+#: internal/shell/dock.go:268
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SYSTÈME"
 
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "Find apps, windows and answers"
 msgstr "Rechercher des applications, des fenêtres et des réponses"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "Capture d’écran"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Capture an area, a window or a screen"
 msgstr "Capturer une zone, une fenêtre ou un écran"
 
@@ -4722,10 +4881,6 @@ msgstr "mot de passe : je veux une requête JSON"
 msgid "not ok"
 msgstr "pas bien"
 
-#: internal/ui/askpass.go:187
-msgid "Copy"
-msgstr "Copier"
-
 #: internal/ui/askpass.go:209
 msgid "Passphrase Required"
 msgstr "Phrase secrète requise"
@@ -4753,6 +4908,8 @@ msgstr "D'accord"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/pass.ui:359
+#: ui/pass.ui:474
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "Annuler"
@@ -5043,10 +5200,6 @@ msgstr "Notifications"
 msgid "Notifications (Focus is on)"
 msgstr "Notifications (Ne pas déranger activé)"
 
-#: internal/ui/notify.go:377
-msgid "Hide"
-msgstr "Masquer"
-
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
 #: ui/group.ui:52
@@ -5262,13 +5415,6 @@ msgstr "Non redémarré : %s"
 #: internal/ui/settings.go:574
 msgid "%d%%"
 msgstr "%d %%"
-
-#: internal/ui/settings.go:584
-#: internal/ui/settings.go:611
-msgid "%d entry"
-msgid_plural "%d entries"
-msgstr[0] "%d entrée"
-msgstr[1] "%d entrées"
 
 #: internal/ui/settings.go:610
 msgid "%s (%s, %s) · %s"
@@ -5496,6 +5642,7 @@ msgstr "Point final"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
+#: ui/pass.ui:368
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -6004,6 +6151,38 @@ msgstr "Echap fermer"
 #: ui/polkit.ui:523
 msgid "Password"
 msgstr "Mot de passe"
+
+#: ui/pass.ui:60
+msgid "STORE"
+msgstr "MAGASIN"
+
+#: ui/pass.ui:72
+msgid "Another store: a folder with a .gpg-id"
+msgstr "Un autre magasin : un dossier avec un .gpg-id"
+
+#: ui/pass.ui:147
+msgid "Search every entry"
+msgstr "Chercher dans toutes les entrées"
+
+#: ui/pass.ui:237
+msgid "Rename or move"
+msgstr "Renommer ou déplacer"
+
+#: ui/pass.ui:313
+msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
+msgstr "La première ligne est le mot de passe ; les lignes « clé : valeur » sont des champs ; une ligne otpauth:// est un code à usage unique."
+
+#: ui/pass.ui:414
+msgid "CATEGORY"
+msgstr "CATÉGORIE"
+
+#: ui/pass.ui:428
+msgid "A category there is"
+msgstr "Une catégorie existante"
+
+#: ui/pass.ui:444
+msgid "NAME"
+msgstr "NOM"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"
@@ -7086,6 +7265,14 @@ msgstr "Révéler les zones de sécurité et signaler les mines cachées"
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "jeux;arcade;puzzle;"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:10
+msgid "Your password store: passwords, one-time codes and notes, by category"
+msgstr "Votre magasin de mots de passe : mots de passe, codes à usage unique et notes, par catégorie"
+
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:14
+msgid "password;pass;gpg;otp;totp;2fa;secret;"
+msgstr "mot de passe;pass;gpg;otp;totp;2fa;secret;"
 
 #: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
 msgid "Buy streets, build houses and outlast up to three computer players"
