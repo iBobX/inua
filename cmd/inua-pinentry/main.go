@@ -19,6 +19,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
+	"github.com/lyricat/inua/internal/keyring"
 	"github.com/lyricat/inua/internal/pinentry"
 	"github.com/lyricat/inua/internal/proc"
 )
@@ -47,14 +48,21 @@ func main() {
 		defer cancel()
 		resp, err := ipc.Call(ctx, sock, ipc.Request{Op: "call", Target: "password", Function: string(q.Mode), Args: []string{string(arg)}})
 		var a pinentry.Answer
+		answer := keyring.Entered
 		switch {
 		case err == nil:
 			a.OK, a.Pin = true, resp.Result
 		case resp.Error == "cancelled":
-			// a.OK false
+			answer = keyring.Cancelled
 		case resp.Error == "not ok":
 			a.NotOK = true
 		default:
+			answer = keyring.Failed
+		}
+		if q.Mode == pinentry.GetPin {
+			record(q, answer)
+		}
+		if answer == keyring.Failed {
 			return a, err
 		}
 		return a, nil
@@ -77,6 +85,20 @@ func requester(owner int) string {
 		return app
 	}
 	return proc.Chain(owner, 4)
+}
+
+// record adds a passphrase asked for to the keyring's record of reads,
+// which Settings → Keyring lists.
+func record(q pinentry.Request, answer string) {
+	forKeyring, ok := strings.CutPrefix(os.Getenv("PINENTRY_USER_DATA"), pinentry.UserData)
+	if !ok {
+		forKeyring = "" // someone else's
+	}
+	a := keyring.PassphraseAccess(q.Owner, forKeyring, q.Desc, keyring.StoreDir())
+	a.Answer = answer
+	if err := keyring.RecordAccess(keyring.AccessPath(), a); err != nil {
+		fmt.Fprintln(os.Stderr, "inua-pinentry: record:", err)
+	}
 }
 
 // listening reports whether a shell answers on its control socket.

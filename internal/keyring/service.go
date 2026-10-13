@@ -69,10 +69,12 @@ type Service struct {
 	readers  map[string]bool // the apps that read a secret, by name
 }
 
-// app is a client of the service: its program and PID.
+// app is a client of the service: its program and PID, and the detail
+// the record of reads keeps.
 type app struct {
-	name string
-	pid  int
+	name                string
+	pid                 int
+	exe, command, chain string
 }
 
 type session struct {
@@ -275,7 +277,9 @@ func (s *Service) sealed(it Item, sess *session, sp dbus.ObjectPath, who string)
 		first := !s.readers[a.name]
 		s.readers[a.name] = true
 		s.mu.Unlock()
-		s.OnRead(Access{Time: time.Now(), App: a.name, PID: a.pid, Secret: label}, first)
+		s.OnRead(Access{Time: time.Now(), App: a.name, PID: a.pid, Secret: label,
+			Pass: s.store.Where(it.Collection, it.ID), Collection: it.Collection,
+			Exe: a.exe, Command: a.command, Chain: a.chain, Bus: who}, first)
 	}
 	return Secret{Session: sp, Parameters: params, Value: value, ContentType: ct}, nil
 }
@@ -290,7 +294,8 @@ func (s *Service) client(unique string) app {
 	}
 	var pid uint32
 	if s.conn.BusObject().Call("org.freedesktop.DBus.GetConnectionUnixProcessID", 0, unique).Store(&pid) == nil {
-		a = app{name: proc.Name(int(pid)), pid: int(pid)}
+		p := int(pid)
+		a = app{name: proc.Name(p), pid: p, exe: proc.Exe(p), command: proc.Command(p), chain: proc.Chain(proc.Parent(p), 8)}
 	}
 	a.name = cmp.Or(a.name, unique)
 	s.mu.Lock()

@@ -166,7 +166,16 @@ enable` lets D-Bus start inua-keyring instead of gnome-keyring, and
 through inua's dialog, when a secret is read and gpg-agent has not
 cached it. Every secret handed out is logged with the program and PID
 that read it and recorded in `~/.local/state/inua/keyring-access.jsonl`
-(the newest 200 to 400); Settings → Keyring lists the reads, and a
+(the newest 200 to 400), with the secret's pass entry and the process as
+it was then: its program's path, command line, what it runs under and its
+bus name. inua-pinentry records each passphrase it asks for there too:
+the program running gpg, the pass entry gpg decrypts (or the key), and
+whether the passphrase was entered. gpg-agent keeps the passphrase for a
+while (10 minutes by default), so reads of pass made meanwhile, `pass -c`
+among them, ask nothing and are not listed. Settings → Keyring lists the
+reads and passphrases with their pass entries; clicking one shows all of
+that in a side panel. The record is private
+(mode 600), but a command line can hold whatever its program was given. A
 notification tells of each app's first read since inua-keyring started
 (`keyring.notify`). The design: [feat/keyring.md](feat/keyring.md).
 

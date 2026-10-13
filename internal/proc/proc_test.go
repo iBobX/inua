@@ -4,7 +4,9 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
+	"unicode/utf8"
 )
 
 // fake writes a process into a fake /proc.
@@ -66,5 +68,35 @@ func TestChain(t *testing.T) {
 	}
 	if Chain(99, 8) != "" {
 		t.Error("a gone process has a chain")
+	}
+}
+
+// The detail of a process: its program's path and its command line,
+// quoted so that arguments with spaces stay apart, and cut when long.
+func TestExeAndCommand(t *testing.T) {
+	old := root
+	root = t.TempDir()
+	defer func() { root = old }()
+	fake(t, 40, 1, "gh", "gh", "pr", "", "view", "8", "--json", "a b")
+	if err := os.Symlink("/usr/bin/gh", filepath.Join(root, "40", "exe")); err != nil {
+		t.Fatal(err)
+	}
+	if got := Exe(40); got != "/usr/bin/gh" {
+		t.Errorf("exe: %q", got)
+	}
+	if got := Command(40); got != `gh pr "" view 8 --json "a b"` {
+		t.Errorf("command: %q", got)
+	}
+	fake(t, 41, 1, "cat", "cat", strings.Repeat("é", maxCommand))
+	if got := Command(41); len(got) > maxCommand+len("…") || !strings.HasSuffix(got, "…") || !utf8.ValidString(got) {
+		t.Errorf("long command: %d bytes", len(got))
+	}
+	// Chrome rewrites its command line as one string.
+	fake(t, 42, 1, "chrome", "/opt/google/chrome/chrome --user-data-dir=/tmp/x/chrome-profile --no-first-run")
+	if Name(42) != "chrome" || Command(42) != "/opt/google/chrome/chrome --user-data-dir=/tmp/x/chrome-profile --no-first-run" {
+		t.Errorf("rewritten command line: %q %q", Name(42), Command(42))
+	}
+	if Exe(99) != "" || Command(99) != "" || Exe(0) != "" {
+		t.Error("a gone process has a program")
 	}
 }

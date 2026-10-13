@@ -141,3 +141,31 @@ func TestCollections(t *testing.T) {
 		t.Errorf("collections %+v", s.Collections())
 	}
 }
+
+// named is a backend whose entries have a name, as pass's do.
+type named struct{ *memory }
+
+func (named) name(entry string) string { return "inua-keyring/" + entry }
+
+// Where names an item's entry as pass does; nothing for one kept in
+// memory.
+func TestWhere(t *testing.T) {
+	s, err := Open(filepath.Join(t.TempDir(), "inua-keyring", ".index.json"), named{newMemory()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, _, err := s.CreateItem(Login, "API key: work", nil, []byte("k"), "", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mem, _, err := s.CreateItem(Session, "for now", nil, []byte("k"), "", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := s.Where(Login, it.ID); got != "inua-keyring/login/api-key-work" {
+		t.Errorf("where: %q", got)
+	}
+	if s.Where(Session, mem.ID) != "" || s.Where(Login, "none") != "" || s.Where("none", it.ID) != "" {
+		t.Error("an item without an entry has one")
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 	"testing"
 	"time"
 
@@ -247,6 +248,10 @@ func TestOnRead(t *testing.T) {
 	if len(reads) != 2 || reads[0].App != me || reads[0].PID != os.Getpid() || reads[0].Secret != "API key" || !firsts[0] || firsts[1] {
 		t.Errorf("reads %+v, first %v (this is %s, pid %d)", reads, firsts, me, os.Getpid())
 	}
+	exe, _ := os.Executable()
+	if a := reads[0]; a.Exe != exe || a.Command == "" || a.Collection != Login || a.Bus == "" || a.Pass != "" {
+		t.Errorf("detail %+v (this is %s)", a, exe)
+	}
 }
 
 // The record keeps the newest accesses, newest first.
@@ -263,5 +268,80 @@ func TestAccessRecord(t *testing.T) {
 	got, err := ReadAccess(path)
 	if err != nil || len(got) != accessKeep || got[0].PID != 2*accessKeep || got[accessKeep-1].PID != accessKeep+1 {
 		t.Errorf("kept %d, newest %+v, oldest %+v, %v", len(got), got[0], got[len(got)-1], err)
+	}
+}
+
+// Reads of one secret by one process in a row are one, counted; another
+// secret or process between them starts another.
+func TestGroupReads(t *testing.T) {
+	at := func(m int) time.Time { return time.Date(2026, 10, 13, 12, m, 0, 0, time.UTC) }
+	record := []Access{ // newest first
+		{Time: at(9), App: "gh", PID: 3, Secret: "token"},
+		{Time: at(8), App: "gh", PID: 3, Secret: "token"},
+		{Time: at(7), App: "gh", PID: 3, Secret: "token"},
+		{Time: at(6), App: "gh", PID: 2, Secret: "token"},
+		{Time: at(5), App: "zed", PID: 4, Secret: "key"},
+		{Time: at(4), App: "gh", PID: 2, Secret: "token"},
+	}
+	got := GroupReads(record, 10)
+	if len(got) != 4 || got[0].N != 3 || !got[0].Time.Equal(at(9)) || !got[0].First.Equal(at(7)) ||
+		got[1].N != 1 || !got[1].First.Equal(at(6)) || got[3].PID != 2 {
+		t.Errorf("%+v", got)
+	}
+	if got := GroupReads(record, 2); len(got) != 2 || GroupReads(nil, 2) != nil {
+		t.Errorf("limit: %d", len(got))
+	}
+}
+
+// A passphrase asked for pass names pass, the entry gpg decrypts, and the
+// key; one asked for inua-keyring names the app and secret it read for.
+func TestPassphraseAccess(t *testing.T) {
+	if _, err := exec.LookPath("bash"); err != nil {
+		t.Skip("no bash")
+	}
+	dir := t.TempDir()
+	store := filepath.Join(dir, "store")
+	script := filepath.Join(dir, "pass")
+	// pass, running gpg on an entry: a process named gpg, with the file.
+	body := "(exec -a gpg bash -c 'sleep 30; :' gpg -d -- " + store + "/work/mail.gpg); :\n"
+	if err := os.WriteFile(script, []byte(body), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command("bash", "-c", "bash "+script+"; :")
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true} // to stop them all, sleep too
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer cmd.Wait()
+	defer syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	var gpg int
+	for range 100 {
+		for _, pid := range proc.All() {
+			if proc.Name(pid) == "gpg" && proc.Parent(proc.Parent(pid)) == cmd.Process.Pid {
+				gpg = pid
+			}
+		}
+		if gpg != 0 {
+			break
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	if gpg == 0 {
+		t.Fatal("gpg did not start")
+	}
+	desc := "Please enter the passphrase to unlock the OpenPGP secret key:%0A\"Ann <ann@example.org>\"%0A255-bit EDDSA key"
+	a := PassphraseAccess(gpg, "", desc, store)
+	if a.Kind != Passphrase || a.App != "pass" || a.Pass != "work/mail" || a.Secret != "work/mail" || a.PID != gpg || !strings.Contains(a.Command, "mail.gpg") {
+		t.Errorf("for pass: %+v", a)
+	}
+	a = PassphraseAccess(gpg, "gh (pid 41)\tPassword for 'ann' on 'gh:github.com'", desc, store)
+	if a.App != "gh" || a.Secret != "Password for 'ann' on 'gh:github.com'" || a.Pass != "work/mail" {
+		t.Errorf("for inua-keyring: %+v", a)
+	}
+	if a := PassphraseAccess(0, "", desc, store); a.Secret != "Ann <ann@example.org>" || a.App != "" {
+		t.Errorf("for no one known: %+v", a)
+	}
+	if got := passEntry("/elsewhere/x.gpg", store); got != "/elsewhere/x.gpg" {
+		t.Errorf("outside the store: %q", got)
 	}
 }

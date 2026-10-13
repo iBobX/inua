@@ -737,6 +737,21 @@ window.settings { background: @app; font-size: 14px; }
 /* The icon slot keeps one width whether it holds a button or not. */
 .settings .slot { min-width: 28px; }
 .settings .row.compact { min-height: 0; padding: 6px 0; }
+/* The Keyring page's reads: a row is a button opening the side panel. */
+.settings button.keyring-read {
+  margin: 0 -10px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+  transition: background 180ms ease-out, border-color 180ms ease-out;
+}
+.settings button.keyring-read:hover { background: alpha(@accent, 0.06); }
+.settings button.keyring-read.on { border-color: alpha(@accent, 0.3); background: mix(@surface, @primary, 0.1); }
+.settings .side-panel { background: @panel; border-left: 1px solid alpha(@line, 0.7); }
+.settings .side-head { min-height: 44px; margin: 18px 18px 0 22px; border-bottom: 1px solid alpha(@line, 0.55); }
+.settings .side-body { padding: 16px 22px 24px; }
 .settings .mono-sub { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11.5px; }
 .settings .recording {
   margin-bottom: 14px;

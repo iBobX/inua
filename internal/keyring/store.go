@@ -595,6 +595,24 @@ func (s *Store) Secret(coll, id, who string) ([]byte, string, error) {
 	return data, cmp.Or(r.ContentType, "text/plain"), err
 }
 
+// Where is the name an item's secret has in its backend, what `pass show`
+// takes ("inua-keyring/login/chrome-safe-storage"); "" for an item kept in
+// memory, or none.
+func (s *Store) Where(coll, id string) string {
+	s.mu.Lock()
+	var entry string
+	if c := s.coll(coll); c != nil {
+		if r := c.item(id); r != nil {
+			entry = r.Entry
+		}
+	}
+	s.mu.Unlock()
+	if n, ok := s.backend(coll).(interface{ name(string) string }); ok && entry != "" {
+		return n.name(entry)
+	}
+	return ""
+}
+
 // change changes an item under the lock.
 func (s *Store) change(coll, id, msg string, f func(c *collRec, r *itemRec) error) error {
 	s.mu.Lock()
