@@ -10,7 +10,9 @@
 # first, and the answer defaults to yes for gpg's pinentry (inua-pinentry)
 # and the keyring apps keep secrets in (inua-keyring, in pass); with no
 # login manager it offers greetd + tuigreet (yes), while GDM, SDDM,
-# LightDM … are kept unless you answer yes. Run it again to update.
+# LightDM … are kept unless you answer yes. Without a password store it
+# offers to make one with a GPG key of yours (yes), or with a new key
+# (no), and says what to run by hand. Run it again to update.
 #
 # Environment:
 #   INUA_VERSION=v0.1.2   a release instead of the latest
@@ -212,12 +214,83 @@ fi
 # --- the keyring ------------------------------------------------------------
 
 heading "Setting up the keyring"
+
+# prompt QUESTION DEFAULT: a line typed at the terminal, else DEFAULT.
+prompt() {
+    printf "  ${bold}?${off}   %s ${dim}[%s]${off} " "$1" "$2" >/dev/tty
+    read -r answer </dev/tty || answer=
+    printf "%s\n" "${answer:-$2}"
+}
+
+# secret_keys: the GPG keys of yours that can encrypt, one a line:
+# fingerprint, a tab, the first user ID.
+secret_keys() {
+    gpg --batch --list-secret-keys --with-colons 2>/dev/null | awk -F: '
+        $1 == "sec" { ok = $2 != "e" && $2 != "r" && $12 ~ /E/; fpr = ""; uid = ""; next }
+        $1 == "fpr" && fpr == "" { fpr = $10 }
+        $1 == "uid" && uid == "" && ok && fpr != "" { uid = $10; gsub(/\\x3a/, ":", uid); print fpr "\t" uid }'
+}
+
+# setup_store: makes the password store inua-keyring keeps apps' secrets
+# in, if there is none: with a GPG key of yours, or a new one you choose
+# the passphrase of. Nothing without a terminal to ask at. True when the
+# store is there.
+setup_store() {
+    store=${PASSWORD_STORE_DIR:-$HOME/.password-store}
+    [ -f "$store/.gpg-id" ] && return 0
+    (: </dev/tty) 2>/dev/null || return 1
+    told=yes # what to run by hand is said below
+    say "pass has no password store yet; inua-keyring keeps apps' secrets in one, locked with a GPG key"
+    keys=$(secret_keys)
+    n=$(printf "%s" "$keys" | grep -c . || true)
+    fpr=
+    if [ "$n" -eq 1 ]; then
+        fpr=$(printf "%s" "$keys" | cut -f1)
+        say "with your key $(printf "%s" "$keys" | cut -f2), this runs:"
+        say "    pass init $fpr"
+        say "(by hand later: that, then inua keyring replace)"
+        ask "Create the password store with this key?" y || return 1
+    elif [ "$n" -gt 1 ]; then
+        say "your GPG keys:"
+        printf "%s\n" "$keys" | awk -F'\t' '{ printf "        %d  %s  %s\n", NR, $2, substr($1, length($1) - 15) }'
+        say "the one chosen runs: pass init KEY (by hand later: that, then inua keyring replace)"
+        choice=$(prompt "Which key locks the password store? 0 for none" 1)
+        case $choice in '' | *[!0-9]*) choice=0 ;; esac
+        [ "$choice" -ge 1 ] && [ "$choice" -le "$n" ] || return 1
+        fpr=$(printf "%s\n" "$keys" | sed -n "${choice}p" | cut -f1)
+    else
+        say "you have no GPG key. To make one and the password store by hand:"
+        say "    gpg --quick-generate-key \"Your Name <you@example.org>\" default default never"
+        say "    pass init KEY-ID          (the fingerprint gpg printed)"
+        say "    inua keyring replace"
+        ask "Or create them now? You choose the key's passphrase" n || return 1
+        name=$(prompt "Your name" "$(git config --get user.name 2>/dev/null || getent passwd "$(id -un)" | cut -d: -f5 | cut -d, -f1)")
+        email=$(prompt "Your email" "$(git config --get user.email 2>/dev/null || true)")
+        uid=$name
+        [ -n "$email" ] && uid="$name <$email>"
+        [ -n "$uid" ] || return 1
+        # gpg asks for the passphrase through the pinentry: inua's dialog, or
+        # without a shell running the usual one, on this terminal if need be.
+        GPG_TTY=$(tty </dev/tty) gpg --quick-generate-key "$uid" default default never </dev/tty || return 1
+        fpr=$(secret_keys | awk -F'\t' -v uid="$uid" '$2 == uid { f = $1 } END { print f }')
+        [ -n "$fpr" ] || return 1
+        done_ "made the GPG key $uid"
+        note "back it up: gpg --export-secret-keys --armor $fpr > inua-key.asc. Without the key, or its passphrase, the secrets in pass cannot be read"
+    fi
+    pass init "$fpr" >/dev/null || return 1
+    done_ "made the password store in $store"
+}
+
 # inua keyring replace asks before replacing the running keyring
 # (gnome-keyring …), copying its items into pass first.
 if [ ! -x "$prefix/bin/inua-keyring" ] || ! have pass; then
     note "inua-keyring needs pass; once it is installed, run: inua keyring replace"
-elif [ ! -f "${PASSWORD_STORE_DIR:-$HOME/.password-store}/.gpg-id" ]; then
-    note "pass has no password store yet; run: pass init YOUR-GPG-KEY-ID, then: inua keyring replace"
+elif told=no; ! have gpg || ! setup_store; then
+    if [ "$told" = yes ]; then
+        note "inua-keyring waits for a password store; the keyring is left as it is"
+    else
+        note "pass has no password store yet; run: pass init YOUR-GPG-KEY-ID, then: inua keyring replace"
+    fi
 elif [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ ! -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
     note "no desktop session here; in one, run: inua keyring replace"
 elif PATH="$prefix/bin:$PATH" "$prefix/bin/inua" keyring replace </dev/null; then

@@ -45,6 +45,9 @@ More on each: [the shell in detail](docs/features.md) and
 
 - Ubuntu 26.04 (or another distribution with the same packages)
 - Hyprland 0.53, GTK 4.22, gtk4-layer-shell 1.3
+- Recommended: pass and gnupg, where `inua-keyring` keeps apps' secrets
+  (without them, apps keep using gnome-keyring); the install script
+  offers to install them
 - Go 1.26 or later to build
 
 System features use the services you probably already run: NetworkManager,
@@ -69,7 +72,9 @@ first, and the answer defaults to yes for gpg's pinentry (with
 `inua-keyring`, after copying its items into pass). With no login manager
 it offers greetd + tuigreet, the login screen inua recommends (yes); GDM,
 SDDM … are kept unless you answer yes, and Inua joins their list of
-sessions. On Fedora 43 and later, Hyprland comes from a COPR
+sessions. Without a password store it offers to make one with a GPG key of
+yours (yes), or with a new key whose passphrase you choose (no), and says
+what to run to do it yourself. On Fedora 43 and later, Hyprland comes from a COPR
 (Fedora's repositories stopped at 0.45); inua needs 0.53 or later.
 `INUA_VERSION=v0.1.2` picks a release.
 
