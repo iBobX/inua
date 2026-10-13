@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gobject/types"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"codeberg.org/puregotk/puregotk/v4/pango"
 
 	"github.com/lyricat/inua/internal/capture/hyprland"
 	"github.com/lyricat/inua/internal/gtkx"
@@ -46,6 +47,10 @@ type workspaceOverview struct {
 	searchStatus         gtk.Label
 	mru                  gtk.Button
 	images               map[string]*gtk.Picture
+	layoutKey            string
+	cardWidgets          map[int]*overviewCardWidgets
+	windowWidgets        map[string]*overviewWindowWidgets
+	renderedTargets      []uintptr
 	textures             map[string]*gdk.MemoryTexture
 	capture              *hyprland.Stream
 	captureFailed        bool
@@ -54,6 +59,7 @@ type workspaceOverview struct {
 	renderGen            uintptr
 	captureMu            sync.Mutex
 	pendingFrames        map[string]queuedOverviewFrame
+	previewSize          map[string][2]int
 	frameDrainQueued     bool
 	columns              int
 	refs                 gtkx.Scope
@@ -125,7 +131,6 @@ func (s *shellUI) showOverview() {
 		}
 	}
 	s.renderOverview()
-	s.updateOverviewCapture()
 	s.guardOverviewMouse(true)
 	log.Printf("overview: open (%d workspaces) wallpaper=%q", len(s.overview.st.Cards), s.cfg.ImagePath())
 }
@@ -166,6 +171,11 @@ func (s *shellUI) closeOverview(restore bool) {
 		o.win.Unref()
 		o.win = nil
 	}
+	o.targets = nil
+	o.cardWidgets = nil
+	o.windowWidgets = nil
+	o.images = nil
+	o.renderedTargets = nil
 	if restore && previous != "" {
 		for _, w := range s.snap.Toplevels {
 			if w.Address == previous {
@@ -186,7 +196,6 @@ func (s *shellUI) bindOverviewHandlers() {
 	s.onOverviewRender = func(gen uintptr) bool {
 		if gen == s.overview.renderGen && s.overview.st.Open {
 			s.renderOverview()
-			s.updateOverviewCapture()
 		}
 		return false
 	}
@@ -388,13 +397,19 @@ func (s *shellUI) renderOverview() {
 	if !o.st.Open || o.dragging != "" {
 		return
 	}
-	o.targets = map[uintptr]overviewDropTarget{}
+	if o.targets == nil {
+		o.targets = map[uintptr]overviewDropTarget{}
+	}
+	o.captureMu.Lock()
+	o.previewSize = make(map[string][2]int)
+	o.captureMu.Unlock()
 	s.renderOverviewView(o)
 	for _, view := range o.views {
 		view.st = o.st
 		view.textures = o.textures
 		s.renderOverviewView(view)
 	}
+	s.updateOverviewCapture()
 }
 
 func (s *shellUI) renderOverviewView(o *workspaceOverview) {
@@ -402,6 +417,7 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		return
 	}
 	if o.win == nil {
+		o.layoutKey = ""
 		s.buildOverview(o)
 	}
 	if o.query.GetText() != o.st.Query {
@@ -411,9 +427,6 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 	}
 	o.mru.SetLabel(map[bool]string{true: i18n.T("MRU: ON"), false: i18n.T("MRU: OFF")}[o.st.MRU])
 	o.scope.SetLabel(map[bool]string{true: i18n.T("This monitor"), false: i18n.T("All monitors")}[s.cfg.Overview.PerMonitor])
-	o.images = make(map[string]*gtk.Picture)
-
-	gtkx.Clear(&o.cards)
 	matching := 0
 	for _, card := range o.st.Cards {
 		if s.cfg.Overview.PerMonitor && card.Workspace.Monitor != o.monitor {
@@ -422,13 +435,27 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		matching += len(card.Windows)
 	}
 	if o.st.Query == "" {
-		o.searchStatus.SetText(i18n.T("TYPE TO FILTER WINDOWS"))
+		o.searchStatus.SetText(i18n.T("FILTER"))
 	} else if matching == 0 {
-		o.searchStatus.SetText(i18n.T("NO MATCHING WINDOWS"))
+		o.searchStatus.SetText(i18n.T("NO MATCHES"))
 	} else {
-		o.searchStatus.SetText(i18n.Tf("%d MATCHING WINDOWS", matching))
+		o.searchStatus.SetText(i18n.Nf("%d RESULT", "%d RESULTS", matching, matching))
 	}
 	o.queryClear.SetVisible(o.st.Query != "")
+	key := overviewLayoutKey(o.st.Cards, s.snap.Monitors, s.cfg.Overview.PerMonitor, o.monitor, int(o.root.GetScaleFactor()), o.st.Query != "")
+	if o.layoutKey == key {
+		s.updateOverviewWidgets(o)
+		return
+	}
+	for _, ptr := range o.renderedTargets {
+		delete(s.overview.targets, ptr)
+	}
+	o.renderedTargets = nil
+	o.layoutKey = key
+	o.images = make(map[string]*gtk.Picture)
+	o.cardWidgets = make(map[int]*overviewCardWidgets)
+	o.windowWidgets = make(map[string]*overviewWindowWidgets)
+	gtkx.Clear(&o.cards)
 	type indexedCard struct {
 		index int
 		card  shell.OverviewCard
@@ -544,12 +571,12 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 
 		if card.New {
 			background.SetName("new-workspace:" + card.Workspace.Monitor)
-			background.SetLabel(i18n.T("＋\nNew workspace"))
 		}
 		canvas.SetChild(&background.Widget)
 		background.Unref()
 		{
 			s.overview.targets[canvas.GoPointer()] = overviewDropTarget{ID: card.Workspace.ID, Monitor: card.Workspace.Monitor, New: card.New, Scale: thumbW / monW}
+			o.renderedTargets = append(o.renderedTargets, canvas.GoPointer())
 			drop := gtk.NewDropTarget(types.GType(gobject.TypeStringVal), gdk.ActionMoveValue)
 			drop.ConnectMotion(&s.onOverviewMotion)
 			drop.ConnectLeave(&s.onOverviewLeave)
@@ -560,14 +587,29 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 		board.SetOverflow(gtk.OverflowHiddenValue)
 		canvas.AddOverlay(&board.Widget)
 		board.Unref()
+		if card.New {
+			badge := gtk.NewLabel(i18n.T("＋  New workspace"))
+			badge.AddCssClass("overview-new-badge")
+			badge.SetHalign(gtk.AlignEndValue)
+			badge.SetValign(gtk.AlignStartValue)
+			badge.SetMarginTop(10)
+			badge.SetMarginEnd(10)
+			badge.SetCanTarget(false)
+			canvas.AddOverlay(&badge.Widget)
+			badge.Unref()
+		}
+		o.cardWidgets[i] = &overviewCardWidgets{canvas: canvas, board: board, order: overviewWindowOrder(card.Windows), monX: monX, monY: monY, monW: monW, monH: monH, thumbW: thumbW, thumbH: thumbH}
 		// Paint the focused window last, as the topmost window.
 		for wi := len(card.Windows) - 1; wi >= 0; wi-- {
 			w := card.Windows[wi]
 			x, y, pw, ph := overviewWindowLayout(w, monX, monY, monW, monH, thumbW, thumbH)
+			s.noteOverviewPreviewSize(w.Address, pw, ph, int(o.root.GetScaleFactor()))
 			b := gtk.NewButton()
 			b.SetName("window:" + w.Address)
 			b.SetSizeRequest(int32(pw), int32(ph))
-			b.SetTooltipText(w.Title)
+			b.SetTooltipText(w.Title) // the label is cut short in small previews
+			ww := &overviewWindowWidgets{button: b, rect: [4]float64{x, y, pw, ph}, title: w.Title}
+			o.windowWidgets[w.Address] = ww
 			b.AddCssClass("overview-window")
 			if w.Activated {
 				b.AddCssClass("active")
@@ -581,18 +623,40 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 				preview.SetPaintable(texture)
 			}
 			windowLayer := gtk.NewOverlay()
+			windowLayer.SetOverflow(gtk.OverflowHiddenValue)
 			windowLayer.SetChild(&preview.Widget)
 			preview.Unref()
+			meta := gtk.NewBox(gtk.OrientationHorizontalValue, 7)
+			meta.AddCssClass("overview-window-meta")
+			meta.SetHalign(gtk.AlignFillValue)
+			meta.SetValign(gtk.AlignEndValue)
+			meta.SetSizeRequest(-1, 38)
+			icon := gtk.NewImage()
 			if entry := s.dockState.apps.ForClass(w.Class); entry != nil && entry.Icon != "" {
-				icon := gtk.NewImage()
 				setIcon(icon, entry.Icon)
-				icon.SetPixelSize(int32(max(24, min(pw, ph)*0.18)))
-				icon.SetHalign(gtk.AlignCenterValue)
-				icon.SetValign(gtk.AlignCenterValue)
-				icon.SetCanTarget(false)
-				windowLayer.AddOverlay(&icon.Widget)
-				icon.Unref()
+			} else {
+				setIcon(icon, "application-x-executable")
 			}
+			icon.SetPixelSize(18)
+			icon.SetValign(gtk.AlignCenterValue)
+			icon.SetCanTarget(false)
+			gtkx.Append(meta, &icon.Widget)
+			title := gtk.NewLabel(w.Title)
+			title.AddCssClass("overview-window-title")
+			title.SetWrap(true)
+			title.SetWrapMode(pango.WrapWordCharValue)
+			title.SetLines(2)
+			title.SetEllipsize(3) // end
+			title.SetJustify(gtk.JustifyLeftValue)
+			title.SetHalign(gtk.AlignFillValue)
+			title.SetValign(gtk.AlignCenterValue)
+			title.SetHexpand(true)
+			gtkx.Append(meta, &title.Widget)
+			ww.label = title
+			windowLayer.AddOverlay(&meta.Widget)
+			meta.Unref()
+			icon.Unref()
+			title.Unref()
 			b.SetChild(&windowLayer.Widget)
 			windowLayer.Unref()
 			o.images[w.Address] = preview
@@ -634,10 +698,13 @@ func (s *shellUI) updateOverviewCapture() {
 	if o.captureFailed {
 		return
 	}
-	var targets []string
-	for _, card := range o.st.Cards {
+	var targets, priority []string
+	for i, card := range o.st.Cards {
 		for _, w := range card.Windows {
 			targets = append(targets, w.Address)
+			if i == o.st.Selected {
+				priority = append(priority, w.Address)
+			}
 		}
 	}
 	if len(targets) == 0 {
@@ -649,13 +716,14 @@ func (s *shellUI) updateOverviewCapture() {
 		return
 	}
 	if o.capture != nil {
-		o.capture.SetTargets(targets)
+		o.capture.SetTargetsWithPriority(targets, priority)
 		return
 	}
 	o.captureGen++
 	gen := o.captureGen
 	o.capture = hyprland.Start(context.Background(), targets, func(f hyprland.Frame) {
-		s.queueOverviewFrame(gen, shrinkOverviewFrame(f))
+		w, h := s.overviewPreviewSize(f.Address)
+		s.queueOverviewFrame(gen, hyprland.Shrink(f, w, h))
 	}, func(err error) {
 		log.Printf("overview capture: %v", err)
 		gtkx.Post(func() {
@@ -675,6 +743,37 @@ func (s *shellUI) updateOverviewCapture() {
 			})
 		})
 	})
+	o.capture.SetTargetsWithPriority(targets, priority)
+}
+
+func (s *shellUI) noteOverviewPreviewSize(address string, width, height float64, scale int) {
+	if address == "" {
+		return
+	}
+	if scale < 1 {
+		scale = 1
+	}
+	o := &s.overview
+	o.captureMu.Lock()
+	defer o.captureMu.Unlock()
+	if o.previewSize == nil {
+		o.previewSize = make(map[string][2]int)
+	}
+	old := o.previewSize[address]
+	w := int(width*float64(scale) + 0.5)
+	h := int(height*float64(scale) + 0.5)
+	o.previewSize[address] = [2]int{max(old[0], w), max(old[1], h)}
+}
+
+func (s *shellUI) overviewPreviewSize(address string) (int, int) {
+	o := &s.overview
+	o.captureMu.Lock()
+	size := o.previewSize[address]
+	o.captureMu.Unlock()
+	if size[0] <= 0 || size[1] <= 0 {
+		return 720, 720
+	}
+	return size[0], size[1]
 }
 
 // queueOverviewFrame keeps at most the newest frame per client while GTK is
@@ -749,72 +848,6 @@ func (s *shellUI) drainOverviewFrames() {
 		}
 		o.textures[f.Address] = texture
 	}
-}
-
-// Overview thumbnails are much smaller than application surfaces; cap their
-// backing textures to 720px on the long edge. Area-average downscale keeps
-// text readable without holding a full compositor buffer per window.
-func shrinkOverviewFrame(f hyprland.Frame) hyprland.Frame {
-	const maxEdge = 720
-	if f.Width <= 0 || f.Height <= 0 || f.Stride < f.Width*4 || len(f.Pixels) < f.Stride*f.Height {
-		return hyprland.Frame{Address: f.Address}
-	}
-	w, h := f.Width, f.Height
-	if f.Width > maxEdge || f.Height > maxEdge {
-		scale := float64(maxEdge) / float64(max(f.Width, f.Height))
-		w, h = max(1, int(float64(f.Width)*scale)), max(1, int(float64(f.Height)*scale))
-	}
-	pixels := make([]byte, w*h*4)
-	if w == f.Width && h == f.Height {
-		for y := 0; y < h; y++ {
-			srcY := y
-			if f.YInvert {
-				srcY = f.Height - 1 - y
-			}
-			copy(pixels[y*w*4:(y+1)*w*4], f.Pixels[srcY*f.Stride:srcY*f.Stride+w*4])
-		}
-		f.Width, f.Height, f.Stride, f.Pixels, f.YInvert = w, h, w*4, pixels, false
-		return f
-	}
-	for y := 0; y < h; y++ {
-		sy0 := y * f.Height / h
-		sy1 := min(f.Height, (y+1)*f.Height/h)
-		if sy1 <= sy0 {
-			sy1 = min(f.Height, sy0+1)
-		}
-		if f.YInvert {
-			sy0, sy1 = f.Height-sy1, f.Height-sy0
-		}
-		for x := 0; x < w; x++ {
-			sx0 := x * f.Width / w
-			sx1 := min(f.Width, (x+1)*f.Width/w)
-			if sx1 <= sx0 {
-				sx1 = min(f.Width, sx0+1)
-			}
-			var c0, c1, c2, c3, n int
-			for sy := sy0; sy < sy1; sy++ {
-				row := sy * f.Stride
-				for sx := sx0; sx < sx1; sx++ {
-					src := row + sx*4
-					c0 += int(f.Pixels[src])
-					c1 += int(f.Pixels[src+1])
-					c2 += int(f.Pixels[src+2])
-					c3 += int(f.Pixels[src+3])
-					n++
-				}
-			}
-			if n == 0 {
-				continue
-			}
-			dst := (y*w + x) * 4
-			pixels[dst] = byte(c0 / n)
-			pixels[dst+1] = byte(c1 / n)
-			pixels[dst+2] = byte(c2 / n)
-			pixels[dst+3] = byte(c3 / n)
-		}
-	}
-	f.Width, f.Height, f.Stride, f.Pixels, f.YInvert = w, h, w*4, pixels, false
-	return f
 }
 
 func (s *shellUI) createWorkspaceOnMonitor(monitor string) {

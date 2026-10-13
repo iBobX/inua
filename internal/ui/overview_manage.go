@@ -162,6 +162,7 @@ func (s *shellUI) bindOverviewManagement() {
 					if o.hint != nil {
 						o.hint.SetText(i18n.Tf("%s · %s · Middle click: close", w.Title, w.Class))
 					}
+					s.updateOverviewCapture()
 					return
 				}
 			}

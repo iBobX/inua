@@ -28,13 +28,13 @@ type Frame struct {
 // Stream is a live preview worker. SetTargets replaces the capture list;
 // frame callbacks run on the worker goroutine.
 type Stream struct {
-	targets chan []string
+	targets chan captureTargets
 	cancel  context.CancelFunc
 }
 
 func Start(ctx context.Context, targets []string, onFrame func(Frame), onError func(error)) *Stream {
 	workerCtx, cancel := context.WithCancel(ctx)
-	s := &Stream{targets: make(chan []string, 1), cancel: cancel}
+	s := &Stream{targets: make(chan captureTargets, 1), cancel: cancel}
 	s.SetTargets(targets)
 	go func() {
 		if err := run(workerCtx, s.targets, onFrame); err != nil && onError != nil && workerCtx.Err() == nil {
@@ -45,10 +45,16 @@ func Start(ctx context.Context, targets []string, onFrame func(Frame), onError f
 }
 
 func (s *Stream) SetTargets(targets []string) {
+	s.SetTargetsWithPriority(targets, nil)
+}
+
+// SetTargetsWithPriority refreshes selected-workspace windows first while
+// continuing to refresh the other visible previews at a lower rate.
+func (s *Stream) SetTargetsWithPriority(targets, priority []string) {
 	if s == nil {
 		return
 	}
-	copyTargets := append([]string(nil), targets...)
+	copyTargets := captureTargets{addresses: append([]string(nil), targets...), priority: append([]string(nil), priority...)}
 	select {
 	case s.targets <- copyTargets:
 	default:
@@ -92,7 +98,7 @@ type client struct {
 	mappings         map[uint32]uint32
 	foreignHandles   map[uint32]bool
 	frames           map[uint32]*frameState
-	buffers          map[string]*buffer
+	bufs             []*buffer // by last use, newest first; at most keepBuffers
 }
 
 func socketPath() (string, error) {
@@ -110,7 +116,7 @@ func socketPath() (string, error) {
 	return filepath.Join(runtime, name), nil
 }
 
-func run(ctx context.Context, updates <-chan []string, onFrame func(Frame)) error {
+func run(ctx context.Context, updates <-chan captureTargets, onFrame func(Frame)) error {
 	path, err := socketPath()
 	if err != nil {
 		return err
@@ -120,40 +126,25 @@ func run(ctx context.Context, updates <-chan []string, onFrame func(Frame)) erro
 		return fmt.Errorf("connect Wayland: %w", err)
 	}
 	defer conn.Close()
-	c := &client{conn: conn, next: 6, frames: map[uint32]*frameState{}, buffers: map[string]*buffer{}, handles: map[string]uint32{}, mappings: map[uint32]uint32{}, foreignHandles: map[uint32]bool{}}
+	c := &client{conn: conn, next: 6, frames: map[uint32]*frameState{}, handles: map[string]uint32{}, mappings: map[uint32]uint32{}, foreignHandles: map[uint32]bool{}}
 	defer c.releaseBuffers()
 	if err := c.init(); err != nil {
 		return err
 	}
-	targets := []string{}
-	next := 0
-	tick := time.NewTicker(120 * time.Millisecond)
+	schedule := captureSchedule{}
+	tick := time.NewTicker(16 * time.Millisecond)
 	defer tick.Stop()
 	for {
 		select {
 		case <-ctx.Done():
 			return nil
 		case t := <-updates:
-			targets = unique(t)
-			keep := map[string]bool{}
-			for _, a := range targets {
-				keep[a] = true
-			}
-			for a, b := range c.buffers {
-				if !keep[a] {
-					c.destroyBuffer(b)
-					delete(c.buffers, a)
-				}
-			}
+			schedule.set(t)
 		case <-tick.C:
-			if len(targets) == 0 {
+			a := schedule.next(time.Now())
+			if a == "" {
 				continue
 			}
-			if next >= len(targets) {
-				next = 0
-			}
-			a := targets[next]
-			next++
 			if err := c.capture(a, onFrame); err != nil {
 				if ctx.Err() != nil {
 					return nil
@@ -294,6 +285,7 @@ func (c *client) capture(address string, onFrame func(Frame)) error {
 	}
 	id := c.alloc()
 	c.frames[id] = &frameState{id: id, address: address}
+	var cur *buffer // the buffer this frame is copied into
 	if err := c.send(c.manager, 2, u32(id), u32(0), u32(handle)); err != nil {
 		delete(c.frames, id)
 		return err
@@ -336,25 +328,18 @@ func (c *client) capture(address string, onFrame func(Frame)) error {
 				c.destroyFrame(id)
 				return errors.New("invalid Hyprland capture buffer size")
 			}
-			b := c.buffers[address]
-			if b == nil || b.w != f.w || b.h != f.h || b.stride != f.stride || b.format != f.format {
-				if b != nil {
-					c.destroyBuffer(b)
-				}
-				b, err = c.newBuffer(*f)
-				if err != nil {
-					c.destroyFrame(id)
-					return err
-				}
-				c.buffers[address] = b
+			b, err := c.bufferFor(*f)
+			if err != nil {
+				c.destroyFrame(id)
+				return err
 			}
+			cur = b
 			if err = c.send(id, 0, u32(b.id), u32(1)); err != nil {
 				c.destroyFrame(id)
 				return err
 			}
 		case 3: // ready
-			b := c.buffers[address]
-			if b != nil && onFrame != nil {
+			if b := cur; b != nil && onFrame != nil {
 				onFrame(Frame{Address: address, Width: b.w, Height: b.h, Stride: b.stride, Format: b.format, YInvert: f.flags&1 != 0, Pixels: b.data})
 			}
 			c.destroyFrame(id)
@@ -414,9 +399,37 @@ func (c *client) destroyBuffer(b *buffer) {
 	}
 }
 func (c *client) releaseBuffers() {
-	for _, b := range c.buffers {
+	for _, b := range c.bufs {
 		c.destroyBuffer(b)
 	}
+	c.bufs = nil
+}
+
+// keepBuffers is how many shared-memory buffers the client keeps. Captures
+// run one at a time and onFrame copies the pixels out, so windows of one size
+// share a buffer; a few sizes cover the usual mix without reallocating on
+// each capture, or holding one buffer per window.
+const keepBuffers = 4
+
+// bufferFor is a buffer for frame f's size and format, the last used first.
+func (c *client) bufferFor(f frameState) (*buffer, error) {
+	for i, b := range c.bufs {
+		if b.w == f.w && b.h == f.h && b.stride == f.stride && b.format == f.format {
+			copy(c.bufs[1:i+1], c.bufs[:i])
+			c.bufs[0] = b
+			return b, nil
+		}
+	}
+	b, err := c.newBuffer(f)
+	if err != nil {
+		return nil, err
+	}
+	c.bufs = append([]*buffer{b}, c.bufs...)
+	if len(c.bufs) > keepBuffers {
+		c.destroyBuffer(c.bufs[keepBuffers])
+		c.bufs = c.bufs[:keepBuffers]
+	}
+	return b, nil
 }
 func (c *client) alloc() uint32 { id := c.next; c.next++; return id }
 

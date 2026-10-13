@@ -240,16 +240,22 @@ func Run(opts Options) int {
 		log.Printf("gtk4-layer-shell %s preloaded", layershell.Version())
 	}
 
+	socketPath := ipc.SocketPath(opts.Instance)
+	ln, err := ipc.Listen(socketPath)
+	if err != nil {
+		log.Printf("ipc: %v", err)
+		return 1
+	}
+
 	app := gtk.NewApplication(shell.AppID, gio.GApplicationNonUniqueValue)
 	s := &shellUI{opts: opts, cfg: opts.Config, app: app, bars: map[uintptr]*bar{}}
 	s.pass.slot = make(chan struct{}, 1) // before the control socket serves
 	activate := func(gio.Application) { s.start() }
 	app.ConnectActivate(&activate)
 
-	socketPath := ipc.SocketPath(opts.Instance)
 	go func() {
 		log.Printf("ipc: serving on %s", socketPath)
-		err := ipc.Serve(context.Background(), socketPath, func(_ context.Context, req ipc.Request) ipc.Response {
+		err := ipc.ServeListener(context.Background(), ln, socketPath, func(_ context.Context, req ipc.Request) ipc.Response {
 			if req.Op == "call" && req.Target == "password" {
 				return s.askPassword(req) // waits for the user, off the main loop
 			}

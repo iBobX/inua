@@ -39,24 +39,25 @@ func SocketPath(instance string) string {
 	return filepath.Join(rundir.Path(), instance+".sock")
 }
 
-// Serve listens on path until ctx ends. A stale socket left by a dead process
+// Listen creates a unix listener on path. A stale socket left by a dead process
 // is replaced; a live one is an error so two shells do not share a name.
-func Serve(ctx context.Context, path string, h HandlerFunc) error {
+func Listen(path string) (net.Listener, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-		return err
+		return nil, err
 	}
 	if err := rundir.Check(filepath.Dir(path)); err != nil { // no one else's socket, nor a link to one
-		return err
+		return nil, err
 	}
 	if conn, err := net.Dial("unix", path); err == nil {
 		conn.Close()
-		return fmt.Errorf("%s: another instance is running", path)
+		return nil, fmt.Errorf("%s: another instance is running", path)
 	}
 	os.Remove(path)
-	ln, err := net.Listen("unix", path)
-	if err != nil {
-		return err
-	}
+	return net.Listen("unix", path)
+}
+
+// ServeListener accepts connections on ln until ctx ends.
+func ServeListener(ctx context.Context, ln net.Listener, path string, h HandlerFunc) error {
 	stop := context.AfterFunc(ctx, func() { ln.Close() })
 	defer stop()
 	defer os.Remove(path)
@@ -71,6 +72,15 @@ func Serve(ctx context.Context, path string, h HandlerFunc) error {
 		}
 		go serveConn(ctx, conn, h)
 	}
+}
+
+// Serve listens on path until ctx ends.
+func Serve(ctx context.Context, path string, h HandlerFunc) error {
+	ln, err := Listen(path)
+	if err != nil {
+		return err
+	}
+	return ServeListener(ctx, ln, path, h)
 }
 
 func serveConn(ctx context.Context, conn net.Conn, h HandlerFunc) {
