@@ -2602,6 +2602,46 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                     <child>
                                       <object class="GtkBox">
                                         <style>
+                                          <class name="field"/>
+                                        </style>
+                                        <property name="orientation">1</property>
+                                        <property name="spacing">6</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="label"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Never record copies from</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="clip_sensitive">
+                                            <property name="name">clip_sensitive</property>
+                                            <style>
+                                              <class name="mono-entry"/>
+                                            </style>
+                                            <property name="placeholder-text" translatable="yes">pass, keepassxc, …</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="sub"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from</property>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
                                           <class name="row"/>
                                         </style>
                                         <property name="spacing">16</property>
@@ -2812,12 +2852,23 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           </object>
                                         </child>
                                         <child>
+                                          <object class="GtkButton" id="clip_reveal">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">clip_reveal</property>
+                                            <property name="label" translatable="yes">Reveal in File Manager</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
                                           <object class="GtkButton" id="clip_clear">
+                                            <style>
+                                              <class name="outlined"/>
+                                              <class name="danger"/>
+                                            </style>
                                             <property name="name">clip_clear</property>
                                             <property name="label" translatable="yes">Clear the history</property>
-                                            <style>
-                                              <class name="button-danger"/>
-                                            </style>
                                             <property name="valign">3</property>
                                           </object>
                                         </child>

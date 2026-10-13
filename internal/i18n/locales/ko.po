@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-keyring/main.go:81
 #: internal/ui/settings_keyring.go:152
-#: ui/settings.ui:2852
+#: ui/settings.ui:2903
 msgid "Keyring"
 msgstr "키링"
 
@@ -941,7 +941,7 @@ msgstr "모델"
 #: internal/appui/tailscale.go:628
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
-#: ui/settings.ui:3384
+#: ui/settings.ui:3435
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "이름"
@@ -4615,7 +4615,7 @@ msgstr "배너 알림 음소거됨"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:3601
+#: ui/settings.ui:3652
 msgid "Off"
 msgstr "꺼짐"
 
@@ -4819,7 +4819,11 @@ msgstr[0] "%d개 · 클릭하여 복사 · Esc로 닫기"
 msgid "[DETAILS]"
 msgstr "[상세]"
 
-#: internal/ui/clipboard.go:498
+#: internal/ui/clipboard.go:499
+msgid "[COPIED %s FROM %s]"
+msgstr "[%s에 %s에서 복사]"
+
+#: internal/ui/clipboard.go:501
 msgid "[COPIED %s]"
 msgstr "[%s 복사]"
 
@@ -5168,80 +5172,80 @@ msgstr "스크린샷이 복사되었습니다."
 msgid "Screenshot taken"
 msgstr "촬영된 스크린샷"
 
-#: internal/ui/settings.go:222
+#: internal/ui/settings.go:228
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:240
-#: internal/ui/settings.go:559
+#: internal/ui/settings.go:246
+#: internal/ui/settings.go:571
 msgid "%d%%"
 msgstr "%d%%"
 
-#: internal/ui/settings.go:569
-#: internal/ui/settings.go:596
+#: internal/ui/settings.go:581
+#: internal/ui/settings.go:608
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
 
-#: internal/ui/settings.go:595
+#: internal/ui/settings.go:607
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:597
+#: internal/ui/settings.go:609
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:598
+#: internal/ui/settings.go:610
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:599
+#: internal/ui/settings.go:611
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:665
+#: internal/ui/settings.go:690
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:691
+#: internal/ui/settings.go:716
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:693
+#: internal/ui/settings.go:718
 msgid "Images"
 msgstr "이미지"
 
-#: internal/ui/settings.go:732
+#: internal/ui/settings.go:757
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:734
+#: internal/ui/settings.go:759
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:736
+#: internal/ui/settings.go:761
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:754
+#: internal/ui/settings.go:779
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:770
+#: internal/ui/settings.go:795
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:783
+#: internal/ui/settings.go:808
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:784
+#: internal/ui/settings.go:809
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:785
+#: internal/ui/settings.go:810
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
@@ -5475,7 +5479,7 @@ msgid "key not saved"
 msgstr "키를 저장하지 못함"
 
 #: internal/ui/settings_keyring.go:96
-#: ui/settings.ui:3127
+#: ui/settings.ui:3178
 msgid "<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>읽기<span alpha='55%'>]</span>"
 
@@ -5591,7 +5595,7 @@ msgid "The record of reads cannot be read: %s"
 msgstr "읽기 기록을 읽을 수 없음: %s"
 
 #: internal/ui/settings_keyring.go:236
-#: ui/settings.ui:3053
+#: ui/settings.ui:3104
 msgid "No app has read a secret yet."
 msgstr "아직 비밀을 읽은 앱이 없습니다."
 
@@ -5686,7 +5690,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 업그레이드: inua 업그레이드"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:4190
+#: ui/settings.ui:4241
 msgid "Upgrade"
 msgstr "업그레이드"
 
@@ -6464,260 +6468,276 @@ msgstr "클립보드 기록 보관"
 msgid "Text and images you copy, kept on this computer; a password manager's copies are left out"
 msgstr "복사한 텍스트와 이미지를 이 컴퓨터에 보관합니다. 비밀번호 관리자의 복사는 제외됩니다"
 
-#: ui/settings.ui:2618
+#: ui/settings.ui:2614
+msgid "Never record copies from"
+msgstr "기록하지 않을 복사 출처"
+
+#: ui/settings.ui:2624
+msgid "pass, keepassxc, …"
+msgstr "pass, keepassxc, …"
+
+#: ui/settings.ui:2632
+msgid "Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from"
+msgstr "프로그램 또는 창 클래스를 쉼표로 구분합니다. wl-copy를 실행한 프로그램과 포커스된 창을 확인합니다. 기록의 항목에 포인터를 올리면 출처를 볼 수 있습니다"
+
+#: ui/settings.ui:2658
 msgid "Show in top bar"
 msgstr "상단 바에 표시"
 
-#: ui/settings.ui:2627
+#: ui/settings.ui:2667
 msgid "A button in the status area opens the clipboard history"
 msgstr "상태 영역의 버튼으로 클립보드 기록을 엽니다"
 
-#: ui/settings.ui:2661
+#: ui/settings.ui:2701
 msgid "Paste on click"
 msgstr "클릭하여 붙여넣기"
 
-#: ui/settings.ui:2670
+#: ui/settings.ui:2710
 msgid "Clicking an entry pastes it into the window you were in; off only copies it"
 msgstr "항목을 클릭하면 이전 창에 붙여넣습니다. 끄면 복사만 합니다"
 
-#: ui/settings.ui:2704
+#: ui/settings.ui:2744
 msgid "Panel opacity"
 msgstr "패널 불투명도"
 
-#: ui/settings.ui:2755
+#: ui/settings.ui:2795
 msgid "History limit"
 msgstr "기록 한도"
 
-#: ui/settings.ui:2764
+#: ui/settings.ui:2804
 msgid "How many entries it keeps; the oldest go first"
 msgstr "보관할 항목 수. 오래된 것부터 지워집니다"
 
-#: ui/settings.ui:2798
+#: ui/settings.ui:2838
 msgid "History storage"
 msgstr "기록 저장 공간"
 
-#: ui/settings.ui:2807
+#: ui/settings.ui:2847
 msgid "Loading history…"
 msgstr "기록 불러오는 중…"
 
-#: ui/settings.ui:2817
+#: ui/settings.ui:2860
+msgid "Reveal in File Manager"
+msgstr "파일 관리자에서 보기"
+
+#: ui/settings.ui:2871
 msgid "Clear the history"
 msgstr "기록 지우기"
 
-#: ui/settings.ui:2893
+#: ui/settings.ui:2944
 msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>키링<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2901
+#: ui/settings.ui:2952
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "앱의 비밀: 브라우저 키, Wi-Fi 비밀번호, API 키"
 
-#: ui/settings.ui:2931
+#: ui/settings.ui:2982
 msgid "Secret Service"
 msgstr "Secret Service"
 
-#: ui/settings.ui:2967
+#: ui/settings.ui:3018
 msgid "Tell when an app reads a secret"
 msgstr "앱이 비밀을 읽으면 알림"
 
-#: ui/settings.ui:2976
+#: ui/settings.ui:3027
 msgid "A notification for each app's first read since inua-keyring started"
 msgstr "inua-keyring 시작 후 앱마다 처음 읽을 때 알림"
 
-#: ui/settings.ui:3021
+#: ui/settings.ui:3072
 msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>읽기<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3029
+#: ui/settings.ui:3080
 msgid "Every secret inua-keyring handed out and passphrase asked for, newest first"
 msgstr "inua-keyring이 내준 모든 비밀과 요청된 암호 문구, 최신순"
 
-#: ui/settings.ui:3075
+#: ui/settings.ui:3126
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: ui/settings.ui:3139
+#: ui/settings.ui:3190
 msgid "Close"
 msgstr "닫기"
 
-#: ui/settings.ui:3171
+#: ui/settings.ui:3222
 msgid "Shortcuts"
 msgstr "단축키"
 
-#: ui/settings.ui:3201
+#: ui/settings.ui:3252
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "새로운 단축키를 누른다. Esc는 취소합니다. 백스페이스는 이 기능을 끕니다."
 
-#: ui/settings.ui:3230
-#: ui/settings.ui:4089
+#: ui/settings.ui:3281
+#: ui/settings.ui:4140
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3238
+#: ui/settings.ui:3289
 msgid "The shell's own actions"
 msgstr "쉘 자체의 동작"
 
-#: ui/settings.ui:3287
+#: ui/settings.ui:3338
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>스크린샷<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3295
+#: ui/settings.ui:3346
 msgid "With grim and slurp"
 msgstr "grim 및 slurp 사용"
 
-#: ui/settings.ui:3344
+#: ui/settings.ui:3395
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>맞춤<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3352
+#: ui/settings.ui:3403
 msgid "Your own commands"
 msgstr "자신만의 명령"
 
-#: ui/settings.ui:3394
+#: ui/settings.ui:3445
 msgid "Command, e.g. kitty"
 msgstr "명령(예: kitty)"
 
-#: ui/settings.ui:3403
+#: ui/settings.ui:3454
 msgid "Add…"
 msgstr "추가..."
 
-#: ui/settings.ui:3404
+#: ui/settings.ui:3455
 msgid "Add, then press its shortcut"
 msgstr "추가한 후 바로가기를 누르세요."
 
-#: ui/settings.ui:3439
+#: ui/settings.ui:3490
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>하이프랜드<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3447
+#: ui/settings.ui:3498
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "Hyprland.conf의 기타 바로가기"
 
-#: ui/settings.ui:3492
+#: ui/settings.ui:3543
 msgid "Keyboard"
 msgstr "키보드"
 
-#: ui/settings.ui:3540
+#: ui/settings.ui:3591
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>키<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3548
+#: ui/settings.ui:3599
 msgid "Every keyboard"
 msgstr "모든 키보드"
 
-#: ui/settings.ui:3578
+#: ui/settings.ui:3629
 msgid "Swap Ctrl and Alt"
 msgstr "Ctrl과 Alt를 교환합니다."
 
-#: ui/settings.ui:3587
+#: ui/settings.ui:3638
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt는 Ctrl 역할을 하고, Ctrl은 Alt 역할을 합니다."
 
-#: ui/settings.ui:3602
+#: ui/settings.ui:3653
 msgid "Left side"
 msgstr "왼쪽"
 
-#: ui/settings.ui:3603
+#: ui/settings.ui:3654
 msgid "Both sides"
 msgstr "양쪽"
 
-#: ui/settings.ui:3630
-#: ui/settings.ui:3653
+#: ui/settings.ui:3681
+#: ui/settings.ui:3704
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
-#: ui/settings.ui:3639
+#: ui/settings.ui:3690
 msgid "What the Caps Lock key does"
 msgstr "Caps Lock 키의 기능"
 
-#: ui/settings.ui:3654
+#: ui/settings.ui:3705
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:3655
+#: ui/settings.ui:3706
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:3693
-#: ui/settings.ui:3975
+#: ui/settings.ui:3744
+#: ui/settings.ui:4026
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>소스<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3701
-#: ui/settings.ui:3983
+#: ui/settings.ui:3752
+#: ui/settings.ui:4034
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua는 이것을 Hyprland의 inua.conf에 씁니다."
 
-#: ui/settings.ui:3752
-#: ui/settings.ui:4019
+#: ui/settings.ui:3803
+#: ui/settings.ui:4070
 msgid "Use hyprland.conf"
 msgstr "Hyprland.conf를 사용하십시오."
 
-#: ui/settings.ui:3753
+#: ui/settings.ui:3804
 msgid "Stop setting keyboard options in inua"
 msgstr "inua에서 키보드 옵션 설정을 중지합니다."
 
-#: ui/settings.ui:3784
+#: ui/settings.ui:3835
 msgid "Mouse & Touch"
 msgstr "마우스 및 터치패드"
 
-#: ui/settings.ui:3832
+#: ui/settings.ui:3883
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>포인터<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3840
+#: ui/settings.ui:3891
 msgid "Every touchpad"
 msgstr "모든 터치패드"
 
-#: ui/settings.ui:3870
+#: ui/settings.ui:3921
 msgid "Pointer speed"
 msgstr "포인터 속도"
 
-#: ui/settings.ui:3921
+#: ui/settings.ui:3972
 msgid "Acceleration"
 msgstr "가속"
 
-#: ui/settings.ui:3930
+#: ui/settings.ui:3981
 msgid "Faster swipes move the pointer further"
 msgstr "더 빠르게 스와이프하면 포인터가 더 멀리 이동합니다."
 
-#: ui/settings.ui:4020
+#: ui/settings.ui:4071
 msgid "Stop setting the touchpad in inua"
 msgstr "inua에서 터치패드 설정을 중지합니다."
 
-#: ui/settings.ui:4051
+#: ui/settings.ui:4102
 msgid "About"
 msgstr "소개"
 
-#: ui/settings.ui:4097
+#: ui/settings.ui:4148
 msgid "The version, and new releases"
 msgstr "버전 및 새 릴리스"
 
-#: ui/settings.ui:4127
+#: ui/settings.ui:4178
 msgid "Version"
 msgstr "버전"
 
-#: ui/settings.ui:4163
+#: ui/settings.ui:4214
 msgid "Updates"
 msgstr "업데이트"
 
-#: ui/settings.ui:4199
+#: ui/settings.ui:4250
 msgid "Check for updates"
 msgstr "업데이트 확인"
 
-#: ui/settings.ui:4225
+#: ui/settings.ui:4276
 msgid "Check every day"
 msgstr "매일 확인"
 
-#: ui/settings.ui:4234
+#: ui/settings.ui:4285
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "새 릴리스가 출시되면 업그레이드 버튼과 함께 알림이 표시됩니다."
 
-#: ui/settings.ui:4279
+#: ui/settings.ui:4330
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4287
+#: ui/settings.ui:4338
 msgid "What the latest release changed"
 msgstr "최신 릴리스에서 변경된 사항"
 

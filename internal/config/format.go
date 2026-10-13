@@ -23,7 +23,7 @@ func Format(c Config) string {
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates,
-		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick,
+		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
@@ -327,6 +327,12 @@ limit = %d
 # Clicking an entry pastes it into the window you were in; false only
 # copies it.
 paste_on_click = %t
+
+# Programs and window classes whose copies are never recorded, in any
+# case. Wayland does not say who copied: inua looks at the job that ran
+# wl-copy (pass -c, passmenu) and at the focused window. Hover over an
+# entry in the panel to see where it came from.
+sensitive_sources = %s
 
 [dock]
 # Show the app dock on each monitor: pinned apps, then the others with open

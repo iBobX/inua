@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -21,6 +23,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/system"
 )
 
 // settings is the settings window (settings.ui), a normal toplevel built
@@ -42,12 +45,13 @@ type settings struct {
 	dockSize, dockPosition                              gtk.DropDown
 	dockPinned                                          gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
+	clipSensitive                                       gtk.Entry
 	bgFit, ws, launchMode, swap, caps, icons, banner    gtk.DropDown
 	clipLimit                                           gtk.DropDown
 	clipLimits                                          []int // clipLimit's choices
 	tpSpeed, clipOpacity                                gtk.Scale
 	clipOpacityVal, clipStats                           gtk.Label
-	clipClear                                           gtk.Button
+	clipClear, clipReveal                               gtk.Button
 
 	// Keyboard and touchpad: where the settings come from, and why they
 	// would do nothing.
@@ -210,6 +214,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			_ = clipboard.Clear(s.clipboard.path)
 			s.refreshClipboard()
 			s.updateClipboardStats()
+		case name == "clip_reveal":
+			go revealFile(s.clipboard.path)
 		case strings.HasPrefix(name, "pin-"):
 			action, id, _ := strings.Cut(strings.TrimPrefix(name, "pin-"), ":")
 			c.Dock.Pinned = movePinned(c.Dock.Pinned, id, action)
@@ -356,11 +362,13 @@ func (s *shellUI) openSettings() {
 	ui.Get("clip_bar", &st.clipBar)
 	ui.Get("clip_paste", &st.clipPaste)
 	ui.Get("clip_limit", &st.clipLimit)
+	ui.Get("clip_sensitive", &st.clipSensitive)
 	st.clipLimits = nil // a new dropdown, without its choices
 	ui.Get("clip_opacity", &st.clipOpacity)
 	ui.Get("clip_opacity_val", &st.clipOpacityVal)
 	ui.Get("clip_stats", &st.clipStats)
 	ui.Get("clip_clear", &st.clipClear)
+	ui.Get("clip_reveal", &st.clipReveal)
 	ui.Get("swap", &st.swap)
 	ui.Get("caps", &st.caps)
 	ui.Get("tp_speed", &st.tpSpeed)
@@ -384,7 +392,7 @@ func (s *shellUI) openSettings() {
 	s.getKeyringSettings(ui)
 	ui.Close()
 
-	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot} {
+	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot, &st.clipSensitive} {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
@@ -395,7 +403,7 @@ func (s *shellUI) openSettings() {
 	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
-	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear} {
+	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	st.tpSpeed.ConnectChangeValue(&s.onSettingsScale)
@@ -528,6 +536,10 @@ func (s *shellUI) showSettings() {
 	setEntry(&st.terminal, c.Launcher.Terminal)
 	setEntry(&st.lock, c.Control.Lock)
 	setEntry(&st.screenshot, c.Control.Screenshot)
+	// Only when it says otherwise: "pass, " being typed is "pass".
+	if !slices.Equal(sourceList(st.clipSensitive.GetText()), c.Clipboard.SensitiveSources) {
+		st.clipSensitive.SetText(strings.Join(c.Clipboard.SensitiveSources, ", "))
+	}
 	st.bgFit.SetSelected(uint32(max(0, slices.Index(fitChoices, c.Background.Fit))))
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
@@ -599,6 +611,17 @@ func (s *shellUI) updateClipboardStats() {
 		i18n.Tf("%.1f KB", float64(size)/1024)))
 }
 
+// sourceList is the names in a comma-separated list, without blanks.
+func sourceList(text string) []string {
+	names := []string{}
+	for name := range strings.SplitSeq(text, ",") {
+		if name = strings.TrimSpace(name); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
 // setEntry changes an entry's text only if it differs, so the caret stays
 // where it is while the user types.
 func setEntry(e *gtk.Entry, text string) {
@@ -628,6 +651,8 @@ func (s *shellUI) settingsEntryChanged(e *gtk.Entry) {
 		c.Control.Lock = text
 	case "screenshot":
 		c.Control.Screenshot = text
+	case "clip_sensitive":
+		c.Clipboard.SensitiveSources = sourceList(text)
 	case "bg_color":
 		valid = config.ValidColor(text)
 		c.Background.Color = text
@@ -811,4 +836,31 @@ func movePinned(pinned []string, id, action string) []string {
 		out[i], out[i+1] = out[i+1], out[i]
 	}
 	return out
+}
+
+// revealFile shows path selected in the file manager
+// (org.freedesktop.FileManager1), else opens its folder; a file not made
+// yet shows its folder. It waits on the bus: run it off the main thread.
+func revealFile(path string) {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		log.Printf("reveal: %v", err)
+		return
+	}
+	method, target := "ShowItems", path
+	if _, err := os.Stat(path); err != nil {
+		method, target = "ShowFolders", dir
+	}
+	if conn, err := system.SessionBus(); err == nil {
+		uri := (&url.URL{Scheme: "file", Path: target}).String()
+		err = conn.Object("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1").
+			Call("org.freedesktop.FileManager1."+method, 0, []string{uri}, "").Err
+		conn.Close()
+		if err == nil {
+			return
+		}
+	}
+	if err := exec.Command("xdg-open", dir).Run(); err != nil {
+		log.Printf("reveal: %v", err)
+	}
 }

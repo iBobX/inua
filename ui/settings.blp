@@ -1855,6 +1855,34 @@ ApplicationWindow settings {
                   Separator {}
 
                   Box {
+                    styles ["field"]
+                    orientation: vertical;
+                    spacing: 6;
+
+                    Label {
+                      styles ["label"]
+                      label:  _("Never record copies from");
+                      xalign: 0;
+                    }
+
+                    // clipboard.sensitive_sources, separated by commas.
+                    Entry clip_sensitive {
+                      name: "clip_sensitive";
+                      styles ["mono-entry"]
+                      placeholder-text:  _("pass, keepassxc, …");
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label:  _("Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
                     styles ["row"]
                     spacing: 16;
 
@@ -2004,10 +2032,17 @@ ApplicationWindow settings {
                       }
                     }
 
+                    Button clip_reveal {
+                      styles ["outlined"]
+                      name: "clip_reveal";
+                      label:  _("Reveal in File Manager");
+                      valign: center;
+                    }
+
                     Button clip_clear {
+                      styles ["outlined", "danger"]
                       name: "clip_clear";
                       label:  _("Clear the history");
-                      styles ["button-danger"]
                       valign: center;
                     }
                   }

@@ -131,8 +131,8 @@ keeps none of it.
 The clipboard button in the top bar (or a shortcut set for "Clipboard
 history", or `inua call clipboard toggle|open|close`) opens a searchable
 list of the text and images you copied, in a sidebar like the notification
-center's. Hover over an entry for its text or image and when it was copied;
-click it to paste into the window you were in, or use its buttons to only
+center's. Hover over an entry for its text or image, when it was copied
+and where from; click it to paste into the window you were in, or use its buttons to only
 copy it, paste an image's file path, or delete it. Escape or a click
 outside closes the panel.
 
@@ -144,6 +144,18 @@ selection to `inua clipboard capture`; it keeps the newest
 images over 32 MiB are not kept, nor a password manager's copies when it
 marks them as sensitive (`CLIPBOARD_STATE=sensitive`). Deleting, clearing
 or falling past the limit removes an image's file too.
+
+Copies from the programs and window classes in
+`clipboard.sensitive_sources` (Settings → Clipboard, "Never record copies
+from") are not kept either; it lists pass, gopass, passmenu, rofi-pass,
+KeePassXC, Bitwarden and 1Password by default. Wayland does not say which
+program copied, so the capture looks for itself: a `wl-copy` started in
+the last few seconds serves the selection, and the programs in the job
+that ran it count, with what they run under. That finds `pass -c`, which
+keeps a process there while the password is on the clipboard. The focused
+window counts too, by its class and program. An app that copies from its
+own window while another is focused, or a `wl-copy` run from a program not
+listed, is not recognised.
 `clipboard.enable = false` (Settings → Clipboard) records nothing, and
 what is on the clipboard when recording starts (the shell starting, or the
 switch turned on) is not kept either.

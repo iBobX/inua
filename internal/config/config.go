@@ -365,7 +365,16 @@ type Clipboard struct {
 	// PasteOnClick pastes a clicked entry into the window that was
 	// focused; off, it is only copied.
 	PasteOnClick bool `toml:"paste_on_click"`
+	// SensitiveSources are programs and window classes whose copies are
+	// not recorded, in any case: clipboard.FindSource says where a copy
+	// comes from.
+	SensitiveSources []string `toml:"sensitive_sources"`
 }
+
+// DefaultSensitiveSources are the password managers whose copies are not
+// recorded unless the settings say otherwise. KeePassXC also marks its
+// copies as sensitive.
+var DefaultSensitiveSources = []string{"pass", "gopass", "passmenu", "rofi-pass", "keepassxc", "org.keepassxc.KeePassXC", "bitwarden", "1password"}
 
 // ClipboardLimitChoices are the history limits the settings window offers.
 var ClipboardLimitChoices = []int{50, 100, 300, 500}
@@ -440,7 +449,7 @@ func Default() Config {
 		Background: Background{Enable: true, Fit: "cover"},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
-		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true},
+		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},

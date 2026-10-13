@@ -494,8 +494,11 @@ func (s *shellUI) showClipboardDetail(row *gtk.Widget, entry clipboard.Entry) {
 	image := entry.Type == "image"
 	c.preview.SetVisible(image)
 	c.detailTitle.SetText(i18n.T("[DETAILS]"))
-	if !entry.Time.IsZero() {
-		c.detailTitle.SetText(i18n.Tf("[COPIED %s]", strings.ToUpper(readTime(entry.Time, time.Now()))))
+	switch when := strings.ToUpper(readTime(entry.Time, time.Now())); {
+	case !entry.Time.IsZero() && entry.Source != "":
+		c.detailTitle.SetText(i18n.Tf("[COPIED %s FROM %s]", when, strings.ToUpper(entry.Source)))
+	case !entry.Time.IsZero():
+		c.detailTitle.SetText(i18n.Tf("[COPIED %s]", when))
 	}
 	if image {
 		c.preview.SetFilename(entry.Path)

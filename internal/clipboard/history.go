@@ -37,6 +37,9 @@ type Entry struct {
 	MIME string    `json:"mime,omitempty"`
 	Path string    `json:"path,omitempty"` // an image's file
 	Time time.Time `json:"time,omitzero"`  // when it was copied
+	// Source is the program it seems to come from (see FindSource): "pass",
+	// "firefox"; "" when not known.
+	Source string `json:"source,omitempty"`
 }
 
 // HistoryPath is the history: $XDG_STATE_HOME/inua/clipboard-history.json
@@ -181,15 +184,18 @@ func SkipFirst(path string) error {
 
 // Capture adds the selection on r, as wl-paste --watch hands it over, to
 // the history at path, keeping limit entries. Sensitive selections (a
-// password manager's, CLIPBOARD_STATE=sensitive), empty ones, text over
-// MaxText and images over MaxImage are not kept. The bytes never pass
-// through a shell or a command line.
-func Capture(path string, limit int, r io.Reader) error {
+// password manager's, CLIPBOARD_STATE=sensitive, or from a program listed
+// as sensitive), empty ones, text over MaxText and images over MaxImage
+// are not kept. The bytes never pass through a shell or a command line.
+func Capture(path string, limit int, from Source, r io.Reader) error {
 	if os.Remove(path+".skip") == nil {
 		return nil // see SkipFirst
 	}
 	switch os.Getenv("CLIPBOARD_STATE") {
 	case "sensitive", "nil", "clear":
+		return nil
+	}
+	if from.Sensitive {
 		return nil
 	}
 	data, err := io.ReadAll(io.LimitReader(r, MaxImage+1))
@@ -199,7 +205,7 @@ func Capture(path string, limit int, r io.Reader) error {
 	if len(data) == 0 || len(data) > MaxImage {
 		return nil
 	}
-	entry := Entry{Type: "text", Time: time.Now()}
+	entry := Entry{Type: "text", Time: time.Now(), Source: from.Name}
 	if mime := http.DetectContentType(data); strings.HasPrefix(mime, "image/") {
 		dir := imageDir(path)
 		if err := os.MkdirAll(dir, 0o700); err != nil {

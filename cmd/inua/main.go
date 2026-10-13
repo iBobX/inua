@@ -194,7 +194,28 @@ func cmdClipboardCapture(args []string) error {
 		io.Copy(io.Discard, os.Stdin)
 		return nil
 	}
-	return clipboard.Capture(path, c.Clipboard.Limit, os.Stdin)
+	from := clipboard.FindSource(focusedWindow(), c.Clipboard.SensitiveSources)
+	if from.Sensitive {
+		io.Copy(io.Discard, os.Stdin) // and Capture keeps nothing
+	}
+	return clipboard.Capture(path, c.Clipboard.Limit, from, os.Stdin)
+}
+
+// focusedWindow is the window focused now, as Hyprland names it; none
+// without Hyprland.
+func focusedWindow() clipboard.Window {
+	var w clipboard.Window
+	paths, err := hypr.PathsFromEnv()
+	if err != nil {
+		return w
+	}
+	c := hypr.NewClient(paths)
+	c.Timeout = 300 * time.Millisecond // a copy is not held up for long
+	data, err := c.Request(context.Background(), "j/activewindow")
+	if err == nil {
+		json.Unmarshal(data, &w)
+	}
+	return w
 }
 
 // cmdConfig checks the settings file the way inua-shell reads it.

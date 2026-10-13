@@ -15,7 +15,7 @@ func TestTextCapturePreservesPayloadAndDeduplicates(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "clipboard-history.json")
 	text := " 中文\n$(never execute) `nor this` 100%\n"
 	for range 2 {
-		if err := Capture(path, DefaultLimit, strings.NewReader(text)); err != nil {
+		if err := Capture(path, DefaultLimit, Source{}, strings.NewReader(text)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -33,7 +33,7 @@ func TestSensitiveClipboardIsNotStored(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "history.json")
 	for _, state := range []string{"sensitive", "nil", "clear"} {
 		t.Setenv("CLIPBOARD_STATE", state)
-		if err := Capture(path, DefaultLimit, strings.NewReader("do not store")); err != nil {
+		if err := Capture(path, DefaultLimit, Source{}, strings.NewReader("do not store")); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -51,7 +51,7 @@ func TestSkipFirst(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, text := range []string{"copied while off", "copied after"} {
-		if err := Capture(path, DefaultLimit, strings.NewReader(text)); err != nil {
+		if err := Capture(path, DefaultLimit, Source{}, strings.NewReader(text)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -64,7 +64,7 @@ func TestImageCapture(t *testing.T) {
 	t.Setenv("CLIPBOARD_STATE", "data")
 	path := filepath.Join(t.TempDir(), "history.json")
 	data := []byte("\x89PNG\r\n\x1a\nimage payload")
-	if err := Capture(path, DefaultLimit, bytes.NewReader(data)); err != nil {
+	if err := Capture(path, DefaultLimit, Source{}, bytes.NewReader(data)); err != nil {
 		t.Fatal(err)
 	}
 	entries, err := Read(path)
@@ -86,11 +86,11 @@ func TestCaptureLimits(t *testing.T) {
 	t.Setenv("CLIPBOARD_STATE", "data")
 	path := filepath.Join(t.TempDir(), "history.json")
 	for _, data := range [][]byte{[]byte(strings.Repeat("x", MaxText+1)), {0xff, 0xfe, 'a'}, nil} {
-		if err := Capture(path, DefaultLimit, bytes.NewReader(data)); err != nil {
+		if err := Capture(path, DefaultLimit, Source{}, bytes.NewReader(data)); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if err := Capture(path, DefaultLimit, strings.NewReader(strings.Repeat("y", MaxText))); err != nil {
+	if err := Capture(path, DefaultLimit, Source{}, strings.NewReader(strings.Repeat("y", MaxText))); err != nil {
 		t.Fatal(err)
 	}
 	if entries, _ := Read(path); len(entries) != 1 || len(entries[0].Text) != MaxText {
@@ -105,7 +105,7 @@ func TestLimitAndImageFiles(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "history.json")
 	png := func(n int) []byte { return fmt.Appendf([]byte("\x89PNG\r\n\x1a\n"), "image %d", n) }
 	for i := range 3 {
-		if err := Capture(path, 2, bytes.NewReader(png(i))); err != nil {
+		if err := Capture(path, 2, Source{}, bytes.NewReader(png(i))); err != nil {
 			t.Fatal(err)
 		}
 	}
