@@ -53,7 +53,7 @@ func TestStore(t *testing.T) {
 	if found := s.Search(Login, map[string]string{"application": "other"}); len(found) != 0 {
 		t.Errorf("search: %+v", found)
 	}
-	secret, ct, err := s.Secret(Login, it.ID)
+	secret, ct, err := s.Secret(Login, it.ID, "")
 	if err != nil || string(secret) != "new" || ct != "text/plain" {
 		t.Errorf("secret %q %q %v", secret, ct, err)
 	}
@@ -64,7 +64,7 @@ func TestStore(t *testing.T) {
 	if got := back.m["login/item"]; string(got) != base64.StdEncoding.EncodeToString(bin) {
 		t.Errorf("binary entry %q", got)
 	}
-	if got, _, _ := s.Secret(Login, bi.ID); !bytes.Equal(got, bin) {
+	if got, _, _ := s.Secret(Login, bi.ID, ""); !bytes.Equal(got, bin) {
 		t.Errorf("binary %v", got)
 	}
 
@@ -134,7 +134,7 @@ func TestCollections(t *testing.T) {
 	if len(back.m) != 0 {
 		t.Error("a session item reached the store")
 	}
-	if got, _, _ := s.Secret(Session, it.ID); string(got) != "t" {
+	if got, _, _ := s.Secret(Session, it.ID, ""); string(got) != "t" {
 		t.Errorf("session secret %q", got)
 	}
 	if len(s.Collections()) != 3 { // login, work_stuff_2, session

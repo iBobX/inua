@@ -3,6 +3,23 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+#: cmd/inua-keyring/main.go:81
+#: ui/settings.ui:2499
+msgid "Keyring"
+msgstr ""
+
+#: cmd/inua-keyring/main.go:82
+msgid "%s read a secret"
+msgstr ""
+
+#: cmd/inua-keyring/main.go:83
+msgid "“%s”, by pid %d. Settings → Keyring lists every read."
+msgstr ""
+
+#: cmd/inua-pinentry/main.go:75
+msgid "%s, for the secret “%s”"
+msgstr ""
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:299
@@ -920,7 +937,7 @@ msgstr ""
 #: internal/appui/tailscale.go:628
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
-#: ui/settings.ui:2712
+#: ui/settings.ui:2964
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr ""
@@ -940,6 +957,7 @@ msgid "%s · since %s"
 msgstr ""
 
 #: internal/appui/sysmon.go:965
+#: internal/ui/settings_keyring.go:131
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr ""
@@ -4575,7 +4593,7 @@ msgid "Jan 2"
 msgstr ""
 
 #: internal/shell/notify.go:32
-#: internal/ui/settings_about.go:181
+#: internal/ui/settings_about.go:184
 msgid "Jan 2, 2006"
 msgstr ""
 
@@ -4592,7 +4610,7 @@ msgstr ""
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:2929
+#: ui/settings.ui:3181
 msgid "Off"
 msgstr ""
 
@@ -4689,34 +4707,38 @@ msgstr ""
 msgid "not ok"
 msgstr ""
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:126
+msgid "Asked by %s"
+msgstr ""
+
+#: internal/ui/askpass.go:131
 msgid "Passphrase Required"
 msgstr ""
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Confirm"
 msgstr ""
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Message"
 msgstr ""
 
-#: internal/ui/askpass.go:141
+#: internal/ui/askpass.go:144
 msgid "Passphrase"
 msgstr ""
 
-#: internal/ui/askpass.go:163
+#: internal/ui/askpass.go:166
 msgid "OK"
 msgstr ""
 
-#: internal/ui/askpass.go:164
+#: internal/ui/askpass.go:167
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/polkit.ui:161
 msgid "Cancel"
 msgstr ""
 
-#: internal/ui/askpass.go:231
+#: internal/ui/askpass.go:234
 msgid "The passphrases do not match."
 msgstr ""
 
@@ -4838,7 +4860,7 @@ msgstr ""
 
 #: internal/ui/lock.go:248
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:138
+#: internal/ui/settings_about.go:141
 msgid "Checking…"
 msgstr ""
 
@@ -5062,108 +5084,108 @@ msgstr ""
 msgid "Screenshot taken"
 msgstr ""
 
-#: internal/ui/settings.go:199
+#: internal/ui/settings.go:202
 msgid "Not restarted: %s"
 msgstr ""
 
-#: internal/ui/settings.go:572
+#: internal/ui/settings.go:577
 msgid "Not saved: %s"
 msgstr ""
 
-#: internal/ui/settings.go:598
+#: internal/ui/settings.go:603
 msgid "Choose a wallpaper"
 msgstr ""
 
-#: internal/ui/settings.go:600
+#: internal/ui/settings.go:605
 msgid "Images"
 msgstr ""
 
-#: internal/ui/settings.go:639
+#: internal/ui/settings.go:644
 msgid "Off: another notification daemon can show them"
 msgstr ""
 
-#: internal/ui/settings.go:641
+#: internal/ui/settings.go:646
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr ""
 
-#: internal/ui/settings.go:643
+#: internal/ui/settings.go:648
 msgid "Waiting: another notification daemon is running"
 msgstr ""
 
-#: internal/ui/settings.go:661
+#: internal/ui/settings.go:666
 msgid "Nothing pinned"
 msgstr ""
 
-#: internal/ui/settings.go:677
+#: internal/ui/settings.go:682
 msgid "%s (not installed)"
 msgstr ""
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:695
 msgid "Move earlier"
 msgstr ""
 
-#: internal/ui/settings.go:691
+#: internal/ui/settings.go:696
 msgid "Move later"
 msgstr ""
 
-#: internal/ui/settings.go:692
+#: internal/ui/settings.go:697
 msgid "Remove from the dock"
 msgstr ""
 
-#: internal/ui/settings_about.go:126
+#: internal/ui/settings_about.go:129
 msgid "inua %s, built from source"
 msgstr ""
 
-#: internal/ui/settings_about.go:133
+#: internal/ui/settings_about.go:136
 msgid "Upgrade to %s"
 msgstr ""
 
-#: internal/ui/settings_about.go:136
+#: internal/ui/settings_about.go:139
 msgid "Upgrading… the shell restarts on the new version"
 msgstr ""
 
-#: internal/ui/settings_about.go:142
+#: internal/ui/settings_about.go:145
 msgid "Could not reach GitHub: %s"
 msgstr ""
 
-#: internal/ui/settings_about.go:144
+#: internal/ui/settings_about.go:147
 msgid "Not checked yet"
 msgstr ""
 
-#: internal/ui/settings_about.go:146
+#: internal/ui/settings_about.go:149
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr ""
 
-#: internal/ui/settings_about.go:148
+#: internal/ui/settings_about.go:151
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr ""
 
-#: internal/ui/settings_about.go:150
+#: internal/ui/settings_about.go:153
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr ""
 
-#: internal/ui/settings_about.go:152
+#: internal/ui/settings_about.go:155
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr ""
 
-#: internal/ui/settings_about.go:154
+#: internal/ui/settings_about.go:157
 msgid "Newer than the latest release, %s"
 msgstr ""
 
-#: internal/ui/settings_about.go:164
+#: internal/ui/settings_about.go:167
 msgid "Shown once the releases are read"
 msgstr ""
 
-#: internal/ui/settings_about.go:166
+#: internal/ui/settings_about.go:169
 msgid "Reading the releases…"
 msgstr ""
 
-#: internal/ui/settings_about.go:187
+#: internal/ui/settings_about.go:190
 msgid "installed"
 msgstr ""
 
-#: internal/ui/settings_about.go:191
+#: internal/ui/settings_about.go:194
 msgid "On GitHub"
 msgstr ""
 
@@ -5339,6 +5361,49 @@ msgstr ""
 msgid "key not saved"
 msgstr ""
 
+#: internal/ui/settings_keyring.go:55
+msgid "Looking…"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:57
+msgid "Cannot reach the session bus"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:61
+msgid "%s serves it, keeping the secrets in pass"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:63
+msgid "%s serves it, not inua-keyring; inua keyring replace switches"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:65
+msgid "No one serves it now; D-Bus starts it on the first request"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:76
+msgid "The record of reads cannot be read: %s"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:78
+#: ui/settings.ui:2697
+msgid "No app has read a secret yet."
+msgstr ""
+
+#: internal/ui/settings_keyring.go:104
+msgid "%s read “%s”"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:109
+msgid "pid %d"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:111
+msgid "pid %d · %d times in a row"
+msgid_plural "pid %d · %d times in a row"
+msgstr[0] ""
+msgstr[1] ""
+
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
 msgstr ""
@@ -5397,7 +5462,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr ""
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:3518
+#: ui/settings.ui:3770
 msgid "Upgrade"
 msgstr ""
 
@@ -6163,184 +6228,216 @@ msgstr ""
 msgid "Critical notifications still show banners"
 msgstr ""
 
-#: ui/settings.ui:2499
+#: ui/settings.ui:2537
+msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2545
+msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
+msgstr ""
+
+#: ui/settings.ui:2575
+msgid "Secret Service"
+msgstr ""
+
+#: ui/settings.ui:2611
+msgid "Tell when an app reads a secret"
+msgstr ""
+
+#: ui/settings.ui:2620
+msgid "A notification for each app's first read since inua-keyring started"
+msgstr ""
+
+#: ui/settings.ui:2665
+msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:2673
+msgid "Every secret inua-keyring handed out, newest first"
+msgstr ""
+
+#: ui/settings.ui:2719
+msgid "Refresh"
+msgstr ""
+
+#: ui/settings.ui:2751
 msgid "Shortcuts"
 msgstr ""
 
-#: ui/settings.ui:2529
+#: ui/settings.ui:2781
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr ""
 
-#: ui/settings.ui:2558
-#: ui/settings.ui:3417
+#: ui/settings.ui:2810
+#: ui/settings.ui:3669
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2566
+#: ui/settings.ui:2818
 msgid "The shell's own actions"
 msgstr ""
 
-#: ui/settings.ui:2615
+#: ui/settings.ui:2867
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2623
+#: ui/settings.ui:2875
 msgid "With grim and slurp"
 msgstr ""
 
-#: ui/settings.ui:2672
+#: ui/settings.ui:2924
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2680
+#: ui/settings.ui:2932
 msgid "Your own commands"
 msgstr ""
 
-#: ui/settings.ui:2722
+#: ui/settings.ui:2974
 msgid "Command, e.g. kitty"
 msgstr ""
 
-#: ui/settings.ui:2731
+#: ui/settings.ui:2983
 msgid "Add…"
 msgstr ""
 
-#: ui/settings.ui:2732
+#: ui/settings.ui:2984
 msgid "Add, then press its shortcut"
 msgstr ""
 
-#: ui/settings.ui:2767
+#: ui/settings.ui:3019
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2775
+#: ui/settings.ui:3027
 msgid "Other shortcuts, from hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:2820
+#: ui/settings.ui:3072
 msgid "Keyboard"
 msgstr ""
 
-#: ui/settings.ui:2868
+#: ui/settings.ui:3120
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:2876
+#: ui/settings.ui:3128
 msgid "Every keyboard"
 msgstr ""
 
-#: ui/settings.ui:2906
+#: ui/settings.ui:3158
 msgid "Swap Ctrl and Alt"
 msgstr ""
 
-#: ui/settings.ui:2915
+#: ui/settings.ui:3167
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr ""
 
-#: ui/settings.ui:2930
+#: ui/settings.ui:3182
 msgid "Left side"
 msgstr ""
 
-#: ui/settings.ui:2931
+#: ui/settings.ui:3183
 msgid "Both sides"
 msgstr ""
 
-#: ui/settings.ui:2958
-#: ui/settings.ui:2981
+#: ui/settings.ui:3210
+#: ui/settings.ui:3233
 msgid "Caps Lock"
 msgstr ""
 
-#: ui/settings.ui:2967
+#: ui/settings.ui:3219
 msgid "What the Caps Lock key does"
 msgstr ""
 
-#: ui/settings.ui:2982
+#: ui/settings.ui:3234
 msgid "Escape"
 msgstr ""
 
-#: ui/settings.ui:2983
+#: ui/settings.ui:3235
 msgid "Ctrl"
 msgstr ""
 
-#: ui/settings.ui:3021
-#: ui/settings.ui:3303
+#: ui/settings.ui:3273
+#: ui/settings.ui:3555
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3029
-#: ui/settings.ui:3311
+#: ui/settings.ui:3281
+#: ui/settings.ui:3563
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr ""
 
-#: ui/settings.ui:3080
-#: ui/settings.ui:3347
+#: ui/settings.ui:3332
+#: ui/settings.ui:3599
 msgid "Use hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:3081
+#: ui/settings.ui:3333
 msgid "Stop setting keyboard options in inua"
 msgstr ""
 
-#: ui/settings.ui:3112
+#: ui/settings.ui:3364
 msgid "Mouse & Touch"
 msgstr ""
 
-#: ui/settings.ui:3160
+#: ui/settings.ui:3412
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3168
+#: ui/settings.ui:3420
 msgid "Every touchpad"
 msgstr ""
 
-#: ui/settings.ui:3198
+#: ui/settings.ui:3450
 msgid "Pointer speed"
 msgstr ""
 
-#: ui/settings.ui:3249
+#: ui/settings.ui:3501
 msgid "Acceleration"
 msgstr ""
 
-#: ui/settings.ui:3258
+#: ui/settings.ui:3510
 msgid "Faster swipes move the pointer further"
 msgstr ""
 
-#: ui/settings.ui:3348
+#: ui/settings.ui:3600
 msgid "Stop setting the touchpad in inua"
 msgstr ""
 
-#: ui/settings.ui:3379
+#: ui/settings.ui:3631
 msgid "About"
 msgstr ""
 
-#: ui/settings.ui:3425
+#: ui/settings.ui:3677
 msgid "The version, and new releases"
 msgstr ""
 
-#: ui/settings.ui:3455
+#: ui/settings.ui:3707
 msgid "Version"
 msgstr ""
 
-#: ui/settings.ui:3491
+#: ui/settings.ui:3743
 msgid "Updates"
 msgstr ""
 
-#: ui/settings.ui:3527
+#: ui/settings.ui:3779
 msgid "Check for updates"
 msgstr ""
 
-#: ui/settings.ui:3553
+#: ui/settings.ui:3805
 msgid "Check every day"
 msgstr ""
 
-#: ui/settings.ui:3562
+#: ui/settings.ui:3814
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr ""
 
-#: ui/settings.ui:3607
+#: ui/settings.ui:3859
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:3615
+#: ui/settings.ui:3867
 msgid "What the latest release changed"
 msgstr ""
 

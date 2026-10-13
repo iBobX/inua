@@ -27,7 +27,7 @@ func Format(c Config) string {
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
-		q(c.Keyring.Folder),
+		q(c.Keyring.Folder), c.Keyring.Notify,
 		shortcuts(c.Shortcuts))
 }
 
@@ -375,6 +375,10 @@ serve_listen = %s
 # of the password store (PASSWORD_STORE_DIR, else ~/.password-store).
 # inua keyring status|import|enable|disable: see docs/feat/keyring.md.
 folder = %s
+
+# A notification when an app reads its first secret since inua-keyring
+# started. Every read is listed in Settings → Keyring.
+notify = %t
 
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything

@@ -5,18 +5,29 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/lyricat/inua/internal/dbustest"
+	"github.com/lyricat/inua/internal/proc"
 )
 
 // serve runs the service with a fake pass on a private bus.
 func serve(t *testing.T) (addr string, s *Store, back *memory) {
 	t.Helper()
+	return serveWith(t, nil)
+}
+
+// serveWith is serve, with the service set up by set before it starts.
+func serveWith(t *testing.T, set func(*Service)) (addr string, s *Store, back *memory) {
+	t.Helper()
 	addr = dbustest.Start(t)
 	s, back, _ = newStore(t)
 	svc := NewService(dbustest.Conn(t, addr), s)
+	if set != nil {
+		set(svc)
+	}
 	done := make(chan error, 1)
 	go func() { done <- svc.Serve(t.Context()) }()
 	probe := dbustest.Conn(t, addr)
@@ -191,7 +202,7 @@ func TestImport(t *testing.T) {
 	if len(vpn) != 1 || vpn[0].Collection != "work" {
 		t.Fatalf("vpn %+v", vpn)
 	}
-	if got, ct, _ := dst.Secret(vpn[0].Collection, vpn[0].ID); string(got) != "\x00\x01\x02" || ct != "application/octet-stream" {
+	if got, ct, _ := dst.Secret(vpn[0].Collection, vpn[0].ID, ""); string(got) != "\x00\x01\x02" || ct != "application/octet-stream" {
 		t.Errorf("vpn secret %q %q", got, ct)
 	}
 	// Again: nothing new; a changed secret is updated.
@@ -200,5 +211,57 @@ func TestImport(t *testing.T) {
 	rep, err = Import(t.Context(), c, dst)
 	if err != nil || rep.Added != 0 || rep.Same != 1 || rep.Updated != 1 || string(back.m["login/chrome-safe-storage"]) != "k2" {
 		t.Errorf("again: %+v %v %v", rep, err, back.m)
+	}
+}
+
+// Each secret handed out is reported with the program and PID that read
+// it, the first read of each app marked.
+func TestOnRead(t *testing.T) {
+	var mu sync.Mutex
+	var reads []Access
+	var firsts []bool
+	addr, _, _ := serveWith(t, func(svc *Service) {
+		svc.OnRead = func(a Access, first bool) {
+			mu.Lock()
+			defer mu.Unlock()
+			reads, firsts = append(reads, a), append(firsts, first)
+		}
+	})
+	c, err := Connect(dbustest.Conn(t, addr), AlgPlain)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+	attrs := map[string]string{"xdg:schema": "test"}
+	if err := c.Store(t.Context(), "API key", attrs, []byte("k")); err != nil {
+		t.Fatal(err)
+	}
+	for range 2 {
+		if _, ok, err := c.Lookup(t.Context(), attrs); !ok || err != nil {
+			t.Fatalf("lookup %v %v", ok, err)
+		}
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	me := proc.Name(os.Getpid())
+	if len(reads) != 2 || reads[0].App != me || reads[0].PID != os.Getpid() || reads[0].Secret != "API key" || !firsts[0] || firsts[1] {
+		t.Errorf("reads %+v, first %v (this is %s, pid %d)", reads, firsts, me, os.Getpid())
+	}
+}
+
+// The record keeps the newest accesses, newest first.
+func TestAccessRecord(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "inua", "keyring-access.jsonl")
+	if got, err := ReadAccess(path); got != nil || err != nil {
+		t.Fatalf("no record: %v %v", got, err)
+	}
+	for i := range 2*accessKeep + 1 {
+		if err := RecordAccess(path, Access{App: "app", PID: i, Secret: "s"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	got, err := ReadAccess(path)
+	if err != nil || len(got) != accessKeep || got[0].PID != 2*accessKeep || got[accessKeep-1].PID != accessKeep+1 {
+		t.Errorf("kept %d, newest %+v, oldest %+v, %v", len(got), got[0], got[len(got)-1], err)
 	}
 }

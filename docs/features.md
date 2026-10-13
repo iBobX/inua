@@ -120,8 +120,10 @@ screenshot color` picks a colour from the still with a loupe.
 inua is the session's Polkit agent: a program asking for administrator
 rights (pkexec, a system setting) gets inua's password dialog, and the
 system's helper checks the password. gpg asks for passphrases in the same
-dialog through `inua-pinentry`, which `inua init` sets up. The shell keeps
-none of it.
+dialog through `inua-pinentry`, which `inua init` sets up; the dialog
+says who asked: the app inua-keyring reads a secret for, or the program
+gpg-agent names and those it runs under ("gpg ← git ← zed"). The shell
+keeps none of it.
 
 ## Keyring
 
@@ -133,7 +135,11 @@ copies gnome-keyring's items (`-n` lists them first), `inua keyring
 enable` lets D-Bus start inua-keyring instead of gnome-keyring, and
 `inua keyring status` says who serves now. gpg asks for the passphrase,
 through inua's dialog, when a secret is read and gpg-agent has not
-cached it. The design: [feat/keyring.md](feat/keyring.md).
+cached it. Every secret handed out is logged with the program and PID
+that read it and recorded in `~/.local/state/inua/keyring-access.jsonl`
+(the newest 200 to 400); Settings → Keyring lists the reads, and a
+notification tells of each app's first read since inua-keyring started
+(`keyring.notify`). The design: [feat/keyring.md](feat/keyring.md).
 
 ## Keyboard and touchpad
 

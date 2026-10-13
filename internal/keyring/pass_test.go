@@ -55,13 +55,13 @@ func TestPass(t *testing.T) {
 	if err != nil || string(out) != "sk-λ\nsecond line" {
 		t.Errorf("pass show: %q %v", out, err)
 	}
-	got, _, err := s.Secret(Login, it.ID)
+	got, _, err := s.Secret(Login, it.ID, "")
 	if err != nil || string(got) != "sk-λ\nsecond line" {
 		t.Errorf("secret %q %v", got, err)
 	}
 	bin := []byte{0xff, 0, 7}
 	bi, _, _ := s.CreateItem(Login, "binary", nil, bin, "", false)
-	if got, _, err := s.Secret(Login, bi.ID); err != nil || !bytes.Equal(got, bin) {
+	if got, _, err := s.Secret(Login, bi.ID, ""); err != nil || !bytes.Equal(got, bin) {
 		t.Errorf("binary %v %v", got, err)
 	}
 	if err := s.DeleteItem(Login, it.ID); err != nil {

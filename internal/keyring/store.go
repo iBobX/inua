@@ -559,8 +559,9 @@ func (s *Store) CreateItem(coll, label string, attrs map[string]string, secret [
 }
 
 // Secret reads an item's secret and its content type; for pass, gpg-agent
-// may ask for the passphrase.
-func (s *Store) Secret(coll, id string) ([]byte, string, error) {
+// may ask for the passphrase, saying the read is for who ("app\tsecret";
+// "" for no one in particular).
+func (s *Store) Secret(coll, id, who string) ([]byte, string, error) {
 	s.mu.Lock()
 	c := s.coll(coll)
 	var r itemRec
@@ -577,7 +578,14 @@ func (s *Store) Secret(coll, id string) ([]byte, string, error) {
 		return nil, "", ErrNoItem
 	}
 	// Not under the lock: pinentry may wait for the user.
-	data, err := s.backend(coll).Show(r.Entry)
+	b := s.backend(coll)
+	var data []byte
+	var err error
+	if f, ok := b.(showerFor); ok && who != "" {
+		data, err = f.ShowFor(r.Entry, who)
+	} else {
+		data, err = b.Show(r.Entry)
+	}
 	if err != nil {
 		return nil, "", err
 	}

@@ -1,14 +1,18 @@
 package keyring
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"maps"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/godbus/dbus/v5"
+
+	"github.com/lyricat/inua/internal/proc"
 )
 
 const (
@@ -54,9 +58,21 @@ type Service struct {
 	// foreign leaves out OwnName, so tests can stand in for gnome-keyring.
 	foreign bool
 
+	// OnRead hears of each secret handed out; first is the app's first
+	// read since the service started. It runs on the request's goroutine.
+	OnRead func(a Access, first bool)
+
 	mu       sync.Mutex
 	sessions map[dbus.ObjectPath]*session
 	nextSess int
+	apps     map[string]app  // the clients, by unique name
+	readers  map[string]bool // the apps that read a secret, by name
+}
+
+// app is a client of the service: its program and PID.
+type app struct {
+	name string
+	pid  int
 }
 
 type session struct {
@@ -66,7 +82,7 @@ type session struct {
 
 // NewService prepares the service on conn; Serve runs it.
 func NewService(conn *dbus.Conn, store *Store) *Service {
-	return &Service{conn: conn, store: store, sessions: map[dbus.ObjectPath]*session{}}
+	return &Service{conn: conn, store: store, sessions: map[dbus.ObjectPath]*session{}, apps: map[string]app{}, readers: map[string]bool{}}
 }
 
 // Serve provides the Secret Service until ctx ends. It fails when another
@@ -121,10 +137,27 @@ func (s *Service) Serve(ctx context.Context) error {
 						delete(s.sessions, p)
 					}
 				}
+				delete(s.apps, gone)
 				s.mu.Unlock()
 			}
 		}
 	}
+}
+
+// Serving names the process serving the Secret Service, "zed (pid 4123)",
+// and whether it is inua-keyring; "" when no one serves it.
+func Serving(conn *dbus.Conn) (who string, ours bool) {
+	var unique string
+	if conn.BusObject().Call("org.freedesktop.DBus.GetNameOwner", 0, Name).Store(&unique) != nil {
+		return "", false
+	}
+	var own string
+	ours = conn.BusObject().Call("org.freedesktop.DBus.GetNameOwner", 0, OwnName).Store(&own) == nil && own == unique
+	var pid uint32
+	if conn.BusObject().Call("org.freedesktop.DBus.GetConnectionUnixProcessID", 0, unique).Store(&pid) != nil {
+		return unique, ours
+	}
+	return proc.Describe(int(pid)), ours
 }
 
 // owner names who holds a bus name, for messages.
@@ -220,8 +253,16 @@ func (s *Service) session(p dbus.ObjectPath, who string) (*session, *dbus.Error)
 	return sess, nil
 }
 
-func (s *Service) sealed(it Item, sess *session, sp dbus.ObjectPath) (Secret, *dbus.Error) {
-	secret, ct, err := s.store.Secret(it.Collection, it.ID)
+// sealed reads an item's secret for the client who, sealed for its
+// session; gpg-agent's pinentry and OnRead hear which app it is for.
+func (s *Service) sealed(it Item, sess *session, sp dbus.ObjectPath, who string) (Secret, *dbus.Error) {
+	a := s.client(who)
+	label := cmp.Or(it.Label, it.ID)
+	asker := a.name
+	if a.pid > 0 {
+		asker = proc.Describe(a.pid)
+	}
+	secret, ct, err := s.store.Secret(it.Collection, it.ID, asker+"\t"+label)
 	if err != nil {
 		return Secret{}, failed(err)
 	}
@@ -229,7 +270,33 @@ func (s *Service) sealed(it Item, sess *session, sp dbus.ObjectPath) (Secret, *d
 	if err != nil {
 		return Secret{}, failed(err)
 	}
+	if s.OnRead != nil {
+		s.mu.Lock()
+		first := !s.readers[a.name]
+		s.readers[a.name] = true
+		s.mu.Unlock()
+		s.OnRead(Access{Time: time.Now(), App: a.name, PID: a.pid, Secret: label}, first)
+	}
 	return Secret{Session: sp, Parameters: params, Value: value, ContentType: ct}, nil
+}
+
+// client names the process behind a unique bus name, asking the bus once.
+func (s *Service) client(unique string) app {
+	s.mu.Lock()
+	a, ok := s.apps[unique]
+	s.mu.Unlock()
+	if ok {
+		return a
+	}
+	var pid uint32
+	if s.conn.BusObject().Call("org.freedesktop.DBus.GetConnectionUnixProcessID", 0, unique).Store(&pid) == nil {
+		a = app{name: proc.Name(int(pid)), pid: int(pid)}
+	}
+	a.name = cmp.Or(a.name, unique)
+	s.mu.Lock()
+	s.apps[unique] = a
+	s.mu.Unlock()
+	return a
 }
 
 func (s *Service) opened(sec Secret, who string) ([]byte, *dbus.Error) {
@@ -370,7 +437,7 @@ func (o serviceObj) GetSecrets(m dbus.Message, items []dbus.ObjectPath, sp dbus.
 		if !ok {
 			continue // the specification: items that do not exist are left out
 		}
-		sec, derr := o.s.sealed(it, sess, sp)
+		sec, derr := o.s.sealed(it, sess, sp, sender(m))
 		if derr != nil {
 			return nil, derr
 		}
@@ -525,7 +592,7 @@ func (o itemObj) GetSecret(m dbus.Message, sp dbus.ObjectPath) (Secret, *dbus.Er
 	if derr != nil {
 		return Secret{}, derr
 	}
-	return o.s.sealed(it, sess, sp)
+	return o.s.sealed(it, sess, sp, sender(m))
 }
 
 func (o itemObj) SetSecret(m dbus.Message, secret Secret) *dbus.Error {

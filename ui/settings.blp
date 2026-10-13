@@ -1780,6 +1780,184 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "keyring";
+        title:  _("Keyring");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_keyring {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [KEYRING]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("Apps' secrets: browsers' keys, Wi-Fi passwords, API keys");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Secret Service");
+                        xalign: 0;
+                      }
+
+                      // Who serves it: inua-keyring, another keyring, or none.
+                      Label keyring_state {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Tell when an app reads a secret");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("A notification for each app's first read since inua-keyring started");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch keyring_notify {
+                      name: "keyring_notify";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [READS]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("Every secret inua-keyring handed out, newest first");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  // Filled from Go: a row for each read, a process reading
+                  // the same secret again counted on one row.
+                  Box keyring_reads {
+                    orientation: vertical;
+                  }
+
+                  Label keyring_none {
+                    styles ["sub"]
+                    label:  _("No app has read a secret yet.");
+                    xalign: 0;
+                    visible: false;
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Label {
+                      hexpand: true;
+                    }
+
+                    Button keyring_refresh {
+                      styles ["outlined"]
+                      name: "keyring_refresh";
+                      label:  _("Refresh");
+                      valign: center;
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_keyring {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "shortcuts";
         title:  _("Shortcuts");
 

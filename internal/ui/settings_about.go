@@ -46,8 +46,11 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	a.upgrade.ConnectClicked(&s.onSettingsButton)
 	a.daily.ConnectStateSet(&s.onSettingsSwitch)
 	s.onSettingsPage = func(uintptr, uintptr, uintptr) {
-		if s.settings.pages.GetVisibleChildName() == "about" && s.settings.about.checked.IsZero() {
+		switch page := s.settings.pages.GetVisibleChildName(); {
+		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()
+		case page == "keyring":
+			s.showKeyringReads() // what was read since it was last shown
 		}
 	}
 	gtkx.ConnectNotify(&s.settings.pages, "visible-child-name", &s.onSettingsPage)

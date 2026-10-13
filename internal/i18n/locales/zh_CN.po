@@ -5,6 +5,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: cmd/inua-keyring/main.go:81
+#: ui/settings.ui:2499
+msgid "Keyring"
+msgstr "钥匙环"
+
+#: cmd/inua-keyring/main.go:82
+msgid "%s read a secret"
+msgstr "%s 读取了一个密钥"
+
+#: cmd/inua-keyring/main.go:83
+msgid "“%s”, by pid %d. Settings → Keyring lists every read."
+msgstr "“%s”，pid %d。设置 → 钥匙环 列出每次读取。"
+
+#: cmd/inua-pinentry/main.go:75
+msgid "%s, for the secret “%s”"
+msgstr "%s，读取密钥“%s”"
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:299
@@ -920,7 +937,7 @@ msgstr "模型"
 #: internal/appui/tailscale.go:628
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
-#: ui/settings.ui:2712
+#: ui/settings.ui:2964
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名称"
@@ -940,6 +957,7 @@ msgid "%s · since %s"
 msgstr "%s · 自 %s 起"
 
 #: internal/appui/sysmon.go:965
+#: internal/ui/settings_keyring.go:131
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1月2日 15:04"
@@ -4571,7 +4589,7 @@ msgid "Jan 2"
 msgstr "1月2日"
 
 #: internal/shell/notify.go:32
-#: internal/ui/settings_about.go:181
+#: internal/ui/settings_about.go:184
 msgid "Jan 2, 2006"
 msgstr "2006年1月2日"
 
@@ -4588,7 +4606,7 @@ msgstr "横幅通知已静音"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:2929
+#: ui/settings.ui:3181
 msgid "Off"
 msgstr "关闭"
 
@@ -4685,34 +4703,38 @@ msgstr "密码：想要一个JSON请求"
 msgid "not ok"
 msgstr "不行"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:126
+msgid "Asked by %s"
+msgstr "请求者：%s"
+
+#: internal/ui/askpass.go:131
 msgid "Passphrase Required"
 msgstr "需要密码"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Confirm"
 msgstr "确认"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Message"
 msgstr "留言"
 
-#: internal/ui/askpass.go:141
+#: internal/ui/askpass.go:144
 msgid "Passphrase"
 msgstr "密码"
 
-#: internal/ui/askpass.go:163
+#: internal/ui/askpass.go:166
 msgid "OK"
 msgstr "好的"
 
-#: internal/ui/askpass.go:164
+#: internal/ui/askpass.go:167
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/polkit.ui:161
 msgid "Cancel"
 msgstr "取消"
 
-#: internal/ui/askpass.go:231
+#: internal/ui/askpass.go:234
 msgid "The passphrases do not match."
 msgstr "密码短语不匹配。"
 
@@ -4834,7 +4856,7 @@ msgstr "密码错误"
 
 #: internal/ui/lock.go:248
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:138
+#: internal/ui/settings_about.go:141
 msgid "Checking…"
 msgstr "正在检查..."
 
@@ -5058,108 +5080,108 @@ msgstr "截图已复制"
 msgid "Screenshot taken"
 msgstr "截图"
 
-#: internal/ui/settings.go:199
+#: internal/ui/settings.go:202
 msgid "Not restarted: %s"
 msgstr "未重新启动：%s"
 
-#: internal/ui/settings.go:572
+#: internal/ui/settings.go:577
 msgid "Not saved: %s"
 msgstr "未保存：%s"
 
-#: internal/ui/settings.go:598
+#: internal/ui/settings.go:603
 msgid "Choose a wallpaper"
 msgstr "选择壁纸"
 
-#: internal/ui/settings.go:600
+#: internal/ui/settings.go:605
 msgid "Images"
 msgstr "图像"
 
-#: internal/ui/settings.go:639
+#: internal/ui/settings.go:644
 msgid "Off: another notification daemon can show them"
 msgstr "关闭：另一个通知守护进程可以显示它们"
 
-#: internal/ui/settings.go:641
+#: internal/ui/settings.go:646
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "先显示横幅，再收进通知中心（顶栏铃铛或 Super+N）"
 
-#: internal/ui/settings.go:643
+#: internal/ui/settings.go:648
 msgid "Waiting: another notification daemon is running"
 msgstr "等待：另一个通知守护进程正在运行"
 
-#: internal/ui/settings.go:661
+#: internal/ui/settings.go:666
 msgid "Nothing pinned"
 msgstr "尚未固定应用"
 
-#: internal/ui/settings.go:677
+#: internal/ui/settings.go:682
 msgid "%s (not installed)"
 msgstr "%s(未安装)"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:695
 msgid "Move earlier"
 msgstr "向前移动"
 
-#: internal/ui/settings.go:691
+#: internal/ui/settings.go:696
 msgid "Move later"
 msgstr "向后移动"
 
-#: internal/ui/settings.go:692
+#: internal/ui/settings.go:697
 msgid "Remove from the dock"
 msgstr "从程序坞移除"
 
-#: internal/ui/settings_about.go:126
+#: internal/ui/settings_about.go:129
 msgid "inua %s, built from source"
 msgstr "inua %s，从源代码构建"
 
-#: internal/ui/settings_about.go:133
+#: internal/ui/settings_about.go:136
 msgid "Upgrade to %s"
 msgstr "升级至%s"
 
-#: internal/ui/settings_about.go:136
+#: internal/ui/settings_about.go:139
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "正在升级... shell 在新版本上重新启动"
 
-#: internal/ui/settings_about.go:142
+#: internal/ui/settings_about.go:145
 msgid "Could not reach GitHub: %s"
 msgstr "无法到达 GitHub：%s"
 
-#: internal/ui/settings_about.go:144
+#: internal/ui/settings_about.go:147
 msgid "Not checked yet"
 msgstr "尚未检查"
 
-#: internal/ui/settings_about.go:146
+#: internal/ui/settings_about.go:149
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "最新版本为%s ；这个版本无法与之相比"
 
-#: internal/ui/settings_about.go:148
+#: internal/ui/settings_about.go:151
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s 已发布；升级将替换当前的源码构建版本"
 
-#: internal/ui/settings_about.go:150
+#: internal/ui/settings_about.go:153
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s 已发布"
 
-#: internal/ui/settings_about.go:152
+#: internal/ui/settings_about.go:155
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "最新:%[1]s为最新版本(已检查%[2]s)"
 
-#: internal/ui/settings_about.go:154
+#: internal/ui/settings_about.go:157
 msgid "Newer than the latest release, %s"
 msgstr "比最新版本更新，%s"
 
-#: internal/ui/settings_about.go:164
+#: internal/ui/settings_about.go:167
 msgid "Shown once the releases are read"
 msgstr "读取版本后显示"
 
-#: internal/ui/settings_about.go:166
+#: internal/ui/settings_about.go:169
 msgid "Reading the releases…"
 msgstr "正在读取版本信息…"
 
-#: internal/ui/settings_about.go:187
+#: internal/ui/settings_about.go:190
 msgid "installed"
 msgstr "已安装"
 
-#: internal/ui/settings_about.go:191
+#: internal/ui/settings_about.go:194
 msgid "On GitHub"
 msgstr "在 GitHub 上"
 
@@ -5335,6 +5357,48 @@ msgstr "密钥未删除"
 msgid "key not saved"
 msgstr "密钥未保存"
 
+#: internal/ui/settings_keyring.go:55
+msgid "Looking…"
+msgstr "正在查看…"
+
+#: internal/ui/settings_keyring.go:57
+msgid "Cannot reach the session bus"
+msgstr "无法连接会话总线"
+
+#: internal/ui/settings_keyring.go:61
+msgid "%s serves it, keeping the secrets in pass"
+msgstr "%s 正在提供服务，密钥保存在 pass 中"
+
+#: internal/ui/settings_keyring.go:63
+msgid "%s serves it, not inua-keyring; inua keyring replace switches"
+msgstr "%s 正在提供服务，而不是 inua-keyring；inua keyring replace 可切换"
+
+#: internal/ui/settings_keyring.go:65
+msgid "No one serves it now; D-Bus starts it on the first request"
+msgstr "目前无人提供服务；D-Bus 会在首次请求时启动它"
+
+#: internal/ui/settings_keyring.go:76
+msgid "The record of reads cannot be read: %s"
+msgstr "无法读取读取记录：%s"
+
+#: internal/ui/settings_keyring.go:78
+#: ui/settings.ui:2697
+msgid "No app has read a secret yet."
+msgstr "还没有应用读取过密钥。"
+
+#: internal/ui/settings_keyring.go:104
+msgid "%s read “%s”"
+msgstr "%s 读取了“%s”"
+
+#: internal/ui/settings_keyring.go:109
+msgid "pid %d"
+msgstr "pid %d"
+
+#: internal/ui/settings_keyring.go:111
+msgid "pid %d · %d times in a row"
+msgid_plural "pid %d · %d times in a row"
+msgstr[0] "pid %d · 连续 %d 次"
+
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
 msgstr "设置于inua"
@@ -5393,7 +5457,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 升级方式:inua 升级"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:3518
+#: ui/settings.ui:3770
 msgid "Upgrade"
 msgstr "升级"
 
@@ -6159,184 +6223,216 @@ msgstr "专注模式下显示紧急通知"
 msgid "Critical notifications still show banners"
 msgstr "重要通知仍然显示横幅"
 
-#: ui/settings.ui:2499
+#: ui/settings.ui:2537
+msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>钥匙环<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2545
+msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
+msgstr "应用的密钥：浏览器密钥、Wi-Fi 密码、API 密钥"
+
+#: ui/settings.ui:2575
+msgid "Secret Service"
+msgstr "Secret Service"
+
+#: ui/settings.ui:2611
+msgid "Tell when an app reads a secret"
+msgstr "应用读取密钥时通知"
+
+#: ui/settings.ui:2620
+msgid "A notification for each app's first read since inua-keyring started"
+msgstr "inua-keyring 启动后，每个应用首次读取时发出通知"
+
+#: ui/settings.ui:2665
+msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>读取<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2673
+msgid "Every secret inua-keyring handed out, newest first"
+msgstr "inua-keyring 交出的每个密钥，最新的在前"
+
+#: ui/settings.ui:2719
+msgid "Refresh"
+msgstr "刷新"
+
+#: ui/settings.ui:2751
 msgid "Shortcuts"
 msgstr "快捷键"
 
-#: ui/settings.ui:2529
+#: ui/settings.ui:2781
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "按新的快捷方式。 Esc 取消；退格键将其关闭。"
 
-#: ui/settings.ui:2558
-#: ui/settings.ui:3417
+#: ui/settings.ui:2810
+#: ui/settings.ui:3669
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2566
+#: ui/settings.ui:2818
 msgid "The shell's own actions"
 msgstr "shell自身的动作"
 
-#: ui/settings.ui:2615
+#: ui/settings.ui:2867
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>屏幕截图<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2623
+#: ui/settings.ui:2875
 msgid "With grim and slurp"
 msgstr "使用 grim 和 slurp"
 
-#: ui/settings.ui:2672
+#: ui/settings.ui:2924
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>自定义<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2680
+#: ui/settings.ui:2932
 msgid "Your own commands"
 msgstr "你自己的命令"
 
-#: ui/settings.ui:2722
+#: ui/settings.ui:2974
 msgid "Command, e.g. kitty"
 msgstr "命令，例如 kitty"
 
-#: ui/settings.ui:2731
+#: ui/settings.ui:2983
 msgid "Add…"
 msgstr "添加……"
 
-#: ui/settings.ui:2732
+#: ui/settings.ui:2984
 msgid "Add, then press its shortcut"
 msgstr "添加，然后按其快捷键"
 
-#: ui/settings.ui:2767
+#: ui/settings.ui:3019
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2775
+#: ui/settings.ui:3027
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "其他快捷方式，来自hyprland.conf"
 
-#: ui/settings.ui:2820
+#: ui/settings.ui:3072
 msgid "Keyboard"
 msgstr "键盘"
 
-#: ui/settings.ui:2868
+#: ui/settings.ui:3120
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>键<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2876
+#: ui/settings.ui:3128
 msgid "Every keyboard"
 msgstr "每个键盘"
 
-#: ui/settings.ui:2906
+#: ui/settings.ui:3158
 msgid "Swap Ctrl and Alt"
 msgstr "交换 Ctrl 和 Alt"
 
-#: ui/settings.ui:2915
+#: ui/settings.ui:3167
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt充当Ctrl，并且Ctrl充当Alt"
 
-#: ui/settings.ui:2930
+#: ui/settings.ui:3182
 msgid "Left side"
 msgstr "左侧"
 
-#: ui/settings.ui:2931
+#: ui/settings.ui:3183
 msgid "Both sides"
 msgstr "左右两侧"
 
-#: ui/settings.ui:2958
-#: ui/settings.ui:2981
+#: ui/settings.ui:3210
+#: ui/settings.ui:3233
 msgid "Caps Lock"
 msgstr "大写锁定"
 
-#: ui/settings.ui:2967
+#: ui/settings.ui:3219
 msgid "What the Caps Lock key does"
 msgstr "大写锁定键的作用"
 
-#: ui/settings.ui:2982
+#: ui/settings.ui:3234
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:2983
+#: ui/settings.ui:3235
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:3021
-#: ui/settings.ui:3303
+#: ui/settings.ui:3273
+#: ui/settings.ui:3555
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>来源<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3029
-#: ui/settings.ui:3311
+#: ui/settings.ui:3281
+#: ui/settings.ui:3563
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua 将这些写入 Hyprland 的 inua.conf"
 
-#: ui/settings.ui:3080
-#: ui/settings.ui:3347
+#: ui/settings.ui:3332
+#: ui/settings.ui:3599
 msgid "Use hyprland.conf"
 msgstr "使用hyprland.conf"
 
-#: ui/settings.ui:3081
+#: ui/settings.ui:3333
 msgid "Stop setting keyboard options in inua"
 msgstr "停止在inua中设置键盘选项"
 
-#: ui/settings.ui:3112
+#: ui/settings.ui:3364
 msgid "Mouse & Touch"
 msgstr "鼠标与触控板"
 
-#: ui/settings.ui:3160
+#: ui/settings.ui:3412
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>指针<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3168
+#: ui/settings.ui:3420
 msgid "Every touchpad"
 msgstr "每个触摸板"
 
-#: ui/settings.ui:3198
+#: ui/settings.ui:3450
 msgid "Pointer speed"
 msgstr "指针速度"
 
-#: ui/settings.ui:3249
+#: ui/settings.ui:3501
 msgid "Acceleration"
 msgstr "加速度"
 
-#: ui/settings.ui:3258
+#: ui/settings.ui:3510
 msgid "Faster swipes move the pointer further"
 msgstr "更快的滑动使指针移动得更远"
 
-#: ui/settings.ui:3348
+#: ui/settings.ui:3600
 msgid "Stop setting the touchpad in inua"
 msgstr "停止在inua中设置触摸板"
 
-#: ui/settings.ui:3379
+#: ui/settings.ui:3631
 msgid "About"
 msgstr "关于"
 
-#: ui/settings.ui:3425
+#: ui/settings.ui:3677
 msgid "The version, and new releases"
 msgstr "版本及新版本"
 
-#: ui/settings.ui:3455
+#: ui/settings.ui:3707
 msgid "Version"
 msgstr "版本"
 
-#: ui/settings.ui:3491
+#: ui/settings.ui:3743
 msgid "Updates"
 msgstr "更新"
 
-#: ui/settings.ui:3527
+#: ui/settings.ui:3779
 msgid "Check for updates"
 msgstr "检查更新"
 
-#: ui/settings.ui:3553
+#: ui/settings.ui:3805
 msgid "Check every day"
 msgstr "每天检查"
 
-#: ui/settings.ui:3562
+#: ui/settings.ui:3814
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "当新版本发布时会出现通知，并带有升级按钮"
 
-#: ui/settings.ui:3607
+#: ui/settings.ui:3859
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>变更日志<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3615
+#: ui/settings.ui:3867
 msgid "What the latest release changed"
 msgstr "最新版本改变了什么"
 

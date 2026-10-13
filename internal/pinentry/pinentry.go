@@ -35,7 +35,18 @@ type Request struct {
 	Repeat  string `json:"repeat,omitempty"` // ask twice (a new passphrase): the second field's prompt
 	NoMatch string `json:"nomatch,omitempty"`
 	Timeout int    `json:"timeout,omitempty"` // seconds; 0 for none
+
+	// Owner is the process gpg-agent asks for (OPTION owner=PID/UID
+	// HOST): gpg, run by whatever wants the key; 0 when it did not say.
+	Owner int `json:"-"`
+	// Requester says who wants it, for the dialog: "git ← zed".
+	Requester string `json:"requester,omitempty"`
 }
+
+// UserData is how inua-keyring says, in PINENTRY_USER_DATA (gpg-agent
+// hands it to the pinentry), which app wants which secret when its pass
+// asks for the key: UserData + app + "\t" + secret.
+const UserData = "inua-keyring:"
 
 // Answer is how the user answered.
 type Answer struct {
@@ -67,6 +78,7 @@ func Serve(r io.Reader, w io.Writer, ask Asker) error {
 		return err
 	}
 	var st Request
+	owner := 0 // the agent says it once, for the connection
 	sc := bufio.NewScanner(r)
 	sc.Buffer(make([]byte, 0, 4096), 1<<20)
 	for sc.Scan() {
@@ -81,7 +93,13 @@ func Serve(r io.Reader, w io.Writer, ask Asker) error {
 		switch cmd {
 		case "BYE":
 			return say("OK closing connection")
-		case "NOP", "OPTION", "SETKEYINFO", "SETQUALITYBAR", "SETQUALITYBAR_TT", "SETGENPIN", "SETGENPIN_TT", "CLEARPASSPHRASE":
+		case "OPTION":
+			if v, ok := strings.CutPrefix(arg, "owner="); ok {
+				pid, _, _ := strings.Cut(v, "/")
+				owner, _ = strconv.Atoi(pid)
+			}
+			err = say("OK")
+		case "NOP", "SETKEYINFO", "SETQUALITYBAR", "SETQUALITYBAR_TT", "SETGENPIN", "SETGENPIN_TT", "CLEARPASSPHRASE":
 			err = say("OK")
 		case "RESET":
 			st = Request{}
@@ -125,11 +143,13 @@ func Serve(r io.Reader, w io.Writer, ask Asker) error {
 			}
 		case "GETPIN":
 			q := st
+			q.Owner = owner
 			q.Mode = GetPin
 			err = answer(say, ask, q)
 			st.Error = "" // shown once
 		case "CONFIRM":
 			q := st
+			q.Owner = owner
 			q.Mode = Confirm
 			if arg == "--one-button" {
 				q.Mode = Message
@@ -138,6 +158,7 @@ func Serve(r io.Reader, w io.Writer, ask Asker) error {
 			st.Error = ""
 		case "MESSAGE":
 			q := st
+			q.Owner = owner
 			q.Mode = Message
 			err = answer(say, ask, q)
 		default:

@@ -65,29 +65,13 @@ func activationIsOurs() bool {
 	return err == nil && strings.Contains(string(b), "inua-keyring")
 }
 
-// serving names the process holding the Secret Service's name, or "".
-func serving(conn *dbus.Conn) (string, bool) {
-	var unique string
-	if conn.BusObject().Call("org.freedesktop.DBus.GetNameOwner", 0, keyring.Name).Store(&unique) != nil {
-		return "", false
-	}
-	var ours string
-	isOurs := conn.BusObject().Call("org.freedesktop.DBus.GetNameOwner", 0, keyring.OwnName).Store(&ours) == nil && ours == unique
-	var pid uint32
-	if conn.BusObject().Call("org.freedesktop.DBus.GetConnectionUnixProcessID", 0, unique).Store(&pid) != nil {
-		return unique, isOurs
-	}
-	exe, _ := os.Readlink(fmt.Sprintf("/proc/%d/exe", pid))
-	return fmt.Sprintf("%s (pid %d)", filepath.Base(exe), pid), isOurs
-}
-
 func keyringStatus(pass keyring.Pass) error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	who, ours := serving(conn)
+	who, ours := keyring.Serving(conn)
 	switch {
 	case who == "":
 		fmt.Println("Secret Service: nobody serves it now")
@@ -130,7 +114,7 @@ func keyringImport(pass keyring.Pass) error {
 		return err
 	}
 	defer conn.Close()
-	who, ours := serving(conn)
+	who, ours := keyring.Serving(conn)
 	if ours {
 		return errors.New("inua-keyring serves the Secret Service already: nothing to import from")
 	}
@@ -157,7 +141,7 @@ func keyringDryRun() error {
 		return err
 	}
 	defer conn.Close()
-	who, ours := serving(conn)
+	who, ours := keyring.Serving(conn)
 	if ours {
 		return errors.New("inua-keyring serves the Secret Service already: nothing to import from")
 	}
@@ -202,7 +186,7 @@ func keyringEnable(pass keyring.Pass) error {
 	}
 	if conn, err := dbus.ConnectSessionBus(); err == nil {
 		defer conn.Close()
-		if who, ours := serving(conn); who != "" && !ours {
+		if who, ours := keyring.Serving(conn); who != "" && !ours {
 			fmt.Printf("Wrote %s.\n\n%s serves the Secret Service now; inua-keyring takes over once it stops.\n", path, who)
 			fmt.Println("If you have not yet, copy its items first:  inua keyring import")
 			fmt.Println("Then turn gnome-keyring's service off (for every app; log in again after):")
@@ -278,7 +262,7 @@ func keyringReplace(pass keyring.Pass) error {
 		return fmt.Errorf("no session bus (%v): run it in your desktop session", err)
 	}
 	defer conn.Close()
-	who, ours := serving(conn)
+	who, ours := keyring.Serving(conn)
 	if ours && activationIsOurs() {
 		fmt.Println("inua-keyring serves the Secret Service already")
 		return nil
@@ -321,7 +305,7 @@ func keyringReplace(pass keyring.Pass) error {
 		fmt.Println("inua-keyring serves the Secret Service now. To undo: inua keyring disable")
 		return nil
 	}
-	now, _ := serving(conn)
+	now, _ := keyring.Serving(conn)
 	fmt.Printf("%s still serves the Secret Service; inua-keyring takes over once it stops (log in again).\n", cmp.Or(now, "nobody"))
 	return nil
 }

@@ -9,7 +9,15 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/lyricat/inua/internal/pinentry"
 )
+
+// showerFor is a Backend that can say whom a read is for: Pass, so its
+// pinentry names the app.
+type showerFor interface {
+	ShowFor(entry, who string) ([]byte, error)
+}
 
 // Backend keeps the secrets themselves, by entry ("login/chrome-safe-
 // storage", under the store's folder). Pass is the real one; tests use a
@@ -54,8 +62,17 @@ func (p Pass) Ready() error {
 func (p Pass) name(entry string) string { return p.Folder + "/" + entry }
 
 func (p Pass) run(stdin []byte, args ...string) ([]byte, error) {
+	return p.runFor("", stdin, args...)
+}
+
+// runFor runs pass; who, when set, is handed to the pinentry gpg-agent may
+// start (PINENTRY_USER_DATA), for it to say who the key is wanted for.
+func (p Pass) runFor(who string, stdin []byte, args ...string) ([]byte, error) {
 	cmd := exec.Command("pass", args...)
 	cmd.Env = append(os.Environ(), "PASSWORD_STORE_DIR="+p.Dir)
+	if who != "" {
+		cmd.Env = append(cmd.Env, "PINENTRY_USER_DATA="+pinentry.UserData+who)
+	}
 	var out, errb bytes.Buffer
 	cmd.Stdin = bytes.NewReader(stdin)
 	cmd.Stdout, cmd.Stderr = &out, &errb
@@ -66,6 +83,12 @@ func (p Pass) run(stdin []byte, args ...string) ([]byte, error) {
 }
 
 func (p Pass) Show(entry string) ([]byte, error) { return p.run(nil, "show", p.name(entry)) }
+
+// ShowFor is Show for an app: who is "app\tsecret", for the passphrase
+// dialog.
+func (p Pass) ShowFor(entry, who string) ([]byte, error) {
+	return p.runFor(who, nil, "show", p.name(entry))
+}
 
 // Insert writes the secret exactly as given (-m: to the end of input).
 func (p Pass) Insert(entry string, secret []byte) error {

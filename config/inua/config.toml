@@ -265,6 +265,10 @@ reasoning = ""
 # inua keyring status|import|enable|disable: see docs/feat/keyring.md.
 folder = "inua-keyring"
 
+# A notification when an app reads its first secret since inua-keyring
+# started. Every read is listed in Settings → Keyring.
+notify = true
+
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions

@@ -323,6 +323,9 @@ var AssistantTools = []string{"web_search", "url_fetch", "read_file", "bash"}
 type Keyring struct {
 	// Folder is the password store's folder for its items.
 	Folder string `toml:"folder"`
+	// Notify tells of each app's first secret read since inua-keyring
+	// started; Settings → Keyring lists every read.
+	Notify bool `toml:"notify"`
 }
 
 // Dock is the app dock along a screen edge of each monitor.
@@ -421,7 +424,7 @@ func Default() Config {
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
-		Keyring: Keyring{Folder: "inua-keyring"},
+		Keyring: Keyring{Folder: "inua-keyring", Notify: true},
 	}
 }
 

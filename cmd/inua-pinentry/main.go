@@ -12,11 +12,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 
+	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/pinentry"
+	"github.com/lyricat/inua/internal/proc"
 )
 
 // fallbacks are the pinentries run without a shell, the first found.
@@ -27,7 +31,10 @@ func main() {
 	if !listening(sock) {
 		fallback()
 	}
+	cfg, _, _ := config.Load(config.DefaultPath())
+	i18n.Init(cfg.Language)
 	ask := func(q pinentry.Request) (pinentry.Answer, error) {
+		q.Requester = requester(q.Owner)
 		arg, err := json.Marshal(q)
 		if err != nil {
 			return pinentry.Answer{}, err
@@ -56,6 +63,20 @@ func main() {
 		fmt.Fprintln(os.Stderr, "inua-pinentry:", err)
 		os.Exit(1)
 	}
+}
+
+// requester says who wants the key, for the dialog: the app and secret
+// inua-keyring named, else the process gpg-agent asks for and those it
+// runs under ("gpg ← git ← zed").
+func requester(owner int) string {
+	if v, ok := strings.CutPrefix(os.Getenv("PINENTRY_USER_DATA"), pinentry.UserData); ok {
+		app, secret, _ := strings.Cut(v, "\t")
+		if secret != "" {
+			return i18n.Tf("%s, for the secret “%s”", app, secret)
+		}
+		return app
+	}
+	return proc.Chain(owner, 4)
 }
 
 // listening reports whether a shell answers on its control socket.

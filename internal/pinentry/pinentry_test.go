@@ -77,3 +77,18 @@ func TestCancelAndConfirm(t *testing.T) {
 		t.Errorf("asked %+v", asked)
 	}
 }
+
+// The agent names the process it asks for once; every question carries it,
+// across RESET.
+func TestOwner(t *testing.T) {
+	_, asked := session(t, "OPTION owner=4123/1000 desk\nGETPIN\nRESET\nCONFIRM\nBYE\n", func(Request) (Answer, error) {
+		return Answer{OK: true}, nil
+	})
+	if len(asked) != 2 || asked[0].Owner != 4123 || asked[1].Owner != 4123 {
+		t.Errorf("owners %+v", asked)
+	}
+	_, asked = session(t, "GETPIN\nBYE\n", func(Request) (Answer, error) { return Answer{OK: true}, nil })
+	if asked[0].Owner != 0 {
+		t.Errorf("an owner the agent did not name: %d", asked[0].Owner)
+	}
+}

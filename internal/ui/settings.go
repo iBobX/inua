@@ -56,9 +56,10 @@ type settings struct {
 	// controls start from what is in effect.
 	hyprKb string
 
-	sc    shortcutState // the Shortcuts page
-	ai    aiSettings    // the AI page
-	about aboutSettings // the About page
+	sc      shortcutState   // the Shortcuts page
+	ai      aiSettings      // the AI page
+	about   aboutSettings   // the About page
+	keyring keyringSettings // the Keyring page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -120,6 +121,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Notify.CriticalInFocus = on
 		case "about_daily":
 			c.Notify.Updates = on
+		case "keyring_notify":
+			c.Keyring.Notify = on
 		case "tp_accel":
 			c.Input.TouchpadAccel = "flat"
 			if on {
@@ -174,7 +177,7 @@ func (s *shellUI) bindSettingsHandlers() {
 	}
 	s.onSettingsButton = func(b gtk.Button) {
 		name := b.GetName()
-		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) {
+		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) || s.keyringButton(name) {
 			return
 		}
 		c := s.cfg
@@ -342,6 +345,7 @@ func (s *shellUI) openSettings() {
 	st.drops = map[uintptr]*gtk.DropDown{}
 	s.getAISettings(ui)
 	s.getAboutSettings(ui)
+	s.getKeyringSettings(ui)
 	ui.Close()
 
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot} {
@@ -377,7 +381,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "ai", "notifications", "shortcuts", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "ai", "notifications", "keyring", "shortcuts", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -500,6 +504,7 @@ func (s *shellUI) showSettings() {
 	s.showShortcuts()
 	s.showAISettings()
 	s.showAboutSettings()
+	st.keyring.notify.SetActive(c.Keyring.Notify)
 	st.clockPreview.SetText(config.Strftime(c.Bar.Clock, time.Now()))
 	for _, e := range st.entries {
 		e.RemoveCssClass("invalid")

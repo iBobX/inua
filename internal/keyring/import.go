@@ -70,7 +70,7 @@ func Import(ctx context.Context, c *Client, s *Store) (Imported, error) {
 				rep.Added++
 				continue
 			}
-			if old, _, err := s.Secret(local, existing.ID); err == nil && bytes.Equal(old, it.Secret) {
+			if old, _, err := s.Secret(local, existing.ID, ""); err == nil && bytes.Equal(old, it.Secret) {
 				rep.Same++
 				continue
 			}

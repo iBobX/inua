@@ -5,6 +5,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: cmd/inua-keyring/main.go:81
+#: ui/settings.ui:2499
+msgid "Keyring"
+msgstr "キーリング"
+
+#: cmd/inua-keyring/main.go:82
+msgid "%s read a secret"
+msgstr "%s がシークレットを読み取りました"
+
+#: cmd/inua-keyring/main.go:83
+msgid "“%s”, by pid %d. Settings → Keyring lists every read."
+msgstr "「%s」、pid %d。設定 → キーリングにすべての読み取りが表示されます。"
+
+#: cmd/inua-pinentry/main.go:75
+msgid "%s, for the secret “%s”"
+msgstr "%s、シークレット「%s」"
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:299
@@ -920,7 +937,7 @@ msgstr "モデル"
 #: internal/appui/tailscale.go:628
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
-#: ui/settings.ui:2712
+#: ui/settings.ui:2964
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名前"
@@ -940,6 +957,7 @@ msgid "%s · since %s"
 msgstr "%[1]s · %[2]s以降"
 
 #: internal/appui/sysmon.go:965
+#: internal/ui/settings_keyring.go:131
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1月2日 15:04"
@@ -4571,7 +4589,7 @@ msgid "Jan 2"
 msgstr "1月2日"
 
 #: internal/shell/notify.go:32
-#: internal/ui/settings_about.go:181
+#: internal/ui/settings_about.go:184
 msgid "Jan 2, 2006"
 msgstr "2006年1月2日"
 
@@ -4588,7 +4606,7 @@ msgstr "バナー通知を抑制中"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:2929
+#: ui/settings.ui:3181
 msgid "Off"
 msgstr "オフ"
 
@@ -4685,34 +4703,38 @@ msgstr "パスワード: 1 つの JSON リクエストが必要です"
 msgid "not ok"
 msgstr "ダメだ"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:126
+msgid "Asked by %s"
+msgstr "要求元: %s"
+
+#: internal/ui/askpass.go:131
 msgid "Passphrase Required"
 msgstr "パスフレーズが必要です"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Confirm"
 msgstr "確認"
 
-#: internal/ui/askpass.go:128
+#: internal/ui/askpass.go:131
 msgid "Message"
 msgstr "メッセージ"
 
-#: internal/ui/askpass.go:141
+#: internal/ui/askpass.go:144
 msgid "Passphrase"
 msgstr "パスフレーズ"
 
-#: internal/ui/askpass.go:163
+#: internal/ui/askpass.go:166
 msgid "OK"
 msgstr "わかりました"
 
-#: internal/ui/askpass.go:164
+#: internal/ui/askpass.go:167
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/polkit.ui:161
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: internal/ui/askpass.go:231
+#: internal/ui/askpass.go:234
 msgid "The passphrases do not match."
 msgstr "パスフレーズが一致しません。"
 
@@ -4834,7 +4856,7 @@ msgstr "パスワードが間違っています"
 
 #: internal/ui/lock.go:248
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:138
+#: internal/ui/settings_about.go:141
 msgid "Checking…"
 msgstr "チェック中…"
 
@@ -5058,108 +5080,108 @@ msgstr "スクリーンショットがコピーされました"
 msgid "Screenshot taken"
 msgstr "撮影されたスクリーンショット"
 
-#: internal/ui/settings.go:199
+#: internal/ui/settings.go:202
 msgid "Not restarted: %s"
 msgstr "再起動できませんでした: %s"
 
-#: internal/ui/settings.go:572
+#: internal/ui/settings.go:577
 msgid "Not saved: %s"
 msgstr "保存されていません: %s"
 
-#: internal/ui/settings.go:598
+#: internal/ui/settings.go:603
 msgid "Choose a wallpaper"
 msgstr "壁紙を選択してください"
 
-#: internal/ui/settings.go:600
+#: internal/ui/settings.go:605
 msgid "Images"
 msgstr "画像"
 
-#: internal/ui/settings.go:639
+#: internal/ui/settings.go:644
 msgid "Off: another notification daemon can show them"
 msgstr "オフ: 別の通知デーモンがそれらを表示できる"
 
-#: internal/ui/settings.go:641
+#: internal/ui/settings.go:646
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "バナー表示後に通知センターへ（バーのベル、または Super+N）"
 
-#: internal/ui/settings.go:643
+#: internal/ui/settings.go:648
 msgid "Waiting: another notification daemon is running"
 msgstr "待機中: 別の通知デーモンが実行中です"
 
-#: internal/ui/settings.go:661
+#: internal/ui/settings.go:666
 msgid "Nothing pinned"
 msgstr "固定したアプリはありません"
 
-#: internal/ui/settings.go:677
+#: internal/ui/settings.go:682
 msgid "%s (not installed)"
 msgstr "%s (未インストール)"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:695
 msgid "Move earlier"
 msgstr "前に移動"
 
-#: internal/ui/settings.go:691
+#: internal/ui/settings.go:696
 msgid "Move later"
 msgstr "後ろに移動"
 
-#: internal/ui/settings.go:692
+#: internal/ui/settings.go:697
 msgid "Remove from the dock"
 msgstr "ドックから削除"
 
-#: internal/ui/settings_about.go:126
+#: internal/ui/settings_about.go:129
 msgid "inua %s, built from source"
 msgstr "inua %s、ソースから構築"
 
-#: internal/ui/settings_about.go:133
+#: internal/ui/settings_about.go:136
 msgid "Upgrade to %s"
 msgstr "%s へのアップグレード"
 
-#: internal/ui/settings_about.go:136
+#: internal/ui/settings_about.go:139
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "アップグレード...シェルが新しいバージョンで再起動します"
 
-#: internal/ui/settings_about.go:142
+#: internal/ui/settings_about.go:145
 msgid "Could not reach GitHub: %s"
 msgstr "GitHub にアクセスできませんでした: %s"
 
-#: internal/ui/settings_about.go:144
+#: internal/ui/settings_about.go:147
 msgid "Not checked yet"
 msgstr "まだ確認されていません"
 
-#: internal/ui/settings_about.go:146
+#: internal/ui/settings_about.go:149
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "最新のリリースは%sである。このバージョンはそれと比較できません"
 
-#: internal/ui/settings_about.go:148
+#: internal/ui/settings_about.go:151
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s が公開されました。更新するとソースからのビルドを置き換えます"
 
-#: internal/ui/settings_about.go:150
+#: internal/ui/settings_about.go:153
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s が公開されました"
 
-#: internal/ui/settings_about.go:152
+#: internal/ui/settings_about.go:155
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "最新: %[1]s が最新リリースです (%[2]s を確認)"
 
-#: internal/ui/settings_about.go:154
+#: internal/ui/settings_about.go:157
 msgid "Newer than the latest release, %s"
 msgstr "最新リリース %s よりも新しい"
 
-#: internal/ui/settings_about.go:164
+#: internal/ui/settings_about.go:167
 msgid "Shown once the releases are read"
 msgstr "リリースが読み込まれると表示されます"
 
-#: internal/ui/settings_about.go:166
+#: internal/ui/settings_about.go:169
 msgid "Reading the releases…"
 msgstr "リリース情報を読み込み中…"
 
-#: internal/ui/settings_about.go:187
+#: internal/ui/settings_about.go:190
 msgid "installed"
 msgstr "インストールされました"
 
-#: internal/ui/settings_about.go:191
+#: internal/ui/settings_about.go:194
 msgid "On GitHub"
 msgstr "GitHub 上"
 
@@ -5335,6 +5357,48 @@ msgstr "キーを削除できませんでした"
 msgid "key not saved"
 msgstr "キーを保存できませんでした"
 
+#: internal/ui/settings_keyring.go:55
+msgid "Looking…"
+msgstr "確認中…"
+
+#: internal/ui/settings_keyring.go:57
+msgid "Cannot reach the session bus"
+msgstr "セッションバスに接続できません"
+
+#: internal/ui/settings_keyring.go:61
+msgid "%s serves it, keeping the secrets in pass"
+msgstr "%s が提供中です。シークレットは pass に保存されます"
+
+#: internal/ui/settings_keyring.go:63
+msgid "%s serves it, not inua-keyring; inua keyring replace switches"
+msgstr "inua-keyring ではなく %s が提供中です。inua keyring replace で切り替えます"
+
+#: internal/ui/settings_keyring.go:65
+msgid "No one serves it now; D-Bus starts it on the first request"
+msgstr "現在提供しているものはありません。最初の要求時に D-Bus が起動します"
+
+#: internal/ui/settings_keyring.go:76
+msgid "The record of reads cannot be read: %s"
+msgstr "読み取りの記録を読めません: %s"
+
+#: internal/ui/settings_keyring.go:78
+#: ui/settings.ui:2697
+msgid "No app has read a secret yet."
+msgstr "シークレットを読み取ったアプリはまだありません。"
+
+#: internal/ui/settings_keyring.go:104
+msgid "%s read “%s”"
+msgstr "%s が「%s」を読み取り"
+
+#: internal/ui/settings_keyring.go:109
+msgid "pid %d"
+msgstr "pid %d"
+
+#: internal/ui/settings_keyring.go:111
+msgid "pid %d · %d times in a row"
+msgid_plural "pid %d · %d times in a row"
+msgstr[0] "pid %d · 連続 %d 回"
+
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
 msgstr "イヌアを舞台とする"
@@ -5393,7 +5457,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s アップグレード: inua upgrade"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:3518
+#: ui/settings.ui:3770
 msgid "Upgrade"
 msgstr "アップグレード"
 
@@ -6159,184 +6223,216 @@ msgstr "集中モードでも緊急通知を表示"
 msgid "Critical notifications still show banners"
 msgstr "重要な通知には依然としてバナーが表示される"
 
-#: ui/settings.ui:2499
+#: ui/settings.ui:2537
+msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>キーリング<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2545
+msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
+msgstr "アプリのシークレット: ブラウザーの鍵、Wi-Fi パスワード、API キー"
+
+#: ui/settings.ui:2575
+msgid "Secret Service"
+msgstr "Secret Service"
+
+#: ui/settings.ui:2611
+msgid "Tell when an app reads a secret"
+msgstr "アプリがシークレットを読み取ったら通知"
+
+#: ui/settings.ui:2620
+msgid "A notification for each app's first read since inua-keyring started"
+msgstr "inua-keyring の起動後、各アプリの最初の読み取りを通知します"
+
+#: ui/settings.ui:2665
+msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>読み取り<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2673
+msgid "Every secret inua-keyring handed out, newest first"
+msgstr "inua-keyring が渡したすべてのシークレット（新しい順）"
+
+#: ui/settings.ui:2719
+msgid "Refresh"
+msgstr "更新"
+
+#: ui/settings.ui:2751
 msgid "Shortcuts"
 msgstr "ショートカット"
 
-#: ui/settings.ui:2529
+#: ui/settings.ui:2781
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "新しいショートカットを押します。 Esc でキャンセルします。バックスペースキーを押すとオフになります。"
 
-#: ui/settings.ui:2558
-#: ui/settings.ui:3417
+#: ui/settings.ui:2810
+#: ui/settings.ui:3669
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2566
+#: ui/settings.ui:2818
 msgid "The shell's own actions"
 msgstr "シェル自身のアクション"
 
-#: ui/settings.ui:2615
+#: ui/settings.ui:2867
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>スクリーンショット<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2623
+#: ui/settings.ui:2875
 msgid "With grim and slurp"
 msgstr "grim と slurp を使用"
 
-#: ui/settings.ui:2672
+#: ui/settings.ui:2924
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>カスタム<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2680
+#: ui/settings.ui:2932
 msgid "Your own commands"
 msgstr "独自のコマンド"
 
-#: ui/settings.ui:2722
+#: ui/settings.ui:2974
 msgid "Command, e.g. kitty"
 msgstr "コマンド（例：kitty）"
 
-#: ui/settings.ui:2731
+#: ui/settings.ui:2983
 msgid "Add…"
 msgstr "追加…"
 
-#: ui/settings.ui:2732
+#: ui/settings.ui:2984
 msgid "Add, then press its shortcut"
 msgstr "追加して、そのショートカットを押します"
 
-#: ui/settings.ui:2767
+#: ui/settings.ui:3019
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>ハイパーランド<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2775
+#: ui/settings.ui:3027
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "他のショートカット、hyprland.confから"
 
-#: ui/settings.ui:2820
+#: ui/settings.ui:3072
 msgid "Keyboard"
 msgstr "キーボード"
 
-#: ui/settings.ui:2868
+#: ui/settings.ui:3120
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2876
+#: ui/settings.ui:3128
 msgid "Every keyboard"
 msgstr "あらゆるキーボード"
 
-#: ui/settings.ui:2906
+#: ui/settings.ui:3158
 msgid "Swap Ctrl and Alt"
 msgstr "Ctrl と Alt を入れ替える"
 
-#: ui/settings.ui:2915
+#: ui/settings.ui:3167
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt は Ctrl として機能し、Ctrl は Alt として機能します"
 
-#: ui/settings.ui:2930
+#: ui/settings.ui:3182
 msgid "Left side"
 msgstr "左側"
 
-#: ui/settings.ui:2931
+#: ui/settings.ui:3183
 msgid "Both sides"
 msgstr "左右両方"
 
-#: ui/settings.ui:2958
-#: ui/settings.ui:2981
+#: ui/settings.ui:3210
+#: ui/settings.ui:3233
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
-#: ui/settings.ui:2967
+#: ui/settings.ui:3219
 msgid "What the Caps Lock key does"
 msgstr "Caps Lock キーの機能"
 
-#: ui/settings.ui:2982
+#: ui/settings.ui:3234
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:2983
+#: ui/settings.ui:3235
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:3021
-#: ui/settings.ui:3303
+#: ui/settings.ui:3273
+#: ui/settings.ui:3555
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>ソース<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3029
-#: ui/settings.ui:3311
+#: ui/settings.ui:3281
+#: ui/settings.ui:3563
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua はこれらを Hyprland の inua.conf に書き込みます"
 
-#: ui/settings.ui:3080
-#: ui/settings.ui:3347
+#: ui/settings.ui:3332
+#: ui/settings.ui:3599
 msgid "Use hyprland.conf"
 msgstr "hyprland.confを使用する"
 
-#: ui/settings.ui:3081
+#: ui/settings.ui:3333
 msgid "Stop setting keyboard options in inua"
 msgstr "inua でのキーボード オプションの設定を停止する"
 
-#: ui/settings.ui:3112
+#: ui/settings.ui:3364
 msgid "Mouse & Touch"
 msgstr "マウスとタッチパッド"
 
-#: ui/settings.ui:3160
+#: ui/settings.ui:3412
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3168
+#: ui/settings.ui:3420
 msgid "Every touchpad"
 msgstr "あらゆるタッチパッド"
 
-#: ui/settings.ui:3198
+#: ui/settings.ui:3450
 msgid "Pointer speed"
 msgstr "ポインタの速度"
 
-#: ui/settings.ui:3249
+#: ui/settings.ui:3501
 msgid "Acceleration"
 msgstr "加速度"
 
-#: ui/settings.ui:3258
+#: ui/settings.ui:3510
 msgid "Faster swipes move the pointer further"
 msgstr "スワイプが速いとポインタがさらに遠くに移動します"
 
-#: ui/settings.ui:3348
+#: ui/settings.ui:3600
 msgid "Stop setting the touchpad in inua"
 msgstr "inua でのタッチパッドの設定を停止する"
 
-#: ui/settings.ui:3379
+#: ui/settings.ui:3631
 msgid "About"
 msgstr "について"
 
-#: ui/settings.ui:3425
+#: ui/settings.ui:3677
 msgid "The version, and new releases"
 msgstr "バージョンと新しいリリース"
 
-#: ui/settings.ui:3455
+#: ui/settings.ui:3707
 msgid "Version"
 msgstr "バージョン"
 
-#: ui/settings.ui:3491
+#: ui/settings.ui:3743
 msgid "Updates"
 msgstr "アップデート"
 
-#: ui/settings.ui:3527
+#: ui/settings.ui:3779
 msgid "Check for updates"
 msgstr "アップデートをチェックする"
 
-#: ui/settings.ui:3553
+#: ui/settings.ui:3805
 msgid "Check every day"
 msgstr "毎日チェックする"
 
-#: ui/settings.ui:3562
+#: ui/settings.ui:3814
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "新しいリリースがリリースされると、アップグレードするボタンが表示される通知が表示されます。"
 
-#: ui/settings.ui:3607
+#: ui/settings.ui:3859
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3615
+#: ui/settings.ui:3867
 msgid "What the latest release changed"
 msgstr "最新リリースの変更点"
 

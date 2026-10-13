@@ -122,7 +122,10 @@ func (s *shellUI) openPass(d *passDialog) {
 	ui.Close()
 
 	who.SetVisible(false)
-	command.SetVisible(false)
+	// Who wants the key (inua-pinentry tells): the app, or the processes.
+	command.SetText(i18n.Tf("Asked by %s", q.Requester))
+	command.SetSelectable(false) // a selectable label opens selected
+	command.SetVisible(q.Requester != "")
 	title := q.Title
 	if title == "" || strings.EqualFold(title, "pinentry") {
 		title = map[pinentry.Mode]string{pinentry.GetPin: i18n.T("Passphrase Required"), pinentry.Confirm: i18n.T("Confirm"), pinentry.Message: i18n.T("Message")}[q.Mode]
