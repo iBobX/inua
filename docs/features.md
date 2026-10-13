@@ -199,9 +199,9 @@ while (10 minutes by default), so reads of pass made meanwhile, `pass -c`
 among them, ask nothing and are not listed. Settings → Keyring lists the
 reads and passphrases with their pass entries; clicking one shows all of
 that in a side panel. The record is private
-(mode 600), but a command line can hold whatever its program was given. A
-notification tells of each app's first read since inua-keyring started
-(`keyring.notify`). The design: [feat/keyring.md](feat/keyring.md).
+(mode 600), but a command line can hold whatever its program was given.
+`keyring.notify` (Settings → Keyring, off by default) adds a notification
+for each app's first read since inua-keyring started. The design: [feat/keyring.md](feat/keyring.md).
 
 ## Keyboard and touchpad
 

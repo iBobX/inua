@@ -404,7 +404,7 @@ serve_listen = %s
 folder = %s
 
 # A notification when an app reads its first secret since inua-keyring
-# started. Every read is listed in Settings → Keyring.
+# started; off by default. Every read is listed in Settings → Keyring.
 notify = %t
 
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
