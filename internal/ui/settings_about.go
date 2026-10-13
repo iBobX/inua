@@ -46,6 +46,7 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	a.upgrade.ConnectClicked(&s.onSettingsButton)
 	a.daily.ConnectStateSet(&s.onSettingsSwitch)
 	s.onSettingsPage = func(uintptr, uintptr, uintptr) {
+		s.selectSettingsIndex() // the page turned from Go: `inua settings PAGE`
 		switch page := s.settings.pages.GetVisibleChildName(); {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()

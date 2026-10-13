@@ -27,9 +27,14 @@ ApplicationWindow settings {
         xalign: 0;
       }
 
-      StackSidebar {
+      // The pages, each with its icon (settings_index.go).
+      ScrolledWindow {
         vexpand: true;
-        stack: pages;
+        hscrollbar-policy: never;
+
+        ListBox index {
+          selection-mode: browse;
+        }
       }
 
       // Why saving failed; hidden otherwise.

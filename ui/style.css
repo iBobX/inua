@@ -649,8 +649,7 @@ window.settings { background: @app; font-size: 14px; }
   font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
   font-size: 20px;
 }
-/* GTK's stack sidebar frames its list as a view; here it sits on the panel. */
-.settings .index stacksidebar,
+/* GTK frames a list as a view; here the index sits on the panel. */
 .settings .index scrolledwindow,
 .settings .index viewport,
 .settings .index list { background: transparent; border: none; box-shadow: none; }
@@ -671,6 +670,9 @@ window.settings { background: @app; font-size: 14px; }
   font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
 }
 .settings .index row:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
+.settings .index row .index-icon { color: @t2; transition: color 180ms ease-out; }
+.settings .index row:hover .index-icon { color: @t1; }
+.settings .index row:selected .index-icon { color: @accent; }
 .settings .index row:selected {
   border-color: alpha(@accent, 0.3);
   background: mix(@surface, @primary, 0.1);
@@ -1030,8 +1032,6 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
 .polkit-card button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
 .polkit-card button.suggested-action:disabled { opacity: 0.45; }
 .polkit-card button.plain { min-height: 0; padding: 4px; border: none; background: transparent; color: @t1; }
-
-/* --- light apps ------------------------------------------------------ */
 /* gpg's passphrase: the key it unlocks and who asks, in sections as
    Settings has (a mark, a [LABEL] on a hairline) of label and value rows. */
 .polkit-card button.pass-mask { padding: 5px; border: 1px solid transparent; border-radius: 2px; color: @t2; }
@@ -1076,6 +1076,8 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
 /* A hidden value: dots, a little apart, tertiary. */
 .pass-masked { color: @t2; letter-spacing: 0.2em; }
 .pass-note .mark { background: @accent; }
+
+/* --- light apps ------------------------------------------------------ */
 
 /* Clock, Weather, Stocks and Calculator are drawn in the settings window's
    language (their windows carry .settings): an index on the panel colour

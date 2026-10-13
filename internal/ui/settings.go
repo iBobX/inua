@@ -36,6 +36,7 @@ type settings struct {
 
 	status, clockPreview gtk.Label
 	pages                gtk.Stack
+	index                gtk.ListBox // the pages' list, beside them
 	themes               gtk.FlowBox
 	swatches             map[string]*gtk.Button // by theme, owned by the flow box
 
@@ -317,6 +318,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("settings", st.win)
 	ui.Get("status", &st.status)
 	ui.Get("pages", &st.pages)
+	ui.Get("index", &st.index)
 	ui.Get("themes", &st.themes)
 	ui.Get("clock_preview", &st.clockPreview)
 	ui.Get("bg_enable", &st.bgEnable)
@@ -390,6 +392,7 @@ func (s *shellUI) openSettings() {
 	s.getAISettings(ui)
 	s.getAboutSettings(ui)
 	s.getKeyringSettings(ui)
+	s.buildSettingsIndex()
 	ui.Close()
 
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot, &st.clipSensitive} {

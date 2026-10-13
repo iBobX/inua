@@ -32,9 +32,14 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
-              <object class="GtkStackSidebar">
+              <object class="GtkScrolledWindow">
                 <property name="vexpand">true</property>
-                <property name="stack">pages</property>
+                <property name="hscrollbar-policy">2</property>
+                <child>
+                  <object class="GtkListBox" id="index">
+                    <property name="selection-mode">2</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>

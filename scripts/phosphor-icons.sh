@@ -137,5 +137,14 @@ document-open-recent                  clock-counter-clockwise
 # password dialog: hide and show the private details
 view-conceal                          eye-slash
 view-reveal                           eye
+# the settings index
+preferences-desktop-appearance        palette
+user-desktop                          layout
+system-run                            rocket-launch
+applications-science                  sparkle
+preferences-desktop-keyboard-shortcuts command
+input-keyboard                        keyboard
+input-mouse                           mouse-simple
+help-about                            info
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

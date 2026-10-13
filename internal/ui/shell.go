@@ -135,6 +135,7 @@ type shellUI struct {
 	onSettingsSwitch       func(gtk.Switch, bool) bool
 	onSettingsDrop         func(uintptr, uintptr, uintptr)
 	onSettingsPage         func(uintptr, uintptr, uintptr)
+	onSettingsIndex        func(gtk.ListBox, uintptr)
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
 	onSettingsClose        func(gtk.Window) bool
@@ -185,9 +186,9 @@ type shellUI struct {
 	onPassNotOK            func(gtk.Button)
 	onPassActivate         func(gtk.PasswordEntry)
 	onPassKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
-	onAlarmTick            glib.SourceFunc
 	onPassMask             func(gtk.Button)
 	onPassRow              func(gtk.Button)
+	onAlarmTick            glib.SourceFunc
 	onRecordTimeout        glib.SourceFunc
 	onSettingsSave         glib.SourceFunc
 	onNoteButton           func(gtk.Button)
@@ -518,11 +519,11 @@ type hyprHandler struct{ s *shellUI }
 func (h hyprHandler) OnSnapshot(snap hypr.Snapshot) { gtkx.Post(func() { h.s.apply(snap) }) }
 func (h hyprHandler) OnEvent(e hypr.Event) {
 	h.s.overviewEvent(e)
-	if e.Name == "configreloaded" {
 	if e.Name == "screencast" { // "1,OWNER" when a screencast starts, "0,…" when it ends
 		on := strings.HasPrefix(e.Data, "1")
 		gtkx.Post(func() { h.s.passCapture(func(m *shell.PassMask) { m.Screencast(on) }) })
 	}
+	if e.Name == "configreloaded" {
 		// inua.conf may have changed what is in effect.
 		gtkx.Post(func() {
 			h.s.refreshHyprInput()
