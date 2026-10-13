@@ -99,7 +99,7 @@ chosen entry. A search above the entries looks through every category.
 
 Every change goes through `pass`, so git and `.gpg-id` work as on the
 command line; decrypting asks for the passphrase in inua's dialog when
-gpg-agent has not kept it. The design: [feat/pass.md](feat/pass.md).
+gpg-agent has not kept it.
 
 ## Tailscale
 
