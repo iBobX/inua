@@ -128,6 +128,9 @@ type Ctx struct {
 func Run(name string, args []string, uiDir string) int {
 	cfg, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
 	i18n.Init(cfg.Language)
+	if name == "workshop" {
+		return runWorkshop(args, uiDir)
+	}
 	a, ok := Apps[name]
 	if !ok {
 		names := make([]string, 0, len(Apps))
@@ -137,12 +140,18 @@ func Run(name string, args []string, uiDir string) int {
 		fmt.Fprintf(os.Stderr, "unknown app %q (%s)\n", name, strings.Join(names, ", "))
 		return 2
 	}
+	return run(name, IDBase+"."+a.ID, a.Title, a.make(), a.many, args, uiDir)
+}
+
+// run runs view v as the app named name, with its application ID and
+// title, until its window closes.
+func run(name, appID, title string, v view, many bool, args []string, uiDir string) int {
 	flags := gio.GApplicationDefaultFlagsValue
-	if a.many {
+	if many {
 		flags = gio.GApplicationNonUniqueValue
 	}
-	app := gtk.NewApplication(IDBase+"."+a.ID, flags)
-	c := &Ctx{App: app, UIDir: uiDir, cfgPath: config.DefaultPath(), v: a.make()}
+	app := gtk.NewApplication(appID, flags)
+	c := &Ctx{App: app, UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
 	c.activate = func(gio.Application) {
 		if c.win != nil { // started again: the window comes to the user
 			bringHere()
@@ -153,7 +162,7 @@ func Run(name string, args []string, uiDir string) int {
 		c.loadIcons()
 		c.win = c.v.build(c)
 		c.win.SetApplication(app)
-		c.win.SetTitle(i18n.T(a.Title))
+		c.win.SetTitle(i18n.T(title))
 		c.win.AddCssClass("app")
 		c.win.AddCssClass("settings") // the settings window's controls and sections
 		c.win.AddCssClass(name)

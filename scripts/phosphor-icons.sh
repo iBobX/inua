@@ -112,6 +112,7 @@ system-search                         magnifying-glass
 edit-find                             magnifying-glass
 # the dock's drawer and the control center's power row
 view-app-grid                         squares-four
+application-x-addon                   lego
 system-suspend                        moon
 system-reboot                         arrow-clockwise
 system-shutdown                       power

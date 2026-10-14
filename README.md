@@ -34,6 +34,7 @@ and a settings window, in one calm visual language. It works with
 | **Keyring** | `inua-keyring` serves apps' secrets (the Secret Service: browsers, Wi-Fi, the assistant's keys) from pass, after importing gnome-keyring's. |
 | **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. It stays running with the desktop and can serve as an [endpoint for other Consoles](docs/apps.md#console-endpoint). |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
+| **Workshop** | Write your own light apps in any language: the program describes its window in inua's building blocks and inua draws it in the shell's look. `inua workshop new`, `dev`, `install`; see [docs/workshop.md](docs/workshop.md). |
 | **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer. Each has its own launcher, or run `inua-games minesweeper`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
@@ -223,7 +224,7 @@ Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
 | `ui/` | Blueprint layouts, CSS, colour themes, icons |
 | `config/` | Sample configuration, login session, Fcitx themes |
 
-Documentation: [the shell in detail](docs/features.md), [light apps](docs/apps.md),
+Documentation: [the shell in detail](docs/features.md), [light apps](docs/apps.md), [workshop](docs/workshop.md),
 [design](docs/design.md), [architecture](docs/architecture.md),
 [toolkit choice](docs/toolkit.md), [setup](config/README.md).
 

@@ -1,0 +1,15 @@
+# A workshop app's manifest (docs/workshop.md).
+id = "{{ID}}"
+name = "{{NAME}}"
+description = "A workshop app"
+version = "0.1.0"
+icon = "icon.svg"
+# Its group in the dock's workshop drawer: everyday, tools, network,
+# development, media, games or system; other without one.
+category = "tools"
+run = ["python3", "main.py"]
+# The inua functions it calls beyond the ones every app has:
+# notify, open, clipboard, terminal, run.
+uses = []
+width = 520
+height = 560

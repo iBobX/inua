@@ -1131,6 +1131,7 @@ msgid "TRUSTED APPS"
 msgstr "受信任的应用"
 
 #: internal/appui/pass.go:1016
+#: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
@@ -1155,6 +1156,7 @@ msgid "%s · %s"
 msgstr "%s · %s"
 
 #: internal/appui/pass.go:1032
+#: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
@@ -1263,7 +1265,7 @@ msgstr "无法搜索:%s"
 
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
-#: internal/ui/dock.go:402
+#: internal/ui/dock.go:413
 msgid "Quit"
 msgstr "退出"
 
@@ -1334,7 +1336,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:261
+#: internal/shell/dock.go:262
+#: internal/shell/dock.go:292
 msgid "NETWORK"
 msgstr "网络"
 
@@ -1654,6 +1657,7 @@ msgid "Speed"
 msgstr "频率"
 
 #: internal/appui/sysmon.go:986
+#: internal/appui/workshop_manager.go:50
 msgid "Installed"
 msgstr "总量"
 
@@ -2272,6 +2276,160 @@ msgstr "更新了 %s·OPEN-METEO"
 #: internal/appui/weather.go:470
 msgid "No place by that name"
 msgstr "没有叫这个名字的地方"
+
+#: internal/appui/workshop.go:39
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:3
+msgid "Workshop"
+msgstr "工坊"
+
+#: internal/appui/workshop.go:202
+msgid "Starting %s…"
+msgstr "正在启动 %s…"
+
+#: internal/appui/workshop.go:215
+msgid "%s could not start"
+msgstr "%s 无法启动"
+
+#: internal/appui/workshop.go:226
+msgid "It ended without an error."
+msgstr "它已结束，没有错误。"
+
+#: internal/appui/workshop.go:230
+msgid "%s stopped"
+msgstr "%s 已停止"
+
+#: internal/appui/workshop.go:281
+msgid "Start again"
+msgstr "重新启动"
+
+#: internal/appui/workshop.go:287
+msgid "It starts again by itself when a file of it changes."
+msgstr "它的文件改变时会自动重新启动。"
+
+#: internal/appui/workshop.go:682
+msgid "Unknown building block %q"
+msgstr "未知的组件 %q"
+
+#: internal/appui/workshop.go:963
+#: internal/ui/askpass.go:267
+#: internal/ui/askpass.go:384
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
+#: ui/pass.ui:446
+#: ui/pass.ui:543
+#: ui/polkit.ui:733
+msgid "Cancel"
+msgstr "取消"
+
+#: internal/appui/workshop.go:968
+#: internal/ui/askpass.go:266
+msgid "OK"
+msgstr "好的"
+
+#: internal/appui/workshop_manager.go:60
+msgid "Uses: %s"
+msgstr "使用：%s"
+
+#: internal/appui/workshop_manager.go:63
+#: internal/ui/record.go:163
+msgid "Open"
+msgstr "打开"
+
+#: internal/appui/workshop_manager.go:64
+msgid "Remove…"
+msgstr "移除…"
+
+#: internal/appui/workshop_manager.go:70
+msgid "No workshop apps yet"
+msgstr "还没有工坊应用"
+
+#: internal/appui/workshop_manager.go:70
+msgid "Install one below, or write your own."
+msgstr "在下面安装一个，或自己写一个。"
+
+#: internal/appui/workshop_manager.go:82
+msgid "Broken"
+msgstr "已损坏"
+
+#: internal/appui/workshop_manager.go:82
+msgid "Their app.toml could not be read"
+msgstr "无法读取它们的 app.toml"
+
+#: internal/appui/workshop_manager.go:88
+msgid "Add"
+msgstr "添加"
+
+#: internal/appui/workshop_manager.go:89
+msgid "From a folder"
+msgstr "从文件夹"
+
+#: internal/appui/workshop_manager.go:89
+msgid "A folder with an app.toml; it is copied."
+msgstr "带有 app.toml 的文件夹；会被复制。"
+
+#: internal/appui/workshop_manager.go:90
+#: ui/settings.ui:498
+msgid "Choose…"
+msgstr "选择……"
+
+#: internal/appui/workshop_manager.go:91
+msgid "From git"
+msgstr "从 git"
+
+#: internal/appui/workshop_manager.go:91
+msgid "In a terminal: inua workshop install URL"
+msgstr "在终端中：inua workshop install URL"
+
+#: internal/appui/workshop_manager.go:92
+msgid "Write your own"
+msgstr "自己写一个"
+
+#: internal/appui/workshop_manager.go:92
+msgid "inua workshop new DIR makes one; inua workshop dev DIR runs it, again on every save. The guide is docs/workshop.md in inua."
+msgstr "inua workshop new DIR 创建一个；inua workshop dev DIR 运行它，每次保存都会重新运行。指南是 inua 中的 docs/workshop.md。"
+
+#: internal/appui/workshop_manager.go:115
+msgid "Remove %s?"
+msgstr "移除 %s？"
+
+#: internal/appui/workshop_manager.go:115
+msgid "Its folder and launcher entry go to the trash; its data stays."
+msgstr "它的文件夹和启动器条目会移到回收站；数据保留。"
+
+#: internal/appui/workshop_manager.go:122
+msgid "Removed %s."
+msgstr "已移除 %s。"
+
+#: internal/appui/workshop_manager.go:134
+msgid "A workshop app: a folder with an app.toml"
+msgstr "工坊应用：带有 app.toml 的文件夹"
+
+#: internal/appui/workshop_manager.go:144
+msgid "nothing beyond what every app has"
+msgstr "除了每个应用都有的以外没有其他"
+
+#: internal/appui/workshop_manager.go:148
+msgid "It runs %s, as you, with your files, like any program you start. It uses: %s."
+msgstr "它会以你的身份、带着你的文件运行 %s，和你启动的任何程序一样。它使用：%s。"
+
+#: internal/appui/workshop_manager.go:149
+msgid "Install %s?"
+msgstr "安装 %s？"
+
+#: internal/appui/workshop_manager.go:151
+msgid "Replace the installed %s?"
+msgstr "替换已安装的 %s？"
+
+#: internal/appui/workshop_manager.go:154
+msgid "Install"
+msgstr "安装"
+
+#: internal/appui/workshop_manager.go:164
+msgid "Installed %s; the launcher and the dock's drawer list it."
+msgstr "已安装 %s；启动器和程序坞的抽屉里会列出它。"
 
 #: internal/assistant/assistant.go:426
 msgid "Remote Console: %s"
@@ -4737,7 +4895,7 @@ msgid "SPACE PINBALL"
 msgstr "太空弹球"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "启动器"
@@ -4770,7 +4928,7 @@ msgstr "聚焦或关闭"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4983,7 +5141,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空回收站"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "inua's settings"
 msgstr "inua的设置"
 
@@ -5129,36 +5287,59 @@ msgstr "网址"
 msgid "Web search"
 msgstr "网络搜索"
 
-#: internal/shell/dock.go:245
+#: internal/shell/dock.go:246
+#: internal/shell/dock.go:292
 msgid "EVERYDAY"
 msgstr "日常"
 
-#: internal/shell/dock.go:252
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:292
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:264
+#: internal/shell/dock.go:265
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
+#: internal/shell/dock.go:294
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系统"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Find apps, windows and answers"
 msgstr "查找应用程序、窗口和答案"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "截图"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 msgid "Capture an area, a window or a screen"
 msgstr "捕获区域、窗口或屏幕"
+
+#: internal/shell/dock.go:293
+msgid "DEVELOPMENT"
+msgstr "开发"
+
+#: internal/shell/dock.go:293
+msgid "MEDIA"
+msgstr "媒体"
+
+#: internal/shell/dock.go:293
+msgid "GAMES"
+msgstr "游戏"
+
+#: internal/shell/dock.go:294
+msgid "OTHER"
+msgstr "其他"
+
+#: internal/shell/dock.go:319
+msgid "WORKSHOP"
+msgstr "工坊"
 
 #: internal/shell/launcher.go:48
 msgid "[WINDOWS]"
@@ -5369,23 +5550,6 @@ msgstr "解锁 OpenPGP 密钥"
 #: internal/ui/askpass.go:244
 msgid "Passphrase"
 msgstr "密码"
-
-#: internal/ui/askpass.go:266
-msgid "OK"
-msgstr "好的"
-
-#: internal/ui/askpass.go:267
-#: internal/ui/askpass.go:384
-#: ui/clock.ui:244
-#: ui/clock.ui:454
-#: ui/gpg.ui:1252
-#: ui/gpg.ui:1469
-#: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
-#: ui/polkit.ui:733
-msgid "Cancel"
-msgstr "取消"
 
 #: internal/ui/askpass.go:327
 msgid "Trust the list of apps again?"
@@ -5621,28 +5785,32 @@ msgstr "退出"
 msgid "Log out?"
 msgstr "确认退出登录？"
 
-#: internal/ui/dock.go:394
+#: internal/ui/dock.go:405
 msgid "New Window"
 msgstr "新窗口"
 
-#: internal/ui/dock.go:396
+#: internal/ui/dock.go:407
 msgid "Remove from Dock"
 msgstr "从扩展坞中移除"
 
-#: internal/ui/dock.go:398
+#: internal/ui/dock.go:409
 msgid "Keep in Dock"
 msgstr "固定到程序坞"
 
-#: internal/ui/dock.go:404
+#: internal/ui/dock.go:415
 msgid "Quit (%d windows)"
 msgstr "退出(%d窗口)"
 
-#: internal/ui/drawer.go:148
+#: internal/ui/drawer.go:212
 #: ui/settings.ui:1532
 msgid "Apps"
 msgstr "应用程序"
 
-#: internal/ui/drawer.go:243
+#: internal/ui/drawer.go:215
+msgid "Workshop apps"
+msgstr "工坊应用"
+
+#: internal/ui/drawer.go:316
 msgid "The light apps are not installed (make install)."
 msgstr "轻型应用程序未安装(make install)。"
 
@@ -5684,7 +5852,7 @@ msgstr "hyprland.lua 在加载 inua.lua 之后又设置了这些,会盖过 inua 
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyprland.conf 在加载 inua.conf 后再次设置这些,这赢得了 inua: %s。将源代码行移到它们下方。"
 
-#: internal/ui/launcher.go:285
+#: internal/ui/launcher.go:286
 msgid "inua launcher"
 msgstr "inua发射器"
 
@@ -5883,10 +6051,6 @@ msgstr "录屏已保存"
 #: internal/ui/record.go:159
 msgid "Screen recording"
 msgstr "屏幕录制"
-
-#: internal/ui/record.go:163
-msgid "Open"
-msgstr "打开"
 
 #: internal/ui/record.go:163
 #: internal/ui/screenshot.go:789
@@ -6520,6 +6684,18 @@ msgstr "inua无法升级"
 msgid "Could not upgrade: %s"
 msgstr "无法升级:%s"
 
+#: internal/workshop/session.go:126
+msgid "It ended before saying hello; what it wrote is below."
+msgstr "它在打招呼前就结束了；它的输出在下面。"
+
+#: internal/workshop/session.go:130
+msgid "It did not answer"
+msgstr "它没有回应"
+
+#: internal/workshop/session.go:133
+msgid "It speaks version %d of the workshop protocol; this inua speaks %d."
+msgstr "它使用工坊协议第 %d 版；此 inua 使用第 %d 版。"
+
 #: ui/agenda.ui:50
 msgid "[CALENDAR]"
 msgstr "[日历]"
@@ -7111,10 +7287,6 @@ msgstr "图像"
 #: ui/settings.ui:489
 msgid "none: a fine texture"
 msgstr "无图片：显示细纹理背景"
-
-#: ui/settings.ui:498
-msgid "Choose…"
-msgstr "选择……"
 
 #: ui/settings.ui:508
 msgid "No image"
@@ -8153,3 +8325,11 @@ msgstr "现在和未来几天的天气"
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:20
 msgid "forecast;temperature;rain;"
 msgstr "预报;气温;雨量;"
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:10
+msgid "Your own light apps: open, install and remove them"
+msgstr "你自己的轻应用：打开、安装和移除"
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:20
+msgid "workshop;plugin;app;script;extension;"
+msgstr "工坊;插件;应用;脚本;扩展;workshop;"

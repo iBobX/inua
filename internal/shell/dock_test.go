@@ -6,6 +6,7 @@ import (
 
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
+	"github.com/lyricat/inua/internal/workshop"
 )
 
 func dockWin(addr, class string, history float64) hypr.Toplevel {
@@ -186,6 +187,45 @@ func TestLightAppSections(t *testing.T) {
 	// The shell's tools are there with no light app installed.
 	if got := LightAppSections(NewAppIndex(nil)); len(got) != 2 || got[0].Title != "TOOLS" || got[1].Title != "SYSTEM" {
 		t.Errorf("none installed: %+v", got)
+	}
+}
+
+// The workshop drawer: the apps installed by category, by their entries
+// or by their manifests; then the Workshop app, in a group of its own.
+func TestWorkshopSections(t *testing.T) {
+	todo := workshop.Manifest{ID: "dev.inua.todo", Name: "Todo", Category: "everyday"}
+	hosts := workshop.Manifest{ID: "dev.inua.ssh-hosts", Name: "SSH Hosts", Description: "Hosts", Category: "Network"}
+	odd := workshop.Manifest{ID: "dev.x.odd", Name: "Odd", Category: "spaceships"}
+	bare := workshop.Manifest{ID: "dev.x.bare", Name: "Bare"}
+	apps := NewAppIndex([]*desktop.Entry{
+		{ID: todo.AppID(), Name: "Todo (entry)"},
+		{ID: WorkshopApp, Name: "Workshop"},
+	})
+	got := WorkshopSections(apps, []workshop.Manifest{odd, hosts, todo, bare})
+	var titles []string
+	for _, g := range got {
+		titles = append(titles, g.Title)
+	}
+	if strings.Join(titles, " ") != "EVERYDAY NETWORK OTHER WORKSHOP" {
+		t.Fatalf("groups %v", titles)
+	}
+	if got[0].Apps[0].Name != "Todo (entry)" {
+		t.Errorf("by its entry: %+v", got[0].Apps[0])
+	}
+	if e := got[1].Apps[0]; e.ID != hosts.AppID() || e.Name != "SSH Hosts" || strings.Join(e.Command, " ") != "inua-apps workshop dev.inua.ssh-hosts" || e.WMClass != hosts.AppID() {
+		t.Errorf("made from the manifest: %+v", e)
+	}
+	if other := got[2].Apps; len(other) != 2 || other[0].Name != "Odd" || other[1].Name != "Bare" {
+		t.Errorf("other: %+v", other)
+	}
+	if w := got[3].Apps; len(w) != 1 || w[0].ID != WorkshopApp {
+		t.Errorf("the Workshop app: %+v", w)
+	}
+	if got := WorkshopSections(NewAppIndex(nil), nil); len(got) != 0 {
+		t.Errorf("nothing installed: %+v", got)
+	}
+	if got := WorkshopSections(apps, nil); len(got) != 1 || got[0].Apps[0].ID != WorkshopApp {
+		t.Errorf("only the Workshop app: %+v", got)
 	}
 }
 

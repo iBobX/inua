@@ -27,6 +27,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/workshop"
 )
 
 // The app dock: one per monitor along a configurable screen edge, the
@@ -59,6 +60,7 @@ type dock struct {
 	hover    bool
 	hideGen  uintptr
 	drawer   *gtk.Button // the drawer's button, borrowed from items; nil without one
+	workshop *gtk.Button // the workshop drawer's, there while workshop apps are installed
 
 	// Dragging an app: its button is hidden while it is away, and the
 	// others move aside to leave a gap where it would land (see setGap).
@@ -87,6 +89,10 @@ type dockState struct {
 	gapTicking bool            // onDockGapTick is running
 	drawer     *drawerPanel    // the open drawer, nil when closed
 	programs   map[int]string  // /proc/PID/comm of windows' processes, by PID
+
+	// The workshop apps installed, read again when their folder changes.
+	workshopStamp string
+	workshopApps  []workshop.Manifest
 }
 
 // syncDock gives a bar's monitor a dock, or takes it away, following
@@ -269,7 +275,8 @@ func (s *shellUI) renderDock(b *bar) {
 		}
 	}
 	drawer := s.cfg.Dock.Drawer
-	if sig := dockSignature(items, d.size, drawer); sig != d.shown {
+	withWorkshop := drawer && len(s.installedWorkshop()) > 0
+	if sig := dockSignature(items, d.size, drawer) + fmt.Sprint(withWorkshop); sig != d.shown {
 		d.shown = sig
 		if s.dockState.menu != nil {
 			s.dockState.menu.Popdown() // its button is about to go
@@ -293,7 +300,7 @@ func (s *shellUI) renderDock(b *bar) {
 			d.buttons[it.Key] = db
 			gtkx.Append(&d.items, &db.btn.Widget)
 		}
-		d.drawer = nil
+		d.drawer, d.workshop = nil, nil
 		if drawer {
 			orientation := gtk.OrientationVerticalValue
 			if d.vertical {
@@ -302,8 +309,12 @@ func (s *shellUI) renderDock(b *bar) {
 			sep := gtk.NewSeparator(orientation)
 			sep.AddCssClass("dock-sep")
 			gtkx.Append(&d.items, &sep.Widget)
-			d.drawer = s.drawerButton(d.size)
+			d.drawer = s.drawerButton(d.size, drawerApps)
 			gtkx.Append(&d.items, &d.drawer.Widget)
+			if withWorkshop {
+				d.workshop = s.drawerButton(d.size, drawerWorkshop)
+				gtkx.Append(&d.items, &d.workshop.Widget)
+			}
 		}
 	}
 	for _, it := range items {

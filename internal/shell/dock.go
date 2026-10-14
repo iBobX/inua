@@ -8,6 +8,7 @@ import (
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/workshop"
 )
 
 // DockItem is one app on the dock.
@@ -281,6 +282,43 @@ var ShellApps = []*desktop.Entry{
 	{ID: "inua:settings", Name: i18n.M("Settings"), Comment: i18n.M("inua's settings"), Icon: "io.github.lyricat.Inua.Settings"},
 	{ID: "inua:launcher", Name: i18n.M("Launcher"), Comment: i18n.M("Find apps, windows and answers"), Icon: "io.github.lyricat.Inua.Launcher"},
 	{ID: "inua:screenshot", Name: i18n.M("Screenshot"), Comment: i18n.M("Capture an area, a window or a screen"), Icon: "io.github.lyricat.Inua.Screenshot"},
+}
+
+// WorkshopApp is the Workshop light app, which ends the workshop drawer.
+const WorkshopApp = "io.github.lyricat.Inua.Workshop"
+
+// workshopTitles are the workshop drawer's group titles, by category.
+var workshopTitles = map[string]string{
+	"everyday": i18n.M("EVERYDAY"), "tools": i18n.M("TOOLS"), "network": i18n.M("NETWORK"),
+	"development": i18n.M("DEVELOPMENT"), "media": i18n.M("MEDIA"), "games": i18n.M("GAMES"),
+	"system": i18n.M("SYSTEM"), "other": i18n.M("OTHER"),
+}
+
+// WorkshopSections are the dock's workshop drawer: the workshop apps
+// installed, by category in workshop.Categories' order, each by its
+// desktop entry (one made from the manifest while the index has not seen
+// the entry yet); then the Workshop app, to manage them, in a group of its
+// own.
+func WorkshopSections(apps AppIndex, installed []workshop.Manifest) []AppGroup {
+	by := map[string][]*desktop.Entry{}
+	for _, m := range installed {
+		e := apps.ByID(strings.ToLower(m.AppID()))
+		if e == nil {
+			e = &desktop.Entry{ID: m.AppID(), Name: m.Name, Comment: m.Description, Icon: m.IconPath(),
+				Command: []string{"inua-apps", "workshop", m.ID}, WMClass: m.AppID()}
+		}
+		by[m.Group()] = append(by[m.Group()], e)
+	}
+	var out []AppGroup
+	for _, c := range workshop.Categories {
+		if len(by[c]) > 0 {
+			out = append(out, AppGroup{workshopTitles[c], by[c]})
+		}
+	}
+	if e := apps.ByID(strings.ToLower(WorkshopApp)); e != nil {
+		out = append(out, AppGroup{i18n.M("WORKSHOP"), []*desktop.Entry{e}})
+	}
+	return out
 }
 
 // AppGroup is a titled group of installed apps.

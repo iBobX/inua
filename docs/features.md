@@ -232,6 +232,22 @@ entry of inua-keyring's, the apps trusted with it and its last reads. With no in
 programs from reading secrets they were never given; a program running
 as you can still start a trusted one and take over what it does.
 
+## Workshop
+
+Light apps of your own, in any language: a folder with `app.toml` and a
+program that describes its window in inua's building blocks (pages,
+columns, sections, rows, entries, buttons, …) over JSON-RPC on its stdin
+and stdout; inua draws it in the shell's look and sends back what the
+user does. It may notify, copy, open, run commands or the terminal, when
+its manifest names them, and keeps its data in a store inua holds. `inua
+workshop new DIR` makes one from the template, `dev DIR` runs it again
+on every save, `install URL|DIR` adds it to the launcher, `remove ID`
+takes it away. Python and JavaScript apps import `inua`, which comes with
+inua. A puzzle button beside the dock's drawer, there once an app is
+installed, opens the workshop drawer: the apps by the category their
+manifest gives, and the Workshop app to open, install and remove them.
+See [workshop.md](workshop.md).
+
 ## Keyboard and touchpad
 
 Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed: written to

@@ -9,6 +9,7 @@
 //	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
 //	inua init [-force] [-pinentry ask|replace|keep] [-dir dir]  write the sample configuration
 //	inua keyring status|import|enable|disable|replace|lock  the Secret Service kept in pass
+//	inua workshop list|new|install|remove|run|dev    the light apps users write
 //	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
@@ -63,6 +64,8 @@ func main() {
 		err = cmdInit(os.Args[2:])
 	case "keyring":
 		err = cmdKeyring(os.Args[2:])
+	case "workshop":
+		err = cmdWorkshop(os.Args[2:])
 	case "upgrade":
 		err = cmdUpgrade(os.Args[2:])
 	case "version", "--version", "-v":
@@ -86,6 +89,7 @@ func usage() {
   inua config apply
   inua init [-force] [-pinentry ask|replace|keep] [-dir dir]
   inua keyring status|import [-n]|enable|disable|replace|lock
+  inua workshop list|new [--js] DIR [NAME]|install [-y] URL|DIR|remove ID|run ID|DIR|dev DIR
   inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua clipboard capture [history-path]
   inua version`)

@@ -3,7 +3,7 @@
 // system-monitor | tailscale | pass | gpg | viewer; for Clock (world, alarms, stopwatch,
 // timer) and System Monitor (overview, processes) a tab, and for Image
 // Viewer the images (a file to step through its folder, a folder, or
-// several files).
+// several files). inua-apps workshop ID|DIR runs a workshop app.
 package main
 
 import (
@@ -19,9 +19,10 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-apps [-ui-dir DIR] clock|weather|stocks|calculator|calendar|color-picker|system-monitor|tailscale|pass|gpg [page]")
 		fmt.Fprintln(os.Stderr, "       inua-apps [-ui-dir DIR] viewer [file|folder]...")
+		fmt.Fprintln(os.Stderr, "       inua-apps [-ui-dir DIR] workshop [--dev] ID|DIR")
 	}
 	flag.Parse()
-	if flag.NArg() < 1 || (flag.Arg(0) != "viewer" && flag.NArg() > 2) {
+	if flag.NArg() < 1 || (flag.Arg(0) != "viewer" && flag.Arg(0) != "workshop" && flag.NArg() > 2) {
 		flag.Usage()
 		os.Exit(2)
 	}

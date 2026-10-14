@@ -1137,6 +1137,7 @@ msgid "TRUSTED APPS"
 msgstr ""
 
 #: internal/appui/pass.go:1016
+#: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
@@ -1162,6 +1163,7 @@ msgid "%s · %s"
 msgstr ""
 
 #: internal/appui/pass.go:1032
+#: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
@@ -1271,7 +1273,7 @@ msgstr ""
 
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
-#: internal/ui/dock.go:402
+#: internal/ui/dock.go:413
 msgid "Quit"
 msgstr ""
 
@@ -1342,7 +1344,8 @@ msgstr ""
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:261
+#: internal/shell/dock.go:262
+#: internal/shell/dock.go:292
 msgid "NETWORK"
 msgstr ""
 
@@ -1666,6 +1669,7 @@ msgid "Speed"
 msgstr ""
 
 #: internal/appui/sysmon.go:986
+#: internal/appui/workshop_manager.go:50
 msgid "Installed"
 msgstr ""
 
@@ -2283,6 +2287,160 @@ msgstr ""
 
 #: internal/appui/weather.go:470
 msgid "No place by that name"
+msgstr ""
+
+#: internal/appui/workshop.go:39
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:3
+msgid "Workshop"
+msgstr ""
+
+#: internal/appui/workshop.go:202
+msgid "Starting %s…"
+msgstr ""
+
+#: internal/appui/workshop.go:215
+msgid "%s could not start"
+msgstr ""
+
+#: internal/appui/workshop.go:226
+msgid "It ended without an error."
+msgstr ""
+
+#: internal/appui/workshop.go:230
+msgid "%s stopped"
+msgstr ""
+
+#: internal/appui/workshop.go:281
+msgid "Start again"
+msgstr ""
+
+#: internal/appui/workshop.go:287
+msgid "It starts again by itself when a file of it changes."
+msgstr ""
+
+#: internal/appui/workshop.go:682
+msgid "Unknown building block %q"
+msgstr ""
+
+#: internal/appui/workshop.go:963
+#: internal/ui/askpass.go:267
+#: internal/ui/askpass.go:384
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
+#: ui/pass.ui:446
+#: ui/pass.ui:543
+#: ui/polkit.ui:733
+msgid "Cancel"
+msgstr ""
+
+#: internal/appui/workshop.go:968
+#: internal/ui/askpass.go:266
+msgid "OK"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:60
+msgid "Uses: %s"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:63
+#: internal/ui/record.go:163
+msgid "Open"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:64
+msgid "Remove…"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:70
+msgid "No workshop apps yet"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:70
+msgid "Install one below, or write your own."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:82
+msgid "Broken"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:82
+msgid "Their app.toml could not be read"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:88
+msgid "Add"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:89
+msgid "From a folder"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:89
+msgid "A folder with an app.toml; it is copied."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:90
+#: ui/settings.ui:498
+msgid "Choose…"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:91
+msgid "From git"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:91
+msgid "In a terminal: inua workshop install URL"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:92
+msgid "Write your own"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:92
+msgid "inua workshop new DIR makes one; inua workshop dev DIR runs it, again on every save. The guide is docs/workshop.md in inua."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:115
+msgid "Remove %s?"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:115
+msgid "Its folder and launcher entry go to the trash; its data stays."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:122
+msgid "Removed %s."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:134
+msgid "A workshop app: a folder with an app.toml"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:144
+msgid "nothing beyond what every app has"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:148
+msgid "It runs %s, as you, with your files, like any program you start. It uses: %s."
+msgstr ""
+
+#: internal/appui/workshop_manager.go:149
+msgid "Install %s?"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:151
+msgid "Replace the installed %s?"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:154
+msgid "Install"
+msgstr ""
+
+#: internal/appui/workshop_manager.go:164
+msgid "Installed %s; the launcher and the dock's drawer list it."
 msgstr ""
 
 #: internal/assistant/assistant.go:426
@@ -4751,7 +4909,7 @@ msgid "SPACE PINBALL"
 msgstr ""
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr ""
@@ -4784,7 +4942,7 @@ msgstr ""
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4997,7 +5155,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr ""
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "inua's settings"
 msgstr ""
 
@@ -5143,35 +5301,58 @@ msgstr ""
 msgid "Web search"
 msgstr ""
 
-#: internal/shell/dock.go:245
+#: internal/shell/dock.go:246
+#: internal/shell/dock.go:292
 msgid "EVERYDAY"
 msgstr ""
 
-#: internal/shell/dock.go:252
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:292
 msgid "TOOLS"
 msgstr ""
 
-#: internal/shell/dock.go:264
+#: internal/shell/dock.go:265
 msgid "PLAY"
 msgstr ""
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
+#: internal/shell/dock.go:294
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr ""
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Find apps, windows and answers"
 msgstr ""
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr ""
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 msgid "Capture an area, a window or a screen"
+msgstr ""
+
+#: internal/shell/dock.go:293
+msgid "DEVELOPMENT"
+msgstr ""
+
+#: internal/shell/dock.go:293
+msgid "MEDIA"
+msgstr ""
+
+#: internal/shell/dock.go:293
+msgid "GAMES"
+msgstr ""
+
+#: internal/shell/dock.go:294
+msgid "OTHER"
+msgstr ""
+
+#: internal/shell/dock.go:319
+msgid "WORKSHOP"
 msgstr ""
 
 #: internal/shell/launcher.go:48
@@ -5382,23 +5563,6 @@ msgstr ""
 
 #: internal/ui/askpass.go:244
 msgid "Passphrase"
-msgstr ""
-
-#: internal/ui/askpass.go:266
-msgid "OK"
-msgstr ""
-
-#: internal/ui/askpass.go:267
-#: internal/ui/askpass.go:384
-#: ui/clock.ui:244
-#: ui/clock.ui:454
-#: ui/gpg.ui:1252
-#: ui/gpg.ui:1469
-#: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
-#: ui/polkit.ui:733
-msgid "Cancel"
 msgstr ""
 
 #: internal/ui/askpass.go:327
@@ -5638,28 +5802,32 @@ msgstr ""
 msgid "Log out?"
 msgstr ""
 
-#: internal/ui/dock.go:394
+#: internal/ui/dock.go:405
 msgid "New Window"
 msgstr ""
 
-#: internal/ui/dock.go:396
+#: internal/ui/dock.go:407
 msgid "Remove from Dock"
 msgstr ""
 
-#: internal/ui/dock.go:398
+#: internal/ui/dock.go:409
 msgid "Keep in Dock"
 msgstr ""
 
-#: internal/ui/dock.go:404
+#: internal/ui/dock.go:415
 msgid "Quit (%d windows)"
 msgstr ""
 
-#: internal/ui/drawer.go:148
+#: internal/ui/drawer.go:212
 #: ui/settings.ui:1532
 msgid "Apps"
 msgstr ""
 
-#: internal/ui/drawer.go:243
+#: internal/ui/drawer.go:215
+msgid "Workshop apps"
+msgstr ""
+
+#: internal/ui/drawer.go:316
 msgid "The light apps are not installed (make install)."
 msgstr ""
 
@@ -5701,7 +5869,7 @@ msgstr ""
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr ""
 
-#: internal/ui/launcher.go:285
+#: internal/ui/launcher.go:286
 msgid "inua launcher"
 msgstr ""
 
@@ -5900,10 +6068,6 @@ msgstr ""
 
 #: internal/ui/record.go:159
 msgid "Screen recording"
-msgstr ""
-
-#: internal/ui/record.go:163
-msgid "Open"
 msgstr ""
 
 #: internal/ui/record.go:163
@@ -6543,6 +6707,18 @@ msgstr ""
 msgid "Could not upgrade: %s"
 msgstr ""
 
+#: internal/workshop/session.go:126
+msgid "It ended before saying hello; what it wrote is below."
+msgstr ""
+
+#: internal/workshop/session.go:130
+msgid "It did not answer"
+msgstr ""
+
+#: internal/workshop/session.go:133
+msgid "It speaks version %d of the workshop protocol; this inua speaks %d."
+msgstr ""
+
 #: ui/agenda.ui:50
 msgid "[CALENDAR]"
 msgstr ""
@@ -7133,10 +7309,6 @@ msgstr ""
 
 #: ui/settings.ui:489
 msgid "none: a fine texture"
-msgstr ""
-
-#: ui/settings.ui:498
-msgid "Choose…"
 msgstr ""
 
 #: ui/settings.ui:508
@@ -8175,4 +8347,12 @@ msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:20
 msgid "forecast;temperature;rain;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:10
+msgid "Your own light apps: open, install and remove them"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:20
+msgid "workshop;plugin;app;script;extension;"
 msgstr ""

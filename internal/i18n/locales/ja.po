@@ -1131,6 +1131,7 @@ msgid "TRUSTED APPS"
 msgstr "信頼するアプリ"
 
 #: internal/appui/pass.go:1016
+#: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
@@ -1155,6 +1156,7 @@ msgid "%s · %s"
 msgstr "%s · %s"
 
 #: internal/appui/pass.go:1032
+#: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
@@ -1263,7 +1265,7 @@ msgstr "検索できませんでした: %s"
 
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
-#: internal/ui/dock.go:402
+#: internal/ui/dock.go:413
 msgid "Quit"
 msgstr "やめる"
 
@@ -1334,7 +1336,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:261
+#: internal/shell/dock.go:262
+#: internal/shell/dock.go:292
 msgid "NETWORK"
 msgstr "ネットワーク"
 
@@ -1654,6 +1657,7 @@ msgid "Speed"
 msgstr "速度"
 
 #: internal/appui/sysmon.go:986
+#: internal/appui/workshop_manager.go:50
 msgid "Installed"
 msgstr "インストールされました"
 
@@ -2272,6 +2276,160 @@ msgstr "更新済み %s · OPEN-METEO"
 #: internal/appui/weather.go:470
 msgid "No place by that name"
 msgstr "そんな名前の場所はない"
+
+#: internal/appui/workshop.go:39
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:3
+msgid "Workshop"
+msgstr "ワークショップ"
+
+#: internal/appui/workshop.go:202
+msgid "Starting %s…"
+msgstr "%s を起動中…"
+
+#: internal/appui/workshop.go:215
+msgid "%s could not start"
+msgstr "%s を起動できませんでした"
+
+#: internal/appui/workshop.go:226
+msgid "It ended without an error."
+msgstr "エラーなしで終了しました。"
+
+#: internal/appui/workshop.go:230
+msgid "%s stopped"
+msgstr "%s が停止しました"
+
+#: internal/appui/workshop.go:281
+msgid "Start again"
+msgstr "もう一度起動"
+
+#: internal/appui/workshop.go:287
+msgid "It starts again by itself when a file of it changes."
+msgstr "ファイルが変わると自動で起動し直します。"
+
+#: internal/appui/workshop.go:682
+msgid "Unknown building block %q"
+msgstr "不明な部品 %q"
+
+#: internal/appui/workshop.go:963
+#: internal/ui/askpass.go:267
+#: internal/ui/askpass.go:384
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
+#: ui/pass.ui:446
+#: ui/pass.ui:543
+#: ui/polkit.ui:733
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: internal/appui/workshop.go:968
+#: internal/ui/askpass.go:266
+msgid "OK"
+msgstr "わかりました"
+
+#: internal/appui/workshop_manager.go:60
+msgid "Uses: %s"
+msgstr "使うもの: %s"
+
+#: internal/appui/workshop_manager.go:63
+#: internal/ui/record.go:163
+msgid "Open"
+msgstr "開く"
+
+#: internal/appui/workshop_manager.go:64
+msgid "Remove…"
+msgstr "削除…"
+
+#: internal/appui/workshop_manager.go:70
+msgid "No workshop apps yet"
+msgstr "ワークショップのアプリはまだありません"
+
+#: internal/appui/workshop_manager.go:70
+msgid "Install one below, or write your own."
+msgstr "下からインストールするか、自分で作りましょう。"
+
+#: internal/appui/workshop_manager.go:82
+msgid "Broken"
+msgstr "壊れているもの"
+
+#: internal/appui/workshop_manager.go:82
+msgid "Their app.toml could not be read"
+msgstr "app.toml を読めませんでした"
+
+#: internal/appui/workshop_manager.go:88
+msgid "Add"
+msgstr "追加"
+
+#: internal/appui/workshop_manager.go:89
+msgid "From a folder"
+msgstr "フォルダから"
+
+#: internal/appui/workshop_manager.go:89
+msgid "A folder with an app.toml; it is copied."
+msgstr "app.toml のあるフォルダ。コピーされます。"
+
+#: internal/appui/workshop_manager.go:90
+#: ui/settings.ui:498
+msgid "Choose…"
+msgstr "選択してください…"
+
+#: internal/appui/workshop_manager.go:91
+msgid "From git"
+msgstr "git から"
+
+#: internal/appui/workshop_manager.go:91
+msgid "In a terminal: inua workshop install URL"
+msgstr "ターミナルで: inua workshop install URL"
+
+#: internal/appui/workshop_manager.go:92
+msgid "Write your own"
+msgstr "自分で作る"
+
+#: internal/appui/workshop_manager.go:92
+msgid "inua workshop new DIR makes one; inua workshop dev DIR runs it, again on every save. The guide is docs/workshop.md in inua."
+msgstr "inua workshop new DIR で作り、inua workshop dev DIR で実行します。保存するたびに起動し直します。ガイドは inua の docs/workshop.md です。"
+
+#: internal/appui/workshop_manager.go:115
+msgid "Remove %s?"
+msgstr "%s を削除しますか？"
+
+#: internal/appui/workshop_manager.go:115
+msgid "Its folder and launcher entry go to the trash; its data stays."
+msgstr "フォルダとランチャーの項目はゴミ箱へ移ります。データは残ります。"
+
+#: internal/appui/workshop_manager.go:122
+msgid "Removed %s."
+msgstr "%s を削除しました。"
+
+#: internal/appui/workshop_manager.go:134
+msgid "A workshop app: a folder with an app.toml"
+msgstr "ワークショップのアプリ: app.toml のあるフォルダ"
+
+#: internal/appui/workshop_manager.go:144
+msgid "nothing beyond what every app has"
+msgstr "どのアプリにもあるもの以外は何も"
+
+#: internal/appui/workshop_manager.go:148
+msgid "It runs %s, as you, with your files, like any program you start. It uses: %s."
+msgstr "%s を、あなたとして、あなたのファイルとともに実行します。起動するほかのプログラムと同じです。使うもの: %s。"
+
+#: internal/appui/workshop_manager.go:149
+msgid "Install %s?"
+msgstr "%s をインストールしますか？"
+
+#: internal/appui/workshop_manager.go:151
+msgid "Replace the installed %s?"
+msgstr "インストール済みの %s を置き換えますか？"
+
+#: internal/appui/workshop_manager.go:154
+msgid "Install"
+msgstr "インストール"
+
+#: internal/appui/workshop_manager.go:164
+msgid "Installed %s; the launcher and the dock's drawer list it."
+msgstr "%s をインストールしました。ランチャーとドックの引き出しに表示されます。"
 
 #: internal/assistant/assistant.go:426
 msgid "Remote Console: %s"
@@ -4737,7 +4895,7 @@ msgid "SPACE PINBALL"
 msgstr "スペースピンボール"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "ランチャー"
@@ -4770,7 +4928,7 @@ msgstr "フォーカスのオンまたはオフ"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4983,7 +5141,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "もう一度 Enter を押すとゴミ箱を空にします"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "inua's settings"
 msgstr "inuaの設定"
 
@@ -5129,36 +5287,59 @@ msgstr "ウェブアドレス"
 msgid "Web search"
 msgstr "ウェブ検索"
 
-#: internal/shell/dock.go:245
+#: internal/shell/dock.go:246
+#: internal/shell/dock.go:292
 msgid "EVERYDAY"
 msgstr "毎日"
 
-#: internal/shell/dock.go:252
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:292
 msgid "TOOLS"
 msgstr "ツール"
 
-#: internal/shell/dock.go:264
+#: internal/shell/dock.go:265
 msgid "PLAY"
 msgstr "遊び"
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
+#: internal/shell/dock.go:294
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "システム"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "スクリーンショット"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 msgid "Capture an area, a window or a screen"
 msgstr "領域、ウィンドウ、または画面をキャプチャする"
+
+#: internal/shell/dock.go:293
+msgid "DEVELOPMENT"
+msgstr "開発"
+
+#: internal/shell/dock.go:293
+msgid "MEDIA"
+msgstr "メディア"
+
+#: internal/shell/dock.go:293
+msgid "GAMES"
+msgstr "ゲーム"
+
+#: internal/shell/dock.go:294
+msgid "OTHER"
+msgstr "その他"
+
+#: internal/shell/dock.go:319
+msgid "WORKSHOP"
+msgstr "ワークショップ"
 
 #: internal/shell/launcher.go:48
 msgid "[WINDOWS]"
@@ -5369,23 +5550,6 @@ msgstr "OpenPGP 鍵のロック解除"
 #: internal/ui/askpass.go:244
 msgid "Passphrase"
 msgstr "パスフレーズ"
-
-#: internal/ui/askpass.go:266
-msgid "OK"
-msgstr "わかりました"
-
-#: internal/ui/askpass.go:267
-#: internal/ui/askpass.go:384
-#: ui/clock.ui:244
-#: ui/clock.ui:454
-#: ui/gpg.ui:1252
-#: ui/gpg.ui:1469
-#: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
-#: ui/polkit.ui:733
-msgid "Cancel"
-msgstr "キャンセル"
 
 #: internal/ui/askpass.go:327
 msgid "Trust the list of apps again?"
@@ -5621,28 +5785,32 @@ msgstr "ログアウト"
 msgid "Log out?"
 msgstr "ログアウトしますか？"
 
-#: internal/ui/dock.go:394
+#: internal/ui/dock.go:405
 msgid "New Window"
 msgstr "新しい窓"
 
-#: internal/ui/dock.go:396
+#: internal/ui/dock.go:407
 msgid "Remove from Dock"
 msgstr "ドックから取り外す"
 
-#: internal/ui/dock.go:398
+#: internal/ui/dock.go:409
 msgid "Keep in Dock"
 msgstr "ドックに固定"
 
-#: internal/ui/dock.go:404
+#: internal/ui/dock.go:415
 msgid "Quit (%d windows)"
 msgstr "終了 (%d Windows)"
 
-#: internal/ui/drawer.go:148
+#: internal/ui/drawer.go:212
 #: ui/settings.ui:1532
 msgid "Apps"
 msgstr "アプリ"
 
-#: internal/ui/drawer.go:243
+#: internal/ui/drawer.go:215
+msgid "Workshop apps"
+msgstr "ワークショップのアプリ"
+
+#: internal/ui/drawer.go:316
 msgid "The light apps are not installed (make install)."
 msgstr "ライトアプリはインストールされない(メイクインストール)。"
 
@@ -5684,7 +5852,7 @@ msgstr "hyprland.lua は inua.lua を読み込んだ後にこれらを再設定�
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyprland.conf は、inua.conf をロードした後にこれらを再度設定します。これは、inua: %s よりも優先されます。ソース行をそれらの下に移動します。"
 
-#: internal/ui/launcher.go:285
+#: internal/ui/launcher.go:286
 msgid "inua launcher"
 msgstr "イヌアランチャー"
 
@@ -5883,10 +6051,6 @@ msgstr "録音が保存されました"
 #: internal/ui/record.go:159
 msgid "Screen recording"
 msgstr "画面記録"
-
-#: internal/ui/record.go:163
-msgid "Open"
-msgstr "開く"
 
 #: internal/ui/record.go:163
 #: internal/ui/screenshot.go:789
@@ -6520,6 +6684,18 @@ msgstr "inua をアップグレードできませんでした"
 msgid "Could not upgrade: %s"
 msgstr "アップグレードできませんでした: %s"
 
+#: internal/workshop/session.go:126
+msgid "It ended before saying hello; what it wrote is below."
+msgstr "あいさつの前に終了しました。出力は下にあります。"
+
+#: internal/workshop/session.go:130
+msgid "It did not answer"
+msgstr "応答がありませんでした"
+
+#: internal/workshop/session.go:133
+msgid "It speaks version %d of the workshop protocol; this inua speaks %d."
+msgstr "ワークショップ・プロトコルのバージョン %d を話します。この inua は %d です。"
+
 #: ui/agenda.ui:50
 msgid "[CALENDAR]"
 msgstr "[カレンダー]"
@@ -7111,10 +7287,6 @@ msgstr "画像"
 #: ui/settings.ui:489
 msgid "none: a fine texture"
 msgstr "画像なし：細かな模様"
-
-#: ui/settings.ui:498
-msgid "Choose…"
-msgstr "選択してください…"
 
 #: ui/settings.ui:508
 msgid "No image"
@@ -8153,3 +8325,11 @@ msgstr "現在の天気と今後の天気"
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:20
 msgid "forecast;temperature;rain;"
 msgstr "予報;気温;雨;"
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:10
+msgid "Your own light apps: open, install and remove them"
+msgstr "自作のライトアプリを開く・インストールする・削除する"
+
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:20
+msgid "workshop;plugin;app;script;extension;"
+msgstr "ワークショップ;プラグイン;アプリ;スクリプト;拡張;workshop;"

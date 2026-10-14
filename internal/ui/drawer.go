@@ -2,6 +2,7 @@ package ui
 
 import (
 	"log"
+	"os"
 	"os/exec"
 	"slices"
 	"strings"
@@ -18,6 +19,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/workshop"
 )
 
 // The dock's drawer: a button at the dock's end (dock.drawer) that opens
@@ -36,7 +38,15 @@ const drawerRevealMS = 220
 // assistant is on.
 const assistantApp = "io.github.lyricat.Inua.Assistant"
 
+// The drawers: inua's tools and light apps, and the workshop apps.
+const (
+	drawerApps     = "apps"
+	drawerWorkshop = "workshop"
+)
+
 type drawerPanel struct {
+	kind     string // drawerApps or drawerWorkshop
+	bar      *bar   // whose dock it opened from
 	win      gtk.ApplicationWindow
 	backdrop *gtk.Box // borrowed from win
 	reveal   *gtk.Revealer
@@ -47,8 +57,14 @@ type drawerPanel struct {
 func (s *shellUI) bindDrawerHandlers() {
 	s.onDrawerClicked = func(b gtk.Button) {
 		for _, bar := range s.bars {
-			if d := bar.dock; d != nil && d.drawer != nil && d.drawer.GoPointer() == b.GoPointer() {
-				s.toggleDrawer(bar)
+			d := bar.dock
+			switch {
+			case d == nil:
+			case d.drawer != nil && d.drawer.GoPointer() == b.GoPointer():
+				s.toggleDrawer(bar, drawerApps)
+				return
+			case d.workshop != nil && d.workshop.GoPointer() == b.GoPointer():
+				s.toggleDrawer(bar, drawerWorkshop)
 				return
 			}
 		}
@@ -63,9 +79,12 @@ func (s *shellUI) bindDrawerHandlers() {
 			return
 		}
 		gtkx.Post(s.closeDrawer) // the button is in the drawer
-		for _, e := range shell.LightApps(s.dockState.apps) {
-			if e.ID == id {
-				s.launchApp(e)
+		for _, g := range append(s.drawerSections(), s.workshopSections()...) {
+			for _, e := range g.Apps {
+				if e.ID == id {
+					s.launchApp(e)
+					return
+				}
 			}
 		}
 	}
@@ -80,9 +99,20 @@ func (s *shellUI) bindDrawerHandlers() {
 		}
 		outside := hit.GoPointer() == p.backdrop.GoPointer()
 		hit.Unref() // Pick returned a new reference
-		if outside {
-			gtkx.Post(s.closeDrawer)
+		if !outside {
+			return
 		}
+		// Over the other drawer's button, under this one's overlay: that
+		// drawer, once this one is gone.
+		if d := p.bar.dock; d != nil {
+			for kind, btn := range map[string]*gtk.Button{drawerApps: d.drawer, drawerWorkshop: d.workshop} {
+				if kind != p.kind && btn != nil && s.overDockButton(p.bar, btn, x, y) {
+					b := p.bar
+					p.then = func() { s.toggleDrawer(b, kind) }
+				}
+			}
+		}
+		gtkx.Post(s.closeDrawer)
 	}
 	s.onDrawerKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
 		if keyval != keyEscape {
@@ -91,10 +121,23 @@ func (s *shellUI) bindDrawerHandlers() {
 		gtkx.Post(s.closeDrawer)
 		return true
 	}
+	// A workshop app installed or removed from a terminal: the dock's
+	// workshop button comes or goes within a few seconds. A stat of the
+	// apps' folder each time; they are read again only when it changed.
+	s.onWorkshopTick = func(uintptr) bool {
+		was := s.dockState.workshopStamp
+		s.installedWorkshop()
+		if s.dockState.workshopStamp != was {
+			s.renderDocks()
+		}
+		return true
+	}
+	glib.TimeoutAdd(3000, &s.onWorkshopTick, 0)
 	s.onDrawerGone = func(uintptr) bool {
 		if p := s.dockState.drawer; p != nil && p.closing {
 			s.dockState.drawer = nil
 			p.win.Destroy()
+			s.renderDocks() // a workshop app installed or removed meanwhile: its button
 			s.hideDocksSoon()
 			if p.then != nil {
 				p.then()
@@ -108,17 +151,36 @@ func (s *shellUI) bindDrawerHandlers() {
 // is off or its program is missing (as the launcher's row).
 func (s *shellUI) drawerSections() []shell.AppGroup {
 	_, err := exec.LookPath("inua-assistant")
-	if s.cfg.Assistant.Enable && err == nil {
-		return shell.LightAppSections(s.dockState.apps)
-	}
+	assistant := s.cfg.Assistant.Enable && err == nil
 	var out []shell.AppGroup
 	for _, g := range shell.LightAppSections(s.dockState.apps) {
-		g.Apps = slices.DeleteFunc(g.Apps, func(e *desktop.Entry) bool { return e.ID == assistantApp })
+		if !assistant {
+			g.Apps = slices.DeleteFunc(g.Apps, func(e *desktop.Entry) bool { return e.ID == assistantApp })
+		}
 		if len(g.Apps) > 0 {
 			out = append(out, g)
 		}
 	}
 	return out
+}
+
+// installedWorkshop is the workshop apps installed, read again only when
+// their folder changed: the dock asks at every change of the windows.
+func (s *shellUI) installedWorkshop() []workshop.Manifest {
+	stamp := ""
+	if info, err := os.Stat(workshop.AppsDir()); err == nil {
+		stamp = info.ModTime().String()
+	}
+	if stamp != s.dockState.workshopStamp {
+		s.dockState.workshopStamp = stamp
+		s.dockState.workshopApps, _ = workshop.Installed()
+	}
+	return s.dockState.workshopApps
+}
+
+// workshopSections are the workshop drawer's groups, by category.
+func (s *shellUI) workshopSections() []shell.AppGroup {
+	return shell.WorkshopSections(s.dockState.apps, s.installedWorkshop())
 }
 
 // drawerShellApp opens one of the shell's tools, the drawer gone.
@@ -139,19 +201,25 @@ func (s *shellUI) drawerShellApp(id string) {
 	}
 }
 
-// drawerButton is the button at the dock's end, the size of an app's.
-func (s *shellUI) drawerButton(size int) *gtk.Button {
+// drawerButton is a drawer's button at the dock's end, the size of an
+// app's: kind is drawerApps or drawerWorkshop.
+func (s *shellUI) drawerButton(size int, kind string) *gtk.Button {
 	btn := gtk.NewButton()
 	btn.AddCssClass("dock-item")
 	btn.AddCssClass("dock-drawer")
-	btn.SetName("dock-drawer")
+	btn.SetName("dock-" + kind)
+	icon := "view-app-grid-symbolic"
 	btn.SetTooltipText(i18n.T("Apps"))
+	if kind == drawerWorkshop {
+		icon = "application-x-addon-symbolic"
+		btn.SetTooltipText(i18n.T("Workshop apps"))
+	}
 	btn.SetFocusable(false)
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 3)
 	frame := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	frame.AddCssClass("drawer-frame")
 	frame.SetSizeRequest(int32(size), int32(size))
-	img := gtk.NewImageFromIconName("view-app-grid-symbolic")
+	img := gtk.NewImageFromIconName(icon)
 	img.SetPixelSize(int32(max(14, size*9/20)))
 	img.SetHexpand(true)
 	img.SetHalign(gtk.AlignCenterValue)
@@ -168,28 +236,33 @@ func (s *shellUI) drawerButton(size int) *gtk.Button {
 	return btn
 }
 
-// toggleDrawer opens the drawer over a bar's dock, or closes it.
-func (s *shellUI) toggleDrawer(b *bar) {
+// toggleDrawer opens a drawer over a bar's dock, or closes it; the other
+// drawer, when open, gives way to it.
+func (s *shellUI) toggleDrawer(b *bar, kind string) {
 	if p := s.dockState.drawer; p != nil {
-		if !p.closing {
+		if !p.closing && p.kind == kind {
 			s.closeDrawer()
 			return
 		}
-		// Opened again while sliding away: that one goes now.
+		// The other drawer, or opened again while sliding away: that one
+		// goes now.
 		s.dockState.drawer = nil
 		p.win.Destroy()
 	}
 	if s.dockState.menu != nil {
 		s.dockState.menu.Popdown()
 	}
-	s.openDrawer(b)
+	s.openDrawer(b, kind)
 }
 
 // drawerContent is the card: each group's title, then its apps in rows of
 // drawerColumns, every cell as wide as the others, so a long name wraps
 // instead of widening the row.
-func (s *shellUI) drawerContent() *gtk.Box {
+func (s *shellUI) drawerContent(kind string) *gtk.Box {
 	sections := s.drawerSections()
+	if kind == drawerWorkshop {
+		sections = s.workshopSections()
+	}
 	content := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	for _, g := range sections {
 		title := gtk.NewLabel(i18n.T(g.Title))
@@ -239,7 +312,7 @@ func (s *shellUI) drawerContent() *gtk.Box {
 		}
 		gtkx.Append(content, &grid.Widget)
 	}
-	if len(shell.LightApps(s.dockState.apps)) == len(shell.ShellApps) {
+	if kind == drawerApps && len(shell.LightApps(s.dockState.apps)) == len(shell.ShellApps) {
 		l := gtk.NewLabel(i18n.T("The light apps are not installed (make install)."))
 		l.AddCssClass("drawer-empty")
 		gtkx.Append(content, &l.Widget)
@@ -248,12 +321,20 @@ func (s *shellUI) drawerContent() *gtk.Box {
 }
 
 // openDrawer slides the launcher out from the dock edge, beside its button.
-func (s *shellUI) openDrawer(b *bar) {
+func (s *shellUI) openDrawer(b *bar, kind string) {
 	d := b.dock
-	if d == nil || d.drawer == nil {
+	if d == nil {
 		return
 	}
-	p := &drawerPanel{win: *gtk.NewApplicationWindow(s.app)}
+	button := d.drawer
+	if kind == drawerWorkshop {
+		button = d.workshop
+		s.freshenApps() // an app just installed: its desktop entry
+	}
+	if button == nil {
+		return
+	}
+	p := &drawerPanel{kind: kind, bar: b, win: *gtk.NewApplicationWindow(s.app)}
 	p.win.AddCssClass("drawer-overlay")
 	backdrop := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	backdrop.SetHexpand(true)
@@ -270,7 +351,7 @@ func (s *shellUI) openDrawer(b *bar) {
 	scroll.SetPolicy(gtk.PolicyNeverValue, gtk.PolicyAutomaticValue)
 	scroll.SetPropagateNaturalWidth(true)
 	scroll.SetPropagateNaturalHeight(true)
-	content := s.drawerContent()
+	content := s.drawerContent(kind)
 	scroll.SetChild(&content.Widget)
 	content.Unref()
 	gtkx.Append(card, &scroll.Widget)
@@ -304,7 +385,7 @@ func (s *shellUI) openDrawer(b *bar) {
 	}
 	var r graphene.Rect
 	var f [4]float32
-	hasBounds := d.drawer.ComputeBounds(&d.win.Widget, &r)
+	hasBounds := button.ComputeBounds(&d.win.Widget, &r)
 	if hasBounds {
 		f = *(*[4]float32)(unsafe.Pointer(&r))
 	}
@@ -371,6 +452,38 @@ func (s *shellUI) openDrawer(b *bar) {
 	s.refocusPointer()
 }
 
+// overDockButton reports whether the point x, y of the drawer's overlay
+// (the monitor's coordinates) is on one of the dock's buttons. The dock is
+// centred along its edge, as openDrawer places the card by it.
+func (s *shellUI) overDockButton(b *bar, btn *gtk.Button, x, y float64) bool {
+	d := b.dock
+	var r graphene.Rect
+	if d == nil || !btn.ComputeBounds(&d.win.Widget, &r) {
+		return false
+	}
+	f := *(*[4]float32)(unsafe.Pointer(&r))
+	var geo gdk.Rectangle
+	b.mon.GetGeometry(&geo)
+	dockW, dockH := float64(d.win.GetWidth()), float64(d.win.GetHeight())
+	var ox, oy float64 // the dock window's corner
+	switch d.position {
+	case "left":
+		ox, oy = 0, (float64(geo.Height)-dockH)/2
+	case "right":
+		ox, oy = float64(geo.Width)-dockW, (float64(geo.Height)-dockH)/2
+	case "top":
+		barH := 0.0
+		if s.cfg.Bar.Enable {
+			barH = float64(b.win.GetHeight())
+		}
+		ox, oy = (float64(geo.Width)-dockW)/2, barH
+	default: // bottom
+		ox, oy = (float64(geo.Width)-dockW)/2, float64(geo.Height)-dockH
+	}
+	bx, by := ox+float64(f[0]), oy+float64(f[1])
+	return x >= bx && x < bx+float64(f[2]) && y >= by && y < by+float64(f[3])
+}
+
 // drawerGap is the least space between the drawer and the screen's edges.
 const drawerGap = 8
 
@@ -395,13 +508,16 @@ func (s *shellUI) closeDrawer() {
 // drawer of the dock on the focused monitor.
 func (s *shellUI) drawerRequest(fn string) bool {
 	p := s.dockState.drawer
-	open := p != nil && !p.closing
+	kind := drawerApps
 	switch fn {
 	case "toggle", "open", "close":
+	case "workshop": // toggles the workshop drawer
+		kind = drawerWorkshop
 	default:
 		return false
 	}
-	if fn == "close" || (fn == "toggle" && open) {
+	open := p != nil && !p.closing && p.kind == kind
+	if fn == "close" || ((fn == "toggle" || fn == "workshop") && open) {
 		s.closeDrawer()
 		return true
 	}
@@ -412,8 +528,11 @@ func (s *shellUI) drawerRequest(fn string) bool {
 		if b.dock == nil || b.connector() != s.snap.FocusedMonitor || b.dock.drawer == nil {
 			continue
 		}
+		if kind == drawerWorkshop && b.dock.workshop == nil {
+			continue // no workshop app installed
+		}
 		s.showDock(b.dock)
-		s.toggleDrawer(b)
+		s.toggleDrawer(b, kind)
 	}
 	return true
 }
