@@ -367,6 +367,7 @@ func (s *shellUI) openDrawer(b *bar) {
 	s.dockState.drawer = p
 	p.win.Present()
 	reveal.SetRevealChild(true) // after Present, so it slides in
+	s.refocusPointer() // so a second click on the button, unmoved, closes it
 }
 
 // drawerGap is the least space between the drawer and the screen's edges.
