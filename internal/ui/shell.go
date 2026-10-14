@@ -65,6 +65,8 @@ type shellUI struct {
 	app   *gtk.Application
 	layer bool // compositor supports layer-shell and it is in use
 
+	appsStamp string // the applications folders as last scanned (desktop.Stamp)
+
 	client    *hypr.Client
 	snap      hypr.Snapshot
 	connected bool
@@ -218,6 +220,7 @@ type shellUI struct {
 	onDrawerBackdrop       func(gtk.GestureClick, int32, float64, float64)
 	onDrawerKey            func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onDrawerGone           glib.SourceFunc
+	onWorkshopTick         glib.SourceFunc
 	onDockMenu             func(gtk.GestureClick, int32, float64, float64)
 	onDockAction           func(gio.SimpleAction, uintptr)
 	onDockMenuClosed       func(gtk.Popover)
@@ -399,24 +402,7 @@ func (s *shellUI) start() {
 	// Bring hypr/inua.conf up to date with config.toml (edited while the
 	// shell was not running); Hyprland reloads only if it changed.
 	s.applyHyprland()
-	go func() {
-		locale := os.Getenv("LANG")
-		if selected := i18n.Lang(); selected != "" {
-			locale = selected
-		}
-		entries := desktop.Scan(desktop.DataDirs(), locale)
-		gtkx.Post(func() {
-			s.launcher.st.SetApps(entries)
-			s.dockApps(entries)
-			s.notes.apps = map[string]*desktop.Entry{}
-			for _, e := range entries {
-				s.notes.apps[e.ID] = e
-				s.notes.apps[strings.ToLower(e.ID)] = e
-			}
-			s.syncLauncher()
-			log.Printf("desktop: %d entries", len(entries))
-		})
-	}()
+	s.scanApps()
 	s.restartClock()
 }
 
@@ -923,4 +909,37 @@ func (s *shellUI) runAfter(ms uint32, f func()) {
 	s.afterSeq++
 	s.afterFns[s.afterSeq] = f
 	glib.TimeoutAdd(ms, &s.onAfter, s.afterSeq)
+}
+
+// scanApps reads the desktop entries, for the launcher, the dock and the
+// notifications, off the main loop.
+func (s *shellUI) scanApps() {
+	s.appsStamp = desktop.Stamp(desktop.DataDirs())
+	go func() {
+		locale := os.Getenv("LANG")
+		if selected := i18n.Lang(); selected != "" {
+			locale = selected
+		}
+		entries := desktop.Scan(desktop.DataDirs(), locale)
+		gtkx.Post(func() {
+			s.launcher.st.SetApps(entries)
+			s.dockApps(entries)
+			s.notes.apps = map[string]*desktop.Entry{}
+			for _, e := range entries {
+				s.notes.apps[e.ID] = e
+				s.notes.apps[strings.ToLower(e.ID)] = e
+			}
+			s.syncLauncher()
+			log.Printf("desktop: %d entries", len(entries))
+		})
+	}()
+}
+
+// freshenApps scans the desktop entries again when an applications folder
+// changed since: an app installed or removed (a workshop app among them)
+// shows without a restart.
+func (s *shellUI) freshenApps() {
+	if desktop.Stamp(desktop.DataDirs()) != s.appsStamp {
+		s.scanApps()
+	}
 }

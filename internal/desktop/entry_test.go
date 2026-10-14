@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 )
 
 const firefox = `[Desktop Entry]
@@ -105,5 +106,22 @@ func TestScanPrecedence(t *testing.T) {
 	}
 	if !slices.Equal(ids, []string{"a", "kde-b"}) || names[0] != "A user" {
 		t.Fatalf("ids %q names %q", ids, names)
+	}
+}
+
+// Stamp changes when an entry is added to one of the folders, not
+// otherwise.
+func TestStamp(t *testing.T) {
+	a, b := t.TempDir(), filepath.Join(t.TempDir(), "missing")
+	before := Stamp([]string{a, b})
+	if Stamp([]string{a, b}) != before {
+		t.Error("the stamp changed with nothing done")
+	}
+	time.Sleep(10 * time.Millisecond)
+	if err := os.WriteFile(filepath.Join(a, "new.desktop"), []byte("[Desktop Entry]\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if Stamp([]string{a, b}) == before {
+		t.Error("the stamp stayed after an entry was added")
 	}
 }

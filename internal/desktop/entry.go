@@ -239,6 +239,20 @@ func ParseExec(exec string, e *Entry) ([]string, error) {
 }
 
 // DataDirs returns application directories in precedence order.
+// Stamp sums up the times of the applications folders dirs (as DataDirs
+// gives them): it changes when an entry is added or removed there, so the
+// entries can be scanned again only then.
+func Stamp(dirs []string) string {
+	var b strings.Builder
+	for _, d := range dirs {
+		if info, err := os.Stat(d); err == nil {
+			b.WriteString(info.ModTime().String())
+		}
+		b.WriteByte(0)
+	}
+	return b.String()
+}
+
 func DataDirs() []string {
 	home := os.Getenv("XDG_DATA_HOME")
 	if home == "" {
