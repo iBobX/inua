@@ -19,7 +19,8 @@ import (
 
 // Entry is a decrypted entry as pass writes one: the first line is the
 // password; "key: value" lines are fields; an otpauth:// line is a
-// one-time password; what is left are notes.
+// one-time password; a line of dashes ("---") divides; what is left are
+// notes.
 type Entry struct {
 	Password string
 	Fields   []Field
@@ -54,6 +55,9 @@ func Parse(text string) Entry {
 	for _, l := range lines[1:] {
 		t := strings.TrimSpace(l)
 		switch m := fieldLine.FindStringSubmatch(l); {
+		case len(t) >= 3 && strings.Trim(t, "-") == "":
+			// A divider ("---"), as gopass and browserpass write before
+			// the fields: neither a field nor a note.
 		case strings.HasPrefix(t, "otpauth://") && e.OTP == "":
 			e.OTP = t
 		case m != nil && !strings.Contains(m[1], "://"):

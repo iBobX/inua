@@ -26,6 +26,10 @@ func TestParse(t *testing.T) {
 	if e := Parse("only\n"); e.Password != "only" || e.Fields != nil || e.Notes != "" {
 		t.Errorf("password alone: %+v", e)
 	}
+	// A divider is neither a field nor a note.
+	if e := Parse("p\n---\nuser: ann\n-----\nkept\n"); len(e.Fields) != 1 || e.Notes != "kept" {
+		t.Errorf("dividers: %+v", e)
+	}
 	// A URL alone on a line is a note, not a field "https".
 	if e := Parse("p\nhttps://example.org\n"); len(e.Fields) != 0 || e.Notes != "https://example.org" {
 		t.Errorf("a URL: %+v", e)
