@@ -188,8 +188,10 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	gtkx.ConnectNotify(&a.pages, "visible-child", &a.onPage)
 
-	// Files dropped on a device's page go to it with Taildrop.
-	drop := gtk.NewDropTarget(gdk.FileListGLibType(), gdk.ActionCopyValue)
+	// Files dropped on a device's page go to it with Taildrop. Move as
+	// well as copy: Nautilus offers its files to be moved only, and they
+	// are only read.
+	drop := gtk.NewDropTarget(gdk.FileListGLibType(), gdk.ActionCopyValue|gdk.ActionMoveValue)
 	a.onDrop = func(dt gtk.DropTarget, _ uintptr, _, _ float64) bool {
 		if v := dt.GetValue(); v != nil {
 			a.sendFiles(droppedPaths(v))
