@@ -164,7 +164,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 			return
 		}
 		a.picked, a.category = true, name
-		a.showCategories()
+		markSelected(&a.categoryList, "cat:"+name)
 		a.showEntries()
 		a.openForm(formMoveCategory, name)
 	}
@@ -383,6 +383,21 @@ func (a *passApp) showEntries() {
 	}
 }
 
+// markSelected moves the selection to the list's item of that name in
+// place: rebuilding the list would scroll it back to the top.
+func markSelected(list *gtk.Box, name string) {
+	for c := list.GetFirstChild(); c != nil; {
+		if c.GetName() == name {
+			c.AddCssClass("selected")
+		} else {
+			c.RemoveCssClass("selected")
+		}
+		next := c.GetNextSibling()
+		c.Unref() // GetFirstChild and GetNextSibling return new references
+		c = next
+	}
+}
+
 // passEntryRow is an entry in the list: in a square, the icon its name
 // calls for (a service's logo, what it is for: pass.Icon), else its
 // initial, which tell entries apart at a glance; its name; and below,
@@ -452,7 +467,7 @@ func (a *passApp) closeEntry() {
 func (a *passApp) openEntry(name string) {
 	a.closeEntry()
 	a.selected = name
-	a.showEntries()
+	markSelected(&a.entryList, "entry:"+name)
 	cat, sub := pass.Split(name)
 	a.entryTitle.SetText(sub)
 	a.entryPath.SetText(name)
@@ -603,7 +618,7 @@ func (a *passApp) button(name string) {
 	case "cat":
 		a.picked, a.category = true, arg
 		a.filter.SetText("")
-		a.showCategories()
+		markSelected(&a.categoryList, name)
 		a.showEntries()
 		if c, _ := pass.Split(a.selected); a.selected == "" || c != arg {
 			a.closeEntry()
