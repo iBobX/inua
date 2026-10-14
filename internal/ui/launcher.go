@@ -32,17 +32,18 @@ type launcher struct {
 	rates    *convert.Rates
 	fetching bool // exchange rates are being read
 
-	win        *gtk.ApplicationWindow // nil while closed
-	mode       gtk.Label
-	modeDesc   gtk.Label
-	query      gtk.Entry
-	results    gtk.Box
-	messageBox gtk.Box
-	messageTag gtk.Label
-	message    gtk.Label
-	refs       gtkx.Scope
-	hasFocus   bool
-	opens      int
+	win             *gtk.ApplicationWindow // nil while closed
+	mode            gtk.Label
+	modeDesc        gtk.Label
+	query           gtk.Entry
+	results         gtk.Box
+	messageBox      gtk.Box
+	messageTag      gtk.Label
+	message         gtk.Label
+	scrollRemainder float64
+	refs            gtkx.Scope
+	hasFocus        bool
+	opens           int
 }
 
 const (
@@ -63,6 +64,21 @@ const (
 func (s *shellUI) bindLauncherHandlers() {
 	s.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
 		return s.launcherKey(keyval)
+	}
+	s.onLauncherScroll = func(_ gtk.EventControllerScroll, _, dy float64) bool {
+		l := &s.launcher
+		if !l.st.Open || dy == 0 {
+			return false
+		}
+		l.scrollRemainder += dy
+		steps := int(l.scrollRemainder)
+		if steps == 0 {
+			return true
+		}
+		l.scrollRemainder -= float64(steps)
+		l.st.Move(steps)
+		s.renderLauncher()
+		return true
 	}
 	s.onQueryChanged = func(uintptr, uintptr) {
 		l := &s.launcher
@@ -298,6 +314,10 @@ func (s *shellUI) buildLauncher() {
 
 	gtkx.ConnectChanged(&l.query, &s.onQueryChanged)
 	l.query.ConnectActivate(&s.onQueryActivate)
+	scroll := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollDiscreteValue)
+	scroll.SetPropagationPhase(gtk.PhaseCaptureValue)
+	scroll.ConnectScroll(&s.onLauncherScroll)
+	l.results.AddController(&scroll.EventController)
 }
 
 // renderLauncher rebuilds the result rows from row.ui.
