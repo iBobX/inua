@@ -656,8 +656,6 @@ func (s *shellUI) renderOverviewView(o *workspaceOverview) {
 			ww.label = title
 			windowLayer.AddOverlay(&meta.Widget)
 			meta.Unref()
-			icon.Unref()
-			title.Unref()
 			b.SetChild(&windowLayer.Widget)
 			windowLayer.Unref()
 			o.images[w.Address] = preview
