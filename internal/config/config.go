@@ -327,6 +327,12 @@ type Keyring struct {
 	// Notify tells of each app's first secret read since inua-keyring
 	// started; off by default. Settings → Keyring lists every read.
 	Notify bool `toml:"notify"`
+	// Untrusted answers a read by an app not trusted with the secret when
+	// no one can be asked (no shell): "allow" (recorded) or "deny".
+	Untrusted string `toml:"untrusted"`
+	// LockAfter locks the keyring after so many minutes without a read;
+	// 0 locks it only with the screen, before suspend, or when asked.
+	LockAfter int `toml:"lock_after"`
 }
 
 // Dock is the app dock along a screen edge of each monitor.
@@ -453,7 +459,7 @@ func Default() Config {
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "org.gnome.Nautilus", "kitty"}},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
-		Keyring: Keyring{Folder: "inua-keyring"},
+		Keyring: Keyring{Folder: "inua-keyring", Untrusted: "allow"},
 	}
 }
 
@@ -518,6 +524,11 @@ func (c *Config) validate() []string {
 	if f := c.Keyring.Folder; f == "" || filepath.IsAbs(f) || slices.Contains(strings.Split(filepath.ToSlash(f), "/"), "..") {
 		w = append(w, fmt.Sprintf("keyring.folder = %q: want a folder inside the password store; using %q", f, d.Keyring.Folder))
 		c.Keyring.Folder = d.Keyring.Folder
+	}
+	oneOf("keyring.untrusted", &c.Keyring.Untrusted, d.Keyring.Untrusted, "allow", "deny")
+	if c.Keyring.LockAfter < 0 {
+		w = append(w, fmt.Sprintf("keyring.lock_after = %d: want minutes, or 0 for never; using 0", c.Keyring.LockAfter))
+		c.Keyring.LockAfter = 0
 	}
 	c.Assistant.Tools = slices.DeleteFunc(c.Assistant.Tools, func(t string) bool {
 		if slices.Contains(AssistantTools, t) {

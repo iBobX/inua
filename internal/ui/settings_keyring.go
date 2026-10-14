@@ -3,6 +3,8 @@ package ui
 import (
 	"cmp"
 	"fmt"
+	"log"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -19,8 +21,10 @@ import (
 // keyringReadsShown is how many rows the Keyring page lists.
 const keyringReadsShown = 60
 
-// keyringSettings is the Keyring page: who serves the Secret Service, the
-// switch for read notifications, and the reads inua-keyring recorded
+// keyringSettings is the Keyring page: who serves the Secret Service,
+// whether it is unlocked, when it locks, the switch for read
+// notifications, the apps trusted with each secret
+// (docs/feat/keyring-trust.md), and the reads inua-keyring recorded
 // (keyring.AccessPath), read again each time the page is shown. A read
 // clicked opens the side panel with what is known of it.
 type keyringSettings struct {
@@ -32,6 +36,17 @@ type keyringSettings struct {
 	head        gtk.Label
 	fields      gtk.Box
 	close       gtk.Button
+
+	lockState, problemText, trustedNone gtk.Label
+	trustedSum, trustedCount            gtk.Label
+	lock, reseal, trustedOpen, back     gtk.Button
+	lockAfter, untrusted                gtk.DropDown
+	problem, trusted                    gtk.Box
+	pages                               gtk.Stack
+	filter                              gtk.SearchEntry
+	onFilter                            func(gtk.SearchEntry)
+	apps                                []keyringApp // the trusted apps
+	shown                               []keyringApp // those the filter lets through, as listed
 
 	groups []keyring.Reads // the rows, as listed
 	rows   []*gtk.Button
@@ -49,17 +64,103 @@ func (s *shellUI) getKeyringSettings(ui *gtkx.Builder) {
 	ui.Get("keyring_detail_head", &k.head)
 	ui.Get("keyring_detail_fields", &k.fields)
 	ui.Get("keyring_detail_close", &k.close)
+	ui.Get("keyring_lock_state", &k.lockState)
+	ui.Get("keyring_lock", &k.lock)
+	ui.Get("keyring_lock_after", &k.lockAfter)
+	ui.Get("keyring_untrusted", &k.untrusted)
+	ui.Get("keyring_problem", &k.problem)
+	ui.Get("keyring_problem_text", &k.problemText)
+	ui.Get("keyring_reseal", &k.reseal)
+	ui.Get("keyring_trusted", &k.trusted)
+	ui.Get("keyring_trusted_none", &k.trustedNone)
+	ui.Get("keyring_trusted_sum", &k.trustedSum)
+	ui.Get("keyring_trusted_count", &k.trustedCount)
+	ui.Get("keyring_trusted_open", &k.trustedOpen)
+	ui.Get("keyring_trusted_back", &k.back)
+	ui.Get("keyring_pages", &k.pages)
+	ui.Get("keyring_trusted_filter", &k.filter)
 	k.open = -1
 	k.notify.ConnectStateSet(&s.onSettingsSwitch)
-	k.refresh.ConnectClicked(&s.onSettingsButton)
-	k.close.ConnectClicked(&s.onSettingsButton)
+	k.onFilter = func(gtk.SearchEntry) { s.listTrustedApps() }
+	k.filter.ConnectSearchChanged(&k.onFilter)
+	for _, b := range []*gtk.Button{&k.refresh, &k.close, &k.lock, &k.reseal, &k.trustedOpen, &k.back} {
+		b.ConnectClicked(&s.onSettingsButton)
+	}
+	for _, d := range []*gtk.DropDown{&k.lockAfter, &k.untrusted} {
+		s.settings.drops[d.GoPointer()] = d
+		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
+	}
+}
+
+// The choices of the page's drop-downs, in their order.
+var (
+	keyringLockAfter = []int{0, 5, 15, 30, 60, 240} // minutes
+	keyringUntrusted = []string{"allow", "deny"}
+)
+
+// showKeyringSettings sets the drop-downs as the configuration has them.
+func (s *shellUI) showKeyringSettings() {
+	k := &s.settings.keyring
+	c := s.cfg.Keyring
+	k.lockAfter.SetSelected(uint32(max(0, slices.Index(keyringLockAfter, c.LockAfter))))
+	k.untrusted.SetSelected(uint32(max(0, slices.Index(keyringUntrusted, c.Untrusted))))
+}
+
+// keyringApp is an app trusted with a secret, as the page lists it.
+type keyringApp struct {
+	item   string // "collection/item"
+	secret string // the item's label
+	app    keyring.Trusted
 }
 
 // keyringButton handles the page's buttons; false for another page's.
 func (s *shellUI) keyringButton(name string) bool {
+	k := &s.settings.keyring
 	switch {
 	case name == "keyring_refresh":
 		s.showKeyringReads()
+	case name == "keyring_trusted_open":
+		s.openKeyringRead(-1)
+		k.pages.SetVisibleChildName("trusted")
+		k.filter.GrabFocus()
+	case name == "keyring_trusted_back":
+		k.filter.SetText("")
+		k.pages.SetVisibleChildName("main")
+	case name == "keyring_lock":
+		k.lock.SetSensitive(false)
+		go func() {
+			if conn, err := system.SessionBus(); err == nil {
+				keyring.LockKeyring(conn)
+				conn.Close()
+			}
+			gtkx.Post(s.showKeyringReads)
+		}()
+	case name == "keyring_reseal":
+		k.reseal.SetSensitive(false)
+		go func() { // inua-keyring asks the user, in the shell's dialog
+			if conn, err := system.SessionBus(); err == nil {
+				if _, err := keyring.ResealTrust(conn); err != nil {
+					log.Printf("settings: keyring: %v", err)
+				}
+				conn.Close()
+			}
+			gtkx.Post(s.showKeyringReads)
+		}()
+	case strings.HasPrefix(name, "keyring-untrust:"):
+		i, _ := strconv.Atoi(strings.TrimPrefix(name, "keyring-untrust:"))
+		if i < 0 || i >= len(k.shown) {
+			return true
+		}
+		a := k.shown[i]
+		go func() {
+			if conn, err := system.SessionBus(); err == nil {
+				if err := keyring.UntrustApp(conn, a.item, a.app.Identity); err != nil {
+					log.Printf("settings: keyring: %v", err)
+				}
+				conn.Close()
+			}
+			gtkx.Post(s.showKeyringReads)
+		}()
 	case name == "keyring_detail_close":
 		s.openKeyringRead(-1)
 	case strings.HasPrefix(name, "keyring-read:"):
@@ -144,6 +245,7 @@ func keyringFields(g keyring.Reads) []keyringFieldText {
 	fields := []keyringFieldText{
 		{secret, value},
 		{i18n.T("Answer"), answer},
+		{i18n.T("Decision"), keyringDecision(g.Decision)},
 		{i18n.T("In pass"), where},
 		{i18n.T("Keyring"), g.Collection},
 		{i18n.T("App"), g.App},
@@ -205,24 +307,41 @@ func (s *shellUI) showKeyringReads() {
 		return
 	}
 	k.state.SetText(i18n.T("Looking…"))
+	folder := s.cfg.Keyring.Folder
 	go func() {
 		state := i18n.T("Cannot reach the session bus")
+		lockState, unlocked, problem := i18n.T("inua-keyring is not running"), false, ""
 		if conn, err := system.SessionBus(); err == nil {
 			switch who, ours := keyring.Serving(conn); {
 			case ours:
 				state = i18n.Tf("%s serves it, keeping the secrets in pass", who)
+				if on, p, err := keyring.KeyringState(conn); err == nil {
+					unlocked, problem = on, p
+					lockState = i18n.T("Locked: the next read decrypts with gpg, which may ask for your passphrase")
+					if on {
+						lockState = i18n.T("Kept in protected memory since the first read, so reads ask for nothing")
+					}
+				}
 			case who != "":
 				state = i18n.Tf("%s serves it, not inua-keyring; inua keyring replace switches", who)
 			default:
 				state = i18n.T("No one serves it now; D-Bus starts it on the first request")
 			}
+			conn.Close()
 		}
+		apps := keyringApps(folder)
 		reads, err := keyring.ReadAccess(keyring.AccessPath())
 		gtkx.Post(func() {
 			if s.settings.win == nil {
 				return
 			}
 			k.state.SetText(state)
+			k.lockState.SetText(lockState)
+			k.lock.SetSensitive(unlocked)
+			k.problem.SetVisible(problem != "")
+			k.problemText.SetText(keyringProblem(problem))
+			k.reseal.SetSensitive(true)
+			s.showTrustedApps(apps, problem)
 			gtkx.Clear(&k.reads)
 			if err != nil {
 				k.none.SetText(i18n.Tf("The record of reads cannot be read: %s", err.Error()))
@@ -249,6 +368,9 @@ func keyringRow(g keyring.Reads) *gtk.Button {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	row.AddCssClass("row")
 	icon, head := "dialog-password-symbolic", i18n.Tf("%s read “%s”", g.App, g.Secret)
+	if g.Decision == keyring.DecDenied {
+		icon, head = "action-unavailable-symbolic", i18n.Tf("%s was denied “%s”", g.App, g.Secret)
+	}
 	if g.Kind == keyring.Passphrase {
 		icon, head = "system-lock-screen-symbolic", i18n.Tf("%s asked for the passphrase", cmp.Or(g.App, "gpg"))
 	}
@@ -275,6 +397,9 @@ func keyringRow(g keyring.Reads) *gtk.Button {
 		sub = i18n.T("session keyring, in memory")
 	case sub == "":
 		sub = i18n.Tf("pid %d", g.PID)
+	}
+	if g.Decision != "" && g.Decision != keyring.DecTrusted {
+		sub = i18n.Tf("%s · %s", sub, keyringDecision(g.Decision))
 	}
 	if g.N > 1 {
 		sub = i18n.Nf("%s · %d times in a row", "%s · %d times in a row", g.N, sub, g.N)
@@ -306,4 +431,156 @@ func readTime(t, now time.Time) string {
 		return t.Format("15:04")
 	}
 	return i18n.Time(t, "Jan 2 15:04")
+}
+
+// keyringProblem says why the trust list is not trusted.
+func keyringProblem(p string) string {
+	if p == "the list was changed outside inua-keyring" {
+		return i18n.T("It was changed outside inua-keyring, so every app is asked about until you trust it again. Look through it first.")
+	}
+	return i18n.Tf("It cannot be read: %s. Every app is asked about.", p)
+}
+
+// keyringApps lists the trusted apps, each with the label of its secret,
+// the newest first.
+func keyringApps(folder string) []keyringApp {
+	trust := keyring.ReadTrust(keyring.TrustPath())
+	store, err := keyring.OpenPass(keyring.Pass{Dir: keyring.StoreDir(), Folder: folder})
+	var out []keyringApp
+	for item, apps := range trust {
+		label := item
+		if coll, id, ok := strings.Cut(item, "/"); ok && err == nil {
+			if it, err := store.Item(coll, id); err == nil {
+				label = cmp.Or(it.Label, item)
+			}
+		}
+		for _, a := range apps {
+			out = append(out, keyringApp{item: item, secret: label, app: a})
+		}
+	}
+	slices.SortFunc(out, func(a, b keyringApp) int { return b.app.Since.Compare(a.app.Since) })
+	return out
+}
+
+// showTrustedApps takes the trusted apps read, says how many on the
+// Keyring page, and lists them on their own page; problem is why the list
+// is not trusted.
+func (s *shellUI) showTrustedApps(apps []keyringApp, problem string) {
+	k := &s.settings.keyring
+	k.apps = apps
+	secrets := map[string]bool{}
+	for _, a := range apps {
+		secrets[a.item] = true
+	}
+	count := i18n.Nf("%d app", "%d apps", len(apps), len(apps))
+	if len(apps) > 0 {
+		count = i18n.Nf("%s, trusted with %d secret", "%s, trusted with %d secrets", len(secrets), count, len(secrets))
+	}
+	k.trustedCount.SetText(count)
+	sum := count
+	switch {
+	case problem != "":
+		sum = i18n.T("Not trusted: changed outside inua-keyring. Every app is asked about.")
+	case len(apps) == 0:
+		sum = i18n.T("None yet: each app is asked about the first time it reads a secret")
+	}
+	k.trustedSum.SetText(sum)
+	toggle(&k.trustedSum.Widget, "warn-text", problem != "")
+	s.listTrustedApps()
+}
+
+// keyringAppMatches says whether a trusted app has every word of the
+// filter in its name, program, package or secret.
+func keyringAppMatches(a keyringApp, q string) bool {
+	hay := strings.ToLower(strings.Join([]string{a.app.Name(), a.app.Exe, a.app.Script, a.app.Flatpak, a.app.Package, a.secret}, " "))
+	for _, w := range strings.Fields(strings.ToLower(q)) {
+		if !strings.Contains(hay, w) {
+			return false
+		}
+	}
+	return true
+}
+
+// listTrustedApps lists the trusted apps the filter lets through: the app
+// and its secret, its program and package, since when; each with Remove.
+func (s *shellUI) listTrustedApps() {
+	k := &s.settings.keyring
+	q := k.filter.GetText()
+	k.shown = nil
+	for _, a := range k.apps {
+		if keyringAppMatches(a, q) {
+			k.shown = append(k.shown, a)
+		}
+	}
+	gtkx.Clear(&k.trusted)
+	switch {
+	case len(k.apps) == 0:
+		k.trustedNone.SetText(i18n.T("No app is trusted yet: each app is asked about the first time it reads a secret."))
+	case len(k.shown) == 0:
+		k.trustedNone.SetText(i18n.Tf("No trusted app matches “%s”.", strings.TrimSpace(q)))
+	}
+	k.trustedNone.SetVisible(len(k.shown) == 0)
+	for i, a := range k.shown {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		row.AddCssClass("row")
+		img := gtk.NewImageFromIconName("security-high-symbolic")
+		img.SetValign(gtk.AlignCenterValue)
+		gtkx.Append(row, &img.Widget)
+		text := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+		text.SetHexpand(true)
+		title := gtk.NewLabel(i18n.Tf("%s reads “%s”", a.app.Name(), a.secret))
+		title.AddCssClass("title")
+		title.SetXalign(0)
+		title.SetEllipsize(3)
+		gtkx.Append(text, &title.Widget)
+		where := a.app.Exe
+		switch {
+		case a.app.Flatpak != "":
+			where = i18n.Tf("Flatpak: %s", a.app.Flatpak)
+		case a.app.Script != "":
+			where = a.app.Exe + " " + a.app.Script
+		}
+		if a.app.Package != "" {
+			where = i18n.Tf("%s · %s", where, a.app.Package)
+		}
+		sub := gtk.NewLabel(where)
+		sub.AddCssClass("sub")
+		sub.AddCssClass("mono-sub")
+		sub.SetXalign(0)
+		sub.SetEllipsize(2)
+		sub.SetTooltipText(where)
+		gtkx.Append(text, &sub.Widget)
+		gtkx.Append(row, &text.Widget)
+		if !a.app.Since.IsZero() {
+			when := gtk.NewLabel(i18n.Tf("since %s", i18n.Time(a.app.Since.Local(), "Jan 2, 2006")))
+			when.AddCssClass("sub")
+			when.SetValign(gtk.AlignCenterValue)
+			gtkx.Append(row, &when.Widget)
+		}
+		rm := gtk.NewButtonWithLabel(i18n.T("Remove"))
+		rm.AddCssClass("outlined")
+		rm.SetValign(gtk.AlignCenterValue)
+		rm.SetName(fmt.Sprintf("keyring-untrust:%d", i))
+		rm.SetTooltipText(i18n.T("Stop trusting it: it is asked about at its next read"))
+		rm.ConnectClicked(&s.onSettingsButton)
+		gtkx.Append(row, &rm.Widget)
+		gtkx.Append(&k.trusted, &row.Widget)
+	}
+}
+
+// keyringDecision says how a read went with the trust list.
+func keyringDecision(d string) string {
+	switch d {
+	case keyring.DecTrusted:
+		return i18n.T("trusted")
+	case keyring.DecOnce:
+		return i18n.T("allowed once")
+	case keyring.DecAllowed:
+		return i18n.T("allowed, and trusted from now on")
+	case keyring.DecDenied:
+		return i18n.T("denied")
+	case keyring.DecUnasked:
+		return i18n.T("allowed: no one to ask")
+	}
+	return d
 }

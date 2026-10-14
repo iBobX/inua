@@ -295,6 +295,16 @@ folder = "inua-keyring"
 # started; off by default. Every read is listed in Settings → Keyring.
 notify = false
 
+# Each secret has the apps trusted with it; another app reading it is
+# asked about (Deny, Allow once, Always allow). With no inua shell to
+# ask in: "allow" (as without the list, and recorded) or "deny".
+untrusted = "allow"
+
+# After the first read, the keyring keeps its secrets in protected memory
+# until it locks: with the screen, before suspend, with "inua keyring
+# lock", or after this many minutes without a read (0: not by time).
+lock_after = 0
+
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions

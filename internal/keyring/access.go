@@ -38,6 +38,9 @@ type Access struct {
 	Command string `json:"command,omitempty"` // its command line
 	Chain   string `json:"chain,omitempty"`   // what it runs under, proc.Chain
 	Bus     string `json:"bus,omitempty"`     // its unique name on the bus, ":1.42"
+	// Decision is how a read went with the trust list: DecTrusted,
+	// DecOnce, DecAllowed, DecDenied, DecUnasked; "" without the list.
+	Decision string `json:"decision,omitempty"`
 }
 
 // The kinds of Access, and how a passphrase was answered.
@@ -137,7 +140,8 @@ type Reads struct {
 
 // same says whether b is the same read as a, again.
 func same(a, b Access) bool {
-	return a.Kind == b.Kind && a.App == b.App && a.PID == b.PID && a.Secret == b.Secret && a.Answer == b.Answer
+	return a.Kind == b.Kind && a.App == b.App && a.PID == b.PID && a.Secret == b.Secret && a.Answer == b.Answer &&
+		(a.Decision == DecDenied) == (b.Decision == DecDenied)
 }
 
 // GroupReads groups a record read by ReadAccess, newest first, into at

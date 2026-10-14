@@ -273,6 +273,13 @@ ApplicationWindow pass {
               styles ["pass-fields"]
               orientation: vertical;
             }
+
+            // An entry of inua-keyring's: the apps trusted with its secret,
+            // and its last reads. Filled from Go.
+            Box keyring_info {
+              orientation: vertical;
+              visible: false;
+            }
           }
         };
       }

@@ -20,9 +20,11 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/keyring"
 	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/lock"
 	"github.com/lyricat/inua/internal/rundir"
+	"github.com/lyricat/inua/internal/system"
 )
 
 // locker is the lock screen. It holds the compositor's session lock
@@ -128,6 +130,7 @@ func (s *shellUI) lockScreen() error {
 	s.closeCenter()
 	s.closeShot("")
 	s.markLocked(true)
+	go lockKeyring()
 	l.locking, l.failures, l.notBefore = true, 0, time.Time{}
 	if !layershell.Lock(l.inst) {
 		// ::failed has already run, or will.
@@ -140,6 +143,23 @@ func (s *shellUI) lockScreen() error {
 		}
 	}
 	return nil
+}
+
+// lockKeyring has inua-keyring, when it runs, forget the secrets it
+// keeps unlocked: the next read decrypts with gpg again.
+func lockKeyring() {
+	conn, err := system.SessionBus()
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+	var has bool
+	if conn.BusObject().Call("org.freedesktop.DBus.NameHasOwner", 0, keyring.OwnName).Store(&has) != nil || !has {
+		return
+	}
+	if err := keyring.LockKeyring(conn); err != nil {
+		log.Printf("lock: keyring: %v", err)
+	}
 }
 
 // unlockScreen ends the lock without a password: for `inua call lock

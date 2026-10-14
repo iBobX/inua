@@ -20,6 +20,17 @@ func newStore(t *testing.T) (*Store, *memory, string) {
 	return s, back, path
 }
 
+func TestByEntry(t *testing.T) {
+	s, _, _ := newStore(t)
+	it, _, _ := s.CreateItem(Login, "Chrome Safe Storage", map[string]string{"app": "chrome"}, []byte("k"), "", false)
+	if got, ok := s.ByEntry("login/chrome-safe-storage"); !ok || got.ID != it.ID || got.Collection != Login {
+		t.Errorf("by entry: %+v %v", got, ok)
+	}
+	if _, ok := s.ByEntry("login/none"); ok {
+		t.Error("found an entry that is not there")
+	}
+}
+
 func TestStore(t *testing.T) {
 	s, back, path := newStore(t)
 	if s.Alias("default") != Login {

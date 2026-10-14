@@ -4,7 +4,8 @@
 // messages. Go fills it (internal/ui/polkit.go). gpg's pinentry asks in
 // it too (internal/ui/askpass.go), without the user row, with the key
 // and who asks for it, a button hiding what is private, a second field
-// for a new passphrase and a third button for some questions.
+// for a new passphrase and a third button for some questions; and
+// inua-keyring, whether an app may read a secret, with the app.
 using Gtk 4.0;
 
 Window polkit_dialog {
@@ -243,6 +244,122 @@ Window polkit_dialog {
             }
 
             Label key_dates {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+              wrap: true;
+            }
+          }
+        }
+      }
+
+      // The app inua-keyring asks about: its program, the package holding
+      // it, and when it was allowed before it changed.
+      Box app_card {
+        styles ["pass-rows"]
+        orientation: vertical;
+        visible: false;
+
+        Box {
+          styles ["pass-head"]
+          spacing: 10;
+
+          Box {
+            styles ["mark"]
+            valign: center;
+          }
+
+          Label {
+            styles ["pass-section"]
+            use-markup: true;
+            label:  _("<span alpha='55%'>[</span>APP<span alpha='55%'>]</span>");
+          }
+
+          // "Changed since you allowed it".
+          Label app_note {
+            styles ["pass-meta"]
+            hexpand: true;
+            xalign: 1;
+          }
+        }
+
+        Button row_program {
+          styles ["pass-row"]
+          name: "row_program";
+
+          Box {
+            spacing: 16;
+
+            Label program_kicker {
+              styles ["kicker"]
+              label:  _("PROGRAM");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Box {
+              orientation: vertical;
+              spacing: 2;
+              hexpand: true;
+
+              Label app_program {
+                styles ["pass-value", "pass-mono"]
+                xalign: 0;
+                ellipsize: middle;
+                width-chars: 10;
+                max-width-chars: 40;
+              }
+
+              // What an interpreter runs, or the Flatpak app.
+              Label app_script {
+                styles ["pass-sub", "pass-mono"]
+                xalign: 0;
+                ellipsize: middle;
+                width-chars: 10;
+                max-width-chars: 40;
+              }
+            }
+          }
+        }
+
+        Button row_package {
+          styles ["pass-row"]
+          name: "row_package";
+
+          Box {
+            spacing: 16;
+
+            Label package_kicker {
+              styles ["kicker"]
+              label:  _("PACKAGE");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label app_package {
+              styles ["pass-value", "pass-mono"]
+              xalign: 0;
+              hexpand: true;
+              ellipsize: end;
+            }
+          }
+        }
+
+        Button row_was {
+          styles ["pass-row"]
+          name: "row_was";
+
+          Box {
+            spacing: 16;
+
+            Label was_kicker {
+              styles ["kicker"]
+              label:  _("ALLOWED");
+              xalign: 0;
+              yalign: 0;
+            }
+
+            Label app_was {
               styles ["pass-value", "pass-mono"]
               xalign: 0;
               hexpand: true;

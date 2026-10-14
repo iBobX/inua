@@ -2909,12 +2909,517 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <property name="child">
                   <object class="GtkBox">
                     <child>
-                      <object class="GtkOverlay">
+                      <object class="GtkStack" id="keyring_pages">
                         <property name="hexpand">true</property>
-                        <property name="child">
-                          <object class="GtkScrolledWindow" id="scroll_keyring">
-                            <property name="hscrollbar-policy">2</property>
-                            <child>
+                        <property name="transition-type">6</property>
+                        <property name="transition-duration">160</property>
+                        <child>
+                          <object class="GtkStackPage">
+                            <property name="name">main</property>
+                            <property name="child">
+                              <object class="GtkOverlay">
+                                <property name="hexpand">true</property>
+                                <property name="child">
+                                  <object class="GtkScrolledWindow" id="scroll_keyring">
+                                    <property name="hscrollbar-policy">2</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="page"/>
+                                        </style>
+                                        <property name="orientation">1</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <style>
+                                              <class name="section"/>
+                                            </style>
+                                            <property name="orientation">1</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-head"/>
+                                                </style>
+                                                <property name="spacing">10</property>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="mark"/>
+                                                    </style>
+                                                    <property name="valign">3</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-label"/>
+                                                    </style>
+                                                    <property name="use-markup">true</property>
+                                                    <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;KEYRING&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-meta"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">Apps' secrets: browsers' keys, Wi-Fi passwords, API keys</property>
+                                                    <property name="hexpand">true</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="ellipsize">3</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-body"/>
+                                                </style>
+                                                <property name="orientation">1</property>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">1</property>
+                                                        <property name="hexpand">true</property>
+                                                        <property name="valign">3</property>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="title"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">Secret Service</property>
+                                                            <property name="xalign">0</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel" id="keyring_state">
+                                                            <style>
+                                                              <class name="sub"/>
+                                                            </style>
+                                                            <property name="xalign">0</property>
+                                                            <property name="wrap">true</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkSeparator"></object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">1</property>
+                                                        <property name="hexpand">true</property>
+                                                        <property name="valign">3</property>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="title"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">Unlocked secrets</property>
+                                                            <property name="xalign">0</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel" id="keyring_lock_state">
+                                                            <style>
+                                                              <class name="sub"/>
+                                                            </style>
+                                                            <property name="xalign">0</property>
+                                                            <property name="wrap">true</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkButton" id="keyring_lock">
+                                                        <style>
+                                                          <class name="outlined"/>
+                                                        </style>
+                                                        <property name="name">keyring_lock</property>
+                                                        <property name="label" translatable="yes">Lock now</property>
+                                                        <property name="valign">3</property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkSeparator"></object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">1</property>
+                                                        <property name="hexpand">true</property>
+                                                        <property name="valign">3</property>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="title"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">Lock when unused</property>
+                                                            <property name="xalign">0</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="sub"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">It locks with the screen and before suspend, and after this long without a read</property>
+                                                            <property name="xalign">0</property>
+                                                            <property name="wrap">true</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkDropDown" id="keyring_lock_after">
+                                                        <property name="name">keyring_lock_after</property>
+                                                        <property name="valign">3</property>
+                                                        <property name="model">
+                                                          <object class="GtkStringList">
+                                                            <items>
+                                                              <item translatable="yes">Never</item>
+                                                              <item translatable="yes">5 minutes</item>
+                                                              <item translatable="yes">15 minutes</item>
+                                                              <item translatable="yes">30 minutes</item>
+                                                              <item translatable="yes">1 hour</item>
+                                                              <item translatable="yes">4 hours</item>
+                                                            </items>
+                                                          </object>
+                                                        </property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkSeparator"></object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">1</property>
+                                                        <property name="hexpand">true</property>
+                                                        <property name="valign">3</property>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="title"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">With no one to ask</property>
+                                                            <property name="xalign">0</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="sub"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">A read by an app not trusted with the secret, while the inua shell is not running</property>
+                                                            <property name="xalign">0</property>
+                                                            <property name="wrap">true</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkDropDown" id="keyring_untrusted">
+                                                        <property name="name">keyring_untrusted</property>
+                                                        <property name="valign">3</property>
+                                                        <property name="model">
+                                                          <object class="GtkStringList">
+                                                            <items>
+                                                              <item translatable="yes">Allowed</item>
+                                                              <item translatable="yes">Denied</item>
+                                                            </items>
+                                                          </object>
+                                                        </property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkSeparator"></object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <property name="orientation">1</property>
+                                                        <property name="hexpand">true</property>
+                                                        <property name="valign">3</property>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="title"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">Tell when an app reads a secret</property>
+                                                            <property name="xalign">0</property>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkLabel">
+                                                            <style>
+                                                              <class name="sub"/>
+                                                            </style>
+                                                            <property name="label" translatable="yes">A notification for each app's first read since inua-keyring started</property>
+                                                            <property name="xalign">0</property>
+                                                            <property name="wrap">true</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkSwitch" id="keyring_notify">
+                                                        <property name="name">keyring_notify</property>
+                                                        <property name="valign">3</property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <style>
+                                              <class name="section"/>
+                                            </style>
+                                            <property name="orientation">1</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-head"/>
+                                                </style>
+                                                <property name="spacing">10</property>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="mark"/>
+                                                    </style>
+                                                    <property name="valign">3</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-label"/>
+                                                    </style>
+                                                    <property name="use-markup">true</property>
+                                                    <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;TRUSTED APPS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-meta"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">Apps that read a secret without asking; any other app is asked about first</property>
+                                                    <property name="hexpand">true</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="ellipsize">3</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-body"/>
+                                                </style>
+                                                <property name="orientation">1</property>
+                                                <child>
+                                                  <object class="GtkButton" id="keyring_trusted_open">
+                                                    <style>
+                                                      <class name="keyring-read"/>
+                                                    </style>
+                                                    <property name="name">keyring_trusted_open</property>
+                                                    <child>
+                                                      <object class="GtkBox">
+                                                        <style>
+                                                          <class name="row"/>
+                                                        </style>
+                                                        <property name="spacing">16</property>
+                                                        <child>
+                                                          <object class="GtkBox">
+                                                            <property name="orientation">1</property>
+                                                            <property name="hexpand">true</property>
+                                                            <property name="valign">3</property>
+                                                            <child>
+                                                              <object class="GtkLabel">
+                                                                <style>
+                                                                  <class name="title"/>
+                                                                </style>
+                                                                <property name="label" translatable="yes">Trusted apps</property>
+                                                                <property name="xalign">0</property>
+                                                              </object>
+                                                            </child>
+                                                            <child>
+                                                              <object class="GtkLabel" id="keyring_trusted_sum">
+                                                                <style>
+                                                                  <class name="sub"/>
+                                                                </style>
+                                                                <property name="xalign">0</property>
+                                                                <property name="wrap">true</property>
+                                                              </object>
+                                                            </child>
+                                                          </object>
+                                                        </child>
+                                                        <child>
+                                                          <object class="GtkImage">
+                                                            <property name="icon-name">go-next-symbolic</property>
+                                                            <property name="valign">3</property>
+                                                          </object>
+                                                        </child>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <style>
+                                              <class name="section"/>
+                                            </style>
+                                            <property name="orientation">1</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-head"/>
+                                                </style>
+                                                <property name="spacing">10</property>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="mark"/>
+                                                    </style>
+                                                    <property name="valign">3</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-label"/>
+                                                    </style>
+                                                    <property name="use-markup">true</property>
+                                                    <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;READS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="section-meta"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">Every secret inua-keyring handed out and passphrase asked for, newest first</property>
+                                                    <property name="hexpand">true</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="ellipsize">3</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <style>
+                                                  <class name="section-body"/>
+                                                </style>
+                                                <property name="orientation">1</property>
+                                                <child>
+                                                  <object class="GtkBox" id="keyring_reads">
+                                                    <property name="orientation">1</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel" id="keyring_none">
+                                                    <style>
+                                                      <class name="sub"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">No app has read a secret yet.</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="visible">false</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkBox">
+                                                    <style>
+                                                      <class name="row"/>
+                                                    </style>
+                                                    <property name="spacing">16</property>
+                                                    <child>
+                                                      <object class="GtkLabel">
+                                                        <property name="hexpand">true</property>
+                                                      </object>
+                                                    </child>
+                                                    <child>
+                                                      <object class="GtkButton" id="keyring_refresh">
+                                                        <style>
+                                                          <class name="outlined"/>
+                                                        </style>
+                                                        <property name="name">keyring_refresh</property>
+                                                        <property name="label" translatable="yes">Refresh</property>
+                                                        <property name="valign">3</property>
+                                                      </object>
+                                                    </child>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </property>
+                                <child type="overlay">
+                                  <object class="GtkBox" id="sticky_keyring">
+                                    <style>
+                                      <class name="section-head"/>
+                                      <class name="sticky"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <property name="valign">1</property>
+                                    <property name="visible">false</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkStackPage">
+                            <property name="name">trusted</property>
+                            <property name="child">
                               <object class="GtkBox">
                                 <style>
                                   <class name="page"/>
@@ -2923,215 +3428,114 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                 <child>
                                   <object class="GtkBox">
                                     <style>
-                                      <class name="section"/>
+                                      <class name="section-head"/>
                                     </style>
-                                    <property name="orientation">1</property>
+                                    <property name="spacing">10</property>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkButton" id="keyring_trusted_back">
                                         <style>
-                                          <class name="section-head"/>
+                                          <class name="plain"/>
                                         </style>
-                                        <property name="spacing">10</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <style>
-                                              <class name="mark"/>
-                                            </style>
-                                            <property name="valign">3</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="section-label"/>
-                                            </style>
-                                            <property name="use-markup">true</property>
-                                            <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;KEYRING&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="section-meta"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Apps' secrets: browsers' keys, Wi-Fi passwords, API keys</property>
-                                            <property name="hexpand">true</property>
-                                            <property name="xalign">0</property>
-                                            <property name="ellipsize">3</property>
-                                          </object>
-                                        </child>
+                                        <property name="name">keyring_trusted_back</property>
+                                        <property name="icon-name">go-previous-symbolic</property>
+                                        <property name="tooltip-text" translatable="yes">Back</property>
+                                        <property name="valign">3</property>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkLabel">
                                         <style>
-                                          <class name="section-body"/>
+                                          <class name="section-label"/>
                                         </style>
-                                        <property name="orientation">1</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <style>
-                                              <class name="row"/>
-                                            </style>
-                                            <property name="spacing">16</property>
-                                            <child>
-                                              <object class="GtkBox">
-                                                <property name="orientation">1</property>
-                                                <property name="hexpand">true</property>
-                                                <property name="valign">3</property>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <style>
-                                                      <class name="title"/>
-                                                    </style>
-                                                    <property name="label" translatable="yes">Secret Service</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkLabel" id="keyring_state">
-                                                    <style>
-                                                      <class name="sub"/>
-                                                    </style>
-                                                    <property name="xalign">0</property>
-                                                    <property name="wrap">true</property>
-                                                  </object>
-                                                </child>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkSeparator"></object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <style>
-                                              <class name="row"/>
-                                            </style>
-                                            <property name="spacing">16</property>
-                                            <child>
-                                              <object class="GtkBox">
-                                                <property name="orientation">1</property>
-                                                <property name="hexpand">true</property>
-                                                <property name="valign">3</property>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <style>
-                                                      <class name="title"/>
-                                                    </style>
-                                                    <property name="label" translatable="yes">Tell when an app reads a secret</property>
-                                                    <property name="xalign">0</property>
-                                                  </object>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <style>
-                                                      <class name="sub"/>
-                                                    </style>
-                                                    <property name="label" translatable="yes">A notification for each app's first read since inua-keyring started</property>
-                                                    <property name="xalign">0</property>
-                                                    <property name="wrap">true</property>
-                                                  </object>
-                                                </child>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkSwitch" id="keyring_notify">
-                                                <property name="name">keyring_notify</property>
-                                                <property name="valign">3</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;TRUSTED APPS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="keyring_trusted_count">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSearchEntry" id="keyring_trusted_filter">
+                                        <property name="placeholder-text" translatable="yes">Filter by app, program or secret</property>
+                                        <property name="width-chars">28</property>
+                                        <property name="valign">3</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="keyring_problem">
                                     <style>
-                                      <class name="section"/>
+                                      <class name="row"/>
+                                      <class name="keyring-problem"/>
                                     </style>
-                                    <property name="orientation">1</property>
+                                    <property name="spacing">16</property>
+                                    <property name="visible">false</property>
                                     <child>
                                       <object class="GtkBox">
-                                        <style>
-                                          <class name="section-head"/>
-                                        </style>
-                                        <property name="spacing">10</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <style>
-                                              <class name="mark"/>
-                                            </style>
-                                            <property name="valign">3</property>
-                                          </object>
-                                        </child>
+                                        <property name="orientation">1</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="valign">3</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <style>
-                                              <class name="section-label"/>
+                                              <class name="title"/>
                                             </style>
-                                            <property name="use-markup">true</property>
-                                            <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;READS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="section-meta"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Every secret inua-keyring handed out and passphrase asked for, newest first</property>
-                                            <property name="hexpand">true</property>
+                                            <property name="label" translatable="yes">The list is not trusted</property>
                                             <property name="xalign">0</property>
-                                            <property name="ellipsize">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="keyring_problem_text">
+                                            <style>
+                                              <class name="sub"/>
+                                            </style>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <object class="GtkButton" id="keyring_reseal">
                                         <style>
-                                          <class name="section-body"/>
+                                          <class name="outlined"/>
                                         </style>
+                                        <property name="name">keyring_reseal</property>
+                                        <property name="label" translatable="yes">Trust this list again</property>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkScrolledWindow">
+                                    <property name="hscrollbar-policy">2</property>
+                                    <property name="vexpand">true</property>
+                                    <child>
+                                      <object class="GtkBox">
                                         <property name="orientation">1</property>
                                         <child>
-                                          <object class="GtkBox" id="keyring_reads">
+                                          <object class="GtkBox" id="keyring_trusted">
                                             <property name="orientation">1</property>
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkLabel" id="keyring_none">
+                                          <object class="GtkLabel" id="keyring_trusted_none">
                                             <style>
                                               <class name="sub"/>
                                             </style>
-                                            <property name="label" translatable="yes">No app has read a secret yet.</property>
                                             <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                            <property name="margin-top">12</property>
                                             <property name="visible">false</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <style>
-                                              <class name="row"/>
-                                            </style>
-                                            <property name="spacing">16</property>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <property name="hexpand">true</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkButton" id="keyring_refresh">
-                                                <style>
-                                                  <class name="outlined"/>
-                                                </style>
-                                                <property name="name">keyring_refresh</property>
-                                                <property name="label" translatable="yes">Refresh</property>
-                                                <property name="valign">3</property>
-                                              </object>
-                                            </child>
                                           </object>
                                         </child>
                                       </object>
@@ -3139,18 +3543,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                          </object>
-                        </property>
-                        <child type="overlay">
-                          <object class="GtkBox" id="sticky_keyring">
-                            <style>
-                              <class name="section-head"/>
-                              <class name="sticky"/>
-                            </style>
-                            <property name="spacing">10</property>
-                            <property name="valign">1</property>
-                            <property name="visible">false</property>
+                            </property>
                           </object>
                         </child>
                       </object>

@@ -93,6 +93,18 @@ type Store struct {
 	stamp   string  // the index file's time and size when read
 	session collRec // in memory
 	mem     *memory // the session collection's secrets
+
+	// vault keeps the secrets read while unlocked (KeepUnlocked); nil:
+	// every read goes to the backend. stamps are their entries' files as
+	// they were read, so one changed outside is read again.
+	vault    *Vault
+	stamps   map[string]string
+	unlocked bool
+	gen      int // counts locks, so a fill that began before one stops
+	lastRead time.Time
+	// OnLock hears the keyring lock (false) and unlock (true); it runs
+	// without the store's lock held.
+	OnLock func(unlocked bool)
 }
 
 // OpenPass opens the store in pass's folder.
@@ -391,6 +403,7 @@ func (s *Store) DeleteCollection(id string) error {
 			if err := s.back.Remove(r.Entry); err != nil && s.back.Exists(r.Entry) {
 				return err
 			}
+			s.forget(r.Entry)
 		}
 		s.idx.Collections = slices.DeleteFunc(s.idx.Collections, func(x *collRec) bool { return x == c })
 		for a, target := range s.idx.Aliases {
@@ -543,6 +556,7 @@ func (s *Store) CreateItem(coll, label string, attrs map[string]string, secret [
 		if err := s.backend(coll).Insert(r.Entry, data); err != nil {
 			return err
 		}
+		s.wrote(coll, r.Entry, data)
 		r.Label, r.Attributes, r.ContentType, r.Encoding, r.Modified = label, maps.Clone(attrs), contentType, enc, now
 		if r.Attributes == nil {
 			r.Attributes = map[string]string{}
@@ -560,7 +574,7 @@ func (s *Store) CreateItem(coll, label string, attrs map[string]string, secret [
 
 // Secret reads an item's secret and its content type; for pass, gpg-agent
 // may ask for the passphrase, saying the read is for who ("app\tsecret";
-// "" for no one in particular).
+// "" for no one in particular). While unlocked, it comes from the vault.
 func (s *Store) Secret(coll, id, who string) ([]byte, string, error) {
 	s.mu.Lock()
 	c := s.coll(coll)
@@ -570,6 +584,10 @@ func (s *Store) Secret(coll, id, who string) ([]byte, string, error) {
 			r = *x
 		}
 	}
+	keep := s.vault != nil && coll != Session
+	if keep {
+		s.lastRead = time.Now()
+	}
 	s.mu.Unlock()
 	if c == nil {
 		return nil, "", ErrNoCollection
@@ -577,22 +595,200 @@ func (s *Store) Secret(coll, id, who string) ([]byte, string, error) {
 	if r.ID == "" {
 		return nil, "", ErrNoItem
 	}
-	// Not under the lock: pinentry may wait for the user.
-	b := s.backend(coll)
-	var data []byte
-	var err error
-	if f, ok := b.(showerFor); ok && who != "" {
-		data, err = f.ShowFor(r.Entry, who)
-	} else {
-		data, err = b.Show(r.Entry)
+	data, ok := s.kept(r.Entry, keep)
+	if !ok {
+		// Not under the lock: pinentry may wait for the user.
+		b := s.backend(coll)
+		var err error
+		if f, ok := b.(showerFor); ok && who != "" {
+			data, err = f.ShowFor(r.Entry, who)
+		} else {
+			data, err = b.Show(r.Entry)
+		}
+		if err != nil {
+			return nil, "", err
+		}
+		if keep {
+			s.keep(r.Entry, data, true)
+		}
 	}
-	if err != nil {
-		return nil, "", err
-	}
+	ct := cmp.Or(r.ContentType, "text/plain")
 	if r.Encoding == "base64" {
-		data, err = base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
+		raw := data
+		data, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(raw)))
+		clear(raw)
+		return data, ct, err
 	}
-	return data, cmp.Or(r.ContentType, "text/plain"), err
+	return data, ct, nil
+}
+
+// KeepUnlocked has the store keep the secrets of its backend in v from
+// the first read on, until Lock (docs/feat/keyring-trust.md). The session
+// collection is in memory anyway.
+func (s *Store) KeepUnlocked(v *Vault) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.vault, s.stamps = v, map[string]string{}
+}
+
+// Unlocked reports whether the secrets are kept, and when one was last
+// read.
+func (s *Store) Unlocked() (bool, time.Time) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.unlocked, s.lastRead
+}
+
+// Lock forgets the kept secrets: the next read decrypts again.
+func (s *Store) Lock() {
+	s.mu.Lock()
+	was := s.unlocked
+	s.unlocked = false
+	s.gen++
+	clear(s.stamps)
+	if s.vault != nil {
+		s.vault.Wipe()
+	}
+	on := s.OnLock
+	s.mu.Unlock()
+	if was && on != nil {
+		on(false)
+	}
+}
+
+// stamper is a Backend that can tell when an entry changed: Pass, whose
+// entries the user may edit with pass itself.
+type stamper interface {
+	Stamp(entry string) string
+}
+
+func (s *Store) entryStamp(entry string) string {
+	if st, ok := s.back.(stamper); ok {
+		return st.Stamp(entry)
+	}
+	return ""
+}
+
+// kept is an entry's secret from the vault, as the backend holds it; not
+// when its entry changed since.
+func (s *Store) kept(entry string, keep bool) ([]byte, bool) {
+	if !keep {
+		return nil, false
+	}
+	s.mu.Lock()
+	want, ok := s.stamps[entry]
+	s.mu.Unlock()
+	if !ok || s.entryStamp(entry) != want {
+		return nil, false
+	}
+	return s.vault.Get(entry)
+}
+
+// keep puts a secret just read or written in the vault. The first read
+// unlocks, and the rest of the backend's entries are read meanwhile
+// (fill), while gpg-agent still has the passphrase.
+func (s *Store) keep(entry string, data []byte, read bool) {
+	st := s.entryStamp(entry)
+	s.mu.Lock()
+	if !s.unlocked && !read {
+		s.mu.Unlock()
+		return // written while locked: read from pass when asked
+	}
+	if err := s.vault.Put(entry, data); err != nil {
+		s.mu.Unlock()
+		fmt.Fprintln(os.Stderr, "keyring:", err)
+		return
+	}
+	s.stamps[entry] = st
+	first := !s.unlocked
+	s.unlocked = true
+	gen, on := s.gen, s.OnLock
+	s.mu.Unlock()
+	if first {
+		if on != nil {
+			on(true)
+		}
+		go s.fill(gen)
+	}
+}
+
+// quietShower is a Backend that can read without asking anyone: Pass,
+// whose gpg then fails rather than start a pinentry.
+type quietShower interface {
+	ShowQuiet(entry string) ([]byte, error)
+}
+
+// fill reads the entries not yet kept, without asking for a passphrase:
+// once gpg-agent forgot it, the rest are read when asked for.
+func (s *Store) fill(gen int) {
+	s.mu.Lock()
+	s.fresh()
+	var todo []string
+	if s.back.Exists(trustKeyEntry) && !s.vault.Has(trustKeyEntry) {
+		todo = append(todo, trustKeyEntry)
+	}
+	for _, c := range s.idx.Collections {
+		for _, r := range c.Items {
+			if _, ok := s.stamps[r.Entry]; !ok {
+				todo = append(todo, r.Entry)
+			}
+		}
+	}
+	s.mu.Unlock()
+	show := s.back.Show
+	if q, ok := s.back.(quietShower); ok {
+		show = q.ShowQuiet
+	}
+	for _, entry := range todo {
+		st := s.entryStamp(entry)
+		data, err := show(entry)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "keyring: unlocking %s: %v\n", entry, err)
+			return
+		}
+		s.mu.Lock()
+		if s.gen != gen {
+			s.mu.Unlock()
+			clear(data)
+			return // locked meanwhile
+		}
+		if _, ok := s.stamps[entry]; !ok {
+			if err := s.vault.Put(entry, data); err != nil {
+				s.mu.Unlock()
+				clear(data)
+				fmt.Fprintln(os.Stderr, "keyring:", err)
+				return
+			}
+			s.stamps[entry] = st
+		}
+		s.mu.Unlock()
+		clear(data)
+	}
+}
+
+// forget drops an entry from the vault.
+func (s *Store) forget(entry string) {
+	if s.vault == nil {
+		return
+	}
+	delete(s.stamps, entry)
+	s.vault.Remove(entry)
+}
+
+// ByEntry finds the item whose secret is the backend's entry
+// ("login/chrome-safe-storage"), as the Pass app names it.
+func (s *Store) ByEntry(entry string) (Item, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.fresh()
+	for _, c := range s.idx.Collections {
+		for _, r := range c.Items {
+			if r.Entry == entry {
+				return r.public(c.ID), true
+			}
+		}
+	}
+	return Item{}, false
 }
 
 // Where is the name an item's secret has in its backend, what `pass show`
@@ -635,6 +831,23 @@ func (s *Store) change(coll, id, msg string, f func(c *collRec, r *itemRec) erro
 	})
 }
 
+// wrote keeps a secret just written while unlocked; called under the
+// store's lock.
+func (s *Store) wrote(coll, entry string, data []byte) {
+	if s.vault == nil || coll == Session {
+		return
+	}
+	if !s.unlocked {
+		s.forget(entry)
+		return
+	}
+	if err := s.vault.Put(entry, data); err != nil {
+		s.forget(entry)
+		return
+	}
+	s.stamps[entry] = s.entryStamp(entry)
+}
+
 // SetSecret replaces an item's secret.
 func (s *Store) SetSecret(coll, id string, secret []byte, contentType string) error {
 	return s.change(coll, id, "secret "+coll+"/"+id, func(c *collRec, r *itemRec) error {
@@ -642,6 +855,7 @@ func (s *Store) SetSecret(coll, id string, secret []byte, contentType string) er
 		if err := s.backend(coll).Insert(r.Entry, data); err != nil {
 			return err
 		}
+		s.wrote(coll, r.Entry, data)
 		r.Encoding, r.ContentType = enc, contentType
 		return nil
 	})
@@ -682,6 +896,9 @@ func (s *Store) DeleteItem(coll, id string) error {
 		back := s.backend(coll)
 		if err := back.Remove(r.Entry); err != nil && back.Exists(r.Entry) {
 			return err
+		}
+		if coll != Session {
+			s.forget(r.Entry)
 		}
 		c.Items = slices.DeleteFunc(c.Items, func(x *itemRec) bool { return x == r })
 		c.Modified = unix()

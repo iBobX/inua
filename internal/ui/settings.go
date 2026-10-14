@@ -183,6 +183,12 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Style.Icons = pick(config.IconSets, i, c.Style.Icons)
 		case "language":
 			c.Language = pick(config.Languages, i, c.Language)
+		case "keyring_lock_after":
+			if i >= 0 && i < len(keyringLockAfter) {
+				c.Keyring.LockAfter = keyringLockAfter[i]
+			}
+		case "keyring_untrusted":
+			c.Keyring.Untrusted = pick(keyringUntrusted, i, c.Keyring.Untrusted)
 		case "swap":
 			opts := shell.SetSwapCtrlAlt(s.kbOptions(), pick(swapChoices, i, ""))
 			c.Input.KbOptions = &opts
@@ -558,6 +564,7 @@ func (s *shellUI) showSettings() {
 	s.showAISettings()
 	s.showAboutSettings()
 	st.keyring.notify.SetActive(c.Keyring.Notify)
+	s.showKeyringSettings()
 	st.clockPreview.SetText(config.Strftime(c.Bar.Clock, time.Now()))
 	for _, e := range st.entries {
 		e.RemoveCssClass("invalid")

@@ -353,6 +353,171 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
+              <object class="GtkBox" id="app_card">
+                <style>
+                  <class name="pass-rows"/>
+                </style>
+                <property name="orientation">1</property>
+                <property name="visible">false</property>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="pass-head"/>
+                    </style>
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkBox">
+                        <style>
+                          <class name="mark"/>
+                        </style>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="pass-section"/>
+                        </style>
+                        <property name="use-markup">true</property>
+                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;APP&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="app_note">
+                        <style>
+                          <class name="pass-meta"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                        <property name="xalign">1</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="row_program">
+                    <style>
+                      <class name="pass-row"/>
+                    </style>
+                    <property name="name">row_program</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="spacing">16</property>
+                        <child>
+                          <object class="GtkLabel" id="program_kicker">
+                            <style>
+                              <class name="kicker"/>
+                            </style>
+                            <property name="label" translatable="yes">PROGRAM</property>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
+                            <property name="spacing">2</property>
+                            <property name="hexpand">true</property>
+                            <child>
+                              <object class="GtkLabel" id="app_program">
+                                <style>
+                                  <class name="pass-value"/>
+                                  <class name="pass-mono"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="ellipsize">2</property>
+                                <property name="width-chars">10</property>
+                                <property name="max-width-chars">40</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="app_script">
+                                <style>
+                                  <class name="pass-sub"/>
+                                  <class name="pass-mono"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="ellipsize">2</property>
+                                <property name="width-chars">10</property>
+                                <property name="max-width-chars">40</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="row_package">
+                    <style>
+                      <class name="pass-row"/>
+                    </style>
+                    <property name="name">row_package</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="spacing">16</property>
+                        <child>
+                          <object class="GtkLabel" id="package_kicker">
+                            <style>
+                              <class name="kicker"/>
+                            </style>
+                            <property name="label" translatable="yes">PACKAGE</property>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="app_package">
+                            <style>
+                              <class name="pass-value"/>
+                              <class name="pass-mono"/>
+                            </style>
+                            <property name="xalign">0</property>
+                            <property name="hexpand">true</property>
+                            <property name="ellipsize">3</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="row_was">
+                    <style>
+                      <class name="pass-row"/>
+                    </style>
+                    <property name="name">row_was</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="spacing">16</property>
+                        <child>
+                          <object class="GtkLabel" id="was_kicker">
+                            <style>
+                              <class name="kicker"/>
+                            </style>
+                            <property name="label" translatable="yes">ALLOWED</property>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="app_was">
+                            <style>
+                              <class name="pass-value"/>
+                              <class name="pass-mono"/>
+                            </style>
+                            <property name="xalign">0</property>
+                            <property name="hexpand">true</property>
+                            <property name="wrap">true</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
               <object class="GtkBox" id="asks">
                 <style>
                   <class name="pass-rows"/>

@@ -23,6 +23,9 @@ import (
 // The answer is the reply: the passphrase as its result, or the error
 // "cancelled" (or "not ok", the third button of a question). The shell
 // keeps nothing; the reply goes back over the user's own socket.
+// inua-keyring asks there too whether an app may read a secret
+// (`call password approve`): the result "always" or "once", or
+// "cancelled" for Deny.
 
 type passPrompts struct {
 	slot chan struct{} // held by the dialog on screen
@@ -51,6 +54,8 @@ type passDialog struct {
 	name, email, role, algo, fpr              gtk.Label
 	primary, dates                            gtk.Label
 	forKicker, forValue, askerApp, askerChain gtk.Label
+	appCard, pkgRow, wasRow                   gtk.Widget
+	appNote, program, script, pkg, was        gtk.Label
 	kickers                                   map[string]*gtk.Label // by row: what a copy flashes
 	kickerText                                map[string]string     // a kicker's own text while it says "Copied"
 	copies                                    map[string]int        // copies made of a row: the newest restores its kicker
@@ -65,7 +70,7 @@ func (s *shellUI) askPassword(req ipc.Request) ipc.Response {
 	}
 	q.Mode = pinentry.Mode(req.Function)
 	switch q.Mode {
-	case pinentry.GetPin, pinentry.Confirm, pinentry.Message:
+	case pinentry.GetPin, pinentry.Confirm, pinentry.Message, pinentry.Approve:
 	default:
 		return ipc.Response{Error: "password: unknown mode " + req.Function}
 	}
@@ -103,7 +108,11 @@ func (s *shellUI) bindPassHandlers() {
 	}
 	s.onPassNotOK = func(gtk.Button) {
 		if d := s.pass.cur; d != nil {
-			later(func() { s.finishPass(d, ipc.Response{Error: i18n.T("not ok")}) })
+			r := ipc.Response{Error: i18n.T("not ok")}
+			if d.q.Mode == pinentry.Approve {
+				r = ipc.Response{OK: true, Result: "once"}
+			}
+			later(func() { s.finishPass(d, r) })
 		}
 	}
 	s.onPassMask = func(gtk.Button) {
@@ -157,7 +166,7 @@ func (s *shellUI) openPass(d *passDialog) {
 	ui.Get("ok", &ok)
 	ui.Get("cancel", &cancel)
 	ui.Get("notok", &notok)
-	var card, keyCard, asks gtk.Box
+	var card, keyCard, asks, appCard gtk.Box
 	var primaryRow, forRow gtk.Button
 	ui.Get("card", &card)
 	ui.Get("mask", &d.mask)
@@ -166,20 +175,24 @@ func (s *shellUI) openPass(d *passDialog) {
 	ui.Get("mask_note_text", &d.maskNote)
 	ui.Get("key_card", &keyCard)
 	ui.Get("asks", &asks)
+	ui.Get("app_card", &appCard)
 	for id, l := range map[string]*gtk.Label{
 		"key_name": &d.name, "key_email": &d.email, "key_role": &d.role,
 		"key_algo": &d.algo, "key_fpr": &d.fpr, "key_primary": &d.primary,
 		"key_dates": &d.dates, "for_kicker": &d.forKicker, "for_value": &d.forValue,
 		"asker_app": &d.askerApp, "asker_chain": &d.askerChain,
+		"app_note": &d.appNote, "app_program": &d.program, "app_script": &d.script,
+		"app_package": &d.pkg, "app_was": &d.was,
 	} {
 		ui.Get(id, l)
 	}
-	d.card, d.keyCard, d.asks = card.Widget, keyCard.Widget, asks.Widget
+	d.card, d.keyCard, d.asks, d.appCard = card.Widget, keyCard.Widget, asks.Widget, appCard.Widget
 	d.kickers, d.kickerText, d.copies = map[string]*gtk.Label{}, map[string]string{}, map[string]int{}
 	for _, r := range []struct{ row, kicker string }{
 		{"row_owner", "owner_kicker"}, {"row_type", "type_kicker"}, {"row_fpr", "fpr_kicker"},
 		{"row_primary", "primary_kicker"}, {"row_created", "created_kicker"},
 		{"row_for", "for_kicker"}, {"row_asker", "asker_kicker"},
+		{"row_program", "program_kicker"}, {"row_package", "package_kicker"}, {"row_was", "was_kicker"},
 	} {
 		var b gtk.Button
 		ui.Get(r.row, &b)
@@ -190,6 +203,10 @@ func (s *shellUI) openPass(d *passDialog) {
 			primaryRow = b
 		case "row_for":
 			forRow = b
+		case "row_package":
+			d.pkgRow = b.Widget
+		case "row_was":
+			d.wasRow = b.Widget
 		}
 		if r.kicker == "for_kicker" {
 			d.kickers[r.row] = &d.forKicker
@@ -215,7 +232,9 @@ func (s *shellUI) openPass(d *passDialog) {
 	s.fillPassDetails(d)
 	d.mask.ConnectClicked(&s.onPassMask)
 	getpin := q.Mode == pinentry.GetPin
-	if !getpin {
+	if q.Mode == pinentry.Approve {
+		title = fillApproval(d)
+	} else if !getpin {
 		icon.SetFromIconName("dialog-information-symbolic")
 	}
 	// gpg's prompt ("Passphrase:", "PIN:") goes in the field, as polkit's
@@ -249,6 +268,9 @@ func (s *shellUI) openPass(d *passDialog) {
 	cancel.SetVisible(q.Mode != pinentry.Message)
 	notok.SetLabel(q.NotOK)
 	notok.SetVisible(q.Mode == pinentry.Confirm && q.NotOK != "")
+	if q.Mode == pinentry.Approve {
+		s.approveButtons(d, &ok, &cancel, &notok)
+	}
 	ok.ConnectClicked(&s.onPassOK)
 	cancel.ConnectClicked(&s.onPassCancel)
 	notok.ConnectClicked(&s.onPassNotOK)
@@ -278,12 +300,98 @@ func (s *shellUI) openPass(d *passDialog) {
 	s.pass.cur = d
 	s.lockPassSize(d)
 	d.win.Present()
-	if getpin {
+	switch {
+	case getpin:
 		d.password.GrabFocus()
-	} else {
+	case q.Mode == pinentry.Approve:
+		cancel.GrabFocus() // Enter on a dialog that just appeared denies
+	default:
 		ok.GrabFocus()
 	}
 	log.Printf("pinentry: asking (%s)", q.Mode)
+}
+
+// fillApproval fills inua-keyring's question, whether an app may read a
+// secret, and returns its title: the app's program and package, and how
+// it was allowed before it changed; or whether to trust the list of apps
+// again.
+func fillApproval(d *passDialog) string {
+	q := d.q
+	a := q.Approval
+	if a == nil {
+		a = &pinentry.Approval{}
+	}
+	var title, sub string
+	switch {
+	case a.Reseal:
+		title = i18n.T("Trust the list of apps again?")
+		sub = i18n.Nf("The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking.",
+			"The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking.", a.Apps, a.Apps)
+	case a.Changed:
+		title = i18n.Tf("%s has changed since you allowed it", q.App)
+		sub = i18n.T("Its program is not the one you allowed. If you did not update it, deny.")
+	default:
+		title = i18n.Tf("Allow %s to read a secret?", q.App)
+		sub = i18n.T("It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking.")
+	}
+	if a.Tampered != "" {
+		sub = i18n.Tf("It can only be allowed once: %s.", a.Tampered)
+	}
+	d.title.SetText(title)
+	d.subtitle.SetText(sub)
+	d.subtitle.SetVisible(true)
+	d.message.SetVisible(false)
+
+	d.appCard.SetVisible(!a.Reseal)
+	d.asks.SetVisible(!a.Reseal && q.App != "")
+	d.program.SetText(a.Program)
+	d.program.SetTooltipText(a.Program)
+	what := a.Script
+	if a.Flatpak != "" {
+		what = i18n.Tf("Flatpak: %s", a.Flatpak)
+	}
+	d.script.SetText(what)
+	d.script.SetVisible(what != "")
+	d.pkg.SetText(a.Package)
+	d.pkgRow.SetVisible(a.Package != "")
+	d.appNote.SetText("")
+	if a.Changed {
+		d.appNote.SetText(i18n.T("Changed since you allowed it"))
+		was := i18n.Time(a.Since.Local(), "Jan 2, 2006")
+		if a.WasPackage != "" {
+			was = i18n.Tf("%s · as %s", was, a.WasPackage)
+		}
+		d.was.SetText(was)
+	}
+	d.wasRow.SetVisible(a.Changed && !a.Since.IsZero())
+	return title
+}
+
+// approveButtons labels the buttons for inua-keyring's question: Deny
+// (Escape), Allow once, Always allow; Allow once alone for an app that
+// can't be trusted as it runs, and Cancel or Trust for the list.
+func (s *shellUI) approveButtons(d *passDialog, ok, cancel, notok *gtk.Button) {
+	a := d.q.Approval
+	if a == nil {
+		a = &pinentry.Approval{}
+	}
+	cancel.SetLabel(i18n.T("Deny"))
+	notok.SetLabel(i18n.T("Allow once"))
+	ok.SetLabel(i18n.T("Always allow"))
+	notok.SetVisible(true)
+	switch {
+	case a.Reseal:
+		cancel.SetLabel(i18n.T("Cancel"))
+		ok.SetLabel(i18n.T("Trust"))
+		notok.SetVisible(false)
+	case a.Tampered != "":
+		ok.SetLabel(i18n.T("Allow once"))
+		notok.SetVisible(false)
+	}
+	// Deny first, as the safe one.
+	if box := cancel.GetParent(); box != nil {
+		(&gtk.Box{Widget: *box}).ReorderChildAfter(&cancel.Widget, &gtk.Widget{})
+	}
 }
 
 // fillPassDetails fills what does not change with the mask: who asks,
@@ -364,6 +472,14 @@ func passRowText(q pinentry.Request, row, dates string) string {
 			return q.App + " ← " + q.Chain
 		}
 		return q.App
+	}
+	if a := q.Approval; a != nil {
+		switch row {
+		case "row_program":
+			return strings.TrimSpace(a.Program + " " + a.Script)
+		case "row_package":
+			return a.Package
+		}
 	}
 	return ""
 }
@@ -551,6 +667,14 @@ func (s *shellUI) showPassInfo(d *passDialog, text string, bad bool) {
 func (s *shellUI) answerPass() {
 	d := s.pass.cur
 	if d == nil || d.closed {
+		return
+	}
+	if d.q.Mode == pinentry.Approve {
+		r := "always"
+		if a := d.q.Approval; a != nil && a.Tampered != "" {
+			r = "once"
+		}
+		s.finishPass(d, ipc.Response{OK: true, Result: r})
 		return
 	}
 	if d.q.Mode != pinentry.GetPin {

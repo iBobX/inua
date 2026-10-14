@@ -44,6 +44,8 @@ func cmdKeyring(args []string) error {
 		return keyringDisable()
 	case "replace":
 		return keyringReplace(pass)
+	case "lock":
+		return keyringLock()
 	}
 	usage()
 	return nil
@@ -85,6 +87,14 @@ func keyringStatus(pass keyring.Pass) error {
 	} else {
 		fmt.Println("Started by D-Bus: not inua-keyring (inua keyring enable)")
 	}
+	if ours {
+		if on, problem, err := keyring.KeyringState(conn); err == nil {
+			fmt.Println("Unlocked:", map[bool]string{true: "yes, until it locks (inua keyring lock)", false: "no"}[on])
+			if problem != "" {
+				fmt.Println("Trusted apps: not trusted:", problem, "(Settings → Keyring)")
+			}
+		}
+	}
 	fmt.Printf("Items: %s/%s\n", pass.Dir, pass.Folder)
 	if err := pass.Ready(); err != nil {
 		fmt.Println("  ", err)
@@ -101,6 +111,24 @@ func keyringStatus(pass keyring.Pass) error {
 		items, _ := store.Items(c.ID)
 		fmt.Printf("  %s (%s): %d items\n", c.Label, c.ID, len(items))
 	}
+	return nil
+}
+
+// keyringLock has the running inua-keyring forget the secrets it keeps
+// unlocked.
+func keyringLock() error {
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	if _, ours := keyring.Serving(conn); !ours {
+		return errors.New("inua-keyring is not running")
+	}
+	if err := keyring.LockKeyring(conn); err != nil {
+		return err
+	}
+	fmt.Println("Locked: the next read decrypts with gpg again.")
 	return nil
 }
 

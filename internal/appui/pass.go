@@ -17,6 +17,8 @@ import (
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/keyring"
+	"github.com/lyricat/inua/internal/system"
 )
 
 // masked stands for a hidden value.
@@ -61,19 +63,24 @@ type passApp struct {
 	filling  bool
 
 	categoryList, entryList, fields, skeleton gtk.Box
-	decrypting, decryptError                  gtk.Box
-	storeMenu                                 gtk.DropDown
-	storePath, emptyText                      gtk.Label
-	entryTitle, entryPath                     gtk.Label
-	decryptTitle, decryptErrorText            gtk.Label
-	editTitle, editError                      gtk.Label
-	spinner                                   gtk.Spinner
-	newEntry, moveEntry, editEntry            gtk.Button
-	deleteEntry                               gtk.Button
-	filter                                    gtk.SearchEntry
-	detail                                    gtk.Stack
-	editor                                    gtk.TextView
-	win                                       *gtk.ApplicationWindow
+	keyringInfo                               gtk.Box
+	// The open entry's keyring item ("login/3") and the apps trusted with
+	// it, as listed; "" for an entry that is not inua-keyring's.
+	keyringItem                    string
+	trustedHere                    []keyring.Trusted
+	decrypting, decryptError       gtk.Box
+	storeMenu                      gtk.DropDown
+	storePath, emptyText           gtk.Label
+	entryTitle, entryPath          gtk.Label
+	decryptTitle, decryptErrorText gtk.Label
+	editTitle, editError           gtk.Label
+	spinner                        gtk.Spinner
+	newEntry, moveEntry, editEntry gtk.Button
+	deleteEntry                    gtk.Button
+	filter                         gtk.SearchEntry
+	detail                         gtk.Stack
+	editor                         gtk.TextView
+	win                            *gtk.ApplicationWindow
 
 	// The dialog that names a new entry, renames or moves, or deletes.
 	dlg                         gtk.Window
@@ -105,7 +112,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui := c.Load("pass.ui")
 	ui.Get("pass", a.win)
 	for id, w := range map[string]gobject.Ptr{
-		"categories": &a.categoryList, "entries": &a.entryList, "fields": &a.fields,
+		"categories": &a.categoryList, "entries": &a.entryList, "fields": &a.fields, "keyring_info": &a.keyringInfo,
 		"skeleton": &a.skeleton, "decrypting": &a.decrypting, "decrypt_error": &a.decryptError,
 		"store_menu": &a.storeMenu, "store_path": &a.storePath,
 		"empty_text": &a.emptyText, "entry_title": &a.entryTitle, "entry_path": &a.entryPath,
@@ -459,6 +466,9 @@ func (a *passApp) closeEntry() {
 	clear(a.reveal)
 	clear(a.values)
 	gtkx.Clear(&a.fields)
+	gtkx.Clear(&a.keyringInfo)
+	a.keyringInfo.SetVisible(false)
+	a.keyringItem, a.trustedHere = "", nil
 	a.editor.GetBuffer().SetText("", 0)
 }
 
@@ -477,6 +487,9 @@ func (a *passApp) openEntry(name string) {
 	a.moveEntry.SetSensitive(!inKeyring)
 	a.deleteEntry.SetSensitive(!inKeyring)
 	a.detail.SetVisibleChildName("entry")
+	if inKeyring {
+		a.showKeyringInfo(name)
+	}
 	gen, s := a.gen, a.store
 	go func() {
 		text, err := s.Show(name)
@@ -626,6 +639,25 @@ func (a *passApp) button(name string) {
 		}
 	case "entry":
 		a.openEntry(arg)
+	case "untrust":
+		i, _ := strconv.Atoi(arg)
+		if i < 0 || i >= len(a.trustedHere) || a.keyringItem == "" {
+			return
+		}
+		item, id, name := a.keyringItem, a.trustedHere[i].Identity, a.selected
+		go func() {
+			if conn, err := system.SessionBus(); err == nil {
+				if err := keyring.UntrustApp(conn, item, id); err != nil {
+					log.Printf("pass: keyring: %v", err)
+				}
+				conn.Close()
+			}
+			gtkx.Post(func() {
+				if a.selected == name {
+					a.showKeyringInfo(name)
+				}
+			})
+		}()
 	case "retry":
 		if a.selected != "" {
 			a.openEntry(a.selected)
@@ -940,4 +972,155 @@ func (a *passApp) submitForm() {
 			}
 		})
 	}()
+}
+
+// passReadsShown is how many reads of a keyring entry the Pass app lists.
+const passReadsShown = 5
+
+// showKeyringInfo shows, under an entry of inua-keyring's, the apps
+// trusted with its secret, each with Remove, and its last reads; read
+// from inua-keyring's files, off the main loop.
+func (a *passApp) showKeyringInfo(name string) {
+	dir, folder := a.store.Dir, a.keyring
+	go func() {
+		var item string
+		var apps []keyring.Trusted
+		if dir == keyring.StoreDir() {
+			if st, err := keyring.OpenPass(keyring.Pass{Dir: dir, Folder: folder}); err == nil {
+				if it, ok := st.ByEntry(strings.TrimPrefix(name, folder+"/")); ok {
+					item = keyring.ItemKey(it.Collection, it.ID)
+					apps = keyring.ReadTrust(keyring.TrustPath())[item]
+				}
+			}
+		}
+		var reads []keyring.Reads
+		if record, err := keyring.ReadAccess(keyring.AccessPath()); err == nil {
+			var mine []keyring.Access
+			for _, r := range record {
+				if r.Pass == name && r.Kind == "" {
+					mine = append(mine, r)
+				}
+			}
+			reads = keyring.GroupReads(mine, passReadsShown)
+		}
+		gtkx.Post(func() {
+			if a.selected != name {
+				return // another entry since
+			}
+			a.keyringItem, a.trustedHere = item, apps
+			gtkx.Clear(&a.keyringInfo)
+			a.keyringInfo.SetVisible(item != "")
+			if item == "" {
+				return
+			}
+			gtkx.Append(&a.keyringInfo, &passSection(i18n.T("TRUSTED APPS"), i18n.Nf("%d app", "%d apps", len(apps), len(apps))).Widget)
+			if len(apps) == 0 {
+				gtkx.Append(&a.keyringInfo, &passNote(i18n.T("None: an app reading it is asked about first.")).Widget)
+			}
+			for i, t := range apps {
+				where := t.Exe
+				switch {
+				case t.Flatpak != "":
+					where = i18n.Tf("Flatpak: %s", t.Flatpak)
+				case t.Script != "":
+					where = t.Exe + " " + t.Script
+				}
+				if t.Package != "" {
+					where = i18n.Tf("%s · %s", where, t.Package)
+				}
+				row := passInfoRow(t.Name(), where)
+				rm := gtk.NewButtonWithLabel(i18n.T("Remove"))
+				rm.AddCssClass("outlined")
+				rm.SetValign(gtk.AlignCenterValue)
+				rm.SetName("untrust:" + strconv.Itoa(i))
+				rm.SetTooltipText(i18n.T("Stop trusting it: it is asked about at its next read"))
+				rm.ConnectClicked(&a.onButton)
+				gtkx.Append(row, &rm.Widget)
+				gtkx.Append(&a.keyringInfo, &row.Widget)
+			}
+			gtkx.Append(&a.keyringInfo, &passSection(i18n.T("LAST READS"), "").Widget)
+			if len(reads) == 0 {
+				gtkx.Append(&a.keyringInfo, &passNote(i18n.T("No app has read it yet.")).Widget)
+			}
+			for _, r := range reads {
+				what := passReadWhat(r)
+				when := i18n.Time(r.Time.Local(), "Jan 2 15:04")
+				if r.N > 1 {
+					when = i18n.Nf("%s · %d times", "%s · %d times", r.N, when, r.N)
+				}
+				gtkx.Append(&a.keyringInfo, &passInfoRow(r.App, i18n.Tf("%s · %s", what, when)).Widget)
+			}
+		})
+	}()
+}
+
+// passReadWhat says how a read of a keyring entry went.
+func passReadWhat(r keyring.Reads) string {
+	switch r.Decision {
+	case keyring.DecTrusted:
+		return i18n.T("trusted")
+	case keyring.DecOnce:
+		return i18n.T("allowed once")
+	case keyring.DecAllowed:
+		return i18n.T("allowed, and trusted from now on")
+	case keyring.DecDenied:
+		return i18n.T("denied")
+	case keyring.DecUnasked:
+		return i18n.T("allowed: no one to ask")
+	}
+	return i18n.T("read")
+}
+
+// passSection is a section head, as the other light apps have: [TITLE]
+// and a dim note.
+func passSection(title, meta string) *gtk.Box {
+	head := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	head.AddCssClass("section-head")
+	head.AddCssClass("pass-keyring-head")
+	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	mark.AddCssClass("mark")
+	mark.SetValign(gtk.AlignCenterValue)
+	gtkx.Append(head, &mark.Widget)
+	t := gtk.NewLabel("")
+	t.AddCssClass("section-label")
+	t.SetMarkup("<span alpha='55%'>[</span>" + glib.MarkupEscapeText(title, -1) + "<span alpha='55%'>]</span>")
+	gtkx.Append(head, &t.Widget)
+	m := gtk.NewLabel(meta)
+	m.AddCssClass("section-meta")
+	m.SetHexpand(true)
+	m.SetXalign(0)
+	gtkx.Append(head, &m.Widget)
+	return head
+}
+
+// passInfoRow is a row of a keyring entry's sections: a name over a dim
+// line in the monospace.
+func passInfoRow(title, sub string) *gtk.Box {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	row.AddCssClass("pass-row")
+	col := gtk.NewBox(gtk.OrientationVerticalValue, 3)
+	col.SetHexpand(true)
+	t := gtk.NewLabel(title)
+	t.AddCssClass("title")
+	t.SetXalign(0)
+	t.SetEllipsize(3)
+	gtkx.Append(col, &t.Widget)
+	l := gtk.NewLabel(sub)
+	l.AddCssClass("pass-entry-folder")
+	l.SetXalign(0)
+	l.SetEllipsize(2) // middle: a path's both ends tell most
+	l.SetTooltipText(sub)
+	gtkx.Append(col, &l.Widget)
+	gtkx.Append(row, &col.Widget)
+	return row
+}
+
+// passNote is a dim line under a section head.
+func passNote(text string) *gtk.Label {
+	l := gtk.NewLabel(text)
+	l.AddCssClass("sub")
+	l.AddCssClass("pass-keyring-note")
+	l.SetXalign(0)
+	l.SetWrap(true)
+	return l
 }

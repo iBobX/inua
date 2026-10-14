@@ -35,8 +35,10 @@ type crypter interface {
 
 type plain struct{}
 
-func (plain) seal(secret []byte) ([]byte, []byte, error) { return nil, secret, nil }
-func (plain) open(_, value []byte) ([]byte, error)       { return value, nil }
+func (plain) seal(secret []byte) ([]byte, []byte, error) {
+	return nil, append([]byte(nil), secret...), nil
+}
+func (plain) open(_, value []byte) ([]byte, error) { return value, nil }
 
 // dhKey is one side's key pair.
 type dhKey struct{ priv, pub *big.Int }

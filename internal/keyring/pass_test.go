@@ -59,6 +59,21 @@ func TestPass(t *testing.T) {
 	if err != nil || string(got) != "sk-λ\nsecond line" {
 		t.Errorf("secret %q %v", got, err)
 	}
+	// Read without a pinentry (the key has no passphrase), and the
+	// entry's stamp changes when it is written.
+	p := Pass{Dir: store, Folder: "inua-keyring"}
+	if got, err := p.ShowQuiet("login/api-key-work"); err != nil || string(got) != "sk-λ\nsecond line" {
+		t.Errorf("show quietly: %q %v", got, err)
+	}
+	st := p.Stamp("login/api-key-work")
+	if st == "" || p.Stamp("login/none") != "" {
+		t.Errorf("stamps %q, %q", st, p.Stamp("login/none"))
+	}
+	s.SetSecret(Login, it.ID, []byte("sk-λ\nsecond line\nthird"), "text/plain")
+	if p.Stamp("login/api-key-work") == st {
+		t.Error("the stamp stayed after a write")
+	}
+	s.SetSecret(Login, it.ID, []byte("sk-λ\nsecond line"), "text/plain")
 	bin := []byte{0xff, 0, 7}
 	bi, _, _ := s.CreateItem(Login, "binary", nil, bin, "", false)
 	if got, _, err := s.Secret(Login, bi.ID, ""); err != nil || !bytes.Equal(got, bin) {

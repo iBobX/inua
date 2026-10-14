@@ -2071,9 +2071,18 @@ ApplicationWindow settings {
         title:  _("Keyring");
 
         // The reads, and beside them the one clicked: what it read, where
-        // the secret is in pass, and the process that asked.
+        // the secret is in pass, and the process that asked. The trusted
+        // apps are a page of their own, there may be many.
         child: Box {
-          Overlay {
+          Stack keyring_pages {
+            hexpand: true;
+            transition-type: slide_left_right;
+            transition-duration: 160;
+
+            StackPage {
+              name: "main";
+
+              child: Overlay {
             hexpand: true;
 
             child: ScrolledWindow scroll_keyring {
@@ -2142,6 +2151,119 @@ ApplicationWindow settings {
 
                     Separator {}
 
+                    // Unlocked since the first read, or locked.
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Unlocked secrets");
+                          xalign: 0;
+                        }
+
+                        Label keyring_lock_state {
+                          styles ["sub"]
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Button keyring_lock {
+                        styles ["outlined"]
+                        name: "keyring_lock";
+                        label:  _("Lock now");
+                        valign: center;
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Lock when unused");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("It locks with the screen and before suspend, and after this long without a read");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown keyring_lock_after {
+                        name: "keyring_lock_after";
+                        valign: center;
+
+                        model: StringList {
+                          strings [
+                            _("Never"),
+                            _("5 minutes"),
+                            _("15 minutes"),
+                            _("30 minutes"),
+                            _("1 hour"),
+                            _("4 hours"),
+                          ]
+                        };
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("With no one to ask");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("A read by an app not trusted with the secret, while the inua shell is not running");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown keyring_untrusted {
+                        name: "keyring_untrusted";
+                        valign: center;
+
+                        model: StringList {
+                          strings [
+                            _("Allowed"),
+                            _("Denied"),
+                          ]
+                        };
+                      }
+                    }
+
+                    Separator {}
+
                     Box {
                       styles ["row"]
                       spacing: 16;
@@ -2167,6 +2289,76 @@ ApplicationWindow settings {
                       Switch keyring_notify {
                         name: "keyring_notify";
                         valign: center;
+                      }
+                    }
+                  }
+                }
+
+                // [TRUSTED APPS]
+                Box {
+                  styles ["section"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label:  _("<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>");
+                    }
+
+                    Label {
+                      styles ["section-meta"]
+                      label:  _("Apps that read a secret without asking; any other app is asked about first");
+                      hexpand: true;
+                      xalign: 0;
+                      ellipsize: end;
+                    }
+                  }
+
+                  Box {
+                    styles ["section-body"]
+                    orientation: vertical;
+
+                    // How many, or why the list is not trusted; opens the
+                    // page of them.
+                    Button keyring_trusted_open {
+                      styles ["keyring-read"]
+                      name: "keyring_trusted_open";
+
+                      Box {
+                        styles ["row"]
+                        spacing: 16;
+
+                        Box {
+                          orientation: vertical;
+                          hexpand: true;
+                          valign: center;
+
+                          Label {
+                            styles ["title"]
+                            label:  _("Trusted apps");
+                            xalign: 0;
+                          }
+
+                          Label keyring_trusted_sum {
+                            styles ["sub"]
+                            xalign: 0;
+                            wrap: true;
+                          }
+                        }
+
+                        Image {
+                          icon-name: "go-next-symbolic";
+                          valign: center;
+                        }
                       }
                     }
                   }
@@ -2245,6 +2437,105 @@ ApplicationWindow settings {
               spacing: 10;
               valign: start;
               visible: false;
+            }
+              };
+            }
+
+            // The trusted apps, filtered by what is typed.
+            StackPage {
+              name: "trusted";
+
+              child: Box {
+                styles ["page"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Button keyring_trusted_back {
+                    styles ["plain"]
+                    name: "keyring_trusted_back";
+                    icon-name: "go-previous-symbolic";
+                    tooltip-text:  _("Back");
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>");
+                  }
+
+                  Label keyring_trusted_count {
+                    styles ["section-meta"]
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  SearchEntry keyring_trusted_filter {
+                    placeholder-text:  _("Filter by app, program or secret");
+                    width-chars: 28;
+                    valign: center;
+                  }
+                }
+
+                // The list was changed outside inua-keyring: nothing in it
+                // is trusted until the user trusts it again.
+                Box keyring_problem {
+                  styles ["row", "keyring-problem"]
+                  spacing: 16;
+                  visible: false;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+
+                    Label {
+                      styles ["title"]
+                      label:  _("The list is not trusted");
+                      xalign: 0;
+                    }
+
+                    Label keyring_problem_text {
+                      styles ["sub"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Button keyring_reseal {
+                    styles ["outlined"]
+                    name: "keyring_reseal";
+                    label:  _("Trust this list again");
+                    valign: center;
+                  }
+                }
+
+                ScrolledWindow {
+                  hscrollbar-policy: never;
+                  vexpand: true;
+
+                  Box {
+                    orientation: vertical;
+
+                    // Filled from Go: a row for each app and secret.
+                    Box keyring_trusted {
+                      orientation: vertical;
+                    }
+
+                    Label keyring_trusted_none {
+                      styles ["sub"]
+                      xalign: 0;
+                      wrap: true;
+                      margin-top: 12;
+                      visible: false;
+                    }
+                  }
+                }
+              };
             }
           }
 

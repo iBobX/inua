@@ -90,6 +90,30 @@ func (p Pass) ShowFor(entry, who string) ([]byte, error) {
 	return p.runFor(who, nil, "show", p.name(entry))
 }
 
+// ShowQuiet is Show that asks no one: without the passphrase in
+// gpg-agent, gpg fails instead of starting a pinentry.
+func (p Pass) ShowQuiet(entry string) ([]byte, error) {
+	cmd := exec.Command("pass", "show", p.name(entry))
+	cmd.Env = append(os.Environ(), "PASSWORD_STORE_DIR="+p.Dir,
+		"PASSWORD_STORE_GPG_OPTS="+strings.TrimSpace(os.Getenv("PASSWORD_STORE_GPG_OPTS")+" --pinentry-mode=error"))
+	var out, errb bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &errb
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("pass show: %v: %s", err, strings.TrimSpace(errb.String()))
+	}
+	return out.Bytes(), nil
+}
+
+// Stamp is the entry's file as it is now: its time and size; "" when it
+// is not there.
+func (p Pass) Stamp(entry string) string {
+	info, err := os.Stat(filepath.Join(p.Dir, p.Folder, entry+".gpg"))
+	if err != nil {
+		return ""
+	}
+	return fmt.Sprint(info.ModTime().UnixNano(), info.Size())
+}
+
 // Insert writes the secret exactly as given (-m: to the end of input).
 func (p Pass) Insert(entry string, secret []byte) error {
 	_, err := p.run(secret, "insert", "--multiline", "--force", p.name(entry))

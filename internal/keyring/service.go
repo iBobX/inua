@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/godbus/dbus/v5"
+	"github.com/godbus/dbus/v5/introspect"
 
 	"github.com/lyricat/inua/internal/proc"
 )
@@ -62,11 +63,26 @@ type Service struct {
 	// read since the service started. It runs on the request's goroutine.
 	OnRead func(a Access, first bool)
 
+	// Trust decides which apps read which secret
+	// (docs/feat/keyring-trust.md); nil: every app reads any.
+	Trust *Trust
+	// Ask asks the user whether an app may read a secret; nil, or an
+	// error: Untrusted answers.
+	Ask func(ctx context.Context, q Question) (Answer, error)
+	// Untrusted answers when nobody can be asked: AllowOnce or Deny
+	// (keyring.untrusted, as it is when asked); nil: AllowOnce.
+	Untrusted func() Answer
+
 	mu       sync.Mutex
 	sessions map[dbus.ObjectPath]*session
 	nextSess int
 	apps     map[string]app  // the clients, by unique name
 	readers  map[string]bool // the apps that read a secret, by name
+	// decisions are the answers kept for a process: allowed once or
+	// denied, by unique name, then item.
+	decisions map[string]map[string]Answer
+	pending   map[string]*pending // questions on their way, by client and item
+	later     []laterTrust        // apps to trust once the key can be read
 }
 
 // app is a client of the service: its program and PID, and the detail
@@ -75,6 +91,8 @@ type app struct {
 	name                string
 	pid                 int
 	exe, command, chain string
+	id                  Identity // who it is, for the trust list
+	idErr               error    // why it is not known
 }
 
 type session struct {
@@ -84,7 +102,14 @@ type session struct {
 
 // NewService prepares the service on conn; Serve runs it.
 func NewService(conn *dbus.Conn, store *Store) *Service {
-	return &Service{conn: conn, store: store, sessions: map[dbus.ObjectPath]*session{}, apps: map[string]app{}, readers: map[string]bool{}}
+	s := &Service{conn: conn, store: store, sessions: map[dbus.ObjectPath]*session{}, apps: map[string]app{}, readers: map[string]bool{},
+		decisions: map[string]map[string]Answer{}, pending: map[string]*pending{}}
+	store.OnLock = func(unlocked bool) {
+		if unlocked && s.Trust != nil {
+			go s.trustLater()
+		}
+	}
+	return s
 }
 
 // Serve provides the Secret Service until ctx ends. It fails when another
@@ -98,6 +123,16 @@ func (s *Service) Serve(ctx context.Context) error {
 			return err
 		}
 		defer s.conn.ExportSubtree(nil, basePath, iface)
+	}
+	if !s.foreign {
+		if err := s.conn.Export(ownObj{s}, ownPath, ownIface); err != nil {
+			return err
+		}
+		defer s.conn.Export(nil, ownPath, ownIface)
+		node := introspect.Node{Name: string(ownPath)}
+		if err := s.conn.Export(introspect.NewIntrospectable(&node), ownPath, ifIntrospect); err == nil {
+			defer s.conn.Export(nil, ownPath, ifIntrospect)
+		}
 	}
 	// Sessions end with the clients that opened them.
 	sigs := make(chan *dbus.Signal, 16)
@@ -140,6 +175,7 @@ func (s *Service) Serve(ctx context.Context) error {
 					}
 				}
 				delete(s.apps, gone)
+				delete(s.decisions, gone)
 				s.mu.Unlock()
 			}
 		}
@@ -264,24 +300,50 @@ func (s *Service) sealed(it Item, sess *session, sp dbus.ObjectPath, who string)
 	if a.pid > 0 {
 		asker = proc.Describe(a.pid)
 	}
+	read := Access{Time: time.Now(), App: a.name, PID: a.pid, Secret: label,
+		Pass: s.store.Where(it.Collection, it.ID), Collection: it.Collection,
+		Exe: a.exe, Command: a.command, Chain: a.chain, Bus: who}
+	dec, unchecked, derr := s.permit(it, a, who, label)
+	if derr != nil {
+		s.denied(read, dec)
+		return Secret{}, derr
+	}
 	secret, ct, err := s.store.Secret(it.Collection, it.ID, asker+"\t"+label)
 	if err != nil {
 		return Secret{}, failed(err)
+	}
+	defer clear(secret)
+	if unchecked {
+		// Trusted by a list whose seal is checked now that it unlocked.
+		if dec, derr = s.recheck(it, a, who, label); derr != nil {
+			s.denied(read, dec)
+			return Secret{}, derr
+		}
+	}
+	if s.Trust != nil {
+		s.trustLater()
 	}
 	params, value, err := sess.c.seal(secret)
 	if err != nil {
 		return Secret{}, failed(err)
 	}
+	read.Decision = dec
 	if s.OnRead != nil {
 		s.mu.Lock()
 		first := !s.readers[a.name]
 		s.readers[a.name] = true
 		s.mu.Unlock()
-		s.OnRead(Access{Time: time.Now(), App: a.name, PID: a.pid, Secret: label,
-			Pass: s.store.Where(it.Collection, it.ID), Collection: it.Collection,
-			Exe: a.exe, Command: a.command, Chain: a.chain, Bus: who}, first)
+		s.OnRead(read, first)
 	}
 	return Secret{Session: sp, Parameters: params, Value: value, ContentType: ct}, nil
+}
+
+// denied reports a read the user did not allow.
+func (s *Service) denied(read Access, dec string) {
+	read.Decision = cmp.Or(dec, DecDenied)
+	if s.OnRead != nil {
+		s.OnRead(read, false)
+	}
 }
 
 // client names the process behind a unique bus name, asking the bus once.
@@ -296,6 +358,11 @@ func (s *Service) client(unique string) app {
 	if s.conn.BusObject().Call("org.freedesktop.DBus.GetConnectionUnixProcessID", 0, unique).Store(&pid) == nil {
 		p := int(pid)
 		a = app{name: proc.Name(p), pid: p, exe: proc.Exe(p), command: proc.Command(p), chain: proc.Chain(proc.Parent(p), 8)}
+		if s.Trust != nil {
+			a.id, a.idErr = s.identify(unique, p)
+		}
+	} else {
+		a.idErr = errors.New("the bus did not say which process it is")
 	}
 	a.name = cmp.Or(a.name, unique)
 	s.mu.Lock()
@@ -443,6 +510,9 @@ func (o serviceObj) GetSecrets(m dbus.Message, items []dbus.ObjectPath, sp dbus.
 			continue // the specification: items that do not exist are left out
 		}
 		sec, derr := o.s.sealed(it, sess, sp, sender(m))
+		if derr == errDenied && len(items) > 1 {
+			continue // the others may be allowed
+		}
 		if derr != nil {
 			return nil, derr
 		}
@@ -542,6 +612,7 @@ func (o collectionObj) CreateItem(m dbus.Message, props map[string]dbus.Variant,
 	if err != nil {
 		return "/", "/", failed(err)
 	}
+	o.s.trustCreator(it, sender(m))
 	p := itemPath(coll, it.ID)
 	cp := collPath(coll)
 	if created {
@@ -581,6 +652,9 @@ func (o itemObj) Delete(m dbus.Message) (dbus.ObjectPath, *dbus.Error) {
 	}
 	if err := o.s.store.DeleteItem(it.Collection, it.ID); err != nil {
 		return "/", failed(err)
+	}
+	if o.s.Trust != nil {
+		o.s.Trust.Forget(ItemKey(it.Collection, it.ID))
 	}
 	cp := collPath(it.Collection)
 	o.s.emit(cp, ifCollection+".ItemDeleted", itemPath(it.Collection, it.ID))

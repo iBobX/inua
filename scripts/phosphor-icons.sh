@@ -70,6 +70,8 @@ media-skip-forward                    skip-forward
 # control center buttons and tiles
 system-lock-screen                    lock
 dialog-password                       key
+security-high                         shield-check
+action-unavailable                    prohibit
 edit-paste                            clipboard-text
 applets-screenshooter                 selection
 emblem-system                         gear-six

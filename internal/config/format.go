@@ -28,7 +28,7 @@ func Format(c Config) string {
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
-		q(c.Keyring.Folder), c.Keyring.Notify,
+		q(c.Keyring.Folder), c.Keyring.Notify, q(c.Keyring.Untrusted), c.Keyring.LockAfter,
 		shortcuts(c.Shortcuts))
 }
 
@@ -406,6 +406,16 @@ folder = %s
 # A notification when an app reads its first secret since inua-keyring
 # started; off by default. Every read is listed in Settings → Keyring.
 notify = %t
+
+# Each secret has the apps trusted with it; another app reading it is
+# asked about (Deny, Allow once, Always allow). With no inua shell to
+# ask in: "allow" (as without the list, and recorded) or "deny".
+untrusted = %s
+
+# After the first read, the keyring keeps its secrets in protected memory
+# until it locks: with the screen, before suspend, with "inua keyring
+# lock", or after this many minutes without a read (0: not by time).
+lock_after = %d
 
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything

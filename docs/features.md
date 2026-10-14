@@ -207,6 +207,31 @@ that in a side panel. The record is private
 `keyring.notify` (Settings → Keyring, off by default) adds a notification
 for each app's first read since inua-keyring started.
 
+After the first read, inua-keyring keeps its secrets in protected memory
+(`memfd_secret`, else locked out of swap and core dumps; its process
+can't be traced or read by the user's other programs) until it locks:
+with inua's lock screen, before suspend, with `inua keyring lock` or
+Settings → Keyring, or after `keyring.lock_after` minutes without a
+read. So gpg asks for the passphrase once a session, not whenever
+gpg-agent forgot it, and the rest of the password store keeps gpg-agent's
+short cache.
+
+Each secret has the apps trusted with it. Another app reading it gets a
+dialog: Deny, Allow once (for that process), Always allow. The app that
+stored a secret is trusted with it. An app is its program (for a script,
+the script), known by its SHA-256: a program only root can change (the
+file and its folders root's: the package manager's) stays trusted when
+updated; any other program is asked about again when it changes. An app
+run with `LD_PRELOAD`, `LD_AUDIT` or `LD_LIBRARY_PATH` can only be
+allowed once. The list is kept in `~/.local/state/inua/keyring-trust.json`,
+sealed with a key kept in pass; changed outside inua-keyring, it is not
+trusted until you trust it again in Settings → Keyring. Its Trusted apps
+page lists them, with a filter and Remove; the Pass app shows, under an
+entry of inua-keyring's, the apps trusted with it and its last reads. With no inua shell to ask in,
+`keyring.untrusted` decides ("allow", the default, or "deny"). This keeps
+programs from reading secrets they were never given; a program running
+as you can still start a trusted one and take over what it does.
+
 ## Keyboard and touchpad
 
 Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed: written to

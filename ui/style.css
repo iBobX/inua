@@ -769,6 +769,7 @@ window.settings { background: @app; font-size: 14px; }
 }
 
 /* A notice: the hairline in the notice's colour, no fill. */
+.settings .keyring-problem .title, .settings .sub.warn-text { color: @warn; }
 .settings .warn {
   margin-bottom: 14px;
   padding: 10px 14px;
@@ -1861,6 +1862,9 @@ window.pass .pass-entry-mark {
 window.pass button.index-item.pass-entry.selected .pass-entry-mark { border-color: alpha(@accent, 0.45); color: @accent; }
 window.pass .pass-entry-mark image { color: @t1; -gtk-icon-size: 15px; }
 window.pass button.index-item.pass-entry.selected .pass-entry-mark image { color: @accent; }
+/* An entry of inua-keyring's: the apps trusted with it, its last reads. */
+window.pass .pass-keyring-head { margin-top: 22px; }
+window.pass .pass-keyring-note { padding: 12px 0; }
 window.pass .pass-entry-folder {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 11px;

@@ -4,7 +4,9 @@
 package main
 
 import (
+	"cmp"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -18,9 +20,13 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
+	sys "golang.org/x/sys/unix"
+
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/keyring"
+	"github.com/lyricat/inua/internal/pinentry"
 )
 
 // version is the release, set by the release build (-X main.version).
@@ -34,6 +40,11 @@ func main() {
 		return
 	}
 	log.SetPrefix("inua-keyring: ")
+	// The user's other programs may not read this one's memory, where the
+	// unlocked secrets are (ptrace, /proc/PID/mem), nor its core dumps.
+	if err := sys.Prctl(sys.PR_SET_DUMPABLE, 0, 0, 0, 0); err != nil {
+		log.Printf("prctl: %v", err)
+	}
 	cfg, warnings, err := config.Load(config.DefaultPath())
 	for _, w := range warnings {
 		log.Print(w)
@@ -54,14 +65,25 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	log.Printf("serving %s from %s/%s", keyring.Name, keyring.StoreDir(), cfg.Keyring.Folder)
+	store.KeepUnlocked(keyring.NewVault())
 	svc := keyring.NewService(conn, store)
+	svc.Trust = keyring.NewTrust(keyring.TrustPath(), store.TrustKey)
+	svc.Ask = askShell
+	svc.Untrusted = func() keyring.Answer {
+		if now, _, err := config.Load(config.DefaultPath()); err == nil && now.Keyring.Untrusted == "deny" {
+			return keyring.Deny
+		}
+		return keyring.AllowOnce
+	}
+	go lockOnSleep(ctx, store)
+	go lockWhenIdle(ctx, store)
 	record := keyring.AccessPath()
 	svc.OnRead = func(a keyring.Access, first bool) {
-		log.Printf("secret %q read by %s (pid %d)", a.Secret, a.App, a.PID)
+		log.Printf("secret %q read by %s (pid %d) %s", a.Secret, a.App, a.PID, a.Decision)
 		if err := keyring.RecordAccess(record, a); err != nil {
 			log.Printf("access record: %v", err)
 		}
-		if first {
+		if first && a.Decision != keyring.DecDenied {
 			// The settings' switch, as it is now: it changes while this runs.
 			if now, _, err := config.Load(config.DefaultPath()); err == nil && now.Keyring.Notify {
 				go notify(conn, a)
@@ -152,3 +174,91 @@ func openReads() {
 }
 
 func fileExists(p string) bool { _, err := os.Stat(p); return err == nil }
+
+// askShell asks, in the shell's passphrase dialog, whether an app may read
+// a secret; an error when no shell listens.
+func askShell(ctx context.Context, q keyring.Question) (keyring.Answer, error) {
+	ap := &pinentry.Approval{Program: q.Identity.Exe, Script: q.Identity.Script, Flatpak: q.Identity.Flatpak,
+		Package: q.Package, Tampered: q.Tampered, Reseal: q.Reseal, Apps: q.Apps}
+	if ap.Package == "" && q.Identity.System {
+		ap.Package = keyring.Package(q.Identity.Exe)
+	}
+	if q.Was != nil {
+		ap.Changed, ap.Since, ap.WasPackage = true, q.Was.Since, q.Was.Package
+	}
+	req := pinentry.Request{Mode: pinentry.Approve, App: q.App, Chain: q.Chain, Keyring: true,
+		Secret: q.Secret, Entry: q.Entry, Approval: ap}
+	arg, err := json.Marshal(req)
+	if err != nil {
+		return keyring.Deny, err
+	}
+	sock := ipc.SocketPath(cmp.Or(os.Getenv("INUA_INSTANCE"), "default"))
+	resp, err := ipc.Call(ctx, sock, ipc.Request{Op: "call", Target: "password", Function: string(pinentry.Approve), Args: []string{string(arg)}})
+	switch {
+	case err == nil && resp.Result == "always":
+		return keyring.AlwaysAllow, nil
+	case err == nil && resp.Result == "once":
+		return keyring.AllowOnce, nil
+	case resp.Error == "cancelled":
+		return keyring.Deny, nil
+	case err == nil:
+		return keyring.Deny, fmt.Errorf("the shell answered %q", resp.Result)
+	}
+	return keyring.Deny, err
+}
+
+// lockOnSleep locks the keyring before the machine suspends or
+// hibernates (logind's PrepareForSleep).
+func lockOnSleep(ctx context.Context, store *keyring.Store) {
+	conn, err := dbus.ConnectSystemBus()
+	if err != nil {
+		log.Printf("system bus: %v; not locking before sleep", err)
+		return
+	}
+	defer conn.Close()
+	match := []dbus.MatchOption{dbus.WithMatchInterface("org.freedesktop.login1.Manager"), dbus.WithMatchMember("PrepareForSleep")}
+	if err := conn.AddMatchSignal(match...); err != nil {
+		log.Printf("logind: %v; not locking before sleep", err)
+		return
+	}
+	sigs := make(chan *dbus.Signal, 4)
+	conn.Signal(sigs)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case sig := <-sigs:
+			if len(sig.Body) == 1 && sig.Body[0] == true {
+				log.Print("locking: the machine sleeps")
+				store.Lock()
+			}
+		}
+	}
+}
+
+// lockWhenIdle locks the keyring once no secret was read for
+// keyring.lock_after minutes, read again each time, as Settings changes
+// it.
+func lockWhenIdle(ctx context.Context, store *keyring.Store) {
+	tick := time.NewTicker(30 * time.Second)
+	defer tick.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-tick.C:
+		}
+		on, last := store.Unlocked()
+		if !on {
+			continue
+		}
+		cfg, _, err := config.Load(config.DefaultPath())
+		if err != nil || cfg.Keyring.LockAfter <= 0 {
+			continue
+		}
+		if time.Since(last) >= time.Duration(cfg.Keyring.LockAfter)*time.Minute {
+			log.Printf("locking: no read for %v", time.Duration(cfg.Keyring.LockAfter)*time.Minute)
+			store.Lock()
+		}
+	}
+}

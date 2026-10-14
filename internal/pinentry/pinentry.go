@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Mode is what the agent asks for.
@@ -20,6 +21,9 @@ const (
 	GetPin  Mode = "getpin"  // a passphrase or PIN
 	Confirm Mode = "confirm" // yes or no
 	Message Mode = "message" // only to be read
+	// Approve is inua-keyring's, not the agent's: may an app read a
+	// secret? The answer is "always", "once", or cancelled (deny).
+	Approve Mode = "approve"
 )
 
 // Request is one question, with what the agent set before asking it.
@@ -55,6 +59,28 @@ type Request struct {
 	Secret string `json:"secret,omitempty"`
 	// Key is the key the passphrase unlocks; nil when it is not known.
 	Key *Key `json:"key,omitempty"`
+	// Approval is what Approve asks about.
+	Approval *Approval `json:"approval,omitempty"`
+}
+
+// Approval is the app an Approve question is about: its program, and how
+// it was trusted before when it changed since.
+type Approval struct {
+	Program string `json:"program,omitempty"` // its path
+	Script  string `json:"script,omitempty"`  // what the program, an interpreter, runs
+	Flatpak string `json:"flatpak,omitempty"`
+	Package string `json:"package,omitempty"` // "github-cli 2.62.0-1"
+	// Changed is set when the app was trusted, but its program is not the
+	// one trusted, on Since, as WasPackage.
+	Changed    bool      `json:"changed,omitempty"`
+	Since      time.Time `json:"since,omitzero"`
+	WasPackage string    `json:"was_package,omitempty"`
+	// Tampered says why it can only be allowed once.
+	Tampered string `json:"tampered,omitempty"`
+	// Reseal asks instead whether to trust the list of apps again, after
+	// it was changed outside inua-keyring; Apps is how many it has.
+	Reseal bool `json:"reseal,omitempty"`
+	Apps   int  `json:"apps,omitempty"`
 }
 
 // UserData is how inua-keyring says, in PINENTRY_USER_DATA (gpg-agent
