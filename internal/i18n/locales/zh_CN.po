@@ -368,6 +368,7 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: internal/appui/pass.go:197
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -381,10 +382,10 @@ msgid "Viewer"
 msgstr "图片查看器"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:658
+#: internal/appui/pass.go:755
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
-#: ui/pass.ui:259
+#: ui/pass.ui:238
 msgid "Delete"
 msgstr "删除"
 
@@ -486,7 +487,7 @@ msgid "Remove %s"
 msgstr "移除%s"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:248
+#: ui/pass.ui:227
 msgid "Edit"
 msgstr "编辑"
 
@@ -569,153 +570,161 @@ msgstr "复制 %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "还没有颜色。从屏幕上的任意位置选择一个。"
 
-#: internal/appui/pass.go:220
+#: internal/appui/pass.go:277
 msgid "A password store: a folder with a .gpg-id"
 msgstr "密码库：含有 .gpg-id 的文件夹"
 
-#: internal/appui/pass.go:228
+#: internal/appui/pass.go:285
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s 不是密码库：没有 .gpg-id（pass init 可以创建）。"
 
-#: internal/appui/pass.go:248
+#: internal/appui/pass.go:305
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "没有密码库。pass init 你的GPG密钥ID 会在 ~/.password-store 创建一个；也可以在下方添加其他文件夹。"
 
-#: internal/appui/pass.go:275
+#: internal/appui/pass.go:332
 msgid "The store is empty. + makes an entry."
 msgstr "密码库是空的。+ 可新建条目。"
 
-#: internal/appui/pass.go:278
-#: internal/appui/pass.go:491
-#: internal/appui/pass.go:572
-#: internal/appui/pass.go:715
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:335
+#: internal/appui/pass.go:600
+#: internal/appui/pass.go:681
+#: internal/appui/pass.go:937
 msgid "Choose an entry."
 msgstr "选择一个条目。"
 
-#: internal/appui/pass.go:284
+#: internal/appui/pass.go:341
 msgid "Top level"
 msgstr "顶层"
 
-#: internal/appui/pass.go:292
+#: internal/appui/pass.go:349
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 条"
 
-#: internal/appui/pass.go:298
-#: ui/pass.ui:127
-msgid "Rename or move this category"
-msgstr "重命名或移动此类别"
+#: internal/appui/pass.go:354
+msgid "Right-click to rename or move"
+msgstr "右键点击以重命名或移动"
 
-#: internal/appui/pass.go:300
-msgid "inua-keyring's folder: its index names these entries by path"
-msgstr "inua-keyring 的文件夹：它的索引按路径引用这些条目"
+#: internal/appui/pass.go:449
+msgid "Decrypting %s"
+msgstr "正在解密 %s"
 
-#: internal/appui/pass.go:353
-msgid "Decrypting…"
-msgstr "正在解密…"
-
-#: internal/appui/pass.go:367
-msgid "Cannot decrypt it: %s"
-msgstr "无法解密：%s"
-
-#: internal/appui/pass.go:391
+#: internal/appui/pass.go:500
 msgid "PASSWORD"
 msgstr "密码"
 
-#: internal/appui/pass.go:396
-#: internal/appui/pass.go:448
+#: internal/appui/pass.go:505
+#: internal/appui/pass.go:557
 msgid "ONE-TIME CODE"
 msgstr "一次性验证码"
 
-#: internal/appui/pass.go:403
+#: internal/appui/pass.go:512
 msgid "NOTES"
 msgstr "备注"
 
-#: internal/appui/pass.go:432
+#: internal/appui/pass.go:541
 msgid "Show"
 msgstr "显示"
 
-#: internal/appui/pass.go:434
+#: internal/appui/pass.go:543
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "隐藏"
 
-#: internal/appui/pass.go:438
-#: internal/appui/pass.go:463
+#: internal/appui/pass.go:547
+#: internal/appui/pass.go:572
 #: internal/ui/askpass.go:187
 msgid "Copy"
 msgstr "复制"
 
-#: internal/appui/pass.go:477
+#: internal/appui/pass.go:586
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "剩 %d 秒"
 
-#: internal/appui/pass.go:625
-msgid "Categories…"
-msgstr "类别…"
+#: internal/appui/pass.go:737
+msgid "Rename or move the category “%s”"
+msgstr "重命名或移动类别“%s”"
 
-#: internal/appui/pass.go:634
-#: internal/appui/pass.go:640
-msgid "Rename or move “%s”"
-msgstr "重命名或移动“%s”"
+#: internal/appui/pass.go:738
+msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
+msgstr "新路径。换个名字即重命名；放到另一个类别下的路径，即连同所有条目移动过去。"
 
-#: internal/appui/pass.go:635
-msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
-msgstr "新路径：换个名字即重命名；放到另一个类别下的路径（archive/work）即移动过去。"
-
-#: internal/appui/pass.go:637
-#: internal/appui/pass.go:644
+#: internal/appui/pass.go:739
+#: internal/appui/pass.go:743
 msgid "Move"
 msgstr "移动"
 
-#: internal/appui/pass.go:641
-msgid "The same category and a new name renames it; another category moves it."
-msgstr "同一类别下换新名字即重命名；换类别即移动。"
+#: internal/appui/pass.go:741
+msgid "Rename or move “%s”"
+msgstr "重命名或移动“%s”"
 
-#: internal/appui/pass.go:646
-#: ui/pass.ui:137
+#: internal/appui/pass.go:742
+msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
+msgstr "新路径。第一段是类别：改它即移动条目，改其余部分即重命名。"
+
+#: internal/appui/pass.go:745
+#: ui/pass.ui:123
 msgid "New entry"
 msgstr "新建条目"
 
-#: internal/appui/pass.go:647
-msgid "Where it goes; then its content."
-msgstr "放在哪里；然后填写内容。"
+#: internal/appui/pass.go:746
+msgid "Its path: the first part is its category. Its content comes next."
+msgstr "路径：第一段是类别。接着填写内容。"
 
-#: internal/appui/pass.go:654
+#: internal/appui/pass.go:751
 msgid "Next"
 msgstr "下一步"
 
-#: internal/appui/pass.go:656
+#: internal/appui/pass.go:753
 msgid "Delete “%s”?"
 msgstr "删除“%s”？"
 
-#: internal/appui/pass.go:657
+#: internal/appui/pass.go:754
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass 会删除它的文件；git 管理的密码库会在历史中保留。"
 
-#: internal/appui/pass.go:695
-msgid "Each part of the path needs a name, without a leading dot."
-msgstr "路径的每一段都要有名字，且不能以点开头。"
+#: internal/appui/pass.go:790
+#: internal/appui/pass.go:817
+#: internal/appui/viewer.go:812
+msgid "FILE"
+msgstr "文件"
 
-#: internal/appui/pass.go:697
+#: internal/appui/pass.go:813
+msgid "CATEGORY"
+msgstr "类别"
+
+#: internal/appui/pass.go:814
+msgid "NAME"
+msgstr "名称"
+
+#: internal/appui/pass.go:827
+msgid "and %d more"
+msgid_plural "and %d more"
+msgstr[0] "还有 %d 个"
+
+#: internal/appui/pass.go:871
 msgid "That is where it is."
 msgstr "它已经在那里了。"
 
-#: internal/appui/pass.go:699
-msgid "%s is already in the store."
-msgstr "%s 已经在密码库里了。"
-
-#: internal/appui/pass.go:701
+#: internal/appui/pass.go:873
 msgid "A category cannot move into itself."
 msgstr "类别不能移动到自身内部。"
 
-#: internal/appui/pass.go:703
-msgid "It will be %s"
-msgstr "将成为 %s"
+#: internal/appui/pass.go:875
+msgid "That path is already in the store."
+msgstr "这个路径已经在密码库里了。"
+
+#: internal/appui/pass.go:877
+msgid "It is no longer in the store."
+msgstr "它已经不在密码库里了。"
+
+#: internal/appui/pass.go:879
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "路径的每一段都要有名字，且不能以点开头。"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -1674,10 +1683,6 @@ msgstr "实际尺寸(1)"
 msgid "Fit the window (0)"
 msgstr "适应窗口（0）"
 
-#: internal/appui/viewer.go:812
-msgid "FILE"
-msgstr "文件"
-
 #: internal/appui/viewer.go:819
 msgid "Size"
 msgstr "尺寸"
@@ -1747,6 +1752,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "无法读取天气。\n%s"
 
 #: internal/appui/weather.go:273
+#: ui/pass.ui:350
 msgid "Try again"
 msgstr "再试一次"
 
@@ -4900,8 +4906,8 @@ msgstr "好的"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
-#: ui/pass.ui:359
-#: ui/pass.ui:474
+#: ui/pass.ui:440
+#: ui/pass.ui:537
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "取消"
@@ -5629,7 +5635,7 @@ msgstr "端点"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
-#: ui/pass.ui:368
+#: ui/pass.ui:449
 msgid "Save"
 msgstr "保存"
 
@@ -6145,29 +6151,29 @@ msgstr "密码库"
 msgid "Another store: a folder with a .gpg-id"
 msgstr "其他密码库：含有 .gpg-id 的文件夹"
 
-#: ui/pass.ui:147
+#: ui/pass.ui:113
 msgid "Search every entry"
 msgstr "搜索所有条目"
 
-#: ui/pass.ui:237
+#: ui/pass.ui:216
 msgid "Rename or move"
 msgstr "重命名或移动"
 
-#: ui/pass.ui:313
+#: ui/pass.ui:278
+msgid "gpg may ask for your passphrase, in inua's dialog."
+msgstr "gpg 可能会在 inua 的对话框里询问密码短语。"
+
+#: ui/pass.ui:325
+msgid "It could not be decrypted"
+msgstr "无法解密"
+
+#: ui/pass.ui:394
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "第一行是密码；“键: 值”形式的行是字段；otpauth:// 开头的行是一次性验证码。"
 
-#: ui/pass.ui:414
-msgid "CATEGORY"
-msgstr "类别"
-
-#: ui/pass.ui:428
-msgid "A category there is"
-msgstr "已有的类别"
-
-#: ui/pass.ui:444
-msgid "NAME"
-msgstr "名称"
+#: ui/pass.ui:504
+msgid "category/name"
+msgstr "类别/名称"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

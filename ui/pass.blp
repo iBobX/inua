@@ -78,22 +78,14 @@ ApplicationWindow pass {
       hexpand: false;
       width-request: 280;
 
+      // The search through every entry, and a new entry beside it.
       Box {
         styles ["pass-col-head"]
         spacing: 6;
 
-        Label category_title {
-          styles ["pass-col-title"]
+        SearchEntry filter {
           hexpand: true;
-          xalign: 0;
-          ellipsize: end;
-        }
-
-        Button move_category {
-          styles ["plain"]
-          name: "move-category";
-          icon-name: "document-edit-symbolic";
-          tooltip-text:  _("Rename or move this category");
+          placeholder-text:  _("Search every entry");
         }
 
         Button new_entry {
@@ -101,12 +93,8 @@ ApplicationWindow pass {
           name: "new-entry";
           icon-name: "list-add-symbolic";
           tooltip-text:  _("New entry");
+          valign: center;
         }
-      }
-
-      SearchEntry filter {
-        styles ["index-search"]
-        placeholder-text:  _("Search every entry");
       }
 
       ScrolledWindow {
@@ -195,12 +183,89 @@ ApplicationWindow pass {
               }
             }
 
-            // Decrypting, or why it could not.
-            Label entry_state {
-              styles ["sub"]
-              xalign: 0;
-              wrap: true;
+            // While gpg decrypts: a spinner, what is decrypted, and the
+            // rows to come, shimmering.
+            Box decrypting {
+              styles ["pass-decrypting"]
+              orientation: vertical;
               visible: false;
+
+              Box {
+                spacing: 14;
+
+                Spinner spinner {
+                  valign: center;
+                }
+
+                Box {
+                  orientation: vertical;
+                  spacing: 3;
+                  valign: center;
+
+                  Label decrypt_title {
+                    styles ["pass-decrypt-title"]
+                    xalign: 0;
+                    ellipsize: middle;
+                  }
+
+                  Label {
+                    styles ["sub"]
+                    label:  _("gpg may ask for your passphrase, in inua's dialog.");
+                    xalign: 0;
+                    wrap: true;
+                  }
+                }
+              }
+
+              Box skeleton {
+                styles ["pass-skeleton"]
+                orientation: vertical;
+              }
+            }
+
+            // Why it could not be decrypted, and a second try.
+            Box decrypt_error {
+              styles ["pass-decrypt-error"]
+              orientation: vertical;
+              spacing: 10;
+              visible: false;
+
+              Box {
+                spacing: 12;
+
+                Image {
+                  icon-name: "system-lock-screen-symbolic";
+                  pixel-size: 22;
+                  valign: start;
+                }
+
+                Box {
+                  orientation: vertical;
+                  spacing: 4;
+                  hexpand: true;
+
+                  Label {
+                    styles ["pass-decrypt-title"]
+                    label:  _("It could not be decrypted");
+                    xalign: 0;
+                  }
+
+                  Label decrypt_error_text {
+                    styles ["pass-path"]
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: word_char;
+                    selectable: true;
+                  }
+                }
+              }
+
+              Button retry {
+                styles ["outlined"]
+                name: "retry";
+                label:  _("Try again");
+                halign: start;
+              }
             }
 
             // The password, the one-time code, the fields and the notes.
@@ -273,90 +338,69 @@ ApplicationWindow pass {
           }
         };
       }
+    }
+  }
+}
 
-      // Rename, move, a new entry, or deleting one: what changes and where
-      // it ends up, then Cancel and the action.
-      StackPage {
-        name: "form";
+// New entry, rename or move, and delete: the path in one field, and what
+// it would do, previewed as it is typed. Modal over the window.
+Window pass_dialog {
+  styles ["app", "settings", "pass", "pass-dialog"]
+  modal: true;
+  resizable: false;
+  default-width: 480;
+  hide-on-close: true;
 
-        child: Box {
-          styles ["page"]
-          orientation: vertical;
-          spacing: 12;
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 12;
 
-          Label form_title {
-            styles ["pass-title"]
-            xalign: 0;
-            wrap: true;
-          }
+    Label dialog_title {
+      styles ["pass-title"]
+      xalign: 0;
+      wrap: true;
+    }
 
-          Label form_text {
-            styles ["sub"]
-            xalign: 0;
-            wrap: true;
-          }
+    Label dialog_text {
+      styles ["sub"]
+      xalign: 0;
+      wrap: true;
+    }
 
-          Box form_category_box {
-            orientation: vertical;
-            spacing: 6;
+    Entry dialog_path {
+      styles ["pass-path-entry"]
+      placeholder-text:  _("category/name");
+    }
 
-            Label form_category_label {
-              styles ["kicker"]
-              label:  _("CATEGORY");
-              xalign: 0;
-            }
+    // Where it ends up: its category and name, and each entry it moves.
+    Box dialog_preview {
+      styles ["pass-preview"]
+      orientation: vertical;
+      spacing: 6;
+    }
 
-            Box {
-              spacing: 8;
+    Label dialog_error {
+      styles ["pass-error"]
+      xalign: 0;
+      wrap: true;
+      visible: false;
+    }
 
-              Entry form_category {
-                hexpand: true;
-              }
+    Box {
+      spacing: 8;
+      halign: end;
+      margin-top: 4;
 
-              DropDown form_categories {
-                tooltip-text:  _("A category there is");
-              }
-            }
-          }
+      Button dialog_cancel {
+        styles ["outlined"]
+        name: "dialog-cancel";
+        label:  _("Cancel");
+      }
 
-          Box form_sub_box {
-            orientation: vertical;
-            spacing: 6;
-
-            Label form_sub_label {
-              styles ["kicker"]
-              label:  _("NAME");
-              xalign: 0;
-            }
-
-            Entry form_sub {}
-          }
-
-          // Where it ends up, or why it cannot.
-          Label form_result {
-            styles ["pass-path"]
-            xalign: 0;
-            wrap: true;
-            wrap-mode: word_char;
-          }
-
-          Box {
-            spacing: 8;
-            halign: end;
-            margin-top: 6;
-
-            Button form_cancel {
-              styles ["outlined"]
-              name: "form-cancel";
-              label:  _("Cancel");
-            }
-
-            Button form_ok {
-              styles ["suggested-action"]
-              name: "form-ok";
-            }
-          }
-        };
+      Button dialog_ok {
+        styles ["suggested-action"]
+        name: "dialog-ok";
       }
     }
   }

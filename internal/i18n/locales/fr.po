@@ -368,6 +368,7 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: internal/appui/pass.go:197
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -381,10 +382,10 @@ msgid "Viewer"
 msgstr "Visionneuse d’images"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:658
+#: internal/appui/pass.go:755
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
-#: ui/pass.ui:259
+#: ui/pass.ui:238
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -486,7 +487,7 @@ msgid "Remove %s"
 msgstr "Supprimer %s"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:248
+#: ui/pass.ui:227
 msgid "Edit"
 msgstr "Modifier"
 
@@ -569,35 +570,34 @@ msgstr "Copier %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "Pas encore de couleur. Choisissez-en un n’importe où sur l’écran."
 
-#: internal/appui/pass.go:220
+#: internal/appui/pass.go:277
 msgid "A password store: a folder with a .gpg-id"
 msgstr "Un magasin de mots de passe : un dossier avec un .gpg-id"
 
-#: internal/appui/pass.go:228
+#: internal/appui/pass.go:285
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s n’est pas un magasin de mots de passe : il n’a pas de .gpg-id (pass init en crée un)."
 
-#: internal/appui/pass.go:248
+#: internal/appui/pass.go:305
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "Aucun magasin de mots de passe. pass init VOTRE-ID-DE-CLÉ-GPG en crée un dans ~/.password-store ; un autre dossier peut être ajouté en bas."
 
-#: internal/appui/pass.go:275
+#: internal/appui/pass.go:332
 msgid "The store is empty. + makes an entry."
 msgstr "Le magasin est vide. + crée une entrée."
 
-#: internal/appui/pass.go:278
-#: internal/appui/pass.go:491
-#: internal/appui/pass.go:572
-#: internal/appui/pass.go:715
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:335
+#: internal/appui/pass.go:600
+#: internal/appui/pass.go:681
+#: internal/appui/pass.go:937
 msgid "Choose an entry."
 msgstr "Choisissez une entrée."
 
-#: internal/appui/pass.go:284
+#: internal/appui/pass.go:341
 msgid "Top level"
 msgstr "Niveau supérieur"
 
-#: internal/appui/pass.go:292
+#: internal/appui/pass.go:349
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
@@ -605,119 +605,129 @@ msgid_plural "%d entries"
 msgstr[0] "%d entrée"
 msgstr[1] "%d entrées"
 
-#: internal/appui/pass.go:298
-#: ui/pass.ui:127
-msgid "Rename or move this category"
-msgstr "Renommer ou déplacer cette catégorie"
+#: internal/appui/pass.go:354
+msgid "Right-click to rename or move"
+msgstr "Clic droit pour renommer ou déplacer"
 
-#: internal/appui/pass.go:300
-msgid "inua-keyring's folder: its index names these entries by path"
-msgstr "Le dossier d’inua-keyring : son index désigne ces entrées par leur chemin"
+#: internal/appui/pass.go:449
+msgid "Decrypting %s"
+msgstr "Déchiffrement de %s"
 
-#: internal/appui/pass.go:353
-msgid "Decrypting…"
-msgstr "Déchiffrement…"
-
-#: internal/appui/pass.go:367
-msgid "Cannot decrypt it: %s"
-msgstr "Impossible de le déchiffrer : %s"
-
-#: internal/appui/pass.go:391
+#: internal/appui/pass.go:500
 msgid "PASSWORD"
 msgstr "MOT DE PASSE"
 
-#: internal/appui/pass.go:396
-#: internal/appui/pass.go:448
+#: internal/appui/pass.go:505
+#: internal/appui/pass.go:557
 msgid "ONE-TIME CODE"
 msgstr "CODE À USAGE UNIQUE"
 
-#: internal/appui/pass.go:403
+#: internal/appui/pass.go:512
 msgid "NOTES"
 msgstr "NOTES"
 
-#: internal/appui/pass.go:432
+#: internal/appui/pass.go:541
 msgid "Show"
 msgstr "Afficher"
 
-#: internal/appui/pass.go:434
+#: internal/appui/pass.go:543
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "Masquer"
 
-#: internal/appui/pass.go:438
-#: internal/appui/pass.go:463
+#: internal/appui/pass.go:547
+#: internal/appui/pass.go:572
 #: internal/ui/askpass.go:187
 msgid "Copy"
 msgstr "Copier"
 
-#: internal/appui/pass.go:477
+#: internal/appui/pass.go:586
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d seconde restante"
 msgstr[1] "%d secondes restantes"
 
-#: internal/appui/pass.go:625
-msgid "Categories…"
-msgstr "Catégories…"
+#: internal/appui/pass.go:737
+msgid "Rename or move the category “%s”"
+msgstr "Renommer ou déplacer la catégorie « %s »"
 
-#: internal/appui/pass.go:634
-#: internal/appui/pass.go:640
-msgid "Rename or move “%s”"
-msgstr "Renommer ou déplacer « %s »"
+#: internal/appui/pass.go:738
+msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
+msgstr "Son nouveau chemin. Un autre nom la renomme ; un chemin sous une autre catégorie l’y déplace, avec toutes ses entrées."
 
-#: internal/appui/pass.go:635
-msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
-msgstr "Son nouveau chemin : un autre nom la renomme ; un chemin sous une autre catégorie (archive/work) l’y déplace."
-
-#: internal/appui/pass.go:637
-#: internal/appui/pass.go:644
+#: internal/appui/pass.go:739
+#: internal/appui/pass.go:743
 msgid "Move"
 msgstr "Déplacer"
 
-#: internal/appui/pass.go:641
-msgid "The same category and a new name renames it; another category moves it."
-msgstr "La même catégorie et un nouveau nom la renomment ; une autre catégorie la déplace."
+#: internal/appui/pass.go:741
+msgid "Rename or move “%s”"
+msgstr "Renommer ou déplacer « %s »"
 
-#: internal/appui/pass.go:646
-#: ui/pass.ui:137
+#: internal/appui/pass.go:742
+msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
+msgstr "Son nouveau chemin. La première partie est sa catégorie : changez-la pour déplacer l’entrée, le reste pour la renommer."
+
+#: internal/appui/pass.go:745
+#: ui/pass.ui:123
 msgid "New entry"
 msgstr "Nouvelle entrée"
 
-#: internal/appui/pass.go:647
-msgid "Where it goes; then its content."
-msgstr "Où elle va ; ensuite, son contenu."
+#: internal/appui/pass.go:746
+msgid "Its path: the first part is its category. Its content comes next."
+msgstr "Son chemin : la première partie est sa catégorie. Son contenu vient ensuite."
 
-#: internal/appui/pass.go:654
+#: internal/appui/pass.go:751
 msgid "Next"
 msgstr "Suivant"
 
-#: internal/appui/pass.go:656
+#: internal/appui/pass.go:753
 msgid "Delete “%s”?"
 msgstr "Supprimer « %s » ?"
 
-#: internal/appui/pass.go:657
+#: internal/appui/pass.go:754
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass supprime son fichier ; un magasin git le garde dans son historique."
 
-#: internal/appui/pass.go:695
-msgid "Each part of the path needs a name, without a leading dot."
-msgstr "Chaque partie du chemin a besoin d’un nom, sans point au début."
+#: internal/appui/pass.go:790
+#: internal/appui/pass.go:817
+#: internal/appui/viewer.go:812
+msgid "FILE"
+msgstr "DOSSIER"
 
-#: internal/appui/pass.go:697
+#: internal/appui/pass.go:813
+msgid "CATEGORY"
+msgstr "CATÉGORIE"
+
+#: internal/appui/pass.go:814
+msgid "NAME"
+msgstr "NOM"
+
+#: internal/appui/pass.go:827
+msgid "and %d more"
+msgid_plural "and %d more"
+msgstr[0] "et %d de plus"
+msgstr[1] "et %d de plus"
+
+#: internal/appui/pass.go:871
 msgid "That is where it is."
 msgstr "Elle y est déjà."
 
-#: internal/appui/pass.go:699
-msgid "%s is already in the store."
-msgstr "%s est déjà dans le magasin."
-
-#: internal/appui/pass.go:701
+#: internal/appui/pass.go:873
 msgid "A category cannot move into itself."
 msgstr "Une catégorie ne peut pas se déplacer en elle-même."
 
-#: internal/appui/pass.go:703
-msgid "It will be %s"
-msgstr "Elle deviendra %s"
+#: internal/appui/pass.go:875
+msgid "That path is already in the store."
+msgstr "Ce chemin est déjà dans le magasin."
+
+#: internal/appui/pass.go:877
+msgid "It is no longer in the store."
+msgstr "Il n’est plus dans le magasin."
+
+#: internal/appui/pass.go:879
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "Chaque partie du chemin a besoin d’un nom, sans point au début."
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -1680,10 +1690,6 @@ msgstr "Taille réelle (1)"
 msgid "Fit the window (0)"
 msgstr "Ajuster à la fenêtre (0)"
 
-#: internal/appui/viewer.go:812
-msgid "FILE"
-msgstr "DOSSIER"
-
 #: internal/appui/viewer.go:819
 msgid "Size"
 msgstr "Taille"
@@ -1753,6 +1759,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "La météo n'a pas pu être lue.\n%s"
 
 #: internal/appui/weather.go:273
+#: ui/pass.ui:350
 msgid "Try again"
 msgstr "Réessayez"
 
@@ -4908,8 +4915,8 @@ msgstr "D'accord"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
-#: ui/pass.ui:359
-#: ui/pass.ui:474
+#: ui/pass.ui:440
+#: ui/pass.ui:537
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "Annuler"
@@ -5642,7 +5649,7 @@ msgstr "Point final"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
-#: ui/pass.ui:368
+#: ui/pass.ui:449
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -6160,29 +6167,29 @@ msgstr "MAGASIN"
 msgid "Another store: a folder with a .gpg-id"
 msgstr "Un autre magasin : un dossier avec un .gpg-id"
 
-#: ui/pass.ui:147
+#: ui/pass.ui:113
 msgid "Search every entry"
 msgstr "Chercher dans toutes les entrées"
 
-#: ui/pass.ui:237
+#: ui/pass.ui:216
 msgid "Rename or move"
 msgstr "Renommer ou déplacer"
 
-#: ui/pass.ui:313
+#: ui/pass.ui:278
+msgid "gpg may ask for your passphrase, in inua's dialog."
+msgstr "gpg peut vous demander votre phrase secrète, dans la fenêtre d’inua."
+
+#: ui/pass.ui:325
+msgid "It could not be decrypted"
+msgstr "Impossible de le déchiffrer"
+
+#: ui/pass.ui:394
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "La première ligne est le mot de passe ; les lignes « clé : valeur » sont des champs ; une ligne otpauth:// est un code à usage unique."
 
-#: ui/pass.ui:414
-msgid "CATEGORY"
-msgstr "CATÉGORIE"
-
-#: ui/pass.ui:428
-msgid "A category there is"
-msgstr "Une catégorie existante"
-
-#: ui/pass.ui:444
-msgid "NAME"
-msgstr "NOM"
+#: ui/pass.ui:504
+msgid "category/name"
+msgstr "catégorie/nom"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

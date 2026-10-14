@@ -210,3 +210,73 @@ func TestTilde(t *testing.T) {
 		t.Errorf("outside home: %q", got)
 	}
 }
+
+func TestPlanMove(t *testing.T) {
+	entries := []string{"top", "work/github", "work/servers/db", "home/wifi"}
+	cases := []struct {
+		from, to string
+		want     []Move
+		err      string
+	}{
+		{"", "work/gitlab", []Move{{"", "work/gitlab"}}, ""},
+		{"", " /new/entry/ ", []Move{{"", "new/entry"}}, ""},
+		{"work/github", "office/github", []Move{{"work/github", "office/github"}}, ""},
+		{"work", "archive/work", []Move{{"work/github", "archive/work/github"}, {"work/servers/db", "archive/work/servers/db"}}, ""},
+		{"top", "home/top", []Move{{"top", "home/top"}}, ""},
+		{"work/github", "work/github", nil, "where it is"},
+		{"work", "work/old", nil, "into itself"},
+		{"work/github", "home/wifi", nil, "already"},
+		{"top", "home", nil, "already"}, // a folder of that name
+		{"", "", nil, "empty"},
+		{"", "a/../b", nil, "dot"},
+		{"gone", "x", nil, "not in the store"},
+	}
+	for _, c := range cases {
+		got, err := PlanMove(entries, c.from, c.to)
+		if c.err != "" {
+			if err == nil || !strings.Contains(err.Error(), c.err) {
+				t.Errorf("PlanMove(%q, %q) error %v, want %q", c.from, c.to, err, c.err)
+			}
+			continue
+		}
+		if err != nil || !slices.Equal(got, c.want) {
+			t.Errorf("PlanMove(%q, %q) = %v, %v", c.from, c.to, got, err)
+		}
+	}
+}
+
+func TestIcon(t *testing.T) {
+	cases := map[string]string{
+		"work/github":            "github-logo",
+		"personal/GitHub.com":    "github-logo",
+		"dev/github/ann":         "github-logo", // the folder names the service
+		"google/ann@example.org": "google-logo", // the category, a service
+		"home/wifi":              "wifi-high",
+		"home/router":            "network",
+		"personal/bank":          "bank",
+		"personal/visa-card":     "credit-card",
+		"work/servers/db/prod":   "hard-drives", // the leaf "prod"
+		"work/servers/db":        "database",
+		"work/ssh-bastion":       "terminal-window",
+		"dev/npm-token":          "package", // npm before token
+		"dev/api-key":            "key",
+		"work/vpn":               "shield-check",
+		"x":                      "x-logo",
+		"personal/email":         "envelope",
+		"work/aws-console":       "cloud",
+		"home/notes":             "", // nothing says
+		"work/mail/ann":          "envelope",
+		"work/ann":               "", // "work" is a category: no kind from it
+		"misc/boxer":             "", // a word, not a part of one: no "box"
+	}
+	for name, want := range cases {
+		if got := Icon(name); got != want {
+			t.Errorf("Icon(%q) = %q, want %q", name, got, want)
+		}
+	}
+	for _, icon := range Icons() {
+		if icon == "" || strings.ContainsAny(icon, " /") {
+			t.Errorf("Icons: %q", icon)
+		}
+	}
+}

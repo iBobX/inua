@@ -182,3 +182,45 @@ func Subpaths(entries []string, category string) []string {
 	}
 	return out
 }
+
+// Move is an entry's name before and after a rename or a move.
+type Move struct{ From, To string }
+
+// PlanMove says what moving from to to would do to the entries: each one
+// it renames, in order. from is an entry or a folder of them (a
+// category); "" plans a new entry at to. The error says why it cannot:
+// to is not a name, is where from is, is taken, or is inside from.
+func PlanMove(entries []string, from, to string) ([]Move, error) {
+	to = strings.Trim(strings.TrimSpace(to), "/")
+	if err := ValidName(to); err != nil {
+		return nil, err
+	}
+	if to == from {
+		return nil, errors.New("that is where it is")
+	}
+	if from != "" && strings.HasPrefix(to, from+"/") {
+		return nil, errors.New("it cannot move into itself")
+	}
+	taken := func(name string) bool {
+		return slices.ContainsFunc(entries, func(e string) bool { return e == name || strings.HasPrefix(e, name+"/") })
+	}
+	if taken(to) {
+		return nil, fmt.Errorf("%s is already in the store", to)
+	}
+	if from == "" {
+		return []Move{{"", to}}, nil
+	}
+	var moves []Move
+	for _, e := range entries {
+		switch {
+		case e == from:
+			moves = append(moves, Move{e, to})
+		case strings.HasPrefix(e, from+"/"):
+			moves = append(moves, Move{e, to + strings.TrimPrefix(e, from)})
+		}
+	}
+	if len(moves) == 0 {
+		return nil, fmt.Errorf("%s is not in the store", from)
+	}
+	return moves, nil
+}

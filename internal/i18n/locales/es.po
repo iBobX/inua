@@ -368,6 +368,7 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
+#: internal/appui/pass.go:197
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -381,10 +382,10 @@ msgid "Viewer"
 msgstr "Visor de imágenes"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:658
+#: internal/appui/pass.go:755
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
-#: ui/pass.ui:259
+#: ui/pass.ui:238
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -486,7 +487,7 @@ msgid "Remove %s"
 msgstr "Eliminar %s"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:248
+#: ui/pass.ui:227
 msgid "Edit"
 msgstr "Editar"
 
@@ -569,35 +570,34 @@ msgstr "Copiar %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "Aún no hay color. Elija uno desde cualquier lugar de la pantalla."
 
-#: internal/appui/pass.go:220
+#: internal/appui/pass.go:277
 msgid "A password store: a folder with a .gpg-id"
 msgstr "Un almacén de contraseñas: una carpeta con un .gpg-id"
 
-#: internal/appui/pass.go:228
+#: internal/appui/pass.go:285
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s no es un almacén de contraseñas: no tiene .gpg-id (pass init lo crea)."
 
-#: internal/appui/pass.go:248
+#: internal/appui/pass.go:305
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "No hay almacén de contraseñas. pass init SU-ID-DE-CLAVE-GPG crea uno en ~/.password-store; abajo se puede añadir otra carpeta."
 
-#: internal/appui/pass.go:275
+#: internal/appui/pass.go:332
 msgid "The store is empty. + makes an entry."
 msgstr "El almacén está vacío. + crea una entrada."
 
-#: internal/appui/pass.go:278
-#: internal/appui/pass.go:491
-#: internal/appui/pass.go:572
-#: internal/appui/pass.go:715
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:335
+#: internal/appui/pass.go:600
+#: internal/appui/pass.go:681
+#: internal/appui/pass.go:937
 msgid "Choose an entry."
 msgstr "Elija una entrada."
 
-#: internal/appui/pass.go:284
+#: internal/appui/pass.go:341
 msgid "Top level"
 msgstr "Nivel superior"
 
-#: internal/appui/pass.go:292
+#: internal/appui/pass.go:349
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
@@ -605,119 +605,129 @@ msgid_plural "%d entries"
 msgstr[0] "%d entrada"
 msgstr[1] "%d entradas"
 
-#: internal/appui/pass.go:298
-#: ui/pass.ui:127
-msgid "Rename or move this category"
-msgstr "Renombrar o mover esta categoría"
+#: internal/appui/pass.go:354
+msgid "Right-click to rename or move"
+msgstr "Clic derecho para renombrar o mover"
 
-#: internal/appui/pass.go:300
-msgid "inua-keyring's folder: its index names these entries by path"
-msgstr "La carpeta de inua-keyring: su índice nombra estas entradas por su ruta"
+#: internal/appui/pass.go:449
+msgid "Decrypting %s"
+msgstr "Descifrando %s"
 
-#: internal/appui/pass.go:353
-msgid "Decrypting…"
-msgstr "Descifrando…"
-
-#: internal/appui/pass.go:367
-msgid "Cannot decrypt it: %s"
-msgstr "No se puede descifrar: %s"
-
-#: internal/appui/pass.go:391
+#: internal/appui/pass.go:500
 msgid "PASSWORD"
 msgstr "CONTRASEÑA"
 
-#: internal/appui/pass.go:396
-#: internal/appui/pass.go:448
+#: internal/appui/pass.go:505
+#: internal/appui/pass.go:557
 msgid "ONE-TIME CODE"
 msgstr "CÓDIGO DE UN SOLO USO"
 
-#: internal/appui/pass.go:403
+#: internal/appui/pass.go:512
 msgid "NOTES"
 msgstr "NOTAS"
 
-#: internal/appui/pass.go:432
+#: internal/appui/pass.go:541
 msgid "Show"
 msgstr "Mostrar"
 
-#: internal/appui/pass.go:434
+#: internal/appui/pass.go:543
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "Ocultar"
 
-#: internal/appui/pass.go:438
-#: internal/appui/pass.go:463
+#: internal/appui/pass.go:547
+#: internal/appui/pass.go:572
 #: internal/ui/askpass.go:187
 msgid "Copy"
 msgstr "Copiar"
 
-#: internal/appui/pass.go:477
+#: internal/appui/pass.go:586
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d segundo restante"
 msgstr[1] "%d segundos restantes"
 
-#: internal/appui/pass.go:625
-msgid "Categories…"
-msgstr "Categorías…"
+#: internal/appui/pass.go:737
+msgid "Rename or move the category “%s”"
+msgstr "Renombrar o mover la categoría «%s»"
 
-#: internal/appui/pass.go:634
-#: internal/appui/pass.go:640
-msgid "Rename or move “%s”"
-msgstr "Renombrar o mover «%s»"
+#: internal/appui/pass.go:738
+msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
+msgstr "Su nueva ruta. Otro nombre la renombra; una ruta bajo otra categoría la mueve allí, con todas sus entradas."
 
-#: internal/appui/pass.go:635
-msgid "Its new path: another name renames it; a path under another category (archive/work) moves it there."
-msgstr "Su nueva ruta: otro nombre la renombra; una ruta bajo otra categoría (archive/work) la mueve allí."
-
-#: internal/appui/pass.go:637
-#: internal/appui/pass.go:644
+#: internal/appui/pass.go:739
+#: internal/appui/pass.go:743
 msgid "Move"
 msgstr "Mover"
 
-#: internal/appui/pass.go:641
-msgid "The same category and a new name renames it; another category moves it."
-msgstr "La misma categoría y un nombre nuevo la renombran; otra categoría la mueve."
+#: internal/appui/pass.go:741
+msgid "Rename or move “%s”"
+msgstr "Renombrar o mover «%s»"
 
-#: internal/appui/pass.go:646
-#: ui/pass.ui:137
+#: internal/appui/pass.go:742
+msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
+msgstr "Su nueva ruta. La primera parte es su categoría: cámbiala para mover la entrada, y el resto para renombrarla."
+
+#: internal/appui/pass.go:745
+#: ui/pass.ui:123
 msgid "New entry"
 msgstr "Entrada nueva"
 
-#: internal/appui/pass.go:647
-msgid "Where it goes; then its content."
-msgstr "Dónde va; después, su contenido."
+#: internal/appui/pass.go:746
+msgid "Its path: the first part is its category. Its content comes next."
+msgstr "Su ruta: la primera parte es su categoría. Después, su contenido."
 
-#: internal/appui/pass.go:654
+#: internal/appui/pass.go:751
 msgid "Next"
 msgstr "Siguiente"
 
-#: internal/appui/pass.go:656
+#: internal/appui/pass.go:753
 msgid "Delete “%s”?"
 msgstr "¿Eliminar «%s»?"
 
-#: internal/appui/pass.go:657
+#: internal/appui/pass.go:754
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass elimina su archivo; un almacén con git lo conserva en su historial."
 
-#: internal/appui/pass.go:695
-msgid "Each part of the path needs a name, without a leading dot."
-msgstr "Cada parte de la ruta necesita un nombre, sin punto inicial."
+#: internal/appui/pass.go:790
+#: internal/appui/pass.go:817
+#: internal/appui/viewer.go:812
+msgid "FILE"
+msgstr "ARCHIVO"
 
-#: internal/appui/pass.go:697
+#: internal/appui/pass.go:813
+msgid "CATEGORY"
+msgstr "CATEGORÍA"
+
+#: internal/appui/pass.go:814
+msgid "NAME"
+msgstr "NOMBRE"
+
+#: internal/appui/pass.go:827
+msgid "and %d more"
+msgid_plural "and %d more"
+msgstr[0] "y %d más"
+msgstr[1] "y %d más"
+
+#: internal/appui/pass.go:871
 msgid "That is where it is."
 msgstr "Ya está ahí."
 
-#: internal/appui/pass.go:699
-msgid "%s is already in the store."
-msgstr "%s ya está en el almacén."
-
-#: internal/appui/pass.go:701
+#: internal/appui/pass.go:873
 msgid "A category cannot move into itself."
 msgstr "Una categoría no puede moverse dentro de sí misma."
 
-#: internal/appui/pass.go:703
-msgid "It will be %s"
-msgstr "Quedará en %s"
+#: internal/appui/pass.go:875
+msgid "That path is already in the store."
+msgstr "Esa ruta ya está en el almacén."
+
+#: internal/appui/pass.go:877
+msgid "It is no longer in the store."
+msgstr "Ya no está en el almacén."
+
+#: internal/appui/pass.go:879
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "Cada parte de la ruta necesita un nombre, sin punto inicial."
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -1680,10 +1690,6 @@ msgstr "Tamaño real (1)"
 msgid "Fit the window (0)"
 msgstr "Ajustar a la ventana (0)"
 
-#: internal/appui/viewer.go:812
-msgid "FILE"
-msgstr "ARCHIVO"
-
 #: internal/appui/viewer.go:819
 msgid "Size"
 msgstr "Tamaño"
@@ -1753,6 +1759,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "No se pudo leer el tiempo.\n%s"
 
 #: internal/appui/weather.go:273
+#: ui/pass.ui:350
 msgid "Try again"
 msgstr "Inténtalo de nuevo"
 
@@ -4908,8 +4915,8 @@ msgstr "OK"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
-#: ui/pass.ui:359
-#: ui/pass.ui:474
+#: ui/pass.ui:440
+#: ui/pass.ui:537
 #: ui/polkit.ui:566
 msgid "Cancel"
 msgstr "Cancelar"
@@ -5642,7 +5649,7 @@ msgstr "Punto final"
 
 #: internal/ui/settings_ai.go:312
 #: ui/clock.ui:252
-#: ui/pass.ui:368
+#: ui/pass.ui:449
 msgid "Save"
 msgstr "Guardar"
 
@@ -6160,29 +6167,29 @@ msgstr "ALMACÉN"
 msgid "Another store: a folder with a .gpg-id"
 msgstr "Otro almacén: una carpeta con un .gpg-id"
 
-#: ui/pass.ui:147
+#: ui/pass.ui:113
 msgid "Search every entry"
 msgstr "Buscar en todas las entradas"
 
-#: ui/pass.ui:237
+#: ui/pass.ui:216
 msgid "Rename or move"
 msgstr "Renombrar o mover"
 
-#: ui/pass.ui:313
+#: ui/pass.ui:278
+msgid "gpg may ask for your passphrase, in inua's dialog."
+msgstr "gpg puede pedirte la frase de paso, en el diálogo de inua."
+
+#: ui/pass.ui:325
+msgid "It could not be decrypted"
+msgstr "No se pudo descifrar"
+
+#: ui/pass.ui:394
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "La primera línea es la contraseña; las líneas «clave: valor» son campos; una línea otpauth:// es un código de un solo uso."
 
-#: ui/pass.ui:414
-msgid "CATEGORY"
-msgstr "CATEGORÍA"
-
-#: ui/pass.ui:428
-msgid "A category there is"
-msgstr "Una categoría existente"
-
-#: ui/pass.ui:444
-msgid "NAME"
-msgstr "NOMBRE"
+#: ui/pass.ui:504
+msgid "category/name"
+msgstr "categoría/nombre"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

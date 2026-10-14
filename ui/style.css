@@ -1804,7 +1804,7 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 
 /* The middle column: the chosen category's entries. */
 window.pass .pass-entries { background: @app; border-right: 1px solid alpha(@line, 0.7); }
-window.pass .pass-col-head { min-height: 32px; padding: 22px 14px 10px 26px; }
+window.pass .pass-col-head { padding: 22px 12px 12px 14px; }
 window.pass .pass-col-title {
   font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
   font-size: 16px;
@@ -1844,4 +1844,71 @@ window.pass .pass-error { color: @danger; }
 window.pass button.destructive-action { border: 1px solid @danger; background: @danger; color: @app; }
 window.pass button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
 window.pass button.suggested-action:disabled { opacity: 0.45; }
-window.pass .pass-entries entry.search { margin: 0 14px 8px 14px; }
+/* An entry in the list: the icon its name calls for, else its initial,
+   in a hairline square; its name; and where it is, dim, in the monospace. */
+window.pass button.index-item.pass-entry { min-height: 48px; padding: 6px 12px 6px 10px; }
+window.pass .pass-entry-mark {
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid alpha(@line, 0.9);
+  border-radius: 3px;
+  background: alpha(@surface, 0.6);
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: @t1;
+}
+window.pass button.index-item.pass-entry.selected .pass-entry-mark { border-color: alpha(@accent, 0.45); color: @accent; }
+window.pass .pass-entry-mark image { color: @t1; -gtk-icon-size: 15px; }
+window.pass button.index-item.pass-entry.selected .pass-entry-mark image { color: @accent; }
+window.pass .pass-entry-folder {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t2;
+}
+/* Decrypting: a spinner, what is decrypted, and the rows to come. */
+window.pass .pass-decrypting { padding: 22px 0 0; }
+window.pass .pass-decrypt-title {
+  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
+  font-size: 14px;
+  color: @t0;
+}
+window.pass .pass-skeleton { margin-top: 18px; }
+window.pass .pass-skel-row { padding: 14px 0; border-bottom: 1px solid alpha(@line, 0.4); }
+window.pass .pass-skel {
+  border-radius: 2px;
+  background: alpha(@t2, 0.18);
+  animation: pass-shimmer 1.4s ease-in-out infinite;
+}
+window.pass .pass-skel.short { background: alpha(@t2, 0.12); }
+window.pass .pass-skel-row:nth-child(2) .pass-skel { animation-delay: 160ms; }
+window.pass .pass-skel-row:nth-child(3) .pass-skel { animation-delay: 320ms; }
+@keyframes pass-shimmer { 50% { opacity: 0.35; } }
+window.pass .pass-decrypt-error {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid alpha(@danger, 0.35);
+  border-radius: 3px;
+  background: alpha(@danger, 0.05);
+}
+window.pass .pass-decrypt-error image { color: @danger; }
+/* The dialog: the path in one field, and what it would do. */
+window.pass-dialog { background: @app; }
+window.pass-dialog .page { padding: 22px 24px 20px; }
+window.pass-dialog .pass-path-entry {
+  min-height: 34px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 13px;
+}
+window.pass-dialog .pass-preview {
+  padding: 12px 14px;
+  border: 1px solid alpha(@line, 0.7);
+  border-radius: 3px;
+  background: alpha(@surface, 0.5);
+}
+window.pass-dialog .pass-preview-value {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+  color: @t0;
+}
+window.pass-dialog .pass-preview-value.before { color: @t2; }

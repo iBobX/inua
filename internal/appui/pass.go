@@ -56,39 +56,49 @@ type passApp struct {
 	otpCode *gtk.Label
 	otpLeft *gtk.Label
 
-	form       string // the form shown, one of form…
-	formFrom   string // what it renames, moves or deletes
-	editNew    bool   // the editor writes a new entry, named by the form
-	newName    string
-	busy       bool // a pass command runs
-	clipGen    int
-	filling    bool
-	categories []string // the form's menu of categories
+	form     string // the dialog's errand, one of form…; "" while it is closed
+	formFrom string // what it renames, moves or deletes
+	editNew  bool   // the editor writes a new entry, named in the dialog
+	newName  string
+	busy     bool // a pass command runs
+	clipGen  int
+	filling  bool
 
-	categoryList, entryList, fields     gtk.Box
-	storeMenu                           gtk.DropDown
-	storePath, categoryTitle, emptyText gtk.Label
-	entryTitle, entryPath, entryState   gtk.Label
-	editTitle, editError                gtk.Label
-	formTitle, formText, formResult     gtk.Label
-	formCategoryBox, formSubBox         gtk.Box
-	formCategory, formSub               gtk.Entry
-	formCategories                      gtk.DropDown
-	formOK, moveCategory, newEntry      gtk.Button
-	moveEntry, editEntry, deleteEntry   gtk.Button
-	filter                              gtk.SearchEntry
-	detail                              gtk.Stack
-	editor                              gtk.TextView
-	win                                 *gtk.ApplicationWindow
-	onButton                            func(gtk.Button)
-	onFilter                            func(gtk.SearchEntry)
-	onStore, onFormPick                 func(uintptr, uintptr, uintptr)
-	onFormChanged                       func(uintptr, uintptr)
-	onFormActivate                      func(gtk.Entry)
-	onTick                              glib.SourceFunc
-	onClear                             glib.SourceFunc
-	dialog                              *gtk.FileDialog
-	onChosen                            gio.AsyncReadyCallback
+	categoryList, entryList, fields, skeleton gtk.Box
+	decrypting, decryptError                  gtk.Box
+	storeMenu                                 gtk.DropDown
+	storePath, emptyText                      gtk.Label
+	entryTitle, entryPath                     gtk.Label
+	decryptTitle, decryptErrorText            gtk.Label
+	editTitle, editError                      gtk.Label
+	spinner                                   gtk.Spinner
+	newEntry, moveEntry, editEntry            gtk.Button
+	deleteEntry                               gtk.Button
+	filter                                    gtk.SearchEntry
+	detail                                    gtk.Stack
+	editor                                    gtk.TextView
+	win                                       *gtk.ApplicationWindow
+
+	// The dialog that names a new entry, renames or moves, or deletes.
+	dlg                         gtk.Window
+	dlgTitle, dlgText, dlgError gtk.Label
+	dlgPath                     gtk.Entry
+	dlgPreview                  gtk.Box
+	dlgOK                       gtk.Button
+
+	onButton       func(gtk.Button)
+	onFilter       func(gtk.SearchEntry)
+	onStore        func(uintptr, uintptr, uintptr)
+	onFormChanged  func(uintptr, uintptr)
+	onFormActivate func(gtk.Entry)
+	onDlgKey       func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onDlgClose     func(gtk.Window) bool
+	onWinClose     func(gtk.Window) bool
+	onCategoryMenu func(gtk.GestureClick, int32, float64, float64)
+	onTick         glib.SourceFunc
+	onClear        glib.SourceFunc
+	dialog         *gtk.FileDialog
+	onChosen       gio.AsyncReadyCallback
 }
 
 func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
@@ -96,21 +106,22 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.win = &gtk.ApplicationWindow{}
 	a.reveal, a.values = map[string]bool{}, map[string]string{}
 	a.keyring = c.config().Keyring.Folder
-	var addStore, editCancel, editSave, formCancel gtk.Button
+	var addStore, editCancel, editSave, retry, dlgCancel gtk.Button
 	ui := c.Load("pass.ui")
 	ui.Get("pass", a.win)
 	for id, w := range map[string]gobject.Ptr{
 		"categories": &a.categoryList, "entries": &a.entryList, "fields": &a.fields,
-		"store_menu": &a.storeMenu, "store_path": &a.storePath, "category_title": &a.categoryTitle,
+		"skeleton": &a.skeleton, "decrypting": &a.decrypting, "decrypt_error": &a.decryptError,
+		"store_menu": &a.storeMenu, "store_path": &a.storePath,
 		"empty_text": &a.emptyText, "entry_title": &a.entryTitle, "entry_path": &a.entryPath,
-		"entry_state": &a.entryState, "edit_title": &a.editTitle, "edit_error": &a.editError,
-		"form_title": &a.formTitle, "form_text": &a.formText, "form_result": &a.formResult,
-		"form_category_box": &a.formCategoryBox, "form_sub_box": &a.formSubBox,
-		"form_category": &a.formCategory, "form_sub": &a.formSub, "form_categories": &a.formCategories,
-		"form_ok": &a.formOK, "move_category": &a.moveCategory, "new_entry": &a.newEntry,
-		"move_entry": &a.moveEntry, "edit_entry": &a.editEntry, "delete_entry": &a.deleteEntry,
+		"decrypt_title": &a.decryptTitle, "decrypt_error_text": &a.decryptErrorText,
+		"edit_title": &a.editTitle, "edit_error": &a.editError, "spinner": &a.spinner,
+		"new_entry": &a.newEntry, "move_entry": &a.moveEntry, "edit_entry": &a.editEntry, "delete_entry": &a.deleteEntry,
 		"filter": &a.filter, "detail": &a.detail, "editor": &a.editor,
-		"add_store": &addStore, "edit_cancel": &editCancel, "edit_save": &editSave, "form_cancel": &formCancel,
+		"add_store": &addStore, "edit_cancel": &editCancel, "edit_save": &editSave, "retry": &retry,
+		"pass_dialog": &a.dlg, "dialog_title": &a.dlgTitle, "dialog_text": &a.dlgText,
+		"dialog_error": &a.dlgError, "dialog_path": &a.dlgPath, "dialog_preview": &a.dlgPreview,
+		"dialog_ok": &a.dlgOK, "dialog_cancel": &dlgCancel,
 	} {
 		ui.Get(id, w)
 	}
@@ -123,13 +134,19 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 			a.useStore(a.stores[i])
 		}
 	}
-	a.onFormPick = func(uintptr, uintptr, uintptr) {
-		if i := int(a.formCategories.GetSelected()); !a.filling && i > 0 && i <= len(a.categories) {
-			a.formCategory.SetText(a.categories[i-1])
-		}
-	}
 	a.onFormChanged = func(uintptr, uintptr) { a.checkForm() }
-	a.onFormActivate = func(gtk.Entry) { a.button("form-ok") }
+	a.onFormActivate = func(gtk.Entry) { a.submitForm() }
+	a.onDlgKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		if keyval == 0xff1b { // Escape
+			a.closeForm()
+			return true
+		}
+		return false
+	}
+	a.onDlgClose = func(gtk.Window) bool {
+		a.closeForm()
+		return true // hidden, kept for the next errand
+	}
 	a.onChosen = func(_, result, _ uintptr) {
 		d := a.dialog
 		a.dialog = nil
@@ -145,20 +162,60 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 		unrefObject(f)
 		a.addStore(dir)
 	}
+	// A right click on a category renames or moves it.
+	a.onCategoryMenu = func(g gtk.GestureClick, _ int32, _, _ float64) {
+		name := strings.TrimPrefix(g.GetWidget().GetName(), "cat:")
+		if name == "" || name == a.keyring {
+			return
+		}
+		a.picked, a.category = true, name
+		a.showCategories()
+		a.showEntries()
+		a.openForm(formMoveCategory, name)
+	}
 	a.onTick = func(uintptr) bool {
 		a.tickOTP()
 		return true
 	}
-	for _, b := range []*gtk.Button{&addStore, &editCancel, &editSave, &formCancel, &a.formOK,
-		&a.moveCategory, &a.newEntry, &a.moveEntry, &a.editEntry, &a.deleteEntry} {
+	for _, b := range []*gtk.Button{&addStore, &editCancel, &editSave, &retry, &dlgCancel, &a.dlgOK,
+		&a.newEntry, &a.moveEntry, &a.editEntry, &a.deleteEntry} {
 		b.ConnectClicked(&a.onButton)
 	}
 	a.filter.ConnectSearchChanged(&a.onFilter)
 	gtkx.ConnectNotify(&a.storeMenu, "selected", &a.onStore)
-	gtkx.ConnectNotify(&a.formCategories, "selected", &a.onFormPick)
-	for _, e := range []*gtk.Entry{&a.formCategory, &a.formSub} {
-		gtkx.ConnectChanged(e, &a.onFormChanged)
-		e.ConnectActivate(&a.onFormActivate)
+	gtkx.ConnectChanged(&a.dlgPath, &a.onFormChanged)
+	a.dlgPath.ConnectActivate(&a.onFormActivate)
+	// The dialog's class is the app's, so the compositor groups it; being
+	// the app's, it would keep the app running hidden, so it goes with
+	// the window.
+	a.dlg.SetApplication(c.App)
+	a.onWinClose = func(gtk.Window) bool {
+		a.dlg.Destroy()
+		return false
+	}
+	a.win.ConnectCloseRequest(&a.onWinClose)
+	a.dlg.SetTitle(i18n.T("Pass"))
+	a.dlg.SetTransientFor(&a.win.Window)
+	a.dlg.ConnectCloseRequest(&a.onDlgClose)
+	keys := gtk.NewEventControllerKey()
+	keys.ConnectKeyPressed(&a.onDlgKey)
+	a.dlg.AddController(&keys.EventController)
+	// The rows to come while an entry decrypts: shimmering placeholders.
+	for _, w := range []int{120, 180, 90} {
+		row := gtk.NewBox(gtk.OrientationVerticalValue, 6)
+		row.AddCssClass("pass-skel-row")
+		k := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+		k.AddCssClass("pass-skel")
+		k.AddCssClass("short")
+		k.SetHalign(gtk.AlignStartValue)
+		k.SetSizeRequest(56, 8)
+		gtkx.Append(row, &k.Widget)
+		v := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+		v.AddCssClass("pass-skel")
+		v.SetHalign(gtk.AlignStartValue)
+		v.SetSizeRequest(int32(w), 12)
+		gtkx.Append(row, &v.Widget)
+		gtkx.Append(&a.skeleton, &row.Widget)
 	}
 
 	if err := store.Load(pass.StoreName, &a.prefs); err != nil {
@@ -291,13 +348,16 @@ func (a *passApp) showCategories() {
 	for _, c := range pass.Categories(a.entries) {
 		row := text(a.categoryName(c.Name), i18n.Nf("%d entry", "%d entries", c.Count, c.Count))
 		item := indexItem("cat:"+c.Name, &row.Widget, a.picked && c.Name == a.category, &a.onButton)
+		// A right click renames or moves it, but for the top level and
+		// inua-keyring's folder, whose index names its entries by path.
+		if c.Name != "" && c.Name != a.keyring {
+			item.SetTooltipText(i18n.T("Right-click to rename or move"))
+			menu := gtk.NewGestureClick()
+			menu.SetButton(3)
+			menu.ConnectPressed(&a.onCategoryMenu)
+			item.AddController(&menu.EventController)
+		}
 		gtkx.Append(&a.categoryList, &item.Widget)
-	}
-	a.categoryTitle.SetText(a.categoryName(a.category))
-	a.moveCategory.SetSensitive(a.picked && a.category != "" && a.category != a.keyring)
-	a.moveCategory.SetTooltipText(i18n.T("Rename or move this category"))
-	if a.category == a.keyring {
-		a.moveCategory.SetTooltipText(i18n.T("inua-keyring's folder: its index names these entries by path"))
 	}
 	a.newEntry.SetSensitive(a.store.Dir != "")
 }
@@ -309,18 +369,69 @@ func (a *passApp) showEntries() {
 	q := strings.ToLower(strings.TrimSpace(a.filter.GetText()))
 	for _, e := range a.entries {
 		cat, sub := pass.Split(e)
-		var row *gtk.Box
+		// The entry's own name, then where it is: its folders in the
+		// category, and the category too while searching.
+		folder, name := "", sub
+		if i := strings.LastIndexByte(sub, '/'); i >= 0 {
+			folder, name = sub[:i], sub[i+1:]
+		}
 		switch {
 		case q != "" && strings.Contains(strings.ToLower(e), q):
-			row = text(sub, a.categoryName(cat))
+			folder = strings.Trim(pass.Join(a.categoryName(cat), folder), "/")
 		case q == "" && a.picked && cat == a.category:
-			row = text(sub, "")
 		default:
 			continue
 		}
-		item := indexItem("entry:"+e, &row.Widget, e == a.selected, &a.onButton)
+		item := indexItem("entry:"+e, &passEntryRow(e, name, folder).Widget, e == a.selected, &a.onButton)
+		item.AddCssClass("pass-entry")
 		gtkx.Append(&a.entryList, &item.Widget)
 	}
+}
+
+// passEntryRow is an entry in the list: in a square, the icon its name
+// calls for (a service's logo, what it is for: pass.Icon), else its
+// initial, which tell entries apart at a glance; its name; and below,
+// dim, where it is.
+func passEntryRow(entry, name, folder string) *gtk.Box {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	mark.AddCssClass("pass-entry-mark")
+	mark.SetValign(gtk.AlignCenterValue)
+	mark.SetHexpand(false) // set, so the centred icon's expanding stops here
+	mark.SetSizeRequest(28, 28)
+	var inner *gtk.Widget
+	if icon := pass.Icon(entry); icon != "" {
+		img := gtk.NewImageFromIconName("pass-" + icon + "-symbolic")
+		inner = &img.Widget
+	} else {
+		initial := "·"
+		if r := []rune(strings.TrimLeft(name, "._-@ ")); len(r) > 0 {
+			initial = strings.ToUpper(string(r[0]))
+		}
+		inner = &gtk.NewLabel(initial).Widget
+	}
+	inner.SetHexpand(true)
+	inner.SetHalign(gtk.AlignCenterValue)
+	inner.SetValign(gtk.AlignCenterValue)
+	gtkx.Append(mark, inner)
+	gtkx.Append(row, &mark.Widget)
+	col := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	col.SetValign(gtk.AlignCenterValue)
+	col.SetHexpand(true)
+	n := gtk.NewLabel(name)
+	n.AddCssClass("title")
+	n.SetXalign(0)
+	n.SetEllipsize(3)
+	gtkx.Append(col, &n.Widget)
+	if folder != "" {
+		f := gtk.NewLabel(folder)
+		f.AddCssClass("pass-entry-folder")
+		f.SetXalign(0)
+		f.SetEllipsize(1) // start: the nearest folder tells most
+		gtkx.Append(col, &f.Widget)
+	}
+	gtkx.Append(row, &col.Widget)
+	return row
 }
 
 // --- the entry ---
@@ -350,8 +461,8 @@ func (a *passApp) openEntry(name string) {
 	cat, sub := pass.Split(name)
 	a.entryTitle.SetText(sub)
 	a.entryPath.SetText(name)
-	a.entryState.SetText(i18n.T("Decrypting…"))
-	a.entryState.SetVisible(true)
+	a.decryptTitle.SetText(i18n.Tf("Decrypting %s", name))
+	a.showDecrypting(true, "")
 	inKeyring := cat == a.keyring
 	a.moveEntry.SetSensitive(!inKeyring)
 	a.deleteEntry.SetSensitive(!inKeyring)
@@ -364,10 +475,10 @@ func (a *passApp) openEntry(name string) {
 				return // another entry since
 			}
 			if err != nil {
-				a.entryState.SetText(i18n.Tf("Cannot decrypt it: %s", err.Error()))
+				a.showDecrypting(false, err.Error())
 				return
 			}
-			a.entryState.SetVisible(false)
+			a.showDecrypting(false, "")
 			a.raw = text
 			a.entry = pass.Parse(text)
 			a.otp = nil
@@ -379,6 +490,19 @@ func (a *passApp) openEntry(name string) {
 			a.showFields()
 		})
 	}()
+}
+
+// showDecrypting shows the spinner and the shimmering rows while an
+// entry decrypts, or why it could not be, with a second try.
+func (a *passApp) showDecrypting(on bool, failed string) {
+	a.decrypting.SetVisible(on)
+	if on {
+		a.spinner.Start()
+	} else {
+		a.spinner.Stop()
+	}
+	a.decryptErrorText.SetText(failed)
+	a.decryptError.SetVisible(failed != "")
 }
 
 // showFields shows the open entry's values, each with its copy button;
@@ -491,8 +615,10 @@ func (a *passApp) button(name string) {
 			a.showEmpty(i18n.T("Choose an entry."))
 		}
 	case "entry":
-		if a.form == "" || a.detail.GetVisibleChildName() != "form" {
-			a.openEntry(arg)
+		a.openEntry(arg)
+	case "retry":
+		if a.selected != "" {
+			a.openEntry(a.selected)
 		}
 	case "reveal":
 		a.reveal[arg] = !a.reveal[arg]
@@ -501,8 +627,6 @@ func (a *passApp) button(name string) {
 		a.copySecret(a.values[arg])
 	case "add-store":
 		a.chooseStore()
-	case "move-category":
-		a.openForm(formMoveCategory, a.category)
 	case "move-entry":
 		a.openForm(formMoveEntry, a.selected)
 	case "new-entry":
@@ -515,9 +639,9 @@ func (a *passApp) button(name string) {
 		a.closeEditor()
 	case "edit-save":
 		a.saveEditor()
-	case "form-cancel":
+	case "dialog-cancel":
 		a.closeForm()
-	case "form-ok":
+	case "dialog-ok":
 		a.submitForm()
 	}
 }
@@ -608,129 +732,191 @@ func (a *passApp) saveEditor() {
 	}()
 }
 
-// --- the form ---
+// --- the dialog ---
 
-// openForm shows the form that renames or moves a category or an entry,
-// names a new entry, or asks before deleting one.
+// openForm opens the dialog that names a new entry, renames or moves a
+// category or an entry (its path the only field, what it would do shown
+// as it is typed), or asks before deleting one.
 func (a *passApp) openForm(form, from string) {
-	a.form, a.formFrom = form, from
-	a.filling = true
-	cats := []string{}
-	for _, c := range pass.Categories(a.entries) {
-		if c.Name != "" {
-			cats = append(cats, c.Name)
-		}
+	if a.form != "" {
+		return
 	}
-	a.categories = cats
-	a.formCategories.SetModel(gtk.NewStringList(append([]string{i18n.T("Categories…")}, cats...)))
-	a.formCategories.SetSelected(0)
-	a.filling = false
-	a.formCategoryBox.SetVisible(form == formMoveEntry || form == formNew)
-	a.formSubBox.SetVisible(form != formDelete)
-	a.formOK.RemoveCssClass("destructive-action")
-	a.formOK.AddCssClass("suggested-action")
+	a.form, a.formFrom = form, from
+	a.dlgOK.RemoveCssClass("destructive-action")
+	a.dlgOK.AddCssClass("suggested-action")
+	a.dlgPath.SetVisible(form != formDelete)
+	a.dlgError.SetVisible(false)
+	path := from
 	switch form {
 	case formMoveCategory:
-		a.formTitle.SetText(i18n.Tf("Rename or move “%s”", from))
-		a.formText.SetText(i18n.T("Its new path: another name renames it; a path under another category (archive/work) moves it there."))
-		a.formSub.SetText(from)
-		a.formOK.SetLabel(i18n.T("Move"))
+		a.dlgTitle.SetText(i18n.Tf("Rename or move the category “%s”", from))
+		a.dlgText.SetText(i18n.T("Its new path. Another name renames it; a path under another category moves it there, with all its entries."))
+		a.dlgOK.SetLabel(i18n.T("Move"))
 	case formMoveEntry:
-		cat, sub := pass.Split(from)
-		a.formTitle.SetText(i18n.Tf("Rename or move “%s”", sub))
-		a.formText.SetText(i18n.T("The same category and a new name renames it; another category moves it."))
-		a.formCategory.SetText(cat)
-		a.formSub.SetText(sub)
-		a.formOK.SetLabel(i18n.T("Move"))
+		a.dlgTitle.SetText(i18n.Tf("Rename or move “%s”", from))
+		a.dlgText.SetText(i18n.T("Its new path. The first part is its category: change it to move the entry, the rest to rename it."))
+		a.dlgOK.SetLabel(i18n.T("Move"))
 	case formNew:
-		a.formTitle.SetText(i18n.T("New entry"))
-		a.formText.SetText(i18n.T("Where it goes; then its content."))
-		cat := ""
-		if a.picked {
-			cat = a.category
+		a.dlgTitle.SetText(i18n.T("New entry"))
+		a.dlgText.SetText(i18n.T("Its path: the first part is its category. Its content comes next."))
+		path = ""
+		if a.picked && a.category != "" {
+			path = a.category + "/"
 		}
-		a.formCategory.SetText(cat)
-		a.formSub.SetText("")
-		a.formOK.SetLabel(i18n.T("Next"))
+		a.dlgOK.SetLabel(i18n.T("Next"))
 	case formDelete:
-		a.formTitle.SetText(i18n.Tf("Delete “%s”?", from))
-		a.formText.SetText(i18n.T("pass removes its file; a git store keeps it in its history."))
-		a.formOK.SetLabel(i18n.T("Delete"))
-		a.formOK.RemoveCssClass("suggested-action")
-		a.formOK.AddCssClass("destructive-action")
+		a.dlgTitle.SetText(i18n.Tf("Delete “%s”?", from))
+		a.dlgText.SetText(i18n.T("pass removes its file; a git store keeps it in its history."))
+		a.dlgOK.SetLabel(i18n.T("Delete"))
+		a.dlgOK.RemoveCssClass("suggested-action")
+		a.dlgOK.AddCssClass("destructive-action")
 	}
+	a.filling = true
+	a.dlgPath.SetText(path)
+	a.filling = false
 	a.checkForm()
-	a.detail.SetVisibleChildName("form")
+	a.dlg.Present()
+	if form == formDelete {
+		a.dlgOK.GrabFocus()
+		return
+	}
+	a.dlgPath.GrabFocus()
+	// The part to change selected: an entry's name, all of a category.
+	start := int32(0)
+	if form == formMoveEntry {
+		if i := strings.LastIndexByte(path, '/'); i >= 0 {
+			start = int32(i + 1)
+		}
+	}
+	a.dlgPath.SelectRegion(start, -1)
 	if form == formNew {
-		a.formSub.GrabFocus()
-	} else if form != formDelete {
-		a.formSub.GrabFocus()
+		a.dlgPath.SetPosition(-1)
 	}
 }
 
-// formTarget is where the form would put what it moves or makes.
-func (a *passApp) formTarget() string {
-	sub := strings.Trim(strings.TrimSpace(a.formSub.GetText()), "/")
-	switch a.form {
-	case formMoveCategory:
-		return sub
-	case formMoveEntry, formNew:
-		return pass.Join(strings.Trim(strings.TrimSpace(a.formCategory.GetText()), "/"), sub)
-	}
-	return a.formFrom
-}
-
-// checkForm says where it would end up, or why it cannot, and allows the
-// action only when it can.
+// checkForm previews what the dialog would do, or why it cannot, and
+// allows the action only when it can.
 func (a *passApp) checkForm() {
 	if a.form == "" || a.filling {
 		return
 	}
-	to := a.formTarget()
-	ok, msg := true, ""
-	switch {
-	case a.form == formDelete:
-		msg = a.store.Dir + "/" + a.formFrom + ".gpg"
-	case pass.ValidName(to) != nil:
-		ok, msg = false, i18n.T("Each part of the path needs a name, without a leading dot.")
-	case to == a.formFrom:
-		ok, msg = false, i18n.T("That is where it is.")
-	case a.store.Has(to):
-		ok, msg = false, i18n.Tf("%s is already in the store.", to)
-	case a.form == formMoveCategory && strings.HasPrefix(to, a.formFrom+"/"):
-		ok, msg = false, i18n.T("A category cannot move into itself.")
-	default:
-		msg = i18n.Tf("It will be %s", to)
+	gtkx.Clear(&a.dlgPreview)
+	if a.form == formDelete {
+		a.previewLine(i18n.T("FILE"), pass.Tilde(a.store.Dir)+"/"+a.formFrom+".gpg", "")
+		a.dlgError.SetVisible(false)
+		a.dlgOK.SetSensitive(!a.busy)
+		return
 	}
-	a.formResult.SetText(msg)
-	setClass(&a.formResult.Widget, "pass-error", !ok)
-	a.formOK.SetSensitive(ok && !a.busy)
+	from := a.formFrom
+	if a.form == formNew {
+		from = ""
+	}
+	moves, err := pass.PlanMove(a.entries, from, a.dlgPath.GetText())
+	a.dlgPreview.SetVisible(err == nil)
+	if err != nil {
+		a.dlgError.SetText(passPlanError(err))
+		// Nothing typed yet, or the path as it is: no reproach, only no
+		// action.
+		typed := strings.Trim(strings.TrimSpace(a.dlgPath.GetText()), "/")
+		a.dlgError.SetVisible(typed != "" && typed != a.formFrom)
+		a.dlgOK.SetSensitive(false)
+		return
+	}
+	a.dlgError.SetVisible(false)
+	to := moves[0].To
+	if a.form == formMoveCategory {
+		to = strings.Trim(strings.TrimSpace(a.dlgPath.GetText()), "/")
+	}
+	cat, sub := pass.Split(to)
+	a.previewLine(i18n.T("CATEGORY"), a.categoryName(cat), "")
+	a.previewLine(i18n.T("NAME"), sub, "")
+	switch {
+	case a.form == formNew:
+		a.previewLine(i18n.T("FILE"), pass.Tilde(a.store.Dir)+"/"+to+".gpg", "")
+	default:
+		shown := moves
+		if len(shown) > 5 {
+			shown = shown[:5]
+		}
+		for _, m := range shown {
+			a.previewLine("", m.From, m.To)
+		}
+		if n := len(moves) - len(shown); n > 0 {
+			a.previewLine("", i18n.Nf("and %d more", "and %d more", n, n), "")
+		}
+	}
+	a.dlgOK.SetSensitive(!a.busy)
+	a.dlgPreview.SetVisible(true)
+}
+
+// previewLine adds a line to the dialog's preview: a name and a value, or
+// an entry's path before and after.
+func (a *passApp) previewLine(key, value, after string) {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	if key != "" {
+		k := gtk.NewLabel(key)
+		k.AddCssClass("kicker")
+		k.SetXalign(0)
+		k.SetSizeRequest(84, -1)
+		gtkx.Append(row, &k.Widget)
+	}
+	v := gtk.NewLabel(value)
+	v.AddCssClass("pass-preview-value")
+	v.SetXalign(0)
+	v.SetEllipsize(2)
+	if after != "" {
+		v.AddCssClass("before")
+	}
+	gtkx.Append(row, &v.Widget)
+	if after != "" {
+		arrow := gtk.NewLabel("→")
+		arrow.AddCssClass("sub")
+		gtkx.Append(row, &arrow.Widget)
+		w := gtk.NewLabel(after)
+		w.AddCssClass("pass-preview-value")
+		w.SetXalign(0)
+		w.SetEllipsize(2)
+		w.SetHexpand(true)
+		gtkx.Append(row, &w.Widget)
+	}
+	gtkx.Append(&a.dlgPreview, &row.Widget)
+}
+
+// passPlanError says, in the user's language, why a path is refused.
+func passPlanError(err error) string {
+	switch msg := err.Error(); {
+	case strings.Contains(msg, "where it is"):
+		return i18n.T("That is where it is.")
+	case strings.Contains(msg, "into itself"):
+		return i18n.T("A category cannot move into itself.")
+	case strings.Contains(msg, "already"):
+		return i18n.T("That path is already in the store.")
+	case strings.Contains(msg, "not in the store"):
+		return i18n.T("It is no longer in the store.")
+	}
+	return i18n.T("Each part of the path needs a name, without a leading dot.")
 }
 
 func (a *passApp) closeForm() {
-	form := a.form
 	a.form = ""
-	switch {
-	case form == formNew || a.selected == "":
-		a.showEmpty(i18n.T("Choose an entry."))
-	default:
-		a.detail.SetVisibleChildName("entry")
-	}
+	a.dlg.SetVisible(false)
 }
 
 func (a *passApp) submitForm() {
-	if a.busy || !a.formOK.GetSensitive() {
+	if a.form == "" || a.busy || !a.dlgOK.GetSensitive() {
 		return
 	}
-	form, from, to := a.form, a.formFrom, a.formTarget()
+	form, from := a.form, a.formFrom
+	to := strings.Trim(strings.TrimSpace(a.dlgPath.GetText()), "/")
 	if form == formNew {
-		a.form, a.editNew, a.newName = "", true, to
+		a.closeForm()
+		a.editNew, a.newName = true, to
 		a.closeEntry()
 		a.openEditor(to, "")
 		return
 	}
 	a.busy = true
-	a.formOK.SetSensitive(false)
+	a.dlgOK.SetSensitive(false)
 	s := a.store
 	go func() {
 		var err error
@@ -742,12 +928,12 @@ func (a *passApp) submitForm() {
 		gtkx.Post(func() {
 			a.busy = false
 			if err != nil {
-				a.formResult.SetText(err.Error())
-				setClass(&a.formResult.Widget, "pass-error", true)
-				a.formOK.SetSensitive(true)
+				a.dlgError.SetText(err.Error())
+				a.dlgError.SetVisible(true)
+				a.dlgOK.SetSensitive(true)
 				return
 			}
-			a.form = ""
+			a.closeForm()
 			switch form {
 			case formDelete:
 				a.closeEntry()

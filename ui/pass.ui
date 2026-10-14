@@ -108,23 +108,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </style>
                 <property name="spacing">6</property>
                 <child>
-                  <object class="GtkLabel" id="category_title">
-                    <style>
-                      <class name="pass-col-title"/>
-                    </style>
+                  <object class="GtkSearchEntry" id="filter">
                     <property name="hexpand">true</property>
-                    <property name="xalign">0</property>
-                    <property name="ellipsize">3</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="move_category">
-                    <style>
-                      <class name="plain"/>
-                    </style>
-                    <property name="name">move-category</property>
-                    <property name="icon-name">document-edit-symbolic</property>
-                    <property name="tooltip-text" translatable="yes">Rename or move this category</property>
+                    <property name="placeholder-text" translatable="yes">Search every entry</property>
                   </object>
                 </child>
                 <child>
@@ -135,16 +121,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="name">new-entry</property>
                     <property name="icon-name">list-add-symbolic</property>
                     <property name="tooltip-text" translatable="yes">New entry</property>
+                    <property name="valign">3</property>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSearchEntry" id="filter">
-                <style>
-                  <class name="index-search"/>
-                </style>
-                <property name="placeholder-text" translatable="yes">Search every entry</property>
               </object>
             </child>
             <child>
@@ -263,13 +242,115 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="entry_state">
+                          <object class="GtkBox" id="decrypting">
                             <style>
-                              <class name="sub"/>
+                              <class name="pass-decrypting"/>
                             </style>
-                            <property name="xalign">0</property>
-                            <property name="wrap">true</property>
+                            <property name="orientation">1</property>
                             <property name="visible">false</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">14</property>
+                                <child>
+                                  <object class="GtkSpinner" id="spinner">
+                                    <property name="valign">3</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">3</property>
+                                    <property name="valign">3</property>
+                                    <child>
+                                      <object class="GtkLabel" id="decrypt_title">
+                                        <style>
+                                          <class name="pass-decrypt-title"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">2</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="sub"/>
+                                        </style>
+                                        <property name="label" translatable="yes">gpg may ask for your passphrase, in inua's dialog.</property>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="skeleton">
+                                <style>
+                                  <class name="pass-skeleton"/>
+                                </style>
+                                <property name="orientation">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="decrypt_error">
+                            <style>
+                              <class name="pass-decrypt-error"/>
+                            </style>
+                            <property name="orientation">1</property>
+                            <property name="spacing">10</property>
+                            <property name="visible">false</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">system-lock-screen-symbolic</property>
+                                    <property name="pixel-size">22</property>
+                                    <property name="valign">1</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">4</property>
+                                    <property name="hexpand">true</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="pass-decrypt-title"/>
+                                        </style>
+                                        <property name="label" translatable="yes">It could not be decrypted</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="decrypt_error_text">
+                                        <style>
+                                          <class name="pass-path"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="wrap-mode">2</property>
+                                        <property name="selectable">true</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="retry">
+                                <style>
+                                  <class name="outlined"/>
+                                </style>
+                                <property name="name">retry</property>
+                                <property name="label" translatable="yes">Try again</property>
+                                <property name="halign">1</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
@@ -374,118 +455,94 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </property>
               </object>
             </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="pass_dialog">
+    <style>
+      <class name="app"/>
+      <class name="settings"/>
+      <class name="pass"/>
+      <class name="pass-dialog"/>
+    </style>
+    <property name="modal">true</property>
+    <property name="resizable">false</property>
+    <property name="default-width">480</property>
+    <property name="hide-on-close">true</property>
+    <child>
+      <object class="GtkBox">
+        <style>
+          <class name="page"/>
+        </style>
+        <property name="orientation">1</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkLabel" id="dialog_title">
+            <style>
+              <class name="pass-title"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="dialog_text">
+            <style>
+              <class name="sub"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="dialog_path">
+            <style>
+              <class name="pass-path-entry"/>
+            </style>
+            <property name="placeholder-text" translatable="yes">category/name</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="dialog_preview">
+            <style>
+              <class name="pass-preview"/>
+            </style>
+            <property name="orientation">1</property>
+            <property name="spacing">6</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="dialog_error">
+            <style>
+              <class name="pass-error"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <property name="halign">2</property>
+            <property name="margin-top">4</property>
             <child>
-              <object class="GtkStackPage">
-                <property name="name">form</property>
-                <property name="child">
-                  <object class="GtkBox">
-                    <style>
-                      <class name="page"/>
-                    </style>
-                    <property name="orientation">1</property>
-                    <property name="spacing">12</property>
-                    <child>
-                      <object class="GtkLabel" id="form_title">
-                        <style>
-                          <class name="pass-title"/>
-                        </style>
-                        <property name="xalign">0</property>
-                        <property name="wrap">true</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="form_text">
-                        <style>
-                          <class name="sub"/>
-                        </style>
-                        <property name="xalign">0</property>
-                        <property name="wrap">true</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="form_category_box">
-                        <property name="orientation">1</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="form_category_label">
-                            <style>
-                              <class name="kicker"/>
-                            </style>
-                            <property name="label" translatable="yes">CATEGORY</property>
-                            <property name="xalign">0</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="spacing">8</property>
-                            <child>
-                              <object class="GtkEntry" id="form_category">
-                                <property name="hexpand">true</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkDropDown" id="form_categories">
-                                <property name="tooltip-text" translatable="yes">A category there is</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="form_sub_box">
-                        <property name="orientation">1</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="form_sub_label">
-                            <style>
-                              <class name="kicker"/>
-                            </style>
-                            <property name="label" translatable="yes">NAME</property>
-                            <property name="xalign">0</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="form_sub"></object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="form_result">
-                        <style>
-                          <class name="pass-path"/>
-                        </style>
-                        <property name="xalign">0</property>
-                        <property name="wrap">true</property>
-                        <property name="wrap-mode">2</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="spacing">8</property>
-                        <property name="halign">2</property>
-                        <property name="margin-top">6</property>
-                        <child>
-                          <object class="GtkButton" id="form_cancel">
-                            <style>
-                              <class name="outlined"/>
-                            </style>
-                            <property name="name">form-cancel</property>
-                            <property name="label" translatable="yes">Cancel</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="form_ok">
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                            <property name="name">form-ok</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </property>
+              <object class="GtkButton" id="dialog_cancel">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">dialog-cancel</property>
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="dialog_ok">
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <property name="name">dialog-ok</property>
               </object>
             </child>
           </object>

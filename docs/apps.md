@@ -80,6 +80,9 @@ The password store ([pass](https://www.passwordstore.org)) in three
 columns: the categories (each entry's first path segment, `work` of
 `work/mail/ann`), the chosen category's entries (`mail/ann`), and the
 chosen entry. A search above the entries looks through every category.
+Each entry has an icon its name calls for (a service's logo, as for
+GitHub or Google, or what it is for: wifi, bank, mail, a server, a
+token …), else its initial.
 
 - An entry opens decrypted: the password, a one-time code (from an
   `otpauth://totp/` line, with the seconds it stays), its `key: value`
@@ -88,11 +91,14 @@ chosen entry. A search above the entries looks through every category.
   show them; every value has a copy button. A copy is marked as a
   password manager's, so clipboard histories leave it out, and is taken
   off the clipboard after 45 seconds.
-- Edit opens the entry's text; Delete asks first. + makes a new entry.
-- A category or an entry can be renamed or moved: another name renames
-  it; another category (or, for a category, a path under one) moves it.
-  inua-keyring's folder is not renamed or moved, as its index names its
-  entries by path.
+- Edit opens the entry's text; Delete asks first. + (beside the search)
+  makes a new entry.
+- A category (right-click it) or an entry can be
+  renamed or moved, in a dialog that takes the new path and previews it:
+  its category and name, and every entry that moves. Another name renames
+  it; another first part moves it to that category. inua-keyring's folder
+  is not renamed or moved, as its index names its entries by path.
+- A line of dashes (`---`, as gopass writes) divides; it is not a note.
 - At the foot of the categories: the store in use, a menu when there is
   more than one (`$PASSWORD_STORE_DIR`, `~/.password-store`, and folders
   added with the folder button).
