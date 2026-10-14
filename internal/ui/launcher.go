@@ -276,7 +276,7 @@ func (s *shellUI) buildLauncher() {
 	if s.layer {
 		layershell.InitForWindow(w)
 		layershell.SetNamespace(w, "inua-launcher")
-		layershell.SetLayer(w, layershell.LayerOverlay)
+		layershell.SetLayer(w, layershell.LayerTop)
 		layershell.SetKeyboardMode(w, layershell.KeyboardExclusive)
 		if mon := s.focusedMonitor(); mon != nil {
 			layershell.SetMonitor(w, mon.GoPointer())
