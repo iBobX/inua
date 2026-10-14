@@ -288,11 +288,15 @@ Window polkit_dialog {
               yalign: 0;
             }
 
+            // A file's path can be long: cut in the middle, not
+            // widening the dialog; the tooltip has it whole.
             Label for_value {
               styles ["pass-value", "pass-mono"]
               xalign: 0;
               hexpand: true;
               ellipsize: middle;
+              width-chars: 10;
+              max-width-chars: 40;
             }
           }
         }
