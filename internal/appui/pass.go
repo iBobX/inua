@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
@@ -19,9 +18,6 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
-
-// passClearAfter is how long a copied value stays on the clipboard.
-const passClearAfter = 45 * time.Second
 
 // masked stands for a hidden value.
 const passMasked = "••••••••••"
@@ -61,7 +57,7 @@ type passApp struct {
 	editNew  bool   // the editor writes a new entry, named in the dialog
 	newName  string
 	busy     bool // a pass command runs
-	clipGen  int
+	clip     secretClip
 	filling  bool
 
 	categoryList, entryList, fields, skeleton gtk.Box
@@ -96,7 +92,6 @@ type passApp struct {
 	onWinClose     func(gtk.Window) bool
 	onCategoryMenu func(gtk.GestureClick, int32, float64, float64)
 	onTick         glib.SourceFunc
-	onClear        glib.SourceFunc
 	dialog         *gtk.FileDialog
 	onChosen       gio.AsyncReadyCallback
 }
@@ -646,38 +641,8 @@ func (a *passApp) button(name string) {
 	}
 }
 
-// copySecret puts a value on the clipboard with the password manager's
-// hint, which clipboard histories (inua's among them) leave out, and
-// takes it off again after a while if it is still there.
-func (a *passApp) copySecret(value string) {
-	if value == "" {
-		return
-	}
-	clip := a.win.GetClipboard()
-	defer clip.Unref()
-	data := []byte(value)
-	providers := []uintptr{
-		gdk.NewContentProviderForBytes("text/plain;charset=utf-8", glib.NewBytes(data, uint(len(data)))).GoPointer(),
-		gdk.NewContentProviderForBytes("text/plain", glib.NewBytes(data, uint(len(data)))).GoPointer(),
-		gdk.NewContentProviderForBytes("x-kde-passwordManagerHint", glib.NewBytes([]byte("secret"), 6)).GoPointer(),
-	}
-	union := gdk.NewContentProviderUnion(uintptr(unsafe.Pointer(&providers[0])), uint(len(providers)))
-	clip.SetContent(union)
-	union.Unref()
-	a.clipGen++
-	gen := a.clipGen
-	a.onClear = func(uintptr) bool {
-		if gen == a.clipGen {
-			c := a.win.GetClipboard()
-			if c.IsLocal() { // still ours: nothing else was copied since
-				c.SetContent(&gdk.ContentProvider{})
-			}
-			c.Unref()
-		}
-		return false
-	}
-	glib.TimeoutAdd(uint32(passClearAfter/time.Millisecond), &a.onClear, 0)
-}
+// copySecret copies a value as a secret (secretClip).
+func (a *passApp) copySecret(value string) { a.clip.copy(&a.win.Widget, value) }
 
 // --- the editor ---
 
