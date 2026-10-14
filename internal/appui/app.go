@@ -1,6 +1,6 @@
 // Package appui runs inua's light apps: Clock, Weather, Stocks,
-// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass and
-// Viewer. Each runs as its own process with its own application ID, so
+// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass,
+// GPG and Viewer. Each runs as its own process with its own application ID, so
 // the launcher, the dock and the compositor see it as an app, but in the
 // shell's look: the theme and style from inua's settings, followed as
 // they change, and the shell's icons.
@@ -66,6 +66,7 @@ var Apps = map[string]struct {
 	"system-monitor": {"SystemMonitor", i18n.M("System Monitor"), func() view { return &sysmonApp{} }, false},
 	"tailscale":      {"Tailscale", i18n.M("Tailscale"), func() view { return &tailscaleApp{} }, false},
 	"pass":           {"Pass", i18n.M("Pass"), func() view { return &passApp{} }, false},
+	"gpg":            {"GPG", i18n.M("GPG"), func() view { return &gpgApp{} }, false},
 	"viewer":         {"Viewer", i18n.M("Viewer"), func() view { return &viewerApp{} }, true},
 }
 

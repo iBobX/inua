@@ -107,6 +107,53 @@ Every change goes through `pass`, so git and `.gpg-id` work as on the
 command line; decrypting asks for the passphrase in inua's dialog when
 gpg-agent has not kept it.
 
+## GPG
+
+Encrypt and decrypt with [GnuPG](https://gnupg.org), through `gpg` and
+your keyring, in three tabs, each with its main button in a bar at the
+bottom:
+
+- **Encrypt:** a composer. **To** works like a mail client's: type a
+  name, address or key ID and pick a match (Enter takes the first), or
+  list all keys with the button at the end; the people chosen show as
+  chips, and Backspace takes the last one off. Expired or revoked keys
+  are listed greyed, with the date, since gpg cannot encrypt to them.
+  **From** is your key, with its key ID, algorithm and dates so keys of
+  the same name are told apart; with several, it opens a list of them.
+  **Sign** (so they know it is from you and unchanged) and **Let me read
+  it too** (encrypt to your key as well) are switches, on by default. Then **Text** or **Files** (chosen or dropped): the tab
+  shown is what is encrypted. The result takes the composer's place: a
+  message comes out armored, to copy or save; a file is written beside it
+  as `NAME.gpg`. **Back** returns to the composer as it was.
+- **Decrypt:** **Text** or **Files**, as in Encrypt. A message pasted is
+  decrypted as soon as it is whole, a block in a longer mail included;
+  files chosen or dropped are decrypted at once. When the clipboard holds
+  an encrypted message, the tab offers to decrypt it. The result shows
+  under the input: who signed it (a good signature, one that does not
+  match, a key not in your keyring, or one no longer valid) and who it was
+  encrypted to; a message's text, to copy or save, or the files written
+  beside the encrypted ones without `.gpg` or `.asc`, each with **Move to
+  Trash…**, which asks first.
+- **Keys:** your keyring in three sections, **My keys**, **Others** and
+  **Invalid keys** (expired, revoked or disabled), each key with its
+  fingerprint and dates, and **Copy fingerprint**, **Copy public key** and
+  **Encrypt to…**. An expired key of yours has **Extend 2 years**, and no
+  Delete: its secret key still opens what was encrypted to it. Another
+  person's invalid key says to ask them for an updated key, and has
+  **Delete…**, which asks first; messages it signed then show as signed
+  by a key not in your keyring.
+  **Import…** (in the bar at the bottom) takes a key pasted, from a file, or from the clipboard, and
+  shows the keys in it before adding them. **Create key** makes your own
+  (name, email, expiry), its passphrase asked in inua's dialog; the form
+  also gives `gpg --full-generate-key` for a terminal. With no key of
+  your own, the tab offers to create one.
+
+Nothing is overwritten. Decrypted text is copied with the password
+manager's hint, so clipboard histories leave it out, and taken off the
+clipboard after 45 seconds. Signing, decrypting, creating and extending
+ask for your passphrase in inua's dialog when gpg-agent has not kept it.
+`inua-apps gpg encrypt|decrypt|keys` opens a tab.
+
 ## Tailscale
 
 [Tailscale](https://tailscale.com) through tailscaled's local API:

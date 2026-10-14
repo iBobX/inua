@@ -1,0 +1,1120 @@
+// GPG: encrypt and decrypt with GnuPG, in three tabs, each with an
+// action bar at the bottom. Encrypt: a composer (to whom, from which of
+// your keys, a text or files), and what came out in its place. Decrypt:
+// a message pasted or files, decrypted as they come; who it was for and
+// who signed it in its place. Keys: the keyring, importing a key and
+// creating your own. Go fills them (internal/appui/gpg.go).
+using Gtk 4.0;
+
+ApplicationWindow gpg {
+  default-width: 760;
+  default-height: 720;
+
+  Box {
+    styles ["gpgapp"]
+    orientation: vertical;
+
+    StackSwitcher {
+      styles ["tabs"]
+      stack: pages;
+      halign: center;
+    }
+
+    Stack pages {
+      vexpand: true;
+      transition-type: crossfade;
+      transition-duration: 140;
+
+      StackPage {
+        name: "encrypt";
+        title: _("ENCRYPT");
+
+        child: Stack enc_view {
+          transition-type: crossfade;
+          transition-duration: 140;
+
+          StackPage {
+            name: "compose";
+
+            child: Box enc_compose {
+              orientation: vertical;
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box {
+                  styles ["page"]
+                  orientation: vertical;
+
+                  // [TO] chips and a field to type in, the matches under it.
+                  Box {
+                    styles ["section"]
+                    orientation: vertical;
+
+                    Box {
+                      styles ["section-head"]
+                      spacing: 10;
+
+                      Box {
+                        styles ["mark"]
+                        valign: center;
+                      }
+
+                      Label {
+                        styles ["section-label"]
+                        use-markup: true;
+                        label: _("<span alpha='55%'>[</span>TO<span alpha='55%'>]</span>");
+                      }
+
+                      Label to_count {
+                        styles ["section-meta"]
+                        hexpand: true;
+                        xalign: 0;
+                      }
+                    }
+
+                    Box to_box {
+                      styles ["gpg-to"]
+                      spacing: 6;
+
+                      FlowBox to_chips {
+                        hexpand: true;
+                        valign: center;
+                        selection-mode: none;
+                        homogeneous: false;
+                        column-spacing: 6;
+                        row-spacing: 6;
+                        max-children-per-line: 30;
+
+                        Entry to_entry {
+                          styles ["gpg-to-entry"]
+                          hexpand: true;
+                          width-chars: 30;
+                          placeholder-text: _("Name, address or key ID");
+                        }
+                      }
+
+                      ToggleButton to_browse {
+                        styles ["plain"]
+                        valign: start;
+                        icon-name: "pan-down-symbolic";
+                        tooltip-text: _("All keys");
+                      }
+                    }
+
+                    Box to_suggest {
+                      styles ["gpg-suggest-frame"]
+                      orientation: vertical;
+                      visible: false;
+                    }
+                  }
+
+                  // [FROM] your key, signing, and a copy for you.
+                  Box {
+                    styles ["section"]
+                    orientation: vertical;
+
+                    Box {
+                      styles ["section-head"]
+                      spacing: 10;
+
+                      Box {
+                        styles ["mark"]
+                        valign: center;
+                      }
+
+                      Label {
+                        styles ["section-label"]
+                        use-markup: true;
+                        label: _("<span alpha='55%'>[</span>FROM<span alpha='55%'>]</span>");
+                      }
+                    }
+
+                    Box from_some {
+                      orientation: vertical;
+
+                      MenuButton from_button {
+                        styles ["gpg-from"]
+                        margin-top: 10;
+
+                        child: Box {
+                          spacing: 10;
+
+                          Box {
+                            orientation: vertical;
+                            spacing: 2;
+                            hexpand: true;
+
+                            Label from_title {
+                              styles ["title"]
+                              xalign: 0;
+                              ellipsize: end;
+                            }
+
+                            Label from_sub {
+                              styles ["gpg-mono-sub"]
+                              xalign: 0;
+                              ellipsize: end;
+                            }
+                          }
+
+                          Image from_arrow {
+                            icon-name: "pan-down-symbolic";
+                            valign: center;
+                          }
+                        };
+
+                        popover: Popover from_pop {
+                          styles ["gpg-from-pop"]
+                          has-arrow: false;
+
+                          Box from_list {
+                            orientation: vertical;
+                          }
+                        };
+                      }
+
+                      Box {
+                        styles ["row", "compact"]
+                        spacing: 12;
+                        margin-top: 6;
+
+                        Box {
+                          orientation: vertical;
+                          hexpand: true;
+                          valign: center;
+
+                          Label {
+                            styles ["title"]
+                            label: _("Sign");
+                            xalign: 0;
+                          }
+
+                          Label {
+                            styles ["sub"]
+                            label: _("So they know it is from you and unchanged");
+                            xalign: 0;
+                            wrap: true;
+                          }
+                        }
+
+                        Switch sign {
+                          active: true;
+                          valign: center;
+                        }
+                      }
+
+                      Box {
+                        styles ["row", "compact"]
+                        spacing: 12;
+
+                        Box {
+                          orientation: vertical;
+                          hexpand: true;
+                          valign: center;
+
+                          Label {
+                            styles ["title"]
+                            label: _("Let me read it too");
+                            xalign: 0;
+                          }
+
+                          Label to_self_sub {
+                            styles ["sub"]
+                            label: _("Encrypt to your key as well, so you can open it later");
+                            xalign: 0;
+                            wrap: true;
+                          }
+                        }
+
+                        Switch to_self {
+                          active: true;
+                          valign: center;
+                        }
+                      }
+                    }
+
+                    Box from_none {
+                      styles ["row"]
+                      spacing: 12;
+                      visible: false;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label: _("You have no key of your own");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label: _("Without one you cannot sign, or read what you encrypt");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Button b_create {
+                        styles ["outlined"]
+                        name: "create";
+                        label: _("Create your key");
+                        valign: center;
+                      }
+                    }
+                  }
+
+                  // [MESSAGE] a text, or files; the tab shown is what is encrypted.
+                  Box {
+                    styles ["section"]
+                    orientation: vertical;
+
+                    Box {
+                      styles ["section-head"]
+                      spacing: 10;
+
+                      Box {
+                        styles ["mark"]
+                        valign: center;
+                      }
+
+                      Label {
+                        styles ["section-label"]
+                        use-markup: true;
+                        label: _("<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>");
+                        hexpand: true;
+                        xalign: 0;
+                      }
+
+                      StackSwitcher {
+                        styles ["gpg-kind"]
+                        stack: msg_kind;
+                        valign: center;
+                      }
+                    }
+
+                    Stack msg_kind {
+                      transition-type: crossfade;
+                      transition-duration: 120;
+                      vhomogeneous: false;
+
+                      StackPage {
+                        name: "text";
+                        title: _("Text");
+
+                        child: ScrolledWindow {
+                          styles ["gpg-editor"]
+                          height-request: 200;
+
+                          TextView enc_input {
+                            styles ["gpg-text"]
+                            wrap-mode: word_char;
+                            top-margin: 10;
+                            bottom-margin: 10;
+                            left-margin: 12;
+                            right-margin: 12;
+                          }
+                        };
+                      }
+
+                      StackPage {
+                        name: "files";
+                        title: _("Files");
+
+                        child: Box {
+                          orientation: vertical;
+
+                          Box enc_files {
+                            styles ["gpg-files"]
+                            orientation: vertical;
+                          }
+
+                          Box enc_drop {
+                            styles ["gpg-drop"]
+                            orientation: vertical;
+                            spacing: 10;
+
+                            Label {
+                              styles ["sub"]
+                              label: _("Drop files here, or");
+                            }
+
+                            Button b_enc_choose {
+                              styles ["outlined"]
+                              name: "enc-choose";
+                              label: _("Choose files…");
+                              halign: center;
+                            }
+                          }
+                        };
+                      }
+                    }
+                  }
+                }
+              }
+
+              Box {
+                styles ["gpg-bar"]
+                spacing: 8;
+
+                Button b_enc_clear {
+                  styles ["outlined"]
+                  name: "enc-clear";
+                  label: _("Clear");
+                }
+
+                Label enc_status {
+                  styles ["sub"]
+                  hexpand: true;
+                  xalign: 1;
+                  wrap: true;
+                }
+
+                Button encrypt {
+                  styles ["suggested-action"]
+                  name: "encrypt";
+                  label: _("Encrypt");
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "result";
+
+            child: Box {
+              orientation: vertical;
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box {
+                  styles ["page"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label: _("<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>");
+                    }
+
+                    Label enc_result_meta {
+                      styles ["section-meta"]
+                      hexpand: true;
+                      xalign: 0;
+                    }
+                  }
+
+                  ScrolledWindow enc_output_frame {
+                    styles ["gpg-editor"]
+                    vexpand: true;
+                    height-request: 260;
+
+                    TextView enc_output {
+                      styles ["gpg-text", "gpg-mono"]
+                      editable: false;
+                      wrap-mode: char;
+                      top-margin: 10;
+                      bottom-margin: 10;
+                      left-margin: 12;
+                      right-margin: 12;
+                    }
+                  }
+
+                  Box enc_written {
+                    styles ["gpg-files"]
+                    orientation: vertical;
+                  }
+                }
+              }
+
+              Box {
+                styles ["gpg-bar"]
+                spacing: 8;
+
+                Button b_enc_back {
+                  styles ["outlined"]
+                  name: "enc-back";
+                  label: _("Back");
+                }
+
+                Label enc_result_status {
+                  styles ["sub"]
+                  hexpand: true;
+                  xalign: 1;
+                  wrap: true;
+                }
+
+                Button enc_save {
+                  styles ["outlined"]
+                  name: "enc-save";
+                  label: _("Save…");
+                }
+
+                Button enc_copy {
+                  styles ["suggested-action"]
+                  name: "enc-copy";
+                  label: _("Copy");
+                }
+              }
+            };
+          }
+        };
+      }
+
+      StackPage {
+        name: "decrypt";
+        title: _("DECRYPT");
+
+        child: Box dec_in {
+          orientation: vertical;
+
+          ScrolledWindow {
+            hscrollbar-policy: never;
+            vexpand: true;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // An encrypted message on the clipboard, offered.
+              Box clip_offer {
+                styles ["gpg-offer"]
+                spacing: 12;
+                visible: false;
+
+                Image {
+                  icon-name: "edit-paste-symbolic";
+                  valign: center;
+                }
+
+                Label {
+                  label: _("The clipboard holds an encrypted message");
+                  hexpand: true;
+                  xalign: 0;
+                  wrap: true;
+                }
+
+                Button b_dec_clip {
+                  styles ["outlined"]
+                  name: "dec-clip";
+                  label: _("Decrypt it");
+                  valign: center;
+                }
+              }
+
+              // [MESSAGE] pasted, or files; decrypted as they come.
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: _("<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label: _("Decrypted as soon as it is pasted or dropped");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  StackSwitcher {
+                    styles ["gpg-kind"]
+                    stack: dec_kind;
+                    valign: center;
+                  }
+                }
+
+                Stack dec_kind {
+                  transition-type: crossfade;
+                  transition-duration: 120;
+                  vhomogeneous: false;
+
+                  StackPage {
+                    name: "text";
+                    title: _("Text");
+
+                    child: ScrolledWindow {
+                      styles ["gpg-editor"]
+                      height-request: 180;
+
+                      TextView dec_input {
+                        styles ["gpg-text", "gpg-mono"]
+                        wrap-mode: char;
+                        top-margin: 10;
+                        bottom-margin: 10;
+                        left-margin: 12;
+                        right-margin: 12;
+                      }
+                    };
+                  }
+
+                  StackPage {
+                    name: "files";
+                    title: _("Files");
+
+                    child: Box {
+                      orientation: vertical;
+
+                      Box dec_files {
+                        styles ["gpg-files"]
+                        orientation: vertical;
+                      }
+
+                      Box {
+                        styles ["gpg-drop"]
+                        orientation: vertical;
+                        spacing: 10;
+
+                        Label {
+                          styles ["sub"]
+                          label: _("Drop files here, or");
+                        }
+
+                        Button b_dec_choose {
+                          styles ["outlined"]
+                          name: "dec-choose";
+                          label: _("Choose files…");
+                          halign: center;
+                        }
+                      }
+                    };
+                  }
+                }
+              }
+
+              // [DECRYPTED] who signed it, who it was for, and the text.
+              Box dec_result {
+                styles ["section"]
+                orientation: vertical;
+                visible: false;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 6;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label: _("<span alpha='55%'>[</span>DECRYPTED<span alpha='55%'>]</span>");
+                    hexpand: true;
+                    xalign: 0;
+                  }
+
+                  Button dec_save {
+                    styles ["outlined", "gpg-small"]
+                    name: "dec-save";
+                    label: _("Save…");
+                    valign: center;
+                  }
+
+                  Button dec_copy {
+                    styles ["outlined", "gpg-small"]
+                    name: "dec-copy";
+                    label: _("Copy");
+                    valign: center;
+                  }
+                }
+
+                // The signature: good, bad, or a signer not in the keyring.
+                Box signature {
+                  styles ["gpg-signature"]
+                  spacing: 12;
+
+                  Image signature_icon {
+                    pixel-size: 20;
+                    valign: start;
+                  }
+
+                  Box {
+                    orientation: vertical;
+                    spacing: 3;
+                    hexpand: true;
+
+                    Label signature_title {
+                      styles ["gpg-signature-title"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+
+                    Label signature_sub {
+                      styles ["gpg-mono-sub"]
+                      xalign: 0;
+                      wrap: true;
+                      wrap-mode: word_char;
+                      selectable: true;
+                    }
+                  }
+                }
+
+                Label dec_to {
+                  styles ["sub"]
+                  xalign: 0;
+                  wrap: true;
+                  margin-top: 8;
+                }
+
+                ScrolledWindow dec_output_frame {
+                  styles ["gpg-editor"]
+                  height-request: 200;
+
+                  TextView dec_output {
+                    styles ["gpg-text"]
+                    editable: false;
+                    wrap-mode: word_char;
+                    top-margin: 10;
+                    bottom-margin: 10;
+                    left-margin: 12;
+                    right-margin: 12;
+                  }
+                }
+
+                Box dec_written {
+                  styles ["gpg-files"]
+                  orientation: vertical;
+                }
+              }
+            }
+          }
+
+          Box {
+            styles ["gpg-bar"]
+            spacing: 8;
+
+            Button b_dec_clear {
+              styles ["outlined"]
+              name: "dec-clear";
+              label: _("Clear");
+            }
+
+            Label dec_status {
+              styles ["sub"]
+              hexpand: true;
+              xalign: 1;
+              wrap: true;
+            }
+
+            Button decrypt {
+              styles ["suggested-action"]
+              name: "decrypt";
+              label: _("Decrypt");
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "keys";
+        title: _("KEYS");
+
+        child: Stack keys_view {
+          transition-type: crossfade;
+          transition-duration: 140;
+
+          StackPage {
+            name: "list";
+
+            child: Box {
+              orientation: vertical;
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                // The groups (my keys, others, invalid keys), each under a
+                // head of its own; Go fills them.
+                Box {
+                  styles ["page"]
+                  orientation: vertical;
+
+                  // No key of the user's yet.
+                  Box no_key {
+                    styles ["gpg-offer"]
+                    spacing: 12;
+                    visible: false;
+
+                    Box {
+                      orientation: vertical;
+                      spacing: 3;
+                      hexpand: true;
+
+                      Label {
+                        styles ["title"]
+                        label: _("You have no key of your own yet");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("You need one to sign, and for others to send you messages only you can read");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button b_create3 {
+                      styles ["suggested-action"]
+                      name: "create";
+                      label: _("Create your key");
+                      valign: center;
+                    }
+                  }
+
+                  Box keys {
+                    orientation: vertical;
+                  }
+                }
+              }
+
+              Box {
+                styles ["gpg-bar"]
+                spacing: 8;
+
+                Button b_import {
+                  styles ["outlined"]
+                  name: "import";
+                  label: _("Import…");
+                }
+
+                Label keys_meta {
+                  styles ["sub"]
+                  hexpand: true;
+                  xalign: 1;
+                  wrap: true;
+                }
+
+                Button b_create2 {
+                  styles ["outlined"]
+                  name: "create";
+                  label: _("Create key");
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "import";
+
+            child: Box imp_page {
+              orientation: vertical;
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box {
+                  styles ["page"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label: _("<span alpha='55%'>[</span>IMPORT<span alpha='55%'>]</span>");
+                    }
+
+                    Label {
+                      styles ["section-meta"]
+                      label: _("Paste a public key, or choose or drop a key file");
+                      hexpand: true;
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  ScrolledWindow {
+                    styles ["gpg-editor"]
+                    height-request: 160;
+
+                    TextView imp_input {
+                      styles ["gpg-text", "gpg-mono"]
+                      wrap-mode: char;
+                      top-margin: 10;
+                      bottom-margin: 10;
+                      left-margin: 12;
+                      right-margin: 12;
+                    }
+                  }
+
+                  Box imp_preview {
+                    orientation: vertical;
+                    margin-top: 6;
+                  }
+                }
+              }
+
+              Box {
+                styles ["gpg-bar"]
+                spacing: 8;
+
+                Button b_keys_back {
+                  styles ["outlined"]
+                  name: "keys-back";
+                  label: _("Cancel");
+                }
+
+                Button b_imp_choose {
+                  styles ["outlined"]
+                  name: "imp-choose";
+                  label: _("Choose file…");
+                }
+
+                Label imp_status {
+                  styles ["sub"]
+                  hexpand: true;
+                  xalign: 1;
+                  wrap: true;
+                }
+
+                Button imp_do {
+                  styles ["suggested-action"]
+                  name: "imp-do";
+                  label: _("Import");
+                  sensitive: false;
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "create";
+
+            child: Box {
+              orientation: vertical;
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box {
+                  styles ["page"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label: _("<span alpha='55%'>[</span>NEW KEY<span alpha='55%'>]</span>");
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Label {
+                      styles ["title"]
+                      label: _("Name");
+                      hexpand: true;
+                      xalign: 0;
+                    }
+
+                    Entry new_name {
+                      width-chars: 30;
+                      valign: center;
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Label {
+                      styles ["title"]
+                      label: _("Email");
+                      hexpand: true;
+                      xalign: 0;
+                    }
+
+                    Entry new_email {
+                      width-chars: 30;
+                      input-purpose: email;
+                      valign: center;
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label: _("Expires");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("You can extend it before then; an expired key still decrypts");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown new_expire {
+                      valign: center;
+                    }
+                  }
+
+                  Label {
+                    styles ["sub"]
+                    label: _("gpg asks for a passphrase to protect the new key. Remember it: without it the key cannot be used.");
+                    xalign: 0;
+                    wrap: true;
+                    margin-top: 14;
+                  }
+
+                  Box {
+                    spacing: 8;
+                    margin-top: 18;
+
+                    Label {
+                      styles ["sub"]
+                      label: _("Or in a terminal:");
+                    }
+
+                    Label {
+                      styles ["gpg-mono-sub"]
+                      label: "gpg --full-generate-key";
+                      selectable: true;
+                    }
+                  }
+                }
+              }
+
+              Box {
+                styles ["gpg-bar"]
+                spacing: 8;
+
+                Button b_keys_back2 {
+                  styles ["outlined"]
+                  name: "keys-back";
+                  label: _("Cancel");
+                }
+
+                Label new_status {
+                  styles ["sub"]
+                  hexpand: true;
+                  xalign: 1;
+                  wrap: true;
+                }
+
+                Button new_do {
+                  styles ["suggested-action"]
+                  name: "new-do";
+                  label: _("Create");
+                }
+              }
+            };
+          }
+        };
+      }
+    }
+  }
+}
+
+// Asks before another person's key is taken off the keyring. Modal over
+// the window.
+Window gpg_dialog {
+  styles ["app", "settings", "gpg", "gpg-dialog"]
+  modal: true;
+  resizable: false;
+  default-width: 460;
+  hide-on-close: true;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 12;
+
+    Label dialog_title {
+      styles ["gpg-dialog-title"]
+      xalign: 0;
+      wrap: true;
+    }
+
+    Label dialog_key {
+      styles ["gpg-mono-sub"]
+      xalign: 0;
+      wrap: true;
+      wrap-mode: word_char;
+    }
+
+    Label dialog_text {
+      styles ["sub"]
+      xalign: 0;
+      wrap: true;
+    }
+
+    Box {
+      spacing: 8;
+      halign: end;
+      margin-top: 4;
+
+      Button dialog_cancel {
+        styles ["outlined"]
+        name: "dialog-cancel";
+        label: _("Cancel");
+      }
+
+      Button dialog_ok {
+        styles ["destructive-action"]
+        name: "dialog-ok";
+        label: _("Delete");
+      }
+    }
+  }
+}

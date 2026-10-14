@@ -231,6 +231,8 @@ msgid "%d mo ago"
 msgstr "%d개월 전"
 
 #: internal/apps/tailscale/status.go:187
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:602
 msgid "expired %s"
 msgstr "만료된 %s"
 
@@ -368,13 +370,19 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:197
+#: internal/appui/pass.go:192
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
 msgstr "Pass"
 
 #: internal/appui/app.go:69
+#: internal/appui/gpg.go:272
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
+msgid "GPG"
+msgstr "GPG"
+
+#: internal/appui/app.go:70
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -382,9 +390,11 @@ msgid "Viewer"
 msgstr "이미지 뷰어"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:770
+#: internal/appui/gpg.go:1529
+#: internal/appui/pass.go:735
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/gpg.ui:1572
 #: ui/pass.ui:238
 msgid "Delete"
 msgstr "삭제"
@@ -570,159 +580,546 @@ msgstr "%s 복사"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "아직 색상이 없습니다. 화면 어디에서나 하나를 선택하세요."
 
-#: internal/appui/pass.go:277
+#: internal/appui/gpg.go:144
+msgid "1 year"
+msgstr "1년"
+
+#: internal/appui/gpg.go:144
+msgid "2 years"
+msgstr "2년"
+
+#: internal/appui/gpg.go:144
+msgid "5 years"
+msgstr "5년"
+
+#: internal/appui/gpg.go:144
+msgid "Never"
+msgstr "만료 없음"
+
+#: internal/appui/gpg.go:317
+msgid "The keyring cannot be read: %s"
+msgstr "키링을 읽을 수 없습니다: %s"
+
+#: internal/appui/gpg.go:359
+msgid "created %s"
+msgstr "%s 생성"
+
+#: internal/appui/gpg.go:359
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:364
+#: internal/appui/gpg.go:602
+#: internal/appui/gpg.go:624
+#: internal/shell/notify.go:32
+#: internal/ui/askpass.go:308
+#: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
+#: internal/ui/settings_about.go:185
+msgid "Jan 2, 2006"
+msgstr "2006년 1월 2일"
+
+#: internal/appui/gpg.go:364
+msgid "expires %s"
+msgstr "%s 만료"
+
+#: internal/appui/gpg.go:378
+#: internal/appui/gpg.go:775
+msgid "signs only"
+msgstr "서명 전용"
+
+#: internal/appui/gpg.go:388
+msgid "revoked"
+msgstr "폐기됨"
+
+#: internal/appui/gpg.go:390
+msgid "expired"
+msgstr "만료됨"
+
+#: internal/appui/gpg.go:392
+msgid "disabled"
+msgstr "비활성"
+
+#: internal/appui/gpg.go:394
+#: internal/appui/gpg.go:608
+#: internal/appui/gpg.go:748
+msgid "yours"
+msgstr "내 키"
+
+#: internal/appui/gpg.go:396
+msgid "verified"
+msgstr "검증됨"
+
+#: internal/appui/gpg.go:398
+msgid "partly verified"
+msgstr "일부 검증됨"
+
+#: internal/appui/gpg.go:400
+msgid "not verified"
+msgstr "검증 안 됨"
+
+#: internal/appui/gpg.go:463
+#: ui/gpg.ui:305
+msgid "Encrypt to your key as well, so you can open it later"
+msgstr "내 키로도 암호화해 나중에 열 수 있게 합니다"
+
+#: internal/appui/gpg.go:465
+msgid "This key only signs; it cannot be encrypted to"
+msgstr "이 키는 서명 전용이라 암호화 대상이 될 수 없습니다"
+
+#: internal/appui/gpg.go:516
+msgid "Take off"
+msgstr "빼기"
+
+#: internal/appui/gpg.go:526
+msgid "%d recipient"
+msgid_plural "%d recipients"
+msgstr[0] "받는 사람 %d명"
+
+#: internal/appui/gpg.go:529
+#: ui/gpg.ui:118
+msgid "Name, address or key ID"
+msgstr "이름, 주소 또는 키 ID"
+
+#: internal/appui/gpg.go:531
+msgid "Add another"
+msgstr "더 추가"
+
+#: internal/appui/gpg.go:580
+msgid "%d more: type to narrow them down"
+msgid_plural "%d more: type to narrow them down"
+msgstr[0] "%d개 더: 입력해 좁히세요"
+
+#: internal/appui/gpg.go:623
+msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "이 키는 %s에 만료되어 gpg가 암호화할 수 없습니다. %s에게 갱신된 키를 받아 가져오세요."
+
+#: internal/appui/gpg.go:626
+#: internal/appui/gpg.go:791
+msgid "%s revoked this key; ask for their new one."
+msgstr "%s이(가) 이 키를 폐기했습니다. 새 키를 받으세요."
+
+#: internal/appui/gpg.go:628
+msgid "This key cannot encrypt."
+msgstr "이 키로는 암호화할 수 없습니다."
+
+#: internal/appui/gpg.go:638
+msgid "No key matches. Import theirs on the Keys tab."
+msgstr "맞는 키가 없습니다. 키 탭에서 상대의 키를 가져오세요."
+
+#: internal/appui/gpg.go:640
+msgid "Already added."
+msgstr "이미 추가했습니다."
+
+#: internal/appui/gpg.go:643
+msgid "Your keyring is empty. Import their key on the Keys tab."
+msgstr "키링이 비어 있습니다. 키 탭에서 상대의 키를 가져오세요."
+
+#: internal/appui/gpg.go:645
+msgid "Every key is chosen."
+msgstr "모든 키를 골랐습니다."
+
+#: internal/appui/gpg.go:700
+msgid "MY KEYS"
+msgstr "내 키"
+
+#: internal/appui/gpg.go:700
+msgid "OTHERS"
+msgstr "다른 사람"
+
+#: internal/appui/gpg.go:700
+msgid "INVALID KEYS"
+msgstr "유효하지 않은 키"
+
+#: internal/appui/gpg.go:717
+msgid "%d key"
+msgid_plural "%d keys"
+msgstr[0] "키 %d개"
+
+#: internal/appui/gpg.go:785
+msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
+msgstr "연장하면 다시 쓸 수 있습니다. 어떤 경우든 보관하세요. 이 키로 암호화된 것을 엽니다."
+
+#: internal/appui/gpg.go:787
+msgid "Keep it: it opens what was encrypted to it."
+msgstr "보관하세요. 이 키로 암호화된 것을 엽니다."
+
+#: internal/appui/gpg.go:789
+msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "gpg가 이 키로 암호화할 수 없습니다. %s에게 갱신된 키를 받아 가져오세요."
+
+#: internal/appui/gpg.go:812
+msgid "Copy fingerprint"
+msgstr "지문 복사"
+
+#: internal/appui/gpg.go:813
+msgid "Copy public key"
+msgstr "공개 키 복사"
+
+#: internal/appui/gpg.go:815
+msgid "Encrypt to…"
+msgstr "이 키로 암호화…"
+
+#: internal/appui/gpg.go:818
+msgid "Extend 2 years"
+msgstr "2년 연장"
+
+#: internal/appui/gpg.go:823
+msgid "Delete…"
+msgstr "삭제…"
+
+#: internal/appui/gpg.go:883
+#: internal/appui/tailscale.go:469
+#: internal/appui/viewer.go:395
+#: internal/ui/askpass.go:386
+msgid "Copied"
+msgstr "복사됨"
+
+#: internal/appui/gpg.go:886
+msgid "Copied; taken off the clipboard in 45 seconds"
+msgstr "복사했습니다. 45초 뒤 클립보드에서 지워집니다"
+
+#: internal/appui/gpg.go:939
+msgid "Fingerprint copied"
+msgstr "지문을 복사했습니다"
+
+#: internal/appui/gpg.go:951
+msgid "Public key copied"
+msgstr "공개 키를 복사했습니다"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to encrypt"
+msgstr "암호화할 파일"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to decrypt"
+msgstr "복호화할 파일"
+
+#: internal/appui/gpg.go:1019
+msgid "Key file to import"
+msgstr "가져올 키 파일"
+
+#: internal/appui/gpg.go:1085
+msgid "Leave it out"
+msgstr "빼기"
+
+#: internal/appui/gpg.go:1120
+msgid "Saved to %s"
+msgstr "%s에 저장했습니다"
+
+#: internal/appui/gpg.go:1136
+msgid "Add someone to encrypt to."
+msgstr "암호화할 받는 사람을 추가하세요."
+
+#: internal/appui/gpg.go:1150
+#: internal/appui/gpg.go:1276
+msgid "Choose or drop files first."
+msgstr "먼저 파일을 고르거나 끌어다 놓으세요."
+
+#: internal/appui/gpg.go:1161
+msgid "Type a message first."
+msgstr "먼저 메시지를 입력하세요."
+
+#: internal/appui/gpg.go:1166
+msgid "Encrypting…"
+msgstr "암호화하는 중…"
+
+#: internal/appui/gpg.go:1198
+msgid "you"
+msgstr "나"
+
+#: internal/appui/gpg.go:1203
+msgid "For %s"
+msgstr "받는 사람: %s"
+
+#: internal/appui/gpg.go:1205
+msgid "signed"
+msgstr "서명됨"
+
+#: internal/appui/gpg.go:1222
+msgid "written in %s"
+msgstr "%s에 저장됨"
+
+#: internal/appui/gpg.go:1226
+msgid "Move to Trash…"
+msgstr "휴지통으로 이동…"
+
+#: internal/appui/gpg.go:1250
+msgid "%s moved to the trash"
+msgstr "%s을(를) 휴지통으로 옮겼습니다"
+
+#: internal/appui/gpg.go:1285
+msgid "Paste a message first."
+msgstr "먼저 메시지를 붙여 넣으세요."
+
+#: internal/appui/gpg.go:1292
+msgid "Decrypting… gpg may ask for your passphrase."
+msgstr "복호화하는 중… gpg가 암호 문구를 물을 수 있습니다."
+
+#: internal/appui/gpg.go:1341
+msgid "Not signed: who sent it is not known"
+msgstr "서명 없음: 누가 보냈는지 알 수 없습니다"
+
+#: internal/appui/gpg.go:1349
+msgid "Signed by %s"
+msgstr "%s 서명"
+
+#: internal/appui/gpg.go:1352
+msgid "Jan 2, 2006 15:04"
+msgstr "2006년 1월 2일 15:04"
+
+#: internal/appui/gpg.go:1356
+msgid "The signature by %s does not match: it was changed after signing"
+msgstr "%s의 서명이 맞지 않습니다: 서명 후 바뀌었습니다"
+
+#: internal/appui/gpg.go:1360
+msgid "Signed by a key not in your keyring, so it cannot be checked"
+msgstr "키링에 없는 키로 서명되어 확인할 수 없습니다"
+
+#: internal/appui/gpg.go:1364
+msgid "Signed by %s, with a key that is no longer valid"
+msgstr "%s 서명, 더 이상 유효하지 않은 키"
+
+#: internal/appui/gpg.go:1382
+msgid "Encrypted to %s"
+msgstr "%s에게 암호화됨"
+
+#: internal/appui/gpg.go:1398
+#: ui/gpg.ui:1280
+msgid "Import"
+msgstr "가져오기"
+
+#: internal/appui/gpg.go:1408
+msgid "No key found in it."
+msgstr "키를 찾지 못했습니다."
+
+#: internal/appui/gpg.go:1413
+msgid "Import %d key"
+msgid_plural "Import %d keys"
+msgstr[0] "키 %d개 가져오기"
+
+#: internal/appui/gpg.go:1425
+msgid "new"
+msgstr "새 키"
+
+#: internal/appui/gpg.go:1428
+msgid "holds a secret key"
+msgstr "비밀 키 포함"
+
+#: internal/appui/gpg.go:1430
+msgid "updates one you have"
+msgstr "가진 키를 갱신"
+
+#: internal/appui/gpg.go:1455
+msgid "Importing…"
+msgstr "가져오는 중…"
+
+#: internal/appui/gpg.go:1466
+msgid "%d key imported"
+msgid_plural "%d keys imported"
+msgstr[0] "키 %d개를 가져왔습니다"
+
+#: internal/appui/gpg.go:1479
+msgid "Give a name and an address."
+msgstr "이름과 주소를 입력하세요."
+
+#: internal/appui/gpg.go:1483
+msgid "That address has no @."
+msgstr "주소에 @가 없습니다."
+
+#: internal/appui/gpg.go:1489
+msgid "Creating… gpg asks for a passphrase for the new key."
+msgstr "만드는 중… gpg가 새 키의 암호 문구를 묻습니다."
+
+#: internal/appui/gpg.go:1503
+msgid "Your key is created"
+msgstr "키를 만들었습니다"
+
+#: internal/appui/gpg.go:1526
+msgid "Delete the key of %s?"
+msgstr "%s의 키를 삭제할까요?"
+
+#: internal/appui/gpg.go:1528
+msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
+msgstr "키링에서 빠집니다. 이 키로 서명된 메시지는 키링에 없는 키의 서명으로 표시되며, 다시 가져오면 돌아옵니다."
+
+#: internal/appui/gpg.go:1535
+msgid "Move %s to the trash?"
+msgstr "%s을(를) 휴지통으로 옮길까요?"
+
+#: internal/appui/gpg.go:1536
+msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
+msgstr "복호화한 사본은 휴지통으로 가며 거기서 복원할 수 있습니다. 암호화된 파일은 남습니다."
+
+#: internal/appui/gpg.go:1537
+msgid "Move to Trash"
+msgstr "휴지통으로 이동"
+
+#: internal/appui/gpg.go:1553
+msgid "Key deleted"
+msgstr "키를 삭제했습니다"
+
+#: internal/appui/gpg.go:1563
+msgid "Extending… gpg asks for your passphrase."
+msgstr "연장하는 중… gpg가 암호 문구를 묻습니다."
+
+#: internal/appui/gpg.go:1572
+msgid "Extended by 2 years"
+msgstr "2년 연장했습니다"
+
+#: internal/appui/pass.go:272
 msgid "A password store: a folder with a .gpg-id"
 msgstr "비밀번호 저장소: .gpg-id가 있는 폴더"
 
-#: internal/appui/pass.go:285
+#: internal/appui/pass.go:280
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s은(는) 비밀번호 저장소가 아닙니다: .gpg-id가 없습니다 (pass init으로 만듭니다)."
 
-#: internal/appui/pass.go:305
+#: internal/appui/pass.go:300
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "비밀번호 저장소가 없습니다. pass init GPG-키-ID로 ~/.password-store에 만들 수 있고, 아래에서 다른 폴더를 추가할 수 있습니다."
 
-#: internal/appui/pass.go:332
+#: internal/appui/pass.go:327
 msgid "The store is empty. + makes an entry."
 msgstr "저장소가 비어 있습니다. +로 항목을 만듭니다."
 
-#: internal/appui/pass.go:335
-#: internal/appui/pass.go:615
-#: internal/appui/pass.go:696
-#: internal/appui/pass.go:955
+#: internal/appui/pass.go:330
+#: internal/appui/pass.go:610
+#: internal/appui/pass.go:661
+#: internal/appui/pass.go:920
 msgid "Choose an entry."
 msgstr "항목을 고르세요."
 
-#: internal/appui/pass.go:341
+#: internal/appui/pass.go:336
 msgid "Top level"
 msgstr "최상위"
 
-#: internal/appui/pass.go:349
+#: internal/appui/pass.go:344
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
 
-#: internal/appui/pass.go:354
+#: internal/appui/pass.go:349
 msgid "Right-click to rename or move"
 msgstr "오른쪽 클릭으로 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:464
+#: internal/appui/pass.go:459
 msgid "Decrypting %s"
 msgstr "%s 복호화하는 중"
 
-#: internal/appui/pass.go:515
+#: internal/appui/pass.go:510
 msgid "PASSWORD"
 msgstr "비밀번호"
 
-#: internal/appui/pass.go:520
-#: internal/appui/pass.go:572
+#: internal/appui/pass.go:515
+#: internal/appui/pass.go:567
 msgid "ONE-TIME CODE"
 msgstr "일회용 코드"
 
-#: internal/appui/pass.go:527
+#: internal/appui/pass.go:522
 msgid "NOTES"
 msgstr "메모"
 
-#: internal/appui/pass.go:556
+#: internal/appui/pass.go:551
 msgid "Show"
 msgstr "보기"
 
-#: internal/appui/pass.go:558
+#: internal/appui/pass.go:553
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "숨기기"
 
-#: internal/appui/pass.go:562
-#: internal/appui/pass.go:587
+#: internal/appui/pass.go:557
+#: internal/appui/pass.go:582
 #: internal/ui/askpass.go:187
+#: ui/gpg.ui:661
+#: ui/gpg.ui:907
 msgid "Copy"
 msgstr "복사"
 
-#: internal/appui/pass.go:601
+#: internal/appui/pass.go:596
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d초 남음"
 
-#: internal/appui/pass.go:752
+#: internal/appui/pass.go:717
 msgid "Rename or move the category “%s”"
 msgstr "카테고리 “%s” 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:753
+#: internal/appui/pass.go:718
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "새 경로. 다른 이름이면 이름이 바뀌고, 다른 카테고리 아래 경로면 모든 항목과 함께 그곳으로 옮겨집니다."
 
-#: internal/appui/pass.go:754
-#: internal/appui/pass.go:758
+#: internal/appui/pass.go:719
+#: internal/appui/pass.go:723
 msgid "Move"
 msgstr "이동"
 
-#: internal/appui/pass.go:756
+#: internal/appui/pass.go:721
 msgid "Rename or move “%s”"
 msgstr "“%s” 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:757
+#: internal/appui/pass.go:722
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "새 경로. 첫 부분이 카테고리입니다. 그 부분을 바꾸면 이동, 나머지를 바꾸면 이름 바꾸기입니다."
 
-#: internal/appui/pass.go:760
+#: internal/appui/pass.go:725
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "새 항목"
 
-#: internal/appui/pass.go:761
+#: internal/appui/pass.go:726
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "경로: 첫 부분이 카테고리입니다. 내용은 그다음에."
 
-#: internal/appui/pass.go:766
+#: internal/appui/pass.go:731
 msgid "Next"
 msgstr "다음"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:733
 msgid "Delete “%s”?"
 msgstr "“%s”을(를) 삭제할까요?"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:734
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니다."
 
-#: internal/appui/pass.go:805
-#: internal/appui/pass.go:835
+#: internal/appui/pass.go:770
+#: internal/appui/pass.go:800
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "파일"
 
-#: internal/appui/pass.go:831
+#: internal/appui/pass.go:796
 msgid "CATEGORY"
 msgstr "카테고리"
 
-#: internal/appui/pass.go:832
+#: internal/appui/pass.go:797
 msgid "NAME"
 msgstr "이름"
 
-#: internal/appui/pass.go:845
+#: internal/appui/pass.go:810
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "외 %d개"
 
-#: internal/appui/pass.go:889
+#: internal/appui/pass.go:854
 msgid "That is where it is."
 msgstr "이미 그곳에 있습니다."
 
-#: internal/appui/pass.go:891
+#: internal/appui/pass.go:856
 msgid "A category cannot move into itself."
 msgstr "카테고리를 자기 안으로 옮길 수 없습니다."
 
-#: internal/appui/pass.go:893
+#: internal/appui/pass.go:858
 msgid "That path is already in the store."
 msgstr "그 경로는 이미 저장소에 있습니다."
 
-#: internal/appui/pass.go:895
+#: internal/appui/pass.go:860
 msgid "It is no longer in the store."
 msgstr "더 이상 저장소에 없습니다."
 
-#: internal/appui/pass.go:897
+#: internal/appui/pass.go:862
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "경로의 각 부분에는 점으로 시작하지 않는 이름이 필요합니다."
 
@@ -846,7 +1243,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:260
+#: internal/shell/dock.go:261
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -1104,17 +1501,18 @@ msgid "Model"
 msgstr "모델"
 
 #: internal/appui/sysmon.go:960
-#: internal/appui/tailscale.go:628
+#: internal/appui/tailscale.go:630
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
+#: ui/gpg.ui:1342
 #: ui/settings.ui:3440
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "이름"
 
 #: internal/appui/sysmon.go:961
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:566
 msgid "System"
 msgstr "시스템"
 
@@ -1242,7 +1640,7 @@ msgid "up"
 msgstr "위로"
 
 #: internal/appui/sysmon.go:1043
-#: internal/appui/tailscale.go:630
+#: internal/appui/tailscale.go:632
 msgid "Addresses"
 msgstr "주소"
 
@@ -1251,8 +1649,8 @@ msgid "Hardware"
 msgstr "하드웨어"
 
 #: internal/appui/sysmon.go:1049
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:567
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:569
 msgid "Traffic"
 msgstr "교통"
 
@@ -1344,298 +1742,292 @@ msgstr "%s 온."
 msgid "%s off."
 msgstr "%s 오프."
 
-#: internal/appui/tailscale.go:301
+#: internal/appui/tailscale.go:303
 msgid "Not changed: allow this app to manage Tailscale first."
 msgstr "변경되지 않음: 이 앱이 먼저 Tailscale을 관리하도록 허용합니다."
 
-#: internal/appui/tailscale.go:303
+#: internal/appui/tailscale.go:305
 msgid "Tailscale is not running."
 msgstr "Tailscale이 실행되고 있지 않습니다."
 
-#: internal/appui/tailscale.go:345
+#: internal/appui/tailscale.go:347
 #: internal/shell/status.go:69
 #: internal/shell/status.go:86
 #: internal/shell/status.go:101
 msgid "Unavailable"
 msgstr "사용 불가"
 
-#: internal/appui/tailscale.go:356
+#: internal/appui/tailscale.go:358
 msgid "%d of %d devices online"
 msgstr "%[2]d 장치의 %[1]d 온라인"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Tailscale's service is not running."
 msgstr "Tailscale의 서비스가 실행되고 있지 않습니다."
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Start…"
 msgstr "시작..."
 
-#: internal/appui/tailscale.go:370
+#: internal/appui/tailscale.go:372
 msgid "Started Tailscale."
 msgstr "Tailscale을 시작했습니다."
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "This device is logged out of its tailnet."
 msgstr "이 장치는 테일넷에서 로그아웃되었습니다."
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "Log In"
 msgstr "로그인"
 
-#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:379
 msgid "An admin of the tailnet has to approve this device."
 msgstr "테일넷의 관리자가 이 장치를 승인해야 합니다."
 
-#: internal/appui/tailscale.go:377
-#: internal/appui/tailscale.go:664
+#: internal/appui/tailscale.go:379
+#: internal/appui/tailscale.go:666
 msgid "Admin Console"
 msgstr "관리 콘솔"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
 msgstr "여기에서 Tailscale을 변경하려면 한 번 허용하십시오. 관리자의 비밀번호를 묻습니다."
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "Allow…"
 msgstr "허용..."
 
-#: internal/appui/tailscale.go:382
+#: internal/appui/tailscale.go:384
 msgid "This app may now manage Tailscale."
 msgstr "이제 이 앱은 Tailscale을 관리할 수 있습니다."
 
-#: internal/appui/tailscale.go:414
+#: internal/appui/tailscale.go:416
 msgid "No device matches."
 msgstr "일치하는 장치가 없습니다."
 
-#: internal/appui/tailscale.go:416
+#: internal/appui/tailscale.go:418
 msgid "No other devices in the tailnet yet."
 msgstr "테일넷에는 아직 다른 장치가 없습니다."
 
-#: internal/appui/tailscale.go:433
+#: internal/appui/tailscale.go:435
 msgid "exit node in use"
 msgstr "사용 중인 출구 노드"
 
-#: internal/appui/tailscale.go:435
+#: internal/appui/tailscale.go:437
 msgid "exit node"
 msgstr "출구 노드"
 
-#: internal/appui/tailscale.go:445
+#: internal/appui/tailscale.go:447
 msgid "Details, ping, exit node and sending files"
 msgstr "세부사항, 핑, 종료 노드 및 파일 전송"
 
-#: internal/appui/tailscale.go:467
-#: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:386
-msgid "Copied"
-msgstr "복사됨"
-
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy IP"
 msgstr "IP 복사"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy Name"
 msgstr "이름 복사"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Ping"
 msgstr "Ping"
 
-#: internal/appui/tailscale.go:513
-#: internal/appui/tailscale.go:575
+#: internal/appui/tailscale.go:515
+#: internal/appui/tailscale.go:577
 msgid "Use as Exit Node"
 msgstr "출구 노드로 사용"
 
-#: internal/appui/tailscale.go:522
+#: internal/appui/tailscale.go:524
 msgid "DEVICE"
 msgstr "장치"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:561
-#: internal/appui/tailscale.go:629
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:631
 msgid "MagicDNS"
 msgstr "MagicDNS"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:562
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:564
 msgid "IPv4"
 msgstr "IPv4"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:565
 msgid "IPv6"
 msgstr "IPv6"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:565
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:567
 msgid "Status"
 msgstr "상태"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:566
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:568
 msgid "Connection"
 msgstr "연결"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:568
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:570
 msgid "Key expires"
 msgstr "키 만료"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:569
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:571
 msgid "Tags"
 msgstr "태그"
 
-#: internal/appui/tailscale.go:526
+#: internal/appui/tailscale.go:528
 msgid "SEND FILES"
 msgstr "파일 보내기"
 
-#: internal/appui/tailscale.go:542
+#: internal/appui/tailscale.go:544
 msgid "NO LONGER IN THE TAILNET"
 msgstr "더 이상 테일넷에 있지 않습니다."
 
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:566
 msgid "%s · host name %s"
 msgstr "%[1]s · 호스트 이름 %[2]s"
 
-#: internal/appui/tailscale.go:570
+#: internal/appui/tailscale.go:572
 msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
 msgstr "Taildrop을 사용하여 파일을 %s로 보내려면 이 패널에 파일을 놓습니다. 그들은 구원받을 때까지 기다립니다."
 
-#: internal/appui/tailscale.go:573
+#: internal/appui/tailscale.go:575
 msgid "Stop Using as Exit Node"
 msgstr "종료 노드로 사용 중지"
 
-#: internal/appui/tailscale.go:582
+#: internal/appui/tailscale.go:584
 msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
 msgstr "이 장치의 트래픽을 다음을 통해 보냅니다."
 
-#: internal/appui/tailscale.go:592
+#: internal/appui/tailscale.go:594
 msgid "IN USE"
 msgstr "사용 중"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "없음"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 msgid "Traffic goes out from this device as usual."
 msgstr "평소와 같이 이 장치에서 트래픽이 발생합니다."
 
-#: internal/appui/tailscale.go:607
+#: internal/appui/tailscale.go:609
 msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
 msgstr "테일넷의 어떤 장치도 출구 노드가 될 수 없습니다. 하나의 종료 노드로 제공을 켠 다음 관리 콘솔에서 승인하세요."
 
-#: internal/appui/tailscale.go:614
+#: internal/appui/tailscale.go:616
 msgid "Allow local network access"
 msgstr "로컬 네트워크 액세스 허용"
 
-#: internal/appui/tailscale.go:615
+#: internal/appui/tailscale.go:617
 msgid "Reach printers and other devices on this network while the exit node carries the rest."
 msgstr "출구 노드가 나머지를 전달하는 동안 이 네트워크의 프린터 및 기타 장치에 도달합니다."
 
-#: internal/appui/tailscale.go:626
+#: internal/appui/tailscale.go:628
 #: ui/tailscale.ui:170
 msgid "THIS DEVICE"
 msgstr "이 장치는"
 
-#: internal/appui/tailscale.go:633
+#: internal/appui/tailscale.go:635
 msgid "Tailnet"
 msgstr "Tailscale 네트워크"
 
-#: internal/appui/tailscale.go:635
+#: internal/appui/tailscale.go:637
 msgid "SETTINGS"
 msgstr "설정"
 
-#: internal/appui/tailscale.go:644
+#: internal/appui/tailscale.go:646
 msgid "RECEIVED FILES"
 msgstr "수신된 파일"
 
-#: internal/appui/tailscale.go:647
+#: internal/appui/tailscale.go:649
 msgid "Files sent to this device show here once this app may manage Tailscale."
 msgstr "이 앱이 Tailscale을 관리할 수 있게 되면 이 장치로 전송된 파일이 여기에 표시됩니다."
 
-#: internal/appui/tailscale.go:651
+#: internal/appui/tailscale.go:653
 msgid "None waiting. Files other devices send with Taildrop show here."
 msgstr "기다리는 사람은 없습니다. Taildrop을 사용하여 다른 장치에서 보내는 파일이 여기에 표시됩니다."
 
-#: internal/appui/tailscale.go:656
+#: internal/appui/tailscale.go:658
 msgid "Save to Downloads"
 msgstr "다운로드에 저장"
 
-#: internal/appui/tailscale.go:659
+#: internal/appui/tailscale.go:661
 msgid "ACCOUNT"
 msgstr "계정"
 
-#: internal/appui/tailscale.go:660
+#: internal/appui/tailscale.go:662
 #: internal/shell/commands.go:31
 msgid "Log Out"
 msgstr "로그아웃"
 
-#: internal/appui/tailscale.go:662
+#: internal/appui/tailscale.go:664
 msgid "Sure?"
 msgstr "확인할까요?"
 
-#: internal/appui/tailscale.go:747
+#: internal/appui/tailscale.go:749
 msgid "No exit node: traffic goes out from this device."
 msgstr "출구 노드 없음: 트래픽이 이 장치에서 나갑니다."
 
-#: internal/appui/tailscale.go:749
-#: internal/appui/tailscale.go:760
+#: internal/appui/tailscale.go:751
+#: internal/appui/tailscale.go:762
 msgid "Traffic now goes through %s."
 msgstr "이제 트래픽은 %s를 통과합니다."
 
-#: internal/appui/tailscale.go:758
+#: internal/appui/tailscale.go:760
 msgid "Stopped using %s as exit node."
 msgstr "%s를 종료 노드로 사용하는 것이 중지되었습니다."
 
-#: internal/appui/tailscale.go:780
+#: internal/appui/tailscale.go:782
 msgid "Logged out."
 msgstr "로그아웃되었습니다."
 
-#: internal/appui/tailscale.go:803
+#: internal/appui/tailscale.go:805
 msgid "Pinging %s…"
 msgstr "%s를 핑하는..."
 
-#: internal/appui/tailscale.go:817
+#: internal/appui/tailscale.go:819
 msgid "%s did not answer"
 msgstr "%s가 응답하지 않았습니다."
 
-#: internal/appui/tailscale.go:820
+#: internal/appui/tailscale.go:822
 msgid "%s answered in %.0f ms"
 msgstr "%[1]s가 %.0[2]f ms에 응답했습니다."
 
-#: internal/appui/tailscale.go:821
+#: internal/appui/tailscale.go:823
 msgid "Direct, %s"
 msgstr "다이렉트, %s"
 
-#: internal/appui/tailscale.go:823
+#: internal/appui/tailscale.go:825
 msgid "Relayed through %s"
 msgstr "%s를 통해 중계됨"
 
-#: internal/appui/tailscale.go:839
+#: internal/appui/tailscale.go:841
 msgid "Sending %s to %s…"
 msgstr "%[1]s를 %[2]s로 보내는 중..."
 
-#: internal/appui/tailscale.go:864
+#: internal/appui/tailscale.go:866
 msgid "Sent %s to %s."
 msgstr "%[1]s를 %[2]s로 전송했습니다."
 
-#: internal/appui/tailscale.go:901
+#: internal/appui/tailscale.go:903
 msgid "Saved %s to %s."
 msgstr "%[1]s를 %[2]s에 저장했습니다."
 
-#: internal/appui/tailscale.go:912
+#: internal/appui/tailscale.go:914
 msgid "Opening the login page…"
 msgstr "로그인 페이지를 여는 중..."
 
-#: internal/appui/tailscale.go:939
+#: internal/appui/tailscale.go:941
 msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
 msgstr "이 세션에서는 비밀번호 프롬프트가 실행되지 않습니다(polkit 에이전트). 터미널에서 실행: sudo %s"
 
-#: internal/appui/tailscale.go:941
+#: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "완료되지 않음: 관리자 비밀번호가 제공되지 않았습니다."
 
@@ -4259,7 +4651,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "실행기"
@@ -4292,7 +4684,7 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4504,7 +4896,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -4658,26 +5050,26 @@ msgstr "매일"
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:263
+#: internal/shell/dock.go:264
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:268
+#: internal/shell/dock.go:269
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
@@ -4760,14 +5152,6 @@ msgstr "%dh"
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1월 2일"
-
-#: internal/shell/notify.go:32
-#: internal/ui/askpass.go:308
-#: internal/ui/askpass.go:312
-#: internal/ui/askpass.go:314
-#: internal/ui/settings_about.go:185
-msgid "Jan 2, 2006"
-msgstr "2006년 1월 2일"
 
 #: internal/shell/notify.go:40
 msgid "Needs notifications"
@@ -4906,9 +5290,12 @@ msgstr "OK"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
 #: ui/pass.ui:440
 #: ui/pass.ui:537
-#: ui/polkit.ui:566
+#: ui/polkit.ui:568
 msgid "Cancel"
 msgstr "취소"
 
@@ -5198,6 +5585,8 @@ msgstr "알림(집중 모드 켜짐)"
 
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
+#: ui/gpg.ui:508
+#: ui/gpg.ui:1011
 #: ui/group.ui:52
 msgid "Clear"
 msgstr "지우기"
@@ -6114,6 +6503,173 @@ msgstr "지금 재생 중"
 msgid "How to play"
 msgstr "게임 방법"
 
+#: ui/gpg.ui:35
+msgid "ENCRYPT"
+msgstr "암호화"
+
+#: ui/gpg.ui:82
+msgid "<span alpha='55%'>[</span>TO<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>받는 사람<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:130
+msgid "All keys"
+msgstr "모든 키"
+
+#: ui/gpg.ui:172
+msgid "<span alpha='55%'>[</span>FROM<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>보내는 사람<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:255
+msgid "Sign"
+msgstr "서명"
+
+#: ui/gpg.ui:264
+msgid "So they know it is from you and unchanged"
+msgstr "내가 보냈고 바뀌지 않았음을 알 수 있게"
+
+#: ui/gpg.ui:296
+msgid "Let me read it too"
+msgstr "나도 읽을 수 있게"
+
+#: ui/gpg.ui:339
+msgid "You have no key of your own"
+msgstr "내 키가 없습니다"
+
+#: ui/gpg.ui:348
+msgid "Without one you cannot sign, or read what you encrypt"
+msgstr "키가 없으면 서명할 수도, 암호화한 것을 읽을 수도 없습니다"
+
+#: ui/gpg.ui:361
+#: ui/gpg.ui:1102
+msgid "Create your key"
+msgstr "내 키 만들기"
+
+#: ui/gpg.ui:395
+#: ui/gpg.ui:750
+msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>메시지<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "텍스트"
+
+#: ui/gpg.ui:445
+#: ui/gpg.ui:810
+msgid "Files"
+msgstr "파일"
+
+#: ui/gpg.ui:469
+#: ui/gpg.ui:834
+msgid "Drop files here, or"
+msgstr "여기에 파일을 끌어다 놓거나"
+
+#: ui/gpg.ui:478
+#: ui/gpg.ui:843
+msgid "Choose files…"
+msgstr "파일 고르기…"
+
+#: ui/gpg.ui:527
+msgid "Encrypt"
+msgstr "암호화"
+
+#: ui/gpg.ui:572
+msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>암호문<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:633
+msgid "Back"
+msgstr "뒤로"
+
+#: ui/gpg.ui:652
+#: ui/gpg.ui:896
+msgid "Save…"
+msgstr "저장…"
+
+#: ui/gpg.ui:677
+msgid "DECRYPT"
+msgstr "복호화"
+
+#: ui/gpg.ui:706
+msgid "The clipboard holds an encrypted message"
+msgstr "클립보드에 암호화된 메시지가 있습니다"
+
+#: ui/gpg.ui:718
+msgid "Decrypt it"
+msgstr "복호화"
+
+#: ui/gpg.ui:758
+msgid "Decrypted as soon as it is pasted or dropped"
+msgstr "붙여 넣거나 끌어다 놓으면 바로 복호화합니다"
+
+#: ui/gpg.ui:884
+msgid "<span alpha='55%'>[</span>DECRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>복호문<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1030
+msgid "Decrypt"
+msgstr "복호화"
+
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "키"
+
+#: ui/gpg.ui:1080
+msgid "You have no key of your own yet"
+msgstr "아직 내 키가 없습니다"
+
+#: ui/gpg.ui:1089
+msgid "You need one to sign, and for others to send you messages only you can read"
+msgstr "서명하려면, 그리고 나만 읽을 수 있는 메시지를 받으려면 필요합니다"
+
+#: ui/gpg.ui:1129
+msgid "Import…"
+msgstr "가져오기…"
+
+#: ui/gpg.ui:1148
+msgid "Create key"
+msgstr "키 만들기"
+
+#: ui/gpg.ui:1193
+msgid "<span alpha='55%'>[</span>IMPORT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>가져오기<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1201
+msgid "Paste a public key, or choose or drop a key file"
+msgstr "공개 키를 붙여 넣거나 키 파일을 고르거나 끌어다 놓으세요"
+
+#: ui/gpg.ui:1261
+msgid "Choose file…"
+msgstr "파일 고르기…"
+
+#: ui/gpg.ui:1326
+msgid "<span alpha='55%'>[</span>NEW KEY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>새 키<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1366
+msgid "Email"
+msgstr "이메일"
+
+#: ui/gpg.ui:1396
+msgid "Expires"
+msgstr "만료"
+
+#: ui/gpg.ui:1405
+msgid "You can extend it before then; an expired key still decrypts"
+msgstr "그 전에 연장할 수 있고, 만료된 키도 복호화는 됩니다"
+
+#: ui/gpg.ui:1424
+msgid "gpg asks for a passphrase to protect the new key. Remember it: without it the key cannot be used."
+msgstr "gpg가 새 키를 보호할 암호 문구를 묻습니다. 꼭 기억하세요. 없으면 키를 쓸 수 없습니다."
+
+#: ui/gpg.ui:1439
+msgid "Or in a terminal:"
+msgstr "또는 터미널에서:"
+
+#: ui/gpg.ui:1488
+msgid "Create"
+msgstr "만들기"
+
 #: ui/launcher.ui:53
 msgid "Tab  switch"
 msgstr "탭 스위치"
@@ -6139,7 +6695,7 @@ msgid "Esc  close"
 msgstr "Esc 닫기"
 
 #: ui/lock.ui:76
-#: ui/polkit.ui:523
+#: ui/polkit.ui:525
 msgid "Password"
 msgstr "비밀번호"
 
@@ -6203,19 +6759,19 @@ msgstr "생성일"
 msgid "<span alpha='55%'>[</span>REQUEST<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>요청<span alpha='55%'>]</span>"
 
-#: ui/polkit.ui:435
+#: ui/polkit.ui:437
 msgid "ASKED BY"
 msgstr "요청자"
 
-#: ui/polkit.ui:484
+#: ui/polkit.ui:486
 msgid "AS"
 msgstr "그대로"
 
-#: ui/polkit.ui:503
+#: ui/polkit.ui:505
 msgid "Another user"
 msgstr "다른 사용자"
 
-#: ui/polkit.ui:574
+#: ui/polkit.ui:576
 msgid "Authenticate"
 msgstr "인증하다"
 
@@ -7246,6 +7802,14 @@ msgstr "화면 어디에서나 색상을 선택하세요."
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
 msgstr "색상;색;16진수;rgb;스포이드;"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:10
+msgid "Encrypt and decrypt messages and files with GnuPG, and see who signed them"
+msgstr "GnuPG로 메시지와 파일을 암호화·복호화하고, 누가 서명했는지 확인합니다"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:20
+msgid "gpg;gnupg;pgp;openpgp;encrypt;decrypt;sign;signature;key;"
+msgstr "gpg;gnupg;pgp;openpgp;암호화;복호화;서명;키;"
 
 #: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
 msgid "Reveal safe squares and flag hidden mines"

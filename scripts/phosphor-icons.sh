@@ -149,6 +149,10 @@ help-about                            info
 # Pass: edit, and rename or move
 document-edit                         pencil-simple
 go-jump                               arrow-bend-up-right
+# GPG: a signature that does not hold, saving, the key chosen
+dialog-warning                        warning
+document-save                         floppy-disk
+object-select                         check
 # Pass: an entry's icon, by its name (internal/apps/pass/icon.go)
 pass-airplane                         airplane
 pass-amazon-logo                      amazon-logo

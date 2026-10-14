@@ -231,6 +231,8 @@ msgid "%d mo ago"
 msgstr "%d 個月前"
 
 #: internal/apps/tailscale/status.go:187
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:602
 msgid "expired %s"
 msgstr "已過期 %s"
 
@@ -368,13 +370,19 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:197
+#: internal/appui/pass.go:192
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
 msgstr "Pass"
 
 #: internal/appui/app.go:69
+#: internal/appui/gpg.go:272
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
+msgid "GPG"
+msgstr "GPG"
+
+#: internal/appui/app.go:70
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -382,9 +390,11 @@ msgid "Viewer"
 msgstr "圖片檢視器"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:770
+#: internal/appui/gpg.go:1529
+#: internal/appui/pass.go:735
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/gpg.ui:1572
 #: ui/pass.ui:238
 msgid "Delete"
 msgstr "刪除"
@@ -570,159 +580,546 @@ msgstr "複製 %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "還沒有顏色。從螢幕上的任意位置選擇一個。"
 
-#: internal/appui/pass.go:277
+#: internal/appui/gpg.go:144
+msgid "1 year"
+msgstr "1 年"
+
+#: internal/appui/gpg.go:144
+msgid "2 years"
+msgstr "2 年"
+
+#: internal/appui/gpg.go:144
+msgid "5 years"
+msgstr "5 年"
+
+#: internal/appui/gpg.go:144
+msgid "Never"
+msgstr "永不過期"
+
+#: internal/appui/gpg.go:317
+msgid "The keyring cannot be read: %s"
+msgstr "無法讀取金鑰環：%s"
+
+#: internal/appui/gpg.go:359
+msgid "created %s"
+msgstr "建立於 %s"
+
+#: internal/appui/gpg.go:359
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:364
+#: internal/appui/gpg.go:602
+#: internal/appui/gpg.go:624
+#: internal/shell/notify.go:32
+#: internal/ui/askpass.go:308
+#: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
+#: internal/ui/settings_about.go:185
+msgid "Jan 2, 2006"
+msgstr "2006年1月2日"
+
+#: internal/appui/gpg.go:364
+msgid "expires %s"
+msgstr "%s 過期"
+
+#: internal/appui/gpg.go:378
+#: internal/appui/gpg.go:775
+msgid "signs only"
+msgstr "僅簽章"
+
+#: internal/appui/gpg.go:388
+msgid "revoked"
+msgstr "已撤銷"
+
+#: internal/appui/gpg.go:390
+msgid "expired"
+msgstr "已過期"
+
+#: internal/appui/gpg.go:392
+msgid "disabled"
+msgstr "已停用"
+
+#: internal/appui/gpg.go:394
+#: internal/appui/gpg.go:608
+#: internal/appui/gpg.go:748
+msgid "yours"
+msgstr "你的"
+
+#: internal/appui/gpg.go:396
+msgid "verified"
+msgstr "已驗證"
+
+#: internal/appui/gpg.go:398
+msgid "partly verified"
+msgstr "部分驗證"
+
+#: internal/appui/gpg.go:400
+msgid "not verified"
+msgstr "未驗證"
+
+#: internal/appui/gpg.go:463
+#: ui/gpg.ui:305
+msgid "Encrypt to your key as well, so you can open it later"
+msgstr "也加密給你的金鑰，以便你之後能打開"
+
+#: internal/appui/gpg.go:465
+msgid "This key only signs; it cannot be encrypted to"
+msgstr "這個金鑰僅用於簽章，不能作為加密對象"
+
+#: internal/appui/gpg.go:516
+msgid "Take off"
+msgstr "移除"
+
+#: internal/appui/gpg.go:526
+msgid "%d recipient"
+msgid_plural "%d recipients"
+msgstr[0] "%d 個收件人"
+
+#: internal/appui/gpg.go:529
+#: ui/gpg.ui:118
+msgid "Name, address or key ID"
+msgstr "姓名、地址或金鑰 ID"
+
+#: internal/appui/gpg.go:531
+msgid "Add another"
+msgstr "再新增"
+
+#: internal/appui/gpg.go:580
+msgid "%d more: type to narrow them down"
+msgid_plural "%d more: type to narrow them down"
+msgstr[0] "還有 %d 個：輸入以縮小範圍"
+
+#: internal/appui/gpg.go:623
+msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "這個金鑰已於 %s 過期，gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
+
+#: internal/appui/gpg.go:626
+#: internal/appui/gpg.go:791
+msgid "%s revoked this key; ask for their new one."
+msgstr "%s 已撤銷這個金鑰；請向對方要新的。"
+
+#: internal/appui/gpg.go:628
+msgid "This key cannot encrypt."
+msgstr "這個金鑰不能加密。"
+
+#: internal/appui/gpg.go:638
+msgid "No key matches. Import theirs on the Keys tab."
+msgstr "沒有符合的金鑰。請在「金鑰」頁匯入對方的金鑰。"
+
+#: internal/appui/gpg.go:640
+msgid "Already added."
+msgstr "已經新增了。"
+
+#: internal/appui/gpg.go:643
+msgid "Your keyring is empty. Import their key on the Keys tab."
+msgstr "金鑰環是空的。請在「金鑰」頁匯入對方的金鑰。"
+
+#: internal/appui/gpg.go:645
+msgid "Every key is chosen."
+msgstr "所有金鑰都已選上。"
+
+#: internal/appui/gpg.go:700
+msgid "MY KEYS"
+msgstr "我的金鑰"
+
+#: internal/appui/gpg.go:700
+msgid "OTHERS"
+msgstr "他人的"
+
+#: internal/appui/gpg.go:700
+msgid "INVALID KEYS"
+msgstr "無效金鑰"
+
+#: internal/appui/gpg.go:717
+msgid "%d key"
+msgid_plural "%d keys"
+msgstr[0] "%d 個金鑰"
+
+#: internal/appui/gpg.go:785
+msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
+msgstr "延長後可再次使用。無論如何請保留：它能打開加密給它的內容。"
+
+#: internal/appui/gpg.go:787
+msgid "Keep it: it opens what was encrypted to it."
+msgstr "請保留：它能打開加密給它的內容。"
+
+#: internal/appui/gpg.go:789
+msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
+
+#: internal/appui/gpg.go:812
+msgid "Copy fingerprint"
+msgstr "複製指紋"
+
+#: internal/appui/gpg.go:813
+msgid "Copy public key"
+msgstr "複製公鑰"
+
+#: internal/appui/gpg.go:815
+msgid "Encrypt to…"
+msgstr "加密給…"
+
+#: internal/appui/gpg.go:818
+msgid "Extend 2 years"
+msgstr "延長 2 年"
+
+#: internal/appui/gpg.go:823
+msgid "Delete…"
+msgstr "刪除…"
+
+#: internal/appui/gpg.go:883
+#: internal/appui/tailscale.go:469
+#: internal/appui/viewer.go:395
+#: internal/ui/askpass.go:386
+msgid "Copied"
+msgstr "已複製"
+
+#: internal/appui/gpg.go:886
+msgid "Copied; taken off the clipboard in 45 seconds"
+msgstr "已複製；45 秒後從剪貼簿移除"
+
+#: internal/appui/gpg.go:939
+msgid "Fingerprint copied"
+msgstr "已複製指紋"
+
+#: internal/appui/gpg.go:951
+msgid "Public key copied"
+msgstr "已複製公鑰"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to encrypt"
+msgstr "要加密的檔案"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to decrypt"
+msgstr "要解密的檔案"
+
+#: internal/appui/gpg.go:1019
+msgid "Key file to import"
+msgstr "要匯入的金鑰檔案"
+
+#: internal/appui/gpg.go:1085
+msgid "Leave it out"
+msgstr "移除"
+
+#: internal/appui/gpg.go:1120
+msgid "Saved to %s"
+msgstr "已儲存到 %s"
+
+#: internal/appui/gpg.go:1136
+msgid "Add someone to encrypt to."
+msgstr "請新增加密對象。"
+
+#: internal/appui/gpg.go:1150
+#: internal/appui/gpg.go:1276
+msgid "Choose or drop files first."
+msgstr "請先選擇或拖入檔案。"
+
+#: internal/appui/gpg.go:1161
+msgid "Type a message first."
+msgstr "請先輸入訊息。"
+
+#: internal/appui/gpg.go:1166
+msgid "Encrypting…"
+msgstr "正在加密…"
+
+#: internal/appui/gpg.go:1198
+msgid "you"
+msgstr "你"
+
+#: internal/appui/gpg.go:1203
+msgid "For %s"
+msgstr "給 %s"
+
+#: internal/appui/gpg.go:1205
+msgid "signed"
+msgstr "已簽章"
+
+#: internal/appui/gpg.go:1222
+msgid "written in %s"
+msgstr "已寫入 %s"
+
+#: internal/appui/gpg.go:1226
+msgid "Move to Trash…"
+msgstr "移到垃圾桶…"
+
+#: internal/appui/gpg.go:1250
+msgid "%s moved to the trash"
+msgstr "已將 %s 移到垃圾桶"
+
+#: internal/appui/gpg.go:1285
+msgid "Paste a message first."
+msgstr "請先貼上訊息。"
+
+#: internal/appui/gpg.go:1292
+msgid "Decrypting… gpg may ask for your passphrase."
+msgstr "正在解密… gpg 可能會詢問密碼短語。"
+
+#: internal/appui/gpg.go:1341
+msgid "Not signed: who sent it is not known"
+msgstr "未簽章：不知道是誰傳送的"
+
+#: internal/appui/gpg.go:1349
+msgid "Signed by %s"
+msgstr "由 %s 簽章"
+
+#: internal/appui/gpg.go:1352
+msgid "Jan 2, 2006 15:04"
+msgstr "2006年1月2日 15:04"
+
+#: internal/appui/gpg.go:1356
+msgid "The signature by %s does not match: it was changed after signing"
+msgstr "%s 的簽章不符：簽章後被改動過"
+
+#: internal/appui/gpg.go:1360
+msgid "Signed by a key not in your keyring, so it cannot be checked"
+msgstr "簽章所用的金鑰不在你的金鑰環裡，無法核對"
+
+#: internal/appui/gpg.go:1364
+msgid "Signed by %s, with a key that is no longer valid"
+msgstr "由 %s 簽章，所用的金鑰已失效"
+
+#: internal/appui/gpg.go:1382
+msgid "Encrypted to %s"
+msgstr "加密給 %s"
+
+#: internal/appui/gpg.go:1398
+#: ui/gpg.ui:1280
+msgid "Import"
+msgstr "匯入"
+
+#: internal/appui/gpg.go:1408
+msgid "No key found in it."
+msgstr "裡面沒有金鑰。"
+
+#: internal/appui/gpg.go:1413
+msgid "Import %d key"
+msgid_plural "Import %d keys"
+msgstr[0] "匯入 %d 個金鑰"
+
+#: internal/appui/gpg.go:1425
+msgid "new"
+msgstr "新的"
+
+#: internal/appui/gpg.go:1428
+msgid "holds a secret key"
+msgstr "含私鑰"
+
+#: internal/appui/gpg.go:1430
+msgid "updates one you have"
+msgstr "更新已有的"
+
+#: internal/appui/gpg.go:1455
+msgid "Importing…"
+msgstr "正在匯入…"
+
+#: internal/appui/gpg.go:1466
+msgid "%d key imported"
+msgid_plural "%d keys imported"
+msgstr[0] "已匯入 %d 個金鑰"
+
+#: internal/appui/gpg.go:1479
+msgid "Give a name and an address."
+msgstr "請填寫姓名和地址。"
+
+#: internal/appui/gpg.go:1483
+msgid "That address has no @."
+msgstr "這個地址沒有 @。"
+
+#: internal/appui/gpg.go:1489
+msgid "Creating… gpg asks for a passphrase for the new key."
+msgstr "正在建立… gpg 會為新金鑰詢問密碼短語。"
+
+#: internal/appui/gpg.go:1503
+msgid "Your key is created"
+msgstr "金鑰已建立"
+
+#: internal/appui/gpg.go:1526
+msgid "Delete the key of %s?"
+msgstr "刪除 %s 的金鑰？"
+
+#: internal/appui/gpg.go:1528
+msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
+msgstr "它會從金鑰環中移除。之後它簽章的訊息會顯示為由不在金鑰環中的金鑰簽章；重新匯入即可恢復。"
+
+#: internal/appui/gpg.go:1535
+msgid "Move %s to the trash?"
+msgstr "把 %s 移到垃圾桶？"
+
+#: internal/appui/gpg.go:1536
+msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
+msgstr "解密出的副本會移到垃圾桶，可從那裡復原；加密檔案保留。"
+
+#: internal/appui/gpg.go:1537
+msgid "Move to Trash"
+msgstr "移到垃圾桶"
+
+#: internal/appui/gpg.go:1553
+msgid "Key deleted"
+msgstr "已刪除金鑰"
+
+#: internal/appui/gpg.go:1563
+msgid "Extending… gpg asks for your passphrase."
+msgstr "正在延長… gpg 會詢問你的密碼短語。"
+
+#: internal/appui/gpg.go:1572
+msgid "Extended by 2 years"
+msgstr "已延長 2 年"
+
+#: internal/appui/pass.go:272
 msgid "A password store: a folder with a .gpg-id"
 msgstr "密碼庫：含有 .gpg-id 的資料夾"
 
-#: internal/appui/pass.go:285
+#: internal/appui/pass.go:280
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s 不是密碼庫：沒有 .gpg-id（pass init 可以建立）。"
 
-#: internal/appui/pass.go:305
+#: internal/appui/pass.go:300
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "沒有密碼庫。pass init 你的GPG金鑰ID 會在 ~/.password-store 建立一個；也可以在下方加入其他資料夾。"
 
-#: internal/appui/pass.go:332
+#: internal/appui/pass.go:327
 msgid "The store is empty. + makes an entry."
 msgstr "密碼庫是空的。+ 可新增項目。"
 
-#: internal/appui/pass.go:335
-#: internal/appui/pass.go:615
-#: internal/appui/pass.go:696
-#: internal/appui/pass.go:955
+#: internal/appui/pass.go:330
+#: internal/appui/pass.go:610
+#: internal/appui/pass.go:661
+#: internal/appui/pass.go:920
 msgid "Choose an entry."
 msgstr "選擇一個項目。"
 
-#: internal/appui/pass.go:341
+#: internal/appui/pass.go:336
 msgid "Top level"
 msgstr "頂層"
 
-#: internal/appui/pass.go:349
+#: internal/appui/pass.go:344
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 筆"
 
-#: internal/appui/pass.go:354
+#: internal/appui/pass.go:349
 msgid "Right-click to rename or move"
 msgstr "右鍵點擊以重新命名或移動"
 
-#: internal/appui/pass.go:464
+#: internal/appui/pass.go:459
 msgid "Decrypting %s"
 msgstr "正在解密 %s"
 
-#: internal/appui/pass.go:515
+#: internal/appui/pass.go:510
 msgid "PASSWORD"
 msgstr "密碼"
 
-#: internal/appui/pass.go:520
-#: internal/appui/pass.go:572
+#: internal/appui/pass.go:515
+#: internal/appui/pass.go:567
 msgid "ONE-TIME CODE"
 msgstr "一次性驗證碼"
 
-#: internal/appui/pass.go:527
+#: internal/appui/pass.go:522
 msgid "NOTES"
 msgstr "備註"
 
-#: internal/appui/pass.go:556
+#: internal/appui/pass.go:551
 msgid "Show"
 msgstr "顯示"
 
-#: internal/appui/pass.go:558
+#: internal/appui/pass.go:553
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "隱藏"
 
-#: internal/appui/pass.go:562
-#: internal/appui/pass.go:587
+#: internal/appui/pass.go:557
+#: internal/appui/pass.go:582
 #: internal/ui/askpass.go:187
+#: ui/gpg.ui:661
+#: ui/gpg.ui:907
 msgid "Copy"
 msgstr "複製"
 
-#: internal/appui/pass.go:601
+#: internal/appui/pass.go:596
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "剩 %d 秒"
 
-#: internal/appui/pass.go:752
+#: internal/appui/pass.go:717
 msgid "Rename or move the category “%s”"
 msgstr "重新命名或移動類別「%s」"
 
-#: internal/appui/pass.go:753
+#: internal/appui/pass.go:718
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "新路徑。換個名字即重新命名；放到另一個類別下的路徑，即連同所有項目移動過去。"
 
-#: internal/appui/pass.go:754
-#: internal/appui/pass.go:758
+#: internal/appui/pass.go:719
+#: internal/appui/pass.go:723
 msgid "Move"
 msgstr "移動"
 
-#: internal/appui/pass.go:756
+#: internal/appui/pass.go:721
 msgid "Rename or move “%s”"
 msgstr "重新命名或移動「%s」"
 
-#: internal/appui/pass.go:757
+#: internal/appui/pass.go:722
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "新路徑。第一段是類別：改它即移動項目，改其餘部分即重新命名。"
 
-#: internal/appui/pass.go:760
+#: internal/appui/pass.go:725
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "新增項目"
 
-#: internal/appui/pass.go:761
+#: internal/appui/pass.go:726
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "路徑：第一段是類別。接著填寫內容。"
 
-#: internal/appui/pass.go:766
+#: internal/appui/pass.go:731
 msgid "Next"
 msgstr "下一步"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:733
 msgid "Delete “%s”?"
 msgstr "刪除「%s」？"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:734
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass 會刪除它的檔案；git 管理的密碼庫會在歷史中保留。"
 
-#: internal/appui/pass.go:805
-#: internal/appui/pass.go:835
+#: internal/appui/pass.go:770
+#: internal/appui/pass.go:800
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "文件"
 
-#: internal/appui/pass.go:831
+#: internal/appui/pass.go:796
 msgid "CATEGORY"
 msgstr "類別"
 
-#: internal/appui/pass.go:832
+#: internal/appui/pass.go:797
 msgid "NAME"
 msgstr "名稱"
 
-#: internal/appui/pass.go:845
+#: internal/appui/pass.go:810
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "還有 %d 個"
 
-#: internal/appui/pass.go:889
+#: internal/appui/pass.go:854
 msgid "That is where it is."
 msgstr "它已經在那裡了。"
 
-#: internal/appui/pass.go:891
+#: internal/appui/pass.go:856
 msgid "A category cannot move into itself."
 msgstr "類別不能移動到自身內部。"
 
-#: internal/appui/pass.go:893
+#: internal/appui/pass.go:858
 msgid "That path is already in the store."
 msgstr "這個路徑已經在密碼庫裡了。"
 
-#: internal/appui/pass.go:895
+#: internal/appui/pass.go:860
 msgid "It is no longer in the store."
 msgstr "它已經不在密碼庫裡了。"
 
-#: internal/appui/pass.go:897
+#: internal/appui/pass.go:862
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "路徑的每一段都要有名字，且不能以點開頭。"
 
@@ -846,7 +1243,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:260
+#: internal/shell/dock.go:261
 msgid "NETWORK"
 msgstr "網路"
 
@@ -1104,17 +1501,18 @@ msgid "Model"
 msgstr "模型"
 
 #: internal/appui/sysmon.go:960
-#: internal/appui/tailscale.go:628
+#: internal/appui/tailscale.go:630
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
+#: ui/gpg.ui:1342
 #: ui/settings.ui:3440
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名稱"
 
 #: internal/appui/sysmon.go:961
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:566
 msgid "System"
 msgstr "系統"
 
@@ -1242,7 +1640,7 @@ msgid "up"
 msgstr "向上"
 
 #: internal/appui/sysmon.go:1043
-#: internal/appui/tailscale.go:630
+#: internal/appui/tailscale.go:632
 msgid "Addresses"
 msgstr "地址"
 
@@ -1251,8 +1649,8 @@ msgid "Hardware"
 msgstr "硬體"
 
 #: internal/appui/sysmon.go:1049
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:567
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:569
 msgid "Traffic"
 msgstr "交通"
 
@@ -1344,298 +1742,292 @@ msgstr "%s上。"
 msgid "%s off."
 msgstr "%s 關閉。"
 
-#: internal/appui/tailscale.go:301
+#: internal/appui/tailscale.go:303
 msgid "Not changed: allow this app to manage Tailscale first."
 msgstr "未改變：允許該應用程式首先管理Tailscale。"
 
-#: internal/appui/tailscale.go:303
+#: internal/appui/tailscale.go:305
 msgid "Tailscale is not running."
 msgstr "Tailscale沒有運行。"
 
-#: internal/appui/tailscale.go:345
+#: internal/appui/tailscale.go:347
 #: internal/shell/status.go:69
 #: internal/shell/status.go:86
 #: internal/shell/status.go:101
 msgid "Unavailable"
 msgstr "無法使用"
 
-#: internal/appui/tailscale.go:356
+#: internal/appui/tailscale.go:358
 msgid "%d of %d devices online"
 msgstr "%[1]d %[2]d 設備在線"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Tailscale's service is not running."
 msgstr "Tailscale的服務未運作。"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Start…"
 msgstr "開始…"
 
-#: internal/appui/tailscale.go:370
+#: internal/appui/tailscale.go:372
 msgid "Started Tailscale."
 msgstr "開始Tailscale。"
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "This device is logged out of its tailnet."
 msgstr "該設備已從其尾網註銷。"
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "Log In"
 msgstr "登入"
 
-#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:379
 msgid "An admin of the tailnet has to approve this device."
 msgstr "尾網的管理員必須批准該設備。"
 
-#: internal/appui/tailscale.go:377
-#: internal/appui/tailscale.go:664
+#: internal/appui/tailscale.go:379
+#: internal/appui/tailscale.go:666
 msgid "Admin Console"
 msgstr "管理控制台"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
 msgstr "若要從此處更改 Tailscale，請允許一次；它要求輸入管理員密碼。"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "Allow…"
 msgstr "允許…"
 
-#: internal/appui/tailscale.go:382
+#: internal/appui/tailscale.go:384
 msgid "This app may now manage Tailscale."
 msgstr "該應用程式現在可以管理Tailscale。"
 
-#: internal/appui/tailscale.go:414
+#: internal/appui/tailscale.go:416
 msgid "No device matches."
 msgstr "沒有設備匹配。"
 
-#: internal/appui/tailscale.go:416
+#: internal/appui/tailscale.go:418
 msgid "No other devices in the tailnet yet."
 msgstr "尾網中還沒有其他設備。"
 
-#: internal/appui/tailscale.go:433
+#: internal/appui/tailscale.go:435
 msgid "exit node in use"
 msgstr "出口節點使用中"
 
-#: internal/appui/tailscale.go:435
+#: internal/appui/tailscale.go:437
 msgid "exit node"
 msgstr "出口節點"
 
-#: internal/appui/tailscale.go:445
+#: internal/appui/tailscale.go:447
 msgid "Details, ping, exit node and sending files"
 msgstr "詳情、ping、出口節點及發送文件"
 
-#: internal/appui/tailscale.go:467
-#: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:386
-msgid "Copied"
-msgstr "已複製"
-
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy IP"
 msgstr "複製IP"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy Name"
 msgstr "複製名稱"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Ping"
 msgstr "Ping"
 
-#: internal/appui/tailscale.go:513
-#: internal/appui/tailscale.go:575
+#: internal/appui/tailscale.go:515
+#: internal/appui/tailscale.go:577
 msgid "Use as Exit Node"
 msgstr "用作出口節點"
 
-#: internal/appui/tailscale.go:522
+#: internal/appui/tailscale.go:524
 msgid "DEVICE"
 msgstr "設備"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:561
-#: internal/appui/tailscale.go:629
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:631
 msgid "MagicDNS"
 msgstr "MagicDNS"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:562
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:564
 msgid "IPv4"
 msgstr "IPv4"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:565
 msgid "IPv6"
 msgstr "IPv6"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:565
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:567
 msgid "Status"
 msgstr "狀態"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:566
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:568
 msgid "Connection"
 msgstr "連接"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:568
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:570
 msgid "Key expires"
 msgstr "密鑰過期"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:569
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:571
 msgid "Tags"
 msgstr "標籤"
 
-#: internal/appui/tailscale.go:526
+#: internal/appui/tailscale.go:528
 msgid "SEND FILES"
 msgstr "傳送文件"
 
-#: internal/appui/tailscale.go:542
+#: internal/appui/tailscale.go:544
 msgid "NO LONGER IN THE TAILNET"
 msgstr "不再在尾網上"
 
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:566
 msgid "%s · host name %s"
 msgstr "%[1]s·主機名稱%[2]s"
 
-#: internal/appui/tailscale.go:570
+#: internal/appui/tailscale.go:572
 msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
 msgstr "將檔案拖曳到該面板上以使用Taildrop將它們傳送到%s。他們等待它直到被保存。"
 
-#: internal/appui/tailscale.go:573
+#: internal/appui/tailscale.go:575
 msgid "Stop Using as Exit Node"
 msgstr "停止用作出口節點"
 
-#: internal/appui/tailscale.go:582
+#: internal/appui/tailscale.go:584
 msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
 msgstr "透過此設備發送流量"
 
-#: internal/appui/tailscale.go:592
+#: internal/appui/tailscale.go:594
 msgid "IN USE"
 msgstr "使用中"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "無"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 msgid "Traffic goes out from this device as usual."
 msgstr "流量照常從該設備發出。"
 
-#: internal/appui/tailscale.go:607
+#: internal/appui/tailscale.go:609
 msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
 msgstr "尾網中沒有設備願意作為出口節點。在其中之一上啟用 Offer 作為出口節點，然後在管理控制台中批准它。"
 
-#: internal/appui/tailscale.go:614
+#: internal/appui/tailscale.go:616
 msgid "Allow local network access"
 msgstr "允許本地網路存取"
 
-#: internal/appui/tailscale.go:615
+#: internal/appui/tailscale.go:617
 msgid "Reach printers and other devices on this network while the exit node carries the rest."
 msgstr "到達該網路上的印表機和其他設備，而出口節點承載其餘設備。"
 
-#: internal/appui/tailscale.go:626
+#: internal/appui/tailscale.go:628
 #: ui/tailscale.ui:170
 msgid "THIS DEVICE"
 msgstr "該裝置"
 
-#: internal/appui/tailscale.go:633
+#: internal/appui/tailscale.go:635
 msgid "Tailnet"
 msgstr "Tailscale 網路"
 
-#: internal/appui/tailscale.go:635
+#: internal/appui/tailscale.go:637
 msgid "SETTINGS"
 msgstr "設定"
 
-#: internal/appui/tailscale.go:644
+#: internal/appui/tailscale.go:646
 msgid "RECEIVED FILES"
 msgstr "收到的文件"
 
-#: internal/appui/tailscale.go:647
+#: internal/appui/tailscale.go:649
 msgid "Files sent to this device show here once this app may manage Tailscale."
 msgstr "一旦此應用程式可以管理 Tailscale，傳送到此裝置的檔案就會顯示在此。"
 
-#: internal/appui/tailscale.go:651
+#: internal/appui/tailscale.go:653
 msgid "None waiting. Files other devices send with Taildrop show here."
 msgstr "無人等待。其他裝置使用 Taildrop 傳送的檔案顯示在此。"
 
-#: internal/appui/tailscale.go:656
+#: internal/appui/tailscale.go:658
 msgid "Save to Downloads"
 msgstr "儲存到下載"
 
-#: internal/appui/tailscale.go:659
+#: internal/appui/tailscale.go:661
 msgid "ACCOUNT"
 msgstr "帳戶"
 
-#: internal/appui/tailscale.go:660
+#: internal/appui/tailscale.go:662
 #: internal/shell/commands.go:31
 msgid "Log Out"
 msgstr "登出"
 
-#: internal/appui/tailscale.go:662
+#: internal/appui/tailscale.go:664
 msgid "Sure?"
 msgstr "確定？"
 
-#: internal/appui/tailscale.go:747
+#: internal/appui/tailscale.go:749
 msgid "No exit node: traffic goes out from this device."
 msgstr "無出口節點：流量從該設備流出。"
 
-#: internal/appui/tailscale.go:749
-#: internal/appui/tailscale.go:760
+#: internal/appui/tailscale.go:751
+#: internal/appui/tailscale.go:762
 msgid "Traffic now goes through %s."
 msgstr "流量現在經過%s。"
 
-#: internal/appui/tailscale.go:758
+#: internal/appui/tailscale.go:760
 msgid "Stopped using %s as exit node."
 msgstr "停止使用 %s 作為出口節點。"
 
-#: internal/appui/tailscale.go:780
+#: internal/appui/tailscale.go:782
 msgid "Logged out."
 msgstr "已註銷。"
 
-#: internal/appui/tailscale.go:803
+#: internal/appui/tailscale.go:805
 msgid "Pinging %s…"
 msgstr "ping %s…"
 
-#: internal/appui/tailscale.go:817
+#: internal/appui/tailscale.go:819
 msgid "%s did not answer"
 msgstr "%s 未接聽"
 
-#: internal/appui/tailscale.go:820
+#: internal/appui/tailscale.go:822
 msgid "%s answered in %.0f ms"
 msgstr "%[1]s 以 %.0[2]f 毫秒回答"
 
-#: internal/appui/tailscale.go:821
+#: internal/appui/tailscale.go:823
 msgid "Direct, %s"
 msgstr "直接,%s"
 
-#: internal/appui/tailscale.go:823
+#: internal/appui/tailscale.go:825
 msgid "Relayed through %s"
 msgstr "透過 %s 中繼"
 
-#: internal/appui/tailscale.go:839
+#: internal/appui/tailscale.go:841
 msgid "Sending %s to %s…"
 msgstr "發送 %[1]s 至 %[2]s..."
 
-#: internal/appui/tailscale.go:864
+#: internal/appui/tailscale.go:866
 msgid "Sent %s to %s."
 msgstr "將%[1]s傳送至%[2]s。"
 
-#: internal/appui/tailscale.go:901
+#: internal/appui/tailscale.go:903
 msgid "Saved %s to %s."
 msgstr "將 %[1]s 儲存到 %[2]s。"
 
-#: internal/appui/tailscale.go:912
+#: internal/appui/tailscale.go:914
 msgid "Opening the login page…"
 msgstr "正在開啟登入頁面…"
 
-#: internal/appui/tailscale.go:939
+#: internal/appui/tailscale.go:941
 msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
 msgstr "此會話中沒有執行密碼提示(polkit 代理);在終端機中執行: sudo %s"
 
-#: internal/appui/tailscale.go:941
+#: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "未完成：未給予管理者密碼"
 
@@ -4259,7 +4651,7 @@ msgid "SPACE PINBALL"
 msgstr "太空彈珠"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "啟動器"
@@ -4292,7 +4684,7 @@ msgstr "聚焦或關閉"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4504,7 +4896,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空垃圾桶"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "inua's settings"
 msgstr "inua的設置"
 
@@ -4658,26 +5050,26 @@ msgstr "日常"
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:263
+#: internal/shell/dock.go:264
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:268
+#: internal/shell/dock.go:269
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系統"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Find apps, windows and answers"
 msgstr "尋找應用程式、視窗和答案"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "螢幕截圖"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Capture an area, a window or a screen"
 msgstr "捕捉區域、視窗或螢幕"
 
@@ -4760,14 +5152,6 @@ msgstr "%dh"
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1月2日"
-
-#: internal/shell/notify.go:32
-#: internal/ui/askpass.go:308
-#: internal/ui/askpass.go:312
-#: internal/ui/askpass.go:314
-#: internal/ui/settings_about.go:185
-msgid "Jan 2, 2006"
-msgstr "2006年1月2日"
 
 #: internal/shell/notify.go:40
 msgid "Needs notifications"
@@ -4906,9 +5290,12 @@ msgstr "好的"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
 #: ui/pass.ui:440
 #: ui/pass.ui:537
-#: ui/polkit.ui:566
+#: ui/polkit.ui:568
 msgid "Cancel"
 msgstr "取消"
 
@@ -5198,6 +5585,8 @@ msgstr "通知（專注模式已開啟）"
 
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
+#: ui/gpg.ui:508
+#: ui/gpg.ui:1011
 #: ui/group.ui:52
 msgid "Clear"
 msgstr "清除"
@@ -6114,6 +6503,173 @@ msgstr "正在播放"
 msgid "How to play"
 msgstr "玩法"
 
+#: ui/gpg.ui:35
+msgid "ENCRYPT"
+msgstr "加密"
+
+#: ui/gpg.ui:82
+msgid "<span alpha='55%'>[</span>TO<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>收件人<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:130
+msgid "All keys"
+msgstr "所有金鑰"
+
+#: ui/gpg.ui:172
+msgid "<span alpha='55%'>[</span>FROM<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>寄件人<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:255
+msgid "Sign"
+msgstr "簽章"
+
+#: ui/gpg.ui:264
+msgid "So they know it is from you and unchanged"
+msgstr "讓對方知道它來自你且未被改動"
+
+#: ui/gpg.ui:296
+msgid "Let me read it too"
+msgstr "我也要能讀"
+
+#: ui/gpg.ui:339
+msgid "You have no key of your own"
+msgstr "你還沒有自己的金鑰"
+
+#: ui/gpg.ui:348
+msgid "Without one you cannot sign, or read what you encrypt"
+msgstr "沒有它就不能簽章，也讀不了你加密的內容"
+
+#: ui/gpg.ui:361
+#: ui/gpg.ui:1102
+msgid "Create your key"
+msgstr "建立你的金鑰"
+
+#: ui/gpg.ui:395
+#: ui/gpg.ui:750
+msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>訊息<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "文字"
+
+#: ui/gpg.ui:445
+#: ui/gpg.ui:810
+msgid "Files"
+msgstr "檔案"
+
+#: ui/gpg.ui:469
+#: ui/gpg.ui:834
+msgid "Drop files here, or"
+msgstr "把檔案拖到這裡，或"
+
+#: ui/gpg.ui:478
+#: ui/gpg.ui:843
+msgid "Choose files…"
+msgstr "選擇檔案…"
+
+#: ui/gpg.ui:527
+msgid "Encrypt"
+msgstr "加密"
+
+#: ui/gpg.ui:572
+msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>密文<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:633
+msgid "Back"
+msgstr "返回"
+
+#: ui/gpg.ui:652
+#: ui/gpg.ui:896
+msgid "Save…"
+msgstr "儲存…"
+
+#: ui/gpg.ui:677
+msgid "DECRYPT"
+msgstr "解密"
+
+#: ui/gpg.ui:706
+msgid "The clipboard holds an encrypted message"
+msgstr "剪貼簿裡有一則加密訊息"
+
+#: ui/gpg.ui:718
+msgid "Decrypt it"
+msgstr "解密它"
+
+#: ui/gpg.ui:758
+msgid "Decrypted as soon as it is pasted or dropped"
+msgstr "貼上或拖入後立即解密"
+
+#: ui/gpg.ui:884
+msgid "<span alpha='55%'>[</span>DECRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>明文<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1030
+msgid "Decrypt"
+msgstr "解密"
+
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "金鑰"
+
+#: ui/gpg.ui:1080
+msgid "You have no key of your own yet"
+msgstr "你還沒有自己的金鑰"
+
+#: ui/gpg.ui:1089
+msgid "You need one to sign, and for others to send you messages only you can read"
+msgstr "簽章需要它，別人給你寄只有你能讀的訊息也需要它"
+
+#: ui/gpg.ui:1129
+msgid "Import…"
+msgstr "匯入…"
+
+#: ui/gpg.ui:1148
+msgid "Create key"
+msgstr "建立金鑰"
+
+#: ui/gpg.ui:1193
+msgid "<span alpha='55%'>[</span>IMPORT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>匯入<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1201
+msgid "Paste a public key, or choose or drop a key file"
+msgstr "貼上公鑰，或選擇、拖入金鑰檔案"
+
+#: ui/gpg.ui:1261
+msgid "Choose file…"
+msgstr "選擇檔案…"
+
+#: ui/gpg.ui:1326
+msgid "<span alpha='55%'>[</span>NEW KEY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>新金鑰<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1366
+msgid "Email"
+msgstr "電子郵件"
+
+#: ui/gpg.ui:1396
+msgid "Expires"
+msgstr "有效期"
+
+#: ui/gpg.ui:1405
+msgid "You can extend it before then; an expired key still decrypts"
+msgstr "到期前可以延長；過期的金鑰仍能解密"
+
+#: ui/gpg.ui:1424
+msgid "gpg asks for a passphrase to protect the new key. Remember it: without it the key cannot be used."
+msgstr "gpg 會詢問用來保護新金鑰的密碼短語。請記住它：沒有它金鑰就無法使用。"
+
+#: ui/gpg.ui:1439
+msgid "Or in a terminal:"
+msgstr "或在終端機裡："
+
+#: ui/gpg.ui:1488
+msgid "Create"
+msgstr "建立"
+
 #: ui/launcher.ui:53
 msgid "Tab  switch"
 msgstr "選項卡開關"
@@ -6139,7 +6695,7 @@ msgid "Esc  close"
 msgstr "Esc關閉"
 
 #: ui/lock.ui:76
-#: ui/polkit.ui:523
+#: ui/polkit.ui:525
 msgid "Password"
 msgstr "密碼"
 
@@ -6203,19 +6759,19 @@ msgstr "建立於"
 msgid "<span alpha='55%'>[</span>REQUEST<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>請求<span alpha='55%'>]</span>"
 
-#: ui/polkit.ui:435
+#: ui/polkit.ui:437
 msgid "ASKED BY"
 msgstr "請求者"
 
-#: ui/polkit.ui:484
+#: ui/polkit.ui:486
 msgid "AS"
 msgstr "AS"
 
-#: ui/polkit.ui:503
+#: ui/polkit.ui:505
 msgid "Another user"
 msgstr "另一用戶"
 
-#: ui/polkit.ui:574
+#: ui/polkit.ui:576
 msgid "Authenticate"
 msgstr "驗證"
 
@@ -7246,6 +7802,14 @@ msgstr "從螢幕上的任何位置選擇顏色"
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
 msgstr "顏色;取色;十六進位;rgb;滴管;"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:10
+msgid "Encrypt and decrypt messages and files with GnuPG, and see who signed them"
+msgstr "用 GnuPG 加密、解密訊息和檔案，並查看是誰簽的名"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:20
+msgid "gpg;gnupg;pgp;openpgp;encrypt;decrypt;sign;signature;key;"
+msgstr "gpg;gnupg;pgp;openpgp;加密;解密;簽章;金鑰;"
 
 #: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
 msgid "Reveal safe squares and flag hidden mines"

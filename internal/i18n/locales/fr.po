@@ -231,6 +231,8 @@ msgid "%d mo ago"
 msgstr "il y a %d mois"
 
 #: internal/apps/tailscale/status.go:187
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:602
 msgid "expired %s"
 msgstr "%s expiré"
 
@@ -368,13 +370,19 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:197
+#: internal/appui/pass.go:192
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
 msgstr "Pass"
 
 #: internal/appui/app.go:69
+#: internal/appui/gpg.go:272
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
+msgid "GPG"
+msgstr "GPG"
+
+#: internal/appui/app.go:70
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -382,9 +390,11 @@ msgid "Viewer"
 msgstr "Visionneuse d’images"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:770
+#: internal/appui/gpg.go:1529
+#: internal/appui/pass.go:735
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/gpg.ui:1572
 #: ui/pass.ui:238
 msgid "Delete"
 msgstr "Supprimer"
@@ -570,34 +580,424 @@ msgstr "Copier %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "Pas encore de couleur. Choisissez-en un n’importe où sur l’écran."
 
-#: internal/appui/pass.go:277
+#: internal/appui/gpg.go:144
+msgid "1 year"
+msgstr "1 an"
+
+#: internal/appui/gpg.go:144
+msgid "2 years"
+msgstr "2 ans"
+
+#: internal/appui/gpg.go:144
+msgid "5 years"
+msgstr "5 ans"
+
+#: internal/appui/gpg.go:144
+msgid "Never"
+msgstr "Jamais"
+
+#: internal/appui/gpg.go:317
+msgid "The keyring cannot be read: %s"
+msgstr "Impossible de lire le trousseau : %s"
+
+#: internal/appui/gpg.go:359
+msgid "created %s"
+msgstr "créée le %s"
+
+#: internal/appui/gpg.go:359
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:364
+#: internal/appui/gpg.go:602
+#: internal/appui/gpg.go:624
+#: internal/shell/notify.go:32
+#: internal/ui/askpass.go:308
+#: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
+#: internal/ui/settings_about.go:185
+msgid "Jan 2, 2006"
+msgstr "2 Jan 2006"
+
+#: internal/appui/gpg.go:364
+msgid "expires %s"
+msgstr "expire le %s"
+
+#: internal/appui/gpg.go:378
+#: internal/appui/gpg.go:775
+msgid "signs only"
+msgstr "signe seulement"
+
+#: internal/appui/gpg.go:388
+msgid "revoked"
+msgstr "révoquée"
+
+#: internal/appui/gpg.go:390
+msgid "expired"
+msgstr "expirée"
+
+#: internal/appui/gpg.go:392
+msgid "disabled"
+msgstr "désactivée"
+
+#: internal/appui/gpg.go:394
+#: internal/appui/gpg.go:608
+#: internal/appui/gpg.go:748
+msgid "yours"
+msgstr "la vôtre"
+
+#: internal/appui/gpg.go:396
+msgid "verified"
+msgstr "vérifiée"
+
+#: internal/appui/gpg.go:398
+msgid "partly verified"
+msgstr "vérifiée en partie"
+
+#: internal/appui/gpg.go:400
+msgid "not verified"
+msgstr "non vérifiée"
+
+#: internal/appui/gpg.go:463
+#: ui/gpg.ui:305
+msgid "Encrypt to your key as well, so you can open it later"
+msgstr "Chiffrer aussi pour votre clé, pour pouvoir l’ouvrir plus tard"
+
+#: internal/appui/gpg.go:465
+msgid "This key only signs; it cannot be encrypted to"
+msgstr "Cette clé signe seulement ; on ne peut pas chiffrer pour elle"
+
+#: internal/appui/gpg.go:516
+msgid "Take off"
+msgstr "Retirer"
+
+#: internal/appui/gpg.go:526
+msgid "%d recipient"
+msgid_plural "%d recipients"
+msgstr[0] "%d destinataire"
+msgstr[1] "%d destinataires"
+
+#: internal/appui/gpg.go:529
+#: ui/gpg.ui:118
+msgid "Name, address or key ID"
+msgstr "Nom, adresse ou ID de clé"
+
+#: internal/appui/gpg.go:531
+msgid "Add another"
+msgstr "Ajouter quelqu’un"
+
+#: internal/appui/gpg.go:580
+msgid "%d more: type to narrow them down"
+msgid_plural "%d more: type to narrow them down"
+msgstr[0] "%d de plus : tapez pour affiner"
+msgstr[1] "%d de plus : tapez pour affiner"
+
+#: internal/appui/gpg.go:623
+msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "Cette clé a expiré le %s ; gpg ne peut donc pas chiffrer pour elle. Demandez une clé à jour à %s, puis importez-la."
+
+#: internal/appui/gpg.go:626
+#: internal/appui/gpg.go:791
+msgid "%s revoked this key; ask for their new one."
+msgstr "%s a révoqué cette clé ; demandez la nouvelle."
+
+#: internal/appui/gpg.go:628
+msgid "This key cannot encrypt."
+msgstr "Cette clé ne peut pas chiffrer."
+
+#: internal/appui/gpg.go:638
+msgid "No key matches. Import theirs on the Keys tab."
+msgstr "Aucune clé ne correspond. Importez la sienne dans l’onglet Clés."
+
+#: internal/appui/gpg.go:640
+msgid "Already added."
+msgstr "Déjà ajouté."
+
+#: internal/appui/gpg.go:643
+msgid "Your keyring is empty. Import their key on the Keys tab."
+msgstr "Votre trousseau est vide. Importez sa clé dans l’onglet Clés."
+
+#: internal/appui/gpg.go:645
+msgid "Every key is chosen."
+msgstr "Toutes les clés sont choisies."
+
+#: internal/appui/gpg.go:700
+msgid "MY KEYS"
+msgstr "MES CLÉS"
+
+#: internal/appui/gpg.go:700
+msgid "OTHERS"
+msgstr "AUTRES"
+
+#: internal/appui/gpg.go:700
+msgid "INVALID KEYS"
+msgstr "CLÉS INVALIDES"
+
+#: internal/appui/gpg.go:717
+msgid "%d key"
+msgid_plural "%d keys"
+msgstr[0] "%d clé"
+msgstr[1] "%d clés"
+
+#: internal/appui/gpg.go:785
+msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
+msgstr "Prolongez-la pour vous en resservir. Gardez-la de toute façon : elle ouvre ce qui a été chiffré pour elle."
+
+#: internal/appui/gpg.go:787
+msgid "Keep it: it opens what was encrypted to it."
+msgstr "Gardez-la : elle ouvre ce qui a été chiffré pour elle."
+
+#: internal/appui/gpg.go:789
+msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "gpg ne peut pas chiffrer pour elle. Demandez une clé à jour à %s, puis importez-la."
+
+#: internal/appui/gpg.go:812
+msgid "Copy fingerprint"
+msgstr "Copier l’empreinte"
+
+#: internal/appui/gpg.go:813
+msgid "Copy public key"
+msgstr "Copier la clé publique"
+
+#: internal/appui/gpg.go:815
+msgid "Encrypt to…"
+msgstr "Chiffrer pour…"
+
+#: internal/appui/gpg.go:818
+msgid "Extend 2 years"
+msgstr "Prolonger de 2 ans"
+
+#: internal/appui/gpg.go:823
+msgid "Delete…"
+msgstr "Supprimer…"
+
+#: internal/appui/gpg.go:883
+#: internal/appui/tailscale.go:469
+#: internal/appui/viewer.go:395
+#: internal/ui/askpass.go:386
+msgid "Copied"
+msgstr "Copié"
+
+#: internal/appui/gpg.go:886
+msgid "Copied; taken off the clipboard in 45 seconds"
+msgstr "Copié ; retiré du presse-papiers dans 45 secondes"
+
+#: internal/appui/gpg.go:939
+msgid "Fingerprint copied"
+msgstr "Empreinte copiée"
+
+#: internal/appui/gpg.go:951
+msgid "Public key copied"
+msgstr "Clé publique copiée"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to encrypt"
+msgstr "Fichiers à chiffrer"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to decrypt"
+msgstr "Fichiers à déchiffrer"
+
+#: internal/appui/gpg.go:1019
+msgid "Key file to import"
+msgstr "Fichier de clé à importer"
+
+#: internal/appui/gpg.go:1085
+msgid "Leave it out"
+msgstr "Retirer"
+
+#: internal/appui/gpg.go:1120
+msgid "Saved to %s"
+msgstr "Enregistré dans %s"
+
+#: internal/appui/gpg.go:1136
+msgid "Add someone to encrypt to."
+msgstr "Ajoutez quelqu’un pour qui chiffrer."
+
+#: internal/appui/gpg.go:1150
+#: internal/appui/gpg.go:1276
+msgid "Choose or drop files first."
+msgstr "Choisissez ou déposez d’abord des fichiers."
+
+#: internal/appui/gpg.go:1161
+msgid "Type a message first."
+msgstr "Tapez d’abord un message."
+
+#: internal/appui/gpg.go:1166
+msgid "Encrypting…"
+msgstr "Chiffrement…"
+
+#: internal/appui/gpg.go:1198
+msgid "you"
+msgstr "vous"
+
+#: internal/appui/gpg.go:1203
+msgid "For %s"
+msgstr "Pour %s"
+
+#: internal/appui/gpg.go:1205
+msgid "signed"
+msgstr "signé"
+
+#: internal/appui/gpg.go:1222
+msgid "written in %s"
+msgstr "écrit dans %s"
+
+#: internal/appui/gpg.go:1226
+msgid "Move to Trash…"
+msgstr "Mettre à la corbeille…"
+
+#: internal/appui/gpg.go:1250
+msgid "%s moved to the trash"
+msgstr "%s mis à la corbeille"
+
+#: internal/appui/gpg.go:1285
+msgid "Paste a message first."
+msgstr "Collez d’abord un message."
+
+#: internal/appui/gpg.go:1292
+msgid "Decrypting… gpg may ask for your passphrase."
+msgstr "Déchiffrement… gpg peut demander votre phrase secrète."
+
+#: internal/appui/gpg.go:1341
+msgid "Not signed: who sent it is not known"
+msgstr "Non signé : on ne sait pas qui l’a envoyé"
+
+#: internal/appui/gpg.go:1349
+msgid "Signed by %s"
+msgstr "Signé par %s"
+
+#: internal/appui/gpg.go:1352
+msgid "Jan 2, 2006 15:04"
+msgstr "2 Jan 2006 15:04"
+
+#: internal/appui/gpg.go:1356
+msgid "The signature by %s does not match: it was changed after signing"
+msgstr "La signature de %s ne correspond pas : il a été modifié après la signature"
+
+#: internal/appui/gpg.go:1360
+msgid "Signed by a key not in your keyring, so it cannot be checked"
+msgstr "Signé par une clé absente de votre trousseau : impossible de vérifier"
+
+#: internal/appui/gpg.go:1364
+msgid "Signed by %s, with a key that is no longer valid"
+msgstr "Signé par %s, avec une clé qui n’est plus valide"
+
+#: internal/appui/gpg.go:1382
+msgid "Encrypted to %s"
+msgstr "Chiffré pour %s"
+
+#: internal/appui/gpg.go:1398
+#: ui/gpg.ui:1280
+msgid "Import"
+msgstr "Importer"
+
+#: internal/appui/gpg.go:1408
+msgid "No key found in it."
+msgstr "Aucune clé dedans."
+
+#: internal/appui/gpg.go:1413
+msgid "Import %d key"
+msgid_plural "Import %d keys"
+msgstr[0] "Importer %d clé"
+msgstr[1] "Importer %d clés"
+
+#: internal/appui/gpg.go:1425
+msgid "new"
+msgstr "nouvelle"
+
+#: internal/appui/gpg.go:1428
+msgid "holds a secret key"
+msgstr "contient une clé secrète"
+
+#: internal/appui/gpg.go:1430
+msgid "updates one you have"
+msgstr "met à jour une des vôtres"
+
+#: internal/appui/gpg.go:1455
+msgid "Importing…"
+msgstr "Importation…"
+
+#: internal/appui/gpg.go:1466
+msgid "%d key imported"
+msgid_plural "%d keys imported"
+msgstr[0] "%d clé importée"
+msgstr[1] "%d clés importées"
+
+#: internal/appui/gpg.go:1479
+msgid "Give a name and an address."
+msgstr "Indiquez un nom et une adresse."
+
+#: internal/appui/gpg.go:1483
+msgid "That address has no @."
+msgstr "Cette adresse n’a pas de @."
+
+#: internal/appui/gpg.go:1489
+msgid "Creating… gpg asks for a passphrase for the new key."
+msgstr "Création… gpg demande une phrase secrète pour la nouvelle clé."
+
+#: internal/appui/gpg.go:1503
+msgid "Your key is created"
+msgstr "Votre clé est créée"
+
+#: internal/appui/gpg.go:1526
+msgid "Delete the key of %s?"
+msgstr "Supprimer la clé de %s ?"
+
+#: internal/appui/gpg.go:1528
+msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
+msgstr "Elle quitte votre trousseau. Les messages qu’elle a signés apparaîtront comme signés par une clé absente de votre trousseau ; la réimporter rétablit cela."
+
+#: internal/appui/gpg.go:1535
+msgid "Move %s to the trash?"
+msgstr "Mettre %s à la corbeille ?"
+
+#: internal/appui/gpg.go:1536
+msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
+msgstr "La copie déchiffrée va à la corbeille, d’où elle peut être restaurée ; le fichier chiffré reste."
+
+#: internal/appui/gpg.go:1537
+msgid "Move to Trash"
+msgstr "Mettre à la corbeille"
+
+#: internal/appui/gpg.go:1553
+msgid "Key deleted"
+msgstr "Clé supprimée"
+
+#: internal/appui/gpg.go:1563
+msgid "Extending… gpg asks for your passphrase."
+msgstr "Prolongation… gpg demande votre phrase secrète."
+
+#: internal/appui/gpg.go:1572
+msgid "Extended by 2 years"
+msgstr "Prolongée de 2 ans"
+
+#: internal/appui/pass.go:272
 msgid "A password store: a folder with a .gpg-id"
 msgstr "Un magasin de mots de passe : un dossier avec un .gpg-id"
 
-#: internal/appui/pass.go:285
+#: internal/appui/pass.go:280
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s n’est pas un magasin de mots de passe : il n’a pas de .gpg-id (pass init en crée un)."
 
-#: internal/appui/pass.go:305
+#: internal/appui/pass.go:300
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "Aucun magasin de mots de passe. pass init VOTRE-ID-DE-CLÉ-GPG en crée un dans ~/.password-store ; un autre dossier peut être ajouté en bas."
 
-#: internal/appui/pass.go:332
+#: internal/appui/pass.go:327
 msgid "The store is empty. + makes an entry."
 msgstr "Le magasin est vide. + crée une entrée."
 
-#: internal/appui/pass.go:335
-#: internal/appui/pass.go:615
-#: internal/appui/pass.go:696
-#: internal/appui/pass.go:955
+#: internal/appui/pass.go:330
+#: internal/appui/pass.go:610
+#: internal/appui/pass.go:661
+#: internal/appui/pass.go:920
 msgid "Choose an entry."
 msgstr "Choisissez une entrée."
 
-#: internal/appui/pass.go:341
+#: internal/appui/pass.go:336
 msgid "Top level"
 msgstr "Niveau supérieur"
 
-#: internal/appui/pass.go:349
+#: internal/appui/pass.go:344
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
@@ -605,127 +1005,129 @@ msgid_plural "%d entries"
 msgstr[0] "%d entrée"
 msgstr[1] "%d entrées"
 
-#: internal/appui/pass.go:354
+#: internal/appui/pass.go:349
 msgid "Right-click to rename or move"
 msgstr "Clic droit pour renommer ou déplacer"
 
-#: internal/appui/pass.go:464
+#: internal/appui/pass.go:459
 msgid "Decrypting %s"
 msgstr "Déchiffrement de %s"
 
-#: internal/appui/pass.go:515
+#: internal/appui/pass.go:510
 msgid "PASSWORD"
 msgstr "MOT DE PASSE"
 
-#: internal/appui/pass.go:520
-#: internal/appui/pass.go:572
+#: internal/appui/pass.go:515
+#: internal/appui/pass.go:567
 msgid "ONE-TIME CODE"
 msgstr "CODE À USAGE UNIQUE"
 
-#: internal/appui/pass.go:527
+#: internal/appui/pass.go:522
 msgid "NOTES"
 msgstr "NOTES"
 
-#: internal/appui/pass.go:556
+#: internal/appui/pass.go:551
 msgid "Show"
 msgstr "Afficher"
 
-#: internal/appui/pass.go:558
+#: internal/appui/pass.go:553
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "Masquer"
 
-#: internal/appui/pass.go:562
-#: internal/appui/pass.go:587
+#: internal/appui/pass.go:557
+#: internal/appui/pass.go:582
 #: internal/ui/askpass.go:187
+#: ui/gpg.ui:661
+#: ui/gpg.ui:907
 msgid "Copy"
 msgstr "Copier"
 
-#: internal/appui/pass.go:601
+#: internal/appui/pass.go:596
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d seconde restante"
 msgstr[1] "%d secondes restantes"
 
-#: internal/appui/pass.go:752
+#: internal/appui/pass.go:717
 msgid "Rename or move the category “%s”"
 msgstr "Renommer ou déplacer la catégorie « %s »"
 
-#: internal/appui/pass.go:753
+#: internal/appui/pass.go:718
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "Son nouveau chemin. Un autre nom la renomme ; un chemin sous une autre catégorie l’y déplace, avec toutes ses entrées."
 
-#: internal/appui/pass.go:754
-#: internal/appui/pass.go:758
+#: internal/appui/pass.go:719
+#: internal/appui/pass.go:723
 msgid "Move"
 msgstr "Déplacer"
 
-#: internal/appui/pass.go:756
+#: internal/appui/pass.go:721
 msgid "Rename or move “%s”"
 msgstr "Renommer ou déplacer « %s »"
 
-#: internal/appui/pass.go:757
+#: internal/appui/pass.go:722
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "Son nouveau chemin. La première partie est sa catégorie : changez-la pour déplacer l’entrée, le reste pour la renommer."
 
-#: internal/appui/pass.go:760
+#: internal/appui/pass.go:725
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "Nouvelle entrée"
 
-#: internal/appui/pass.go:761
+#: internal/appui/pass.go:726
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "Son chemin : la première partie est sa catégorie. Son contenu vient ensuite."
 
-#: internal/appui/pass.go:766
+#: internal/appui/pass.go:731
 msgid "Next"
 msgstr "Suivant"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:733
 msgid "Delete “%s”?"
 msgstr "Supprimer « %s » ?"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:734
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass supprime son fichier ; un magasin git le garde dans son historique."
 
-#: internal/appui/pass.go:805
-#: internal/appui/pass.go:835
+#: internal/appui/pass.go:770
+#: internal/appui/pass.go:800
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "DOSSIER"
 
-#: internal/appui/pass.go:831
+#: internal/appui/pass.go:796
 msgid "CATEGORY"
 msgstr "CATÉGORIE"
 
-#: internal/appui/pass.go:832
+#: internal/appui/pass.go:797
 msgid "NAME"
 msgstr "NOM"
 
-#: internal/appui/pass.go:845
+#: internal/appui/pass.go:810
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "et %d de plus"
 msgstr[1] "et %d de plus"
 
-#: internal/appui/pass.go:889
+#: internal/appui/pass.go:854
 msgid "That is where it is."
 msgstr "Elle y est déjà."
 
-#: internal/appui/pass.go:891
+#: internal/appui/pass.go:856
 msgid "A category cannot move into itself."
 msgstr "Une catégorie ne peut pas se déplacer en elle-même."
 
-#: internal/appui/pass.go:893
+#: internal/appui/pass.go:858
 msgid "That path is already in the store."
 msgstr "Ce chemin est déjà dans le magasin."
 
-#: internal/appui/pass.go:895
+#: internal/appui/pass.go:860
 msgid "It is no longer in the store."
 msgstr "Il n’est plus dans le magasin."
 
-#: internal/appui/pass.go:897
+#: internal/appui/pass.go:862
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "Chaque partie du chemin a besoin d’un nom, sans point au début."
 
@@ -849,7 +1251,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:260
+#: internal/shell/dock.go:261
 msgid "NETWORK"
 msgstr "RÉSEAU"
 
@@ -1109,17 +1511,18 @@ msgid "Model"
 msgstr "Modèle"
 
 #: internal/appui/sysmon.go:960
-#: internal/appui/tailscale.go:628
+#: internal/appui/tailscale.go:630
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
+#: ui/gpg.ui:1342
 #: ui/settings.ui:3440
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "Nom"
 
 #: internal/appui/sysmon.go:961
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:566
 msgid "System"
 msgstr "Système"
 
@@ -1249,7 +1652,7 @@ msgid "up"
 msgstr "vers le haut"
 
 #: internal/appui/sysmon.go:1043
-#: internal/appui/tailscale.go:630
+#: internal/appui/tailscale.go:632
 msgid "Addresses"
 msgstr "Adresses"
 
@@ -1258,8 +1661,8 @@ msgid "Hardware"
 msgstr "Matériel"
 
 #: internal/appui/sysmon.go:1049
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:567
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:569
 msgid "Traffic"
 msgstr "Trafic"
 
@@ -1351,298 +1754,292 @@ msgstr "%s allumé."
 msgid "%s off."
 msgstr "%s éteint."
 
-#: internal/appui/tailscale.go:301
+#: internal/appui/tailscale.go:303
 msgid "Not changed: allow this app to manage Tailscale first."
 msgstr "Pas modifié : autorisez cette application à gérer Tailscale en premier."
 
-#: internal/appui/tailscale.go:303
+#: internal/appui/tailscale.go:305
 msgid "Tailscale is not running."
 msgstr "Tailscale ne fonctionne pas."
 
-#: internal/appui/tailscale.go:345
+#: internal/appui/tailscale.go:347
 #: internal/shell/status.go:69
 #: internal/shell/status.go:86
 #: internal/shell/status.go:101
 msgid "Unavailable"
 msgstr "Indisponible"
 
-#: internal/appui/tailscale.go:356
+#: internal/appui/tailscale.go:358
 msgid "%d of %d devices online"
 msgstr "Appareils %[1]d ou %[2]d en ligne"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Tailscale's service is not running."
 msgstr "Le service Tailscale ne fonctionne pas."
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Start…"
 msgstr "Commencer…"
 
-#: internal/appui/tailscale.go:370
+#: internal/appui/tailscale.go:372
 msgid "Started Tailscale."
 msgstr "Tailscale démarré."
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "This device is logged out of its tailnet."
 msgstr "Cet appareil est déconnecté de son tailnet."
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "Log In"
 msgstr "Connexion"
 
-#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:379
 msgid "An admin of the tailnet has to approve this device."
 msgstr "Un administrateur du tailnet doit approuver ce dispositif."
 
-#: internal/appui/tailscale.go:377
-#: internal/appui/tailscale.go:664
+#: internal/appui/tailscale.go:379
+#: internal/appui/tailscale.go:666
 msgid "Admin Console"
 msgstr "Console d'administration"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
 msgstr "Pour modifier Tailscale à partir d'ici, autorisez-le une fois ; il demande le mot de passe d'un administrateur."
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "Allow…"
 msgstr "Autoriser…"
 
-#: internal/appui/tailscale.go:382
+#: internal/appui/tailscale.go:384
 msgid "This app may now manage Tailscale."
 msgstr "Cette application peut désormais gérer Tailscale."
 
-#: internal/appui/tailscale.go:414
+#: internal/appui/tailscale.go:416
 msgid "No device matches."
 msgstr "Aucun dispositif ne correspond."
 
-#: internal/appui/tailscale.go:416
+#: internal/appui/tailscale.go:418
 msgid "No other devices in the tailnet yet."
 msgstr "Aucun autre appareil n'est encore présent dans le réseau."
 
-#: internal/appui/tailscale.go:433
+#: internal/appui/tailscale.go:435
 msgid "exit node in use"
 msgstr "nœud de sortie en cours d'utilisation"
 
-#: internal/appui/tailscale.go:435
+#: internal/appui/tailscale.go:437
 msgid "exit node"
 msgstr "nœud de sortie"
 
-#: internal/appui/tailscale.go:445
+#: internal/appui/tailscale.go:447
 msgid "Details, ping, exit node and sending files"
 msgstr "Détails, ping, noeud de sortie et envoi de fichiers"
 
-#: internal/appui/tailscale.go:467
-#: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:386
-msgid "Copied"
-msgstr "Copié"
-
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy IP"
 msgstr "Copier l'IP"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy Name"
 msgstr "Copier le nom"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Ping"
 msgstr "Ping"
 
-#: internal/appui/tailscale.go:513
-#: internal/appui/tailscale.go:575
+#: internal/appui/tailscale.go:515
+#: internal/appui/tailscale.go:577
 msgid "Use as Exit Node"
 msgstr "Utiliser comme nœud de sortie"
 
-#: internal/appui/tailscale.go:522
+#: internal/appui/tailscale.go:524
 msgid "DEVICE"
 msgstr "DISPOSITIF"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:561
-#: internal/appui/tailscale.go:629
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:631
 msgid "MagicDNS"
 msgstr "MagicDNS"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:562
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:564
 msgid "IPv4"
 msgstr "IPv4"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:565
 msgid "IPv6"
 msgstr "IPv6"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:565
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:567
 msgid "Status"
 msgstr "Statut"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:566
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:568
 msgid "Connection"
 msgstr "Connexion"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:568
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:570
 msgid "Key expires"
 msgstr "La clé expire"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:569
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:571
 msgid "Tags"
 msgstr "Balises"
 
-#: internal/appui/tailscale.go:526
+#: internal/appui/tailscale.go:528
 msgid "SEND FILES"
 msgstr "ENVOYER DES FICHIERS"
 
-#: internal/appui/tailscale.go:542
+#: internal/appui/tailscale.go:544
 msgid "NO LONGER IN THE TAILNET"
 msgstr "PLUS DANS LE TAILNET"
 
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:566
 msgid "%s · host name %s"
 msgstr "%[1]s · nom d'hôte %[2]s"
 
-#: internal/appui/tailscale.go:570
+#: internal/appui/tailscale.go:572
 msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
 msgstr "Déposez les fichiers sur ce panneau pour les envoyer à %s avec Taildrop. Ils attendent jusqu'à ce qu'ils soient sauvés."
 
-#: internal/appui/tailscale.go:573
+#: internal/appui/tailscale.go:575
 msgid "Stop Using as Exit Node"
 msgstr "Arrêter d'utiliser comme nœud de sortie"
 
-#: internal/appui/tailscale.go:582
+#: internal/appui/tailscale.go:584
 msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
 msgstr "ENVOYER LE TRAFIC DE CET APPAREIL VIA"
 
-#: internal/appui/tailscale.go:592
+#: internal/appui/tailscale.go:594
 msgid "IN USE"
 msgstr "EN UTILISATION"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "Aucun"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 msgid "Traffic goes out from this device as usual."
 msgstr "Le trafic sort de ce dispositif comme d'habitude."
 
-#: internal/appui/tailscale.go:607
+#: internal/appui/tailscale.go:609
 msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
 msgstr "Aucun dispositif du tailnet ne propose d'être un nœud de sortie. Activez l'offre en tant que nœud de sortie sur un, puis approuvez-la dans la console d'administration."
 
-#: internal/appui/tailscale.go:614
+#: internal/appui/tailscale.go:616
 msgid "Allow local network access"
 msgstr "Autoriser l'accès au réseau local"
 
-#: internal/appui/tailscale.go:615
+#: internal/appui/tailscale.go:617
 msgid "Reach printers and other devices on this network while the exit node carries the rest."
 msgstr "Atteignez les imprimantes et autres appareils sur ce réseau tandis que le nœud de sortie transporte le reste."
 
-#: internal/appui/tailscale.go:626
+#: internal/appui/tailscale.go:628
 #: ui/tailscale.ui:170
 msgid "THIS DEVICE"
 msgstr "CE DISPOSITIF"
 
-#: internal/appui/tailscale.go:633
+#: internal/appui/tailscale.go:635
 msgid "Tailnet"
 msgstr "Réseau Tailscale"
 
-#: internal/appui/tailscale.go:635
+#: internal/appui/tailscale.go:637
 msgid "SETTINGS"
 msgstr "PARAMÈTRES"
 
-#: internal/appui/tailscale.go:644
+#: internal/appui/tailscale.go:646
 msgid "RECEIVED FILES"
 msgstr "FICHIERS REÇUS"
 
-#: internal/appui/tailscale.go:647
+#: internal/appui/tailscale.go:649
 msgid "Files sent to this device show here once this app may manage Tailscale."
 msgstr "Les fichiers envoyés à cet appareil s'affichent ici une fois que cette application peut gérer Tailscale."
 
-#: internal/appui/tailscale.go:651
+#: internal/appui/tailscale.go:653
 msgid "None waiting. Files other devices send with Taildrop show here."
 msgstr "Aucune attente. Les fichiers que d'autres appareils envoient avec Taildrop s'affichent ici."
 
-#: internal/appui/tailscale.go:656
+#: internal/appui/tailscale.go:658
 msgid "Save to Downloads"
 msgstr "Enregistrer dans les téléchargements"
 
-#: internal/appui/tailscale.go:659
+#: internal/appui/tailscale.go:661
 msgid "ACCOUNT"
 msgstr "COMPTE"
 
-#: internal/appui/tailscale.go:660
+#: internal/appui/tailscale.go:662
 #: internal/shell/commands.go:31
 msgid "Log Out"
 msgstr "Fermer la session"
 
-#: internal/appui/tailscale.go:662
+#: internal/appui/tailscale.go:664
 msgid "Sure?"
 msgstr "Confirmer ?"
 
-#: internal/appui/tailscale.go:747
+#: internal/appui/tailscale.go:749
 msgid "No exit node: traffic goes out from this device."
 msgstr "Pas de nœud de sortie : le trafic sort de ce dispositif."
 
-#: internal/appui/tailscale.go:749
-#: internal/appui/tailscale.go:760
+#: internal/appui/tailscale.go:751
+#: internal/appui/tailscale.go:762
 msgid "Traffic now goes through %s."
 msgstr "Le trafic passe désormais par %s."
 
-#: internal/appui/tailscale.go:758
+#: internal/appui/tailscale.go:760
 msgid "Stopped using %s as exit node."
 msgstr "Arrêt de l'utilisation de %s comme nœud de sortie."
 
-#: internal/appui/tailscale.go:780
+#: internal/appui/tailscale.go:782
 msgid "Logged out."
 msgstr "Déconnecté."
 
-#: internal/appui/tailscale.go:803
+#: internal/appui/tailscale.go:805
 msgid "Pinging %s…"
 msgstr "Ping de %s…"
 
-#: internal/appui/tailscale.go:817
+#: internal/appui/tailscale.go:819
 msgid "%s did not answer"
 msgstr "%s n’a pas répondu"
 
-#: internal/appui/tailscale.go:820
+#: internal/appui/tailscale.go:822
 msgid "%s answered in %.0f ms"
 msgstr "%[1]s a répondu en %.0[2]f ms"
 
-#: internal/appui/tailscale.go:821
+#: internal/appui/tailscale.go:823
 msgid "Direct, %s"
 msgstr "Direct, %s"
 
-#: internal/appui/tailscale.go:823
+#: internal/appui/tailscale.go:825
 msgid "Relayed through %s"
 msgstr "Relayé via %s"
 
-#: internal/appui/tailscale.go:839
+#: internal/appui/tailscale.go:841
 msgid "Sending %s to %s…"
 msgstr "Envoi de %[1]s à %[2]s..."
 
-#: internal/appui/tailscale.go:864
+#: internal/appui/tailscale.go:866
 msgid "Sent %s to %s."
 msgstr "Envoyé %[1]s à %[2]s."
 
-#: internal/appui/tailscale.go:901
+#: internal/appui/tailscale.go:903
 msgid "Saved %s to %s."
 msgstr "%[1]s enregistré dans %[2]s."
 
-#: internal/appui/tailscale.go:912
+#: internal/appui/tailscale.go:914
 msgid "Opening the login page…"
 msgstr "Ouverture de la page de connexion…"
 
-#: internal/appui/tailscale.go:939
+#: internal/appui/tailscale.go:941
 msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
 msgstr "Aucune invite de mot de passe n'est exécutée dans cette session (un agent polkit) ; exécuter dans un terminal : sudo %s"
 
-#: internal/appui/tailscale.go:941
+#: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "non réalisé : aucun mot de passe administrateur n'a été donné"
 
@@ -4268,7 +4665,7 @@ msgid "SPACE PINBALL"
 msgstr "FLIPPER SPATIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "Lanceur"
@@ -4301,7 +4698,7 @@ msgstr "Mise au point activée ou désactivée"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4513,7 +4910,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Appuyez à nouveau sur Entrée pour vider la corbeille"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "inua's settings"
 msgstr "Paramètres d'Inua"
 
@@ -4667,26 +5064,26 @@ msgstr "TOUS LES JOURS"
 msgid "TOOLS"
 msgstr "OUTILS"
 
-#: internal/shell/dock.go:263
+#: internal/shell/dock.go:264
 msgid "PLAY"
 msgstr "JOUER"
 
-#: internal/shell/dock.go:268
+#: internal/shell/dock.go:269
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SYSTÈME"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Find apps, windows and answers"
 msgstr "Rechercher des applications, des fenêtres et des réponses"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "Capture d’écran"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Capture an area, a window or a screen"
 msgstr "Capturer une zone, une fenêtre ou un écran"
 
@@ -4769,14 +5166,6 @@ msgstr "%dh"
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "2 Jan"
-
-#: internal/shell/notify.go:32
-#: internal/ui/askpass.go:308
-#: internal/ui/askpass.go:312
-#: internal/ui/askpass.go:314
-#: internal/ui/settings_about.go:185
-msgid "Jan 2, 2006"
-msgstr "2 Jan 2006"
 
 #: internal/shell/notify.go:40
 msgid "Needs notifications"
@@ -4915,9 +5304,12 @@ msgstr "D'accord"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
 #: ui/pass.ui:440
 #: ui/pass.ui:537
-#: ui/polkit.ui:566
+#: ui/polkit.ui:568
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -5209,6 +5601,8 @@ msgstr "Notifications (Ne pas déranger activé)"
 
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
+#: ui/gpg.ui:508
+#: ui/gpg.ui:1011
 #: ui/group.ui:52
 msgid "Clear"
 msgstr "Effacer"
@@ -6130,6 +6524,173 @@ msgstr "En cours de lecture"
 msgid "How to play"
 msgstr "Comment jouer"
 
+#: ui/gpg.ui:35
+msgid "ENCRYPT"
+msgstr "CHIFFRER"
+
+#: ui/gpg.ui:82
+msgid "<span alpha='55%'>[</span>TO<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>POUR<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:130
+msgid "All keys"
+msgstr "Toutes les clés"
+
+#: ui/gpg.ui:172
+msgid "<span alpha='55%'>[</span>FROM<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>DE<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:255
+msgid "Sign"
+msgstr "Signer"
+
+#: ui/gpg.ui:264
+msgid "So they know it is from you and unchanged"
+msgstr "Pour qu’on sache qu’il vient de vous et n’a pas changé"
+
+#: ui/gpg.ui:296
+msgid "Let me read it too"
+msgstr "Pouvoir le lire aussi"
+
+#: ui/gpg.ui:339
+msgid "You have no key of your own"
+msgstr "Vous n’avez pas de clé à vous"
+
+#: ui/gpg.ui:348
+msgid "Without one you cannot sign, or read what you encrypt"
+msgstr "Sans elle, vous ne pouvez ni signer ni lire ce que vous chiffrez"
+
+#: ui/gpg.ui:361
+#: ui/gpg.ui:1102
+msgid "Create your key"
+msgstr "Créer votre clé"
+
+#: ui/gpg.ui:395
+#: ui/gpg.ui:750
+msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "Texte"
+
+#: ui/gpg.ui:445
+#: ui/gpg.ui:810
+msgid "Files"
+msgstr "Fichiers"
+
+#: ui/gpg.ui:469
+#: ui/gpg.ui:834
+msgid "Drop files here, or"
+msgstr "Déposez des fichiers ici, ou"
+
+#: ui/gpg.ui:478
+#: ui/gpg.ui:843
+msgid "Choose files…"
+msgstr "Choisir des fichiers…"
+
+#: ui/gpg.ui:527
+msgid "Encrypt"
+msgstr "Chiffrer"
+
+#: ui/gpg.ui:572
+msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>CHIFFRÉ<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:633
+msgid "Back"
+msgstr "Retour"
+
+#: ui/gpg.ui:652
+#: ui/gpg.ui:896
+msgid "Save…"
+msgstr "Enregistrer…"
+
+#: ui/gpg.ui:677
+msgid "DECRYPT"
+msgstr "DÉCHIFFRER"
+
+#: ui/gpg.ui:706
+msgid "The clipboard holds an encrypted message"
+msgstr "Le presse-papiers contient un message chiffré"
+
+#: ui/gpg.ui:718
+msgid "Decrypt it"
+msgstr "Le déchiffrer"
+
+#: ui/gpg.ui:758
+msgid "Decrypted as soon as it is pasted or dropped"
+msgstr "Déchiffré dès qu’il est collé ou déposé"
+
+#: ui/gpg.ui:884
+msgid "<span alpha='55%'>[</span>DECRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>DÉCHIFFRÉ<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1030
+msgid "Decrypt"
+msgstr "Déchiffrer"
+
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "CLÉS"
+
+#: ui/gpg.ui:1080
+msgid "You have no key of your own yet"
+msgstr "Vous n’avez pas encore de clé à vous"
+
+#: ui/gpg.ui:1089
+msgid "You need one to sign, and for others to send you messages only you can read"
+msgstr "Il en faut une pour signer, et pour qu’on vous envoie des messages que vous seul pouvez lire"
+
+#: ui/gpg.ui:1129
+msgid "Import…"
+msgstr "Importer…"
+
+#: ui/gpg.ui:1148
+msgid "Create key"
+msgstr "Créer une clé"
+
+#: ui/gpg.ui:1193
+msgid "<span alpha='55%'>[</span>IMPORT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>IMPORTER<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1201
+msgid "Paste a public key, or choose or drop a key file"
+msgstr "Collez une clé publique, ou choisissez ou déposez un fichier de clé"
+
+#: ui/gpg.ui:1261
+msgid "Choose file…"
+msgstr "Choisir un fichier…"
+
+#: ui/gpg.ui:1326
+msgid "<span alpha='55%'>[</span>NEW KEY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>NOUVELLE CLÉ<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1366
+msgid "Email"
+msgstr "E-mail"
+
+#: ui/gpg.ui:1396
+msgid "Expires"
+msgstr "Expire"
+
+#: ui/gpg.ui:1405
+msgid "You can extend it before then; an expired key still decrypts"
+msgstr "Vous pouvez la prolonger avant ; une clé expirée déchiffre toujours"
+
+#: ui/gpg.ui:1424
+msgid "gpg asks for a passphrase to protect the new key. Remember it: without it the key cannot be used."
+msgstr "gpg demande une phrase secrète pour protéger la nouvelle clé. Retenez-la : sans elle, la clé est inutilisable."
+
+#: ui/gpg.ui:1439
+msgid "Or in a terminal:"
+msgstr "Ou dans un terminal :"
+
+#: ui/gpg.ui:1488
+msgid "Create"
+msgstr "Créer"
+
 #: ui/launcher.ui:53
 msgid "Tab  switch"
 msgstr "Commutateur à onglets"
@@ -6155,7 +6716,7 @@ msgid "Esc  close"
 msgstr "Echap fermer"
 
 #: ui/lock.ui:76
-#: ui/polkit.ui:523
+#: ui/polkit.ui:525
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -6219,19 +6780,19 @@ msgstr "CRÉÉE"
 msgid "<span alpha='55%'>[</span>REQUEST<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>DEMANDE<span alpha='55%'>]</span>"
 
-#: ui/polkit.ui:435
+#: ui/polkit.ui:437
 msgid "ASKED BY"
 msgstr "DEMANDÉ PAR"
 
-#: ui/polkit.ui:484
+#: ui/polkit.ui:486
 msgid "AS"
 msgstr "COMME"
 
-#: ui/polkit.ui:503
+#: ui/polkit.ui:505
 msgid "Another user"
 msgstr "Un autre utilisateur"
 
-#: ui/polkit.ui:574
+#: ui/polkit.ui:576
 msgid "Authenticate"
 msgstr "Authentifier"
 
@@ -7262,6 +7823,14 @@ msgstr "Choisissez une couleur n'importe où sur l'écran"
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
 msgstr "couleur;hexadécimal;rvb;rgb;pipette;"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:10
+msgid "Encrypt and decrypt messages and files with GnuPG, and see who signed them"
+msgstr "Chiffrez et déchiffrez messages et fichiers avec GnuPG, et voyez qui les a signés"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:20
+msgid "gpg;gnupg;pgp;openpgp;encrypt;decrypt;sign;signature;key;"
+msgstr "gpg;gnupg;pgp;openpgp;chiffrer;déchiffrer;signer;signature;clé;"
 
 #: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
 msgid "Reveal safe squares and flag hidden mines"

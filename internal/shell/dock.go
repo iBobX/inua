@@ -256,6 +256,7 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Viewer",
 		"io.github.lyricat.Inua.SystemMonitor",
 		"io.github.lyricat.Inua.Pass",
+		"io.github.lyricat.Inua.GPG",
 	}},
 	{i18n.M("NETWORK"), []string{
 		"io.github.lyricat.Inua.Tailscale",

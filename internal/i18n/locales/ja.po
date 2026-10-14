@@ -231,6 +231,8 @@ msgid "%d mo ago"
 msgstr "%d か月前"
 
 #: internal/apps/tailscale/status.go:187
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:602
 msgid "expired %s"
 msgstr "期限切れ %s"
 
@@ -368,13 +370,19 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:197
+#: internal/appui/pass.go:192
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
 msgstr "Pass"
 
 #: internal/appui/app.go:69
+#: internal/appui/gpg.go:272
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
+msgid "GPG"
+msgstr "GPG"
+
+#: internal/appui/app.go:70
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
@@ -382,9 +390,11 @@ msgid "Viewer"
 msgstr "画像ビューアー"
 
 #: internal/appui/calculator.go:49
-#: internal/appui/pass.go:770
+#: internal/appui/gpg.go:1529
+#: internal/appui/pass.go:735
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
+#: ui/gpg.ui:1572
 #: ui/pass.ui:238
 msgid "Delete"
 msgstr "削除"
@@ -570,159 +580,546 @@ msgstr "コピー %s"
 msgid "No colour yet. Pick one from anywhere on the screen."
 msgstr "まだ色はありません。画面上の任意の場所から 1 つ選択します。"
 
-#: internal/appui/pass.go:277
+#: internal/appui/gpg.go:144
+msgid "1 year"
+msgstr "1年"
+
+#: internal/appui/gpg.go:144
+msgid "2 years"
+msgstr "2年"
+
+#: internal/appui/gpg.go:144
+msgid "5 years"
+msgstr "5年"
+
+#: internal/appui/gpg.go:144
+msgid "Never"
+msgstr "なし"
+
+#: internal/appui/gpg.go:317
+msgid "The keyring cannot be read: %s"
+msgstr "キーリングを読めません：%s"
+
+#: internal/appui/gpg.go:359
+msgid "created %s"
+msgstr "%s 作成"
+
+#: internal/appui/gpg.go:359
+#: internal/appui/gpg.go:362
+#: internal/appui/gpg.go:364
+#: internal/appui/gpg.go:602
+#: internal/appui/gpg.go:624
+#: internal/shell/notify.go:32
+#: internal/ui/askpass.go:308
+#: internal/ui/askpass.go:312
+#: internal/ui/askpass.go:314
+#: internal/ui/settings_about.go:185
+msgid "Jan 2, 2006"
+msgstr "2006年1月2日"
+
+#: internal/appui/gpg.go:364
+msgid "expires %s"
+msgstr "%s に期限切れ"
+
+#: internal/appui/gpg.go:378
+#: internal/appui/gpg.go:775
+msgid "signs only"
+msgstr "署名専用"
+
+#: internal/appui/gpg.go:388
+msgid "revoked"
+msgstr "失効"
+
+#: internal/appui/gpg.go:390
+msgid "expired"
+msgstr "期限切れ"
+
+#: internal/appui/gpg.go:392
+msgid "disabled"
+msgstr "無効"
+
+#: internal/appui/gpg.go:394
+#: internal/appui/gpg.go:608
+#: internal/appui/gpg.go:748
+msgid "yours"
+msgstr "あなたの鍵"
+
+#: internal/appui/gpg.go:396
+msgid "verified"
+msgstr "検証済み"
+
+#: internal/appui/gpg.go:398
+msgid "partly verified"
+msgstr "一部検証済み"
+
+#: internal/appui/gpg.go:400
+msgid "not verified"
+msgstr "未検証"
+
+#: internal/appui/gpg.go:463
+#: ui/gpg.ui:305
+msgid "Encrypt to your key as well, so you can open it later"
+msgstr "自分の鍵にも暗号化して、あとで開けるようにします"
+
+#: internal/appui/gpg.go:465
+msgid "This key only signs; it cannot be encrypted to"
+msgstr "この鍵は署名専用で、宛先にはできません"
+
+#: internal/appui/gpg.go:516
+msgid "Take off"
+msgstr "外す"
+
+#: internal/appui/gpg.go:526
+msgid "%d recipient"
+msgid_plural "%d recipients"
+msgstr[0] "宛先 %d 人"
+
+#: internal/appui/gpg.go:529
+#: ui/gpg.ui:118
+msgid "Name, address or key ID"
+msgstr "名前、アドレス、鍵 ID"
+
+#: internal/appui/gpg.go:531
+msgid "Add another"
+msgstr "さらに追加"
+
+#: internal/appui/gpg.go:580
+msgid "%d more: type to narrow them down"
+msgid_plural "%d more: type to narrow them down"
+msgstr[0] "ほか %d 件：入力して絞り込めます"
+
+#: internal/appui/gpg.go:623
+msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "この鍵は %s に期限切れになったため、gpg は暗号化できません。%s に更新した鍵をもらい、取り込んでください。"
+
+#: internal/appui/gpg.go:626
+#: internal/appui/gpg.go:791
+msgid "%s revoked this key; ask for their new one."
+msgstr "%s はこの鍵を失効させました。新しい鍵をもらってください。"
+
+#: internal/appui/gpg.go:628
+msgid "This key cannot encrypt."
+msgstr "この鍵では暗号化できません。"
+
+#: internal/appui/gpg.go:638
+msgid "No key matches. Import theirs on the Keys tab."
+msgstr "一致する鍵がありません。鍵タブで相手の鍵を取り込んでください。"
+
+#: internal/appui/gpg.go:640
+msgid "Already added."
+msgstr "追加済みです。"
+
+#: internal/appui/gpg.go:643
+msgid "Your keyring is empty. Import their key on the Keys tab."
+msgstr "キーリングは空です。鍵タブで相手の鍵を取り込んでください。"
+
+#: internal/appui/gpg.go:645
+msgid "Every key is chosen."
+msgstr "すべての鍵を選びました。"
+
+#: internal/appui/gpg.go:700
+msgid "MY KEYS"
+msgstr "自分の鍵"
+
+#: internal/appui/gpg.go:700
+msgid "OTHERS"
+msgstr "ほかの人"
+
+#: internal/appui/gpg.go:700
+msgid "INVALID KEYS"
+msgstr "無効な鍵"
+
+#: internal/appui/gpg.go:717
+msgid "%d key"
+msgid_plural "%d keys"
+msgstr[0] "鍵 %d 個"
+
+#: internal/appui/gpg.go:785
+msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
+msgstr "延長すればまた使えます。いずれにせよ残してください。この鍵宛てに暗号化されたものを開けます。"
+
+#: internal/appui/gpg.go:787
+msgid "Keep it: it opens what was encrypted to it."
+msgstr "残してください。この鍵宛てに暗号化されたものを開けます。"
+
+#: internal/appui/gpg.go:789
+msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "gpg はこの鍵で暗号化できません。%s に更新した鍵をもらい、取り込んでください。"
+
+#: internal/appui/gpg.go:812
+msgid "Copy fingerprint"
+msgstr "フィンガープリントをコピー"
+
+#: internal/appui/gpg.go:813
+msgid "Copy public key"
+msgstr "公開鍵をコピー"
+
+#: internal/appui/gpg.go:815
+msgid "Encrypt to…"
+msgstr "この鍵へ暗号化…"
+
+#: internal/appui/gpg.go:818
+msgid "Extend 2 years"
+msgstr "2年延長"
+
+#: internal/appui/gpg.go:823
+msgid "Delete…"
+msgstr "削除…"
+
+#: internal/appui/gpg.go:883
+#: internal/appui/tailscale.go:469
+#: internal/appui/viewer.go:395
+#: internal/ui/askpass.go:386
+msgid "Copied"
+msgstr "コピーしました"
+
+#: internal/appui/gpg.go:886
+msgid "Copied; taken off the clipboard in 45 seconds"
+msgstr "コピーしました。45秒後にクリップボードから消えます"
+
+#: internal/appui/gpg.go:939
+msgid "Fingerprint copied"
+msgstr "フィンガープリントをコピーしました"
+
+#: internal/appui/gpg.go:951
+msgid "Public key copied"
+msgstr "公開鍵をコピーしました"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to encrypt"
+msgstr "暗号化するファイル"
+
+#: internal/appui/gpg.go:1019
+msgid "Files to decrypt"
+msgstr "復号するファイル"
+
+#: internal/appui/gpg.go:1019
+msgid "Key file to import"
+msgstr "取り込む鍵ファイル"
+
+#: internal/appui/gpg.go:1085
+msgid "Leave it out"
+msgstr "外す"
+
+#: internal/appui/gpg.go:1120
+msgid "Saved to %s"
+msgstr "%s に保存しました"
+
+#: internal/appui/gpg.go:1136
+msgid "Add someone to encrypt to."
+msgstr "暗号化する宛先を追加してください。"
+
+#: internal/appui/gpg.go:1150
+#: internal/appui/gpg.go:1276
+msgid "Choose or drop files first."
+msgstr "先にファイルを選ぶかドロップしてください。"
+
+#: internal/appui/gpg.go:1161
+msgid "Type a message first."
+msgstr "先にメッセージを入力してください。"
+
+#: internal/appui/gpg.go:1166
+msgid "Encrypting…"
+msgstr "暗号化しています…"
+
+#: internal/appui/gpg.go:1198
+msgid "you"
+msgstr "自分"
+
+#: internal/appui/gpg.go:1203
+msgid "For %s"
+msgstr "宛先：%s"
+
+#: internal/appui/gpg.go:1205
+msgid "signed"
+msgstr "署名あり"
+
+#: internal/appui/gpg.go:1222
+msgid "written in %s"
+msgstr "%s に書き出しました"
+
+#: internal/appui/gpg.go:1226
+msgid "Move to Trash…"
+msgstr "ゴミ箱に移動…"
+
+#: internal/appui/gpg.go:1250
+msgid "%s moved to the trash"
+msgstr "%s をゴミ箱に移動しました"
+
+#: internal/appui/gpg.go:1285
+msgid "Paste a message first."
+msgstr "先にメッセージを貼り付けてください。"
+
+#: internal/appui/gpg.go:1292
+msgid "Decrypting… gpg may ask for your passphrase."
+msgstr "復号しています… gpg がパスフレーズを尋ねることがあります。"
+
+#: internal/appui/gpg.go:1341
+msgid "Not signed: who sent it is not known"
+msgstr "署名なし：送り主はわかりません"
+
+#: internal/appui/gpg.go:1349
+msgid "Signed by %s"
+msgstr "%s が署名"
+
+#: internal/appui/gpg.go:1352
+msgid "Jan 2, 2006 15:04"
+msgstr "2006年1月2日 15:04"
+
+#: internal/appui/gpg.go:1356
+msgid "The signature by %s does not match: it was changed after signing"
+msgstr "%s の署名が一致しません：署名後に変更されています"
+
+#: internal/appui/gpg.go:1360
+msgid "Signed by a key not in your keyring, so it cannot be checked"
+msgstr "キーリングにない鍵で署名されているため、確かめられません"
+
+#: internal/appui/gpg.go:1364
+msgid "Signed by %s, with a key that is no longer valid"
+msgstr "%s が、もう有効でない鍵で署名"
+
+#: internal/appui/gpg.go:1382
+msgid "Encrypted to %s"
+msgstr "%s 宛てに暗号化"
+
+#: internal/appui/gpg.go:1398
+#: ui/gpg.ui:1280
+msgid "Import"
+msgstr "取り込む"
+
+#: internal/appui/gpg.go:1408
+msgid "No key found in it."
+msgstr "鍵が見つかりません。"
+
+#: internal/appui/gpg.go:1413
+msgid "Import %d key"
+msgid_plural "Import %d keys"
+msgstr[0] "鍵 %d 個を取り込む"
+
+#: internal/appui/gpg.go:1425
+msgid "new"
+msgstr "新規"
+
+#: internal/appui/gpg.go:1428
+msgid "holds a secret key"
+msgstr "秘密鍵を含む"
+
+#: internal/appui/gpg.go:1430
+msgid "updates one you have"
+msgstr "手持ちの鍵を更新"
+
+#: internal/appui/gpg.go:1455
+msgid "Importing…"
+msgstr "取り込んでいます…"
+
+#: internal/appui/gpg.go:1466
+msgid "%d key imported"
+msgid_plural "%d keys imported"
+msgstr[0] "鍵 %d 個を取り込みました"
+
+#: internal/appui/gpg.go:1479
+msgid "Give a name and an address."
+msgstr "名前とアドレスを入力してください。"
+
+#: internal/appui/gpg.go:1483
+msgid "That address has no @."
+msgstr "アドレスに @ がありません。"
+
+#: internal/appui/gpg.go:1489
+msgid "Creating… gpg asks for a passphrase for the new key."
+msgstr "作成しています… gpg が新しい鍵のパスフレーズを尋ねます。"
+
+#: internal/appui/gpg.go:1503
+msgid "Your key is created"
+msgstr "鍵を作成しました"
+
+#: internal/appui/gpg.go:1526
+msgid "Delete the key of %s?"
+msgstr "%s の鍵を削除しますか？"
+
+#: internal/appui/gpg.go:1528
+msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
+msgstr "キーリングから外れます。この鍵で署名されたメッセージは、キーリングにない鍵の署名として表示されます。取り込み直せば元に戻ります。"
+
+#: internal/appui/gpg.go:1535
+msgid "Move %s to the trash?"
+msgstr "%s をゴミ箱に移動しますか？"
+
+#: internal/appui/gpg.go:1536
+msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
+msgstr "復号したコピーはゴミ箱に移り、そこから戻せます。暗号化されたファイルは残ります。"
+
+#: internal/appui/gpg.go:1537
+msgid "Move to Trash"
+msgstr "ゴミ箱に移動"
+
+#: internal/appui/gpg.go:1553
+msgid "Key deleted"
+msgstr "鍵を削除しました"
+
+#: internal/appui/gpg.go:1563
+msgid "Extending… gpg asks for your passphrase."
+msgstr "延長しています… gpg がパスフレーズを尋ねます。"
+
+#: internal/appui/gpg.go:1572
+msgid "Extended by 2 years"
+msgstr "2年延長しました"
+
+#: internal/appui/pass.go:272
 msgid "A password store: a folder with a .gpg-id"
 msgstr "パスワードストア：.gpg-id のあるフォルダー"
 
-#: internal/appui/pass.go:285
+#: internal/appui/pass.go:280
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s はパスワードストアではありません：.gpg-id がありません（pass init で作れます）。"
 
-#: internal/appui/pass.go:305
+#: internal/appui/pass.go:300
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "パスワードストアがありません。pass init GPG鍵ID で ~/.password-store に作れます。下から別のフォルダーも追加できます。"
 
-#: internal/appui/pass.go:332
+#: internal/appui/pass.go:327
 msgid "The store is empty. + makes an entry."
 msgstr "ストアは空です。+ でエントリーを作れます。"
 
-#: internal/appui/pass.go:335
-#: internal/appui/pass.go:615
-#: internal/appui/pass.go:696
-#: internal/appui/pass.go:955
+#: internal/appui/pass.go:330
+#: internal/appui/pass.go:610
+#: internal/appui/pass.go:661
+#: internal/appui/pass.go:920
 msgid "Choose an entry."
 msgstr "エントリーを選んでください。"
 
-#: internal/appui/pass.go:341
+#: internal/appui/pass.go:336
 msgid "Top level"
 msgstr "最上位"
 
-#: internal/appui/pass.go:349
+#: internal/appui/pass.go:344
 #: internal/ui/settings.go:584
 #: internal/ui/settings.go:611
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 件"
 
-#: internal/appui/pass.go:354
+#: internal/appui/pass.go:349
 msgid "Right-click to rename or move"
 msgstr "右クリックで名前の変更または移動"
 
-#: internal/appui/pass.go:464
+#: internal/appui/pass.go:459
 msgid "Decrypting %s"
 msgstr "%s を復号しています"
 
-#: internal/appui/pass.go:515
+#: internal/appui/pass.go:510
 msgid "PASSWORD"
 msgstr "パスワード"
 
-#: internal/appui/pass.go:520
-#: internal/appui/pass.go:572
+#: internal/appui/pass.go:515
+#: internal/appui/pass.go:567
 msgid "ONE-TIME CODE"
 msgstr "ワンタイムコード"
 
-#: internal/appui/pass.go:527
+#: internal/appui/pass.go:522
 msgid "NOTES"
 msgstr "メモ"
 
-#: internal/appui/pass.go:556
+#: internal/appui/pass.go:551
 msgid "Show"
 msgstr "表示"
 
-#: internal/appui/pass.go:558
+#: internal/appui/pass.go:553
 #: internal/ui/notify.go:377
 msgid "Hide"
 msgstr "ヒデ"
 
-#: internal/appui/pass.go:562
-#: internal/appui/pass.go:587
+#: internal/appui/pass.go:557
+#: internal/appui/pass.go:582
 #: internal/ui/askpass.go:187
+#: ui/gpg.ui:661
+#: ui/gpg.ui:907
 msgid "Copy"
 msgstr "コピー"
 
-#: internal/appui/pass.go:601
+#: internal/appui/pass.go:596
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "残り %d 秒"
 
-#: internal/appui/pass.go:752
+#: internal/appui/pass.go:717
 msgid "Rename or move the category “%s”"
 msgstr "カテゴリー「%s」の名前を変更または移動"
 
-#: internal/appui/pass.go:753
+#: internal/appui/pass.go:718
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "新しいパス。別の名前なら名前の変更、別のカテゴリーの下のパスなら、すべてのエントリーごとそこへ移動します。"
 
-#: internal/appui/pass.go:754
-#: internal/appui/pass.go:758
+#: internal/appui/pass.go:719
+#: internal/appui/pass.go:723
 msgid "Move"
 msgstr "移動"
 
-#: internal/appui/pass.go:756
+#: internal/appui/pass.go:721
 msgid "Rename or move “%s”"
 msgstr "「%s」の名前を変更または移動"
 
-#: internal/appui/pass.go:757
+#: internal/appui/pass.go:722
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "新しいパス。最初の部分がカテゴリーです。そこを変えれば移動、残りを変えれば名前の変更です。"
 
-#: internal/appui/pass.go:760
+#: internal/appui/pass.go:725
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "新しいエントリー"
 
-#: internal/appui/pass.go:761
+#: internal/appui/pass.go:726
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "パス：最初の部分がカテゴリーです。内容はその次に。"
 
-#: internal/appui/pass.go:766
+#: internal/appui/pass.go:731
 msgid "Next"
 msgstr "次へ"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:733
 msgid "Delete “%s”?"
 msgstr "「%s」を削除しますか？"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:734
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass がファイルを削除します。git のストアでは履歴に残ります。"
 
-#: internal/appui/pass.go:805
-#: internal/appui/pass.go:835
+#: internal/appui/pass.go:770
+#: internal/appui/pass.go:800
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "ファイル"
 
-#: internal/appui/pass.go:831
+#: internal/appui/pass.go:796
 msgid "CATEGORY"
 msgstr "カテゴリー"
 
-#: internal/appui/pass.go:832
+#: internal/appui/pass.go:797
 msgid "NAME"
 msgstr "名前"
 
-#: internal/appui/pass.go:845
+#: internal/appui/pass.go:810
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "ほか %d 件"
 
-#: internal/appui/pass.go:889
+#: internal/appui/pass.go:854
 msgid "That is where it is."
 msgstr "すでにそこにあります。"
 
-#: internal/appui/pass.go:891
+#: internal/appui/pass.go:856
 msgid "A category cannot move into itself."
 msgstr "カテゴリーを自分の中へは移動できません。"
 
-#: internal/appui/pass.go:893
+#: internal/appui/pass.go:858
 msgid "That path is already in the store."
 msgstr "そのパスはすでにストアにあります。"
 
-#: internal/appui/pass.go:895
+#: internal/appui/pass.go:860
 msgid "It is no longer in the store."
 msgstr "もうストアにありません。"
 
-#: internal/appui/pass.go:897
+#: internal/appui/pass.go:862
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "パスの各部分には、先頭がドットでない名前が必要です。"
 
@@ -846,7 +1243,7 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:260
+#: internal/shell/dock.go:261
 msgid "NETWORK"
 msgstr "ネットワーク"
 
@@ -1104,17 +1501,18 @@ msgid "Model"
 msgstr "モデル"
 
 #: internal/appui/sysmon.go:960
-#: internal/appui/tailscale.go:628
+#: internal/appui/tailscale.go:630
 #: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:305
+#: ui/gpg.ui:1342
 #: ui/settings.ui:3440
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名前"
 
 #: internal/appui/sysmon.go:961
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:566
 msgid "System"
 msgstr "システム"
 
@@ -1242,7 +1640,7 @@ msgid "up"
 msgstr "アップ"
 
 #: internal/appui/sysmon.go:1043
-#: internal/appui/tailscale.go:630
+#: internal/appui/tailscale.go:632
 msgid "Addresses"
 msgstr "アドレス"
 
@@ -1251,8 +1649,8 @@ msgid "Hardware"
 msgstr "ハードウェア"
 
 #: internal/appui/sysmon.go:1049
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:567
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:569
 msgid "Traffic"
 msgstr "交通"
 
@@ -1344,298 +1742,292 @@ msgstr "%sオン。"
 msgid "%s off."
 msgstr "%s オフ。"
 
-#: internal/appui/tailscale.go:301
+#: internal/appui/tailscale.go:303
 msgid "Not changed: allow this app to manage Tailscale first."
 msgstr "変更なし: このアプリが最初に Tailscale を管理できるようにします。"
 
-#: internal/appui/tailscale.go:303
+#: internal/appui/tailscale.go:305
 msgid "Tailscale is not running."
 msgstr "テールスケールは実行されていない。"
 
-#: internal/appui/tailscale.go:345
+#: internal/appui/tailscale.go:347
 #: internal/shell/status.go:69
 #: internal/shell/status.go:86
 #: internal/shell/status.go:101
 msgid "Unavailable"
 msgstr "利用不可"
 
-#: internal/appui/tailscale.go:356
+#: internal/appui/tailscale.go:358
 msgid "%d of %d devices online"
 msgstr "オンラインの %[2]d デバイスの %[1]d"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Tailscale's service is not running."
 msgstr "Tailscaleのサービスは実行されていない。"
 
-#: internal/appui/tailscale.go:369
+#: internal/appui/tailscale.go:371
 msgid "Start…"
 msgstr "スタート…"
 
-#: internal/appui/tailscale.go:370
+#: internal/appui/tailscale.go:372
 msgid "Started Tailscale."
 msgstr "テイルスケール社を設立。"
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "This device is logged out of its tailnet."
 msgstr "このデバイスはテールネットからログアウトされています。"
 
-#: internal/appui/tailscale.go:374
+#: internal/appui/tailscale.go:376
 msgid "Log In"
 msgstr "ログイン"
 
-#: internal/appui/tailscale.go:377
+#: internal/appui/tailscale.go:379
 msgid "An admin of the tailnet has to approve this device."
 msgstr "テールネットの管理者は、このデバイスを承認する必要がある。"
 
-#: internal/appui/tailscale.go:377
-#: internal/appui/tailscale.go:664
+#: internal/appui/tailscale.go:379
+#: internal/appui/tailscale.go:666
 msgid "Admin Console"
 msgstr "管理コンソール"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
 msgstr "ここから Tailscale を変更するには、一度許可します。管理者のパスワードを要求されます。"
 
-#: internal/appui/tailscale.go:380
+#: internal/appui/tailscale.go:382
 msgid "Allow…"
 msgstr "許可してください…"
 
-#: internal/appui/tailscale.go:382
+#: internal/appui/tailscale.go:384
 msgid "This app may now manage Tailscale."
 msgstr "このアプリは Tailscale を管理できるようになりました。"
 
-#: internal/appui/tailscale.go:414
+#: internal/appui/tailscale.go:416
 msgid "No device matches."
 msgstr "0001 一致するデバイスがありません。"
 
-#: internal/appui/tailscale.go:416
+#: internal/appui/tailscale.go:418
 msgid "No other devices in the tailnet yet."
 msgstr "テールネットにはまだ他のデバイスが存在しない。"
 
-#: internal/appui/tailscale.go:433
+#: internal/appui/tailscale.go:435
 msgid "exit node in use"
 msgstr "出口ノードが使用中です"
 
-#: internal/appui/tailscale.go:435
+#: internal/appui/tailscale.go:437
 msgid "exit node"
 msgstr "出口ノード"
 
-#: internal/appui/tailscale.go:445
+#: internal/appui/tailscale.go:447
 msgid "Details, ping, exit node and sending files"
 msgstr "詳細、ping、出口ノード、およびファイルの送信"
 
-#: internal/appui/tailscale.go:467
-#: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:386
-msgid "Copied"
-msgstr "コピーしました"
-
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy IP"
 msgstr "IPのコピー"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Copy Name"
 msgstr "名前のコピー"
 
-#: internal/appui/tailscale.go:505
+#: internal/appui/tailscale.go:507
 msgid "Ping"
 msgstr "Ping"
 
-#: internal/appui/tailscale.go:513
-#: internal/appui/tailscale.go:575
+#: internal/appui/tailscale.go:515
+#: internal/appui/tailscale.go:577
 msgid "Use as Exit Node"
 msgstr "出口ノードとして使用する"
 
-#: internal/appui/tailscale.go:522
+#: internal/appui/tailscale.go:524
 msgid "DEVICE"
 msgstr "デバイス"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:561
-#: internal/appui/tailscale.go:629
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:631
 msgid "MagicDNS"
 msgstr "MagicDNS"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:562
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:564
 msgid "IPv4"
 msgstr "IPv4"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:563
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:565
 msgid "IPv6"
 msgstr "IPv6"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:565
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:567
 msgid "Status"
 msgstr "ステータス"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:566
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:568
 msgid "Connection"
 msgstr "接続"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:568
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:570
 msgid "Key expires"
 msgstr "キーの有効期限が切れる"
 
-#: internal/appui/tailscale.go:523
-#: internal/appui/tailscale.go:569
+#: internal/appui/tailscale.go:525
+#: internal/appui/tailscale.go:571
 msgid "Tags"
 msgstr "タグ"
 
-#: internal/appui/tailscale.go:526
+#: internal/appui/tailscale.go:528
 msgid "SEND FILES"
 msgstr "ファイルの送信"
 
-#: internal/appui/tailscale.go:542
+#: internal/appui/tailscale.go:544
 msgid "NO LONGER IN THE TAILNET"
 msgstr "もはやテールネットには存在しない"
 
-#: internal/appui/tailscale.go:564
+#: internal/appui/tailscale.go:566
 msgid "%s · host name %s"
 msgstr "%[1]s · ホスト名 %[2]s"
 
-#: internal/appui/tailscale.go:570
+#: internal/appui/tailscale.go:572
 msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
 msgstr "このパネルにファイルをドロップして、Taildrop で %s に送信します。保存されるまで待機します。"
 
-#: internal/appui/tailscale.go:573
+#: internal/appui/tailscale.go:575
 msgid "Stop Using as Exit Node"
 msgstr "出口ノードとしての使用を停止する"
 
-#: internal/appui/tailscale.go:582
+#: internal/appui/tailscale.go:584
 msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
 msgstr "このデバイスのトラフィックを送信します"
 
-#: internal/appui/tailscale.go:592
+#: internal/appui/tailscale.go:594
 msgid "IN USE"
 msgstr "使用中"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "なし"
 
-#: internal/appui/tailscale.go:599
+#: internal/appui/tailscale.go:601
 msgid "Traffic goes out from this device as usual."
 msgstr "トラフィックは通常通りこの装置から発信される。"
 
-#: internal/appui/tailscale.go:607
+#: internal/appui/tailscale.go:609
 msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
 msgstr "テールネット内のデバイスは、出口ノードになることを申し出ない。 1 つで「終了ノードとしてオファー」をオンにし、管理コンソールで承認します。"
 
-#: internal/appui/tailscale.go:614
+#: internal/appui/tailscale.go:616
 msgid "Allow local network access"
 msgstr "ローカルネットワークアクセスを許可する"
 
-#: internal/appui/tailscale.go:615
+#: internal/appui/tailscale.go:617
 msgid "Reach printers and other devices on this network while the exit node carries the rest."
 msgstr "出口ノードが残りを運ぶ間に、このネットワーク上のプリンタおよび他のデバイスに到達する。"
 
-#: internal/appui/tailscale.go:626
+#: internal/appui/tailscale.go:628
 #: ui/tailscale.ui:170
 msgid "THIS DEVICE"
 msgstr "この装置"
 
-#: internal/appui/tailscale.go:633
+#: internal/appui/tailscale.go:635
 msgid "Tailnet"
 msgstr "Tailscale ネットワーク"
 
-#: internal/appui/tailscale.go:635
+#: internal/appui/tailscale.go:637
 msgid "SETTINGS"
 msgstr "設定"
 
-#: internal/appui/tailscale.go:644
+#: internal/appui/tailscale.go:646
 msgid "RECEIVED FILES"
 msgstr "個のファイルを受信しました"
 
-#: internal/appui/tailscale.go:647
+#: internal/appui/tailscale.go:649
 msgid "Files sent to this device show here once this app may manage Tailscale."
 msgstr "このアプリが Tailscale を管理できるようになるまで、このデバイスに送信されたファイルがここに表示されます。"
 
-#: internal/appui/tailscale.go:651
+#: internal/appui/tailscale.go:653
 msgid "None waiting. Files other devices send with Taildrop show here."
 msgstr "待っている人はいない。他のデバイスが Taildrop で送信したファイルがここに表示されます。"
 
-#: internal/appui/tailscale.go:656
+#: internal/appui/tailscale.go:658
 msgid "Save to Downloads"
 msgstr "ダウンロードに保存"
 
-#: internal/appui/tailscale.go:659
+#: internal/appui/tailscale.go:661
 msgid "ACCOUNT"
 msgstr "アカウント"
 
-#: internal/appui/tailscale.go:660
+#: internal/appui/tailscale.go:662
 #: internal/shell/commands.go:31
 msgid "Log Out"
 msgstr "ログアウト"
 
-#: internal/appui/tailscale.go:662
+#: internal/appui/tailscale.go:664
 msgid "Sure?"
 msgstr "よろしいですか？"
 
-#: internal/appui/tailscale.go:747
+#: internal/appui/tailscale.go:749
 msgid "No exit node: traffic goes out from this device."
 msgstr "出口ノードなし:トラフィックはこのデバイスから出ます。"
 
-#: internal/appui/tailscale.go:749
-#: internal/appui/tailscale.go:760
+#: internal/appui/tailscale.go:751
+#: internal/appui/tailscale.go:762
 msgid "Traffic now goes through %s."
 msgstr "トラフィックは %s を通過します。"
 
-#: internal/appui/tailscale.go:758
+#: internal/appui/tailscale.go:760
 msgid "Stopped using %s as exit node."
 msgstr "%s を出口ノードとして使用するのを停止しました。"
 
-#: internal/appui/tailscale.go:780
+#: internal/appui/tailscale.go:782
 msgid "Logged out."
 msgstr "ログアウトした。"
 
-#: internal/appui/tailscale.go:803
+#: internal/appui/tailscale.go:805
 msgid "Pinging %s…"
 msgstr "%s を鳴らしています…"
 
-#: internal/appui/tailscale.go:817
+#: internal/appui/tailscale.go:819
 msgid "%s did not answer"
 msgstr "%s は応答しませんでした"
 
-#: internal/appui/tailscale.go:820
+#: internal/appui/tailscale.go:822
 msgid "%s answered in %.0f ms"
 msgstr "%[1]s は %.0[2]f ミリ秒で応答しました"
 
-#: internal/appui/tailscale.go:821
+#: internal/appui/tailscale.go:823
 msgid "Direct, %s"
 msgstr "直接、%s"
 
-#: internal/appui/tailscale.go:823
+#: internal/appui/tailscale.go:825
 msgid "Relayed through %s"
 msgstr "%s 経由で中継"
 
-#: internal/appui/tailscale.go:839
+#: internal/appui/tailscale.go:841
 msgid "Sending %s to %s…"
 msgstr "%[1]s を %[2]s に送信中..."
 
-#: internal/appui/tailscale.go:864
+#: internal/appui/tailscale.go:866
 msgid "Sent %s to %s."
 msgstr "%[1]s を %[2]s に送信しました。"
 
-#: internal/appui/tailscale.go:901
+#: internal/appui/tailscale.go:903
 msgid "Saved %s to %s."
 msgstr "%[1]s を %[2]s に保存しました。"
 
-#: internal/appui/tailscale.go:912
+#: internal/appui/tailscale.go:914
 msgid "Opening the login page…"
 msgstr "ログインページを開くと…"
 
-#: internal/appui/tailscale.go:939
+#: internal/appui/tailscale.go:941
 msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
 msgstr "このセッション (polkit エージェント) ではパスワード プロンプトが実行されていません。ターミナルで実行: sudo %s"
 
-#: internal/appui/tailscale.go:941
+#: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "未完了: 管理者のパスワードが指定されていませんでした"
 
@@ -4259,7 +4651,7 @@ msgid "SPACE PINBALL"
 msgstr "スペースピンボール"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "ランチャー"
@@ -4292,7 +4684,7 @@ msgstr "フォーカスのオンまたはオフ"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -4504,7 +4896,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "もう一度 Enter を押すとゴミ箱を空にします"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:280
+#: internal/shell/dock.go:281
 msgid "inua's settings"
 msgstr "inuaの設定"
 
@@ -4658,26 +5050,26 @@ msgstr "毎日"
 msgid "TOOLS"
 msgstr "ツール"
 
-#: internal/shell/dock.go:263
+#: internal/shell/dock.go:264
 msgid "PLAY"
 msgstr "遊び"
 
-#: internal/shell/dock.go:268
+#: internal/shell/dock.go:269
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "システム"
 
-#: internal/shell/dock.go:281
+#: internal/shell/dock.go:282
 msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "スクリーンショット"
 
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "Capture an area, a window or a screen"
 msgstr "領域、ウィンドウ、または画面をキャプチャする"
 
@@ -4760,14 +5152,6 @@ msgstr "%dh"
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1月2日"
-
-#: internal/shell/notify.go:32
-#: internal/ui/askpass.go:308
-#: internal/ui/askpass.go:312
-#: internal/ui/askpass.go:314
-#: internal/ui/settings_about.go:185
-msgid "Jan 2, 2006"
-msgstr "2006年1月2日"
 
 #: internal/shell/notify.go:40
 msgid "Needs notifications"
@@ -4906,9 +5290,12 @@ msgstr "わかりました"
 #: internal/ui/askpass.go:248
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
 #: ui/pass.ui:440
 #: ui/pass.ui:537
-#: ui/polkit.ui:566
+#: ui/polkit.ui:568
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -5198,6 +5585,8 @@ msgstr "通知（集中モードが有効）"
 
 #: internal/ui/notify.go:379
 #: ui/colorpicker.ui:93
+#: ui/gpg.ui:508
+#: ui/gpg.ui:1011
 #: ui/group.ui:52
 msgid "Clear"
 msgstr "消去"
@@ -6114,6 +6503,173 @@ msgstr "再生中"
 msgid "How to play"
 msgstr "遊び方"
 
+#: ui/gpg.ui:35
+msgid "ENCRYPT"
+msgstr "暗号化"
+
+#: ui/gpg.ui:82
+msgid "<span alpha='55%'>[</span>TO<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>宛先<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:130
+msgid "All keys"
+msgstr "すべての鍵"
+
+#: ui/gpg.ui:172
+msgid "<span alpha='55%'>[</span>FROM<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>差出人<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:255
+msgid "Sign"
+msgstr "署名"
+
+#: ui/gpg.ui:264
+msgid "So they know it is from you and unchanged"
+msgstr "あなたからで、改変されていないと分かるように"
+
+#: ui/gpg.ui:296
+msgid "Let me read it too"
+msgstr "自分も読めるようにする"
+
+#: ui/gpg.ui:339
+msgid "You have no key of your own"
+msgstr "自分の鍵がありません"
+
+#: ui/gpg.ui:348
+msgid "Without one you cannot sign, or read what you encrypt"
+msgstr "鍵がないと署名も、自分で暗号化したものを読むこともできません"
+
+#: ui/gpg.ui:361
+#: ui/gpg.ui:1102
+msgid "Create your key"
+msgstr "鍵を作成"
+
+#: ui/gpg.ui:395
+#: ui/gpg.ui:750
+msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>メッセージ<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "テキスト"
+
+#: ui/gpg.ui:445
+#: ui/gpg.ui:810
+msgid "Files"
+msgstr "ファイル"
+
+#: ui/gpg.ui:469
+#: ui/gpg.ui:834
+msgid "Drop files here, or"
+msgstr "ここにファイルをドロップ、または"
+
+#: ui/gpg.ui:478
+#: ui/gpg.ui:843
+msgid "Choose files…"
+msgstr "ファイルを選ぶ…"
+
+#: ui/gpg.ui:527
+msgid "Encrypt"
+msgstr "暗号化"
+
+#: ui/gpg.ui:572
+msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>暗号文<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:633
+msgid "Back"
+msgstr "戻る"
+
+#: ui/gpg.ui:652
+#: ui/gpg.ui:896
+msgid "Save…"
+msgstr "保存…"
+
+#: ui/gpg.ui:677
+msgid "DECRYPT"
+msgstr "復号"
+
+#: ui/gpg.ui:706
+msgid "The clipboard holds an encrypted message"
+msgstr "クリップボードに暗号化されたメッセージがあります"
+
+#: ui/gpg.ui:718
+msgid "Decrypt it"
+msgstr "復号する"
+
+#: ui/gpg.ui:758
+msgid "Decrypted as soon as it is pasted or dropped"
+msgstr "貼り付けやドロップですぐに復号します"
+
+#: ui/gpg.ui:884
+msgid "<span alpha='55%'>[</span>DECRYPTED<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>復号結果<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1030
+msgid "Decrypt"
+msgstr "復号"
+
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "鍵"
+
+#: ui/gpg.ui:1080
+msgid "You have no key of your own yet"
+msgstr "まだ自分の鍵がありません"
+
+#: ui/gpg.ui:1089
+msgid "You need one to sign, and for others to send you messages only you can read"
+msgstr "署名にも、あなただけが読めるメッセージを受け取るにも必要です"
+
+#: ui/gpg.ui:1129
+msgid "Import…"
+msgstr "取り込む…"
+
+#: ui/gpg.ui:1148
+msgid "Create key"
+msgstr "鍵を作成"
+
+#: ui/gpg.ui:1193
+msgid "<span alpha='55%'>[</span>IMPORT<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>取り込み<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1201
+msgid "Paste a public key, or choose or drop a key file"
+msgstr "公開鍵を貼り付けるか、鍵ファイルを選ぶかドロップしてください"
+
+#: ui/gpg.ui:1261
+msgid "Choose file…"
+msgstr "ファイルを選ぶ…"
+
+#: ui/gpg.ui:1326
+msgid "<span alpha='55%'>[</span>NEW KEY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>新しい鍵<span alpha='55%'>]</span>"
+
+#: ui/gpg.ui:1366
+msgid "Email"
+msgstr "メール"
+
+#: ui/gpg.ui:1396
+msgid "Expires"
+msgstr "有効期限"
+
+#: ui/gpg.ui:1405
+msgid "You can extend it before then; an expired key still decrypts"
+msgstr "それまでに延長できます。期限切れの鍵でも復号はできます"
+
+#: ui/gpg.ui:1424
+msgid "gpg asks for a passphrase to protect the new key. Remember it: without it the key cannot be used."
+msgstr "gpg が新しい鍵を守るパスフレーズを尋ねます。忘れないでください。なければ鍵は使えません。"
+
+#: ui/gpg.ui:1439
+msgid "Or in a terminal:"
+msgstr "またはターミナルで："
+
+#: ui/gpg.ui:1488
+msgid "Create"
+msgstr "作成"
+
 #: ui/launcher.ui:53
 msgid "Tab  switch"
 msgstr "タブスイッチ"
@@ -6139,7 +6695,7 @@ msgid "Esc  close"
 msgstr "Esc 閉じる"
 
 #: ui/lock.ui:76
-#: ui/polkit.ui:523
+#: ui/polkit.ui:525
 msgid "Password"
 msgstr "パスワード"
 
@@ -6203,19 +6759,19 @@ msgstr "作成日"
 msgid "<span alpha='55%'>[</span>REQUEST<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>要求<span alpha='55%'>]</span>"
 
-#: ui/polkit.ui:435
+#: ui/polkit.ui:437
 msgid "ASKED BY"
 msgstr "要求元"
 
-#: ui/polkit.ui:484
+#: ui/polkit.ui:486
 msgid "AS"
 msgstr "AS"
 
-#: ui/polkit.ui:503
+#: ui/polkit.ui:505
 msgid "Another user"
 msgstr "別のユーザー"
 
-#: ui/polkit.ui:574
+#: ui/polkit.ui:576
 msgid "Authenticate"
 msgstr "認証する"
 
@@ -7246,6 +7802,14 @@ msgstr "画面上の任意の場所から色を選択します"
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
 msgstr "色;カラー;16進数;rgb;スポイト;"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:10
+msgid "Encrypt and decrypt messages and files with GnuPG, and see who signed them"
+msgstr "GnuPG でメッセージやファイルを暗号化・復号し、誰が署名したかを確かめます"
+
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:20
+msgid "gpg;gnupg;pgp;openpgp;encrypt;decrypt;sign;signature;key;"
+msgstr "gpg;gnupg;pgp;openpgp;暗号化;復号;署名;鍵;"
 
 #: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
 msgid "Reveal safe squares and flag hidden mines"
