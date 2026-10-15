@@ -20,6 +20,7 @@ import (
 
 	"github.com/lyricat/inua/internal/clipboard"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/shell"
@@ -928,27 +929,50 @@ func movePinned(pinned []string, id, action string) []string {
 	return out
 }
 
-// revealFile shows path selected in the file manager
-// (org.freedesktop.FileManager1), else opens its folder; a file not made
-// yet shows its folder. It waits on the bus: run it off the main thread.
+// revealFile shows path selected in the file manager, else opens its
+// folder; a file not made yet shows its folder. It waits on the bus: run
+// it off the main thread.
 func revealFile(path string) {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		log.Printf("reveal: %v", err)
 		return
 	}
-	method, target := "ShowItems", path
 	if _, err := os.Stat(path); err != nil {
-		method, target = "ShowFolders", dir
+		showInFileManager("ShowFolders", dir)
+		return
 	}
+	showInFileManager("ShowItems", path)
+}
+
+// showInFileManager asks a running file manager to show target
+// (org.freedesktop.FileManager1's ShowItems or ShowFolders). With none
+// running it starts inua-files rather than let D-Bus start one: D-Bus
+// starts it with the activation environment, which may name another
+// Wayland display (a nested session's), and the window never shows.
+func showInFileManager(method, target string) {
 	if conn, err := system.SessionBus(); err == nil {
-		uri := (&url.URL{Scheme: "file", Path: target}).String()
-		err = conn.Object("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1").
-			Call("org.freedesktop.FileManager1."+method, 0, []string{uri}, "").Err
+		var running bool
+		conn.BusObject().Call("org.freedesktop.DBus.NameHasOwner", 0, "org.freedesktop.FileManager1").Store(&running)
+		if running {
+			uri := (&url.URL{Scheme: "file", Path: target}).String()
+			err = conn.Object("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1").
+				Call("org.freedesktop.FileManager1."+method, 0, []string{uri}, "").Err
+		}
 		conn.Close()
-		if err == nil {
+		if running && err == nil {
 			return
 		}
+	}
+	// inua-files opens a folder, or shows a file selected in its folder.
+	if bin, err := exec.LookPath("inua-files"); err == nil {
+		if err := desktop.Spawn([]string{bin, target}, ""); err == nil {
+			return
+		}
+	}
+	dir := target
+	if method == "ShowItems" {
+		dir = filepath.Dir(target)
 	}
 	if err := exec.Command("xdg-open", dir).Run(); err != nil {
 		log.Printf("reveal: %v", err)

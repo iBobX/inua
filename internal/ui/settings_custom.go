@@ -62,7 +62,7 @@ func revealFolder(dir, item string) {
 			return
 		}
 	}
-	revealFile(dir) // the folder itself, in its parent
+	showInFileManager("ShowFolders", dir)
 }
 
 // trash moves a theme file or an icon set folder to the trash, so it can
