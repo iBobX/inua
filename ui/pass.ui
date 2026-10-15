@@ -207,6 +207,17 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                               </object>
                             </child>
                             <child>
+                              <object class="GtkButton" id="otp_entry">
+                                <style>
+                                  <class name="plain"/>
+                                </style>
+                                <property name="name">otp-entry</property>
+                                <property name="icon-name">pass-qr-code-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Add a one-time code</property>
+                                <property name="valign">3</property>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkButton" id="move_entry">
                                 <style>
                                   <class name="plain"/>
@@ -436,7 +447,31 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <child>
                       <object class="GtkBox">
                         <property name="spacing">8</property>
-                        <property name="halign">2</property>
+                        <child>
+                          <object class="GtkButton" id="edit_otp">
+                            <style>
+                              <class name="outlined"/>
+                            </style>
+                            <property name="name">edit-otp</property>
+                            <property name="hexpand">true</property>
+                            <property name="halign">1</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">pass-qr-code-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label" translatable="yes">One-time code…</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                         <child>
                           <object class="GtkButton" id="edit_cancel">
                             <style>
@@ -549,6 +584,239 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <class name="suggested-action"/>
                 </style>
                 <property name="name">dialog-ok</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="otp_dialog">
+    <style>
+      <class name="app"/>
+      <class name="settings"/>
+      <class name="pass"/>
+      <class name="pass-dialog"/>
+    </style>
+    <property name="modal">true</property>
+    <property name="resizable">false</property>
+    <property name="default-width">520</property>
+    <property name="hide-on-close">true</property>
+    <child>
+      <object class="GtkBox">
+        <style>
+          <class name="page"/>
+        </style>
+        <property name="orientation">1</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkLabel" id="otp_title">
+            <style>
+              <class name="pass-title"/>
+            </style>
+            <property name="label" translatable="yes">Add a one-time code</property>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <style>
+              <class name="sub"/>
+            </style>
+            <property name="label" translatable="yes">Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image.</property>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="otp_input">
+            <style>
+              <class name="pass-path-entry"/>
+            </style>
+            <property name="placeholder-text" translatable="yes">JBSW Y3DP EHPK 3PXP, or otpauth://…</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <child>
+              <object class="GtkButton" id="otp_scan">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">otp-scan</property>
+                <property name="tooltip-text" translatable="yes">The Pass windows step aside while the screen is read</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">pass-scan-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Scan the screen</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="otp_area">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">otp-area</property>
+                <property name="tooltip-text" translatable="yes">Drag out the area with the QR code</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">applets-screenshooter-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Select an area</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="otp_image">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">otp-image</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="icon-name">image-x-generic-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">From an image…</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <property name="homogeneous">true</property>
+            <child>
+              <object class="GtkEntry" id="otp_issuer">
+                <property name="placeholder-text" translatable="yes">Issuer, e.g. GitHub</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="otp_account">
+                <property name="placeholder-text" translatable="yes">Account, e.g. you@example.org</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="otp_preview">
+            <style>
+              <class name="pass-row"/>
+            </style>
+            <property name="spacing">12</property>
+            <property name="visible">false</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">1</property>
+                <property name="spacing">3</property>
+                <property name="hexpand">true</property>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="kicker"/>
+                    </style>
+                    <property name="label" translatable="yes">ONE-TIME CODE</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="otp_code">
+                        <style>
+                          <class name="pass-otp"/>
+                        </style>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="otp_left">
+                        <style>
+                          <class name="sub"/>
+                        </style>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="otp_status">
+            <style>
+              <class name="sub"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="otp_error">
+            <style>
+              <class name="pass-error"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <property name="halign">2</property>
+            <property name="margin-top">4</property>
+            <child>
+              <object class="GtkButton" id="otp_cancel">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">otp-cancel</property>
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="otp_ok">
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <property name="name">otp-ok</property>
+                <property name="label" translatable="yes">Add</property>
+                <property name="sensitive">false</property>
               </object>
             </child>
           </object>

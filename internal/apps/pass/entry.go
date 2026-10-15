@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Entry is a decrypted entry as pass writes one: the first line is the
@@ -89,29 +91,29 @@ type OTP struct {
 func ParseOTP(uri string) (OTP, error) {
 	u, err := url.Parse(uri)
 	if err != nil || u.Scheme != "otpauth" {
-		return OTP{}, errors.New("not an otpauth:// URI")
+		return OTP{}, errors.New(i18n.T("Not an otpauth:// link."))
 	}
 	if !strings.EqualFold(u.Host, "totp") {
-		return OTP{}, fmt.Errorf("only time-based codes (totp), not %s", u.Host)
+		return OTP{}, errors.New(i18n.Tf("Only time-based codes (totp), not %s.", u.Host))
 	}
 	q := u.Query()
 	o := OTP{Label: strings.TrimPrefix(u.Path, "/"), digits: 6, period: 30 * time.Second, hash: sha1.New}
 	secret := strings.ToUpper(strings.NewReplacer(" ", "", "-", "").Replace(q.Get("secret")))
 	o.secret, err = base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(strings.TrimRight(secret, "="))
 	if err != nil || len(o.secret) == 0 {
-		return OTP{}, errors.New("the secret is not base32")
+		return OTP{}, errors.New(i18n.T("The secret is letters A to Z and digits 2 to 7 (base32)."))
 	}
 	if d := q.Get("digits"); d != "" {
 		n, err := strconv.Atoi(d)
 		if err != nil || n < 6 || n > 8 {
-			return OTP{}, fmt.Errorf("digits %q: want 6 to 8", d)
+			return OTP{}, errors.New(i18n.Tf("Digits %s: want 6 to 8.", d))
 		}
 		o.digits = n
 	}
 	if p := q.Get("period"); p != "" {
 		n, err := strconv.Atoi(p)
 		if err != nil || n < 1 {
-			return OTP{}, fmt.Errorf("period %q: want seconds", p)
+			return OTP{}, errors.New(i18n.Tf("Period %s: want seconds.", p))
 		}
 		o.period = time.Duration(n) * time.Second
 	}
@@ -122,7 +124,7 @@ func ParseOTP(uri string) (OTP, error) {
 	case "SHA512":
 		o.hash = sha512.New
 	default:
-		return OTP{}, fmt.Errorf("algorithm %q: want SHA1, SHA256 or SHA512", q.Get("algorithm"))
+		return OTP{}, errors.New(i18n.Tf("Algorithm %s: want SHA1, SHA256 or SHA512.", q.Get("algorithm")))
 	}
 	return o, nil
 }

@@ -93,6 +93,15 @@ token …), else its initial.
   off the clipboard after 45 seconds.
 - Edit opens the entry's text; Delete asks first. + (beside the search)
   makes a new entry.
+- A one-time code is added with the QR-code button on an entry, or
+  **One-time code…** in the editor: paste the secret a site shows
+  (`JBSW Y3DP EHPK 3PXP`; spaces and lower case are fine) or its
+  `otpauth://` link, or read its QR code: **Scan the screen** (the Pass
+  windows step aside while each monitor is read), **Select an area**
+  (drag it out, with slurp), or **From an image…** (PNG or JPEG). The
+  code shows as it would be now; **Add** puts the `otpauth://` line in the
+  text, replacing the one there, and Save encrypts it. Google
+  Authenticator's export (several accounts in one code) is not read.
 - A category (right-click it) or an entry can be
   renamed or moved, in a dialog that takes the new path and previews it:
   its category and name, and every entry that moves. Another name renames

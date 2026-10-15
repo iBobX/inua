@@ -147,6 +147,48 @@ msgstr "%[1]s, %[2]s%[3]d h %[4]d min"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/pass/entry.go:94
+#: internal/apps/pass/otp.go:38
+msgid "Not an otpauth:// link."
+msgstr "otpauth:// 링크가 아닙니다."
+
+#: internal/apps/pass/entry.go:97
+msgid "Only time-based codes (totp), not %s."
+msgstr "시간 기반 코드(totp)만 됩니다. %s는 안 됩니다."
+
+#: internal/apps/pass/entry.go:104
+#: internal/apps/pass/otp.go:44
+msgid "The secret is letters A to Z and digits 2 to 7 (base32)."
+msgstr "시크릿은 A~Z 문자와 2~7 숫자입니다(base32)."
+
+#: internal/apps/pass/entry.go:109
+msgid "Digits %s: want 6 to 8."
+msgstr "자릿수 %s: 6~8이어야 합니다."
+
+#: internal/apps/pass/entry.go:116
+msgid "Period %s: want seconds."
+msgstr "주기 %s: 초 단위여야 합니다."
+
+#: internal/apps/pass/entry.go:127
+msgid "Algorithm %s: want SHA1, SHA256 or SHA512."
+msgstr "알고리즘 %s: SHA1, SHA256, SHA512 중 하나여야 합니다."
+
+#: internal/apps/pass/otp.go:29
+msgid "Type or paste the secret, or read its QR code."
+msgstr "시크릿을 입력하거나 붙여넣거나, QR 코드를 읽으세요."
+
+#: internal/apps/pass/otp.go:137
+msgid "This is a Google Authenticator export, which holds several accounts; show each site's own QR code instead."
+msgstr "여러 계정이 담긴 Google Authenticator 내보내기입니다. 각 사이트의 QR 코드를 대신 표시하세요."
+
+#: internal/apps/pass/otp.go:160
+msgid "No QR code found."
+msgstr "QR 코드를 찾지 못했습니다."
+
+#: internal/apps/pass/otp.go:162
+msgid "The QR code is not a one-time code."
+msgstr "이 QR 코드는 일회용 코드가 아닙니다."
+
 #: internal/apps/sysmon/process.go:46
 msgid "running"
 msgstr "달리기"
@@ -374,7 +416,8 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:199
+#: internal/appui/pass.go:207
+#: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -395,11 +438,11 @@ msgstr "이미지 뷰어"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
-#: internal/appui/pass.go:782
+#: internal/appui/pass.go:801
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
-#: ui/pass.ui:238
+#: ui/pass.ui:249
 msgid "Delete"
 msgstr "삭제"
 
@@ -501,7 +544,7 @@ msgid "Remove %s"
 msgstr "%s 제거"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:227
+#: ui/pass.ui:238
 msgid "Edit"
 msgstr "편집하다"
 
@@ -972,72 +1015,85 @@ msgstr "연장하는 중… gpg가 암호 문구를 묻습니다."
 msgid "Extended by 2 years"
 msgstr "2년 연장했습니다"
 
-#: internal/appui/pass.go:279
+#: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "비밀번호 저장소: .gpg-id가 있는 폴더"
 
-#: internal/appui/pass.go:287
+#: internal/appui/pass.go:296
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s은(는) 비밀번호 저장소가 아닙니다: .gpg-id가 없습니다 (pass init으로 만듭니다)."
 
-#: internal/appui/pass.go:307
+#: internal/appui/pass.go:316
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "비밀번호 저장소가 없습니다. pass init GPG-키-ID로 ~/.password-store에 만들 수 있고, 아래에서 다른 폴더를 추가할 수 있습니다."
 
-#: internal/appui/pass.go:334
+#: internal/appui/pass.go:343
 msgid "The store is empty. + makes an entry."
 msgstr "저장소가 비어 있습니다. +로 항목을 만듭니다."
 
-#: internal/appui/pass.go:337
-#: internal/appui/pass.go:638
-#: internal/appui/pass.go:708
-#: internal/appui/pass.go:967
+#: internal/appui/pass.go:346
+#: internal/appui/pass.go:657
+#: internal/appui/pass.go:727
+#: internal/appui/pass.go:986
 msgid "Choose an entry."
 msgstr "항목을 고르세요."
 
-#: internal/appui/pass.go:343
+#: internal/appui/pass.go:352
 msgid "Top level"
 msgstr "최상위"
 
-#: internal/appui/pass.go:351
+#: internal/appui/pass.go:360
 #: internal/ui/settings.go:598
 #: internal/ui/settings.go:625
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
 
-#: internal/appui/pass.go:356
+#: internal/appui/pass.go:365
 msgid "Right-click to rename or move"
 msgstr "오른쪽 클릭으로 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:484
+#: internal/appui/pass.go:494
 msgid "Decrypting %s"
 msgstr "%s 복호화하는 중"
 
-#: internal/appui/pass.go:538
+#: internal/appui/pass.go:550
+#: internal/appui/pass_otp.go:188
+msgid "Replace the one-time code"
+msgstr "일회용 코드 바꾸기"
+
+#: internal/appui/pass.go:552
+#: internal/appui/pass_otp.go:191
+#: ui/pass.ui:216
+#: ui/pass.ui:617
+msgid "Add a one-time code"
+msgstr "일회용 코드 추가"
+
+#: internal/appui/pass.go:554
 msgid "PASSWORD"
 msgstr "비밀번호"
 
-#: internal/appui/pass.go:543
-#: internal/appui/pass.go:595
+#: internal/appui/pass.go:559
+#: internal/appui/pass.go:611
+#: ui/pass.ui:749
 msgid "ONE-TIME CODE"
 msgstr "일회용 코드"
 
-#: internal/appui/pass.go:550
+#: internal/appui/pass.go:566
 msgid "NOTES"
 msgstr "메모"
 
-#: internal/appui/pass.go:579
+#: internal/appui/pass.go:595
 msgid "Show"
 msgstr "보기"
 
-#: internal/appui/pass.go:581
+#: internal/appui/pass.go:597
 #: internal/ui/notify.go:402
 msgid "Hide"
 msgstr "숨기기"
 
-#: internal/appui/pass.go:585
-#: internal/appui/pass.go:610
+#: internal/appui/pass.go:601
+#: internal/appui/pass.go:626
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1045,181 +1101,226 @@ msgstr "숨기기"
 msgid "Copy"
 msgstr "복사"
 
-#: internal/appui/pass.go:624
+#: internal/appui/pass.go:640
+#: internal/appui/pass_otp.go:246
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d초 남음"
 
-#: internal/appui/pass.go:764
+#: internal/appui/pass.go:783
 msgid "Rename or move the category “%s”"
 msgstr "카테고리 “%s” 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:765
+#: internal/appui/pass.go:784
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "새 경로. 다른 이름이면 이름이 바뀌고, 다른 카테고리 아래 경로면 모든 항목과 함께 그곳으로 옮겨집니다."
 
-#: internal/appui/pass.go:766
-#: internal/appui/pass.go:770
+#: internal/appui/pass.go:785
+#: internal/appui/pass.go:789
 msgid "Move"
 msgstr "이동"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:787
 msgid "Rename or move “%s”"
 msgstr "“%s” 이름 바꾸기 또는 이동"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:788
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "새 경로. 첫 부분이 카테고리입니다. 그 부분을 바꾸면 이동, 나머지를 바꾸면 이름 바꾸기입니다."
 
-#: internal/appui/pass.go:772
+#: internal/appui/pass.go:791
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "새 항목"
 
-#: internal/appui/pass.go:773
+#: internal/appui/pass.go:792
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "경로: 첫 부분이 카테고리입니다. 내용은 그다음에."
 
-#: internal/appui/pass.go:778
+#: internal/appui/pass.go:797
 msgid "Next"
 msgstr "다음"
 
-#: internal/appui/pass.go:780
+#: internal/appui/pass.go:799
 msgid "Delete “%s”?"
 msgstr "“%s”을(를) 삭제할까요?"
 
-#: internal/appui/pass.go:781
+#: internal/appui/pass.go:800
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니다."
 
-#: internal/appui/pass.go:817
-#: internal/appui/pass.go:847
+#: internal/appui/pass.go:836
+#: internal/appui/pass.go:866
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "파일"
 
-#: internal/appui/pass.go:843
+#: internal/appui/pass.go:862
 msgid "CATEGORY"
 msgstr "카테고리"
 
-#: internal/appui/pass.go:844
+#: internal/appui/pass.go:863
 msgid "NAME"
 msgstr "이름"
 
-#: internal/appui/pass.go:857
+#: internal/appui/pass.go:876
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "외 %d개"
 
-#: internal/appui/pass.go:901
+#: internal/appui/pass.go:920
 msgid "That is where it is."
 msgstr "이미 그곳에 있습니다."
 
-#: internal/appui/pass.go:903
+#: internal/appui/pass.go:922
 msgid "A category cannot move into itself."
 msgstr "카테고리를 자기 안으로 옮길 수 없습니다."
 
-#: internal/appui/pass.go:905
+#: internal/appui/pass.go:924
 msgid "That path is already in the store."
 msgstr "그 경로는 이미 저장소에 있습니다."
 
-#: internal/appui/pass.go:907
+#: internal/appui/pass.go:926
 msgid "It is no longer in the store."
 msgstr "더 이상 저장소에 없습니다."
 
-#: internal/appui/pass.go:909
+#: internal/appui/pass.go:928
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "경로의 각 부분에는 점으로 시작하지 않는 이름이 필요합니다."
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 msgid "TRUSTED APPS"
 msgstr "신뢰하는 앱"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
 msgstr[0] "앱 %d개"
 
-#: internal/appui/pass.go:1018
+#: internal/appui/pass.go:1037
 msgid "None: an app reading it is asked about first."
 msgstr "없음: 읽으려는 앱은 먼저 묻습니다."
 
-#: internal/appui/pass.go:1024
+#: internal/appui/pass.go:1043
 #: internal/ui/askpass.go:357
 #: internal/ui/settings_keyring.go:539
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
 
-#: internal/appui/pass.go:1029
-#: internal/appui/pass.go:1051
+#: internal/appui/pass.go:1048
+#: internal/appui/pass.go:1070
 #: internal/ui/settings_keyring.go:394
 #: internal/ui/settings_keyring.go:402
 #: internal/ui/settings_keyring.go:544
 msgid "%s · %s"
 msgstr "%s · %s"
 
-#: internal/appui/pass.go:1032
+#: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "제거"
 
-#: internal/appui/pass.go:1036
+#: internal/appui/pass.go:1055
 #: internal/ui/settings_keyring.go:564
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr "신뢰를 그만둡니다. 다음 읽기 때 묻습니다"
 
-#: internal/appui/pass.go:1041
+#: internal/appui/pass.go:1060
 msgid "LAST READS"
 msgstr "최근 읽기"
 
-#: internal/appui/pass.go:1043
+#: internal/appui/pass.go:1062
 msgid "No app has read it yet."
 msgstr "아직 읽은 앱이 없습니다."
 
-#: internal/appui/pass.go:1047
+#: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/ui/settings_keyring.go:433
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1월 2일 15:04"
 
-#: internal/appui/pass.go:1049
+#: internal/appui/pass.go:1068
 msgid "%s · %d times"
 msgid_plural "%s · %d times"
 msgstr[0] "%s · %d회"
 
-#: internal/appui/pass.go:1061
+#: internal/appui/pass.go:1080
 #: internal/ui/settings_keyring.go:575
 msgid "trusted"
 msgstr "신뢰됨"
 
-#: internal/appui/pass.go:1063
+#: internal/appui/pass.go:1082
 #: internal/ui/settings_keyring.go:577
 msgid "allowed once"
 msgstr "한 번 허용됨"
 
-#: internal/appui/pass.go:1065
+#: internal/appui/pass.go:1084
 #: internal/ui/settings_keyring.go:579
 msgid "allowed, and trusted from now on"
 msgstr "허용됨, 이제부터 신뢰"
 
-#: internal/appui/pass.go:1067
+#: internal/appui/pass.go:1086
 #: internal/ui/settings_keyring.go:581
 msgid "denied"
 msgstr "거부됨"
 
-#: internal/appui/pass.go:1069
+#: internal/appui/pass.go:1088
 #: internal/ui/settings_keyring.go:583
 msgid "allowed: no one to ask"
 msgstr "허용됨: 물어볼 곳 없음"
 
-#: internal/appui/pass.go:1071
+#: internal/appui/pass.go:1090
 msgid "read"
 msgstr "읽음"
+
+#: internal/appui/pass_otp.go:101
+msgid "It is not an image this app reads (PNG or JPEG)."
+msgstr "이 앱이 읽는 이미지(PNG 또는 JPEG)가 아닙니다."
+
+#: internal/appui/pass_otp.go:189
+msgid "Replace"
+msgstr "바꾸기"
+
+#: internal/appui/pass_otp.go:192
+#: internal/appui/workshop_manager.go:88
+#: ui/pass.ui:818
+msgid "Add"
+msgstr "추가"
+
+#: internal/appui/pass_otp.go:265
+msgid "Reading the screen needs grim."
+msgstr "화면을 읽으려면 grim이 필요합니다."
+
+#: internal/appui/pass_otp.go:269
+msgid "Selecting an area needs slurp."
+msgstr "영역을 선택하려면 slurp이 필요합니다."
+
+#: internal/appui/pass_otp.go:273
+msgid "No area was chosen."
+msgstr "영역을 고르지 않았습니다."
+
+#: internal/appui/pass_otp.go:288
+#: internal/appui/pass_otp.go:326
+msgid "The screen could not be read."
+msgstr "화면을 읽지 못했습니다."
+
+#: internal/appui/pass_otp.go:338
+msgid "An image with a QR code"
+msgstr "QR 코드가 있는 이미지"
+
+#: internal/appui/pass_otp.go:340
+#: internal/ui/settings.go:735
+msgid "Images"
+msgstr "이미지"
+
+#: internal/appui/pass_otp.go:361
+msgid "Reading the QR code…"
+msgstr "QR 코드 읽는 중…"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -2238,7 +2339,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "날씨를 읽을 수 없습니다.\n%s"
 
 #: internal/appui/weather.go:273
-#: ui/pass.ui:350
+#: ui/pass.ui:361
 msgid "Try again"
 msgstr "다시 시도해 보세요"
 
@@ -2323,8 +2424,9 @@ msgstr "알 수 없는 블록 %q"
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
+#: ui/pass.ui:481
+#: ui/pass.ui:578
+#: ui/pass.ui:809
 #: ui/polkit.ui:733
 msgid "Cancel"
 msgstr "취소"
@@ -2344,7 +2446,7 @@ msgstr "열기"
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:328
 #: ui/clock.ui:252
-#: ui/pass.ui:455
+#: ui/pass.ui:490
 msgid "Save"
 msgstr "저장"
 
@@ -2371,10 +2473,6 @@ msgstr "고장남"
 #: internal/appui/workshop_manager.go:82
 msgid "Their app.toml could not be read"
 msgstr "app.toml을 읽을 수 없습니다"
-
-#: internal/appui/workshop_manager.go:88
-msgid "Add"
-msgstr "추가"
 
 #: internal/appui/workshop_manager.go:89
 msgid "From a folder"
@@ -6258,10 +6356,6 @@ msgstr "저장되지 않음: %s"
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:735
-msgid "Images"
-msgstr "이미지"
-
 #: internal/ui/settings.go:775
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
@@ -7207,25 +7301,65 @@ msgstr "다른 저장소: .gpg-id가 있는 폴더"
 msgid "Search every entry"
 msgstr "모든 항목 검색"
 
-#: ui/pass.ui:216
+#: ui/pass.ui:227
 msgid "Rename or move"
 msgstr "이름 바꾸기 또는 이동"
 
-#: ui/pass.ui:278
+#: ui/pass.ui:289
 msgid "gpg may ask for your passphrase, in inua's dialog."
 msgstr "gpg가 inua 대화 상자에서 암호 문구를 물을 수 있습니다."
 
-#: ui/pass.ui:325
+#: ui/pass.ui:336
 msgid "It could not be decrypted"
 msgstr "복호화하지 못했습니다"
 
-#: ui/pass.ui:400
+#: ui/pass.ui:411
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "첫 줄은 비밀번호, “키: 값” 줄은 필드, otpauth:// 줄은 일회용 코드입니다."
 
-#: ui/pass.ui:510
+#: ui/pass.ui:468
+msgid "One-time code…"
+msgstr "일회용 코드…"
+
+#: ui/pass.ui:545
 msgid "category/name"
 msgstr "카테고리/이름"
+
+#: ui/pass.ui:627
+msgid "Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image."
+msgstr "사이트가 보여 주는 시크릿이나 otpauth:// 링크를 붙여넣으세요. 또는 QR 코드를 읽으세요: 화면, 화면의 일부, 이미지에서."
+
+#: ui/pass.ui:637
+msgid "JBSW Y3DP EHPK 3PXP, or otpauth://…"
+msgstr "JBSW Y3DP EHPK 3PXP 또는 otpauth://…"
+
+#: ui/pass.ui:649
+msgid "The Pass windows step aside while the screen is read"
+msgstr "화면을 읽는 동안 Pass 창이 비켜 납니다"
+
+#: ui/pass.ui:660
+msgid "Scan the screen"
+msgstr "화면 스캔"
+
+#: ui/pass.ui:673
+msgid "Drag out the area with the QR code"
+msgstr "QR 코드가 있는 영역을 끌어서 고르세요"
+
+#: ui/pass.ui:684
+msgid "Select an area"
+msgstr "영역 선택"
+
+#: ui/pass.ui:707
+msgid "From an image…"
+msgstr "이미지에서…"
+
+#: ui/pass.ui:722
+msgid "Issuer, e.g. GitHub"
+msgstr "발급자(예: GitHub)"
+
+#: ui/pass.ui:727
+msgid "Account, e.g. you@example.org"
+msgstr "계정(예: you@example.org)"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

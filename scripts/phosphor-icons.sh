@@ -152,6 +152,9 @@ help-about                            info
 # Pass: edit, and rename or move
 document-edit                         pencil-simple
 go-jump                               arrow-bend-up-right
+# Pass: a one-time code from a QR code, read off the screen
+pass-qr-code                          qr-code
+pass-scan                             scan
 # GPG: a signature that does not hold, saving, the key chosen
 dialog-warning                        warning
 document-save                         floppy-disk

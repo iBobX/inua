@@ -147,6 +147,48 @@ msgstr "%[1]s, %[2]s%[3]d h %[4]d min"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/pass/entry.go:94
+#: internal/apps/pass/otp.go:38
+msgid "Not an otpauth:// link."
+msgstr "Ce n’est pas un lien otpauth://."
+
+#: internal/apps/pass/entry.go:97
+msgid "Only time-based codes (totp), not %s."
+msgstr "Seulement les codes basés sur le temps (totp), pas %s."
+
+#: internal/apps/pass/entry.go:104
+#: internal/apps/pass/otp.go:44
+msgid "The secret is letters A to Z and digits 2 to 7 (base32)."
+msgstr "Le secret se compose des lettres A à Z et des chiffres 2 à 7 (base32)."
+
+#: internal/apps/pass/entry.go:109
+msgid "Digits %s: want 6 to 8."
+msgstr "Chiffres %s : 6 à 8 attendus."
+
+#: internal/apps/pass/entry.go:116
+msgid "Period %s: want seconds."
+msgstr "Période %s : des secondes attendues."
+
+#: internal/apps/pass/entry.go:127
+msgid "Algorithm %s: want SHA1, SHA256 or SHA512."
+msgstr "Algorithme %s : SHA1, SHA256 ou SHA512 attendu."
+
+#: internal/apps/pass/otp.go:29
+msgid "Type or paste the secret, or read its QR code."
+msgstr "Tapez ou collez le secret, ou lisez son code QR."
+
+#: internal/apps/pass/otp.go:137
+msgid "This is a Google Authenticator export, which holds several accounts; show each site's own QR code instead."
+msgstr "C’est un export de Google Authenticator, qui contient plusieurs comptes ; affichez plutôt le code QR de chaque site."
+
+#: internal/apps/pass/otp.go:160
+msgid "No QR code found."
+msgstr "Aucun code QR trouvé."
+
+#: internal/apps/pass/otp.go:162
+msgid "The QR code is not a one-time code."
+msgstr "Le code QR n’est pas un code à usage unique."
+
 #: internal/apps/sysmon/process.go:46
 msgid "running"
 msgstr "en cours d'exécution"
@@ -374,7 +416,8 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:199
+#: internal/appui/pass.go:207
+#: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -395,11 +438,11 @@ msgstr "Visionneuse d’images"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
-#: internal/appui/pass.go:782
+#: internal/appui/pass.go:801
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
-#: ui/pass.ui:238
+#: ui/pass.ui:249
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -501,7 +544,7 @@ msgid "Remove %s"
 msgstr "Supprimer %s"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:227
+#: ui/pass.ui:238
 msgid "Edit"
 msgstr "Modifier"
 
@@ -977,34 +1020,34 @@ msgstr "Prolongation… gpg demande votre phrase secrète."
 msgid "Extended by 2 years"
 msgstr "Prolongée de 2 ans"
 
-#: internal/appui/pass.go:279
+#: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "Un magasin de mots de passe : un dossier avec un .gpg-id"
 
-#: internal/appui/pass.go:287
+#: internal/appui/pass.go:296
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s n’est pas un magasin de mots de passe : il n’a pas de .gpg-id (pass init en crée un)."
 
-#: internal/appui/pass.go:307
+#: internal/appui/pass.go:316
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "Aucun magasin de mots de passe. pass init VOTRE-ID-DE-CLÉ-GPG en crée un dans ~/.password-store ; un autre dossier peut être ajouté en bas."
 
-#: internal/appui/pass.go:334
+#: internal/appui/pass.go:343
 msgid "The store is empty. + makes an entry."
 msgstr "Le magasin est vide. + crée une entrée."
 
-#: internal/appui/pass.go:337
-#: internal/appui/pass.go:638
-#: internal/appui/pass.go:708
-#: internal/appui/pass.go:967
+#: internal/appui/pass.go:346
+#: internal/appui/pass.go:657
+#: internal/appui/pass.go:727
+#: internal/appui/pass.go:986
 msgid "Choose an entry."
 msgstr "Choisissez une entrée."
 
-#: internal/appui/pass.go:343
+#: internal/appui/pass.go:352
 msgid "Top level"
 msgstr "Niveau supérieur"
 
-#: internal/appui/pass.go:351
+#: internal/appui/pass.go:360
 #: internal/ui/settings.go:598
 #: internal/ui/settings.go:625
 msgid "%d entry"
@@ -1012,38 +1055,51 @@ msgid_plural "%d entries"
 msgstr[0] "%d entrée"
 msgstr[1] "%d entrées"
 
-#: internal/appui/pass.go:356
+#: internal/appui/pass.go:365
 msgid "Right-click to rename or move"
 msgstr "Clic droit pour renommer ou déplacer"
 
-#: internal/appui/pass.go:484
+#: internal/appui/pass.go:494
 msgid "Decrypting %s"
 msgstr "Déchiffrement de %s"
 
-#: internal/appui/pass.go:538
+#: internal/appui/pass.go:550
+#: internal/appui/pass_otp.go:188
+msgid "Replace the one-time code"
+msgstr "Remplacer le code à usage unique"
+
+#: internal/appui/pass.go:552
+#: internal/appui/pass_otp.go:191
+#: ui/pass.ui:216
+#: ui/pass.ui:617
+msgid "Add a one-time code"
+msgstr "Ajouter un code à usage unique"
+
+#: internal/appui/pass.go:554
 msgid "PASSWORD"
 msgstr "MOT DE PASSE"
 
-#: internal/appui/pass.go:543
-#: internal/appui/pass.go:595
+#: internal/appui/pass.go:559
+#: internal/appui/pass.go:611
+#: ui/pass.ui:749
 msgid "ONE-TIME CODE"
 msgstr "CODE À USAGE UNIQUE"
 
-#: internal/appui/pass.go:550
+#: internal/appui/pass.go:566
 msgid "NOTES"
 msgstr "NOTES"
 
-#: internal/appui/pass.go:579
+#: internal/appui/pass.go:595
 msgid "Show"
 msgstr "Afficher"
 
-#: internal/appui/pass.go:581
+#: internal/appui/pass.go:597
 #: internal/ui/notify.go:402
 msgid "Hide"
 msgstr "Masquer"
 
-#: internal/appui/pass.go:585
-#: internal/appui/pass.go:610
+#: internal/appui/pass.go:601
+#: internal/appui/pass.go:626
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1051,99 +1107,100 @@ msgstr "Masquer"
 msgid "Copy"
 msgstr "Copier"
 
-#: internal/appui/pass.go:624
+#: internal/appui/pass.go:640
+#: internal/appui/pass_otp.go:246
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "%d seconde restante"
 msgstr[1] "%d secondes restantes"
 
-#: internal/appui/pass.go:764
+#: internal/appui/pass.go:783
 msgid "Rename or move the category “%s”"
 msgstr "Renommer ou déplacer la catégorie « %s »"
 
-#: internal/appui/pass.go:765
+#: internal/appui/pass.go:784
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "Son nouveau chemin. Un autre nom la renomme ; un chemin sous une autre catégorie l’y déplace, avec toutes ses entrées."
 
-#: internal/appui/pass.go:766
-#: internal/appui/pass.go:770
+#: internal/appui/pass.go:785
+#: internal/appui/pass.go:789
 msgid "Move"
 msgstr "Déplacer"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:787
 msgid "Rename or move “%s”"
 msgstr "Renommer ou déplacer « %s »"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:788
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "Son nouveau chemin. La première partie est sa catégorie : changez-la pour déplacer l’entrée, le reste pour la renommer."
 
-#: internal/appui/pass.go:772
+#: internal/appui/pass.go:791
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "Nouvelle entrée"
 
-#: internal/appui/pass.go:773
+#: internal/appui/pass.go:792
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "Son chemin : la première partie est sa catégorie. Son contenu vient ensuite."
 
-#: internal/appui/pass.go:778
+#: internal/appui/pass.go:797
 msgid "Next"
 msgstr "Suivant"
 
-#: internal/appui/pass.go:780
+#: internal/appui/pass.go:799
 msgid "Delete “%s”?"
 msgstr "Supprimer « %s » ?"
 
-#: internal/appui/pass.go:781
+#: internal/appui/pass.go:800
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass supprime son fichier ; un magasin git le garde dans son historique."
 
-#: internal/appui/pass.go:817
-#: internal/appui/pass.go:847
+#: internal/appui/pass.go:836
+#: internal/appui/pass.go:866
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "DOSSIER"
 
-#: internal/appui/pass.go:843
+#: internal/appui/pass.go:862
 msgid "CATEGORY"
 msgstr "CATÉGORIE"
 
-#: internal/appui/pass.go:844
+#: internal/appui/pass.go:863
 msgid "NAME"
 msgstr "NOM"
 
-#: internal/appui/pass.go:857
+#: internal/appui/pass.go:876
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "et %d de plus"
 msgstr[1] "et %d de plus"
 
-#: internal/appui/pass.go:901
+#: internal/appui/pass.go:920
 msgid "That is where it is."
 msgstr "Elle y est déjà."
 
-#: internal/appui/pass.go:903
+#: internal/appui/pass.go:922
 msgid "A category cannot move into itself."
 msgstr "Une catégorie ne peut pas se déplacer en elle-même."
 
-#: internal/appui/pass.go:905
+#: internal/appui/pass.go:924
 msgid "That path is already in the store."
 msgstr "Ce chemin est déjà dans le magasin."
 
-#: internal/appui/pass.go:907
+#: internal/appui/pass.go:926
 msgid "It is no longer in the store."
 msgstr "Il n’est plus dans le magasin."
 
-#: internal/appui/pass.go:909
+#: internal/appui/pass.go:928
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "Chaque partie du chemin a besoin d’un nom, sans point au début."
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 msgid "TRUSTED APPS"
 msgstr "APPS DE CONFIANCE"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
@@ -1151,85 +1208,129 @@ msgid_plural "%d apps"
 msgstr[0] "%d app"
 msgstr[1] "%d apps"
 
-#: internal/appui/pass.go:1018
+#: internal/appui/pass.go:1037
 msgid "None: an app reading it is asked about first."
 msgstr "Aucune : une app qui le lit fait d’abord l’objet d’une question."
 
-#: internal/appui/pass.go:1024
+#: internal/appui/pass.go:1043
 #: internal/ui/askpass.go:357
 #: internal/ui/settings_keyring.go:539
 msgid "Flatpak: %s"
 msgstr "Flatpak : %s"
 
-#: internal/appui/pass.go:1029
-#: internal/appui/pass.go:1051
+#: internal/appui/pass.go:1048
+#: internal/appui/pass.go:1070
 #: internal/ui/settings_keyring.go:394
 #: internal/ui/settings_keyring.go:402
 #: internal/ui/settings_keyring.go:544
 msgid "%s · %s"
 msgstr "%s · %s"
 
-#: internal/appui/pass.go:1032
+#: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "Retirer"
 
-#: internal/appui/pass.go:1036
+#: internal/appui/pass.go:1055
 #: internal/ui/settings_keyring.go:564
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr "Ne plus lui faire confiance : la question sera posée à sa prochaine lecture"
 
-#: internal/appui/pass.go:1041
+#: internal/appui/pass.go:1060
 msgid "LAST READS"
 msgstr "DERNIÈRES LECTURES"
 
-#: internal/appui/pass.go:1043
+#: internal/appui/pass.go:1062
 msgid "No app has read it yet."
 msgstr "Aucune app ne l’a encore lu."
 
-#: internal/appui/pass.go:1047
+#: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/ui/settings_keyring.go:433
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "2 Jan 15:04"
 
-#: internal/appui/pass.go:1049
+#: internal/appui/pass.go:1068
 msgid "%s · %d times"
 msgid_plural "%s · %d times"
 msgstr[0] "%s · %d fois"
 msgstr[1] "%s · %d fois"
 
-#: internal/appui/pass.go:1061
+#: internal/appui/pass.go:1080
 #: internal/ui/settings_keyring.go:575
 msgid "trusted"
 msgstr "de confiance"
 
-#: internal/appui/pass.go:1063
+#: internal/appui/pass.go:1082
 #: internal/ui/settings_keyring.go:577
 msgid "allowed once"
 msgstr "autorisée une fois"
 
-#: internal/appui/pass.go:1065
+#: internal/appui/pass.go:1084
 #: internal/ui/settings_keyring.go:579
 msgid "allowed, and trusted from now on"
 msgstr "autorisée, et de confiance désormais"
 
-#: internal/appui/pass.go:1067
+#: internal/appui/pass.go:1086
 #: internal/ui/settings_keyring.go:581
 msgid "denied"
 msgstr "refusée"
 
-#: internal/appui/pass.go:1069
+#: internal/appui/pass.go:1088
 #: internal/ui/settings_keyring.go:583
 msgid "allowed: no one to ask"
 msgstr "autorisée : personne à qui demander"
 
-#: internal/appui/pass.go:1071
+#: internal/appui/pass.go:1090
 msgid "read"
 msgstr "lu"
+
+#: internal/appui/pass_otp.go:101
+msgid "It is not an image this app reads (PNG or JPEG)."
+msgstr "Ce n’est pas une image que cette app lit (PNG ou JPEG)."
+
+#: internal/appui/pass_otp.go:189
+msgid "Replace"
+msgstr "Remplacer"
+
+#: internal/appui/pass_otp.go:192
+#: internal/appui/workshop_manager.go:88
+#: ui/pass.ui:818
+msgid "Add"
+msgstr "Ajouter"
+
+#: internal/appui/pass_otp.go:265
+msgid "Reading the screen needs grim."
+msgstr "Lire l’écran nécessite grim."
+
+#: internal/appui/pass_otp.go:269
+msgid "Selecting an area needs slurp."
+msgstr "Sélectionner une zone nécessite slurp."
+
+#: internal/appui/pass_otp.go:273
+msgid "No area was chosen."
+msgstr "Aucune zone choisie."
+
+#: internal/appui/pass_otp.go:288
+#: internal/appui/pass_otp.go:326
+msgid "The screen could not be read."
+msgstr "L’écran n’a pas pu être lu."
+
+#: internal/appui/pass_otp.go:338
+msgid "An image with a QR code"
+msgstr "Une image avec un code QR"
+
+#: internal/appui/pass_otp.go:340
+#: internal/ui/settings.go:735
+msgid "Images"
+msgstr "Images"
+
+#: internal/appui/pass_otp.go:361
+msgid "Reading the QR code…"
+msgstr "Lecture du code QR…"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -2252,7 +2353,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "La météo n'a pas pu être lue.\n%s"
 
 #: internal/appui/weather.go:273
-#: ui/pass.ui:350
+#: ui/pass.ui:361
 msgid "Try again"
 msgstr "Réessayez"
 
@@ -2337,8 +2438,9 @@ msgstr "Bloc inconnu %q"
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
+#: ui/pass.ui:481
+#: ui/pass.ui:578
+#: ui/pass.ui:809
 #: ui/polkit.ui:733
 msgid "Cancel"
 msgstr "Annuler"
@@ -2358,7 +2460,7 @@ msgstr "Ouvrir"
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:328
 #: ui/clock.ui:252
-#: ui/pass.ui:455
+#: ui/pass.ui:490
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2385,10 +2487,6 @@ msgstr "Cassées"
 #: internal/appui/workshop_manager.go:82
 msgid "Their app.toml could not be read"
 msgstr "Leur app.toml n’a pas pu être lu"
-
-#: internal/appui/workshop_manager.go:88
-msgid "Add"
-msgstr "Ajouter"
 
 #: internal/appui/workshop_manager.go:89
 msgid "From a folder"
@@ -6280,10 +6378,6 @@ msgstr "Non sauvegardé : %s"
 msgid "Choose a wallpaper"
 msgstr "Choisir un fond d'écran"
 
-#: internal/ui/settings.go:735
-msgid "Images"
-msgstr "Images"
-
 #: internal/ui/settings.go:775
 msgid "Off: another notification daemon can show them"
 msgstr "Désactivé : un autre démon de notification peut les afficher"
@@ -7232,25 +7326,65 @@ msgstr "Un autre magasin : un dossier avec un .gpg-id"
 msgid "Search every entry"
 msgstr "Chercher dans toutes les entrées"
 
-#: ui/pass.ui:216
+#: ui/pass.ui:227
 msgid "Rename or move"
 msgstr "Renommer ou déplacer"
 
-#: ui/pass.ui:278
+#: ui/pass.ui:289
 msgid "gpg may ask for your passphrase, in inua's dialog."
 msgstr "gpg peut vous demander votre phrase secrète, dans la fenêtre d’inua."
 
-#: ui/pass.ui:325
+#: ui/pass.ui:336
 msgid "It could not be decrypted"
 msgstr "Impossible de le déchiffrer"
 
-#: ui/pass.ui:400
+#: ui/pass.ui:411
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "La première ligne est le mot de passe ; les lignes « clé : valeur » sont des champs ; une ligne otpauth:// est un code à usage unique."
 
-#: ui/pass.ui:510
+#: ui/pass.ui:468
+msgid "One-time code…"
+msgstr "Code à usage unique…"
+
+#: ui/pass.ui:545
 msgid "category/name"
 msgstr "catégorie/nom"
+
+#: ui/pass.ui:627
+msgid "Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image."
+msgstr "Collez le secret qu’affiche le site, ou son lien otpauth://. Ou lisez son code QR : à l’écran, dans une zone de l’écran ou dans une image."
+
+#: ui/pass.ui:637
+msgid "JBSW Y3DP EHPK 3PXP, or otpauth://…"
+msgstr "JBSW Y3DP EHPK 3PXP, ou otpauth://…"
+
+#: ui/pass.ui:649
+msgid "The Pass windows step aside while the screen is read"
+msgstr "Les fenêtres de Pass s’écartent pendant la lecture de l’écran"
+
+#: ui/pass.ui:660
+msgid "Scan the screen"
+msgstr "Scanner l’écran"
+
+#: ui/pass.ui:673
+msgid "Drag out the area with the QR code"
+msgstr "Faites glisser pour délimiter la zone avec le code QR"
+
+#: ui/pass.ui:684
+msgid "Select an area"
+msgstr "Sélectionner une zone"
+
+#: ui/pass.ui:707
+msgid "From an image…"
+msgstr "Depuis une image…"
+
+#: ui/pass.ui:722
+msgid "Issuer, e.g. GitHub"
+msgstr "Émetteur, p. ex. GitHub"
+
+#: ui/pass.ui:727
+msgid "Account, e.g. you@example.org"
+msgstr "Compte, p. ex. vous@example.org"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

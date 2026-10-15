@@ -88,6 +88,8 @@ type passApp struct {
 	dlgPath                     gtk.Entry
 	dlgPreview                  gtk.Box
 	dlgOK                       gtk.Button
+	otpDlg                      passOTP // pass_otp.go
+	otpEntry, editOTP           gtk.Button
 
 	onButton       func(gtk.Button)
 	onFilter       func(gtk.SearchEntry)
@@ -108,7 +110,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.win = &gtk.ApplicationWindow{}
 	a.reveal, a.values = map[string]bool{}, map[string]string{}
 	a.keyring = c.config().Keyring.Folder
-	var addStore, editCancel, editSave, retry, dlgCancel gtk.Button
+	var addStore, editCancel, editSave, retry, dlgCancel, otpCancel gtk.Button
 	ui := c.Load("pass.ui")
 	ui.Get("pass", a.win)
 	for id, w := range map[string]gobject.Ptr{
@@ -124,7 +126,11 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 		"pass_dialog": &a.dlg, "dialog_title": &a.dlgTitle, "dialog_text": &a.dlgText,
 		"dialog_error": &a.dlgError, "dialog_path": &a.dlgPath, "dialog_preview": &a.dlgPreview,
 		"dialog_ok": &a.dlgOK, "dialog_cancel": &dlgCancel,
+		"otp_entry": &a.otpEntry, "edit_otp": &a.editOTP, "otp_cancel": &otpCancel,
 	} {
+		ui.Get(id, w)
+	}
+	for id, w := range a.otpWidgets() {
 		ui.Get(id, w)
 	}
 	ui.Close()
@@ -177,10 +183,11 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	a.onTick = func(uintptr) bool {
 		a.tickOTP()
+		a.tickOTPDialog()
 		return true
 	}
 	for _, b := range []*gtk.Button{&addStore, &editCancel, &editSave, &retry, &dlgCancel, &a.dlgOK,
-		&a.newEntry, &a.moveEntry, &a.editEntry, &a.deleteEntry} {
+		&a.newEntry, &a.moveEntry, &a.editEntry, &a.deleteEntry, &a.otpEntry, &a.editOTP} {
 		b.ConnectClicked(&a.onButton)
 	}
 	a.filter.ConnectSearchChanged(&a.onFilter)
@@ -193,6 +200,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.dlg.SetApplication(c.App)
 	a.onWinClose = func(gtk.Window) bool {
 		a.dlg.Destroy()
+		a.otpDlg.win.Destroy()
 		return false
 	}
 	a.win.ConnectCloseRequest(&a.onWinClose)
@@ -202,6 +210,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	keys := gtk.NewEventControllerKey()
 	keys.ConnectKeyPressed(&a.onDlgKey)
 	a.dlg.AddController(&keys.EventController)
+	a.bindOTP(&otpCancel)
 	// The rows to come while an entry decrypts: shimmering placeholders.
 	for _, w := range []int{120, 180, 90} {
 		row := gtk.NewBox(gtk.OrientationVerticalValue, 6)
@@ -470,6 +479,7 @@ func (a *passApp) closeEntry() {
 	a.keyringInfo.SetVisible(false)
 	a.keyringItem, a.trustedHere = "", nil
 	a.editor.GetBuffer().SetText("", 0)
+	a.otpEntry.SetSensitive(false) // until it is decrypted
 }
 
 // openEntry decrypts an entry and shows it; gpg-agent may ask for the
@@ -535,6 +545,12 @@ func (a *passApp) showFields() {
 	clear(a.values)
 	a.otpCode, a.otpLeft = nil, nil
 	e := a.entry
+	a.otpEntry.SetSensitive(true)
+	if e.OTP != "" {
+		a.otpEntry.SetTooltipText(i18n.T("Replace the one-time code"))
+	} else {
+		a.otpEntry.SetTooltipText(i18n.T("Add a one-time code"))
+	}
 	a.addRow("password", i18n.T("PASSWORD"), e.Password, true)
 	if e.OTP != "" {
 		if a.otp != nil {
@@ -627,6 +643,9 @@ func (a *passApp) tickOTP() {
 // --- buttons ---
 
 func (a *passApp) button(name string) {
+	if a.otpButton(name) {
+		return
+	}
 	switch kind, arg, _ := strings.Cut(name, ":"); kind {
 	case "cat":
 		a.picked, a.category = true, arg

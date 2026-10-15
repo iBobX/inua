@@ -147,6 +147,48 @@ msgstr "%s，%s%d 小时 %d 分钟"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/pass/entry.go:94
+#: internal/apps/pass/otp.go:38
+msgid "Not an otpauth:// link."
+msgstr "不是 otpauth:// 链接。"
+
+#: internal/apps/pass/entry.go:97
+msgid "Only time-based codes (totp), not %s."
+msgstr "只支持基于时间的验证码（totp），不支持 %s。"
+
+#: internal/apps/pass/entry.go:104
+#: internal/apps/pass/otp.go:44
+msgid "The secret is letters A to Z and digits 2 to 7 (base32)."
+msgstr "密钥由字母 A 到 Z 和数字 2 到 7 组成（base32）。"
+
+#: internal/apps/pass/entry.go:109
+msgid "Digits %s: want 6 to 8."
+msgstr "位数 %s：应为 6 到 8。"
+
+#: internal/apps/pass/entry.go:116
+msgid "Period %s: want seconds."
+msgstr "周期 %s：应为秒数。"
+
+#: internal/apps/pass/entry.go:127
+msgid "Algorithm %s: want SHA1, SHA256 or SHA512."
+msgstr "算法 %s：应为 SHA1、SHA256 或 SHA512。"
+
+#: internal/apps/pass/otp.go:29
+msgid "Type or paste the secret, or read its QR code."
+msgstr "输入或粘贴密钥，或读取它的二维码。"
+
+#: internal/apps/pass/otp.go:137
+msgid "This is a Google Authenticator export, which holds several accounts; show each site's own QR code instead."
+msgstr "这是 Google 身份验证器的导出码，包含多个账户；请改用各网站自己的二维码。"
+
+#: internal/apps/pass/otp.go:160
+msgid "No QR code found."
+msgstr "没有找到二维码。"
+
+#: internal/apps/pass/otp.go:162
+msgid "The QR code is not a one-time code."
+msgstr "这个二维码不是一次性验证码。"
+
 #: internal/apps/sysmon/process.go:46
 msgid "running"
 msgstr "运行中"
@@ -374,7 +416,8 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:199
+#: internal/appui/pass.go:207
+#: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -395,11 +438,11 @@ msgstr "图片查看器"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
-#: internal/appui/pass.go:782
+#: internal/appui/pass.go:801
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
-#: ui/pass.ui:238
+#: ui/pass.ui:249
 msgid "Delete"
 msgstr "删除"
 
@@ -501,7 +544,7 @@ msgid "Remove %s"
 msgstr "移除%s"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:227
+#: ui/pass.ui:238
 msgid "Edit"
 msgstr "编辑"
 
@@ -972,72 +1015,85 @@ msgstr "正在延长… gpg 会询问你的密码短语。"
 msgid "Extended by 2 years"
 msgstr "已延长 2 年"
 
-#: internal/appui/pass.go:279
+#: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "密码库：含有 .gpg-id 的文件夹"
 
-#: internal/appui/pass.go:287
+#: internal/appui/pass.go:296
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s 不是密码库：没有 .gpg-id（pass init 可以创建）。"
 
-#: internal/appui/pass.go:307
+#: internal/appui/pass.go:316
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "没有密码库。pass init 你的GPG密钥ID 会在 ~/.password-store 创建一个；也可以在下方添加其他文件夹。"
 
-#: internal/appui/pass.go:334
+#: internal/appui/pass.go:343
 msgid "The store is empty. + makes an entry."
 msgstr "密码库是空的。+ 可新建条目。"
 
-#: internal/appui/pass.go:337
-#: internal/appui/pass.go:638
-#: internal/appui/pass.go:708
-#: internal/appui/pass.go:967
+#: internal/appui/pass.go:346
+#: internal/appui/pass.go:657
+#: internal/appui/pass.go:727
+#: internal/appui/pass.go:986
 msgid "Choose an entry."
 msgstr "选择一个条目。"
 
-#: internal/appui/pass.go:343
+#: internal/appui/pass.go:352
 msgid "Top level"
 msgstr "顶层"
 
-#: internal/appui/pass.go:351
+#: internal/appui/pass.go:360
 #: internal/ui/settings.go:598
 #: internal/ui/settings.go:625
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 条"
 
-#: internal/appui/pass.go:356
+#: internal/appui/pass.go:365
 msgid "Right-click to rename or move"
 msgstr "右键点击以重命名或移动"
 
-#: internal/appui/pass.go:484
+#: internal/appui/pass.go:494
 msgid "Decrypting %s"
 msgstr "正在解密 %s"
 
-#: internal/appui/pass.go:538
+#: internal/appui/pass.go:550
+#: internal/appui/pass_otp.go:188
+msgid "Replace the one-time code"
+msgstr "替换一次性验证码"
+
+#: internal/appui/pass.go:552
+#: internal/appui/pass_otp.go:191
+#: ui/pass.ui:216
+#: ui/pass.ui:617
+msgid "Add a one-time code"
+msgstr "添加一次性验证码"
+
+#: internal/appui/pass.go:554
 msgid "PASSWORD"
 msgstr "密码"
 
-#: internal/appui/pass.go:543
-#: internal/appui/pass.go:595
+#: internal/appui/pass.go:559
+#: internal/appui/pass.go:611
+#: ui/pass.ui:749
 msgid "ONE-TIME CODE"
 msgstr "一次性验证码"
 
-#: internal/appui/pass.go:550
+#: internal/appui/pass.go:566
 msgid "NOTES"
 msgstr "备注"
 
-#: internal/appui/pass.go:579
+#: internal/appui/pass.go:595
 msgid "Show"
 msgstr "显示"
 
-#: internal/appui/pass.go:581
+#: internal/appui/pass.go:597
 #: internal/ui/notify.go:402
 msgid "Hide"
 msgstr "隐藏"
 
-#: internal/appui/pass.go:585
-#: internal/appui/pass.go:610
+#: internal/appui/pass.go:601
+#: internal/appui/pass.go:626
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1045,181 +1101,226 @@ msgstr "隐藏"
 msgid "Copy"
 msgstr "复制"
 
-#: internal/appui/pass.go:624
+#: internal/appui/pass.go:640
+#: internal/appui/pass_otp.go:246
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "剩 %d 秒"
 
-#: internal/appui/pass.go:764
+#: internal/appui/pass.go:783
 msgid "Rename or move the category “%s”"
 msgstr "重命名或移动类别“%s”"
 
-#: internal/appui/pass.go:765
+#: internal/appui/pass.go:784
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "新路径。换个名字即重命名；放到另一个类别下的路径，即连同所有条目移动过去。"
 
-#: internal/appui/pass.go:766
-#: internal/appui/pass.go:770
+#: internal/appui/pass.go:785
+#: internal/appui/pass.go:789
 msgid "Move"
 msgstr "移动"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:787
 msgid "Rename or move “%s”"
 msgstr "重命名或移动“%s”"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:788
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "新路径。第一段是类别：改它即移动条目，改其余部分即重命名。"
 
-#: internal/appui/pass.go:772
+#: internal/appui/pass.go:791
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "新建条目"
 
-#: internal/appui/pass.go:773
+#: internal/appui/pass.go:792
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "路径：第一段是类别。接着填写内容。"
 
-#: internal/appui/pass.go:778
+#: internal/appui/pass.go:797
 msgid "Next"
 msgstr "下一步"
 
-#: internal/appui/pass.go:780
+#: internal/appui/pass.go:799
 msgid "Delete “%s”?"
 msgstr "删除“%s”？"
 
-#: internal/appui/pass.go:781
+#: internal/appui/pass.go:800
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass 会删除它的文件；git 管理的密码库会在历史中保留。"
 
-#: internal/appui/pass.go:817
-#: internal/appui/pass.go:847
+#: internal/appui/pass.go:836
+#: internal/appui/pass.go:866
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "文件"
 
-#: internal/appui/pass.go:843
+#: internal/appui/pass.go:862
 msgid "CATEGORY"
 msgstr "类别"
 
-#: internal/appui/pass.go:844
+#: internal/appui/pass.go:863
 msgid "NAME"
 msgstr "名称"
 
-#: internal/appui/pass.go:857
+#: internal/appui/pass.go:876
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "还有 %d 个"
 
-#: internal/appui/pass.go:901
+#: internal/appui/pass.go:920
 msgid "That is where it is."
 msgstr "它已经在那里了。"
 
-#: internal/appui/pass.go:903
+#: internal/appui/pass.go:922
 msgid "A category cannot move into itself."
 msgstr "类别不能移动到自身内部。"
 
-#: internal/appui/pass.go:905
+#: internal/appui/pass.go:924
 msgid "That path is already in the store."
 msgstr "这个路径已经在密码库里了。"
 
-#: internal/appui/pass.go:907
+#: internal/appui/pass.go:926
 msgid "It is no longer in the store."
 msgstr "它已经不在密码库里了。"
 
-#: internal/appui/pass.go:909
+#: internal/appui/pass.go:928
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "路径的每一段都要有名字，且不能以点开头。"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 msgid "TRUSTED APPS"
 msgstr "受信任的应用"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
 msgstr[0] "%d 个应用"
 
-#: internal/appui/pass.go:1018
+#: internal/appui/pass.go:1037
 msgid "None: an app reading it is asked about first."
 msgstr "无：读取它的应用会先询问。"
 
-#: internal/appui/pass.go:1024
+#: internal/appui/pass.go:1043
 #: internal/ui/askpass.go:357
 #: internal/ui/settings_keyring.go:539
 msgid "Flatpak: %s"
 msgstr "Flatpak：%s"
 
-#: internal/appui/pass.go:1029
-#: internal/appui/pass.go:1051
+#: internal/appui/pass.go:1048
+#: internal/appui/pass.go:1070
 #: internal/ui/settings_keyring.go:394
 #: internal/ui/settings_keyring.go:402
 #: internal/ui/settings_keyring.go:544
 msgid "%s · %s"
 msgstr "%s · %s"
 
-#: internal/appui/pass.go:1032
+#: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "移除"
 
-#: internal/appui/pass.go:1036
+#: internal/appui/pass.go:1055
 #: internal/ui/settings_keyring.go:564
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr "不再信任：它下次读取时会询问"
 
-#: internal/appui/pass.go:1041
+#: internal/appui/pass.go:1060
 msgid "LAST READS"
 msgstr "最近读取"
 
-#: internal/appui/pass.go:1043
+#: internal/appui/pass.go:1062
 msgid "No app has read it yet."
 msgstr "尚无应用读取过它。"
 
-#: internal/appui/pass.go:1047
+#: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/ui/settings_keyring.go:433
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1月2日 15:04"
 
-#: internal/appui/pass.go:1049
+#: internal/appui/pass.go:1068
 msgid "%s · %d times"
 msgid_plural "%s · %d times"
 msgstr[0] "%s · %d 次"
 
-#: internal/appui/pass.go:1061
+#: internal/appui/pass.go:1080
 #: internal/ui/settings_keyring.go:575
 msgid "trusted"
 msgstr "已信任"
 
-#: internal/appui/pass.go:1063
+#: internal/appui/pass.go:1082
 #: internal/ui/settings_keyring.go:577
 msgid "allowed once"
 msgstr "允许一次"
 
-#: internal/appui/pass.go:1065
+#: internal/appui/pass.go:1084
 #: internal/ui/settings_keyring.go:579
 msgid "allowed, and trusted from now on"
 msgstr "已允许，今后信任"
 
-#: internal/appui/pass.go:1067
+#: internal/appui/pass.go:1086
 #: internal/ui/settings_keyring.go:581
 msgid "denied"
 msgstr "已拒绝"
 
-#: internal/appui/pass.go:1069
+#: internal/appui/pass.go:1088
 #: internal/ui/settings_keyring.go:583
 msgid "allowed: no one to ask"
 msgstr "已允许：无人可询问"
 
-#: internal/appui/pass.go:1071
+#: internal/appui/pass.go:1090
 msgid "read"
 msgstr "已读取"
+
+#: internal/appui/pass_otp.go:101
+msgid "It is not an image this app reads (PNG or JPEG)."
+msgstr "这不是本应用能读取的图片（PNG 或 JPEG）。"
+
+#: internal/appui/pass_otp.go:189
+msgid "Replace"
+msgstr "替换"
+
+#: internal/appui/pass_otp.go:192
+#: internal/appui/workshop_manager.go:88
+#: ui/pass.ui:818
+msgid "Add"
+msgstr "添加"
+
+#: internal/appui/pass_otp.go:265
+msgid "Reading the screen needs grim."
+msgstr "读取屏幕需要 grim。"
+
+#: internal/appui/pass_otp.go:269
+msgid "Selecting an area needs slurp."
+msgstr "选择区域需要 slurp。"
+
+#: internal/appui/pass_otp.go:273
+msgid "No area was chosen."
+msgstr "没有选择区域。"
+
+#: internal/appui/pass_otp.go:288
+#: internal/appui/pass_otp.go:326
+msgid "The screen could not be read."
+msgstr "无法读取屏幕。"
+
+#: internal/appui/pass_otp.go:338
+msgid "An image with a QR code"
+msgstr "含二维码的图片"
+
+#: internal/appui/pass_otp.go:340
+#: internal/ui/settings.go:735
+msgid "Images"
+msgstr "图像"
+
+#: internal/appui/pass_otp.go:361
+msgid "Reading the QR code…"
+msgstr "正在读取二维码…"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -2238,7 +2339,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "无法读取天气。\n%s"
 
 #: internal/appui/weather.go:273
-#: ui/pass.ui:350
+#: ui/pass.ui:361
 msgid "Try again"
 msgstr "再试一次"
 
@@ -2323,8 +2424,9 @@ msgstr "未知的组件 %q"
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
+#: ui/pass.ui:481
+#: ui/pass.ui:578
+#: ui/pass.ui:809
 #: ui/polkit.ui:733
 msgid "Cancel"
 msgstr "取消"
@@ -2344,7 +2446,7 @@ msgstr "打开"
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:328
 #: ui/clock.ui:252
-#: ui/pass.ui:455
+#: ui/pass.ui:490
 msgid "Save"
 msgstr "保存"
 
@@ -2371,10 +2473,6 @@ msgstr "已损坏"
 #: internal/appui/workshop_manager.go:82
 msgid "Their app.toml could not be read"
 msgstr "无法读取它们的 app.toml"
-
-#: internal/appui/workshop_manager.go:88
-msgid "Add"
-msgstr "添加"
 
 #: internal/appui/workshop_manager.go:89
 msgid "From a folder"
@@ -6258,10 +6356,6 @@ msgstr "未保存：%s"
 msgid "Choose a wallpaper"
 msgstr "选择壁纸"
 
-#: internal/ui/settings.go:735
-msgid "Images"
-msgstr "图像"
-
 #: internal/ui/settings.go:775
 msgid "Off: another notification daemon can show them"
 msgstr "关闭：另一个通知守护进程可以显示它们"
@@ -7207,25 +7301,65 @@ msgstr "其他密码库：含有 .gpg-id 的文件夹"
 msgid "Search every entry"
 msgstr "搜索所有条目"
 
-#: ui/pass.ui:216
+#: ui/pass.ui:227
 msgid "Rename or move"
 msgstr "重命名或移动"
 
-#: ui/pass.ui:278
+#: ui/pass.ui:289
 msgid "gpg may ask for your passphrase, in inua's dialog."
 msgstr "gpg 可能会在 inua 的对话框里询问密码短语。"
 
-#: ui/pass.ui:325
+#: ui/pass.ui:336
 msgid "It could not be decrypted"
 msgstr "无法解密"
 
-#: ui/pass.ui:400
+#: ui/pass.ui:411
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "第一行是密码；“键: 值”形式的行是字段；otpauth:// 开头的行是一次性验证码。"
 
-#: ui/pass.ui:510
+#: ui/pass.ui:468
+msgid "One-time code…"
+msgstr "一次性验证码…"
+
+#: ui/pass.ui:545
 msgid "category/name"
 msgstr "类别/名称"
+
+#: ui/pass.ui:627
+msgid "Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image."
+msgstr "粘贴网站给出的密钥，或它的 otpauth:// 链接。也可以读取它的二维码：从屏幕、屏幕的某个区域或图片中。"
+
+#: ui/pass.ui:637
+msgid "JBSW Y3DP EHPK 3PXP, or otpauth://…"
+msgstr "JBSW Y3DP EHPK 3PXP，或 otpauth://…"
+
+#: ui/pass.ui:649
+msgid "The Pass windows step aside while the screen is read"
+msgstr "读取屏幕时，Pass 的窗口会先让开"
+
+#: ui/pass.ui:660
+msgid "Scan the screen"
+msgstr "扫描屏幕"
+
+#: ui/pass.ui:673
+msgid "Drag out the area with the QR code"
+msgstr "拖出包含二维码的区域"
+
+#: ui/pass.ui:684
+msgid "Select an area"
+msgstr "选择区域"
+
+#: ui/pass.ui:707
+msgid "From an image…"
+msgstr "从图片…"
+
+#: ui/pass.ui:722
+msgid "Issuer, e.g. GitHub"
+msgstr "发行方，如 GitHub"
+
+#: ui/pass.ui:727
+msgid "Account, e.g. you@example.org"
+msgstr "账户，如 you@example.org"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

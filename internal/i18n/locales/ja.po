@@ -147,6 +147,48 @@ msgstr "%s、%s%d 時間 %d 分"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/pass/entry.go:94
+#: internal/apps/pass/otp.go:38
+msgid "Not an otpauth:// link."
+msgstr "otpauth:// のリンクではありません。"
+
+#: internal/apps/pass/entry.go:97
+msgid "Only time-based codes (totp), not %s."
+msgstr "時間ベースのコード（totp）のみです。%s は使えません。"
+
+#: internal/apps/pass/entry.go:104
+#: internal/apps/pass/otp.go:44
+msgid "The secret is letters A to Z and digits 2 to 7 (base32)."
+msgstr "シークレットは A〜Z の文字と 2〜7 の数字です（base32）。"
+
+#: internal/apps/pass/entry.go:109
+msgid "Digits %s: want 6 to 8."
+msgstr "桁数 %s：6〜8 にしてください。"
+
+#: internal/apps/pass/entry.go:116
+msgid "Period %s: want seconds."
+msgstr "周期 %s：秒数にしてください。"
+
+#: internal/apps/pass/entry.go:127
+msgid "Algorithm %s: want SHA1, SHA256 or SHA512."
+msgstr "アルゴリズム %s：SHA1、SHA256、SHA512 のいずれかにしてください。"
+
+#: internal/apps/pass/otp.go:29
+msgid "Type or paste the secret, or read its QR code."
+msgstr "シークレットを入力または貼り付けるか、QR コードを読み取ってください。"
+
+#: internal/apps/pass/otp.go:137
+msgid "This is a Google Authenticator export, which holds several accounts; show each site's own QR code instead."
+msgstr "これは複数のアカウントを含む Google Authenticator のエクスポートです。各サイト自身の QR コードを表示してください。"
+
+#: internal/apps/pass/otp.go:160
+msgid "No QR code found."
+msgstr "QR コードが見つかりません。"
+
+#: internal/apps/pass/otp.go:162
+msgid "The QR code is not a one-time code."
+msgstr "この QR コードはワンタイムコードではありません。"
+
 #: internal/apps/sysmon/process.go:46
 msgid "running"
 msgstr "ランニング"
@@ -374,7 +416,8 @@ msgid "Tailscale"
 msgstr "Tailscale"
 
 #: internal/appui/app.go:68
-#: internal/appui/pass.go:199
+#: internal/appui/pass.go:207
+#: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:3
 msgid "Pass"
@@ -395,11 +438,11 @@ msgstr "画像ビューアー"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
-#: internal/appui/pass.go:782
+#: internal/appui/pass.go:801
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
-#: ui/pass.ui:238
+#: ui/pass.ui:249
 msgid "Delete"
 msgstr "削除"
 
@@ -501,7 +544,7 @@ msgid "Remove %s"
 msgstr "%sを削除します"
 
 #: internal/appui/clock.go:402
-#: ui/pass.ui:227
+#: ui/pass.ui:238
 msgid "Edit"
 msgstr "編集"
 
@@ -972,72 +1015,85 @@ msgstr "延長しています… gpg がパスフレーズを尋ねます。"
 msgid "Extended by 2 years"
 msgstr "2年延長しました"
 
-#: internal/appui/pass.go:279
+#: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "パスワードストア：.gpg-id のあるフォルダー"
 
-#: internal/appui/pass.go:287
+#: internal/appui/pass.go:296
 msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
 msgstr "%s はパスワードストアではありません：.gpg-id がありません（pass init で作れます）。"
 
-#: internal/appui/pass.go:307
+#: internal/appui/pass.go:316
 msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
 msgstr "パスワードストアがありません。pass init GPG鍵ID で ~/.password-store に作れます。下から別のフォルダーも追加できます。"
 
-#: internal/appui/pass.go:334
+#: internal/appui/pass.go:343
 msgid "The store is empty. + makes an entry."
 msgstr "ストアは空です。+ でエントリーを作れます。"
 
-#: internal/appui/pass.go:337
-#: internal/appui/pass.go:638
-#: internal/appui/pass.go:708
-#: internal/appui/pass.go:967
+#: internal/appui/pass.go:346
+#: internal/appui/pass.go:657
+#: internal/appui/pass.go:727
+#: internal/appui/pass.go:986
 msgid "Choose an entry."
 msgstr "エントリーを選んでください。"
 
-#: internal/appui/pass.go:343
+#: internal/appui/pass.go:352
 msgid "Top level"
 msgstr "最上位"
 
-#: internal/appui/pass.go:351
+#: internal/appui/pass.go:360
 #: internal/ui/settings.go:598
 #: internal/ui/settings.go:625
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 件"
 
-#: internal/appui/pass.go:356
+#: internal/appui/pass.go:365
 msgid "Right-click to rename or move"
 msgstr "右クリックで名前の変更または移動"
 
-#: internal/appui/pass.go:484
+#: internal/appui/pass.go:494
 msgid "Decrypting %s"
 msgstr "%s を復号しています"
 
-#: internal/appui/pass.go:538
+#: internal/appui/pass.go:550
+#: internal/appui/pass_otp.go:188
+msgid "Replace the one-time code"
+msgstr "ワンタイムコードを置き換える"
+
+#: internal/appui/pass.go:552
+#: internal/appui/pass_otp.go:191
+#: ui/pass.ui:216
+#: ui/pass.ui:617
+msgid "Add a one-time code"
+msgstr "ワンタイムコードを追加"
+
+#: internal/appui/pass.go:554
 msgid "PASSWORD"
 msgstr "パスワード"
 
-#: internal/appui/pass.go:543
-#: internal/appui/pass.go:595
+#: internal/appui/pass.go:559
+#: internal/appui/pass.go:611
+#: ui/pass.ui:749
 msgid "ONE-TIME CODE"
 msgstr "ワンタイムコード"
 
-#: internal/appui/pass.go:550
+#: internal/appui/pass.go:566
 msgid "NOTES"
 msgstr "メモ"
 
-#: internal/appui/pass.go:579
+#: internal/appui/pass.go:595
 msgid "Show"
 msgstr "表示"
 
-#: internal/appui/pass.go:581
+#: internal/appui/pass.go:597
 #: internal/ui/notify.go:402
 msgid "Hide"
 msgstr "ヒデ"
 
-#: internal/appui/pass.go:585
-#: internal/appui/pass.go:610
+#: internal/appui/pass.go:601
+#: internal/appui/pass.go:626
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1045,181 +1101,226 @@ msgstr "ヒデ"
 msgid "Copy"
 msgstr "コピー"
 
-#: internal/appui/pass.go:624
+#: internal/appui/pass.go:640
+#: internal/appui/pass_otp.go:246
 msgid "%d second left"
 msgid_plural "%d seconds left"
 msgstr[0] "残り %d 秒"
 
-#: internal/appui/pass.go:764
+#: internal/appui/pass.go:783
 msgid "Rename or move the category “%s”"
 msgstr "カテゴリー「%s」の名前を変更または移動"
 
-#: internal/appui/pass.go:765
+#: internal/appui/pass.go:784
 msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
 msgstr "新しいパス。別の名前なら名前の変更、別のカテゴリーの下のパスなら、すべてのエントリーごとそこへ移動します。"
 
-#: internal/appui/pass.go:766
-#: internal/appui/pass.go:770
+#: internal/appui/pass.go:785
+#: internal/appui/pass.go:789
 msgid "Move"
 msgstr "移動"
 
-#: internal/appui/pass.go:768
+#: internal/appui/pass.go:787
 msgid "Rename or move “%s”"
 msgstr "「%s」の名前を変更または移動"
 
-#: internal/appui/pass.go:769
+#: internal/appui/pass.go:788
 msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
 msgstr "新しいパス。最初の部分がカテゴリーです。そこを変えれば移動、残りを変えれば名前の変更です。"
 
-#: internal/appui/pass.go:772
+#: internal/appui/pass.go:791
 #: ui/pass.ui:123
 msgid "New entry"
 msgstr "新しいエントリー"
 
-#: internal/appui/pass.go:773
+#: internal/appui/pass.go:792
 msgid "Its path: the first part is its category. Its content comes next."
 msgstr "パス：最初の部分がカテゴリーです。内容はその次に。"
 
-#: internal/appui/pass.go:778
+#: internal/appui/pass.go:797
 msgid "Next"
 msgstr "次へ"
 
-#: internal/appui/pass.go:780
+#: internal/appui/pass.go:799
 msgid "Delete “%s”?"
 msgstr "「%s」を削除しますか？"
 
-#: internal/appui/pass.go:781
+#: internal/appui/pass.go:800
 msgid "pass removes its file; a git store keeps it in its history."
 msgstr "pass がファイルを削除します。git のストアでは履歴に残ります。"
 
-#: internal/appui/pass.go:817
-#: internal/appui/pass.go:847
+#: internal/appui/pass.go:836
+#: internal/appui/pass.go:866
 #: internal/appui/viewer.go:812
 msgid "FILE"
 msgstr "ファイル"
 
-#: internal/appui/pass.go:843
+#: internal/appui/pass.go:862
 msgid "CATEGORY"
 msgstr "カテゴリー"
 
-#: internal/appui/pass.go:844
+#: internal/appui/pass.go:863
 msgid "NAME"
 msgstr "名前"
 
-#: internal/appui/pass.go:857
+#: internal/appui/pass.go:876
 msgid "and %d more"
 msgid_plural "and %d more"
 msgstr[0] "ほか %d 件"
 
-#: internal/appui/pass.go:901
+#: internal/appui/pass.go:920
 msgid "That is where it is."
 msgstr "すでにそこにあります。"
 
-#: internal/appui/pass.go:903
+#: internal/appui/pass.go:922
 msgid "A category cannot move into itself."
 msgstr "カテゴリーを自分の中へは移動できません。"
 
-#: internal/appui/pass.go:905
+#: internal/appui/pass.go:924
 msgid "That path is already in the store."
 msgstr "そのパスはすでにストアにあります。"
 
-#: internal/appui/pass.go:907
+#: internal/appui/pass.go:926
 msgid "It is no longer in the store."
 msgstr "もうストアにありません。"
 
-#: internal/appui/pass.go:909
+#: internal/appui/pass.go:928
 msgid "Each part of the path needs a name, without a leading dot."
 msgstr "パスの各部分には、先頭がドットでない名前が必要です。"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 msgid "TRUSTED APPS"
 msgstr "信頼するアプリ"
 
-#: internal/appui/pass.go:1016
+#: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
 #: internal/ui/settings_keyring.go:475
 msgid "%d app"
 msgid_plural "%d apps"
 msgstr[0] "%d 個のアプリ"
 
-#: internal/appui/pass.go:1018
+#: internal/appui/pass.go:1037
 msgid "None: an app reading it is asked about first."
 msgstr "なし。読もうとするアプリは先に確認します。"
 
-#: internal/appui/pass.go:1024
+#: internal/appui/pass.go:1043
 #: internal/ui/askpass.go:357
 #: internal/ui/settings_keyring.go:539
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
 
-#: internal/appui/pass.go:1029
-#: internal/appui/pass.go:1051
+#: internal/appui/pass.go:1048
+#: internal/appui/pass.go:1070
 #: internal/ui/settings_keyring.go:394
 #: internal/ui/settings_keyring.go:402
 #: internal/ui/settings_keyring.go:544
 msgid "%s · %s"
 msgstr "%s · %s"
 
-#: internal/appui/pass.go:1032
+#: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
 #: internal/ui/settings_keyring.go:560
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "削除"
 
-#: internal/appui/pass.go:1036
+#: internal/appui/pass.go:1055
 #: internal/ui/settings_keyring.go:564
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr "信頼をやめます。次の読み取りで確認します"
 
-#: internal/appui/pass.go:1041
+#: internal/appui/pass.go:1060
 msgid "LAST READS"
 msgstr "最近の読み取り"
 
-#: internal/appui/pass.go:1043
+#: internal/appui/pass.go:1062
 msgid "No app has read it yet."
 msgstr "まだどのアプリも読んでいません。"
 
-#: internal/appui/pass.go:1047
+#: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/ui/settings_keyring.go:433
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "1月2日 15:04"
 
-#: internal/appui/pass.go:1049
+#: internal/appui/pass.go:1068
 msgid "%s · %d times"
 msgid_plural "%s · %d times"
 msgstr[0] "%s · %d 回"
 
-#: internal/appui/pass.go:1061
+#: internal/appui/pass.go:1080
 #: internal/ui/settings_keyring.go:575
 msgid "trusted"
 msgstr "信頼済み"
 
-#: internal/appui/pass.go:1063
+#: internal/appui/pass.go:1082
 #: internal/ui/settings_keyring.go:577
 msgid "allowed once"
 msgstr "今回だけ許可"
 
-#: internal/appui/pass.go:1065
+#: internal/appui/pass.go:1084
 #: internal/ui/settings_keyring.go:579
 msgid "allowed, and trusted from now on"
 msgstr "許可し、今後は信頼"
 
-#: internal/appui/pass.go:1067
+#: internal/appui/pass.go:1086
 #: internal/ui/settings_keyring.go:581
 msgid "denied"
 msgstr "拒否"
 
-#: internal/appui/pass.go:1069
+#: internal/appui/pass.go:1088
 #: internal/ui/settings_keyring.go:583
 msgid "allowed: no one to ask"
 msgstr "許可: 確認できる相手なし"
 
-#: internal/appui/pass.go:1071
+#: internal/appui/pass.go:1090
 msgid "read"
 msgstr "読み取り"
+
+#: internal/appui/pass_otp.go:101
+msgid "It is not an image this app reads (PNG or JPEG)."
+msgstr "このアプリが読める画像（PNG または JPEG）ではありません。"
+
+#: internal/appui/pass_otp.go:189
+msgid "Replace"
+msgstr "置き換え"
+
+#: internal/appui/pass_otp.go:192
+#: internal/appui/workshop_manager.go:88
+#: ui/pass.ui:818
+msgid "Add"
+msgstr "追加"
+
+#: internal/appui/pass_otp.go:265
+msgid "Reading the screen needs grim."
+msgstr "画面の読み取りには grim が必要です。"
+
+#: internal/appui/pass_otp.go:269
+msgid "Selecting an area needs slurp."
+msgstr "範囲の選択には slurp が必要です。"
+
+#: internal/appui/pass_otp.go:273
+msgid "No area was chosen."
+msgstr "範囲が選ばれませんでした。"
+
+#: internal/appui/pass_otp.go:288
+#: internal/appui/pass_otp.go:326
+msgid "The screen could not be read."
+msgstr "画面を読み取れませんでした。"
+
+#: internal/appui/pass_otp.go:338
+msgid "An image with a QR code"
+msgstr "QR コードの入った画像"
+
+#: internal/appui/pass_otp.go:340
+#: internal/ui/settings.go:735
+msgid "Images"
+msgstr "画像"
+
+#: internal/appui/pass_otp.go:361
+msgid "Reading the QR code…"
+msgstr "QR コードを読み取り中…"
 
 #: internal/appui/stocks.go:274
 msgid "Search for a symbol to add it."
@@ -2238,7 +2339,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "天気が読めませんでした。\n%s"
 
 #: internal/appui/weather.go:273
-#: ui/pass.ui:350
+#: ui/pass.ui:361
 msgid "Try again"
 msgstr "もう一度試してください"
 
@@ -2323,8 +2424,9 @@ msgstr "不明な部品 %q"
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
-#: ui/pass.ui:446
-#: ui/pass.ui:543
+#: ui/pass.ui:481
+#: ui/pass.ui:578
+#: ui/pass.ui:809
 #: ui/polkit.ui:733
 msgid "Cancel"
 msgstr "キャンセル"
@@ -2344,7 +2446,7 @@ msgstr "開く"
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:328
 #: ui/clock.ui:252
-#: ui/pass.ui:455
+#: ui/pass.ui:490
 msgid "Save"
 msgstr "保存"
 
@@ -2371,10 +2473,6 @@ msgstr "壊れているもの"
 #: internal/appui/workshop_manager.go:82
 msgid "Their app.toml could not be read"
 msgstr "app.toml を読めませんでした"
-
-#: internal/appui/workshop_manager.go:88
-msgid "Add"
-msgstr "追加"
 
 #: internal/appui/workshop_manager.go:89
 msgid "From a folder"
@@ -6258,10 +6356,6 @@ msgstr "保存されていません: %s"
 msgid "Choose a wallpaper"
 msgstr "壁紙を選択してください"
 
-#: internal/ui/settings.go:735
-msgid "Images"
-msgstr "画像"
-
 #: internal/ui/settings.go:775
 msgid "Off: another notification daemon can show them"
 msgstr "オフ: 別の通知デーモンがそれらを表示できる"
@@ -7207,25 +7301,65 @@ msgstr "別のストア：.gpg-id のあるフォルダー"
 msgid "Search every entry"
 msgstr "すべてのエントリーを検索"
 
-#: ui/pass.ui:216
+#: ui/pass.ui:227
 msgid "Rename or move"
 msgstr "名前の変更または移動"
 
-#: ui/pass.ui:278
+#: ui/pass.ui:289
 msgid "gpg may ask for your passphrase, in inua's dialog."
 msgstr "gpg がパスフレーズを inua のダイアログで尋ねることがあります。"
 
-#: ui/pass.ui:325
+#: ui/pass.ui:336
 msgid "It could not be decrypted"
 msgstr "復号できませんでした"
 
-#: ui/pass.ui:400
+#: ui/pass.ui:411
 msgid "The first line is the password; lines “key: value” are fields; an otpauth:// line is a one-time code."
 msgstr "1行目がパスワード、「キー: 値」の行がフィールド、otpauth:// の行がワンタイムコードです。"
 
-#: ui/pass.ui:510
+#: ui/pass.ui:468
+msgid "One-time code…"
+msgstr "ワンタイムコード…"
+
+#: ui/pass.ui:545
 msgid "category/name"
 msgstr "カテゴリー/名前"
+
+#: ui/pass.ui:627
+msgid "Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image."
+msgstr "サイトが表示するシークレット、または otpauth:// のリンクを貼り付けます。または QR コードを読み取ります：画面全体、画面の一部、画像から。"
+
+#: ui/pass.ui:637
+msgid "JBSW Y3DP EHPK 3PXP, or otpauth://…"
+msgstr "JBSW Y3DP EHPK 3PXP、または otpauth://…"
+
+#: ui/pass.ui:649
+msgid "The Pass windows step aside while the screen is read"
+msgstr "画面を読み取る間、Pass のウィンドウは退きます"
+
+#: ui/pass.ui:660
+msgid "Scan the screen"
+msgstr "画面をスキャン"
+
+#: ui/pass.ui:673
+msgid "Drag out the area with the QR code"
+msgstr "QR コードのある範囲をドラッグして選びます"
+
+#: ui/pass.ui:684
+msgid "Select an area"
+msgstr "範囲を選択"
+
+#: ui/pass.ui:707
+msgid "From an image…"
+msgstr "画像から…"
+
+#: ui/pass.ui:722
+msgid "Issuer, e.g. GitHub"
+msgstr "発行元（例：GitHub）"
+
+#: ui/pass.ui:727
+msgid "Account, e.g. you@example.org"
+msgstr "アカウント（例：you@example.org）"
 
 #: ui/polkit.ui:156
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"

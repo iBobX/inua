@@ -158,6 +158,14 @@ ApplicationWindow pass {
                 }
               }
 
+              Button otp_entry {
+                styles ["plain"]
+                name: "otp-entry";
+                icon-name: "pass-qr-code-symbolic";
+                tooltip-text:  _("Add a one-time code");
+                valign: center;
+              }
+
               Button move_entry {
                 styles ["plain"]
                 name: "move-entry";
@@ -329,7 +337,27 @@ ApplicationWindow pass {
 
           Box {
             spacing: 8;
-            halign: end;
+
+            // A one-time code from its secret or its QR code: the dialog
+            // below puts its otpauth:// line in the text.
+            Button edit_otp {
+              styles ["outlined"]
+              name: "edit-otp";
+              hexpand: true;
+              halign: start;
+
+              Box {
+                spacing: 6;
+
+                Image {
+                  icon-name: "pass-qr-code-symbolic";
+                }
+
+                Label {
+                  label:  _("One-time code…");
+                }
+              }
+            }
 
             Button edit_cancel {
               styles ["outlined"]
@@ -408,6 +436,179 @@ Window pass_dialog {
       Button dialog_ok {
         styles ["suggested-action"]
         name: "dialog-ok";
+      }
+    }
+  }
+}
+
+// A one-time code: its secret or otpauth:// link typed or pasted, or
+// read from a QR code on the screen or in an image; the code it makes,
+// shown as it would be now. Modal over the window.
+Window otp_dialog {
+  styles ["app", "settings", "pass", "pass-dialog"]
+  modal: true;
+  resizable: false;
+  default-width: 520;
+  hide-on-close: true;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 12;
+
+    Label otp_title {
+      styles ["pass-title"]
+      label:  _("Add a one-time code");
+      xalign: 0;
+      wrap: true;
+    }
+
+    Label {
+      styles ["sub"]
+      label:  _("Paste the secret the site shows, or its otpauth:// link. Or read its QR code: from the screen, an area of it, or an image.");
+      xalign: 0;
+      wrap: true;
+    }
+
+    Entry otp_input {
+      styles ["pass-path-entry"]
+      placeholder-text:  _("JBSW Y3DP EHPK 3PXP, or otpauth://…");
+    }
+
+    Box {
+      spacing: 8;
+
+      Button otp_scan {
+        styles ["outlined"]
+        name: "otp-scan";
+        tooltip-text:  _("The Pass windows step aside while the screen is read");
+
+        Box {
+          spacing: 6;
+
+          Image {
+            icon-name: "pass-scan-symbolic";
+          }
+
+          Label {
+            label:  _("Scan the screen");
+          }
+        }
+      }
+
+      Button otp_area {
+        styles ["outlined"]
+        name: "otp-area";
+        tooltip-text:  _("Drag out the area with the QR code");
+
+        Box {
+          spacing: 6;
+
+          Image {
+            icon-name: "applets-screenshooter-symbolic";
+          }
+
+          Label {
+            label:  _("Select an area");
+          }
+        }
+      }
+
+      Button otp_image {
+        styles ["outlined"]
+        name: "otp-image";
+
+        Box {
+          spacing: 6;
+
+          Image {
+            icon-name: "image-x-generic-symbolic";
+          }
+
+          Label {
+            label:  _("From an image…");
+          }
+        }
+      }
+    }
+
+    // Who the code is for, as other authenticator apps name it.
+    Box {
+      spacing: 8;
+      homogeneous: true;
+
+      Entry otp_issuer {
+        placeholder-text:  _("Issuer, e.g. GitHub");
+      }
+
+      Entry otp_account {
+        placeholder-text:  _("Account, e.g. you@example.org");
+      }
+    }
+
+    // The code it makes now, and the seconds it stays.
+    Box otp_preview {
+      styles ["pass-row"]
+      spacing: 12;
+      visible: false;
+
+      Box {
+        orientation: vertical;
+        spacing: 3;
+        hexpand: true;
+
+        Label {
+          styles ["kicker"]
+          label:  _("ONE-TIME CODE");
+          xalign: 0;
+        }
+
+        Box {
+          spacing: 12;
+
+          Label otp_code {
+            styles ["pass-otp"]
+            xalign: 0;
+          }
+
+          Label otp_left {
+            styles ["sub"]
+            valign: center;
+          }
+        }
+      }
+    }
+
+    Label otp_status {
+      styles ["sub"]
+      xalign: 0;
+      wrap: true;
+      visible: false;
+    }
+
+    Label otp_error {
+      styles ["pass-error"]
+      xalign: 0;
+      wrap: true;
+      visible: false;
+    }
+
+    Box {
+      spacing: 8;
+      halign: end;
+      margin-top: 4;
+
+      Button otp_cancel {
+        styles ["outlined"]
+        name: "otp-cancel";
+        label:  _("Cancel");
+      }
+
+      Button otp_ok {
+        styles ["suggested-action"]
+        name: "otp-ok";
+        label:  _("Add");
+        sensitive: false;
       }
     }
   }
