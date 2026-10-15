@@ -9,7 +9,15 @@ Nautilus in an inua session. It aims to be:
 - **keyboard first**: every action has a key, typing filters, a jump list
   learns the folders you use, and the mouse is never required;
 - **quiet**: the shell's colours, hairlines, monospace readouts and
-  Phosphor icons; no toolbar full of buttons.
+  Phosphor icons for its buttons; no toolbar full of buttons.
+
+Files, folders, places and drives are drawn with the desktop's icon theme,
+in colour: the theme the XDG settings portal names
+(`org.gnome.desktop.interface icon-theme`, else GTK's setting), with
+GIO's icon for each MIME type (the theme's specific one, else its generic
+one) and the theme's own icons for home and the user folders. They are
+looked up in an icon theme of that name alone: the window's theme is the
+apps' Phosphor set, and GTK would take its symbolic icons for these names.
 
 It is a program of its own (`cmd/inua-files`), like `inua-games` and
 `inua-assistant`, so `inua-apps` does not grow and the file manager can
@@ -44,7 +52,7 @@ the share first.
 
 | Part | What | Key |
 | --- | --- | --- |
-| Sidebar (left) | Places, the trash, devices and network shares; at its foot, hidden files, two panes, details and the keys. A right click on an entry: open it in a new tab or window, and remove a bookmark, empty the trash, eject a drive or disconnect a share. | F9 shows or hides it |
+| Sidebar (left) | Places, the trash, devices and network shares; at its foot, framed toggles (as Calculator's) for hidden files, two panes and details, and the keys. A right click on an entry: open it in a new tab or window, and remove a bookmark, empty the trash, eject a drive or disconnect a share. | F9 shows or hides it |
 | Panes (centre) | One pane, or two side by side (commander style). Each has its own tabs, and each tab its own folder and history; a pane's view, order and selection are its folder's. With two panes, a status square starts each path: filled for the one the keys go to, hollow for the other, whose selection loses the accent. | F3 two panes; Tab the other pane |
 | Tabs | A pane's tabs show above it once it has two: the folder's name, a button that closes it (a middle click too). | Ctrl+T, Ctrl+W, Ctrl+Tab |
 | Details (right) | The selection: a thumbnail or the first lines of a text, its kind (MIME type), size, modified, opened and changed times, permissions, owner, where it is and where a link points; a folder's size and count, added up on a goroutine. Several selected: how many, and their size. | Space, Ctrl+I, Alt+Enter |
@@ -53,7 +61,8 @@ the share first.
 
 ### Views
 
-The head's text tabs, LIST and GRID (the apps' tabs), choose the view:
+A segmented control in the head (as GPG's Text | Files), with a list and
+a grid icon, chooses the view:
 
 | View | What | Key |
 | --- | --- | --- |

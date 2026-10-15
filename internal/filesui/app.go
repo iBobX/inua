@@ -38,6 +38,7 @@ type App struct {
 	queued   []func() // D-Bus requests that came before the first window
 
 	kinds  kinds
+	icons  *themeIcons // the desktop's, for files, folders and places
 	thumbs *thumbs
 	counts *counts
 
@@ -47,6 +48,7 @@ type App struct {
 	nets    []files.NetMount
 
 	users, groups map[uint32]string // owners' names, looked up once
+	folders       map[string]string // folders' icons, by path
 
 	clip  []string // what this app last put on the clipboard
 	cut   bool
@@ -58,7 +60,7 @@ type App struct {
 
 // New makes the app; Register gives it to appui once it holds its name.
 func New() *App {
-	return &App{kinds: kinds{}, thumbs: newThumbs(), counts: newCounts(), users: map[uint32]string{}, groups: map[uint32]string{}}
+	return &App{kinds: kinds{}, thumbs: newThumbs(), counts: newCounts(), users: map[uint32]string{}, groups: map[uint32]string{}, folders: map[string]string{}}
 }
 
 // Register makes a the "files" light app, its every start its own: a
@@ -72,6 +74,7 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.h = newHub()
 	a.settings = files.LoadSettings()
+	a.icons = newThemeIcons(c.DesktopIcons)
 	w := a.newWindow()
 	a.watchDevices()
 	return &w.win
@@ -160,6 +163,16 @@ func (a *App) ShowItemsNow(paths []string) []*window {
 func (a *App) closed(w *window) {
 	a.wins = slices.DeleteFunc(a.wins, func(x *window) bool { return x == w })
 	a.settings.Save()
+}
+
+// folderIcon is a folder's icon, worked out once for each folder.
+func (a *App) folderIcon(path string) string {
+	if icon, ok := a.folders[path]; ok {
+		return icon
+	}
+	icon := folderIcon(path)
+	a.folders[path] = icon
+	return icon
 }
 
 // --- devices ---

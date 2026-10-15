@@ -1,7 +1,7 @@
 package filesui
 
 import (
-	"strings"
+	"path/filepath"
 
 	"codeberg.org/puregotk/puregotk/v4/gio"
 
@@ -10,8 +10,16 @@ import (
 )
 
 // kind is what a file is, for its icon and the list's Kind column.
+//
+// Files, folders, places and drives are drawn with the desktop's icon
+// theme, in colour (the theme the XDG settings portal names, which the
+// apps' Phosphor theme inherits): GIO's icon for a MIME type names the
+// theme's specific icon and its generic one, and a theme that lacks one
+// falls back to the next. The window's buttons keep the shell's icons.
 type kind struct {
-	mime, desc, icon string
+	mime, desc string
+	icon       string        // a theme icon's name, when gicon is nil
+	gicon      *gio.IconBase // GIO's icon for the type
 }
 
 // kinds caches GIO's guess for each extension: the guess reads only the
@@ -21,69 +29,47 @@ type kinds map[string]kind
 func (k kinds) of(e *files.Entry) kind {
 	switch {
 	case e.Broken:
-		return kind{"inode/symlink", i18n.T("Broken link"), "emblem-symbolic-link-symbolic"}
+		return kind{mime: "inode/symlink", desc: i18n.T("Broken link"), icon: "emblem-unreadable"}
 	case e.Dir:
-		return kind{"inode/directory", i18n.T("Folder"), "folder-symbolic"}
+		return kind{mime: "inode/directory", desc: i18n.T("Folder"), icon: "folder"}
 	}
 	ext := e.Ext()
 	if ext == "" && e.Mode&0o111 != 0 {
-		return kind{"application/x-executable", i18n.T("Program"), "application-x-executable-symbolic"}
+		return kind{mime: "application/x-executable", desc: i18n.T("Program"), icon: "application-x-executable"}
 	}
 	if c, ok := k[ext]; ok {
 		return c
 	}
 	var uncertain bool
 	mime := gio.ContentTypeGuess(e.Name, nil, 0, &uncertain)
-	c := kind{mime: mime, desc: gio.ContentTypeGetDescription(mime), icon: iconFor(mime)}
+	c := kind{mime: mime, desc: gio.ContentTypeGetDescription(mime), gicon: gio.ContentTypeGetIcon(mime)}
 	if ext != "" {
 		k[ext] = c
 	}
 	return c
 }
 
-// iconFor is the shell's icon for a MIME type: a few kinds, drawn from
-// Phosphor (ui/icons), rather than the theme's many.
-func iconFor(mime string) string {
-	top, sub, _ := strings.Cut(mime, "/")
-	switch top {
-	case "image":
-		return "image-x-generic-symbolic"
-	case "audio":
-		return "audio-x-generic-symbolic"
-	case "video":
-		return "video-x-generic-symbolic"
-	case "font":
-		return "font-x-generic-symbolic"
-	case "text":
-		switch sub {
-		case "plain", "markdown", "x-readme", "x-log", "csv":
-			return "text-x-generic-symbolic"
+// folderIcon is a folder's icon: home's, the user folders' own, the
+// generic folder's for the rest.
+func folderIcon(path string) string {
+	if path == files.Home() {
+		return "user-home"
+	}
+	for key, dir := range files.UserDirs() {
+		if dir == path {
+			if icon, ok := userDirIcons[key]; ok {
+				return icon
+			}
 		}
-		return "text-x-script-symbolic"
 	}
-	switch {
-	case sub == "pdf":
-		return "application-pdf-symbolic"
-	case strings.Contains(sub, "zip"), strings.Contains(sub, "tar"), strings.Contains(sub, "compressed"),
-		strings.Contains(sub, "rar"), strings.Contains(sub, "7z"), strings.Contains(sub, "xz"),
-		strings.Contains(sub, "bzip"), strings.Contains(sub, "zstd"), strings.Contains(sub, "archive"),
-		strings.Contains(sub, "deb"), strings.Contains(sub, "rpm"):
-		return "package-x-generic-symbolic"
-	case strings.Contains(sub, "spreadsheet"), strings.Contains(sub, "excel"):
-		return "x-office-spreadsheet-symbolic"
-	case strings.Contains(sub, "presentation"), strings.Contains(sub, "powerpoint"):
-		return "x-office-presentation-symbolic"
-	case strings.Contains(sub, "document"), strings.Contains(sub, "msword"), strings.Contains(sub, "rtf"),
-		strings.Contains(sub, "epub"):
-		return "x-office-document-symbolic"
-	case strings.Contains(sub, "iso9660"), strings.Contains(sub, "disk-image"), strings.Contains(sub, "cd-image"):
-		return "media-optical-symbolic"
-	case strings.Contains(sub, "executable"), strings.Contains(sub, "sharedlib"), strings.Contains(sub, "appimage"):
-		return "application-x-executable-symbolic"
-	case strings.Contains(sub, "json"), strings.Contains(sub, "xml"), strings.Contains(sub, "javascript"),
-		strings.Contains(sub, "shellscript"), strings.Contains(sub, "x-python"), strings.Contains(sub, "toml"),
-		strings.Contains(sub, "yaml"), strings.Contains(sub, "sql"):
-		return "text-x-script-symbolic"
+	if filepath.Dir(path) == path {
+		return "drive-harddisk"
 	}
-	return "application-x-generic-symbolic"
+	return "folder"
+}
+
+var userDirIcons = map[string]string{
+	"DESKTOP": "user-desktop", "DOCUMENTS": "folder-documents", "DOWNLOAD": "folder-download",
+	"MUSIC": "folder-music", "PICTURES": "folder-pictures", "VIDEOS": "folder-videos",
+	"TEMPLATES": "folder-templates", "PUBLICSHARE": "folder-publicshare",
 }

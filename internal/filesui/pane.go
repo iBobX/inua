@@ -301,15 +301,14 @@ func (p *pane) bindRow(item uintptr) {
 	r.name.SetText(e.Name)
 	zoom := p.w.app.settings.Zoom
 	if r.grid {
-		r.icon.SetPixelSize(gridIcon(zoom))
 		if tex := p.w.app.thumbs.get(r.path, e, p); tex != nil {
+			r.icon.SetPixelSize(gridIcon(zoom))
 			r.icon.SetFromPaintable(tex)
 		} else {
-			r.icon.SetFromIconName(k.icon)
+			p.kindIcon(k, e, r, gridIcon(zoom))
 		}
 	} else {
-		r.icon.SetPixelSize(listIcon(zoom))
-		r.icon.SetFromIconName(k.icon)
+		p.kindIcon(k, e, r, listIcon(zoom))
 		for c, col := range columns {
 			on := p.w.app.settings.ShowsColumn(col.by)
 			r.cols[c].SetVisible(on)
@@ -322,6 +321,16 @@ func (p *pane) bindRow(item uintptr) {
 	setClass(&r.box.Widget, "link", e.Link != "")
 	setClass(&r.box.Widget, "cut", p.w.app.isCut(r.path))
 	r.box.SetTooltipText(tooltipFor(e, r.path))
+}
+
+// kindIcon shows an entry's icon in its row: a folder's by where it is
+// (home, the user folders), else its kind's.
+func (p *pane) kindIcon(k kind, e *files.Entry, r *row, size int32) {
+	if e.Dir && !e.Broken {
+		p.w.app.icons.set(&r.icon, p.w.app.folderIcon(r.path), size)
+		return
+	}
+	p.w.app.icons.setKind(&r.icon, k, size)
 }
 
 func tooltipFor(e *files.Entry, path string) string {
