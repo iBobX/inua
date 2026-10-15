@@ -4,19 +4,30 @@
 # The shell puts them in an icon theme of its own (style.icons = "phosphor").
 # Edit the list and run again to change or add one; the files are committed.
 #
-#   scripts/phosphor-icons.sh path/to/node_modules/@phosphor-icons/core
+#   scripts/phosphor-icons.sh path/to/node_modules/@phosphor-icons/core [WEIGHT]
 #
-# Regular weight (npm i @phosphor-icons/core).
+# The regular weight (the default) is the built-in set. Another weight
+# (bold, fill, light, thin, duotone) makes a sample icon set of the user's
+# own, config/inua/icons/phosphor-WEIGHT, which `inua init` installs.
+# npm i @phosphor-icons/core
 set -eu
-src=${1:?usage: $0 PHOSPHOR_CORE_DIR (node_modules/@phosphor-icons/core)}
-dest=$(CDPATH= cd -- "$(dirname -- "$0")/../ui/icons" && pwd)
+src=${1:?usage: $0 PHOSPHOR_CORE_DIR (node_modules/@phosphor-icons/core) [WEIGHT]}
+weight=${2:-regular}
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if [ "$weight" = regular ]; then
+	dest=$root/ui/icons suffix=
+else
+	dest=$root/config/inua/icons/phosphor-$weight suffix=-$weight
+fi
+[ -d "$src/assets/$weight" ] || { echo "$0: no weight $weight in $src/assets" >&2; exit 1; }
+mkdir -p "$dest"
 rm -f "$dest"/*.svg
 cp "$src/LICENSE" "$dest/LICENSE"
 
 # freedesktop name (without -symbolic)   Phosphor name
 while read -r name icon; do
 	case "$name" in '' | '#'*) continue ;; esac
-	cp "$src/assets/regular/$icon.svg" "$dest/$name-symbolic.svg"
+	cp "$src/assets/$weight/$icon$suffix.svg" "$dest/$name-symbolic.svg"
 done <<'LIST'
 # bar and control center: network
 network-offline                       globe-simple-x
@@ -73,7 +84,7 @@ dialog-password                       key
 security-high                         shield-check
 action-unavailable                    prohibit
 edit-paste                            clipboard-text
-applets-screenshooter                 selection
+applets-screenshooter                 camera
 emblem-system                         gear-six
 power-profile-power-saver             leaf
 weather-clear-night                   moon
@@ -244,5 +255,7 @@ fortune-pier                          boat
 fortune-power                         lightning
 fortune-water                         drop
 fortune-dice                          dice-five
+# Files
+view-more                             dots-three
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

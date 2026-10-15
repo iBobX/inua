@@ -8,6 +8,8 @@ The sample configuration inua needs on a new system:
 | `hypr/inua.conf` | `~/.config/hypr/inua.conf` | The Hyprland settings inua manages (keyboard, touchpad, shortcuts, the session lock restore setting, the light apps' window rule), written by inua from `config.toml`. The sample has no settings of yours; `hyprland.conf` sources it last |
 | `inua/config.toml` | `~/.config/inua/config.toml` | The shell's settings: every option at its default, documented |
 | `inua/style.css` | `~/.config/inua/style.css` | Style overrides: the built-in colours and examples, all commented out |
+| `inua/themes/nord.css` | `~/.config/inua/themes/nord.css` | A sample theme of your own, the Nord palette (MIT): every colour token, each with what it paints. Not in use until chosen |
+| `inua/icons/phosphor-bold/` | `~/.config/inua/icons/phosphor-bold/` | A sample icon set of your own: Phosphor's bold weight (MIT), every icon the shell draws. Not in use until chosen |
 | `apps/` | `~/.local/share/applications/`, `~/.local/share/icons/hicolor/scalable/apps/` (`make install`) | Desktop entries and icons of the light apps (Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Viewer; see [docs/apps.md](../docs/apps.md)). The icons' glyphs are Phosphor's (MIT) |
 | `fcitx5/themes/` | `~/.local/share/fcitx5/themes/` (`make install-fcitx`) | Fcitx 5 themes in inua's style |
 
@@ -217,7 +219,8 @@ built-in [Phosphor](https://phosphoricons.com) regular icons (MIT; licence in
 Appearance page switches back to the system icon theme. App icons in the
 launcher, dock and tray always come from the system theme. To change or add
 an icon, edit the table in `scripts/phosphor-icons.sh` and run it again (its
-argument is the `@phosphor-icons/core` directory).
+argument is the `@phosphor-icons/core` directory), then once more with `bold`
+as a second argument for the sample icon set.
 
 Themes and icon sets of your own live next to `config.toml`:
 
@@ -232,6 +235,9 @@ Themes and icon sets of your own live next to `config.toml`:
   symbolic icons in the text colour, so one set serves light and dark
   themes alike. inua's apps use the set too.
 
+`inua init` installs one of each to start from: `themes/nord.css` and
+`icons/phosphor-bold/`.
+
 Names are lower-case letters, digits, `-` and `_`. Both appear in the
 Appearance page and in `style.theme` / `style.icons`. The page also adds
 them: Addâ¦ copies a theme file or an icon folder here, named after it
@@ -245,8 +251,9 @@ next start or settings change.
 spacing and your own `style.css` keep their sizes.
 
 Tests keep `config.toml` equal to the defaults (`internal/config`): add new
-settings to the sample too. `samples.go` embeds this directory's four files
-in `inua`; a test keeps the `inua.conf` sample equal to what empty settings
+settings to the sample too. `samples.go` embeds this directory's `hypr/` and
+`inua/` files in `inua`; a test keeps the sample theme setting every token
+`ui/style.css` uses and the sample icon set naming every built-in icon; a test keeps the `inua.conf` sample equal to what empty settings
 produce (`internal/hyprconf`).
 
 ## Dock and bar
