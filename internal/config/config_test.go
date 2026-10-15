@@ -214,6 +214,7 @@ func TestFormatRoundTrip(t *testing.T) {
 	c.Background.Color = "#102030"
 	c.Assistant.ServeEnable = true
 	c.Assistant.ServeListen = "127.0.0.1:9876"
+	c.MCP = MCP{Enable: true, Policy: "allow"}
 	path := filepath.Join(t.TempDir(), "inua", "config.toml")
 	if err := Save(path, c); err != nil {
 		t.Fatal(err)
@@ -229,6 +230,13 @@ func TestFormatRoundTrip(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, c) {
 		t.Errorf("round trip:\n got %+v\nwant %+v", got, c)
+	}
+}
+
+func TestMCPPolicyValidation(t *testing.T) {
+	c, w, _ := Load(write(t, "[mcp]\npolicy = \"everything\"\n"))
+	if c.MCP.Policy != "ask" || !strings.Contains(strings.Join(w, "\n"), "mcp.policy") {
+		t.Errorf("policy %q, warnings %q", c.MCP.Policy, w)
 	}
 }
 

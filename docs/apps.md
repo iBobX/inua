@@ -267,6 +267,46 @@ The shell starts it with `inua-assistant --background`; running this command
 again reaches the existing process without showing its window. Starting
 `inua-assistant` normally, or choosing it in the dock, shows the window.
 
+### MCP: inua's tools for the assistant and for agents
+
+inua serves its tools over MCP: list and focus windows, move them between
+workspaces, open apps, read the system's state, change Wi-Fi, volume,
+brightness or Focus, lock the screen, take screenshots, read
+notifications and the clipboard, look at processes and Tailscale. The
+server is `inua-assistant --mcp` (`inua mcp` runs it).
+
+**The assistant** uses them through this server, with Mister Morph's MCP
+client, which starts it for each question. Its `tool_search` keeps the
+tools out of requests until the model finds the ones it needs, so each
+request is short; its `codemode` lets the model chain several reads in
+one step. What the assistant does still shows in its window, line by
+line. Changes ask as **Ask before changes** says, and the riskiest
+(closing windows, ending processes, power) always ask, in inua's dialog:
+**Deny** or **Allow**, call by call.
+
+**Agents** on this computer (Claude Code, Codex, any MCP client) use the
+same server. Turn it on for them in **Settings → AI → MCP** (off by
+default; the assistant uses it either way), then connect an agent:
+
+```sh
+claude mcp add inua -- inua mcp
+```
+
+Any other agent: a stdio MCP server whose command is `inua mcp`.
+
+**What agents may do** sets the policy (`[mcp] policy` in config.toml):
+**Look only** offers only the tools that read; **Ask before changes**
+(the default) asks in inua's dialog before anything that changes
+something; **Change without asking** lets changes run. Whatever the
+policy, closing windows, ending processes, power, and reading the
+clipboard or the notifications ask. The dialog names the agent and what
+it runs under (`claude ← zsh`), and says what the call does ("Closing
+Firefox"): **Deny**, **Allow once**, **Allow for this session**. Every
+call, the assistant's too, is recorded in
+`~/.local/state/inua/mcp-calls.jsonl`. Turning MCP off, or tightening
+the policy, takes effect at the next call.
+
+
 ## Viewer
 
 Steps through a folder with the images beside the shown one already

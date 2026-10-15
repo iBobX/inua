@@ -5,9 +5,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: cmd/inua-assistant/mcp.go:56
+msgid "inua's assistant"
+msgstr "inua 어시스턴트"
+
 #: cmd/inua-keyring/main.go:117
 #: internal/ui/settings_keyring.go:250
-#: ui/settings.ui:2908
+#: ui/settings.ui:3105
 msgid "Keyring"
 msgstr "키링"
 
@@ -513,7 +517,7 @@ msgid "Reset"
 msgstr "초기화"
 
 #: internal/appui/clock.go:496
-#: internal/assistantui/assistantui.go:491
+#: internal/assistantui/assistantui.go:458
 #: internal/ui/alarms.go:108
 msgid "Stop"
 msgstr "중지"
@@ -593,7 +597,7 @@ msgid "5 years"
 msgstr "5년"
 
 #: internal/appui/gpg.go:144
-#: ui/settings.ui:3100
+#: ui/settings.ui:3297
 msgid "Never"
 msgstr "만료 없음"
 
@@ -611,10 +615,10 @@ msgstr "%s 생성"
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:360
-#: internal/ui/askpass.go:416
-#: internal/ui/askpass.go:420
-#: internal/ui/askpass.go:422
+#: internal/ui/askpass.go:366
+#: internal/ui/askpass.go:427
+#: internal/ui/askpass.go:431
+#: internal/ui/askpass.go:433
 #: internal/ui/settings_about.go:185
 #: internal/ui/settings_keyring.go:555
 msgid "Jan 2, 2006"
@@ -772,7 +776,7 @@ msgstr "삭제…"
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/appui/viewer.go:395
-#: internal/ui/askpass.go:502
+#: internal/ui/askpass.go:516
 msgid "Copied"
 msgstr "복사됨"
 
@@ -996,8 +1000,8 @@ msgid "Top level"
 msgstr "최상위"
 
 #: internal/appui/pass.go:351
-#: internal/ui/settings.go:591
-#: internal/ui/settings.go:618
+#: internal/ui/settings.go:595
+#: internal/ui/settings.go:622
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
@@ -1037,6 +1041,7 @@ msgstr "숨기기"
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
+#: ui/settings.ui:2354
 msgid "Copy"
 msgstr "복사"
 
@@ -1142,7 +1147,7 @@ msgid "None: an app reading it is asked about first."
 msgstr "없음: 읽으려는 앱은 먼저 묻습니다."
 
 #: internal/appui/pass.go:1024
-#: internal/ui/askpass.go:351
+#: internal/ui/askpass.go:357
 #: internal/ui/settings_keyring.go:539
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
@@ -1237,12 +1242,12 @@ msgid "Range start"
 msgstr "범위 시작"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:58
+#: internal/ui/settings_ai.go:65
 msgid "High"
 msgstr "높음"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:58
+#: internal/ui/settings_ai.go:65
 msgid "Low"
 msgstr "낮음"
 
@@ -1590,16 +1595,16 @@ msgstr "컴퓨터"
 
 #: internal/appui/sysmon.go:959
 #: internal/appui/sysmon.go:971
-#: internal/ui/settings_ai.go:307
+#: internal/ui/settings_ai.go:323
 msgid "Model"
 msgstr "모델"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
 #: internal/appui/viewer.go:813
-#: internal/ui/settings_ai.go:305
+#: internal/ui/settings_ai.go:321
 #: ui/gpg.ui:1342
-#: ui/settings.ui:3833
+#: ui/settings.ui:4030
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "이름"
@@ -2312,7 +2317,7 @@ msgstr "알 수 없는 블록 %q"
 
 #: internal/appui/workshop.go:963
 #: internal/ui/askpass.go:267
-#: internal/ui/askpass.go:384
+#: internal/ui/askpass.go:395
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/gpg.ui:1252
@@ -2431,9 +2436,17 @@ msgstr "설치"
 msgid "Installed %s; the launcher and the dock's drawer list it."
 msgstr "%s을(를) 설치했습니다. 런처와 독의 서랍에 나타납니다."
 
-#: internal/assistant/assistant.go:426
+#: internal/assistant/assistant.go:449
 msgid "Remote Console: %s"
 msgstr "원격 콘솔: %s"
+
+#: internal/assistant/mcp.go:70
+msgid "Looking for tools: %s"
+msgstr "도구 찾는 중: %s"
+
+#: internal/assistant/mcp.go:72
+msgid "Running a script with the tools"
+msgstr "도구를 쓰는 스크립트 실행 중"
 
 #: internal/assistant/tools.go:173
 #: internal/assistant/tools.go:199
@@ -2612,105 +2625,106 @@ msgstr "Tailscale 연결 해제 중"
 msgid "Looking up the weather in %s"
 msgstr "%s에서 날씨 검색하기"
 
-#: internal/assistantui/assistantui.go:43
+#: internal/assistantui/assistantui.go:37
 #: ui/assistant.ui:35
 #: ui/settings.ui:1683
 #: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
 msgid "Assistant"
 msgstr "도우미"
 
-#: internal/assistantui/assistantui.go:50
+#: internal/assistantui/assistantui.go:44
 msgid "What is using the most CPU right now?"
 msgstr "현재 가장 많은 CPU를 사용하고 있는 것은 무엇입니까?"
 
-#: internal/assistantui/assistantui.go:51
+#: internal/assistantui/assistantui.go:45
 msgid "Turn on Focus and set the volume to 30%"
 msgstr "포커스를 켜고 볼륨을 30%로 설정하세요."
 
-#: internal/assistantui/assistantui.go:52
+#: internal/assistantui/assistantui.go:46
 msgid "What did I miss? Sum up my notifications"
 msgstr "내가 무엇을 놓쳤는가? 내 알림 요약"
 
-#: internal/assistantui/assistantui.go:53
+#: internal/assistantui/assistantui.go:47
 msgid "Which devices on my tailnet are online?"
 msgstr "내 테일넷의 어떤 장치가 온라인 상태입니까?"
 
-#: internal/assistantui/assistantui.go:54
+#: internal/assistantui/assistantui.go:48
 msgid "What is the weather this afternoon in Kyoto?"
 msgstr "오늘 오후 교토 날씨는 어떻습니까?"
 
-#: internal/assistantui/assistantui.go:140
+#: internal/assistantui/assistantui.go:134
 msgid "%s answers from here"
 msgstr "%s는 여기에서 답변합니다."
 
-#: internal/assistantui/assistantui.go:283
+#: internal/assistantui/assistantui.go:277
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "어시스턴트가 꺼진다. 설정 → AI에서 켜주세요."
 
-#: internal/assistantui/assistantui.go:295
+#: internal/assistantui/assistantui.go:289
 msgid "Cannot read the saved keys: %s"
 msgstr "저장된 키를 읽을 수 없습니다: %s"
 
-#: internal/assistantui/assistantui.go:304
+#: internal/assistantui/assistantui.go:298
 msgid "Cannot read the key of %s: %v"
 msgstr "%[1]s의 키를 읽을 수 없습니다: %[2]v"
 
-#: internal/assistantui/assistantui.go:310
-#: internal/ui/settings_ai.go:579
+#: internal/assistantui/assistantui.go:304
+#: internal/ui/settings_ai.go:602
 msgid "Cannot read the Console token: %s"
 msgstr "콘솔 토큰을 읽을 수 없습니다: %s"
 
-#: internal/assistantui/assistantui.go:317
+#: internal/assistantui/assistantui.go:311
 msgid "No API key for %s (%s): type one in Settings → AI."
 msgstr "%[1]s(%[2]s)에 대한 API 키가 없음: 설정 → AI에 하나를 입력합니다."
 
-#: internal/assistantui/assistantui.go:358
+#: internal/assistantui/assistantui.go:360
 msgid "Could not start the Console endpoint: %s"
 msgstr "콘솔 끝점을 시작할 수 없습니다: %s"
 
-#: internal/assistantui/assistantui.go:498
+#: internal/assistantui/assistantui.go:465
 msgid "✕ Not done: %s"
 msgstr "✕ 완료되지 않음: %s"
 
-#: internal/assistantui/assistantui.go:509
+#: internal/assistantui/assistantui.go:476
 #: ui/assistant.ui:136
 msgid "Ask"
 msgstr "질문하다"
 
-#: internal/assistantui/assistantui.go:513
+#: internal/assistantui/assistantui.go:480
 msgid "Stopped."
 msgstr "중지되었습니다."
 
-#: internal/assistantui/assistantui.go:516
+#: internal/assistantui/assistantui.go:483
 msgid "Something went wrong: %s"
 msgstr "문제가 발생했습니다: %s"
 
-#: internal/assistantui/assistantui.go:519
+#: internal/assistantui/assistantui.go:486
 msgid "(no answer)"
 msgstr "(대답 없음)"
 
-#: internal/assistantui/assistantui.go:549
+#: internal/assistantui/assistantui.go:516
 msgid "Don't"
 msgstr "거부"
 
-#: internal/assistantui/assistantui.go:549
+#: internal/assistantui/assistantui.go:516
+#: internal/ui/askpass.go:390
 msgid "Allow"
 msgstr "허용하다"
 
-#: internal/assistantui/assistantui.go:570
+#: internal/assistantui/assistantui.go:537
 msgid "Not allowed"
 msgstr "허용되지 않음"
 
-#: internal/assistantui/assistantui.go:572
+#: internal/assistantui/assistantui.go:539
 msgid "Canceled"
 msgstr "취소됨"
 
-#: internal/assistantui/assistantui.go:574
-#: ui/settings.ui:3155
+#: internal/assistantui/assistantui.go:541
+#: ui/settings.ui:3352
 msgid "Allowed"
 msgstr "허용됨"
 
-#: internal/assistantui/assistantui.go:663
+#: internal/assistantui/assistantui.go:630
 msgid "TRY"
 msgstr "시도하다"
 
@@ -5082,7 +5096,7 @@ msgid "Lock Screen"
 msgstr "화면 잠금"
 
 #: internal/shell/commands.go:27
-#: ui/settings.ui:3052
+#: ui/settings.ui:3249
 msgid "Lock now"
 msgstr "지금 잠그세요"
 
@@ -5434,7 +5448,7 @@ msgstr "배너 알림 음소거됨"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:4050
+#: ui/settings.ui:4247
 msgid "Off"
 msgstr "꺼짐"
 
@@ -5552,125 +5566,146 @@ msgid "Passphrase"
 msgstr "암호문"
 
 #: internal/ui/askpass.go:327
+#: internal/ui/askpass.go:330
+msgid "Let %s do this?"
+msgstr "%s이(가) 이 작업을 하도록 허용할까요?"
+
+#: internal/ui/askpass.go:328
+msgid "The assistant needs this to answer you. Deny, and it will say it could not."
+msgstr "어시스턴트가 답하는 데 필요합니다. 거부하면 할 수 없었다고 말합니다."
+
+#: internal/ui/askpass.go:331
+msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
+msgstr "AI 에이전트가 데스크톱에서 inua의 도구를 쓰려고 합니다. 한 번만, 또는 이 세션 동안 허용할 수 있습니다."
+
+#: internal/ui/askpass.go:333
 msgid "Trust the list of apps again?"
 msgstr "앱 목록을 다시 신뢰할까요?"
 
-#: internal/ui/askpass.go:328
+#: internal/ui/askpass.go:334
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] "비밀을 신뢰하는 앱 목록이 inua-keyring 밖에서 바뀌었습니다. 방금 설정에서 요청한 경우에만 다시 신뢰하세요. 앱 %d개가 묻지 않고 비밀을 읽게 됩니다."
 
-#: internal/ui/askpass.go:331
+#: internal/ui/askpass.go:337
 msgid "%s has changed since you allowed it"
 msgstr "%s이(가) 허용한 뒤로 바뀌었습니다"
 
-#: internal/ui/askpass.go:332
+#: internal/ui/askpass.go:338
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr "프로그램이 허용한 것과 다릅니다. 업데이트하지 않았다면 거부하세요."
 
-#: internal/ui/askpass.go:334
+#: internal/ui/askpass.go:340
 msgid "Allow %s to read a secret?"
 msgstr "%s이(가) 비밀을 읽도록 허용할까요?"
 
-#: internal/ui/askpass.go:335
+#: internal/ui/askpass.go:341
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr "아직 이 비밀에 대해 신뢰되지 않았습니다. ‘항상 허용’하면 이제부터 묻지 않고 읽을 수 있습니다."
 
-#: internal/ui/askpass.go:338
+#: internal/ui/askpass.go:344
 msgid "It can only be allowed once: %s."
 msgstr "한 번만 허용할 수 있습니다: %s."
 
-#: internal/ui/askpass.go:359
+#: internal/ui/askpass.go:365
 msgid "Changed since you allowed it"
 msgstr "허용한 뒤로 바뀜"
 
-#: internal/ui/askpass.go:362
+#: internal/ui/askpass.go:368
 msgid "%s · as %s"
 msgstr "%s · %s(으)로"
 
-#: internal/ui/askpass.go:378
+#: internal/ui/askpass.go:384
 msgid "Deny"
 msgstr "거부"
 
-#: internal/ui/askpass.go:379
-#: internal/ui/askpass.go:388
+#: internal/ui/askpass.go:385
+#: internal/ui/askpass.go:399
 msgid "Allow once"
 msgstr "한 번 허용"
 
-#: internal/ui/askpass.go:380
+#: internal/ui/askpass.go:386
 msgid "Always allow"
 msgstr "항상 허용"
 
-#: internal/ui/askpass.go:385
+#: internal/ui/askpass.go:393
+msgid "Allow for this session"
+msgstr "이 세션 동안 허용"
+
+#: internal/ui/askpass.go:396
 msgid "Trust"
 msgstr "신뢰"
 
-#: internal/ui/askpass.go:404
+#: internal/ui/askpass.go:415
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr "inua-keyring이 %s에 비밀을 전달할 수 있도록 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:406
+#: internal/ui/askpass.go:417
 msgid "Enter the passphrase so %s can use this key."
 msgstr "%s이(가) 이 키를 사용할 수 있도록 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:408
+#: internal/ui/askpass.go:419
 msgid "Enter the passphrase to use this key."
 msgstr "이 키를 사용하려면 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:420
+#: internal/ui/askpass.go:431
 msgid "%s · expired %s"
 msgstr "%s · %s 만료됨"
 
-#: internal/ui/askpass.go:422
+#: internal/ui/askpass.go:433
 msgid "%s · expires %s"
 msgstr "%s · %s 만료"
 
-#: internal/ui/askpass.go:437
+#: internal/ui/askpass.go:448
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr "대상"
 
-#: internal/ui/askpass.go:439
+#: internal/ui/askpass.go:450
 msgid "SECRET"
 msgstr "비밀"
 
-#: internal/ui/askpass.go:521
+#: internal/ui/askpass.go:453
+msgid "ACTION"
+msgstr "작업"
+
+#: internal/ui/askpass.go:535
 msgid "Encryption subkey"
 msgstr "암호화 하위 키"
 
-#: internal/ui/askpass.go:523
+#: internal/ui/askpass.go:537
 msgid "Signing subkey"
 msgstr "서명 하위 키"
 
-#: internal/ui/askpass.go:525
+#: internal/ui/askpass.go:539
 msgid "Authentication subkey"
 msgstr "인증 하위 키"
 
-#: internal/ui/askpass.go:527
+#: internal/ui/askpass.go:541
 msgid "Subkey"
 msgstr "하위 키"
 
-#: internal/ui/askpass.go:529
+#: internal/ui/askpass.go:543
 msgid "Primary key"
 msgstr "기본 키"
 
-#: internal/ui/askpass.go:576
+#: internal/ui/askpass.go:590
 msgid "Show the private details (Ctrl+H)"
 msgstr "개인 정보 표시 (Ctrl+H)"
 
-#: internal/ui/askpass.go:579
+#: internal/ui/askpass.go:593
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "개인 정보 숨기기: 키 소유자, 지문, pass 항목 (Ctrl+H)"
 
-#: internal/ui/askpass.go:638
+#: internal/ui/askpass.go:652
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "화면을 녹화하거나 공유하는 동안 숨겨집니다."
 
-#: internal/ui/askpass.go:641
+#: internal/ui/askpass.go:655
 msgid "Hidden for the screenshot."
 msgstr "스크린샷을 위해 숨겨집니다."
 
-#: internal/ui/askpass.go:688
+#: internal/ui/askpass.go:702
 msgid "The passphrases do not match."
 msgstr "암호 문구가 일치하지 않습니다."
 
@@ -5704,7 +5739,7 @@ msgid "Search clipboard history"
 msgstr "클립보드 기록 검색"
 
 #: internal/ui/clipboard.go:335
-#: ui/settings.ui:2504
+#: ui/settings.ui:2701
 msgid "Clipboard"
 msgstr "클립보드"
 
@@ -5885,7 +5920,7 @@ msgstr "비밀번호를 확인할 수 없습니다."
 
 #: internal/ui/notify.go:291
 #: ui/bar.ui:122
-#: ui/settings.ui:2283
+#: ui/settings.ui:2480
 msgid "Notifications"
 msgstr "알림"
 
@@ -6097,74 +6132,74 @@ msgstr "스크린샷이 복사되었습니다."
 msgid "Screenshot taken"
 msgstr "촬영된 스크린샷"
 
-#: internal/ui/settings.go:235
+#: internal/ui/settings.go:239
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:253
-#: internal/ui/settings.go:581
+#: internal/ui/settings.go:257
+#: internal/ui/settings.go:585
 msgid "%d%%"
 msgstr "%d%%"
 
-#: internal/ui/settings.go:617
+#: internal/ui/settings.go:621
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:619
+#: internal/ui/settings.go:623
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:620
+#: internal/ui/settings.go:624
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:621
+#: internal/ui/settings.go:625
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:700
+#: internal/ui/settings.go:704
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:726
+#: internal/ui/settings.go:730
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:728
+#: internal/ui/settings.go:732
 msgid "Images"
 msgstr "이미지"
 
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:771
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:769
+#: internal/ui/settings.go:773
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:771
+#: internal/ui/settings.go:775
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:789
+#: internal/ui/settings.go:793
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:805
+#: internal/ui/settings.go:809
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:818
+#: internal/ui/settings.go:822
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:819
+#: internal/ui/settings.go:823
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:820
+#: internal/ui/settings.go:824
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
@@ -6225,181 +6260,185 @@ msgstr "설치됨"
 msgid "On GitHub"
 msgstr "GitHub에서"
 
-#: internal/ui/settings_ai.go:58
+#: internal/ui/settings_ai.go:65
 msgid "Model default"
 msgstr "모델 기본값"
 
-#: internal/ui/settings_ai.go:58
+#: internal/ui/settings_ai.go:65
 msgid "Minimal"
 msgstr "최소"
 
-#: internal/ui/settings_ai.go:58
+#: internal/ui/settings_ai.go:65
 #: ui/settings.ui:1191
 msgid "Medium"
 msgstr "보통"
 
-#: internal/ui/settings_ai.go:97
+#: internal/ui/settings_ai.go:111
 msgid "Keys typed here are kept in %s"
 msgstr "여기에 입력된 키는 %s에 보관됩니다."
 
-#: internal/ui/settings_ai.go:136
+#: internal/ui/settings_ai.go:150
 msgid "key not moved"
 msgstr "키를 옮기지 못함"
 
-#: internal/ui/settings_ai.go:165
+#: internal/ui/settings_ai.go:181
 msgid "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
 msgstr "콘솔에서 이 URL과 토큰을 사용하십시오. 다른 컴퓨터에서 이 데스크톱의 연결 가능한 주소를 사용하세요."
 
-#: internal/ui/settings_ai.go:168
+#: internal/ui/settings_ai.go:184
 msgid "Turn on Assistant to serve this endpoint."
 msgstr "이 엔드포인트를 제공하려면 Assistant를 켜십시오."
 
-#: internal/ui/settings_ai.go:170
+#: internal/ui/settings_ai.go:186
 msgid "HTTP serving is off. The assistant still runs in the background."
 msgstr "HTTP 서비스가 꺼져 있습니다. 어시스턴트는 여전히 백그라운드에서 실행됩니다."
 
-#: internal/ui/settings_ai.go:172
+#: internal/ui/settings_ai.go:188
 msgid "Create a token to allow Console connections."
 msgstr "콘솔 연결을 허용하는 토큰을 생성합니다."
 
-#: internal/ui/settings_ai.go:179
+#: internal/ui/settings_ai.go:195
 msgid "Reading keyring…"
 msgstr "키링을 읽는 중..."
 
-#: internal/ui/settings_ai.go:181
+#: internal/ui/settings_ai.go:197
 msgid "Hide token"
 msgstr "토큰 숨기기"
 
-#: internal/ui/settings_ai.go:183
+#: internal/ui/settings_ai.go:199
 #: ui/settings.ui:2148
 msgid "Create token"
 msgstr "토큰 생성"
 
-#: internal/ui/settings_ai.go:185
+#: internal/ui/settings_ai.go:201
 msgid "Show token"
 msgstr "토큰 표시"
 
-#: internal/ui/settings_ai.go:200
+#: internal/ui/settings_ai.go:216
 msgid "Then, when it fails: %s"
 msgstr "그리고, 실패할 경우: %s"
 
-#: internal/ui/settings_ai.go:202
+#: internal/ui/settings_ai.go:218
 msgid "The profile asked first; turn on Fallback on others to try them when it fails"
 msgstr "먼저 사용할 프로필입니다. 실패 시 다른 프로필을 시도하려면 대체 응답을 켜세요"
 
-#: internal/ui/settings_ai.go:258
+#: internal/ui/settings_ai.go:274
 msgid "Move up (fallbacks are tried in this order)"
 msgstr "위로 이동(대체는 이 순서대로 시도됩니다)"
 
-#: internal/ui/settings_ai.go:259
+#: internal/ui/settings_ai.go:275
 msgid "Move down"
 msgstr "아래로 이동"
 
-#: internal/ui/settings_ai.go:260
+#: internal/ui/settings_ai.go:276
 msgid "Remove this profile"
 msgstr "이 프로필 삭제"
 
-#: internal/ui/settings_ai.go:283
+#: internal/ui/settings_ai.go:299
 msgid "a name: work, fast, local …"
 msgstr "이름: 일, 빠른, 지역 ..."
 
-#: internal/ui/settings_ai.go:285
+#: internal/ui/settings_ai.go:301
 msgid "the model's ID"
 msgstr "모델 ID"
 
-#: internal/ui/settings_ai.go:286
+#: internal/ui/settings_ai.go:302
 msgid "the provider's own"
 msgstr "공급자 자신의"
 
-#: internal/ui/settings_ai.go:292
-#: internal/ui/settings_ai.go:391
+#: internal/ui/settings_ai.go:308
+#: internal/ui/settings_ai.go:407
 msgid "Paste a key, then Save"
 msgstr "키를 붙여넣은 다음 저장하세요."
 
-#: internal/ui/settings_ai.go:306
+#: internal/ui/settings_ai.go:322
 msgid "Provider"
 msgstr "제공업체"
 
-#: internal/ui/settings_ai.go:308
+#: internal/ui/settings_ai.go:324
 msgid "Reasoning"
 msgstr "추론 수준"
 
-#: internal/ui/settings_ai.go:309
+#: internal/ui/settings_ai.go:325
 msgid "Endpoint"
 msgstr "엔드포인트"
 
-#: internal/ui/settings_ai.go:312
+#: internal/ui/settings_ai.go:328
 #: ui/clock.ui:252
 #: ui/pass.ui:455
 msgid "Save"
 msgstr "저장"
 
-#: internal/ui/settings_ai.go:313
+#: internal/ui/settings_ai.go:329
 msgid "Forget"
 msgstr "키 삭제"
 
-#: internal/ui/settings_ai.go:321
+#: internal/ui/settings_ai.go:337
 msgid "API key"
 msgstr "API 키"
 
-#: internal/ui/settings_ai.go:326
+#: internal/ui/settings_ai.go:342
 msgid "Fallback: answers when the profiles above it fail"
 msgstr "앞선 프로필이 실패하면 대신 응답"
 
-#: internal/ui/settings_ai.go:368
+#: internal/ui/settings_ai.go:384
 msgid "Answers first. "
 msgstr "먼저 답변하십시오. "
 
-#: internal/ui/settings_ai.go:370
+#: internal/ui/settings_ai.go:386
 msgid "Fallback %d. "
 msgstr "폴백 %d. "
 
-#: internal/ui/settings_ai.go:375
+#: internal/ui/settings_ai.go:391
 msgid "The saved keys cannot be read: %s"
 msgstr "저장된 키를 읽을 수 없습니다: %s"
 
-#: internal/ui/settings_ai.go:377
+#: internal/ui/settings_ai.go:393
 msgid "Key saved"
 msgstr "키 저장됨"
 
-#: internal/ui/settings_ai.go:379
+#: internal/ui/settings_ai.go:395
 msgid "No key (a local server may want none)"
 msgstr "키 없음(로컬 서버는 아무 키도 원하지 않을 수 있음)"
 
-#: internal/ui/settings_ai.go:381
+#: internal/ui/settings_ai.go:397
 msgid "No key yet: the assistant cannot answer"
 msgstr "키가 없어 도우미가 응답할 수 없습니다"
 
-#: internal/ui/settings_ai.go:383
+#: internal/ui/settings_ai.go:399
 msgid "No key yet: this profile is skipped"
 msgstr "키가 없어 이 프로필을 건너뜁니다"
 
-#: internal/ui/settings_ai.go:389
+#: internal/ui/settings_ai.go:405
 msgid "Saved; paste another to replace it"
 msgstr "저장되었습니다. 교체하려면 다른 것을 붙여넣으세요."
 
-#: internal/ui/settings_ai.go:550
+#: internal/ui/settings_ai.go:566
+msgid "Command copied"
+msgstr "명령을 복사했습니다"
+
+#: internal/ui/settings_ai.go:573
 msgid "Endpoint URL copied"
 msgstr "엔드포인트 URL이 복사되었습니다."
 
-#: internal/ui/settings_ai.go:581
+#: internal/ui/settings_ai.go:604
 msgid "No Console token. Create one first."
 msgstr "콘솔 토큰이 없습니다. 먼저 하나를 만드세요."
 
-#: internal/ui/settings_ai.go:586
+#: internal/ui/settings_ai.go:609
 msgid "Token copied"
 msgstr "토큰 복사"
 
-#: internal/ui/settings_ai.go:651
+#: internal/ui/settings_ai.go:674
 msgid "key not removed"
 msgstr "키를 삭제하지 못함"
 
-#: internal/ui/settings_ai.go:662
+#: internal/ui/settings_ai.go:685
 msgid "key not saved"
 msgstr "키를 저장하지 못함"
 
 #: internal/ui/settings_keyring.go:197
-#: ui/settings.ui:3576
+#: ui/settings.ui:3773
 msgid "<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>읽기<span alpha='55%'>]</span>"
 
@@ -6531,7 +6570,7 @@ msgid "The record of reads cannot be read: %s"
 msgstr "읽기 기록을 읽을 수 없음: %s"
 
 #: internal/ui/settings_keyring.go:349
-#: ui/settings.ui:3368
+#: ui/settings.ui:3565
 msgid "No app has read a secret yet."
 msgstr "아직 비밀을 읽은 앱이 없습니다."
 
@@ -6663,7 +6702,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 업그레이드: inua 업그레이드"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:4639
+#: ui/settings.ui:4836
 msgid "Upgrade"
 msgstr "업그레이드"
 
@@ -6949,7 +6988,7 @@ msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>암호문<span alpha='55%'>]</span>"
 
 #: ui/gpg.ui:633
-#: ui/settings.ui:3441
+#: ui/settings.ui:3638
 msgid "Back"
 msgstr "뒤로"
 
@@ -7537,6 +7576,7 @@ msgid "The profile asked first; the assistant's window can switch for a conversa
 msgstr "먼저 사용할 프로필이며 도우미 창에서 대화별로 바꿀 수 있습니다"
 
 #: ui/settings.ui:1769
+#: ui/settings.ui:2310
 msgid "Ask before changes"
 msgstr "변경 전 질문"
 
@@ -7626,416 +7666,457 @@ msgid "Kept in the keyring (pass with inua-keyring). Creating or reading it may 
 msgstr "키링에 보관됩니다(inua-keyring으로 전달). 암호를 만들거나 읽으면 암호가 필요할 수 있습니다."
 
 #: ui/settings.ui:2204
+msgid "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:2212
+msgid "Let AI agents on this computer use inua's tools"
+msgstr "이 컴퓨터의 AI 에이전트가 inua의 도구를 쓰게 합니다"
+
+#: ui/settings.ui:2242
+#: ui/settings.ui:2261
+msgid "MCP server"
+msgstr "MCP 서버"
+
+#: ui/settings.ui:2251
+msgid "Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way."
+msgstr "Claude Code나 Codex 같은 에이전트가 inua mcp를 통해 창을 보고, 앱을 열고, 설정을 바꾸는 등을 할 수 있습니다. 어시스턴트는 어느 쪽이든 이 도구를 씁니다."
+
+#: ui/settings.ui:2286
+msgid "What agents may do"
+msgstr "에이전트가 할 수 있는 일"
+
+#: ui/settings.ui:2295
+msgid "Closing windows, ending processes, power, the clipboard and notifications always ask"
+msgstr "창 닫기, 프로세스 종료, 전원, 클립보드, 알림은 항상 묻습니다"
+
+#: ui/settings.ui:2309
+msgid "Look only"
+msgstr "보기만"
+
+#: ui/settings.ui:2311
+msgid "Change without asking"
+msgstr "묻지 않고 변경"
+
+#: ui/settings.ui:2334
+msgid "Connect an agent"
+msgstr "에이전트 연결"
+
+#: ui/settings.ui:2364
+msgid "Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog."
+msgstr "다른 에이전트: inua mcp를 실행하는 stdio 서버로 설정합니다. 모든 호출은 기록되고, 확인은 inua의 대화상자에서 합니다."
+
+#: ui/settings.ui:2401
 msgid "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>프로필<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2212
+#: ui/settings.ui:2409
 msgid "The models it can use; fallbacks answer when the first fails"
 msgstr "사용할 모델입니다. 첫 모델이 실패하면 대체 모델이 응답합니다"
 
-#: ui/settings.ui:2242
+#: ui/settings.ui:2439
 msgid "Add Profile"
 msgstr "프로필 추가"
 
-#: ui/settings.ui:2321
+#: ui/settings.ui:2518
 msgid "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>알림<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2329
+#: ui/settings.ui:2526
 msgid "Banners, then the notification center"
 msgstr "배너 다음으로 알림 센터"
 
-#: ui/settings.ui:2359
+#: ui/settings.ui:2556
 msgid "Show notifications"
 msgstr "알림 표시"
 
-#: ui/settings.ui:2401
+#: ui/settings.ui:2598
 msgid "Banner duration"
 msgstr "배너 기간"
 
-#: ui/settings.ui:2410
+#: ui/settings.ui:2607
 msgid "How long a banner shows; critical ones stay"
 msgstr "배너가 표시되는 시간; 중요한 사람은 남아"
 
-#: ui/settings.ui:2424
+#: ui/settings.ui:2621
 msgid "3 seconds"
 msgstr "3초"
 
-#: ui/settings.ui:2425
+#: ui/settings.ui:2622
 msgid "5 seconds"
 msgstr "5초"
 
-#: ui/settings.ui:2426
+#: ui/settings.ui:2623
 msgid "8 seconds"
 msgstr "8초"
 
-#: ui/settings.ui:2427
+#: ui/settings.ui:2624
 msgid "12 seconds"
 msgstr "12초"
 
-#: ui/settings.ui:2454
+#: ui/settings.ui:2651
 msgid "Critical during Focus"
 msgstr "집중 모드에서도 긴급 알림 표시"
 
-#: ui/settings.ui:2463
+#: ui/settings.ui:2660
 msgid "Critical notifications still show banners"
 msgstr "중요한 알림에는 여전히 배너가 표시됩니다."
 
-#: ui/settings.ui:2542
+#: ui/settings.ui:2739
 msgid "<span alpha='55%'>[</span>CLIPBOARD<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>클립보드<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2550
+#: ui/settings.ui:2747
 msgid "History, panel appearance and pasting"
 msgstr "기록, 패널 모양과 붙여넣기"
 
-#: ui/settings.ui:2580
+#: ui/settings.ui:2777
 msgid "Keep a clipboard history"
 msgstr "클립보드 기록 보관"
 
-#: ui/settings.ui:2589
+#: ui/settings.ui:2786
 msgid "Text and images you copy, kept on this computer; a password manager's copies are left out"
 msgstr "복사한 텍스트와 이미지를 이 컴퓨터에 보관합니다. 비밀번호 관리자의 복사는 제외됩니다"
 
-#: ui/settings.ui:2619
+#: ui/settings.ui:2816
 msgid "Never record copies from"
 msgstr "기록하지 않을 복사 출처"
 
-#: ui/settings.ui:2629
+#: ui/settings.ui:2826
 msgid "pass, keepassxc, …"
 msgstr "pass, keepassxc, …"
 
-#: ui/settings.ui:2637
+#: ui/settings.ui:2834
 msgid "Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from"
 msgstr "프로그램 또는 창 클래스를 쉼표로 구분합니다. wl-copy를 실행한 프로그램과 포커스된 창을 확인합니다. 기록의 항목에 포인터를 올리면 출처를 볼 수 있습니다"
 
-#: ui/settings.ui:2663
+#: ui/settings.ui:2860
 msgid "Show in top bar"
 msgstr "상단 바에 표시"
 
-#: ui/settings.ui:2672
+#: ui/settings.ui:2869
 msgid "A button in the status area opens the clipboard history"
 msgstr "상태 영역의 버튼으로 클립보드 기록을 엽니다"
 
-#: ui/settings.ui:2706
+#: ui/settings.ui:2903
 msgid "Paste on click"
 msgstr "클릭하여 붙여넣기"
 
-#: ui/settings.ui:2715
+#: ui/settings.ui:2912
 msgid "Clicking an entry pastes it into the window you were in; off only copies it"
 msgstr "항목을 클릭하면 이전 창에 붙여넣습니다. 끄면 복사만 합니다"
 
-#: ui/settings.ui:2749
+#: ui/settings.ui:2946
 msgid "Panel opacity"
 msgstr "패널 불투명도"
 
-#: ui/settings.ui:2800
+#: ui/settings.ui:2997
 msgid "History limit"
 msgstr "기록 한도"
 
-#: ui/settings.ui:2809
+#: ui/settings.ui:3006
 msgid "How many entries it keeps; the oldest go first"
 msgstr "보관할 항목 수. 오래된 것부터 지워집니다"
 
-#: ui/settings.ui:2843
+#: ui/settings.ui:3040
 msgid "History storage"
 msgstr "기록 저장 공간"
 
-#: ui/settings.ui:2852
+#: ui/settings.ui:3049
 msgid "Loading history…"
 msgstr "기록 불러오는 중…"
 
-#: ui/settings.ui:2865
+#: ui/settings.ui:3062
 msgid "Reveal in File Manager"
 msgstr "파일 관리자에서 보기"
 
-#: ui/settings.ui:2876
+#: ui/settings.ui:3073
 msgid "Clear the history"
 msgstr "기록 지우기"
 
-#: ui/settings.ui:2957
+#: ui/settings.ui:3154
 msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>키링<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2965
+#: ui/settings.ui:3162
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "앱의 비밀: 브라우저 키, Wi-Fi 비밀번호, API 키"
 
-#: ui/settings.ui:2995
+#: ui/settings.ui:3192
 msgid "Secret Service"
 msgstr "Secret Service"
 
-#: ui/settings.ui:3031
+#: ui/settings.ui:3228
 msgid "Unlocked secrets"
 msgstr "잠금 해제된 비밀"
 
-#: ui/settings.ui:3077
+#: ui/settings.ui:3274
 msgid "Lock when unused"
 msgstr "사용하지 않으면 잠금"
 
-#: ui/settings.ui:3086
+#: ui/settings.ui:3283
 msgid "It locks with the screen and before suspend, and after this long without a read"
 msgstr "화면 잠금과 절전 전, 그리고 이만큼 읽기가 없으면 잠깁니다"
 
-#: ui/settings.ui:3101
+#: ui/settings.ui:3298
 msgid "5 minutes"
 msgstr "5분"
 
-#: ui/settings.ui:3102
+#: ui/settings.ui:3299
 msgid "15 minutes"
 msgstr "15분"
 
-#: ui/settings.ui:3103
+#: ui/settings.ui:3300
 msgid "30 minutes"
 msgstr "30분"
 
-#: ui/settings.ui:3104
+#: ui/settings.ui:3301
 msgid "1 hour"
 msgstr "1시간"
 
-#: ui/settings.ui:3105
+#: ui/settings.ui:3302
 msgid "4 hours"
 msgstr "4시간"
 
-#: ui/settings.ui:3132
+#: ui/settings.ui:3329
 msgid "With no one to ask"
 msgstr "물어볼 곳이 없을 때"
 
-#: ui/settings.ui:3141
+#: ui/settings.ui:3338
 msgid "A read by an app not trusted with the secret, while the inua shell is not running"
 msgstr "inua 셸이 실행 중이 아닐 때, 비밀에 대해 신뢰되지 않은 앱의 읽기"
 
-#: ui/settings.ui:3156
+#: ui/settings.ui:3353
 msgid "Denied"
 msgstr "거부"
 
-#: ui/settings.ui:3183
+#: ui/settings.ui:3380
 msgid "Tell when an app reads a secret"
 msgstr "앱이 비밀을 읽으면 알림"
 
-#: ui/settings.ui:3192
+#: ui/settings.ui:3389
 msgid "A notification for each app's first read since inua-keyring started"
 msgstr "inua-keyring 시작 후 앱마다 처음 읽을 때 알림"
 
-#: ui/settings.ui:3237
-#: ui/settings.ui:3451
+#: ui/settings.ui:3434
+#: ui/settings.ui:3648
 msgid "<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>신뢰하는 앱<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3245
+#: ui/settings.ui:3442
 msgid "Apps that read a secret without asking; any other app is asked about first"
 msgstr "묻지 않고 비밀을 읽는 앱. 다른 앱은 먼저 묻습니다"
 
-#: ui/settings.ui:3281
+#: ui/settings.ui:3478
 msgid "Trusted apps"
 msgstr "신뢰하는 앱"
 
-#: ui/settings.ui:3336
+#: ui/settings.ui:3533
 msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>읽기<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3344
+#: ui/settings.ui:3541
 msgid "Every secret inua-keyring handed out and passphrase asked for, newest first"
 msgstr "inua-keyring이 내준 모든 비밀과 요청된 암호 문구, 최신순"
 
-#: ui/settings.ui:3390
+#: ui/settings.ui:3587
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: ui/settings.ui:3466
+#: ui/settings.ui:3663
 msgid "Filter by app, program or secret"
 msgstr "앱, 프로그램, 비밀로 거르기"
 
-#: ui/settings.ui:3491
+#: ui/settings.ui:3688
 msgid "The list is not trusted"
 msgstr "목록을 신뢰하지 않습니다"
 
-#: ui/settings.ui:3512
+#: ui/settings.ui:3709
 msgid "Trust this list again"
 msgstr "이 목록을 다시 신뢰"
 
-#: ui/settings.ui:3588
+#: ui/settings.ui:3785
 msgid "Close"
 msgstr "닫기"
 
-#: ui/settings.ui:3620
+#: ui/settings.ui:3817
 msgid "Shortcuts"
 msgstr "단축키"
 
-#: ui/settings.ui:3650
+#: ui/settings.ui:3847
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "새로운 단축키를 누른다. Esc는 취소합니다. 백스페이스는 이 기능을 끕니다."
 
-#: ui/settings.ui:3679
-#: ui/settings.ui:4538
+#: ui/settings.ui:3876
+#: ui/settings.ui:4735
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3687
+#: ui/settings.ui:3884
 msgid "The shell's own actions"
 msgstr "쉘 자체의 동작"
 
-#: ui/settings.ui:3736
+#: ui/settings.ui:3933
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>스크린샷<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3744
+#: ui/settings.ui:3941
 msgid "With grim and slurp"
 msgstr "grim 및 slurp 사용"
 
-#: ui/settings.ui:3793
+#: ui/settings.ui:3990
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>맞춤<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3801
+#: ui/settings.ui:3998
 msgid "Your own commands"
 msgstr "자신만의 명령"
 
-#: ui/settings.ui:3843
+#: ui/settings.ui:4040
 msgid "Command, e.g. kitty"
 msgstr "명령(예: kitty)"
 
-#: ui/settings.ui:3852
+#: ui/settings.ui:4049
 msgid "Add…"
 msgstr "추가..."
 
-#: ui/settings.ui:3853
+#: ui/settings.ui:4050
 msgid "Add, then press its shortcut"
 msgstr "추가한 후 바로가기를 누르세요."
 
-#: ui/settings.ui:3888
+#: ui/settings.ui:4085
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>하이프랜드<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3896
+#: ui/settings.ui:4093
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "Hyprland.conf의 기타 바로가기"
 
-#: ui/settings.ui:3941
+#: ui/settings.ui:4138
 msgid "Keyboard"
 msgstr "키보드"
 
-#: ui/settings.ui:3989
+#: ui/settings.ui:4186
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>키<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3997
+#: ui/settings.ui:4194
 msgid "Every keyboard"
 msgstr "모든 키보드"
 
-#: ui/settings.ui:4027
+#: ui/settings.ui:4224
 msgid "Swap Ctrl and Alt"
 msgstr "Ctrl과 Alt를 교환합니다."
 
-#: ui/settings.ui:4036
+#: ui/settings.ui:4233
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt는 Ctrl 역할을 하고, Ctrl은 Alt 역할을 합니다."
 
-#: ui/settings.ui:4051
+#: ui/settings.ui:4248
 msgid "Left side"
 msgstr "왼쪽"
 
-#: ui/settings.ui:4052
+#: ui/settings.ui:4249
 msgid "Both sides"
 msgstr "양쪽"
 
-#: ui/settings.ui:4079
-#: ui/settings.ui:4102
+#: ui/settings.ui:4276
+#: ui/settings.ui:4299
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
-#: ui/settings.ui:4088
+#: ui/settings.ui:4285
 msgid "What the Caps Lock key does"
 msgstr "Caps Lock 키의 기능"
 
-#: ui/settings.ui:4103
+#: ui/settings.ui:4300
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:4104
+#: ui/settings.ui:4301
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:4142
-#: ui/settings.ui:4424
+#: ui/settings.ui:4339
+#: ui/settings.ui:4621
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>소스<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4150
-#: ui/settings.ui:4432
+#: ui/settings.ui:4347
+#: ui/settings.ui:4629
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua는 이것을 Hyprland의 inua.conf에 씁니다."
 
-#: ui/settings.ui:4201
-#: ui/settings.ui:4468
+#: ui/settings.ui:4398
+#: ui/settings.ui:4665
 msgid "Use hyprland.conf"
 msgstr "Hyprland.conf를 사용하십시오."
 
-#: ui/settings.ui:4202
+#: ui/settings.ui:4399
 msgid "Stop setting keyboard options in inua"
 msgstr "inua에서 키보드 옵션 설정을 중지합니다."
 
-#: ui/settings.ui:4233
+#: ui/settings.ui:4430
 msgid "Mouse & Touch"
 msgstr "마우스 및 터치패드"
 
-#: ui/settings.ui:4281
+#: ui/settings.ui:4478
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>포인터<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4289
+#: ui/settings.ui:4486
 msgid "Every touchpad"
 msgstr "모든 터치패드"
 
-#: ui/settings.ui:4319
+#: ui/settings.ui:4516
 msgid "Pointer speed"
 msgstr "포인터 속도"
 
-#: ui/settings.ui:4370
+#: ui/settings.ui:4567
 msgid "Acceleration"
 msgstr "가속"
 
-#: ui/settings.ui:4379
+#: ui/settings.ui:4576
 msgid "Faster swipes move the pointer further"
 msgstr "더 빠르게 스와이프하면 포인터가 더 멀리 이동합니다."
 
-#: ui/settings.ui:4469
+#: ui/settings.ui:4666
 msgid "Stop setting the touchpad in inua"
 msgstr "inua에서 터치패드 설정을 중지합니다."
 
-#: ui/settings.ui:4500
+#: ui/settings.ui:4697
 msgid "About"
 msgstr "소개"
 
-#: ui/settings.ui:4546
+#: ui/settings.ui:4743
 msgid "The version, and new releases"
 msgstr "버전 및 새 릴리스"
 
-#: ui/settings.ui:4576
+#: ui/settings.ui:4773
 msgid "Version"
 msgstr "버전"
 
-#: ui/settings.ui:4612
+#: ui/settings.ui:4809
 msgid "Updates"
 msgstr "업데이트"
 
-#: ui/settings.ui:4648
+#: ui/settings.ui:4845
 msgid "Check for updates"
 msgstr "업데이트 확인"
 
-#: ui/settings.ui:4674
+#: ui/settings.ui:4871
 msgid "Check every day"
 msgstr "매일 확인"
 
-#: ui/settings.ui:4683
+#: ui/settings.ui:4880
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "새 릴리스가 출시되면 업그레이드 버튼과 함께 알림이 표시됩니다."
 
-#: ui/settings.ui:4728
+#: ui/settings.ui:4925
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4736
+#: ui/settings.ui:4933
 msgid "What the latest release changed"
 msgstr "최신 릴리스에서 변경된 사항"
 

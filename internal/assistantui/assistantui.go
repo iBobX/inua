@@ -11,12 +11,9 @@ import (
 	"fmt"
 	"log"
 	"maps"
-	"net/http"
 	"os"
-	"os/exec"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 	"unsafe"
 
@@ -26,14 +23,11 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
-	"github.com/lyricat/inua/internal/apps/tailscale"
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/assistant"
 	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
-	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
-	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 )
@@ -321,7 +315,15 @@ func (v *view) setUp() {
 		say(err.Error())
 		return
 	}
-	v.as, err = assistant.New(set, assistant.Tools(desktopOf(cfg)), v.approve)
+	// inua's tools come from its MCP server, this program with --mcp, as
+	// for agents (docs/feat/mcp.md).
+	exe, err := os.Executable()
+	if err != nil {
+		say(err.Error())
+		return
+	}
+	set.MCPServer = []string{exe, "--mcp"}
+	v.as, err = assistant.New(set, nil, v.approve)
 	if err != nil {
 		say(err.Error())
 		return
@@ -419,41 +421,6 @@ func openAISettings() {
 			log.Printf("open settings: %v", err)
 		}
 	}()
-}
-
-// desktopOf connects the tools to this session.
-func desktopOf(cfg config.Config) assistant.Desktop {
-	sock := ipc.SocketPath(cmp.Or(os.Getenv("INUA_INSTANCE"), "default"))
-	d := assistant.Desktop{
-		Call: func(ctx context.Context, target, fn string, args ...string) (string, error) {
-			resp, err := ipc.Call(ctx, sock, ipc.Request{Op: "call", Target: target, Function: fn, Args: args})
-			return resp.Result, err
-		},
-		Launch:    func(e *desktop.Entry) error { return desktop.LaunchWith(e, cfg.TerminalCommand()) },
-		Tailscale: tailscale.NewClient(""),
-		HTTP:      &http.Client{Timeout: 15 * time.Second},
-		ClipRead: func(ctx context.Context) (string, error) {
-			out, err := exec.CommandContext(ctx, "wl-paste", "--no-newline", "--type", "text").Output()
-			return string(out), err
-		},
-		ClipWrite: func(ctx context.Context, text string) error {
-			cmd := exec.CommandContext(ctx, "wl-copy")
-			cmd.Stdin = strings.NewReader(text)
-			return cmd.Run()
-		},
-	}
-	var once sync.Once
-	var apps []*desktop.Entry
-	d.Apps = func() []*desktop.Entry {
-		once.Do(func() { apps = desktop.Scan(desktop.DataDirs(), os.Getenv("LANG")) })
-		return apps
-	}
-	if paths, err := hypr.PathsFromEnv(); err == nil {
-		client := hypr.NewClient(paths)
-		d.HyprRequest = client.Request
-		d.HyprDispatch = client.Dispatch
-	}
-	return d
 }
 
 func (v *view) submit() {

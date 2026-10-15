@@ -29,6 +29,7 @@ func Format(c Config) string {
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
 		q(c.Keyring.Folder), c.Keyring.Notify, q(c.Keyring.Untrusted), c.Keyring.LockAfter,
+		c.MCP.Enable, q(c.MCP.Policy),
 		shortcuts(c.Shortcuts))
 }
 
@@ -416,6 +417,19 @@ untrusted = %s
 # until it locks: with the screen, before suspend, with "inua keyring
 # lock", or after this many minutes without a read (0: not by time).
 lock_after = %d
+
+[mcp]
+# inua as an MCP server: its tools (windows, apps, settings,
+# notifications…) for the assistant, which uses it whatever this says,
+# and for agents on this computer (Claude Code, Codex…) through
+# "inua mcp", e.g. claude mcp add inua -- inua mcp. Off for agents by
+# default.
+enable = %t
+
+# What an agent may do: "read" (look only), "ask" (ask before changes, in
+# inua's dialog) or "allow" (change without asking; closing windows,
+# ending processes, power, the clipboard and notifications still ask).
+policy = %s
 
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything

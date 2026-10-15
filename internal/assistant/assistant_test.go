@@ -90,11 +90,18 @@ func (f *fakeModel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"usage":   map[string]any{"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2}})
 }
 
-func newTest(t *testing.T, model *fakeModel, own []Tool, approve Approver) *Assistant {
+// newModelServer serves the fake model; its URL.
+func newModelServer(t *testing.T, model *fakeModel) string {
 	t.Helper()
 	srv := httptest.NewServer(model)
 	t.Cleanup(srv.Close)
-	a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv.URL + "/v1", APIKey: "test"}},
+	return srv.URL
+}
+
+func newTest(t *testing.T, model *fakeModel, own []Tool, approve Approver) *Assistant {
+	t.Helper()
+	srv := newModelServer(t, model)
+	a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv + "/v1", APIKey: "test"}},
 		AskBeforeChanges: true, StateDir: t.TempDir(), CacheDir: t.TempDir(), MaxSteps: 6}, own, approve)
 	if err != nil {
 		t.Fatal(err)

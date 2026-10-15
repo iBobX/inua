@@ -37,6 +37,13 @@ type aiSettings struct {
 	tokenShow, tokenCopy, urlCopy gtk.Button
 	tokenBusy                     bool
 
+	mcpEnable  gtk.Switch // inua as an MCP server (docs/feat/mcp.md)
+	mcpPolicy  gtk.DropDown
+	mcpCommand gtk.Entry
+	mcpCopy    gtk.Button
+
+	// The assistant's MCP servers: a row each, and the form adding one.
+
 	keys     *keys.Keys
 	saved    map[string]uint64 // profiles with a saved key
 	savedErr error
@@ -79,7 +86,14 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	ui.Get("ai_url_copy", &a.urlCopy)
 	s.settings.entries[a.listen.GoPointer()] = &a.listen
 	gtkx.ConnectChanged(&a.listen, &s.onSettingsEntry)
-	for _, b := range []*gtk.Button{&a.tokenShow, &a.tokenCopy, &a.urlCopy} {
+	ui.Get("mcp_enable", &a.mcpEnable)
+	ui.Get("mcp_policy", &a.mcpPolicy)
+	ui.Get("mcp_command", &a.mcpCommand)
+	ui.Get("mcp_copy", &a.mcpCopy)
+	a.mcpEnable.ConnectStateSet(&s.onSettingsSwitch)
+	s.settings.drops[a.mcpPolicy.GoPointer()] = &a.mcpPolicy
+	gtkx.ConnectNotify(&a.mcpPolicy, "selected", &s.onSettingsDrop)
+	for _, b := range []*gtk.Button{&a.tokenShow, &a.tokenCopy, &a.urlCopy, &a.mcpCopy} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	var add gtk.Button
@@ -145,6 +159,8 @@ func (s *shellUI) showAISettings() {
 	c := s.cfg.Assistant
 	a.enable.SetActive(c.Enable)
 	a.ask.SetActive(c.AskBeforeChanges)
+	a.mcpEnable.SetActive(s.cfg.MCP.Enable)
+	a.mcpPolicy.SetSelected(uint32(max(0, slices.Index(config.MCPPolicies, s.cfg.MCP.Policy))))
 	a.web.SetActive(slices.Contains(c.Tools, "web_search"))
 	a.files.SetActive(slices.Contains(c.Tools, "read_file"))
 	a.bash.SetActive(slices.Contains(c.Tools, "bash"))
@@ -543,6 +559,13 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 
 // aiButton carries out the AI page's buttons; false for a button not its.
 func (s *shellUI) aiButton(name string) bool {
+	if name == "mcp_copy" {
+		clip := s.settings.win.GetClipboard()
+		clip.SetText(s.settings.ai.mcpCommand.GetText())
+		clip.Unref()
+		s.setStatus(i18n.T("Command copied"), false)
+		return true
+	}
 	if name == "ai_url_copy" {
 		clip := s.settings.win.GetClipboard()
 		clip.SetText(s.settings.ai.endpoint.GetText())

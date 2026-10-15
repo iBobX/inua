@@ -35,6 +35,7 @@ type Config struct {
 	Dock       Dock       `toml:"dock"`
 	Assistant  Assistant  `toml:"assistant"`
 	Keyring    Keyring    `toml:"keyring"`
+	MCP        MCP        `toml:"mcp"`
 	Screenshot Screenshot `toml:"screenshot"`
 	Clipboard  Clipboard  `toml:"clipboard"`
 	Shortcuts  []Shortcut `toml:"shortcuts"`
@@ -335,6 +336,20 @@ type Keyring struct {
 	LockAfter int `toml:"lock_after"`
 }
 
+// MCP is inua as an MCP server: agents on this computer use the
+// assistant's tools through `inua mcp` (docs/feat/mcp.md).
+type MCP struct {
+	// Enable lets agents connect; off by default.
+	Enable bool `toml:"enable"`
+	// Policy is what an agent may do: "read" (look only), "ask" (ask
+	// before changes) or "allow" (change without asking; the riskiest
+	// still ask).
+	Policy string `toml:"policy"`
+}
+
+// MCPPolicies are mcp.policy's values.
+var MCPPolicies = []string{"read", "ask", "allow"}
+
 // Dock is the app dock along a screen edge of each monitor.
 type Dock struct {
 	Enable bool `toml:"enable"`
@@ -460,6 +475,7 @@ func Default() Config {
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring", Untrusted: "allow"},
+		MCP:     MCP{Policy: "ask"},
 	}
 }
 
@@ -526,6 +542,7 @@ func (c *Config) validate() []string {
 		c.Keyring.Folder = d.Keyring.Folder
 	}
 	oneOf("keyring.untrusted", &c.Keyring.Untrusted, d.Keyring.Untrusted, "allow", "deny")
+	oneOf("mcp.policy", &c.MCP.Policy, d.MCP.Policy, MCPPolicies...)
 	if c.Keyring.LockAfter < 0 {
 		w = append(w, fmt.Sprintf("keyring.lock_after = %d: want minutes, or 0 for never; using 0", c.Keyring.LockAfter))
 		c.Keyring.LockAfter = 0

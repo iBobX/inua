@@ -81,6 +81,15 @@ type Approval struct {
 	// it was changed outside inua-keyring; Apps is how many it has.
 	Reseal bool `json:"reseal,omitempty"`
 	Apps   int  `json:"apps,omitempty"`
+	// Agent asks instead whether an AI agent may use one of inua's tools
+	// (inua as an MCP server): Action is what the call does ("Closing
+	// Firefox"); Program is the agent's program. "always" then means for
+	// the agent's session.
+	Agent  bool   `json:"agent,omitempty"`
+	Action string `json:"action,omitempty"`
+	// Assistant is inua's own assistant as the agent: allowed once, call
+	// by call, as it asked in its window.
+	Assistant bool `json:"assistant,omitempty"`
 }
 
 // UserData is how inua-keyring says, in PINENTRY_USER_DATA (gpg-agent

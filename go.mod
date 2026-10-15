@@ -8,7 +8,8 @@ require (
 	codeberg.org/puregotk/purego v0.0.0-20260224095105-2513c838cb80
 	github.com/BurntSushi/toml v1.6.0
 	github.com/godbus/dbus/v5 v5.2.2
-	github.com/quailyquaily/mistermorph v0.3.52
+	github.com/modelcontextprotocol/go-sdk v1.4.0
+	github.com/quailyquaily/mistermorph v0.3.54-0.20261015070641-f7ac340db394
 	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
 )
@@ -50,7 +51,6 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/modelcontextprotocol/go-sdk v1.4.0 // indirect
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
 	github.com/nickalie/go-webpbin v0.0.0-20220110095747-f10016bf2dc1 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect

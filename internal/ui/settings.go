@@ -134,6 +134,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Notify.Updates = on
 		case "keyring_notify":
 			c.Keyring.Notify = on
+		case "mcp_enable":
+			c.MCP.Enable = on
 		case "clip_enable":
 			c.Clipboard.Enable = on
 		case "clip_bar":
@@ -189,6 +191,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			}
 		case "keyring_untrusted":
 			c.Keyring.Untrusted = pick(keyringUntrusted, i, c.Keyring.Untrusted)
+		case "mcp_policy":
+			c.MCP.Policy = pick(config.MCPPolicies, i, c.MCP.Policy)
 		case "swap":
 			opts := shell.SetSwapCtrlAlt(s.kbOptions(), pick(swapChoices, i, ""))
 			c.Input.KbOptions = &opts

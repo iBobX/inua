@@ -305,6 +305,19 @@ untrusted = "allow"
 # lock", or after this many minutes without a read (0: not by time).
 lock_after = 0
 
+[mcp]
+# inua as an MCP server: its tools (windows, apps, settings,
+# notifications…) for the assistant, which uses it whatever this says,
+# and for agents on this computer (Claude Code, Codex…) through
+# "inua mcp", e.g. claude mcp add inua -- inua mcp. Off for agents by
+# default.
+enable = false
+
+# What an agent may do: "read" (look only), "ask" (ask before changes, in
+# inua's dialog) or "allow" (change without asking; closing windows,
+# ending processes, power, the clipboard and notifications still ask).
+policy = "ask"
+
 # Keyboard shortcuts set in the settings window (Shortcuts). inua writes
 # them to ~/.config/hypr/inua.conf: each unbinds its keys from anything
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions

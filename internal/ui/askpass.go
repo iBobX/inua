@@ -323,6 +323,12 @@ func fillApproval(d *passDialog) string {
 	}
 	var title, sub string
 	switch {
+	case a.Agent && a.Assistant:
+		title = i18n.Tf("Let %s do this?", q.App)
+		sub = i18n.T("The assistant needs this to answer you. Deny, and it will say it could not.")
+	case a.Agent:
+		title = i18n.Tf("Let %s do this?", q.App)
+		sub = i18n.T("An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session.")
 	case a.Reseal:
 		title = i18n.T("Trust the list of apps again?")
 		sub = i18n.Nf("The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking.",
@@ -380,6 +386,11 @@ func (s *shellUI) approveButtons(d *passDialog, ok, cancel, notok *gtk.Button) {
 	ok.SetLabel(i18n.T("Always allow"))
 	notok.SetVisible(true)
 	switch {
+	case a.Agent && a.Assistant:
+		ok.SetLabel(i18n.T("Allow"))
+		notok.SetVisible(false)
+	case a.Agent:
+		ok.SetLabel(i18n.T("Allow for this session"))
 	case a.Reseal:
 		cancel.SetLabel(i18n.T("Cancel"))
 		ok.SetLabel(i18n.T("Trust"))
@@ -437,6 +448,9 @@ func (s *shellUI) fillPassDetails(d *passDialog) {
 	d.forKicker.SetText(i18n.T("FOR"))
 	if q.Keyring && q.Secret != "" {
 		d.forKicker.SetText(i18n.T("SECRET"))
+	}
+	if q.Approval != nil && q.Approval.Agent {
+		d.forKicker.SetText(i18n.T("ACTION"))
 	}
 	d.asks.SetVisible(q.App != "")
 }
@@ -671,7 +685,7 @@ func (s *shellUI) answerPass() {
 	}
 	if d.q.Mode == pinentry.Approve {
 		r := "always"
-		if a := d.q.Approval; a != nil && a.Tampered != "" {
+		if a := d.q.Approval; a != nil && (a.Tampered != "" || a.Assistant) {
 			r = "once"
 		}
 		s.finishPass(d, ipc.Response{OK: true, Result: r})

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"golang.org/x/sys/unix"
 
@@ -145,4 +146,16 @@ func sibling(name string) string {
 func isFile(p string) bool {
 	info, err := os.Stat(p)
 	return err == nil && !info.IsDir()
+}
+
+// cmdMCP is inua as an MCP server on stdio (docs/feat/mcp.md). The tools
+// live in inua-assistant, beside this program: it becomes that, keeping
+// this process, so the agent that started it stays its parent.
+func cmdMCP() error {
+	exe := sibling("inua-assistant")
+	path, err := exec.LookPath(exe)
+	if err != nil {
+		return fmt.Errorf("inua mcp needs inua-assistant: %w", err)
+	}
+	return syscall.Exec(path, []string{"inua-assistant", "--mcp"}, os.Environ())
 }

@@ -48,6 +48,10 @@ type Settings struct {
 	MaxSteps         int
 	ServeListen      string
 	ServeToken       string
+	// MCPServer is the command that serves inua's tools over MCP
+	// (inua-assistant --mcp): the assistant uses them through Mister
+	// Morph's MCP client, as agents do (docs/feat/mcp.md). Empty: none.
+	MCPServer []string
 }
 
 // keyless are the providers for servers that may want no key (a model
@@ -147,6 +151,7 @@ type Assistant struct {
 
 	mu      sync.Mutex
 	history []llm.Message
+	topic   string // the conversation, for what tool_search found in it
 	busy    bool
 }
 
@@ -210,12 +215,20 @@ func New(set Settings, own []Tool, approve Approver) (*Assistant, error) {
 	cfg.Set("tool_repeat_limit", 3)
 	cfg.Set("server.listen", set.ServeListen)
 	cfg.Set("server.auth_token", set.ServeToken)
+	if len(set.MCPServer) > 0 {
+		cfg.Set("mcp.servers", []any{map[string]any{
+			"name": mcpServerName, "type": "stdio",
+			"command": set.MCPServer[0], "args": set.MCPServer[1:],
+			"description": "this desktop: windows, workspaces, apps, Wi-Fi, Bluetooth, volume, brightness, Focus, notifications, the clipboard, processes, Tailscale, the weather",
+			"env":         map[string]any{MCPClientEnv: "assistant"},
+		}})
+	}
 	cfg.AddPromptBlock(prompt)
 	rt, err := integration.NewChecked(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("assistant: %w", err)
 	}
-	a := &Assistant{set: set, rt: rt, approve: approve, profile: first.Name}
+	a := &Assistant{set: set, rt: rt, approve: approve, profile: first.Name, topic: newTopic()}
 	a.reg = rt.NewRegistry()
 	// Every tool, built-in or inua's, goes through wrap: the window sees it
 	// start, and changes wait for the user.
@@ -279,8 +292,11 @@ func builtinRisk(name string) Risk {
 
 // ToolNames lists the tools the agent has.
 func (a *Assistant) ToolNames() []string {
+	a.mu.Lock()
+	reg := a.reg
+	a.mu.Unlock()
 	var names []string
-	for _, t := range a.reg.All() {
+	for _, t := range reg.All() {
 		names = append(names, t.Name())
 	}
 	slices.Sort(names)
@@ -320,6 +336,8 @@ func (a *Assistant) Ask(ctx context.Context, question string, ev Events) (string
 	a.busy = true
 	history := slices.Clone(a.history)
 	profile := a.profile
+	reg := a.reg
+	topic := a.topic
 	a.mu.Unlock()
 	defer func() {
 		a.mu.Lock()
@@ -329,8 +347,10 @@ func (a *Assistant) Ask(ctx context.Context, question string, ev Events) (string
 
 	var stream answerStream
 	ctx = context.WithValue(ctx, eventsKey{}, ev)
+	ctx = agent.WithEventSinkContext(ctx, mcpEvents(ev))
 	res, err := a.rt.RunTaskWithOptions(ctx, question, integration.RunTaskOptions{
-		Registry:    a.reg,
+		Registry:    reg,
+		TopicID:     topic,
 		LLMProfile:  profile,
 		PersistTask: a.set.ServeListen != "",
 		Agent: agent.RunOptions{
@@ -363,10 +383,11 @@ func (a *Assistant) Ask(ctx context.Context, question string, ev Events) (string
 // settings change in the middle of one.
 func (a *Assistant) Carry(from *Assistant) {
 	from.mu.Lock()
-	h := slices.Clone(from.history)
+	h, topic := slices.Clone(from.history), from.topic
 	from.mu.Unlock()
 	a.mu.Lock()
 	a.history = h
+	a.topic = topic
 	a.mu.Unlock()
 }
 
@@ -374,6 +395,7 @@ func (a *Assistant) Carry(from *Assistant) {
 func (a *Assistant) Reset() {
 	a.mu.Lock()
 	a.history = nil
+	a.topic = newTopic()
 	a.mu.Unlock()
 }
 
@@ -417,7 +439,8 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 	if ev.Tool != nil {
 		ev.Tool(w.name, doing)
 	}
-	if w.risk == Always || (w.risk == Change && w.a.set.AskBeforeChanges) {
+	risk := w.risk
+	if risk == Always || (risk == Change && w.a.set.AskBeforeChanges) {
 		ok := false
 		if w.a.approve != nil {
 			var err error

@@ -1,6 +1,7 @@
 // Command inua-assistant is the assistant's window: an agent with inua's
 // tools (docs/feat/assistant.md). `inua-assistant --ask "…"` asks a
 // question; with the window already open, the question goes to it.
+// `inua-assistant --mcp` is inua as an MCP server (docs/feat/mcp.md).
 package main
 
 import (
@@ -23,7 +24,14 @@ func main() {
 	background := flag.Bool("background", false, "start the assistant without showing its window")
 	serveToken := flag.Bool("serve-token", false, "print the Console token from the keyring, creating it if missing")
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory")
+	mcpServer := flag.Bool("mcp", false, "be inua's MCP server on stdio, for an AI agent (inua mcp)")
 	flag.Parse()
+	if *mcpServer {
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		code := runMCP(ctx)
+		stop()
+		os.Exit(code)
+	}
 	if *serveToken {
 		token, err := keys.New().ServeToken(true)
 		if err != nil {

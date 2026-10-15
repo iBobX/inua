@@ -1554,6 +1554,147 @@ ApplicationWindow settings {
                 }
               }
 
+              // [MCP]: inua as an MCP server, for AI agents on this computer.
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("Let AI agents on this computer use inua's tools");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("MCP server");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label:  _("Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch mcp_enable {
+                      name: "mcp_enable";
+                      tooltip-text:  _("MCP server");
+                      valign: center;
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("What agents may do");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label:  _("Closing windows, ending processes, power, the clipboard and notifications always ask");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown mcp_policy {
+                      name: "mcp_policy";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          _("Look only"),
+                          _("Ask before changes"),
+                          _("Change without asking"),
+                        ]
+                      };
+                    }
+                  }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    orientation: vertical;
+                    spacing: 8;
+
+                    Label {
+                      styles ["title"]
+                      label:  _("Connect an agent");
+                      xalign: 0;
+                    }
+
+                    Box {
+                      spacing: 8;
+
+                      Entry mcp_command {
+                        editable: false;
+                        hexpand: true;
+                        text: "claude mcp add inua -- inua mcp";
+                      }
+
+                      Button mcp_copy {
+                        styles ["outlined"]
+                        name: "mcp_copy";
+                        label:  _("Copy");
+                      }
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label:  _("Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+                }
+              }
+
               // [PROFILES]: Go fills ai_profiles, a card for each.
               Box {
                 styles ["section"]
