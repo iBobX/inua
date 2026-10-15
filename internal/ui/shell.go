@@ -65,7 +65,8 @@ type shellUI struct {
 	app   *gtk.Application
 	layer bool // compositor supports layer-shell and it is in use
 
-	appsStamp string // the applications folders as last scanned (desktop.Stamp)
+	appsStamp string           // the applications folders as last scanned (desktop.Stamp)
+	apps      []*desktop.Entry // the desktop entries as last scanned
 
 	client    *hypr.Client
 	snap      hypr.Snapshot
@@ -137,6 +138,7 @@ type shellUI struct {
 	onSettingsSwitch       func(gtk.Switch, bool) bool
 	onSettingsDrop         func(uintptr, uintptr, uintptr)
 	onSettingsPage         func(uintptr, uintptr, uintptr)
+	onDefaultApp           func(uintptr, uintptr, uintptr)
 	onSettingsIndex        func(gtk.ListBox, uintptr)
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
@@ -929,6 +931,7 @@ func (s *shellUI) scanApps() {
 		}
 		entries := desktop.Scan(desktop.DataDirs(), locale)
 		gtkx.Post(func() {
+			s.apps = entries
 			s.launcher.st.SetApps(entries)
 			s.dockApps(entries)
 			s.notes.apps = map[string]*desktop.Entry{}

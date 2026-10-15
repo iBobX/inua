@@ -12,6 +12,7 @@
 //	inua workshop list|new|install|remove|run|dev    the light apps users write
 //	inua mcp                                         inua as an MCP server on stdio, for an AI agent
 //	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
+//	inua terminal [command [args...]]               open the default terminal, running command
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
 package main
@@ -36,6 +37,7 @@ import (
 	"github.com/lyricat/inua/internal/bootstrap"
 	"github.com/lyricat/inua/internal/clipboard"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/hyprconf"
 	"github.com/lyricat/inua/internal/ipc"
@@ -71,6 +73,8 @@ func main() {
 		err = cmdMCP()
 	case "upgrade":
 		err = cmdUpgrade(os.Args[2:])
+	case "terminal":
+		err = cmdTerminal(os.Args[2:])
 	case "version", "--version", "-v":
 		fmt.Println("inua", version)
 	default:
@@ -96,8 +100,25 @@ func usage() {
   inua mcp
   inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua clipboard capture [history-path]
+  inua terminal [command [args...]]
   inua version`)
 	os.Exit(2)
+}
+
+// cmdTerminal opens the default terminal (Settings → Default Apps: the
+// launcher's terminal, else $TERMINAL, xdg-terminals.list's,
+// xdg-terminal-exec), running command in it if given.
+func cmdTerminal(command []string) error {
+	cfg, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
+	argv, dashE := desktop.Terminal(cfg.TerminalCommand())
+	if len(command) > 0 && dashE {
+		argv = append(argv, "-e")
+	}
+	argv = append(argv, command...)
+	if _, err := exec.LookPath(argv[0]); err != nil {
+		return fmt.Errorf("no terminal to open (%s): choose one in Settings, Default Apps", argv[0])
+	}
+	return desktop.Spawn(argv, "")
 }
 
 // defaultInstance names the control socket when -n is not given.

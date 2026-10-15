@@ -96,8 +96,17 @@ its window to the current workspace.
 ## Settings
 
 A two-column settings window for everything: appearance and wallpaper, bar
-and dock, launcher, AI (the assistant's models), notifications, shortcuts,
-keyboard, mouse and touchpad. Changes apply as you make them.
+and dock, launcher, default apps, AI (the assistant's models),
+notifications, shortcuts, keyboard, mouse and touchpad. Changes apply as
+you make them.
+
+Default Apps chooses what opens links (the web browser), mailto: links,
+folders (the file manager), audio, video, pictures, PDFs and plain text,
+from the installed apps that open them, inua's own among them; the
+choice is the desktop's, in `~/.config/mimeapps.list`, so other apps
+follow it too. The terminal chosen there is the launcher's terminal and
+the first of `~/.config/xdg-terminals.list`; `inua terminal` opens it,
+and the sample Hyprland config's Super+Return runs `inua terminal`.
 
 ## Shortcuts
 

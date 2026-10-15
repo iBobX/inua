@@ -11,6 +11,7 @@ var settingsIcons = map[string]string{
 	"appearance":    "preferences-desktop-appearance-symbolic",
 	"bar":           "user-desktop-symbolic",
 	"launcher":      "system-run-symbolic",
+	"apps":          "view-app-grid-symbolic",
 	"ai":            "applications-science-symbolic",
 	"notifications": "preferences-system-notifications-symbolic",
 	"clipboard":     "edit-paste-symbolic",

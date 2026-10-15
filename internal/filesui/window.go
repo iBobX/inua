@@ -11,6 +11,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/files"
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -892,7 +893,8 @@ func (w *window) copyFolderPath(p *pane) {
 	w.flash(i18n.Tf("Copied %s.", shortHome(p.dir)))
 }
 
-// terminal opens a terminal in dir: xdg-terminal-exec, told the folder
+// terminal opens a terminal in dir: the one chosen in inua's settings
+// (Default Apps), started there; else xdg-terminal-exec, told the folder
 // with --dir (a terminal that serves its windows from one process, as
 // GNOME's, starts them where it runs, not where it is asked from), else
 // $TERMINAL, else kitty with --directory.
@@ -900,7 +902,11 @@ func (w *window) terminal(dir string) {
 	if dir == "" {
 		dir = files.Home()
 	}
-	try := [][]string{{"xdg-terminal-exec", "--dir=" + dir}}
+	var try [][]string
+	if c, _, _ := config.Load(config.DefaultPath()); len(c.TerminalCommand()) > 0 {
+		try = append(try, c.TerminalCommand())
+	}
+	try = append(try, []string{"xdg-terminal-exec", "--dir=" + dir})
 	if t := strings.Fields(os.Getenv("TERMINAL")); len(t) > 0 {
 		try = append(try, t)
 	}

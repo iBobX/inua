@@ -52,6 +52,8 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 			s.checkReleases()
 		case page == "keyring":
 			s.showKeyringReads() // what was read since it was last shown
+		case page == "apps":
+			s.showDefaultApps() // apps installed or chosen elsewhere since
 		}
 	}
 	gtkx.ConnectNotify(&s.settings.pages, "visible-child-name", &s.onSettingsPage)

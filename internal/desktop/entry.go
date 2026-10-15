@@ -28,8 +28,9 @@ type Entry struct {
 	Categories    []string
 	Keywords      []string
 	NoDisplay     bool
-	WMClass       string // StartupWMClass: the class of the app's windows
-	Path          string // file the entry came from
+	WMClass       string   // StartupWMClass: the class of the app's windows
+	MimeTypes     []string // the types it opens: "audio/flac", "x-scheme-handler/http"
+	Path          string   // file the entry came from
 }
 
 // Parse reads the [Desktop Entry] group. locale is like "zh_CN.UTF-8"; ""
@@ -89,6 +90,7 @@ func Parse(r io.Reader, id, locale string) (*Entry, error) {
 		Keywords:      splitList(get("Keywords")),
 		NoDisplay:     vals["NoDisplay"] == "true",
 		WMClass:       unescape(vals["StartupWMClass"]),
+		MimeTypes:     splitList(vals["MimeType"]),
 	}
 	if e.Name == "" {
 		return nil, fmt.Errorf("%s: no Name", id)

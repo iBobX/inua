@@ -11,6 +11,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/glib"
 
 	"github.com/lyricat/inua/internal/apps/files"
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -115,9 +116,14 @@ func (w *window) openWithApp(id string, paths []string) {
 	if dir == "" {
 		dir = filepath.Dir(paths[0])
 	}
+	c, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
+	term, dashE := desktop.Terminal(c.TerminalCommand())
+	if dashE {
+		term = append(term, "-e")
+	}
 	for _, argv := range cmds {
 		if e.RunInTerminal {
-			argv = append([]string{"xdg-terminal-exec"}, argv...)
+			argv = append(slices.Clone(term), argv...)
 		}
 		if err := desktop.Spawn(argv, dir); err != nil {
 			w.flash(i18n.Tf("%s could not be opened: %v", filepath.Base(paths[0]), err))

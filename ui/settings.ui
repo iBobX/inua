@@ -1827,6 +1827,103 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             </child>
             <child>
               <object class="GtkStackPage">
+                <property name="name">apps</property>
+                <property name="title" translatable="yes">Default Apps</property>
+                <property name="child">
+                  <object class="GtkOverlay">
+                    <property name="child">
+                      <object class="GtkScrolledWindow" id="scroll_apps">
+                        <property name="hscrollbar-policy">2</property>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="page"/>
+                            </style>
+                            <property name="orientation">1</property>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;DEFAULT APPS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">What opens links, folders and files</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="default_apps">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <style>
+                                      <class name="sub"/>
+                                    </style>
+                                    <property name="label" translatable="yes">Saved where other apps read them too: ~/.config/mimeapps.list, and for the terminal xdg-terminals.list and the launcher's terminal.</property>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="margin-top">8</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <child type="overlay">
+                      <object class="GtkBox" id="sticky_apps">
+                        <style>
+                          <class name="section-head"/>
+                          <class name="sticky"/>
+                        </style>
+                        <property name="spacing">10</property>
+                        <property name="valign">1</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
                 <property name="name">ai</property>
                 <property name="title" translatable="yes">AI</property>
                 <property name="child">

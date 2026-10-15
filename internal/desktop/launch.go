@@ -5,29 +5,22 @@ import (
 	"errors"
 	"os"
 	"os/exec"
-	"slices"
 	"strconv"
 	"strings"
 	"syscall"
 )
 
 // LaunchWith starts the entry detached from this process: own session, no
-// stdio. Terminal=true entries run through terminal, followed by "-e"; nil
-// means $TERMINAL, then xdg-terminal-exec. Window placement and focus are
-// left to Hyprland.
+// stdio. Terminal=true entries run in the terminal (Terminal, with the
+// launcher's terminal). Window placement and focus are left to Hyprland.
 func LaunchWith(e *Entry, terminal []string) error {
 	if len(e.Command) == 0 {
 		return errors.New(e.ID + ": no command")
 	}
 	argv := e.Command
 	if e.RunInTerminal {
-		term := slices.Clone(terminal)
-		if len(term) == 0 {
-			term = strings.Fields(os.Getenv("TERMINAL"))
-		}
-		if len(term) == 0 {
-			term = []string{"xdg-terminal-exec"}
-		} else {
+		term, dashE := Terminal(terminal)
+		if dashE {
 			term = append(term, "-e")
 		}
 		argv = append(term, argv...)

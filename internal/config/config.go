@@ -61,8 +61,9 @@ type Bar struct {
 type Launcher struct {
 	// Mode is what `launcher toggle` opens: "apps" or "windows".
 	Mode string `toml:"mode"`
-	// Terminal runs Terminal=true apps, followed by "-e" and the command.
-	// Empty means $TERMINAL, then xdg-terminal-exec.
+	// Terminal is the default terminal: `inua terminal` opens it, and it
+	// runs Terminal=true apps, followed by "-e" and the command. Empty
+	// means $TERMINAL, then xdg-terminals.list's, then xdg-terminal-exec.
 	Terminal string `toml:"terminal"`
 	// Search is the web search offered after the results: a URL with %s
 	// for the words typed.

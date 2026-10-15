@@ -77,6 +77,7 @@ type settings struct {
 	ai      aiSettings      // the AI page
 	about   aboutSettings   // the About page
 	keyring keyringSettings // the Keyring page
+	apps    appsSettings    // the Default Apps page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -425,6 +426,7 @@ func (s *shellUI) openSettings() {
 	s.getAISettings(ui)
 	s.getAboutSettings(ui)
 	s.getKeyringSettings(ui)
+	s.getAppsSettings(ui)
 	s.buildSettingsIndex()
 	ui.Close()
 
@@ -462,7 +464,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "ai", "notifications", "clipboard", "keyring", "shortcuts", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.

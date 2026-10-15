@@ -1294,6 +1294,75 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "apps";
+        title:  _("Default Apps");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_apps {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [DEFAULT APPS]: a row a kind of default, each a menu of the
+              // apps that can be it (settings_apps.go).
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>DEFAULT APPS<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("What opens links, folders and files");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box default_apps {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+
+                Label {
+                  styles ["sub"]
+                  label:  _("Saved where other apps read them too: ~/.config/mimeapps.list, and for the terminal xdg-terminals.list and the launcher's terminal.");
+                  xalign: 0;
+                  wrap: true;
+                  margin-top: 8;
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_apps {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "ai";
         title:  _("AI");
 

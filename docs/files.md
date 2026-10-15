@@ -121,7 +121,7 @@ Selection and changes
 | Ctrl+Z | Undo the last operations, one at a time |
 | F5 / F6 | Copy / move the selection to the other pane (one pane: F5 reloads) |
 | Ctrl+D | Bookmark this folder, or remove its bookmark |
-| Ctrl+Alt+T | A terminal here (`xdg-terminal-exec`, else `$TERMINAL`, else kitty) |
+| Ctrl+Alt+T | A terminal here (the default terminal, else `xdg-terminal-exec`, `$TERMINAL`, kitty) |
 | Menu, Shift+F10, right click | The selection's menu (or the folder's) |
 
 Window
@@ -248,9 +248,10 @@ editor.
 ## Terminal
 
 The head's terminal button, Ctrl+Alt+T and the folder's menu open a
-terminal in the folder: `xdg-terminal-exec --dir=FOLDER` (the terminal
-chosen for the desktop), else `$TERMINAL` started there, else kitty with
-`--directory`. The folder is passed rather than only started in, as a
+terminal in the folder: the one chosen in Settings, Default Apps (the
+launcher's terminal) started there, else `xdg-terminal-exec
+--dir=FOLDER` (the terminal chosen for the desktop), else `$TERMINAL`
+started there, else kitty with `--directory`. The folder is passed rather than only started in, as a
 terminal that serves its windows from one process (GNOME Terminal) would
 open in its own.
 

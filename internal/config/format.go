@@ -195,8 +195,9 @@ tray = %t
 # (`+"`launcher apps`"+` and `+"`launcher windows`"+` open a mode directly; Tab switches.)
 mode = %s
 
-# Terminal for apps marked Terminal=true; the command follows after "-e".
-# Empty: $TERMINAL, then xdg-terminal-exec.
+# The default terminal (Settings, Default Apps): `+"`inua terminal`"+` opens it, and
+# apps marked Terminal=true run in it, the command after "-e".
+# Empty: $TERMINAL, then xdg-terminals.list's first, then xdg-terminal-exec.
 terminal = %s
 
 # The web search offered after the results: a web address with %%s where
