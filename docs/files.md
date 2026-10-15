@@ -44,24 +44,28 @@ the share first.
 
 | Part | What | Key |
 | --- | --- | --- |
-| Sidebar (left) | Places, the trash, devices and network shares; at its foot, hidden files, two panes, details and the keys. | F9 shows or hides it |
-| Panes (centre) | One pane, or two side by side (commander style). Each has its own folder, history, view, order and selection; with two, the one the keys go to has the accent along its top. | F3 two panes; Tab the other pane |
+| Sidebar (left) | Places, the trash, devices and network shares; at its foot, hidden files, two panes, details and the keys. A right click on an entry: open it in a new tab or window, and remove a bookmark, empty the trash, eject a drive or disconnect a share. | F9 shows or hides it |
+| Panes (centre) | One pane, or two side by side (commander style). Each has its own tabs, and each tab its own folder and history; a pane's view, order and selection are its folder's. With two panes, a status square starts each path: filled for the one the keys go to, hollow for the other, whose selection loses the accent. | F3 two panes; Tab the other pane |
+| Tabs | A pane's tabs show above it once it has two: the folder's name, a button that closes it (a middle click too). | Ctrl+T, Ctrl+W, Ctrl+Tab |
 | Details (right) | The selection: a thumbnail or the first lines of a text, its kind (MIME type), size, modified, opened and changed times, permissions, owner, where it is and where a link points; a folder's size and count, added up on a goroutine. Several selected: how many, and their size. | Space, Ctrl+I, Alt+Enter |
-| Path bar | The folder as buttons, one a segment (home as a house). Ctrl+L turns it into an entry (`~` is home, Tab completes folder names); a file typed opens its folder with it selected; a URI (`sftp://host/dir`, `smb://server/share`) mounts it; `trash:` is the trash. | Ctrl+L, Esc back |
-| Status | The count, the hidden count, the selection and its size, the filter typed, free space; a message for a moment after an action. The operation running shows under the panes, with its speed, time left and a cancel button. | |
+| Path bar | The folder as buttons, one a segment (home as a house); a click beside them, or the pencil, edits it, the next button copies it, and the last opens a terminal there. Ctrl+L turns it into an entry (`~` is home, Tab completes folder names); a file typed opens its folder with it selected; a URI (`sftp://host/dir`, `smb://server/share`) mounts it; `trash:` is the trash. | Ctrl+L, Esc back |
+| Status | The count, the hidden count, the selection and its size, the filter typed, free space, and the zoom (− 100% +); a message for a moment after an action. The operation running shows under the panes, with its speed, time left and a cancel button. | |
 
 ### Views
 
+The head's text tabs, LIST and GRID (the apps' tabs), choose the view:
+
 | View | What | Key |
 | --- | --- | --- |
-| List | Rows: icon, name, size (a folder's item count), modified, kind. A column head sorts by it, again reverses it. With two panes the kind is left out. | Ctrl+1 |
+| List | Rows: icon and name, then the columns chosen: size (a folder's item count), modified, created, opened, kind, permissions, owner, group (size, modified and kind at first). A column head sorts by it, again reverses it; a right click on the heads, or the button at their end, turns columns on and off, for every folder. The heads and the rows share fixed widths, so they line up. | Ctrl+1 |
 | Grid | Icons, thumbnails for images, names below. | Ctrl+2 |
 
 Both are GTK's recycling `ListView` and `GridView`: only the rows on
 screen have widgets, so the size of a folder does not matter. Each folder
 remembers its view and order (kept in `~/.local/share/inua/files.json`,
-the last 500 folders); a new folder takes the last one used. Ctrl++,
-Ctrl+− and Ctrl+0 make the rows and icons bigger, smaller and normal.
+the last 500 folders); a new folder takes the last one used. The zoom
+(Ctrl++, Ctrl+−, Ctrl+0, Ctrl with the wheel, or the status line's
+buttons) goes from 80% to 150%: rows, text and icons, in every window.
 
 Order: by name (natural: `file2` before `file10`, case folded), size,
 modified or kind; folders first. Hidden files (dot files and those named in
@@ -83,6 +87,7 @@ Moving and opening
 | ↑ ↓ ← → / Home End / PgUp PgDn | Move (the arrows step through the grid's cells) |
 | Enter | Open: a folder in this pane, a file with its app; several selected, all of them |
 | Shift+Enter | Open with… (choose the app) |
+| Middle click | A folder in a new tab, behind this one |
 | Backspace, Alt+↑ | The parent folder, with the folder left selected |
 | Alt+← / Alt+→ | Back / forward |
 | Alt+Home | Home |
@@ -99,7 +104,7 @@ Selection and changes
 | Shift+arrows, Ctrl+click, Shift+click, a rubber band | Select |
 | Ctrl+A / Ctrl+Shift+A / Ctrl+Shift+I | Select all / none / invert |
 | Ctrl+C / Ctrl+X / Ctrl+V | Copy / cut / paste, interchanged with other file managers (`x-special/gnome-copied-files`, `text/uri-list`) |
-| Ctrl+Shift+C | Copy the paths as text |
+| Ctrl+Shift+C | Copy the paths as text (nothing selected: the folder's) |
 | F2 | Rename (the name without its extension is selected) |
 | Delete | Move to the trash (in the trash: delete for good) |
 | Shift+Delete | Delete for good (asks first) |
@@ -114,13 +119,15 @@ Window
 
 | Key | Does |
 | --- | --- |
-| Ctrl+N / Ctrl+W | New window / close it |
+| Ctrl+T / Ctrl+W | New tab (here) / close the tab; the last one closes the window |
+| Ctrl+Tab / Ctrl+Shift+Tab, Ctrl+PgDn / Ctrl+PgUp | Next / previous tab |
+| Ctrl+N / Ctrl+Q | New window / close it |
 | Ctrl+1 / Ctrl+2 | List / grid |
 | Ctrl+H | Hidden files |
 | F3 / Tab | Two panes / the other pane |
 | F9 / Space, Ctrl+I | Sidebar / details |
 | Ctrl+R | Reload (folders follow their changes by themselves; this is for network folders) |
-| Ctrl++ / Ctrl+− / Ctrl+0 | Bigger / smaller / normal |
+| Ctrl++ / Ctrl+− / Ctrl+0, Ctrl+wheel | Bigger / smaller / normal |
 | Ctrl+? | The keys |
 
 In a card (rename, a name taken, a question): Enter does what is
@@ -215,11 +222,34 @@ until then.
 
 ## Opening files
 
-Files open with the app the desktop chose for their MIME type, through
-GTK's `GtkFileLauncher` (the same `mimeapps.list` the launcher reads, and
-the portal when there is one); *Open with…* (Shift+Enter) shows GTK's
-chooser, which can make the choice the default. A launcher opens a file
-by its type and never runs it, so scripts open in the editor.
+A file opens with the app chosen for its type: its MIME type, guessed
+from its name and first bytes; the choice is the desktop's, kept by GIO
+in `~/.config/mimeapps.list`, so the launcher, browsers and other file
+managers agree. A type with no app chosen asks. *Open with…*
+(Shift+Enter, or the menu) is the app's own card: the apps for the type,
+the one chosen first, the last used next, each with its icon; typing
+finds any other app. *Always open … with it*, on at first, keeps the
+choice for the type; off, the app is only put first next time. Several
+files open together, one app for each type. The app starts from its
+desktop entry with the files in its `Exec` (`%f`, `%F`, `%u`, `%U` as the
+Desktop Entry specification says; `internal/desktop`), in the files'
+folder; a file is opened by its type, never run, so scripts open in the
+editor.
+
+## Terminal
+
+The head's terminal button, Ctrl+Alt+T and the folder's menu open a
+terminal in the folder: `xdg-terminal-exec --dir=FOLDER` (the terminal
+chosen for the desktop), else `$TERMINAL` started there, else kitty with
+`--directory`. The folder is passed rather than only started in, as a
+terminal that serves its windows from one process (GNOME Terminal) would
+open in its own.
+
+## Window
+
+Files is a normal window, tiled as other apps are: the light apps float,
+and `inua.conf` (written by inua) tiles Files after them
+(`windowrule inua-files … tile = yes`).
 
 ## Instance and D-Bus
 
@@ -258,10 +288,10 @@ As the other light apps: the logic without GTK, tested; the view thin.
 
 | Package | What |
 | --- | --- |
-| `internal/apps/files` | Entries (`ReadDir`: names, then `lstat` on up to eight goroutines for big folders; links' targets; `.hidden`), natural order without allocating, fuzzy matching and the filter, history, the jump list (frecency), settings, places (XDG user folders, GTK bookmarks read and written), mounts (`mountinfo`, `statfs`, GVfs's folder names, the table followed), the trash, operations (copy, move, link, trash, restore, delete, rename, make; conflicts, progress, cancelling, undo), the clipboard's formats, searching below a folder on several goroutines, watching a folder (inotify, a burst of changes merged into one within 80 ms, at most 600 ms late), thumbnails |
+| `internal/apps/files` | Entries (`ReadDir`: names, then `statx`, which gives the creation time too, on up to eight goroutines for big folders; links' targets; `.hidden`), natural order without allocating, fuzzy matching and the filter, history, the jump list (frecency), settings, places (XDG user folders, GTK bookmarks read and written), mounts (`mountinfo`, `statfs`, GVfs's folder names, the table followed), the trash, operations (copy, move, link, trash, restore, delete, rename, make; conflicts, progress, cancelling, undo), the clipboard's formats, searching below a folder on several goroutines, watching a folder (inotify, a burst of changes merged into one within 80 ms, at most 600 ms late), thumbnails |
 | `internal/apps/files/disks` | UDisks2: volumes and their drives, mounting, unmounting, unlocking, locking, ejecting and powering off, followed by its signals |
 | `internal/apps/files/fm1` | `org.freedesktop.FileManager1`: serving it, and handing paths to a running instance |
-| `internal/filesui` | The windows: sidebar, panes, list and grid, details, path bar, cards, menu, drag and drop, the clipboard, operations' progress, GIO for opening files and mounting shares |
+| `internal/filesui` | The windows: sidebar, panes and their tabs, list (its columns) and grid, details, path bar, cards (Open With among them), menus, drag and drop, the clipboard, operations' progress, zoom, GIO for apps by type and mounting shares |
 | `cmd/inua-files` | Arguments, handing over to a running instance, `-default` |
 | `ui/files.blp`, `ui/filespane.blp`, `ui/style.css` | The window, a pane, and their look (`window.files`) |
 
@@ -308,9 +338,9 @@ keys.
 
 ## Not yet
 
-In order: tabs; renaming many files with a pattern; thumbnails of videos
+In order: renaming many files with a pattern; thumbnails of videos
 and PDFs through the system's thumbnailers; reordering, renaming and
-dropping on the sidebar's bookmarks; asking a share's password in the
+dropping on the sidebar's bookmarks (removing them is in their menu); asking a share's password in the
 app's own card rather than GTK's dialog; redo; archives (compress,
 extract); finding servers on the network (`network:///`, mDNS) rather than
 typing an address; a Miller-columns view. Recent and starred files are

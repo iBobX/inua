@@ -1,7 +1,8 @@
-// One pane of Files: where it is (back, forward, up and the path as
-// buttons, or an entry for typing one), the column heads that sort, the
-// folder as a list or a grid (made in Go, internal/filesui/pane.go), and
-// a status line. Loaded once for each pane.
+// One pane of Files: its tabs (shown with two or more), where it is (back,
+// forward, up, the path as buttons or an entry, its path copied, a
+// terminal there), the list or the grid as text tabs, the column heads
+// that sort (made in Go), the folder itself (internal/filesui/pane.go),
+// and a status line with the zoom. Loaded once for each pane.
 using Gtk 4.0;
 
 Box pane {
@@ -10,9 +11,21 @@ Box pane {
   hexpand: true;
   width-request: 320;
 
+  Box tabs {
+    styles ["files-tabs"]
+    visible: false;
+  }
+
   Box {
     styles ["files-head"]
     spacing: 2;
+
+    // With two panes: filled for the one the keys go to, hollow for the other.
+    Box pane_mark {
+      styles ["mark", "files-pane-mark"]
+      valign: center;
+      visible: false;
+    }
 
     Button back {
       styles ["plain"]
@@ -37,6 +50,7 @@ Box pane {
       transition-type: crossfade;
       transition-duration: 100;
 
+      // A click beside the buttons edits the path.
       StackPage {
         name: "crumbs";
 
@@ -69,86 +83,74 @@ Box pane {
       }
     }
 
-    ToggleButton list_button {
+    Button edit_path {
       styles ["plain"]
-      icon-name: "view-list-symbolic";
-      tooltip-text: _("List (Ctrl+1)");
+      icon-name: "document-edit-symbolic";
+      tooltip-text: _("Edit the path (Ctrl+L)");
     }
 
-    ToggleButton grid_button {
+    Button copy_path {
       styles ["plain"]
-      icon-name: "view-grid-symbolic";
-      tooltip-text: _("Grid (Ctrl+2)");
-      group: list_button;
+      icon-name: "edit-copy-symbolic";
+      tooltip-text: _("Copy the path (Ctrl+Shift+C)");
+    }
+
+    Button terminal {
+      styles ["plain"]
+      icon-name: "utilities-terminal-symbolic";
+      tooltip-text: _("Terminal here (Ctrl+Alt+T)");
+    }
+
+    StackSwitcher view_switch {
+      styles ["tabs", "files-view-tabs"]
+      stack: views;
+      valign: center;
     }
   }
 
-  // The list's column heads: a click sorts by the column, again reverses.
+  // The list's column heads: a click sorts by the column, again reverses;
+  // a right click, or the button at the end, chooses the columns.
   Box columns {
     styles ["files-columns"]
-
-    Button col_name {
-      styles ["files-col"]
-      hexpand: true;
-
-      Label col_name_label {
-        styles ["kicker"]
-        xalign: 0;
-      }
-    }
-
-    Button col_size {
-      styles ["files-col", "files-col-size"]
-
-      Label col_size_label {
-        styles ["kicker"]
-        xalign: 1;
-      }
-    }
-
-    Button col_modified {
-      styles ["files-col", "files-col-date"]
-
-      Label col_modified_label {
-        styles ["kicker"]
-        xalign: 0;
-      }
-    }
-
-    Button col_kind {
-      styles ["files-col", "files-col-kind"]
-
-      Label col_kind_label {
-        styles ["kicker"]
-        xalign: 0;
-      }
-    }
+    spacing: 10;
   }
 
-  Stack views {
+  Overlay {
     vexpand: true;
 
-    StackPage {
-      name: "list";
-      child: ScrolledWindow list_scroll {
-        hscrollbar-policy: never;
-      };
-    }
+    child: Stack views {
+      transition-type: crossfade;
+      transition-duration: 100;
 
-    StackPage {
-      name: "grid";
-      child: ScrolledWindow grid_scroll {
-        hscrollbar-policy: never;
-      };
-    }
+      StackPage {
+        name: "list";
+        title: _("LIST");
 
-    StackPage {
-      name: "empty";
-      child: Label empty_label {
-        styles ["files-empty"]
-        wrap: true;
-        justify: center;
-      };
+        child: ScrolledWindow list_scroll {
+          hscrollbar-policy: never;
+        };
+      }
+
+      StackPage {
+        name: "grid";
+        title: _("GRID");
+
+        child: ScrolledWindow grid_scroll {
+          hscrollbar-policy: never;
+        };
+      }
+    };
+
+    // Why there is nothing to show, over the empty view.
+    [overlay]
+    Label empty_label {
+      styles ["files-empty"]
+      wrap: true;
+      justify: center;
+      halign: center;
+      valign: center;
+      can-target: false;
+      visible: false;
     }
   }
 
@@ -168,14 +170,35 @@ Box pane {
       ellipsize: end;
     }
 
-    Label free_label {
-      styles ["readout"]
-    }
-
     Button empty_trash {
       styles ["link", "files-empty-trash"]
       label: _("Empty Trash");
       visible: false;
+    }
+
+    Label free_label {
+      styles ["readout"]
+    }
+
+    Box {
+      styles ["files-zoom"]
+
+      Button zoom_out {
+        styles ["plain"]
+        icon-name: "zoom-out-symbolic";
+        tooltip-text: _("Smaller (Ctrl+−)");
+      }
+
+      Button zoom_level {
+        styles ["link", "files-zoom-level"]
+        tooltip-text: _("Normal size (Ctrl+0)");
+      }
+
+      Button zoom_in {
+        styles ["plain"]
+        icon-name: "zoom-in-symbolic";
+        tooltip-text: _("Bigger (Ctrl++)");
+      }
     }
   }
 }

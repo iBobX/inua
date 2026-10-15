@@ -758,3 +758,61 @@ func TestThumbnail(t *testing.T) {
 		t.Fatal("a stale cache entry is read")
 	}
 }
+
+func TestStatAttributes(t *testing.T) {
+	dir := t.TempDir()
+	p := filepath.Join(dir, "f")
+	write(t, p, "abc")
+	os.Chmod(p, 0o640)
+	opened := time.Date(2021, 5, 6, 7, 8, 9, 0, time.UTC)
+	os.Chtimes(p, opened, time.Now())
+	e, err := Stat(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fi, _ := os.Lstat(p)
+	if e.Mode != fi.Mode() || e.Size != 3 || !e.ModTime.Equal(fi.ModTime()) {
+		t.Fatalf("mode %v size %d mtime %v; lstat %v %v", e.Mode, e.Size, e.ModTime, fi.Mode(), fi.ModTime())
+	}
+	if !e.Opened.Equal(opened) || e.UID != uint32(os.Getuid()) {
+		t.Fatalf("opened %v uid %d", e.Opened, e.UID)
+	}
+	if !e.Created.IsZero() && e.Created.After(time.Now().Add(time.Minute)) {
+		t.Fatalf("created %v", e.Created)
+	}
+	os.Mkdir(filepath.Join(dir, "d"), 0o755)
+	os.Symlink("d", filepath.Join(dir, "l"))
+	if e, _ := Stat(filepath.Join(dir, "d")); !e.Dir || e.Mode&fs.ModeDir == 0 {
+		t.Fatalf("folder %+v", e)
+	}
+	if e, _ := Stat(filepath.Join(dir, "l")); !e.Dir || e.Mode&fs.ModeSymlink == 0 || e.Link != "d" {
+		t.Fatalf("link %+v", e)
+	}
+}
+
+func TestSortByAttributes(t *testing.T) {
+	a, b := newEntry("a"), newEntry("b")
+	a.Opened, b.Opened = time.Unix(200, 0), time.Unix(100, 0)
+	a.Mode, b.Mode = 0o644, 0o600
+	a.UID, b.UID = 2, 1
+	for by, want := range map[SortBy]string{ByOpened: "b", ByPerms: "b", ByOwner: "b", ByCreated: "a"} {
+		es := []Entry{a, b}
+		Sort(es, Order{By: by})
+		if es[0].Name != want {
+			t.Errorf("by %s: %s first", by, es[0].Name)
+		}
+	}
+}
+
+func TestToggleColumn(t *testing.T) {
+	s := &Settings{Columns: []SortBy{BySize, ByKind}}
+	s.ToggleColumn(ByOwner)
+	s.ToggleColumn(ByModified)
+	if !slices.Equal(s.Columns, []SortBy{BySize, ByModified, ByKind, ByOwner}) {
+		t.Fatalf("on, in their order: %v", s.Columns)
+	}
+	s.ToggleColumn(BySize)
+	if s.ShowsColumn(BySize) || len(s.Columns) != 3 {
+		t.Fatalf("off: %v", s.Columns)
+	}
+}

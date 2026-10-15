@@ -47,6 +47,7 @@ type cardParts struct {
 	entry, secret    bool
 	entryText        string
 	check            string
+	checked          bool // the check is on at first
 	list             bool
 	listHeight       int // the list's most, when not the usual
 	selectStem, mono bool
@@ -68,7 +69,7 @@ func (w *window) openCard(c *card, parts cardParts) {
 	w.cardScroll.SetMaxContentHeight(int32(cmp.Or(parts.listHeight, 340)))
 	w.cardCheck.SetVisible(parts.check != "")
 	w.cardCheck.SetLabel(parts.check)
-	w.cardCheck.SetActive(false)
+	w.cardCheck.SetActive(parts.checked)
 	for i, b := range c.buttons {
 		btn := gtk.NewButtonWithLabel(b.label)
 		btn.AddCssClass("outlined")
@@ -203,7 +204,7 @@ func (w *window) cardFail(msg string) {
 }
 
 // setCardList fills the card's list; a click on an item picks it.
-func (w *window) setCardList(items, labels, subs []string) {
+func (w *window) setCardList(items, labels, subs []string, icons ...*gio.IconBase) {
 	c := w.card
 	w.app.h.forget(c.ptrs[len(c.buttons):])
 	c.ptrs = c.ptrs[:len(c.buttons)]
@@ -216,7 +217,19 @@ func (w *window) setCardList(items, labels, subs []string) {
 		}
 		b := gtk.NewButton()
 		b.AddCssClass("files-card-item")
-		b.SetChild(&text(labels[i], sub).Widget)
+		t := text(labels[i], sub)
+		if i < len(icons) && icons[i] != nil && icons[i].Ptr != 0 {
+			row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+			img := gtk.NewImageFromGicon(icons[i])
+			img.SetPixelSize(24)
+			gtkx.Append(row, &img.Widget)
+			t.SetHexpand(true)
+			gtkx.Append(row, &t.Widget)
+			b.SetChild(&row.Widget)
+			row.Unref()
+		} else {
+			b.SetChild(&t.Widget)
+		}
 		item := items[i]
 		w.app.h.click(b, func() {
 			picked := c.picked
@@ -246,6 +259,7 @@ func (w *window) markPick() {
 // text is a title over a dim line.
 func text(title, sub string) *gtk.Box {
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	box.SetValign(gtk.AlignCenterValue)
 	t := gtk.NewLabel(title)
 	t.AddCssClass("title")
 	t.SetXalign(0)
@@ -693,7 +707,7 @@ func (w *window) showKeys() {
 		}},
 		{i18n.T("Files"), [][2]string{
 			{"Ctrl+C / Ctrl+X / Ctrl+V", i18n.T("Copy / cut / paste")},
-			{"Ctrl+Shift+C", i18n.T("Copy the paths")},
+			{"Ctrl+Shift+C", i18n.T("Copy the paths (none selected: the folder's)")},
 			{"F2", i18n.T("Rename")},
 			{"Delete", i18n.T("Move to Trash")},
 			{"Shift+Delete", i18n.T("Delete for good")},
@@ -705,13 +719,16 @@ func (w *window) showKeys() {
 			{"Ctrl+Alt+T", i18n.T("Terminal here")},
 		}},
 		{i18n.T("Window"), [][2]string{
+			{"Ctrl+T / Ctrl+W", i18n.T("New tab / close tab")},
+			{"Ctrl+Tab, Ctrl+PgDn / PgUp", i18n.T("Next / previous tab")},
+			{i18n.T("Middle click"), i18n.T("A folder in a new tab")},
 			{"Ctrl+1 / Ctrl+2", i18n.T("List / grid")},
 			{"Ctrl+H", i18n.T("Hidden files")},
 			{"F3, Tab", i18n.T("Two panes, the other pane")},
 			{"F9", i18n.T("Sidebar")},
 			{"Space, Ctrl+I", i18n.T("Details")},
-			{"Ctrl++ / Ctrl+− / Ctrl+0", i18n.T("Bigger / smaller / normal")},
-			{"Ctrl+N, Ctrl+W", i18n.T("New window, close")},
+			{"Ctrl++ / Ctrl+− / Ctrl+0, Ctrl+wheel", i18n.T("Bigger / smaller / normal")},
+			{"Ctrl+N, Ctrl+Q", i18n.T("New window, close it")},
 			{"Ctrl+R", i18n.T("Reload")},
 		}},
 	}

@@ -5,6 +5,7 @@
 package files
 
 import (
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -14,6 +15,8 @@ import (
 	"syscall"
 	"time"
 	"unicode/utf8"
+
+	"golang.org/x/sys/unix"
 )
 
 // Entry is one item of a folder.
@@ -22,10 +25,14 @@ type Entry struct {
 	Size    int64
 	Mode    fs.FileMode // of the item itself; a link's is ModeSymlink
 	ModTime time.Time
-	Dir     bool   // a folder, or a link to one
-	Link    string // where a link points; empty for anything else
-	Broken  bool   // a link whose target is missing
-	Hidden  bool   // a dot file, or named in the folder's .hidden
+	Dir     bool      // a folder, or a link to one
+	Link    string    // where a link points; empty for anything else
+	Broken  bool      // a link whose target is missing
+	Hidden  bool      // a dot file, or named in the folder's .hidden
+	Created time.Time // the birth time, where the filesystem keeps one
+	Opened  time.Time // the access time
+	UID     uint32
+	GID     uint32
 
 	key string // Name folded for sorting and matching
 	ext string // the extension, folded, without its dot
@@ -71,18 +78,83 @@ func fold(s string) string {
 // Stat reads one entry, as ReadDir would.
 func Stat(path string) (Entry, error) {
 	e := newEntry(filepath.Base(path))
-	fi, err := os.Lstat(path)
-	if err != nil {
-		return e, err
-	}
-	fill(&e, path, fi)
-	return e, nil
+	return e, statEntry(&e, path)
 }
 
+// statEntry fills e from path itself (not what a link points to) with
+// statx, which gives the birth time too, in the one call lstat would be;
+// where statx is missing, from lstat.
+func statEntry(e *Entry, path string) error {
+	var st unix.Statx_t
+	err := unix.Statx(unix.AT_FDCWD, path, unix.AT_SYMLINK_NOFOLLOW|unix.AT_NO_AUTOMOUNT,
+		unix.STATX_BASIC_STATS|unix.STATX_BTIME, &st)
+	if errors.Is(err, unix.ENOSYS) {
+		fi, err := os.Lstat(path)
+		if err != nil {
+			return err
+		}
+		fill(e, path, fi)
+		return nil
+	}
+	if err != nil {
+		return &fs.PathError{Op: "statx", Path: path, Err: err}
+	}
+	e.Size, e.Mode = int64(st.Size), statxMode(uint32(st.Mode))
+	e.ModTime = time.Unix(st.Mtime.Sec, int64(st.Mtime.Nsec))
+	e.Opened = time.Unix(st.Atime.Sec, int64(st.Atime.Nsec))
+	if st.Mask&unix.STATX_BTIME != 0 && st.Btime.Sec != 0 {
+		e.Created = time.Unix(st.Btime.Sec, int64(st.Btime.Nsec))
+	}
+	e.UID, e.GID = st.Uid, st.Gid
+	e.Dir = e.Mode.IsDir()
+	followLink(e, path)
+	return nil
+}
+
+// statxMode turns a stat mode into Go's, as os does.
+func statxMode(m uint32) fs.FileMode {
+	mode := fs.FileMode(m & 0o777)
+	switch m & unix.S_IFMT {
+	case unix.S_IFBLK:
+		mode |= fs.ModeDevice
+	case unix.S_IFCHR:
+		mode |= fs.ModeDevice | fs.ModeCharDevice
+	case unix.S_IFDIR:
+		mode |= fs.ModeDir
+	case unix.S_IFIFO:
+		mode |= fs.ModeNamedPipe
+	case unix.S_IFLNK:
+		mode |= fs.ModeSymlink
+	case unix.S_IFSOCK:
+		mode |= fs.ModeSocket
+	}
+	if m&unix.S_ISUID != 0 {
+		mode |= fs.ModeSetuid
+	}
+	if m&unix.S_ISGID != 0 {
+		mode |= fs.ModeSetgid
+	}
+	if m&unix.S_ISVTX != 0 {
+		mode |= fs.ModeSticky
+	}
+	return mode
+}
+
+// fill fills e from a FileInfo (lstat's, or a directory entry's).
 func fill(e *Entry, path string, fi fs.FileInfo) {
 	e.Size, e.Mode, e.ModTime = fi.Size(), fi.Mode(), fi.ModTime()
 	e.Dir = fi.IsDir()
-	if fi.Mode()&fs.ModeSymlink != 0 {
+	if st, ok := fi.Sys().(*syscall.Stat_t); ok {
+		e.UID, e.GID = st.Uid, st.Gid
+		e.Opened = time.Unix(st.Atim.Unix())
+	}
+	followLink(e, path)
+}
+
+// followLink reads where a link points, and takes the target's kind and
+// size.
+func followLink(e *Entry, path string) {
+	if e.Mode&fs.ModeSymlink != 0 {
 		e.Link, _ = os.Readlink(path)
 		if t, err := os.Stat(path); err == nil {
 			e.Dir = t.IsDir()
@@ -122,10 +194,7 @@ func ReadDir(dir string) ([]Entry, error) {
 			if hidden[e.Name] {
 				e.Hidden = true
 			}
-			p := filepath.Join(dir, e.Name)
-			if fi, err := os.Lstat(p); err == nil {
-				fill(&e, p, fi)
-			} else if os.IsNotExist(err) {
+			if err := statEntry(&e, filepath.Join(dir, e.Name)); errors.Is(err, fs.ErrNotExist) {
 				e.Name = "" // gone already
 			}
 			out[i] = e

@@ -6,6 +6,8 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+
+	"github.com/lyricat/inua/internal/gtkx"
 )
 
 // hub holds one signal handler of each kind for the whole process, and
@@ -29,6 +31,8 @@ type hub struct {
 	prepare   map[uintptr]func(x, y float64) uintptr
 	dropped   map[uintptr]func(v *gobject.Value, x, y float64, state gdk.ModifierType) bool
 	selection map[uintptr]func()
+	notified  map[uintptr]func()
+	scrolled  map[uintptr]func(dy float64)
 	async     map[uintptr]func(result uintptr)
 	timers    map[uintptr]func()
 	next      uintptr
@@ -48,6 +52,8 @@ type hub struct {
 	onPrepare   func(gtk.DragSource, float64, float64) gdk.ContentProvider
 	onDrop      func(gtk.DropTarget, uintptr, float64, float64) bool
 	onSelection func(uintptr, uint32, uint32, uintptr)
+	onNotify    func(uintptr, uintptr, uintptr)
+	onScroll    func(gtk.EventControllerScroll, float64, float64) bool
 	onAsync     gio.AsyncReadyCallback
 	onTimer     glib.SourceFunc
 }
@@ -64,6 +70,8 @@ func newHub() *hub {
 		prepare:   map[uintptr]func(float64, float64) uintptr{},
 		dropped:   map[uintptr]func(*gobject.Value, float64, float64, gdk.ModifierType) bool{},
 		selection: map[uintptr]func(){},
+		notified:  map[uintptr]func(){},
+		scrolled:  map[uintptr]func(float64){},
 		async:     map[uintptr]func(uintptr){}, timers: map[uintptr]func(){},
 	}
 	h.onClicked = func(b gtk.Button) {
@@ -147,6 +155,19 @@ func newHub() *hub {
 		if f := h.selection[model]; f != nil {
 			f()
 		}
+	}
+	h.onNotify = func(obj, _, _ uintptr) {
+		if f := h.notified[obj]; f != nil {
+			f()
+		}
+	}
+	h.onScroll = func(c gtk.EventControllerScroll, _, dy float64) bool {
+		f := h.scrolled[c.GoPointer()]
+		if f == nil || c.GetCurrentEventState()&gdk.ControlMaskValue == 0 {
+			return false
+		}
+		f(dy)
+		return true
 	}
 	h.onAsync = func(_, result, id uintptr) {
 		if f := h.async[id]; f != nil {
@@ -245,6 +266,22 @@ func (h *hub) dropTarget(w *gtk.Widget, f func(v *gobject.Value, x, y float64, s
 	return d.GoPointer()
 }
 
+// notify runs f when obj's property changes; one property an object.
+func (h *hub) notify(obj gobject.Ptr, property string, f func()) {
+	h.notified[obj.GoPointer()] = f
+	gtkx.ConnectNotify(obj, property, &h.onNotify)
+}
+
+// ctrlScroll runs f for each step of the wheel turned over w with Ctrl
+// held (dy below zero is up); without Ctrl the view scrolls as usual.
+func (h *hub) ctrlScroll(w *gtk.Widget, f func(dy float64)) uintptr {
+	c := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollDiscreteValue)
+	h.scrolled[c.GoPointer()] = f
+	c.ConnectScroll(&h.onScroll)
+	w.AddController(&c.EventController)
+	return c.GoPointer()
+}
+
 func (h *hub) onSelectionChanged(model gobject.Ptr, f func()) {
 	h.selection[model.GoPointer()] = f
 	gobject.SignalConnect(model.GoPointer(), "selection-changed", glib.NewCallback(&h.onSelection))
@@ -280,5 +317,7 @@ func (h *hub) forget(ptrs []uintptr) {
 		delete(h.prepare, p)
 		delete(h.dropped, p)
 		delete(h.selection, p)
+		delete(h.notified, p)
+		delete(h.scrolled, p)
 	}
 }

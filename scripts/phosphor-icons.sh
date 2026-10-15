@@ -247,5 +247,6 @@ changes-prevent                       lock-simple
 go-up                                 arrow-up
 view-grid                             squares-four
 view-dual                             columns
+utilities-terminal                    terminal-window
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

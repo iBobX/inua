@@ -14,11 +14,29 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <property name="hexpand">true</property>
     <property name="width-request">320</property>
     <child>
+      <object class="GtkBox" id="tabs">
+        <style>
+          <class name="files-tabs"/>
+        </style>
+        <property name="visible">false</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkBox">
         <style>
           <class name="files-head"/>
         </style>
         <property name="spacing">2</property>
+        <child>
+          <object class="GtkBox" id="pane_mark">
+            <style>
+              <class name="mark"/>
+              <class name="files-pane-mark"/>
+            </style>
+            <property name="valign">3</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
         <child>
           <object class="GtkButton" id="back">
             <style>
@@ -99,22 +117,40 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton" id="list_button">
+          <object class="GtkButton" id="edit_path">
             <style>
               <class name="plain"/>
             </style>
-            <property name="icon-name">view-list-symbolic</property>
-            <property name="tooltip-text" translatable="yes">List (Ctrl+1)</property>
+            <property name="icon-name">document-edit-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Edit the path (Ctrl+L)</property>
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton" id="grid_button">
+          <object class="GtkButton" id="copy_path">
             <style>
               <class name="plain"/>
             </style>
-            <property name="icon-name">view-grid-symbolic</property>
-            <property name="tooltip-text" translatable="yes">Grid (Ctrl+2)</property>
-            <property name="group">list_button</property>
+            <property name="icon-name">edit-copy-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Copy the path (Ctrl+Shift+C)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="terminal">
+            <style>
+              <class name="plain"/>
+            </style>
+            <property name="icon-name">utilities-terminal-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Terminal here (Ctrl+Alt+T)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackSwitcher" id="view_switch">
+            <style>
+              <class name="tabs"/>
+              <class name="files-view-tabs"/>
+            </style>
+            <property name="stack">views</property>
+            <property name="valign">3</property>
           </object>
         </child>
       </object>
@@ -124,107 +160,51 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <style>
           <class name="files-columns"/>
         </style>
-        <child>
-          <object class="GtkButton" id="col_name">
-            <style>
-              <class name="files-col"/>
-            </style>
-            <property name="hexpand">true</property>
-            <child>
-              <object class="GtkLabel" id="col_name_label">
-                <style>
-                  <class name="kicker"/>
-                </style>
-                <property name="xalign">0</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="col_size">
-            <style>
-              <class name="files-col"/>
-              <class name="files-col-size"/>
-            </style>
-            <child>
-              <object class="GtkLabel" id="col_size_label">
-                <style>
-                  <class name="kicker"/>
-                </style>
-                <property name="xalign">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="col_modified">
-            <style>
-              <class name="files-col"/>
-              <class name="files-col-date"/>
-            </style>
-            <child>
-              <object class="GtkLabel" id="col_modified_label">
-                <style>
-                  <class name="kicker"/>
-                </style>
-                <property name="xalign">0</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="col_kind">
-            <style>
-              <class name="files-col"/>
-              <class name="files-col-kind"/>
-            </style>
-            <child>
-              <object class="GtkLabel" id="col_kind_label">
-                <style>
-                  <class name="kicker"/>
-                </style>
-                <property name="xalign">0</property>
-              </object>
-            </child>
-          </object>
-        </child>
+        <property name="spacing">10</property>
       </object>
     </child>
     <child>
-      <object class="GtkStack" id="views">
+      <object class="GtkOverlay">
         <property name="vexpand">true</property>
-        <child>
-          <object class="GtkStackPage">
-            <property name="name">list</property>
-            <property name="child">
-              <object class="GtkScrolledWindow" id="list_scroll">
-                <property name="hscrollbar-policy">2</property>
+        <property name="child">
+          <object class="GtkStack" id="views">
+            <property name="transition-type">1</property>
+            <property name="transition-duration">100</property>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">list</property>
+                <property name="title" translatable="yes">LIST</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow" id="list_scroll">
+                    <property name="hscrollbar-policy">2</property>
+                  </object>
+                </property>
               </object>
-            </property>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">grid</property>
+                <property name="title" translatable="yes">GRID</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow" id="grid_scroll">
+                    <property name="hscrollbar-policy">2</property>
+                  </object>
+                </property>
+              </object>
+            </child>
           </object>
-        </child>
-        <child>
-          <object class="GtkStackPage">
-            <property name="name">grid</property>
-            <property name="child">
-              <object class="GtkScrolledWindow" id="grid_scroll">
-                <property name="hscrollbar-policy">2</property>
-              </object>
-            </property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkStackPage">
-            <property name="name">empty</property>
-            <property name="child">
-              <object class="GtkLabel" id="empty_label">
-                <style>
-                  <class name="files-empty"/>
-                </style>
-                <property name="wrap">true</property>
-                <property name="justify">2</property>
-              </object>
-            </property>
+        </property>
+        <child type="overlay">
+          <object class="GtkLabel" id="empty_label">
+            <style>
+              <class name="files-empty"/>
+            </style>
+            <property name="wrap">true</property>
+            <property name="justify">2</property>
+            <property name="halign">3</property>
+            <property name="valign">3</property>
+            <property name="can-target">false</property>
+            <property name="visible">false</property>
           </object>
         </child>
       </object>
@@ -254,13 +234,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="free_label">
-            <style>
-              <class name="readout"/>
-            </style>
-          </object>
-        </child>
-        <child>
           <object class="GtkButton" id="empty_trash">
             <style>
               <class name="link"/>
@@ -268,6 +241,47 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             </style>
             <property name="label" translatable="yes">Empty Trash</property>
             <property name="visible">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="free_label">
+            <style>
+              <class name="readout"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <style>
+              <class name="files-zoom"/>
+            </style>
+            <child>
+              <object class="GtkButton" id="zoom_out">
+                <style>
+                  <class name="plain"/>
+                </style>
+                <property name="icon-name">zoom-out-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Smaller (Ctrl+−)</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="zoom_level">
+                <style>
+                  <class name="link"/>
+                  <class name="files-zoom-level"/>
+                </style>
+                <property name="tooltip-text" translatable="yes">Normal size (Ctrl+0)</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="zoom_in">
+                <style>
+                  <class name="plain"/>
+                </style>
+                <property name="icon-name">zoom-in-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Bigger (Ctrl++)</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

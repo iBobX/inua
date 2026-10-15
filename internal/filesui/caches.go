@@ -124,7 +124,7 @@ func (c *counts) text(path string, p *pane) string {
 				c.n[path] = n
 				p.w.app.updateRows(path, func(r *row) {
 					if !r.grid {
-						r.size.SetText(countText(n))
+						r.cols[sizeCol].SetText(countText(n))
 					}
 				})
 			})

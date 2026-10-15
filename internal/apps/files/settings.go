@@ -1,6 +1,7 @@
 package files
 
 import (
+	"slices"
 	"time"
 
 	"github.com/lyricat/inua/internal/apps/store"
@@ -27,12 +28,36 @@ type Settings struct {
 	Sidebar  bool                   `json:"sidebar"`
 	Details  bool                   `json:"details"`
 	Dual     bool                   `json:"dual"`
-	Zoom     int                    `json:"zoom"` // -2 … 3: the rows' and icons' size
+	Zoom     int                    `json:"zoom"`    // -2 … 3: the rows' and icons' size
+	Columns  []SortBy               `json:"columns"` // the list's columns after the name, in order
 	Servers  []string               `json:"servers,omitempty"`
 	Jumps    Jumps                  `json:"jumps"`
 	Width    int                    `json:"width,omitempty"`
 	Height   int                    `json:"height,omitempty"`
 	modified bool
+}
+
+// Columns are the list's columns after the name, in the order they come.
+var Columns = []SortBy{BySize, ByModified, ByCreated, ByOpened, ByKind, ByPerms, ByOwner, ByGroup}
+
+// DefaultColumns are those shown until others are chosen.
+var DefaultColumns = []SortBy{BySize, ByModified, ByKind}
+
+// ShowsColumn says whether the list shows column c.
+func (s *Settings) ShowsColumn(c SortBy) bool { return slices.Contains(s.Columns, c) }
+
+// ToggleColumn shows column c, or hides it; the columns keep Columns'
+// order.
+func (s *Settings) ToggleColumn(c SortBy) {
+	on := !s.ShowsColumn(c)
+	var out []SortBy
+	for _, k := range Columns {
+		if k == c && on || k != c && s.ShowsColumn(k) {
+			out = append(out, k)
+		}
+	}
+	s.Columns = out
+	s.modified = true
 }
 
 // maxFolders is how many folders keep their own view; the oldest set
@@ -41,7 +66,7 @@ const maxFolders = 500
 
 // LoadSettings reads the settings, or the defaults.
 func LoadSettings() *Settings {
-	s := &Settings{Last: FolderView{View: ListView, Order: Order{By: ByName}}, Sidebar: true}
+	s := &Settings{Last: FolderView{View: ListView, Order: Order{By: ByName}}, Sidebar: true, Columns: DefaultColumns}
 	store.Load("files", s)
 	if s.Folders == nil {
 		s.Folders = map[string]*FolderView{}

@@ -39,16 +39,17 @@ type pane struct {
 	w *window
 	n int // 0 or 1
 
-	box                                             gtk.Box
-	back, fwd, up, emptyTrash                       gtk.Button
+	box, tabsBox, mark                              gtk.Box
+	back, fwd, up, emptyTrash, zoomLevel            gtk.Button
 	pathStack                                       gtk.Stack
 	crumbs                                          gtk.Box
 	crumbScroll                                     gtk.ScrolledWindow
 	location                                        gtk.Entry
 	search                                          gtk.SearchEntry
-	listBtn, gridBtn                                gtk.ToggleButton
 	columns                                         gtk.Box
-	colLabels                                       [4]gtk.Label
+	nameHead                                        gtk.Label
+	colHeads                                        [len(columns)]*gtk.Button
+	colLabels                                       [len(columns)]*gtk.Label
 	views                                           gtk.Stack
 	listScroll, gridScroll                          gtk.ScrolledWindow
 	emptyLabel, filterLabel, statusLabel, freeLabel gtk.Label
@@ -60,10 +61,11 @@ type pane struct {
 	rows     map[uintptr]*row // by list item
 	rowOf    map[uintptr]*row // by the row's own widget, for picking
 	names    []string         // what the model holds
-	menu     *gtk.Popover
-	menuBox  gtk.Box
-	menuPtrs []uintptr
+	menu     *popMenu
 	crumbPtr []uintptr
+	tabs     []*tab
+	tab      int // the one shown
+	tabPtrs  []uintptr
 
 	mode   mode
 	dir    string
@@ -87,18 +89,25 @@ type pane struct {
 
 // row is the widgets of a list row or a grid cell.
 type row struct {
-	box                    gtk.Box
-	icon                   gtk.Image
-	name, size, date, kind gtk.Label
-	grid                   bool
-	pos                    uint32
-	path                   string // bound to, for thumbnails arriving later
+	box  gtk.Box
+	icon gtk.Image
+	name gtk.Label
+	cols [len(columns)]*gtk.Label // the list's columns, in columns' order
+	grid bool
+	pos  uint32
+	path string // bound to, for thumbnails arriving later
 }
+
+// sizeCol is the size's column in columns.
+const sizeCol = 0
 
 func newPane(w *window, n int) *pane {
 	p := &pane{w: w, n: n, rows: map[uintptr]*row{}, rowOf: map[uintptr]*row{}}
 	ui := w.app.c.Load("filespane.ui")
 	ui.Take("pane", &p.box)
+	ui.Get("tabs", &p.tabsBox)
+	ui.Get("pane_mark", &p.mark)
+	ui.Get("zoom_level", &p.zoomLevel)
 	ui.Get("back", &p.back)
 	ui.Get("forward", &p.fwd)
 	ui.Get("up", &p.up)
@@ -108,8 +117,6 @@ func newPane(w *window, n int) *pane {
 	ui.Get("crumb_scroll", &p.crumbScroll)
 	ui.Get("location", &p.location)
 	ui.Get("search", &p.search)
-	ui.Get("list_button", &p.listBtn)
-	ui.Get("grid_button", &p.gridBtn)
 	ui.Get("columns", &p.columns)
 	ui.Get("views", &p.views)
 	ui.Get("list_scroll", &p.listScroll)
@@ -118,13 +125,11 @@ func newPane(w *window, n int) *pane {
 	ui.Get("filter_label", &p.filterLabel)
 	ui.Get("status_label", &p.statusLabel)
 	ui.Get("free_label", &p.freeLabel)
-	cols := map[string]files.SortBy{"col_name": files.ByName, "col_size": files.BySize, "col_modified": files.ByModified, "col_kind": files.ByKind}
-	for i, id := range []string{"col_name", "col_size", "col_modified", "col_kind"} {
-		var b gtk.Button
-		ui.Get(id, &b)
-		ui.Get(id+"_label", &p.colLabels[i])
-		by := cols[id]
-		w.click(&b, func() { p.sortBy(by) })
+	buttons := map[string]*gtk.Button{}
+	for _, id := range []string{"edit_path", "copy_path", "terminal", "zoom_in", "zoom_out"} {
+		b := &gtk.Button{}
+		ui.Get(id, b)
+		buttons[id] = b
 	}
 	ui.Close()
 
@@ -132,14 +137,23 @@ func newPane(w *window, n int) *pane {
 	w.click(&p.fwd, func() { p.goForward() })
 	w.click(&p.up, func() { p.goUp() })
 	w.click(&p.emptyTrash, func() { w.confirmEmptyTrash() })
-	w.toggle(&p.listBtn, func(on bool) {
-		if on {
-			p.setView(files.ListView)
+	w.click(buttons["edit_path"], func() { w.setActive(p); p.editLocation() })
+	w.click(buttons["copy_path"], func() { w.setActive(p); w.copyFolderPath(p) })
+	w.click(buttons["terminal"], func() { w.setActive(p); w.terminal(p.dir) })
+	w.click(buttons["zoom_in"], func() { w.zoom(1) })
+	w.click(buttons["zoom_out"], func() { w.zoom(-1) })
+	w.click(&p.zoomLevel, func() { w.zoom(0) })
+	// The list or the grid, chosen by the view's text tabs.
+	w.notify(&p.views, "visible-child-name", func() {
+		if v := files.View(p.views.GetVisibleChildName()); v == files.ListView || v == files.GridView {
+			p.setView(v)
 		}
 	})
-	w.toggle(&p.gridBtn, func(on bool) {
-		if on {
-			p.setView(files.GridView)
+	// A click beside the path's buttons edits it.
+	w.press(&p.crumbScroll.Widget, false, func(button uint32, _ int32, _, _ float64) {
+		if button == 1 {
+			w.setActive(p)
+			p.editLocation()
 		}
 	})
 	w.enter(&p.location, func() { p.typedLocation() })
@@ -173,10 +187,16 @@ func newPane(w *window, n int) *pane {
 
 	for _, v := range []*gtk.Widget{&p.list.Widget, &p.grid.Widget} {
 		w.press(v, false, func(button uint32, _ int32, x, y float64) {
-			if button == 3 {
+			switch button {
+			case 3:
 				p.contextMenu(v, x, y)
+			case 2: // a folder in a new tab, behind this one
+				if r, ok := p.pick(v, x, y); ok && int(r.pos) < len(p.shown) && p.all[p.shown[r.pos]].Dir && p.mode != inTrash {
+					p.newTab(p.path(p.shown[r.pos]), false)
+				}
 			}
 		})
+		w.scroll(v, func(dy float64) { w.zoom(map[bool]int{true: -1, false: 1}[dy > 0]) })
 		w.dragSource(v, func(x, y float64) uintptr { return p.dragContent(v, x, y) })
 		w.dropTarget(v, func(paths []string, x, y float64, state gdk.ModifierType) {
 			p.dropped(v, paths, x, y, state)
@@ -185,13 +205,10 @@ func newPane(w *window, n int) *pane {
 	// A click anywhere in the pane makes it the one keys go to.
 	w.press(&p.box.Widget, true, func(uint32, int32, float64, float64) { w.setActive(p) })
 
-	p.menu = gtk.NewPopover()
-	p.menu.AddCssClass("files-menu")
-	p.menu.SetHasArrow(false)
-	p.menuBox = *gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	p.menu.SetChild(&p.menuBox.Widget)
-	p.menuBox.Unref()
-	p.menu.SetParent(&p.box.Widget)
+	p.menu = newPopMenu(w.app.h, &p.box.Widget)
+	p.buildColumns()
+	p.tabs = []*tab{{}}
+	p.syncZoom()
 	return p
 }
 
@@ -200,7 +217,8 @@ func (p *pane) destroy() {
 		p.stop()
 	}
 	p.gen++
-	p.menu.Unparent()
+	p.menu.destroy()
+	p.w.app.h.forget(p.tabPtrs)
 	p.sel.Unref()
 }
 
@@ -220,18 +238,16 @@ func (p *pane) setupRow(item uintptr) {
 	r.name.SetHexpand(true)
 	r.name.SetEllipsize(2) // middle: the extension stays in view
 	gtkx.Append(&r.box, &r.name.Widget)
-	for _, l := range []struct {
-		lab   *gtk.Label
-		class string
-		x     float32
-	}{{&r.size, "files-size", 1}, {&r.date, "files-date", 0}, {&r.kind, "files-kind", 0}} {
-		*l.lab = *gtk.NewLabel("")
-		l.lab.AddCssClass(l.class)
-		l.lab.AddCssClass("readout")
-		l.lab.SetXalign(l.x)
-		l.lab.SetEllipsize(3)
-		gtkx.Append(&r.box, &l.lab.Widget)
+	for k, c := range columns {
+		l := fixedLabel(c.width, c.right)
+		l.AddCssClass("readout")
+		l.AddCssClass("files-col-" + string(c.by))
+		r.cols[k] = l
+		gtkx.Append(&r.box, &l.Widget)
 	}
+	end := gtk.NewBox(gtk.OrientationHorizontalValue, 0) // under the columns button
+	end.SetSizeRequest(trailing, -1)
+	gtkx.Append(&r.box, &end.Widget)
 	li.SetChild(&r.box.Widget)
 	r.box.Unref()
 	p.rows[item] = r
@@ -285,31 +301,22 @@ func (p *pane) bindRow(item uintptr) {
 	r.name.SetText(e.Name)
 	zoom := p.w.app.settings.Zoom
 	if r.grid {
-		r.icon.SetPixelSize(int32(80 + 16*zoom))
+		r.icon.SetPixelSize(gridIcon(zoom))
 		if tex := p.w.app.thumbs.get(r.path, e, p); tex != nil {
 			r.icon.SetFromPaintable(tex)
 		} else {
 			r.icon.SetFromIconName(k.icon)
 		}
 	} else {
-		r.icon.SetPixelSize(int32(16 + 2*zoom))
+		r.icon.SetPixelSize(listIcon(zoom))
 		r.icon.SetFromIconName(k.icon)
-		if e.Dir {
-			r.size.SetText(p.w.app.counts.text(r.path, p))
-		} else {
-			r.size.SetText(sizeText(e.Size))
+		for c, col := range columns {
+			on := p.w.app.settings.ShowsColumn(col.by)
+			r.cols[c].SetVisible(on)
+			if on {
+				r.cols[c].SetText(p.columnText(col, i, r.path))
+			}
 		}
-		r.date.SetText(dateText(e.ModTime))
-		switch {
-		case p.mode == inTrash:
-			r.kind.SetText(shortHome(filepath.Dir(p.trash[i].Orig)))
-		case p.mode == inSearch:
-			r.kind.SetText(shortHome(p.dirs[i]))
-		default:
-			r.kind.SetText(k.desc)
-		}
-		r.kind.SetVisible(!p.w.dual)
-		r.date.SetVisible(!p.w.dual || p.box.GetWidth() > 560)
 	}
 	setClass(&r.box.Widget, "hidden", e.Hidden)
 	setClass(&r.box.Widget, "link", e.Link != "")
@@ -614,8 +621,6 @@ func (p *pane) saveView() {
 // the model to the view shown only.
 func (p *pane) syncView() {
 	grid := p.fv.View == files.GridView
-	p.listBtn.SetActive(!grid)
-	p.gridBtn.SetActive(grid)
 	p.columns.SetVisible(!grid)
 	if grid {
 		p.list.SetModel(noModel)
@@ -625,13 +630,11 @@ func (p *pane) syncView() {
 		p.list.SetModel(p.sel)
 	}
 	p.emptyTrash.SetVisible(p.mode == inTrash && len(p.all) > 0)
-	if len(p.shown) == 0 {
-		p.emptyLabel.SetText(p.emptyText())
-		p.views.SetVisibleChildName("empty")
-	} else if grid {
-		p.views.SetVisibleChildName("grid")
-	} else {
-		p.views.SetVisibleChildName("list")
+	p.emptyLabel.SetVisible(len(p.shown) == 0)
+	p.emptyLabel.SetText(p.emptyText())
+	p.views.SetVisibleChildName(string(p.fv.View))
+	if p.fv.View != files.GridView {
+		p.views.SetVisibleChildName(string(files.ListView))
 	}
 	p.syncColumns()
 }
@@ -656,29 +659,6 @@ func (p *pane) emptyText() string {
 		return i18n.Nf("Only hidden files: %d of them (Ctrl+H shows them).", "Only hidden files: %d of them (Ctrl+H shows them).", len(p.all), len(p.all))
 	}
 	return i18n.T("This folder is empty.")
-}
-
-func (p *pane) syncColumns() {
-	titles := [4]string{i18n.T("NAME"), i18n.T("SIZE"), i18n.T("MODIFIED"), i18n.T("KIND")}
-	switch p.mode {
-	case inTrash:
-		titles[2], titles[3] = i18n.T("TRASHED"), i18n.T("FROM")
-	case inSearch:
-		titles[3] = i18n.T("FOLDER")
-	}
-	by := []files.SortBy{files.ByName, files.BySize, files.ByModified, files.ByKind}
-	for i, l := range p.colLabels {
-		t := titles[i]
-		if p.mode == inFolder && p.fv.Order.By == by[i] || p.fv.Order.By == "" && i == 0 {
-			if p.fv.Order.Reverse {
-				t += " ↓"
-			} else {
-				t += " ↑"
-			}
-		}
-		l.SetText(t)
-	}
-	p.colLabels[3].GetParent().SetVisible(!p.w.dual)
 }
 
 func (p *pane) sortBy(by files.SortBy) {
@@ -802,7 +782,7 @@ func (p *pane) activate(pos uint32) {
 	case e.Dir:
 		p.goTo(p.path(i), true)
 	default:
-		p.w.launch(p.path(i), false)
+		p.w.launch([]string{p.path(i)}, false)
 	}
 }
 
@@ -895,6 +875,7 @@ func (p *pane) completeLocation() {
 // --- the path bar ---
 
 func (p *pane) showCrumbs() {
+	p.buildTabs()
 	p.w.app.h.forget(p.crumbPtr)
 	p.crumbPtr = p.crumbPtr[:0]
 	gtkx.Clear(&p.crumbs)
@@ -1232,41 +1213,7 @@ func (p *pane) menuAtSelection() {
 // showMenu opens the menu of the selection (or of the folder) at x, y in
 // the pane.
 func (p *pane) showMenu(x, y int32) {
-	p.w.app.h.forget(p.menuPtrs)
-	p.menuPtrs = p.menuPtrs[:0]
-	gtkx.Clear(&p.menuBox)
-	for _, it := range p.w.menuItems(p) {
-		if it.id == "" {
-			sep := gtk.NewSeparator(gtk.OrientationHorizontalValue)
-			gtkx.Append(&p.menuBox, &sep.Widget)
-			continue
-		}
-		b := gtk.NewButton()
-		b.AddCssClass("files-menu-item")
-		box := gtk.NewBox(gtk.OrientationHorizontalValue, 16)
-		l := gtk.NewLabel(it.label)
-		l.SetXalign(0)
-		l.SetHexpand(true)
-		gtkx.Append(box, &l.Widget)
-		if it.key != "" {
-			k := gtk.NewLabel(it.key)
-			k.AddCssClass("readout")
-			k.AddCssClass("files-menu-key")
-			gtkx.Append(box, &k.Widget)
-		}
-		b.SetChild(&box.Widget)
-		box.Unref()
-		id := it.id
-		p.w.app.h.click(b, func() {
-			p.menu.Popdown()
-			p.w.do(id)
-		})
-		p.menuPtrs = append(p.menuPtrs, b.GoPointer())
-		gtkx.Append(&p.menuBox, &b.Widget)
-	}
-	rect := gdk.Rectangle{X: x, Y: y, Width: 1, Height: 1}
-	p.menu.SetPointingTo(&rect)
-	p.menu.Popup()
+	p.menu.show(func() []menuItem { return p.w.menuItems(p) }, x, y)
 }
 
 // --- drag and drop ---
@@ -1329,6 +1276,31 @@ func droppedPaths(v *gobject.Value) []string {
 		}
 	}
 	return paths
+}
+
+// --- zoom ---
+
+// The zoom's steps, -2 to 3: the percent shown, and the icons' sizes.
+var (
+	zoomPercent = [...]int{80, 90, 100, 115, 130, 150}
+	listIcons   = [...]int32{14, 15, 16, 19, 22, 26}
+	gridIcons   = [...]int32{56, 68, 80, 104, 128, 160}
+)
+
+func zoomStep(z int) int        { return max(0, min(len(zoomPercent)-1, z+2)) }
+func listIcon(z int) int32      { return listIcons[zoomStep(z)] }
+func gridIcon(z int) int32      { return gridIcons[zoomStep(z)] }
+func zoomClass(step int) string { return fmt.Sprintf("files-zoom-%d", step) }
+
+// syncZoom sizes the rows' text as the zoom says (a class on the pane,
+// style.css) and shows it.
+func (p *pane) syncZoom() {
+	z := zoomStep(p.w.app.settings.Zoom)
+	for k := range zoomPercent {
+		setClass(&p.box.Widget, zoomClass(k), k == z)
+	}
+	p.zoomLevel.SetLabel(fmt.Sprintf("%d%%", zoomPercent[z]))
+	p.syncColumns()
 }
 
 // --- small helpers ---

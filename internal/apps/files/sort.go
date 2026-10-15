@@ -13,6 +13,11 @@ const (
 	BySize     SortBy = "size"
 	ByModified SortBy = "modified"
 	ByKind     SortBy = "kind"
+	ByCreated  SortBy = "created"
+	ByOpened   SortBy = "opened"
+	ByPerms    SortBy = "permissions"
+	ByOwner    SortBy = "owner"
+	ByGroup    SortBy = "group"
 )
 
 // Order is how a folder is sorted.
@@ -45,6 +50,16 @@ func compare(a, b *Entry, o Order) int {
 		c = a.ModTime.Compare(b.ModTime)
 	case ByKind:
 		c = cmp.Compare(a.ext, b.ext)
+	case ByCreated:
+		c = a.Created.Compare(b.Created)
+	case ByOpened:
+		c = a.Opened.Compare(b.Opened)
+	case ByPerms:
+		c = cmp.Compare(a.Mode.Perm(), b.Mode.Perm())
+	case ByOwner:
+		c = cmp.Compare(a.UID, b.UID)
+	case ByGroup:
+		c = cmp.Compare(a.GID, b.GID)
 	}
 	if c == 0 {
 		c = Natural(a.key, b.key)

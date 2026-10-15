@@ -46,6 +46,8 @@ type App struct {
 	mounts  []files.Mount
 	nets    []files.NetMount
 
+	users, groups map[uint32]string // owners' names, looked up once
+
 	clip  []string // what this app last put on the clipboard
 	cut   bool
 	undos []files.Undo
@@ -56,7 +58,7 @@ type App struct {
 
 // New makes the app; Register gives it to appui once it holds its name.
 func New() *App {
-	return &App{kinds: kinds{}, thumbs: newThumbs(), counts: newCounts()}
+	return &App{kinds: kinds{}, thumbs: newThumbs(), counts: newCounts(), users: map[uint32]string{}, groups: map[uint32]string{}}
 }
 
 // Register makes a the "files" light app, its every start its own: a

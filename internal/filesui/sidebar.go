@@ -39,9 +39,19 @@ func (w *window) buildSidebar() {
 		if pl.Kind == "home" {
 			name = i18n.T("Home")
 		}
-		w.sideEntry(name, "", pl.Icon, path, func() { w.cur().goTo(path, true) }, nil)
+		var extra []menuItem
+		if pl.Kind == "bookmark" {
+			extra = append(extra, menuItem{label: i18n.T("Remove from the bookmarks"), run: func() {
+				if _, err := files.ToggleBookmark(path); err != nil {
+					w.flash(err.Error())
+				}
+				w.app.sidebarsChanged()
+			}})
+		}
+		w.sideEntry(name, "", pl.Icon, path, func() { w.cur().goTo(path, true) }, nil, extra...)
 	}
-	w.sideEntry(i18n.T("Trash"), "", "user-trash-symbolic", trashKey, func() { w.cur().showTrash(true) }, nil)
+	w.sideEntry(i18n.T("Trash"), "", "user-trash-symbolic", trashKey, func() { w.cur().showTrash(true) }, nil,
+		menuItem{label: i18n.T("Empty Trash"), run: func() { w.confirmEmptyTrash() }})
 
 	w.sideHead(i18n.T("DEVICES"))
 	w.sideEntry(i18n.T("Computer"), "", "drive-harddisk-symbolic", "/", func() { w.cur().goTo("/", true) }, nil)
@@ -67,10 +77,12 @@ func (w *window) buildSidebar() {
 			icon = "drive-removable-media-symbolic"
 		}
 		var eject func()
+		var extra []menuItem
 		if v.Mounted() || v.Drive.Removable && (v.Drive.Ejectable || v.Drive.CanPowerOff) {
 			eject = func() { w.eject(v) }
+			extra = append(extra, menuItem{label: i18n.T("Eject"), run: eject})
 		}
-		w.sideEntry(v.Name(), sub, icon, path, func() { w.openVolume(v) }, eject)
+		w.sideEntry(v.Name(), sub, icon, path, func() { w.openVolume(v) }, eject, extra...)
 	}
 	for _, m := range files.UserMounts(w.app.mounts, false) {
 		if shown[m.Point] {
@@ -91,7 +103,8 @@ func (w *window) buildSidebar() {
 		if n.Scheme == "mtp" || n.Scheme == "gphoto2" {
 			icon = "phone-symbolic"
 		}
-		w.sideEntry(n.Name, n.URI, icon, n.Path, func() { w.cur().goTo(n.Path, true) }, func() { w.disconnect(n) })
+		w.sideEntry(n.Name, n.URI, icon, n.Path, func() { w.cur().goTo(n.Path, true) }, func() { w.disconnect(n) },
+			menuItem{label: i18n.T("Disconnect"), run: func() { w.disconnect(n) }})
 	}
 	w.sideEntry(i18n.T("Connect to a server…"), "", "network-workgroup-symbolic", "", func() { w.askServer() }, nil)
 	w.markSidebar()
@@ -107,7 +120,10 @@ func (w *window) sideHead(text string) {
 
 // sideEntry adds an entry: a button that opens it and, for a drive or a
 // share, a button that ejects or disconnects it.
-func (w *window) sideEntry(name, sub, icon, path string, open, eject func()) {
+//
+// A right click shows its menu: opening it in a new tab or window, and
+// what more there is to do with it (extra).
+func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), extra ...menuItem) {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	row.AddCssClass("files-side-row")
 	b := gtk.NewButton()
@@ -135,6 +151,31 @@ func (w *window) sideEntry(name, sub, icon, path string, open, eject func()) {
 	}
 	w.app.h.click(b, open)
 	w.sidePtr = append(w.sidePtr, b.GoPointer())
+	var items []menuItem
+	if path != "" {
+		items = []menuItem{
+			{label: i18n.T("Open in a new tab"), run: func() { w.cur().newTab(path, true) }},
+			{label: i18n.T("Open in a new window"), run: func() { w.app.ShowFoldersNow([]string{path}) }},
+		}
+		if path == trashKey {
+			items = items[:1]
+		}
+	}
+	if len(extra) > 0 && len(items) > 0 {
+		items = append(items, menuItem{})
+	}
+	items = append(items, extra...)
+	if len(items) > 0 {
+		g := w.app.h.press(&b.Widget, false, func(button uint32, _ int32, x, y float64) {
+			if button != 3 {
+				return
+			}
+			var sx, sy float64
+			b.TranslateCoordinates(&w.sidebarCol.Widget, x, y, &sx, &sy)
+			w.sideMenu.show(func() []menuItem { return items }, int32(sx), int32(sy))
+		})
+		w.sidePtr = append(w.sidePtr, g)
+	}
 	w.side = append(w.side, sideItem{path: path, button: b, open: open})
 	gtkx.Append(row, &b.Widget)
 	if eject != nil {

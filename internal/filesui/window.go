@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
-	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/files"
+	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -21,7 +21,7 @@ type window struct {
 	win gtk.ApplicationWindow
 
 	sidebarReveal, detailsReveal, jobsReveal gtk.Revealer
-	sidebar, details                         gtk.Box
+	sidebar, sidebarCol, details             gtk.Box
 	hiddenToggle, dualToggle, detailsToggle  gtk.ToggleButton
 	paned                                    gtk.Paned
 	jobLabel, jobRate                        gtk.Label
@@ -39,13 +39,14 @@ type window struct {
 	dual   bool
 	owned  []uintptr // registered with the hub, forgotten when the window goes
 
-	side    []sideItem // the sidebar's entries, for Alt+1 … Alt+9
-	sidePtr []uintptr
-	card    *card
-	jobs    jobs
-	detGen  uint64
-	flashes uint64
-	closing bool // asked to close while operations ran
+	side     []sideItem // the sidebar's entries, for Alt+1 … Alt+9
+	sideMenu *popMenu
+	sidePtr  []uintptr
+	card     *card
+	jobs     jobs
+	detGen   uint64
+	flashes  uint64
+	closing  bool // asked to close while operations ran
 }
 
 func (a *App) newWindow() *window {
@@ -56,6 +57,7 @@ func (a *App) newWindow() *window {
 	ui.Get("details_reveal", &w.detailsReveal)
 	ui.Get("jobs_reveal", &w.jobsReveal)
 	ui.Get("sidebar", &w.sidebar)
+	ui.Get("sidebar_col", &w.sidebarCol)
 	ui.Get("details", &w.details)
 	ui.Get("hidden_toggle", &w.hiddenToggle)
 	ui.Get("dual_toggle", &w.dualToggle)
@@ -125,6 +127,7 @@ func (a *App) newWindow() *window {
 	w.sidebarReveal.SetRevealChild(s.Sidebar)
 	w.setDetails(s.Details)
 	w.dualToggle.SetActive(s.Dual)
+	w.sideMenu = newPopMenu(a.h, &w.sidebarCol.Widget)
 	w.buildSidebar()
 	return w
 }
@@ -151,6 +154,15 @@ func (w *window) enter(e gobject.Ptr, f func()) {
 func (w *window) edit(e gobject.Ptr, f func()) {
 	w.app.h.edit(e, f)
 	w.own(e.GoPointer())
+}
+
+func (w *window) notify(obj gobject.Ptr, property string, f func()) {
+	w.app.h.notify(obj, property, f)
+	w.own(obj.GoPointer())
+}
+
+func (w *window) scroll(v *gtk.Widget, f func(dy float64)) {
+	w.own(w.app.h.ctrlScroll(v, f))
 }
 
 func (w *window) factory(setup, bind, teardown func(uintptr)) *gtk.SignalListItemFactory {
@@ -197,9 +209,9 @@ func (w *window) closeRequested() bool {
 	}
 	w.app.h.forget(w.owned)
 	w.app.h.forget(w.sidePtr)
+	w.sideMenu.destroy()
 	for _, p := range w.p {
 		w.app.h.forget(p.crumbPtr)
-		w.app.h.forget(p.menuPtrs)
 	}
 	w.app.closed(w)
 	return false
@@ -237,8 +249,12 @@ func (w *window) panes() []*pane {
 
 func (w *window) setActive(p *pane) {
 	w.active = p.n
+	// With two panes, a square at the start of each pane's path: filled
+	// for the one the keys go to; the other's selection goes quiet.
 	for _, q := range w.p {
-		setClass(&q.box.Widget, "active", q == p && w.dual)
+		q.mark.SetVisible(w.dual)
+		setClass(&q.mark.Widget, "on", q == p)
+		setClass(&q.box.Widget, "inactive", q != p && w.dual)
 	}
 	w.hiddenToggle.SetActive(p.fv.Order.ShowsHidden)
 	w.syncTitle()
@@ -431,6 +447,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 			p.sel.UnselectAll()
 		case 'i':
 			w.invertSelection()
+		case uint32(gdk.KEY_ISO_Left_Tab), uint32(gdk.KEY_Tab):
+			p.stepTab(-1)
 		case '?', '/':
 			w.showKeys()
 		case 'z':
@@ -469,8 +487,16 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 			w.do("reload")
 		case 'i':
 			w.setDetails(!w.detailsReveal.GetRevealChild())
-		case 'w', 'q':
+		case 't':
+			p.newTab(p.locationKey(), true)
+		case 'w':
+			p.closeTab(p.tab)
+		case 'q':
 			w.win.Close()
+		case uint32(gdk.KEY_Tab), uint32(gdk.KEY_Page_Down):
+			p.stepTab(1)
+		case uint32(gdk.KEY_Page_Up):
+			p.stepTab(-1)
 		case '+', '=', uint32(gdk.KEY_KP_Add):
 			w.zoom(1)
 		case '-', uint32(gdk.KEY_KP_Subtract):
@@ -619,12 +645,20 @@ func (w *window) zoom(d int) {
 		*z = max(-2, min(3, *z+d))
 	}
 	w.app.settings.Touch()
+	for _, ww := range w.app.wins {
+		for _, p := range ww.p {
+			p.syncZoom()
+		}
+	}
 	w.app.rebindAll()
 }
 
 // --- the actions, by name: keys, the menu and the sidebar's buttons ---
 
-type menuItem struct{ id, label, key string }
+// item is a menu entry that runs the action id.
+func (w *window) item(id, label, key string) menuItem {
+	return menuItem{label: label, key: key, run: func() { w.do(id) }}
+}
 
 // menuItems are the menu's for what is selected in p.
 func (w *window) menuItems(p *pane) []menuItem {
@@ -632,71 +666,72 @@ func (w *window) menuItems(p *pane) []menuItem {
 	sep := menuItem{}
 	if p.mode == inTrash {
 		if len(sel) == 0 {
-			return []menuItem{{"empty-trash", i18n.T("Empty Trash"), ""}}
+			return []menuItem{w.item("empty-trash", i18n.T("Empty Trash"), "")}
 		}
 		return []menuItem{
-			{"restore", i18n.T("Restore"), ""},
-			{"delete", i18n.T("Delete for good…"), "Del"},
+			w.item("restore", i18n.T("Restore"), ""),
+			w.item("delete", i18n.T("Delete for good…"), "Del"),
 			sep,
-			{"empty-trash", i18n.T("Empty Trash"), ""},
+			w.item("empty-trash", i18n.T("Empty Trash"), ""),
 		}
 	}
 	if len(sel) == 0 {
 		items := []menuItem{
-			{"new-folder", i18n.T("New folder…"), "Ctrl+Shift+N"},
-			{"new-file", i18n.T("New file…"), "Ctrl+Alt+N"},
-			{"paste", i18n.T("Paste"), "Ctrl+V"},
+			w.item("new-folder", i18n.T("New folder…"), "Ctrl+Shift+N"),
+			w.item("new-file", i18n.T("New file…"), "Ctrl+Alt+N"),
+			w.item("paste", i18n.T("Paste"), "Ctrl+V"),
 			sep,
-			{"terminal", i18n.T("Terminal here"), "Ctrl+Alt+T"},
-			{"copy-path", i18n.T("Copy the folder's path"), "Ctrl+Shift+C"},
-			{"bookmark", w.bookmarkLabel(p.dir), "Ctrl+D"},
+			w.item("terminal", i18n.T("Terminal here"), "Ctrl+Alt+T"),
+			w.item("copy-path", i18n.T("Copy the folder's path"), "Ctrl+Shift+C"),
+			w.item("bookmark", w.bookmarkLabel(p.dir), "Ctrl+D"),
 			sep,
-			{"hidden", i18n.T("Hidden files"), "Ctrl+H"},
-			{"reload", i18n.T("Reload"), "Ctrl+R"},
+			w.item("hidden", i18n.T("Hidden files"), "Ctrl+H"),
+			w.item("reload", i18n.T("Reload"), "Ctrl+R"),
 		}
 		return items
 	}
 	one := len(sel) == 1
 	dir := one && p.all[sel[0]].Dir
-	items := []menuItem{{"open", i18n.T("Open"), "Enter"}}
+	items := []menuItem{w.item("open", i18n.T("Open"), "Enter")}
 	if one && !dir {
-		items = append(items, menuItem{"open-with", i18n.T("Open with…"), "Shift+Enter"})
+		items = append(items, w.item("open-with", i18n.T("Open with…"), "Shift+Enter"))
 	}
 	if dir {
-		items = append(items, menuItem{"open-window", i18n.T("Open in a new window"), ""})
+		items = append(items, w.item("open-tab", i18n.T("Open in a new tab"), i18n.T("Middle click")))
+		items = append(items, w.item("open-window", i18n.T("Open in a new window"), ""))
 		if w.dual {
-			items = append(items, menuItem{"open-other", i18n.T("Open in the other pane"), ""})
+			items = append(items, w.item("open-other", i18n.T("Open in the other pane"), ""))
 		}
 	}
 	if p.mode == inSearch {
-		items = append(items, menuItem{"show-folder", i18n.T("Show in its folder"), ""})
+		items = append(items, w.item("show-folder", i18n.T("Show in its folder"), ""))
 	}
 	items = append(items, sep,
-		menuItem{"cut", i18n.T("Cut"), "Ctrl+X"},
-		menuItem{"copy", i18n.T("Copy"), "Ctrl+C"},
-		menuItem{"copy-path", i18n.T("Copy the path"), "Ctrl+Shift+C"},
+		w.item("cut", i18n.T("Cut"), "Ctrl+X"),
+		w.item("copy", i18n.T("Copy"), "Ctrl+C"),
+		w.item("copy-path", i18n.T("Copy the path"), "Ctrl+Shift+C"),
 	)
 	if dir {
-		items = append(items, menuItem{"paste-into", i18n.T("Paste into the folder"), ""})
+		items = append(items, w.item("paste-into", i18n.T("Paste into the folder"), ""))
 	}
 	if w.dual {
 		items = append(items, sep,
-			menuItem{"copy-other", i18n.T("Copy to the other pane"), "F5"},
-			menuItem{"move-other", i18n.T("Move to the other pane"), "F6"},
+			w.item("copy-other", i18n.T("Copy to the other pane"), "F5"),
+			w.item("move-other", i18n.T("Move to the other pane"), "F6"),
 		)
 	}
 	items = append(items, sep)
 	if one {
-		items = append(items, menuItem{"rename", i18n.T("Rename…"), "F2"})
+		items = append(items, w.item("rename", i18n.T("Rename…"), "F2"))
 	}
 	items = append(items,
-		menuItem{"trash", i18n.T("Move to Trash"), "Del"},
-		menuItem{"delete", i18n.T("Delete for good…"), "Shift+Del"},
+		w.item("trash", i18n.T("Move to Trash"), "Del"),
+		w.item("delete", i18n.T("Delete for good…"), "Shift+Del"),
 	)
 	if dir {
-		items = append(items, sep, menuItem{"bookmark-sel", w.bookmarkLabel(p.path(sel[0])), ""})
+		items = append(items, sep, w.item("bookmark-sel", w.bookmarkLabel(p.path(sel[0])), ""))
 	}
-	items = append(items, sep, menuItem{"properties", i18n.T("Details"), "Alt+Enter"})
+	items = append(items, sep, w.item("properties", i18n.T("Details"), "Alt+Enter"))
 	return items
 }
 
@@ -711,6 +746,7 @@ func (w *window) bookmarkLabel(dir string) string {
 func (w *window) do(id string) {
 	p := w.cur()
 	sel := p.selectedPaths()
+	var fs []string // the files among them
 	switch id {
 	case "open":
 		opened := false
@@ -719,12 +755,26 @@ func (w *window) do(id string) {
 				p.goTo(p.path(i), true)
 				opened = true
 			} else if !p.all[i].Dir {
-				w.launch(p.path(i), false)
+				fs = append(fs, p.path(i))
 			}
 		}
+		if len(fs) > 0 {
+			w.launch(fs, false)
+		}
 	case "open-with":
-		if len(sel) > 0 {
-			w.launch(sel[0], true)
+		for _, i := range p.selected() {
+			if !p.all[i].Dir {
+				fs = append(fs, p.path(i))
+			}
+		}
+		if len(fs) > 0 {
+			w.launch(fs, true)
+		}
+	case "open-tab":
+		for _, path := range sel {
+			if st, err := os.Stat(path); err == nil && st.IsDir() {
+				p.newTab(path, false)
+			}
 		}
 	case "open-window":
 		w.app.ShowFoldersNow(sel[:1])
@@ -833,35 +883,34 @@ func (w *window) do(id string) {
 	}
 }
 
-// launch opens a file with its app, or asks which app when ask.
-func (w *window) launch(path string, ask bool) {
-	f := gio.FileNewForPath(path)
-	l := gtk.NewFileLauncher(f)
-	unrefObject(f)
-	l.SetAlwaysAsk(ask)
-	id := w.app.h.callback(func(result uintptr) {
-		defer l.Unref()
-		if _, err := l.LaunchFinish(&gio.AsyncResultBase{Ptr: result}); err != nil && !strings.Contains(err.Error(), "dismissed") {
-			w.flash(i18n.Tf("%s could not be opened: %v", filepath.Base(path), err))
-		}
-	})
-	l.Launch(&w.win.Window, nil, &w.app.h.onAsync, id)
+// copyFolderPath copies the path of the folder p shows.
+func (w *window) copyFolderPath(p *pane) {
+	if p.mode == inTrash {
+		return
+	}
+	w.app.copyText(w, p.dir)
+	w.flash(i18n.Tf("Copied %s.", shortHome(p.dir)))
 }
 
-// terminal opens a terminal in dir: xdg-terminal-exec, else $TERMINAL,
-// else kitty.
+// terminal opens a terminal in dir: xdg-terminal-exec, told the folder
+// with --dir (a terminal that serves its windows from one process, as
+// GNOME's, starts them where it runs, not where it is asked from), else
+// $TERMINAL, else kitty with --directory.
 func (w *window) terminal(dir string) {
-	for _, t := range []string{"xdg-terminal-exec", os.Getenv("TERMINAL"), "kitty"} {
-		if t == "" {
+	if dir == "" {
+		dir = files.Home()
+	}
+	try := [][]string{{"xdg-terminal-exec", "--dir=" + dir}}
+	if t := strings.Fields(os.Getenv("TERMINAL")); len(t) > 0 {
+		try = append(try, t)
+	}
+	try = append(try, []string{"kitty", "--directory", dir})
+	for _, argv := range try {
+		if _, err := exec.LookPath(argv[0]); err != nil {
 			continue
 		}
-		if path, err := exec.LookPath(t); err == nil {
-			cmd := exec.Command(path)
-			cmd.Dir = dir
-			if err := cmd.Start(); err == nil {
-				go cmd.Wait()
-				return
-			}
+		if err := desktop.Spawn(argv, dir); err == nil {
+			return
 		}
 	}
 	w.flash(i18n.T("No terminal was found: install xdg-terminal-exec or set $TERMINAL."))
