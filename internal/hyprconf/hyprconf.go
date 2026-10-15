@@ -50,6 +50,13 @@ windowrule {
     float = yes
     center = yes
 }
+
+# Files is a normal window: tiled like other apps.
+windowrule {
+    name = inua-files
+    match:class = ^(io\.github\.lyricat\.Inua\.Files)$
+    tile = yes
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -148,6 +155,13 @@ hl.window_rule({
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\..+)$" },
     float = true,
     center = true,
+})
+
+-- Files is a normal window: tiled like other apps.
+hl.window_rule({
+    name = "inua-files",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Files)$" },
+    tile = true,
 })
 `
 
