@@ -51,7 +51,8 @@ type settings struct {
 	clipLimit                                                        gtk.DropDown
 	clipLimits                                                       []int // clipLimit's choices
 	textScale                                                        gtk.DropDown
-	textScales                                                       []int // textScale's choices
+	textScales                                                       []int    // textScale's choices
+	iconSets                                                         []string // icons' choices
 	tpSpeed, clipOpacity                                             gtk.Scale
 	clipOpacityVal, clipStats                                        gtk.Label
 	clipClear, clipReveal                                            gtk.Button
@@ -186,7 +187,7 @@ func (s *shellUI) bindSettingsHandlers() {
 				c.Clipboard.Limit = s.settings.clipLimits[i]
 			}
 		case "icons":
-			c.Style.Icons = pick(config.IconSets, i, c.Style.Icons)
+			c.Style.Icons = pick(s.settings.iconSets, i, c.Style.Icons)
 		case "text_scale":
 			if i >= 0 && i < len(s.settings.textScales) {
 				c.Style.TextScale = s.settings.textScales[i]
@@ -355,6 +356,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("language", &st.language)
 	ui.Get("text_scale", &st.textScale)
 	st.textScales = nil // a new dropdown, without its choices
+	st.iconSets = nil
 	ui.Get("lang_restart_row", &st.langRestartRow)
 	ui.Get("lang_restart", &st.langRestart)
 	ui.Get("banner", &st.banner)
@@ -493,7 +495,7 @@ func (s *shellUI) closeSettings() {
 func (s *shellUI) buildSwatches() {
 	st := &s.settings
 	st.swatches = map[string]*gtk.Button{}
-	for _, name := range config.Themes {
+	for _, name := range s.cfg.ThemeNames() {
 		btn := gtk.NewButton()
 		btn.SetName("theme:" + name)
 		btn.AddCssClass("swatch")
@@ -512,7 +514,7 @@ func (s *shellUI) buildSwatches() {
 			gtkx.Append(ground, &c.Widget)
 		}
 		gtkx.Append(box, &ground.Widget)
-		label := gtk.NewLabel(themeKanji[name] + "  " + name)
+		label := gtk.NewLabel(strings.TrimSpace(themeKanji[name] + "  " + name))
 		label.SetXalign(0)
 		gtkx.Append(box, &label.Widget)
 
@@ -523,20 +525,27 @@ func (s *shellUI) buildSwatches() {
 		btn.Unref() // the flow box holds it
 		st.swatches[name] = btn
 	}
+	s.loadSwatchStyle()
 }
 
-// swatchCSS colours the theme swatches from the theme files, whatever the
-// current theme is.
-func (s *shellUI) swatchCSS() string {
+// loadSwatchStyle colours the theme swatches from the theme files, whatever
+// the current theme is. The user's themes may have changed since the
+// last time, so opening the settings loads it again.
+func (s *shellUI) loadSwatchStyle() {
+	st := &s.styles
+	if st.swatches == nil {
+		st.swatches = gtk.NewCssProvider()
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.swatches, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
+	}
 	var b strings.Builder
-	for _, name := range config.Themes {
+	for _, name := range s.cfg.ThemeNames() {
 		c := shellThemeColors(s, name)
 		fmt.Fprintf(&b, ".swatch.sw-%[1]s .ground { background-color: %[2]s; border: 1px solid %[3]s; }\n"+
 			".swatch.sw-%[1]s .chip-accent { background-color: %[4]s; }\n"+
 			".swatch.sw-%[1]s .chip-text { background-color: %[5]s; }\n",
 			name, c["app"], c["line"], c["accent"], c["t0"])
 	}
-	return b.String()
+	st.swatches.LoadFromString(b.String())
 }
 
 // showSettings sets every control from the current settings.
@@ -567,7 +576,7 @@ func (s *shellUI) showSettings() {
 	st.bgFit.SetSelected(uint32(max(0, slices.Index(fitChoices, c.Background.Fit))))
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
-	st.icons.SetSelected(uint32(max(0, slices.Index(config.IconSets, c.Style.Icons))))
+	s.showIconSets()
 	s.showTextScale()
 	st.language.SetSelected(uint32(max(0, slices.Index(config.Languages, c.Language))))
 	// The shell chose its language when it started.
@@ -589,6 +598,21 @@ func (s *shellUI) showSettings() {
 
 // showTextScale offers the usual text sizes, and the one in the file if it
 // is another.
+// showIconSets offers the built-in icon sets and the user's.
+func (s *shellUI) showIconSets() {
+	st := &s.settings
+	sets := s.cfg.IconSetNames()
+	if !slices.Equal(sets, st.iconSets) {
+		names := slices.Clone(sets)
+		names[0], names[1] = i18n.T("Phosphor"), i18n.T("System theme") // config.IconSets
+		list := gtk.NewStringList(names)
+		st.icons.SetModel(list)
+		list.Unref()
+		st.iconSets = sets
+	}
+	st.icons.SetSelected(uint32(max(0, slices.Index(sets, s.cfg.Style.Icons))))
+}
+
 func (s *shellUI) showTextScale() {
 	st := &s.settings
 	scale := s.cfg.Style.TextScale

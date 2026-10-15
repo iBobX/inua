@@ -26,6 +26,7 @@ type styles struct {
 	user      *gtk.CssProvider // style.css from the config directory
 	wallpaper *gtk.CssProvider // window.wallpaper
 	clipboard *gtk.CssProvider // clipboard card opacity
+	swatches  *gtk.CssProvider // the settings window's theme swatches
 }
 
 func (s *shellUI) theme() string { return cmp.Or(s.cfg.Style.Theme, "yoru") }
@@ -42,7 +43,7 @@ func (s *shellUI) loadStyles() {
 		gtk.StyleContextAddProviderForDisplay(display, st.user, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
 	// The theme defines the colour tokens style.css uses.
-	st.base.LoadFromString(s.readUI("themes/"+s.theme()+".css") + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale) + s.swatchCSS())
+	st.base.LoadFromString(s.cfg.ThemeCSS(s.theme(), s.readUI) + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale))
 	user := ""
 	if path := s.cfg.CSSPath(); path != "" {
 		if css, err := os.ReadFile(path); err == nil {
@@ -55,6 +56,7 @@ func (s *shellUI) loadStyles() {
 	st.user.LoadFromString(user)
 	s.loadIcons()
 	s.loadClipboardStyle()
+	s.loadSwatchStyle()
 }
 
 func (s *shellUI) loadClipboardStyle() {
@@ -87,7 +89,7 @@ func (s *shellUI) loadWallpaper() {
 
 // shellThemeColors reads a theme's colour tokens.
 func shellThemeColors(s *shellUI, name string) map[string]string {
-	return shell.ThemeColors(s.readUI("themes/" + name + ".css"))
+	return shell.ThemeColors(s.cfg.ThemeCSS(name, s.readUI))
 }
 
 func writeTile(field string) (string, error) {
@@ -208,7 +210,13 @@ func (s *shellUI) reload() ipc.Response {
 	if err != nil {
 		return ipc.Response{Error: err.Error()}
 	}
+	same := s.cfg.Style == c.Style
 	s.applyConfig(c)
+	if same {
+		// The user's theme or icon set may have changed on disk.
+		s.loadStyles()
+		s.loadWallpaper()
+	}
 	s.applyHyprland()
 	msg := fmt.Sprintf("reloaded %s", s.opts.ConfigPath)
 	for _, w := range warnings {

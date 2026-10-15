@@ -1188,8 +1188,8 @@ msgid "Top level"
 msgstr "Nivel superior"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:630
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:654
+#: internal/ui/settings.go:681
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d entrada"
@@ -1468,7 +1468,7 @@ msgid "An image with a QR code"
 msgstr "Una imagen con un código QR"
 
 #: internal/appui/pass_otp.go:340
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:791
 msgid "Images"
 msgstr "Imágenes"
 
@@ -8039,73 +8039,83 @@ msgstr "Captura de pantalla copiada"
 msgid "Screenshot taken"
 msgstr "Captura de pantalla tomada"
 
-#: internal/ui/settings.go:247
+#: internal/ui/settings.go:248
 msgid "Not restarted: %s"
 msgstr "No se reinició: %s"
 
-#: internal/ui/settings.go:265
-#: internal/ui/settings.go:603
-#: internal/ui/settings.go:620
+#: internal/ui/settings.go:266
+#: internal/ui/settings.go:627
+#: internal/ui/settings.go:644
 msgid "%d%%"
 msgstr "%d %%"
 
-#: internal/ui/settings.go:656
+#: internal/ui/settings.go:607
+#: ui/settings.ui:318
+msgid "Phosphor"
+msgstr "Phosphor"
+
+#: internal/ui/settings.go:607
+#: ui/settings.ui:319
+msgid "System theme"
+msgstr "Tema del sistema"
+
+#: internal/ui/settings.go:680
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:658
+#: internal/ui/settings.go:682
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d texto"
 msgstr[1] "%d textos"
 
-#: internal/ui/settings.go:659
+#: internal/ui/settings.go:683
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d imagen"
 msgstr[1] "%d imágenes"
 
-#: internal/ui/settings.go:660
+#: internal/ui/settings.go:684
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:739
+#: internal/ui/settings.go:763
 msgid "Not saved: %s"
 msgstr "No guardado: %s"
 
-#: internal/ui/settings.go:765
+#: internal/ui/settings.go:789
 msgid "Choose a wallpaper"
 msgstr "Elige un fondo de pantalla"
 
-#: internal/ui/settings.go:807
+#: internal/ui/settings.go:831
 msgid "Off: another notification daemon can show them"
 msgstr "Desactivado: otro demonio de notificación puede mostrarlos"
 
-#: internal/ui/settings.go:809
+#: internal/ui/settings.go:833
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "Banners y después el centro de notificaciones (campana de la barra o Super+N)"
 
-#: internal/ui/settings.go:811
+#: internal/ui/settings.go:835
 msgid "Waiting: another notification daemon is running"
 msgstr "Esperando: se está ejecutando otro demonio de notificación"
 
-#: internal/ui/settings.go:829
+#: internal/ui/settings.go:853
 msgid "Nothing pinned"
 msgstr "No hay aplicaciones fijadas"
 
-#: internal/ui/settings.go:845
+#: internal/ui/settings.go:869
 msgid "%s (not installed)"
 msgstr "%s (no instalado)"
 
-#: internal/ui/settings.go:858
+#: internal/ui/settings.go:882
 msgid "Move earlier"
 msgstr "Mover antes"
 
-#: internal/ui/settings.go:859
+#: internal/ui/settings.go:883
 msgid "Move later"
 msgstr "Mover después"
 
-#: internal/ui/settings.go:860
+#: internal/ui/settings.go:884
 msgid "Remove from the dock"
 msgstr "Quitar del dock"
 
@@ -9364,14 +9374,6 @@ msgstr "Conjunto de iconos"
 #: ui/settings.ui:304
 msgid "App icons always come from the system"
 msgstr "Los íconos de las aplicaciones siempre provienen del sistema"
-
-#: ui/settings.ui:318
-msgid "Phosphor"
-msgstr "Phosphor"
-
-#: ui/settings.ui:319
-msgid "System theme"
-msgstr "Tema del sistema"
 
 #: ui/settings.ui:357
 msgid "<span alpha='55%'>[</span>LANGUAGE<span alpha='55%'>]</span>"

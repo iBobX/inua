@@ -116,11 +116,17 @@ recordings = "~/Videos/Screencasts"
 #   "rinko"     燐光   dark, phosphor green
 #   "bunko"     分光   dark, indigo and cyan
 #   "denko"     電光   dark, violet and electric cyan
+# or a theme of your own: themes/NAME.css next to this file, with
+# @define-color lines for the colors it changes (copy a built-in theme to
+# start); the others come from yoru, or from the built-in theme it names.
 theme = "yoru"
 
 # Icons of the bar, control center, launcher and settings:
 #   "phosphor"  Phosphor's line icons, built in (the default)
 #   "system"    the system's icon theme
+# or a set of your own: a folder icons/NAME/ next to this file, with SVGs
+# named like the built-in ones (NAME-symbolic.svg); icons it lacks stay
+# Phosphor's. Draw them in one colour: it follows the theme.
 # App icons in the launcher and the tray always come from the system's.
 icons = "phosphor"
 
