@@ -34,7 +34,7 @@ and a settings window, in one calm visual language. It works with
 | **Keyring** | `inua-keyring` serves apps' secrets (the Secret Service: browsers, Wi-Fi, the assistant's keys) from pass, after importing gnome-keyring's. |
 | **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. It stays running with the desktop and can serve as an [endpoint for other Consoles](docs/apps.md#console-endpoint). Its tools come from inua's [MCP server](docs/apps.md#mcp-inuas-tools-for-the-assistant-and-for-agents), which AI agents such as Claude Code can use too, through `inua mcp` ([the tools](docs/mcp.md)). |
 | **Files** | A file manager to replace Nautilus, keyboard first: one or two panes, list or grid, filter by typing, jump to folders used before, search, details; drives and USB sticks through UDisks2 (mount, unlock, eject), network shares through GVfs, the freedesktop trash, undo; `inua-files`, see [docs/files.md](docs/files.md). |
-| **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale and Viewer. |
+| **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Viewer, Music (a player in Winamp's spirit, with an equalizer and a spectrum) and Video. |
 | **Workshop** | Write your own light apps in any language: the program describes its window in inua's building blocks and inua draws it in the shell's look. `inua workshop new`, `dev`, `install`; see [docs/workshop.md](docs/workshop.md). |
 | **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer. Each has its own launcher, or run `inua-games minesweeper`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
@@ -50,6 +50,8 @@ More on each: [the shell in detail](docs/features.md) and
 - Recommended: pass and gnupg, where `inua-keyring` keeps apps' secrets
   (without them, apps keep using gnome-keyring); the install script
   offers to install them
+- For Music and Video: GStreamer's plugins (base, good, bad, ugly and
+  libav), which the install script also offers
 - Go 1.26 or later to build
 
 System features use the services you probably already run: NetworkManager,

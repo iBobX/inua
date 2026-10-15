@@ -147,6 +147,46 @@ msgstr "%[1]s, %[2]s%[3]d h %[4]d min"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/music/music.go:393
+msgid "Flat"
+msgstr "플랫"
+
+#: internal/apps/music/music.go:394
+msgid "Rock"
+msgstr "록"
+
+#: internal/apps/music/music.go:395
+msgid "Pop"
+msgstr "팝"
+
+#: internal/apps/music/music.go:396
+msgid "Jazz"
+msgstr "재즈"
+
+#: internal/apps/music/music.go:397
+msgid "Classical"
+msgstr "클래식"
+
+#: internal/apps/music/music.go:398
+msgid "Dance"
+msgstr "댄스"
+
+#: internal/apps/music/music.go:399
+msgid "Bass"
+msgstr "저음"
+
+#: internal/apps/music/music.go:400
+msgid "Treble"
+msgstr "고음"
+
+#: internal/apps/music/music.go:401
+msgid "Vocal"
+msgstr "보컬"
+
+#: internal/apps/music/music.go:402
+msgid "Laptop speakers"
+msgstr "노트북 스피커"
+
 #: internal/apps/pass/entry.go:94
 #: internal/apps/pass/otp.go:38
 msgid "Not an otpauth:// link."
@@ -369,55 +409,55 @@ msgstr "뇌우"
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: internal/appui/app.go:60
+#: internal/appui/app.go:61
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:844
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "시계"
 
-#: internal/appui/app.go:61
+#: internal/appui/app.go:62
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:319
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "날씨"
 
-#: internal/appui/app.go:62
+#: internal/appui/app.go:63
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "주식"
 
-#: internal/appui/app.go:63
+#: internal/appui/app.go:64
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "계산기"
 
-#: internal/appui/app.go:64
+#: internal/appui/app.go:65
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "달력"
 
-#: internal/appui/app.go:65
+#: internal/appui/app.go:66
 #: internal/ui/picker.go:148
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "색상 선택기"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:67
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "시스템 모니터"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:68
 #: ui/control.ui:474
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:69
 #: internal/appui/pass.go:207
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
@@ -425,18 +465,32 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:70
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
 
-#: internal/appui/app.go:70
+#: internal/appui/app.go:71
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
 msgid "Viewer"
 msgstr "이미지 뷰어"
+
+#: internal/appui/app.go:72
+#: internal/appui/music.go:292
+#: internal/appui/music.go:1103
+#: config/apps/io.github.lyricat.Inua.Music.desktop:3
+msgid "Music"
+msgstr "음악"
+
+#: internal/appui/app.go:73
+#: internal/appui/video.go:256
+#: internal/appui/video.go:510
+#: config/apps/io.github.lyricat.Inua.Video.desktop:3
+msgid "Video"
+msgstr "비디오"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
@@ -559,6 +613,7 @@ msgid "Start"
 msgstr "시작"
 
 #: internal/appui/clock.go:492
+#: ui/music.ui:332
 msgid "Reset"
 msgstr "초기화"
 
@@ -1020,6 +1075,85 @@ msgstr "연장하는 중… gpg가 암호 문구를 묻습니다."
 msgid "Extended by 2 years"
 msgstr "2년 연장했습니다"
 
+#: internal/appui/media.go:54
+msgid "GStreamer is not installed: install its plugins (on Ubuntu gstreamer1.0-plugins-base, -good, -bad, -ugly and gstreamer1.0-libav)."
+msgstr "GStreamer가 설치되어 있지 않습니다. 플러그인을 설치하세요(Ubuntu에서는 gstreamer1.0-plugins-base, -good, -bad, -ugly와 gstreamer1.0-libav)."
+
+#: internal/appui/music.go:177
+#: ui/music.ui:323
+msgid "Presets"
+msgstr "프리셋"
+
+#: internal/appui/music.go:485
+msgid "Cannot play %s: %s"
+msgstr "%s을(를) 재생할 수 없습니다: %s"
+
+#: internal/appui/music.go:559
+#: ui/music.ui:86
+msgid "Nothing playing"
+msgstr "재생 중인 것 없음"
+
+#: internal/appui/music.go:609
+msgid "MONO"
+msgstr "모노"
+
+#: internal/appui/music.go:611
+msgid "STEREO"
+msgstr "스테레오"
+
+#: internal/appui/music.go:678
+msgid "PRE"
+msgstr "PRE"
+
+#: internal/appui/music.go:787
+#: ui/music.ui:270
+msgid "Repeat: off (R)"
+msgstr "반복: 끔 (R)"
+
+#: internal/appui/music.go:790
+msgid "Repeat: the playlist (R)"
+msgstr "반복: 재생 목록 (R)"
+
+#: internal/appui/music.go:792
+msgid "Repeat: this track (R)"
+msgstr "반복: 이 곡 (R)"
+
+#: internal/appui/music.go:1015
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] "%d곡"
+
+#: internal/appui/music.go:1102
+#: internal/appui/sysmon.go:786
+msgid "Open files"
+msgstr "파일 열기"
+
+#: internal/appui/music.go:1102
+#: ui/music.ui:424
+msgid "Add files"
+msgstr "파일 추가"
+
+#: internal/appui/music.go:1106
+#: ui/music.ui:434
+msgid "Add a folder"
+msgstr "폴더 추가"
+
+#: internal/appui/music.go:1109
+msgid "Load a playlist"
+msgstr "재생 목록 불러오기"
+
+#: internal/appui/music.go:1110
+msgid "Playlists"
+msgstr "재생 목록"
+
+#: internal/appui/music.go:1113
+msgid "Save the playlist"
+msgstr "재생 목록 저장"
+
+#: internal/appui/music.go:1114
+msgid "Playlist"
+msgstr "재생 목록"
+
 #: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "비밀번호 저장소: .gpg-id가 있는 폴더"
@@ -1452,8 +1586,8 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:99
-#: internal/shell/dock.go:263
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:265
+#: internal/shell/dock.go:295
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -1613,10 +1747,6 @@ msgstr "프로그램"
 #: internal/filesui/kinds.go:26
 msgid "Folder"
 msgstr "폴더"
-
-#: internal/appui/sysmon.go:786
-msgid "Open files"
-msgstr "파일 열기"
 
 #: internal/appui/sysmon.go:786
 msgid "Disk read"
@@ -2238,6 +2368,40 @@ msgstr "이 세션에서는 비밀번호 프롬프트가 실행되지 않습니�
 #: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "완료되지 않음: 관리자 비밀번호가 제공되지 않았습니다."
+
+#: internal/appui/video.go:305
+msgid "Resumed at %s"
+msgstr "%s부터 이어서 재생"
+
+#: internal/appui/video.go:394
+msgid "Playing a video"
+msgstr "비디오 재생 중"
+
+#: internal/appui/video.go:417
+msgid "Cannot play it: %s"
+msgstr "재생할 수 없습니다: %s"
+
+#: internal/appui/video.go:529
+#: internal/shell/notify.go:44
+#: internal/shell/status.go:73
+#: internal/shell/status.go:88
+#: internal/shell/status.go:107
+#: internal/shell/status.go:122
+#: ui/settings.ui:4382
+msgid "Off"
+msgstr "꺼짐"
+
+#: internal/appui/video.go:575
+msgid "Speed %s×"
+msgstr "속도 %s×"
+
+#: internal/appui/video.go:684
+msgid "Open a video"
+msgstr "비디오 열기"
+
+#: internal/appui/video.go:692
+msgid "Videos"
+msgstr "비디오"
 
 #: internal/appui/viewer.go:199
 msgid "%s is not an image the viewer knows."
@@ -6627,7 +6791,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:286
 #: ui/settings.ui:1525
 msgid "Launcher"
 msgstr "실행기"
@@ -6660,7 +6824,7 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:285
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -6869,7 +7033,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:285
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -7016,56 +7180,56 @@ msgid "Web search"
 msgstr "웹 검색"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:295
 msgid "EVERYDAY"
 msgstr "매일"
 
-#: internal/shell/dock.go:253
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:255
+#: internal/shell/dock.go:295
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:266
+#: internal/shell/dock.go:268
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:271
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:273
+#: internal/shell/dock.go:297
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:286
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:287
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1485
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:287
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:296
 msgid "DEVELOPMENT"
 msgstr "개발"
 
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:296
 msgid "MEDIA"
 msgstr "미디어"
 
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:296
 msgid "GAMES"
 msgstr "게임"
 
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:297
 msgid "OTHER"
 msgstr "기타"
 
-#: internal/shell/dock.go:320
+#: internal/shell/dock.go:322
 msgid "WORKSHOP"
 msgstr "워크숍"
 
@@ -7156,15 +7320,6 @@ msgstr "알림이 필요함"
 #: internal/shell/notify.go:42
 msgid "Banners quiet"
 msgstr "배너 알림 음소거됨"
-
-#: internal/shell/notify.go:44
-#: internal/shell/status.go:73
-#: internal/shell/status.go:88
-#: internal/shell/status.go:107
-#: internal/shell/status.go:122
-#: ui/settings.ui:4382
-msgid "Off"
-msgstr "꺼짐"
 
 #: internal/shell/status.go:47
 msgid "Offline"
@@ -8871,6 +9026,99 @@ msgstr "Esc 닫기"
 msgid "Password"
 msgstr "비밀번호"
 
+#: ui/music.ui:55
+#: ui/video.ui:153
+msgid "Click to show the time left"
+msgstr "클릭하면 남은 시간 표시"
+
+#: ui/music.ui:151
+msgid "Previous (Z)"
+msgstr "이전 (Z)"
+
+#: ui/music.ui:158
+msgid "Play (X)"
+msgstr "재생 (X)"
+
+#: ui/music.ui:165
+msgid "Pause (C)"
+msgstr "일시 정지 (C)"
+
+#: ui/music.ui:172
+msgid "Stop (V)"
+msgstr "정지 (V)"
+
+#: ui/music.ui:179
+msgid "Next (B)"
+msgstr "다음 (B)"
+
+#: ui/music.ui:191
+msgid "Open files (Ctrl+O)"
+msgstr "파일 열기 (Ctrl+O)"
+
+#: ui/music.ui:215
+msgid "Volume"
+msgstr "음량"
+
+#: ui/music.ui:230
+msgid "BAL"
+msgstr "밸런스"
+
+#: ui/music.ui:241
+msgid "Balance"
+msgstr "밸런스"
+
+#: ui/music.ui:259
+msgid "Shuffle (S)"
+msgstr "무작위 (S)"
+
+#: ui/music.ui:279
+msgid "EQ"
+msgstr "EQ"
+
+#: ui/music.ui:280
+msgid "The equalizer"
+msgstr "이퀄라이저"
+
+#: ui/music.ui:289
+msgid "PL"
+msgstr "목록"
+
+#: ui/music.ui:290
+msgid "The playlist"
+msgstr "재생 목록"
+
+#: ui/music.ui:317
+msgid "ON"
+msgstr "켬"
+
+#: ui/music.ui:318
+msgid "Equalizer on or off"
+msgstr "이퀄라이저 켜기/끄기"
+
+#: ui/music.ui:385
+msgid "Filter the playlist"
+msgstr "재생 목록 거르기"
+
+#: ui/music.ui:444
+msgid "Remove the selected track (Delete)"
+msgstr "고른 곡 빼기 (Delete)"
+
+#: ui/music.ui:454
+msgid "Clear the playlist"
+msgstr "재생 목록 비우기"
+
+#: ui/music.ui:467
+msgid "Drop files or folders here"
+msgstr "파일이나 폴더를 여기에 놓으세요"
+
+#: ui/music.ui:482
+msgid "Load a playlist (.m3u)"
+msgstr "재생 목록 불러오기 (.m3u)"
+
+#: ui/music.ui:492
+msgid "Save the playlist (.m3u)"
+msgstr "재생 목록 저장 (.m3u)"
+
 #: ui/pass.ui:60
 msgid "STORE"
 msgstr "저장소"
@@ -10005,6 +10253,43 @@ msgstr "이름, 주소, OS 또는 태그로 필터링"
 msgid "EXIT NODE"
 msgstr "출구 노드"
 
+#: ui/video.ui:45
+msgid "Drop a video here"
+msgstr "비디오를 여기에 놓으세요"
+
+#: ui/video.ui:54
+msgid "Open a video…"
+msgstr "비디오 열기…"
+
+#: ui/video.ui:102
+msgid "From the start"
+msgstr "처음부터"
+
+#: ui/video.ui:169
+msgid "Play or pause (Space)"
+msgstr "재생/일시 정지 (Space)"
+
+#: ui/video.ui:183
+msgid "Sound track"
+msgstr "음성 트랙"
+
+#: ui/video.ui:210
+msgid "Subtitles (S)"
+msgstr "자막 (S)"
+
+#: ui/video.ui:239
+msgid "Speed ([ and ])"
+msgstr "속도 ([ 와 ])"
+
+#: ui/video.ui:249
+msgid "Mute (M)"
+msgstr "음소거 (M)"
+
+#: ui/video.ui:273
+#: ui/viewer.ui:189
+msgid "Full screen (F)"
+msgstr "전체화면(F)"
+
 #: ui/viewer.ui:61
 msgid "Open… (Ctrl+O)"
 msgstr "열기...(Ctrl+O)"
@@ -10044,10 +10329,6 @@ msgstr "휴지통으로 이동할까요?"
 #: ui/viewer.ui:180
 msgid "Details (I)"
 msgstr "세부 정보 (I)"
-
-#: ui/viewer.ui:189
-msgid "Full screen (F)"
-msgstr "전체화면(F)"
 
 #: ui/viewer.ui:227
 msgid "Previous (←)"
@@ -10163,6 +10444,14 @@ msgstr "안전한 사각형을 드러내고 숨겨진 지뢰를 표시하세요"
 msgid "games;arcade;puzzle;"
 msgstr "게임;아케이드;퍼즐;"
 
+#: config/apps/io.github.lyricat.Inua.Music.desktop:10
+msgid "Play music, with a playlist and an equalizer"
+msgstr "재생 목록과 이퀄라이저로 음악 재생"
+
+#: config/apps/io.github.lyricat.Inua.Music.desktop:20
+msgid "music;audio;player;playlist;mp3;flac;equalizer;"
+msgstr "음악;오디오;플레이어;재생목록;mp3;flac;이퀄라이저;"
+
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:10
 msgid "Your password store: passwords, one-time codes and notes, by category"
 msgstr "비밀번호 저장소: 비밀번호, 일회용 코드, 메모를 카테고리별로"
@@ -10202,6 +10491,14 @@ msgstr "Tailnet의 장치, 종료 노드 및 이 장치의 Tailscale 설정"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;네트워크;출구 노드;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Video.desktop:10
+msgid "Watch videos"
+msgstr "비디오 보기"
+
+#: config/apps/io.github.lyricat.Inua.Video.desktop:20
+msgid "video;movie;film;player;subtitles;"
+msgstr "비디오;영화;동영상;플레이어;자막;"
 
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
 msgid "Look through pictures"

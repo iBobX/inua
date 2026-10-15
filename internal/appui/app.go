@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
@@ -68,6 +69,8 @@ var Apps = map[string]struct {
 	"pass":           {"Pass", i18n.M("Pass"), func() view { return &passApp{} }, false},
 	"gpg":            {"GPG", i18n.M("GPG"), func() view { return &gpgApp{} }, false},
 	"viewer":         {"Viewer", i18n.M("Viewer"), func() view { return &viewerApp{} }, true},
+	"music":          {"Music", i18n.M("Music"), func() view { return &musicApp{} }, false},
+	"video":          {"Video", i18n.M("Video"), func() view { return &videoApp{} }, false},
 }
 
 // View is a light app's window from another package: cmd/inua-assistant
@@ -90,6 +93,17 @@ func (e external) open(args []string) {
 	if o, ok := e.v.(Opener); ok {
 		o.Open(args)
 	}
+}
+
+// opensFiles are the apps (by name) that take files while they run:
+// started again with files, the running one gets them (its Opener).
+var opensFiles = map[string]bool{"music": true, "video": true}
+
+// RegisterOpener is Register for a View that opens files (an Opener): a
+// start with files hands them to the app already running.
+func RegisterOpener(name, id, title string, make func() View) {
+	Register(name, id, title, make)
+	opensFiles[name] = true
 }
 
 // Register adds a light app from another package, for Run.
@@ -125,6 +139,7 @@ type Ctx struct {
 	win      *gtk.ApplicationWindow
 	v        view
 	onTick   glib.SourceFunc
+	open     func(gio.Application, uintptr, int32, string)
 	activate func(gio.Application)
 	iconPath bool // the apps' icon theme is in use
 }
@@ -157,8 +172,13 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	if many {
 		flags = gio.GApplicationNonUniqueValue
 	}
+	files := opensFiles[name]
+	if files {
+		flags |= gio.GApplicationHandlesOpenValue
+	}
 	app := gtk.NewApplication(appID, flags)
 	c := &Ctx{App: app, UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
+	opened := false // the files of the first start went to open already
 	c.activate = func(gio.Application) {
 		if c.win != nil { // started again: the window comes to the user
 			bringHere()
@@ -176,7 +196,7 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		if !c.StartHidden {
 			c.win.Present()
 		}
-		if o, ok := c.v.(opener); ok {
+		if o, ok := c.v.(opener); ok && !opened {
 			o.open(args)
 		} else if p, ok := c.v.(pager); ok && len(args) > 0 {
 			p.showPage(args[0])
@@ -188,7 +208,34 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		glib.TimeoutAdd(2000, &c.onTick, 0)
 	}
 	app.ConnectActivate(&c.activate)
-	return int(app.Run(1, []string{os.Args[0]}))
+	argv := []string{os.Args[0]}
+	if files {
+		// The files go through GApplication, so a second start's reach the
+		// app already running: open, here or there.
+		argv = append(argv, args...)
+		c.open = func(_ gio.Application, list uintptr, n int32, _ string) {
+			var paths []string
+			// GFile *files[n], C memory.
+			for _, ptr := range unsafe.Slice((*uintptr)(*(*unsafe.Pointer)(unsafe.Pointer(&list))), int(n)) {
+				f := gio.FileBase{Ptr: ptr}
+				if p := f.GetPath(); p != "" {
+					paths = append(paths, p)
+				}
+			}
+			first := c.win == nil
+			opened = true
+			c.activate(app.Application)
+			if o, ok := c.v.(opener); ok {
+				o.open(paths)
+			}
+			if !first {
+				bringHere()
+				c.win.Present()
+			}
+		}
+		app.ConnectOpen(&c.open)
+	}
+	return int(app.Run(int32(len(argv)), argv))
 }
 
 // ReadUI is a layout or stylesheet from ui/.

@@ -1,0 +1,365 @@
+// Music, a player in Winamp's spirit: the main panel (the display with
+// the time, the scrolling title, the stream's figures and the spectrum;
+// the seek bar; the transport, volume and balance, shuffle and repeat,
+// and the EQ and PL toggles), the equalizer and the playlist, each of
+// the last two shown or hidden. Go fills them (internal/appui/music.go).
+using Gtk 4.0;
+
+ApplicationWindow music {
+  default-width: 600;
+  default-height: 660;
+
+  Box {
+    styles ["music-app"]
+    orientation: vertical;
+
+    // --- the main panel ---
+    Box {
+      styles ["music-main"]
+      orientation: vertical;
+      spacing: 10;
+
+      Box {
+        styles ["music-display"]
+        spacing: 16;
+
+        Box {
+          orientation: vertical;
+          spacing: 6;
+
+          Box {
+            spacing: 8;
+
+            Image play_state {
+              styles ["music-state"]
+              icon-name: "media-playback-stop-symbolic";
+              valign: center;
+            }
+
+            Label time {
+              styles ["music-time"]
+              label: "0:00";
+              xalign: 1;
+              width-chars: 6;
+              tooltip-text:  _("Click to show the time left");
+            }
+          }
+
+          Picture spectrum {
+            styles ["music-spectrum"]
+            width-request: 152;
+            height-request: 38;
+            can-shrink: true;
+            content-fit: fill;
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+          spacing: 8;
+
+          Label title {
+            styles ["music-title"]
+            xalign: 0;
+            single-line-mode: true;
+            label:  _("Nothing playing");
+          }
+
+          Box {
+            spacing: 12;
+
+            Label kbps {
+              styles ["readout"]
+            }
+
+            Label khz {
+              styles ["readout"]
+            }
+
+            Label channels {
+              styles ["readout", "music-channels"]
+            }
+          }
+        }
+      }
+
+      Scale seek {
+        styles ["music-seek"]
+        orientation: horizontal;
+        draw-value: false;
+        hexpand: true;
+        sensitive: false;
+
+        adjustment: Adjustment {
+          lower: 0;
+          upper: 1;
+          step-increment: 0.01;
+        };
+      }
+
+      Box {
+        spacing: 6;
+
+        Box {
+          styles ["linked", "music-transport"]
+
+          Button prev {
+            name: "prev";
+            icon-name: "media-skip-backward-symbolic";
+            tooltip-text:  _("Previous (Z)");
+          }
+
+          Button play {
+            name: "play";
+            icon-name: "media-playback-start-symbolic";
+            tooltip-text:  _("Play (X)");
+          }
+
+          Button pause {
+            name: "pause";
+            icon-name: "media-playback-pause-symbolic";
+            tooltip-text:  _("Pause (C)");
+          }
+
+          Button stop {
+            name: "stop";
+            icon-name: "media-playback-stop-symbolic";
+            tooltip-text:  _("Stop (V)");
+          }
+
+          Button next {
+            name: "next";
+            icon-name: "media-skip-forward-symbolic";
+            tooltip-text:  _("Next (B)");
+          }
+        }
+
+        Button open {
+          styles ["plain"]
+          name: "open";
+          icon-name: "media-eject-symbolic";
+          tooltip-text:  _("Open files (Ctrl+O)");
+        }
+
+        Box {
+          hexpand: true;
+        }
+
+        Image {
+          styles ["music-dim"]
+          icon-name: "audio-volume-high-symbolic";
+        }
+
+        Scale volume {
+          styles ["music-small-scale"]
+          orientation: horizontal;
+          draw-value: false;
+          width-request: 84;
+          tooltip-text:  _("Volume");
+
+          adjustment: Adjustment {
+            lower: 0;
+            upper: 1;
+            step-increment: 0.05;
+          };
+        }
+
+        Label {
+          styles ["kicker"]
+          label:  _("BAL");
+        }
+
+        Scale balance {
+          styles ["music-small-scale"]
+          orientation: horizontal;
+          draw-value: false;
+          width-request: 54;
+          tooltip-text:  _("Balance");
+
+          adjustment: Adjustment {
+            lower: -1;
+            upper: 1;
+            step-increment: 0.1;
+          };
+        }
+
+        ToggleButton shuffle {
+          styles ["plain", "music-toggle"]
+          name: "shuffle";
+          icon-name: "media-playlist-shuffle-symbolic";
+          tooltip-text:  _("Shuffle (S)");
+        }
+
+        Button repeat {
+          styles ["plain", "music-toggle"]
+          name: "repeat";
+          icon-name: "media-playlist-repeat-symbolic";
+          tooltip-text:  _("Repeat: off (R)");
+        }
+
+        ToggleButton show_eq {
+          styles ["music-panel-toggle"]
+          name: "show-eq";
+          label:  _("EQ");
+          tooltip-text:  _("The equalizer");
+        }
+
+        ToggleButton show_list {
+          styles ["music-panel-toggle"]
+          name: "show-list";
+          label:  _("PL");
+          tooltip-text:  _("The playlist");
+        }
+      }
+    }
+
+    // --- the equalizer ---
+    Revealer eq_reveal {
+      transition-type: slide_down;
+      transition-duration: 160;
+
+      Box {
+        styles ["music-eq"]
+        orientation: vertical;
+        spacing: 10;
+
+        Box {
+          spacing: 8;
+
+          ToggleButton eq_on {
+            styles ["music-panel-toggle"]
+            name: "eq-on";
+            label:  _("ON");
+            tooltip-text:  _("Equalizer on or off");
+          }
+
+          DropDown presets {
+            tooltip-text:  _("Presets");
+          }
+
+          Button eq_reset {
+            styles ["plain"]
+            name: "eq-reset";
+            label:  _("Reset");
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Picture eq_curve {
+            styles ["music-eq-curve"]
+            width-request: 180;
+            height-request: 34;
+            can-shrink: true;
+            content-fit: fill;
+          }
+        }
+
+        // The preamp and the ten bands, as vertical sliders (Go).
+        Box bands {
+          styles ["music-bands"]
+          spacing: 2;
+        }
+      }
+    }
+
+    // --- the playlist ---
+    Revealer list_reveal {
+      transition-type: slide_down;
+      transition-duration: 160;
+      vexpand: true;
+
+      Box {
+        styles ["music-playlist"]
+        orientation: vertical;
+
+        Box {
+          styles ["music-list-head"]
+          spacing: 10;
+
+          SearchEntry filter {
+            hexpand: true;
+            placeholder-text:  _("Filter the playlist");
+          }
+
+          Label total {
+            styles ["readout"]
+          }
+        }
+
+        ScrolledWindow list_scroll {
+          vexpand: true;
+          hscrollbar-policy: never;
+
+          Box rows {
+            styles ["music-rows"]
+            orientation: vertical;
+          }
+        }
+
+        Box {
+          styles ["music-list-foot"]
+          spacing: 2;
+
+          Button add_files {
+            styles ["plain"]
+            name: "add-files";
+            icon-name: "list-add-symbolic";
+            tooltip-text:  _("Add files");
+          }
+
+          Button add_folder {
+            styles ["plain"]
+            name: "add-folder";
+            icon-name: "folder-open-symbolic";
+            tooltip-text:  _("Add a folder");
+          }
+
+          Button remove {
+            styles ["plain"]
+            name: "remove";
+            icon-name: "list-remove-symbolic";
+            tooltip-text:  _("Remove the selected track (Delete)");
+          }
+
+          Button clear {
+            styles ["plain"]
+            name: "clear";
+            icon-name: "user-trash-symbolic";
+            tooltip-text:  _("Clear the playlist");
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Label hint {
+            styles ["sub"]
+            label:  _("Drop files or folders here");
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Button load_list {
+            styles ["plain"]
+            name: "load-list";
+            icon-name: "document-open-recent-symbolic";
+            tooltip-text:  _("Load a playlist (.m3u)");
+          }
+
+          Button save_list {
+            styles ["plain"]
+            name: "save-list";
+            icon-name: "document-save-symbolic";
+            tooltip-text:  _("Save the playlist (.m3u)");
+          }
+        }
+      }
+    }
+  }
+}
