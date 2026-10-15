@@ -127,6 +127,20 @@ func TestSamplesUseDefaultHyprlandConfig(t *testing.T) {
 	}
 }
 
+func TestSamplesBesideLuaConfig(t *testing.T) {
+	dir := t.TempDir()
+	os.MkdirAll(filepath.Join(dir, "hypr"), 0o755)
+	os.WriteFile(filepath.Join(dir, "hypr/hyprland.lua"), []byte("require(\"default.hypr.omarchy\")\n"), 0o644)
+	for _, force := range []bool{false, true} {
+		if _, err := Install(samples.FS, samples.Files, dir, force); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := os.Stat(filepath.Join(dir, "hypr/hyprland.conf")); !os.IsNotExist(err) {
+			t.Errorf("force %v: hyprland.conf written beside hyprland.lua: %v", force, err)
+		}
+	}
+}
+
 func TestFindShellStart(t *testing.T) {
 	dir := t.TempDir()
 	conf := func(name, content string) string {

@@ -32,7 +32,9 @@ type Result struct {
 // Install copies the named files from fsys into dir, creating directories
 // as needed. Existing files are left alone unless force is set; then a
 // file that differs is renamed to <path>.bak (an older .bak is replaced)
-// and the sample written in its place.
+// and the sample written in its place. The sample hyprland.conf is not
+// written beside a hyprland.lua (Omarchy's, say): Hyprland reads the Lua
+// one, and inua would check and write for the wrong file.
 func Install(fsys fs.FS, names []string, dir string, force bool) ([]Result, error) {
 	var results []Result
 	for _, name := range names {
@@ -41,6 +43,11 @@ func Install(fsys fs.FS, names []string, dir string, force bool) ([]Result, erro
 			return results, err
 		}
 		path := filepath.Join(dir, filepath.FromSlash(name))
+		if name == "hypr/hyprland.conf" {
+			if _, err := os.Stat(filepath.Join(filepath.Dir(path), "hyprland.lua")); err == nil {
+				continue
+			}
+		}
 		r := Result{Path: path}
 		old, err := os.ReadFile(path)
 		switch {

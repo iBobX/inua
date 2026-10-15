@@ -30,7 +30,8 @@ install-config`, or run `inua init` after installing.
 
 `inua init` carries the samples inside the binary; it needs no repository.
 Existing files that differ are left alone (and listed); `inua init -force`
-replaces them, keeping the old ones as `.bak`. It sets gpg-agent's
+replaces them, keeping the old ones as `.bak`; the sample `hyprland.conf`
+is not written beside a `hyprland.lua`, the config Hyprland reads. It sets gpg-agent's
 `pinentry-program` to `inua-pinentry` in `~/.gnupg/gpg-agent.conf` (or
 `$GNUPGHOME`), keeping the rest of the file and another pinentry already
 set (unless `-force`), so gpg asks for passphrases in inua's dialog; with
