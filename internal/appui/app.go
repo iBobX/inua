@@ -1,6 +1,7 @@
 // Package appui runs inua's light apps: Clock, Weather, Stocks,
-// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass,
-// GPG and Viewer. Each runs as its own process with its own application ID, so
+// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass and
+// GPG, and those of other programs (Files, Viewer, the assistant, the
+// games). Each runs as its own process with its own application ID, so
 // the launcher, the dock and the compositor see it as an app, but in the
 // shell's look: the theme and style from inua's settings, followed as
 // they change, and the shell's icons.
@@ -50,8 +51,8 @@ type opener interface{ open(args []string) }
 
 // Apps are the light apps by command name, with their application ID
 // suffix and window title. A many-windowed app runs once for each start
-// (each image opened is its own window); the others bring their window
-// forward when started again.
+// (as Viewer, registered by inua-viewer, does); the others bring their
+// window forward when started again.
 var Apps = map[string]struct {
 	ID, Title string
 	make      func() view
@@ -67,7 +68,6 @@ var Apps = map[string]struct {
 	"tailscale":      {"Tailscale", i18n.M("Tailscale"), func() view { return &tailscaleApp{} }, false},
 	"pass":           {"Pass", i18n.M("Pass"), func() view { return &passApp{} }, false},
 	"gpg":            {"GPG", i18n.M("GPG"), func() view { return &gpgApp{} }, false},
-	"viewer":         {"Viewer", i18n.M("Viewer"), func() view { return &viewerApp{} }, true},
 }
 
 // View is a light app's window from another package: cmd/inua-assistant
@@ -96,7 +96,7 @@ func (e external) open(args []string) {
 func Register(name, id, title string, make func() View) { register(name, id, title, make, false) }
 
 // RegisterMany adds a light app whose every start runs on its own, as
-// Viewer's do; an app that wants one process keeps to it itself
+// Viewer's do (inua-viewer); an app that wants one process keeps to it itself
 // (inua-files does, through D-Bus).
 func RegisterMany(name, id, title string, make func() View) { register(name, id, title, make, true) }
 

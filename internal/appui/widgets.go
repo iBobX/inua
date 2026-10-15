@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
@@ -172,3 +173,5 @@ func (p *picker) set(i, v int) {
 // noPaintable empties a picture: the bindings take a paintable value, and
 // a zero texture passes NULL.
 func noPaintable(p *gtk.Picture) { p.SetPaintable(&gdk.Texture{}) }
+
+func unrefObject(o gobject.Ptr) { (&gobject.Object{Ptr: o.GoPointer()}).Unref() }

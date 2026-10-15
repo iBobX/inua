@@ -1,7 +1,13 @@
-package appui
+// Package viewerui is inua-viewer's window (docs/apps.md#viewer): a
+// picture zoomed, turned and stepped through its folder; a PDF's pages one
+// under another; Markdown laid out to read, or plain text. The logic is
+// internal/apps/viewer; this is the view.
+package viewerui
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"os"
@@ -9,44 +15,57 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gdkpixbuf"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
-	"codeberg.org/puregotk/puregotk/v4/graphene"
-	"codeberg.org/puregotk/puregotk/v4/gsk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/viewer"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
-// viewerApp is the Viewer: one window per start, showing an image
-// and stepping through its folder.
-type viewerApp struct {
-	c   *Ctx
+// Register gives the Viewer to appui: each start a window of its own.
+func Register() {
+	appui.RegisterMany("viewer", "Viewer", i18n.M("Viewer"), func() appui.View { return &App{} })
+}
+
+// App is the Viewer: one window per start, showing a file and stepping
+// through the files of its kind in its folder.
+type App struct {
+	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
 	toolbar                                    gtk.Box
 	name, meta, status, trashLabel, emptyLabel gtk.Label
 	zoomLevel, prev, next, fullscreenB         gtk.Button
+	rotateB, copyB, wallpaperB                 gtk.Button
+	stage                                      gtk.Stack
 	scroller                                   gtk.ScrolledWindow
 	canvas                                     gtk.Fixed
 	picture                                    gtk.Picture
 	empty, details                             gtk.Box
 	detailsReveal                              gtk.Revealer
-	detailsToggle                              gtk.ToggleButton
+	detailsToggle, sourceToggle                gtk.ToggleButton
 	hadj, vadj                                 *gtk.Adjustment
 	dialog                                     *gtk.FileDialog
 
 	files []string
 	index int
+	kind  viewer.Kind // how the shown file is shown
+	size  int64       // the shown document's; an image keeps its own
+	mod   time.Time
 
-	// The images loaded: the one shown, and those beside it (viewerload.go).
+	pdf  pdfView
+	text textView
+
+	// The images loaded: the one shown, and those beside it (load.go).
 	cache      map[string]*shot
 	work       chan struct{} // a place for each load running
 	cur        *shot
@@ -71,7 +90,7 @@ type viewerApp struct {
 	statusGen  uintptr
 
 	onButton                  func(gtk.Button)
-	onDetails                 func(gtk.ToggleButton)
+	onDetails, onSource       func(gtk.ToggleButton)
 	onKey                     func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onScroll                  func(gtk.EventControllerScroll, float64, float64) bool
 	onMotion                  func(gtk.EventControllerMotion, float64, float64)
@@ -87,7 +106,7 @@ type viewerApp struct {
 	onChosen                  gio.AsyncReadyCallback
 }
 
-func (a *viewerApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = &gtk.ApplicationWindow{}
 	ui := c.Load("viewer.ui")
@@ -97,26 +116,34 @@ func (a *viewerApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui.Get("meta", &a.meta)
 	ui.Get("status", &a.status)
 	ui.Get("zoom_level", &a.zoomLevel)
+	ui.Get("stage", &a.stage)
 	ui.Get("scroller", &a.scroller)
 	ui.Get("picture", &a.picture)
 	ui.Get("canvas", &a.canvas)
 	ui.Get("prev", &a.prev)
 	ui.Get("next", &a.next)
+	ui.Get("rotate", &a.rotateB)
+	ui.Get("copy", &a.copyB)
+	ui.Get("wallpaper", &a.wallpaperB)
 	ui.Get("empty", &a.empty)
 	ui.Get("empty_label", &a.emptyLabel)
 	ui.Get("details_reveal", &a.detailsReveal)
 	ui.Get("details", &a.details)
 	ui.Get("details_toggle", &a.detailsToggle)
+	ui.Get("source", &a.sourceToggle)
 	ui.Get("trash_label", &a.trashLabel)
 	ui.Get("fullscreen", &a.fullscreenB)
 	buttons := map[string]*gtk.Button{}
-	for _, n := range []string{"open", "zoom_out", "zoom_in", "rotate", "copy", "wallpaper", "folder", "trash", "open_empty"} {
+	for _, n := range []string{"open", "zoom_out", "zoom_in", "folder", "trash", "open_empty"} {
 		b := &gtk.Button{}
 		ui.Get(n, b)
 		buttons[n] = b
 	}
+	a.pdf.init(a, ui)
+	a.text.init(a, ui)
 	ui.Close()
 	buttons["zoom_level"], buttons["prev"], buttons["next"], buttons["fullscreen"] = &a.zoomLevel, &a.prev, &a.next, &a.fullscreenB
+	buttons["rotate"], buttons["copy"], buttons["wallpaper"] = &a.rotateB, &a.copyB, &a.wallpaperB
 
 	a.onButton = func(b gtk.Button) { a.action(b.GetName()) }
 	for n, b := range buttons {
@@ -125,6 +152,8 @@ func (a *viewerApp) build(c *Ctx) *gtk.ApplicationWindow {
 	}
 	a.onDetails = func(t gtk.ToggleButton) { a.detailsReveal.SetRevealChild(t.GetActive()) }
 	a.detailsToggle.ConnectToggled(&a.onDetails)
+	a.onSource = func(t gtk.ToggleButton) { a.text.showSource(t.GetActive()) }
+	a.sourceToggle.ConnectToggled(&a.onSource)
 
 	a.hadj, a.vadj = a.scroller.GetHadjustment(), a.scroller.GetVadjustment()
 	// The stage's size changes during the layout, which takes no new
@@ -143,7 +172,7 @@ func (a *viewerApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.hadj.ConnectChanged(&a.onViewChanged)
 	a.vadj.ConnectChanged(&a.onViewChanged)
 	a.bindInput()
-	// Full screen, however it came: the picture alone.
+	// Full screen, however it came: the file alone.
 	a.onFullscreened = func(uintptr, uintptr, uintptr) {
 		full := a.win.IsFullscreen()
 		a.toolbar.SetVisible(!full)
@@ -184,27 +213,24 @@ func (a *viewerApp) build(c *Ctx) *gtk.ApplicationWindow {
 		}
 		path := file.GetPath()
 		unrefObject(file)
-		a.open([]string{path})
+		a.Open([]string{path})
 	}
 	a.fit, a.zoom = true, 1
 	return a.win
 }
 
-func (a *viewerApp) themeChanged() {}
+func (a *App) ThemeChanged() { a.text.recolor() }
 
-// open shows the images of the arguments (see viewer.List).
-func (a *viewerApp) open(args []string) {
+// Open shows the files of the arguments (see viewer.List).
+func (a *App) Open(args []string) {
 	a.files, a.index = viewer.List(args)
-	if len(args) > 0 && len(a.files) == 0 {
-		a.showEmpty(i18n.Tf("%s is not an image the viewer knows.", filepath.Base(args[0])))
-		return
-	}
 	a.show(a.index)
 }
 
-// bindInput: wheel and pinch zoom, drags pan, a double click switches
-// between fitting and actual size, and the keys.
-func (a *viewerApp) bindInput() {
+// bindInput: on the picture, wheel and pinch zoom, drags pan, a double
+// click switches between fitting and actual size; and the keys, which the
+// window takes before the text view does.
+func (a *App) bindInput() {
 	motion := gtk.NewEventControllerMotion()
 	a.onMotion = func(_ gtk.EventControllerMotion, x, y float64) { a.px, a.py = x, y }
 	motion.ConnectMotion(&a.onMotion)
@@ -224,11 +250,7 @@ func (a *viewerApp) bindInput() {
 		if dy == 0 {
 			return true
 		}
-		f := math.Pow(1.2, -dy)
-		if s.GetUnit() == gdk.ScrollUnitSurfaceValue {
-			f = math.Exp(-dy * 0.01)
-		}
-		a.zoomTo(a.zoom*f, a.px, a.py)
+		a.zoomTo(a.zoom*wheelFactor(s, dy), a.px, a.py)
 		return true
 	}
 	scroll.ConnectScroll(&a.onScroll)
@@ -269,6 +291,7 @@ func (a *viewerApp) bindInput() {
 	a.scroller.AddController(&click.EventController)
 
 	keys := gtk.NewEventControllerKey()
+	keys.SetPropagationPhase(gtk.PhaseCaptureValue)
 	a.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
 		return a.key(keyval, state)
 	}
@@ -276,12 +299,23 @@ func (a *viewerApp) bindInput() {
 	a.win.AddController(&keys.EventController)
 }
 
+// wheelFactor is how much a turn of the wheel, or a touchpad's scroll,
+// zooms by.
+func wheelFactor(s gtk.EventControllerScroll, dy float64) float64 {
+	if s.GetUnit() == gdk.ScrollUnitSurfaceValue {
+		return math.Exp(-dy * 0.01)
+	}
+	return math.Pow(1.2, -dy)
+}
+
 // Keys the viewer takes.
 const (
 	keyBackSpace = 0xff08
 	keyHome      = 0xff50
 	keyLeft      = 0xff51
+	keyUp        = 0xff52
 	keyRight     = 0xff53
+	keyDown      = 0xff54
 	keyPageUp    = 0xff55
 	keyPageDown  = 0xff56
 	keyEnd       = 0xff57
@@ -294,17 +328,28 @@ const (
 	keyEsc       = 0xff1b
 )
 
-func (a *viewerApp) key(keyval uint32, state gdk.ModifierType) bool {
+func (a *App) key(keyval uint32, state gdk.ModifierType) bool {
 	ctrl := state&gdk.ControlMaskValue != 0
 	shift := state&gdk.ShiftMaskValue != 0
-	cx, cy := a.hadj.GetPageSize()/2, a.vadj.GetPageSize()/2
 	switch {
 	case ctrl && (keyval == 'o' || keyval == 'O'):
 		a.action("open")
 	case ctrl && (keyval == 'c' || keyval == 'C'):
 		a.action("copy")
+	case ctrl && keyval == keyPageUp:
+		a.action("prev")
+	case ctrl && keyval == keyPageDown:
+		a.action("next")
+	case ctrl && (keyval == '+' || keyval == '=' || keyval == keyKPAdd):
+		a.zoomStep(true)
+	case ctrl && (keyval == '-' || keyval == keyKPSub):
+		a.zoomStep(false)
+	case ctrl && (keyval == '0' || keyval == keyKP0):
+		a.zoomReset(true)
 	case ctrl:
 		return false
+	case a.kind == viewer.PDF && a.pdf.key(keyval, shift):
+	case (a.kind == viewer.Markdown || a.kind == viewer.Text) && a.text.key(keyval, shift):
 	case keyval == keyLeft || keyval == keyPageUp || keyval == keyBackSpace:
 		a.action("prev")
 	case keyval == keyRight || keyval == keyPageDown || keyval == ' ':
@@ -314,13 +359,13 @@ func (a *viewerApp) key(keyval uint32, state gdk.ModifierType) bool {
 	case keyval == keyEnd:
 		a.show(len(a.files) - 1)
 	case keyval == '+' || keyval == '=' || keyval == keyKPAdd:
-		a.zoomTo(viewer.StepZoom(a.zoom, true), cx, cy)
+		a.zoomStep(true)
 	case keyval == '-' || keyval == keyKPSub:
-		a.zoomTo(viewer.StepZoom(a.zoom, false), cx, cy)
+		a.zoomStep(false)
 	case keyval == '0' || keyval == keyKP0:
-		a.fitWindow()
+		a.zoomReset(true)
 	case keyval == '1' || keyval == keyKP1:
-		a.zoomTo(1, cx, cy)
+		a.zoomReset(false)
 	case keyval == 'f' || keyval == 'F' || keyval == keyF11:
 		a.action("fullscreen")
 	case keyval == keyEsc && a.win.IsFullscreen():
@@ -331,6 +376,8 @@ func (a *viewerApp) key(keyval uint32, state gdk.ModifierType) bool {
 		a.turn(1)
 	case keyval == 'R' || (keyval == 'r' && shift) || keyval == 'l' || keyval == 'L':
 		a.turn(3)
+	case (keyval == 's' || keyval == 'S') && a.kind == viewer.Markdown:
+		a.sourceToggle.SetActive(!a.sourceToggle.GetActive())
 	case keyval == 'i' || keyval == 'I':
 		a.detailsToggle.SetActive(!a.detailsToggle.GetActive())
 	case keyval == keyDelete:
@@ -341,8 +388,42 @@ func (a *viewerApp) key(keyval uint32, state gdk.ModifierType) bool {
 	return true
 }
 
-func (a *viewerApp) action(name string) {
-	cx, cy := a.hadj.GetPageSize()/2, a.vadj.GetPageSize()/2
+// zoomStep zooms the file shown in or out a step.
+func (a *App) zoomStep(up bool) {
+	switch a.kind {
+	case viewer.PDF:
+		a.pdf.step(up)
+	case viewer.Markdown, viewer.Text:
+		a.text.step(up)
+	default:
+		a.zoomTo(viewer.StepZoom(a.zoom, up), a.hadj.GetPageSize()/2, a.vadj.GetPageSize()/2)
+	}
+}
+
+// zoomReset fits the file shown to the window, or shows it at its actual
+// size.
+func (a *App) zoomReset(fit bool) {
+	switch a.kind {
+	case viewer.PDF:
+		a.pdf.reset(fit)
+	case viewer.Markdown, viewer.Text:
+		a.text.setZoom(1)
+	default:
+		if fit {
+			a.fitWindow()
+		} else {
+			a.zoomTo(1, a.hadj.GetPageSize()/2, a.vadj.GetPageSize()/2)
+		}
+	}
+}
+
+// setZoomLabel shows the zoom, and what a click on it does.
+func (a *App) setZoomLabel(label, tip string) {
+	a.zoomLevel.SetLabel(label)
+	a.zoomLevel.SetTooltipText(tip)
+}
+
+func (a *App) action(name string) {
 	if name != "trash" {
 		a.disarmTrash()
 	}
@@ -358,11 +439,18 @@ func (a *viewerApp) action(name string) {
 			a.show((a.index + 1) % len(a.files))
 		}
 	case "zoom_in":
-		a.zoomTo(viewer.StepZoom(a.zoom, true), cx, cy)
+		a.zoomStep(true)
 	case "zoom_out":
-		a.zoomTo(viewer.StepZoom(a.zoom, false), cx, cy)
+		a.zoomStep(false)
 	case "zoom_level":
-		a.toggleActual(cx, cy)
+		switch a.kind {
+		case viewer.PDF:
+			a.pdf.reset(!a.pdf.fit)
+		case viewer.Markdown, viewer.Text:
+			a.text.setZoom(1)
+		default:
+			a.toggleActual(a.hadj.GetPageSize()/2, a.vadj.GetPageSize()/2)
+		}
 	case "rotate":
 		a.turn(1)
 	case "fullscreen":
@@ -378,24 +466,7 @@ func (a *viewerApp) action(name string) {
 	}
 	switch name {
 	case "copy":
-		mime := viewer.Mime(path)
-		go func() {
-			f, err := os.Open(path)
-			if err == nil {
-				cmd := exec.Command("wl-copy", "--type", mime) // its output to /dev/null: no pipe to wait on
-				cmd.Stdin = f
-				err = cmd.Run()
-				f.Close()
-			}
-			gtkx.Post(func() {
-				if err != nil {
-					log.Printf("viewer: copy: %v", err)
-					a.flash(i18n.T("Could not copy"))
-				} else {
-					a.flash(i18n.T("Copied"))
-				}
-			})
-		}()
+		a.copy(path)
 	case "wallpaper":
 		a.setWallpaper(path)
 	case "folder":
@@ -420,44 +491,96 @@ func (a *viewerApp) action(name string) {
 		a.files = slices.Delete(a.files, a.index, a.index+1)
 		a.flash(i18n.T("Moved to Trash"))
 		if len(a.files) == 0 {
-			a.clearImage()
-			a.showEmpty(i18n.T("No images left here."))
+			a.leave(viewer.None)
+			a.showEmpty(i18n.T("Nothing left here."))
 			return
 		}
 		a.show(min(a.index, len(a.files)-1))
 	}
 }
 
-func (a *viewerApp) current() string {
+// copy puts the image on the clipboard, a PDF's page as text, or the
+// text selected (else all of it).
+func (a *App) copy(path string) {
+	var mime string
+	var read func() (io.Reader, func(), error)
+	switch a.kind {
+	case viewer.PDF:
+		doc, page := a.pdf.doc, a.pdf.cur
+		if doc == nil {
+			return
+		}
+		mime = "text/plain;charset=utf-8"
+		read = func() (io.Reader, func(), error) {
+			s := doc.PageText(page)
+			if strings.TrimSpace(s) == "" {
+				return nil, nil, errors.New("no text on the page")
+			}
+			return strings.NewReader(s), func() {}, nil
+		}
+	case viewer.Markdown, viewer.Text:
+		s := a.text.copyText()
+		mime = "text/plain;charset=utf-8"
+		read = func() (io.Reader, func(), error) { return strings.NewReader(s), func() {}, nil }
+	default:
+		mime = viewer.Mime(path)
+		read = func() (io.Reader, func(), error) {
+			f, err := os.Open(path)
+			if err != nil {
+				return nil, nil, err
+			}
+			return f, func() { f.Close() }, nil
+		}
+	}
+	go func() {
+		r, done, err := read()
+		if err == nil {
+			cmd := exec.Command("wl-copy", "--type", mime) // its output to /dev/null: no pipe to wait on
+			cmd.Stdin = r
+			err = cmd.Run()
+			done()
+		}
+		gtkx.Post(func() {
+			if err != nil {
+				log.Printf("viewer: copy: %v", err)
+				a.flash(i18n.T("Could not copy"))
+			} else {
+				a.flash(i18n.T("Copied"))
+			}
+		})
+	}()
+}
+
+func (a *App) current() string {
 	if a.index < 0 || a.index >= len(a.files) {
 		return ""
 	}
 	return a.files[a.index]
 }
 
-func (a *viewerApp) disarmTrash() {
+func (a *App) disarmTrash() {
 	a.trashArmed = false
 	a.trashLabel.SetVisible(false)
 }
 
 // flash says something in the toolbar for a moment.
-func (a *viewerApp) flash(text string) {
+func (a *App) flash(text string) {
 	a.status.SetText(text)
 	a.statusGen++
 	glib.TimeoutAdd(1800, &a.onCalm, a.statusGen)
 }
 
-// choose asks for an image to open.
-func (a *viewerApp) choose() {
+// choose asks for a file to open.
+func (a *App) choose() {
 	if a.dialog != nil {
 		return
 	}
 	d := gtk.NewFileDialog()
-	d.SetTitle(i18n.T("Open an Image"))
+	d.SetTitle(i18n.T("Open a File"))
 	filter := gtk.NewFileFilter()
-	filter.SetName("Images")
-	for _, m := range viewer.Exts {
-		filter.AddMimeType(m)
+	filter.SetName(i18n.T("Images, PDFs, Markdown and text"))
+	for _, s := range viewer.Suffixes() {
+		filter.AddSuffix(s)
 	}
 	d.SetDefaultFilter(filter)
 	filter.Unref()
@@ -474,97 +597,103 @@ func (a *viewerApp) choose() {
 	d.Open(&a.win.Window, nil, &a.onChosen, 0)
 }
 
-// show shows the i-th image: at once if it is loaded, else as soon as a
-// first look at it is, and then the images beside it load.
-func (a *viewerApp) show(i int) {
+// show shows the i-th file, in the view for its kind.
+func (a *App) show(i int) {
 	if i < 0 || i >= len(a.files) {
 		if len(a.files) == 0 {
-			a.showEmpty(i18n.T("Open an image to view it."))
+			a.showEmpty(i18n.T("Open an image or a document to view it."))
 		}
 		return
-	}
-	a.index = i
-	a.gen++
-	if a.iter != nil {
-		a.iter.Unref()
-		a.iter = nil
 	}
 	path := a.files[i]
-	s := a.shotFor(path)
-	a.cur, a.prefetched = s, false
-	a.turns, a.fit, a.texW, a.texH, a.w, a.h = 0, true, 0, 0, 0, 0
-	a.keep(a.neighbours()...)
+	kind := viewer.Sniff(path)
+	if kind == viewer.None {
+		kind = viewer.Image // for GDK's loaders to try
+	}
+	a.leave(kind)
+	a.index, a.kind = i, kind
 	a.name.SetText(filepath.Base(path))
 	a.win.SetTitle(filepath.Base(path))
-	many := len(a.files) > 1
-	a.prev.SetVisible(many)
-	a.next.SetVisible(many)
-	if s.tex == nil && s.anim == nil {
-		noPaintable(&a.picture)
-	}
-	a.display()
-	a.load(s)
-}
-
-// neighbours are the shown image and those beside it.
-func (a *viewerApp) neighbours() []string {
-	n := len(a.files)
-	if n == 0 {
-		return nil
-	}
-	return []string{a.files[a.index], a.files[(a.index+1)%n], a.files[(a.index-1+n)%n]}
-}
-
-// shotChanged: a load has come further.
-func (a *viewerApp) shotChanged(s *shot) {
-	if s == a.cur {
-		a.display()
-	}
-}
-
-// display draws the shown image as far as it has loaded.
-func (a *viewerApp) display() {
-	s := a.cur
-	if s == nil {
-		return
-	}
-	switch {
-	case s.anim != nil:
-		a.empty.SetVisible(false)
-		if a.iter == nil {
-			a.iter = s.anim.GetIter(nil)
-			a.showFrame()
+	a.empty.SetVisible(false)
+	a.setTools()
+	a.size, a.mod = 0, time.Time{}
+	if kind != viewer.Image {
+		if st, err := os.Stat(path); err == nil {
+			a.size, a.mod = st.Size(), st.ModTime()
 		}
-	case s.tex != nil:
-		a.empty.SetVisible(false)
-		a.picture.SetPaintable(s.tex)
-		a.texW, a.texH = s.texW, s.texH
-		a.geometry()
-	case s.err != nil:
-		a.showEmpty(i18n.Tf("Could not open %s.\n%v", filepath.Base(s.path), s.err))
+	}
+	switch kind {
+	case viewer.PDF:
+		a.stage.SetVisibleChildName("pdf")
+		a.pdf.open(path)
+	case viewer.Markdown, viewer.Text:
+		a.stage.SetVisibleChildName("text")
+		a.text.open(path, kind)
+	default:
+		a.stage.SetVisibleChildName("image")
+		a.showImage(path)
 	}
 	a.showMeta()
 	a.showDetails()
-	if (s.tex != nil || s.anim != nil) && !a.prefetched {
-		a.prefetched = true
-		for _, p := range a.neighbours()[1:] {
-			a.load(a.shotFor(p))
+}
+
+// leave lets go of what the shown file's view holds, before a file of
+// kind next is shown.
+func (a *App) leave(next viewer.Kind) {
+	switch a.kind {
+	case viewer.Image:
+		if next != viewer.Image {
+			a.clearImage()
+			a.keep()
 		}
+	case viewer.PDF:
+		a.pdf.close()
+	case viewer.Markdown, viewer.Text:
+		a.text.clear()
+	}
+	a.kind = viewer.None
+}
+
+// setTools shows the toolbar's buttons the kind of file shown has use for.
+func (a *App) setTools() {
+	image := a.kind == viewer.Image
+	a.rotateB.SetVisible(image)
+	a.wallpaperB.SetVisible(image)
+	a.sourceToggle.SetVisible(a.kind == viewer.Markdown)
+	many := len(a.files) > 1
+	a.prev.SetVisible(many)
+	a.next.SetVisible(many)
+	switch a.kind {
+	case viewer.PDF:
+		a.copyB.SetTooltipText(i18n.T("Copy the page's text (Ctrl+C)"))
+		a.prev.SetTooltipText(i18n.T("Previous file (Ctrl+Page Up)"))
+		a.next.SetTooltipText(i18n.T("Next file (Ctrl+Page Down)"))
+	case viewer.Markdown, viewer.Text:
+		a.copyB.SetTooltipText(i18n.T("Copy the text (Ctrl+C)"))
+		a.prev.SetTooltipText(i18n.T("Previous (←)"))
+		a.next.SetTooltipText(i18n.T("Next (→)"))
+	default:
+		a.copyB.SetTooltipText(i18n.T("Copy the image (Ctrl+C)"))
+		a.prev.SetTooltipText(i18n.T("Previous (←)"))
+		a.next.SetTooltipText(i18n.T("Next (→)"))
 	}
 }
 
-// clearImage stops drawing an image.
-func (a *viewerApp) clearImage() {
-	noPaintable(&a.picture)
-	if a.iter != nil {
-		a.iter.Unref()
-		a.iter = nil
+// failed says a file could not be shown.
+func (a *App) failed(path string, err error) {
+	switch {
+	case errors.Is(err, viewer.ErrEncrypted):
+		a.showEmpty(i18n.Tf("%s is locked with a password.", filepath.Base(path)))
+	case errors.Is(err, viewer.ErrNotText):
+		a.showEmpty(i18n.Tf("%s is not UTF-8 text.", filepath.Base(path)))
+	case viewer.PDFAvailable() != nil && viewer.KindOf(path) == viewer.PDF:
+		a.showEmpty(i18n.T("Install libpoppler-glib8t64 to view PDFs."))
+	default:
+		a.showEmpty(i18n.Tf("Could not open %s.\n%v", filepath.Base(path), err))
 	}
-	a.cur = nil
-	a.texW, a.texH, a.w, a.h = 0, 0, 0, 0
 }
 
-func (a *viewerApp) showEmpty(text string) {
+func (a *App) showEmpty(text string) {
 	a.emptyLabel.SetText(text)
 	a.empty.SetVisible(true)
 	if len(a.files) == 0 {
@@ -576,202 +705,41 @@ func (a *viewerApp) showEmpty(text string) {
 	}
 }
 
-// showFrame shows the animation's frame and waits for the next.
-func (a *viewerApp) showFrame() {
-	pb := a.iter.GetPixbuf()
-	if pb == nil {
-		return
-	}
-	tex := gdk.NewTextureForPixbuf(pb)
-	a.picture.SetPaintable(tex)
-	tex.Unref()
-	if w, h := int(pb.GetWidth()), int(pb.GetHeight()); w != a.texW || h != a.texH {
-		a.texW, a.texH = w, h
-		a.geometry()
-	}
-	if d := a.iter.GetDelayTime(); d >= 0 {
-		glib.TimeoutAdd(uint32(max(d, 20)), &a.onFrame, a.gen)
-	}
-}
-
-// orientation is how the shown image is drawn: mirrored or not, then
-// turned by its EXIF orientation and the turns asked for.
-func (a *viewerApp) orientation() (turns int, mirror bool) {
-	if a.cur == nil {
-		return 0, false
-	}
-	t, mirror := viewer.Orientation(a.cur.orient)
-	return (t + a.turns) % 4, mirror
-}
-
-// geometry follows the shown image's size as drawn.
-func (a *viewerApp) geometry() {
-	s := a.cur
-	if s == nil || s.fullW == 0 || a.texW == 0 {
-		return
-	}
-	turns, _ := a.orientation()
-	a.w, a.h = s.fullW, s.fullH
-	if turns%2 == 1 {
-		a.w, a.h = a.h, a.w
-	}
-	if a.fit {
-		a.fitWindow()
-	} else {
-		a.applyZoom()
-	}
-}
-
-// turn rotates the image by quarter turns clockwise: only the transform
-// changes.
-func (a *viewerApp) turn(q int) {
-	if a.w == 0 {
-		return
-	}
-	a.turns = (a.turns + q) % 4
-	a.geometry()
-	a.showMeta()
-}
-
-// scale is the screen's pixels per logical pixel.
-func (a *viewerApp) scale() float64 {
-	if n := a.win.GetNative(); n != nil {
-		if s := n.GetSurface(); s != nil {
-			if f := s.GetScale(); f > 0 {
-				return f
-			}
-		}
-	}
-	return 1
-}
-
-// fitWindow shows the whole image, at most at its actual size.
-func (a *viewerApp) fitWindow() {
-	if a.w == 0 {
-		return
-	}
-	s := a.scale()
-	vw, vh := a.view()
-	a.viewW, a.viewH = int(vw), int(vh)
-	a.fit = true
-	if vw <= 0 || vh <= 0 {
-		// Not laid out yet: show it small (never larger than the screen),
-		// and fit it once the stage has a size (refit).
-		a.zoom = viewer.FitZoom(float64(a.w), float64(a.h), 800*s, 600*s)
-	} else {
-		a.zoom = viewer.FitZoom(float64(a.w), float64(a.h), vw*s, vh*s)
-	}
-	a.applyZoom()
-}
-
-// view is the stage's size: the scroll range's page, which is right
-// already while the window is being resized.
-func (a *viewerApp) view() (float64, float64) {
-	return a.hadj.GetPageSize(), a.vadj.GetPageSize()
-}
-
-// refit follows the stage's size while the image fits it.
-func (a *viewerApp) refit() {
-	if !a.fit || a.w == 0 {
-		return
-	}
-	if vw, vh := a.view(); int(vw) != a.viewW || int(vh) != a.viewH {
-		a.fitWindow()
-	}
-}
-
-// shownSize is the image's size on the stage, in logical pixels.
-func (a *viewerApp) shownSize(z float64) (float64, float64) {
-	s := a.scale()
-	return math.Max(1, math.Round(float64(a.w)*z/s)), math.Max(1, math.Round(float64(a.h)*z/s))
-}
-
-// applyZoom scales the picture as a whole, which keeps its shape, and
-// mirrors and turns it as it should stand. A smaller preview is scaled up
-// to the image's size.
-func (a *viewerApp) applyZoom() {
-	s := a.cur
-	if s == nil || a.texW == 0 || s.fullW == 0 {
-		return
-	}
-	turns, mirror := a.orientation()
-	k := a.zoom / a.scale() * float64(s.fullW) / float64(a.texW)
-	dx, dy := viewer.Placement(float64(a.texW), float64(a.texH), k, turns, mirror)
-	fx := k
-	if mirror {
-		fx = -k
-	}
-	t := gsk.NewTransform().Translate(&graphene.Point{X: float32(dx), Y: float32(dy)}).
-		Rotate(float32(90*turns)).Scale(float32(fx), float32(k))
-	a.canvas.SetChildTransform(&a.picture.Widget, t)
-	t.Unref()
-	a.canvas.QueueResize() // its size is the scaled picture's
-	label := viewer.Percent(a.zoom)
-	if a.fit {
-		label = i18n.Tf("Fit · %s", label)
-	}
-	a.zoomLevel.SetLabel(label)
-	if a.fit {
-		a.zoomLevel.SetTooltipText(i18n.T("Actual size (1)"))
-	} else {
-		a.zoomLevel.SetTooltipText(i18n.T("Fit the window (0)"))
-	}
-}
-
-// zoomTo zooms to z, keeping the image's point under (x, y) on the stage
-// where it is.
-func (a *viewerApp) zoomTo(z float64, x, y float64) {
-	if a.w == 0 {
-		return
-	}
-	z = viewer.ClampZoom(z)
-	vw, vh := a.view()
-	w0, h0 := a.shownSize(a.zoom)
-	// The point, as a share of the image; the image is centred while it is
-	// smaller than the stage.
-	fx := (a.hadj.GetValue() + x - math.Max(0, (vw-w0)/2)) / w0
-	fy := (a.vadj.GetValue() + y - math.Max(0, (vh-h0)/2)) / h0
-	fx, fy = math.Max(0, math.Min(fx, 1)), math.Max(0, math.Min(fy, 1))
-	a.fit, a.zoom = false, z
-	a.applyZoom()
-	w1, h1 := a.shownSize(z)
-	// Set the scroll range now, so the position holds through the layout.
-	place := func(adj *gtk.Adjustment, content, view, f, at float64) {
-		upper := math.Max(content, view)
-		v := math.Max(0, math.Min(f*content-at+math.Max(0, (view-content)/2), upper-view))
-		adj.Configure(v, 0, upper, view/10, view*0.9, view)
-	}
-	place(a.hadj, w1, vw, fx, x)
-	place(a.vadj, h1, vh, fy, y)
-}
-
-// toggleActual switches between fitting the window and actual size.
-func (a *viewerApp) toggleActual(x, y float64) {
-	if a.fit && a.zoom != 1 {
-		a.zoomTo(1, x, y)
-	} else {
-		a.fitWindow()
-	}
-}
-
-func (a *viewerApp) position() string {
+func (a *App) position() string {
 	if len(a.files) <= 1 {
 		return ""
 	}
 	return fmt.Sprintf("%d / %d", a.index+1, len(a.files))
 }
 
-// showMeta: where it is in the folder, its size and its file size.
-func (a *viewerApp) showMeta() {
+// showMeta: where it is in the folder; an image's size, a PDF's page or a
+// text's lines; its file size and type.
+func (a *App) showMeta() {
 	var parts []string
 	if p := a.position(); p != "" {
 		parts = append(parts, p)
 	}
-	if a.w > 0 {
-		parts = append(parts, fmt.Sprintf("%d × %d", a.w, a.h))
+	size := a.size
+	switch a.kind {
+	case viewer.PDF:
+		if n := a.pdf.pages(); n > 0 {
+			parts = append(parts, i18n.Tf("Page %d of %d", a.pdf.cur+1, n))
+		}
+	case viewer.Markdown, viewer.Text:
+		if lines := a.text.stats[0]; lines > 0 {
+			parts = append(parts, i18n.Nf("%d line", "%d lines", lines, lines))
+		}
+	default:
+		if a.w > 0 {
+			parts = append(parts, fmt.Sprintf("%d × %d", a.w, a.h))
+		}
+		size = 0
+		if a.cur != nil {
+			size = a.cur.size
+		}
 	}
-	if a.cur != nil && a.cur.size > 0 {
-		parts = append(parts, viewer.Size(a.cur.size))
+	if size > 0 {
+		parts = append(parts, viewer.Size(size))
 	}
 	if ext := strings.TrimPrefix(filepath.Ext(a.current()), "."); ext != "" {
 		parts = append(parts, strings.ToUpper(ext))
@@ -779,10 +747,14 @@ func (a *viewerApp) showMeta() {
 	a.meta.SetText(strings.Join(parts, "  ·  "))
 }
 
-// showDetails fills the details panel: the file, then the camera.
-func (a *viewerApp) showDetails() {
+// showDetails fills the details panel: the file, then the camera, the
+// document or the text.
+func (a *App) showDetails() {
 	gtkx.Clear(&a.details)
 	path := a.current()
+	if path == "" {
+		return
+	}
 	section := func(title string) {
 		l := gtk.NewLabel(title)
 		l.AddCssClass("kicker")
@@ -809,9 +781,46 @@ func (a *viewerApp) showDetails() {
 		gtkx.Append(box, &v.Widget)
 		gtkx.Append(&a.details, &box.Widget)
 	}
+	date := func(t time.Time) string {
+		if t.IsZero() {
+			return ""
+		}
+		return i18n.Time(t, "Jan 2, 2006  15:04")
+	}
 	section(i18n.T("FILE"))
 	row(i18n.T("Name"), filepath.Base(path))
 	row(i18n.T("Folder"), shortHome(filepath.Dir(path)))
+	switch a.kind {
+	case viewer.PDF:
+		row(i18n.T("Size"), viewer.Size(a.size))
+		row(i18n.T("Type"), viewer.Mime(path))
+		row(i18n.T("Modified"), date(a.mod))
+		if a.pdf.doc == nil {
+			return
+		}
+		info := a.pdf.info
+		section(i18n.T("DOCUMENT"))
+		row(i18n.T("Title"), info.Title)
+		row(i18n.T("Author"), info.Author)
+		row(i18n.T("Subject"), info.Subject)
+		row(i18n.T("Pages"), fmt.Sprint(a.pdf.pages()))
+		row(i18n.T("Page size"), viewer.PageSizeText(a.pdf.doc.PageSize(a.pdf.cur)))
+		row(i18n.T("Created"), date(info.Created))
+		row(i18n.T("Changed"), date(info.Modified))
+		row(i18n.T("Made with"), strings.Join(slices.Compact([]string{info.Creator, info.Producer}), "  ·  "))
+		return
+	case viewer.Markdown, viewer.Text:
+		row(i18n.T("Size"), viewer.Size(a.size))
+		row(i18n.T("Type"), viewer.Mime(path))
+		row(i18n.T("Modified"), date(a.mod))
+		if st := a.text.stats; st[2] > 0 {
+			section(i18n.T("TEXT"))
+			row(i18n.T("Lines"), fmt.Sprint(st[0]))
+			row(i18n.T("Words"), fmt.Sprint(st[1]))
+			row(i18n.T("Characters"), fmt.Sprint(st[2]))
+		}
+		return
+	}
 	s := a.cur
 	if s == nil {
 		return
@@ -827,23 +836,19 @@ func (a *viewerApp) showDetails() {
 	}
 	row(i18n.T("Dimensions"), dims)
 	row(i18n.T("Type"), viewer.Mime(path))
-	if !s.mod.IsZero() {
-		row(i18n.T("Modified"), i18n.Time(s.mod, "Jan 2, 2006  15:04"))
-	}
+	row(i18n.T("Modified"), date(s.mod))
 	if e := s.exif; !e.Empty() {
 		section(i18n.T("CAMERA"))
 		row(i18n.T("Camera"), e.Camera())
 		row(i18n.T("Lens"), e.Lens)
 		row(i18n.T("Exposure"), e.Settings())
-		if !e.Taken.IsZero() {
-			row(i18n.T("Taken"), i18n.Time(e.Taken, "Jan 2, 2006  15:04"))
-		}
+		row(i18n.T("Taken"), date(e.Taken))
 	}
 }
 
 // setWallpaper makes the image inua's wallpaper and asks the shell to read
 // its settings again.
-func (a *viewerApp) setWallpaper(path string) {
+func (a *App) setWallpaper(path string) {
 	cfgPath := config.DefaultPath()
 	cfg, _, err := config.Load(cfgPath)
 	if err != nil {
@@ -858,6 +863,18 @@ func (a *viewerApp) setWallpaper(path string) {
 	}
 	go exec.Command("inua", "call", "shell", "reload").Run()
 	a.flash(i18n.T("Set as wallpaper"))
+}
+
+// scale is the screen's pixels per logical pixel.
+func (a *App) scale() float64 {
+	if n := a.win.GetNative(); n != nil {
+		if s := n.GetSurface(); s != nil {
+			if f := s.GetScale(); f > 0 {
+				return f
+			}
+		}
+	}
+	return 1
 }
 
 // showInFolder opens the file manager at the file, or its folder.
@@ -883,3 +900,6 @@ func shortHome(p string) string {
 }
 
 func unrefObject(o gobject.Ptr) { (&gobject.Object{Ptr: o.GoPointer()}).Unref() }
+
+// noPaintable empties a picture.
+func noPaintable(p *gtk.Picture) { p.SetPaintable(&gdk.Texture{}) }

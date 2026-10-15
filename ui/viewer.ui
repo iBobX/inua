@@ -103,6 +103,16 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
+              <object class="GtkToggleButton" id="source">
+                <style>
+                  <class name="plain"/>
+                </style>
+                <property name="icon-name">text-x-script-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Show the source (S)</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkButton" id="rotate">
                 <style>
                   <class name="plain"/>
@@ -198,20 +208,77 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               <object class="GtkOverlay">
                 <property name="hexpand">true</property>
                 <property name="child">
-                  <object class="GtkScrolledWindow" id="scroller">
-                    <style>
-                      <class name="viewer-stage"/>
-                    </style>
+                  <object class="GtkStack" id="stage">
                     <child>
-                      <object class="GtkFixed" id="canvas">
-                        <property name="halign">3</property>
-                        <property name="valign">3</property>
-                        <child>
-                          <object class="GtkPicture" id="picture">
-                            <property name="can-shrink">false</property>
-                            <property name="content-fit">0</property>
+                      <object class="GtkStackPage">
+                        <property name="name">image</property>
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="scroller">
+                            <style>
+                              <class name="viewer-stage"/>
+                            </style>
+                            <child>
+                              <object class="GtkFixed" id="canvas">
+                                <property name="halign">3</property>
+                                <property name="valign">3</property>
+                                <child>
+                                  <object class="GtkPicture" id="picture">
+                                    <property name="can-shrink">false</property>
+                                    <property name="content-fit">0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
-                        </child>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">pdf</property>
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="doc_scroller">
+                            <style>
+                              <class name="viewer-stage"/>
+                            </style>
+                            <child>
+                              <object class="GtkBox" id="pages">
+                                <style>
+                                  <class name="viewer-pages"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <property name="spacing">16</property>
+                                <property name="halign">3</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">text</property>
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="text_scroller">
+                            <style>
+                              <class name="viewer-paper"/>
+                            </style>
+                            <property name="hscrollbar-policy">2</property>
+                            <child>
+                              <object class="GtkTextView" id="text">
+                                <style>
+                                  <class name="viewer-text"/>
+                                </style>
+                                <property name="editable">false</property>
+                                <property name="cursor-visible">false</property>
+                                <property name="wrap-mode">3</property>
+                                <property name="top-margin">32</property>
+                                <property name="bottom-margin">48</property>
+                                <property name="pixels-inside-wrap">3</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
                       </object>
                     </child>
                   </object>
@@ -269,7 +336,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <style>
                           <class name="primary"/>
                         </style>
-                        <property name="label" translatable="yes">Open an Image…</property>
+                        <property name="label" translatable="yes">Open a File…</property>
                         <property name="halign">3</property>
                       </object>
                     </child>

@@ -369,55 +369,55 @@ msgstr "雷雨"
 msgid "Unknown"
 msgstr "不明"
 
-#: internal/appui/app.go:60
+#: internal/appui/app.go:61
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:844
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "時計"
 
-#: internal/appui/app.go:61
+#: internal/appui/app.go:62
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:319
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "天気"
 
-#: internal/appui/app.go:62
+#: internal/appui/app.go:63
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "株価"
 
-#: internal/appui/app.go:63
+#: internal/appui/app.go:64
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "電卓"
 
-#: internal/appui/app.go:64
+#: internal/appui/app.go:65
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "カレンダー"
 
-#: internal/appui/app.go:65
+#: internal/appui/app.go:66
 #: internal/ui/picker.go:148
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "カラーピッカー"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:67
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "システムモニター"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:68
 #: ui/control.ui:474
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:69
 #: internal/appui/pass.go:207
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
@@ -425,18 +425,11 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:70
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
-
-#: internal/appui/app.go:70
-#: internal/appui/viewer.go:571
-#: internal/appui/viewer.go:572
-#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
-msgid "Viewer"
-msgstr "画像ビューアー"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
@@ -821,8 +814,8 @@ msgstr "削除…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/appui/viewer.go:395
 #: internal/ui/askpass.go:516
+#: internal/viewerui/app.go:548
 msgid "Copied"
 msgstr "コピーしました"
 
@@ -1157,7 +1150,7 @@ msgstr "pass がファイルを削除します。git のストアでは履歴に
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
-#: internal/appui/viewer.go:812
+#: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "ファイル"
 
@@ -1609,8 +1602,8 @@ msgid "Program"
 msgstr "プログラム"
 
 #: internal/appui/sysmon.go:786
-#: internal/appui/viewer.go:814
 #: internal/filesui/kinds.go:26
+#: internal/viewerui/app.go:792
 msgid "Folder"
 msgstr "フォルダー"
 
@@ -1715,8 +1708,8 @@ msgstr "モデル"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
-#: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:321
+#: internal/viewerui/app.go:791
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4165
 #: ui/sysmon.ui:96
@@ -2238,100 +2231,6 @@ msgstr "このセッション (polkit エージェント) ではパスワード 
 #: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "未完了: 管理者のパスワードが指定されていませんでした"
-
-#: internal/appui/viewer.go:199
-msgid "%s is not an image the viewer knows."
-msgstr "%sは、視聴者が知っている画像ではない。"
-
-#: internal/appui/viewer.go:393
-msgid "Could not copy"
-msgstr "コピーできませんでした"
-
-#: internal/appui/viewer.go:414
-msgid "Could not move to Trash"
-msgstr "ゴミ箱に移動できませんでした"
-
-#: internal/appui/viewer.go:421
-msgid "Moved to Trash"
-msgstr "ゴミ箱に移動しました"
-
-#: internal/appui/viewer.go:424
-msgid "No images left here."
-msgstr "ここには画像が残されていない。"
-
-#: internal/appui/viewer.go:456
-msgid "Open an Image"
-msgstr "画像を開く"
-
-#: internal/appui/viewer.go:482
-msgid "Open an image to view it."
-msgstr "画像を開いて表示します。"
-
-#: internal/appui/viewer.go:544
-msgid "Could not open %s.\n%v"
-msgstr "%[1]sを開けませんでした。\n%[2]v"
-
-#: internal/appui/viewer.go:711
-msgid "Fit · %s"
-msgstr "フィット・%s"
-
-#: internal/appui/viewer.go:715
-msgid "Actual size (1)"
-msgstr "実寸サイズ(1)"
-
-#: internal/appui/viewer.go:717
-msgid "Fit the window (0)"
-msgstr "ウィンドウに合わせる (0)"
-
-#: internal/appui/viewer.go:819
-msgid "Size"
-msgstr "サイズ"
-
-#: internal/appui/viewer.go:828
-msgid "Dimensions"
-msgstr "寸法"
-
-#: internal/appui/viewer.go:829
-msgid "Type"
-msgstr "タイプ"
-
-#: internal/appui/viewer.go:831
-msgid "Modified"
-msgstr "修正"
-
-#: internal/appui/viewer.go:831
-#: internal/appui/viewer.go:839
-msgid "Jan 2, 2006  15:04"
-msgstr "2006年1月2日  15:04"
-
-#: internal/appui/viewer.go:834
-msgid "CAMERA"
-msgstr "カメラ"
-
-#: internal/appui/viewer.go:835
-msgid "Camera"
-msgstr "カメラ"
-
-#: internal/appui/viewer.go:836
-msgid "Lens"
-msgstr "レンズ"
-
-#: internal/appui/viewer.go:837
-msgid "Exposure"
-msgstr "露出"
-
-#: internal/appui/viewer.go:839
-msgid "Taken"
-msgstr "撮影日時"
-
-#: internal/appui/viewer.go:856
-msgid "Could not set the wallpaper"
-msgstr "壁紙を設定できませんでした"
-
-#: internal/appui/viewer.go:860
-#: ui/viewer.ui:129
-msgid "Set as wallpaper"
-msgstr "壁紙として設定する"
 
 #: internal/appui/weather.go:255
 msgid "Add a city to see its weather."
@@ -8425,6 +8324,238 @@ msgstr "inua をアップグレードできませんでした"
 msgid "Could not upgrade: %s"
 msgstr "アップグレードできませんでした: %s"
 
+#: internal/viewerui/app.go:36
+#: internal/viewerui/app.go:700
+#: internal/viewerui/app.go:701
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
+msgid "Viewer"
+msgstr "ビューアー"
+
+#: internal/viewerui/app.go:485
+msgid "Could not move to Trash"
+msgstr "ゴミ箱に移動できませんでした"
+
+#: internal/viewerui/app.go:492
+msgid "Moved to Trash"
+msgstr "ゴミ箱に移動しました"
+
+#: internal/viewerui/app.go:495
+msgid "Nothing left here."
+msgstr "ここにはもう何もありません。"
+
+#: internal/viewerui/app.go:546
+msgid "Could not copy"
+msgstr "コピーできませんでした"
+
+#: internal/viewerui/app.go:579
+msgid "Open a File"
+msgstr "ファイルを開く"
+
+#: internal/viewerui/app.go:581
+msgid "Images, PDFs, Markdown and text"
+msgstr "画像、PDF、Markdown、テキスト"
+
+#: internal/viewerui/app.go:604
+msgid "Open an image or a document to view it."
+msgstr "画像か文書を開くと表示します。"
+
+#: internal/viewerui/app.go:668
+msgid "Copy the page's text (Ctrl+C)"
+msgstr "ページのテキストをコピー (Ctrl+C)"
+
+#: internal/viewerui/app.go:669
+msgid "Previous file (Ctrl+Page Up)"
+msgstr "前のファイル (Ctrl+Page Up)"
+
+#: internal/viewerui/app.go:670
+msgid "Next file (Ctrl+Page Down)"
+msgstr "次のファイル (Ctrl+Page Down)"
+
+#: internal/viewerui/app.go:672
+msgid "Copy the text (Ctrl+C)"
+msgstr "テキストをコピー (Ctrl+C)"
+
+#: internal/viewerui/app.go:673
+#: internal/viewerui/app.go:677
+#: ui/viewer.ui:294
+msgid "Previous (←)"
+msgstr "前へ (←)"
+
+#: internal/viewerui/app.go:674
+#: internal/viewerui/app.go:678
+#: ui/viewer.ui:305
+msgid "Next (→)"
+msgstr "次へ（→）"
+
+#: internal/viewerui/app.go:676
+#: ui/viewer.ui:130
+msgid "Copy the image (Ctrl+C)"
+msgstr "画像をコピー（Ctrl+C）"
+
+#: internal/viewerui/app.go:686
+msgid "%s is locked with a password."
+msgstr "%s はパスワードで保護されています。"
+
+#: internal/viewerui/app.go:688
+msgid "%s is not UTF-8 text."
+msgstr "%s は UTF-8 のテキストではありません。"
+
+#: internal/viewerui/app.go:690
+msgid "Install libpoppler-glib8t64 to view PDFs."
+msgstr "PDF を表示するには libpoppler-glib8t64 をインストールしてください。"
+
+#: internal/viewerui/app.go:692
+#: internal/viewerui/image.go:80
+msgid "Could not open %s.\n%v"
+msgstr "%[1]sを開けませんでした。\n%[2]v"
+
+#: internal/viewerui/app.go:726
+msgid "Page %d of %d"
+msgstr "%[2]d ページ中 %[1]d"
+
+#: internal/viewerui/app.go:730
+msgid "%d line"
+msgid_plural "%d lines"
+msgstr[0] "%d 行"
+
+#: internal/viewerui/app.go:788
+msgid "Jan 2, 2006  15:04"
+msgstr "2006年1月2日  15:04"
+
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "サイズ"
+
+#: internal/viewerui/app.go:796
+#: internal/viewerui/app.go:814
+#: internal/viewerui/app.go:838
+msgid "Type"
+msgstr "タイプ"
+
+#: internal/viewerui/app.go:797
+#: internal/viewerui/app.go:815
+#: internal/viewerui/app.go:839
+msgid "Modified"
+msgstr "修正"
+
+#: internal/viewerui/app.go:802
+msgid "DOCUMENT"
+msgstr "文書"
+
+#: internal/viewerui/app.go:803
+msgid "Title"
+msgstr "タイトル"
+
+#: internal/viewerui/app.go:804
+msgid "Author"
+msgstr "作成者"
+
+#: internal/viewerui/app.go:805
+msgid "Subject"
+msgstr "件名"
+
+#: internal/viewerui/app.go:806
+msgid "Pages"
+msgstr "ページ数"
+
+#: internal/viewerui/app.go:807
+msgid "Page size"
+msgstr "ページサイズ"
+
+#: internal/viewerui/app.go:808
+msgid "Created"
+msgstr "作成"
+
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "変更"
+
+#: internal/viewerui/app.go:810
+msgid "Made with"
+msgstr "作成ソフト"
+
+#: internal/viewerui/app.go:817
+msgid "TEXT"
+msgstr "テキスト"
+
+#: internal/viewerui/app.go:818
+msgid "Lines"
+msgstr "行数"
+
+#: internal/viewerui/app.go:819
+msgid "Words"
+msgstr "単語数"
+
+#: internal/viewerui/app.go:820
+msgid "Characters"
+msgstr "文字数"
+
+#: internal/viewerui/app.go:837
+msgid "Dimensions"
+msgstr "寸法"
+
+#: internal/viewerui/app.go:841
+msgid "CAMERA"
+msgstr "カメラ"
+
+#: internal/viewerui/app.go:842
+msgid "Camera"
+msgstr "カメラ"
+
+#: internal/viewerui/app.go:843
+msgid "Lens"
+msgstr "レンズ"
+
+#: internal/viewerui/app.go:844
+msgid "Exposure"
+msgstr "露出"
+
+#: internal/viewerui/app.go:845
+msgid "Taken"
+msgstr "撮影日時"
+
+#: internal/viewerui/app.go:861
+msgid "Could not set the wallpaper"
+msgstr "壁紙を設定できませんでした"
+
+#: internal/viewerui/app.go:865
+#: ui/viewer.ui:139
+msgid "Set as wallpaper"
+msgstr "壁紙として設定する"
+
+#: internal/viewerui/image.go:222
+#: internal/viewerui/pdf.go:288
+msgid "Fit · %s"
+msgstr "フィット・%s"
+
+#: internal/viewerui/image.go:222
+#: internal/viewerui/pdf.go:288
+#: internal/viewerui/text.go:716
+msgid "Actual size (1)"
+msgstr "実寸サイズ(1)"
+
+#: internal/viewerui/image.go:224
+msgid "Fit the window (0)"
+msgstr "ウィンドウに合わせる (0)"
+
+#: internal/viewerui/pdf.go:188
+msgid "%s has no pages."
+msgstr "%s にはページがありません。"
+
+#: internal/viewerui/pdf.go:290
+msgid "Fit the width (0)"
+msgstr "幅に合わせる (0)"
+
+#: internal/viewerui/text.go:670
+msgid "Not found"
+msgstr "見つかりません"
+
+#: internal/viewerui/text.go:682
+msgid "Could not open the link"
+msgstr "リンクを開けませんでした"
+
 #: internal/workshop/session.go:141
 msgid "It ended before saying hello; what it wrote is below."
 msgstr "あいさつの前に終了しました。出力は下にあります。"
@@ -10022,44 +10153,36 @@ msgid "Zoom in (+)"
 msgstr "拡大（+）"
 
 #: ui/viewer.ui:111
+msgid "Show the source (S)"
+msgstr "ソースを表示 (S)"
+
+#: ui/viewer.ui:121
 msgid "Rotate (R, Shift+R the other way)"
 msgstr "回転（R、Shift+R を逆方向）"
 
-#: ui/viewer.ui:120
-msgid "Copy the image (Ctrl+C)"
-msgstr "画像をコピー（Ctrl+C）"
-
-#: ui/viewer.ui:138
+#: ui/viewer.ui:148
 msgid "Show in folder"
 msgstr "フォルダ内で表示"
 
-#: ui/viewer.ui:147
+#: ui/viewer.ui:157
 msgid "Move to Trash (Delete)"
 msgstr "ゴミ箱に移動（削除）"
 
-#: ui/viewer.ui:160
+#: ui/viewer.ui:170
 msgid "Trash?"
 msgstr "ゴミ箱に移動しますか？"
 
-#: ui/viewer.ui:180
+#: ui/viewer.ui:190
 msgid "Details (I)"
 msgstr "詳細 (I)"
 
-#: ui/viewer.ui:189
+#: ui/viewer.ui:199
 msgid "Full screen (F)"
 msgstr "全画面（F）"
 
-#: ui/viewer.ui:227
-msgid "Previous (←)"
-msgstr "前へ (←)"
-
-#: ui/viewer.ui:238
-msgid "Next (→)"
-msgstr "次へ（→）"
-
-#: ui/viewer.ui:272
-msgid "Open an Image…"
-msgstr "画像を開く…"
+#: ui/viewer.ui:339
+msgid "Open a File…"
+msgstr "ファイルを開く…"
 
 #: ui/weather.ui:30
 msgid "Previous place"
@@ -10204,12 +10327,12 @@ msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "VPN;テールネット;ネットワーク;出口ノード;テールドロップ;"
 
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
-msgid "Look through pictures"
-msgstr "写真に目を通す"
+msgid "Look through pictures, PDFs, Markdown and text"
+msgstr "画像、PDF、Markdown、テキストを見る"
 
-#: config/apps/io.github.lyricat.Inua.Viewer.desktop:20
-msgid "image;picture;photo;viewer;"
-msgstr "画像;写真;ビューア;"
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:14
+msgid "image;picture;photo;viewer;pdf;document;markdown;text;"
+msgstr "画像;写真;ビューア;PDF;文書;Markdown;テキスト;"
 
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:10
 msgid "The weather now and the coming days"

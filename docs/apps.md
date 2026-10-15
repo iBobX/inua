@@ -8,9 +8,9 @@ icons.
 Open them from the launcher, from the drawer at the end of the dock, or
 with `inua-apps NAME` (`inua-apps clock`, `inua-apps tailscale` …). An app
 runs once: starting it again brings its window to the current workspace.
-Viewer is the exception, with a window for each image opened. The
-Assistant is a program of its own, `inua-assistant`, and so is the file
-manager, `inua-files` ([files.md](files.md)).
+The Assistant is a program of its own, `inua-assistant`, and so are the
+file manager, `inua-files` ([files.md](files.md)), and Viewer,
+`inua-viewer`, which opens a window for each file opened.
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -333,7 +333,33 @@ desktop's file manager in place of Nautilus. See [files.md](files.md).
 
 ## Viewer
 
-Steps through a folder with the images beside the shown one already
-loaded; zooms and pans, rotates, plays animations, shows a photo's EXIF;
-copies, sets as wallpaper, moves to Trash. It registers for image files.
-With `libturbojpeg0` installed it decodes JPEG several times faster.
+A program of its own: `inua-viewer [FILE|FOLDER …]` shows images, PDFs,
+Markdown and plain text, each start in a window of its own. A file steps
+through the files of its kind in its folder (← and →, or the arrows at
+the sides), a folder through its images, several files through those
+given. It registers for images, PDFs and Markdown; plain text it opens
+when asked (Open With, or `inua-viewer notes.txt`). The details (I) say
+what the file is, the trash button (Delete) moves it to Trash after a
+second press, and F shows it full screen.
+
+- **Images** load beside the shown one before you step to them; zoom and
+  pan, rotate, play animations, see a photo's EXIF, copy the image, set
+  it as the wallpaper. With `libturbojpeg0` installed it decodes JPEG
+  several times faster.
+- **PDFs** show their pages one under another, fitting the width, each
+  drawn as it comes into view. Page Up and Page Down (or ← and →) go a
+  page, Home and End to the ends, Ctrl and the wheel or a pinch zoom, and
+  Ctrl+C copies the page's text; Ctrl+Page Up and Ctrl+Page Down step to
+  the other PDFs in the folder. The details give the title, author, pages
+  and page size. PDFs need `libpoppler-glib8t64`; a PDF locked with a
+  password is not opened.
+- **Markdown** is laid out to read in a column, with GitHub's tables,
+  task lists and strikethrough; links open in the browser, other files
+  open in the viewer and `#heading` links scroll. S switches to the
+  source. Pictures beside the file are shown; those on the web show as
+  links.
+- **Plain text** (code, logs, configuration, any UTF-8 file) is shown in
+  a fixed-width font. Ctrl+C copies the selection, or all of it.
+
++, − and 0 (or Ctrl with them) zoom documents and text as they do
+pictures.

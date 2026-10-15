@@ -53,8 +53,9 @@ func TestList(t *testing.T) {
 	if got := base(files); len(got) != 3 || i != 0 {
 		t.Errorf("a folder: %v at %d", got, i)
 	}
-	files, _ = List([]string{filepath.Join(dir, "b2.png"), filepath.Join(dir, "notes.txt"), filepath.Join(dir, "a.webp")})
-	if got := base(files); !slices.Equal(got, []string{"b2.png", "a.webp"}) {
+	os.WriteFile(filepath.Join(dir, "blob.bin"), []byte{0, 1, 2}, 0o644)
+	files, _ = List([]string{filepath.Join(dir, "b2.png"), filepath.Join(dir, "blob.bin"), filepath.Join(dir, "notes.txt"), filepath.Join(dir, "a.webp")})
+	if got := base(files); !slices.Equal(got, []string{"b2.png", "notes.txt", "a.webp"}) {
 		t.Errorf("several: %v", got)
 	}
 	files, i = List([]string{filepath.Join(dir, ".hidden.png")})

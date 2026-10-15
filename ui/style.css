@@ -266,6 +266,24 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
 .viewer-detail { padding: 8px 0; border-bottom: 1px solid alpha(@line, 0.45); }
 .viewer-detail-key { font-size: 11px; color: @t2; }
 .viewer-detail-value { font-size: 12.5px; color: @t0; }
+/* A PDF's pages on the stage; a page not yet drawn is a faint sheet. */
+.viewer-page {
+  background: alpha(@t0, 0.06);
+  box-shadow: 0 1px 6px alpha(black, 0.35);
+}
+/* Markdown and text on the app's ground, in a column Go keeps. */
+.viewer-paper, .viewer-paper textview text { background: @app; }
+.viewer-text { font-size: 15px; line-height: 1.45; color: @t0; }
+.viewer-text text selection { background: alpha(@accent, 0.3); }
+.viewer-md-table { margin: 4px 0; border: 1px solid @line; }
+.viewer-md-cell {
+  padding: 6px 12px;
+  font-size: 13.5px;
+  border-right: 1px solid alpha(@line, 0.6);
+  border-bottom: 1px solid alpha(@line, 0.6);
+}
+.viewer-md-head { font-weight: 600; background: @surface; }
+.viewer-md-missing { font-size: 12.5px; color: @t2; }
 
 /* --- calendar panel -------------------------------------------------- */
 

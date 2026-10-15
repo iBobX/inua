@@ -31,6 +31,10 @@ builds:
     main: ./cmd/inua-files
     binary: inua-files
   - <<: *build
+    id: inua-viewer
+    main: ./cmd/inua-viewer
+    binary: inua-viewer
+  - <<: *build
     id: inua-games
     main: ./cmd/inua-games
     binary: inua-games

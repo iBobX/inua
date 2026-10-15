@@ -76,6 +76,7 @@ part shows "Unavailable" or hides. Ubuntu Desktop usually has the first five.
 | `pipewire-bin` (`pw-play`) | The alarm and timer sound |
 | `wf-recorder` | Recording the screen from the screenshot tool |
 | `libturbojpeg0` | Optional: Viewer decodes JPEG with it, several times faster, and at a smaller size for a quick first look; without it, Go decodes |
+| `libpoppler-glib8t64` | Viewer draws PDFs with it (loaded through purego when a PDF opens); without it, PDFs do not open |
 | `xdg-terminal-exec` | Launching `Terminal=true` apps when neither `launcher.terminal` nor `$TERMINAL` is set |
 | `pass`, `gnupg` | `inua-keyring`, the Secret Service kept in the password store (`pass init` sets one up); without pass, apps keep using gnome-keyring and the assistant's keys stay in its file |
 
