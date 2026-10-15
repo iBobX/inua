@@ -34,7 +34,9 @@ class InuaError(Exception):
 
 class Event:
     """What the user did: type (click, change, submit, timer), the id of
-    what they did it to, its value, and every input's value in state."""
+    what they did it to, its value, and every input's value in state. A
+    topic followed with app.watch is type "desktop", its id the topic and
+    its value what changed."""
 
     def __init__(self, params):
         self.type = params.get("type")
@@ -74,6 +76,7 @@ class App:
         self._view = None
         self._init = []
         self._handlers = []  # (id, type, function)
+        self._watch = []  # topics to follow from the start
         self._next = 0
         self._pending = []  # messages read while waiting for an answer
         self._running = False
@@ -100,6 +103,26 @@ class App:
         """A function to run once inua said hello, before the first view."""
         self._init.append(fn)
         return fn
+
+    def watch(self, topic):
+        """A handler for changes on the desktop, while the window is open:
+        "window" (the focused window), "clipboard" (a new copy),
+        "notification" (each new one), "system" (Wi-Fi, volume, battery…),
+        "media" (what plays). Each needs its use in the manifest. The
+        handler gets an Event whose value is what changed."""
+
+        def deco(fn):
+            self._handlers.append((topic, "desktop", fn))
+            if topic not in self._watch:
+                self._watch.append(topic)
+            return fn
+
+        return deco
+
+    def subscribe(self, *topics):
+        """Follow topics (see watch) from now on; handle them with
+        @app.on(topic, "desktop")."""
+        self.call("events.subscribe", topics=list(topics))
 
     # --- talking to inua ---
 
@@ -176,6 +199,8 @@ class App:
             if method == "initialize":
                 self.info = params
                 self._send({"id": msg["id"], "result": {"protocol": PROTOCOL}})
+                if self._watch:
+                    self._safely(self.subscribe, *self._watch)
                 for fn in self._init:
                     self._safely(fn)
                 self.render()
@@ -246,7 +271,8 @@ class ui:
 
     @staticmethod
     def text(text, style=None):
-        """style: heading, title, sub or mono."""
+        """style: heading, title, sub, mono, hero (a big number), readout
+        (a small mono value) or kicker (a small capital label)."""
         return _node("text", None, text=text, style=style)
 
     @staticmethod
@@ -287,6 +313,59 @@ class ui:
     @staticmethod
     def empty(title, text=None, icon=None):
         return _node("empty", None, title=title, text=text, icon=icon)
+
+    @staticmethod
+    def tabs(id, *tabs, value=None):
+        """Tabs above their pages; value is the shown tab's id (the first
+        when none). Choosing one is a change event with its id."""
+        return _node("tabs", tabs, id=id, value=value)
+
+    @staticmethod
+    def tab(id, title, *children):
+        """A tab of ui.tabs: its title and its page's content."""
+        return _node("tab", children, id=id, title=title)
+
+    @staticmethod
+    def segmented(id, options, value=None):
+        """A choice of a few options as joined buttons; a change event
+        with the option."""
+        return _node("segmented", None, id=id, options=list(options), value=value)
+
+    @staticmethod
+    def slider(id, min=0, max=100, step=1, value=None):
+        """A number from min to max; change events as it moves."""
+        return _node("slider", None, id=id, min=min, max=max, step=step, value=min if value is None else value)
+
+    @staticmethod
+    def progress(value, text=None):
+        """How far something is, from 0 to 1."""
+        return _node("progress", None, value=float(value), text=text)
+
+    @staticmethod
+    def spinner(text=None):
+        """Something is going on."""
+        return _node("spinner", None, text=text)
+
+    @staticmethod
+    def chart(points, height=80, min=None, max=None):
+        """A line over a soft fill; min and max fix its range, else it
+        follows the points."""
+        return _node("chart", None, points=[float(p) for p in points], height=height, min=min, max=max)
+
+    @staticmethod
+    def tiles(*tiles):
+        """Tiles that wrap, as the control center's."""
+        return _node("tiles", tiles)
+
+    @staticmethod
+    def tile(id, title, sub=None, icon=None, selected=False):
+        """A tile of ui.tiles; a click is an event with its id."""
+        return _node("tile", None, id=id, title=title, sub=sub, icon=icon, selected=selected)
+
+    @staticmethod
+    def image(src=None, icon=None, width=None, height=None):
+        """An image file, or an icon by name."""
+        return _node("image", None, src=src, icon=icon, width=width, height=height)
 
 
 app = App()

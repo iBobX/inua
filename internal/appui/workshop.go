@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -72,6 +73,7 @@ type wsNode struct {
 	bar              *wsNode  // a page's bar
 	barBox           *gtk.Box // where it goes
 	sig              uintptr  // the object whose signals name this input
+	more             wsMore   // the blocks of workshop_blocks.go
 }
 
 type workshopApp struct {
@@ -109,6 +111,9 @@ type workshopApp struct {
 	onRestart   func(gtk.Button)
 	onCloseReq  func(gtk.Window) bool
 	cancelWatch context.CancelFunc
+
+	fileDialog                               *wsFiles // open, for the app
+	onFileOpened, onFileSaved, onFilesOpened gio.AsyncReadyCallback
 }
 
 func (a *workshopApp) themeChanged() {}
@@ -156,6 +161,7 @@ func (a *workshopApp) build(c *Ctx) *gtk.ApplicationWindow {
 		}
 	}
 	a.onRestart = func(gtk.Button) { a.start() }
+	a.bindFileDialogs()
 	a.onCloseReq = func(gtk.Window) bool {
 		a.stopping = true
 		if a.cancelWatch != nil {
@@ -326,6 +332,9 @@ func (a *workshopApp) submit(ptr uintptr) {
 
 // value is an input's value as the app sees it.
 func (a *workshopApp) value(n *wsNode) any {
+	if v, ok := a.valueMore(n); ok {
+		return v
+	}
 	switch {
 	case n.entry != nil:
 		return n.entry.GetText()
@@ -360,6 +369,9 @@ func (a *workshopApp) state() map[string]any {
 func (a *workshopApp) setValue(n *wsNode, v any) {
 	a.filling = true
 	defer func() { a.filling = false }()
+	if a.setValueMore(n, v) {
+		return
+	}
 	s, _ := v.(string)
 	switch {
 	case n.entry != nil:
@@ -439,7 +451,7 @@ func (a *workshopApp) same(old, n workshop.Node) bool {
 	case "row":
 		return (old.ID == "") == (n.ID == "")
 	}
-	return true
+	return sameMore(old, n)
 }
 
 // syncKids brings a container's children to kids, keeping those at the
@@ -678,6 +690,9 @@ func (a *workshopApp) make(n workshop.Node) *wsNode {
 		gtkx.Append(box, &w.sub.Widget)
 		w.w = &box.Widget
 	default:
+		if a.makeMore(w, n) {
+			break
+		}
 		w.title = label("warn")
 		w.title.SetText(i18n.Tf("Unknown building block %q", n.Type))
 		w.w = &w.title.Widget
@@ -736,16 +751,18 @@ func (a *workshopApp) update(w *wsNode, n workshop.Node) {
 		w.w.SetName(n.ID)
 	case "text":
 		w.title.SetText(n.Text)
-		for _, c := range []string{"ws-heading", "title", "sub", "ws-mono"} {
+		for _, c := range []string{"ws-heading", "title", "sub", "ws-mono", "ws-hero", "readout", "kicker"} {
 			w.w.RemoveCssClass(c)
 		}
 		switch n.Style {
 		case "heading":
 			w.w.AddCssClass("ws-heading")
-		case "title", "sub":
+		case "title", "sub", "readout", "kicker":
 			w.w.AddCssClass(n.Style)
 		case "mono":
 			w.w.AddCssClass("ws-mono")
+		case "hero":
+			w.w.AddCssClass("ws-hero")
 		}
 		// Mono text is what one copies (a command, a path); a selectable
 		// label would take the focus a removed button leaves, all selected.
@@ -787,8 +804,9 @@ func (a *workshopApp) update(w *wsNode, n workshop.Node) {
 		for _, c := range []string{"suggested-action", "destructive-action", "plain", "outlined"} {
 			b.RemoveCssClass(c)
 		}
-		b.AddCssClass(map[string]string{"primary": "suggested-action", "danger": "destructive-action", "plain": "plain"}[n.Style])
-		if n.Style == "" {
+		if c := map[string]string{"primary": "suggested-action", "danger": "destructive-action", "plain": "plain"}[n.Style]; c != "" {
+			b.AddCssClass(c)
+		} else {
 			b.AddCssClass("outlined")
 		}
 		b.SetTooltipText(n.Sub)
@@ -828,9 +846,12 @@ func (a *workshopApp) update(w *wsNode, n workshop.Node) {
 		w.title.SetText(n.Title)
 		w.sub.SetText(n.Text)
 		w.sub.SetVisible(n.Text != "")
+	default:
+		a.updateMore(w, n, prev, valueChanged)
 	}
 	if w.kids != nil {
 		a.syncKids(w, n.Children)
+		a.afterKids(w)
 	}
 }
 

@@ -2034,4 +2034,54 @@ window.workshop .ws-log { border: 1px solid alpha(@line, 0.55); border-radius: 2
 window.workshop button.suggested-action, .ws-dialog button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
 window.workshop button.destructive-action, .ws-dialog button.destructive-action { border: 1px solid @danger; background: @danger; color: @app; }
 .ws-dialog { padding: 22px 24px 18px; }
+/* The blocks from Settings and the light apps: tabs as the light apps'
+   (text over a hairline, the current one underlined), joined choices,
+   sliders, progress, charts, tiles as the control center's. */
+window.workshop .ws-tab-strip { margin: 2px 0 12px; border-bottom: 1px solid alpha(@line, 0.55); }
+window.workshop .ws-tab-strip > button.ws-tab-button {
+  min-height: 0;
+  min-width: 0;
+  margin: 0 4px;
+  padding: 10px 8px 9px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: @t2;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 160ms ease-out, box-shadow 160ms ease-out;
+}
+window.workshop .ws-tab-strip > button.ws-tab-button:hover { color: @t1; }
+window.workshop .ws-tab-strip > button.ws-tab-button.checked { color: @t0; box-shadow: inset 0 -2px @accent; }
+window.workshop .ws-hero {
+  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
+  font-size: 44px;
+  font-weight: 300;
+  font-feature-settings: "tnum";
+  color: @t0;
+}
+window.workshop scale.ws-slider value { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11.5px; color: @t1; }
+window.workshop progressbar.ws-progress trough { min-height: 4px; border-radius: 2px; background: alpha(@line, 0.7); }
+window.workshop progressbar.ws-progress progress { min-height: 4px; border-radius: 2px; background: @accent; }
+window.workshop .ws-chart { margin: 4px 0; }
+window.workshop .ws-image-icon { color: @t1; }
+window.workshop button.ws-tile {
+  padding: 10px 12px;
+  border: 1px solid @line;
+  border-radius: 2px;
+  box-shadow: none;
+  background: transparent;
+  color: @t0;
+  transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+window.workshop button.ws-tile:hover { background: alpha(@accent, 0.05); }
+window.workshop button.ws-tile image { color: @t2; }
+window.workshop button.ws-tile .title { font-size: 13px; }
+window.workshop button.ws-tile .sub { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11px; color: @t2; }
+window.workshop button.ws-tile.on { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
+window.workshop button.ws-tile.on image { color: @accent; }
 .ws-dialog-title { font-size: 15px; font-weight: 600; color: @t0; }

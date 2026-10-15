@@ -14,6 +14,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/layershell"
+	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 )
@@ -146,6 +147,9 @@ func (s *shellUI) applyConfig(c config.Config) {
 	s.cfg = c
 	if !old.Assistant.Enable && c.Assistant.Enable {
 		s.startAssistant()
+	}
+	if old.Notify.History && !c.Notify.History {
+		go noteHistory(func(path string) error { return notify.ClearHistory(path) })
 	}
 	if old.Overview != c.Overview {
 		s.installOverviewKeys()

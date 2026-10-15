@@ -79,6 +79,9 @@ last three on a second click.
 inua is the notification server. Banners slide in at the top right, then
 wait in an iOS-style notification center grouped by app, saved across
 restarts. Focus keeps banners quiet. Cleared notifications slide away.
+**Keep a history** (Settings → Notifications, off by default) records
+the last 500 that came, dismissed ones too, for the assistant, agents and
+workshop apps allowed to read them; turning it off clears it.
 
 ## Dock
 
@@ -236,10 +239,14 @@ as you can still start a trusted one and take over what it does.
 
 Light apps of your own, in any language: a folder with `app.toml` and a
 program that describes its window in inua's building blocks (pages,
-columns, sections, rows, entries, buttons, …) over JSON-RPC on its stdin
-and stdout; inua draws it in the shell's look and sends back what the
-user does. It may notify, copy, open, run commands or the terminal, when
-its manifest names them, and keeps its data in a store inua holds. `inua
+columns, sections, rows, entries, buttons, tabs, sliders, charts, tiles,
+…) over JSON-RPC on its stdin and stdout; inua draws it in the shell's
+look and sends back what the user does. It may notify, copy, open, run
+commands or the terminal, and use inua's desk functions (the same the
+assistant and agents use: windows, apps, the system, notifications, the
+clipboard history, what plays), when its manifest names them, follow
+changes on the desktop as they happen, and keeps its data in a store
+inua holds. `inua
 workshop new DIR` makes one from the template, `dev DIR` runs it again
 on every save, `install URL|DIR` adds it to the launcher, `remove ID`
 takes it away. Python and JavaScript apps import `inua`, which comes with

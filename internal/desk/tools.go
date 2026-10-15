@@ -1,4 +1,4 @@
-package assistant
+package desk
 
 import (
 	"cmp"
@@ -21,6 +21,47 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 )
 
+// Risk says whether a tool asks before it runs.
+type Risk int
+
+const (
+	Read   Risk = iota // only looks
+	Change             // changes something easily undone; asks when AskBeforeChanges
+	Always             // changes something hard to undo, or reaches past inua; always asks
+)
+
+// Tool is one of inua's tools.
+type Tool struct {
+	Name, Description string
+	Schema            string // JSON schema of the arguments
+	Risk              Risk
+	// Use is the permission a workshop app names in its manifest to call
+	// it (docs/workshop.md); "" needs none.
+	Use string
+	// Describe says what a call is about to do, for the window: "Turning
+	// on Focus". Nil uses the tool's name.
+	Describe func(args map[string]any) string
+	Run      func(ctx context.Context, args map[string]any) (any, error)
+}
+
+// Call runs the tool and gives its result as text: a string as it is,
+// else JSON.
+func (t Tool) Call(ctx context.Context, args map[string]any) (string, error) {
+	v, err := t.Run(ctx, args)
+	if err != nil {
+		return "", err
+	}
+	if s, ok := v.(string); ok {
+		return s, nil
+	}
+	b, err := json.Marshal(v)
+	return string(b), err
+}
+
+// DeclinedPrefix starts the error of a call the user declined, so the
+// window says it was declined rather than that it failed.
+const DeclinedPrefix = "declined: "
+
 // Desktop is what inua's tools reach: the shell's control socket, Hyprland,
 // the installed apps, the clipboard, Tailscale and the web. Tests fill it
 // with fakes.
@@ -34,9 +75,17 @@ type Desktop struct {
 	Launch       func(*desktop.Entry) error
 	ClipRead     func(ctx context.Context) (string, error)
 	ClipWrite    func(ctx context.Context, text string) error
-	Tailscale    *tailscale.Client
-	HTTP         *http.Client
-	Processes    func() []sysmon.Process // nil reads /proc
+	// ClipImage puts an image file on the clipboard.
+	ClipImage func(ctx context.Context, path, mime string) error
+	// ClipHistory and NoteHistory are the clipboard's and the
+	// notifications' histories (internal/clipboard, internal/notify).
+	ClipHistory, NoteHistory string
+	// NoteHistoryOn says whether the notification history is kept; nil:
+	// it is.
+	NoteHistoryOn func() bool
+	Tailscale     *tailscale.Client
+	HTTP          *http.Client
+	Processes     func() []sysmon.Process // nil reads /proc
 }
 
 func str(args map[string]any, k string) string {
@@ -85,6 +134,8 @@ func Tools(d Desktop) []Tool {
 	ts = append(ts, appTools(d)...)
 	ts = append(ts, systemTools(d)...)
 	ts = append(ts, infoTools(d)...)
+	ts = append(ts, mediaTools(d)...)
+	ts = append(ts, historyTools(d)...)
 	return ts
 }
 
@@ -175,14 +226,14 @@ func windowTools(d Desktop) []Tool {
 	}
 	return []Tool{
 		{
-			Name: "list_windows", Description: "Lists the open windows: id, title, app and workspace, and which is focused.",
+			Name: "list_windows", Use: "windows", Description: "Lists the open windows: id, title, app and workspace, and which is focused.",
 			Describe: func(map[string]any) string { return i18n.T("Looking at the windows") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				return windows(ctx, d)
 			},
 		},
 		{
-			Name: "focus_window", Description: "Brings a window forward and focuses it.", Schema: schema(windowArg),
+			Name: "focus_window", Use: "windows", Description: "Brings a window forward and focuses it.", Schema: schema(windowArg),
 			Describe: named(i18n.M("Focusing %s")),
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				w, err := findWindow(ctx, d, str(a, "window"))
@@ -193,7 +244,7 @@ func windowTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "move_window", Description: "Moves a window to a workspace (a number or a name).",
+			Name: "move_window", Use: "windows", Description: "Moves a window to a workspace (a number or a name).",
 			Schema: schema(windowArg+`,"workspace":{"type":"string"}`, "workspace"), Risk: Change,
 			Describe: func(a map[string]any) string {
 				return i18n.Tf("Moving %s to workspace %s", cmp.Or(str(a, "window"), i18n.T("the focused window")), str(a, "workspace"))
@@ -211,7 +262,7 @@ func windowTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "close_window", Description: "Closes a window (its app may ask to save).", Schema: schema(windowArg),
+			Name: "close_window", Use: "windows", Description: "Closes a window (its app may ask to save).", Schema: schema(windowArg),
 			Risk: Always, Describe: named(i18n.M("Closing %s")),
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
 				w, err := findWindow(ctx, d, str(a, "window"))
@@ -222,7 +273,7 @@ func windowTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "switch_workspace", Description: "Shows a workspace (a number or a name).",
+			Name: "switch_workspace", Use: "windows", Description: "Shows a workspace (a number or a name).",
 			Schema:   schema(`"workspace":{"type":"string"}`, "workspace"),
 			Describe: func(a map[string]any) string { return i18n.Tf("Going to workspace %s", str(a, "workspace")) },
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
@@ -233,7 +284,80 @@ func windowTools(d Desktop) []Tool {
 				return "ok", d.HyprDispatch(ctx, "workspace "+ws)
 			},
 		},
+		{
+			Name: "list_workspaces", Use: "windows", Description: "Lists the workspaces (id, name, monitor, how many windows, which is shown and focused) and the monitors (name, size, scale, the workspace shown).",
+			Describe: func(map[string]any) string { return i18n.T("Looking at the workspaces") },
+			Run: func(ctx context.Context, _ map[string]any) (any, error) {
+				return workspaces(ctx, d)
+			},
+		},
 	}
+}
+
+// workspaces are Hyprland's workspaces and monitors.
+func workspaces(ctx context.Context, d Desktop) (any, error) {
+	if d.HyprRequest == nil {
+		return nil, errors.New("not on Hyprland")
+	}
+	var mons []struct {
+		Name    string  `json:"name"`
+		Width   int     `json:"width"`
+		Height  int     `json:"height"`
+		Scale   float64 `json:"scale"`
+		Focused bool    `json:"focused"`
+		Active  struct {
+			ID int `json:"id"`
+		} `json:"activeWorkspace"`
+	}
+	var wss []struct {
+		ID      int    `json:"id"`
+		Name    string `json:"name"`
+		Monitor string `json:"monitor"`
+		Windows int    `json:"windows"`
+	}
+	for cmd, v := range map[string]any{"j/monitors": &mons, "j/workspaces": &wss} {
+		data, err := d.HyprRequest(ctx, cmd)
+		if err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(data, v); err != nil {
+			return nil, err
+		}
+	}
+	type monitor struct {
+		Name      string  `json:"name"`
+		Width     int     `json:"width"`
+		Height    int     `json:"height"`
+		Scale     float64 `json:"scale"`
+		Focused   bool    `json:"focused,omitempty"`
+		Workspace int     `json:"workspace"`
+	}
+	type workspace struct {
+		ID      int    `json:"id"`
+		Name    string `json:"name"`
+		Monitor string `json:"monitor"`
+		Windows int    `json:"windows"`
+		Shown   bool   `json:"shown,omitempty"`
+		Focused bool   `json:"focused,omitempty"`
+	}
+	var outM []monitor
+	shown, focused := map[int]bool{}, 0
+	for _, m := range mons {
+		outM = append(outM, monitor{m.Name, m.Width, m.Height, m.Scale, m.Focused, m.Active.ID})
+		shown[m.Active.ID] = true
+		if m.Focused {
+			focused = m.Active.ID
+		}
+	}
+	var outW []workspace
+	for _, w := range wss {
+		if w.ID < 0 { // special workspaces (scratchpads)
+			continue
+		}
+		outW = append(outW, workspace{w.ID, w.Name, w.Monitor, w.Windows, shown[w.ID], w.ID == focused})
+	}
+	slices.SortFunc(outW, func(a, b workspace) int { return cmp.Compare(a.ID, b.ID) })
+	return map[string]any{"workspaces": outW, "monitors": outM}, nil
 }
 
 // --- apps -------------------------------------------------------------------
@@ -271,7 +395,7 @@ func findApp(d Desktop, q string) (*desktop.Entry, error) {
 func appTools(d Desktop) []Tool {
 	return []Tool{
 		{
-			Name: "list_apps", Description: "Lists installed apps (name, id, what it is), those matching the words when given.",
+			Name: "list_apps", Use: "apps", Description: "Lists installed apps (name, id, what it is), those matching the words when given.",
 			Schema:   schema(`"query":{"type":"string"}`),
 			Describe: func(map[string]any) string { return i18n.T("Looking at the apps") },
 			Run: func(_ context.Context, a map[string]any) (any, error) {
@@ -287,7 +411,7 @@ func appTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "open_app", Description: "Starts an installed app, by its name or id.",
+			Name: "open_app", Use: "apps", Description: "Starts an installed app, by its name or id.",
 			Schema:   schema(`"app":{"type":"string"}`, "app"),
 			Describe: func(a map[string]any) string { return i18n.Tf("Opening %s", str(a, "app")) },
 			Run: func(_ context.Context, a map[string]any) (any, error) {
@@ -303,31 +427,35 @@ func appTools(d Desktop) []Tool {
 
 // --- the system (through the shell) ------------------------------------------
 
-func systemTools(d Desktop) []Tool {
-	call := func(ctx context.Context, target, fn string, args ...string) (any, error) {
-		if d.Call == nil {
-			return nil, errors.New("the shell is not running")
-		}
-		out, err := d.Call(ctx, target, fn, args...)
-		if err != nil {
-			return nil, err
-		}
-		if json.Valid([]byte(out)) {
-			return json.RawMessage(out), nil
-		}
-		return cmp.Or(out, "ok"), nil
+// shell asks the shell's control socket: JSON as it is, else the text,
+// or "ok".
+func (d Desktop) shell(ctx context.Context, target, fn string, args ...string) (any, error) {
+	if d.Call == nil {
+		return nil, errors.New("the shell is not running")
 	}
+	out, err := d.Call(ctx, target, fn, args...)
+	if err != nil {
+		return nil, err
+	}
+	if json.Valid([]byte(out)) {
+		return json.RawMessage(out), nil
+	}
+	return cmp.Or(out, "ok"), nil
+}
+
+func systemTools(d Desktop) []Tool {
+	call := d.shell
 	settings := []string{"wifi", "bluetooth", "volume", "mute", "brightness", "focus", "saver"}
 	return []Tool{
 		{
-			Name: "system_status", Description: "Battery, Wi-Fi, Bluetooth, volume, brightness, power saver, Focus (quiet notifications), the time.",
+			Name: "system_status", Use: "system", Description: "Battery, Wi-Fi, Bluetooth, volume, brightness, power saver, Focus (quiet notifications), the time.",
 			Describe: func(map[string]any) string { return i18n.T("Looking at the system") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				return call(ctx, "system", "status")
 			},
 		},
 		{
-			Name: "set_system", Description: `Changes one setting: wifi, bluetooth, mute, focus, saver (power saver) take "on" or "off"; volume and brightness take 0 to 100.`,
+			Name: "set_system", Use: "system", Description: `Changes one setting: wifi, bluetooth, mute, focus, saver (power saver) take "on" or "off"; volume and brightness take 0 to 100.`,
 			Schema: schema(`"setting":{"type":"string","enum":["wifi","bluetooth","volume","mute","brightness","focus","saver"]},"value":{"type":"string"}`, "setting", "value"),
 			Risk:   Change,
 			Describe: func(a map[string]any) string {
@@ -357,12 +485,12 @@ func systemTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "lock_screen", Description: "Locks the screen.", Risk: Change,
+			Name: "lock_screen", Use: "system", Description: "Locks the screen.", Risk: Change,
 			Describe: func(map[string]any) string { return i18n.T("Locking the screen") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "lock", "now") },
 		},
 		{
-			Name: "screenshot", Description: `Takes a screenshot, saved and copied: "window" (the focused one) or "screen" at once, or "area" for the user to drag out.`,
+			Name: "screenshot", Use: "system", Description: `Takes a screenshot, saved and copied: "window" (the focused one) or "screen" at once, or "area" for the user to drag out.`,
 			Schema: schema(`"of":{"type":"string","enum":["area","window","screen"]}`),
 			Describe: func(a map[string]any) string {
 				switch str(a, "of") {
@@ -382,7 +510,7 @@ func systemTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "power", Description: "Suspends, restarts, shuts down or logs out.",
+			Name: "power", Use: "system", Description: "Suspends, restarts, shuts down or logs out.",
 			Schema: schema(`"action":{"type":"string","enum":["suspend","reboot","poweroff","logout"]}`, "action"),
 			Risk:   Always,
 			Describe: func(a map[string]any) string {
@@ -397,17 +525,72 @@ func systemTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "list_notifications", Description: "The notifications waiting in the notification center, newest first: app, summary, body, time.",
+			Name: "list_notifications", Use: "notifications", Description: "The notifications waiting in the notification center, newest first: app, summary, body, time.",
 			Describe: func(map[string]any) string { return i18n.T("Reading the notifications") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "notifications", "list") },
 		},
 		{
-			Name: "clear_notifications", Description: "Clears every notification.", Risk: Change,
+			Name: "clear_notifications", Use: "notifications", Description: "Clears every notification.", Risk: Change,
 			Describe: func(map[string]any) string { return i18n.T("Clearing the notifications") },
 			Run:      func(ctx context.Context, _ map[string]any) (any, error) { return call(ctx, "notifications", "clear") },
 		},
 		{
-			Name: "clipboard_read", Description: "The text on the clipboard.",
+			Name: "dismiss_notification", Use: "notifications", Description: "Clears one notification, by its id from list_notifications.",
+			Schema: schema(`"id":{"type":"integer"}`, "id"), Risk: Change,
+			Describe: func(map[string]any) string { return i18n.T("Dismissing a notification") },
+			Run: func(ctx context.Context, a map[string]any) (any, error) {
+				id, ok := num(a, "id")
+				if !ok {
+					return nil, errors.New("want a notification's id")
+				}
+				return call(ctx, "notifications", "dismiss", strconv.Itoa(id))
+			},
+		},
+		{
+			Name: "notification_action", Use: "notifications", Description: `Runs one of a notification's actions, by their keys from list_notifications; "default" (the default) is as clicking it.`,
+			Schema: schema(`"id":{"type":"integer"},"action":{"type":"string"}`, "id"), Risk: Change,
+			Describe: func(a map[string]any) string {
+				if k := str(a, "action"); k != "" && k != "default" {
+					return i18n.Tf("Choosing “%s” on a notification", k)
+				}
+				return i18n.T("Opening a notification")
+			},
+			Run: func(ctx context.Context, a map[string]any) (any, error) {
+				id, ok := num(a, "id")
+				if !ok {
+					return nil, errors.New("want a notification's id")
+				}
+				return call(ctx, "notifications", "invoke", strconv.Itoa(id), cmp.Or(str(a, "action"), "default"))
+			},
+		},
+		{
+			Name: "show_panel", Use: "system", Description: "Opens part of the shell for the user: the launcher, the overview, the control center, the calendar, the clipboard history, the notification center, or Settings (at a page when given).",
+			Schema: schema(`"panel":{"type":"string","enum":["launcher","overview","control_center","calendar","clipboard","notifications","settings"]},"page":{"type":"string","enum":["appearance","bar","launcher","ai","notifications","clipboard","keyring","shortcuts","keyboard","mouse","about"]}`, "panel"),
+			Describe: func(a map[string]any) string {
+				return map[string]string{
+					"launcher": i18n.T("Opening the launcher"), "overview": i18n.T("Opening the overview"),
+					"control_center": i18n.T("Opening the control center"), "calendar": i18n.T("Opening the calendar"),
+					"clipboard": i18n.T("Opening the clipboard history"), "notifications": i18n.T("Opening the notifications"),
+					"settings": i18n.T("Opening Settings"),
+				}[str(a, "panel")]
+			},
+			Run: func(ctx context.Context, a map[string]any) (any, error) {
+				to, ok := map[string][2]string{
+					"launcher": {"launcher", "apps"}, "overview": {"overview", "open"}, "control_center": {"control", "open"},
+					"calendar": {"calendar", "open"}, "clipboard": {"clipboard", "open"}, "notifications": {"notifications", "open"},
+					"settings": {"settings", "open"},
+				}[str(a, "panel")]
+				if !ok {
+					return nil, fmt.Errorf("no panel %q", str(a, "panel"))
+				}
+				if p := str(a, "page"); to[0] == "settings" && p != "" {
+					return call(ctx, "settings", "open", p)
+				}
+				return call(ctx, to[0], to[1])
+			},
+		},
+		{
+			Name: "clipboard_read", Use: "clipboard-history", Description: "The text on the clipboard.",
 			Describe: func(map[string]any) string { return i18n.T("Reading the clipboard") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				t, err := d.ClipRead(ctx)
@@ -418,7 +601,7 @@ func systemTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "clipboard_write", Description: "Puts text on the clipboard.",
+			Name: "clipboard_write", Use: "clipboard", Description: "Puts text on the clipboard.",
 			Schema: schema(`"text":{"type":"string"}`, "text"), Risk: Change,
 			Describe: func(a map[string]any) string {
 				t := []rune(str(a, "text"))
@@ -445,7 +628,7 @@ func infoTools(d Desktop) []Tool {
 	}
 	return []Tool{
 		{
-			Name: "processes", Description: "The busiest processes: by CPU (over half a second) or by memory.",
+			Name: "processes", Use: "processes", Description: "The busiest processes: by CPU (over half a second) or by memory.",
 			Schema:   schema(`"by":{"type":"string","enum":["cpu","memory"]},"limit":{"type":"integer"}`),
 			Describe: func(a map[string]any) string { return i18n.T("Looking at the processes") },
 			Run: func(ctx context.Context, a map[string]any) (any, error) {
@@ -485,7 +668,7 @@ func infoTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "end_process", Description: "Asks one of the user's processes to quit (force: kill it).",
+			Name: "end_process", Use: "processes", Description: "Asks one of the user's processes to quit (force: kill it).",
 			Schema: schema(`"pid":{"type":"integer"},"force":{"type":"boolean"}`, "pid"), Risk: Always,
 			Describe: func(a map[string]any) string {
 				pid, _ := num(a, "pid")
@@ -518,7 +701,7 @@ func infoTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "tailscale_status", Description: "Tailscale: connected or not, this device, the devices of the tailnet (name, address, online, OS), the exit node.",
+			Name: "tailscale_status", Use: "network", Description: "Tailscale: connected or not, this device, the devices of the tailnet (name, address, online, OS), the exit node.",
 			Describe: func(map[string]any) string { return i18n.T("Looking at Tailscale") },
 			Run: func(ctx context.Context, _ map[string]any) (any, error) {
 				st, err := d.Tailscale.Status(ctx)
@@ -544,7 +727,7 @@ func infoTools(d Desktop) []Tool {
 			},
 		},
 		{
-			Name: "tailscale_set", Description: `Connects or disconnects Tailscale ("connect": true/false), or sends traffic through an exit node ("exit_node": a device's name, or "none").`,
+			Name: "tailscale_set", Use: "network", Description: `Connects or disconnects Tailscale ("connect": true/false), or sends traffic through an exit node ("exit_node": a device's name, or "none").`,
 			Schema: schema(`"connect":{"type":"boolean"},"exit_node":{"type":"string"}`), Risk: Change,
 			Describe: func(a map[string]any) string {
 				if e := str(a, "exit_node"); e != "" {

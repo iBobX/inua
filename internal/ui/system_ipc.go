@@ -3,10 +3,12 @@ package ui
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/notify"
 )
@@ -153,21 +155,95 @@ func (s *shellUI) systemSet(key, value string) error {
 	return nil
 }
 
+// noteRequest answers `call notifications dismiss|invoke ID [KEY]`: as
+// the notification's × or its button (KEY "default" is a click on it).
+func (s *shellUI) noteRequest(fn string, args []string) ipc.Response {
+	if len(args) == 0 {
+		return ipc.Response{Error: "notifications " + fn + ": want an id"}
+	}
+	id, err := strconv.ParseUint(args[0], 10, 32)
+	if err != nil {
+		return ipc.Response{Error: "notifications " + fn + ": want an id, not " + strconv.Quote(args[0])}
+	}
+	n, ok := s.noteByID(uint32(id))
+	if !ok {
+		return ipc.Response{Error: fmt.Sprintf("no notification %d", id)}
+	}
+	if fn == "dismiss" {
+		s.dismissNote(n.ID)
+		return ipc.Response{OK: true}
+	}
+	key := "default"
+	if len(args) > 1 {
+		key = args[1]
+	}
+	if key == "default" && !n.Default || key != "default" && !slices.ContainsFunc(n.Actions, func(a notify.Action) bool { return a.Key == key }) {
+		return ipc.Response{Error: fmt.Sprintf("notification %d has no action %q", id, key)}
+	}
+	s.invokeNote(n, key)
+	return ipc.Response{OK: true}
+}
+
+// mediaRequest answers `call media status|play-pause|next|previous`: the
+// player the control center shows.
+func (s *shellUI) mediaRequest(fn string) ipc.Response {
+	m := s.sys.Media
+	if fn == "status" {
+		if !m.Available {
+			return jsonResponse(map[string]any{"available": false})
+		}
+		return jsonResponse(map[string]any{"available": true, "player": m.Identity, "title": m.Title, "artist": m.Artist,
+			"playing": m.Playing, "can_play_pause": m.CanPlayPause, "can_next": m.CanNext, "can_previous": m.CanPrev})
+	}
+	v := &s.svc
+	var do func() error
+	switch {
+	case fn == "play-pause" && m.CanPlayPause:
+		do = v.media.PlayPause
+	case fn == "next" && m.CanNext:
+		do = v.media.Next
+	case fn == "previous" && m.CanPrev:
+		do = v.media.Previous
+	case fn == "play-pause" || fn == "next" || fn == "previous":
+		return ipc.Response{Error: "the player cannot do " + fn + " now"}
+	default:
+		return ipc.Response{Error: "unknown function media " + fn}
+	}
+	if err := do(); err != nil {
+		return ipc.Response{Error: err.Error()}
+	}
+	return ipc.Response{OK: true}
+}
+
 // notificationList answers `call notifications list`: the center's
 // notifications, newest first, as plain text.
 func (s *shellUI) notificationList() ipc.Response {
+	type action struct {
+		Key   string `json:"key"`
+		Label string `json:"label"`
+	}
 	type note struct {
-		App     string `json:"app"`
-		Summary string `json:"summary"`
-		Body    string `json:"body,omitempty"`
-		Time    string `json:"time"`
+		ID      uint32   `json:"id"`
+		App     string   `json:"app"`
+		Summary string   `json:"summary"`
+		Body    string   `json:"body,omitempty"`
+		Time    string   `json:"time"`
+		Actions []action `json:"actions,omitempty"`
 	}
 	var out []note
-	items := s.notes.c.Items
-	for i := len(items) - 1; i >= 0 && len(out) < 50; i-- {
-		n := items[i]
+	for _, n := range s.notes.c.Items { // newest first
+		if len(out) == 50 {
+			break
+		}
 		app, _ := s.noteApp(n)
-		out = append(out, note{App: app, Summary: n.Summary, Body: notify.PlainText(n.Body), Time: n.Time.Format("Mon 15:04")})
+		o := note{ID: n.ID, App: app, Summary: n.Summary, Body: notify.PlainText(n.Body), Time: n.Time.Format("Mon 15:04")}
+		if n.Default {
+			o.Actions = append(o.Actions, action{"default", i18n.T("Open")})
+		}
+		for _, a := range n.Actions {
+			o.Actions = append(o.Actions, action{a.Key, a.Label})
+		}
+		out = append(out, o)
 	}
 	return jsonResponse(map[string]any{"focus": s.focusOn(), "notifications": out})
 }

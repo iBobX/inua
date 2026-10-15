@@ -1,4 +1,4 @@
-package assistant
+package desk
 
 import (
 	"cmp"
@@ -11,15 +11,19 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/apps/tailscale"
+	"github.com/lyricat/inua/internal/clipboard"
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/ipc"
+	"github.com/lyricat/inua/internal/notify"
 )
 
-// LocalDesktop connects the tools to this session: the shell's control
+// Local connects the tools to this session: the shell's control
 // socket ($INUA_INSTANCE, else default), Hyprland, the installed apps
-// (terminal runs those that want one), the clipboard, Tailscale.
-func LocalDesktop(terminal []string) Desktop {
+// (terminal runs those that want one), the clipboard and its history, the
+// notification history, Tailscale.
+func Local(terminal []string) Desktop {
 	sock := ipc.SocketPath(cmp.Or(os.Getenv("INUA_INSTANCE"), "default"))
 	d := Desktop{
 		Call: func(ctx context.Context, target, fn string, args ...string) (string, error) {
@@ -37,6 +41,22 @@ func LocalDesktop(terminal []string) Desktop {
 			cmd := exec.CommandContext(ctx, "wl-copy")
 			cmd.Stdin = strings.NewReader(text)
 			return cmd.Run()
+		},
+		ClipImage: func(ctx context.Context, path, mime string) error {
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			cmd := exec.CommandContext(ctx, "wl-copy", "--type", cmp.Or(mime, "image/png"))
+			cmd.Stdin = f
+			return cmd.Run()
+		},
+		ClipHistory: clipboard.HistoryPath(),
+		NoteHistory: notify.HistoryPath(),
+		NoteHistoryOn: func() bool {
+			c, _, err := config.Load(config.DefaultPath())
+			return err == nil && c.Notify.History
 		},
 	}
 	var once sync.Once

@@ -19,8 +19,8 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/lyricat/inua/internal/assistant"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 )
 
 // Answer is how the user answered an agent's call.
@@ -61,7 +61,7 @@ type Call struct {
 
 // Options set up a server.
 type Options struct {
-	Tools []assistant.Tool
+	Tools []desk.Tool
 	// Config is mcp.* as it is now, read again for each call: turning it
 	// off or tightening the policy takes effect at once.
 	Config  func() config.MCP
@@ -87,17 +87,17 @@ var leftOut = []string{"web_search", "url_fetch", "read_file", "bash"}
 
 // sensitive are reads that can hold secrets or private messages: they ask
 // whatever the policy.
-var sensitive = []string{"clipboard_read", "list_notifications"}
+var sensitive = []string{"clipboard_read", "clipboard_history", "list_notifications", "notification_history"}
 
 // actions are tools the assistant runs without asking, being harmless and
 // asked for by the user typing to it, that still act: for an agent they
 // are changes (not offered to look only, and not read-only).
-var actions = []string{"focus_window", "switch_workspace", "open_app", "screenshot"}
+var actions = []string{"focus_window", "switch_workspace", "open_app", "screenshot", "show_panel", "media_control"}
 
 // risk is a tool's risk for an agent.
-func risk(t assistant.Tool) assistant.Risk {
-	if t.Risk == assistant.Read && slices.Contains(actions, t.Name) {
-		return assistant.Change
+func risk(t desk.Tool) desk.Risk {
+	if t.Risk == desk.Read && slices.Contains(actions, t.Name) {
+		return desk.Change
 	}
 	return t.Risk
 }
@@ -123,24 +123,24 @@ func New(o Options) *mcp.Server {
 }
 
 // offered says whether a policy offers a tool at all.
-func offered(policy string, t assistant.Tool) bool {
-	return policy != "read" || (risk(t) == assistant.Read && !slices.Contains(sensitive, t.Name))
+func offered(policy string, t desk.Tool) bool {
+	return policy != "read" || (risk(t) == desk.Read && !slices.Contains(sensitive, t.Name))
 }
 
 // mustAsk says whether a call needs the user's yes under a policy.
-func mustAsk(policy string, t assistant.Tool) bool {
+func mustAsk(policy string, t desk.Tool) bool {
 	switch {
-	case slices.Contains(sensitive, t.Name), risk(t) == assistant.Always:
+	case slices.Contains(sensitive, t.Name), risk(t) == desk.Always:
 		return true
-	case risk(t) == assistant.Read:
+	case risk(t) == desk.Read:
 		return false
 	}
 	return policy != "allow"
 }
 
-func mcpTool(t assistant.Tool) *mcp.Tool {
-	ann := &mcp.ToolAnnotations{ReadOnlyHint: risk(t) == assistant.Read}
-	destructive := risk(t) == assistant.Always
+func mcpTool(t desk.Tool) *mcp.Tool {
+	ann := &mcp.ToolAnnotations{ReadOnlyHint: risk(t) == desk.Read}
+	destructive := risk(t) == desk.Always
 	ann.DestructiveHint = &destructive
 	schema := t.Schema
 	if strings.TrimSpace(schema) == "" { // a tool without arguments
@@ -153,7 +153,7 @@ func failure(msg string) *mcp.CallToolResult {
 	return &mcp.CallToolResult{IsError: true, Content: []mcp.Content{&mcp.TextContent{Text: msg}}}
 }
 
-func (s *server) handler(t assistant.Tool) mcp.ToolHandler {
+func (s *server) handler(t desk.Tool) mcp.ToolHandler {
 	return func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		agent := "an agent"
 		if p := req.Session.InitializeParams(); p != nil && p.ClientInfo != nil {
@@ -184,7 +184,7 @@ func (s *server) handler(t assistant.Tool) mcp.ToolHandler {
 		if s.o.Assistant {
 			// As the assistant's own tools ask: the riskiest always,
 			// changes as its settings say.
-			ask = t.Risk == assistant.Always || (t.Risk == assistant.Change && s.o.AskBeforeChanges != nil && s.o.AskBeforeChanges())
+			ask = t.Risk == desk.Always || (t.Risk == desk.Change && s.o.AskBeforeChanges != nil && s.o.AskBeforeChanges())
 		} else {
 			cfg := s.o.Config()
 			switch {
@@ -213,7 +213,7 @@ func (s *server) handler(t assistant.Tool) mcp.ToolHandler {
 			case Deny:
 				done("denied", nil)
 				if s.o.Assistant {
-					return failure(assistant.DeclinedPrefix + "The user declined this. Do not try it another way."), nil
+					return failure(desk.DeclinedPrefix + "The user declined this. Do not try it another way."), nil
 				}
 				return failure("The user did not allow it."), nil
 			case Session:

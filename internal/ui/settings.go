@@ -40,19 +40,19 @@ type settings struct {
 	themes               gtk.FlowBox
 	swatches             map[string]*gtk.Button // by theme, owned by the flow box
 
-	bgEnable, title, tray, tpAccel, notifyOn, critFocus gtk.Switch
-	barOn, dockOn, dockHide, dockDrawer, dockFlushBar   gtk.Switch
-	clipEnable, clipBar, clipPaste                      gtk.Switch
-	dockSize, dockPosition                              gtk.DropDown
-	dockPinned                                          gtk.Box
-	bgImage, bgColor, clock, terminal, lock, screenshot gtk.Entry
-	clipSensitive                                       gtk.Entry
-	bgFit, ws, launchMode, swap, caps, icons, banner    gtk.DropDown
-	clipLimit                                           gtk.DropDown
-	clipLimits                                          []int // clipLimit's choices
-	tpSpeed, clipOpacity                                gtk.Scale
-	clipOpacityVal, clipStats                           gtk.Label
-	clipClear, clipReveal                               gtk.Button
+	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory gtk.Switch
+	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                gtk.Switch
+	clipEnable, clipBar, clipPaste                                   gtk.Switch
+	dockSize, dockPosition                                           gtk.DropDown
+	dockPinned                                                       gtk.Box
+	bgImage, bgColor, clock, terminal, lock, screenshot              gtk.Entry
+	clipSensitive                                                    gtk.Entry
+	bgFit, ws, launchMode, swap, caps, icons, banner                 gtk.DropDown
+	clipLimit                                                        gtk.DropDown
+	clipLimits                                                       []int // clipLimit's choices
+	tpSpeed, clipOpacity                                             gtk.Scale
+	clipOpacityVal, clipStats                                        gtk.Label
+	clipClear, clipReveal                                            gtk.Button
 
 	// Keyboard and touchpad: where the settings come from, and why they
 	// would do nothing.
@@ -130,6 +130,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Notify.Enable = on
 		case "critical_focus":
 			c.Notify.CriticalInFocus = on
+		case "notify_history":
+			c.Notify.History = on
 		case "about_daily":
 			c.Notify.Updates = on
 		case "keyring_notify":
@@ -369,6 +371,7 @@ func (s *shellUI) openSettings() {
 	scAdd.ConnectClicked(&s.onSettingsButton)
 	ui.Get("notify_enable", &st.notifyOn)
 	ui.Get("critical_focus", &st.critFocus)
+	ui.Get("notify_history", &st.noteHistory)
 	ui.Get("notify_state", &st.notifyState)
 	ui.Get("clip_enable", &st.clipEnable)
 	ui.Get("clip_bar", &st.clipBar)
@@ -413,7 +416,7 @@ func (s *shellUI) openSettings() {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
@@ -765,6 +768,7 @@ func (s *shellUI) showNotifySettings() {
 	c := s.cfg.Notify
 	st.notifyOn.SetActive(c.Enable)
 	st.critFocus.SetActive(c.CriticalInFocus)
+	st.noteHistory.SetActive(c.History)
 	st.banner.SetSelected(uint32(max(0, slices.Index(config.BannerChoices, c.Banner))))
 	switch {
 	case !c.Enable:

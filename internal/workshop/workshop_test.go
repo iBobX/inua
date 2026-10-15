@@ -9,10 +9,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/lyricat/inua/internal/desk"
 )
 
 // pair connects two Conns.
@@ -212,6 +215,8 @@ type fakeHost struct {
 	state   map[string]any
 	title   string
 	changed chan struct{}
+	deny    bool     // Confirm answers no
+	asked   []string // what Confirm asked
 }
 
 func newFakeHost() *fakeHost {
@@ -238,8 +243,11 @@ func (h *fakeHost) State() map[string]any {
 	}
 	return out
 }
-func (h *fakeHost) Confirm(context.Context, string, string, string, bool) (bool, error) {
-	return true, nil
+func (h *fakeHost) Confirm(_ context.Context, title, text, _ string, _ bool) (bool, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.asked = append(h.asked, title+" "+text)
+	return !h.deny, nil
 }
 func (h *fakeHost) Copy(text string, secret bool) error {
 	h.mu.Lock()
@@ -248,6 +256,13 @@ func (h *fakeHost) Copy(text string, secret bool) error {
 	return nil
 }
 func (h *fakeHost) SetTitle(t string) { h.mu.Lock(); h.title = t; h.mu.Unlock() }
+func (h *fakeHost) OpenFile(_ context.Context, title string, multiple bool) ([]string, error) {
+	if multiple {
+		return []string{"/tmp/a", "/tmp/b"}, nil
+	}
+	return []string{"/tmp/" + title}, nil
+}
+func (h *fakeHost) SaveFile(_ context.Context, _, name string) (string, error) { return "", nil }
 
 // last waits for the next render and returns it flattened to text.
 func (h *fakeHost) next(t *testing.T) string {
@@ -574,5 +589,109 @@ func TestNewJS(t *testing.T) {
 	}
 	if _, err := New(t.TempDir(), "x", "cobol"); err == nil {
 		t.Error("made an app in a language with no template")
+	}
+}
+
+const deskApp = `from inua import app, ui, InuaError
+
+@app.init
+def start():
+    app.subscribe("system")
+
+@app.view
+def view(state):
+    return ui.page(ui.text(state.get("out", "")))
+
+def attempt(method, **params):
+    try:
+        return repr(app.call(method, **params))
+    except InuaError as e:
+        return "error %d %s" % (e.code, e)
+
+@app.on("go", "click")
+def go(ev):
+    app.state["out"] = " | ".join([
+        attempt("list_windows"),
+        attempt("open_app", app="x"),
+        attempt("close_window", window="Mail"),
+        attempt("dialog.openFile", title="pick"),
+        attempt("events.subscribe", topics=["clipboard"]),
+    ])
+
+@app.watch("system")
+def changed(ev):
+    app.state["out"] = "wifi " + str(ev.value["wifi"])
+
+app.run()
+`
+
+// inua's desk functions as an app calls them: by name, needing their
+// use; those that always ask ask in the window, and a no declines; a
+// topic subscribed to sends events.
+func TestSessionDesk(t *testing.T) {
+	if _, err := exec.LookPath("python3"); err != nil {
+		t.Skip("no python3")
+	}
+	t.Setenv("XDG_DATA_HOME", t.TempDir())
+	dir := t.TempDir()
+	os.WriteFile(filepath.Join(dir, "main.py"), []byte(deskApp), 0o644)
+	m := Manifest{ID: "dev.test.desk", Name: "Desk", Run: []string{"python3", "main.py"}, Dir: dir, Uses: []string{"windows", "system"}}
+	var mu sync.Mutex
+	wifi, closed := "true", 0
+	d := desk.Desktop{
+		Call: func(context.Context, string, string, ...string) (string, error) {
+			mu.Lock()
+			defer mu.Unlock()
+			return `{"wifi":` + wifi + `}`, nil
+		},
+		HyprRequest: func(context.Context, string) ([]byte, error) {
+			return []byte(`[{"address":"0xa","title":"Mail","class":"mail","mapped":true,"focusHistoryID":0,"workspace":{"name":"1"}}]`), nil
+		},
+		HyprDispatch: func(context.Context, string) error { mu.Lock(); closed++; mu.Unlock(); return nil },
+	}
+	h := newFakeHost()
+	h.deny = true
+	s := NewSession(m, h)
+	s.Tools, s.WatchEvery = desk.Tools(d), 20*time.Millisecond
+	if err := s.Start("en", ""); err != nil {
+		_, log := s.Why()
+		t.Fatalf("%v\n%s", err, log)
+	}
+	h.next(t)
+	s.Event("click", "go", nil)
+	r := h.next(t)
+	for _, want := range []string{"'title': 'Mail'", "error -32001 not allowed: \\\"apps\\\"", "error -32000 declined", "'/tmp/pick'", "error -32001 not allowed: \\\"clipboard-history\\\""} {
+		if !strings.Contains(r, want) {
+			t.Errorf("no %s in %s", want, r)
+		}
+	}
+	h.mu.Lock()
+	if len(h.asked) != 1 || h.asked[0] != "Let Desk do this? Closing Mail" || closed != 0 {
+		t.Errorf("asked %q, closed %d", h.asked, closed)
+	}
+	h.mu.Unlock()
+
+	mu.Lock()
+	wifi = "false"
+	mu.Unlock()
+	if r := h.next(t); !strings.Contains(r, "wifi False") {
+		t.Errorf("after the change %s", r)
+	}
+	s.Stop()
+	<-s.Exited()
+}
+
+// Every desk function's use is one an app can name, and so is every
+// topic's.
+func TestDeskUses(t *testing.T) {
+	for _, tool := range desk.Tools(desk.Desktop{}) {
+		if tool.Use != "" && !slices.Contains(Uses, tool.Use) {
+			t.Errorf("%s: use %q is not in Uses", tool.Name, tool.Use)
+		}
+	}
+	for name, tp := range desk.Topics {
+		if !slices.Contains(Uses, tp.Use) {
+			t.Errorf("topic %s: use %q is not in Uses", name, tp.Use)
+		}
 	}
 }

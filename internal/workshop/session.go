@@ -2,6 +2,7 @@ package workshop
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -19,6 +20,7 @@ import (
 	"github.com/godbus/dbus/v5"
 
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -33,6 +35,11 @@ type Host interface {
 	Confirm(ctx context.Context, title, text, ok string, danger bool) (bool, error)
 	Copy(text string, secret bool) error
 	SetTitle(title string)
+	// OpenFile asks for files to open: their paths, none when the user
+	// cancels.
+	OpenFile(ctx context.Context, title string, multiple bool) ([]string, error)
+	// SaveFile asks where to save: a path, "" when the user cancels.
+	SaveFile(ctx context.Context, title, name string) (string, error)
 }
 
 // Session is an app's program running for a window.
@@ -49,9 +56,16 @@ type Session struct {
 	exited chan struct{}
 	err    error // why the program ended
 
-	mu     sync.Mutex
-	timers map[string]chan struct{}
-	store  map[string]json.RawMessage
+	// Tools are inua's desk functions, called by their names; nil: those
+	// of this session (desk.Local), when first called.
+	Tools []desk.Tool
+	// WatchEvery is how often a topic subscribed to is read; 0: a second.
+	WatchEvery time.Duration
+
+	mu       sync.Mutex
+	timers   map[string]chan struct{}
+	store    map[string]json.RawMessage
+	watching map[string]context.CancelFunc // topics subscribed to
 }
 
 // NewSession prepares app m for host; Start runs it.
@@ -105,6 +119,7 @@ func (s *Session) Start(language, theme string) error {
 	go func() {
 		err := cmd.Wait()
 		s.stopTimers()
+		s.stopWatching()
 		s.mu.Lock()
 		s.err = err
 		s.mu.Unlock()
@@ -231,6 +246,7 @@ func (s *Session) Stop() {
 		return
 	}
 	s.stopTimers()
+	s.stopWatching()
 	select {
 	case <-s.exited:
 		return
@@ -260,27 +276,37 @@ var needs = map[string]string{
 
 func bad(err error) error { return &Error{CodeBadParams, err.Error()} }
 
+func notAllowed(use string) error {
+	return &Error{CodeNotAllowed, fmt.Sprintf("not allowed: %q is not in the manifest's uses", use)}
+}
+
 // handle answers the app.
 func (s *Session) handle(method string, params json.RawMessage) (any, error) {
 	if use, ok := needs[method]; ok && !s.M.May(use) {
-		return nil, &Error{CodeNotAllowed, fmt.Sprintf("not allowed: %q is not in the manifest's uses", use)}
+		return nil, notAllowed(use)
+	}
+	if t, ok := s.tool(method); ok {
+		return s.callTool(t, params)
 	}
 	var p struct {
-		Root    *Node           `json:"root"`
-		Values  map[string]any  `json:"values"`
-		Title   string          `json:"title"`
-		Body    string          `json:"body"`
-		Text    string          `json:"text"`
-		OK      string          `json:"ok"`
-		Danger  bool            `json:"danger"`
-		Target  string          `json:"target"`
-		Argv    []string        `json:"argv"`
-		Stdin   string          `json:"stdin"`
-		Timeout float64         `json:"timeout"`
-		Key     string          `json:"key"`
-		Value   json.RawMessage `json:"value"`
-		ID      string          `json:"id"`
-		Seconds float64         `json:"seconds"`
+		Root     *Node           `json:"root"`
+		Values   map[string]any  `json:"values"`
+		Title    string          `json:"title"`
+		Body     string          `json:"body"`
+		Text     string          `json:"text"`
+		OK       string          `json:"ok"`
+		Danger   bool            `json:"danger"`
+		Target   string          `json:"target"`
+		Argv     []string        `json:"argv"`
+		Stdin    string          `json:"stdin"`
+		Timeout  float64         `json:"timeout"`
+		Key      string          `json:"key"`
+		Value    json.RawMessage `json:"value"`
+		ID       string          `json:"id"`
+		Seconds  float64         `json:"seconds"`
+		Topics   []string        `json:"topics"`
+		Multiple bool            `json:"multiple"`
+		Name     string          `json:"name"`
 	}
 	if len(params) > 0 && string(params) != "null" {
 		if err := json.Unmarshal(params, &p); err != nil {
@@ -320,8 +346,118 @@ func (s *Session) handle(method string, params json.RawMessage) (any, error) {
 	case "window.setTitle":
 		s.host.SetTitle(p.Title)
 		return nil, nil
+	case "events.subscribe":
+		return nil, s.subscribe(p.Topics)
+	case "dialog.openFile":
+		paths, err := s.host.OpenFile(context.Background(), p.Title, p.Multiple)
+		switch {
+		case err != nil:
+			return nil, err
+		case len(paths) == 0:
+			return nil, nil
+		case p.Multiple:
+			return paths, nil
+		}
+		return paths[0], nil
+	case "dialog.saveFile":
+		path, err := s.host.SaveFile(context.Background(), p.Title, p.Name)
+		if err != nil || path == "" {
+			return nil, err
+		}
+		return path, nil
 	}
 	return nil, &Error{CodeNoMethod, "no such method: " + method}
+}
+
+// tool finds a desk function by its name.
+func (s *Session) tool(name string) (desk.Tool, bool) {
+	s.mu.Lock()
+	if s.Tools == nil {
+		cfg, _, _ := config.Load(config.DefaultPath())
+		s.Tools = desk.Tools(desk.Local(cfg.TerminalCommand()))
+	}
+	tools := s.Tools
+	s.mu.Unlock()
+	for _, t := range tools {
+		if t.Name == name {
+			return t, true
+		}
+	}
+	return desk.Tool{}, false
+}
+
+// callTool runs a desk function for the app: it needs the function's use;
+// those that always ask ask in the app's window first.
+func (s *Session) callTool(t desk.Tool, params json.RawMessage) (any, error) {
+	if t.Use != "" && !s.M.May(t.Use) {
+		return nil, notAllowed(t.Use)
+	}
+	args := map[string]any{}
+	if len(params) > 0 && string(params) != "null" {
+		if err := json.Unmarshal(params, &args); err != nil {
+			return nil, bad(err)
+		}
+	}
+	if t.Risk == desk.Always {
+		doing := t.Name
+		if t.Describe != nil {
+			doing = t.Describe(args)
+		}
+		ok, err := s.host.Confirm(context.Background(), i18n.Tf("Let %s do this?", s.M.Name), doing, i18n.T("Allow"), true)
+		if err != nil {
+			return nil, err
+		}
+		if !ok {
+			return nil, &Error{CodeFailed, desk.DeclinedPrefix + "the user declined"}
+		}
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	out, err := t.Run(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// subscribe follows topics (desk.Topics) until the window closes: each
+// change is an event of type "desktop", its id the topic.
+func (s *Session) subscribe(topics []string) error {
+	for _, topic := range topics {
+		tp, ok := desk.Topics[topic]
+		if !ok {
+			return bad(fmt.Errorf("no topic %q (window, clipboard, notification, system, media)", topic))
+		}
+		if !s.M.May(tp.Use) {
+			return notAllowed(tp.Use)
+		}
+	}
+	every := cmp.Or(s.WatchEvery, time.Second)
+	for _, topic := range topics {
+		tp := desk.Topics[topic]
+		t, _ := s.tool(tp.Tool)
+		s.mu.Lock()
+		_, on := s.watching[topic]
+		if !on {
+			if s.watching == nil {
+				s.watching = map[string]context.CancelFunc{}
+			}
+			ctx, cancel := context.WithCancel(context.Background())
+			s.watching[topic] = cancel
+			go desk.WatchTool(ctx, t, topic, every, func(v any) { s.Event("desktop", topic, v) })
+		}
+		s.mu.Unlock()
+	}
+	return nil
+}
+
+func (s *Session) stopWatching() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for topic, cancel := range s.watching {
+		cancel()
+		delete(s.watching, topic)
+	}
 }
 
 // notify shows a desktop notification from the app.

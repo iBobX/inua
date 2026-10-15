@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lyricat/inua/internal/config"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -14,6 +13,9 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 )
 
 // fakeModel speaks the OpenAI chat API, replying from a script: each reply
@@ -98,7 +100,7 @@ func newModelServer(t *testing.T, model *fakeModel) string {
 	return srv.URL
 }
 
-func newTest(t *testing.T, model *fakeModel, own []Tool, approve Approver) *Assistant {
+func newTest(t *testing.T, model *fakeModel, own []desk.Tool, approve Approver) *Assistant {
 	t.Helper()
 	srv := newModelServer(t, model)
 	a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv + "/v1", APIKey: "test"}},
@@ -111,10 +113,10 @@ func newTest(t *testing.T, model *fakeModel, own []Tool, approve Approver) *Assi
 
 func TestAsk(t *testing.T) {
 	focus := false
-	setFocus := Tool{
+	setFocus := desk.Tool{
 		Name: "set_focus", Description: "Turns Focus (quiet notifications) on or off.",
 		Schema: `{"type":"object","properties":{"on":{"type":"boolean"}},"required":["on"]}`,
-		Risk:   Change,
+		Risk:   desk.Change,
 		Describe: func(args map[string]any) string {
 			if on, _ := args["on"].(bool); on {
 				return "Turning on Focus"
@@ -132,7 +134,7 @@ func TestAsk(t *testing.T) {
 		{final: "Yes, it is still on."},
 	}}
 	var asked []string
-	a := newTest(t, model, []Tool{setFocus}, func(_ context.Context, tool, doing string) (bool, error) {
+	a := newTest(t, model, []desk.Tool{setFocus}, func(_ context.Context, tool, doing string) (bool, error) {
 		asked = append(asked, doing)
 		return true, nil
 	})
@@ -181,14 +183,14 @@ func TestAsk(t *testing.T) {
 
 func TestDeclined(t *testing.T) {
 	ran := false
-	power := Tool{Name: "power", Description: "Shuts down.", Risk: Always,
+	power := desk.Tool{Name: "power", Description: "Shuts down.", Risk: desk.Always,
 		Run: func(context.Context, map[string]any) (any, error) { ran = true; return "ok", nil }}
 	model := &fakeModel{t: t, replies: []reply{
 		{tool: "power", args: `{}`},
 		{final: "I did not shut down: you declined."},
 	}}
 	var denied []string
-	a := newTest(t, model, []Tool{power}, func(context.Context, string, string) (bool, error) { return false, nil })
+	a := newTest(t, model, []desk.Tool{power}, func(context.Context, string, string) (bool, error) { return false, nil })
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	answer, err := a.Ask(ctx, "Shut down", Events{Denied: func(name, _ string) { denied = append(denied, name) }})

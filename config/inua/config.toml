@@ -189,6 +189,12 @@ critical_in_focus = true
 # and tell you in a notification, with a button to upgrade (inua upgrade).
 updates = true
 
+# Keep a history of the notifications that come, the last 500, also those
+# dismissed, in ~/.local/state/inua/notification-history.jsonl: for the
+# assistant, agents (inua mcp) and workshop apps that may read them.
+# Turning it off clears it.
+history = false
+
 [clipboard]
 # Keep a history of what you copy (text and images, with wl-paste from
 # wl-clipboard) in ~/.local/state/inua. A password manager's copies, which

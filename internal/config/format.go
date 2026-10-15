@@ -22,7 +22,7 @@ func Format(c Config) string {
 		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
-		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates,
+		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
 		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback),
@@ -308,6 +308,12 @@ critical_in_focus = %t
 # Check once a day for a new inua release, a few minutes after you log in,
 # and tell you in a notification, with a button to upgrade (inua upgrade).
 updates = %t
+
+# Keep a history of the notifications that come, the last 500, also those
+# dismissed, in ~/.local/state/inua/notification-history.jsonl: for the
+# assistant, agents (inua mcp) and workshop apps that may read them.
+# Turning it off clears it.
+history = %t
 
 [clipboard]
 # Keep a history of what you copy (text and images, with wl-paste from

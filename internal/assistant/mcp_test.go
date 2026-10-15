@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lyricat/inua/internal/desk"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -26,7 +27,7 @@ func TestMain(m *testing.M) {
 			})
 		srv.AddTool(&mcp.Tool{Name: "close_window", Description: "Closes a window.", InputSchema: obj},
 			func(context.Context, *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-				return &mcp.CallToolResult{IsError: true, Content: []mcp.Content{&mcp.TextContent{Text: DeclinedPrefix + "The user declined this."}}}, nil
+				return &mcp.CallToolResult{IsError: true, Content: []mcp.Content{&mcp.TextContent{Text: desk.DeclinedPrefix + "The user declined this."}}}, nil
 			})
 		srv.Run(context.Background(), &mcp.StdioTransport{})
 		os.Exit(0)

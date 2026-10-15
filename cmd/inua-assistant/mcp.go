@@ -14,6 +14,7 @@ import (
 
 	"github.com/lyricat/inua/internal/assistant"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/mcpserver"
@@ -56,7 +57,7 @@ func runMCP(ctx context.Context) int {
 		agent = i18n.T("inua's assistant")
 	}
 	srv := mcpserver.New(mcpserver.Options{
-		Tools:            assistant.Tools(assistant.LocalDesktop(cfg.TerminalCommand())),
+		Tools:            desk.Tools(desk.Local(cfg.TerminalCommand())),
 		Config:           func() config.MCP { return now().MCP },
 		Assistant:        byAssistant,
 		AskBeforeChanges: func() bool { return now().Assistant.AskBeforeChanges },

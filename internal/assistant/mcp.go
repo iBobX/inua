@@ -9,6 +9,7 @@ import (
 
 	"github.com/quailyquaily/mistermorph/agent"
 
+	"github.com/lyricat/inua/internal/desk"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -28,10 +29,6 @@ const MCPClientEnv = "INUA_MCP_CLIENT"
 // mcpToolPrefix is how Mister Morph names inua's tools.
 const mcpToolPrefix = "mcp_" + mcpServerName + "__"
 
-// DeclinedPrefix starts the error of a call the user declined, so the
-// window says it was declined rather than that it failed.
-const DeclinedPrefix = "declined: "
-
 // newTopic names a conversation: Mister Morph keeps what tool_search found
 // for it, so later questions see those tools without searching again.
 func newTopic() string {
@@ -43,7 +40,7 @@ func newTopic() string {
 // describers say what inua's tools are doing, for the window's lines.
 var describers = func() map[string]func(map[string]any) string {
 	m := map[string]func(map[string]any) string{}
-	for _, t := range Tools(Desktop{}) {
+	for _, t := range desk.Tools(desk.Desktop{}) {
 		if t.Describe != nil {
 			m[t.Name] = t.Describe
 		}
@@ -72,7 +69,7 @@ func mcpEvents(ev Events) agent.EventSink {
 				ev.Tool(e.ToolName, i18n.T("Running a script with the tools"))
 			}
 		case e.Kind == agent.EventKindToolDone && ok && e.Error != "":
-			if strings.Contains(e.Error, DeclinedPrefix) {
+			if strings.Contains(e.Error, desk.DeclinedPrefix) {
 				if ev.Denied != nil {
 					ev.Denied(name, doing)
 				}

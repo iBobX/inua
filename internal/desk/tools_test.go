@@ -1,4 +1,4 @@
-package assistant
+package desk
 
 import (
 	"context"
@@ -44,7 +44,7 @@ func run(t *testing.T, d Desktop, name string, args map[string]any) (string, err
 	t.Helper()
 	for _, tool := range Tools(d) {
 		if tool.Name == name {
-			out, err := inuaTool{tool}.Execute(context.Background(), args)
+			out, err := tool.Call(context.Background(), args)
 			return out, err
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -94,6 +95,22 @@ func (s *shellUI) startNotify() {
 	s.notes.expanded = map[string]bool{}
 	s.syncNotify()
 	s.showUnread()
+	if !s.cfg.Notify.History { // turned off while the shell was not running
+		go noteHistory(func(path string) error { return notify.ClearHistory(path) })
+	}
+}
+
+// noteHistoryMu keeps the history's writes in order.
+var noteHistoryMu sync.Mutex
+
+// noteHistory changes the notification history ([notify] history), off
+// the main loop.
+func noteHistory(change func(path string) error) {
+	noteHistoryMu.Lock()
+	defer noteHistoryMu.Unlock()
+	if err := change(notify.HistoryPath()); err != nil {
+		log.Printf("notification history: %v", err)
+	}
 }
 
 // syncNotify starts or stops the server to follow notifications.enable.
@@ -147,6 +164,14 @@ func (s *shellUI) notesNative() bool { return s.notes.owner }
 // postNote takes a notification from an app.
 func (s *shellUI) postNote(n notify.Notification) {
 	nt := &s.notes
+	if _, shown := s.noteByID(n.ID); s.cfg.Notify.History && !shown && !n.Transient {
+		app, _ := s.noteApp(n)
+		r := notify.Record{ID: n.ID, App: app, Summary: n.Summary, Body: notify.PlainText(n.Body), Time: n.Time}
+		if r.Time.IsZero() {
+			r.Time = time.Now()
+		}
+		go noteHistory(func(path string) error { return notify.AppendHistory(path, r) })
+	}
 	banner := nt.c.Post(n, notify.Policy{CriticalInFocus: s.cfg.Notify.CriticalInFocus})
 	s.saveNotesSoon()
 	if s.bannerIndex(n.ID) >= 0 {

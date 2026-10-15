@@ -33,6 +33,7 @@ class App {
     this._view = null;
     this._init = [];
     this._handlers = []; // [id, type, fn]
+    this._watch = []; // topics to follow from the start
     this._next = 0;
     this._waiting = new Map(); // id → {resolve, reject}
     this._queue = []; // messages to handle, one at a time
@@ -66,6 +67,23 @@ class App {
   init(fn) {
     this._init.push(fn);
     return this;
+  }
+
+  /** A handler for changes on the desktop while the window is open:
+   * "window" (the focused window), "clipboard" (a new copy),
+   * "notification" (each new one), "system" (Wi-Fi, volume, battery…),
+   * "media" (what plays). Each needs its use in the manifest; the
+   * handler gets an event whose value is what changed. */
+  watch(topic, fn) {
+    this._handlers.push([topic, "desktop", fn]);
+    if (!this._watch.includes(topic)) this._watch.push(topic);
+    return this;
+  }
+
+  /** Follow topics (see watch) from now on; handle them with
+   * app.on(topic, "desktop", fn). */
+  subscribe(...topics) {
+    return this.call("events.subscribe", { topics });
   }
 
   _send(msg) {
@@ -158,6 +176,7 @@ class App {
       case "initialize":
         this.info = p;
         this._send({ id: msg.id, result: { protocol: PROTOCOL } });
+        if (this._watch.length) await this._safely(() => this.subscribe(...this._watch));
         for (const fn of this._init) await this._safely(fn);
         await this.render();
         return;
@@ -235,7 +254,8 @@ const ui = {
   /** A title over a dim line; with an id, a click on it is an event; end
    * are widgets at its end (buttons, a switch). */
   row: (title, { sub, id, icon, selected, end = [] } = {}) => node("row", { title, sub, id, icon, selected }, end),
-  /** style: heading, title, sub or mono. */
+  /** style: heading, title, sub, mono, hero (a big number), readout (a
+   * small mono value) or kicker (a small capital label). */
   text: (text, { style } = {}) => node("text", { text, style }),
   facts: items => node("facts", { items: items.map(([k, v]) => [String(k), String(v)]) }),
   /** style: primary, danger or plain. */
@@ -251,6 +271,33 @@ const ui = {
   /** The actions at the bottom of the page. */
   bar: (...children) => node("bar", {}, children),
   empty: (title, { text, icon } = {}) => node("empty", { title, text, icon }),
+  /** Tabs above their pages: ui.tabs(id, { value }, ui.tab(…), …); value
+   * is the shown tab's id (the first when none). Choosing one is a change
+   * event with its id. */
+  tabs: (id, ...args) => {
+    const n = container("tabs", args, "value");
+    n.id = id;
+    return n;
+  },
+  /** A tab of ui.tabs: its title and its page's content. */
+  tab: (id, title, ...children) => node("tab", { id, title }, children),
+  /** A choice of a few options as joined buttons; a change event with the
+   * option. */
+  segmented: (id, options, { value } = {}) => node("segmented", { id, options: [...options], value }),
+  /** A number from min to max; change events as it moves. */
+  slider: (id, { min = 0, max = 100, step = 1, value } = {}) => ({ type: "slider", id, min, max, step, value: value ?? min }),
+  /** How far something is, from 0 to 1. */
+  progress: (value, { text } = {}) => node("progress", { value: Number(value), text }),
+  /** Something is going on. */
+  spinner: ({ text } = {}) => node("spinner", { text }),
+  /** A line over a soft fill; min and max fix its range. */
+  chart: (points, { height = 80, min, max } = {}) => node("chart", { points: points.map(Number), height, min, max }),
+  /** Tiles that wrap, as the control center's. */
+  tiles: (...tiles) => node("tiles", {}, tiles),
+  /** A tile of ui.tiles; a click is an event with its id. */
+  tile: (id, title, { sub, icon, selected } = {}) => node("tile", { id, title, sub, icon, selected }),
+  /** An image file, or an icon by name. */
+  image: ({ src, icon, width, height } = {}) => node("image", { src, icon, width, height }),
 };
 
 const app = new App();

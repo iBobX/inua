@@ -24,6 +24,7 @@ import (
 
 	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -108,26 +109,6 @@ func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error)
 	return s, nil
 }
 
-// Risk says whether a tool asks before it runs.
-type Risk int
-
-const (
-	Read   Risk = iota // only looks
-	Change             // changes something easily undone; asks when AskBeforeChanges
-	Always             // changes something hard to undo, or reaches past inua; always asks
-)
-
-// Tool is one of inua's tools.
-type Tool struct {
-	Name, Description string
-	Schema            string // JSON schema of the arguments
-	Risk              Risk
-	// Describe says what a call is about to do, for the window: "Turning
-	// on Focus". Nil uses the tool's name.
-	Describe func(args map[string]any) string
-	Run      func(ctx context.Context, args map[string]any) (any, error)
-}
-
 // Events reach the window while a question is answered. They come from the
 // run's goroutines.
 type Events struct {
@@ -167,7 +148,7 @@ asks from the launcher or your window; answer in their language, briefly, in pla
 
 // New makes a conversation with inua's tools (own) added to the built-ins
 // the settings name.
-func New(set Settings, own []Tool, approve Approver) (*Assistant, error) {
+func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 	data, _ := os.UserHomeDir()
 	stateDir := cmp.Or(set.StateDir, filepath.Join(cmp.Or(os.Getenv("XDG_DATA_HOME"), filepath.Join(data, ".local", "share")), "inua", "assistant"))
 	cacheDir := set.CacheDir
@@ -283,11 +264,11 @@ func (a *Assistant) UseProfile(name string) error {
 }
 
 // builtinRisk: reading files and running commands reach past inua.
-func builtinRisk(name string) Risk {
+func builtinRisk(name string) desk.Risk {
 	if slices.Contains([]string{"read_file", "write_file", "bash", "powershell"}, name) {
-		return Always
+		return desk.Always
 	}
-	return Read
+	return desk.Read
 }
 
 // ToolNames lists the tools the agent has.
@@ -421,7 +402,7 @@ type eventsKey struct{}
 type wrapped struct {
 	a        *Assistant
 	name     string
-	risk     Risk
+	risk     desk.Risk
 	inner    tools.Tool
 	describe func(map[string]any) string
 }
@@ -440,7 +421,7 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 		ev.Tool(w.name, doing)
 	}
 	risk := w.risk
-	if risk == Always || (risk == Change && w.a.set.AskBeforeChanges) {
+	if risk == desk.Always || (risk == desk.Change && w.a.set.AskBeforeChanges) {
 		ok := false
 		if w.a.approve != nil {
 			var err error
@@ -471,7 +452,7 @@ func (w *wrapped) Execute(ctx context.Context, args map[string]any) (string, err
 }
 
 // inuaTool adapts a Tool to Mister Morph's interface: the result as JSON.
-type inuaTool struct{ t Tool }
+type inuaTool struct{ t desk.Tool }
 
 func (i inuaTool) Name() string        { return i.t.Name }
 func (i inuaTool) Description() string { return i.t.Description }
@@ -480,13 +461,5 @@ func (i inuaTool) ParameterSchema() string {
 }
 
 func (i inuaTool) Execute(ctx context.Context, args map[string]any) (string, error) {
-	v, err := i.t.Run(ctx, args)
-	if err != nil {
-		return "", err
-	}
-	if s, ok := v.(string); ok {
-		return s, nil
-	}
-	b, err := json.Marshal(v)
-	return string(b), err
+	return i.t.Call(ctx, args)
 }

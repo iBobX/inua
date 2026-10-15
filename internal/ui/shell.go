@@ -687,11 +687,13 @@ func (s *shellUI) barNames() []string {
 //	launcher toggle|apps|windows|close
 //	control  toggle|open|close
 //	settings toggle|open [PAGE]|close
-//	notifications toggle|open|close|clear|focus [on|off]
+//	notifications toggle|open|close|clear|focus [on|off]|list|dismiss ID|invoke ID [KEY]
+//	system   status|set KEY VALUE|power ACTION
+//	media    status|play-pause|next|previous
 //	shell    state|close|reload|restart|snapshot DIR|tray-menu N
 func (s *shellUI) request(req ipc.Request) ipc.Response {
 	if req.Op == "show" {
-		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\nclipboard: toggle open close\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
+		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list dismiss invoke\nmedia: status play-pause next previous\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area pick-window pick-screen screen window color record stop close\nlock: now unlock state\nclipboard: toggle open close\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
 	}
 	if req.Op != "call" {
 		return ipc.Response{Error: "unknown op " + req.Op}
@@ -796,10 +798,14 @@ func (s *shellUI) request(req ipc.Request) ipc.Response {
 		}
 	case "system":
 		return s.systemRequest(req.Function, req.Args)
+	case "media":
+		return s.mediaRequest(req.Function)
 	case "notifications":
 		switch req.Function {
 		case "list":
 			return s.notificationList()
+		case "dismiss", "invoke":
+			return s.noteRequest(req.Function, req.Args)
 		case "toggle":
 			s.toggleCenter()
 		case "open":

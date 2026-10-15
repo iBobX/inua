@@ -2,6 +2,7 @@ package mcpserver
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -10,15 +11,15 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/lyricat/inua/internal/assistant"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 )
 
 // tools are fakes of each kind: a read, a sensitive read, a change, a
 // risky change, and one agents have their own of.
-func tools(ran *[]string, mu *sync.Mutex) []assistant.Tool {
-	mk := func(name string, risk assistant.Risk, out any) assistant.Tool {
-		return assistant.Tool{Name: name, Description: name + " it", Schema: `{"type":"object","properties":{"window":{"type":"string"}}}`, Risk: risk,
+func tools(ran *[]string, mu *sync.Mutex) []desk.Tool {
+	mk := func(name string, risk desk.Risk, out any) desk.Tool {
+		return desk.Tool{Name: name, Description: name + " it", Schema: `{"type":"object","properties":{"window":{"type":"string"}}}`, Risk: risk,
 			Describe: func(a map[string]any) string {
 				return "Doing " + name + " to " + strings.TrimSpace(asString(a["window"]))
 			},
@@ -29,16 +30,16 @@ func tools(ran *[]string, mu *sync.Mutex) []assistant.Tool {
 				return out, nil
 			}}
 	}
-	noArgs := mk("system_status", assistant.Read, "fine")
+	noArgs := mk("system_status", desk.Read, "fine")
 	noArgs.Schema = "" // as the assistant's tools without arguments have it
-	return []assistant.Tool{
+	return []desk.Tool{
 		noArgs,
-		mk("list_windows", assistant.Read, []map[string]string{{"id": "1", "title": "Firefox"}}),
-		mk("clipboard_read", assistant.Read, "secret text"),
-		mk("focus_window", assistant.Read, "focused"), // as the assistant has it: an action for an agent
-		mk("close_window", assistant.Always, "closed"),
-		mk("set_volume", assistant.Change, "set"),
-		mk("bash", assistant.Always, "no"),
+		mk("list_windows", desk.Read, []map[string]string{{"id": "1", "title": "Firefox"}}),
+		mk("clipboard_read", desk.Read, "secret text"),
+		mk("focus_window", desk.Read, "focused"), // as the assistant has it: an action for an agent
+		mk("close_window", desk.Always, "closed"),
+		mk("set_volume", desk.Change, "set"),
+		mk("bash", desk.Always, "no"),
 	}
 }
 
@@ -242,7 +243,7 @@ func TestRecordFile(t *testing.T) {
 // The assistant's real tools all make MCP tools (their schemas are
 // objects), but those agents have their own.
 func TestRealTools(t *testing.T) {
-	srv := New(Options{Tools: assistant.Tools(assistant.Desktop{}), Config: func() config.MCP { return config.MCP{Enable: true, Policy: "ask"} }})
+	srv := New(Options{Tools: desk.Tools(desk.Desktop{}), Config: func() config.MCP { return config.MCP{Enable: true, Policy: "ask"} }})
 	st, ct := mcp.NewInMemoryTransports()
 	if _, err := srv.Connect(t.Context(), st, nil); err != nil {
 		t.Fatal(err)
@@ -260,6 +261,44 @@ func TestRealTools(t *testing.T) {
 		if slices.Contains(leftOut, tl.Name) {
 			t.Errorf("offered %s", tl.Name)
 		}
+	}
+}
+
+// docs/mcp.md lists every tool served, with the risk it has for agents.
+func TestToolsDocumented(t *testing.T) {
+	doc, err := os.ReadFile(filepath.Join("..", "..", "docs", "mcp.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := map[string]string{}
+	for _, line := range strings.Split(string(doc), "\n") {
+		cells := strings.Split(line, "|")
+		if len(cells) > 5 && strings.HasPrefix(strings.TrimSpace(cells[1]), "`") {
+			rows[strings.Trim(strings.TrimSpace(cells[1]), "`")] = strings.TrimSpace(cells[len(cells)-2])
+		}
+	}
+	for _, tl := range desk.Tools(desk.Desktop{}) {
+		if slices.Contains(leftOut, tl.Name) {
+			continue
+		}
+		want := "read"
+		if risk(tl) != desk.Read {
+			want = "change"
+		}
+		if risk(tl) == desk.Always || slices.Contains(sensitive, tl.Name) {
+			want += ", asks"
+		}
+		got, ok := rows[tl.Name]
+		switch {
+		case !ok:
+			t.Errorf("docs/mcp.md does not list %s", tl.Name)
+		case got != want:
+			t.Errorf("docs/mcp.md: %s's risk is %q, want %q", tl.Name, got, want)
+		}
+		delete(rows, tl.Name)
+	}
+	for name := range rows {
+		t.Errorf("docs/mcp.md lists %s, which is not served", name)
 	}
 }
 
@@ -298,7 +337,7 @@ func TestAssistantClient(t *testing.T) {
 	f.answer = Deny
 	f.mu.Unlock()
 	out, isErr := f.call("close_window")
-	if !isErr || !strings.HasPrefix(out, assistant.DeclinedPrefix) || len(f.asked) != 2 {
+	if !isErr || !strings.HasPrefix(out, desk.DeclinedPrefix) || len(f.asked) != 2 {
 		t.Errorf("declined: %q %v, asked %d", out, isErr, len(f.asked))
 	}
 }

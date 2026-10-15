@@ -270,10 +270,13 @@ again reaches the existing process without showing its window. Starting
 ### MCP: inua's tools for the assistant and for agents
 
 inua serves its tools over MCP: list and focus windows, move them between
-workspaces, open apps, read the system's state, change Wi-Fi, volume,
-brightness or Focus, lock the screen, take screenshots, read
-notifications and the clipboard, look at processes and Tailscale. The
-server is `inua-assistant --mcp` (`inua mcp` runs it).
+workspaces, open apps and the shell's panels, read the system's state,
+change Wi-Fi, volume, brightness or Focus, lock the screen, take
+screenshots, read, open and dismiss notifications (and their history),
+read the clipboard and its history, play or pause what plays, look at
+processes and Tailscale. The server is `inua-assistant --mcp` (`inua
+mcp` runs it). Workshop apps call the same tools
+([workshop.md](workshop.md#inuas-desk-functions)).
 
 **The assistant** uses them through this server, with Mister Morph's MCP
 client, which starts it for each question. Its `tool_search` keeps the
@@ -305,6 +308,8 @@ Firefox"): **Deny**, **Allow once**, **Allow for this session**. Every
 call, the assistant's too, is recorded in
 `~/.local/state/inua/mcp-calls.jsonl`. Turning MCP off, or tightening
 the policy, takes effect at the next call.
+
+Every tool, its arguments, results and risk: [mcp.md](mcp.md).
 
 
 ## Viewer

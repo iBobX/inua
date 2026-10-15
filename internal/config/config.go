@@ -413,6 +413,9 @@ type Notify struct {
 	// Updates checks once a day for a new inua release and says so in a
 	// notification (internal/upgrade).
 	Updates bool `toml:"updates"`
+	// History keeps the notifications that came (internal/notify,
+	// HistoryPath), for the desk functions; off clears it.
+	History bool `toml:"history"`
 }
 
 // BannerChoices are the banner durations the settings window offers.

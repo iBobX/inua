@@ -1909,6 +1909,36 @@ ApplicationWindow settings {
                       valign: center;
                     }
                   }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Keep a history");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("The last 500 notifications, dismissed ones too, for the assistant, agents and workshop apps allowed to read them. Off clears it.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch notify_history {
+                      name: "notify_history";
+                      valign: center;
+                    }
+                  }
                 }
               }
   }

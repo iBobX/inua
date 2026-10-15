@@ -22,8 +22,10 @@ import (
 // Protocol is the version of the protocol this inua speaks.
 const Protocol = 1
 
-// Uses are the functions an app must name in its manifest to call.
-var Uses = []string{"notify", "open", "clipboard", "terminal", "run"}
+// Uses are the functions an app must name in its manifest to call: the
+// workshop's own, and the areas of inua's desk functions (desk.Tool.Use).
+var Uses = []string{"notify", "open", "clipboard", "terminal", "run",
+	"windows", "apps", "system", "notifications", "clipboard-history", "media", "processes", "network"}
 
 // Categories group the apps in the dock's workshop drawer, in its order;
 // an app without one, or with one this inua does not know, is "other".

@@ -29,6 +29,13 @@ type Node struct {
 	Scroll     *bool           `json:"scroll,omitempty"`
 	Spacing    int             `json:"spacing,omitempty"`
 	Width      int             `json:"width,omitempty"`
+	Height     int             `json:"height,omitempty"`
+	// Min, Max and Step are a slider's range; Min and Max fix a chart's.
+	Min    *float64  `json:"min,omitempty"`
+	Max    *float64  `json:"max,omitempty"`
+	Step   float64   `json:"step,omitempty"`
+	Points []float64 `json:"points,omitempty"` // a chart's
+	Src    string    `json:"src,omitempty"`    // an image's file
 
 	Children []Node `json:"children,omitempty"`
 }
@@ -47,6 +54,14 @@ func (n Node) Bool() bool {
 	return b
 }
 
+// Number is a Value as a number; 0 when it is not one.
+func (n Node) Number() float64 {
+	var f float64
+	json.Unmarshal(n.Value, &f)
+	return f
+}
+
 // Types are the building blocks the window draws.
 var Types = []string{"page", "columns", "scroll", "box", "section", "row", "text", "facts",
-	"button", "entry", "search", "textarea", "switch", "dropdown", "bar", "empty"}
+	"button", "entry", "search", "textarea", "switch", "dropdown", "bar", "empty",
+	"tabs", "tab", "segmented", "slider", "progress", "spinner", "chart", "tiles", "tile", "image"}

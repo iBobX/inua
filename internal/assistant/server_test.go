@@ -16,6 +16,7 @@ import (
 
 	"github.com/lyricat/inua/internal/assistant/keys"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desk"
 )
 
 func TestServeSettings(t *testing.T) {
@@ -47,7 +48,7 @@ func TestServeSettings(t *testing.T) {
 
 // serveTest runs the real Runtime API against a scripted model, with isolated
 // state and no connection to the desktop or an external model provider.
-func serveTest(t *testing.T, model *fakeModel, own []Tool, approve Approver) (*Assistant, string, context.CancelFunc) {
+func serveTest(t *testing.T, model *fakeModel, own []desk.Tool, approve Approver) (*Assistant, string, context.CancelFunc) {
 	t.Helper()
 	llm := httptest.NewServer(model)
 	t.Cleanup(llm.Close)
@@ -143,7 +144,7 @@ func TestRuntimeAPIAuthToolsAndLocalIsolation(t *testing.T) {
 	localRelease := make(chan struct{})
 	var changes atomic.Int32
 	var asked atomic.Int32
-	own := []Tool{
+	own := []desk.Tool{
 		{Name: "wait_local", Description: "Waits for the local test.", Run: func(ctx context.Context, _ map[string]any) (any, error) {
 			close(localStarted)
 			select {
@@ -153,7 +154,7 @@ func TestRuntimeAPIAuthToolsAndLocalIsolation(t *testing.T) {
 				return nil, ctx.Err()
 			}
 		}},
-		{Name: "change_desktop", Description: "Changes the fake desktop.", Risk: Change, Run: func(context.Context, map[string]any) (any, error) {
+		{Name: "change_desktop", Description: "Changes the fake desktop.", Risk: desk.Change, Run: func(context.Context, map[string]any) (any, error) {
 			changes.Add(1)
 			return "changed", nil
 		}},
@@ -228,10 +229,10 @@ func TestRuntimeAPICancelsApproval(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			started, stopped := make(chan struct{}), make(chan struct{})
 			var changed atomic.Bool
-			tool := Tool{Name: "change_desktop", Description: "Changes the fake desktop.", Risk: Always,
+			tool := desk.Tool{Name: "change_desktop", Description: "Changes the fake desktop.", Risk: desk.Always,
 				Run: func(context.Context, map[string]any) (any, error) { changed.Store(true); return "changed", nil }}
 			model := &fakeModel{t: t, replies: []reply{{tool: tool.Name, args: `{}`}}}
-			_, url, cancel := serveTest(t, model, []Tool{tool}, func(ctx context.Context, _, _ string) (bool, error) {
+			_, url, cancel := serveTest(t, model, []desk.Tool{tool}, func(ctx context.Context, _, _ string) (bool, error) {
 				close(started)
 				<-ctx.Done()
 				close(stopped)
