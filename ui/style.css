@@ -797,7 +797,7 @@ window.settings { background: @app; font-size: 14px; }
 .settings entry placeholder { color: @t2; }
 .settings .mono-entry { font-size: 12.5px; }
 
-.settings button.outlined, .settings dropdown > button {
+.settings button.outlined, .settings menubutton.outlined > button, .settings dropdown > button {
   min-height: 34px;
   padding: 0 14px;
   background: @surface;
@@ -807,11 +807,11 @@ window.settings { background: @app; font-size: 14px; }
   box-shadow: none;
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
-.settings button.outlined:hover, .settings dropdown > button:hover {
+.settings button.outlined:hover, .settings menubutton.outlined > button:hover, .settings dropdown > button:hover {
   background: mix(@surface, @accent, 0.06);
   border-color: alpha(@accent, 0.38);
 }
-.settings button.outlined:disabled { color: @t2; background: transparent; border-color: alpha(@line, 0.6); }
+.settings button.outlined:disabled, .settings menubutton.outlined > button:disabled { color: @t2; background: transparent; border-color: alpha(@line, 0.6); }
 .settings dropdown > button { min-width: 150px; }
 /* Drop-down lists: the rows straight on the theme's card, with none of
    GTK's padding around them (its listview has an 8px margin), and the
@@ -1580,11 +1580,22 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .fortune-player.out { opacity: 0.45; }
 .fortune-cash { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-feature-settings: "tnum"; font-size: 14px; color: @t0; }
 .fortune-card-title { font-size: 16px; font-weight: 500; color: @t0; }
-.fortune-card { margin-top: 4px; font-size: 12.5px; line-height: 1.45; color: @t1; }
+.fortune-square-head { margin-bottom: 2px; }
+.fortune-square-kind { font-size: 12px; color: @t2; }
+.fortune-square-owner { margin: 8px 0 6px; font-size: 12.5px; color: @t1; }
+.fortune-rents { margin: 2px 0 4px; }
+.fortune-rent { min-height: 26px; padding: 0 8px; border-radius: 3px; background: alpha(@t0, 0.04); font-size: 12.5px; color: @t1; }
+.fortune-rent image { color: @t2; }
+.fortune-rent.now { background: alpha(@accent, 0.16); color: @t0; box-shadow: inset 0 0 0 1px alpha(@accent, 0.45); }
+.fortune-rent.now image { color: @accent; }
+.fortune-rent-amount { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-feature-settings: "tnum"; }
+.fortune-square-note { margin-top: 6px; font-size: 11.5px; line-height: 1.4; color: @t2; }
 .fortune-buttons { margin-top: 10px; }
 .settings button.fortune-main { min-height: 38px; font-weight: 500; }
 .settings button.fortune-main:disabled { background: transparent; border-color: @line; }
 .settings button.fortune-main:disabled label { color: @t2; }
+.settings button.fortune-quiet { padding: 7px 18px; border: 1px solid alpha(@line, 0.9); border-radius: 2px; background: transparent; box-shadow: none; color: @t1; font-weight: 400; }
+.settings button.fortune-quiet:hover { border-color: alpha(@accent, 0.38); background: alpha(@t0, 0.04); color: @t0; }
 .fortune-log { font-size: 12px; color: @t2; }
 .fortune-log.latest { color: @t1; }
 .fortune-log.good { color: alpha(@ok, 0.85); }
@@ -1593,8 +1604,26 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .fortune-section { padding-bottom: 10px; }
 .fortune-section + .fortune-section { border-top: 1px solid alpha(@line, 0.6); }
 .fortune-acts { margin-top: 8px; }
-.fortune-zoom { margin: 12px; }
-.settings .fortune-zoom button { min-width: 30px; min-height: 30px; padding: 0; background: alpha(@surface, 0.85); }
+.fortune-hand { margin-bottom: 10px; }
+.fortune-hand-caption { padding: 2px 10px; border-radius: 10px; background: alpha(@surface, 0.88); font-size: 11.5px; color: @t1; }
+.fortune-shop { margin-top: 64px; padding: 18px 24px 20px; border: 1px solid @line; border-radius: 8px; background: alpha(@surface, 0.97); box-shadow: 0 10px 34px alpha(black, 0.28); }
+.fortune-shop-title { font-family: "Shippori Mincho", "Noto Serif CJK JP", serif; font-size: 22px; font-weight: 500; color: @t0; }
+.fortune-ask { margin: 2px 2px 4px; font-size: 12px; color: @t2; }
+.fortune-shop-sub { margin-bottom: 4px; font-size: 12px; color: @t2; }
+.settings button.fortune-card-button, .settings menubutton.fortune-card-button > button {
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  transition: background 120ms ease-out, margin 120ms ease-out;
+  margin: 3px 0 0;
+}
+.settings button.fortune-card-button:hover, .settings menubutton.fortune-card-button > button:hover,
+.settings menubutton.fortune-card-button > button:checked { background: alpha(@accent, 0.16); margin: 0 0 3px; }
+.settings button.fortune-card-button:disabled, .settings menubutton.fortune-card-button > button:disabled { opacity: 0.5; }
 .fortune-cash { transition: color 250ms ease-out; }
 .fortune-cash.gain { color: @ok; }
 .fortune-cash.loss { color: @danger; }

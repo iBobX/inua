@@ -51,6 +51,7 @@ type frame struct {
 
 // Keys, as GDK names them.
 const (
+	keyHome  = 0xff50
 	keyLeft  = 0xff51
 	keyUp    = 0xff52
 	keyRight = 0xff53
@@ -159,12 +160,14 @@ func (f *frame) say(text, tone string) {
 var noDestroy glib.DestroyNotify = func(uintptr) {}
 
 // canvas is a board drawn with cairo, in units of its own (w × h) that
-// are scaled to fit the widget and centred in it.
+// are scaled to fit the widget and centred in it; or, filling it, in the
+// widget's own units, w × h its size.
 type canvas struct {
 	area          *gtk.DrawingArea
 	w, h          float64
 	scale, ox, oy float64
 	top           bool // drawn at the top of the widget, not in its middle
+	fill          bool // drawn in the widget's units, at its size
 	paint         func(p pen)
 	onDraw        gtk.DrawingAreaDrawFunc
 
@@ -184,6 +187,9 @@ func newCanvas(w, h float64, paint func(p pen)) *canvas {
 	c.area.SetVexpand(true)
 	c.area.SetFocusable(true)
 	c.onDraw = func(_ uintptr, ctx *cairo.Context, width, height int32, _ uintptr) {
+		if c.fill {
+			c.w, c.h = float64(width), float64(height)
+		}
 		c.scale = min(float64(width)/c.w, float64(height)/c.h)
 		c.ox = (float64(width) - c.w*c.scale) / 2
 		c.oy = (float64(height) - c.h*c.scale) / 2

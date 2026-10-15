@@ -226,5 +226,14 @@ go-up                                 arrow-up
 view-grid                             squares-four
 view-dual                             columns
 utilities-terminal                    terminal-window
+# Small Fortune's panel
+fortune-house                         house
+fortune-hotel                         building
+fortune-sell                          hand-coins
+fortune-lot                           plant
+fortune-pier                          boat
+fortune-power                         lightning
+fortune-water                         drop
+fortune-dice                          dice-five
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

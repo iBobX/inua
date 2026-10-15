@@ -7,7 +7,6 @@ import (
 	"math/rand/v2"
 	"slices"
 	"sort"
-	"time"
 
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/i18n"
@@ -16,7 +15,8 @@ import (
 // Small Fortune's board: a printed washi board seen square-on from above
 // and in front, at fElev, its track shaped like the city (fortune_track.go).
 // The board is laid out flat in units of its own (u to the right, v down,
-// fBoard square). The print, which does not change (paper, the city round
+// fBoard square); the city's art on it is drawn for a board mapK times
+// smaller, artBoard square, and printed larger. The print, which does not change (paper, the city round
 // the track, tiles, names, the middle's art), is drawn once into an image
 // and laid on the board; what changes (owners, rents, the square in focus)
 // is printed over it each frame; what stands on the board (houses, inns,
@@ -24,11 +24,13 @@ import (
 // corners, back to front.
 
 const (
-	fBoard = 706.0 // the paper's side
-	fSlab  = 14.0  // the board's thickness
+	artBoard = 706.0           // the side of the board the city's art is drawn for
+	mapK     = 2.0             // how much larger the board is printed
+	fBoard   = artBoard * mapK // the paper's side
+	fSlab    = 14.0            // the board's thickness
 
-	boardW = 900.0
-	boardH = 830.0
+	boardW = 1760.0
+	boardH = 1590.0
 	boardK = 1.2 // canvas units per board unit
 
 	fElev = 62 * math.Pi / 180 // the camera's angle above the table
@@ -110,7 +112,7 @@ func tileFrame(pn pen, t tile) (along, across float64) {
 // jail, it is behind the bars.
 func tokenAt(city, sq, pi int, jailed bool) games.Vec {
 	t := trackOf(city).tiles[sq]
-	if sq%10 == 0 { // a corner: its words inside, the pawns, then the cell or the basin outside
+	if games.IsCorner(sq) { // a corner: its words inside, the pawns, then the cell or the basin outside
 		if jailed {
 			return t.at(-6+12*float64(pi%2), 18+10*float64(pi/2))
 		}
@@ -490,6 +492,12 @@ func rentOf(v games.FortuneView, sq int) int {
 	return 0
 }
 
+// How much larger than drawn the trees and landmarks stand on the board.
+const (
+	treeK     = 1.4
+	landmarkK = 2.4
+)
+
 // The pines in the middle, and where they stand.
 var pines = [][3]float64{{530, 214, 24}, {548, 250, 18}, {204, 410, 22}}
 
@@ -498,35 +506,33 @@ func (p *fortune) paint(pn pen) {
 		return
 	}
 	// What stands still: the whole board drawn into an image at the
-	// camera's zoom, again only when it or the zoom changes; the camera
-	// shows its part, pixel for pixel, so panning costs nothing. Over it
-	// what moves or marks: the square under the pointer, the one picked,
-	// the streets that may be raised, the pawns, the dice, the money flying.
+	// screen's scale, again only when it changes; the camera shows its
+	// part, pixel for pixel, so moving about costs nothing. Over it what
+	// moves or marks: the square under the pointer, the one picked, the
+	// streets that may be raised, the pawns, the dice, the money flying.
 	p.canvasScale = pn.DeviceScale()
-	scale := min(p.canvasScale*p.cam.zoom, 6)
-	key := p.underKey(scale)
-	// While the zoom is changing, the image there is stretched to it; it is
-	// drawn again sharp once the zoom settles.
-	settling := p.under != nil && time.Since(p.zoomedAt) < zoomSettle && p.underState == p.stateKey()
-	if (p.under == nil || key != p.underFor) && !settling {
+	scale := p.canvasScale
+	if p.under == nil || p.underScale != scale || p.underFor != p.stateKey() {
 		if p.under != nil {
 			p.under.Free()
 		}
-		p.under, p.underFor, p.underScale, p.underState = newImage(int(math.Ceil(boardW*scale)), int(math.Ceil(boardH*scale))), key, scale, p.stateKey()
+		p.under, p.underFor, p.underScale = newImage(int(math.Ceil(boardW*scale)), int(math.Ceil(boardH*scale))), p.stateKey(), scale
 		p.under.Draw(func(q pen) {
 			q.Scale(scale, scale)
 			q.Round()
 			p.paintUnder(q)
 		})
 	}
+	p.cam.keep() // for the widget's size now
 	pn.Save()
 	p.cam.look(pn)
-	pn.Blit(p.under, 1/p.underScale, math.Abs(p.underScale-pn.DeviceScale()) > 0.01) // pixel for pixel, but while zooming
+	pn.Blit(p.under, 1/p.underScale, false)
 	p.paintMarks(pn)
 	p.paintOver(pn)
 	p.paintFX(pn)
+	p.paintCardFX(pn)
 	pn.Restore()
-	p.paintMiddle(pn) // on the screen, whatever the camera
+	p.paintMiddle(pn) // on the screen, wherever the camera looks
 }
 
 // paintMarks draws over the board the square under the pointer, the one
@@ -562,13 +568,8 @@ func (p *fortune) paintMarks(pn pen) {
 	pn.Restore()
 }
 
-// underKey names what the still layer shows: when it changes, the layer
-// is drawn again.
-func (p *fortune) underKey(scale float64) string {
-	return fmt.Sprint(scale, " ", p.stateKey())
-}
-
-// stateKey names what the still layer shows, its scale aside.
+// stateKey names what the still layer shows, its scale aside: when it
+// changes, the layer is drawn again.
 func (p *fortune) stateKey() string {
 	v := p.shown
 	return fmt.Sprint(p.city(), v.Owner, v.Houses, v.Pot)
@@ -588,7 +589,7 @@ func (p *fortune) paintOver(pn pen) {
 			if d == 0 { // one die
 				continue
 			}
-			u, w := art.dice.X-22+float64(i)*44, art.dice.Y-float64(i)*12
+			u, w := p.diceAt.X-22+float64(i)*44, p.diceAt.Y-float64(i)*12
 			solids = append(solids, solid{w, func() { die(pn, u, w, bounce*(1-0.3*float64(i)), 24, d) }})
 		}
 	}
@@ -672,7 +673,8 @@ func (p *fortune) paintUnder(pn pen) {
 		}
 	}
 	for _, t := range art.trees {
-		add(t[0], t[1], func() { art.tree(pn, t[0], t[1], t[2], rand.New(rand.NewPCG(uint64(t[0]), uint64(t[1])))) })
+		u, v, s := t[0]*mapK, t[1]*mapK, t[2]*treeK
+		add(u, v, func() { art.tree(pn, u, v, s, rand.New(rand.NewPCG(uint64(t[0]), uint64(t[1])))) })
 	}
 	for _, l := range landmarksOf(p.city()) {
 		add(l.at.X, l.at.Y, func() {
@@ -680,13 +682,13 @@ func (p *fortune) paintUnder(pn pen) {
 			c := project(l.at.X, l.at.Y, 0)
 			pn.Save()
 			pn.Translate(c.X, c.Y)
-			pn.Scale(1.7, 1.7)
+			pn.Scale(landmarkK, landmarkK)
 			pn.Translate(-c.X, -c.Y)
 			l.draw(pn, l.at.X, l.at.Y)
 			pn.Restore()
 		})
 	}
-	fc := tr.tiles[20].at(0, 24)
+	fc := tr.tiles[games.FountainAt].at(0, 24)
 	add(fc.X, fc.Y, func() { p.fountain(pn, fc.X, fc.Y, v.Pot) })
 	sort.SliceStable(solids, func(a, b int) bool { return solids[a].depth < solids[b].depth })
 	for _, s := range solids {
@@ -698,15 +700,7 @@ func (p *fortune) paintUnder(pn pen) {
 // layPrint lays the board's print on it, drawing it again when the scale
 // on screen has changed.
 func (p *fortune) layPrint(pn pen) {
-	// At one of three steps of the zoom (1, 1.6, 2.5 times the canvas's):
-	// zooming within a step lays the same print smaller or larger.
-	scale := p.canvasScale * 2.5
-	for _, k := range []float64{1.6, 1} {
-		if p.canvasScale*k >= pn.DeviceScale()*0.95 {
-			scale = p.canvasScale * k
-		}
-	}
-	scale = min(scale, 5)
+	scale := pn.DeviceScale()
 	if p.print == nil || math.Abs(scale/p.printScale-1) > 0.05 || p.printCity != p.city() {
 		if p.print != nil {
 			p.print.Free()
@@ -738,7 +732,7 @@ func paintPrint(pn pen, city int) {
 	pn.Fill()
 	// Fibres in the paper.
 	pn.Round()
-	for range 900 {
+	for range int(900 * mapK * mapK) {
 		x, y := 5+r.Float64()*(fBoard-10), 5+r.Float64()*(fBoard-10)
 		l, a := 6+r.Float64()*26, r.Float64()*2*math.Pi
 		pn.Width(0.3 + r.Float64()*0.6)
@@ -751,14 +745,19 @@ func paintPrint(pn pen, city int) {
 		pn.Curve(x+math.Cos(a+1)*l*0.4, y+math.Sin(a+1)*l*0.4, x+math.Cos(a-0.6)*l*0.7, y+math.Sin(a-0.6)*l*0.7, x+math.Cos(a)*l, y+math.Sin(a)*l)
 		pn.Stroke()
 	}
-	// Round the track the city, inside it the middle's art.
-	art.outside(pn, r, tr)
+	// Round the track the city, inside it the middle's art, both drawn for
+	// the smaller board and printed larger.
+	pn.Save()
+	pn.Scale(mapK, mapK)
+	art.outside(pn, r, tr.art)
+	pn.Restore()
 	pn.Save()
 	polyPath(pn, tr.inner)
 	pn.Clip()
 	pn.Color(washiPaper)
 	pn.Paint()
-	art.middle(pn, r, tr)
+	pn.Scale(mapK, mapK)
+	art.middle(pn, r, tr.art)
 	pn.Restore()
 	for i, sq := range games.Board {
 		paintTile(pn, tr.tiles[i], i, sq, names[i], art, r)
@@ -870,8 +869,8 @@ func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt,
 		ship(pn, 0, 10, washiIndigo)
 	case games.Utility:
 		label()
-		if i == 12 {
-			bolt(pn, 0, 10, groupColors[3])
+		if i < games.FountainAt { // the power station; then the water works
+			bolt(pn, 0, 10, groupColors[6])
 		} else {
 			drop(pn, 0, 10, washiWater)
 		}
@@ -885,9 +884,12 @@ func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt,
 	case games.TaxSquare:
 		label()
 		pn.Text(art.tax, minchoBold+" 13", 0, 8, 0.5, 0.5, washiInk)
+	case games.CardShop:
+		shopSign(pn, 0, -4, art.shop)
+		pn.Text(i18n.T("Card Shop"), mincho+" 6.4", 0, across/2-12, 0.5, 0.5, washiInk)
 	case games.StartSquare, games.JailSquare, games.Fountain, games.GoToJail:
-		word := art.corners[i]
-		sub := map[games.SquareKind]string{games.StartSquare: i18n.T("START\ncollect $200"), games.JailSquare: i18n.T("JAIL\njust visiting"), games.Fountain: i18n.T("FOUNTAIN\ntake the pot"), games.GoToJail: i18n.T("GO TO\nJAIL")}[sq.Kind]
+		word := art.corners[i/games.Side]
+		sub := map[games.SquareKind]string{games.StartSquare: i18n.Tf("START\ncollect $%d", games.StartPay), games.JailSquare: i18n.T("JAIL\njust visiting"), games.Fountain: i18n.T("FOUNTAIN\ntake the pot"), games.GoToJail: i18n.T("GO TO\nJAIL")}[sq.Kind]
 		// Toward the middle the city's word and the English; then the
 		// pawns; outside, Start's arrow, the cell, the basin.
 		pn.Text(word, art.cornerFont, 0, -across/2+11, 0.5, 0.5, washiShu)
@@ -965,6 +967,24 @@ func (p *fortune) paintTileState(pn pen, i int, v games.FortuneView) {
 	pn.Restore()
 }
 
+// shopSign prints a card shop's sign at x, y: a fan of three cards, the
+// front one with the city's mark.
+func shopSign(pn pen, x, y float64, mark string) {
+	for k, col := range []color.NRGBA{washiIndigo, groupColors[6], washiTile} {
+		pn.Save()
+		pn.Translate(x, y+6)
+		pn.Rotate(float64(k-1) * 0.3)
+		pn.RoundRect(-6.5, -19, 13, 18, 1.6)
+		pn.Color(col)
+		pn.FillKeep()
+		pn.Width(0.8)
+		pn.Alpha(washiInk, 0.8)
+		pn.Stroke()
+		pn.Restore()
+	}
+	pn.Text(mark, minchoBold+" 8", x+2.6, y-3, 0.5, 0.5, washiShu)
+}
+
 func ship(pn pen, x, y float64, col color.NRGBA) {
 	pn.MoveTo(x-12, y)
 	pn.LineTo(x+12, y)
@@ -1039,11 +1059,8 @@ func (p *fortune) fountain(pn pen, u, v float64, pot int) {
 // paintMiddle sets the latest news and whose turn it is on a slip of paper
 // in the middle; at the end, the standings.
 func (p *fortune) paintMiddle(pn pen) {
-	// The slip where the city keeps it, as the camera sees it, kept on
-	// the screen.
-	s := project(p.art().slip.X, p.art().slip.Y, 0)
-	m := games.Vec{X: (s.X-p.cam.view.X)*p.cam.zoom + boardMiddle.X, Y: (s.Y-p.cam.view.Y)*p.cam.zoom + boardMiddle.Y}
-	m.X, m.Y = max(160, min(boardW-160, m.X)), max(50, min(boardH-60, m.Y))
+	// The slip at the top of the view, whatever part of the board it shows.
+	view := p.cam.size()
 	slip := func(x, y, w, h float64) {
 		for k := 3; k >= 1; k-- {
 			g := float64(k) * 1.5
@@ -1059,7 +1076,7 @@ func (p *fortune) paintMiddle(pn pen) {
 		pn.Fill()
 	}
 	if p.g.Phase == games.PhaseOver && !p.busy() {
-		m = boardMiddle // the standings, over the middle of the board
+		m := games.Vec{X: view.X / 2, Y: view.Y / 2} // the standings, over the middle of the view
 		slip(m.X-200, m.Y-150, 400, 260)
 		w := p.g.Winner
 		title := i18n.Tf("%s won.", p.g.Players[w].Name)
@@ -1079,7 +1096,7 @@ func (p *fortune) paintMiddle(pn pen) {
 			pn.Fill()
 			name := p.g.Players[i].Name
 			if p.g.Players[i].Out {
-				name += " (bankrupt)"
+				name = i18n.Tf("%s (bankrupt)", name)
 			}
 			pn.Text(name, mincho+" 13", m.X-134, y, 0, 0.5, washiInk)
 			pn.Text("$"+thousands(p.g.Worth(i)), mincho+" Medium 13", m.X+160, y, 1, 0.5, washiInk)
@@ -1087,7 +1104,11 @@ func (p *fortune) paintMiddle(pn pen) {
 		pn.Text(i18n.T("Press N or Space for a new game"), mincho+" 11", m.X, m.Y+86, 0.5, 0.5, shade(washiInk, 2.4))
 		return
 	}
-	turn := p.g.Players[p.g.Turn]
+	pi := p.g.Turn
+	if p.cur != nil { // the board is still showing a turn gone by
+		pi = p.cur.Player
+	}
+	turn := p.g.Players[pi]
 	who := i18n.T("Your turn")
 	if turn.CPU {
 		who = i18n.Tf("%s's turn", turn.Name)
@@ -1096,6 +1117,7 @@ func (p *fortune) paintMiddle(pn pen) {
 	if len(p.log) > 0 {
 		h = 80
 	}
+	m := games.Vec{X: view.X / 2, Y: 14 + h/2}
 	slip(m.X-110, m.Y-h/2, 220, h)
 	y := m.Y - h/2 + 16
 	if len(p.log) > 0 {
@@ -1109,9 +1131,13 @@ func (p *fortune) paintMiddle(pn pen) {
 		pn.TextBox(l.text, mincho+" 9.5", m.X, y-6, 206, col)
 		y += 40
 	}
-	pn.Color(p.playerColor(p.g.Turn))
+	pn.Color(p.playerColor(pi))
 	pn.RoundRect(m.X-96, y-5, 10, 10, 1.5)
 	pn.Fill()
 	pn.Text(who, mincho+" Medium 9.5", m.X-80, y, 0, 0.5, washiInk)
-	pn.Text(i18n.Tf("round %d of %d", p.g.Round, p.g.Rounds), mincho+" 8.5", m.X+100, y, 1, 0.5, shade(washiInk, 2.4))
+	round := i18n.Tf("round %d of %d", p.g.Round, p.g.Rounds)
+	if p.muted {
+		round = i18n.Tf("%s · sound off", round)
+	}
+	pn.Text(round, mincho+" 8.5", m.X+100, y, 1, 0.5, shade(washiInk, 2.4))
 }

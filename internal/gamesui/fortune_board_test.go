@@ -71,8 +71,8 @@ func TestMoneyFX(t *testing.T) {
 	}
 }
 
-// On every city's board, the slip, the dice, the title, the trees and the
-// landmarks stand clear of the roads.
+// On every city's board, the title, the trees and the landmarks stand
+// clear of the roads.
 func TestCityFurnitureClear(t *testing.T) {
 	for city := range games.FortuneCities {
 		art := cityArts[city]
@@ -81,18 +81,14 @@ func TestCityFurnitureClear(t *testing.T) {
 				t.Errorf("city %d: %s at %v is %.0f from a road, want %.0f", city, what, p, d, r)
 			}
 		}
-		for _, d := range []float64{-92, 0, 92} { // the slip, along its width
-			check("the slip", games.Vec{X: art.slip.X + d, Y: art.slip.Y}, 12)
-		}
-		check("the dice", art.dice, 30)
 		for _, d := range []float64{-70, 0, 70} { // printed under the roads: a nearer road only hides its edge
-			check("the title", games.Vec{X: cityTitles[city].X + d, Y: cityTitles[city].Y + 20}, 20)
+			check("the title", games.Vec{X: (cityTitles[city].X + d) * mapK, Y: (cityTitles[city].Y + 20) * mapK}, 20)
 		}
 		for _, tr := range art.trees {
-			check("a tree", games.Vec{X: tr[0], Y: tr[1]}, tr[2]*0.5)
+			check("a tree", games.Vec{X: tr[0] * mapK, Y: tr[1] * mapK}, tr[2]*treeK*0.5)
 		}
 		for _, l := range landmarksOf(city) {
-			check("a landmark", l.at, 26)
+			check("a landmark", l.at, 15*landmarkK)
 		}
 	}
 }

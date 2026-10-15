@@ -13,12 +13,11 @@ import (
 // Chance and the taxes, what is printed in its middle, and the pieces that
 // stand on it. They follow games.FortuneCities, in order.
 type cityArt struct {
-	corners              map[int]string // Start, Jail, Fountain, Go to Jail, in the city's script
+	corners              [4]string // Start, Jail, Fountain, Go to Jail, in the city's script
 	cornerFont           string
-	chance, tax          string
+	chance, tax, shop    string
 	middle               func(pn pen, r *rand.Rand, tr *track) // inside the track
 	outside              func(pn pen, r *rand.Rand, tr *track) // round it: water, banks, fields
-	slip, dice           games.Vec                             // where the news and the dice lie
 	house                func(pn pen, u, v, s float64, along bool, owner color.NRGBA)
 	hotel                func(pn pen, u, v, su, sv float64, owner color.NRGBA)
 	tree                 func(pn pen, u, v, s float64, r *rand.Rand)
@@ -33,30 +32,26 @@ var cityTitles = []games.Vec{{X: 290, Y: 236}, {X: 84, Y: 48}, {X: 290, Y: 236},
 
 var cityArts = []cityArt{
 	{ // Tokyo
-		corners: map[int]string{0: "出発", 10: "牢", 20: "泉", 30: "入牢"}, cornerFont: minchoBold + " 18",
-		chance: "運", tax: "税", middle: tokyoMiddle, outside: tokyoOutside,
-		slip: games.Vec{X: 450, Y: 478}, dice: games.Vec{X: 430, Y: 548},
+		corners: [4]string{"出発", "牢", "泉", "入牢"}, cornerFont: minchoBold + " 18",
+		chance: "運", tax: "税", shop: "札", middle: tokyoMiddle, outside: tokyoOutside,
 		house: machiya, hotel: ryokan, tree: pine, pawn: kokeshi, spout: true, trees: pines,
 		houseWord: i18n.M("machiya"), hotelWord: i18n.M("ryokan"),
 	},
 	{ // New York
-		corners: map[int]string{0: "GO", 10: "JAIL", 20: "PARK", 30: "COPS"}, cornerFont: minchoBold + " 13",
-		chance: "?", tax: "$", middle: newYorkMiddle, outside: newYorkOutside,
-		slip: games.Vec{X: 616, Y: 674}, dice: games.Vec{X: 655, Y: 585},
+		corners: [4]string{"GO", "JAIL", "PARK", "COPS"}, cornerFont: minchoBold + " 13",
+		chance: "?", tax: "$", shop: "♠", middle: newYorkMiddle, outside: newYorkOutside,
 		house: brownstone, hotel: decoTower, tree: roundTree, pawn: turnedPawn, trees: parkTrees,
 		houseWord: i18n.M("brownstones"), hotelWord: i18n.M("towers"),
 	},
 	{ // Shanghai
-		corners: map[int]string{0: "起点", 10: "监狱", 20: "喷泉", 30: "入狱"}, cornerFont: minchoBold + " 17",
-		chance: "运", tax: "税", middle: shanghaiMiddle, outside: shanghaiOutside,
-		slip: games.Vec{X: 450, Y: 522}, dice: games.Vec{X: 370, Y: 300},
+		corners: [4]string{"起点", "监狱", "喷泉", "入狱"}, cornerFont: minchoBold + " 17",
+		chance: "运", tax: "税", shop: "卡", middle: shanghaiMiddle, outside: shanghaiOutside,
 		house: shikumen, hotel: bundHotel, tree: roundTree, pawn: turnedPawn, spout: true, trees: planeTrees,
 		houseWord: i18n.M("shikumen"), hotelWord: i18n.M("Bund hotels"),
 	},
 	{ // Rome
-		corners: map[int]string{0: "VIA", 10: "CARCERE", 20: "FONTANA", 30: "ARRESTO"}, cornerFont: minchoBold + " 11",
-		chance: "?", tax: "%", middle: romaMiddle, outside: romaOutside,
-		slip: games.Vec{X: 450, Y: 496}, dice: games.Vec{X: 420, Y: 560},
+		corners: [4]string{"VIA", "CARCERE", "FONTANA", "ARRESTO"}, cornerFont: minchoBold + " 11",
+		chance: "?", tax: "%", shop: "♣", middle: romaMiddle, outside: romaOutside,
 		house: villa, hotel: palazzo, tree: cypress, pawn: turnedPawn, trees: cypresses,
 		houseWord: i18n.M("villas"), hotelWord: i18n.M("palazzi"),
 	},
@@ -143,7 +138,7 @@ func decoTower(pn pen, u, v, su, sv float64, owner color.NRGBA) {
 	pn.Width(1.2)
 	pn.Color(shade(stone, 0.6))
 	pn.Line(top.X, top.Y, tip.X, tip.Y)
-	pn.Color(groupColors[3])
+	pn.Color(groupColors[6])
 	pn.Circle(tip.X, tip.Y, 1.3)
 	pn.Fill()
 }
@@ -411,7 +406,7 @@ func tokyoMiddle(pn pen, r *rand.Rand, tr *track) {
 func tokyoOutside(pn pen, r *rand.Rand, tr *track) {
 	lanes(pn, r)
 	pn.Save()
-	pn.Circle(fBoard, fBoard, 210)
+	pn.Circle(artBoard, artBoard, 210)
 	pn.Clip()
 	pn.Alpha(washiIndigo, 0.06)
 	pn.Paint()
@@ -463,7 +458,7 @@ func newYorkMiddle(pn pen, r *rand.Rand, tr *track) {
 func newYorkOutside(pn pen, r *rand.Rand, tr *track) {
 	pn.Color(mix(washiPaper, washiWater, 0.22))
 	pn.Paint()
-	ripples(pn, 0, fBoard, 0, fBoard, r)
+	ripples(pn, 0, artBoard, 0, artBoard, r)
 	land := mix(washiPaper, color.NRGBA{0xC9, 0xBE, 0x9C, 255}, 0.25)
 	for _, shore := range [][]games.Vec{
 		{{X: 0, Y: 0}, {X: 300, Y: 0}, {X: 262, Y: 52}, {X: 130, Y: 196}, {X: 60, Y: 380}, {X: 0, Y: 430}},
@@ -478,7 +473,7 @@ func newYorkOutside(pn pen, r *rand.Rand, tr *track) {
 	}
 	pn.Text("NEW JERSEY", mincho+" Medium 7", 46, 300, 0.5, 0.5, shade(washiInk, 2))
 	pn.Text("BROOKLYN", mincho+" Medium 7", 650, 520, 0.5, 0.5, shade(washiInk, 2))
-	sun(pn, 640, 300, 36, groupColors[3], r)
+	sun(pn, 640, 300, 36, groupColors[6], r)
 	title(pn, cityTitles[1].X, cityTitles[1].Y, "NEW YORK", minchoBold+" 18", "S M A L L    F O R T U N E", "NY", r)
 }
 
@@ -498,7 +493,8 @@ func shanghaiMiddle(pn pen, r *rand.Rand, tr *track) {
 func shanghaiOutside(pn pen, r *rand.Rand, tr *track) {
 	lanes(pn, r)
 	var course []games.Vec
-	for _, i := range []int{28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 0, 1} {
+	east := eastBank()
+	for _, i := range east {
 		t := tr.tiles[i]
 		course = append(course, t.at(0, t.across/2+34))
 	}
@@ -509,22 +505,32 @@ func shanghaiOutside(pn pen, r *rand.Rand, tr *track) {
 	pn.Width(1)
 	for _, d := range []float64{-14, 0, 14} {
 		var line []games.Vec
-		for k, i := range []int{28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 0, 1} {
+		for k, i := range east {
 			t := tr.tiles[i]
 			line = append(line, t.at(float64(k%3)*4, t.across/2+34+d))
 		}
 		pn.Alpha(washiIndigo, 0.3)
 		strokeCurve(pn, line)
 	}
-	label := tr.tiles[31].at(0, tr.tiles[31].across/2+30)
-	pn.Text("黄浦江", minchoBold+" 9", min(label.X, fBoard-24), label.Y, 0.5, 0.5, shade(washiIndigo, 1.5))
+	label := tr.tiles[62].at(0, tr.tiles[62].across/2+30)
+	pn.Text("黄浦江", minchoBold+" 9", min(label.X, artBoard-24), label.Y, 0.5, 0.5, shade(washiIndigo, 1.5))
+}
+
+// eastBank are the squares the Huangpu runs along, from the ring's last
+// side round past Start.
+func eastBank() []int {
+	var sq []int
+	for i := 56; i < games.LoopLen; i++ {
+		sq = append(sq, i)
+	}
+	return append(sq, 0, 1, 2)
 }
 
 // romaMiddle prints the Tiber through the walls, the Colosseum, the title
 // under a warm sun.
 func romaMiddle(pn pen, r *rand.Rand, tr *track) {
 	var course []games.Vec
-	for _, i := range []int{20, 19, 18, 17, 16, 15, 14, 13, 12, 11} {
+	for i := games.FountainAt; i > games.JailAt; i-- { // inside the ring's second side
 		t := tr.tiles[i]
 		course = append(course, t.at(0, -t.across/2-34))
 	}
@@ -535,7 +541,7 @@ func romaMiddle(pn pen, r *rand.Rand, tr *track) {
 	pn.Width(0.8)
 	pn.Alpha(washiIndigo, 0.35)
 	strokeCurve(pn, course)
-	pn.Text("Tevere", mincho+" Medium 7.5", course[4].X, course[4].Y, 0.5, 0.5, shade(washiIndigo, 1.5))
+	pn.Text("Tevere", mincho+" Medium 7.5", course[8].X, course[8].Y, 0.5, 0.5, shade(washiIndigo, 1.5))
 	sun(pn, 420, 158, 38, color.NRGBA{0xD9, 0x8A, 0x3C, 255}, r)
 	colosseum(pn, 528, 262, 58, 15)
 	title(pn, cityTitles[3].X, cityTitles[3].Y, "ROMA", minchoBold+" 36", "S M A L L    F O R T U N E", "SPQR", r)
@@ -544,7 +550,7 @@ func romaMiddle(pn pen, r *rand.Rand, tr *track) {
 // romaOutside prints the Campagna: fields in washes of green and ochre.
 func romaOutside(pn pen, r *rand.Rand, tr *track) {
 	for range 60 {
-		x, y := r.Float64()*fBoard, r.Float64()*fBoard
+		x, y := r.Float64()*artBoard, r.Float64()*artBoard
 		col := []color.NRGBA{{0x9F, 0xB8, 0x7E, 255}, {0xD9, 0xB8, 0x6A, 255}, {0xB8, 0xA0, 0x6E, 255}}[r.IntN(3)]
 		pn.Save()
 		pn.Translate(x, y)
@@ -619,10 +625,10 @@ func lanes(pn pen, r *rand.Rand) {
 	pn.Width(0.5)
 	pn.Alpha(washiInk, 0.08)
 	for k := 0; k < 30; k++ {
-		y := r.Float64() * fBoard
-		pn.Line(0, y, fBoard, y+(r.Float64()-0.5)*60)
-		x := r.Float64() * fBoard
-		pn.Line(x, 0, x+(r.Float64()-0.5)*60, fBoard)
+		y := r.Float64() * artBoard
+		pn.Line(0, y, artBoard, y+(r.Float64()-0.5)*60)
+		x := r.Float64() * artBoard
+		pn.Line(x, 0, x+(r.Float64()-0.5)*60, artBoard)
 	}
 }
 
@@ -745,11 +751,8 @@ func title(pn pen, x, y float64, name, font, line, seal string, r *rand.Rand) {
 // cityNames are a city's names for the board's squares.
 func cityNames(city int) [len(games.Board)]string {
 	var n [len(games.Board)]string
-	for i, s := range games.Board {
-		n[i] = s.Name
-		if c, ok := games.FortuneCities[city].Names[i]; ok {
-			n[i] = c
-		}
+	for i := range games.Board {
+		n[i] = games.FortuneCities[city].SquareName(i)
 	}
 	return n
 }
