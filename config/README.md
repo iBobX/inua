@@ -219,6 +219,10 @@ launcher, dock and tray always come from the system theme. To change or add
 an icon, edit the table in `scripts/phosphor-icons.sh` and run it again (its
 argument is the `@phosphor-icons/core` directory).
 
+`style.text_scale` (80 to 150 percent, default 100; the Appearance page's
+"Text size") sizes the text of the shell and inua's apps alone: icons,
+spacing and your own `style.css` keep their sizes.
+
 Tests keep `config.toml` equal to the defaults (`internal/config`): add new
 settings to the sample too. `samples.go` embeds this directory's four files
 in `inua`; a test keeps the `inua.conf` sample equal to what empty settings

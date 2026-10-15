@@ -234,7 +234,7 @@ func (c *Ctx) loadStyle() {
 	}
 	themeCSS := c.ReadUI("themes/" + theme + ".css")
 	c.Colors = shell.ThemeColors(themeCSS)
-	c.css.LoadFromString(themeCSS + c.ReadUI("style.css"))
+	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
 	if p := cfg.CSSPath(); p != "" {
 		if b, err := os.ReadFile(p); err == nil {
 			c.userCSS.LoadFromString(string(b))

@@ -323,6 +323,10 @@ windows to PNG files for checking layouts without a screenshot tool.
   theme for the shell's process that inherits the system's; app and tray
   icons stay the system's. `style.icons = "system"` uses the system theme
   throughout.
+- Text size: `style.text_scale` (80 to 150 percent, the Appearance page's
+  "Text size") multiplies the `font-size` pixel values of `ui/style.css` as
+  it loads (`shell.ScaleText`), in the shell and in inua's apps; icons,
+  spacing and the user's `style.css` keep their sizes.
 - Launcher: a head with the mark, the mode and the switch hint; the entry
   has only a bottom hairline; the selected row is the accent at 9% with a
   38% hairline; notices (why the list is empty, or `[ERROR]` and the reason)

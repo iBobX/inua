@@ -128,6 +128,9 @@ type Style struct {
 	// EdgeGaps leaves a small gap between the screen edges and the bar and
 	// dock; off puts them flush against the edges.
 	EdgeGaps bool `toml:"edge_gaps"`
+	// TextScale sizes the built-in style's text, 80 to 150 percent. Icons,
+	// spacing and the user's stylesheet keep their sizes.
+	TextScale int `toml:"text_scale"`
 }
 
 type Background struct {
@@ -444,6 +447,9 @@ var Fits = []string{"cover", "contain", "tile", "center"}
 // from the system's.
 var IconSets = []string{"phosphor", "system"}
 
+// TextScales are the text sizes, in percent, the settings window offers.
+var TextScales = []int{90, 100, 110, 125, 150}
+
 // Languages are the interface's languages: "auto" (the environment's),
 // English, then the catalogs in internal/i18n/locales.
 var Languages = []string{"auto", "en", "zh_CN", "zh_TW", "ja", "ko", "es", "fr"}
@@ -469,7 +475,7 @@ func Default() Config {
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true, TextScale: 100},
 		Background: Background{Enable: true, Fit: "cover"},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
@@ -578,6 +584,10 @@ func (c *Config) validate() []string {
 	oneOf("language", &c.Language, d.Language, Languages...)
 	oneOf("style.theme", &c.Style.Theme, d.Style.Theme, Themes...)
 	oneOf("style.icons", &c.Style.Icons, d.Style.Icons, IconSets...)
+	if c.Style.TextScale < 80 || c.Style.TextScale > 150 {
+		w = append(w, fmt.Sprintf("style.text_scale = %d: want 80 to 150; using %d", c.Style.TextScale, d.Style.TextScale))
+		c.Style.TextScale = d.Style.TextScale
+	}
 	oneOf("background.fit", &c.Background.Fit, d.Background.Fit, Fits...)
 	if !ValidColor(c.Background.Color) {
 		w = append(w, fmt.Sprintf("background.color = %q: want #rrggbb; using the theme's ground", c.Background.Color))
