@@ -92,9 +92,22 @@ func TestMCPServerTools(t *testing.T) {
 		t.Error("list_windows's result did not reach the model")
 	}
 
-	// Mister Morph keeps what was found for the conversation (TopicID) in
-	// its channel runtimes; its integration runs do not save it yet, so a
-	// later question searches again.
+	// The next question offers what was found; after Reset, a new
+	// conversation, it is hidden again.
+	model.replies = append(model.replies, reply{final: "Still open."}, reply{final: "New topic."})
+	if _, err := a.Ask(ctx, "And now?", Events{}); err != nil {
+		t.Fatal(err)
+	}
+	if next := requestTools(model.got[4]); !slices.Contains(next, "mcp_inua__list_windows") {
+		t.Errorf("found tools forgotten on the next question: %v", next)
+	}
+	a.Reset()
+	if _, err := a.Ask(ctx, "What is open?", Events{}); err != nil {
+		t.Fatal(err)
+	}
+	if fresh := requestTools(model.got[5]); slices.Contains(fresh, "mcp_inua__list_windows") {
+		t.Errorf("found tools kept after Reset: %v", fresh)
+	}
 }
 
 // Every tool's description of a call works without a desktop, as the

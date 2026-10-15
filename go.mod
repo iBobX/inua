@@ -9,7 +9,7 @@ require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/godbus/dbus/v5 v5.2.2
 	github.com/modelcontextprotocol/go-sdk v1.4.0
-	github.com/quailyquaily/mistermorph v0.3.54-0.20261015070641-f7ac340db394
+	github.com/quailyquaily/mistermorph v0.3.55
 	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
 )
