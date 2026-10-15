@@ -52,7 +52,9 @@ Todo (a list kept in the store, confirm dialogs, a notification), SSH
 Hosts (two columns, a filter, the terminal), Pomodoro (JavaScript:
 timers, a drop-down, a switch) and At a Glance (inua's desk functions and
 changes followed as they happen, in tabs, with tiles, a slider, a chart,
-images and file dialogs).
+images and file dialogs; its Components tab shows every building block in
+its kinds, its inputs live, and its Layouts tab the light apps' layouts:
+a sidebar, a panel at the right, or both, around the page).
 
 ## JavaScript
 

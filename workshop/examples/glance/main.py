@@ -1,8 +1,11 @@
 """At a Glance: inua's desk functions and its building blocks in one app.
 
-Each tab reads something through app.call (system_status, media_status,
-list_workspaces, clipboard_history, notification_history) and follows
-changes with @app.watch, so it stays current while the window is open.
+Each of the first tabs reads something through app.call (system_status,
+media_status, list_workspaces, clipboard_history, notification_history)
+and follows changes with @app.watch, so it stays current while the window
+is open. Components shows every building block, in its kinds, its inputs
+live; Layouts the light apps' layouts: a sidebar, a panel at the right,
+or both, around the page.
 """
 
 from inua import app, ui, InuaError
@@ -128,16 +131,132 @@ def file_tab(state):
     return kids
 
 
+def components_tab(state):
+    """Every building block, by name, in the kinds it comes in."""
+    last = state.get("last") or "Use an input below: its event shows here."
+    points = [50 + 30 * ((i * 37) % 11 - 5) / 5 for i in range(24)]
+    return [
+        ui.section("Last event", ui.text(last, style="mono")),
+        ui.section("text",
+                   *[ui.box(ui.text(s or "plain", style="kicker"),
+                            ui.text("At a glance" if s != "hero" else "42", style=s), spacing=2)
+                     for s in (None, "heading", "title", "sub", "mono", "readout", "kicker", "hero")]),
+        ui.section("button",
+                   ui.box(ui.button("demo:default", "Default"),
+                          ui.button("demo:primary", "Primary", style="primary"),
+                          ui.button("demo:danger", "Danger", style="danger"),
+                          ui.button("demo:plain", "Plain", style="plain"),
+                          ui.button("demo:icon", icon="edit-copy-symbolic", tooltip="An icon button"),
+                          ui.button("demo:icon-plain", icon="list-add-symbolic", style="plain", tooltip="A plain icon button"),
+                          horizontal=True)),
+        ui.section("entry · search · textarea",
+                   ui.entry("demo:entry", placeholder="An entry: Enter submits"),
+                   ui.entry("demo:password", placeholder="A password", password=True),
+                   ui.search("demo:search", placeholder="A search"),
+                   ui.textarea("demo:textarea", value="A textarea,\nover lines.")),
+        ui.section("switch · dropdown · segmented · slider",
+                   ui.row("A switch", sub="On or off", end=[ui.switch("demo:switch", value=True)]),
+                   ui.row("A drop-down", sub="One of a few", end=[ui.dropdown("demo:dropdown", ["Small", "Medium", "Large"], value="Medium")]),
+                   ui.row("Segmented", sub="A few options, joined", end=[ui.segmented("demo:segmented", ["°C", "°F"], value="°C")]),
+                   ui.slider("demo:slider", 0, 100, 5, value=40)),
+        ui.section("progress · spinner · chart",
+                   ui.progress(0.35, text="35%"),
+                   ui.progress(1.0, text="done"),
+                   ui.spinner("Something is going on"),
+                   ui.chart(points, height=70, min=0, max=100)),
+        ui.section("row · facts",
+                   ui.row("A row", sub="Its line under the title"),
+                   ui.row("With an icon", sub="And an id: a click is an event", id="demo:row", icon="folder-open-symbolic"),
+                   ui.row("Selected", sub="As the one in use", icon="object-select-symbolic", selected=True),
+                   ui.row("With widgets at its end", end=[ui.button("demo:row-end", icon="user-trash-symbolic", style="plain", tooltip="At the row's end")]),
+                   ui.facts([("name", "value"), ("kind", "facts"), ("columns", "two")]),
+                   meta="a section's meta"),
+        ui.section("tiles",
+                   ui.tiles(ui.tile("demo:tile-on", "On", sub="selected", icon="weather-clear-symbolic", selected=True),
+                            ui.tile("demo:tile-off", "Off", sub="not selected", icon="weather-clear-night-symbolic"),
+                            ui.tile("demo:tile-more", "Another", sub="tiles wrap", icon="bluetooth-active-symbolic"))),
+        ui.section("image · box",
+                   ui.box(ui.image(icon="image-x-generic-symbolic", width=48, height=48),
+                          ui.box(ui.text("A box", style="title"),
+                                 ui.text("Children in a column, or in a row (horizontal); spacing between them.", style="sub"),
+                                 spacing=2),
+                          horizontal=True, spacing=16)),
+        ui.section("empty", ui.empty("Nothing here", text="What a page with nothing to show says", icon="folder-symbolic")),
+        ui.section("tabs · columns · scroll · bar",
+                   ui.text("The tabs over these pages are tabs; Layouts shows columns and scroll as a sidebar "
+                           "and a panel. A bar sits at the bottom of a page, its actions at the right.", style="sub")),
+    ]
+
+
+LAYOUTS = ["Sidebar", "Right panel", "Both"]
+PLACES = [("home", "Home", "user-home-symbolic"), ("documents", "Documents", "folder-symbolic"),
+          ("music", "Music", "audio-x-generic-symbolic"), ("pictures", "Pictures", "image-x-generic-symbolic")]
+
+
+def layouts_tab(state):
+    """The light apps' layouts, live: a sidebar, a panel at the right, or both."""
+    layout = state.get("layout") or LAYOUTS[0]
+    place = state.get("place") or "documents"
+    name = next(t for i, t, _ in PLACES if i == place)
+    code = {
+        "Sidebar": 'ui.columns(ui.scroll(…, style="sidebar", width=200), ui.scroll(…))',
+        "Right panel": 'ui.columns(ui.scroll(…), ui.scroll(…, style="panel", width=240))',
+        "Both": 'ui.columns(ui.scroll(…, style="sidebar", width=200), ui.scroll(…),\n'
+                '           ui.scroll(…, style="panel", width=240))',
+    }[layout]
+    sidebar = ui.scroll(
+        ui.text("PLACES", style="kicker"),
+        *[ui.row(t, id="place:" + i, icon=icon, selected=i == place) for i, t, icon in PLACES],
+        style="sidebar", width=200)
+    page = ui.scroll(
+        ui.box(ui.text(name, style="heading"), ui.segmented("layout", LAYOUTS, value=layout), horizontal=True, spacing=16),
+        ui.text({"Sidebar": "A sidebar at the left, as in Pass and Files: choose a place there.",
+                 "Right panel": "A panel at the right, as Viewer's details: what is chosen, in detail.",
+                 "Both": "A page between its columns, as in Files: choose a place at the left; "
+                         "its details show at the right."}[layout], style="sub"),
+        ui.section("The layout", ui.text(code, style="mono")),
+        ui.section("In the page", *[ui.row("Item %d in %s" % (k, name), sub="A row of the page") for k in range(1, 5)]))
+    panel = ui.scroll(
+        ui.image(icon=next(c for i, _, c in PLACES if i == place), width=56, height=56),
+        ui.text(name, style="title"),
+        ui.text("DETAILS", style="kicker"),
+        ui.facts([("place", name), ("items", "4"), ("layout", layout)]),
+        style="panel", width=240)
+    kids = {"Sidebar": [sidebar, page], "Right panel": [page, panel], "Both": [sidebar, page, panel]}[layout]
+    return [ui.columns(*kids)]
+
+
 @app.view
 def view(state):
+    # The page does not scroll: each tab's content does, and Layouts'
+    # columns fill the window.
     return ui.page(ui.tabs("tab",
-        ui.tab("system", "System", *system_tab(state)),
-        ui.tab("media", "Playing", *media_tab(state)),
-        ui.tab("workspaces", "Workspaces", *workspaces_tab(state)),
-        ui.tab("clipboard", "Copied", *clipboard_tab(state)),
-        ui.tab("notes", "Notifications", *notes_tab(state)),
-        ui.tab("files", "Files", *file_tab(state)),
-        value=state.get("tab")))
+        ui.tab("system", "System", ui.scroll(*system_tab(state))),
+        ui.tab("media", "Playing", ui.scroll(*media_tab(state))),
+        ui.tab("workspaces", "Workspaces", ui.scroll(*workspaces_tab(state))),
+        ui.tab("clipboard", "Copied", ui.scroll(*clipboard_tab(state))),
+        ui.tab("notes", "Notifications", ui.scroll(*notes_tab(state))),
+        ui.tab("files", "Files", ui.scroll(*file_tab(state))),
+        ui.tab("components", "Components", ui.scroll(*components_tab(state))),
+        ui.tab("layouts", "Layouts", *layouts_tab(state)),
+        value=state.get("tab")), scroll=False)
+
+
+@app.on("demo:*")
+def demo(ev):
+    """Any input of Components: what it sent."""
+    shown = ev.value if not (ev.id or "").endswith("password") else "•" * len(ev.value or "")
+    app.state["last"] = "%s %s = %r" % (ev.type, ev.id, shown)
+
+
+@app.on("layout", "change")
+def layout(ev):
+    app.state["layout"] = ev.value
+
+
+@app.on("place:*", "click")
+def place(ev):
+    app.state["place"] = ev.id[len("place:"):]
 
 
 @app.on("volume", "change")
