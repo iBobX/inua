@@ -149,7 +149,7 @@ func TestFortuneDebtSellsThenBankrupts(t *testing.T) {
 	g.Players[0].Cash = 100
 	g.Players[0].At = 76
 	g.RollWith(2, 1)
-	if !g.Players[0].Out || g.Phase != PhaseOver || g.Result != Lost {
+	if !g.Players[0].Out || g.Phase != PhaseOver || g.Outcome(0) != Lost {
 		t.Fatalf("player %+v phase %v", g.Players[0], g.Phase)
 	}
 	if g.Owner[1] != -1 || g.Houses[1] != 0 {
@@ -342,5 +342,109 @@ func TestFortuneBranches(t *testing.T) {
 		if n != 78 {
 			t.Errorf("%d properties to buy", n)
 		}
+	}
+}
+
+// People named play first, then the computer players: two to four in
+// all, with none of the computer's when the people are enough.
+func TestFortunePeople(t *testing.T) {
+	for _, c := range []struct {
+		humans       []string
+		rivals       int
+		people, cpus int
+	}{
+		{nil, 0, 1, DefaultFortune.Rivals},
+		{nil, 3, 1, 3},
+		{[]string{"Ann", ""}, 0, 2, 0},
+		{[]string{"Ann"}, 0, 1, 1},
+		{[]string{"A", "B", "C"}, 3, 3, 1},
+		{[]string{"A", "B", "C", "D", "E"}, 2, 4, 0},
+	} {
+		g := NewFortune(FortuneSettings{Humans: c.humans, Rivals: c.rivals}, 1)
+		people, cpus := 0, 0
+		for i, p := range g.Players {
+			if p.CPU {
+				cpus++
+			} else if people++; i >= c.people {
+				t.Errorf("%v: a person after the computer's", c.humans)
+			}
+		}
+		if people != c.people || cpus != c.cpus {
+			t.Errorf("%v + %d: %d people, %d computer players", c.humans, c.rivals, people, cpus)
+		}
+	}
+	g := NewFortune(FortuneSettings{Humans: []string{"Ann", ""}}, 1)
+	if g.Players[0].Name != "Ann" || g.Players[1].Name != "Player 2" {
+		t.Errorf("names %q, %q", g.Players[0].Name, g.Players[1].Name)
+	}
+}
+
+// Someone gone has the computer finish their turn and play the next ones
+// until they are back.
+func TestFortuneAway(t *testing.T) {
+	g := ringFortune(FortuneSettings{Humans: []string{"Ann", "Ben"}}, 1)
+	g.RollWith(1, 0) // a street for sale
+	if g.Phase != PhaseBuy {
+		t.Fatalf("phase %v", g.Phase)
+	}
+	g.SetAway(0, true)
+	if g.Turn != 1 || g.Phase != PhaseRoll {
+		t.Fatalf("turn %d phase %v: Ann's turn not finished", g.Turn, g.Phase)
+	}
+	g.RollWith(2, 1)
+	g.Pass()
+	g.LeaveShop()
+	g.EndTurn()
+	if g.Turn != 0 || g.Phase != PhaseCPU || g.Roll() {
+		t.Fatalf("turn %d phase %v: Ann's turn not the computer's", g.Turn, g.Phase)
+	}
+	g.SetAway(0, false)
+	if g.Phase != PhaseRoll || !g.Roll() {
+		t.Fatalf("phase %v: Ann's turn not back", g.Phase)
+	}
+	if g.SetAway(2, true); len(g.Players) != 2 {
+		t.Fatal("players")
+	}
+}
+
+// An event as each player sees it: its tone for them, a card face down
+// and the secret line kept from the others.
+func TestFortuneEventFor(t *testing.T) {
+	e := FortuneEvent{Kind: EvNote, Helps: Seat(1), Hurts: Seat(0), Sees: Seat(1), Text: "a card", Secret: "Turtle"}
+	if v := e.For(0); v.Good || !v.Bad || v.Text != "a card" || v.Secret != "" {
+		t.Errorf("the one robbed: %+v", v)
+	}
+	if v := e.For(1); !v.Good || v.Bad || v.Text != "Turtle" {
+		t.Errorf("the robber: %+v", v)
+	}
+	if v := e.For(-1); v.Good || v.Bad || v.Text != "a card" {
+		t.Errorf("one watching: %+v", v)
+	}
+	if v := (FortuneEvent{Kind: EvNote, Helps: Everyone}).For(-1); !v.Good {
+		t.Error("good news for everyone, not for one watching")
+	}
+	card := FortuneEvent{Kind: EvCard, Card: CardTurtle, Sees: Seat(2)}
+	if v := card.For(0); !v.Back || v.Card != 0 {
+		t.Errorf("someone else's card: %+v", v)
+	}
+	if v := card.For(2); v.Back || v.Card != CardTurtle {
+		t.Errorf("one's own card: %+v", v)
+	}
+	if v := (FortuneEvent{Kind: EvCard, Card: CardTurtle, Played: true}).For(-1); v.Back || v.Card != CardTurtle {
+		t.Errorf("a card played: %+v", v)
+	}
+}
+
+// The game goes on while someone plays, and ends when the last person is
+// out; the computer player left wins.
+func TestFortuneOverWithoutPeople(t *testing.T) {
+	g := ringFortune(FortuneSettings{Humans: []string{"Ann", "Ben"}, Rivals: 1}, 1)
+	g.bankrupt(0)
+	if g.Phase == PhaseOver || g.Outcome(1) != Playing {
+		t.Fatalf("over with Ben still in: %v", g.Phase)
+	}
+	g.bankrupt(1)
+	if g.Phase != PhaseOver || g.Outcome(2) != Won || g.Outcome(0) != Lost || g.Outcome(1) != Lost {
+		t.Fatalf("phase %v winner %d", g.Phase, g.Winner)
 	}
 }

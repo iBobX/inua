@@ -2,6 +2,7 @@ package games
 
 import (
 	"cmp"
+	"fmt"
 	"slices"
 
 	"github.com/lyricat/inua/internal/i18n"
@@ -85,17 +86,14 @@ func (g *Fortune) MaxSteps() int {
 func (g *Fortune) give(pi int, why string) {
 	p := &g.Players[pi]
 	if len(p.Cards) >= HandMax {
-		g.note(pi, false, false, i18n.T("%s's hand is full: no card."), p.Name)
+		g.note(pi, 0, 0, i18n.T("%s's hand is full: no card."), p.Name)
 		return
 	}
 	c := CardKind(g.rng.IntN(int(cardKinds)))
 	p.Cards = append(p.Cards, c)
-	g.emit(FortuneEvent{Kind: EvCard, Player: pi, Card: c, Back: pi != 0, Target: -1})
-	if pi == 0 {
-		g.note(pi, true, false, why, p.Name, i18n.T(Cards[c].Name))
-	} else {
-		g.note(pi, false, false, i18n.T("%s takes a card."), p.Name)
-	}
+	g.emit(FortuneEvent{Kind: EvCard, Player: pi, Card: c, Sees: Seat(pi), Target: -1})
+	g.emit(FortuneEvent{Kind: EvNote, Player: pi, Text: fmt.Sprintf(i18n.T("%s takes a card."), p.Name),
+		Secret: fmt.Sprintf(why, p.Name, i18n.T(Cards[c].Name)), Sees: Seat(pi), Helps: Seat(pi)})
 }
 
 // openShop sets out a shop's cards for the player on it: a computer player
@@ -103,7 +101,7 @@ func (g *Fortune) give(pi int, why string) {
 func (g *Fortune) openShop(pi int) {
 	p := &g.Players[pi]
 	if len(p.Cards) >= HandMax {
-		g.note(pi, false, false, i18n.T("%s's hand is full: nothing to buy."), p.Name)
+		g.note(pi, 0, 0, i18n.T("%s's hand is full: nothing to buy."), p.Name)
 		g.afterMove()
 		return
 	}
@@ -112,7 +110,7 @@ func (g *Fortune) openShop(pi int) {
 		g.Offer = append(g.Offer, CardKind(g.rng.IntN(int(cardKinds))))
 	}
 	g.Phase = PhaseShop
-	if p.CPU {
+	if p.Computer() {
 		g.cpuShop(pi)
 		g.LeaveShop()
 	}
@@ -135,7 +133,7 @@ func (g *Fortune) BuyCard(i int) bool {
 	p.Cash -= Cards[c].Price
 	p.Cards = append(p.Cards, c)
 	g.emit(FortuneEvent{Kind: EvCard, Player: g.Turn, Card: c, Target: -1})
-	g.note(g.Turn, false, false, i18n.T("%s bought %s for $%d."), p.Name, i18n.T(Cards[c].Name), Cards[c].Price)
+	g.note(g.Turn, 0, 0, i18n.T("%s bought %s for $%d."), p.Name, i18n.T(Cards[c].Name), Cards[c].Price)
 	return true
 }
 
@@ -227,9 +225,9 @@ func (g *Fortune) Targets(i int) []int {
 	return slices.DeleteFunc(all, func(t int) bool { return !g.CanPlay(i, t) })
 }
 
-// Play plays the human player's card i on target.
+// Play plays card i of the person whose turn it is on target.
 func (g *Fortune) Play(i, target int) bool {
-	if g.Players[g.Turn].CPU || !g.CanPlay(i, target) {
+	if g.Players[g.Turn].Computer() || !g.CanPlay(i, target) {
 		return false
 	}
 	g.play(i, target)
@@ -252,53 +250,53 @@ func (g *Fortune) play(i, target int) {
 	g.emit(FortuneEvent{Kind: EvCard, Player: pi, Card: c, Played: true, Target: on})
 	switch c {
 	case CardDice:
-		g.note(pi, false, false, i18n.T("%s played %s: %d squares."), p.Name, name, target)
+		g.note(pi, 0, 0, i18n.T("%s played %s: %d squares."), p.Name, name, target)
 		g.Doubles = 0
 		g.walk(pi, target)
 	case CardFreeRent:
 		p.RentFree = true
-		g.note(pi, false, false, i18n.T("%s played %s: no rent next time."), p.Name, name)
+		g.note(pi, 0, 0, i18n.T("%s played %s: no rent next time."), p.Name, name)
 	case CardRequisition:
 		sq, o := p.At, g.Owner[p.At]
 		cost := RequisitionCost(sq, g.Houses[sq])
 		p.Cash -= cost
 		g.Players[o].Cash += cost
 		g.Owner[sq] = pi
-		g.note(pi, pi == 0, o == 0, i18n.T("%s played %s and took %s from %s for $%d."), p.Name, name, g.SquareName(sq), who(o), cost)
+		g.note(pi, Seat(pi), Seat(o), i18n.T("%s played %s and took %s from %s for $%d."), p.Name, name, g.SquareName(sq), who(o), cost)
 	case CardRob:
 		hand := &g.Players[target].Cards
 		k := g.rng.IntN(len(*hand))
 		got := (*hand)[k]
 		*hand = slices.Delete(*hand, k, k+1)
 		p.Cards = append(p.Cards, got)
-		g.emit(FortuneEvent{Kind: EvCard, Player: pi, Card: got, Back: pi != 0 && target != 0, Target: -1})
-		what := i18n.T("a card")
-		if pi == 0 || target == 0 {
-			what = i18n.T(Cards[got].Name)
-		}
-		g.note(pi, pi == 0, target == 0, i18n.T("%s played %s and took %s from %s."), p.Name, name, what, who(target))
+		both := Seat(pi) | Seat(target)
+		g.emit(FortuneEvent{Kind: EvCard, Player: pi, Card: got, Sees: both, Target: -1})
+		took := i18n.T("%s played %s and took %s from %s.")
+		g.emit(FortuneEvent{Kind: EvNote, Player: pi, Helps: Seat(pi), Hurts: Seat(target), Sees: both,
+			Text:   fmt.Sprintf(took, p.Name, name, i18n.T("a card"), who(target)),
+			Secret: fmt.Sprintf(took, p.Name, name, i18n.T(Cards[got].Name), who(target))})
 	case CardDemolish:
 		o := g.Owner[target]
 		g.Houses[target]--
-		g.note(pi, false, o == 0, i18n.T("%s played %s: a building on %s, %s's, is pulled down."), p.Name, name, g.SquareName(target), who(o))
+		g.note(pi, 0, Seat(o), i18n.T("%s played %s: a building on %s, %s's, is pulled down."), p.Name, name, g.SquareName(target), who(o))
 	case CardPermit:
 		g.Houses[target]++
-		g.note(pi, pi == 0, false, i18n.T("%s played %s: a building goes up on %s."), p.Name, name, g.SquareName(target))
+		g.note(pi, Seat(pi), 0, i18n.T("%s played %s: a building goes up on %s."), p.Name, name, g.SquareName(target))
 	case CardTurtle:
 		g.Players[target].Turtle = turtleRuns
-		g.note(pi, false, target == 0 && pi != 0, i18n.T("%s played %s: %s walks one square a roll for three rolls."), p.Name, name, who(target))
+		g.note(pi, 0, Seat(target)&^Seat(pi), i18n.T("%s played %s: %s walks one square a roll for three rolls."), p.Name, name, who(target))
 	case CardSwap:
 		a, b := p.At, g.Players[target].At
-		g.note(pi, false, target == 0, i18n.T("%s played %s and changed places with %s."), p.Name, name, who(target))
+		g.note(pi, 0, Seat(target), i18n.T("%s played %s and changed places with %s."), p.Name, name, who(target))
 		g.jump(pi, b)
 		g.jump(target, a)
 	case CardJailPass:
 		p.InJail, p.JailTries = false, 0
-		g.note(pi, true, false, i18n.T("%s played %s and walked out of jail."), p.Name, name)
+		g.note(pi, Everyone, 0, i18n.T("%s played %s and walked out of jail."), p.Name, name)
 	case CardAudit:
 		due := g.Players[target].Cash / 10 / 10 * 10
 		g.payPot(target, due)
-		g.note(pi, false, target == 0, i18n.T("%s played %s: %s pays $%d into the fountain."), p.Name, name, who(target), due)
+		g.note(pi, 0, Seat(target), i18n.T("%s played %s: %s pays $%d into the fountain."), p.Name, name, who(target), due)
 	case CardEqual:
 		total, n := 0, 0
 		for _, q := range g.Players {
@@ -313,10 +311,10 @@ func (g *Fortune) play(i, target int) {
 			}
 		}
 		g.Pot += total - share*n
-		g.note(pi, false, false, i18n.T("%s played %s: everyone now has $%d."), p.Name, name, share)
+		g.note(pi, 0, 0, i18n.T("%s played %s: everyone now has $%d."), p.Name, name, share)
 	case CardSleep:
 		g.Players[target].Asleep = true
-		g.note(pi, false, target == 0, i18n.T("%s played %s: %s sits out the next turn."), p.Name, name, who(target))
+		g.note(pi, 0, Seat(target), i18n.T("%s played %s: %s sits out the next turn."), p.Name, name, who(target))
 	}
 }
 

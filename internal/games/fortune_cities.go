@@ -92,6 +92,10 @@ var propertyAt = func() (at [len(Board)]int) {
 // rules: one die or two (0 is two), and whether a street may go up a level
 // the turn it is bought.
 type FortuneSettings struct {
+	// Humans are the people's names, one to four, playing in this order
+	// before the computer players; none is one person, "You". With
+	// people named, Rivals 0 is no computer player, not the default.
+	Humans                     []string
 	Rivals, Rounds, Cash, City int
 	Dice                       int
 	BuildOnBuy                 bool

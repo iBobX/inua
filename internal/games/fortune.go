@@ -10,8 +10,8 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 )
 
-// Small Fortune is a property game for one player against one to three
-// computer players, on a board of its own: a ring of 80 squares and two
+// Small Fortune is a property game for one to four players, any of them
+// played by the computer (two to four in all), on a board of its own: a ring of 80 squares and two
 // branch roads across it, a pawn at a fork taking either road as chance
 // has it; 72 streets in 24 colour groups, four ferry piers and two
 // utilities. Each street of theirs a player's pawn passes or lands on in a
@@ -167,8 +167,11 @@ var rentTimes = [...]int{1, 5, 15, 40, 60, 80}
 var pierRent = [...]int{0, 25, 50, 100, 200}
 
 type FortunePlayer struct {
-	Name      string
-	CPU, Out  bool
+	Name string
+	// CPU is a computer player; Away a person's seat the computer plays
+	// while they are gone (SetAway).
+	CPU, Away bool
+	Out       bool
 	Cash, At  int
 	InJail    bool
 	JailTries int
@@ -177,6 +180,9 @@ type FortunePlayer struct {
 	Turtle    int        // rolls left that walk one square
 	Asleep    bool       // misses the next turn
 }
+
+// Computer reports whether the computer plays this player's turns.
+func (p FortunePlayer) Computer() bool { return p.CPU || p.Away }
 
 // FortunePhase is what the player whose turn it is may do.
 type FortunePhase uint8
@@ -214,20 +220,56 @@ type FortuneView struct {
 }
 
 type FortuneEvent struct {
-	Kind      EventKind
-	Player    int
-	Dice      [2]int
-	From, To  int
-	Steps     int
-	Path      []int // the squares an EvWalk stepped on, in order
-	Text      string
-	Good, Bad bool // a note's tone, for the log
-	// An EvCard's card, face down when the human player may not see it;
-	// played, what on: a player or a square, as the card takes, else -1.
+	Kind     EventKind
+	Player   int
+	Dice     [2]int
+	From, To int
+	Steps    int
+	Path     []int // the squares an EvWalk stepped on, in order
+	Text     string
+	// Who a note is good or bad news for, and who sees an EvCard's face
+	// or reads Secret in place of Text: a bit a player (Seat), Everyone;
+	// Sees 0 is everyone too. For turns them into one player's event.
+	Helps, Hurts, Sees uint8
+	Secret             string
+	// A note's tone for the one who watches, and whether an EvCard is
+	// face down to them: For sets them.
+	Good, Bad bool
+	// An EvCard's card; played, what on: a player or a square, as the
+	// card takes, else -1.
 	Card         CardKind
 	Played, Back bool
 	Target       int
 	View         FortuneView
+}
+
+// Everyone is every player's bit, for FortuneEvent's Helps and Hurts.
+const Everyone uint8 = 0xff
+
+// Seat is a player's bit, for FortuneEvent's Helps, Hurts and Sees; none
+// for -1, no player.
+func Seat(player int) uint8 {
+	if player < 0 {
+		return 0
+	}
+	return 1 << player
+}
+
+// For is the event as the player viewer sees it (-1 for someone who
+// watches without playing): its tone for them, and the card face down,
+// with no Card, and the Text without the Secret, where they may not see it.
+func (e FortuneEvent) For(viewer int) FortuneEvent {
+	in := func(m uint8) bool { return m&Seat(viewer) != 0 }
+	e.Good, e.Bad = e.Helps == Everyone || in(e.Helps), e.Hurts == Everyone || in(e.Hurts)
+	sees := e.Sees == 0 || in(e.Sees)
+	if e.Kind == EvCard && !sees {
+		e.Back, e.Card = true, 0
+	}
+	if e.Secret != "" && sees {
+		e.Text = e.Secret
+	}
+	e.Helps, e.Hurts, e.Sees, e.Secret = 0, 0, 0, ""
+	return e
 }
 
 type Fortune struct {
@@ -247,7 +289,6 @@ type Fortune struct {
 	Pot        int
 	Doubles    int
 	Winner     int
-	Result     Outcome // for the human player, once the game is over
 	// CanRaise are the streets of theirs the player whose turn it is
 	// passed or landed on this turn, each of which may go up a level.
 	CanRaise [len(Board)]bool
@@ -266,15 +307,27 @@ type Fortune struct {
 var cpuNames = []string{i18n.M("Mika"), i18n.M("Ren"), i18n.M("Sol")}
 
 // NewFortune starts a game as s says; what s leaves at zero is
-// DefaultFortune's.
+// DefaultFortune's. The people play first, then the computer players.
 func NewFortune(s FortuneSettings, seed uint64) *Fortune {
-	rivals := max(1, min(3, cmp.Or(s.Rivals, DefaultFortune.Rivals)))
+	humans := s.Humans[:min(len(s.Humans), 4)]
+	rivals := cmp.Or(s.Rivals, DefaultFortune.Rivals)
+	if len(humans) == 0 {
+		humans = []string{i18n.T("You")}
+	} else {
+		rivals = s.Rivals // none is none, with people enough
+	}
+	rivals = max(0, min(rivals, 4-len(humans), len(cpuNames)))
+	if len(humans)+rivals < 2 {
+		rivals = 1
+	}
 	cash := cmp.Or(s.Cash, DefaultFortune.Cash)
 	g := &Fortune{Round: 1, Rounds: cmp.Or(s.Rounds, DefaultFortune.Rounds), City: max(0, min(len(FortuneCities)-1, s.City)),
 		OneDie: s.Dice == 1, BuildOnBuy: s.BuildOnBuy,
 		Winner: -1, rng: rand.New(rand.NewPCG(seed, seed^0x5f)), Phase: PhaseRoll}
 	g.choose = func(roads []int) int { return roads[g.rng.IntN(len(roads))] }
-	g.Players = append(g.Players, FortunePlayer{Name: i18n.T("You"), Cash: cash})
+	for i, name := range humans {
+		g.Players = append(g.Players, FortunePlayer{Name: cmp.Or(name, i18n.Tf("Player %d", i+1)), Cash: cash})
+	}
 	for i := range rivals {
 		g.Players = append(g.Players, FortunePlayer{Name: cpuNames[i], CPU: true, Cash: cash})
 	}
@@ -321,8 +374,10 @@ func (g *Fortune) emit(e FortuneEvent) {
 	g.events = append(g.events, e)
 }
 
-func (g *Fortune) note(p int, good, bad bool, format string, args ...any) {
-	g.emit(FortuneEvent{Kind: EvNote, Player: p, Text: fmt.Sprintf(format, args...), Good: good, Bad: bad})
+// note tells what happened to player p, good news for the players in
+// helps and bad for those in hurts.
+func (g *Fortune) note(p int, helps, hurts uint8, format string, args ...any) {
+	g.emit(FortuneEvent{Kind: EvNote, Player: p, Text: fmt.Sprintf(format, args...), Helps: helps, Hurts: hurts})
 }
 
 // Rent is what landing on a property costs, as it stands; a utility's
@@ -441,7 +496,7 @@ func (g *Fortune) Build(sq int) bool {
 	if g.Houses[sq] == Hotel {
 		what = i18n.T("a hotel")
 	}
-	g.note(g.Turn, false, false, i18n.T("%s built %s on %s ($%d)."), g.Players[g.Turn].Name, what, g.SquareName(sq), HouseCost(sq))
+	g.note(g.Turn, 0, 0, i18n.T("%s built %s on %s ($%d)."), g.Players[g.Turn].Name, what, g.SquareName(sq), HouseCost(sq))
 	return true
 }
 
@@ -452,13 +507,13 @@ func (g *Fortune) Sell(sq int) bool {
 	}
 	g.Houses[sq]--
 	g.Players[g.Turn].Cash += HouseCost(sq) / 2
-	g.note(g.Turn, false, false, i18n.T("%s sold a building on %s for $%d."), g.Players[g.Turn].Name, g.SquareName(sq), HouseCost(sq)/2)
+	g.note(g.Turn, 0, 0, i18n.T("%s sold a building on %s for $%d."), g.Players[g.Turn].Name, g.SquareName(sq), HouseCost(sq)/2)
 	return true
 }
 
 // Roll rolls the dice for the human player.
 func (g *Fortune) Roll() bool {
-	if g.Phase != PhaseRoll || g.Players[g.Turn].CPU {
+	if g.Phase != PhaseRoll || g.Players[g.Turn].Computer() {
 		return false
 	}
 	g.roll(g.throw())
@@ -490,7 +545,7 @@ func (g *Fortune) PayBail() bool {
 	}
 	g.payPot(g.Turn, bail)
 	p.InJail, p.JailTries = false, 0
-	g.note(g.Turn, false, false, i18n.T("%s paid $%d bail."), p.Name, bail)
+	g.note(g.Turn, 0, 0, i18n.T("%s paid $%d bail."), p.Name, bail)
 	return true
 }
 
@@ -526,7 +581,7 @@ func (g *Fortune) buy(p int) {
 	sq := g.Players[p].At
 	g.Players[p].Cash -= Board[sq].Price
 	g.Owner[sq] = p
-	g.note(p, false, false, i18n.T("%s bought %s for $%d."), g.Players[p].Name, g.SquareName(sq), Board[sq].Price)
+	g.note(p, 0, 0, i18n.T("%s bought %s for $%d."), g.Players[p].Name, g.SquareName(sq), Board[sq].Price)
 	if g.BuildOnBuy && Board[sq].Kind == Street {
 		g.CanRaise[sq] = true // it may go up a level this very turn
 	}
@@ -544,14 +599,14 @@ func (g *Fortune) roll(a, b int) {
 			if g.OneDie {
 				what = i18n.T("a six")
 			}
-			g.note(g.Turn, true, false, i18n.T("%s rolled %s and walked out of jail."), p.Name, what)
+			g.note(g.Turn, Everyone, 0, i18n.T("%s rolled %s and walked out of jail."), p.Name, what)
 			double = false // no second roll after leaving jail
 		} else if p.JailTries++; p.JailTries < 3 {
-			g.note(g.Turn, false, false, i18n.T("%s stays in jail."), p.Name)
+			g.note(g.Turn, 0, 0, i18n.T("%s stays in jail."), p.Name)
 			g.Phase = PhaseEnd
 			return
 		} else {
-			g.note(g.Turn, false, true, i18n.T("%s paid $%d bail after three tries."), p.Name, bail)
+			g.note(g.Turn, 0, Everyone, i18n.T("%s paid $%d bail after three tries."), p.Name, bail)
 			p.InJail, p.JailTries = false, 0
 			if !g.charge(g.Turn, bail, -1) {
 				return
@@ -560,12 +615,12 @@ func (g *Fortune) roll(a, b int) {
 	} else if p.Turtle > 0 { // a turtle: one square, and no roll again
 		p.Turtle--
 		g.Doubles = 0
-		g.note(g.Turn, false, g.Turn == 0, i18n.T("%s is a turtle: one square."), p.Name)
+		g.note(g.Turn, 0, Seat(g.Turn), i18n.T("%s is a turtle: one square."), p.Name)
 		g.walk(g.Turn, 1)
 		return
 	} else if double {
 		if g.Doubles++; g.Doubles == 3 {
-			g.note(g.Turn, false, true, i18n.T("Three doubles in a row: %s goes to jail."), p.Name)
+			g.note(g.Turn, 0, Everyone, i18n.T("Three doubles in a row: %s goes to jail."), p.Name)
 			g.jail(g.Turn)
 			return
 		}
@@ -626,10 +681,10 @@ func (g *Fortune) walkPath(pi int, path []int) {
 	}
 	g.emit(FortuneEvent{Kind: EvWalk, Player: pi, From: from, To: p.At, Steps: len(path), Path: path})
 	if via >= 0 {
-		g.note(pi, false, false, i18n.T("%s took the road through %s."), p.Name, g.SquareName(via))
+		g.note(pi, 0, 0, i18n.T("%s took the road through %s."), p.Name, g.SquareName(via))
 	}
 	if passed {
-		g.note(pi, true, false, i18n.T("%s passed Start: +$%d."), p.Name, StartPay)
+		g.note(pi, Everyone, 0, i18n.T("%s passed Start: +$%d."), p.Name, StartPay)
 	}
 	g.land(pi)
 }
@@ -664,7 +719,7 @@ func (g *Fortune) land(pi int) {
 		switch {
 		case owner < 0 && p.Cash >= sq.Price:
 			g.Phase = PhaseBuy
-			if p.CPU {
+			if p.Computer() {
 				if g.cpuWants(pi, p.At) {
 					g.buy(pi)
 				}
@@ -672,33 +727,33 @@ func (g *Fortune) land(pi int) {
 			}
 			return
 		case owner < 0:
-			g.note(pi, false, false, i18n.T("%s cannot afford %s."), p.Name, g.SquareName(p.At))
+			g.note(pi, 0, 0, i18n.T("%s cannot afford %s."), p.Name, g.SquareName(p.At))
 
 		case owner != pi && p.RentFree:
 			p.RentFree = false
-			g.note(pi, pi == 0, false, i18n.T("%s owed %s rent for %s and paid nothing: Free Rent."), p.Name, g.Players[owner].Name, g.SquareName(p.At))
+			g.note(pi, Seat(pi), 0, i18n.T("%s owed %s rent for %s and paid nothing: Free Rent."), p.Name, g.Players[owner].Name, g.SquareName(p.At))
 		case owner != pi:
 			rent := g.Rent(p.At)
 			if !g.charge(pi, rent, owner) {
 				return
 			}
-			g.note(pi, pi == owner, pi == 0, i18n.T("%s paid %s $%d rent for %s."), p.Name, g.Players[owner].Name, rent, g.SquareName(p.At))
+			g.note(pi, Seat(owner), Seat(pi), i18n.T("%s paid %s $%d rent for %s."), p.Name, g.Players[owner].Name, rent, g.SquareName(p.At))
 		}
 	case TaxSquare:
 		if !g.charge(pi, sq.Price, -1) {
 			return
 		}
-		g.note(pi, false, pi == 0, i18n.T("%s paid $%d %s into the fountain."), p.Name, sq.Price, i18n.T(sq.Name))
+		g.note(pi, 0, Seat(pi), i18n.T("%s paid $%d %s into the fountain."), p.Name, sq.Price, i18n.T(sq.Name))
 	case Fountain:
 		if g.Pot > 0 {
-			g.note(pi, true, false, i18n.T("%s took $%d from the fountain."), p.Name, g.Pot)
+			g.note(pi, Everyone, 0, i18n.T("%s took $%d from the fountain."), p.Name, g.Pot)
 			p.Cash += g.Pot
 			g.Pot = 0
 		} else {
-			g.note(pi, false, false, "%s", i18n.T("The fountain is empty."))
+			g.note(pi, 0, 0, "%s", i18n.T("The fountain is empty."))
 		}
 	case GoToJail:
-		g.note(pi, false, pi == 0, i18n.T("%s goes to jail."), p.Name)
+		g.note(pi, 0, Seat(pi), i18n.T("%s goes to jail."), p.Name)
 		g.jail(pi)
 		return
 	case ChanceSquare:
@@ -721,8 +776,8 @@ func (g *Fortune) afterMove() {
 	g.Phase = PhaseEnd
 	if g.Doubles > 0 && !g.Players[g.Turn].InJail {
 		g.Phase = PhaseRoll
-		if !g.Players[g.Turn].CPU {
-			g.note(g.Turn, false, false, "%s", i18n.T("A double: roll again."))
+		if !g.Players[g.Turn].Computer() {
+			g.note(g.Turn, 0, 0, "%s", i18n.T("A double: roll again."))
 		}
 	}
 }
@@ -776,7 +831,14 @@ func (g *Fortune) chance(pi int) bool {
 	if strings.Contains(text, "%s") { // a card that names a square
 		text = fmt.Sprintf(text, g.SquareName(c.to))
 	}
-	g.note(pi, c.amount > 0 || c.each > 0, (c.amount < 0 || c.each < 0 || c.house < 0) && pi == 0, i18n.T("Chance for %s: %s"), p.Name, text)
+	helps, hurts := uint8(0), uint8(0)
+	if c.amount > 0 || c.each > 0 {
+		helps = Everyone
+	}
+	if c.amount < 0 || c.each < 0 || c.house < 0 {
+		hurts = Seat(pi)
+	}
+	g.note(pi, helps, hurts, i18n.T("Chance for %s: %s"), p.Name, text)
 	switch {
 	case c.card:
 		g.give(pi, i18n.T("%s takes a card: %s."))
@@ -876,11 +938,11 @@ func (g *Fortune) raise(pi, amount int) {
 		if house {
 			g.Houses[best]--
 			p.Cash += HouseCost(best) / 2
-			g.note(pi, false, pi == 0, i18n.T("%s sold a house on %s for $%d."), p.Name, g.SquareName(best), HouseCost(best)/2)
+			g.note(pi, 0, Seat(pi), i18n.T("%s sold a house on %s for $%d."), p.Name, g.SquareName(best), HouseCost(best)/2)
 		} else {
 			g.Owner[best] = -1
 			p.Cash += Board[best].Price / 2
-			g.note(pi, false, pi == 0, i18n.T("%s sold %s to the bank for $%d."), p.Name, g.SquareName(best), Board[best].Price/2)
+			g.note(pi, 0, Seat(pi), i18n.T("%s sold %s to the bank for $%d."), p.Name, g.SquareName(best), Board[best].Price/2)
 		}
 	}
 }
@@ -894,14 +956,17 @@ func (g *Fortune) bankrupt(pi int) {
 			g.Owner[sq], g.Houses[sq] = -1, 0
 		}
 	}
-	g.note(pi, false, pi == 0, i18n.T("%s is bankrupt and out of the game."), p.Name)
-	left := 0
+	g.note(pi, 0, Seat(pi), i18n.T("%s is bankrupt and out of the game."), p.Name)
+	left, people := 0, 0
 	for _, q := range g.Players {
 		if !q.Out {
 			left++
+			if !q.CPU {
+				people++
+			}
 		}
 	}
-	if pi == 0 || left == 1 {
+	if people == 0 || left == 1 {
 		g.over()
 	} else if pi == g.Turn {
 		g.Phase = PhaseEnd
@@ -926,13 +991,13 @@ func (g *Fortune) next() {
 		}
 		if p.Asleep {
 			p.Asleep = false
-			g.note(g.Turn, false, g.Turn == 0, i18n.T("%s sleeps through their turn."), p.Name)
+			g.note(g.Turn, 0, Seat(g.Turn), i18n.T("%s sleeps through their turn."), p.Name)
 			continue
 		}
 		break
 	}
 	g.Phase = PhaseRoll
-	if g.Players[g.Turn].CPU {
+	if g.Players[g.Turn].Computer() {
 		g.Phase = PhaseCPU
 	}
 }
@@ -946,11 +1011,18 @@ func (g *Fortune) over() {
 		}
 	}
 	g.Winner = best
-	g.Result = Lost
-	if best == 0 {
-		g.Result = Won
+	g.note(best, Seat(best), Everyone&^Seat(best), i18n.T("%s won with $%d in worth."), g.Players[best].Name, g.Worth(best))
+}
+
+// Outcome is how the game went for a player: Playing until it is over.
+func (g *Fortune) Outcome(player int) Outcome {
+	switch {
+	case g.Phase != PhaseOver:
+		return Playing
+	case player == g.Winner:
+		return Won
 	}
-	g.note(best, best == 0, best != 0, i18n.T("%s won with $%d in worth."), g.Players[best].Name, g.Worth(best))
+	return Lost
 }
 
 // PlayCPU plays the computer player's whole turn.
@@ -973,12 +1045,59 @@ func (g *Fortune) PlayCPU() bool {
 	if g.Phase == PhaseOver {
 		return true
 	}
+	g.cpuEnd(pi)
+	return true
+}
+
+// cpuEnd ends the computer player's turn: its cards, its buildings, then
+// the next player.
+func (g *Fortune) cpuEnd(pi int) {
 	if !g.Players[pi].Out {
 		g.cpuCards(pi, false)
 		g.cpuBuild(pi)
 	}
 	g.next()
-	return true
+}
+
+// SetAway has the computer play a person's turns while they are gone
+// (away), or hands them back; no one else's, and nothing once the game
+// is over. Gone in their own turn, the computer
+// finishes it: what is left of it now, or PhaseCPU for PlayCPU.
+func (g *Fortune) SetAway(player int, away bool) {
+	if player < 0 || player >= len(g.Players) {
+		return
+	}
+	p := &g.Players[player]
+	if p.CPU || p.Away == away || g.Phase == PhaseOver {
+		return
+	}
+	p.Away = away
+	if player != g.Turn {
+		return
+	}
+	switch {
+	case !away && g.Phase == PhaseCPU:
+		g.Phase = PhaseRoll
+	case !away:
+	case g.Phase == PhaseRoll:
+		g.Phase = PhaseCPU
+	case g.Phase == PhaseBuy:
+		if g.cpuWants(player, p.At) {
+			g.buy(player)
+		}
+		g.afterMove()
+	case g.Phase == PhaseShop:
+		g.cpuShop(player)
+		g.LeaveShop()
+	}
+	if away {
+		switch g.Phase {
+		case PhaseRoll:
+			g.Phase = PhaseCPU // a double: it rolls again
+		case PhaseEnd:
+			g.cpuEnd(player)
+		}
+	}
 }
 
 // cpuWants: buy when the cash after it stays above a reserve, or when

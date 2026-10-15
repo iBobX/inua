@@ -324,7 +324,7 @@ func (p *fortune) paintCardFX(pn pen) {
 	if !e.Played {
 		t := p.t
 		lift, k0, k1, sink := 70.0, 0.3, 0.85, 0.0
-		if e.Player == 0 { // over the hand, clear of it, then down into it
+		if e.Player == p.me { // over the hand, clear of it, then down into it
 			h := p.cam.half()
 			from = games.Vec{X: p.cam.view.X, Y: p.cam.view.Y + h.Y - handRoom - 20}
 			lift, k0, k1, sink = 140, 0.6, 1.3, handRoom

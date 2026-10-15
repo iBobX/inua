@@ -228,7 +228,7 @@ func TestFortuneCardEvents(t *testing.T) {
 	var cards []FortuneEvent
 	for _, e := range g.Take() {
 		if e.Kind == EvCard {
-			cards = append(cards, e)
+			cards = append(cards, e.For(0))
 		}
 	}
 	if len(cards) != 2 || !cards[0].Played || cards[0].Card != CardRob || cards[0].Target != 1 ||
@@ -237,8 +237,11 @@ func TestFortuneCardEvents(t *testing.T) {
 	}
 	g.give(1, "%s %s")
 	for _, e := range g.Take() {
-		if e.Kind == EvCard && (!e.Back || e.Player != 1) {
+		if e := e.For(0); e.Kind == EvCard && (!e.Back || e.Player != 1 || e.Card != 0) {
 			t.Errorf("a rival's card shown: %+v", e)
+		}
+		if e := e.For(1); e.Kind == EvCard && (e.Back || e.Card != g.Players[1].Cards[len(g.Players[1].Cards)-1]) {
+			t.Errorf("their own card face down: %+v", e)
 		}
 	}
 }

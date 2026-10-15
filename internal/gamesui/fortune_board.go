@@ -546,7 +546,7 @@ func (p *fortune) paintMarks(pn pen) {
 		pn.Alpha(white, 0.32)
 		pn.Fill()
 	}
-	if p.g.Turn == 0 && !p.busy() {
+	if p.mine() && !p.busy() {
 		for sq := range games.Board {
 			if p.g.CanBuild(sq) {
 				pn.Width(2.2)
@@ -1080,7 +1080,7 @@ func (p *fortune) paintMiddle(pn pen) {
 		slip(m.X-200, m.Y-150, 400, 260)
 		w := p.g.Winner
 		title := i18n.Tf("%s won.", p.g.Players[w].Name)
-		if w == 0 {
+		if w == p.me && p.alone() {
 			title = i18n.T("You won!")
 		}
 		pn.Text(title, minchoBold+" 26", m.X, m.Y-112, 0.5, 0.5, washiShu)
@@ -1109,9 +1109,9 @@ func (p *fortune) paintMiddle(pn pen) {
 		pi = p.cur.Player
 	}
 	turn := p.g.Players[pi]
-	who := i18n.T("Your turn")
-	if turn.CPU {
-		who = i18n.Tf("%s's turn", turn.Name)
+	who := i18n.Tf("%s's turn", turn.Name)
+	if pi == p.me && p.alone() {
+		who = i18n.T("Your turn")
 	}
 	h := 30.0
 	if len(p.log) > 0 {

@@ -108,8 +108,8 @@ func (p *fortune) refreshSquare() {
 			whole = whole && v.Owner[i] == o
 		}
 	}
-	mine := s.Kind == games.Street && o == 0
-	idle := !p.busy() && g.Turn == 0
+	mine := s.Kind == games.Street && o >= 0 && o == p.me
+	idle := !p.busy() && p.mine()
 	p.cardButtons.SetVisible(mine)
 	p.build.SetSensitive(idle && g.CanBuild(sq))
 	p.sell.SetSensitive(idle && g.CanSell(sq))
@@ -160,7 +160,7 @@ func (p *fortune) refreshSquare() {
 		p.squareOwner.SetMarkup(html.EscapeString(i18n.Tf("For sale: $%d", s.Price)))
 	default:
 		owns := i18n.Tf("%s owns it", g.Players[o].Name)
-		if o == 0 {
+		if o == p.me && p.alone() {
 			owns = i18n.T("You own it")
 		}
 		rent := ""
@@ -413,7 +413,13 @@ func (p *fortune) refreshHand() {
 	g := p.g
 	if !p.busy() {
 		was := p.handShown
-		p.handShown = slices.Clone(g.Players[0].Cards)
+		if p.handOf != p.me { // another person's hand: none of it new
+			was, p.handFor, p.handOf = nil, "", p.me
+		}
+		p.handShown = nil
+		if p.me >= 0 {
+			p.handShown = slices.Clone(g.Players[p.me].Cards)
+		}
 		// The cards come into the hand: those not in it before.
 		left := slices.Clone(was)
 		born := map[int]time.Time{}
@@ -429,7 +435,7 @@ func (p *fortune) refreshHand() {
 		}
 		p.handBorn = born
 	}
-	mine := g.Turn == 0 && !p.busy() && g.Phase != games.PhaseOver
+	mine := p.mine() && !p.busy() && g.Phase != games.PhaseOver
 	sq := p.focus()
 	key := fmt.Sprint(mine, g.Phase, g.Turn, g.Offer, p.handShown, g.Players, sq, g.Owner, g.Houses)
 	if key == p.handFor {
@@ -446,7 +452,7 @@ func (p *fortune) refreshHand() {
 		}
 		return t
 	}
-	shopping := g.Phase == games.PhaseShop && g.Turn == 0
+	shopping := g.Phase == games.PhaseShop && p.mine()
 	p.shop.SetVisible(shopping)
 	if shopping {
 		for i, c := range g.Offer {
@@ -463,9 +469,14 @@ func (p *fortune) refreshHand() {
 	}
 	cards := p.handShown
 	p.handBar.SetVisible(len(cards) > 0)
-	if mine && !shopping {
+	switch {
+	case !p.alone() && mine && !shopping:
+		p.handCaption.SetText(i18n.Tf("%s's cards · %d of %d · click one to play it", g.Players[p.me].Name, len(cards), games.HandMax))
+	case !p.alone() && p.me >= 0:
+		p.handCaption.SetText(i18n.Tf("%s's cards · %d of %d", g.Players[p.me].Name, len(cards), games.HandMax))
+	case mine && !shopping:
 		p.handCaption.SetText(i18n.Tf("Your cards · %d of %d · click one to play it", len(cards), games.HandMax))
-	} else {
+	default:
 		p.handCaption.SetText(i18n.Tf("Your cards · %d of %d", len(cards), games.HandMax))
 	}
 	for i, c := range cards {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"image/color"
+	"math/bits"
 	"math/rand/v2"
 	"slices"
 	"strings"
@@ -25,7 +26,14 @@ type fortune struct {
 	cv       *canvas
 	cam      camera
 	settings games.FortuneSettings
+	people   int        // how many play at this screen, taking turns
 	pages    *gtk.Stack // "setup", then "play"
+
+	// The people who play at this screen, a bit a player (games.Seat), and
+	// the one of them the board is shown for: whose turn it is, or was last
+	// while others play; -1 for none.
+	here uint8
+	me   int
 
 	// The board shows events one after another: queue waits, cur plays.
 	queue   []games.FortuneEvent
@@ -83,6 +91,7 @@ type fortune struct {
 	handCaption   *gtk.Label
 	onLeaveShop   func(gtk.Button)
 	handFor       string
+	handOf        int // the player whose hand it is
 	handShown     []games.CardKind
 	handBorn      map[int]time.Time
 	handCards     []*canvas
@@ -130,7 +139,7 @@ func (p *fortune) playerColor(i int) color.NRGBA {
 }
 
 func (p *fortune) setup(f *frame) {
-	p.f, p.settings, p.selected, p.hover = f, games.DefaultFortune, -1, -1
+	p.f, p.settings, p.people, p.selected, p.hover = f, games.DefaultFortune, 1, -1, -1
 	p.snd = newSynth()
 	f.win.SetDefaultSize(1440, 900)
 	f.status.SetVisible(false) // the board and the panel say it all
@@ -260,8 +269,11 @@ func (p *fortune) setupPage() *gtk.Box {
 			p.settings.Rounds = games.FortuneRounds[i]
 		case "cash":
 			p.settings.Cash = games.FortuneCash[i]
+		case "people":
+			p.people = i + 1
+			p.fitRivals()
 		case "rivals":
-			p.settings.Rivals = i + 1
+			p.settings.Rivals = i
 		case "dice":
 			p.settings.Dice = i + 1
 		}
@@ -340,12 +352,14 @@ func (p *fortune) setupPage() *gtk.Box {
 	}
 	row(0, i18n.T("Rounds"), "rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds))
 	row(1, i18n.T("Starting money"), "cash", cash, slices.Index(games.FortuneCash, p.settings.Cash))
-	row(2, i18n.T("Rivals"), "rivals", []string{i18n.T("Mika"), i18n.T("Mika, Ren"), i18n.T("Mika, Ren, Sol")}, p.settings.Rivals-1)
-	row(3, i18n.T("Dice"), "dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
+	row(2, i18n.T("People at this screen"), "people", []string{"1", "2", "3", "4"}, p.people-1)
+	row(3, i18n.T("Rivals"), "rivals", []string{i18n.T("None"), i18n.T("Mika"), i18n.T("Mika, Ren"), i18n.T("Mika, Ren, Sol")}, p.settings.Rivals)
+	p.fitRivals()
+	row(4, i18n.T("Dice"), "dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
 	l := gtk.NewLabel(i18n.T("Build the day you buy"))
 	l.AddCssClass("fortune-option")
 	l.SetXalign(0)
-	opts.Attach(&l.Widget, 0, 4, 1, 1)
+	opts.Attach(&l.Widget, 0, 5, 1, 1)
 	build := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	sw := gtk.NewSwitch()
 	sw.SetActive(p.settings.BuildOnBuy)
@@ -359,7 +373,7 @@ func (p *fortune) setupPage() *gtk.Box {
 	note := gtk.NewLabel(i18n.T("A street you buy may go up a level that same turn"))
 	note.AddCssClass("fortune-city-sub")
 	gtkx.Append(build, &note.Widget)
-	opts.Attach(&build.Widget, 1, 4, 1, 1)
+	opts.Attach(&build.Widget, 1, 5, 1, 1)
 	gtkx.Append(page, &opts.Widget)
 
 	p.onStart = func(gtk.Button) { p.begin() }
@@ -372,6 +386,22 @@ func (p *fortune) setupPage() *gtk.Box {
 	return page
 }
 
+// fitRivals offers the computer players that make two to four players
+// with the people, and picks the nearest of them if the one picked does not.
+func (p *fortune) fitRivals() {
+	buttons := p.picks["rivals"]
+	if len(buttons) == 0 {
+		return
+	}
+	fit := max(2-p.people, min(p.settings.Rivals, 4-p.people))
+	for k, b := range buttons {
+		b.SetSensitive(p.people+k >= 2 && p.people+k <= 4)
+	}
+	if fit != p.settings.Rivals {
+		buttons[fit].SetActive(true) // its toggle sets the settings
+	}
+}
+
 // reset goes back to the setup, for a new game.
 func (p *fortune) reset() {
 	p.pages.SetVisibleChildName("setup")
@@ -382,13 +412,22 @@ func (p *fortune) reset() {
 
 // begin starts a game as set up.
 func (p *fortune) begin() {
-	p.g = games.NewFortune(p.settings, uint64(time.Now().UnixNano()))
+	s := p.settings
+	s.Humans = nil // one person: "You"
+	if p.people > 1 {
+		s.Humans = make([]string, p.people) // "Player 1" …
+	}
+	p.g = games.NewFortune(s, uint64(time.Now().UnixNano()))
+	p.here, p.me = 0, 0
+	for i := range p.people {
+		p.here |= games.Seat(i)
+	}
 	p.queue, p.cur, p.t, p.wait, p.fx, p.idle = nil, nil, 0, 0, nil, true
 	p.shown = p.g.View()
 	p.lookAt(0)
 	p.dice, p.diceAt = [2]int{}, p.diceBy(0)
-	p.squareFor, p.handFor, p.handShown, p.handBorn = "", "", nil, nil
-	p.rungTurn, p.endRung = "1", false
+	p.squareFor, p.handFor, p.handShown, p.handBorn, p.handOf = "", "", nil, nil, p.me
+	p.rungTurn, p.endRung = "1 0", false
 	p.log = nil
 	p.selected = -1
 	gtkx.Clear(&p.players)
@@ -435,15 +474,33 @@ func (p *fortune) focus() int {
 	if p.selected >= 0 {
 		return p.selected
 	}
-	return p.shown.At[0]
+	if p.me < 0 {
+		return p.shown.At[p.g.Turn]
+	}
+	return p.shown.At[p.me]
+}
+
+// mine reports whether the player whose turn it is plays at this screen.
+func (p *fortune) mine() bool {
+	return !p.g.Players[p.g.Turn].Computer() && p.here&games.Seat(p.g.Turn) != 0
+}
+
+// alone reports whether one person plays at this screen, "you".
+func (p *fortune) alone() bool { return bits.OnesCount8(p.here) == 1 }
+
+// take queues what happened since, as the person shown for sees it.
+func (p *fortune) take() {
+	for _, e := range p.g.Take() {
+		p.queue = append(p.queue, e.For(p.me))
+	}
 }
 
 // act does a move of the player's and plays out what follows.
 func (p *fortune) act(do func() bool) {
-	if p.busy() || !do() {
+	if p.busy() || !p.mine() || !do() {
 		return
 	}
-	p.queue = append(p.queue, p.g.Take()...)
+	p.take()
 	p.idle = false
 	p.play()
 }
@@ -548,11 +605,15 @@ func (p *fortune) step(dt float64) bool {
 			if p.wait += dt; p.wait > 0.5 {
 				p.wait = 0
 				p.g.PlayCPU()
-				p.queue = append(p.queue, p.g.Take()...)
+				p.take()
 			}
 			return true
 		default:
 			if !p.idle {
+				if p.mine() && p.me != p.g.Turn { // the next person here takes the screen
+					p.me, p.selected = p.g.Turn, -1
+					p.lookAt(p.me)
+				}
 				old := p.shown
 				p.shown, p.idle = p.g.View(), true
 				p.moneyFrom(old, p.shown)
@@ -595,7 +656,7 @@ func (p *fortune) step(dt float64) bool {
 		p.cam.follow(project(at.X, at.Y, 0), dt)
 	case games.EvNote:
 		length = 0.3
-		if e.Player != 0 || p.g.Players[p.g.Turn].CPU {
+		if e.Player != p.me || !p.mine() {
 			length = 0.75
 		}
 	}
@@ -617,13 +678,13 @@ func (p *fortune) ring() {
 	switch {
 	case g.Phase == games.PhaseOver && !p.endRung:
 		p.endRung = true
-		if g.Result == games.Won {
+		if p.here == 0 || p.here&games.Seat(g.Winner) != 0 {
 			p.sound(sndWin)
 		} else {
 			p.sound(sndLose)
 		}
-	case g.Turn == 0 && g.Phase == games.PhaseRoll:
-		if turn := fmt.Sprint(g.Round); turn != p.rungTurn {
+	case p.mine() && g.Phase == games.PhaseRoll:
+		if turn := fmt.Sprint(g.Round, g.Turn); turn != p.rungTurn {
 			p.rungTurn = turn
 			p.sound(sndYourTurn)
 		}
@@ -640,7 +701,7 @@ func (p *fortune) diceBy(pi int) games.Vec {
 // raisable counts the streets the player may raise a level now.
 func (p *fortune) raisable() int {
 	n := 0
-	if p.g.Turn != 0 || p.busy() {
+	if !p.mine() || p.busy() {
 		return 0
 	}
 	for sq := range games.Board {
@@ -711,23 +772,23 @@ func (p *fortune) refresh() {
 	case g.Phase == games.PhaseOver && !p.busy():
 		p.primary.SetLabel(i18n.T("New game"))
 		p.primary.SetSensitive(true)
-	case p.busy() || g.Players[g.Turn].CPU:
+	case p.busy() || !p.mine():
 		p.primary.SetLabel(i18n.Tf("%s is playing…", g.Players[g.Turn].Name))
-		if g.Turn == 0 {
+		if g.Turn == p.me {
 			p.primary.SetLabel("…")
 		}
 		p.primary.SetSensitive(false)
 	case g.Phase == games.PhaseRoll:
 		p.primary.SetLabel(i18n.T("Roll the dice"))
 		p.primary.SetSensitive(true)
-		if g.Players[0].InJail {
+		if g.Players[g.Turn].InJail {
 			p.primary.SetLabel(map[bool]string{false: i18n.T("Roll for a double"), true: i18n.T("Roll for a six")}[g.OneDie])
 			p.secondary.SetLabel(i18n.T("Pay $50 bail"))
 			p.secondary.SetVisible(true)
-			p.secondary.SetSensitive(g.Players[0].Cash >= 50)
+			p.secondary.SetSensitive(g.Players[g.Turn].Cash >= 50)
 		}
 	case g.Phase == games.PhaseBuy:
-		at := g.Players[0].At
+		at := g.Players[g.Turn].At
 		p.primary.SetLabel(i18n.Tf("Buy it for $%d", games.Board[at].Price)) // short: the panel keeps its width
 		p.primary.SetSensitive(true)
 		p.secondary.SetLabel(i18n.T("Don't buy"))
