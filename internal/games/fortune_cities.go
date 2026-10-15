@@ -8,79 +8,84 @@ type FortuneCity struct {
 	ID    string // "tokyo", "new-york", "shanghai", "roma"
 	Name  string // in English
 	Local string // as the city writes it
-	// Names are the properties' names by square: the ring's streets cheap
-	// to dear, the four stops (piers in the rules), the two utilities, and
-	// the two branch roads' streets.
-	Names map[int]string
+	// Names are the properties' names in the board's order: each side of
+	// the ring from Start, its streets cheap to dear round a station or
+	// pier and a utility on two sides; then the two branch roads.
+	Names []string
 }
 
 // FortuneCities are the boards to choose from; the first is the default.
 var FortuneCities = []FortuneCity{
-	{"tokyo", i18n.M("Tokyo"), "東京", map[int]string{
-		1: i18n.M("Sugamo"), 3: i18n.M("Kitasenju"),
-		5: i18n.M("Ueno Station"),
-		6: i18n.M("Asakusa"), 8: i18n.M("Yanaka"), 9: i18n.M("Nippori"),
-		11: i18n.M("Kanda"), 12: i18n.M("Tokyo Power"), 13: i18n.M("Jimbocho"), 14: i18n.M("Akihabara"),
-		15: i18n.M("Tokyo Station"),
-		16: i18n.M("Harajuku"), 18: i18n.M("Omotesando"), 19: i18n.M("Shibuya"),
-		21: i18n.M("Nakameguro"), 23: i18n.M("Daikanyama"), 24: i18n.M("Ebisu"),
-		25: i18n.M("Shinagawa Station"),
-		26: i18n.M("Kagurazaka"), 27: i18n.M("Yotsuya"), 28: i18n.M("Tokyo Waterworks"), 29: i18n.M("Shinjuku"),
-		31: i18n.M("Toranomon"), 32: i18n.M("Akasaka"), 34: i18n.M("Roppongi"),
-		35: i18n.M("Shimbashi Station"),
-		37: i18n.M("Marunouchi"), 39: i18n.M("Ginza"),
-		40: i18n.M("Okachimachi"), 41: i18n.M("Yushima"), 43: i18n.M("Hongo"), 44: i18n.M("Ochanomizu"), 46: i18n.M("Suidobashi"), 47: i18n.M("Iidabashi"),
-		48: i18n.M("Azabu-Juban"), 49: i18n.M("Hiroo"), 51: i18n.M("Shirokane"), 52: i18n.M("Takanawa"), 54: i18n.M("Mita"), 55: i18n.M("Hamamatsucho"),
+	{"tokyo", i18n.M("Tokyo"), "東京", []string{
+		// the ring's first side, from Start
+		i18n.M("Sugamo"), i18n.M("Kitasenju"), i18n.M("Otsuka"), i18n.M("Komagome"), i18n.M("Tabata"), i18n.M("Oji"), i18n.M("Ueno Station"), i18n.M("Asakusa"), i18n.M("Yanaka"), i18n.M("Nippori"), i18n.M("Ryogoku"), i18n.M("Kuramae"), i18n.M("Kiyosumi"),
+		// its second, from Jail
+		i18n.M("Kanda"), i18n.M("Jimbocho"), i18n.M("Akihabara"), i18n.M("Tokyo Power"), i18n.M("Ningyocho"), i18n.M("Monzen-Nakacho"), i18n.M("Tsukishima"), i18n.M("Tokyo Station"), i18n.M("Harajuku"), i18n.M("Omotesando"), i18n.M("Shibuya"), i18n.M("Sangenjaya"), i18n.M("Shimokitazawa"), i18n.M("Jiyugaoka"),
+		// its third, from the Fountain
+		i18n.M("Nakameguro"), i18n.M("Daikanyama"), i18n.M("Ebisu"), i18n.M("Meguro"), i18n.M("Gotanda"), i18n.M("Osaki"), i18n.M("Shinagawa Station"), i18n.M("Kagurazaka"), i18n.M("Yotsuya"), i18n.M("Shinjuku"), i18n.M("Tokyo Waterworks"), i18n.M("Ikebukuro"), i18n.M("Takadanobaba"), i18n.M("Waseda"),
+		// its fourth, from Go to Jail
+		i18n.M("Toranomon"), i18n.M("Akasaka"), i18n.M("Roppongi"), i18n.M("Kudanshita"), i18n.M("Nagatacho"), i18n.M("Kasumigaseki"), i18n.M("Shimbashi Station"), i18n.M("Hibiya"), i18n.M("Yurakucho"), i18n.M("Nihonbashi"), i18n.M("Otemachi"), i18n.M("Marunouchi"), i18n.M("Ginza"),
+		// the first branch road
+		i18n.M("Okachimachi"), i18n.M("Yushima"), i18n.M("Nezu"), i18n.M("Hongo"), i18n.M("Sendagi"), i18n.M("Ochanomizu"), i18n.M("Korakuen"), i18n.M("Suidobashi"), i18n.M("Hakusan"), i18n.M("Myogadani"), i18n.M("Edogawabashi"), i18n.M("Iidabashi"),
+		// the second
+		i18n.M("Azabu-Juban"), i18n.M("Hiroo"), i18n.M("Nishi-Azabu"), i18n.M("Shirokane"), i18n.M("Takanawa"), i18n.M("Sengakuji"), i18n.M("Mita"), i18n.M("Tamachi"), i18n.M("Shibaura"), i18n.M("Hamamatsucho"), i18n.M("Shiodome"), i18n.M("Shiba Park"),
 	}},
-	{"new-york", i18n.M("New York"), i18n.M("New York"), map[int]string{
-		1: i18n.M("Harlem"), 3: i18n.M("Washington Heights"),
-		5: i18n.M("Penn Station"),
-		6: i18n.M("Chinatown"), 8: i18n.M("Little Italy"), 9: i18n.M("Lower East Side"),
-		11: i18n.M("Williamsburg"), 12: i18n.M("Con Edison"), 13: i18n.M("DUMBO"), 14: i18n.M("Brooklyn Heights"),
-		15: i18n.M("Grand Central"),
-		16: i18n.M("Greenwich Village"), 18: i18n.M("SoHo"), 19: i18n.M("Tribeca"),
-		21: i18n.M("Chelsea"), 23: i18n.M("Gramercy"), 24: i18n.M("Flatiron"),
-		25: i18n.M("Staten Island Ferry"),
-		26: i18n.M("Broadway"), 27: i18n.M("Times Square"), 28: i18n.M("City Water Tunnel"), 29: i18n.M("Rockefeller Center"),
-		31: i18n.M("Upper West Side"), 32: i18n.M("Upper East Side"), 34: i18n.M("Central Park South"),
-		35: i18n.M("Hudson Pier"),
-		37: i18n.M("Wall Street"), 39: i18n.M("Fifth Avenue"),
-		40: i18n.M("Hell's Kitchen"), 41: i18n.M("Garment District"), 43: i18n.M("Koreatown"), 44: i18n.M("NoMad"), 46: i18n.M("Murray Hill"), 47: i18n.M("Kips Bay"),
-		48: i18n.M("Battery Park City"), 49: i18n.M("Financial District"), 51: i18n.M("Seaport"), 52: i18n.M("Two Bridges"), 54: i18n.M("Bowery"), 55: i18n.M("NoLIta"),
+	{"new-york", i18n.M("New York"), i18n.M("New York"), []string{
+		// the ring's first side, from Start
+		i18n.M("Harlem"), i18n.M("Washington Heights"), i18n.M("Inwood"), i18n.M("Hamilton Heights"), i18n.M("Morningside Heights"), i18n.M("East Harlem"), i18n.M("Penn Station"), i18n.M("Chinatown"), i18n.M("Little Italy"), i18n.M("Lower East Side"), i18n.M("East Village"), i18n.M("Alphabet City"), i18n.M("Stuyvesant Town"),
+		// its second, from Jail
+		i18n.M("Williamsburg"), i18n.M("DUMBO"), i18n.M("Brooklyn Heights"), i18n.M("Con Edison"), i18n.M("Park Slope"), i18n.M("Cobble Hill"), i18n.M("Red Hook"), i18n.M("Grand Central"), i18n.M("Greenwich Village"), i18n.M("SoHo"), i18n.M("Tribeca"), i18n.M("West Village"), i18n.M("Meatpacking District"), i18n.M("Hudson Square"),
+		// its third, from the Fountain
+		i18n.M("Chelsea"), i18n.M("Gramercy"), i18n.M("Flatiron"), i18n.M("Union Square"), i18n.M("Madison Square"), i18n.M("Herald Square"), i18n.M("Staten Island Ferry"), i18n.M("Broadway"), i18n.M("Times Square"), i18n.M("Rockefeller Center"), i18n.M("City Water Tunnel"), i18n.M("Bryant Park"), i18n.M("Turtle Bay"), i18n.M("Sutton Place"),
+		// its fourth, from Go to Jail
+		i18n.M("Upper West Side"), i18n.M("Upper East Side"), i18n.M("Central Park South"), i18n.M("Lincoln Center"), i18n.M("Carnegie Hill"), i18n.M("Lenox Hill"), i18n.M("Hudson Pier"), i18n.M("Park Avenue"), i18n.M("Madison Avenue"), i18n.M("Billionaires' Row"), i18n.M("Hudson Yards"), i18n.M("Wall Street"), i18n.M("Fifth Avenue"),
+		// the first branch road
+		i18n.M("Hell's Kitchen"), i18n.M("Garment District"), i18n.M("Penn South"), i18n.M("Koreatown"), i18n.M("NoMad"), i18n.M("Rose Hill"), i18n.M("Murray Hill"), i18n.M("Kips Bay"), i18n.M("Tudor City"), i18n.M("Midtown East"), i18n.M("Beekman"), i18n.M("Roosevelt Island"),
+		// the second
+		i18n.M("Battery Park City"), i18n.M("Financial District"), i18n.M("Bowling Green"), i18n.M("Seaport"), i18n.M("Two Bridges"), i18n.M("Civic Center"), i18n.M("Bowery"), i18n.M("NoLIta"), i18n.M("NoHo"), i18n.M("Astor Place"), i18n.M("Cooper Square"), i18n.M("Washington Square"),
 	}},
-	{"shanghai", i18n.M("Shanghai"), "上海", map[int]string{
-		1: i18n.M("Zhabei"), 3: i18n.M("Hongkou"),
-		5: i18n.M("Railway Station"),
-		6: i18n.M("Old City"), 8: i18n.M("Yuyuan Garden"), 9: i18n.M("City God Temple"),
-		11: i18n.M("Changle Road"), 12: i18n.M("Nanshi Power"), 13: i18n.M("Wukang Road"), 14: i18n.M("Jing'an Temple"),
-		15: i18n.M("Hongqiao Station"),
-		16: i18n.M("Tianzifang"), 18: i18n.M("Huaihai Road"), 19: i18n.M("Xintiandi"),
-		21: i18n.M("Fuxing Park"), 23: i18n.M("Sinan Road"), 24: i18n.M("Hengshan Road"),
-		25: i18n.M("Shiliupu Ferry"),
-		26: i18n.M("Jiangning Road"), 27: i18n.M("People's Square"), 28: i18n.M("Yangshupu Waterworks"), 29: i18n.M("Nanjing Road"),
-		31: i18n.M("Jinqiao"), 32: i18n.M("Century Avenue"), 34: i18n.M("Lujiazui"),
-		35: i18n.M("Bund Ferry"),
-		37: i18n.M("Peace Hotel"), 39: i18n.M("The Bund"),
-		40: i18n.M("Suzhou Creek"), 41: i18n.M("Moganshan Road"), 43: i18n.M("Changshou Road"), 44: i18n.M("Caoyang"), 46: i18n.M("Zhongshan Park"), 47: i18n.M("Gubei"),
-		48: i18n.M("Dongjiadu"), 49: i18n.M("Laoximen"), 51: i18n.M("Dajing Road"), 52: i18n.M("Fangbang Road"), 54: i18n.M("Henan Road"), 55: i18n.M("Yu Garden"),
+	{"shanghai", i18n.M("Shanghai"), "上海", []string{
+		// the ring's first side, from Start
+		i18n.M("Zhabei"), i18n.M("Hongkou"), i18n.M("Baoshan Road"), i18n.M("Tilanqiao"), i18n.M("Dalian Road"), i18n.M("Quyang"), i18n.M("Railway Station"), i18n.M("Old City"), i18n.M("Yuyuan Garden"), i18n.M("City God Temple"), i18n.M("Penglai Road"), i18n.M("Dapuqiao"), i18n.M("Ruijin Road"),
+		// its second, from Jail
+		i18n.M("Changle Road"), i18n.M("Wukang Road"), i18n.M("Jing'an Temple"), i18n.M("Nanshi Power"), i18n.M("Yuyuan Road"), i18n.M("Yan'an Road"), i18n.M("Julu Road"), i18n.M("Hongqiao Station"), i18n.M("Tianzifang"), i18n.M("Huaihai Road"), i18n.M("Xintiandi"), i18n.M("Taikang Road"), i18n.M("Shaanxi South Road"), i18n.M("Maoming Road"),
+		// its third, from the Fountain
+		i18n.M("Fuxing Park"), i18n.M("Sinan Road"), i18n.M("Hengshan Road"), i18n.M("Xujiahui"), i18n.M("Tianping Road"), i18n.M("Anfu Road"), i18n.M("Shiliupu Ferry"), i18n.M("Jiangning Road"), i18n.M("People's Square"), i18n.M("Nanjing Road"), i18n.M("Yangshupu Waterworks"), i18n.M("Wujiang Road"), i18n.M("Fuzhou Road"), i18n.M("Weihai Road"),
+		// its fourth, from Go to Jail
+		i18n.M("Jinqiao"), i18n.M("Century Avenue"), i18n.M("Lujiazui"), i18n.M("Zhangjiang"), i18n.M("Huamu"), i18n.M("Binjiang Avenue"), i18n.M("Bund Ferry"), i18n.M("Sichuan Road"), i18n.M("Yuanmingyuan Road"), i18n.M("Rockbund"), i18n.M("Customs House"), i18n.M("Peace Hotel"), i18n.M("The Bund"),
+		// the first branch road
+		i18n.M("Suzhou Creek"), i18n.M("Moganshan Road"), i18n.M("Changhua Road"), i18n.M("Changshou Road"), i18n.M("Caoyang"), i18n.M("Jiaozhou Road"), i18n.M("Zhongshan Park"), i18n.M("Changning Road"), i18n.M("Jiangsu Road"), i18n.M("Hongqiao Road"), i18n.M("Hongmei Road"), i18n.M("Gubei"),
+		// the second
+		i18n.M("Dongjiadu"), i18n.M("Laoximen"), i18n.M("Xiaonanmen"), i18n.M("Dajing Road"), i18n.M("Fangbang Road"), i18n.M("Zhonghua Road"), i18n.M("Henan Road"), i18n.M("Cool Docks"), i18n.M("Fuyou Road"), i18n.M("Yu Garden"), i18n.M("Renmin Road"), i18n.M("Jinling Road"),
 	}},
-	{"roma", i18n.M("Rome"), i18n.M("Roma"), map[int]string{
-		1: i18n.M("Ostiense"), 3: i18n.M("Testaccio"),
-		5: i18n.M("Roma Termini"),
-		6: i18n.M("San Lorenzo"), 8: i18n.M("Monti"), 9: i18n.M("Trastevere"),
-		11: i18n.M("Borgo Pio"), 12: i18n.M("Centrale Elettrica"), 13: i18n.M("Prati"), 14: i18n.M("Via Cola di Rienzo"),
-		15: i18n.M("Stazione Tiburtina"),
-		16: i18n.M("Campo de' Fiori"), 18: i18n.M("Pantheon"), 19: i18n.M("Piazza Navona"),
-		21: i18n.M("Via del Corso"), 23: i18n.M("Fontana di Trevi"), 24: i18n.M("Piazza di Spagna"),
-		25: i18n.M("Porto di Ostia"),
-		26: i18n.M("Aventino"), 27: i18n.M("Palatino"), 28: i18n.M("Acquedotto"), 29: i18n.M("Circo Massimo"),
-		31: i18n.M("Parioli"), 32: i18n.M("Via Veneto"), 34: i18n.M("Villa Borghese"),
-		35: i18n.M("Stazione Trastevere"),
-		37: i18n.M("Via Condotti"), 39: i18n.M("Colosseo"),
-		40: i18n.M("Esquilino"), 41: i18n.M("Piazza Vittorio"), 43: i18n.M("Pigneto"), 44: i18n.M("Porta Maggiore"), 46: i18n.M("Nomentano"), 47: i18n.M("Salario"),
-		48: i18n.M("Garbatella"), 49: i18n.M("Piramide"), 51: i18n.M("Roseto"), 52: i18n.M("Bocca della Verità"), 54: i18n.M("Ghetto"), 55: i18n.M("Isola Tiberina"),
+	{"roma", i18n.M("Rome"), i18n.M("Roma"), []string{
+		// the ring's first side, from Start
+		i18n.M("Ostiense"), i18n.M("Testaccio"), i18n.M("Marconi"), i18n.M("Portuense"), i18n.M("Monteverde"), i18n.M("San Paolo"), i18n.M("Roma Termini"), i18n.M("San Lorenzo"), i18n.M("Monti"), i18n.M("Trastevere"), i18n.M("Celio"), i18n.M("San Giovanni"), i18n.M("Laterano"),
+		// its second, from Jail
+		i18n.M("Borgo Pio"), i18n.M("Prati"), i18n.M("Via Cola di Rienzo"), i18n.M("Centrale Elettrica"), i18n.M("Flaminio"), i18n.M("Delle Vittorie"), i18n.M("Mazzini"), i18n.M("Stazione Tiburtina"), i18n.M("Campo de' Fiori"), i18n.M("Pantheon"), i18n.M("Piazza Navona"), i18n.M("Via Giulia"), i18n.M("Piazza Farnese"), i18n.M("Sant'Eustachio"),
+		// its third, from the Fountain
+		i18n.M("Via del Corso"), i18n.M("Fontana di Trevi"), i18n.M("Piazza di Spagna"), i18n.M("Piazza del Popolo"), i18n.M("Via del Babuino"), i18n.M("Via Margutta"), i18n.M("Porto di Ostia"), i18n.M("Aventino"), i18n.M("Palatino"), i18n.M("Circo Massimo"), i18n.M("Acquedotto"), i18n.M("Campidoglio"), i18n.M("Fori Imperiali"), i18n.M("Piazza Venezia"),
+		// its fourth, from Go to Jail
+		i18n.M("Parioli"), i18n.M("Via Veneto"), i18n.M("Villa Borghese"), i18n.M("Pinciano"), i18n.M("Ludovisi"), i18n.M("Quirinale"), i18n.M("Stazione Trastevere"), i18n.M("Via Sistina"), i18n.M("Trinità dei Monti"), i18n.M("Piazza Barberini"), i18n.M("Via Frattina"), i18n.M("Via Condotti"), i18n.M("Colosseo"),
+		// the first branch road
+		i18n.M("Esquilino"), i18n.M("Piazza Vittorio"), i18n.M("Santa Croce"), i18n.M("Pigneto"), i18n.M("Porta Maggiore"), i18n.M("Torpignattara"), i18n.M("Nomentano"), i18n.M("Salario"), i18n.M("Trieste"), i18n.M("Coppedè"), i18n.M("Villa Ada"), i18n.M("Villa Torlonia"),
+		// the second
+		i18n.M("Garbatella"), i18n.M("Piramide"), i18n.M("San Saba"), i18n.M("Roseto"), i18n.M("Bocca della Verità"), i18n.M("Foro Boario"), i18n.M("Ghetto"), i18n.M("Isola Tiberina"), i18n.M("Portico d'Ottavia"), i18n.M("Largo Argentina"), i18n.M("Teatro di Marcello"), i18n.M("Lungotevere"),
 	}},
 }
+
+// propertyAt is each square's place among the properties, -1 for a square
+// that is not one.
+var propertyAt = func() (at [len(Board)]int) {
+	n := 0
+	for sq := range Board {
+		at[sq] = -1
+		if IsProperty(sq) {
+			at[sq], n = n, n+1
+		}
+	}
+	return at
+}()
 
 // FortuneSettings are a new game's: how many computer players (1–3), how
 // many rounds, how much each player starts with, which city; and its
@@ -94,17 +99,20 @@ type FortuneSettings struct {
 
 // The choices a game offers: rounds, starting cash.
 var (
-	FortuneRounds = []int{20, 30, 45, 60}
+	FortuneRounds = []int{30, 45, 60, 90}
 	FortuneCash   = []int{1000, 1500, 2000, 3000}
 )
 
-// DefaultFortune is a game against two, 30 rounds, $1,500 each, in Tokyo.
-var DefaultFortune = FortuneSettings{Rivals: 2, Rounds: 30, Cash: 1500}
+// DefaultFortune is a game against two, 45 rounds, $1,500 each, in Tokyo.
+var DefaultFortune = FortuneSettings{Rivals: 2, Rounds: 45, Cash: 1500}
 
 // SquareName is a square's name in the game's city.
-func (g *Fortune) SquareName(sq int) string {
-	if n, ok := FortuneCities[g.City].Names[sq]; ok {
-		return i18n.T(n)
+func (g *Fortune) SquareName(sq int) string { return i18n.T(FortuneCities[g.City].SquareName(sq)) }
+
+// SquareName is a square's name in the city, untranslated.
+func (c FortuneCity) SquareName(sq int) string {
+	if n := propertyAt[sq]; n >= 0 {
+		return c.Names[n]
 	}
-	return i18n.T(Board[sq].Name)
+	return Board[sq].Name
 }

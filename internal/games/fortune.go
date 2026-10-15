@@ -11,19 +11,20 @@ import (
 )
 
 // Small Fortune is a property game for one player against one to three
-// computer players, on a board of its own: a ring of 40 squares and two
+// computer players, on a board of its own: a ring of 80 squares and two
 // branch roads across it, a pawn at a fork taking either road as chance
-// has it; 34 streets in twelve colour groups, four ferry piers and two
-// utilities. Each street of
-// theirs a player's pawn passes or lands on in a turn may go up one level
-// that turn: house by house to four, then a hotel; owning a whole group
-// doubles its bare rent and adds half to its built rents.
-// Piers pay more the more of them one owns; utilities charge by the dice.
-// Taxes and fines go into the fountain's pot, which the next player to
-// land there takes. A player who cannot pay sells buildings, then
-// property, back to the bank at half price; one who still cannot is out.
-// The game ends when one player is left, or after its last round, with
-// the most worth (cash, property and buildings).
+// has it; 72 streets in 24 colour groups, four ferry piers and two
+// utilities. Each street of theirs a player's pawn passes or lands on in a
+// turn may go up one level that turn: house by house to four, then a
+// hotel; owning a whole group doubles its bare rent and adds half to its
+// built rents. Piers pay more the more of them one owns; utilities charge
+// by the dice. Taxes and fines go into the fountain's pot, which the next
+// player to land there takes. Cards, from Chance and the card shops, are
+// played in a player's turn, before or after the roll (fortune_cards.go).
+// A player who cannot pay sells buildings, then property, back to the bank
+// at half price; one who still cannot is out. The game ends when one
+// player is left, or after its last round, with the most worth (cash,
+// property and buildings).
 
 type SquareKind uint8
 
@@ -35,88 +36,81 @@ const (
 	GoToJail
 	ChanceSquare
 	TaxSquare
-	Pier    // a ferry pier: rent by how many piers the owner has
-	Utility // rent by the dice
+	Pier     // a ferry pier: rent by how many piers the owner has
+	Utility  // rent by the dice
+	CardShop // cards for sale
 )
 
+// Square is a square of the board. A property's name is its city's
+// (FortuneCity.Names); Name is the others'.
 type Square struct {
 	Name  string
 	Kind  SquareKind
-	Group int // a street's colour group, 0–7
+	Group int // a street's colour group, 0–23
 	Price int // a property's price, or a tax
 }
 
+var (
+	chanceSq = Square{i18n.M("Chance"), ChanceSquare, -1, 0}
+	shopSq   = Square{i18n.M("Card Shop"), CardShop, -1, 0}
+)
+
+// street is a street of group at price.
+func street(group, price int) Square { return Square{"", Street, group, price} }
+
+// Board is the ring, from Start, one side of it to a line, each side's
+// streets in four groups of three round its pier; then the branch roads,
+// in four groups each.
 var Board = [...]Square{
 	{i18n.M("Start"), StartSquare, -1, 0},
-	{i18n.M("Willow Lane"), Street, 0, 60},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Birch Row"), Street, 0, 60},
-	{i18n.M("Income Tax"), TaxSquare, -1, 150},
-	{i18n.M("North Pier"), Pier, -1, 200},
-	{i18n.M("Mill Street"), Street, 1, 100},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Ferry Road"), Street, 1, 100},
-	{i18n.M("Weaver's Yard"), Street, 1, 120},
+	street(0, 60), chanceSq, street(0, 60), street(0, 80), {i18n.M("Income Tax"), TaxSquare, -1, 150},
+	street(1, 80), shopSq, street(1, 80), street(1, 100), {"", Pier, -1, 200},
+	street(2, 100), chanceSq, street(2, 100), street(2, 120), shopSq,
+	street(3, 120), street(3, 120), chanceSq, street(3, 140),
 	{i18n.M("Jail"), JailSquare, -1, 0},
-	{i18n.M("Lantern Alley"), Street, 2, 140},
-	{i18n.M("Power Station"), Utility, -1, 150},
-	{i18n.M("Paper Market"), Street, 2, 140},
-	{i18n.M("Ink Court"), Street, 2, 160},
-	{i18n.M("East Pier"), Pier, -1, 200},
-	{i18n.M("Tea House Row"), Street, 3, 180},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Bell Tower"), Street, 3, 180},
-	{i18n.M("Clock Square"), Street, 3, 200},
+	street(4, 140), chanceSq, street(4, 140), street(4, 160), {"", Utility, -1, 150},
+	street(5, 160), shopSq, street(5, 160), street(5, 180), {"", Pier, -1, 200},
+	street(6, 180), chanceSq, street(6, 180), street(6, 200), shopSq,
+	street(7, 200), street(7, 200), chanceSq, street(7, 220),
 	{i18n.M("Fountain"), Fountain, -1, 0},
-	{i18n.M("Garden Gate"), Street, 4, 220},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Orchard Hill"), Street, 4, 220},
-	{i18n.M("Vineyard Way"), Street, 4, 240},
-	{i18n.M("South Pier"), Pier, -1, 200},
-	{i18n.M("Harbor Front"), Street, 5, 260},
-	{i18n.M("Lighthouse"), Street, 5, 260},
-	{i18n.M("Water Works"), Utility, -1, 150},
-	{i18n.M("Coral Bay"), Street, 5, 280},
+	street(8, 220), chanceSq, street(8, 220), street(8, 240), shopSq,
+	street(9, 240), chanceSq, street(9, 240), street(9, 260), {"", Pier, -1, 200},
+	street(10, 260), shopSq, street(10, 260), street(10, 280), {"", Utility, -1, 150},
+	street(11, 280), street(11, 280), chanceSq, street(11, 300),
 	{i18n.M("Go to Jail"), GoToJail, -1, 0},
-	{i18n.M("Observatory"), Street, 6, 300},
-	{i18n.M("Museum Mile"), Street, 6, 300},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Opera House"), Street, 6, 320},
-	{i18n.M("West Pier"), Pier, -1, 200},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Sky Terrace"), Street, 7, 350},
-	{i18n.M("Luxury Tax"), TaxSquare, -1, 100},
-	{i18n.M("Summit Plaza"), Street, 7, 400},
-	// The first branch road, from North Pier across to East Pier.
-	{i18n.M("Rope Walk"), Street, 8, 110},
-	{i18n.M("Cooper Lane"), Street, 8, 110},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Kiln Street"), Street, 8, 130},
-	{i18n.M("Glass Row"), Street, 9, 150},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Printers' Court"), Street, 9, 150},
-	{i18n.M("Organ Yard"), Street, 9, 170},
-	// The second, from South Pier across to West Pier.
-	{i18n.M("Harbour Steps"), Street, 10, 270},
-	{i18n.M("Sailmakers' Row"), Street, 10, 270},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Captain's Walk"), Street, 10, 290},
-	{i18n.M("Mint Street"), Street, 11, 310},
-	{i18n.M("Chance"), ChanceSquare, -1, 0},
-	{i18n.M("Guild Hall"), Street, 11, 310},
-	{i18n.M("Crown Gardens"), Street, 11, 330},
+	street(12, 300), chanceSq, street(12, 300), street(12, 320), shopSq,
+	street(13, 320), chanceSq, street(13, 320), street(13, 340), {"", Pier, -1, 200},
+	street(14, 350), shopSq, street(14, 350), street(14, 370), chanceSq,
+	street(15, 380), street(15, 380), {i18n.M("Luxury Tax"), TaxSquare, -1, 100}, street(15, 400),
+	// The first branch road, from the north pier across to the east one.
+	street(16, 110), street(16, 110), chanceSq, street(16, 130),
+	street(17, 130), street(17, 130), shopSq, street(17, 150),
+	street(18, 150), street(18, 150), chanceSq, street(18, 170),
+	street(19, 170), shopSq, street(19, 170), street(19, 190),
+	// The second, from the south pier across to the west one.
+	street(20, 270), street(20, 270), chanceSq, street(20, 290),
+	street(21, 290), street(21, 290), shopSq, street(21, 310),
+	street(22, 310), street(22, 310), chanceSq, street(22, 330),
+	street(23, 330), shopSq, street(23, 330), street(23, 350),
 }
 
-// The board's roads: a ring of LoopLen squares from Start, and branch
-// roads off it, each from its fork on the ring through its own squares
-// First to Last and back onto the ring at Rejoin. At a fork a pawn takes
-// either road, as chance has it.
-const LoopLen = 40
+// The board's roads: a ring of LoopLen squares from Start, a corner every
+// Side squares (Start, Jail, the Fountain, Go to Jail), and branch roads
+// off it, each from its fork on the ring through its own squares First to
+// Last and back onto the ring at Rejoin. At a fork a pawn takes either
+// road, as chance has it.
+const (
+	LoopLen = 80
+	Side    = LoopLen / 4
+)
 
 var Branches = []struct{ Fork, First, Last, Rejoin int }{
-	{5, 40, 47, 15},
-	{25, 48, 55, 35},
+	{10, 80, 95, 30},
+	{50, 96, 111, 70},
 }
+
+// IsCorner reports whether sq is one of the ring's four corners.
+func IsCorner(sq int) bool { return sq < LoopLen && sq%Side == 0 }
 
 // Next are the squares a pawn may step on from sq: the ring's next first,
 // and at a fork the branch's first square too.
@@ -153,8 +147,9 @@ func Prev(sq int) int {
 }
 
 const (
-	JailAt     = 10
-	startPay   = 200
+	JailAt     = Side
+	FountainAt = 2 * Side
+	StartPay   = 400 // for passing Start: a lap is long
 	bail       = 50
 	Hotel      = 5 // buildings on a street: four houses, then a hotel
 	cpuReserve = 150
@@ -177,6 +172,10 @@ type FortunePlayer struct {
 	Cash, At  int
 	InJail    bool
 	JailTries int
+	Cards     []CardKind // the hand, at most HandMax
+	RentFree  bool       // a Free Rent card waits for the next rent
+	Turtle    int        // rolls left that walk one square
+	Asleep    bool       // misses the next turn
 }
 
 // FortunePhase is what the player whose turn it is may do.
@@ -185,6 +184,7 @@ type FortunePhase uint8
 const (
 	PhaseRoll FortunePhase = iota // roll (or pay bail, in jail)
 	PhaseBuy                      // buy the street landed on, or pass
+	PhaseShop                     // buy cards at the shop landed on, then leave
 	PhaseEnd                      // build or sell, then end the turn
 	PhaseCPU                      // a computer player is next
 	PhaseOver
@@ -198,6 +198,7 @@ const (
 	EvWalk                  // a token walked forward Steps squares
 	EvJump                  // a token was moved straight to To
 	EvNote                  // something to tell, in Text
+	EvCard                  // a card was got, or Played on Target
 )
 
 // FortuneView is what the board shows: the state after an event.
@@ -205,6 +206,8 @@ type FortuneView struct {
 	Cash   []int
 	At     []int
 	InJail []bool
+	Out    []bool          // who is bankrupt
+	Hands  []int           // how many cards each player holds
 	Owner  [len(Board)]int // -1 for the bank
 	Houses [len(Board)]int
 	Pot    int
@@ -219,7 +222,12 @@ type FortuneEvent struct {
 	Path      []int // the squares an EvWalk stepped on, in order
 	Text      string
 	Good, Bad bool // a note's tone, for the log
-	View      FortuneView
+	// An EvCard's card, face down when the human player may not see it;
+	// played, what on: a player or a square, as the card takes, else -1.
+	Card         CardKind
+	Played, Back bool
+	Target       int
+	View         FortuneView
 }
 
 type Fortune struct {
@@ -243,6 +251,8 @@ type Fortune struct {
 	// CanRaise are the streets of theirs the player whose turn it is
 	// passed or landed on this turn, each of which may go up a level.
 	CanRaise [len(Board)]bool
+	// Offer is the card shop's cards, while the player is at one.
+	Offer []CardKind
 
 	// choose picks a road at a fork, from Next's choices: at random.
 	choose func(roads []int) int
@@ -289,6 +299,8 @@ func (g *Fortune) View() FortuneView {
 		v.Cash = append(v.Cash, p.Cash)
 		v.At = append(v.At, p.At)
 		v.InJail = append(v.InJail, p.InJail)
+		v.Out = append(v.Out, p.Out)
+		v.Hands = append(v.Hands, len(p.Cards))
 	}
 	return v
 }
@@ -545,6 +557,12 @@ func (g *Fortune) roll(a, b int) {
 				return
 			}
 		}
+	} else if p.Turtle > 0 { // a turtle: one square, and no roll again
+		p.Turtle--
+		g.Doubles = 0
+		g.note(g.Turn, false, g.Turn == 0, i18n.T("%s is a turtle: one square."), p.Name)
+		g.walk(g.Turn, 1)
+		return
 	} else if double {
 		if g.Doubles++; g.Doubles == 3 {
 			g.note(g.Turn, false, true, i18n.T("Three doubles in a row: %s goes to jail."), p.Name)
@@ -604,14 +622,14 @@ func (g *Fortune) walkPath(pi int, path []int) {
 	}
 	p.At = path[len(path)-1]
 	if passed {
-		p.Cash += startPay
+		p.Cash += StartPay
 	}
 	g.emit(FortuneEvent{Kind: EvWalk, Player: pi, From: from, To: p.At, Steps: len(path), Path: path})
 	if via >= 0 {
 		g.note(pi, false, false, i18n.T("%s took the road through %s."), p.Name, g.SquareName(via))
 	}
 	if passed {
-		g.note(pi, true, false, i18n.T("%s passed Start: +$%d."), p.Name, startPay)
+		g.note(pi, true, false, i18n.T("%s passed Start: +$%d."), p.Name, StartPay)
 	}
 	g.land(pi)
 }
@@ -656,6 +674,9 @@ func (g *Fortune) land(pi int) {
 		case owner < 0:
 			g.note(pi, false, false, i18n.T("%s cannot afford %s."), p.Name, g.SquareName(p.At))
 
+		case owner != pi && p.RentFree:
+			p.RentFree = false
+			g.note(pi, pi == 0, false, i18n.T("%s owed %s rent for %s and paid nothing: Free Rent."), p.Name, g.Players[owner].Name, g.SquareName(p.At))
 		case owner != pi:
 			rent := g.Rent(p.At)
 			if !g.charge(pi, rent, owner) {
@@ -684,6 +705,9 @@ func (g *Fortune) land(pi int) {
 		if !g.chance(pi) {
 			return
 		}
+	case CardShop:
+		g.openShop(pi)
+		return
 	}
 	g.afterMove()
 }
@@ -711,22 +735,26 @@ var chanceCards = []struct {
 	to     int // a square to go to, -1 none
 	each   int // from (positive) or to (negative) every other player
 	house  int // per house owned
+	card   bool
 }{
-	{i18n.M("A street fair pays out: collect $60."), 60, 0, -1, 0, 0},
-	{i18n.M("Advance to Start."), 0, 0, 0, 0, 0},
-	{i18n.M("Your bicycle needs a new chain: pay $40."), -40, 0, -1, 0, 0},
-	{i18n.M("Go back three squares."), 0, -3, -1, 0, 0},
-	{i18n.M("It is your birthday: every player gives you $25."), 0, 0, -1, 25, 0},
-	{i18n.M("Roof repairs: pay $25 for each building."), 0, 0, -1, 0, -25},
-	{i18n.M("A refund from the tax office: collect $80."), 80, 0, -1, 0, 0},
-	{i18n.M("Catch a ride to the next station or pier."), 0, 0, nextPier, 0, 0},
-	{i18n.M("A night out: go to %s."), 0, 0, 34, 0, 0},
-	{i18n.M("Your shares paid a dividend: collect $100."), 100, 0, -1, 0, 0},
-	{i18n.M("Hotel inspection: pay $40 for each building."), 0, 0, -1, 0, -40},
-	{i18n.M("A parking fine: pay $30."), -30, 0, -1, 0, 0},
-	{i18n.M("You won a crossword: collect $50."), 50, 0, -1, 0, 0},
-	{i18n.M("Buy everyone lunch: pay each player $15."), 0, 0, -1, -15, 0},
-	{i18n.M("Caught jaywalking: go to jail."), 0, 0, JailAt, 0, 0},
+	{i18n.M("A street fair pays out: collect $60."), 60, 0, -1, 0, 0, false},
+	{i18n.M("Advance to Start."), 0, 0, 0, 0, 0, false},
+	{i18n.M("Your bicycle needs a new chain: pay $40."), -40, 0, -1, 0, 0, false},
+	{i18n.M("Go back three squares."), 0, -3, -1, 0, 0, false},
+	{i18n.M("It is your birthday: every player gives you $25."), 0, 0, -1, 25, 0, false},
+	{i18n.M("Roof repairs: pay $25 for each building."), 0, 0, -1, 0, -25, false},
+	{i18n.M("A refund from the tax office: collect $80."), 80, 0, -1, 0, 0, false},
+	{i18n.M("Catch a ride to the next station or pier."), 0, 0, nextPier, 0, 0, false},
+	{i18n.M("A night out: go to %s."), 0, 0, 69, 0, 0, false},
+	{i18n.M("Your shares paid a dividend: collect $100."), 100, 0, -1, 0, 0, false},
+	{i18n.M("Hotel inspection: pay $40 for each building."), 0, 0, -1, 0, -40, false},
+	{i18n.M("A parking fine: pay $30."), -30, 0, -1, 0, 0, false},
+	{i18n.M("You won a crossword: collect $50."), 50, 0, -1, 0, 0, false},
+	{i18n.M("Buy everyone lunch: pay each player $15."), 0, 0, -1, -15, 0, false},
+	{i18n.M("Caught jaywalking: go to jail."), 0, 0, JailAt, 0, 0, false},
+	{i18n.M("A card left on a bench: take it."), 0, 0, -1, 0, 0, true},
+	{i18n.M("The shopkeeper owes you a favour: take a card."), 0, 0, -1, 0, 0, true},
+	{i18n.M("You won a raffle: take a card."), 0, 0, -1, 0, 0, true},
 }
 
 // nextPier is a chance card's destination: the next pier ahead.
@@ -750,6 +778,8 @@ func (g *Fortune) chance(pi int) bool {
 	}
 	g.note(pi, c.amount > 0 || c.each > 0, (c.amount < 0 || c.each < 0 || c.house < 0) && pi == 0, i18n.T("Chance for %s: %s"), p.Name, text)
 	switch {
+	case c.card:
+		g.give(pi, i18n.T("%s takes a card: %s."))
 	case c.to == JailAt:
 		g.jail(pi)
 		return false
@@ -858,6 +888,7 @@ func (g *Fortune) raise(pi, amount int) {
 func (g *Fortune) bankrupt(pi int) {
 	p := &g.Players[pi]
 	p.Out, p.Cash = true, 0
+	p.Cards, p.RentFree, p.Turtle, p.Asleep = nil, false, 0, false
 	for sq, o := range g.Owner {
 		if o == pi {
 			g.Owner[sq], g.Houses[sq] = -1, 0
@@ -889,9 +920,16 @@ func (g *Fortune) next() {
 			}
 			g.Round++
 		}
-		if !g.Players[g.Turn].Out {
-			break
+		p := &g.Players[g.Turn]
+		if p.Out {
+			continue
 		}
+		if p.Asleep {
+			p.Asleep = false
+			g.note(g.Turn, false, g.Turn == 0, i18n.T("%s sleeps through their turn."), p.Name)
+			continue
+		}
+		break
 	}
 	g.Phase = PhaseRoll
 	if g.Players[g.Turn].CPU {
@@ -923,6 +961,9 @@ func (g *Fortune) PlayCPU() bool {
 	pi := g.Turn
 	g.Phase = PhaseRoll
 	for g.Phase == PhaseRoll && g.Turn == pi {
+		if g.cpuCards(pi, true); g.Phase != PhaseRoll || g.Turn != pi {
+			break // a card walked it
+		}
 		p := &g.Players[pi]
 		if p.InJail && p.Cash >= bail+400 {
 			g.PayBail()
@@ -933,6 +974,7 @@ func (g *Fortune) PlayCPU() bool {
 		return true
 	}
 	if !g.Players[pi].Out {
+		g.cpuCards(pi, false)
 		g.cpuBuild(pi)
 	}
 	g.next()

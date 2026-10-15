@@ -7,7 +7,7 @@ import (
 	"github.com/lyricat/inua/internal/games"
 )
 
-// A city's track: its forty squares laid end to end along a closed loop
+// A city's track: the ring's squares laid end to end along a closed loop
 // shaped like the city (the Yamanote Line, Manhattan, Puxi in the Huangpu's
 // bend, Rome's walls), on the board's paper. Each square is a band across
 // the loop fAcross deep, its colour band on the side facing the middle;
@@ -46,10 +46,36 @@ type track struct {
 	roads        [][]games.Vec // each branch road's outline, closed
 	flares       [][]games.Vec // where a road widens out of the ring, or back into it
 	curbs        [][]games.Vec // the flares' edges
+	art          *track        // the track mapK times smaller, as the city's art is drawn
+}
+
+// scaled is the track k times larger.
+func (tr *track) scaled(k float64) *track {
+	pts := func(ps []games.Vec) []games.Vec {
+		out := make([]games.Vec, len(ps))
+		for i, p := range ps {
+			out[i] = games.Vec{X: p.X * k, Y: p.Y * k}
+		}
+		return out
+	}
+	all := func(ls [][]games.Vec) [][]games.Vec {
+		out := make([][]games.Vec, len(ls))
+		for i, l := range ls {
+			out[i] = pts(l)
+		}
+		return out
+	}
+	s := &track{inner: pts(tr.inner), outer: pts(tr.outer), roads: all(tr.roads), flares: all(tr.flares), curbs: all(tr.curbs)}
+	for i, t := range tr.tiles {
+		s.tiles[i] = tile{outline: pts(t.outline), band: pts(t.band), center: games.Vec{X: t.center.X * k, Y: t.center.Y * k},
+			tan: t.tan, in: t.in, along: t.along * k, across: t.across * k}
+	}
+	return s
 }
 
 // cityLoops are the cities' tracks: points on each loop's middle line, in
-// play order from Start, clockwise on the board, smoothed into a curve.
+// play order from Start, clockwise on the board, smoothed into a curve; in
+// the art's units, mapK times smaller than the board's.
 var cityLoops = [][]games.Vec{
 	{ // Tokyo: the Yamanote Line, Shinagawa at Start, Tokyo Bay below on the right
 		{X: 548, Y: 628}, {X: 420, Y: 660}, {X: 292, Y: 648}, {X: 180, Y: 600}, {X: 100, Y: 512},
@@ -85,7 +111,11 @@ var (
 // trackOf is a city's track.
 func trackOf(city int) *track {
 	tracksOnce.Do(func() {
-		for c, pts := range cityLoops {
+		for c, art := range cityLoops {
+			pts := make([]games.Vec, len(art))
+			for i, q := range art {
+				pts[i] = games.Vec{X: q.X * mapK, Y: q.Y * mapK}
+			}
 			tr := buildTrack(pts)
 			var middle games.Vec // the loop's middle
 			for _, q := range pts {
@@ -100,10 +130,11 @@ func trackOf(city int) *track {
 				via := games.Vec{X: mid.X + (middle.X-mid.X)*0.5, Y: mid.Y + (middle.Y-mid.Y)*0.5}
 				if cityRoadsOut[c] {
 					t := tr.tiles[(b.Fork+b.Rejoin)/2]
-					via = t.at(0, 130)
+					via = t.at(0, 130*mapK)
 				}
 				tr.addRoad(b.Fork, b.First, b.Last, b.Rejoin, []games.Vec{via})
 			}
+			tr.art = tr.scaled(1 / mapK)
 			tracks = append(tracks, tr)
 		}
 	})
@@ -292,11 +323,11 @@ func buildTrack(pts []games.Vec) *track {
 	off := func(p, in games.Vec, d float64) games.Vec { return games.Vec{X: p.X + in.X*d, Y: p.Y + in.Y*d} }
 
 	tr := &track{}
-	edge := total / 42 // 36 squares and four corners half as long again
+	edge := total / (games.LoopLen + 2) // the squares, the four corners half as long again
 	s := 0.0
 	for i := range games.LoopLen {
 		l := edge
-		if i%10 == 0 {
+		if games.IsCorner(i) {
 			l = edge * 1.5
 		}
 		steps := 10

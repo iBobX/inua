@@ -33,6 +33,7 @@ type fortune struct {
 	t, wait float64
 	shown   games.FortuneView
 	dice    [2]int
+	diceAt  games.Vec // where the dice lie, on the board
 	log     []logLine
 
 	selected, hover int
@@ -46,20 +47,45 @@ type fortune struct {
 	// pixels to a canvas unit; canvasScale is the canvas's own.
 	under       *image
 	underFor    string
-	underState  string
 	underScale  float64
 	canvasScale float64
-	zoomedAt    time.Time // when the camera's zoom last changed
 
 	fx   []moneyFX // money won and lost, flying off the pawns
 	idle bool      // the board shows the game as it is
+
+	// Its sounds (fortune_sound.go), muted with M; the turn last rung in
+	// and whether the end has played, so each sounds once.
+	snd      *synth
+	muted    bool
+	rungTurn string
+	endRung  bool
 
 	round, pot                      *gtk.Label
 	players, logBox, cardButtons    gtk.Box
 	rows                            []*gtk.Box
 	names, cashes                   []*gtk.Label
-	cardTitle, cardBody             *gtk.Label
 	primary, secondary, build, sell *gtk.Button
+
+	// The square in focus (fortune_panel.go): its sign, name, kind, owner,
+	// rents, laid out again for squareFor; the build button's icon, labels.
+	sign                               *canvas
+	cardTitle, squareKind, squareOwner *gtk.Label
+	rents                              gtk.Box
+	squareFor                          string
+	buildIcon                          *gtk.Image
+	buildLabel, sellLabel              *gtk.Label
+	// The cards over the board: the hand along its foot, under a caption;
+	// the shop over its middle, with its offer. The hand as shown
+	// (handShown), laid out again only when handFor changes; when each card
+	// came into it, and the canvases they are drawn on.
+	hand, offer   gtk.Box
+	handBar, shop *gtk.Box
+	handCaption   *gtk.Label
+	onLeaveShop   func(gtk.Button)
+	handFor       string
+	handShown     []games.CardKind
+	handBorn      map[int]time.Time
+	handCards     []*canvas
 
 	// The setup: a card for each city, the choices, Start.
 	cities      []*canvas
@@ -72,6 +98,7 @@ type fortune struct {
 	onBuildRule func(gtk.Switch, bool) bool
 
 	onPrimary, onSecondary, onBuild, onSell func(gtk.Button)
+	onCard                                  func(gtk.Button) // "buy:offer" or "play:card:target"
 	onClick                                 func(gtk.GestureClick, int32, float64, float64)
 	onMotion                                func(gtk.EventControllerMotion, float64, float64)
 	onLeave                                 func(gtk.EventControllerMotion)
@@ -82,13 +109,18 @@ type logLine struct {
 	good, bad bool
 }
 
-// The streets' colour groups, in the old pigments of washi prints:
-// kogecha, hanada, sakura, yamabuki, matcha, seiji, fuji, shu round the
-// ring; asagi, botan, uguisu, kaki on the branch roads.
-var groupColors = [12]color.NRGBA{
-	{0x8A, 0x5A, 0x3A, 255}, {0x6C, 0x8C, 0xAB, 255}, {0xC2, 0x7D, 0x8B, 255}, {0xD4, 0x9B, 0x39, 255},
-	{0x7A, 0x97, 0x58, 255}, {0x2F, 0x6C, 0x68, 255}, {0x5C, 0x58, 0x8C, 255}, {0xBF, 0x44, 0x30, 255},
-	{0x4A, 0x9B, 0xA8, 255}, {0xB5, 0x51, 0x7E, 255}, {0x7D, 0x7A, 0x3A, 255}, {0xD3, 0x79, 0x3D, 255},
+// The streets' colour groups, in the old pigments of washi prints, each
+// unlike its neighbours: round the ring kogecha, wakatake, hanada, enji,
+// sakura, kon, yamabuki, murasaki, matcha, sangoshu, seiji, nezumi, fuji,
+// beni, ruri, shu; on the branch roads asagi, moegi, botan, aonibi,
+// uguisu, suou, kaki, kikyo.
+var groupColors = [24]color.NRGBA{
+	{0x8A, 0x5A, 0x3A, 255}, {0x6A, 0x9E, 0x73, 255}, {0x6C, 0x8C, 0xAB, 255}, {0x9E, 0x3D, 0x3F, 255},
+	{0xC2, 0x7D, 0x8B, 255}, {0x2E, 0x3A, 0x5C, 255}, {0xD4, 0x9B, 0x39, 255}, {0x7A, 0x4A, 0x7E, 255},
+	{0x7A, 0x97, 0x58, 255}, {0xD4, 0x83, 0x6E, 255}, {0x2F, 0x6C, 0x68, 255}, {0x6E, 0x6A, 0x72, 255},
+	{0x5C, 0x58, 0x8C, 255}, {0xC0, 0x48, 0x5A, 255}, {0x2D, 0x5D, 0x9F, 255}, {0xBF, 0x44, 0x30, 255},
+	{0x4A, 0x9B, 0xA8, 255}, {0x8B, 0xA8, 0x45, 255}, {0xB5, 0x51, 0x7E, 255}, {0x4E, 0x5D, 0x6C, 255},
+	{0x7D, 0x7A, 0x3A, 255}, {0x8E, 0x35, 0x4A, 255}, {0xD3, 0x79, 0x3D, 255}, {0x6A, 0x4C, 0x9C, 255},
 }
 
 // playerColor is a player's colour, the board's own: vermilion, indigo,
@@ -99,6 +131,7 @@ func (p *fortune) playerColor(i int) color.NRGBA {
 
 func (p *fortune) setup(f *frame) {
 	p.f, p.settings, p.selected, p.hover = f, games.DefaultFortune, -1, -1
+	p.snd = newSynth()
 	f.win.SetDefaultSize(1440, 900)
 	f.status.SetVisible(false) // the board and the panel say it all
 	f.hint.SetVisible(false)
@@ -112,14 +145,18 @@ func (p *fortune) setup(f *frame) {
 	p.pages.AddNamed(&p.setupPage().Widget, "setup")
 
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 18)
-	p.cv = newCanvas(boardW, boardH, p.paint)
-	gtkx.Append(row, p.setupCamera())
+	p.cv = newCanvas(1000, 760, p.paint)
+	p.cv.fill = true
+	board := gtk.NewOverlay()
+	board.SetChild(p.setupCamera())
+	p.setupHand(board)
+	gtkx.Append(row, &board.Widget)
 	// The panel: players, the square in focus with what can be done, what
-	// happened; a third of its height each.
+	// happened; the square takes what the players and the last few lines
+	// leave.
 	panel := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	panel.AddCssClass("fortune-panel")
-	panel.SetHomogeneous(true)
-	panel.SetSizeRequest(300, -1)
+	panel.SetSizeRequest(320, -1)
 	panel.SetHexpand(false)
 	gtkx.Append(row, &panel.Widget)
 	p.pages.AddNamed(&row.Widget, "play")
@@ -137,65 +174,38 @@ func (p *fortune) setup(f *frame) {
 		gtkx.Append(panel, &box.Widget)
 		return box
 	}
-	scroll := func(box *gtk.Box, child *gtk.Widget) {
-		sw := gtk.NewScrolledWindow()
-		sw.SetPolicy(gtk.PolicyNeverValue, gtk.PolicyAutomaticValue)
-		sw.SetVexpand(true)
-		sw.SetChild(child)
-		gtkx.Append(box, &sw.Widget)
-	}
-
 	players := section(i18n.T("PLAYERS"))
 	p.players = *gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	scroll(players, &p.players.Widget)
-	p.players.Unref()
+	gtkx.Append(players, &p.players.Widget)
 
 	square := section(i18n.T("SQUARE"))
-	card := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	p.cardTitle = gtk.NewLabel("")
-	p.cardTitle.AddCssClass("fortune-card-title")
-	p.cardTitle.SetXalign(0)
-	p.cardTitle.SetEllipsize(3) // end
-	p.cardTitle.SetMaxWidthChars(28)
-	gtkx.Append(card, &p.cardTitle.Widget)
-	p.cardBody = gtk.NewLabel("")
-	p.cardBody.AddCssClass("fortune-card")
-	p.cardBody.SetXalign(0)
-	p.cardBody.SetWrap(true)
-	p.cardBody.SetMaxWidthChars(36)
-	gtkx.Append(card, &p.cardBody.Widget)
-	scroll(square, &card.Widget)
-	card.Unref()
-	// Building on the square, then the turn's moves.
-	p.cardButtons = *gtk.NewBox(gtk.OrientationHorizontalValue, 6)
-	p.cardButtons.AddCssClass("fortune-buttons")
-	p.cardButtons.SetHomogeneous(true)
-	p.onBuild = func(gtk.Button) { p.act(func() bool { return p.g.Build(p.focus()) }) }
-	p.onSell = func(gtk.Button) { p.act(func() bool { return p.g.Sell(p.focus()) }) }
-	p.build = button(i18n.T("Build a house"), &p.onBuild)
-	p.sell = button(i18n.T("Sell"), &p.onSell)
-	gtkx.Append(&p.cardButtons, &p.build.Widget)
-	gtkx.Append(&p.cardButtons, &p.sell.Widget)
-	gtkx.Append(square, &p.cardButtons.Widget)
+	square.SetVexpand(true)
+	p.setupSquare(square)
 	acts := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
 	acts.AddCssClass("fortune-acts")
-	acts.SetHomogeneous(true)
 	p.onPrimary = func(gtk.Button) { p.main() }
 	p.onSecondary = func(gtk.Button) { p.other() }
 	p.primary = button(i18n.T("Roll the dice"), &p.onPrimary)
 	p.primary.RemoveCssClass("outlined")
 	p.primary.AddCssClass("primary")
 	p.primary.AddCssClass("fortune-main")
-	p.secondary = button("", &p.onSecondary)
+	p.primary.SetHexpand(true)
+	p.secondary = button("", &p.onSecondary) // the quieter choice beside it: don't buy, pay bail
+	p.secondary.RemoveCssClass("outlined")
 	p.secondary.AddCssClass("fortune-main")
+	p.secondary.AddCssClass("fortune-quiet")
 	gtkx.Append(acts, &p.primary.Widget)
 	gtkx.Append(acts, &p.secondary.Widget)
 	gtkx.Append(square, &acts.Widget)
 
 	happened := section(i18n.T("WHAT HAPPENED"))
 	p.logBox = *gtk.NewBox(gtk.OrientationVerticalValue, 4)
-	scroll(happened, &p.logBox.Widget)
+	sw := gtk.NewScrolledWindow()
+	sw.SetPolicy(gtk.PolicyNeverValue, gtk.PolicyAutomaticValue)
+	sw.SetSizeRequest(-1, 120)
+	sw.SetChild(&p.logBox.Widget)
 	p.logBox.Unref()
+	gtkx.Append(happened, &sw.Widget)
 
 	f.keyDown = p.key
 	p.onClick = func(_ gtk.GestureClick, _ int32, x, y float64) {
@@ -208,8 +218,7 @@ func (p *fortune) setup(f *frame) {
 	click.ConnectReleased(&p.onClick) // a drag pans instead
 	p.cv.area.AddController(&click.EventController)
 	p.onMotion = func(_ gtk.EventControllerMotion, x, y float64) {
-		p.cam.pointer = p.cv.at(x, y)
-		if sq := squareAtScreen(p.city(), p.cam.seen(p.cam.pointer)); sq != p.hover {
+		if sq := squareAtScreen(p.city(), p.cam.seen(p.cv.at(x, y))); sq != p.hover {
 			p.hover = sq
 			p.cv.redraw()
 		}
@@ -375,9 +384,11 @@ func (p *fortune) reset() {
 func (p *fortune) begin() {
 	p.g = games.NewFortune(p.settings, uint64(time.Now().UnixNano()))
 	p.queue, p.cur, p.t, p.wait, p.fx, p.idle = nil, nil, 0, 0, nil, true
-	p.cam.zoom, p.cam.view = 1, boardMiddle
 	p.shown = p.g.View()
-	p.dice = [2]int{}
+	p.lookAt(0)
+	p.dice, p.diceAt = [2]int{}, p.diceBy(0)
+	p.squareFor, p.handFor, p.handShown, p.handBorn = "", "", nil, nil
+	p.rungTurn, p.endRung = "1", false
 	p.log = nil
 	p.selected = -1
 	gtkx.Clear(&p.players)
@@ -444,6 +455,8 @@ func (p *fortune) main() {
 		p.act(p.g.Roll)
 	case games.PhaseBuy:
 		p.act(p.g.Buy)
+	case games.PhaseShop:
+		p.act(p.g.LeaveShop)
 	case games.PhaseEnd:
 		p.act(p.g.EndTurn)
 	case games.PhaseOver:
@@ -468,7 +481,7 @@ func (p *fortune) key(k uint32) bool {
 		}
 		return false
 	}
-	if p.zoomKey(k) {
+	if p.panKey(k) {
 		return true
 	}
 	switch k {
@@ -490,6 +503,10 @@ func (p *fortune) key(k uint32) bool {
 		p.other()
 	case 'h':
 		p.act(func() bool { return p.g.Build(p.focus()) })
+	case 'm':
+		p.muted = !p.muted
+		p.snd.setMuted(p.muted)
+		p.cv.redraw()
 	default:
 		return false
 	}
@@ -516,6 +533,10 @@ func (p *fortune) step(dt float64) bool {
 		switch {
 		case len(p.queue) > 0:
 			p.cur, p.queue, p.t, p.idle = &p.queue[0], p.queue[1:], 0, false
+			p.startSounds(p.cur)
+			if p.cur.Kind == games.EvDice {
+				p.diceAt = p.diceBy(p.cur.Player)
+			}
 			if p.cur.Kind == games.EvNote {
 				p.log = append([]logLine{{p.cur.Text, p.cur.Good, p.cur.Bad}}, p.log...)
 				if len(p.log) > 7 {
@@ -535,11 +556,14 @@ func (p *fortune) step(dt float64) bool {
 				old := p.shown
 				p.shown, p.idle = p.g.View(), true
 				p.moneyFrom(old, p.shown)
+				p.soundsFrom(old, p.shown)
 				p.refresh()
+				p.ring()
 			}
 			return len(p.fx) > 0 // until the money has flown
 		}
 	}
+	p.cueSounds(dt)
 	p.t += dt
 	e := p.cur
 	var length float64
@@ -562,6 +586,13 @@ func (p *fortune) step(dt float64) bool {
 		length = jumpTime
 		at, _ := p.token(e.Player)
 		p.cam.follow(project(at.X, at.Y, 0), dt)
+	case games.EvCard:
+		length = cardGotTime
+		if e.Played {
+			length = cardPlayTime
+		}
+		at, _ := p.token(e.Player)
+		p.cam.follow(project(at.X, at.Y, 0), dt)
 	case games.EvNote:
 		length = 0.3
 		if e.Player != 0 || p.g.Players[p.g.Turn].CPU {
@@ -573,9 +604,37 @@ func (p *fortune) step(dt float64) bool {
 		p.shown = e.View
 		p.cur = nil
 		p.moneyFrom(old, p.shown)
+		p.soundsFrom(old, p.shown)
 		p.refresh()
 	}
 	return true
+}
+
+// ring sounds what the board, come to rest, now stands at: the game's
+// end, won or lost, once; the player's turn come round again.
+func (p *fortune) ring() {
+	g := p.g
+	switch {
+	case g.Phase == games.PhaseOver && !p.endRung:
+		p.endRung = true
+		if g.Result == games.Won {
+			p.sound(sndWin)
+		} else {
+			p.sound(sndLose)
+		}
+	case g.Turn == 0 && g.Phase == games.PhaseRoll:
+		if turn := fmt.Sprint(g.Round); turn != p.rungTurn {
+			p.rungTurn = turn
+			p.sound(sndYourTurn)
+		}
+	}
+}
+
+// diceBy is where the dice roll for player pi: inside the loop, beside the
+// square their pawn stands on.
+func (p *fortune) diceBy(pi int) games.Vec {
+	t := trackOf(p.city()).tiles[p.shown.At[pi]]
+	return t.at(0, -t.across/2-40)
 }
 
 // raisable counts the streets the player may raise a level now.
@@ -608,6 +667,20 @@ func (p *fortune) refresh() {
 		case pl.InJail:
 			status += i18n.T(" · in jail")
 		}
+		if !pl.Out {
+			if n := v.Hands[i]; n > 0 {
+				status += i18n.Nf(" · %d card", " · %d cards", n, n)
+			}
+			if pl.RentFree {
+				status += i18n.T(" · free rent")
+			}
+			if pl.Turtle > 0 {
+				status += i18n.T(" · turtle")
+			}
+			if pl.Asleep {
+				status += i18n.T(" · asleep")
+			}
+		}
 		mark := ""
 		if i == g.Turn && g.Phase != games.PhaseOver {
 			mark = "  ◂"
@@ -630,79 +703,7 @@ func (p *fortune) refresh() {
 		}
 	}
 
-	// The square in focus.
-	sq := p.focus()
-	s := games.Board[sq]
-	p.cardTitle.SetText(g.SquareName(sq))
-	var b strings.Builder
-	switch s.Kind {
-	case games.Street:
-		var group []string
-		for _, o := range games.Group(s.Group) {
-			if o != sq {
-				group = append(group, g.SquareName(o))
-			}
-		}
-		fmt.Fprintf(&b, i18n.T("Price $%d · each building $%d\nGroup: %s\n"), s.Price, games.HouseCost(sq), strings.Join(group, ", "))
-		fmt.Fprintf(&b, i18n.T("Rent $%d (whole group $%d)\n1–4 houses: $%d, $%d, $%d, $%d\nHotel: $%d (+50%% with the group)"),
-			games.RentAt(sq, 0, false), games.RentAt(sq, 0, true), games.RentAt(sq, 1, false), games.RentAt(sq, 2, false),
-			games.RentAt(sq, 3, false), games.RentAt(sq, 4, false), games.RentAt(sq, games.Hotel, false))
-		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, i18n.T("\nOwned by %s"), g.Players[o].Name)
-			switch h := v.Houses[sq]; {
-			case h == games.Hotel:
-				b.WriteString(i18n.T(", with a hotel"))
-			case h > 0:
-				b.WriteString(i18n.Nf(", %d house", ", %d houses", h, h))
-			}
-			fmt.Fprintf(&b, i18n.T(": rent now $%d"), rentOf(v, sq))
-		} else {
-			b.WriteString(i18n.T("\nFor sale"))
-		}
-	case games.Pier:
-		fmt.Fprintf(&b, i18n.T("Price $%d. Rent $%d, $%d, $%d or $%d as its owner has 1 to 4 piers."), s.Price,
-			games.PierRent(1), games.PierRent(2), games.PierRent(3), games.PierRent(4))
-		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, i18n.T("\nOwned by %s: rent now $%d"), g.Players[o].Name, rentOf(v, sq))
-		} else {
-			b.WriteString(i18n.T("\nFor sale"))
-		}
-	case games.Utility:
-		fmt.Fprintf(&b, i18n.T("Price $%d. Rent is the dice times %d, or times %d with both utilities."), s.Price,
-			games.UtilityTimes(1), games.UtilityTimes(2))
-		if o := v.Owner[sq]; o >= 0 {
-			fmt.Fprintf(&b, i18n.T("\nOwned by %s"), g.Players[o].Name)
-		} else {
-			b.WriteString(i18n.T("\nFor sale"))
-		}
-	case games.StartSquare:
-		b.WriteString(i18n.T("Collect $200 every time you pass."))
-	case games.JailSquare:
-		fmt.Fprintf(&b, i18n.T("Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go."),
-			map[bool]string{false: i18n.T("a double"), true: i18n.T("a six")}[g.OneDie])
-	case games.Fountain:
-		fmt.Fprintf(&b, i18n.T("Taxes and fines go into the fountain; the next player to land here takes it all: $%d now."), v.Pot)
-	case games.GoToJail:
-		b.WriteString(i18n.T("Straight to jail, without passing Start."))
-	case games.ChanceSquare:
-		b.WriteString(i18n.T("Draw a card: money, a fine, or a trip."))
-	case games.TaxSquare:
-		fmt.Fprintf(&b, i18n.T("Pay $%d into the fountain."), s.Price)
-	}
-	p.cardBody.SetText(b.String())
-	mine := s.Kind == games.Street && v.Owner[sq] == 0
-	p.cardButtons.SetVisible(mine)
-	idle := !p.busy() && g.Turn == 0
-	p.build.SetSensitive(idle && g.CanBuild(sq))
-	p.sell.SetSensitive(idle && g.CanSell(sq))
-	switch h := v.Houses[sq]; {
-	case h == games.Hotel:
-		p.build.SetLabel(i18n.T("Hotel built"))
-	case h == games.Hotel-1:
-		p.build.SetLabel(i18n.Tf("Build a hotel ($%d)", games.HouseCost(sq)))
-	default:
-		p.build.SetLabel(i18n.Tf("Build a house ($%d)", games.HouseCost(sq)))
-	}
+	p.refreshSquare()
 
 	// What can be done.
 	p.secondary.SetVisible(false)
@@ -732,10 +733,14 @@ func (p *fortune) refresh() {
 		p.secondary.SetLabel(i18n.T("Don't buy"))
 		p.secondary.SetVisible(true)
 		p.secondary.SetSensitive(true)
+	case g.Phase == games.PhaseShop:
+		p.primary.SetLabel(i18n.T("Leave the shop"))
+		p.primary.SetSensitive(true)
 	case g.Phase == games.PhaseEnd:
 		p.primary.SetLabel(i18n.T("End turn"))
 		p.primary.SetSensitive(true)
 	}
+	p.refreshHand()
 
 	// What happened.
 	gtkx.Clear(&p.logBox)

@@ -22,7 +22,7 @@ func TestFortuneBuyRentAndGroups(t *testing.T) {
 	if g.Players[0].Cash != before+6 {
 		t.Fatalf("rent paid %d", g.Players[0].Cash-before)
 	}
-	g.Owner[3] = 0 // the whole group: double the bare rent
+	g.Owner[3], g.Owner[4] = 0, 0 // the whole group: double the bare rent
 	if g.Rent(1) != 12 || g.Rent(3) != 12 {
 		t.Fatalf("group rents %d %d", g.Rent(1), g.Rent(3))
 	}
@@ -32,13 +32,13 @@ func TestFortuneBuyRentAndGroups(t *testing.T) {
 // even alone: four houses, then a hotel.
 func TestFortuneRaiseWhatYouPass(t *testing.T) {
 	g := ringFortune(FortuneSettings{Rivals: 1}, 1)
-	g.Owner[1], g.Owner[3] = 0, 0
+	g.Owner[1], g.Owner[3], g.Owner[4] = 0, 0, 0
 	if g.CanBuild(1) {
 		t.Fatal("built on a street not passed")
 	}
 	for n := range Hotel {
 		g.Turn, g.Phase, g.Players[0].At = 0, PhaseRoll, 0
-		g.RollWith(3, 1) // passes Willow Lane and Birch Row
+		g.RollWith(2, 1) // passes the first street, lands on the second
 		if !g.Build(1) || !g.Build(3) {
 			t.Fatalf("turn %d: could not raise both streets passed", n+1)
 		}
@@ -65,7 +65,7 @@ func TestFortuneRaiseWhatYouPass(t *testing.T) {
 	}
 	// Buying a street is not passing one of yours.
 	g.Phase, g.Players[0].At = PhaseRoll, 0
-	g.RollWith(3, 3) // Mill Street, for sale
+	g.RollWith(3, 3) // the second group's first street, for sale
 	g.Buy()
 	if g.CanBuild(6) {
 		t.Fatal("built on the street just bought")
@@ -81,24 +81,24 @@ func TestFortuneRaiseWhatYouPass(t *testing.T) {
 
 func TestFortunePiersAndUtilities(t *testing.T) {
 	g := ringFortune(FortuneSettings{Rivals: 1}, 1)
-	g.Owner[5], g.Owner[15] = 0, 0
-	if g.Rent(5) != 50 {
-		t.Fatalf("two piers' rent %d", g.Rent(5))
+	g.Owner[10], g.Owner[30] = 0, 0
+	if g.Rent(10) != 50 {
+		t.Fatalf("two piers' rent %d", g.Rent(10))
 	}
-	g.Owner[12] = 0
+	g.Owner[25] = 0
 	g.Dice = [2]int{3, 4}
-	if g.Rent(12) != 28 {
-		t.Fatalf("one utility, a 7: %d", g.Rent(12))
+	if g.Rent(25) != 28 {
+		t.Fatalf("one utility, a 7: %d", g.Rent(25))
 	}
-	g.Owner[28] = 0
-	if g.Rent(28) != 70 {
-		t.Fatalf("both utilities, a 7: %d", g.Rent(28))
+	g.Owner[55] = 0
+	if g.Rent(55) != 70 {
+		t.Fatalf("both utilities, a 7: %d", g.Rent(55))
 	}
 	// The computer lands on a pier of ours.
 	g.Turn, g.Phase = 1, PhaseRoll
-	g.Players[1].At = 1
+	g.Players[1].At = 6
 	cash := g.Players[0].Cash
-	g.RollWith(2, 2) // North Pier
+	g.RollWith(2, 2) // the north pier
 	if g.Players[0].Cash != cash+50 {
 		t.Fatalf("pier rent paid %d", g.Players[0].Cash-cash)
 	}
@@ -106,12 +106,13 @@ func TestFortunePiersAndUtilities(t *testing.T) {
 
 func TestFortuneDoublesAndJail(t *testing.T) {
 	g := ringFortune(FortuneSettings{Rivals: 1}, 1)
-	g.RollWith(3, 3) // Mill Street, then roll again
+	g.RollWith(3, 3) // a street for sale, then roll again
 	g.Pass()
 	if g.Phase != PhaseRoll {
 		t.Fatalf("no second roll after a double: %v", g.Phase)
 	}
-	g.RollWith(2, 2) // Jail, visiting
+	g.Owner[8] = 0
+	g.RollWith(1, 1) // a street of ours
 	g.RollWith(1, 1) // the third double
 	if !g.Players[0].InJail || g.Players[0].At != JailAt || g.Phase != PhaseEnd {
 		t.Fatalf("not jailed: %+v %v", g.Players[0], g.Phase)
@@ -129,12 +130,12 @@ func TestFortuneDoublesAndJail(t *testing.T) {
 
 func TestFortuneFountainAndTax(t *testing.T) {
 	g := ringFortune(FortuneSettings{Rivals: 1}, 1)
-	g.RollWith(3, 1) // Income Tax
+	g.RollWith(3, 2) // Income Tax
 	if g.Pot != 150 {
 		t.Fatalf("pot %d", g.Pot)
 	}
 	g.Turn, g.Phase = 0, PhaseRoll
-	g.Players[0].At = 17
+	g.Players[0].At = FountainAt - 3
 	g.RollWith(2, 1) // Fountain
 	if g.Pot != 0 || g.Players[0].Cash != DefaultFortune.Cash {
 		t.Fatalf("pot %d cash %d", g.Pot, g.Players[0].Cash)
@@ -143,10 +144,10 @@ func TestFortuneFountainAndTax(t *testing.T) {
 
 func TestFortuneDebtSellsThenBankrupts(t *testing.T) {
 	g := ringFortune(FortuneSettings{Rivals: 2}, 1)
-	g.Owner[37], g.Owner[39], g.Houses[39] = 1, 1, Hotel // Summit Plaza: $2,700
+	g.Owner[76], g.Owner[77], g.Owner[79], g.Houses[79] = 1, 1, 1, Hotel // the dearest street: $4,800
 	g.Owner[1], g.Houses[1] = 0, 1
 	g.Players[0].Cash = 100
-	g.Players[0].At = 36
+	g.Players[0].At = 76
 	g.RollWith(2, 1)
 	if !g.Players[0].Out || g.Phase != PhaseOver || g.Result != Lost {
 		t.Fatalf("player %+v phase %v", g.Players[0], g.Phase)
@@ -176,7 +177,7 @@ func TestFortuneComputerGames(t *testing.T) {
 			}
 			for sq, h := range g.Houses {
 				if h > 0 && (Board[sq].Kind != Street || g.Owner[sq] < 0 || h > Hotel) {
-					t.Fatalf("seed %d: %d buildings on %s", seed, h, Board[sq].Name)
+					t.Fatalf("seed %d: %d buildings on square %d", seed, h, sq)
 				}
 			}
 			g.Take()
@@ -203,24 +204,34 @@ func TestFortuneSettings(t *testing.T) {
 	if len(g.Players) != 4 || g.Players[0].Cash != 1000 || g.Players[3].Cash != 1000 || g.Rounds != 20 {
 		t.Fatalf("players %d, cash %d, rounds %d", len(g.Players), g.Players[0].Cash, g.Rounds)
 	}
-	if g.SquareName(39) != "The Bund" || g.SquareName(0) != "Start" || g.SquareName(4) != "Income Tax" {
-		t.Errorf("names %q %q %q", g.SquareName(39), g.SquareName(0), g.SquareName(4))
+	if g.SquareName(79) != "The Bund" || g.SquareName(0) != "Start" || g.SquareName(5) != "Income Tax" || g.SquareName(10) != "Railway Station" {
+		t.Errorf("names %q %q %q %q", g.SquareName(79), g.SquareName(0), g.SquareName(5), g.SquareName(10))
 	}
-	g.RollWith(3, 3) // Mill Street's square: the Old City in Shanghai
+	g.RollWith(3, 3) // the second group's first street: Tilanqiao in Shanghai
 	g.Buy()
 	bought := false
 	for _, e := range g.Take() {
-		bought = bought || strings.Contains(e.Text, "bought Old City")
+		bought = bought || strings.Contains(e.Text, "bought Tilanqiao")
 	}
 	if !bought {
-		t.Error("the purchase did not name the Old City")
+		t.Error("the purchase did not name Tilanqiao")
+	}
+	properties := 0
+	for sq := range Board {
+		if IsProperty(sq) {
+			properties++
+		}
 	}
 	for _, c := range FortuneCities {
-		for sq, s := range Board {
-			_, named := c.Names[sq]
-			if property := s.Kind == Street || s.Kind == Pier || s.Kind == Utility; property != named {
-				t.Errorf("%s: square %d (%s) named %v", c.ID, sq, s.Name, named)
+		seen := map[string]bool{}
+		for _, n := range c.Names {
+			if seen[n] {
+				t.Errorf("%s: %s named twice", c.ID, n)
 			}
+			seen[n] = true
+		}
+		if len(c.Names) != properties {
+			t.Errorf("%s: %d names for %d properties", c.ID, len(c.Names), properties)
 		}
 	}
 	// A game of 20 rounds ends after its 20th.
@@ -287,13 +298,14 @@ func ringFortune(s FortuneSettings, seed uint64) *Fortune {
 func TestFortuneBranches(t *testing.T) {
 	g := NewFortune(FortuneSettings{Rivals: 1}, 1)
 	g.choose = func(roads []int) int { return roads[len(roads)-1] } // the branch
-	g.RollWith(3, 3)                                                // over North Pier's fork, onto the branch
-	if g.Players[0].At != 40 {
+	g.Players[0].At = 4
+	g.RollWith(4, 3) // over the north pier's fork, onto the branch
+	if g.Players[0].At != 80 {
 		t.Fatalf("at %d, not the branch's first square", g.Players[0].At)
 	}
 	took := false
 	for _, e := range g.Take() {
-		if e.Kind == EvWalk && fmt.Sprint(e.Path) != "[1 2 3 4 5 40]" {
+		if e.Kind == EvWalk && fmt.Sprint(e.Path) != "[5 6 7 8 9 10 80]" {
 			t.Errorf("path %v", e.Path)
 		}
 		took = took || strings.Contains(e.Text, "took the road through")
@@ -302,22 +314,23 @@ func TestFortuneBranches(t *testing.T) {
 		t.Error("no word of the branch taken")
 	}
 	g.Turn, g.Phase = 0, PhaseRoll
+	g.Players[0].At = 90
 	g.RollWith(5, 4) // to the branch's end and back onto the ring
-	if g.Players[0].At != 16 {
-		t.Errorf("at %d after the branch, not 16", g.Players[0].At)
+	if g.Players[0].At != 33 {
+		t.Errorf("at %d after the branch, not 33", g.Players[0].At)
 	}
-	if Prev(40) != 5 || Prev(41) != 40 || Prev(15) != 14 || fmt.Sprint(Next(5)) != "[6 40]" || fmt.Sprint(Next(47)) != "[15]" {
-		t.Errorf("roads: prev %d %d %d, next %v %v", Prev(40), Prev(41), Prev(15), Next(5), Next(47))
+	if Prev(80) != 10 || Prev(81) != 80 || Prev(30) != 29 || fmt.Sprint(Next(10)) != "[11 80]" || fmt.Sprint(Next(95)) != "[30]" {
+		t.Errorf("roads: prev %d %d %d, next %v %v", Prev(80), Prev(81), Prev(30), Next(10), Next(95))
 	}
 	// At random, both roads are taken.
 	seen := map[int]bool{}
 	for seed := range 40 {
 		g := NewFortune(FortuneSettings{Rivals: 1}, uint64(seed))
-		g.Players[0].At = 4
+		g.Players[0].At = 9
 		g.RollWith(1, 1)
 		seen[g.Players[0].At] = true
 	}
-	if !seen[6] || !seen[40] {
+	if !seen[11] || !seen[80] {
 		t.Errorf("roads taken from the fork: %v", seen)
 	}
 	if n := 0; true {
@@ -326,7 +339,7 @@ func TestFortuneBranches(t *testing.T) {
 				n++
 			}
 		}
-		if n != 40 {
+		if n != 78 {
 			t.Errorf("%d properties to buy", n)
 		}
 	}

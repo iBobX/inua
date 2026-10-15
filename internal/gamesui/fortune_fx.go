@@ -298,3 +298,112 @@ func paintSum(pn pen, u, v, lift float64, e moneyFX) {
 	pn.Text(text, font, c.X+dx+1, c.Y+1.2, 0.5, 0.5, color.NRGBA{0x1F, 0x1B, 0x17, uint8(140 * a)})
 	pn.Text(text, font, c.X+dx, c.Y, 0.5, 0.5, color.NRGBA{col.R, col.G, col.B, uint8(255 * a)})
 }
+
+// How long a card's effect plays: one got, one played.
+const (
+	cardGotTime  = 1.1
+	cardPlayTime = 1.6
+)
+
+// paintCardFX draws the card the board is showing being got or played.
+// Got by a rival: it rises off their pawn face down, shines, and settles
+// back into the pawn's hand. Got by the player: it rises over their hand
+// at the view's foot turning face up, shines, and drops into it. Played: it
+// rises to the middle of the view, large, rays bursting behind it, then
+// flies to what it was played on, a player's pawn or a square, and
+// ripples there; played on nothing, it bursts where it is.
+func (p *fortune) paintCardFX(pn pen) {
+	e := p.cur
+	if e == nil || e.Kind != games.EvCard {
+		return
+	}
+	at, _ := p.token(e.Player)
+	from := project(at.X, at.Y, 26)
+	ease := func(f float64) float64 { f = max(0, min(1, f)); return f * f * (3 - 2*f) }
+	ink := cardInk[e.Card]
+	if !e.Played {
+		t := p.t
+		lift, k0, k1, sink := 70.0, 0.3, 0.85, 0.0
+		if e.Player == 0 { // over the hand, clear of it, then down into it
+			h := p.cam.half()
+			from = games.Vec{X: p.cam.view.X, Y: p.cam.view.Y + h.Y - handRoom - 20}
+			lift, k0, k1, sink = 140, 0.6, 1.3, handRoom
+		}
+		rise := ease(t / 0.35)
+		y := from.Y - lift*rise
+		k := k0 + (k1-k0)*rise
+		turn := math.Pi * (1 - rise) // from its back to its face
+		if t > 0.8 {
+			f := ease((t - 0.8) / 0.3)
+			y = from.Y - lift + (lift+sink)*f
+			k = k1 - (k1-k0)*f
+		}
+		if t > 0.3 && t < 0.9 {
+			pn.Glow(from.X, y, 70, washiGold, 0.55*math.Sin((t-0.3)/0.6*math.Pi))
+			r := rand.New(rand.NewPCG(uint64(e.Card), 7))
+			for range 7 {
+				a, d := r.Float64()*2*math.Pi, 40+r.Float64()*40*(t-0.3)
+				star(pn, from.X+math.Cos(a)*d, y+math.Sin(a)*d*0.8, 3+r.Float64()*3, washiGold, 1-(t-0.3)/0.6)
+			}
+		}
+		back := e.Back || math.Cos(turn) < 0
+		paintCardAt(pn, e.Card, back, from.X, y, k, 0, math.Cos(turn))
+		return
+	}
+	stage := games.Vec{X: p.cam.view.X, Y: p.cam.view.Y - 40}
+	to, ripple := stage, false
+	switch {
+	case e.Target >= 0 && games.Cards[e.Card].Target == games.TargetPlayer:
+		a, _ := p.token(e.Target)
+		to, ripple = project(a.X, a.Y, 20), true
+	case e.Target >= 0 && games.Cards[e.Card].Target == games.TargetSquare:
+		c := trackOf(p.city()).tiles[e.Target].center
+		to, ripple = project(c.X, c.Y, 0), true
+	}
+	t := p.t
+	switch {
+	case t < 0.4: // up to the stage, growing
+		f := ease(t / 0.4)
+		paintCardAt(pn, e.Card, false, from.X+(stage.X-from.X)*f, from.Y+(stage.Y-from.Y)*f, 0.3+1.3*f, -0.3*(1-f), 1)
+	case t < 1.0: // shown, rays behind
+		f := (t - 0.4) / 0.6
+		pn.Glow(stage.X, stage.Y, 150, ink, 0.45*math.Sin(f*math.Pi))
+		pn.Width(5)
+		for i := range 16 {
+			a := float64(i)*math.Pi/8 + t*0.8
+			r0, r1 := 70+30*f, 120+80*f
+			pn.Alpha(mix(ink, washiGold, float64(i%2)), 0.5*(1-f))
+			pn.Line(stage.X+math.Cos(a)*r0, stage.Y+math.Sin(a)*r0, stage.X+math.Cos(a)*r1, stage.Y+math.Sin(a)*r1)
+		}
+		paintCardAt(pn, e.Card, false, stage.X, stage.Y, 1.6+0.06*math.Sin(f*math.Pi*2), 0, 1)
+	default: // off to the target, or a burst
+		f := ease((t - 1.0) / 0.45)
+		if !ripple {
+			for i := range 12 {
+				a := float64(i) * math.Pi / 6
+				d := 40 + 120*f
+				star(pn, stage.X+math.Cos(a)*d, stage.Y+math.Sin(a)*d, 6*(1-f)+1, mix(ink, washiGold, 0.5), 1-f)
+			}
+			if f < 1 {
+				paintCardAt(pn, e.Card, false, stage.X, stage.Y, 1.6*(1-f)+0.01, 0, 1)
+			}
+			return
+		}
+		if f < 1 {
+			paintCardAt(pn, e.Card, false, stage.X+(to.X-stage.X)*f, stage.Y+(to.Y-stage.Y)*f, 1.6-1.4*f, f*0.6, 1)
+		}
+		if g := (t - 1.3) / 0.3; g > 0 {
+			for k := range 3 {
+				r := (g + float64(k)*0.25) * 60
+				pn.Save()
+				pn.Translate(to.X, to.Y)
+				pn.Scale(1, elevSin)
+				pn.Circle(0, 0, r)
+				pn.Restore()
+				pn.Width(3)
+				pn.Alpha(ink, max(0, 0.8-g*0.6-float64(k)*0.2))
+				pn.Stroke()
+			}
+		}
+	}
+}

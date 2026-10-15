@@ -21,13 +21,17 @@ var cityLandmarks = [][]landmark{
 	{{games.Vec{X: 52, Y: 58}, stPeters}, {games.Vec{X: 170, Y: 440}, pantheon}},
 }
 
-// landmarksOf are a city's landmarks, those placed by its track placed.
+// landmarksOf are a city's landmarks on the board, those placed by its
+// track placed.
 func landmarksOf(city int) []landmark {
 	ls := append([]landmark(nil), cityLandmarks[city]...)
+	for i := range ls { // placed for the art's board, standing on the larger one
+		ls[i].at = games.Vec{X: ls[i].at.X * mapK, Y: ls[i].at.Y * mapK}
+	}
 	if city == 2 {
-		t := trackOf(city).tiles[34]
-		ls[0].at = t.at(-6, t.across/2+64)
-		ls[1].at = t.at(26, t.across/2+56)
+		t := trackOf(city).tiles[68]
+		ls[0].at = t.at(-12, t.across/2+166)
+		ls[1].at = t.at(52, t.across/2+150)
 	}
 	return ls
 }
@@ -147,7 +151,7 @@ func liberty(pn pen, u, v float64) {
 	pn.Width(1.6)
 	pn.Line(arm.X, arm.Y, torch.X, torch.Y)
 	pn.Glow(torch.X, torch.Y, 7, color.NRGBA{0xFF, 0xC8, 0x6A, 255}, 0.7)
-	pn.Color(groupColors[3])
+	pn.Color(groupColors[6])
 	pn.Circle(torch.X, torch.Y, 1.6)
 	pn.Fill()
 }
