@@ -74,7 +74,8 @@ configuration with `inua init` (never replacing your files), and adds the
 Inua login session (sudo). Where inua replaces something you have, it asks
 first, and the answer defaults to yes for gpg's pinentry (with
 `inua-pinentry`) and the keyring apps keep secrets in (gnome-keyring, with
-`inua-keyring`, after copying its items into pass). With no login manager
+`inua-keyring`, after copying its items into pass) and for Omarchy's
+shell (Quickshell, with `inua-shell`). With no login manager
 it offers greetd + tuigreet, the login screen inua recommends (yes); GDM,
 SDDM … are kept unless you answer yes, and Inua joins their list of
 sessions. Without a password store it offers to make one with a GPG key of

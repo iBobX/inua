@@ -8,9 +8,10 @@
 # with `inua init` (never replacing your files), and, with sudo, adds the
 # Inua login session. Where inua replaces something you have, it asks
 # first, and the answer defaults to yes for gpg's pinentry (inua-pinentry)
-# and the keyring apps keep secrets in (inua-keyring, in pass); with no
-# login manager it offers greetd + tuigreet (yes), while GDM, SDDM,
-# LightDM … are kept unless you answer yes. Without a password store it
+# and the keyring apps keep secrets in (inua-keyring, in pass), and for
+# Omarchy's shell (Quickshell, with inua-shell); with no login manager it
+# offers greetd + tuigreet (yes), while GDM, SDDM, LightDM … are kept
+# unless you answer yes. Without a password store it
 # offers to make one with a GPG key of yours (yes), or with a new key
 # (no), and says what to run by hand. Run it again to update.
 #
@@ -214,14 +215,16 @@ fi
 # --- your configuration -----------------------------------------------------
 
 heading "Writing your configuration"
-# inua init asks before replacing gpg's pinentry with inua-pinentry.
+# inua init asks before replacing gpg's pinentry with inua-pinentry, and
+# Omarchy's shell (Quickshell) with inua-shell.
 if PATH="$prefix/bin:$PATH" "$prefix/bin/inua" init; then
     done_ "configuration written (your own files are kept)"
 else
     note "inua init reported problems (above); fix them, then run: inua init"
 fi
-# inua init leaves a Hyprland config of yours alone (Omarchy's, say); the
-# Inua session does not start until it starts inua-shell.
+# inua init leaves a Hyprland config of yours alone (an older Omarchy's
+# hyprland.conf, say); the Inua session does not start until it starts
+# inua-shell.
 starts=yes
 PATH="$prefix/bin:$PATH" "$prefix/bin/inua" config hyprland >/dev/null 2>&1 || starts=no
 if [ "$starts" = no ]; then

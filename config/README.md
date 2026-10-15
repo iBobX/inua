@@ -35,7 +35,18 @@ is not written beside a `hyprland.lua`, the config Hyprland reads. It sets gpg-a
 `pinentry-program` to `inua-pinentry` in `~/.gnupg/gpg-agent.conf` (or
 `$GNUPGHOME`), keeping the rest of the file and another pinentry already
 set (unless `-force`), so gpg asks for passphrases in inua's dialog; with
-no shell running, `inua-pinentry` runs the usual pinentry. It then checks `config.toml`,
+no shell running, `inua-pinentry` runs the usual pinentry. With
+Omarchy's Lua config (a `hyprland.lua` that requires
+`default.hypr.omarchy`), whose defaults start Omarchy's shell (Quickshell)
+with `omarchy-launch-shell`, it asks (default yes; `-force` answers yes)
+whether to start `inua-shell` in its place. Yes keeps the file as
+`hyprland.lua.bak`, adds a block before that require that turns Omarchy's
+`hl.exec_cmd("omarchy-launch-shell")` into `inua-shell`, and loads
+`inua.lua` last if nothing does, so inua's shortcuts replace Omarchy's. It
+applies to Omarchy's session too, as both read the file; Omarchy's menus
+and the keys that talk to its shell (Super+Space, Super+comma …) do
+nothing without it, and `omarchy-restart-shell` would start it again.
+Delete the block and that line to have Omarchy's shell back. It then checks `config.toml`,
 checks `hyprland.conf` with `Hyprland --verify-config` when Hyprland is
 installed, and says whether `inua-shell` is on `PATH`.
 

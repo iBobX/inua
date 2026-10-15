@@ -97,11 +97,7 @@ func isLua(path string) bool { return strings.HasSuffix(path, ".lua") }
 // "." or "/" between directories. "" when line requires nothing, or uses
 // a wildcard.
 func luaModule(line, config string) string {
-	m := luaRequireRe.FindStringSubmatchIndex(blankStrings(line))
-	if m == nil {
-		return ""
-	}
-	mod := line[m[4]:m[5]] // the string, from the line itself
+	mod := luaRequired(line)
 	if mod == "" || strings.Contains(mod, "*") {
 		return ""
 	}
@@ -120,6 +116,16 @@ func luaModule(line, config string) string {
 		mod += ".lua"
 	}
 	return mod
+}
+
+// luaRequired is the module name a require on line loads, as written
+// ("default.hypr.omarchy"); "" when line requires nothing.
+func luaRequired(line string) string {
+	m := luaRequireRe.FindStringSubmatchIndex(blankStrings(line))
+	if m == nil {
+		return ""
+	}
+	return line[m[4]:m[5]] // the string, from the line itself
 }
 
 // walk calls visit with each line of a Hyprland config, comments stripped

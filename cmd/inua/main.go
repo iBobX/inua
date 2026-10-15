@@ -418,6 +418,9 @@ func cmdInit(args []string) error {
 		failed = true
 	}
 	hyprConf := hyprconf.ConfigFile(filepath.Join(*dir, "hypr"), false)
+	if bootstrap.OmarchyShell(hyprConf) {
+		initOmarchy(hyprConf, *force)
+	}
 	if target := hyprconf.Target(hyprConf); strings.HasSuffix(target, ".lua") {
 		// A Lua config gets inua.lua now, for the line that loads it.
 		cfg, _, _ := config.Load(filepath.Join(*dir, "inua", "config.toml"))
@@ -449,6 +452,22 @@ func cmdInit(args []string) error {
 	}
 	fmt.Println("\nLog out and choose the Inua session; Super+Space opens the launcher.")
 	return nil
+}
+
+// initOmarchy has Omarchy's config at path start inua-shell in place of
+// Omarchy's shell (Quickshell), which would run beside it, when the user
+// says so (the default answer yes) or with -force. Both the Omarchy and
+// the Inua session read the file.
+func initOmarchy(path string, force bool) {
+	if !force && !askYes("Omarchy starts its own shell (Quickshell), which would run beside inua's. Start inua-shell in its place, in Omarchy's session too?") {
+		fmt.Printf("%s: Omarchy's shell left as it is\n", path)
+		return
+	}
+	if err := bootstrap.ReplaceOmarchyShell(path); err != nil {
+		fmt.Printf("%s: %v\n", path, err)
+		return
+	}
+	fmt.Printf("%s: starts inua-shell in place of Omarchy's shell (the old file is %s.bak)\n", path, filepath.Base(path))
 }
 
 // initPinentry has gpg-agent ask for passphrases in inua's dialog, and
