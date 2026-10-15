@@ -19,7 +19,7 @@ func Format(c Config) string {
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
-		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, q(c.Style.CSS),
+		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, c.Style.TextScale, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
@@ -247,6 +247,10 @@ icons = %s
 # A small gap between the screen edges and the bar and dock. false puts
 # them flush against the edges.
 edge_gaps = %t
+
+# Size of the text in the shell and inua's apps, 80 to 150 percent. Icons,
+# spacing and the stylesheet below keep their sizes.
+text_scale = %d
 
 # Extra stylesheet loaded after the built-in one, relative to this file's
 # directory. Ignored if the file does not exist. See style.css next to this

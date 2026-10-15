@@ -108,6 +108,69 @@ ApplicationWindow settings {
                 }
               }
 
+              // [TEXT]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>TEXT<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("The shell and inua's apps");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Text size");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("Icons and spacing keep their size");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown text_scale {
+                      name: "text_scale";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
               // [ICONS]
               Box {
                 styles ["section"]

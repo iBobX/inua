@@ -42,7 +42,7 @@ func (s *shellUI) loadStyles() {
 		gtk.StyleContextAddProviderForDisplay(display, st.user, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
 	// The theme defines the colour tokens style.css uses.
-	st.base.LoadFromString(s.readUI("themes/"+s.theme()+".css") + s.readUI("style.css") + s.swatchCSS())
+	st.base.LoadFromString(s.readUI("themes/"+s.theme()+".css") + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale) + s.swatchCSS())
 	user := ""
 	if path := s.cfg.CSSPath(); path != "" {
 		if css, err := os.ReadFile(path); err == nil {

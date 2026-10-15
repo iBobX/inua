@@ -524,6 +524,27 @@ func TestLanguage(t *testing.T) {
 	}
 }
 
+// Text is at 100% unless the file says otherwise; a size outside 80 to
+// 150 is reported and falls back to 100.
+func TestTextScale(t *testing.T) {
+	for _, c := range []struct {
+		file   string
+		scale  int
+		warned bool
+	}{
+		{"", 100, false},
+		{"[style]\ntext_scale = 125\n", 125, false},
+		{"[style]\ntext_scale = 115\n", 115, false},
+		{"[style]\ntext_scale = 200\n", 100, true},
+		{"[style]\ntext_scale = 0\n", 100, true},
+	} {
+		cfg, warnings, err := Load(write(t, c.file))
+		if err != nil || cfg.Style.TextScale != c.scale || (len(warnings) > 0) != c.warned {
+			t.Errorf("%q: %d %v %v", c.file, cfg.Style.TextScale, warnings, err)
+		}
+	}
+}
+
 // The clipboard history is kept by default; opacity and limit outside
 // their ranges are reported and fall back to the defaults.
 func TestClipboard(t *testing.T) {

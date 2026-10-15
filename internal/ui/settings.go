@@ -50,6 +50,8 @@ type settings struct {
 	bgFit, ws, launchMode, swap, caps, icons, banner                 gtk.DropDown
 	clipLimit                                                        gtk.DropDown
 	clipLimits                                                       []int // clipLimit's choices
+	textScale                                                        gtk.DropDown
+	textScales                                                       []int // textScale's choices
 	tpSpeed, clipOpacity                                             gtk.Scale
 	clipOpacityVal, clipStats                                        gtk.Label
 	clipClear, clipReveal                                            gtk.Button
@@ -185,6 +187,10 @@ func (s *shellUI) bindSettingsHandlers() {
 			}
 		case "icons":
 			c.Style.Icons = pick(config.IconSets, i, c.Style.Icons)
+		case "text_scale":
+			if i >= 0 && i < len(s.settings.textScales) {
+				c.Style.TextScale = s.settings.textScales[i]
+			}
 		case "language":
 			c.Language = pick(config.Languages, i, c.Language)
 		case "keyring_lock_after":
@@ -347,6 +353,8 @@ func (s *shellUI) openSettings() {
 	ui.Get("launch_mode", &st.launchMode)
 	ui.Get("icons", &st.icons)
 	ui.Get("language", &st.language)
+	ui.Get("text_scale", &st.textScale)
+	st.textScales = nil // a new dropdown, without its choices
 	ui.Get("lang_restart_row", &st.langRestartRow)
 	ui.Get("lang_restart", &st.langRestart)
 	ui.Get("banner", &st.banner)
@@ -412,7 +420,7 @@ func (s *shellUI) openSettings() {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.textScale, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
@@ -560,6 +568,7 @@ func (s *shellUI) showSettings() {
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
 	st.icons.SetSelected(uint32(max(0, slices.Index(config.IconSets, c.Style.Icons))))
+	s.showTextScale()
 	st.language.SetSelected(uint32(max(0, slices.Index(config.Languages, c.Language))))
 	// The shell chose its language when it started.
 	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
@@ -576,6 +585,29 @@ func (s *shellUI) showSettings() {
 	for _, e := range st.entries {
 		e.RemoveCssClass("invalid")
 	}
+}
+
+// showTextScale offers the usual text sizes, and the one in the file if it
+// is another.
+func (s *shellUI) showTextScale() {
+	st := &s.settings
+	scale := s.cfg.Style.TextScale
+	scales := slices.Clone(config.TextScales)
+	if !slices.Contains(scales, scale) {
+		scales = append(scales, scale)
+		slices.Sort(scales)
+	}
+	if !slices.Equal(scales, st.textScales) {
+		names := make([]string, len(scales))
+		for i, n := range scales {
+			names[i] = i18n.Tf("%d%%", n)
+		}
+		list := gtk.NewStringList(names)
+		st.textScale.SetModel(list)
+		list.Unref()
+		st.textScales = scales
+	}
+	st.textScale.SetSelected(uint32(slices.Index(scales, scale)))
 }
 
 func (s *shellUI) showClipboardSettings() {
