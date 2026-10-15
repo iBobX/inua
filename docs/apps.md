@@ -9,7 +9,8 @@ Open them from the launcher, from the drawer at the end of the dock, or
 with `inua-apps NAME` (`inua-apps clock`, `inua-apps tailscale` …). An app
 runs once: starting it again brings its window to the current workspace.
 Viewer is the exception, with a window for each image opened. The
-Assistant is a program of its own, `inua-assistant`.
+Assistant is a program of its own, `inua-assistant`, and so is the file
+manager, `inua-files` ([files.md](files.md)).
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -306,6 +307,15 @@ call, the assistant's too, is recorded in
 `~/.local/state/inua/mcp-calls.jsonl`. Turning MCP off, or tightening
 the policy, takes effect at the next call.
 
+
+## Files
+
+The file manager, a program of its own: `inua-files [PATH …]`. One or
+two panes of a folder as a list or a grid, a sidebar of places, drives and
+network shares, and the details of the selection; every action has a key,
+and typing filters the folder. It serves `org.freedesktop.FileManager1`,
+so "Show in folder" opens it; `inua-files -default` makes it the
+desktop's file manager in place of Nautilus. See [files.md](files.md).
 
 ## Viewer
 

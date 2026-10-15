@@ -1,0 +1,167 @@
+package filesui
+
+import (
+	"path/filepath"
+	"strings"
+
+	"codeberg.org/puregotk/puregotk/v4/gtk"
+
+	"github.com/lyricat/inua/internal/apps/files"
+	"github.com/lyricat/inua/internal/apps/files/disks"
+	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
+)
+
+// sideItem is an entry of the sidebar.
+type sideItem struct {
+	path   string // what it opens, to mark it while a pane is there
+	button *gtk.Button
+	open   func()
+}
+
+// buildSidebar fills the sidebar: places, the trash, drives and other
+// mounts, network shares.
+func (w *window) buildSidebar() {
+	w.app.h.forget(w.sidePtr)
+	w.sidePtr = w.sidePtr[:0]
+	w.side = w.side[:0]
+	gtkx.Clear(&w.sidebar)
+
+	title := gtk.NewLabel(i18n.T("Files"))
+	title.AddCssClass("index-title")
+	title.SetXalign(0)
+	gtkx.Append(&w.sidebar, &title.Widget)
+
+	w.sideHead(i18n.T("PLACES"))
+	for _, pl := range files.Places() {
+		path := pl.Path
+		name := pl.Name
+		if pl.Kind == "home" {
+			name = i18n.T("Home")
+		}
+		w.sideEntry(name, "", pl.Icon, path, func() { w.cur().goTo(path, true) }, nil)
+	}
+	w.sideEntry(i18n.T("Trash"), "", "user-trash-symbolic", trashKey, func() { w.cur().showTrash(true) }, nil)
+
+	w.sideHead(i18n.T("DEVICES"))
+	w.sideEntry(i18n.T("Computer"), "", "drive-harddisk-symbolic", "/", func() { w.cur().goTo("/", true) }, nil)
+	shown := map[string]bool{}
+	for _, v := range w.app.volumes {
+		v := v
+		sub := disks.Size(v.Size)
+		path := ""
+		if v.Mounted() {
+			path = v.MountPoints[0]
+			shown[path] = true
+			if sp, err := files.SpaceOf(path); err == nil && sp.Total > 0 {
+				sub = i18n.Tf("%s free of %s", disks.Size(sp.Free), disks.Size(sp.Total))
+			}
+		} else if v.Encrypted {
+			sub = i18n.Tf("%s, locked", disks.Size(v.Size))
+		}
+		icon := "drive-harddisk-symbolic"
+		switch {
+		case v.Encrypted:
+			icon = "changes-prevent-symbolic"
+		case v.Drive.Bus == "usb" || v.Drive.Bus == "sdio" || v.Drive.Removable:
+			icon = "drive-removable-media-symbolic"
+		}
+		var eject func()
+		if v.Mounted() || v.Drive.Removable && (v.Drive.Ejectable || v.Drive.CanPowerOff) {
+			eject = func() { w.eject(v) }
+		}
+		w.sideEntry(v.Name(), sub, icon, path, func() { w.openVolume(v) }, eject)
+	}
+	for _, m := range files.UserMounts(w.app.mounts, false) {
+		if shown[m.Point] {
+			continue
+		}
+		path := m.Point
+		icon := "drive-harddisk-symbolic"
+		if strings.HasPrefix(m.FSType, "fuse.") || m.FSType == "nfs" || m.FSType == "nfs4" || m.FSType == "cifs" {
+			icon = "folder-remote-symbolic"
+		}
+		w.sideEntry(filepath.Base(path), m.FSType, icon, path, func() { w.cur().goTo(path, true) }, nil)
+	}
+
+	w.sideHead(i18n.T("NETWORK"))
+	for _, n := range w.app.nets {
+		n := n
+		icon := "folder-remote-symbolic"
+		if n.Scheme == "mtp" || n.Scheme == "gphoto2" {
+			icon = "phone-symbolic"
+		}
+		w.sideEntry(n.Name, n.URI, icon, n.Path, func() { w.cur().goTo(n.Path, true) }, func() { w.disconnect(n) })
+	}
+	w.sideEntry(i18n.T("Connect to a server…"), "", "network-workgroup-symbolic", "", func() { w.askServer() }, nil)
+	w.markSidebar()
+}
+
+func (w *window) sideHead(text string) {
+	l := gtk.NewLabel(text)
+	l.AddCssClass("kicker")
+	l.AddCssClass("files-side-head")
+	l.SetXalign(0)
+	gtkx.Append(&w.sidebar, &l.Widget)
+}
+
+// sideEntry adds an entry: a button that opens it and, for a drive or a
+// share, a button that ejects or disconnects it.
+func (w *window) sideEntry(name, sub, icon, path string, open, eject func()) {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	row.AddCssClass("files-side-row")
+	b := gtk.NewButton()
+	b.AddCssClass("index-item")
+	b.AddCssClass("files-side-item")
+	b.SetHexpand(true)
+	box := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	img := gtk.NewImageFromIconName(icon)
+	img.AddCssClass("index-icon")
+	gtkx.Append(box, &img.Widget)
+	t := text(name, sub)
+	t.SetHexpand(true)
+	// Long names are cut, not let widen the sidebar.
+	for c := t.GetFirstChild(); c != nil; {
+		(&gtk.Label{Widget: *c}).SetMaxWidthChars(18)
+		next := c.GetNextSibling()
+		c.Unref()
+		c = next
+	}
+	gtkx.Append(box, &t.Widget)
+	b.SetChild(&box.Widget)
+	box.Unref()
+	if sub != "" {
+		b.SetTooltipText(name + "\n" + sub)
+	}
+	w.app.h.click(b, open)
+	w.sidePtr = append(w.sidePtr, b.GoPointer())
+	w.side = append(w.side, sideItem{path: path, button: b, open: open})
+	gtkx.Append(row, &b.Widget)
+	if eject != nil {
+		e := gtk.NewButtonFromIconName("media-eject-symbolic")
+		e.AddCssClass("plain")
+		e.AddCssClass("files-eject")
+		e.SetValign(gtk.AlignCenterValue)
+		e.SetTooltipText(i18n.T("Eject"))
+		w.app.h.click(e, eject)
+		w.sidePtr = append(w.sidePtr, e.GoPointer())
+		gtkx.Append(row, &e.Widget)
+	}
+	gtkx.Append(&w.sidebar, &row.Widget)
+}
+
+// markSidebar marks the entry of where the pane with the keys is.
+func (w *window) markSidebar() {
+	p := w.cur()
+	here := p.locationKey()
+	for _, it := range w.side {
+		setClass(&it.button.Widget, "selected", it.path != "" && it.path == here)
+	}
+}
+
+// sideJump opens the sidebar's entry n (Alt+1 is the first).
+func (w *window) sideJump(n int) {
+	if n < len(w.side) {
+		w.side[n].open()
+	}
+}

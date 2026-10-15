@@ -102,10 +102,12 @@ apply.
 **Companions the sample config uses**
 ([config/hypr/hyprland.conf](../config/hypr/hyprland.conf); all optional,
 started only when installed; `make deps-desktop`): `fonts-ibm-plex`,
-`fonts-noto-cjk`, `kitty`, `nautilus`, `hypridle`,
+`fonts-noto-cjk`, `kitty`, `hypridle`,
 `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk`,
 `brightnessctl`, `playerctl`, `fcitx5`, and the
-`grim` and `wl-clipboard` above.
+`grim` and `wl-clipboard` above. inua-files, the sample's file manager
+([files.md](files.md)), uses `udisks2` for drives and `gvfs-backends` with
+`gvfs-fuse` for network shares.
 
 Window layouts are whatever the installed Hyprland offers; pick Dwindle or
 Master by trying them. Scrolling layouts are not assumed, and no plugins are

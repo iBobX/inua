@@ -189,11 +189,13 @@ msgid "%d d %d h"
 msgstr "%[1]d d %[2]d h"
 
 #: internal/apps/sysmon/sysmon.go:402
+#: internal/filesui/jobs.go:163
 msgid "%d h %d min"
 msgstr "%[1]d h %[2]d min"
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
+#: internal/filesui/jobs.go:161
 msgid "%d min"
 msgstr "%dmin"
 
@@ -396,6 +398,7 @@ msgstr "Visionneuse d’images"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:782
+#: internal/filesui/cards.go:359
 #: internal/ui/clipboard.go:459
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
@@ -962,6 +965,8 @@ msgid "The decrypted copy goes to the trash, where it can be restored from; the 
 msgstr "La copie déchiffrée va à la corbeille, d’où elle peut être restaurée ; le fichier chiffré reste."
 
 #: internal/appui/gpg.go:1537
+#: internal/filesui/cards.go:698
+#: internal/filesui/window.go:693
 msgid "Move to Trash"
 msgstr "Mettre à la corbeille"
 
@@ -1044,6 +1049,7 @@ msgstr "Masquer"
 
 #: internal/appui/pass.go:585
 #: internal/appui/pass.go:610
+#: internal/filesui/window.go:676
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1110,6 +1116,7 @@ msgid "CATEGORY"
 msgstr "CATÉGORIE"
 
 #: internal/appui/pass.go:844
+#: internal/filesui/pane.go:662
 msgid "NAME"
 msgstr "NOM"
 
@@ -1191,6 +1198,7 @@ msgstr "Aucune app ne l’a encore lu."
 
 #: internal/appui/pass.go:1047
 #: internal/appui/sysmon.go:965
+#: internal/filesui/pane.go:1377
 #: internal/ui/settings_keyring.go:433
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
@@ -1351,8 +1359,9 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:262
-#: internal/shell/dock.go:292
+#: internal/filesui/sidebar.go:87
+#: internal/shell/dock.go:263
+#: internal/shell/dock.go:293
 msgid "NETWORK"
 msgstr "RÉSEAU"
 
@@ -1493,6 +1502,7 @@ msgid "Peak"
 msgstr "Pic"
 
 #: internal/appui/sysmon.go:785
+#: internal/filesui/details.go:50
 msgid "FILES"
 msgstr "FICHIERS"
 
@@ -1501,12 +1511,14 @@ msgid "Command"
 msgstr "Commande"
 
 #: internal/appui/sysmon.go:786
+#: internal/filesui/kinds.go:30
 #: internal/ui/settings_keyring.go:252
 msgid "Program"
 msgstr "Programme"
 
 #: internal/appui/sysmon.go:786
 #: internal/appui/viewer.go:814
+#: internal/filesui/kinds.go:26
 msgid "Folder"
 msgstr "Dossier"
 
@@ -2330,10 +2342,17 @@ msgid "Unknown building block %q"
 msgstr "Bloc inconnu %q"
 
 #: internal/appui/workshop.go:963
+#: internal/filesui/cards.go:271
+#: internal/filesui/cards.go:320
+#: internal/filesui/cards.go:358
+#: internal/filesui/cards.go:375
+#: internal/filesui/cards.go:413
+#: internal/filesui/cards.go:596
 #: internal/ui/askpass.go:267
 #: internal/ui/askpass.go:395
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/files.ui:150
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
@@ -2353,6 +2372,8 @@ msgid "Uses: %s"
 msgstr "Utilise : %s"
 
 #: internal/appui/workshop_manager.go:63
+#: internal/filesui/cards.go:684
+#: internal/filesui/window.go:661
 #: internal/ui/record.go:163
 msgid "Open"
 msgstr "Ouvrir"
@@ -3017,6 +3038,731 @@ msgstr "prix de Coinbase · %s"
 #: internal/convert/convert.go:315
 msgid "%s %s in %s · %s"
 msgstr "%[1]s %[2]s dans %[3]s · %[4]s"
+
+#: internal/filesui/app.go:65
+#: internal/filesui/cards.go:694
+#: internal/filesui/sidebar.go:30
+#: internal/filesui/window.go:87
+#: internal/filesui/window.go:251
+#: ui/gpg.ui:445
+#: ui/gpg.ui:810
+#: config/apps/io.github.lyricat.Inua.Files.desktop:3
+msgid "Files"
+msgstr "Fichiers"
+
+#: internal/filesui/app.go:212
+msgid "%s is plugged in."
+msgstr "%s est branché."
+
+#: internal/filesui/app.go:291
+msgid "There are no files on the clipboard."
+msgstr "Il n’y a pas de fichiers dans le presse-papiers."
+
+#: internal/filesui/app.go:345
+msgid "Nothing to undo."
+msgstr "Rien à annuler."
+
+#: internal/filesui/caches.go:140
+#: internal/filesui/details.go:48
+#: internal/filesui/details.go:273
+#: internal/filesui/jobs.go:141
+#: internal/filesui/jobs.go:143
+#: internal/filesui/jobs.go:145
+#: internal/filesui/jobs.go:147
+#: internal/filesui/jobs.go:149
+#: internal/filesui/jobs.go:151
+#: internal/filesui/pane.go:980
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d élément"
+msgstr[1] "%d éléments"
+
+#: internal/filesui/cards.go:272
+#: internal/filesui/cards.go:292
+#: internal/filesui/cards.go:697
+msgid "Rename"
+msgstr "Renommer"
+
+#: internal/filesui/cards.go:284
+#: internal/filesui/cards.go:329
+msgid "“%s” is taken here."
+msgstr "« %s » existe déjà ici."
+
+#: internal/filesui/cards.go:299
+msgid "A name cannot be empty."
+msgstr "Le nom ne peut pas être vide."
+
+#: internal/filesui/cards.go:301
+msgid "“%s” is not a name."
+msgstr "« %s » n’est pas un nom valide."
+
+#: internal/filesui/cards.go:303
+msgid "A name cannot hold “/”."
+msgstr "Un nom ne peut pas contenir « / »."
+
+#: internal/filesui/cards.go:305
+msgid "The name is too long."
+msgstr "Le nom est trop long."
+
+#: internal/filesui/cards.go:313
+msgid "New file"
+msgstr "Nouveau fichier"
+
+#: internal/filesui/cards.go:313
+msgid "Untitled"
+msgstr "Sans titre"
+
+#: internal/filesui/cards.go:315
+msgid "New folder"
+msgstr "Nouveau dossier"
+
+#: internal/filesui/cards.go:315
+msgid "New Folder"
+msgstr "Nouveau dossier"
+
+#: internal/filesui/cards.go:321
+msgid "Make"
+msgstr "Créer"
+
+#: internal/filesui/cards.go:353
+msgid "Delete %d item for good?"
+msgid_plural "Delete %d items for good?"
+msgstr[0] "Supprimer définitivement %d élément ?"
+msgstr[1] "Supprimer définitivement %d éléments ?"
+
+#: internal/filesui/cards.go:355
+msgid "Delete “%s” for good?"
+msgstr "Supprimer définitivement « %s » ?"
+
+#: internal/filesui/cards.go:370
+msgid "They do not go to the trash, and this cannot be undone."
+msgstr "Ils ne vont pas à la corbeille, et c’est irréversible."
+
+#: internal/filesui/cards.go:376
+#: internal/filesui/window.go:635
+#: internal/filesui/window.go:641
+#: internal/shell/commands.go:32
+#: ui/filespane.ui:269
+msgid "Empty Trash"
+msgstr "Vider la corbeille"
+
+#: internal/filesui/cards.go:393
+msgid "Empty the trash?"
+msgstr "Vider la corbeille ?"
+
+#: internal/filesui/cards.go:393
+msgid "Everything in it is deleted for good, on every drive."
+msgstr "Tout son contenu est supprimé définitivement, sur tous les disques."
+
+#: internal/filesui/cards.go:410
+msgid "There: %s, %s. This one: %s, %s."
+msgstr "Là-bas : %s, %s. Celui-ci : %s, %s."
+
+#: internal/filesui/cards.go:414
+msgid "Skip"
+msgstr "Ignorer"
+
+#: internal/filesui/cards.go:415
+msgid "Keep both"
+msgstr "Garder les deux"
+
+#: internal/filesui/cards.go:419
+msgid "Merge"
+msgstr "Fusionner"
+
+#: internal/filesui/cards.go:421
+msgid "Replace"
+msgstr "Remplacer"
+
+#: internal/filesui/cards.go:424
+msgid "“%s” is already in %s"
+msgstr "« %s » est déjà dans %s"
+
+#: internal/filesui/cards.go:426
+msgid "A folder “%s” is already in %s"
+msgstr "Un dossier « %s » est déjà dans %s"
+
+#: internal/filesui/cards.go:429
+#: ui/files.ui:248
+msgid "Do the same for the rest"
+msgstr "Faire de même pour le reste"
+
+#: internal/filesui/cards.go:438
+msgid "… and %d more"
+msgid_plural "… and %d more"
+msgstr[0] "… et %d de plus"
+msgstr[1] "… et %d de plus"
+
+#: internal/filesui/cards.go:440
+#: internal/filesui/cards.go:718
+#: ui/settings.ui:3785
+msgid "Close"
+msgstr "Fermer"
+
+#: internal/filesui/cards.go:441
+msgid "Some items could not be done"
+msgstr "Certains éléments n’ont pas pu être traités"
+
+#: internal/filesui/cards.go:450
+msgid "Jump to a folder"
+msgstr "Aller à un dossier"
+
+#: internal/filesui/cards.go:478
+msgid "Connect to a server"
+msgstr "Se connecter à un serveur"
+
+#: internal/filesui/cards.go:479
+msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
+msgstr "smb://serveur/partage, sftp://utilisateur@hôte/dossier, ftp://, dav://, nfs://"
+
+#: internal/filesui/cards.go:489
+msgid "Connect"
+msgstr "Se connecter"
+
+#: internal/filesui/cards.go:495
+msgid "Used before"
+msgstr "Déjà utilisé"
+
+#: internal/filesui/cards.go:510
+msgid "Connecting to %s…"
+msgstr "Connexion à %s…"
+
+#: internal/filesui/cards.go:517
+msgid "%s could not be reached: %v"
+msgstr "Impossible de joindre %s : %v"
+
+#: internal/filesui/cards.go:524
+msgid "Connected, but GVfs's FUSE folder is missing (is gvfs-fuse installed?)."
+msgstr "Connecté, mais le dossier FUSE de GVfs manque (gvfs-fuse est-il installé ?)."
+
+#: internal/filesui/cards.go:540
+msgid "%s is not mounted."
+msgstr "%s n’est pas monté."
+
+#: internal/filesui/cards.go:546
+msgid "%s could not be disconnected: %v"
+msgstr "Impossible de déconnecter %s : %v"
+
+#: internal/filesui/cards.go:577
+msgid "Mounting %s…"
+msgstr "Montage de %s…"
+
+#: internal/filesui/cards.go:597
+msgid "Unlock"
+msgstr "Déverrouiller"
+
+#: internal/filesui/cards.go:599
+msgid "Unlocking…"
+msgstr "Déverrouillage…"
+
+#: internal/filesui/cards.go:620
+msgid "That passphrase does not open it."
+msgstr "Cette phrase secrète ne l’ouvre pas."
+
+#: internal/filesui/cards.go:634
+msgid "Unlock %s"
+msgstr "Déverrouiller %s"
+
+#: internal/filesui/cards.go:635
+msgid "The drive is encrypted. Its passphrase is not kept."
+msgstr "Le disque est chiffré. Sa phrase secrète n’est pas conservée."
+
+#: internal/filesui/cards.go:645
+msgid "Ejecting %s…"
+msgstr "Éjection de %s…"
+
+#: internal/filesui/cards.go:656
+msgid "%s can be removed now."
+msgstr "%s peut être retiré maintenant."
+
+#: internal/filesui/cards.go:658
+msgid "%s is unmounted."
+msgstr "%s est démonté."
+
+#: internal/filesui/cards.go:668
+msgid "%s is in use: close the files open on it first."
+msgstr "%s est utilisé : fermez d’abord les fichiers ouverts dessus."
+
+#: internal/filesui/cards.go:670
+msgid "Not allowed."
+msgstr "Non autorisé."
+
+#: internal/filesui/cards.go:672
+msgid "%s: %v"
+msgstr "%s : %v"
+
+#: internal/filesui/cards.go:683
+msgid "Moving"
+msgstr "Se déplacer"
+
+#: internal/filesui/cards.go:685
+msgid "Parent folder"
+msgstr "Dossier parent"
+
+#: internal/filesui/cards.go:686
+msgid "Back / forward"
+msgstr "Précédent / suivant"
+
+#: internal/filesui/cards.go:687
+#: internal/filesui/sidebar.go:40
+#: internal/filesui/window.go:258
+msgid "Home"
+msgstr "Dossier personnel"
+
+#: internal/filesui/cards.go:688
+msgid "The sidebar's places"
+msgstr "Les emplacements du panneau latéral"
+
+#: internal/filesui/cards.go:689
+msgid "Type a path or a server"
+msgstr "Saisir un chemin ou un serveur"
+
+#: internal/filesui/cards.go:690
+msgid "Jump to a folder used before"
+msgstr "Aller à un dossier déjà utilisé"
+
+#: internal/filesui/cards.go:691
+#: ui/filespane.ui:94
+msgid "Search below this folder"
+msgstr "Rechercher dans ce dossier"
+
+#: internal/filesui/cards.go:692
+msgid "Letters"
+msgstr "Lettres"
+
+#: internal/filesui/cards.go:692
+msgid "Filter this folder; Esc clears"
+msgstr "Filtrer ce dossier ; Échap efface"
+
+#: internal/filesui/cards.go:695
+msgid "Copy / cut / paste"
+msgstr "Copier / couper / coller"
+
+#: internal/filesui/cards.go:696
+msgid "Copy the paths"
+msgstr "Copier les chemins"
+
+#: internal/filesui/cards.go:699
+msgid "Delete for good"
+msgstr "Supprimer définitivement"
+
+#: internal/filesui/cards.go:700
+msgid "New folder / new file"
+msgstr "Nouveau dossier / nouveau fichier"
+
+#: internal/filesui/cards.go:701
+msgid "Undo"
+msgstr "Annuler l’action"
+
+#: internal/filesui/cards.go:702
+msgid "Copy / move to the other pane"
+msgstr "Copier / déplacer vers l’autre volet"
+
+#: internal/filesui/cards.go:703
+#: internal/filesui/window.go:663
+msgid "Open with…"
+msgstr "Ouvrir avec…"
+
+#: internal/filesui/cards.go:704
+#: internal/filesui/window.go:707
+msgid "Bookmark"
+msgstr "Ajouter un signet"
+
+#: internal/filesui/cards.go:705
+#: internal/filesui/window.go:650
+msgid "Terminal here"
+msgstr "Terminal ici"
+
+#: internal/filesui/cards.go:707
+#: ui/screenshot.ui:162
+#: ui/shotdrawer.ui:122
+msgid "Window"
+msgstr "Fenêtre"
+
+#: internal/filesui/cards.go:708
+msgid "List / grid"
+msgstr "Liste / grille"
+
+#: internal/filesui/cards.go:709
+#: internal/filesui/window.go:654
+msgid "Hidden files"
+msgstr "Fichiers cachés"
+
+#: internal/filesui/cards.go:710
+msgid "Two panes, the other pane"
+msgstr "Deux volets, l’autre volet"
+
+#: internal/filesui/cards.go:711
+msgid "Sidebar"
+msgstr "Panneau latéral"
+
+#: internal/filesui/cards.go:712
+#: internal/filesui/window.go:699
+msgid "Details"
+msgstr "Détails"
+
+#: internal/filesui/cards.go:713
+msgid "Bigger / smaller / normal"
+msgstr "Plus grand / plus petit / normal"
+
+#: internal/filesui/cards.go:714
+msgid "New window, close"
+msgstr "Nouvelle fenêtre, fermer"
+
+#: internal/filesui/cards.go:715
+#: internal/filesui/window.go:655
+msgid "Reload"
+msgstr "Recharger"
+
+#: internal/filesui/cards.go:719
+msgid "Keys"
+msgstr "Raccourcis"
+
+#: internal/filesui/details.go:49
+msgid "FOLDERS"
+msgstr "DOSSIERS"
+
+#: internal/filesui/details.go:51
+msgid "SIZE OF THE FILES"
+msgstr "TAILLE DES FICHIERS"
+
+#: internal/filesui/details.go:54
+#: internal/filesui/pane.go:902
+#: internal/filesui/sidebar.go:44
+#: internal/filesui/window.go:254
+msgid "Trash"
+msgstr "Corbeille"
+
+#: internal/filesui/details.go:54
+msgid "Search"
+msgstr "Recherche"
+
+#: internal/filesui/details.go:55
+msgid "ITEMS"
+msgstr "ÉLÉMENTS"
+
+#: internal/filesui/details.go:83
+#: internal/filesui/pane.go:665
+msgid "FROM"
+msgstr "PROVENANCE"
+
+#: internal/filesui/details.go:84
+#: internal/filesui/pane.go:665
+msgid "TRASHED"
+msgstr "MIS À LA CORBEILLE"
+
+#: internal/filesui/details.go:86
+#: internal/filesui/pane.go:662
+msgid "KIND"
+msgstr "TYPE"
+
+#: internal/filesui/details.go:88
+msgid "LINKS TO"
+msgstr "LIEN VERS"
+
+#: internal/filesui/details.go:90
+#: internal/filesui/pane.go:662
+msgid "SIZE"
+msgstr "TAILLE"
+
+#: internal/filesui/details.go:92
+msgid "%s byte"
+msgid_plural "%s bytes"
+msgstr[0] "%s octet"
+msgstr[1] "%s octets"
+
+#: internal/filesui/details.go:94
+#: internal/filesui/pane.go:662
+msgid "MODIFIED"
+msgstr "MODIFIÉ"
+
+#: internal/filesui/details.go:96
+msgid "WHERE"
+msgstr "EMPLACEMENT"
+
+#: internal/filesui/details.go:116
+msgid "OPENED"
+msgstr "OUVERT"
+
+#: internal/filesui/details.go:116
+msgid "CHANGED"
+msgstr "CHANGÉ"
+
+#: internal/filesui/details.go:117
+msgid "PERMISSIONS"
+msgstr "PERMISSIONS"
+
+#: internal/filesui/details.go:119
+#: ui/polkit.ui:184
+msgid "OWNER"
+msgstr "TITULAIRE"
+
+#: internal/filesui/details.go:197
+msgid "Jan 2 2006 15:04"
+msgstr "2 Jan 2006 15:04"
+
+#: internal/filesui/details.go:275
+msgid "more than %s"
+msgstr "plus de %s"
+
+#: internal/filesui/jobs.go:121
+msgid "%s left"
+msgstr "%s restant"
+
+#: internal/filesui/jobs.go:141
+msgid "Copying %s to %s"
+msgstr "Copie de %s vers %s"
+
+#: internal/filesui/jobs.go:143
+msgid "Moving %s to %s"
+msgstr "Déplacement de %s vers %s"
+
+#: internal/filesui/jobs.go:145
+msgid "Moving %s to the trash"
+msgstr "Déplacement de %s vers la corbeille"
+
+#: internal/filesui/jobs.go:147
+msgid "Deleting %s"
+msgstr "Suppression de %s"
+
+#: internal/filesui/jobs.go:149
+msgid "Restoring %s"
+msgstr "Restauration de %s"
+
+#: internal/filesui/jobs.go:151
+msgid "Linking %s"
+msgstr "Création d’un lien vers %s"
+
+#: internal/filesui/jobs.go:159
+msgid "%d s"
+msgstr "%d s"
+
+#: internal/filesui/jobs.go:195
+msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
+msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
+msgstr[0] "%d élément déplacé vers la corbeille (Ctrl+Z le remet)."
+msgstr[1] "%d éléments déplacés vers la corbeille (Ctrl+Z les remet)."
+
+#: internal/filesui/kinds.go:24
+msgid "Broken link"
+msgstr "Lien brisé"
+
+#: internal/filesui/pane.go:322
+msgid "%s → %s"
+msgstr "%s → %s"
+
+#: internal/filesui/pane.go:440
+msgid "%s free"
+msgstr "%s libres"
+
+#: internal/filesui/pane.go:642
+msgid "You may not read this folder."
+msgstr "Vous n’avez pas le droit de lire ce dossier."
+
+#: internal/filesui/pane.go:644
+msgid "This folder does not exist."
+msgstr "Ce dossier n’existe pas."
+
+#: internal/filesui/pane.go:646
+msgid "This folder cannot be read: %v"
+msgstr "Impossible de lire ce dossier : %v"
+
+#: internal/filesui/pane.go:648
+msgid "Nothing here matches “%s”."
+msgstr "Rien ici ne correspond à « %s »."
+
+#: internal/filesui/pane.go:650
+msgid "Type to search below this folder."
+msgstr "Tapez pour rechercher dans ce dossier."
+
+#: internal/filesui/pane.go:652
+msgid "Nothing below this folder matches “%s”."
+msgstr "Rien dans ce dossier ne correspond à « %s »."
+
+#: internal/filesui/pane.go:654
+msgid "The trash is empty."
+msgstr "La corbeille est vide."
+
+#: internal/filesui/pane.go:656
+msgid "Only hidden files: %d of them (Ctrl+H shows them)."
+msgid_plural "Only hidden files: %d of them (Ctrl+H shows them)."
+msgstr[0] "Seulement des fichiers cachés : %d (Ctrl+H les affiche)."
+msgstr[1] "Seulement des fichiers cachés : %d (Ctrl+H les affiche)."
+
+#: internal/filesui/pane.go:658
+msgid "This folder is empty."
+msgstr "Ce dossier est vide."
+
+#: internal/filesui/pane.go:667
+msgid "FOLDER"
+msgstr "DOSSIER"
+
+#: internal/filesui/pane.go:841
+msgid "%s does not exist."
+msgstr "%s n’existe pas."
+
+#: internal/filesui/pane.go:936
+msgid "SEARCH"
+msgstr "RECHERCHE"
+
+#: internal/filesui/pane.go:978
+msgid "%d found"
+msgid_plural "%d found"
+msgstr[0] "%d trouvé"
+msgstr[1] "%d trouvés"
+
+#: internal/filesui/pane.go:983
+msgid "%d hidden"
+msgid_plural "%d hidden"
+msgstr[0] "%d caché"
+msgstr[1] "%d cachés"
+
+#: internal/filesui/pane.go:996
+msgid "%d selected"
+msgid_plural "%d selected"
+msgstr[0] "%d sélectionné"
+msgstr[1] "%d sélectionnés"
+
+#: internal/filesui/pane.go:1118
+msgid "done"
+msgstr "terminé"
+
+#: internal/filesui/pane.go:1375
+msgid "15:04"
+msgstr "15:04"
+
+#: internal/filesui/pane.go:1379
+#: internal/ui/shotdrawer.go:329
+msgid "Jan 2 2006"
+msgstr "2 Jan 2006"
+
+#: internal/filesui/sidebar.go:35
+msgid "PLACES"
+msgstr "EMPLACEMENTS"
+
+#: internal/filesui/sidebar.go:46
+#: ui/tailscale.ui:112
+msgid "DEVICES"
+msgstr "DISPOSITIFS"
+
+#: internal/filesui/sidebar.go:47
+msgid "Computer"
+msgstr "Ordinateur"
+
+#: internal/filesui/sidebar.go:57
+msgid "%s free of %s"
+msgstr "%s libres sur %s"
+
+#: internal/filesui/sidebar.go:60
+msgid "%s, locked"
+msgstr "%s, verrouillé"
+
+#: internal/filesui/sidebar.go:96
+msgid "Connect to a server…"
+msgstr "Se connecter à un serveur…"
+
+#: internal/filesui/sidebar.go:145
+msgid "Eject"
+msgstr "Éjecter"
+
+#: internal/filesui/window.go:638
+msgid "Restore"
+msgstr "Restaurer"
+
+#: internal/filesui/window.go:639
+#: internal/filesui/window.go:694
+msgid "Delete for good…"
+msgstr "Supprimer définitivement…"
+
+#: internal/filesui/window.go:646
+msgid "New folder…"
+msgstr "Nouveau dossier…"
+
+#: internal/filesui/window.go:647
+msgid "New file…"
+msgstr "Nouveau fichier…"
+
+#: internal/filesui/window.go:648
+msgid "Paste"
+msgstr "Coller"
+
+#: internal/filesui/window.go:651
+msgid "Copy the folder's path"
+msgstr "Copier le chemin du dossier"
+
+#: internal/filesui/window.go:666
+msgid "Open in a new window"
+msgstr "Ouvrir dans une nouvelle fenêtre"
+
+#: internal/filesui/window.go:668
+msgid "Open in the other pane"
+msgstr "Ouvrir dans l’autre volet"
+
+#: internal/filesui/window.go:672
+msgid "Show in its folder"
+msgstr "Afficher dans son dossier"
+
+#: internal/filesui/window.go:675
+msgid "Cut"
+msgstr "Couper"
+
+#: internal/filesui/window.go:677
+msgid "Copy the path"
+msgstr "Copier le chemin"
+
+#: internal/filesui/window.go:680
+msgid "Paste into the folder"
+msgstr "Coller dans le dossier"
+
+#: internal/filesui/window.go:684
+msgid "Copy to the other pane"
+msgstr "Copier vers l’autre volet"
+
+#: internal/filesui/window.go:685
+msgid "Move to the other pane"
+msgstr "Déplacer vers l’autre volet"
+
+#: internal/filesui/window.go:690
+msgid "Rename…"
+msgstr "Renommer…"
+
+#: internal/filesui/window.go:705
+msgid "Remove the bookmark"
+msgstr "Retirer le signet"
+
+#: internal/filesui/window.go:745
+msgid "Cut %d item: paste to move it."
+msgid_plural "Cut %d items: paste to move them."
+msgstr[0] "%d élément coupé : collez-le pour le déplacer."
+msgstr[1] "%d éléments coupés : collez-les pour les déplacer."
+
+#: internal/filesui/window.go:747
+msgid "Copied %d item."
+msgid_plural "Copied %d items."
+msgstr[0] "%d élément copié."
+msgstr[1] "%d éléments copiés."
+
+#: internal/filesui/window.go:755
+msgid "Copied %d path."
+msgid_plural "Copied %d paths."
+msgstr[0] "%d chemin copié."
+msgstr[1] "%d chemins copiés."
+
+#: internal/filesui/window.go:815
+msgid "Bookmarked %s."
+msgstr "Signet ajouté pour %s."
+
+#: internal/filesui/window.go:817
+msgid "Removed the bookmark of %s."
+msgstr "Signet de %s retiré."
+
+#: internal/filesui/window.go:845
+msgid "%s could not be opened: %v"
+msgstr "Impossible d’ouvrir %s : %v"
+
+#: internal/filesui/window.go:867
+msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
+msgstr "Aucun terminal trouvé : installez xdg-terminal-exec ou définissez $TERMINAL."
 
 #: internal/games/fortune.go:51
 msgid "Willow Lane"
@@ -4925,7 +5671,7 @@ msgid "SPACE PINBALL"
 msgstr "FLIPPER SPATIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "Lanceur"
@@ -4958,7 +5704,7 @@ msgstr "Mise au point activée ou désactivée"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -5159,10 +5905,6 @@ msgid "Press Enter again to log out"
 msgstr "Appuyez à nouveau sur Entrée pour fermer la session"
 
 #: internal/shell/commands.go:32
-msgid "Empty Trash"
-msgstr "Vider la corbeille"
-
-#: internal/shell/commands.go:32
 msgid "Delete what is in the Trash for good"
 msgstr "Supprimer définitivement ce qui se trouve dans la corbeille"
 
@@ -5171,7 +5913,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Appuyez à nouveau sur Entrée pour vider la corbeille"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:283
 msgid "inua's settings"
 msgstr "Paramètres d'Inua"
 
@@ -5318,56 +6060,56 @@ msgid "Web search"
 msgstr "Recherche sur le Web"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 msgid "EVERYDAY"
 msgstr "TOUS LES JOURS"
 
 #: internal/shell/dock.go:253
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 msgid "TOOLS"
 msgstr "OUTILS"
 
-#: internal/shell/dock.go:265
+#: internal/shell/dock.go:266
 msgid "PLAY"
 msgstr "JOUER"
 
-#: internal/shell/dock.go:270
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:271
+#: internal/shell/dock.go:295
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SYSTÈME"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:284
 msgid "Find apps, windows and answers"
 msgstr "Rechercher des applications, des fenêtres et des réponses"
 
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:285
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "Capture d’écran"
 
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:285
 msgid "Capture an area, a window or a screen"
 msgstr "Capturer une zone, une fenêtre ou un écran"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:294
 msgid "DEVELOPMENT"
 msgstr "DÉVELOPPEMENT"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:294
 msgid "MEDIA"
 msgstr "MÉDIAS"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:294
 msgid "GAMES"
 msgstr "JEUX"
 
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:295
 msgid "OTHER"
 msgstr "AUTRES"
 
-#: internal/shell/dock.go:319
+#: internal/shell/dock.go:320
 msgid "WORKSHOP"
 msgstr "ATELIER"
 
@@ -6714,10 +7456,6 @@ msgstr "Faire une autre capture"
 msgid "inua recent screenshots"
 msgstr "captures d'écran récentes d'Inua"
 
-#: internal/ui/shotdrawer.go:329
-msgid "Jan 2 2006"
-msgstr "2 Jan 2006"
-
 #: internal/ui/updates.go:91
 msgid "You have %s."
 msgstr "Vous disposez de %s."
@@ -6934,6 +7672,46 @@ msgstr "Muet"
 msgid "Now playing"
 msgstr "En cours de lecture"
 
+#: ui/files.ui:56
+msgid "Hidden files (Ctrl+H)"
+msgstr "Fichiers cachés (Ctrl+H)"
+
+#: ui/files.ui:65
+msgid "Two panes (F3)"
+msgstr "Deux volets (F3)"
+
+#: ui/files.ui:74
+msgid "Details (Space)"
+msgstr "Détails (Espace)"
+
+#: ui/files.ui:88
+msgid "Keys (Ctrl+?)"
+msgstr "Raccourcis (Ctrl+?)"
+
+#: ui/filespane.ui:28
+msgid "Back (Alt+←)"
+msgstr "Précédent (Alt+←)"
+
+#: ui/filespane.ui:37
+msgid "Forward (Alt+→)"
+msgstr "Suivant (Alt+→)"
+
+#: ui/filespane.ui:46
+msgid "Parent folder (Alt+↑)"
+msgstr "Dossier parent (Alt+↑)"
+
+#: ui/filespane.ui:81
+msgid "A path, or a server: sftp://host/dir, smb://server/share"
+msgstr "Un chemin ou un serveur : sftp://hôte/dossier, smb://serveur/partage"
+
+#: ui/filespane.ui:107
+msgid "List (Ctrl+1)"
+msgstr "Liste (Ctrl+1)"
+
+#: ui/filespane.ui:116
+msgid "Grid (Ctrl+2)"
+msgstr "Grille (Ctrl+2)"
+
 #: ui/game.ui:53
 msgid "How to play"
 msgstr "Comment jouer"
@@ -6988,11 +7766,6 @@ msgstr "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
 #: ui/gpg.ui:783
 msgid "Text"
 msgstr "Texte"
-
-#: ui/gpg.ui:445
-#: ui/gpg.ui:810
-msgid "Files"
-msgstr "Fichiers"
 
 #: ui/gpg.ui:469
 #: ui/gpg.ui:834
@@ -7171,10 +7944,6 @@ msgstr "catégorie/nom"
 msgid "<span alpha='55%'>[</span>KEY<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CLÉ<span alpha='55%'>]</span>"
 
-#: ui/polkit.ui:184
-msgid "OWNER"
-msgstr "TITULAIRE"
-
 #: ui/polkit.ui:233
 msgid "TYPE"
 msgstr "TYPE"
@@ -7235,11 +8004,6 @@ msgstr "Faites glisser pour prendre une zone (Espace passe aux fenêtres)"
 #: ui/shotdrawer.ui:98
 msgid "Area"
 msgstr "Zone"
-
-#: ui/screenshot.ui:162
-#: ui/shotdrawer.ui:122
-msgid "Window"
-msgstr "Fenêtre"
 
 #: ui/screenshot.ui:187
 #: ui/shotdrawer.ui:146
@@ -7960,10 +8724,6 @@ msgstr "La liste n’est pas de confiance"
 msgid "Trust this list again"
 msgstr "Refaire confiance à cette liste"
 
-#: ui/settings.ui:3785
-msgid "Close"
-msgstr "Fermer"
-
 #: ui/settings.ui:3817
 msgid "Shortcuts"
 msgstr "Raccourcis clavier"
@@ -8214,10 +8974,6 @@ msgstr "Fermer (Échapper)"
 msgid "Connect this device to the tailnet"
 msgstr "Connectez cet appareil au tailnet"
 
-#: ui/tailscale.ui:112
-msgid "DEVICES"
-msgstr "DISPOSITIFS"
-
 #: ui/tailscale.ui:124
 msgid "Filter by name, address, OS or tag"
 msgstr "Filtrer par nom, adresse, OS ou tag"
@@ -8357,6 +9113,14 @@ msgstr "Choisissez une couleur n'importe où sur l'écran"
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
 msgstr "couleur;hexadécimal;rvb;rgb;pipette;"
+
+#: config/apps/io.github.lyricat.Inua.Files.desktop:10
+msgid "Browse and organize files"
+msgstr "Parcourir et ranger des fichiers"
+
+#: config/apps/io.github.lyricat.Inua.Files.desktop:14
+msgid "folder;manager;explore;disk;filesystem;usb;mount;"
+msgstr "dossier;gestionnaire;explorer;disque;usb;monter;"
 
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:10
 msgid "Encrypt and decrypt messages and files with GnuPG, and see who signed them"
