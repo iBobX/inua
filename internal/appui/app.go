@@ -93,12 +93,19 @@ func (e external) open(args []string) {
 }
 
 // Register adds a light app from another package, for Run.
-func Register(name, id, title string, make func() View) {
+func Register(name, id, title string, make func() View) { register(name, id, title, make, false) }
+
+// RegisterMany adds a light app whose every start runs on its own, as
+// Viewer's do; an app that wants one process keeps to it itself
+// (inua-files does, through D-Bus).
+func RegisterMany(name, id, title string, make func() View) { register(name, id, title, make, true) }
+
+func register(name, id, title string, make func() View, many bool) {
 	Apps[name] = struct {
 		ID, Title string
 		make      func() view
 		many      bool
-	}{id, title, func() view { return external{make()} }, false}
+	}{id, title, func() view { return external{make()} }, many}
 }
 
 // Ctx is what the views share: the application, the layouts and the

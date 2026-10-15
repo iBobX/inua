@@ -251,6 +251,7 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Assistant",
 	}},
 	{i18n.M("TOOLS"), []string{
+		"io.github.lyricat.Inua.Files",
 		"io.github.lyricat.Inua.Calculator",
 		"io.github.lyricat.Inua.ColorPicker",
 		"inua:screenshot",

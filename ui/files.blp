@@ -1,0 +1,199 @@
+// Files: the sidebar of places, devices and network shares on the left;
+// one pane, or two side by side (filespane.blp); the details of what is
+// selected sliding in at the right; the running operations along the
+// bottom. Cards (rename, a name taken, confirm, jump, connect, unlock)
+// float over the window. Go fills it (internal/filesui).
+using Gtk 4.0;
+
+ApplicationWindow files {
+  default-width: 1180;
+  default-height: 720;
+
+  Overlay {
+    child: Box {
+      Revealer sidebar_reveal {
+        transition-type: slide_right;
+        transition-duration: 160;
+        reveal-child: true;
+
+        // hexpand set: the footer's spacer must not widen the sidebar.
+        child: Box {
+          styles ["index", "files-sidebar"]
+          orientation: vertical;
+          width-request: 216;
+          hexpand: false;
+
+          ScrolledWindow {
+            vexpand: true;
+            hscrollbar-policy: never;
+
+            Box sidebar {
+              styles ["files-places"]
+              orientation: vertical;
+            }
+          }
+
+          Box {
+            styles ["files-sidebar-foot"]
+            spacing: 2;
+
+            ToggleButton hidden_toggle {
+              styles ["plain"]
+              icon-name: "view-reveal-symbolic";
+              tooltip-text: _("Hidden files (Ctrl+H)");
+            }
+
+            ToggleButton dual_toggle {
+              styles ["plain"]
+              icon-name: "view-dual-symbolic";
+              tooltip-text: _("Two panes (F3)");
+            }
+
+            ToggleButton details_toggle {
+              styles ["plain"]
+              icon-name: "dialog-information-symbolic";
+              tooltip-text: _("Details (Space)");
+            }
+
+            Box {
+              hexpand: true;
+            }
+
+            Button keys_button {
+              styles ["plain"]
+              icon-name: "preferences-desktop-keyboard-shortcuts-symbolic";
+              tooltip-text: _("Keys (Ctrl+?)");
+            }
+          }
+        };
+      }
+
+      Box {
+        orientation: vertical;
+        hexpand: true;
+
+        Paned panes {
+          vexpand: true;
+          resize-start-child: true;
+          resize-end-child: true;
+          shrink-start-child: false;
+          shrink-end-child: false;
+        }
+
+        // The operation running, and how many wait behind it.
+        Revealer jobs_reveal {
+          transition-type: slide_up;
+          transition-duration: 160;
+
+          child: Box {
+            styles ["files-jobs"]
+            spacing: 12;
+
+            Label job_label {
+              styles ["readout"]
+              hexpand: true;
+              xalign: 0;
+              ellipsize: middle;
+            }
+
+            ProgressBar job_bar {
+              valign: center;
+              width-request: 180;
+            }
+
+            Label job_rate {
+              styles ["readout", "files-job-rate"]
+            }
+
+            Button job_cancel {
+              styles ["plain"]
+              icon-name: "window-close-symbolic";
+              tooltip-text: _("Cancel");
+            }
+          };
+        }
+      }
+
+      Revealer details_reveal {
+        transition-type: slide_left;
+        transition-duration: 160;
+
+        child: ScrolledWindow {
+          styles ["files-details-scroll"]
+          hscrollbar-policy: never;
+          width-request: 300;
+          hexpand: false;
+
+          Box details {
+            styles ["files-details"]
+            orientation: vertical;
+            spacing: 12;
+          }
+        };
+      }
+    };
+
+    // A card over the window: its parts are shown as each card needs.
+    [overlay]
+    Box card_layer {
+      styles ["files-scrim"]
+      visible: false;
+
+      Box card {
+        styles ["files-card"]
+        orientation: vertical;
+        spacing: 10;
+        halign: center;
+        valign: start;
+        hexpand: true;
+        width-request: 480;
+        margin-top: 72;
+
+        Label card_title {
+          styles ["files-card-title"]
+          xalign: 0;
+          wrap: true;
+        }
+
+        Label card_text {
+          styles ["sub"]
+          xalign: 0;
+          wrap: true;
+          wrap-mode: word_char;
+        }
+
+        Entry card_entry {}
+
+        PasswordEntry card_secret {
+          show-peek-icon: true;
+        }
+
+        ScrolledWindow card_scroll {
+          hscrollbar-policy: never;
+          propagate-natural-height: true;
+          max-content-height: 340;
+
+          Box card_list {
+            styles ["files-card-list"]
+            orientation: vertical;
+          }
+        }
+
+        CheckButton card_check {
+          label: _("Do the same for the rest");
+        }
+
+        Label card_error {
+          styles ["files-card-error"]
+          xalign: 0;
+          wrap: true;
+        }
+
+        Box card_buttons {
+          halign: end;
+          spacing: 8;
+        }
+      }
+    }
+  }
+}
