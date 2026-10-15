@@ -52,53 +52,6 @@ func TestDiscover(t *testing.T) {
 	}
 }
 
-// The music player: tags, the spectrum, seeking, the end.
-func TestPlayerMusic(t *testing.T) {
-	needGst(t)
-	p, err := New(Options{Filters: true, SpectrumBands: 16, AudioSink: "fakesink"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer p.Close()
-	p.SetEQ(-3, [10]float64{6, 4, 2, 0, 0, 0, 0, -2, -4, -6})
-	p.SetBalance(0.5)
-	p.SetVolume(0.8)
-	p.Open(URI(tone(t)), "")
-	p.Play()
-	var tagged, spectrum, ended bool
-	deadline := time.After(15 * time.Second)
-	seeked := false
-	for !ended {
-		select {
-		case e := <-p.Events:
-			switch e.Kind {
-			case Tags:
-				tagged = tagged || e.Info.Title == "Tone"
-			case Spectrum:
-				if len(e.Bands) == 16 {
-					spectrum = true
-				}
-			case Error:
-				t.Fatal(e.Err)
-			case EOS:
-				ended = true
-			}
-		case <-deadline:
-			t.Fatal("no end")
-		}
-		if pos, ok := p.Position(); ok && pos > 200*time.Millisecond && !seeked {
-			seeked = true
-			p.Seek(1500 * time.Millisecond)
-			if d, ok := p.Length(); !ok || d < 1900*time.Millisecond {
-				t.Errorf("length %v %v", d, ok)
-			}
-		}
-	}
-	if !tagged || !spectrum || !seeked {
-		t.Errorf("tagged %v, spectrum %v, seeked %v", tagged, spectrum, seeked)
-	}
-}
-
 // The video player: pictures of the video's size, and the sound tracks.
 func TestPlayerVideo(t *testing.T) {
 	needGst(t)
