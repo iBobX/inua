@@ -1,10 +1,8 @@
-package gamesui
+package games
 
 import (
 	"math"
 	"sync"
-
-	"github.com/lyricat/inua/internal/games"
 )
 
 // A city's track: the ring's squares laid end to end along a closed loop
@@ -15,68 +13,73 @@ import (
 // again as the others.
 
 const (
-	fAcross = 76.0 // a square's depth, across the track
-	fBand   = 22.0 // a street's colour band, where its buildings stand
+	// ArtBoard is the side of the board the city's art is drawn for, and
+	// MapK how much larger the board is: ArtBoard*MapK board units a side,
+	// from 0, 0. The cities' loops are in the art's units.
+	ArtBoard  = 706.0
+	MapK      = 2.0
+	fAcross   = 76.0 // a square's depth, across the track
+	TrackBand = 22.0 // a street's colour band, where its buildings stand
 )
 
-// tile is one square of a track.
-type tile struct {
-	outline       []games.Vec // its edge on the board
-	band          []games.Vec // a street's colour band: the strip on the inner side
-	center        games.Vec
-	tan, in       games.Vec // along the track in play order; into the loop
-	along, across float64
+// Tile is one square of a track.
+type Tile struct {
+	Outline       []Vec // its edge on the board
+	Band          []Vec // a street's colour band: the strip on the inner side
+	Center        Vec
+	Tan, In       Vec // along the track in play order; into the loop
+	Along, Across float64
 }
 
-// at is a point of the square in its own frame: x along the track, y
+// At is a point of the square in its own frame: x along the track, y
 // across it, outwards (the side away from the middle) positive.
-func (t tile) at(x, y float64) games.Vec {
-	return games.Vec{X: t.center.X + t.tan.X*x - t.in.X*y, Y: t.center.Y + t.tan.Y*x - t.in.Y*y}
+func (t Tile) At(x, y float64) Vec {
+	return Vec{X: t.Center.X + t.Tan.X*x - t.In.X*y, Y: t.Center.Y + t.Tan.Y*x - t.In.Y*y}
 }
 
-// turn is the angle that turns the square's frame onto the board: its
+// Turn is the angle that turns the square's frame onto the board: its
 // inner side up when 0.
-func (t tile) turn() float64 { return math.Atan2(t.in.X, -t.in.Y) }
+func (t Tile) Turn() float64 { return math.Atan2(t.In.X, -t.In.Y) }
 
-// track is a city's squares, the edges of the loop they make, and the
+// Track is a city's squares, the edges of the loop they make, and the
 // edges of its branch roads.
-type track struct {
-	tiles        [len(games.Board)]tile
-	inner, outer []games.Vec   // the loop's edges, closed
-	roads        [][]games.Vec // each branch road's outline, closed
-	flares       [][]games.Vec // where a road widens out of the ring, or back into it
-	curbs        [][]games.Vec // the flares' edges
-	art          *track        // the track mapK times smaller, as the city's art is drawn
+type Track struct {
+	Tiles        [len(Board)]Tile
+	Inner, Outer []Vec   // the loop's edges, closed
+	Roads        [][]Vec // each branch road's outline, closed
+	Flares       [][]Vec // where a road widens out of the ring, or back into it
+	Curbs        [][]Vec // the flares' edges
+	Art          *Track  // the track MapK times smaller, as the city's art is drawn
 }
 
-// scaled is the track k times larger.
-func (tr *track) scaled(k float64) *track {
-	pts := func(ps []games.Vec) []games.Vec {
-		out := make([]games.Vec, len(ps))
+// Scaled is the track k times larger.
+func (tr *Track) Scaled(k float64) *Track {
+	pts := func(ps []Vec) []Vec {
+		out := make([]Vec, len(ps))
 		for i, p := range ps {
-			out[i] = games.Vec{X: p.X * k, Y: p.Y * k}
+			out[i] = Vec{X: p.X * k, Y: p.Y * k}
 		}
 		return out
 	}
-	all := func(ls [][]games.Vec) [][]games.Vec {
-		out := make([][]games.Vec, len(ls))
+	all := func(ls [][]Vec) [][]Vec {
+		out := make([][]Vec, len(ls))
 		for i, l := range ls {
 			out[i] = pts(l)
 		}
 		return out
 	}
-	s := &track{inner: pts(tr.inner), outer: pts(tr.outer), roads: all(tr.roads), flares: all(tr.flares), curbs: all(tr.curbs)}
-	for i, t := range tr.tiles {
-		s.tiles[i] = tile{outline: pts(t.outline), band: pts(t.band), center: games.Vec{X: t.center.X * k, Y: t.center.Y * k},
-			tan: t.tan, in: t.in, along: t.along * k, across: t.across * k}
+	s := &Track{Inner: pts(tr.Inner), Outer: pts(tr.Outer), Roads: all(tr.Roads), Flares: all(tr.Flares), Curbs: all(tr.Curbs)}
+	for i, t := range tr.Tiles {
+		s.Tiles[i] = Tile{Outline: pts(t.Outline), Band: pts(t.Band), Center: Vec{X: t.Center.X * k, Y: t.Center.Y * k},
+			Tan: t.Tan, In: t.In, Along: t.Along * k, Across: t.Across * k}
 	}
 	return s
 }
 
 // cityLoops are the cities' tracks: points on each loop's middle line, in
 // play order from Start, clockwise on the board, smoothed into a curve; in
-// the art's units, mapK times smaller than the board's.
-var cityLoops = [][]games.Vec{
+// the art's units, MapK times smaller than the board's.
+var cityLoops = [][]Vec{
 	{ // Tokyo: the Yamanote Line, Shinagawa at Start, Tokyo Bay below on the right
 		{X: 548, Y: 628}, {X: 420, Y: 660}, {X: 292, Y: 648}, {X: 180, Y: 600}, {X: 100, Y: 512},
 		{X: 64, Y: 400}, {X: 76, Y: 280}, {X: 128, Y: 170}, {X: 230, Y: 92}, {X: 360, Y: 62},
@@ -105,36 +108,36 @@ var cityRoadsOut = []bool{false, true, false, false}
 
 var (
 	tracksOnce sync.Once
-	tracks     []*track
+	tracks     []*Track
 )
 
-// trackOf is a city's track.
-func trackOf(city int) *track {
+// TrackOf is a city's track.
+func TrackOf(city int) *Track {
 	tracksOnce.Do(func() {
 		for c, art := range cityLoops {
-			pts := make([]games.Vec, len(art))
+			pts := make([]Vec, len(art))
 			for i, q := range art {
-				pts[i] = games.Vec{X: q.X * mapK, Y: q.Y * mapK}
+				pts[i] = Vec{X: q.X * MapK, Y: q.Y * MapK}
 			}
 			tr := buildTrack(pts)
-			var middle games.Vec // the loop's middle
+			var middle Vec // the loop's middle
 			for _, q := range pts {
 				middle.X += q.X / float64(len(pts))
 				middle.Y += q.Y / float64(len(pts))
 			}
-			for _, b := range games.Branches {
+			for _, b := range Branches {
 				// The road bows away from the ring: across the loop halfway
 				// to its middle, or round the outside well clear of it.
-				f, r := tr.tiles[b.Fork].center, tr.tiles[b.Rejoin].center
-				mid := games.Vec{X: (f.X + r.X) / 2, Y: (f.Y + r.Y) / 2}
-				via := games.Vec{X: mid.X + (middle.X-mid.X)*0.5, Y: mid.Y + (middle.Y-mid.Y)*0.5}
+				f, r := tr.Tiles[b.Fork].Center, tr.Tiles[b.Rejoin].Center
+				mid := Vec{X: (f.X + r.X) / 2, Y: (f.Y + r.Y) / 2}
+				via := Vec{X: mid.X + (middle.X-mid.X)*0.5, Y: mid.Y + (middle.Y-mid.Y)*0.5}
 				if cityRoadsOut[c] {
-					t := tr.tiles[(b.Fork+b.Rejoin)/2]
-					via = t.at(0, 130*mapK)
+					t := tr.Tiles[(b.Fork+b.Rejoin)/2]
+					via = t.At(0, 130*MapK)
 				}
-				tr.addRoad(b.Fork, b.First, b.Last, b.Rejoin, []games.Vec{via})
+				tr.addRoad(b.Fork, b.First, b.Last, b.Rejoin, []Vec{via})
 			}
-			tr.art = tr.scaled(1 / mapK)
+			tr.Art = tr.Scaled(1 / MapK)
 			tracks = append(tracks, tr)
 		}
 	})
@@ -144,30 +147,30 @@ func trackOf(city int) *track {
 // addRoad lays a branch road's squares first to last along a curve from
 // the fork's square through via to the square it rejoins the ring at; the
 // colour bands face the side the road bends round.
-func (tr *track) addRoad(fork, first, last, rejoin int, via []games.Vec) {
-	f, r := tr.tiles[fork], tr.tiles[rejoin]
+func (tr *Track) addRoad(fork, first, last, rejoin int, via []Vec) {
+	f, r := tr.Tiles[fork], tr.Tiles[rejoin]
 	// The road leaves the fork's square at a slant, the way play runs, and
 	// comes back into the square it rejoins at the same slant; a flare at
 	// each end widens it into the ring. Inward for a road across the loop,
 	// outward for one round the outside.
 	out := 1.0
-	if len(via) > 0 && !inside(tr.inner, via[0]) {
+	if len(via) > 0 && !Inside(tr.Inner, via[0]) {
 		out = -1
 	}
 	const gap = 18.0 // the flare's depth, from the ring to the road's end
-	unit := func(v games.Vec) games.Vec { l := math.Hypot(v.X, v.Y); return games.Vec{X: v.X / l, Y: v.Y / l} }
-	leave := unit(games.Vec{X: f.tan.X + f.in.X*out*1.3, Y: f.tan.Y + f.in.Y*out*1.3})
-	arrive := unit(games.Vec{X: r.tan.X - r.in.X*out*1.3, Y: r.tan.Y - r.in.Y*out*1.3})
-	start := f.at(0, -out*(f.across/2+gap))
-	end := r.at(0, -out*(r.across/2+gap))
-	pts := append(append([]games.Vec{start}, via...), end)
+	unit := func(v Vec) Vec { l := math.Hypot(v.X, v.Y); return Vec{X: v.X / l, Y: v.Y / l} }
+	leave := unit(Vec{X: f.Tan.X + f.In.X*out*1.3, Y: f.Tan.Y + f.In.Y*out*1.3})
+	arrive := unit(Vec{X: r.Tan.X - r.In.X*out*1.3, Y: r.Tan.Y - r.In.Y*out*1.3})
+	start := f.At(0, -out*(f.Across/2+gap))
+	end := r.At(0, -out*(r.Across/2+gap))
+	pts := append(append([]Vec{start}, via...), end)
 	line := tangentCurve(pts, leave, arrive, 40)
 	length := []float64{0}
 	for i := 1; i < len(line); i++ {
 		length = append(length, length[i-1]+dist(line[i-1], line[i]))
 	}
 	total := length[len(length)-1]
-	pointAt := func(s float64) (p, tan games.Vec) {
+	pointAt := func(s float64) (p, tan Vec) {
 		s = max(0, min(total, s))
 		i := max(0, min(len(line)-2, searchLength(length, s)))
 		a, b := line[i], line[i+1]
@@ -177,54 +180,54 @@ func (tr *track) addRoad(fork, first, last, rejoin int, via []games.Vec) {
 			k = (s - length[i]) / seg
 		}
 		d := dist(a, b)
-		return games.Vec{X: a.X + (b.X-a.X)*k, Y: a.Y + (b.Y-a.Y)*k}, games.Vec{X: (b.X - a.X) / d, Y: (b.Y - a.Y) / d}
+		return Vec{X: a.X + (b.X-a.X)*k, Y: a.Y + (b.Y-a.Y)*k}, Vec{X: (b.X - a.X) / d, Y: (b.Y - a.Y) / d}
 	}
 	// The bands face the inside of the road's bend: the side its middle
 	// leans toward.
 	mid, mtan := pointAt(total / 2)
-	chord := games.Vec{X: (start.X+end.X)/2 - mid.X, Y: (start.Y+end.Y)/2 - mid.Y}
+	chord := Vec{X: (start.X+end.X)/2 - mid.X, Y: (start.Y+end.Y)/2 - mid.Y}
 	side := 1.0
 	if -mtan.Y*chord.X+mtan.X*chord.Y < 0 {
 		side = -1
 	}
 	n := last - first + 1
 	l := total / float64(n)
-	var left, right []games.Vec
-	off := func(p, in games.Vec, d float64) games.Vec { return games.Vec{X: p.X + in.X*d, Y: p.Y + in.Y*d} }
+	var left, right []Vec
+	off := func(p, in Vec, d float64) Vec { return Vec{X: p.X + in.X*d, Y: p.Y + in.Y*d} }
 	for i := range n {
-		var out, inn, bandOut, bandIn []games.Vec
+		var out, inn, bandOut, bandIn []Vec
 		for k := 0; k <= 8; k++ {
 			p, tan := pointAt(l*float64(i) + l*float64(k)/8)
-			in := games.Vec{X: -tan.Y * side, Y: tan.X * side}
+			in := Vec{X: -tan.Y * side, Y: tan.X * side}
 			out = append(out, off(p, in, -fAcross/2))
 			inn = append(inn, off(p, in, fAcross/2))
-			bandOut = append(bandOut, off(p, in, fAcross/2-fBand))
+			bandOut = append(bandOut, off(p, in, fAcross/2-TrackBand))
 			bandIn = append(bandIn, off(p, in, fAcross/2))
 		}
 		c, tan := pointAt(l*float64(i) + l/2)
-		t := &tr.tiles[first+i]
-		t.outline = append(out, reversed(inn)...)
-		t.band = append(bandOut, reversed(bandIn)...)
-		t.center, t.tan, t.in = c, tan, games.Vec{X: -tan.Y * side, Y: tan.X * side}
-		t.along, t.across = l, fAcross
+		t := &tr.Tiles[first+i]
+		t.Outline = append(out, reversed(inn)...)
+		t.Band = append(bandOut, reversed(bandIn)...)
+		t.Center, t.Tan, t.In = c, tan, Vec{X: -tan.Y * side, Y: tan.X * side}
+		t.Along, t.Across = l, fAcross
 		left, right = append(left, out...), append(right, inn...)
 	}
-	tr.roads = append(tr.roads, append(left, reversed(right)...))
+	tr.Roads = append(tr.Roads, append(left, reversed(right)...))
 	// The flares: from the ring's edge along the fork's (or the rejoined)
 	// square, curving into the road's two sides.
-	edgeOf := func(t tile) (a, b games.Vec) {
-		return t.at(-t.along/2+2, -out*t.across/2), t.at(t.along/2-2, -out*t.across/2)
+	edgeOf := func(t Tile) (a, b Vec) {
+		return t.At(-t.Along/2+2, -out*t.Across/2), t.At(t.Along/2-2, -out*t.Across/2)
 	}
-	flare := func(a, b, capA, capB, dir games.Vec, ahead float64) {
+	flare := func(a, b, capA, capB, dir Vec, ahead float64) {
 		if dist(a, capB) < dist(a, capA) {
 			capA, capB = capB, capA
 		}
-		curb := func(from, to games.Vec) []games.Vec { // into the road along dir
-			ctl := games.Vec{X: to.X - dir.X*gap*1.2*ahead, Y: to.Y - dir.Y*gap*1.2*ahead}
-			var c []games.Vec
+		curb := func(from, to Vec) []Vec { // into the road along dir
+			ctl := Vec{X: to.X - dir.X*gap*1.2*ahead, Y: to.Y - dir.Y*gap*1.2*ahead}
+			var c []Vec
 			for k := 0; k <= 10; k++ {
 				t := float64(k) / 10
-				c = append(c, games.Vec{
+				c = append(c, Vec{
 					X: (1-t)*(1-t)*from.X + 2*(1-t)*t*ctl.X + t*t*to.X,
 					Y: (1-t)*(1-t)*from.Y + 2*(1-t)*t*ctl.Y + t*t*to.Y,
 				})
@@ -233,35 +236,35 @@ func (tr *track) addRoad(fork, first, last, rejoin int, via []games.Vec) {
 		}
 		ca, cb := curb(a, capA), curb(b, capB)
 		// A little past the road's end, to cover its end line.
-		pa := games.Vec{X: capA.X + dir.X*2*ahead, Y: capA.Y + dir.Y*2*ahead}
-		pb := games.Vec{X: capB.X + dir.X*2*ahead, Y: capB.Y + dir.Y*2*ahead}
-		poly := append(append(append([]games.Vec{}, ca...), pa, pb), reversed(cb)...)
-		tr.flares = append(tr.flares, poly)
-		tr.curbs = append(tr.curbs, ca, cb)
+		pa := Vec{X: capA.X + dir.X*2*ahead, Y: capA.Y + dir.Y*2*ahead}
+		pb := Vec{X: capB.X + dir.X*2*ahead, Y: capB.Y + dir.Y*2*ahead}
+		poly := append(append(append([]Vec{}, ca...), pa, pb), reversed(cb)...)
+		tr.Flares = append(tr.Flares, poly)
+		tr.Curbs = append(tr.Curbs, ca, cb)
 	}
-	t0, t1 := tr.tiles[first], tr.tiles[last]
+	t0, t1 := tr.Tiles[first], tr.Tiles[last]
 	a, b := edgeOf(f)
-	flare(a, b, t0.outline[0], t0.outline[len(t0.outline)-1], leave, 1)
+	flare(a, b, t0.Outline[0], t0.Outline[len(t0.Outline)-1], leave, 1)
 	a, b = edgeOf(r)
-	flare(a, b, t1.outline[8], t1.outline[9], arrive, -1)
+	flare(a, b, t1.Outline[8], t1.Outline[9], arrive, -1)
 }
 
 // tangentCurve is a Catmull-Rom curve through pts, per points to each
 // span, leaving its first point along startTan and reaching its last along
 // endTan.
-func tangentCurve(pts []games.Vec, startTan, endTan games.Vec, per int) []games.Vec {
+func tangentCurve(pts []Vec, startTan, endTan Vec, per int) []Vec {
 	n := len(pts)
 	reach := dist(pts[0], pts[n-1])
-	at := func(i int) games.Vec {
+	at := func(i int) Vec {
 		switch {
 		case i < 0: // a point behind the start, so the curve leaves along startTan
-			return games.Vec{X: pts[0].X - startTan.X*reach, Y: pts[0].Y - startTan.Y*reach}
+			return Vec{X: pts[0].X - startTan.X*reach, Y: pts[0].Y - startTan.Y*reach}
 		case i >= n: // and one beyond the end
-			return games.Vec{X: pts[n-1].X + endTan.X*reach, Y: pts[n-1].Y + endTan.Y*reach}
+			return Vec{X: pts[n-1].X + endTan.X*reach, Y: pts[n-1].Y + endTan.Y*reach}
 		}
 		return pts[i]
 	}
-	var line []games.Vec
+	var line []Vec
 	for i := 0; i < n-1; i++ {
 		p0, p1, p2, p3 := at(i-1), at(i), at(i+1), at(i+2)
 		for k := range per {
@@ -270,18 +273,18 @@ func tangentCurve(pts []games.Vec, startTan, endTan games.Vec, per int) []games.
 			f := func(a, b, c, d float64) float64 {
 				return 0.5 * (2*b + (c-a)*t + (2*a-5*b+4*c-d)*t2 + (3*b-a-3*c+d)*t3)
 			}
-			line = append(line, games.Vec{X: f(p0.X, p1.X, p2.X, p3.X), Y: f(p0.Y, p1.Y, p2.Y, p3.Y)})
+			line = append(line, Vec{X: f(p0.X, p1.X, p2.X, p3.X), Y: f(p0.Y, p1.Y, p2.Y, p3.Y)})
 		}
 	}
 	return append(line, pts[n-1])
 }
 
 // buildTrack lays the squares along the loop through pts.
-func buildTrack(pts []games.Vec) *track {
+func buildTrack(pts []Vec) *Track {
 	// The middle line: a closed Catmull-Rom curve through the points.
 	const per = 48
 	n := len(pts)
-	var line []games.Vec
+	var line []Vec
 	for i := range n {
 		p0, p1, p2, p3 := pts[(i+n-1)%n], pts[i], pts[(i+1)%n], pts[(i+2)%n]
 		for k := range per {
@@ -290,7 +293,7 @@ func buildTrack(pts []games.Vec) *track {
 			f := func(a, b, c, d float64) float64 {
 				return 0.5 * (2*b + (c-a)*t + (2*a-5*b+4*c-d)*t2 + (3*b-a-3*c+d)*t3)
 			}
-			line = append(line, games.Vec{X: f(p0.X, p1.X, p2.X, p3.X), Y: f(p0.Y, p1.Y, p2.Y, p3.Y)})
+			line = append(line, Vec{X: f(p0.X, p1.X, p2.X, p3.X), Y: f(p0.Y, p1.Y, p2.Y, p3.Y)})
 		}
 	}
 	m := len(line)
@@ -305,7 +308,7 @@ func buildTrack(pts []games.Vec) *track {
 		side = -1
 	}
 	// pointAt is the line's point s along it, the way it runs and into the loop.
-	pointAt := func(s float64) (p, tan, in games.Vec) {
+	pointAt := func(s float64) (p, tan, in Vec) {
 		s = math.Mod(s+total, total)
 		i := max(0, min(m-1, searchLength(length, s)))
 		a, b := line[i], line[(i+1)%m]
@@ -314,42 +317,42 @@ func buildTrack(pts []games.Vec) *track {
 		if seg > 0 {
 			f = (s - length[i]) / seg
 		}
-		p = games.Vec{X: a.X + (b.X-a.X)*f, Y: a.Y + (b.Y-a.Y)*f}
+		p = Vec{X: a.X + (b.X-a.X)*f, Y: a.Y + (b.Y-a.Y)*f}
 		d := dist(a, b)
-		tan = games.Vec{X: (b.X - a.X) / d, Y: (b.Y - a.Y) / d}
-		in = games.Vec{X: -tan.Y * side, Y: tan.X * side}
+		tan = Vec{X: (b.X - a.X) / d, Y: (b.Y - a.Y) / d}
+		in = Vec{X: -tan.Y * side, Y: tan.X * side}
 		return p, tan, in
 	}
-	off := func(p, in games.Vec, d float64) games.Vec { return games.Vec{X: p.X + in.X*d, Y: p.Y + in.Y*d} }
+	off := func(p, in Vec, d float64) Vec { return Vec{X: p.X + in.X*d, Y: p.Y + in.Y*d} }
 
-	tr := &track{}
-	edge := total / (games.LoopLen + 2) // the squares, the four corners half as long again
+	tr := &Track{}
+	edge := total / (LoopLen + 2) // the squares, the four corners half as long again
 	s := 0.0
-	for i := range games.LoopLen {
+	for i := range LoopLen {
 		l := edge
-		if games.IsCorner(i) {
+		if IsCorner(i) {
 			l = edge * 1.5
 		}
 		steps := 10
-		var out, inn, bandIn, bandOut []games.Vec
+		var out, inn, bandIn, bandOut []Vec
 		for k := 0; k <= steps; k++ {
 			p, _, in := pointAt(s + l*float64(k)/float64(steps))
 			out = append(out, off(p, in, -fAcross/2))
 			inn = append(inn, off(p, in, fAcross/2))
-			bandOut = append(bandOut, off(p, in, fAcross/2-fBand))
+			bandOut = append(bandOut, off(p, in, fAcross/2-TrackBand))
 			bandIn = append(bandIn, off(p, in, fAcross/2))
 		}
 		c, tan, in := pointAt(s + l/2)
-		t := &tr.tiles[i]
-		t.outline = append(out, reversed(inn)...)
-		t.band = append(bandOut, reversed(bandIn)...)
-		t.center, t.tan, t.in, t.along, t.across = c, tan, in, l, fAcross
+		t := &tr.Tiles[i]
+		t.Outline = append(out, reversed(inn)...)
+		t.Band = append(bandOut, reversed(bandIn)...)
+		t.Center, t.Tan, t.In, t.Along, t.Across = c, tan, in, l, fAcross
 		s += l
 	}
 	for k := range m {
 		p, _, in := pointAt(length[k])
-		tr.inner = append(tr.inner, off(p, in, fAcross/2))
-		tr.outer = append(tr.outer, off(p, in, -fAcross/2))
+		tr.Inner = append(tr.Inner, off(p, in, fAcross/2))
+		tr.Outer = append(tr.Outer, off(p, in, -fAcross/2))
 	}
 	return tr
 }
@@ -367,11 +370,11 @@ func searchLength(length []float64, s float64) int {
 	return lo
 }
 
-func dist(a, b games.Vec) float64 { return math.Hypot(b.X-a.X, b.Y-a.Y) }
+func dist(a, b Vec) float64 { return math.Hypot(b.X-a.X, b.Y-a.Y) }
 
 // area is twice a polygon's signed area: positive when it runs clockwise
 // on the board (v down).
-func area(pts []games.Vec) float64 {
+func area(pts []Vec) float64 {
 	a := 0.0
 	for i, p := range pts {
 		q := pts[(i+1)%len(pts)]
@@ -380,16 +383,16 @@ func area(pts []games.Vec) float64 {
 	return a
 }
 
-func reversed(pts []games.Vec) []games.Vec {
-	out := make([]games.Vec, len(pts))
+func reversed(pts []Vec) []Vec {
+	out := make([]Vec, len(pts))
 	for i, p := range pts {
 		out[len(pts)-1-i] = p
 	}
 	return out
 }
 
-// inside reports whether p is inside the polygon.
-func inside(poly []games.Vec, p games.Vec) bool {
+// Inside reports whether p is inside the polygon.
+func Inside(poly []Vec, p Vec) bool {
 	in := false
 	for i, a := range poly {
 		b := poly[(i+1)%len(poly)]
@@ -398,13 +401,4 @@ func inside(poly []games.Vec, p games.Vec) bool {
 		}
 	}
 	return in
-}
-
-// polyPath adds a closed polygon in board units to the path.
-func polyPath(pn pen, pts []games.Vec) {
-	pn.MoveTo(pts[0].X, pts[0].Y)
-	for _, p := range pts[1:] {
-		pn.LineTo(p.X, p.Y)
-	}
-	pn.Close()
 }

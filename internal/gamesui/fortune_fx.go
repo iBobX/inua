@@ -357,7 +357,7 @@ func (p *fortune) paintCardFX(pn pen) {
 		a, _ := p.token(e.Target)
 		to, ripple = project(a.X, a.Y, 20), true
 	case e.Target >= 0 && games.Cards[e.Card].Target == games.TargetSquare:
-		c := trackOf(p.city()).tiles[e.Target].center
+		c := games.TrackOf(p.city()).Tiles[e.Target].Center
 		to, ripple = project(c.X, c.Y, 0), true
 	}
 	t := p.t

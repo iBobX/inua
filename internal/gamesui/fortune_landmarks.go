@@ -26,12 +26,12 @@ var cityLandmarks = [][]landmark{
 func landmarksOf(city int) []landmark {
 	ls := append([]landmark(nil), cityLandmarks[city]...)
 	for i := range ls { // placed for the art's board, standing on the larger one
-		ls[i].at = games.Vec{X: ls[i].at.X * mapK, Y: ls[i].at.Y * mapK}
+		ls[i].at = games.Vec{X: ls[i].at.X * games.MapK, Y: ls[i].at.Y * games.MapK}
 	}
 	if city == 2 {
-		t := trackOf(city).tiles[68]
-		ls[0].at = t.at(-12, t.across/2+166)
-		ls[1].at = t.at(52, t.across/2+150)
+		t := games.TrackOf(city).Tiles[68]
+		ls[0].at = t.At(-12, t.Across/2+166)
+		ls[1].at = t.At(52, t.Across/2+150)
 	}
 	return ls
 }

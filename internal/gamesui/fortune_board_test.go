@@ -12,9 +12,9 @@ import (
 // through the camera's projection; off the track, none.
 func TestSquareAtScreen(t *testing.T) {
 	for city := range games.FortuneCities {
-		tr := trackOf(city)
-		for i, tl := range tr.tiles {
-			if got := squareAtScreen(city, project(tl.center.X, tl.center.Y, 0)); got != i {
+		tr := games.TrackOf(city)
+		for i, tl := range tr.Tiles {
+			if got := squareAtScreen(city, project(tl.Center.X, tl.Center.Y, 0)); got != i {
 				t.Errorf("city %d: square %d's middle: got %d", city, i, got)
 			}
 		}
@@ -42,8 +42,8 @@ func TestTokenAt(t *testing.T) {
 				t.Errorf("city %d: player %d in jail stands on %d", city, pi, squareAt(city, p.X, p.Y))
 			}
 		}
-		tr := trackOf(city)
-		for _, p := range append(slices.Clone(tr.outer), tr.inner...) {
+		tr := games.TrackOf(city)
+		for _, p := range append(slices.Clone(tr.Outer), tr.Inner...) {
 			if p.X < 4 || p.Y < 4 || p.X > fBoard-4 || p.Y > fBoard-4 {
 				t.Errorf("city %d: the track runs off the paper at %v", city, p)
 				break
@@ -82,10 +82,10 @@ func TestCityFurnitureClear(t *testing.T) {
 			}
 		}
 		for _, d := range []float64{-70, 0, 70} { // printed under the roads: a nearer road only hides its edge
-			check("the title", games.Vec{X: (cityTitles[city].X + d) * mapK, Y: (cityTitles[city].Y + 20) * mapK}, 20)
+			check("the title", games.Vec{X: (cityTitles[city].X + d) * games.MapK, Y: (cityTitles[city].Y + 20) * games.MapK}, 20)
 		}
 		for _, tr := range art.trees {
-			check("a tree", games.Vec{X: tr[0] * mapK, Y: tr[1] * mapK}, tr[2]*treeK*0.5)
+			check("a tree", games.Vec{X: tr[0] * games.MapK, Y: tr[1] * games.MapK}, tr[2]*treeK*0.5)
 		}
 		for _, l := range landmarksOf(city) {
 			check("a landmark", l.at, 15*landmarkK)
@@ -96,12 +96,12 @@ func TestCityFurnitureClear(t *testing.T) {
 // roadDistance is how far p is from the nearest road square: 0 on one.
 func roadDistance(city int, p games.Vec) float64 {
 	best := math.Inf(1)
-	for _, tl := range trackOf(city).tiles {
-		if inside(tl.outline, p) {
+	for _, tl := range games.TrackOf(city).Tiles {
+		if games.Inside(tl.Outline, p) {
 			return 0
 		}
-		for i, a := range tl.outline {
-			b := tl.outline[(i+1)%len(tl.outline)]
+		for i, a := range tl.Outline {
+			b := tl.Outline[(i+1)%len(tl.Outline)]
 			best = min(best, segmentDistance(p, a, b))
 		}
 	}

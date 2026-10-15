@@ -694,8 +694,8 @@ func (p *fortune) ring() {
 // diceBy is where the dice roll for player pi: inside the loop, beside the
 // square their pawn stands on.
 func (p *fortune) diceBy(pi int) games.Vec {
-	t := trackOf(p.city()).tiles[p.shown.At[pi]]
-	return t.at(0, -t.across/2-40)
+	t := games.TrackOf(p.city()).Tiles[p.shown.At[pi]]
+	return t.At(0, -t.Across/2-40)
 }
 
 // raisable counts the streets the player may raise a level now.

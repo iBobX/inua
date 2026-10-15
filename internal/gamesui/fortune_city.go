@@ -16,8 +16,8 @@ type cityArt struct {
 	corners              [4]string // Start, Jail, Fountain, Go to Jail, in the city's script
 	cornerFont           string
 	chance, tax, shop    string
-	middle               func(pn pen, r *rand.Rand, tr *track) // inside the track
-	outside              func(pn pen, r *rand.Rand, tr *track) // round it: water, banks, fields
+	middle               func(pn pen, r *rand.Rand, tr *games.Track) // inside the track
+	outside              func(pn pen, r *rand.Rand, tr *games.Track) // round it: water, banks, fields
 	house                func(pn pen, u, v, s float64, along bool, owner color.NRGBA)
 	hotel                func(pn pen, u, v, su, sv float64, owner color.NRGBA)
 	tree                 func(pn pen, u, v, s float64, r *rand.Rand)
@@ -396,17 +396,17 @@ func jetFountain(pn pen, u, v float64) {
 // --- the middles ---
 
 // tokyoMiddle prints the title before a red sun.
-func tokyoMiddle(pn pen, r *rand.Rand, tr *track) {
+func tokyoMiddle(pn pen, r *rand.Rand, tr *games.Track) {
 	sun(pn, 360, 178, 46, washiShu, r)
 	title(pn, cityTitles[0].X, cityTitles[0].Y, "小さな福", minchoBold+" 40", "S M A L L    F O R T U N E", "福", r)
 }
 
 // tokyoOutside prints the city's lanes, and Tokyo Bay's waves to the
 // south-east.
-func tokyoOutside(pn pen, r *rand.Rand, tr *track) {
+func tokyoOutside(pn pen, r *rand.Rand, tr *games.Track) {
 	lanes(pn, r)
 	pn.Save()
-	pn.Circle(artBoard, artBoard, 210)
+	pn.Circle(games.ArtBoard, games.ArtBoard, 210)
 	pn.Clip()
 	pn.Alpha(washiIndigo, 0.06)
 	pn.Paint()
@@ -417,7 +417,7 @@ func tokyoOutside(pn pen, r *rand.Rand, tr *track) {
 
 // newYorkMiddle prints Central Park down the middle of the island, its
 // reservoir.
-func newYorkMiddle(pn pen, r *rand.Rand, tr *track) {
+func newYorkMiddle(pn pen, r *rand.Rand, tr *games.Track) {
 	// The park lies along the island: from the island's axis, w wide.
 	ax, ay := 540.0-186, 92.0-624
 	l := math.Hypot(ax, ay)
@@ -455,10 +455,10 @@ func newYorkMiddle(pn pen, r *rand.Rand, tr *track) {
 
 // newYorkOutside prints the harbour and the rivers round the island, New
 // Jersey and Brooklyn on their banks, Liberty Island, the title.
-func newYorkOutside(pn pen, r *rand.Rand, tr *track) {
+func newYorkOutside(pn pen, r *rand.Rand, tr *games.Track) {
 	pn.Color(mix(washiPaper, washiWater, 0.22))
 	pn.Paint()
-	ripples(pn, 0, artBoard, 0, artBoard, r)
+	ripples(pn, 0, games.ArtBoard, 0, games.ArtBoard, r)
 	land := mix(washiPaper, color.NRGBA{0xC9, 0xBE, 0x9C, 255}, 0.25)
 	for _, shore := range [][]games.Vec{
 		{{X: 0, Y: 0}, {X: 300, Y: 0}, {X: 262, Y: 52}, {X: 130, Y: 196}, {X: 60, Y: 380}, {X: 0, Y: 430}},
@@ -478,7 +478,7 @@ func newYorkOutside(pn pen, r *rand.Rand, tr *track) {
 }
 
 // shanghaiMiddle prints the title, a red sun and clouds.
-func shanghaiMiddle(pn pen, r *rand.Rand, tr *track) {
+func shanghaiMiddle(pn pen, r *rand.Rand, tr *games.Track) {
 	lanes(pn, r)
 	pn.Color(washiPaper)
 	sun(pn, 470, 200, 50, washiShu, r)
@@ -490,13 +490,13 @@ func shanghaiMiddle(pn pen, r *rand.Rand, tr *track) {
 
 // shanghaiOutside prints the lanes, the Huangpu along the east of the
 // track, and Pudong beyond it.
-func shanghaiOutside(pn pen, r *rand.Rand, tr *track) {
+func shanghaiOutside(pn pen, r *rand.Rand, tr *games.Track) {
 	lanes(pn, r)
 	var course []games.Vec
 	east := eastBank()
 	for _, i := range east {
-		t := tr.tiles[i]
-		course = append(course, t.at(0, t.across/2+34))
+		t := tr.Tiles[i]
+		course = append(course, t.At(0, t.Across/2+34))
 	}
 	pn.Round()
 	pn.Width(56)
@@ -506,14 +506,14 @@ func shanghaiOutside(pn pen, r *rand.Rand, tr *track) {
 	for _, d := range []float64{-14, 0, 14} {
 		var line []games.Vec
 		for k, i := range east {
-			t := tr.tiles[i]
-			line = append(line, t.at(float64(k%3)*4, t.across/2+34+d))
+			t := tr.Tiles[i]
+			line = append(line, t.At(float64(k%3)*4, t.Across/2+34+d))
 		}
 		pn.Alpha(washiIndigo, 0.3)
 		strokeCurve(pn, line)
 	}
-	label := tr.tiles[62].at(0, tr.tiles[62].across/2+30)
-	pn.Text("黄浦江", minchoBold+" 9", min(label.X, artBoard-24), label.Y, 0.5, 0.5, shade(washiIndigo, 1.5))
+	label := tr.Tiles[62].At(0, tr.Tiles[62].Across/2+30)
+	pn.Text("黄浦江", minchoBold+" 9", min(label.X, games.ArtBoard-24), label.Y, 0.5, 0.5, shade(washiIndigo, 1.5))
 }
 
 // eastBank are the squares the Huangpu runs along, from the ring's last
@@ -528,11 +528,11 @@ func eastBank() []int {
 
 // romaMiddle prints the Tiber through the walls, the Colosseum, the title
 // under a warm sun.
-func romaMiddle(pn pen, r *rand.Rand, tr *track) {
+func romaMiddle(pn pen, r *rand.Rand, tr *games.Track) {
 	var course []games.Vec
 	for i := games.FountainAt; i > games.JailAt; i-- { // inside the ring's second side
-		t := tr.tiles[i]
-		course = append(course, t.at(0, -t.across/2-34))
+		t := tr.Tiles[i]
+		course = append(course, t.At(0, -t.Across/2-34))
 	}
 	pn.Round()
 	pn.Width(26)
@@ -548,9 +548,9 @@ func romaMiddle(pn pen, r *rand.Rand, tr *track) {
 }
 
 // romaOutside prints the Campagna: fields in washes of green and ochre.
-func romaOutside(pn pen, r *rand.Rand, tr *track) {
+func romaOutside(pn pen, r *rand.Rand, tr *games.Track) {
 	for range 60 {
-		x, y := r.Float64()*artBoard, r.Float64()*artBoard
+		x, y := r.Float64()*games.ArtBoard, r.Float64()*games.ArtBoard
 		col := []color.NRGBA{{0x9F, 0xB8, 0x7E, 255}, {0xD9, 0xB8, 0x6A, 255}, {0xB8, 0xA0, 0x6E, 255}}[r.IntN(3)]
 		pn.Save()
 		pn.Translate(x, y)
@@ -625,10 +625,10 @@ func lanes(pn pen, r *rand.Rand) {
 	pn.Width(0.5)
 	pn.Alpha(washiInk, 0.08)
 	for k := 0; k < 30; k++ {
-		y := r.Float64() * artBoard
-		pn.Line(0, y, artBoard, y+(r.Float64()-0.5)*60)
-		x := r.Float64() * artBoard
-		pn.Line(x, 0, x+(r.Float64()-0.5)*60, artBoard)
+		y := r.Float64() * games.ArtBoard
+		pn.Line(0, y, games.ArtBoard, y+(r.Float64()-0.5)*60)
+		x := r.Float64() * games.ArtBoard
+		pn.Line(x, 0, x+(r.Float64()-0.5)*60, games.ArtBoard)
 	}
 }
 

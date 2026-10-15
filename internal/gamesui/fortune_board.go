@@ -24,10 +24,8 @@ import (
 // corners, back to front.
 
 const (
-	artBoard = 706.0           // the side of the board the city's art is drawn for
-	mapK     = 2.0             // how much larger the board is printed
-	fBoard   = artBoard * mapK // the paper's side
-	fSlab    = 14.0            // the board's thickness
+	fBoard = games.ArtBoard * games.MapK // the paper's side
+	fSlab  = 14.0                        // the board's thickness
 
 	boardW = 1760.0
 	boardH = 1590.0
@@ -84,8 +82,8 @@ const (
 
 // squareAt is the game's city's square at board point u, v; -1 for none.
 func squareAt(city int, u, v float64) int {
-	for i, t := range trackOf(city).tiles {
-		if inside(t.outline, games.Vec{X: u, Y: v}) {
+	for i, t := range games.TrackOf(city).Tiles {
+		if games.Inside(t.Outline, games.Vec{X: u, Y: v}) {
 			return i
 		}
 	}
@@ -101,24 +99,24 @@ func squareAtScreen(city int, p games.Vec) int {
 // tileFrame turns pn so that square t's print faces the middle of the
 // loop: its centre at 0, 0, its inner side up. It returns the square's
 // size so turned: along the track, and across.
-func tileFrame(pn pen, t tile) (along, across float64) {
-	pn.Translate(t.center.X, t.center.Y)
-	pn.Rotate(t.turn())
-	return t.along, t.across
+func tileFrame(pn pen, t games.Tile) (along, across float64) {
+	pn.Translate(t.Center.X, t.Center.Y)
+	pn.Rotate(t.Turn())
+	return t.Along, t.Across
 }
 
 // tokenAt is where player pi's pawn stands on square sq of the city's
 // track: each player has a place of its own there, clear of the print. In
 // jail, it is behind the bars.
 func tokenAt(city, sq, pi int, jailed bool) games.Vec {
-	t := trackOf(city).tiles[sq]
+	t := games.TrackOf(city).Tiles[sq]
 	if games.IsCorner(sq) { // a corner: its words inside, the pawns, then the cell or the basin outside
 		if jailed {
-			return t.at(-6+12*float64(pi%2), 18+10*float64(pi/2))
+			return t.At(-6+12*float64(pi%2), 18+10*float64(pi/2))
 		}
-		return t.at(-15+30*float64(pi%2), -4+12*float64(pi/2))
+		return t.At(-15+30*float64(pi%2), -4+12*float64(pi/2))
 	}
-	return t.at((float64(pi)-1.5)*t.along*0.17, 10+8*float64(pi%2))
+	return t.At((float64(pi)-1.5)*t.Along*0.17, 10+8*float64(pi%2))
 }
 
 // token is where a player's pawn is now, and how high it hops.
@@ -538,11 +536,11 @@ func (p *fortune) paint(pn pen) {
 // paintMarks draws over the board the square under the pointer, the one
 // picked, and the streets the player may raise this turn.
 func (p *fortune) paintMarks(pn pen) {
-	tr := trackOf(p.city())
+	tr := games.TrackOf(p.city())
 	pn.Save()
 	flat(pn, 0)
 	if p.hover >= 0 {
-		polyPath(pn, tr.tiles[p.hover].outline)
+		polyPath(pn, tr.Tiles[p.hover].Outline)
 		pn.Alpha(white, 0.32)
 		pn.Fill()
 	}
@@ -552,7 +550,7 @@ func (p *fortune) paintMarks(pn pen) {
 				pn.Width(2.2)
 				pn.Dash(5, 4)
 				pn.Color(color.NRGBA{0x5E, 0x84, 0x3E, 255})
-				polyPath(pn, tr.tiles[sq].outline)
+				polyPath(pn, tr.Tiles[sq].Outline)
 				pn.Stroke()
 				pn.Dash()
 			}
@@ -562,7 +560,7 @@ func (p *fortune) paintMarks(pn pen) {
 		pn.Width(3)
 		pn.Round()
 		pn.Color(washiShu)
-		polyPath(pn, tr.tiles[f].outline)
+		polyPath(pn, tr.Tiles[f].Outline)
 		pn.Stroke()
 	}
 	pn.Restore()
@@ -622,7 +620,7 @@ func (p *fortune) paintUnder(pn pen) {
 	pn.Save()
 	v := p.shown
 	art := p.art()
-	tr := trackOf(p.city())
+	tr := games.TrackOf(p.city())
 
 	// The board's shadow on the table, and its front edge.
 	tl, br := project(0, 0, 0), project(fBoard, fBoard, -fSlab)
@@ -655,11 +653,11 @@ func (p *fortune) paintUnder(pn pen) {
 			continue
 		}
 		owner := p.playerColor(v.Owner[i])
-		t := tr.tiles[i]
-		mid := -t.across/2 + fBand/2 // the band's middle line
-		along := math.Abs(t.tan.X) >= math.Abs(t.tan.Y)
+		t := tr.Tiles[i]
+		mid := -t.Across/2 + games.TrackBand/2 // the band's middle line
+		along := math.Abs(t.Tan.X) >= math.Abs(t.Tan.Y)
 		if n == games.Hotel {
-			c := t.at(0, mid)
+			c := t.At(0, mid)
 			su, sv := 38.0, 18.0
 			if !along {
 				su, sv = 18, 38
@@ -668,12 +666,12 @@ func (p *fortune) paintUnder(pn pen) {
 			continue
 		}
 		for k := range n {
-			c := t.at((float64(k)-float64(n-1)/2)*min(11.6, t.along/4.2), mid)
+			c := t.At((float64(k)-float64(n-1)/2)*min(11.6, t.Along/4.2), mid)
 			add(c.X, c.Y+6, func() { art.house(pn, c.X, c.Y, 11, along, owner) })
 		}
 	}
 	for _, t := range art.trees {
-		u, v, s := t[0]*mapK, t[1]*mapK, t[2]*treeK
+		u, v, s := t[0]*games.MapK, t[1]*games.MapK, t[2]*treeK
 		add(u, v, func() { art.tree(pn, u, v, s, rand.New(rand.NewPCG(uint64(t[0]), uint64(t[1])))) })
 	}
 	for _, l := range landmarksOf(p.city()) {
@@ -688,7 +686,7 @@ func (p *fortune) paintUnder(pn pen) {
 			pn.Restore()
 		})
 	}
-	fc := tr.tiles[games.FountainAt].at(0, 24)
+	fc := tr.Tiles[games.FountainAt].At(0, 24)
 	add(fc.X, fc.Y, func() { p.fountain(pn, fc.X, fc.Y, v.Pot) })
 	sort.SliceStable(solids, func(a, b int) bool { return solids[a].depth < solids[b].depth })
 	for _, s := range solids {
@@ -722,7 +720,7 @@ func (p *fortune) layPrint(pn pen) {
 // washi, its border, the tiles with their bands, names and signs, the
 // corners, and the middle's art.
 func paintPrint(pn pen, city int) {
-	art, names, tr := cityArts[city], cityNames(city), trackOf(city)
+	art, names, tr := cityArts[city], cityNames(city), games.TrackOf(city)
 	r := rand.New(rand.NewPCG(7, 1))
 	pn.Color(washiIndigo)
 	pn.Rect(0, 0, fBoard, fBoard)
@@ -732,7 +730,7 @@ func paintPrint(pn pen, city int) {
 	pn.Fill()
 	// Fibres in the paper.
 	pn.Round()
-	for range int(900 * mapK * mapK) {
+	for range int(900 * games.MapK * games.MapK) {
 		x, y := 5+r.Float64()*(fBoard-10), 5+r.Float64()*(fBoard-10)
 		l, a := 6+r.Float64()*26, r.Float64()*2*math.Pi
 		pn.Width(0.3 + r.Float64()*0.6)
@@ -748,36 +746,36 @@ func paintPrint(pn pen, city int) {
 	// Round the track the city, inside it the middle's art, both drawn for
 	// the smaller board and printed larger.
 	pn.Save()
-	pn.Scale(mapK, mapK)
-	art.outside(pn, r, tr.art)
+	pn.Scale(games.MapK, games.MapK)
+	art.outside(pn, r, tr.Art)
 	pn.Restore()
 	pn.Save()
-	polyPath(pn, tr.inner)
+	polyPath(pn, tr.Inner)
 	pn.Clip()
 	pn.Color(washiPaper)
 	pn.Paint()
-	pn.Scale(mapK, mapK)
-	art.middle(pn, r, tr.art)
+	pn.Scale(games.MapK, games.MapK)
+	art.middle(pn, r, tr.Art)
 	pn.Restore()
 	for i, sq := range games.Board {
-		paintTile(pn, tr.tiles[i], i, sq, names[i], art, r)
+		paintTile(pn, tr.Tiles[i], i, sq, names[i], art, r)
 	}
 	// The track's edges, in ink; the branch roads'.
-	sumiPath(pn, tr.inner, 1.6, r)
-	sumiPath(pn, tr.outer, 1.6, r)
-	for _, road := range tr.roads {
+	sumiPath(pn, tr.Inner, 1.6, r)
+	sumiPath(pn, tr.Outer, 1.6, r)
+	for _, road := range tr.Roads {
 		sumiPath(pn, road, 1.4, r)
 	}
 	// Where the roads widen out of the ring: the road's ground over the
 	// ring's edge, and curbs into the road's sides.
-	for _, f := range tr.flares {
+	for _, f := range tr.Flares {
 		polyPath(pn, f)
 		pn.Color(washiPaper)
 		pn.FillKeep()
 		pn.Alpha(washiTile, 0.6)
 		pn.Fill()
 	}
-	for _, c := range tr.curbs {
+	for _, c := range tr.Curbs {
 		pn.Round()
 		pn.Width(1.4)
 		pn.Alpha(washiInk, 0.85)
@@ -823,34 +821,34 @@ func sumi(pn pen, x0, y0, x1, y1, w float64, r *rand.Rand) {
 
 // paintTile prints a square: its ground, a street's band, its name and
 // its sign, turned to face the middle; a corner's words.
-func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt, r *rand.Rand) {
-	polyPath(pn, t.outline)
+func paintTile(pn pen, t games.Tile, i int, sq games.Square, name string, art cityArt, r *rand.Rand) {
+	polyPath(pn, t.Outline)
 	pn.Color(washiPaper) // over the city printed round the track
 	pn.FillKeep()
 	pn.Alpha(washiTile, 0.6)
 	pn.Fill()
 	if sq.Kind == games.Street {
 		col := groupColors[sq.Group]
-		polyPath(pn, t.band)
+		polyPath(pn, t.Band)
 		pn.Color(col)
 		pn.Fill()
 		// A wash over it, as pigment settles unevenly.
 		pn.Save()
-		polyPath(pn, t.band)
+		polyPath(pn, t.Band)
 		pn.Clip()
 		for range 6 {
-			c := t.at((r.Float64()-0.5)*t.along, -t.across/2+r.Float64()*fBand)
+			c := t.At((r.Float64()-0.5)*t.Along, -t.Across/2+r.Float64()*games.TrackBand)
 			pn.Alpha(shade(col, 0.82), 0.12)
 			pn.Circle(c.X, c.Y, 4+r.Float64()*8)
 			pn.Fill()
 		}
 		pn.Restore()
-		a, b := t.at(-t.along/2, -t.across/2+fBand), t.at(t.along/2, -t.across/2+fBand)
+		a, b := t.At(-t.Along/2, -t.Across/2+games.TrackBand), t.At(t.Along/2, -t.Across/2+games.TrackBand)
 		sumi(pn, a.X, a.Y, b.X, b.Y, 0.9, r)
 	}
 	// The square's ends, across the track.
-	for _, x := range []float64{-t.along / 2, t.along / 2} {
-		a, b := t.at(x, -t.across/2), t.at(x, t.across/2)
+	for _, x := range []float64{-t.Along / 2, t.Along / 2} {
+		a, b := t.At(x, -t.Across/2), t.At(x, t.Across/2)
 		sumi(pn, a.X, a.Y, b.X, b.Y, 1.1, r)
 	}
 
@@ -858,7 +856,7 @@ func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt,
 	along, across := tileFrame(pn, t)
 	top := -across / 2
 	if sq.Kind == games.Street {
-		top += fBand
+		top += games.TrackBand
 	}
 	label := func() float64 { return pn.TextBox(name, mincho+" Medium 6.6", 0, top+4, along-6, washiInk) }
 	switch sq.Kind {
@@ -927,10 +925,10 @@ func paintTile(pn pen, t tile, i int, sq games.Square, name string, art cityArt,
 // seal, its price or rent, the pointer over it.
 func (p *fortune) paintTileState(pn pen, i int, v games.FortuneView) {
 	sq := games.Board[i]
-	t := trackOf(p.city()).tiles[i]
+	t := games.TrackOf(p.city()).Tiles[i]
 	o := v.Owner[i]
 	if o >= 0 {
-		polyPath(pn, t.outline)
+		polyPath(pn, t.Outline)
 		pn.Alpha(p.playerColor(o), 0.13)
 		pn.Fill()
 	}
@@ -956,7 +954,7 @@ func (p *fortune) paintTileState(pn pen, i int, v games.FortuneView) {
 		s := 9.0
 		top := -across / 2
 		if sq.Kind == games.Street {
-			top += fBand
+			top += games.TrackBand
 		}
 		sx, sy := along/2-s-2.5, top+2.5
 		pn.Color(p.playerColor(o))
@@ -1140,4 +1138,13 @@ func (p *fortune) paintMiddle(pn pen) {
 		round = i18n.Tf("%s · sound off", round)
 	}
 	pn.Text(round, mincho+" 8.5", m.X+100, y, 1, 0.5, shade(washiInk, 2.4))
+}
+
+// polyPath adds a closed polygon in board units to the path.
+func polyPath(pn pen, pts []games.Vec) {
+	pn.MoveTo(pts[0].X, pts[0].Y)
+	for _, p := range pts[1:] {
+		pn.LineTo(p.X, p.Y)
+	}
+	pn.Close()
 }
