@@ -2044,6 +2044,13 @@ window.workshop .ws-page { padding: 16px 24px 20px; }
 window.workshop .ws-page.ws-fixed { padding: 0; }
 window.workshop .ws-scroll { padding: 12px 16px; }
 window.workshop .ws-columns > .ws-col-next { border-left: 1px solid alpha(@line, 0.55); }
+/* scroll(style="sidebar"): the light apps' index column, on the panel
+   colour; scroll(style="panel"): a panel at the right, as Viewer's
+   details. The columns' hairline stands between them and the page. */
+window.workshop .ws-sidebar, window.workshop .ws-panel { background: @panel; }
+window.workshop .ws-sidebar > viewport > .ws-scroll { padding: 18px 12px; }
+window.workshop .ws-panel > viewport > .ws-scroll { padding: 18px 20px; }
+window.workshop .ws-sidebar .ws-row { margin: 0; padding: 6px 10px; min-height: 32px; }
 window.workshop .ws-bar { padding: 10px 24px; border-top: 1px solid alpha(@line, 0.55); }
 window.workshop .ws-row { min-height: 40px; padding: 8px 10px; margin: 0 -10px; border-radius: 2px; }
 window.workshop .ws-row.clickable:hover { background: alpha(@accent, 0.06); }

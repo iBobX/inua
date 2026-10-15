@@ -709,6 +709,12 @@ func (a *workshopApp) update(w *wsNode, n workshop.Node) {
 	} else if prev.Width > 0 {
 		w.w.SetSizeRequest(-1, -1)
 	}
+	if n.Type == "scroll" {
+		// A column's look: the light apps' sidebar (the index column, on
+		// the panel colour) or a panel at the right (as Viewer's details).
+		toggleClass(w.w, "ws-sidebar", n.Style == "sidebar")
+		toggleClass(w.w, "ws-panel", n.Style == "panel")
+	}
 	// An input's value is the app's when it is made and when the app
 	// changes it; in between the user's typing stands.
 	valueChanged := w.sig != 0 && len(n.Value) > 0 && string(n.Value) != string(prev.Value)
