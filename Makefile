@@ -2,7 +2,8 @@
 #
 #   make           build bin/inua-shell (the shell), bin/inua (command line),
 #                  bin/inua-apps (light apps), bin/inua-files (the file
-#                  manager), bin/inua-games (light games),
+#                  manager), bin/inua-viewer (images, PDFs, Markdown and
+#                  text), bin/inua-games (light games),
 #                  bin/inua-pinentry (gpg's prompt), bin/inua-assistant (the
 #                  assistant) and bin/inua-keyring (the Secret Service kept in pass)
 #   make deps      install what inua needs to run, build and test
@@ -43,6 +44,7 @@ build:
 	go build -o bin/inua ./cmd/inua
 	go build -o bin/inua-apps ./cmd/inua-apps
 	go build -o bin/inua-files ./cmd/inua-files
+	go build -o bin/inua-viewer ./cmd/inua-viewer
 	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant
@@ -54,7 +56,7 @@ deps:
 		gstreamer1.0-plugins-base gstreamer1.0-plugins-good
 
 deps-desktop:
-	sudo apt install -y kitty gvfs-backends gvfs-fuse udisks2 hypridle wf-recorder libturbojpeg0 \
+	sudo apt install -y kitty gvfs-backends gvfs-fuse udisks2 hypridle wf-recorder libturbojpeg0 libpoppler-glib8t64 \
 		xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
 		grim slurp wl-clipboard brightnessctl playerctl fcitx5 xdg-terminal-exec \
 		pass gnupg fonts-ibm-plex fonts-noto-cjk \
@@ -85,7 +87,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
 	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
 

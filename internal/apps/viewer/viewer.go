@@ -1,7 +1,9 @@
-// Package viewer is the Viewer's logic without GTK: which files are
-// images, the images of a folder in order, decoding them (in Go, or with
-// libjpeg-turbo when it is installed), how to draw them standing, zoom
-// steps, and what a photo's EXIF says.
+// Package viewer is the Viewer's logic without GTK: what kind of file it
+// is shown (an image, a PDF, Markdown or plain text), the files of a
+// folder in order, decoding images (in Go, or with libjpeg-turbo when it
+// is installed), how to draw them standing, zoom steps, and what a
+// photo's EXIF says; PDF pages drawn by poppler, and Markdown read into
+// blocks to lay out.
 package viewer
 
 import (
@@ -14,8 +16,9 @@ import (
 	"unicode"
 )
 
-// Exts are the file extensions the viewer opens, with their MIME types
-// (for the clipboard and the desktop entry).
+// Exts are the file extensions the viewer registers for, with their MIME
+// types (for the clipboard and the desktop entry). Plain text it opens
+// too (textExts), but leaves to an editor.
 var Exts = map[string]string{
 	".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".jpe": "image/jpeg",
 	".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".svgz": "image/svg+xml",
@@ -23,16 +26,21 @@ var Exts = map[string]string{
 	".avif": "image/avif", ".heic": "image/heic", ".heif": "image/heif", ".jxl": "image/jxl",
 	".tga": "image/x-tga", ".xpm": "image/x-xpixmap", ".pnm": "image/x-portable-anymap",
 	".ppm": "image/x-portable-pixmap", ".pgm": "image/x-portable-graymap", ".pbm": "image/x-portable-bitmap",
+	".pdf": "application/pdf",
+	".md":  "text/markdown", ".markdown": "text/markdown", ".mdown": "text/markdown", ".mkd": "text/markdown",
 }
 
-// IsImage reports whether a file is one the viewer opens, by its name.
-func IsImage(path string) bool {
-	_, ok := Exts[strings.ToLower(filepath.Ext(path))]
-	return ok
-}
+// IsImage reports whether a file is an image the viewer opens, by its name.
+func IsImage(path string) bool { return KindOf(path) == Image }
 
-// Mime is a file's image MIME type, "" if it is not an image.
-func Mime(path string) string { return Exts[strings.ToLower(filepath.Ext(path))] }
+// Mime is a file's MIME type by its name, "" if the viewer does not know
+// it.
+func Mime(path string) string {
+	if KindOf(path) == Text {
+		return "text/plain"
+	}
+	return Exts[strings.ToLower(filepath.Ext(path))]
+}
 
 // Animated reports whether a file may be animated (GIF, WebP).
 func Animated(path string) bool {
@@ -43,9 +51,10 @@ func Animated(path string) bool {
 	return false
 }
 
-// List is what the viewer steps through for its arguments: the images of
-// the folder of a single file (or of a single folder), else the image files
-// given, in the order given. Index is the first to show.
+// List is what the viewer steps through for its arguments: for a single
+// file, the files of its kind in its folder (the images beside an image,
+// the PDFs beside a PDF); for a single folder, its images; else the files
+// given that it opens, in the order given. Index is the first to show.
 func List(args []string) (files []string, index int) {
 	if len(args) == 1 {
 		p, err := filepath.Abs(args[0])
@@ -55,14 +64,17 @@ func List(args []string) (files []string, index int) {
 		if st, err := os.Stat(p); err == nil && st.IsDir() {
 			return Folder(p), 0
 		}
-		files = Folder(filepath.Dir(p))
-		if i := slices.Index(files, p); i >= 0 {
-			return files, i
+		if k := KindOf(p); k != None {
+			files = FolderOf(filepath.Dir(p), k)
+			if i := slices.Index(files, p); i >= 0 {
+				return files, i
+			}
 		}
-		return []string{p}, 0 // not listed (hidden, or an unknown extension)
+		// Not listed: hidden, known by its content, or for GDK to try.
+		return []string{p}, 0
 	}
 	for _, a := range args {
-		if p, err := filepath.Abs(a); err == nil && IsImage(p) {
+		if p, err := filepath.Abs(a); err == nil && Sniff(p) != None {
 			files = append(files, p)
 		}
 	}
@@ -70,14 +82,18 @@ func List(args []string) (files []string, index int) {
 }
 
 // Folder is a folder's images, hidden ones left out, in natural order.
-func Folder(dir string) []string {
+func Folder(dir string) []string { return FolderOf(dir, Image) }
+
+// FolderOf is a folder's files of one kind by their names, hidden ones
+// left out, in natural order.
+func FolderOf(dir string, k Kind) []string {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil
 	}
 	var files []string
 	for _, e := range entries {
-		if e.IsDir() || strings.HasPrefix(e.Name(), ".") || !IsImage(e.Name()) {
+		if e.IsDir() || strings.HasPrefix(e.Name(), ".") || KindOf(e.Name()) != k {
 			continue
 		}
 		files = append(files, filepath.Join(dir, e.Name()))

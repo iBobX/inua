@@ -1,4 +1,4 @@
-package appui
+package viewerui
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 )
 
-// The Viewer's loading. Each image is a shot, kept while it is shown or
+// The Viewer's loading of images. Each image is a shot, kept while it is shown or
 // beside the one shown, so stepping back and forth shows it at once. A
 // shot loads off the main thread in steps, each shown as it comes: first
 // a preview (a smaller decode with libjpeg-turbo, or the photo's EXIF
@@ -43,7 +43,7 @@ type shot struct {
 const loads = 2
 
 // shotFor is the cached shot for a file, made if there is none.
-func (a *viewerApp) shotFor(path string) *shot {
+func (a *App) shotFor(path string) *shot {
 	if a.cache == nil {
 		a.cache = map[string]*shot{}
 		a.work = make(chan struct{}, loads)
@@ -57,7 +57,7 @@ func (a *viewerApp) shotFor(path string) *shot {
 }
 
 // keep lets go of every shot but those of these files.
-func (a *viewerApp) keep(paths ...string) {
+func (a *App) keep(paths ...string) {
 	for p, s := range a.cache {
 		if !containsString(paths, p) {
 			a.drop(s)
@@ -65,7 +65,7 @@ func (a *viewerApp) keep(paths ...string) {
 	}
 }
 
-func (a *viewerApp) drop(s *shot) {
+func (a *App) drop(s *shot) {
 	delete(a.cache, s.path)
 	s.dropped = true
 	if s.loading {
@@ -95,7 +95,7 @@ func containsString(list []string, s string) bool {
 }
 
 // load starts loading a shot unless it has all it needs or is loading.
-func (a *viewerApp) load(s *shot) {
+func (a *App) load(s *shot) {
 	if s.loading || s.full || s.anim != nil || s.err != nil {
 		return
 	}
@@ -147,7 +147,7 @@ func (a *viewerApp) load(s *shot) {
 
 // target is the stage's size in screen pixels, which a preview should
 // fill: the shown image's stage, or a guess before it is laid out.
-func (a *viewerApp) target() (float64, float64) {
+func (a *App) target() (float64, float64) {
 	s := a.scale()
 	vw, vh := a.view()
 	if vw <= 0 || vh <= 0 {
@@ -190,7 +190,7 @@ func decodeFull(path string) (tex *gdk.Texture, w, h int, anim *gdkpixbuf.Pixbuf
 }
 
 // post hands a step's result to the main thread.
-func (a *viewerApp) post(s *shot, tex *gdk.Texture, w, h int, full bool, anim *gdkpixbuf.PixbufAnimation, err error) {
+func (a *App) post(s *shot, tex *gdk.Texture, w, h int, full bool, anim *gdkpixbuf.PixbufAnimation, err error) {
 	gtkx.Post(func() {
 		if full {
 			s.loading = false
@@ -237,6 +237,7 @@ func texture(px viewer.Pixels) *gdk.Texture {
 		viewer.RGB:         gdk.MemoryR8g8b8Value,
 		viewer.RGBA:        gdk.MemoryR8g8b8a8Value,
 		viewer.RGBAPremult: gdk.MemoryR8g8b8a8PremultipliedValue,
+		viewer.BGRAPremult: gdk.MemoryB8g8r8a8PremultipliedValue,
 		viewer.Gray:        gdk.MemoryG8Value,
 	}[px.Format]
 	b := glib.NewBytesTake(uintptr(unsafe.Pointer(&px.Buf[0])), uint(len(px.Buf)))

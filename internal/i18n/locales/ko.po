@@ -409,55 +409,55 @@ msgstr "뇌우"
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: internal/appui/app.go:62
+#: internal/appui/app.go:63
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:976
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "시계"
 
-#: internal/appui/app.go:63
+#: internal/appui/app.go:64
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:319
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "날씨"
 
-#: internal/appui/app.go:64
+#: internal/appui/app.go:65
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "주식"
 
-#: internal/appui/app.go:65
+#: internal/appui/app.go:66
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "계산기"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:67
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "달력"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:68
 #: internal/ui/picker.go:148
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "색상 선택기"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:69
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "시스템 모니터"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:70
 #: ui/control.ui:474
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:70
+#: internal/appui/app.go:71
 #: internal/appui/pass.go:207
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
@@ -465,18 +465,11 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:71
+#: internal/appui/app.go:72
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
-
-#: internal/appui/app.go:72
-#: internal/appui/viewer.go:571
-#: internal/appui/viewer.go:572
-#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
-msgid "Viewer"
-msgstr "이미지 뷰어"
 
 #: internal/appui/app.go:73
 #: internal/appui/music.go:292
@@ -876,8 +869,8 @@ msgstr "삭제…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/appui/viewer.go:395
 #: internal/ui/askpass.go:516
+#: internal/viewerui/app.go:548
 msgid "Copied"
 msgstr "복사됨"
 
@@ -1184,8 +1177,8 @@ msgid "Top level"
 msgstr "최상위"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:670
-#: internal/ui/settings.go:697
+#: internal/ui/settings.go:671
+#: internal/ui/settings.go:698
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
@@ -1293,7 +1286,7 @@ msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니�
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
-#: internal/appui/viewer.go:812
+#: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "파일"
 
@@ -1459,7 +1452,7 @@ msgid "An image with a QR code"
 msgstr "QR 코드가 있는 이미지"
 
 #: internal/appui/pass_otp.go:340
-#: internal/ui/settings.go:807
+#: internal/ui/settings.go:808
 msgid "Images"
 msgstr "이미지"
 
@@ -1745,8 +1738,8 @@ msgid "Program"
 msgstr "프로그램"
 
 #: internal/appui/sysmon.go:786
-#: internal/appui/viewer.go:814
 #: internal/filesui/kinds.go:34
+#: internal/viewerui/app.go:792
 msgid "Folder"
 msgstr "폴더"
 
@@ -1847,8 +1840,8 @@ msgstr "모델"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
-#: internal/appui/viewer.go:813
 #: internal/ui/settings_ai.go:321
+#: internal/viewerui/app.go:791
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4297
 #: ui/sysmon.ui:96
@@ -2405,100 +2398,6 @@ msgstr "비디오 열기"
 msgid "Videos"
 msgstr "비디오"
 
-#: internal/appui/viewer.go:199
-msgid "%s is not an image the viewer knows."
-msgstr "%s는 시청자가 알고 있는 이미지가 아니다."
-
-#: internal/appui/viewer.go:393
-msgid "Could not copy"
-msgstr "복사할 수 없습니다."
-
-#: internal/appui/viewer.go:414
-msgid "Could not move to Trash"
-msgstr "휴지통으로 이동할 수 없습니다."
-
-#: internal/appui/viewer.go:421
-msgid "Moved to Trash"
-msgstr "휴지통으로 이동됨"
-
-#: internal/appui/viewer.go:424
-msgid "No images left here."
-msgstr "여기에는 이미지가 남아 있지 않습니다."
-
-#: internal/appui/viewer.go:456
-msgid "Open an Image"
-msgstr "이미지 열기"
-
-#: internal/appui/viewer.go:482
-msgid "Open an image to view it."
-msgstr "이미지를 보려면 이미지를 열어야 합니다."
-
-#: internal/appui/viewer.go:544
-msgid "Could not open %s.\n%v"
-msgstr "%[1]s를 열 수 없습니다.\n%[2]v"
-
-#: internal/appui/viewer.go:711
-msgid "Fit · %s"
-msgstr "핏 · %s"
-
-#: internal/appui/viewer.go:715
-msgid "Actual size (1)"
-msgstr "실제 크기(1)"
-
-#: internal/appui/viewer.go:717
-msgid "Fit the window (0)"
-msgstr "창에 맞추기 (0)"
-
-#: internal/appui/viewer.go:819
-msgid "Size"
-msgstr "크기"
-
-#: internal/appui/viewer.go:828
-msgid "Dimensions"
-msgstr "치수"
-
-#: internal/appui/viewer.go:829
-msgid "Type"
-msgstr "유형"
-
-#: internal/appui/viewer.go:831
-msgid "Modified"
-msgstr "수정됨"
-
-#: internal/appui/viewer.go:831
-#: internal/appui/viewer.go:839
-msgid "Jan 2, 2006  15:04"
-msgstr "2006년 1월 2일  15:04"
-
-#: internal/appui/viewer.go:834
-msgid "CAMERA"
-msgstr "카메라"
-
-#: internal/appui/viewer.go:835
-msgid "Camera"
-msgstr "카메라"
-
-#: internal/appui/viewer.go:836
-msgid "Lens"
-msgstr "렌즈"
-
-#: internal/appui/viewer.go:837
-msgid "Exposure"
-msgstr "노출"
-
-#: internal/appui/viewer.go:839
-msgid "Taken"
-msgstr "촬영 일시"
-
-#: internal/appui/viewer.go:856
-msgid "Could not set the wallpaper"
-msgstr "배경화면을 설정할 수 없습니다."
-
-#: internal/appui/viewer.go:860
-#: ui/viewer.ui:129
-msgid "Set as wallpaper"
-msgstr "배경화면으로 설정"
-
 #: internal/appui/weather.go:255
 msgid "Add a city to see its weather."
 msgstr "날씨를 보려면 도시를 추가하세요."
@@ -2595,7 +2494,7 @@ msgstr "파일이 바뀌면 저절로 다시 시작합니다."
 msgid "Unknown building block %q"
 msgstr "알 수 없는 블록 %q"
 
-#: internal/appui/workshop.go:984
+#: internal/appui/workshop.go:990
 #: internal/filesui/cards.go:285
 #: internal/filesui/cards.go:334
 #: internal/filesui/cards.go:372
@@ -2617,7 +2516,7 @@ msgstr "알 수 없는 블록 %q"
 msgid "Cancel"
 msgstr "취소"
 
-#: internal/appui/workshop.go:989
+#: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:266
 msgid "OK"
 msgstr "OK"
@@ -8004,81 +7903,81 @@ msgstr "스크린샷이 복사되었습니다."
 msgid "Screenshot taken"
 msgstr "촬영된 스크린샷"
 
-#: internal/ui/settings.go:250
+#: internal/ui/settings.go:251
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:268
-#: internal/ui/settings.go:643
-#: internal/ui/settings.go:660
+#: internal/ui/settings.go:269
+#: internal/ui/settings.go:644
+#: internal/ui/settings.go:661
 msgid "%d%%"
 msgstr "%d%%"
 
-#: internal/ui/settings.go:623
+#: internal/ui/settings.go:624
 #: ui/settings.ui:384
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:623
+#: internal/ui/settings.go:624
 #: ui/settings.ui:385
 msgid "System theme"
 msgstr "시스템 테마"
 
-#: internal/ui/settings.go:696
+#: internal/ui/settings.go:697
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:698
+#: internal/ui/settings.go:699
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:699
+#: internal/ui/settings.go:700
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:700
+#: internal/ui/settings.go:701
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:779
+#: internal/ui/settings.go:780
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:805
+#: internal/ui/settings.go:806
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:847
+#: internal/ui/settings.go:848
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:849
+#: internal/ui/settings.go:850
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:851
+#: internal/ui/settings.go:852
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:869
+#: internal/ui/settings.go:870
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:885
+#: internal/ui/settings.go:886
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:898
+#: internal/ui/settings.go:899
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:899
+#: internal/ui/settings.go:900
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:900
+#: internal/ui/settings.go:901
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
@@ -8623,6 +8522,238 @@ msgstr "inua는 업그레이드할 수 없습니다."
 #: internal/ui/updates.go:179
 msgid "Could not upgrade: %s"
 msgstr "업그레이드할 수 없음: %s"
+
+#: internal/viewerui/app.go:36
+#: internal/viewerui/app.go:700
+#: internal/viewerui/app.go:701
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
+msgid "Viewer"
+msgstr "뷰어"
+
+#: internal/viewerui/app.go:485
+msgid "Could not move to Trash"
+msgstr "휴지통으로 이동할 수 없습니다."
+
+#: internal/viewerui/app.go:492
+msgid "Moved to Trash"
+msgstr "휴지통으로 이동됨"
+
+#: internal/viewerui/app.go:495
+msgid "Nothing left here."
+msgstr "여기에 남은 것이 없습니다."
+
+#: internal/viewerui/app.go:546
+msgid "Could not copy"
+msgstr "복사할 수 없습니다."
+
+#: internal/viewerui/app.go:579
+msgid "Open a File"
+msgstr "파일 열기"
+
+#: internal/viewerui/app.go:581
+msgid "Images, PDFs, Markdown and text"
+msgstr "이미지, PDF, Markdown, 텍스트"
+
+#: internal/viewerui/app.go:604
+msgid "Open an image or a document to view it."
+msgstr "이미지나 문서를 열어 보세요."
+
+#: internal/viewerui/app.go:668
+msgid "Copy the page's text (Ctrl+C)"
+msgstr "페이지의 텍스트 복사 (Ctrl+C)"
+
+#: internal/viewerui/app.go:669
+msgid "Previous file (Ctrl+Page Up)"
+msgstr "이전 파일 (Ctrl+Page Up)"
+
+#: internal/viewerui/app.go:670
+msgid "Next file (Ctrl+Page Down)"
+msgstr "다음 파일 (Ctrl+Page Down)"
+
+#: internal/viewerui/app.go:672
+msgid "Copy the text (Ctrl+C)"
+msgstr "텍스트 복사 (Ctrl+C)"
+
+#: internal/viewerui/app.go:673
+#: internal/viewerui/app.go:677
+#: ui/viewer.ui:294
+msgid "Previous (←)"
+msgstr "이전(←)"
+
+#: internal/viewerui/app.go:674
+#: internal/viewerui/app.go:678
+#: ui/viewer.ui:305
+msgid "Next (→)"
+msgstr "다음(→)"
+
+#: internal/viewerui/app.go:676
+#: ui/viewer.ui:130
+msgid "Copy the image (Ctrl+C)"
+msgstr "이미지 복사(Ctrl+C)"
+
+#: internal/viewerui/app.go:686
+msgid "%s is locked with a password."
+msgstr "%s은(는) 암호로 잠겨 있습니다."
+
+#: internal/viewerui/app.go:688
+msgid "%s is not UTF-8 text."
+msgstr "%s은(는) UTF-8 텍스트가 아닙니다."
+
+#: internal/viewerui/app.go:690
+msgid "Install libpoppler-glib8t64 to view PDFs."
+msgstr "PDF를 보려면 libpoppler-glib8t64를 설치하세요."
+
+#: internal/viewerui/app.go:692
+#: internal/viewerui/image.go:80
+msgid "Could not open %s.\n%v"
+msgstr "%[1]s를 열 수 없습니다.\n%[2]v"
+
+#: internal/viewerui/app.go:726
+msgid "Page %d of %d"
+msgstr "%[2]d페이지 중 %[1]d"
+
+#: internal/viewerui/app.go:730
+msgid "%d line"
+msgid_plural "%d lines"
+msgstr[0] "%d줄"
+
+#: internal/viewerui/app.go:788
+msgid "Jan 2, 2006  15:04"
+msgstr "2006년 1월 2일  15:04"
+
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "크기"
+
+#: internal/viewerui/app.go:796
+#: internal/viewerui/app.go:814
+#: internal/viewerui/app.go:838
+msgid "Type"
+msgstr "유형"
+
+#: internal/viewerui/app.go:797
+#: internal/viewerui/app.go:815
+#: internal/viewerui/app.go:839
+msgid "Modified"
+msgstr "수정됨"
+
+#: internal/viewerui/app.go:802
+msgid "DOCUMENT"
+msgstr "문서"
+
+#: internal/viewerui/app.go:803
+msgid "Title"
+msgstr "제목"
+
+#: internal/viewerui/app.go:804
+msgid "Author"
+msgstr "작성자"
+
+#: internal/viewerui/app.go:805
+msgid "Subject"
+msgstr "주제"
+
+#: internal/viewerui/app.go:806
+msgid "Pages"
+msgstr "페이지"
+
+#: internal/viewerui/app.go:807
+msgid "Page size"
+msgstr "페이지 크기"
+
+#: internal/viewerui/app.go:808
+msgid "Created"
+msgstr "만든 날짜"
+
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "바뀐 날짜"
+
+#: internal/viewerui/app.go:810
+msgid "Made with"
+msgstr "만든 프로그램"
+
+#: internal/viewerui/app.go:817
+msgid "TEXT"
+msgstr "텍스트"
+
+#: internal/viewerui/app.go:818
+msgid "Lines"
+msgstr "줄"
+
+#: internal/viewerui/app.go:819
+msgid "Words"
+msgstr "단어"
+
+#: internal/viewerui/app.go:820
+msgid "Characters"
+msgstr "글자"
+
+#: internal/viewerui/app.go:837
+msgid "Dimensions"
+msgstr "치수"
+
+#: internal/viewerui/app.go:841
+msgid "CAMERA"
+msgstr "카메라"
+
+#: internal/viewerui/app.go:842
+msgid "Camera"
+msgstr "카메라"
+
+#: internal/viewerui/app.go:843
+msgid "Lens"
+msgstr "렌즈"
+
+#: internal/viewerui/app.go:844
+msgid "Exposure"
+msgstr "노출"
+
+#: internal/viewerui/app.go:845
+msgid "Taken"
+msgstr "촬영 일시"
+
+#: internal/viewerui/app.go:861
+msgid "Could not set the wallpaper"
+msgstr "배경화면을 설정할 수 없습니다."
+
+#: internal/viewerui/app.go:865
+#: ui/viewer.ui:139
+msgid "Set as wallpaper"
+msgstr "배경화면으로 설정"
+
+#: internal/viewerui/image.go:222
+#: internal/viewerui/pdf.go:288
+msgid "Fit · %s"
+msgstr "핏 · %s"
+
+#: internal/viewerui/image.go:222
+#: internal/viewerui/pdf.go:288
+#: internal/viewerui/text.go:716
+msgid "Actual size (1)"
+msgstr "실제 크기(1)"
+
+#: internal/viewerui/image.go:224
+msgid "Fit the window (0)"
+msgstr "창에 맞추기 (0)"
+
+#: internal/viewerui/pdf.go:188
+msgid "%s has no pages."
+msgstr "%s에는 페이지가 없습니다."
+
+#: internal/viewerui/pdf.go:290
+msgid "Fit the width (0)"
+msgstr "너비에 맞추기 (0)"
+
+#: internal/viewerui/text.go:670
+msgid "Not found"
+msgstr "찾을 수 없음"
+
+#: internal/viewerui/text.go:682
+msgid "Could not open the link"
+msgstr "링크를 열 수 없습니다"
 
 #: internal/workshop/session.go:141
 msgid "It ended before saying hello; what it wrote is below."
@@ -10353,7 +10484,7 @@ msgid "Mute (M)"
 msgstr "음소거 (M)"
 
 #: ui/video.ui:273
-#: ui/viewer.ui:189
+#: ui/viewer.ui:199
 msgid "Full screen (F)"
 msgstr "전체화면(F)"
 
@@ -10374,40 +10505,32 @@ msgid "Zoom in (+)"
 msgstr "확대(+)"
 
 #: ui/viewer.ui:111
+msgid "Show the source (S)"
+msgstr "원문 보기 (S)"
+
+#: ui/viewer.ui:121
 msgid "Rotate (R, Shift+R the other way)"
 msgstr "회전(R, Shift+R 반대 방향)"
 
-#: ui/viewer.ui:120
-msgid "Copy the image (Ctrl+C)"
-msgstr "이미지 복사(Ctrl+C)"
-
-#: ui/viewer.ui:138
+#: ui/viewer.ui:148
 msgid "Show in folder"
 msgstr "폴더에 표시"
 
-#: ui/viewer.ui:147
+#: ui/viewer.ui:157
 msgid "Move to Trash (Delete)"
 msgstr "휴지통으로 이동(삭제)"
 
-#: ui/viewer.ui:160
+#: ui/viewer.ui:170
 msgid "Trash?"
 msgstr "휴지통으로 이동할까요?"
 
-#: ui/viewer.ui:180
+#: ui/viewer.ui:190
 msgid "Details (I)"
 msgstr "세부 정보 (I)"
 
-#: ui/viewer.ui:227
-msgid "Previous (←)"
-msgstr "이전(←)"
-
-#: ui/viewer.ui:238
-msgid "Next (→)"
-msgstr "다음(→)"
-
-#: ui/viewer.ui:272
-msgid "Open an Image…"
-msgstr "이미지 열기..."
+#: ui/viewer.ui:339
+msgid "Open a File…"
+msgstr "파일 열기…"
 
 #: ui/weather.ui:30
 msgid "Previous place"
@@ -10568,12 +10691,12 @@ msgid "video;movie;film;player;subtitles;"
 msgstr "비디오;영화;동영상;플레이어;자막;"
 
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
-msgid "Look through pictures"
-msgstr "사진을 통해 살펴보기"
+msgid "Look through pictures, PDFs, Markdown and text"
+msgstr "사진, PDF, Markdown, 텍스트 보기"
 
-#: config/apps/io.github.lyricat.Inua.Viewer.desktop:20
-msgid "image;picture;photo;viewer;"
-msgstr "이미지;그림;사진;뷰어;"
+#: config/apps/io.github.lyricat.Inua.Viewer.desktop:14
+msgid "image;picture;photo;viewer;pdf;document;markdown;text;"
+msgstr "이미지;그림;사진;뷰어;PDF;문서;마크다운;텍스트;"
 
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:10
 msgid "The weather now and the coming days"

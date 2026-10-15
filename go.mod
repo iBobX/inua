@@ -11,6 +11,7 @@ require (
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/quailyquaily/mistermorph v0.3.55
+	github.com/yuin/goldmark v1.7.16
 	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
 )
@@ -78,7 +79,6 @@ require (
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
-	github.com/yuin/goldmark v1.7.16 // indirect
 	github.com/zalando/go-keyring v0.2.8 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.50.0 // indirect

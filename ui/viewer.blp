@@ -1,6 +1,7 @@
-// Viewer: a thin toolbar over the picture, which fits the window
-// until zoomed; arrows at the sides step through the folder, and the
-// details slide in at the right. Go names the buttons and does the rest.
+// Viewer: a thin toolbar over the file shown: a picture, which fits the
+// window until zoomed; a PDF's pages one under another; or Markdown and
+// text laid out to read. Arrows at the sides step through the folder, and
+// the details slide in at the right. Go names the buttons and does the rest.
 using Gtk 4.0;
 
 ApplicationWindow viewer {
@@ -69,6 +70,14 @@ ApplicationWindow viewer {
         styles ["viewer-sep"]
       }
 
+      // Markdown as written, or laid out.
+      ToggleButton source {
+        styles ["plain"]
+        icon-name: "viewer-source-symbolic";
+        tooltip-text:  _("Show the source (S)");
+        visible: false;
+      }
+
       Button rotate {
         styles ["plain"]
         icon-name: "object-rotate-right-symbolic";
@@ -93,7 +102,7 @@ ApplicationWindow viewer {
         tooltip-text:  _("Show in folder");
       }
 
-      // A second click within a few seconds moves the image to the trash.
+      // A second click within a few seconds moves the file to the trash.
       Button trash {
         styles ["plain", "viewer-trash"]
         tooltip-text:  _("Move to Trash (Delete)");
@@ -136,20 +145,62 @@ ApplicationWindow viewer {
       Overlay {
         hexpand: true;
 
-        child: ScrolledWindow scroller {
-          styles ["viewer-stage"]
+        child: Stack stage {
+          StackPage {
+            name: "image";
 
-          // The picture at its own size, scaled as a whole by Go (a
-          // transform): its shape never changes, and the canvas is as big
-          // as the picture shown.
-          Fixed canvas {
-            halign: center;
-            valign: center;
+            child: ScrolledWindow scroller {
+              styles ["viewer-stage"]
 
-            Picture picture {
-              can-shrink: false;
-              content-fit: fill;
-            }
+              // The picture at its own size, scaled as a whole by Go (a
+              // transform): its shape never changes, and the canvas is as
+              // big as the picture shown.
+              Fixed canvas {
+                halign: center;
+                valign: center;
+
+                Picture picture {
+                  can-shrink: false;
+                  content-fit: fill;
+                }
+              }
+            };
+          }
+
+          // A PDF's pages, each drawn as it comes into view.
+          StackPage {
+            name: "pdf";
+
+            child: ScrolledWindow doc_scroller {
+              styles ["viewer-stage"]
+
+              Box pages {
+                styles ["viewer-pages"]
+                orientation: vertical;
+                spacing: 16;
+                halign: center;
+              }
+            };
+          }
+
+          // Markdown laid out, or plain text; Go keeps it to a column.
+          StackPage {
+            name: "text";
+
+            child: ScrolledWindow text_scroller {
+              styles ["viewer-paper"]
+              hscrollbar-policy: never;
+
+              TextView text {
+                styles ["viewer-text"]
+                editable: false;
+                cursor-visible: false;
+                wrap-mode: word_char;
+                top-margin: 32;
+                bottom-margin: 48;
+                pixels-inside-wrap: 3;
+              }
+            };
           }
         };
 
@@ -171,7 +222,7 @@ ApplicationWindow viewer {
           tooltip-text:  _("Next (→)");
         }
 
-        // Nothing open, or the image could not be read.
+        // Nothing open, or the file could not be read.
         [overlay]
         Box empty {
           styles ["viewer-empty"]
@@ -195,7 +246,7 @@ ApplicationWindow viewer {
 
           Button open_empty {
             styles ["primary"]
-            label:  _("Open an Image…");
+            label:  _("Open a File…");
             halign: center;
           }
         }

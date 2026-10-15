@@ -53,6 +53,7 @@ const (
 	RGBA                      // 4 bytes, straight alpha
 	RGBAPremult               // 4 bytes, premultiplied alpha
 	Gray                      // 1 byte
+	BGRAPremult               // 4 bytes, premultiplied alpha: cairo's, a PDF page
 )
 
 // Pixels are decoded pixels in a buffer from an Allocator.
