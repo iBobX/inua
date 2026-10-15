@@ -1,0 +1,210 @@
+// Video, a simple player: the picture fills the window; the controls
+// show over its foot while the mouse moves, the file's name over its
+// top; an empty window offers to open a video. Go fills them
+// (internal/appui/video.go).
+using Gtk 4.0;
+
+ApplicationWindow video {
+  default-width: 960;
+  default-height: 560;
+
+  Overlay stage {
+    styles ["video-stage"]
+
+    child: Picture picture {
+      content-fit: contain;
+      can-shrink: true;
+      hexpand: true;
+      vexpand: true;
+    };
+
+    [overlay]
+    Box empty {
+      styles ["video-empty"]
+      orientation: vertical;
+      spacing: 12;
+      halign: center;
+      valign: center;
+
+      Image {
+        icon-name: "pass-film-strip-symbolic";
+        pixel-size: 48;
+      }
+
+      Label empty_title {
+        styles ["video-empty-title"]
+        label:  _("Drop a video here");
+      }
+
+      Button open {
+        styles ["outlined"]
+        name: "open";
+        label:  _("Open a video…");
+        halign: center;
+      }
+    }
+
+    [overlay]
+    Revealer top_reveal {
+      transition-type: crossfade;
+      transition-duration: 200;
+      valign: start;
+
+      Box {
+        styles ["video-top"]
+
+        Label title {
+          styles ["video-title"]
+          hexpand: true;
+          xalign: 0;
+          ellipsize: middle;
+        }
+      }
+    }
+
+    // "Resumed at 12:03", with a way back to the start.
+    [overlay]
+    Box notice {
+      styles ["video-notice"]
+      spacing: 12;
+      halign: center;
+      valign: start;
+      visible: false;
+
+      Label notice_text {}
+
+      Button notice_start {
+        styles ["plain"]
+        name: "from-start";
+        label:  _("From the start");
+      }
+    }
+
+    [overlay]
+    Revealer controls_reveal {
+      transition-type: crossfade;
+      transition-duration: 200;
+      valign: end;
+
+      Box controls {
+        styles ["video-controls"]
+        orientation: vertical;
+        spacing: 4;
+
+        Box {
+          spacing: 12;
+
+          Label position {
+            styles ["video-clock"]
+            label: "0:00";
+          }
+
+          Scale seek {
+            styles ["video-seek"]
+            orientation: horizontal;
+            draw-value: false;
+            hexpand: true;
+
+            adjustment: Adjustment {
+              lower: 0;
+              upper: 1;
+              step-increment: 0.01;
+            };
+          }
+
+          Label length {
+            styles ["video-clock"]
+            label: "0:00";
+            tooltip-text:  _("Click to show the time left");
+          }
+        }
+
+        Box {
+          spacing: 4;
+
+          Button play_pause {
+            styles ["plain", "video-play"]
+            name: "play-pause";
+            icon-name: "media-playback-start-symbolic";
+            tooltip-text:  _("Play or pause (Space)");
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Button audio_track {
+            styles ["plain"]
+            name: "audio-track";
+            tooltip-text:  _("Sound track");
+            visible: false;
+
+            Box {
+              spacing: 6;
+
+              Image {
+                icon-name: "media-audio-track-symbolic";
+              }
+
+              Label audio_label {
+                styles ["video-small"]
+              }
+            }
+          }
+
+          Button subtitles {
+            styles ["plain"]
+            name: "subtitles";
+            tooltip-text:  _("Subtitles (S)");
+            visible: false;
+
+            Box {
+              spacing: 6;
+
+              Image {
+                icon-name: "media-view-subtitles-symbolic";
+              }
+
+              Label subtitles_label {
+                styles ["video-small"]
+              }
+            }
+          }
+
+          Button speed {
+            styles ["plain", "video-small"]
+            name: "speed";
+            label: "1×";
+            tooltip-text:  _("Speed ([ and ])");
+          }
+
+          Button mute {
+            styles ["plain"]
+            name: "mute";
+            icon-name: "audio-volume-high-symbolic";
+            tooltip-text:  _("Mute (M)");
+          }
+
+          Scale volume {
+            orientation: horizontal;
+            draw-value: false;
+            width-request: 96;
+
+            adjustment: Adjustment {
+              lower: 0;
+              upper: 1;
+              step-increment: 0.05;
+            };
+          }
+
+          Button fullscreen {
+            styles ["plain"]
+            name: "fullscreen";
+            icon-name: "view-fullscreen-symbolic";
+            tooltip-text:  _("Full screen (F)");
+          }
+        }
+      }
+    }
+  }
+}

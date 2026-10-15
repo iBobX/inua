@@ -124,3 +124,33 @@ func paint(img *image.NRGBA, r *vector.Rasterizer, c color.NRGBA) {
 		px[3] = uint8(oa)
 	}
 }
+
+// Bars draws levels (0 to 1) as bars from the bottom, w×h pixels, each
+// in segments as an analyser's lights; a peak (0 to 1, none below 0.01)
+// shows as a thin line above its bar.
+func Bars(levels, peaks []float64, w, h int, c color.NRGBA) *image.NRGBA {
+	img := image.NewNRGBA(image.Rect(0, 0, w, h))
+	n := len(levels)
+	if n == 0 || w <= 0 || h <= 0 {
+		return img
+	}
+	slot := float32(w) / float32(n)
+	gap := max(1, slot*0.25)
+	seg := max(2, float32(h)/14) // a light and the gap below it
+	bars := vector.NewRasterizer(w, h)
+	tops := vector.NewRasterizer(w, h)
+	for i, v := range levels {
+		x0, x1 := float32(i)*slot, float32(i+1)*slot-gap
+		top := float32(h) * float32(1-min(max(v, 0), 1))
+		for y := float32(h); y > top; y -= seg {
+			rect(bars, x0, max(y-seg+1, top), x1, y)
+		}
+		if i < len(peaks) && peaks[i] > 0.01 {
+			py := float32(h) * float32(1-min(peaks[i], 1))
+			rect(tops, x0, max(py-1, 0), x1, max(py, 1))
+		}
+	}
+	paint(img, bars, c)
+	paint(img, tops, color.NRGBA{c.R, c.G, c.B, 150})
+	return img
+}

@@ -78,6 +78,7 @@ part shows "Unavailable" or hides. Ubuntu Desktop usually has the first five.
 | `libturbojpeg0` | Optional: Viewer decodes JPEG with it, several times faster, and at a smaller size for a quick first look; without it, Go decodes |
 | `xdg-terminal-exec` | Launching `Terminal=true` apps when neither `launcher.terminal` nor `$TERMINAL` is set |
 | `pass`, `gnupg` | `inua-keyring`, the Secret Service kept in the password store (`pass init` sets one up); without pass, apps keep using gnome-keyring and the assistant's keys stay in its file |
+| `gstreamer1.0-plugins-base`, `-good`, `-bad`, `-ugly`, `gstreamer1.0-libav` | Music and Video (`internal/gst` loads `libgstreamer-1.0` at run time): playing, the equalizer and spectrum, the codecs; without them the two apps say what to install |
 
 Brightness is set through systemd-logind; no extra package.
 
@@ -89,6 +90,7 @@ Brightness is set through systemd-logind; no extra package.
 | `gcc` | `make test`'s `-race` needs cgo (the build itself is `CGO_ENABLED=0`) |
 | `dbus-daemon` | Private buses in tests (`internal/dbustest`) |
 | `pass`, `gnupg` | `internal/keyring`'s test on the real pass (skipped without them) |
+| `gstreamer1.0-plugins-base`, `-good` | `internal/gst`'s tests, which make a tone and a clip and play them silently (skipped without them) |
 | `blueprint-compiler` | Regenerating `.ui` after editing `ui/*.blp` (`make generate`) |
 | `python3` | `scripts/spike.sh … nested`, and Pillow for `scripts/fcitx-themes.py` |
 

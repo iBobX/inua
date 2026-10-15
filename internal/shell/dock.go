@@ -248,6 +248,8 @@ var LightAppGroups = []struct {
 		"io.github.lyricat.Inua.Calendar",
 		"io.github.lyricat.Inua.Weather",
 		"io.github.lyricat.Inua.Stocks",
+		"io.github.lyricat.Inua.Music",
+		"io.github.lyricat.Inua.Video",
 		"io.github.lyricat.Inua.Assistant",
 	}},
 	{i18n.M("TOOLS"), []string{

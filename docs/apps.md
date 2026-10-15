@@ -8,8 +8,9 @@ icons.
 Open them from the launcher, from the drawer at the end of the dock, or
 with `inua-apps NAME` (`inua-apps clock`, `inua-apps tailscale` …). An app
 runs once: starting it again brings its window to the current workspace.
-Viewer is the exception, with a window for each image opened. The
-Assistant is a program of its own, `inua-assistant`.
+Viewer is the exception, with a window for each image opened; Music and
+Video take files given to a second start (Music adds them, Video plays
+the file). The Assistant is a program of its own, `inua-assistant`.
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -327,3 +328,57 @@ Steps through a folder with the images beside the shown one already
 loaded; zooms and pans, rotates, plays animations, shows a photo's EXIF;
 copies, sets as wallpaper, moves to Trash. It registers for image files.
 With `libturbojpeg0` installed it decodes JPEG several times faster.
+
+## Music
+
+A player in Winamp's spirit: three panels, the last two shown or hidden
+with **EQ** and **PL**.
+
+- **The main panel**: a display with the time (a click shows the time
+  left), the title scrolling when it is long, the bitrate, sample rate
+  and STEREO or MONO, and a spectrum analyser with falling peaks; the
+  seek bar; previous, play, pause, stop and next, and the eject button to
+  open files; volume and balance; shuffle (each track once before any
+  repeats) and repeat (off, the playlist, this track).
+- **The equalizer**: on or off, a preamp and ten bands from 60 Hz to
+  16 kHz (±12 dB), its curve drawn above, and presets (Flat, Rock, Pop,
+  Jazz, Classical, Dance, Bass, Treble, Vocal, Laptop speakers).
+- **The playlist**: numbers, names (from the tags, else the file's),
+  lengths, the total; a click selects, a double click or Return plays;
+  Delete removes, Alt+↑/↓ moves; a filter; drop files, folders or
+  playlists anywhere on the window, or add them with the buttons below;
+  load and save `.m3u`.
+
+Winamp's keys: Z previous, X play, C pause, V stop, B next, ←/→ 5 seconds,
+↑/↓ volume, S shuffle, R repeat, Ctrl+O open, Ctrl+L load a playlist.
+The playlist, the track and where in it, the volume, the equalizer and
+the panels are kept between runs. It plays what GStreamer plays (MP3,
+FLAC, Ogg, Opus, AAC, WAV …) and registers for audio files.
+
+## Video
+
+A simple player: the picture fills the window, and nothing else shows
+until the mouse moves. Open a video by starting it with the file, by
+dropping one on the window, or with the button an empty window shows.
+
+- The controls show over the picture's foot while the mouse moves, and go
+  2 seconds after it rests, the cursor with them: play or pause, the
+  time, the seek bar, the length (a click shows the time left), the sound
+  track and subtitles when there are several or any, the speed, mute and
+  volume, full screen.
+- A click plays or pauses; a double click goes full screen.
+- Keys: Space or K play or pause, ←/→ 5 seconds, J/L 10 seconds, ↑/↓
+  volume, M mute, F full screen, Esc leaves it, [ and ] the speed (0.5× to
+  2×), S the next subtitles (then none), Ctrl+O open.
+- Subtitles in the file, or in a `.srt`, `.ass`, `.ssa`, `.vtt` or `.sub`
+  beside it with the same name (or with a language added:
+  `film.en.srt`).
+- It remembers where each video was left (the last 200) and starts there,
+  saying so with a **From the start** button; not near the start or the
+  end.
+- The screen stays awake while a video plays.
+
+Music and Video play with GStreamer (its plugins: base, good, bad, ugly
+and libav; the install script offers them). Both are MPRIS players, so
+the control center, media keys and the [desk functions](mcp.md)
+(`media_status`, `media_control`) see and drive them.

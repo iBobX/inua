@@ -147,6 +147,46 @@ msgstr "%s，%s%d 小時 %d 分鐘"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/music/music.go:393
+msgid "Flat"
+msgstr "平直"
+
+#: internal/apps/music/music.go:394
+msgid "Rock"
+msgstr "搖滾"
+
+#: internal/apps/music/music.go:395
+msgid "Pop"
+msgstr "流行"
+
+#: internal/apps/music/music.go:396
+msgid "Jazz"
+msgstr "爵士"
+
+#: internal/apps/music/music.go:397
+msgid "Classical"
+msgstr "古典"
+
+#: internal/apps/music/music.go:398
+msgid "Dance"
+msgstr "舞曲"
+
+#: internal/apps/music/music.go:399
+msgid "Bass"
+msgstr "低音"
+
+#: internal/apps/music/music.go:400
+msgid "Treble"
+msgstr "高音"
+
+#: internal/apps/music/music.go:401
+msgid "Vocal"
+msgstr "人聲"
+
+#: internal/apps/music/music.go:402
+msgid "Laptop speakers"
+msgstr "筆電喇叭"
+
 #: internal/apps/pass/entry.go:94
 #: internal/apps/pass/otp.go:38
 msgid "Not an otpauth:// link."
@@ -367,55 +407,55 @@ msgstr "雷暴"
 msgid "Unknown"
 msgstr "未知"
 
-#: internal/appui/app.go:60
+#: internal/appui/app.go:61
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:752
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "時鐘"
 
-#: internal/appui/app.go:61
+#: internal/appui/app.go:62
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:319
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "天氣"
 
-#: internal/appui/app.go:62
+#: internal/appui/app.go:63
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "股票"
 
-#: internal/appui/app.go:63
+#: internal/appui/app.go:64
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "計算機"
 
-#: internal/appui/app.go:64
+#: internal/appui/app.go:65
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "日曆"
 
-#: internal/appui/app.go:65
+#: internal/appui/app.go:66
 #: internal/ui/picker.go:148
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "取色器"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:67
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "系統監視器"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:68
 #: ui/control.ui:474
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:69
 #: internal/appui/pass.go:207
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:27
@@ -423,18 +463,32 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:70
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
 
-#: internal/appui/app.go:70
+#: internal/appui/app.go:71
 #: internal/appui/viewer.go:571
 #: internal/appui/viewer.go:572
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:3
 msgid "Viewer"
 msgstr "圖片檢視器"
+
+#: internal/appui/app.go:72
+#: internal/appui/music.go:290
+#: internal/appui/music.go:1098
+#: config/apps/io.github.lyricat.Inua.Music.desktop:3
+msgid "Music"
+msgstr "音樂"
+
+#: internal/appui/app.go:73
+#: internal/appui/video.go:256
+#: internal/appui/video.go:510
+#: config/apps/io.github.lyricat.Inua.Video.desktop:3
+msgid "Video"
+msgstr "影片"
 
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
@@ -556,6 +610,7 @@ msgid "Start"
 msgstr "開始"
 
 #: internal/appui/clock.go:492
+#: ui/music.ui:332
 msgid "Reset"
 msgstr "重設"
 
@@ -1015,6 +1070,85 @@ msgstr "正在延長… gpg 會詢問你的密碼短語。"
 msgid "Extended by 2 years"
 msgstr "已延長 2 年"
 
+#: internal/appui/media.go:54
+msgid "GStreamer is not installed: install its plugins (on Ubuntu gstreamer1.0-plugins-base, -good, -bad, -ugly and gstreamer1.0-libav)."
+msgstr "未安裝 GStreamer：請安裝它的外掛（Ubuntu 上為 gstreamer1.0-plugins-base、-good、-bad、-ugly 和 gstreamer1.0-libav）。"
+
+#: internal/appui/music.go:177
+#: ui/music.ui:323
+msgid "Presets"
+msgstr "預設集"
+
+#: internal/appui/music.go:483
+msgid "Cannot play %s: %s"
+msgstr "無法播放 %s：%s"
+
+#: internal/appui/music.go:554
+#: ui/music.ui:86
+msgid "Nothing playing"
+msgstr "未在播放"
+
+#: internal/appui/music.go:604
+msgid "MONO"
+msgstr "單聲道"
+
+#: internal/appui/music.go:606
+msgid "STEREO"
+msgstr "立體聲"
+
+#: internal/appui/music.go:673
+msgid "PRE"
+msgstr "前級"
+
+#: internal/appui/music.go:782
+#: ui/music.ui:270
+msgid "Repeat: off (R)"
+msgstr "重複：關 (R)"
+
+#: internal/appui/music.go:785
+msgid "Repeat: the playlist (R)"
+msgstr "重複：整個播放清單 (R)"
+
+#: internal/appui/music.go:787
+msgid "Repeat: this track (R)"
+msgstr "重複：這首 (R)"
+
+#: internal/appui/music.go:1010
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] "%d 首"
+
+#: internal/appui/music.go:1097
+#: internal/appui/sysmon.go:786
+msgid "Open files"
+msgstr "開啟文件"
+
+#: internal/appui/music.go:1097
+#: ui/music.ui:424
+msgid "Add files"
+msgstr "加入檔案"
+
+#: internal/appui/music.go:1101
+#: ui/music.ui:434
+msgid "Add a folder"
+msgstr "加入資料夾"
+
+#: internal/appui/music.go:1104
+msgid "Load a playlist"
+msgstr "載入播放清單"
+
+#: internal/appui/music.go:1105
+msgid "Playlists"
+msgstr "播放清單"
+
+#: internal/appui/music.go:1108
+msgid "Save the playlist"
+msgstr "儲存播放清單"
+
+#: internal/appui/music.go:1109
+msgid "Playlist"
+msgstr "播放清單"
+
 #: internal/appui/pass.go:288
 msgid "A password store: a folder with a .gpg-id"
 msgstr "密碼庫：含有 .gpg-id 的資料夾"
@@ -1442,8 +1576,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/shell/dock.go:262
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:264
+#: internal/shell/dock.go:294
 msgid "NETWORK"
 msgstr "網路"
 
@@ -1600,10 +1734,6 @@ msgstr "程序"
 #: internal/appui/viewer.go:814
 msgid "Folder"
 msgstr "Folder"
-
-#: internal/appui/sysmon.go:786
-msgid "Open files"
-msgstr "開啟文件"
 
 #: internal/appui/sysmon.go:786
 msgid "Disk read"
@@ -2225,6 +2355,40 @@ msgstr "此會話中沒有執行密碼提示(polkit 代理);在終端機中執�
 #: internal/appui/tailscale.go:943
 msgid "not done: no administrator's password was given"
 msgstr "未完成：未給予管理者密碼"
+
+#: internal/appui/video.go:305
+msgid "Resumed at %s"
+msgstr "從 %s 繼續"
+
+#: internal/appui/video.go:394
+msgid "Playing a video"
+msgstr "正在播放影片"
+
+#: internal/appui/video.go:417
+msgid "Cannot play it: %s"
+msgstr "無法播放：%s"
+
+#: internal/appui/video.go:529
+#: internal/shell/notify.go:44
+#: internal/shell/status.go:73
+#: internal/shell/status.go:88
+#: internal/shell/status.go:107
+#: internal/shell/status.go:122
+#: ui/settings.ui:4290
+msgid "Off"
+msgstr "關閉"
+
+#: internal/appui/video.go:575
+msgid "Speed %s×"
+msgstr "速度 %s×"
+
+#: internal/appui/video.go:684
+msgid "Open a video"
+msgstr "開啟影片"
+
+#: internal/appui/video.go:692
+msgid "Videos"
+msgstr "影片"
 
 #: internal/appui/viewer.go:199
 msgid "%s is not an image the viewer knows."
@@ -5097,7 +5261,7 @@ msgid "SPACE PINBALL"
 msgstr "太空彈珠"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:285
 #: ui/settings.ui:1433
 msgid "Launcher"
 msgstr "啟動器"
@@ -5130,7 +5294,7 @@ msgstr "聚焦或關閉"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:284
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -5343,7 +5507,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空垃圾桶"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:282
+#: internal/shell/dock.go:284
 msgid "inua's settings"
 msgstr "inua的設置"
 
@@ -5490,56 +5654,56 @@ msgid "Web search"
 msgstr "網路搜尋"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:294
 msgid "EVERYDAY"
 msgstr "日常"
 
-#: internal/shell/dock.go:253
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:255
+#: internal/shell/dock.go:294
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:265
+#: internal/shell/dock.go:267
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:270
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:272
+#: internal/shell/dock.go:296
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系統"
 
-#: internal/shell/dock.go:283
+#: internal/shell/dock.go:285
 msgid "Find apps, windows and answers"
 msgstr "尋找應用程式、視窗和答案"
 
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:286
 #: internal/ui/screenshot.go:783
 #: ui/settings.ui:1393
 msgid "Screenshot"
 msgstr "螢幕截圖"
 
-#: internal/shell/dock.go:284
+#: internal/shell/dock.go:286
 msgid "Capture an area, a window or a screen"
 msgstr "捕捉區域、視窗或螢幕"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:295
 msgid "DEVELOPMENT"
 msgstr "開發"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:295
 msgid "MEDIA"
 msgstr "媒體"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:295
 msgid "GAMES"
 msgstr "遊戲"
 
-#: internal/shell/dock.go:294
+#: internal/shell/dock.go:296
 msgid "OTHER"
 msgstr "其他"
 
-#: internal/shell/dock.go:319
+#: internal/shell/dock.go:321
 msgid "WORKSHOP"
 msgstr "工坊"
 
@@ -5630,15 +5794,6 @@ msgstr "需要通知"
 #: internal/shell/notify.go:42
 msgid "Banners quiet"
 msgstr "橫幅通知已靜音"
-
-#: internal/shell/notify.go:44
-#: internal/shell/status.go:73
-#: internal/shell/status.go:88
-#: internal/shell/status.go:107
-#: internal/shell/status.go:122
-#: ui/settings.ui:4290
-msgid "Off"
-msgstr "關閉"
 
 #: internal/shell/status.go:47
 msgid "Offline"
@@ -7289,6 +7444,99 @@ msgstr "Esc關閉"
 msgid "Password"
 msgstr "密碼"
 
+#: ui/music.ui:55
+#: ui/video.ui:153
+msgid "Click to show the time left"
+msgstr "按一下顯示剩餘時間"
+
+#: ui/music.ui:151
+msgid "Previous (Z)"
+msgstr "上一首 (Z)"
+
+#: ui/music.ui:158
+msgid "Play (X)"
+msgstr "播放 (X)"
+
+#: ui/music.ui:165
+msgid "Pause (C)"
+msgstr "暫停 (C)"
+
+#: ui/music.ui:172
+msgid "Stop (V)"
+msgstr "停止 (V)"
+
+#: ui/music.ui:179
+msgid "Next (B)"
+msgstr "下一首 (B)"
+
+#: ui/music.ui:191
+msgid "Open files (Ctrl+O)"
+msgstr "開啟檔案 (Ctrl+O)"
+
+#: ui/music.ui:215
+msgid "Volume"
+msgstr "音量"
+
+#: ui/music.ui:230
+msgid "BAL"
+msgstr "平衡"
+
+#: ui/music.ui:241
+msgid "Balance"
+msgstr "聲道平衡"
+
+#: ui/music.ui:259
+msgid "Shuffle (S)"
+msgstr "隨機 (S)"
+
+#: ui/music.ui:279
+msgid "EQ"
+msgstr "等化"
+
+#: ui/music.ui:280
+msgid "The equalizer"
+msgstr "等化器"
+
+#: ui/music.ui:289
+msgid "PL"
+msgstr "清單"
+
+#: ui/music.ui:290
+msgid "The playlist"
+msgstr "播放清單"
+
+#: ui/music.ui:317
+msgid "ON"
+msgstr "開"
+
+#: ui/music.ui:318
+msgid "Equalizer on or off"
+msgstr "開關等化器"
+
+#: ui/music.ui:385
+msgid "Filter the playlist"
+msgstr "篩選播放清單"
+
+#: ui/music.ui:444
+msgid "Remove the selected track (Delete)"
+msgstr "移除選取的曲目 (Delete)"
+
+#: ui/music.ui:454
+msgid "Clear the playlist"
+msgstr "清空播放清單"
+
+#: ui/music.ui:467
+msgid "Drop files or folders here"
+msgstr "把檔案或資料夾拖到這裡"
+
+#: ui/music.ui:482
+msgid "Load a playlist (.m3u)"
+msgstr "載入播放清單 (.m3u)"
+
+#: ui/music.ui:492
+msgid "Save the playlist (.m3u)"
+msgstr "儲存播放清單 (.m3u)"
+
 #: ui/pass.ui:60
 msgid "STORE"
 msgstr "密碼庫"
@@ -8428,6 +8676,43 @@ msgstr "依名稱、位址、作業系統或標籤過濾"
 msgid "EXIT NODE"
 msgstr "出口節點"
 
+#: ui/video.ui:45
+msgid "Drop a video here"
+msgstr "把影片拖到這裡"
+
+#: ui/video.ui:54
+msgid "Open a video…"
+msgstr "開啟影片…"
+
+#: ui/video.ui:102
+msgid "From the start"
+msgstr "從頭開始"
+
+#: ui/video.ui:169
+msgid "Play or pause (Space)"
+msgstr "播放或暫停 (空白鍵)"
+
+#: ui/video.ui:183
+msgid "Sound track"
+msgstr "音軌"
+
+#: ui/video.ui:210
+msgid "Subtitles (S)"
+msgstr "字幕 (S)"
+
+#: ui/video.ui:239
+msgid "Speed ([ and ])"
+msgstr "速度（[ 和 ]）"
+
+#: ui/video.ui:249
+msgid "Mute (M)"
+msgstr "靜音 (M)"
+
+#: ui/video.ui:273
+#: ui/viewer.ui:189
+msgid "Full screen (F)"
+msgstr "全螢幕(F)"
+
 #: ui/viewer.ui:61
 msgid "Open… (Ctrl+O)"
 msgstr "開啟… (Ctrl+O)"
@@ -8467,10 +8752,6 @@ msgstr "移至垃圾桶？"
 #: ui/viewer.ui:180
 msgid "Details (I)"
 msgstr "詳細資料（I）"
-
-#: ui/viewer.ui:189
-msgid "Full screen (F)"
-msgstr "全螢幕(F)"
 
 #: ui/viewer.ui:227
 msgid "Previous (←)"
@@ -8578,6 +8859,14 @@ msgstr "揭示安全方塊並標記隱藏的地雷"
 msgid "games;arcade;puzzle;"
 msgstr "遊戲;街機;益智;"
 
+#: config/apps/io.github.lyricat.Inua.Music.desktop:10
+msgid "Play music, with a playlist and an equalizer"
+msgstr "播放音樂，附播放清單和等化器"
+
+#: config/apps/io.github.lyricat.Inua.Music.desktop:20
+msgid "music;audio;player;playlist;mp3;flac;equalizer;"
+msgstr "音樂;音訊;播放器;播放清單;mp3;flac;等化器;"
+
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:10
 msgid "Your password store: passwords, one-time codes and notes, by category"
 msgstr "你的密碼庫：按類別列出密碼、一次性驗證碼和備註"
@@ -8617,6 +8906,14 @@ msgstr "您的 tailnet 的裝置、出口節點和該裝置的 Tailscale 設置"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;網路;出口節點;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Video.desktop:10
+msgid "Watch videos"
+msgstr "觀看影片"
+
+#: config/apps/io.github.lyricat.Inua.Video.desktop:20
+msgid "video;movie;film;player;subtitles;"
+msgstr "影片;電影;視訊;播放器;字幕;"
 
 #: config/apps/io.github.lyricat.Inua.Viewer.desktop:10
 msgid "Look through pictures"

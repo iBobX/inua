@@ -388,7 +388,7 @@ func (a *workshopApp) setValueMore(n *wsNode, v any) bool {
 // drawChart draws the points as the light apps' charts are drawn.
 func (a *workshopApp) drawChart(pic *gtk.Picture, n workshop.Node, h int) {
 	if len(n.Points) < 2 {
-		pic.SetPaintable(nil)
+		pic.SetPaintable(&gdk.PaintableBase{}) // none
 		return
 	}
 	scale := max(1, int(pic.GetScaleFactor()))

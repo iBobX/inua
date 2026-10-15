@@ -155,6 +155,15 @@ go-jump                               arrow-bend-up-right
 # Pass: a one-time code from a QR code, read off the screen
 pass-qr-code                          qr-code
 pass-scan                             scan
+# Music and Video
+media-playback-stop                   stop
+media-eject                           eject
+media-playlist-shuffle                shuffle
+media-playlist-repeat                 repeat
+media-playlist-repeat-song            repeat-once
+media-view-subtitles                  subtitles
+media-audio-track                     waveform
+list-remove                           minus
 # GPG: a signature that does not hold, saving, the key chosen
 dialog-warning                        warning
 document-save                         floppy-disk
