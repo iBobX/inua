@@ -1,6 +1,9 @@
 package config
 
 import (
+	"errors"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -75,10 +78,11 @@ func (c Config) ThemeCSS(name string, builtin func(name string) string) string {
 		base = Default().Style.Theme
 	}
 	css := builtin("themes/" + base + ".css")
-	if c.Dir == "" || !customName.MatchString(name) {
+	path := c.ThemePath(name)
+	if path == "" {
 		return css
 	}
-	user, err := os.ReadFile(filepath.Join(c.Dir, "themes", name+".css"))
+	user, err := os.ReadFile(path)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			log.Printf("theme: %v", err)
@@ -90,10 +94,155 @@ func (c Config) ThemeCSS(name string, builtin func(name string) string) string {
 
 // IconSetDir is the folder of style.icons when it is a set of the user's,
 // "" for a built-in set.
-func (c Config) IconSetDir() string {
-	name := c.Style.Icons
-	if c.Dir == "" || slices.Contains(IconSets, name) || !customName.MatchString(name) {
+func (c Config) IconSetDir() string { return c.IconSetPath(c.Style.Icons) }
+
+// Installing themes and icon sets: the settings window copies a file or a
+// folder the user picks into the config directory.
+
+var (
+	// ErrExists is a theme or icon set whose name is taken, by one of the
+	// user's or a built-in one.
+	ErrExists = errors.New("the name is taken")
+	// ErrNotTheme is a file without colour tokens.
+	ErrNotTheme = errors.New("no @define-color lines with #rrggbb colours")
+	// ErrNoIcons is a folder without SVG files.
+	ErrNoIcons = errors.New("no SVG files")
+)
+
+var (
+	themeToken  = regexp.MustCompile(`@define-color\s+[\w-]+\s+#[0-9a-fA-F]{6}\s*;`)
+	nameInvalid = regexp.MustCompile(`[^a-z0-9_-]+`)
+)
+
+// maxThemeSize bounds a theme file: tokens take a few hundred bytes.
+const maxThemeSize = 1 << 20
+
+// CustomName makes a theme's or icon set's name from a file or folder
+// name: lower case, other characters as "-". "" if nothing is left.
+func CustomName(base string) string {
+	name := strings.Trim(nameInvalid.ReplaceAllString(strings.ToLower(base), "-"), "-_")
+	if !customName.MatchString(name) {
+		return ""
+	}
+	return name
+}
+
+// ThemePath is the file of the user's theme name, "" for a name that
+// cannot be one.
+func (c Config) ThemePath(name string) string {
+	if c.Dir == "" || !customName.MatchString(name) {
+		return ""
+	}
+	return filepath.Join(c.Dir, "themes", name+".css")
+}
+
+// IconSetPath is the folder of the user's icon set name, "" for a name
+// that cannot be one.
+func (c Config) IconSetPath(name string) string {
+	if c.Dir == "" || !customName.MatchString(name) || slices.Contains(IconSets, name) {
 		return ""
 	}
 	return filepath.Join(c.Dir, "icons", name)
+}
+
+// IsCustomTheme reports whether name is a theme of the user's own, rather
+// than built in (or a built-in one the user changed).
+func (c Config) IsCustomTheme(name string) bool {
+	return !slices.Contains(Themes, name) && slices.Contains(c.ThemeNames(), name)
+}
+
+// InstallTheme copies a theme file into the themes folder, named after
+// the file, and returns the name. It neither replaces nor changes a theme.
+func (c Config) InstallTheme(src string) (string, error) {
+	name := CustomName(strings.TrimSuffix(filepath.Base(src), ".css"))
+	dst := c.ThemePath(name)
+	if dst == "" {
+		return "", fmt.Errorf("%s: not a usable name", filepath.Base(src))
+	}
+	if slices.Contains(c.ThemeNames(), name) {
+		return name, ErrExists
+	}
+	f, err := os.Open(src)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	css, err := io.ReadAll(io.LimitReader(f, maxThemeSize+1))
+	if err != nil {
+		return "", err
+	}
+	if len(css) > maxThemeSize || !themeToken.Match(css) {
+		return "", ErrNotTheme
+	}
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return "", err
+	}
+	out, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	if err != nil {
+		if errors.Is(err, os.ErrExist) {
+			return name, ErrExists
+		}
+		return "", err
+	}
+	if _, err := out.Write(css); err != nil {
+		out.Close()
+		os.Remove(dst)
+		return "", err
+	}
+	return name, out.Close()
+}
+
+// InstallIconSet copies the SVG files of a folder (not its subfolders)
+// into the icons folder, named after the folder, and returns the name and
+// how many icons it holds. The set appears whole or not at all.
+func (c Config) InstallIconSet(src string) (string, int, error) {
+	name := CustomName(filepath.Base(filepath.Clean(src)))
+	dst := c.IconSetPath(name)
+	if dst == "" {
+		return "", 0, fmt.Errorf("%s: not a usable name", filepath.Base(src))
+	}
+	if slices.Contains(c.IconSetNames(), name) {
+		return name, 0, ErrExists
+	}
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return "", 0, err
+	}
+	icons := filepath.Dir(dst)
+	if err := os.MkdirAll(icons, 0o755); err != nil {
+		return "", 0, err
+	}
+	// A hidden folder is no set: it is not listed while being filled.
+	tmp, err := os.MkdirTemp(icons, ".install-")
+	if err != nil {
+		return "", 0, err
+	}
+	defer os.RemoveAll(tmp)
+	n := 0
+	for _, e := range entries {
+		if !e.Type().IsRegular() || !strings.HasSuffix(e.Name(), ".svg") {
+			continue
+		}
+		svg, err := os.ReadFile(filepath.Join(src, e.Name()))
+		if err != nil {
+			return "", 0, err
+		}
+		if err := os.WriteFile(filepath.Join(tmp, e.Name()), svg, 0o644); err != nil {
+			return "", 0, err
+		}
+		n++
+	}
+	if n == 0 {
+		return "", 0, ErrNoIcons
+	}
+	if err := os.Chmod(tmp, 0o755); err != nil {
+		return "", 0, err
+	}
+	if _, err := os.Stat(dst); err == nil {
+		return name, 0, ErrExists
+	}
+	if err := os.Rename(tmp, dst); err != nil {
+		return "", 0, err
+	}
+	return name, n, nil
 }

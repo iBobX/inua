@@ -132,6 +132,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <property name="column-spacing">8</property>
                                       </object>
                                     </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Your themes</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">A CSS file of @define-color lines, kept in themes beside config.toml</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="theme_add">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">theme_add</property>
+                                            <property name="label" translatable="yes">Add…</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="theme_trash">
+                                            <style>
+                                              <class name="outlined"/>
+                                              <class name="danger"/>
+                                            </style>
+                                            <property name="name">theme_trash</property>
+                                            <property name="label" translatable="yes">Move to Trash</property>
+                                            <property name="tooltip-text" translatable="yes">The theme in use, if it is one of yours</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="theme_folder">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">theme_folder</property>
+                                            <property name="label" translatable="yes">Open Folder</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -320,6 +386,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 </items>
                                               </object>
                                             </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Your icon sets</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">A folder of SVG icons named like inua's, kept in icons beside config.toml</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="iconset_add">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">iconset_add</property>
+                                            <property name="label" translatable="yes">Add…</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="iconset_trash">
+                                            <style>
+                                              <class name="outlined"/>
+                                              <class name="danger"/>
+                                            </style>
+                                            <property name="name">iconset_trash</property>
+                                            <property name="label" translatable="yes">Move to Trash</property>
+                                            <property name="tooltip-text" translatable="yes">The icon set in use, if it is one of yours</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="iconset_folder">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">iconset_folder</property>
+                                            <property name="label" translatable="yes">Open Folder</property>
+                                            <property name="valign">3</property>
                                           </object>
                                         </child>
                                       </object>

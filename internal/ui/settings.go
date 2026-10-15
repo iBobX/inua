@@ -34,11 +34,13 @@ type settings struct {
 	win  *gtk.ApplicationWindow // nil while closed
 	refs gtkx.Scope
 
-	status, clockPreview gtk.Label
-	pages                gtk.Stack
-	index                gtk.ListBox // the pages' list, beside them
-	themes               gtk.FlowBox
-	swatches             map[string]*gtk.Button // by theme, owned by the flow box
+	status, clockPreview  gtk.Label
+	pages                 gtk.Stack
+	index                 gtk.ListBox // the pages' list, beside them
+	themes                gtk.FlowBox
+	swatches              map[string]*gtk.Button // by theme, owned by the flow box
+	swatchNames           []string               // the themes the swatches show
+	themeTrash, iconTrash gtk.Button             // for the user's theme or icon set in use
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory gtk.Switch
 	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                gtk.Switch
@@ -217,7 +219,7 @@ func (s *shellUI) bindSettingsHandlers() {
 	}
 	s.onSettingsButton = func(b gtk.Button) {
 		name := b.GetName()
-		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) || s.keyringButton(name) {
+		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) || s.keyringButton(name) || s.customButton(name) {
 			return
 		}
 		c := s.cfg
@@ -409,6 +411,13 @@ func (s *shellUI) openSettings() {
 	var choose, clearImage gtk.Button
 	ui.Get("bg_choose", &choose)
 	ui.Get("bg_clear", &clearImage)
+	var themeAdd, themeFolder, iconAdd, iconFolder gtk.Button
+	ui.Get("theme_add", &themeAdd)
+	ui.Get("theme_trash", &st.themeTrash)
+	ui.Get("theme_folder", &themeFolder)
+	ui.Get("iconset_add", &iconAdd)
+	ui.Get("iconset_trash", &st.iconTrash)
+	ui.Get("iconset_folder", &iconFolder)
 	s.buildStickyHeads(ui)
 	st.entries = map[uintptr]*gtk.Entry{}
 	st.drops = map[uintptr]*gtk.DropDown{}
@@ -429,7 +438,7 @@ func (s *shellUI) openSettings() {
 	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
-	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
+	for _, b := range []*gtk.Button{&choose, &clearImage, &themeAdd, &st.themeTrash, &themeFolder, &iconAdd, &st.iconTrash, &iconFolder, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	st.tpSpeed.ConnectChangeValue(&s.onSettingsScale)
@@ -494,8 +503,10 @@ func (s *shellUI) closeSettings() {
 // text colours, and its name.
 func (s *shellUI) buildSwatches() {
 	st := &s.settings
+	st.themes.RemoveAll()
 	st.swatches = map[string]*gtk.Button{}
-	for _, name := range s.cfg.ThemeNames() {
+	st.swatchNames = s.cfg.ThemeNames()
+	for _, name := range st.swatchNames {
 		btn := gtk.NewButton()
 		btn.SetName("theme:" + name)
 		btn.AddCssClass("swatch")
@@ -557,9 +568,14 @@ func (s *shellUI) showSettings() {
 	st.filling = true
 	defer func() { st.filling = false }()
 	c := s.cfg
+	if !slices.Equal(st.swatchNames, c.ThemeNames()) {
+		s.buildSwatches() // a theme was added or taken away
+	}
 	for name, btn := range st.swatches {
 		toggle(&btn.Widget, "on", name == s.theme())
 	}
+	st.themeTrash.SetSensitive(c.IsCustomTheme(s.theme()))
+	st.iconTrash.SetSensitive(c.IconSetDir() != "")
 	st.bgEnable.SetActive(c.Background.Enable)
 	st.title.SetActive(c.Bar.Title)
 	st.tray.SetActive(c.Bar.Tray)

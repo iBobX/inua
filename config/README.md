@@ -233,9 +233,12 @@ Themes and icon sets of your own live next to `config.toml`:
   themes alike. inua's apps use the set too.
 
 Names are lower-case letters, digits, `-` and `_`. Both appear in the
-Appearance page and in `style.theme` / `style.icons`. After editing the
-files, `inua call shell reload` loads them again; inua's apps follow at
-their next start or settings change.
+Appearance page and in `style.theme` / `style.icons`. The page also adds
+them: Addâ¦ copies a theme file or an icon folder here, named after it
+(never over one already there), and chooses it; Move to Trash takes away
+the one in use; Open Folder shows the folder. After editing the files,
+`inua call shell reload` loads them again; inua's apps follow at their
+next start or settings change.
 
 `style.text_scale` (80 to 150 percent, default 100; the Appearance page's
 "Text size") sizes the text of the shell and inua's apps alone: icons,

@@ -236,7 +236,8 @@ type shellUI struct {
 	onDockDropLeave        func(gtk.DropTarget)
 	onDockDrop             func(gtk.DropTarget, uintptr, float64, float64) bool
 	onImageChosen          gio.AsyncReadyCallback
-	onAfter                glib.SourceFunc // runAfter's
+	onCustomChosen         gio.AsyncReadyCallback // a theme or icon set to add
+	onAfter                glib.SourceFunc        // runAfter's
 	afterFns               map[uintptr]func()
 	afterSeq               uintptr
 }
