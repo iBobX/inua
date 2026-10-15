@@ -1,6 +1,8 @@
 package desktop
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"slices"
@@ -123,5 +125,46 @@ func TestStamp(t *testing.T) {
 	}
 	if Stamp([]string{a, b}) == before {
 		t.Error("the stamp stayed after an entry was added")
+	}
+}
+
+func TestExecFiles(t *testing.T) {
+	e := &Entry{Name: "Editor", Icon: "ed"}
+	paths := []string{"/home/u/a b.txt", "/tmp/c.txt"}
+	cases := []struct {
+		exec string
+		want [][]string
+	}{
+		{"editor %F", [][]string{{"editor", "/home/u/a b.txt", "/tmp/c.txt"}}},
+		{"browser %U", [][]string{{"browser", "file:///home/u/a%20b.txt", "file:///tmp/c.txt"}}},
+		{"viewer --one %f", [][]string{{"viewer", "--one", "/home/u/a b.txt"}, {"viewer", "--one", "/tmp/c.txt"}}},
+		{"plain -x", [][]string{{"plain", "-x", "/home/u/a b.txt", "/tmp/c.txt"}}},
+		{`"my app" %i %u`, [][]string{{"my app", "--icon", "ed", "file:///home/u/a%20b.txt"}, {"my app", "--icon", "ed", "file:///tmp/c.txt"}}},
+	}
+	for _, c := range cases {
+		got, err := ExecFiles(c.exec, e, paths)
+		if err != nil {
+			t.Fatalf("%s: %v", c.exec, err)
+		}
+		if fmt.Sprint(got) != fmt.Sprint(c.want) {
+			t.Errorf("%s:\n got %q\nwant %q", c.exec, got, c.want)
+		}
+	}
+}
+
+func TestFind(t *testing.T) {
+	dir := t.TempDir()
+	os.MkdirAll(filepath.Join(dir, "kde"), 0o755)
+	os.WriteFile(filepath.Join(dir, "org.Ed.desktop"), []byte("[Desktop Entry]\nType=Application\nName=Ed\nExec=ed %F\n"), 0o644)
+	os.WriteFile(filepath.Join(dir, "kde", "view.desktop"), []byte("[Desktop Entry]\nType=Application\nName=View\nExec=view %u\n"), 0o644)
+	e, err := Find([]string{t.TempDir(), dir}, "org.Ed.desktop", "")
+	if err != nil || e.Name != "Ed" || e.ExecString != "ed %F" || e.Path != filepath.Join(dir, "org.Ed.desktop") {
+		t.Fatalf("%+v %v", e, err)
+	}
+	if e, err := Find([]string{dir}, "kde-view", ""); err != nil || e.Name != "View" {
+		t.Fatalf("subfolder: %+v %v", e, err)
+	}
+	if _, err := Find([]string{dir}, "nothing", ""); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("missing: %v", err)
 	}
 }

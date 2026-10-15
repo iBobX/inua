@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -168,36 +169,10 @@ func splitList(s string) []string {
 // ParseExec splits an Exec value into argv and expands field codes. File and
 // URL codes (%f %F %u %U) are dropped since the launcher passes no files.
 func ParseExec(exec string, e *Entry) ([]string, error) {
-	var args []string
-	var cur strings.Builder
-	inArg, quoted := false, false
-	for i := 0; i < len(exec); i++ {
-		c := exec[i]
-		switch {
-		case quoted && c == '\\' && i+1 < len(exec):
-			i++
-			cur.WriteByte(exec[i])
-		case c == '"':
-			quoted = !quoted
-			inArg = true
-		case !quoted && (c == ' ' || c == '\t'):
-			if inArg {
-				args = append(args, cur.String())
-				cur.Reset()
-				inArg = false
-			}
-		default:
-			cur.WriteByte(c)
-			inArg = true
-		}
+	args, err := splitExec(exec)
+	if err != nil {
+		return nil, err
 	}
-	if quoted {
-		return nil, errors.New("unterminated quote in Exec")
-	}
-	if inArg {
-		args = append(args, cur.String())
-	}
-
 	var out []string
 	for _, a := range args {
 		switch a {
@@ -310,4 +285,139 @@ func Scan(dirs []string, locale string) []*Entry {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
 	return out
+}
+
+// splitExec splits an Exec value into its words, with the specification's
+// quoting.
+func splitExec(exec string) ([]string, error) {
+	var args []string
+	var cur strings.Builder
+	inArg, quoted := false, false
+	for i := 0; i < len(exec); i++ {
+		c := exec[i]
+		switch {
+		case quoted && c == '\\' && i+1 < len(exec):
+			i++
+			cur.WriteByte(exec[i])
+		case c == '"':
+			quoted = !quoted
+			inArg = true
+		case !quoted && (c == ' ' || c == '\t'):
+			if inArg {
+				args = append(args, cur.String())
+				cur.Reset()
+				inArg = false
+			}
+		default:
+			cur.WriteByte(c)
+			inArg = true
+		}
+	}
+	if quoted {
+		return nil, errors.New("unterminated quote in Exec")
+	}
+	if inArg {
+		args = append(args, cur.String())
+	}
+	return args, nil
+}
+
+// ExecFiles is the command lines that open paths with an entry, as the
+// Desktop Entry specification's field codes say: %F and %U take every
+// file in one command; %f and %u one, so each file gets a command of its
+// own; an Exec with no file code gets the paths at its end.
+func ExecFiles(exec string, e *Entry, paths []string) ([][]string, error) {
+	base, err := splitExec(exec)
+	if err != nil {
+		return nil, err
+	}
+	uris := make([]string, len(paths))
+	for i, p := range paths {
+		uris[i] = (&url.URL{Scheme: "file", Path: p}).String()
+	}
+	single, many := false, false
+	for _, a := range base {
+		switch a {
+		case "%f", "%u":
+			single = true
+		case "%F", "%U":
+			many = true
+		}
+	}
+	expand := func(files, urls []string) ([]string, error) {
+		var out []string
+		for _, a := range base {
+			switch a {
+			case "%f":
+				out = append(out, files[:min(1, len(files))]...)
+			case "%u":
+				out = append(out, urls[:min(1, len(urls))]...)
+			case "%F":
+				out = append(out, files...)
+			case "%U":
+				out = append(out, urls...)
+			default:
+				fixed, err := ParseExec(quoteArg(a), e)
+				if err == nil {
+					out = append(out, fixed...)
+				}
+			}
+		}
+		if !single && !many {
+			out = append(out, files...)
+		}
+		if len(out) == 0 {
+			return nil, errors.New("empty Exec")
+		}
+		return out, nil
+	}
+	if single && !many && len(paths) > 1 {
+		var cmds [][]string
+		for i := range paths {
+			c, err := expand(paths[i:i+1], uris[i:i+1])
+			if err != nil {
+				return nil, err
+			}
+			cmds = append(cmds, c)
+		}
+		return cmds, nil
+	}
+	c, err := expand(paths, uris)
+	if err != nil {
+		return nil, err
+	}
+	return [][]string{c}, nil
+}
+
+// quoteArg quotes one argument for ParseExec, which then expands its
+// other field codes (%i, %c, %k).
+func quoteArg(a string) string {
+	return `"` + strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(a) + `"`
+}
+
+// Find reads the entry with desktop ID id ("org.gnome.TextEditor", with or
+// without ".desktop") from the first of dirs (as DataDirs gives them) that
+// has it. A dash in the ID may stand for a subfolder: kde-foo.desktop is
+// kde/foo.desktop.
+func Find(dirs []string, id, locale string) (*Entry, error) {
+	id = strings.TrimSuffix(id, ".desktop")
+	for _, d := range dirs {
+		rel := id + ".desktop"
+		for {
+			if f, err := os.Open(filepath.Join(d, rel)); err == nil {
+				e, err := Parse(f, id, locale)
+				f.Close()
+				if err == nil {
+					e.Path = filepath.Join(d, rel)
+				}
+				return e, err
+			}
+			i := strings.Index(rel, "-")
+			if i < 0 {
+				break
+			}
+			rel = rel[:i] + "/" + rel[i+1:]
+		}
+	}
+	return nil, fmt.Errorf("%s: %w", id, os.ErrNotExist)
 }
