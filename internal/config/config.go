@@ -118,12 +118,14 @@ type Screenshot struct {
 }
 
 type Style struct {
-	// Theme is the colour theme, one of Themes.
+	// Theme is the colour theme, one of Themes or a theme of the user's
+	// (ThemeNames).
 	Theme string `toml:"theme"`
 	// CSS is a stylesheet loaded after the built-in style, relative to the
 	// config directory. Ignored if the file does not exist.
 	CSS string `toml:"css"`
-	// Icons is the icon set of the shell's own icons, one of IconSets.
+	// Icons is the icon set of the shell's own icons, one of IconSets or a
+	// set of the user's (IconSetNames).
 	Icons string `toml:"icons"`
 	// EdgeGaps leaves a small gap between the screen edges and the bar and
 	// dock; off puts them flush against the edges.
@@ -444,7 +446,7 @@ var Fits = []string{"cover", "contain", "tile", "center"}
 
 // IconSets are the shell's icon sets: "phosphor", Phosphor's regular icons
 // (ui/icons), or "system", the system's icon theme. App icons always come
-// from the system's.
+// from the system's. Sets of the user's follow them (IconSetNames).
 var IconSets = []string{"phosphor", "system"}
 
 // TextScales are the text sizes, in percent, the settings window offers.
@@ -582,8 +584,8 @@ func (c *Config) validate() []string {
 		return false
 	})
 	oneOf("language", &c.Language, d.Language, Languages...)
-	oneOf("style.theme", &c.Style.Theme, d.Style.Theme, Themes...)
-	oneOf("style.icons", &c.Style.Icons, d.Style.Icons, IconSets...)
+	oneOf("style.theme", &c.Style.Theme, d.Style.Theme, c.ThemeNames()...)
+	oneOf("style.icons", &c.Style.Icons, d.Style.Icons, c.IconSetNames()...)
 	if c.Style.TextScale < 80 || c.Style.TextScale > 150 {
 		w = append(w, fmt.Sprintf("style.text_scale = %d: want 80 to 150; using %d", c.Style.TextScale, d.Style.TextScale))
 		c.Style.TextScale = d.Style.TextScale

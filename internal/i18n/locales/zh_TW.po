@@ -1048,8 +1048,8 @@ msgid "Top level"
 msgstr "頂層"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:630
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:654
+#: internal/ui/settings.go:681
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 筆"
@@ -1323,7 +1323,7 @@ msgid "An image with a QR code"
 msgstr "含 QR 碼的圖片"
 
 #: internal/appui/pass_otp.go:340
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:791
 msgid "Images"
 msgstr "影像"
 
@@ -7847,71 +7847,81 @@ msgstr "螢幕截圖已複製"
 msgid "Screenshot taken"
 msgstr "截圖"
 
-#: internal/ui/settings.go:247
+#: internal/ui/settings.go:248
 msgid "Not restarted: %s"
 msgstr "未重新啟動：%s"
 
-#: internal/ui/settings.go:265
-#: internal/ui/settings.go:603
-#: internal/ui/settings.go:620
+#: internal/ui/settings.go:266
+#: internal/ui/settings.go:627
+#: internal/ui/settings.go:644
 msgid "%d%%"
 msgstr "%d%%"
 
-#: internal/ui/settings.go:656
+#: internal/ui/settings.go:607
+#: ui/settings.ui:318
+msgid "Phosphor"
+msgstr "Phosphor"
+
+#: internal/ui/settings.go:607
+#: ui/settings.ui:319
+msgid "System theme"
+msgstr "系統主題"
+
+#: internal/ui/settings.go:680
 msgid "%s (%s, %s) · %s"
 msgstr "%s(%s,%s)· %s"
 
-#: internal/ui/settings.go:658
+#: internal/ui/settings.go:682
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d 段文字"
 
-#: internal/ui/settings.go:659
+#: internal/ui/settings.go:683
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d 張圖片"
 
-#: internal/ui/settings.go:660
+#: internal/ui/settings.go:684
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:739
+#: internal/ui/settings.go:763
 msgid "Not saved: %s"
 msgstr "未儲存：%s"
 
-#: internal/ui/settings.go:765
+#: internal/ui/settings.go:789
 msgid "Choose a wallpaper"
 msgstr "選擇壁紙"
 
-#: internal/ui/settings.go:807
+#: internal/ui/settings.go:831
 msgid "Off: another notification daemon can show them"
 msgstr "關閉：另一個通知守護程式可以顯示它們"
 
-#: internal/ui/settings.go:809
+#: internal/ui/settings.go:833
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "先顯示橫幅，再存入通知中心（頂欄鈴鐺或 Super+N）"
 
-#: internal/ui/settings.go:811
+#: internal/ui/settings.go:835
 msgid "Waiting: another notification daemon is running"
 msgstr "等待：另一個通知守護程式正在執行"
 
-#: internal/ui/settings.go:829
+#: internal/ui/settings.go:853
 msgid "Nothing pinned"
 msgstr "尚未釘選應用程式"
 
-#: internal/ui/settings.go:845
+#: internal/ui/settings.go:869
 msgid "%s (not installed)"
 msgstr "%s(未安裝)"
 
-#: internal/ui/settings.go:858
+#: internal/ui/settings.go:882
 msgid "Move earlier"
 msgstr "向前移動"
 
-#: internal/ui/settings.go:859
+#: internal/ui/settings.go:883
 msgid "Move later"
 msgstr "向後移動"
 
-#: internal/ui/settings.go:860
+#: internal/ui/settings.go:884
 msgid "Remove from the dock"
 msgstr "從 Dock 移除"
 
@@ -9074,14 +9084,6 @@ msgstr "圖示集"
 #: ui/settings.ui:304
 msgid "App icons always come from the system"
 msgstr "應用程式圖示始終來自系統"
-
-#: ui/settings.ui:318
-msgid "Phosphor"
-msgstr "Phosphor"
-
-#: ui/settings.ui:319
-msgid "System theme"
-msgstr "系統主題"
 
 #: ui/settings.ui:357
 msgid "<span alpha='55%'>[</span>LANGUAGE<span alpha='55%'>]</span>"

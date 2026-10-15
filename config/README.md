@@ -219,6 +219,24 @@ launcher, dock and tray always come from the system theme. To change or add
 an icon, edit the table in `scripts/phosphor-icons.sh` and run it again (its
 argument is the `@phosphor-icons/core` directory).
 
+Themes and icon sets of your own live next to `config.toml`:
+
+- `themes/NAME.css` is a theme named `NAME`: `@define-color` lines for the
+  tokens it changes (`app`, `surface`, `t0`, `accent`, … ; copy one of
+  `ui/themes/` to start). The tokens it leaves out come from `yoru`; a file
+  named like a built-in theme (`themes/washi.css`) changes that theme
+  instead. Rules other than colours belong in `style.css`.
+- `icons/NAME/` is an icon set named `NAME`: SVGs named like those in
+  `ui/icons/` (`go-home-symbolic.svg`), each replacing the built-in icon;
+  the icons it lacks stay Phosphor's. Draw them in one colour: GTK repaints
+  symbolic icons in the text colour, so one set serves light and dark
+  themes alike. inua's apps use the set too.
+
+Names are lower-case letters, digits, `-` and `_`. Both appear in the
+Appearance page and in `style.theme` / `style.icons`. After editing the
+files, `inua call shell reload` loads them again; inua's apps follow at
+their next start or settings change.
+
 `style.text_scale` (80 to 150 percent, default 100; the Appearance page's
 "Text size") sizes the text of the shell and inua's apps alone: icons,
 spacing and your own `style.css` keep their sizes.

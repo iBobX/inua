@@ -319,10 +319,15 @@ windows to PNG files for checking layouts without a screenshot tool.
   uses the names. Seven themes: `yoru` (the default, dark), `washi` and
   `aojashin` (light), `suimen`, `rinko`, `bunko` and `denko` (dark),
   chosen with `style.theme`; a test keeps the names and the files in step.
+  A user's theme, `themes/<name>.css` beside `config.toml`, is loaded over
+  `yoru` (or over the built-in theme of its name), so it needs only the
+  tokens it changes (`config.ThemeCSS`).
 - Icons: Phosphor's regular icons (`ui/icons`, MIT), written as an icon
   theme for the shell's process that inherits the system's; app and tray
   icons stay the system's. `style.icons = "system"` uses the system theme
-  throughout.
+  throughout. A user's set, `icons/<name>/` beside `config.toml`, is
+  copied over the Phosphor icons into an icon theme of its own name
+  (`shell.IconTheme`), in the shell and in inua's apps.
 - Text size: `style.text_scale` (80 to 150 percent, the Appearance page's
   "Text size") multiplies the `font-size` pixel values of `ui/style.css` as
   it loads (`shell.ScaleText`), in the shell and in inua's apps; icons,

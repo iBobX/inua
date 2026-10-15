@@ -118,15 +118,16 @@ type Ctx struct {
 	Colors      map[string]string
 	refs        gtkx.Scope
 
-	cfgPath  string
-	cfgMod   time.Time
-	css      *gtk.CssProvider
-	userCSS  *gtk.CssProvider
-	win      *gtk.ApplicationWindow
-	v        view
-	onTick   glib.SourceFunc
-	activate func(gio.Application)
-	iconPath bool // the apps' icon theme is in use
+	cfgPath    string
+	cfgMod     time.Time
+	css        *gtk.CssProvider
+	userCSS    *gtk.CssProvider
+	win        *gtk.ApplicationWindow
+	v          view
+	onTick     glib.SourceFunc
+	activate   func(gio.Application)
+	iconSystem string // the system's icon theme, read before the apps set theirs
+	iconTheme  string // the apps' icon theme in use, "" before loadIcons
 }
 
 // Run runs the named app until its window closes. A second start of the
@@ -225,14 +226,13 @@ func (c *Ctx) config() config.Config {
 // loadStyle loads the theme, the shell's style and the user's.
 func (c *Ctx) loadStyle() {
 	cfg := c.config()
-	theme := cmp.Or(cfg.Style.Theme, "yoru")
 	if c.css == nil {
 		c.css, c.userCSS = gtk.NewCssProvider(), gtk.NewCssProvider()
 		d := gdk.DisplayGetDefault()
 		gtk.StyleContextAddProviderForDisplay(d, c.css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
 		gtk.StyleContextAddProviderForDisplay(d, c.userCSS, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
-	themeCSS := c.ReadUI("themes/" + theme + ".css")
+	themeCSS := cfg.ThemeCSS(cmp.Or(cfg.Style.Theme, "yoru"), c.ReadUI)
 	c.Colors = shell.ThemeColors(themeCSS)
 	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
 	if p := cfg.CSSPath(); p != "" {
@@ -257,72 +257,68 @@ func (c *Ctx) followConfig() {
 }
 
 // loadIcons draws the apps' own icons from the Phosphor set inua ships
-// (ui/icons), whatever the shell's style.icons: the apps write the set as
-// an icon theme of their own, which inherits the system's for app icons
-// and any icon the set lacks.
+// (ui/icons), with the user's set over them when style.icons names one;
+// "system" still means Phosphor here. The apps write the set as an icon
+// theme of their own, which inherits the system's for app icons and any
+// icon the set lacks.
 func (c *Ctx) loadIcons() {
-	if c.iconPath {
-		return
+	cfg := c.config()
+	if c.iconSystem == "" {
+		var v gobject.Value
+		v.Init(gobject.TypeStringVal)
+		gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &v)
+		c.iconSystem = cmp.Or(v.GetString(), "Adwaita")
+		v.Unset()
+		if strings.HasPrefix(c.iconSystem, "inua-") {
+			c.iconSystem = "Adwaita"
+		}
 	}
-	settings := gtk.SettingsGetDefault()
-	var v gobject.Value
-	v.Init(gobject.TypeStringVal)
-	settings.GetProperty("gtk-icon-theme-name", &v)
-	system := cmp.Or(v.GetString(), "Adwaita")
-	v.Unset()
-	if system == appIconTheme {
-		system = "Adwaita"
+	overlay := cfg.IconSetDir()
+	name := appIconTheme
+	if overlay != "" {
+		name = "inua-apps-icons-" + cfg.Style.Icons
+	}
+	if overlay == "" && c.iconTheme == name {
+		return // the built-in icons do not change
 	}
 	dir, err := rundir.Sub("app-icons")
 	if err == nil {
-		err = c.writeIconTheme(dir, system)
+		err = c.writeIconTheme(dir, name, overlay)
 	}
 	if err != nil {
 		log.Printf("icons: %v", err)
 		return
 	}
-	gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
-	gtkx.SetStringSetting("gtk-icon-theme-name", appIconTheme)
-	c.iconPath = true
+	if c.iconTheme == "" {
+		gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
+	}
+	if c.iconTheme == name {
+		// The set's files may have changed: make GTK read them again.
+		gtkx.SetStringSetting("gtk-icon-theme-name", c.iconSystem)
+	}
+	gtkx.SetStringSetting("gtk-icon-theme-name", name)
+	c.iconTheme = name
 }
 
 // appIconTheme names the apps' icon theme.
 const appIconTheme = "inua-phosphor-apps"
 
-func (c *Ctx) writeIconTheme(dir, inherits string) error {
-	theme := filepath.Join(dir, appIconTheme)
-	if err := os.MkdirAll(filepath.Join(theme, "symbolic"), 0o700); err != nil {
-		return err
-	}
-	index := fmt.Sprintf(`[Icon Theme]
-Name=%s
-Comment=Phosphor icons for inua's light apps (written by inua-apps)
-Inherits=%s,hicolor
-Directories=symbolic
-
-[symbolic]
-Size=16
-MinSize=8
-MaxSize=512
-Type=Scalable
-Context=Status
-`, appIconTheme, inherits)
-	if err := os.WriteFile(filepath.Join(theme, "index.theme"), []byte(index), 0o644); err != nil {
-		return err
-	}
+func (c *Ctx) writeIconTheme(dir, name, overlay string) error {
 	entries, err := layouts.FS.ReadDir("icons")
 	if err != nil {
 		return err
 	}
-	for _, e := range entries {
-		if !strings.HasSuffix(e.Name(), ".svg") {
-			continue
-		}
-		if err := os.WriteFile(filepath.Join(theme, "symbolic", e.Name()), []byte(c.ReadUI("icons/"+e.Name())), 0o644); err != nil {
-			return err
-		}
+	t := shell.IconTheme{
+		Name:     name,
+		Comment:  "Icons for inua's light apps (written by inua-apps)",
+		Inherits: c.iconSystem,
+		Read:     func(file string) string { return c.ReadUI("icons/" + file) },
+		Overlay:  overlay,
 	}
-	return nil
+	for _, e := range entries {
+		t.Builtin = append(t.Builtin, e.Name())
+	}
+	return t.Write(dir)
 }
 
 // bringHere moves the app's window to the workspace in view, on Hyprland,
