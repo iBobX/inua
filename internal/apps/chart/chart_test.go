@@ -31,3 +31,18 @@ func TestFlatLineHasNoGaps(t *testing.T) {
 		}
 	}
 }
+
+func TestBars(t *testing.T) {
+	c := color.NRGBA{200, 100, 50, 255}
+	img := Bars([]float64{0, 1, 0.5}, []float64{0, 1, 0.8}, 30, 28, c)
+	lit := func(x, y int) bool { return img.NRGBAAt(x, y).A > 0 }
+	if lit(3, 27) || !lit(13, 27) || !lit(13, 1) || !lit(23, 27) || lit(23, 10) {
+		t.Error("bars at the wrong heights")
+	}
+	if !lit(23, 5) { // the third bar's peak, at 0.8
+		t.Error("no peak")
+	}
+	if len(Bars(nil, nil, 10, 10, c).Pix) != 400 {
+		t.Error("empty")
+	}
+}

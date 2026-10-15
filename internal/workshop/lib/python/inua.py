@@ -252,8 +252,11 @@ class ui:
         return _node("columns", children)
 
     @staticmethod
-    def scroll(*children, width=None):
-        return _node("scroll", children, width=width)
+    def scroll(*children, width=None, style=None):
+        """A scrolling area; style "sidebar" draws it as the light apps'
+        sidebar, "panel" as a panel at the right (give it a width, in
+        columns)."""
+        return _node("scroll", children, width=width, style=style)
 
     @staticmethod
     def box(*children, horizontal=False, spacing=None, width=None):

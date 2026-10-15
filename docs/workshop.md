@@ -52,7 +52,9 @@ Todo (a list kept in the store, confirm dialogs, a notification), SSH
 Hosts (two columns, a filter, the terminal), Pomodoro (JavaScript:
 timers, a drop-down, a switch) and At a Glance (inua's desk functions and
 changes followed as they happen, in tabs, with tiles, a slider, a chart,
-images and file dialogs).
+images and file dialogs; its Components tab shows every building block in
+its kinds, its inputs live, and its Layouts tab the light apps' layouts:
+a sidebar, a panel at the right, or both, around the page).
 
 ## JavaScript
 
@@ -117,8 +119,8 @@ Python, `ui.<type>(…)` makes one.
 | Block | Python | Notes |
 |---|---|---|
 | page | `ui.page(*children, scroll=True)` | The window's content; a `bar` among the children sits at the bottom |
-| columns | `ui.columns(*children)` | Side by side; a child's `width` fixes it, the others share the rest. Use with `page(scroll=False)` and `scroll` children |
-| scroll | `ui.scroll(*children, width=None)` | A scrolling area |
+| columns | `ui.columns(*children)` | Side by side, a hairline between; a child's `width` fixes it, the others share the rest. Use with `page(scroll=False)` and `scroll` children: `columns(scroll(…, style="sidebar", width=200), scroll(…), scroll(…, style="panel", width=260))` |
+| scroll | `ui.scroll(*children, width=None, style=None)` | A scrolling area. In `columns`, style `sidebar` draws it as the light apps' sidebar (the index column, on the panel colour) and `panel` as a panel at the right (as Viewer's details); give it a `width` |
 | box | `ui.box(*children, horizontal=False, spacing=8)` | |
 | section | `ui.section(title, *children, meta=None)` | Under a `[TITLE]` head, as in Settings |
 | row | `ui.row(title, sub=None, id=None, icon=None, selected=False, end=[])` | With an id, a click on it is an event; `end` are widgets at its end |

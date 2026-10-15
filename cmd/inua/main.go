@@ -399,8 +399,8 @@ func cmdInit(args []string) error {
 		usage()
 	}
 	results, err := bootstrap.Install(samples.FS, samples.Files, *dir, *force)
-	for _, r := range results {
-		fmt.Println(r)
+	for _, line := range bootstrap.Lines(results, filepath.Join(*dir, filepath.FromSlash(samples.IconSet))) {
+		fmt.Println(line)
 	}
 	if err != nil {
 		return err

@@ -38,19 +38,22 @@ ApplicationWindow files {
             spacing: 2;
 
             ToggleButton hidden_toggle {
-              styles ["plain"]
+              styles ["framed-toggle"]
+              valign: center;
               icon-name: "view-reveal-symbolic";
               tooltip-text: _("Hidden files (Ctrl+H)");
             }
 
             ToggleButton dual_toggle {
-              styles ["plain"]
+              styles ["framed-toggle"]
+              valign: center;
               icon-name: "view-dual-symbolic";
               tooltip-text: _("Two panes (F3)");
             }
 
             ToggleButton details_toggle {
-              styles ["plain"]
+              styles ["framed-toggle"]
+              valign: center;
               icon-name: "dialog-information-symbolic";
               tooltip-text: _("Details (Space)");
             }
@@ -61,6 +64,7 @@ ApplicationWindow files {
 
             Button keys_button {
               styles ["plain"]
+              valign: center;
               icon-name: "preferences-desktop-keyboard-shortcuts-symbolic";
               tooltip-text: _("Keys (Ctrl+?)");
             }
@@ -107,6 +111,7 @@ ApplicationWindow files {
 
             Button job_cancel {
               styles ["plain"]
+              valign: center;
               icon-name: "window-close-symbolic";
               tooltip-text: _("Cancel");
             }

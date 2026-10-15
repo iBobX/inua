@@ -105,6 +105,51 @@ ApplicationWindow settings {
                     row-spacing: 8;
                     column-spacing: 8;
                   }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Your themes");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("A CSS file of @define-color lines, kept in themes beside config.toml");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button theme_add {
+                      styles ["outlined"]
+                      name: "theme_add";
+                      label:  _("Add…");
+                      valign: center;
+                    }
+
+                    Button theme_trash {
+                      styles ["outlined", "danger"]
+                      name: "theme_trash";
+                      label:  _("Move to Trash");
+                      tooltip-text:  _("The theme in use, if it is one of yours");
+                      valign: center;
+                    }
+
+                    Button theme_folder {
+                      styles ["outlined"]
+                      name: "theme_folder";
+                      label:  _("Open Folder");
+                      valign: center;
+                    }
+                  }
                 }
               }
 
@@ -236,6 +281,51 @@ ApplicationWindow settings {
                           _("System theme"),
                         ]
                       };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Your icon sets");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("A folder of SVG icons named like inua's, kept in icons beside config.toml");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button iconset_add {
+                      styles ["outlined"]
+                      name: "iconset_add";
+                      label:  _("Add…");
+                      valign: center;
+                    }
+
+                    Button iconset_trash {
+                      styles ["outlined", "danger"]
+                      name: "iconset_trash";
+                      label:  _("Move to Trash");
+                      tooltip-text:  _("The icon set in use, if it is one of yours");
+                      valign: center;
+                    }
+
+                    Button iconset_folder {
+                      styles ["outlined"]
+                      name: "iconset_folder";
+                      label:  _("Open Folder");
+                      valign: center;
                     }
                   }
                 }

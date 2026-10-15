@@ -20,6 +20,7 @@ import (
 
 	"github.com/lyricat/inua/internal/clipboard"
 	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/shell"
@@ -34,11 +35,13 @@ type settings struct {
 	win  *gtk.ApplicationWindow // nil while closed
 	refs gtkx.Scope
 
-	status, clockPreview gtk.Label
-	pages                gtk.Stack
-	index                gtk.ListBox // the pages' list, beside them
-	themes               gtk.FlowBox
-	swatches             map[string]*gtk.Button // by theme, owned by the flow box
+	status, clockPreview  gtk.Label
+	pages                 gtk.Stack
+	index                 gtk.ListBox // the pages' list, beside them
+	themes                gtk.FlowBox
+	swatches              map[string]*gtk.Button // by theme, owned by the flow box
+	swatchNames           []string               // the themes the swatches show
+	themeTrash, iconTrash gtk.Button             // for the user's theme or icon set in use
 
 	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory gtk.Switch
 	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                gtk.Switch
@@ -51,7 +54,8 @@ type settings struct {
 	clipLimit                                                        gtk.DropDown
 	clipLimits                                                       []int // clipLimit's choices
 	textScale                                                        gtk.DropDown
-	textScales                                                       []int // textScale's choices
+	textScales                                                       []int    // textScale's choices
+	iconSets                                                         []string // icons' choices
 	tpSpeed, clipOpacity                                             gtk.Scale
 	clipOpacityVal, clipStats                                        gtk.Label
 	clipClear, clipReveal                                            gtk.Button
@@ -186,7 +190,7 @@ func (s *shellUI) bindSettingsHandlers() {
 				c.Clipboard.Limit = s.settings.clipLimits[i]
 			}
 		case "icons":
-			c.Style.Icons = pick(config.IconSets, i, c.Style.Icons)
+			c.Style.Icons = pick(s.settings.iconSets, i, c.Style.Icons)
 		case "text_scale":
 			if i >= 0 && i < len(s.settings.textScales) {
 				c.Style.TextScale = s.settings.textScales[i]
@@ -216,7 +220,7 @@ func (s *shellUI) bindSettingsHandlers() {
 	}
 	s.onSettingsButton = func(b gtk.Button) {
 		name := b.GetName()
-		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) || s.keyringButton(name) {
+		if s.shortcutButton(name) || s.aiButton(name) || s.aboutButton(name) || s.keyringButton(name) || s.customButton(name) {
 			return
 		}
 		c := s.cfg
@@ -355,6 +359,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("language", &st.language)
 	ui.Get("text_scale", &st.textScale)
 	st.textScales = nil // a new dropdown, without its choices
+	st.iconSets = nil
 	ui.Get("lang_restart_row", &st.langRestartRow)
 	ui.Get("lang_restart", &st.langRestart)
 	ui.Get("banner", &st.banner)
@@ -407,6 +412,13 @@ func (s *shellUI) openSettings() {
 	var choose, clearImage gtk.Button
 	ui.Get("bg_choose", &choose)
 	ui.Get("bg_clear", &clearImage)
+	var themeAdd, themeFolder, iconAdd, iconFolder gtk.Button
+	ui.Get("theme_add", &themeAdd)
+	ui.Get("theme_trash", &st.themeTrash)
+	ui.Get("theme_folder", &themeFolder)
+	ui.Get("iconset_add", &iconAdd)
+	ui.Get("iconset_trash", &st.iconTrash)
+	ui.Get("iconset_folder", &iconFolder)
 	s.buildStickyHeads(ui)
 	st.entries = map[uintptr]*gtk.Entry{}
 	st.drops = map[uintptr]*gtk.DropDown{}
@@ -427,7 +439,7 @@ func (s *shellUI) openSettings() {
 	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
-	for _, b := range []*gtk.Button{&choose, &clearImage, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
+	for _, b := range []*gtk.Button{&choose, &clearImage, &themeAdd, &st.themeTrash, &themeFolder, &iconAdd, &st.iconTrash, &iconFolder, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	st.tpSpeed.ConnectChangeValue(&s.onSettingsScale)
@@ -492,8 +504,10 @@ func (s *shellUI) closeSettings() {
 // text colours, and its name.
 func (s *shellUI) buildSwatches() {
 	st := &s.settings
+	st.themes.RemoveAll()
 	st.swatches = map[string]*gtk.Button{}
-	for _, name := range config.Themes {
+	st.swatchNames = s.cfg.ThemeNames()
+	for _, name := range st.swatchNames {
 		btn := gtk.NewButton()
 		btn.SetName("theme:" + name)
 		btn.AddCssClass("swatch")
@@ -512,7 +526,7 @@ func (s *shellUI) buildSwatches() {
 			gtkx.Append(ground, &c.Widget)
 		}
 		gtkx.Append(box, &ground.Widget)
-		label := gtk.NewLabel(themeKanji[name] + "  " + name)
+		label := gtk.NewLabel(strings.TrimSpace(themeKanji[name] + "  " + name))
 		label.SetXalign(0)
 		gtkx.Append(box, &label.Widget)
 
@@ -523,20 +537,27 @@ func (s *shellUI) buildSwatches() {
 		btn.Unref() // the flow box holds it
 		st.swatches[name] = btn
 	}
+	s.loadSwatchStyle()
 }
 
-// swatchCSS colours the theme swatches from the theme files, whatever the
-// current theme is.
-func (s *shellUI) swatchCSS() string {
+// loadSwatchStyle colours the theme swatches from the theme files, whatever
+// the current theme is. The user's themes may have changed since the
+// last time, so opening the settings loads it again.
+func (s *shellUI) loadSwatchStyle() {
+	st := &s.styles
+	if st.swatches == nil {
+		st.swatches = gtk.NewCssProvider()
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.swatches, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
+	}
 	var b strings.Builder
-	for _, name := range config.Themes {
+	for _, name := range s.cfg.ThemeNames() {
 		c := shellThemeColors(s, name)
 		fmt.Fprintf(&b, ".swatch.sw-%[1]s .ground { background-color: %[2]s; border: 1px solid %[3]s; }\n"+
 			".swatch.sw-%[1]s .chip-accent { background-color: %[4]s; }\n"+
 			".swatch.sw-%[1]s .chip-text { background-color: %[5]s; }\n",
 			name, c["app"], c["line"], c["accent"], c["t0"])
 	}
-	return b.String()
+	st.swatches.LoadFromString(b.String())
 }
 
 // showSettings sets every control from the current settings.
@@ -548,9 +569,14 @@ func (s *shellUI) showSettings() {
 	st.filling = true
 	defer func() { st.filling = false }()
 	c := s.cfg
+	if !slices.Equal(st.swatchNames, c.ThemeNames()) {
+		s.buildSwatches() // a theme was added or taken away
+	}
 	for name, btn := range st.swatches {
 		toggle(&btn.Widget, "on", name == s.theme())
 	}
+	st.themeTrash.SetSensitive(c.IsCustomTheme(s.theme()))
+	st.iconTrash.SetSensitive(c.IconSetDir() != "")
 	st.bgEnable.SetActive(c.Background.Enable)
 	st.title.SetActive(c.Bar.Title)
 	st.tray.SetActive(c.Bar.Tray)
@@ -567,7 +593,7 @@ func (s *shellUI) showSettings() {
 	st.bgFit.SetSelected(uint32(max(0, slices.Index(fitChoices, c.Background.Fit))))
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
-	st.icons.SetSelected(uint32(max(0, slices.Index(config.IconSets, c.Style.Icons))))
+	s.showIconSets()
 	s.showTextScale()
 	st.language.SetSelected(uint32(max(0, slices.Index(config.Languages, c.Language))))
 	// The shell chose its language when it started.
@@ -589,6 +615,21 @@ func (s *shellUI) showSettings() {
 
 // showTextScale offers the usual text sizes, and the one in the file if it
 // is another.
+// showIconSets offers the built-in icon sets and the user's.
+func (s *shellUI) showIconSets() {
+	st := &s.settings
+	sets := s.cfg.IconSetNames()
+	if !slices.Equal(sets, st.iconSets) {
+		names := slices.Clone(sets)
+		names[0], names[1] = i18n.T("Phosphor"), i18n.T("System theme") // config.IconSets
+		list := gtk.NewStringList(names)
+		st.icons.SetModel(list)
+		list.Unref()
+		st.iconSets = sets
+	}
+	st.icons.SetSelected(uint32(max(0, slices.Index(sets, s.cfg.Style.Icons))))
+}
+
 func (s *shellUI) showTextScale() {
 	st := &s.settings
 	scale := s.cfg.Style.TextScale
@@ -888,27 +929,50 @@ func movePinned(pinned []string, id, action string) []string {
 	return out
 }
 
-// revealFile shows path selected in the file manager
-// (org.freedesktop.FileManager1), else opens its folder; a file not made
-// yet shows its folder. It waits on the bus: run it off the main thread.
+// revealFile shows path selected in the file manager, else opens its
+// folder; a file not made yet shows its folder. It waits on the bus: run
+// it off the main thread.
 func revealFile(path string) {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		log.Printf("reveal: %v", err)
 		return
 	}
-	method, target := "ShowItems", path
 	if _, err := os.Stat(path); err != nil {
-		method, target = "ShowFolders", dir
+		showInFileManager("ShowFolders", dir)
+		return
 	}
+	showInFileManager("ShowItems", path)
+}
+
+// showInFileManager asks a running file manager to show target
+// (org.freedesktop.FileManager1's ShowItems or ShowFolders). With none
+// running it starts inua-files rather than let D-Bus start one: D-Bus
+// starts it with the activation environment, which may name another
+// Wayland display (a nested session's), and the window never shows.
+func showInFileManager(method, target string) {
 	if conn, err := system.SessionBus(); err == nil {
-		uri := (&url.URL{Scheme: "file", Path: target}).String()
-		err = conn.Object("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1").
-			Call("org.freedesktop.FileManager1."+method, 0, []string{uri}, "").Err
+		var running bool
+		conn.BusObject().Call("org.freedesktop.DBus.NameHasOwner", 0, "org.freedesktop.FileManager1").Store(&running)
+		if running {
+			uri := (&url.URL{Scheme: "file", Path: target}).String()
+			err = conn.Object("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1").
+				Call("org.freedesktop.FileManager1."+method, 0, []string{uri}, "").Err
+		}
 		conn.Close()
-		if err == nil {
+		if running && err == nil {
 			return
 		}
+	}
+	// inua-files opens a folder, or shows a file selected in its folder.
+	if bin, err := exec.LookPath("inua-files"); err == nil {
+		if err := desktop.Spawn([]string{bin, target}, ""); err == nil {
+			return
+		}
+	}
+	dir := target
+	if method == "ShowItems" {
+		dir = filepath.Dir(target)
 	}
 	if err := exec.Command("xdg-open", dir).Run(); err != nil {
 		log.Printf("reveal: %v", err)

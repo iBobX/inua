@@ -1,6 +1,6 @@
 // One pane of Files: its tabs (shown with two or more), where it is (back,
 // forward, up, the path as buttons or an entry, its path copied, a
-// terminal there), the list or the grid as text tabs, the column heads
+// terminal there), the list or the grid (a segmented control), the column heads
 // that sort (made in Go), the folder itself (internal/filesui/pane.go),
 // and a status line with the zoom. Loaded once for each pane.
 using Gtk 4.0;
@@ -29,18 +29,21 @@ Box pane {
 
     Button back {
       styles ["plain"]
+      valign: center;
       icon-name: "go-previous-symbolic";
       tooltip-text: _("Back (Alt+←)");
     }
 
     Button forward {
       styles ["plain"]
+      valign: center;
       icon-name: "go-next-symbolic";
       tooltip-text: _("Forward (Alt+→)");
     }
 
     Button up {
       styles ["plain"]
+      valign: center;
       icon-name: "go-up-symbolic";
       tooltip-text: _("Parent folder (Alt+↑)");
     }
@@ -85,24 +88,27 @@ Box pane {
 
     Button edit_path {
       styles ["plain"]
+      valign: center;
       icon-name: "document-edit-symbolic";
       tooltip-text: _("Edit the path (Ctrl+L)");
     }
 
     Button copy_path {
       styles ["plain"]
+      valign: center;
       icon-name: "edit-copy-symbolic";
       tooltip-text: _("Copy the path (Ctrl+Shift+C)");
     }
 
     Button terminal {
       styles ["plain"]
+      valign: center;
       icon-name: "utilities-terminal-symbolic";
       tooltip-text: _("Terminal here (Ctrl+Alt+T)");
     }
 
     StackSwitcher view_switch {
-      styles ["tabs", "files-view-tabs"]
+      styles ["segmented", "icons"]
       stack: views;
       valign: center;
     }
@@ -124,7 +130,8 @@ Box pane {
 
       StackPage {
         name: "list";
-        title: _("LIST");
+        title: _("List (Ctrl+1)");
+        icon-name: "view-list-symbolic";
 
         child: ScrolledWindow list_scroll {
           hscrollbar-policy: never;
@@ -133,7 +140,8 @@ Box pane {
 
       StackPage {
         name: "grid";
-        title: _("GRID");
+        title: _("Grid (Ctrl+2)");
+        icon-name: "view-grid-symbolic";
 
         child: ScrolledWindow grid_scroll {
           hscrollbar-policy: never;
@@ -185,6 +193,7 @@ Box pane {
 
       Button zoom_out {
         styles ["plain"]
+        valign: center;
         icon-name: "zoom-out-symbolic";
         tooltip-text: _("Smaller (Ctrl+−)");
       }
@@ -196,6 +205,7 @@ Box pane {
 
       Button zoom_in {
         styles ["plain"]
+        valign: center;
         icon-name: "zoom-in-symbolic";
         tooltip-text: _("Bigger (Ctrl++)");
       }

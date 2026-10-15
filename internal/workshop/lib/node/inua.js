@@ -244,7 +244,9 @@ const ui = {
     return n;
   },
   columns: (...args) => container("columns", args),
-  scroll: (...args) => container("scroll", args, "width"),
+  /** A scrolling area: ui.scroll({ width: 200, style: "sidebar" }, …);
+   * style "sidebar" is the light apps' sidebar, "panel" a panel at the right. */
+  scroll: (...args) => container("scroll", args, "width", "style"),
   box: (...args) => container("box", args, "horizontal", "spacing", "width"),
   section(title, ...args) {
     const n = container("section", args, "meta");

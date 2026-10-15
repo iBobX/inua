@@ -4,11 +4,14 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"regexp"
+	"slices"
 	"strings"
 	"testing"
 	"testing/fstest"
 
 	samples "github.com/lyricat/inua/config"
+	"github.com/lyricat/inua/internal/config"
 )
 
 var testFS = fstest.MapFS{
@@ -295,5 +298,64 @@ func TestSetPinentry(t *testing.T) {
 	}
 	if got := read(t, filepath.Join(dir, "gpg-agent.conf")); got != "default-cache-ttl 600\npinentry-program "+prog+"\n" {
 		t.Errorf("forced file %q", got)
+	}
+}
+
+// The samples include a theme and an icon set of the user's own, which
+// the settings find once installed.
+func TestSampleThemeAndIconSet(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := Install(samples.FS, samples.Files, dir, false); err != nil {
+		t.Fatal(err)
+	}
+	c, w, err := config.Load(filepath.Join(dir, "inua", "config.toml"))
+	if err != nil || len(w) != 0 {
+		t.Fatalf("err=%v warnings=%v", err, w)
+	}
+	if !slices.Contains(c.ThemeNames(), "nord") || !slices.Contains(c.IconSetNames(), "phosphor-bold") {
+		t.Errorf("themes %v, icon sets %v", c.ThemeNames(), c.IconSetNames())
+	}
+
+	// Nord sets every token ui/style.css uses, so nothing of yoru shows.
+	nord := read(t, "../../config/inua/themes/nord.css")
+	style := read(t, "../../ui/style.css")
+	for _, m := range regexp.MustCompile(`@define-color\s+([\w-]+)`).FindAllStringSubmatch(read(t, "../../ui/themes/yoru.css"), -1) {
+		token := m[1]
+		used := regexp.MustCompile(`@`+token+`\b`).MatchString(style) || token == "field" // field: the wallpaper's texture
+		if used && !regexp.MustCompile(`@define-color\s+`+token+`\s+#[0-9A-Fa-f]{6};`).MatchString(nord) {
+			t.Errorf("nord.css lacks %s", token)
+		}
+	}
+
+	// The icon set replaces every built-in icon, and adds none.
+	builtin, _ := filepath.Glob("../../ui/icons/*.svg")
+	bold, _ := filepath.Glob("../../config/inua/icons/phosphor-bold/*.svg")
+	if len(bold) != len(builtin) {
+		t.Errorf("%d bold icons, %d built-in", len(bold), len(builtin))
+	}
+	for _, p := range builtin {
+		if _, err := os.Stat(filepath.Join("../../config/inua/icons/phosphor-bold", filepath.Base(p))); err != nil {
+			t.Errorf("phosphor-bold lacks %s", filepath.Base(p))
+		}
+	}
+}
+
+func TestLines(t *testing.T) {
+	set := filepath.Join("cfg", "icons", "bold")
+	results := []Result{
+		{Path: filepath.Join("cfg", "config.toml"), Outcome: Written},
+		{Path: filepath.Join(set, "a.svg"), Outcome: Written},
+		{Path: filepath.Join(set, "b.svg"), Outcome: Written},
+		{Path: filepath.Join(set, "c.svg"), Outcome: Skipped},
+		{Path: filepath.Join("cfg", "icons", "bold-other.svg"), Outcome: Same},
+	}
+	want := []string{
+		"wrote    " + filepath.Join("cfg", "config.toml"),
+		"current  " + filepath.Join("cfg", "icons", "bold-other.svg"),
+		"wrote    " + set + " (2 files)",
+		"skipped  " + set + " (1 file differs; -force replaces them, keeping .bak)",
+	}
+	if got := Lines(results, set); !slices.Equal(got, want) {
+		t.Errorf("Lines =\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
 }

@@ -104,6 +104,9 @@ button.plain {
 }
 button.plain:hover { background: alpha(@accent, 0.09); color: @t0; }
 button.plain:disabled { color: alpha(@t2, 0.5); }
+/* An icon button is square: no side padding, as wide as it is tall. */
+button.image-button { padding-left: 0; padding-right: 0; }
+.settings button.outlined.image-button { min-width: 34px; }
 
 /* --- bar ------------------------------------------------------------- */
 
@@ -175,7 +178,8 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
   background: transparent;
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
-.bar .tray button { padding: 3px 5px; }
+/* The icon buttons among them are square, as tall as the others. */
+.bar button.clipboard, .bar button.notes, .bar .tray button { padding: 3px; }
 /* .hover: the pointer is in a button's reach past the island (up to the
    screen's edge); see bar.endReach and clockReach. */
 .bar button.clipboard:hover, .bar button.clipboard.hover, .bar button.status:hover, .bar button.status.hover, .bar button.notes:hover, .bar button.notes.hover, .bar button.clock-button:hover, .bar button.clock-button.hover, .bar .tray button:hover { background: alpha(@accent, 0.09); }
@@ -245,8 +249,8 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
 .viewer button.viewer-trash label { color: @danger; }
 .viewer-stage { background: mix(@app, black, 0.22); }
 .viewer button.viewer-edge {
-  min-width: 40px;
-  min-height: 84px;
+  min-width: 44px;
+  min-height: 44px;
   margin: 0 12px;
   padding: 0;
   border: 1px solid alpha(@line, 0.7);
@@ -1201,7 +1205,7 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
   font-feature-settings: "tnum";
   color: @t0;
 }
-.settings .picker-unit button.plain { min-height: 22px; padding: 0; }
+.settings .picker-unit button.plain { min-width: 22px; min-height: 22px; padding: 0; }
 .settings .picker-colon { margin: 0 2px; font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 22px; color: @t2; }
 
 /* Clock and Weather: one column. Mono small capitals for labels, light
@@ -1382,7 +1386,9 @@ progressbar.thin progress { min-height: 2px; border-radius: 1px; background: @ac
 /* Calculator */
 .calc { padding: 14px 16px 16px; }
 .calc-modes { margin-bottom: 6px; }
-.settings button.calc-toggle {
+/* A toggle in a hairline frame, tinted with the accent while on
+   (Calculator's modes, Files' panels). */
+.settings button.framed-toggle {
   min-height: 0;
   padding: 4px 10px;
   border: 1px solid @line;
@@ -1392,7 +1398,7 @@ progressbar.thin progress { min-height: 2px; border-radius: 1px; background: @ac
   color: @t1;
   font-size: 12px;
 }
-.settings button.calc-toggle:checked { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); color: @t0; }
+.settings button.framed-toggle:checked { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); color: @t0; }
 .calc-display { padding: 8px 4px 14px; }
 .calc-expr {
   min-height: 22px;
@@ -1428,7 +1434,7 @@ button.calc-key.op { color: @accent; font-size: 20px; }
 button.calc-key.eq { background: @primary; border-color: @primary; color: @app; font-size: 20px; }
 button.calc-key.eq:hover { background: mix(@primary, @app, 0.12); }
 button.calc-key image { -gtk-icon-size: 20px; }
-.settings button.calc-toggle image { -gtk-icon-size: 14px; }
+.settings button.framed-toggle image { -gtk-icon-size: 14px; }
 /* History: a panel at the right, as the viewer's details. */
 .calc-history { padding: 14px 12px 16px; background: @panel; border-left: 1px solid alpha(@line, 0.55); }
 .calc-history > .kicker { margin: 4px 8px 10px; }
@@ -1990,12 +1996,15 @@ window.gpg popover.gpg-from-pop .sub { font-family: "Geist Mono", "IBM Plex Mono
 window.gpg menubutton.gpg-from image { color: @t1; }
 window.gpg button.gpg-from-row { padding: 8px 10px; border: none; border-radius: 2px; background: transparent; }
 window.gpg button.gpg-from-row:hover { background: alpha(@accent, 0.08); }
-/* Text | Files: a segmented control in one hairline frame, the option
-   chosen tinted with the accent (as Mister Morph's console tabs). */
-window.gpg stackswitcher.gpg-kind { padding: 2px; border: 1px solid alpha(@line, 0.7); border-radius: 0; background: @app; }
-window.gpg stackswitcher.gpg-kind > button { min-height: 24px; min-width: 0; padding: 0 12px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @t2; font-size: 12px; font-weight: 500; }
-window.gpg stackswitcher.gpg-kind > button:hover { background: alpha(@t0, 0.06); color: @t0; }
-window.gpg stackswitcher.gpg-kind > button:checked { background: alpha(@accent, 0.16); color: @accent; }
+/* A segmented control (GPG's Text | Files, Files' list | grid): the
+   options in one hairline frame, the one chosen tinted with the accent
+   (as Mister Morph's console tabs); icons or words. */
+.settings stackswitcher.segmented { padding: 2px; border: 1px solid alpha(@line, 0.7); border-radius: 0; background: @app; }
+.settings stackswitcher.segmented > button { min-height: 24px; min-width: 0; padding: 0 12px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @t2; font-size: 12px; font-weight: 500; }
+.settings stackswitcher.segmented > button:hover { background: alpha(@t0, 0.06); color: @t0; }
+.settings stackswitcher.segmented > button:checked { background: alpha(@accent, 0.16); color: @accent; }
+.settings stackswitcher.segmented > button image { -gtk-icon-size: 14px; }
+.settings stackswitcher.segmented.icons > button { min-width: 24px; min-height: 24px; padding: 0; } /* icons: square */
 window.gpg .gpg-drop { margin-top: 12px; padding: 30px; border: 1px dashed alpha(@line, 0.9); border-radius: 3px; }
 /* An offer on top of a page: a message on the clipboard, no key yet. */
 window.gpg .gpg-offer { margin: 14px 0 4px; padding: 12px 14px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
@@ -2053,6 +2062,13 @@ window.workshop .ws-page { padding: 16px 24px 20px; }
 window.workshop .ws-page.ws-fixed { padding: 0; }
 window.workshop .ws-scroll { padding: 12px 16px; }
 window.workshop .ws-columns > .ws-col-next { border-left: 1px solid alpha(@line, 0.55); }
+/* scroll(style="sidebar"): the light apps' index column, on the panel
+   colour; scroll(style="panel"): a panel at the right, as Viewer's
+   details. The columns' hairline stands between them and the page. */
+window.workshop .ws-sidebar, window.workshop .ws-panel { background: @panel; }
+window.workshop .ws-sidebar > viewport > .ws-scroll { padding: 18px 12px; }
+window.workshop .ws-panel > viewport > .ws-scroll { padding: 18px 20px; }
+window.workshop .ws-sidebar .ws-row { margin: 0; padding: 6px 10px; min-height: 32px; }
 window.workshop .ws-bar { padding: 10px 24px; border-top: 1px solid alpha(@line, 0.55); }
 window.workshop .ws-row { min-height: 40px; padding: 8px 10px; margin: 0 -10px; border-radius: 2px; }
 window.workshop .ws-row.clickable:hover { background: alpha(@accent, 0.06); }
@@ -2153,7 +2169,14 @@ window.files button.files-side-item.selected .index-icon { color: @accent; }
 window.files button.files-eject { margin-left: 2px; color: @t2; }
 window.files button.files-eject:hover { color: @t0; }
 window.files .files-sidebar-foot { padding: 8px 12px 12px; border-top: 1px solid alpha(@line, 0.55); }
-window.files .files-sidebar-foot togglebutton:checked { color: @accent; background: alpha(@accent, 0.09); }
+window.files .files-sidebar-foot { border-spacing: 6px; }
+/* Every icon button is square: as wide as tall, and centred in its row
+   (valign in the layouts) so the row cannot stretch it; 28 px, or 20 px
+   where the row is small. A framed one keeps its frame all round. */
+window.files button.image-button { min-width: 28px; min-height: 28px; padding: 0; }
+window.files .files-zoom button.image-button,
+window.files button.files-col-more,
+window.files button.files-tab-close { min-width: 20px; min-height: 20px; padding: 0; }
 
 window.files paned > separator { min-width: 1px; background: alpha(@line, 0.7); }
 window.files .files-pane { background: @app; }
@@ -2183,16 +2206,12 @@ window.files button.files-tab-title {
 }
 window.files button.files-tab-title:hover { color: @t1; }
 window.files .files-tab.current button.files-tab-title { color: @t0; }
-window.files button.files-tab-close { min-width: 18px; min-height: 18px; padding: 2px; margin-right: 4px; opacity: 0.5; }
+window.files button.files-tab-close { margin-right: 4px; opacity: 0.5; }
 window.files .files-tab:hover button.files-tab-close, window.files .files-tab.current button.files-tab-close { opacity: 1; }
 
 /* The list or the grid: the apps' text tabs, small enough for the head. */
-window.files stackswitcher.files-view-tabs { margin: 0 0 0 6px; }
-window.files stackswitcher.files-view-tabs > button,
-window.files stackswitcher.files-view-tabs > button:checked,
-window.files stackswitcher.files-view-tabs > button:hover { margin: 0 2px; padding: 6px 4px 5px; font-size: 10.5px; }
+window.files stackswitcher.segmented { margin-left: 6px; }
 window.files .files-head { padding: 10px 12px 8px; border-bottom: 1px solid alpha(@line, 0.55); }
-window.files .files-head togglebutton:checked { color: @accent; background: alpha(@accent, 0.09); }
 window.files .files-crumbs { padding: 0 6px; }
 window.files button.files-crumb {
   min-height: 28px;
@@ -2213,7 +2232,7 @@ window.files entry.files-location { min-height: 30px; margin: 0 6px; }
 window.files .files-columns { padding: 4px 14px; border-bottom: 1px solid alpha(@line, 0.4); }
 window.files button.files-col { min-height: 20px; min-width: 0; padding: 0; border: none; background: transparent; box-shadow: none; }
 window.files button.files-col:hover .kicker { color: @t0; }
-window.files button.files-col-more { min-height: 20px; min-width: 0; padding: 0; color: @t2; }
+window.files button.files-col-more { color: @t2; }
 window.files button.files-col-more:hover { color: @t0; }
 
 window.files listview, window.files gridview { background: transparent; color: @t0; }
@@ -2268,7 +2287,7 @@ window.files .files-zoom-4 .files-row .readout { font-size: 13px; }
 window.files .files-zoom-5 listview > row { min-height: 42px; }
 window.files .files-zoom-5 .files-name { font-size: 16.5px; }
 window.files .files-zoom-5 .files-row .readout { font-size: 14px; }
-window.files .files-zoom button { min-height: 18px; min-width: 18px; padding: 0 2px; }
+window.files .files-zoom { border-spacing: 2px; }
 window.files button.files-zoom-level { min-width: 40px; padding: 0 2px; }
 window.files .files-status { min-height: 18px; padding: 6px 14px 8px; border-top: 1px solid alpha(@line, 0.4); }
 window.files .files-status .readout { color: @t2; font-size: 11px; }
@@ -2374,3 +2393,126 @@ popover.files-menu .files-menu-check { color: @accent; }
 window.files checkbutton check { border: 1px solid @line; border-radius: 2px; background: @surface; box-shadow: none; }
 window.files checkbutton check:checked { border-color: @accent; background: @accent; color: @app; }
 popover.files-menu separator { margin: 4px 6px; background: alpha(@line, 0.9); }
+/* Music: Winamp's panels in inua's look. The display is a dark well
+   with the time in the accent, mono figures and the analyser; the
+   equalizer's sliders stand in a row; the playlist is a plain list, the
+   track playing in the accent. */
+.music-main { padding: 16px 18px 12px; }
+.music-display {
+  padding: 10px 14px;
+  border: 1px solid alpha(@line, 0.9);
+  border-radius: 2px;
+  background: mix(@app, black, 0.25);
+}
+.music-time {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 30px;
+  font-weight: 300;
+  font-feature-settings: "tnum";
+  color: @accent;
+}
+.music-state { color: @t2; }
+.music-state.playing { color: @accent; }
+.music-title {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 13px;
+  color: @t0;
+}
+.music-channels { color: @accent; }
+.music-dim { color: @t2; }
+.music-seek { margin: 0 -6px; }
+.music-transport > button {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 1px solid @line;
+  border-radius: 0;
+  background: @surface;
+  box-shadow: none;
+  color: @t1;
+}
+.music-transport > button:first-child { border-radius: 2px 0 0 2px; }
+.music-transport > button:last-child { border-radius: 0 2px 2px 0; }
+.music-transport > button:not(:first-child) { border-left-width: 0; }
+.music-transport > button:hover { color: @t0; background: mix(@surface, @accent, 0.06); }
+.music-transport > button:active { background: alpha(@accent, 0.14); }
+.music-small-scale { margin: 0 2px; }
+button.music-toggle { color: @t2; }
+button.music-toggle:checked, button.music-toggle.on { color: @accent; }
+button.music-panel-toggle {
+  min-height: 0;
+  min-width: 0;
+  padding: 3px 9px;
+  border: 1px solid @line;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+  color: @t2;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+button.music-panel-toggle:checked { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); color: @accent; }
+.music-eq { padding: 12px 18px 14px; border-top: 1px solid alpha(@line, 0.55); }
+.music-eq-curve { border: 1px solid alpha(@line, 0.6); border-radius: 2px; background: mix(@app, black, 0.25); }
+.music-pre { margin-right: 14px; padding-right: 14px; border-right: 1px solid alpha(@line, 0.55); }
+scale.music-band { margin: 0 4px; }
+scale.music-band trough { min-width: 4px; }
+.music-playlist { border-top: 1px solid alpha(@line, 0.55); }
+.music-list-head { padding: 10px 18px 8px; }
+.music-rows { padding: 2px 8px 8px; }
+.music-row {
+  min-height: 26px;
+  padding: 2px 10px;
+  border-radius: 2px;
+  color: @t1;
+}
+.music-row:hover { background: alpha(@accent, 0.05); }
+.music-row.selected { background: alpha(@accent, 0.12); color: @t0; }
+.music-row.current { color: @accent; }
+.music-num, .music-length {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-feature-settings: "tnum";
+  color: @t2;
+}
+.music-row.current .music-num, .music-row.current .music-length { color: @accent; }
+.music-list-foot { padding: 4px 10px; border-top: 1px solid alpha(@line, 0.55); }
+
+/* Video: the picture on black, the controls and the name over it in a
+   dark band that fades in and out. */
+window.video, .video-stage { background: black; }
+.video-empty { color: @t1; }
+window.video.video-loaded .video-empty { opacity: 0; }
+.video-empty image { color: @t2; }
+.video-empty-title { font-size: 15px; color: @t1; }
+.video-top {
+  padding: 12px 18px 22px;
+  background: linear-gradient(to bottom, alpha(black, 0.65), alpha(black, 0));
+}
+.video-title { color: white; font-size: 14px; }
+.video-controls {
+  padding: 18px 16px 10px;
+  background: linear-gradient(to top, alpha(black, 0.8), alpha(black, 0));
+  color: white;
+}
+.video-controls button.plain { color: alpha(white, 0.85); }
+.video-controls button.plain:hover { color: white; background: alpha(white, 0.1); }
+.video-controls button.video-play image { -gtk-icon-size: 20px; }
+.video-clock, .video-small {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-feature-settings: "tnum";
+  color: alpha(white, 0.85);
+}
+.video-seek trough { background: alpha(white, 0.25); }
+.video-seek highlight { background: @accent; }
+.video-notice {
+  margin-top: 56px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 2px;
+  background: alpha(black, 0.75);
+  color: white;
+}
+.video-notice button.plain { color: @accent; }

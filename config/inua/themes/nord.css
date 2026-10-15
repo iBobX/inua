@@ -1,0 +1,29 @@
+/* Nord — a sample theme of your own (style.theme = "nord").
+   Colours from the Nord palette (https://www.nordtheme.com, MIT), arctic
+   blue-greys; a few are lightened so text stays legible.
+
+   A theme is @define-color lines, one per token, colours as #rrggbb.
+   Copy this file to start one: name it NAME.css in this folder and pick it
+   on the Appearance page, or set style.theme = "NAME". Tokens you leave
+   out come from yoru. Rules other than colours go in ../style.css. */
+
+/* Grounds, from the back to the front. */
+@define-color app #2E3440;      /* windows and panels: the bar, launcher, settings */
+@define-color panel #323845;    /* side panes: the settings index, details, history */
+@define-color surface #3B4252;  /* cards, rows and fields on the ground */
+@define-color surface2 #434C5E; /* the music artwork in the control center */
+@define-color sb #272C36;       /* the overview's workspaces */
+@define-color field #4C566A;    /* the wallpaper's texture, without a picture */
+
+/* Text. */
+@define-color t0 #ECEFF4;       /* titles and text */
+@define-color t1 #D8DEE9;       /* secondary text and readouts */
+@define-color t2 #959EB0;       /* hints, captions and dim icons */
+@define-color line #434C5E;     /* borders and separators */
+
+/* Colours that mean something. */
+@define-color accent #88C0D0;   /* selection, focus, marks and links */
+@define-color primary #88C0D0;  /* the main button and the chosen item's tint */
+@define-color danger #DA858C;   /* errors and destructive buttons (Nord's red, lightened) */
+@define-color ok #A3BE8C;       /* good news: online, gains, a best time */
+@define-color warn #EBCB8B;     /* warnings */

@@ -77,6 +77,12 @@ pkg() {
         zypper:gnupg) echo gpg2 ;;
         dnf:gnupg) echo gnupg2 ;;
         pacman:tuigreet) echo greetd-tuigreet ;;
+        apt-get:gst-*) echo "gstreamer1.0-plugins-${1#gst-}" | sed 's/plugins-libav/libav/' ;;
+        pacman:gst-*) echo "gst-plugins-${1#gst-}" | sed 's/plugins-libav/libav/' ;;
+        dnf:gst-bad | dnf:gst-ugly) echo "gstreamer1-plugins-${1#gst-}-free" ;;
+        dnf:gst-libav) echo gstreamer1-plugin-libav ;;
+        dnf:gst-*) echo "gstreamer1-plugins-${1#gst-}" ;;
+        zypper:gst-*) echo "gstreamer-plugins-${1#gst-}" ;;
         *) echo "$1" ;;
     esac
 }
@@ -180,8 +186,21 @@ have gpg || missing="$missing $(pkg gnupg)"
 # the clipboard history, Color Picker and Viewer copy with wl-copy; the
 # history reads with wl-paste
 have wl-paste || missing="$missing $(pkg wl-clipboard)"
+# Music and Video play with GStreamer and its plugins; each package is
+# known by one plugin of it.
+gst_plugin() {
+    for d in /usr/lib/gstreamer-1.0 /usr/lib64/gstreamer-1.0 /usr/lib/*-linux-gnu/gstreamer-1.0; do
+        [ -e "$d/$1" ] && return 0
+    done
+    return 1
+}
+gst_plugin libgstplayback.so || missing="$missing $(pkg gst-base)"
+gst_plugin libgstequalizer.so || missing="$missing $(pkg gst-good)"
+gst_plugin libgstmpegtsdemux.so || missing="$missing $(pkg gst-bad)"
+gst_plugin libgstasf.so || missing="$missing $(pkg gst-ugly)"
+gst_plugin libgstlibav.so || missing="$missing $(pkg gst-libav)"
 if [ -z "$missing" ]; then
-    done_ "Hyprland, GTK 4, gtk4-layer-shell, pass, gpg and wl-clipboard are all here"
+    done_ "Hyprland, GTK 4, gtk4-layer-shell, pass, gpg, wl-clipboard and GStreamer are all here"
 else
     note "inua also needs:$missing"
     # shellcheck disable=SC2086

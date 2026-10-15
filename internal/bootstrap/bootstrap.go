@@ -8,6 +8,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
+	"strings"
 )
 
 // Outcome says what Install did with one file.
@@ -81,4 +83,44 @@ func (r Result) String() string {
 		return fmt.Sprintf("replaced %s (old one saved as %s)", r.Path, r.Backup)
 	}
 	return r.Path
+}
+
+// Lines describes results for the terminal, one line per file, except
+// that the files in each of folders (an icon set) are told as one line
+// per outcome.
+func Lines(results []Result, folders ...string) []string {
+	var lines []string
+	counts := make([][4]int, len(folders))
+	for _, r := range results {
+		i := slices.IndexFunc(folders, func(f string) bool { return strings.HasPrefix(r.Path, f+string(filepath.Separator)) })
+		if i < 0 {
+			lines = append(lines, r.String())
+			continue
+		}
+		counts[i][r.Outcome]++
+	}
+	for i, f := range folders {
+		c := counts[i]
+		for _, o := range []Outcome{Written, Same, Skipped, Replaced} {
+			n := c[o]
+			if n == 0 {
+				continue
+			}
+			files, differ := fmt.Sprintf("%d files", n), "differ"
+			if n == 1 {
+				files, differ = "1 file", "differs"
+			}
+			switch o {
+			case Written:
+				lines = append(lines, fmt.Sprintf("wrote    %s (%s)", f, files))
+			case Same:
+				lines = append(lines, fmt.Sprintf("current  %s (%s)", f, files))
+			case Skipped:
+				lines = append(lines, fmt.Sprintf("skipped  %s (%s %s; -force replaces them, keeping .bak)", f, files, differ))
+			case Replaced:
+				lines = append(lines, fmt.Sprintf("replaced %s (%s; old ones saved as .bak)", f, files))
+			}
+		}
+	}
+	return lines
 }

@@ -1,6 +1,6 @@
 // Package appui runs inua's light apps: Clock, Weather, Stocks,
-// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass and
-// GPG, and those of other programs (Files, Viewer, the assistant, the
+// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass,
+// GPG, Music and Video, and those of other programs (Files, Viewer, the assistant, the
 // games). Each runs as its own process with its own application ID, so
 // the launcher, the dock and the compositor see it as an app, but in the
 // shell's look: the theme and style from inua's settings, followed as
@@ -16,12 +16,14 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"github.com/godbus/dbus/v5"
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
@@ -68,6 +70,8 @@ var Apps = map[string]struct {
 	"tailscale":      {"Tailscale", i18n.M("Tailscale"), func() view { return &tailscaleApp{} }, false},
 	"pass":           {"Pass", i18n.M("Pass"), func() view { return &passApp{} }, false},
 	"gpg":            {"GPG", i18n.M("GPG"), func() view { return &gpgApp{} }, false},
+	"music":          {"Music", i18n.M("Music"), func() view { return &musicApp{} }, false},
+	"video":          {"Video", i18n.M("Video"), func() view { return &videoApp{} }, false},
 }
 
 // View is a light app's window from another package: cmd/inua-assistant
@@ -90,6 +94,17 @@ func (e external) open(args []string) {
 	if o, ok := e.v.(Opener); ok {
 		o.Open(args)
 	}
+}
+
+// opensFiles are the apps (by name) that take files while they run:
+// started again with files, the running one gets them (its Opener).
+var opensFiles = map[string]bool{"music": true, "video": true}
+
+// RegisterOpener is Register for a View that opens files (an Opener): a
+// start with files hands them to the app already running.
+func RegisterOpener(name, id, title string, make func() View) {
+	Register(name, id, title, make)
+	opensFiles[name] = true
 }
 
 // Register adds a light app from another package, for Run.
@@ -116,17 +131,21 @@ type Ctx struct {
 	StartHidden bool
 	UIDir       string // read layouts from here instead of the embedded copy
 	Colors      map[string]string
-	refs        gtkx.Scope
+	// DesktopIcons is the desktop's icon theme (the XDG settings portal's,
+	// else GTK's), which the apps' own Phosphor theme inherits.
+	DesktopIcons string
+	refs         gtkx.Scope
 
-	cfgPath  string
-	cfgMod   time.Time
-	css      *gtk.CssProvider
-	userCSS  *gtk.CssProvider
-	win      *gtk.ApplicationWindow
-	v        view
-	onTick   glib.SourceFunc
-	activate func(gio.Application)
-	iconPath bool // the apps' icon theme is in use
+	cfgPath   string
+	cfgMod    time.Time
+	css       *gtk.CssProvider
+	userCSS   *gtk.CssProvider
+	win       *gtk.ApplicationWindow
+	v         view
+	onTick    glib.SourceFunc
+	open      func(gio.Application, uintptr, int32, string)
+	activate  func(gio.Application)
+	iconTheme string // the apps' icon theme in use, "" before loadIcons
 }
 
 // Run runs the named app until its window closes. A second start of the
@@ -157,8 +176,13 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	if many {
 		flags = gio.GApplicationNonUniqueValue
 	}
+	files := opensFiles[name]
+	if files {
+		flags |= gio.GApplicationHandlesOpenValue
+	}
 	app := gtk.NewApplication(appID, flags)
 	c := &Ctx{App: app, UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
+	opened := false // the files of the first start went to open already
 	c.activate = func(gio.Application) {
 		if c.win != nil { // started again: the window comes to the user
 			bringHere()
@@ -176,7 +200,7 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		if !c.StartHidden {
 			c.win.Present()
 		}
-		if o, ok := c.v.(opener); ok {
+		if o, ok := c.v.(opener); ok && !opened {
 			o.open(args)
 		} else if p, ok := c.v.(pager); ok && len(args) > 0 {
 			p.showPage(args[0])
@@ -188,7 +212,34 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		glib.TimeoutAdd(2000, &c.onTick, 0)
 	}
 	app.ConnectActivate(&c.activate)
-	return int(app.Run(1, []string{os.Args[0]}))
+	argv := []string{os.Args[0]}
+	if files {
+		// The files go through GApplication, so a second start's reach the
+		// app already running: open, here or there.
+		argv = append(argv, args...)
+		c.open = func(_ gio.Application, list uintptr, n int32, _ string) {
+			var paths []string
+			// GFile *files[n], C memory.
+			for _, ptr := range unsafe.Slice((*uintptr)(*(*unsafe.Pointer)(unsafe.Pointer(&list))), int(n)) {
+				f := gio.FileBase{Ptr: ptr}
+				if p := f.GetPath(); p != "" {
+					paths = append(paths, p)
+				}
+			}
+			first := c.win == nil
+			opened = true
+			c.activate(app.Application)
+			if o, ok := c.v.(opener); ok {
+				o.open(paths)
+			}
+			if !first {
+				bringHere()
+				c.win.Present()
+			}
+		}
+		app.ConnectOpen(&c.open)
+	}
+	return int(app.Run(int32(len(argv)), argv))
 }
 
 // ReadUI is a layout or stylesheet from ui/.
@@ -225,14 +276,13 @@ func (c *Ctx) config() config.Config {
 // loadStyle loads the theme, the shell's style and the user's.
 func (c *Ctx) loadStyle() {
 	cfg := c.config()
-	theme := cmp.Or(cfg.Style.Theme, "yoru")
 	if c.css == nil {
 		c.css, c.userCSS = gtk.NewCssProvider(), gtk.NewCssProvider()
 		d := gdk.DisplayGetDefault()
 		gtk.StyleContextAddProviderForDisplay(d, c.css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
 		gtk.StyleContextAddProviderForDisplay(d, c.userCSS, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
-	themeCSS := c.ReadUI("themes/" + theme + ".css")
+	themeCSS := cfg.ThemeCSS(cmp.Or(cfg.Style.Theme, "yoru"), c.ReadUI)
 	c.Colors = shell.ThemeColors(themeCSS)
 	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
 	if p := cfg.CSSPath(); p != "" {
@@ -257,72 +307,89 @@ func (c *Ctx) followConfig() {
 }
 
 // loadIcons draws the apps' own icons from the Phosphor set inua ships
-// (ui/icons), whatever the shell's style.icons: the apps write the set as
-// an icon theme of their own, which inherits the system's for app icons
-// and any icon the set lacks.
+// (ui/icons), with the user's set over them when style.icons names one;
+// "system" still means Phosphor here. The apps write the set as an icon
+// theme of their own, which inherits the system's for app icons and any
+// icon the set lacks.
 func (c *Ctx) loadIcons() {
-	if c.iconPath {
-		return
+	cfg := c.config()
+	if c.DesktopIcons == "" {
+		var v gobject.Value
+		v.Init(gobject.TypeStringVal)
+		gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &v)
+		c.DesktopIcons = cmp.Or(desktopIconTheme(), v.GetString(), "Adwaita")
+		v.Unset()
+		if strings.HasPrefix(c.DesktopIcons, "inua-") {
+			c.DesktopIcons = "Adwaita"
+		}
 	}
-	settings := gtk.SettingsGetDefault()
-	var v gobject.Value
-	v.Init(gobject.TypeStringVal)
-	settings.GetProperty("gtk-icon-theme-name", &v)
-	system := cmp.Or(v.GetString(), "Adwaita")
-	v.Unset()
-	if system == appIconTheme {
-		system = "Adwaita"
+	overlay := cfg.IconSetDir()
+	name := appIconTheme
+	if overlay != "" {
+		name = "inua-apps-icons-" + cfg.Style.Icons
+	}
+	if overlay == "" && c.iconTheme == name {
+		return // the built-in icons do not change
 	}
 	dir, err := rundir.Sub("app-icons")
 	if err == nil {
-		err = c.writeIconTheme(dir, system)
+		err = c.writeIconTheme(dir, name, overlay)
 	}
 	if err != nil {
 		log.Printf("icons: %v", err)
 		return
 	}
-	gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
-	gtkx.SetStringSetting("gtk-icon-theme-name", appIconTheme)
-	c.iconPath = true
+	if c.iconTheme == "" {
+		gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
+	}
+	if c.iconTheme == name {
+		// The set's files may have changed: make GTK read them again.
+		gtkx.SetStringSetting("gtk-icon-theme-name", c.DesktopIcons)
+	}
+	gtkx.SetStringSetting("gtk-icon-theme-name", name)
+	c.iconTheme = name
+}
+
+// desktopIconTheme is the icon theme the desktop's settings choose, read
+// from the XDG settings portal (org.gnome.desktop.interface icon-theme),
+// or "" without one.
+func desktopIconTheme() string {
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		return ""
+	}
+	defer conn.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	defer cancel()
+	var v dbus.Variant
+	err = conn.Object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop").
+		CallWithContext(ctx, "org.freedesktop.portal.Settings.ReadOne", 0, "org.gnome.desktop.interface", "icon-theme").Store(&v)
+	if err != nil {
+		return ""
+	}
+	name, _ := v.Value().(string)
+	return name
 }
 
 // appIconTheme names the apps' icon theme.
 const appIconTheme = "inua-phosphor-apps"
 
-func (c *Ctx) writeIconTheme(dir, inherits string) error {
-	theme := filepath.Join(dir, appIconTheme)
-	if err := os.MkdirAll(filepath.Join(theme, "symbolic"), 0o700); err != nil {
-		return err
-	}
-	index := fmt.Sprintf(`[Icon Theme]
-Name=%s
-Comment=Phosphor icons for inua's light apps (written by inua-apps)
-Inherits=%s,hicolor
-Directories=symbolic
-
-[symbolic]
-Size=16
-MinSize=8
-MaxSize=512
-Type=Scalable
-Context=Status
-`, appIconTheme, inherits)
-	if err := os.WriteFile(filepath.Join(theme, "index.theme"), []byte(index), 0o644); err != nil {
-		return err
-	}
+func (c *Ctx) writeIconTheme(dir, name, overlay string) error {
 	entries, err := layouts.FS.ReadDir("icons")
 	if err != nil {
 		return err
 	}
-	for _, e := range entries {
-		if !strings.HasSuffix(e.Name(), ".svg") {
-			continue
-		}
-		if err := os.WriteFile(filepath.Join(theme, "symbolic", e.Name()), []byte(c.ReadUI("icons/"+e.Name())), 0o644); err != nil {
-			return err
-		}
+	t := shell.IconTheme{
+		Name:     name,
+		Comment:  "Icons for inua's light apps (written by inua-apps)",
+		Inherits: c.DesktopIcons,
+		Read:     func(file string) string { return c.ReadUI("icons/" + file) },
+		Overlay:  overlay,
 	}
-	return nil
+	for _, e := range entries {
+		t.Builtin = append(t.Builtin, e.Name())
+	}
+	return t.Write(dir)
 }
 
 // bringHere moves the app's window to the workspace in view, on Hyprland,

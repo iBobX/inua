@@ -50,8 +50,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <child>
                           <object class="GtkToggleButton" id="hidden_toggle">
                             <style>
-                              <class name="plain"/>
+                              <class name="framed-toggle"/>
                             </style>
+                            <property name="valign">3</property>
                             <property name="icon-name">view-reveal-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Hidden files (Ctrl+H)</property>
                           </object>
@@ -59,8 +60,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <child>
                           <object class="GtkToggleButton" id="dual_toggle">
                             <style>
-                              <class name="plain"/>
+                              <class name="framed-toggle"/>
                             </style>
+                            <property name="valign">3</property>
                             <property name="icon-name">view-dual-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Two panes (F3)</property>
                           </object>
@@ -68,8 +70,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <child>
                           <object class="GtkToggleButton" id="details_toggle">
                             <style>
-                              <class name="plain"/>
+                              <class name="framed-toggle"/>
                             </style>
+                            <property name="valign">3</property>
                             <property name="icon-name">dialog-information-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Details (Space)</property>
                           </object>
@@ -84,6 +87,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <style>
                               <class name="plain"/>
                             </style>
+                            <property name="valign">3</property>
                             <property name="icon-name">preferences-desktop-keyboard-shortcuts-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Keys (Ctrl+?)</property>
                           </object>
@@ -146,6 +150,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <style>
                               <class name="plain"/>
                             </style>
+                            <property name="valign">3</property>
                             <property name="icon-name">window-close-symbolic</property>
                             <property name="tooltip-text" translatable="yes">Cancel</property>
                           </object>

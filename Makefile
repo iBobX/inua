@@ -52,13 +52,15 @@ build:
 
 deps:
 	sudo apt install -y hyprland libgtk-4-1 libgtk4-layer-shell0 \
-		golang-go gcc dbus-daemon blueprint-compiler python3 pass gnupg
+		golang-go gcc dbus-daemon blueprint-compiler python3 pass gnupg \
+		gstreamer1.0-plugins-base gstreamer1.0-plugins-good
 
 deps-desktop:
 	sudo apt install -y kitty gvfs-backends gvfs-fuse udisks2 hypridle wf-recorder libturbojpeg0 libpoppler-glib8t64 \
 		xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
 		grim slurp wl-clipboard brightnessctl playerctl fcitx5 xdg-terminal-exec \
-		pass gnupg fonts-ibm-plex fonts-noto-cjk
+		pass gnupg fonts-ibm-plex fonts-noto-cjk \
+		gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
 
 deps-dm:
 	sudo apt install -y greetd tuigreet

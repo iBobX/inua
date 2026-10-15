@@ -4,19 +4,30 @@
 # The shell puts them in an icon theme of its own (style.icons = "phosphor").
 # Edit the list and run again to change or add one; the files are committed.
 #
-#   scripts/phosphor-icons.sh path/to/node_modules/@phosphor-icons/core
+#   scripts/phosphor-icons.sh path/to/node_modules/@phosphor-icons/core [WEIGHT]
 #
-# Regular weight (npm i @phosphor-icons/core).
+# The regular weight (the default) is the built-in set. Another weight
+# (bold, fill, light, thin, duotone) makes a sample icon set of the user's
+# own, config/inua/icons/phosphor-WEIGHT, which `inua init` installs.
+# npm i @phosphor-icons/core
 set -eu
-src=${1:?usage: $0 PHOSPHOR_CORE_DIR (node_modules/@phosphor-icons/core)}
-dest=$(CDPATH= cd -- "$(dirname -- "$0")/../ui/icons" && pwd)
+src=${1:?usage: $0 PHOSPHOR_CORE_DIR (node_modules/@phosphor-icons/core) [WEIGHT]}
+weight=${2:-regular}
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if [ "$weight" = regular ]; then
+	dest=$root/ui/icons suffix=
+else
+	dest=$root/config/inua/icons/phosphor-$weight suffix=-$weight
+fi
+[ -d "$src/assets/$weight" ] || { echo "$0: no weight $weight in $src/assets" >&2; exit 1; }
+mkdir -p "$dest"
 rm -f "$dest"/*.svg
 cp "$src/LICENSE" "$dest/LICENSE"
 
 # freedesktop name (without -symbolic)   Phosphor name
 while read -r name icon; do
 	case "$name" in '' | '#'*) continue ;; esac
-	cp "$src/assets/regular/$icon.svg" "$dest/$name-symbolic.svg"
+	cp "$src/assets/$weight/$icon$suffix.svg" "$dest/$name-symbolic.svg"
 done <<'LIST'
 # bar and control center: network
 network-offline                       globe-simple-x
@@ -73,7 +84,7 @@ dialog-password                       key
 security-high                         shield-check
 action-unavailable                    prohibit
 edit-paste                            clipboard-text
-applets-screenshooter                 selection
+applets-screenshooter                 camera
 emblem-system                         gear-six
 power-profile-power-saver             leaf
 weather-clear-night                   moon
@@ -155,6 +166,15 @@ go-jump                               arrow-bend-up-right
 # Pass: a one-time code from a QR code, read off the screen
 pass-qr-code                          qr-code
 pass-scan                             scan
+# Music and Video
+media-playback-stop                   stop
+media-eject                           eject
+media-playlist-shuffle                shuffle
+media-playlist-repeat                 repeat
+media-playlist-repeat-song            repeat-once
+media-view-subtitles                  subtitles
+media-audio-track                     waveform
+list-remove                           minus
 # GPG: a signature that does not hold, saving, the key chosen
 dialog-warning                        warning
 document-save                         floppy-disk
@@ -218,32 +238,10 @@ pass-wifi-high                        wifi-high
 pass-windows-logo                     windows-logo
 pass-x-logo                           x-logo
 pass-youtube-logo                     youtube-logo
-# Files: kinds of file, places, devices and the file manager's actions
+# Files: the file manager's buttons (files, places and drives use the desktop's theme)
 text-x-generic                        file-text
-text-x-script                         file-code
-video-x-generic                       file-video
-package-x-generic                     file-zip
-x-office-document                     file-doc
-x-office-spreadsheet                  file-xls
-x-office-presentation                 file-ppt
-application-pdf                       file-pdf
-font-x-generic                        text-aa
-media-optical                         disc
-application-x-generic                 file
-emblem-symbolic-link                  link-simple
 user-home                             house
-folder-documents                      folder-simple
-folder-download                       download-simple
-folder-music                          music-notes
-folder-pictures                       image
-folder-videos                         film-strip
-drive-removable-media                 usb
-drive-harddisk                        hard-drive
-phone                                 device-mobile
 media-eject                           eject
-folder-remote                         cloud
-network-workgroup                     share-network
-changes-prevent                       lock-simple
 go-up                                 arrow-up
 view-grid                             squares-four
 view-dual                             columns
@@ -257,5 +255,7 @@ fortune-pier                          boat
 fortune-power                         lightning
 fortune-water                         drop
 fortune-dice                          dice-five
+# Files
+view-more                             dots-three
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"
