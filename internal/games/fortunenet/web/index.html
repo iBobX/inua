@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Small Fortune</title>
+<link rel="stylesheet" href="fortune.css">
+<script type="importmap">
+{"imports": {"three": "./vendor/three/three.module.min.js", "three/addons/OrbitControls.js": "./vendor/three/OrbitControls.js"}}
+</script>
+</head>
+<body>
+
+<main id="join" class="screen">
+  <div class="join-card">
+    <h1 class="title"><span class="seal">福</span><span data-t="title">Small Fortune</span></h1>
+    <p id="lobby-game" class="sub"></p>
+    <form id="join-form" hidden>
+      <label for="name" data-t="name">Your name</label>
+      <input id="name" maxlength="20" autocomplete="nickname" required>
+      <input id="code" maxlength="6" autocomplete="off" placeholder="CODE" hidden>
+      <div class="row">
+        <button type="submit" class="primary" data-t="joinButton">Join</button>
+        <button type="button" id="watch-button" class="quiet" data-t="watch">Watch</button>
+      </div>
+    </form>
+    <section id="lobby" hidden>
+      <ul id="seats"></ul>
+      <p id="lobby-note" class="note"></p>
+    </section>
+    <p id="notice" class="note"></p>
+  </div>
+</main>
+
+<main id="game" class="screen" hidden>
+  <div id="stage">
+    <div id="board"></div>
+    <div id="slip"><p id="slip-line"></p><p><span id="slip-turn"></span><span id="slip-round"></span></p></div>
+    <div id="toast" hidden></div>
+    <div id="pick-hint" hidden><span></span><button type="button" class="quiet" data-t="cancel">Cancel</button></div>
+    <div id="hand-bar" hidden><p id="hand-caption"></p><div id="hand"></div></div>
+    <div id="shop" class="overlay" hidden>
+      <h2 data-t="shop">Card shop</h2>
+      <p class="note" data-t="shopSub"></p>
+      <div id="offer"></div>
+      <button type="button" id="leave-shop" class="primary" data-t="leave">Leave the shop</button>
+    </div>
+    <div id="picker" class="overlay" hidden><h2 id="picker-title"></h2><div id="picker-choices"></div>
+      <button type="button" id="picker-cancel" class="quiet" data-t="cancel">Cancel</button></div>
+    <div id="over" class="overlay" hidden><h2 id="over-title"></h2><ol id="standings"></ol></div>
+  </div>
+  <aside id="panel">
+    <header>
+      <div class="stat"><span class="kicker" data-t="round">ROUND</span><b id="round">—</b></div>
+      <div class="stat"><span class="kicker" data-t="fountain">FOUNTAIN</span><b id="pot">—</b></div>
+      <span id="me" class="note"></span>
+    </header>
+    <section><h3 class="kicker" data-t="players">PLAYERS</h3><ul id="players"></ul></section>
+    <section id="square-section">
+      <h3 class="kicker" data-t="square">SQUARE</h3>
+      <div id="square"></div>
+      <div id="square-acts" class="row" hidden>
+        <button type="button" id="build" class="quiet"></button>
+        <button type="button" id="sell" class="quiet"></button>
+      </div>
+      <div class="row acts">
+        <button type="button" id="primary" class="primary"></button>
+        <button type="button" id="secondary" class="quiet" hidden></button>
+      </div>
+    </section>
+    <section><h3 class="kicker" data-t="happened">WHAT HAPPENED</h3><ul id="log"></ul></section>
+  </aside>
+</main>
+
+<script type="module" src="fortune.js"></script>
+</body>
+</html>

@@ -924,6 +924,7 @@ msgid "Encrypting…"
 msgstr "暗号化しています…"
 
 #: internal/appui/gpg.go:1198
+#: internal/games/fortunenet/texts.go:29
 msgid "you"
 msgstr "自分"
 
@@ -2241,7 +2242,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/gamesui/fortune.go:356
+#: internal/gamesui/fortune.go:375
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "なし"
@@ -2502,6 +2503,8 @@ msgstr "不明な部品 %q"
 #: internal/filesui/cards.go:389
 #: internal/filesui/cards.go:427
 #: internal/filesui/cards.go:610
+#: internal/games/fortunenet/texts.go:75
+#: internal/gamesui/fortune_host.go:229
 #: internal/ui/askpass.go:267
 #: internal/ui/askpass.go:395
 #: ui/clock.ui:244
@@ -4068,13 +4071,14 @@ msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "端末が見つかりません。xdg-terminal-exec をインストールするか $TERMINAL を設定してください。"
 
 #: internal/games/fortune.go:54
-#: internal/gamesui/fortune_board.go:883
+#: internal/games/fortunenet/texts.go:61
+#: internal/gamesui/fortune_board.go:881
 #: internal/gamesui/fortune_panel.go:144
 msgid "Chance"
 msgstr "チャンス"
 
 #: internal/games/fortune.go:55
-#: internal/gamesui/fortune_board.go:889
+#: internal/gamesui/fortune_board.go:887
 #: internal/gamesui/fortune_panel.go:365
 msgid "Card Shop"
 msgstr ""
@@ -4100,7 +4104,7 @@ msgid "Luxury Tax"
 msgstr "贅沢税"
 
 #: internal/games/fortune.go:307
-#: internal/gamesui/fortune.go:356
+#: internal/gamesui/fortune.go:375
 msgid "Mika"
 msgstr "ミカ"
 
@@ -4117,6 +4121,7 @@ msgid "You"
 msgstr "あなた"
 
 #: internal/games/fortune.go:329
+#: internal/gamesui/fortune_host.go:41
 msgid "Player %d"
 msgstr "プレイヤー %d"
 
@@ -4440,6 +4445,7 @@ msgid "%s played %s and took %s from %s."
 msgstr ""
 
 #: internal/games/fortune_cards.go:276
+#: internal/games/fortunenet/texts.go:83
 msgid "a card"
 msgstr ""
 
@@ -5744,6 +5750,351 @@ msgstr ""
 msgid "Lungotevere"
 msgstr ""
 
+#: internal/games/fortunenet/host.go:154
+msgid "The host sent you away."
+msgstr "ホストに退出させられました。"
+
+#: internal/games/fortunenet/host.go:291
+msgid "That is not this game's code."
+msgstr "このゲームのコードではありません。"
+
+#: internal/games/fortunenet/host.go:298
+msgid "Your seat was taken up in another window."
+msgstr "あなたの席は別のウィンドウで開かれました。"
+
+#: internal/games/fortunenet/texts.go:17
+#: internal/gamesui/catalog.go:26
+#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:3
+msgid "Small Fortune"
+msgstr "小さな福"
+
+#: internal/games/fortunenet/texts.go:18
+msgid "Your name"
+msgstr "あなたの名前"
+
+#: internal/games/fortunenet/texts.go:19
+msgid "Join"
+msgstr "参加"
+
+#: internal/games/fortunenet/texts.go:20
+msgid "Watch"
+msgstr "観戦"
+
+#: internal/games/fortunenet/texts.go:21
+msgid "Waiting for the host to start the game…"
+msgstr "ホストがゲームを始めるのを待っています…"
+
+#: internal/games/fortunenet/texts.go:22
+msgid "The game is full: you can watch it."
+msgstr "満員です。観戦できます。"
+
+#: internal/games/fortunenet/texts.go:23
+msgid "Watching"
+msgstr "観戦中"
+
+#: internal/games/fortunenet/texts.go:24
+msgid "Connection lost: trying again…"
+msgstr "接続が切れました。再試行しています…"
+
+#: internal/games/fortunenet/texts.go:25
+msgid "%s · %d rounds · $%s each"
+msgstr "%s · %d ラウンド · 各 $%s"
+
+#: internal/games/fortunenet/texts.go:26
+#: internal/gamesui/fortune_host.go:135
+msgid "Room for %d more"
+msgstr "あと %d 人参加できます"
+
+#: internal/games/fortunenet/texts.go:27
+msgid "at the host's screen"
+msgstr "ホストの画面で"
+
+#: internal/games/fortunenet/texts.go:28
+#: internal/gamesui/fortune_host.go:123
+msgid "in a browser"
+msgstr "ブラウザーで"
+
+#: internal/games/fortunenet/texts.go:30
+#: internal/gamesui/fortune.go:831
+msgid " · away, the computer plays"
+msgstr " · 不在、コンピューターが代わりにプレイ"
+
+#: internal/games/fortunenet/texts.go:31
+#: internal/gamesui/fortune.go:205
+msgid "PLAYERS"
+msgstr "プレイヤー"
+
+#: internal/games/fortunenet/texts.go:32
+#: internal/gamesui/fortune.go:209
+msgid "SQUARE"
+msgstr "マス"
+
+#: internal/games/fortunenet/texts.go:33
+#: internal/gamesui/fortune.go:229
+msgid "WHAT HAPPENED"
+msgstr "何が起こったのか"
+
+#: internal/games/fortunenet/texts.go:34
+#: internal/gamesui/fortune.go:163
+msgid "ROUND"
+msgstr "ラウンド"
+
+#: internal/games/fortunenet/texts.go:35
+#: internal/gamesui/fortune.go:164
+msgid "FOUNTAIN"
+msgstr "ファウンテン"
+
+#: internal/games/fortunenet/texts.go:36
+#: internal/gamesui/fortune.go:216
+#: internal/gamesui/fortune.go:871
+msgid "Roll the dice"
+msgstr "サイコロを振る"
+
+#: internal/games/fortunenet/texts.go:37
+#: internal/gamesui/fortune.go:874
+msgid "Roll for a double"
+msgstr "ゾロ目を狙う"
+
+#: internal/games/fortunenet/texts.go:38
+#: internal/gamesui/fortune.go:874
+msgid "Roll for a six"
+msgstr "６の目を出す"
+
+#: internal/games/fortunenet/texts.go:39
+msgid "Pay $%d bail"
+msgstr "保釈金 $%d を払う"
+
+#: internal/games/fortunenet/texts.go:40
+#: internal/gamesui/fortune.go:881
+#: internal/gamesui/fortune_panel.go:464
+msgid "Buy it for $%d"
+msgstr "$%d で購入"
+
+#: internal/games/fortunenet/texts.go:41
+#: internal/gamesui/fortune.go:883
+msgid "Don't buy"
+msgstr "買わない"
+
+#: internal/games/fortunenet/texts.go:42
+#: internal/gamesui/fortune.go:887
+#: internal/gamesui/fortune_panel.go:376
+msgid "Leave the shop"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:43
+#: internal/gamesui/fortune.go:890
+msgid "End turn"
+msgstr "ターン終了"
+
+#: internal/games/fortunenet/texts.go:44
+#: internal/gamesui/fortune.go:865
+msgid "%s is playing…"
+msgstr "%s の手番です…"
+
+#: internal/games/fortunenet/texts.go:45
+#: internal/gamesui/fortune_board.go:1112
+msgid "Your turn"
+msgstr "あなたの番です"
+
+#: internal/games/fortunenet/texts.go:46
+#: internal/gamesui/fortune_board.go:1110
+msgid "%s's turn"
+msgstr "%s のターン"
+
+#: internal/games/fortunenet/texts.go:47
+#: internal/gamesui/fortune_board.go:1136
+msgid "round %d of %d"
+msgstr "%[2]dの%[1]dラウンド"
+
+#: internal/games/fortunenet/texts.go:48
+#: internal/gamesui/fortune.go:810
+msgid "worth $%s"
+msgstr "$%s相当"
+
+#: internal/games/fortunenet/texts.go:49
+#: internal/gamesui/fortune.go:813
+msgid "bankrupt"
+msgstr "破産"
+
+#: internal/games/fortunenet/texts.go:50
+#: internal/gamesui/fortune.go:815
+msgid " · in jail"
+msgstr "· 刑務所にいる"
+
+#: internal/games/fortunenet/texts.go:51
+#: internal/gamesui/fortune.go:822
+msgid " · free rent"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:52
+#: internal/gamesui/fortune.go:825
+msgid " · turtle"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:53
+#: internal/gamesui/fortune.go:828
+msgid " · asleep"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:54
+#: internal/gamesui/fortune_panel.go:160
+msgid "For sale: $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:55
+#: internal/gamesui/fortune_panel.go:162
+msgid "%s owns it"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:56
+#: internal/gamesui/fortune_panel.go:164
+msgid "You own it"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:57
+#: internal/gamesui/fortune_panel.go:168
+msgid "rent now"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:58
+#: internal/gamesui/fortune_panel.go:138
+msgid "Street · price $%d · building $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:59
+#: internal/gamesui/fortune_panel.go:140
+msgid "Station or pier · price $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:60
+#: internal/gamesui/fortune_panel.go:142
+msgid "Utility · price $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:62
+#: internal/gamesui/fortune_panel.go:146
+msgid "Card shop"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:63
+#: internal/gamesui/fortune_panel.go:148
+msgid "Tax · $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:64
+#: internal/gamesui/fortune_panel.go:150
+msgid "Corner"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:65
+#: internal/gamesui/fortune_panel.go:125
+msgid "House · $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:66
+#: internal/gamesui/fortune_panel.go:122
+msgid "Hotel · $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:67
+#: internal/gamesui/fortune_panel.go:119
+msgid "Hotel built"
+msgstr "ホテル建設"
+
+#: internal/games/fortunenet/texts.go:68
+#: internal/gamesui/fortune_panel.go:127
+msgid "Sell · $%d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:69
+#: internal/gamesui/fortune_panel.go:480
+msgid "Your cards · %d of %d"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:70
+#: internal/gamesui/fortune_panel.go:478
+msgid "Your cards · %d of %d · click one to play it"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:71
+#: internal/gamesui/fortune_panel.go:368
+msgid "Click a card to buy it: any of them, or none."
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:72
+#: internal/gamesui/fortune_panel.go:511
+msgid "On whom?"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:73
+#: internal/gamesui/fortune_panel.go:513
+msgid "How many squares?"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:74
+msgid "Pick a square on the board"
+msgstr "盤上のマスを選んでください"
+
+#: internal/games/fortunenet/texts.go:76
+#: internal/gamesui/fortune_board.go:1080
+msgid "%s won."
+msgstr "%s が勝ちました。"
+
+#: internal/games/fortunenet/texts.go:77
+#: internal/gamesui/fortune_board.go:1082
+msgid "You won!"
+msgstr "勝ちました！"
+
+#: internal/games/fortunenet/texts.go:78
+#: internal/gamesui/fortune_board.go:1097
+msgid "%s (bankrupt)"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:79
+#: internal/gamesui/fortune_panel.go:234
+msgid "Bare"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:80
+#: internal/gamesui/fortune_panel.go:237
+msgid "Hotel"
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:81
+msgid "%s got a card"
+msgstr "%s がカードを手に入れた"
+
+#: internal/games/fortunenet/texts.go:82
+msgid "%s played %s"
+msgstr "%s が%sを使った"
+
+#: internal/games/fortunenet/texts.go:84
+#: internal/gamesui/fortune_panel.go:271
+msgid "The rent is the dice times this."
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:85
+#: internal/gamesui/fortune_panel.go:265
+msgid "The rent is by how many piers the owner has."
+msgstr ""
+
+#: internal/games/fortunenet/texts.go:88
+#: internal/gamesui/fortune.go:819
+msgid " · %d card"
+msgid_plural " · %d cards"
+msgstr[0] ""
+
+#: internal/games/fortunenet/texts.go:91
+msgid "and %d computer player"
+msgid_plural "and %d computer players"
+msgstr[0] "とコンピューター %d 人"
+
+#: internal/games/fortunenet/texts.go:94
+#: internal/gamesui/fortune_panel.go:239
+msgid "%d house"
+msgid_plural "%d houses"
+msgstr[0] ""
+
 #: internal/games/pinball_rules.go:63
 msgid "Cadet"
 msgstr "士官候補生"
@@ -6070,214 +6421,116 @@ msgstr "士官候補生から海軍大将まで昇進するために任務を遂
 msgid "A or ← left flipper  ·  D or → right flipper  ·  hold Space to pull the plunger  ·  X . ↑ nudge  ·  M sound  ·  P pause  ·  N new game"
 msgstr "Aまたは←左フリッパー・Dまたは→右フリッパー・ホールドプランジャー・Xを引くスペース。 ↑ナッジ・M音・P一時停止・Nニューゲーム"
 
-#: internal/gamesui/catalog.go:26
-#: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:3
-msgid "Small Fortune"
-msgstr "小さな福"
-
 #: internal/gamesui/catalog.go:27
-msgid "A property game against one to three computer players on a ring of 80 squares with two branch roads (at a fork, chance picks the road), in Tokyo, New York, Shanghai or Rome: choose the city, the rounds, the starting money, your rivals and the rules (one die or two; building on a street the turn you buy it) before you start. The board is larger than the window: drag it, scroll, or use the arrow keys to look about; Home brings you back to your pawn. Roll the dice and walk the board; with two, a double rolls again and three in a row go to jail. Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. Passing Start pays $400. Taxes and fines fill the fountain, and whoever lands there takes it. Cards come from Chance and the card shops, where you may buy any of the three on offer; hold up to ten, and play any number in your turn, before you roll or after you move: Loaded Dice, Free Rent, Requisition, Pickpocket, Demolition, Building Permit, Turtle, Swap Places, Jail Pass, Tax Audit, Fair Shares and Sleeping Pill. A card played on a street takes the square in focus: click it on the board first. Who cannot pay sells buildings and property at half price, or is out. After the last round, or when one player is left, the most worth wins: cash, property and buildings. Keys: Space the main action, R roll, B buy, X pass, E end turn, J pay bail, H build on the square in focus, M the sound on or off, N a new game. The sound plays through pw-cat; without it the game is silent."
+msgid "A property game for two to four players, people at the screen taking turns, people in a browser on the same network (set On the network: the lobby shows the link and its QR code) and computer players, on a ring of 80 squares with two branch roads (at a fork, chance picks the road), in Tokyo, New York, Shanghai or Rome: choose the city, the rounds, the starting money, your rivals and the rules (one die or two; building on a street the turn you buy it) before you start. The board is larger than the window: drag it, scroll, or use the arrow keys to look about; Home brings you back to your pawn. Roll the dice and walk the board; with two, a double rolls again and three in a row go to jail. Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. Passing Start pays $400. Taxes and fines fill the fountain, and whoever lands there takes it. Cards come from Chance and the card shops, where you may buy any of the three on offer; hold up to ten, and play any number in your turn, before you roll or after you move: Loaded Dice, Free Rent, Requisition, Pickpocket, Demolition, Building Permit, Turtle, Swap Places, Jail Pass, Tax Audit, Fair Shares and Sleeping Pill. A card played on a street takes the square in focus: click it on the board first. Who cannot pay sells buildings and property at half price, or is out. After the last round, or when one player is left, the most worth wins: cash, property and buildings. Keys: Space the main action, R roll, B buy, X pass, E end turn, J pay bail, H build on the square in focus, M the sound on or off, N a new game. The sound plays through pw-cat; without it the game is silent."
 msgstr ""
 
 #: internal/gamesui/catalog.go:28
 msgid "Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  M sound  ·  click a square to see it  ·  drag, scroll or arrows to look about  ·  Home your pawn"
 msgstr ""
 
-#: internal/gamesui/fortune.go:147
-msgid "ROUND"
-msgstr "ラウンド"
+#: internal/gamesui/fortune.go:165
+msgid "JOIN CODE"
+msgstr "参加コード"
 
-#: internal/gamesui/fortune.go:148
-msgid "FOUNTAIN"
-msgstr "ファウンテン"
-
-#: internal/gamesui/fortune.go:186
-msgid "PLAYERS"
-msgstr "プレイヤー"
-
-#: internal/gamesui/fortune.go:190
-msgid "SQUARE"
-msgstr "マス"
-
-#: internal/gamesui/fortune.go:197
-#: internal/gamesui/fortune.go:782
-msgid "Roll the dice"
-msgstr "サイコロを振る"
-
-#: internal/gamesui/fortune.go:210
-msgid "WHAT HAPPENED"
-msgstr "何が起こったのか"
-
-#: internal/gamesui/fortune.go:253
+#: internal/gamesui/fortune.go:272
 msgid "Where do you play?"
 msgstr "どこで遊びますか？"
 
-#: internal/gamesui/fortune.go:280
-#: internal/gamesui/fortune.go:380
-msgid "Start in %s"
-msgstr "%sで開始"
-
-#: internal/gamesui/fortune.go:318
+#: internal/gamesui/fortune.go:337
 msgid "%s and %s"
 msgstr "%[1]sおよび%[2]s"
 
-#: internal/gamesui/fortune.go:353
+#: internal/gamesui/fortune.go:372
 msgid "Rounds"
 msgstr "ラウンド"
 
-#: internal/gamesui/fortune.go:354
+#: internal/gamesui/fortune.go:373
 msgid "Starting money"
 msgstr "開始資金"
 
-#: internal/gamesui/fortune.go:355
+#: internal/gamesui/fortune.go:374
 msgid "People at this screen"
 msgstr "この画面で遊ぶ人数"
 
-#: internal/gamesui/fortune.go:356
+#: internal/gamesui/fortune.go:375
 msgid "Rivals"
 msgstr "ライバル"
 
-#: internal/gamesui/fortune.go:356
+#: internal/gamesui/fortune.go:375
 msgid "Mika, Ren"
 msgstr "ミカ、レン"
 
-#: internal/gamesui/fortune.go:356
+#: internal/gamesui/fortune.go:375
 msgid "Mika, Ren, Sol"
 msgstr "ミカ、レン、ソル"
 
-#: internal/gamesui/fortune.go:358
+#: internal/gamesui/fortune.go:377
 msgid "Dice"
 msgstr "サイコロ"
 
-#: internal/gamesui/fortune.go:358
+#: internal/gamesui/fortune.go:377
 msgid "One die"
 msgstr "サイコロ1個"
 
-#: internal/gamesui/fortune.go:358
+#: internal/gamesui/fortune.go:377
 msgid "Two dice"
 msgstr "２つのサイコロ"
 
-#: internal/gamesui/fortune.go:359
+#: internal/gamesui/fortune.go:378
 msgid "Build the day you buy"
 msgstr "買ったその日に建てよう"
 
-#: internal/gamesui/fortune.go:373
+#: internal/gamesui/fortune.go:392
 msgid "A street you buy may go up a level that same turn"
 msgstr "あなたが購入した通りは、同じターンでレベルを上げることができます"
 
-#: internal/gamesui/fortune.go:724
-msgid "worth $%s"
-msgstr "$%s相当"
+#: internal/gamesui/fortune.go:396
+msgid "On the network"
+msgstr "ネットワーク"
 
-#: internal/gamesui/fortune.go:727
-msgid "bankrupt"
-msgstr "破産"
+#: internal/gamesui/fortune.go:411
+msgid "Others on this network join from a browser; you may play or only host"
+msgstr "同じネットワークの人がブラウザーから参加します。一緒に遊ぶことも、ホストだけすることもできます"
 
-#: internal/gamesui/fortune.go:729
-msgid " · in jail"
-msgstr "· 刑務所にいる"
+#: internal/gamesui/fortune.go:461
+msgid "Open the game to the network"
+msgstr "ネットワークに公開する"
 
-#: internal/gamesui/fortune.go:733
-msgid " · %d card"
-msgid_plural " · %d cards"
-msgstr[0] ""
+#: internal/gamesui/fortune.go:463
+msgid "Start in %s"
+msgstr "%sで開始"
 
-#: internal/gamesui/fortune.go:736
-msgid " · free rent"
-msgstr ""
-
-#: internal/gamesui/fortune.go:739
-msgid " · turtle"
-msgstr ""
-
-#: internal/gamesui/fortune.go:742
-msgid " · asleep"
-msgstr ""
-
-#: internal/gamesui/fortune.go:773
+#: internal/gamesui/fortune.go:862
 #: ui/game.ui:76
 msgid "New game"
 msgstr "新しいゲーム"
 
-#: internal/gamesui/fortune.go:776
-msgid "%s is playing…"
-msgstr "%s の手番です…"
-
-#: internal/gamesui/fortune.go:785
-msgid "Roll for a double"
-msgstr "ゾロ目を狙う"
-
-#: internal/gamesui/fortune.go:785
-msgid "Roll for a six"
-msgstr "６の目を出す"
-
-#: internal/gamesui/fortune.go:786
+#: internal/gamesui/fortune.go:875
 msgid "Pay $50 bail"
 msgstr "保釈金50ドルを支払え"
 
-#: internal/gamesui/fortune.go:792
-#: internal/gamesui/fortune_panel.go:464
-msgid "Buy it for $%d"
-msgstr "$%d で購入"
-
-#: internal/gamesui/fortune.go:794
-msgid "Don't buy"
-msgstr "買わない"
-
-#: internal/gamesui/fortune.go:798
-#: internal/gamesui/fortune_panel.go:376
-msgid "Leave the shop"
-msgstr ""
-
-#: internal/gamesui/fortune.go:801
-msgid "End turn"
-msgstr "ターン終了"
-
-#: internal/gamesui/fortune_board.go:892
+#: internal/gamesui/fortune_board.go:890
 msgid "START\ncollect $%d"
 msgstr ""
 
-#: internal/gamesui/fortune_board.go:892
+#: internal/gamesui/fortune_board.go:890
 msgid "JAIL\njust visiting"
 msgstr "JAIL\nがちょうど訪問中"
 
-#: internal/gamesui/fortune_board.go:892
+#: internal/gamesui/fortune_board.go:890
 msgid "FOUNTAIN\ntake the pot"
 msgstr "噴水\n賞金を獲得"
 
-#: internal/gamesui/fortune_board.go:892
+#: internal/gamesui/fortune_board.go:890
 msgid "GO TO\nJAIL"
 msgstr "\n刑務所へ行きます"
 
-#: internal/gamesui/fortune_board.go:1082
-msgid "%s won."
-msgstr "%s が勝ちました。"
-
-#: internal/gamesui/fortune_board.go:1084
-msgid "You won!"
-msgstr "勝ちました！"
-
-#: internal/gamesui/fortune_board.go:1099
-msgid "%s (bankrupt)"
-msgstr ""
-
-#: internal/gamesui/fortune_board.go:1104
+#: internal/gamesui/fortune_board.go:1102
 msgid "Press N or Space for a new game"
 msgstr "新しいゲームを行うには N または Space を押してください"
 
-#: internal/gamesui/fortune_board.go:1112
-msgid "%s's turn"
-msgstr "%s のターン"
-
-#: internal/gamesui/fortune_board.go:1114
-msgid "Your turn"
-msgstr "あなたの番です"
-
 #: internal/gamesui/fortune_board.go:1138
-msgid "round %d of %d"
-msgstr "%[2]dの%[1]dラウンド"
-
-#: internal/gamesui/fortune_board.go:1140
 msgid "%s · sound off"
 msgstr ""
 
@@ -6313,74 +6566,33 @@ msgstr "ヴィラ"
 msgid "palazzi"
 msgstr "パラッツィ"
 
-#: internal/gamesui/fortune_panel.go:119
-msgid "Hotel built"
-msgstr "ホテル建設"
+#: internal/gamesui/fortune_host.go:55
+msgid "The game could not open to the network: %v"
+msgstr "ネットワークに公開できませんでした: %v"
 
-#: internal/gamesui/fortune_panel.go:122
-msgid "Hotel · $%d"
-msgstr ""
+#: internal/gamesui/fortune_host.go:83
+msgid "Host"
+msgstr "ホスト"
 
-#: internal/gamesui/fortune_panel.go:125
-msgid "House · $%d"
-msgstr ""
+#: internal/gamesui/fortune_host.go:123
+msgid "at this screen"
+msgstr "この画面で"
 
-#: internal/gamesui/fortune_panel.go:127
-msgid "Sell · $%d"
-msgstr ""
+#: internal/gamesui/fortune_host.go:127
+msgid "Send away"
+msgstr "退出させる"
 
-#: internal/gamesui/fortune_panel.go:138
-msgid "Street · price $%d · building $%d"
-msgstr ""
+#: internal/gamesui/fortune_host.go:133
+msgid "Waiting for visitors: open the link on a phone or a computer on the same network."
+msgstr "参加者を待っています。同じネットワークのスマートフォンやコンピューターでリンクを開いてください。"
 
-#: internal/gamesui/fortune_panel.go:140
-msgid "Station or pier · price $%d"
-msgstr ""
+#: internal/gamesui/fortune_host.go:173
+msgid "Others join from a browser"
+msgstr "ブラウザーから参加"
 
-#: internal/gamesui/fortune_panel.go:142
-msgid "Utility · price $%d"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:146
-msgid "Card shop"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:148
-msgid "Tax · $%d"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:150
-msgid "Corner"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:160
-msgid "For sale: $%d"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:162
-msgid "%s owns it"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:164
-msgid "You own it"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:168
-msgid "rent now"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:234
-msgid "Bare"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:237
-msgid "Hotel"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:239
-msgid "%d house"
-msgid_plural "%d houses"
-msgstr[0] ""
+#: internal/gamesui/fortune_host.go:224
+msgid "Start the game"
+msgstr "ゲームを始める"
 
 #: internal/gamesui/fortune_panel.go:244
 msgid "The whole group: bare rent doubled, built rents half again."
@@ -6399,10 +6611,6 @@ msgid "%d pier"
 msgid_plural "%d piers"
 msgstr[0] ""
 
-#: internal/gamesui/fortune_panel.go:265
-msgid "The rent is by how many piers the owner has."
-msgstr ""
-
 #: internal/gamesui/fortune_panel.go:269
 msgid "× %d"
 msgstr ""
@@ -6411,10 +6619,6 @@ msgstr ""
 msgid "%d utility"
 msgid_plural "%d utilities"
 msgstr[0] ""
-
-#: internal/gamesui/fortune_panel.go:271
-msgid "The rent is the dice times this."
-msgstr ""
 
 #: internal/gamesui/fortune_panel.go:273
 msgid "Collect $%d every time you pass."
@@ -6444,10 +6648,6 @@ msgstr ""
 msgid "Pay $%d into the fountain."
 msgstr "噴水に$%dを支払います。"
 
-#: internal/gamesui/fortune_panel.go:368
-msgid "Click a card to buy it: any of them, or none."
-msgstr ""
-
 #: internal/gamesui/fortune_panel.go:474
 msgid "%s's cards · %d of %d · click one to play it"
 msgstr "%s のカード · %d / %d · クリックで使う"
@@ -6456,24 +6656,8 @@ msgstr "%s のカード · %d / %d · クリックで使う"
 msgid "%s's cards · %d of %d"
 msgstr "%s のカード · %d / %d"
 
-#: internal/gamesui/fortune_panel.go:478
-msgid "Your cards · %d of %d · click one to play it"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:480
-msgid "Your cards · %d of %d"
-msgstr ""
-
 #: internal/gamesui/fortune_panel.go:489
 msgid "Plays on the square in focus: %s."
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:511
-msgid "On whom?"
-msgstr ""
-
-#: internal/gamesui/fortune_panel.go:513
-msgid "How many squares?"
 msgstr ""
 
 #: internal/gamesui/mines.go:37

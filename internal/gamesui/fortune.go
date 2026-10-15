@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"github.com/makiuchi-d/gozxing"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/fortunenet"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -27,7 +29,21 @@ type fortune struct {
 	cam      camera
 	settings games.FortuneSettings
 	people   int        // how many play at this screen, taking turns
-	pages    *gtk.Stack // "setup", then "play"
+	pages    *gtk.Stack // "setup", "lobby" for a game on the network, then "play"
+
+	// A game on the local network (fortune_host.go): hostOn as set up; the
+	// game's host from the lobby on; the lobby's link, QR code, players
+	// and buttons; the code in the header while the game is on.
+	hostOn                              bool
+	net                                 *fortunenet.Host
+	lobbyURL, lobbyMore                 *gtk.Label
+	lobbyWait, lobbyNote, code          *gtk.Label
+	lobbyList                           gtk.Box
+	lobbyStart                          *gtk.Button
+	qrCanvas                            *canvas
+	qr                                  *gozxing.BitMatrix
+	onKick, onLobbyStart, onLobbyCancel func(gtk.Button)
+	onHostRule                          func(gtk.Switch, bool) bool
 
 	// The people who play at this screen, a bit a player (games.Seat), and
 	// the one of them the board is shown for: whose turn it is, or was last
@@ -146,12 +162,15 @@ func (p *fortune) setup(f *frame) {
 	f.hint.SetVisible(false)
 	p.round = f.stat(i18n.T("ROUND"))
 	p.pot = f.stat(i18n.T("FOUNTAIN"))
+	p.code = f.stat(i18n.T("JOIN CODE"))
+	p.code.GetParent().SetVisible(false)
 
 	p.pages = gtk.NewStack()
 	p.pages.SetTransitionType(gtk.StackTransitionTypeCrossfadeValue)
 	p.pages.SetTransitionDuration(220)
 	p.pages.SetVexpand(true)
 	p.pages.AddNamed(&p.setupPage().Widget, "setup")
+	p.pages.AddNamed(&p.setupLobby().Widget, "lobby")
 
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 18)
 	p.cv = newCanvas(1000, 760, p.paint)
@@ -270,14 +289,14 @@ func (p *fortune) setupPage() *gtk.Box {
 		case "cash":
 			p.settings.Cash = games.FortuneCash[i]
 		case "people":
-			p.people = i + 1
+			p.people = i
 			p.fitRivals()
 		case "rivals":
 			p.settings.Rivals = i
 		case "dice":
 			p.settings.Dice = i + 1
 		}
-		p.start.SetLabel(i18n.Tf("Start in %s", i18n.T(games.FortuneCities[p.settings.City].Name)))
+		p.start.SetLabel(p.startLabel())
 	}
 	pick := func(kind string, i int, active bool, child *gtk.Widget) *gtk.ToggleButton {
 		b := gtk.NewToggleButton()
@@ -352,7 +371,7 @@ func (p *fortune) setupPage() *gtk.Box {
 	}
 	row(0, i18n.T("Rounds"), "rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds))
 	row(1, i18n.T("Starting money"), "cash", cash, slices.Index(games.FortuneCash, p.settings.Cash))
-	row(2, i18n.T("People at this screen"), "people", []string{"1", "2", "3", "4"}, p.people-1)
+	row(2, i18n.T("People at this screen"), "people", []string{"0", "1", "2", "3", "4"}, p.people)
 	row(3, i18n.T("Rivals"), "rivals", []string{i18n.T("None"), i18n.T("Mika"), i18n.T("Mika, Ren"), i18n.T("Mika, Ren, Sol")}, p.settings.Rivals)
 	p.fitRivals()
 	row(4, i18n.T("Dice"), "dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
@@ -374,10 +393,29 @@ func (p *fortune) setupPage() *gtk.Box {
 	note.AddCssClass("fortune-city-sub")
 	gtkx.Append(build, &note.Widget)
 	opts.Attach(&build.Widget, 1, 5, 1, 1)
+	l = gtk.NewLabel(i18n.T("On the network"))
+	l.AddCssClass("fortune-option")
+	l.SetXalign(0)
+	opts.Attach(&l.Widget, 0, 6, 1, 1)
+	host := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	sw = gtk.NewSwitch()
+	sw.SetActive(p.hostOn)
+	sw.SetValign(gtk.AlignCenterValue)
+	p.onHostRule = func(_ gtk.Switch, on bool) bool {
+		p.hostOn = on
+		p.fitRivals()
+		return false
+	}
+	sw.ConnectStateSet(&p.onHostRule)
+	gtkx.Append(host, &sw.Widget)
+	note = gtk.NewLabel(i18n.T("Others on this network join from a browser; you may play or only host"))
+	note.AddCssClass("fortune-city-sub")
+	gtkx.Append(host, &note.Widget)
+	opts.Attach(&host.Widget, 1, 6, 1, 1)
 	gtkx.Append(page, &opts.Widget)
 
 	p.onStart = func(gtk.Button) { p.begin() }
-	p.start = button(i18n.Tf("Start in %s", i18n.T(games.FortuneCities[p.settings.City].Name)), &p.onStart)
+	p.start = button(p.startLabel(), &p.onStart)
 	p.start.RemoveCssClass("outlined")
 	p.start.AddCssClass("primary")
 	p.start.AddCssClass("fortune-start")
@@ -387,44 +425,81 @@ func (p *fortune) setupPage() *gtk.Box {
 }
 
 // fitRivals offers the computer players that make two to four players
-// with the people, and picks the nearest of them if the one picked does not.
+// with the people, and picks the nearest of them if the one picked does
+// not; on the network, visitors may make up the rest, and the people at
+// the screen may be none.
 func (p *fortune) fitRivals() {
-	buttons := p.picks["rivals"]
-	if len(buttons) == 0 {
+	people, rivals := p.picks["people"], p.picks["rivals"]
+	if len(people) == 0 || len(rivals) == 0 {
 		return
 	}
-	fit := max(2-p.people, min(p.settings.Rivals, 4-p.people))
-	for k, b := range buttons {
-		b.SetSensitive(p.people+k >= 2 && p.people+k <= 4)
+	people[0].SetSensitive(p.hostOn)
+	if p.people == 0 && !p.hostOn {
+		people[1].SetActive(true) // its toggle fits the rivals again
+		return
+	}
+	least := 2 - p.people
+	if p.hostOn {
+		least = 0
+	}
+	fit := max(least, min(p.settings.Rivals, 4-p.people))
+	for k, b := range rivals {
+		b.SetSensitive(k >= least && p.people+k <= 4)
 	}
 	if fit != p.settings.Rivals {
-		buttons[fit].SetActive(true) // its toggle sets the settings
+		rivals[fit].SetActive(true) // its toggle sets the settings
+	}
+	if p.start != nil {
+		p.start.SetLabel(p.startLabel())
 	}
 }
 
-// reset goes back to the setup, for a new game.
+// startLabel is what Start says: where the game is, or that it opens to
+// the network first.
+func (p *fortune) startLabel() string {
+	if p.hostOn {
+		return i18n.T("Open the game to the network")
+	}
+	return i18n.Tf("Start in %s", i18n.T(games.FortuneCities[p.settings.City].Name))
+}
+
+// reset goes back to the setup, for a new game; a game on the network
+// is over.
 func (p *fortune) reset() {
+	p.hostClose()
 	p.pages.SetVisibleChildName("setup")
 	p.round.SetText("—")
 	p.pot.SetText("—")
 	p.start.GrabFocus()
 }
 
-// begin starts a game as set up.
+// begin starts a game as set up, or on the network its lobby.
 func (p *fortune) begin() {
+	if p.hostOn {
+		p.hostLobby()
+		return
+	}
 	s := p.settings
 	s.Humans = nil // one person: "You"
 	if p.people > 1 {
 		s.Humans = make([]string, p.people) // "Player 1" …
 	}
-	p.g = games.NewFortune(s, uint64(time.Now().UnixNano()))
-	p.here, p.me = 0, 0
+	var here uint8
 	for i := range p.people {
-		p.here |= games.Seat(i)
+		here |= games.Seat(i)
+	}
+	p.newGame(games.NewFortune(s, uint64(time.Now().UnixNano())), here)
+}
+
+// newGame shows game g, played at this screen by the players in here.
+func (p *fortune) newGame(g *games.Fortune, here uint8) {
+	p.g, p.here, p.me = g, here, -1
+	if here != 0 {
+		p.me = bits.TrailingZeros8(here) // the first of them
 	}
 	p.queue, p.cur, p.t, p.wait, p.fx, p.idle = nil, nil, 0, 0, nil, true
 	p.shown = p.g.View()
-	p.lookAt(0)
+	p.lookAt(max(0, p.me))
 	p.dice, p.diceAt = [2]int{}, p.diceBy(0)
 	p.squareFor, p.handFor, p.handShown, p.handBorn, p.handOf = "", "", nil, nil, p.me
 	p.rungTurn, p.endRung = "1 0", false
@@ -438,6 +513,8 @@ func (p *fortune) begin() {
 		name := gtk.NewLabel("")
 		name.SetHexpand(true)
 		name.SetXalign(0)
+		name.SetWrap(true) // a long status: "away, the computer plays"
+		name.SetMaxWidthChars(28)
 		gtkx.Append(row, &name.Widget)
 		cash := gtk.NewLabel("")
 		cash.AddCssClass("fortune-cash")
@@ -500,6 +577,10 @@ func (p *fortune) act(do func() bool) {
 	if p.busy() || !p.mine() || !do() {
 		return
 	}
+	if p.net != nil {
+		p.net.Flush() // its events come back through netEvents
+		return
+	}
 	p.take()
 	p.idle = false
 	p.play()
@@ -531,6 +612,9 @@ func (p *fortune) other() {
 }
 
 func (p *fortune) key(k uint32) bool {
+	if p.pages.GetVisibleChildName() == "lobby" {
+		return false
+	}
 	if p.g == nil || p.pages.GetVisibleChildName() == "setup" {
 		if k == ' ' || k == keyEnter {
 			p.begin()
@@ -601,6 +685,8 @@ func (p *fortune) step(dt float64) bool {
 				}
 				p.refresh()
 			}
+		case p.g.Phase == games.PhaseCPU && p.net != nil:
+			return true // the host plays, and hands the board what happened
 		case p.g.Phase == games.PhaseCPU:
 			if p.wait += dt; p.wait > 0.5 {
 				p.wait = 0
@@ -741,6 +827,9 @@ func (p *fortune) refresh() {
 			if pl.Asleep {
 				status += i18n.T(" · asleep")
 			}
+			if pl.Away {
+				status += i18n.T(" · away, the computer plays")
+			}
 		}
 		mark := ""
 		if i == g.Turn && g.Phase != games.PhaseOver {
@@ -785,7 +874,7 @@ func (p *fortune) refresh() {
 			p.primary.SetLabel(map[bool]string{false: i18n.T("Roll for a double"), true: i18n.T("Roll for a six")}[g.OneDie])
 			p.secondary.SetLabel(i18n.T("Pay $50 bail"))
 			p.secondary.SetVisible(true)
-			p.secondary.SetSensitive(g.Players[g.Turn].Cash >= 50)
+			p.secondary.SetSensitive(g.Players[g.Turn].Cash >= games.Bail)
 		}
 	case g.Phase == games.PhaseBuy:
 		at := g.Players[g.Turn].At

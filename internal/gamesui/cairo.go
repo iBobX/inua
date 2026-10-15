@@ -1,6 +1,7 @@
 package gamesui
 
 import (
+	goimage "image"
 	"image/color"
 	"math"
 	"math/rand/v2"
@@ -227,6 +228,21 @@ func (im *image) Speckle(r *rand.Rand, n int, c color.NRGBA, a float64) {
 		px[i+3] = uint8(al*255 + float64(px[i+3])*(1-al))
 	}
 	cr.dirtySurface(im.s)
+}
+
+// RGBA is a copy of the image's pixels, for encoding it.
+func (im *image) RGBA() *goimage.RGBA {
+	cr.flushSurface(im.s)
+	stride := int(cr.surfaceStride(im.s))
+	px := unsafe.Slice((*byte)(cr.surfaceData(im.s)), stride*im.h)
+	out := goimage.NewRGBA(goimage.Rect(0, 0, im.w, im.h))
+	for y := range im.h {
+		for x := range im.w {
+			i, o := y*stride+x*4, out.PixOffset(x, y) // premultiplied BGRA, as RGBA is
+			out.Pix[o], out.Pix[o+1], out.Pix[o+2], out.Pix[o+3] = px[i+2], px[i+1], px[i], px[i+3]
+		}
+	}
+	return out
 }
 
 // Image paints im at x, y, scaled by k (pixels to units), smoothly.

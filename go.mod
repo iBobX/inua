@@ -8,6 +8,7 @@ require (
 	codeberg.org/puregotk/purego v0.0.0-20260224095105-2513c838cb80
 	github.com/BurntSushi/toml v1.6.0
 	github.com/godbus/dbus/v5 v5.2.2
+	github.com/gorilla/websocket v1.5.3
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
 	github.com/quailyquaily/mistermorph v0.3.55
@@ -45,7 +46,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/jsonschema-go v0.4.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/larksuite/oapi-sdk-go/v3 v3.8.1 // indirect

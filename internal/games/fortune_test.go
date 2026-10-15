@@ -123,7 +123,7 @@ func TestFortuneDoublesAndJail(t *testing.T) {
 		t.Fatalf("left jail without a double: %+v", g.Players[0])
 	}
 	g.Phase = PhaseRoll
-	if !g.PayBail() || g.Players[0].InJail || g.Pot != bail {
+	if !g.PayBail() || g.Players[0].InJail || g.Pot != Bail {
 		t.Fatalf("bail: %+v pot %d", g.Players[0], g.Pot)
 	}
 }

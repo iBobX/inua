@@ -150,8 +150,8 @@ const (
 	JailAt     = Side
 	FountainAt = 2 * Side
 	StartPay   = 400 // for passing Start: a lap is long
-	bail       = 50
-	Hotel      = 5 // buildings on a street: four houses, then a hotel
+	Bail       = 50  // the way out of jail
+	Hotel      = 5   // buildings on a street: four houses, then a hotel
 	cpuReserve = 150
 )
 
@@ -540,12 +540,12 @@ func (g *Fortune) RollWith(a, b int) bool {
 // PayBail pays the way out of jail before rolling.
 func (g *Fortune) PayBail() bool {
 	p := &g.Players[g.Turn]
-	if g.Phase != PhaseRoll || !p.InJail || p.Cash < bail {
+	if g.Phase != PhaseRoll || !p.InJail || p.Cash < Bail {
 		return false
 	}
-	g.payPot(g.Turn, bail)
+	g.payPot(g.Turn, Bail)
 	p.InJail, p.JailTries = false, 0
-	g.note(g.Turn, 0, 0, i18n.T("%s paid $%d bail."), p.Name, bail)
+	g.note(g.Turn, 0, 0, i18n.T("%s paid $%d bail."), p.Name, Bail)
 	return true
 }
 
@@ -606,9 +606,9 @@ func (g *Fortune) roll(a, b int) {
 			g.Phase = PhaseEnd
 			return
 		} else {
-			g.note(g.Turn, 0, Everyone, i18n.T("%s paid $%d bail after three tries."), p.Name, bail)
+			g.note(g.Turn, 0, Everyone, i18n.T("%s paid $%d bail after three tries."), p.Name, Bail)
 			p.InJail, p.JailTries = false, 0
-			if !g.charge(g.Turn, bail, -1) {
+			if !g.charge(g.Turn, Bail, -1) {
 				return
 			}
 		}
@@ -1037,7 +1037,7 @@ func (g *Fortune) PlayCPU() bool {
 			break // a card walked it
 		}
 		p := &g.Players[pi]
-		if p.InJail && p.Cash >= bail+400 {
+		if p.InJail && p.Cash >= Bail+400 {
 			g.PayBail()
 		}
 		g.roll(g.throw())
