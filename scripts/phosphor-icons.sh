@@ -246,6 +246,8 @@ go-up                                 arrow-up
 view-grid                             squares-four
 view-dual                             columns
 utilities-terminal                    terminal-window
+# Viewer: Markdown's source
+viewer-source                         code
 # Small Fortune's panel
 fortune-house                         house
 fortune-hotel                         building
