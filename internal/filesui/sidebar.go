@@ -1,6 +1,7 @@
 package filesui
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -50,11 +51,11 @@ func (w *window) buildSidebar() {
 		}
 		w.sideEntry(name, "", pl.Icon, path, func() { w.cur().goTo(path, true) }, nil, extra...)
 	}
-	w.sideEntry(i18n.T("Trash"), "", "user-trash-symbolic", trashKey, func() { w.cur().showTrash(true) }, nil,
+	w.sideEntry(i18n.T("Trash"), "", trashIcon(), trashKey, func() { w.cur().showTrash(true) }, nil,
 		menuItem{label: i18n.T("Empty Trash"), run: func() { w.confirmEmptyTrash() }})
 
 	w.sideHead(i18n.T("DEVICES"))
-	w.sideEntry(i18n.T("Computer"), "", "drive-harddisk-symbolic", "/", func() { w.cur().goTo("/", true) }, nil)
+	w.sideEntry(i18n.T("Computer"), "", "computer", "/", func() { w.cur().goTo("/", true) }, nil)
 	shown := map[string]bool{}
 	for _, v := range w.app.volumes {
 		v := v
@@ -69,12 +70,10 @@ func (w *window) buildSidebar() {
 		} else if v.Encrypted {
 			sub = i18n.Tf("%s, locked", disks.Size(v.Size))
 		}
-		icon := "drive-harddisk-symbolic"
+		icon := "drive-harddisk"
 		switch {
-		case v.Encrypted:
-			icon = "changes-prevent-symbolic"
 		case v.Drive.Bus == "usb" || v.Drive.Bus == "sdio" || v.Drive.Removable:
-			icon = "drive-removable-media-symbolic"
+			icon = "drive-removable-media"
 		}
 		var eject func()
 		var extra []menuItem
@@ -89,9 +88,9 @@ func (w *window) buildSidebar() {
 			continue
 		}
 		path := m.Point
-		icon := "drive-harddisk-symbolic"
+		icon := "drive-harddisk"
 		if strings.HasPrefix(m.FSType, "fuse.") || m.FSType == "nfs" || m.FSType == "nfs4" || m.FSType == "cifs" {
-			icon = "folder-remote-symbolic"
+			icon = "folder-remote"
 		}
 		w.sideEntry(filepath.Base(path), m.FSType, icon, path, func() { w.cur().goTo(path, true) }, nil)
 	}
@@ -99,14 +98,14 @@ func (w *window) buildSidebar() {
 	w.sideHead(i18n.T("NETWORK"))
 	for _, n := range w.app.nets {
 		n := n
-		icon := "folder-remote-symbolic"
+		icon := "folder-remote"
 		if n.Scheme == "mtp" || n.Scheme == "gphoto2" {
-			icon = "phone-symbolic"
+			icon = "phone"
 		}
 		w.sideEntry(n.Name, n.URI, icon, n.Path, func() { w.cur().goTo(n.Path, true) }, func() { w.disconnect(n) },
 			menuItem{label: i18n.T("Disconnect"), run: func() { w.disconnect(n) }})
 	}
-	w.sideEntry(i18n.T("Connect to a server…"), "", "network-workgroup-symbolic", "", func() { w.askServer() }, nil)
+	w.sideEntry(i18n.T("Connect to a server…"), "", "network-workgroup", "", func() { w.askServer() }, nil)
 	w.markSidebar()
 }
 
@@ -131,8 +130,9 @@ func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), ext
 	b.AddCssClass("files-side-item")
 	b.SetHexpand(true)
 	box := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-	img := gtk.NewImageFromIconName(icon)
-	img.AddCssClass("index-icon")
+	img := gtk.NewImage()
+	w.app.icons.set(img, icon, 18)
+	img.AddCssClass("files-side-icon")
 	gtkx.Append(box, &img.Widget)
 	t := text(name, sub)
 	t.SetHexpand(true)
@@ -189,6 +189,14 @@ func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), ext
 		gtkx.Append(row, &e.Widget)
 	}
 	gtkx.Append(&w.sidebar, &row.Widget)
+}
+
+// trashIcon is the trash's icon, full or empty.
+func trashIcon() string {
+	if es, err := os.ReadDir(filepath.Join(files.HomeTrash(), "files")); err == nil && len(es) > 0 {
+		return "user-trash-full"
+	}
+	return "user-trash"
 }
 
 // markSidebar marks the entry of where the pane with the keys is.

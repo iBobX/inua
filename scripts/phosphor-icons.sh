@@ -227,32 +227,10 @@ pass-wifi-high                        wifi-high
 pass-windows-logo                     windows-logo
 pass-x-logo                           x-logo
 pass-youtube-logo                     youtube-logo
-# Files: kinds of file, places, devices and the file manager's actions
+# Files: the file manager's buttons (files, places and drives use the desktop's theme)
 text-x-generic                        file-text
-text-x-script                         file-code
-video-x-generic                       file-video
-package-x-generic                     file-zip
-x-office-document                     file-doc
-x-office-spreadsheet                  file-xls
-x-office-presentation                 file-ppt
-application-pdf                       file-pdf
-font-x-generic                        text-aa
-media-optical                         disc
-application-x-generic                 file
-emblem-symbolic-link                  link-simple
 user-home                             house
-folder-documents                      folder-simple
-folder-download                       download-simple
-folder-music                          music-notes
-folder-pictures                       image
-folder-videos                         film-strip
-drive-removable-media                 usb
-drive-harddisk                        hard-drive
-phone                                 device-mobile
 media-eject                           eject
-folder-remote                         cloud
-network-workgroup                     share-network
-changes-prevent                       lock-simple
 go-up                                 arrow-up
 view-grid                             squares-four
 view-dual                             columns

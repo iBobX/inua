@@ -1364,7 +1364,9 @@ progressbar.thin progress { min-height: 2px; border-radius: 1px; background: @ac
 /* Calculator */
 .calc { padding: 14px 16px 16px; }
 .calc-modes { margin-bottom: 6px; }
-.settings button.calc-toggle {
+/* A toggle in a hairline frame, tinted with the accent while on
+   (Calculator's modes, Files' panels). */
+.settings button.framed-toggle {
   min-height: 0;
   padding: 4px 10px;
   border: 1px solid @line;
@@ -1374,7 +1376,7 @@ progressbar.thin progress { min-height: 2px; border-radius: 1px; background: @ac
   color: @t1;
   font-size: 12px;
 }
-.settings button.calc-toggle:checked { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); color: @t0; }
+.settings button.framed-toggle:checked { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); color: @t0; }
 .calc-display { padding: 8px 4px 14px; }
 .calc-expr {
   min-height: 22px;
@@ -1410,7 +1412,7 @@ button.calc-key.op { color: @accent; font-size: 20px; }
 button.calc-key.eq { background: @primary; border-color: @primary; color: @app; font-size: 20px; }
 button.calc-key.eq:hover { background: mix(@primary, @app, 0.12); }
 button.calc-key image { -gtk-icon-size: 20px; }
-.settings button.calc-toggle image { -gtk-icon-size: 14px; }
+.settings button.framed-toggle image { -gtk-icon-size: 14px; }
 /* History: a panel at the right, as the viewer's details. */
 .calc-history { padding: 14px 12px 16px; background: @panel; border-left: 1px solid alpha(@line, 0.55); }
 .calc-history > .kicker { margin: 4px 8px 10px; }
@@ -1972,12 +1974,14 @@ window.gpg popover.gpg-from-pop .sub { font-family: "Geist Mono", "IBM Plex Mono
 window.gpg menubutton.gpg-from image { color: @t1; }
 window.gpg button.gpg-from-row { padding: 8px 10px; border: none; border-radius: 2px; background: transparent; }
 window.gpg button.gpg-from-row:hover { background: alpha(@accent, 0.08); }
-/* Text | Files: a segmented control in one hairline frame, the option
-   chosen tinted with the accent (as Mister Morph's console tabs). */
-window.gpg stackswitcher.gpg-kind { padding: 2px; border: 1px solid alpha(@line, 0.7); border-radius: 0; background: @app; }
-window.gpg stackswitcher.gpg-kind > button { min-height: 24px; min-width: 0; padding: 0 12px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @t2; font-size: 12px; font-weight: 500; }
-window.gpg stackswitcher.gpg-kind > button:hover { background: alpha(@t0, 0.06); color: @t0; }
-window.gpg stackswitcher.gpg-kind > button:checked { background: alpha(@accent, 0.16); color: @accent; }
+/* A segmented control (GPG's Text | Files, Files' list | grid): the
+   options in one hairline frame, the one chosen tinted with the accent
+   (as Mister Morph's console tabs); icons or words. */
+.settings stackswitcher.segmented { padding: 2px; border: 1px solid alpha(@line, 0.7); border-radius: 0; background: @app; }
+.settings stackswitcher.segmented > button { min-height: 24px; min-width: 0; padding: 0 12px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @t2; font-size: 12px; font-weight: 500; }
+.settings stackswitcher.segmented > button:hover { background: alpha(@t0, 0.06); color: @t0; }
+.settings stackswitcher.segmented > button:checked { background: alpha(@accent, 0.16); color: @accent; }
+.settings stackswitcher.segmented > button image { -gtk-icon-size: 14px; }
 window.gpg .gpg-drop { margin-top: 12px; padding: 30px; border: 1px dashed alpha(@line, 0.9); border-radius: 3px; }
 /* An offer on top of a page: a message on the clipboard, no key yet. */
 window.gpg .gpg-offer { margin: 14px 0 4px; padding: 12px 14px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
@@ -2135,7 +2139,8 @@ window.files button.files-side-item.selected .index-icon { color: @accent; }
 window.files button.files-eject { margin-left: 2px; color: @t2; }
 window.files button.files-eject:hover { color: @t0; }
 window.files .files-sidebar-foot { padding: 8px 12px 12px; border-top: 1px solid alpha(@line, 0.55); }
-window.files .files-sidebar-foot togglebutton:checked { color: @accent; background: alpha(@accent, 0.09); }
+window.files .files-sidebar-foot { border-spacing: 6px; }
+window.files .files-sidebar-foot button.framed-toggle { padding: 4px 7px; }
 
 window.files paned > separator { min-width: 1px; background: alpha(@line, 0.7); }
 window.files .files-pane { background: @app; }
@@ -2169,12 +2174,9 @@ window.files button.files-tab-close { min-width: 18px; min-height: 18px; padding
 window.files .files-tab:hover button.files-tab-close, window.files .files-tab.current button.files-tab-close { opacity: 1; }
 
 /* The list or the grid: the apps' text tabs, small enough for the head. */
-window.files stackswitcher.files-view-tabs { margin: 0 0 0 6px; }
-window.files stackswitcher.files-view-tabs > button,
-window.files stackswitcher.files-view-tabs > button:checked,
-window.files stackswitcher.files-view-tabs > button:hover { margin: 0 2px; padding: 6px 4px 5px; font-size: 10.5px; }
+window.files stackswitcher.segmented { margin-left: 6px; }
+window.files stackswitcher.segmented > button { min-height: 22px; padding: 0 8px; }
 window.files .files-head { padding: 10px 12px 8px; border-bottom: 1px solid alpha(@line, 0.55); }
-window.files .files-head togglebutton:checked { color: @accent; background: alpha(@accent, 0.09); }
 window.files .files-crumbs { padding: 0 6px; }
 window.files button.files-crumb {
   min-height: 28px;

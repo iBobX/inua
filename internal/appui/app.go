@@ -22,6 +22,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"github.com/godbus/dbus/v5"
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
@@ -130,7 +131,10 @@ type Ctx struct {
 	StartHidden bool
 	UIDir       string // read layouts from here instead of the embedded copy
 	Colors      map[string]string
-	refs        gtkx.Scope
+	// DesktopIcons is the desktop's icon theme (the XDG settings portal's,
+	// else GTK's), which the apps' own Phosphor theme inherits.
+	DesktopIcons string
+	refs         gtkx.Scope
 
 	cfgPath  string
 	cfgMod   time.Time
@@ -315,11 +319,12 @@ func (c *Ctx) loadIcons() {
 	var v gobject.Value
 	v.Init(gobject.TypeStringVal)
 	settings.GetProperty("gtk-icon-theme-name", &v)
-	system := cmp.Or(v.GetString(), "Adwaita")
+	system := cmp.Or(desktopIconTheme(), v.GetString(), "Adwaita")
 	v.Unset()
 	if system == appIconTheme {
 		system = "Adwaita"
 	}
+	c.DesktopIcons = system
 	dir, err := rundir.Sub("app-icons")
 	if err == nil {
 		err = c.writeIconTheme(dir, system)
@@ -331,6 +336,27 @@ func (c *Ctx) loadIcons() {
 	gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
 	gtkx.SetStringSetting("gtk-icon-theme-name", appIconTheme)
 	c.iconPath = true
+}
+
+// desktopIconTheme is the icon theme the desktop's settings choose, read
+// from the XDG settings portal (org.gnome.desktop.interface icon-theme),
+// or "" without one.
+func desktopIconTheme() string {
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		return ""
+	}
+	defer conn.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	defer cancel()
+	var v dbus.Variant
+	err = conn.Object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop").
+		CallWithContext(ctx, "org.freedesktop.portal.Settings.ReadOne", 0, "org.gnome.desktop.interface", "icon-theme").Store(&v)
+	if err != nil {
+		return ""
+	}
+	name, _ := v.Value().(string)
+	return name
 }
 
 // appIconTheme names the apps' icon theme.

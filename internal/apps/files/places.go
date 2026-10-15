@@ -12,7 +12,7 @@ import (
 type Place struct {
 	Name string
 	Path string // a local path; for a bookmark of a URI, its URI
-	Icon string
+	Icon string // a freedesktop icon name, drawn from the desktop's theme
 	Kind string // "home", "xdg", "bookmark", "root"
 }
 
@@ -43,12 +43,12 @@ func DataHome() string {
 // xdgDirs are the user folders in the order the sidebar shows them, with
 // their icons.
 var xdgDirs = []struct{ key, icon string }{
-	{"DESKTOP", "user-desktop-symbolic"},
-	{"DOCUMENTS", "folder-documents-symbolic"},
-	{"DOWNLOAD", "folder-download-symbolic"},
-	{"MUSIC", "folder-music-symbolic"},
-	{"PICTURES", "folder-pictures-symbolic"},
-	{"VIDEOS", "folder-videos-symbolic"},
+	{"DESKTOP", "user-desktop"},
+	{"DOCUMENTS", "folder-documents"},
+	{"DOWNLOAD", "folder-download"},
+	{"MUSIC", "folder-music"},
+	{"PICTURES", "folder-pictures"},
+	{"VIDEOS", "folder-videos"},
 }
 
 // UserDirs reads ~/.config/user-dirs.dirs: XDG_DESKTOP_DIR="$HOME/Desktop"
@@ -88,7 +88,7 @@ func UserDirs() map[string]string {
 // exist, then the bookmarks.
 func Places() []Place {
 	home := Home()
-	out := []Place{{Name: "Home", Path: home, Icon: "user-home-symbolic", Kind: "home"}}
+	out := []Place{{Name: "Home", Path: home, Icon: "user-home", Kind: "home"}}
 	dirs := UserDirs()
 	for _, d := range xdgDirs {
 		p, ok := dirs[d.key]
@@ -111,7 +111,7 @@ func Places() []Place {
 			continue
 		}
 		listed[b.Path] = true
-		out = append(out, Place{Name: b.Name, Path: b.Path, Icon: "folder-symbolic", Kind: "bookmark"})
+		out = append(out, Place{Name: b.Name, Path: b.Path, Icon: "folder", Kind: "bookmark"})
 	}
 	return out
 }

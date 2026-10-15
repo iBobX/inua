@@ -12,6 +12,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/files"
@@ -44,7 +45,7 @@ func (w *window) showDetails() {
 				size += p.all[i].Size
 			}
 		}
-		w.detailIcon("edit-copy-symbolic")
+		w.detailIcon("edit-copy")
 		w.detailTitle(i18n.Nf("%d item", "%d items", len(sel), len(sel)))
 		w.detailFact(i18n.T("FOLDERS"), strconv.Itoa(dirs))
 		w.detailFact(i18n.T("FILES"), strconv.Itoa(len(sel)-dirs))
@@ -75,7 +76,12 @@ func (w *window) showDetails() {
 		pic.SetSizeRequest(-1, 200)
 		gtkx.Append(&w.details, &pic.Widget)
 	} else {
-		w.detailIcon(k.icon)
+		img := w.detailIcon("")
+		if e.Dir {
+			w.app.icons.set(img, w.app.folderIcon(path), 72)
+		} else {
+			w.app.icons.setKind(img, k, 72)
+		}
 	}
 	w.detailTitle(e.Name)
 	if p.mode == inTrash && len(sel) == 1 {
@@ -96,7 +102,7 @@ func (w *window) showDetails() {
 	where := w.detailFact(i18n.T("WHERE"), shortHome(filepath.Dir(path)))
 	where.SetSelectable(true)
 	var preview *gtk.Label
-	if !e.Dir && strings.HasPrefix(k.mime, "text/") || k.icon == "text-x-script-symbolic" {
+	if !e.Dir && gio.ContentTypeIsA(k.mime, "text/plain") {
 		preview = gtk.NewLabel("")
 		preview.AddCssClass("files-text-preview")
 		preview.SetXalign(0)
@@ -145,11 +151,14 @@ func (w *window) showDetails() {
 	}()
 }
 
-func (w *window) detailIcon(icon string) {
+// detailIcon adds the panel's big icon, named or set later, and returns
+// it.
+func (w *window) detailIcon(icon string) *gtk.Image {
 	img := gtk.NewImageFromIconName(icon)
 	img.SetPixelSize(72)
 	img.AddCssClass("files-details-icon")
 	gtkx.Append(&w.details, &img.Widget)
+	return img
 }
 
 func (w *window) detailTitle(t string) {
