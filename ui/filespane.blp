@@ -29,18 +29,21 @@ Box pane {
 
     Button back {
       styles ["plain"]
+      valign: center;
       icon-name: "go-previous-symbolic";
       tooltip-text: _("Back (Alt+←)");
     }
 
     Button forward {
       styles ["plain"]
+      valign: center;
       icon-name: "go-next-symbolic";
       tooltip-text: _("Forward (Alt+→)");
     }
 
     Button up {
       styles ["plain"]
+      valign: center;
       icon-name: "go-up-symbolic";
       tooltip-text: _("Parent folder (Alt+↑)");
     }
@@ -85,24 +88,27 @@ Box pane {
 
     Button edit_path {
       styles ["plain"]
+      valign: center;
       icon-name: "document-edit-symbolic";
       tooltip-text: _("Edit the path (Ctrl+L)");
     }
 
     Button copy_path {
       styles ["plain"]
+      valign: center;
       icon-name: "edit-copy-symbolic";
       tooltip-text: _("Copy the path (Ctrl+Shift+C)");
     }
 
     Button terminal {
       styles ["plain"]
+      valign: center;
       icon-name: "utilities-terminal-symbolic";
       tooltip-text: _("Terminal here (Ctrl+Alt+T)");
     }
 
     StackSwitcher view_switch {
-      styles ["segmented"]
+      styles ["segmented", "icons"]
       stack: views;
       valign: center;
     }
@@ -187,6 +193,7 @@ Box pane {
 
       Button zoom_out {
         styles ["plain"]
+        valign: center;
         icon-name: "zoom-out-symbolic";
         tooltip-text: _("Smaller (Ctrl+−)");
       }
@@ -198,6 +205,7 @@ Box pane {
 
       Button zoom_in {
         styles ["plain"]
+        valign: center;
         icon-name: "zoom-in-symbolic";
         tooltip-text: _("Bigger (Ctrl++)");
       }

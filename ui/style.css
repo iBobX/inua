@@ -104,6 +104,9 @@ button.plain {
 }
 button.plain:hover { background: alpha(@accent, 0.09); color: @t0; }
 button.plain:disabled { color: alpha(@t2, 0.5); }
+/* An icon button is square: no side padding, as wide as it is tall. */
+button.image-button { padding-left: 0; padding-right: 0; }
+.settings button.outlined.image-button { min-width: 34px; }
 
 /* --- bar ------------------------------------------------------------- */
 
@@ -176,6 +179,8 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
 .bar .tray button { padding: 3px 5px; }
+/* The icon buttons among them are square, as tall as the others. */
+.bar button.clipboard, .bar button.notes, .bar .tray button.image-button { padding: 3px; }
 /* .hover: the pointer is in a button's reach past the island (up to the
    screen's edge); see bar.endReach and clockReach. */
 .bar button.clipboard:hover, .bar button.clipboard.hover, .bar button.status:hover, .bar button.status.hover, .bar button.notes:hover, .bar button.notes.hover, .bar button.clock-button:hover, .bar button.clock-button.hover, .bar .tray button:hover { background: alpha(@accent, 0.09); }
@@ -245,8 +250,8 @@ button.plain:disabled { color: alpha(@t2, 0.5); }
 .viewer button.viewer-trash label { color: @danger; }
 .viewer-stage { background: mix(@app, black, 0.22); }
 .viewer button.viewer-edge {
-  min-width: 40px;
-  min-height: 84px;
+  min-width: 44px;
+  min-height: 44px;
   margin: 0 12px;
   padding: 0;
   border: 1px solid alpha(@line, 0.7);
@@ -1183,7 +1188,7 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
   font-feature-settings: "tnum";
   color: @t0;
 }
-.settings .picker-unit button.plain { min-height: 22px; padding: 0; }
+.settings .picker-unit button.plain { min-width: 22px; min-height: 22px; padding: 0; }
 .settings .picker-colon { margin: 0 2px; font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 22px; color: @t2; }
 
 /* Clock and Weather: one column. Mono small capitals for labels, light
@@ -1982,6 +1987,7 @@ window.gpg button.gpg-from-row:hover { background: alpha(@accent, 0.08); }
 .settings stackswitcher.segmented > button:hover { background: alpha(@t0, 0.06); color: @t0; }
 .settings stackswitcher.segmented > button:checked { background: alpha(@accent, 0.16); color: @accent; }
 .settings stackswitcher.segmented > button image { -gtk-icon-size: 14px; }
+.settings stackswitcher.segmented.icons > button { min-width: 24px; min-height: 24px; padding: 0; } /* icons: square */
 window.gpg .gpg-drop { margin-top: 12px; padding: 30px; border: 1px dashed alpha(@line, 0.9); border-radius: 3px; }
 /* An offer on top of a page: a message on the clipboard, no key yet. */
 window.gpg .gpg-offer { margin: 14px 0 4px; padding: 12px 14px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
@@ -2140,7 +2146,13 @@ window.files button.files-eject { margin-left: 2px; color: @t2; }
 window.files button.files-eject:hover { color: @t0; }
 window.files .files-sidebar-foot { padding: 8px 12px 12px; border-top: 1px solid alpha(@line, 0.55); }
 window.files .files-sidebar-foot { border-spacing: 6px; }
-window.files .files-sidebar-foot button.framed-toggle { padding: 4px 7px; }
+/* Every icon button is square: as wide as tall, and centred in its row
+   (valign in the layouts) so the row cannot stretch it; 28 px, or 20 px
+   where the row is small. A framed one keeps its frame all round. */
+window.files button.image-button { min-width: 28px; min-height: 28px; padding: 0; }
+window.files .files-zoom button.image-button,
+window.files button.files-col-more,
+window.files button.files-tab-close { min-width: 20px; min-height: 20px; padding: 0; }
 
 window.files paned > separator { min-width: 1px; background: alpha(@line, 0.7); }
 window.files .files-pane { background: @app; }
@@ -2170,12 +2182,11 @@ window.files button.files-tab-title {
 }
 window.files button.files-tab-title:hover { color: @t1; }
 window.files .files-tab.current button.files-tab-title { color: @t0; }
-window.files button.files-tab-close { min-width: 18px; min-height: 18px; padding: 2px; margin-right: 4px; opacity: 0.5; }
+window.files button.files-tab-close { margin-right: 4px; opacity: 0.5; }
 window.files .files-tab:hover button.files-tab-close, window.files .files-tab.current button.files-tab-close { opacity: 1; }
 
 /* The list or the grid: the apps' text tabs, small enough for the head. */
 window.files stackswitcher.segmented { margin-left: 6px; }
-window.files stackswitcher.segmented > button { min-height: 22px; padding: 0 8px; }
 window.files .files-head { padding: 10px 12px 8px; border-bottom: 1px solid alpha(@line, 0.55); }
 window.files .files-crumbs { padding: 0 6px; }
 window.files button.files-crumb {
@@ -2197,7 +2208,7 @@ window.files entry.files-location { min-height: 30px; margin: 0 6px; }
 window.files .files-columns { padding: 4px 14px; border-bottom: 1px solid alpha(@line, 0.4); }
 window.files button.files-col { min-height: 20px; min-width: 0; padding: 0; border: none; background: transparent; box-shadow: none; }
 window.files button.files-col:hover .kicker { color: @t0; }
-window.files button.files-col-more { min-height: 20px; min-width: 0; padding: 0; color: @t2; }
+window.files button.files-col-more { color: @t2; }
 window.files button.files-col-more:hover { color: @t0; }
 
 window.files listview, window.files gridview { background: transparent; color: @t0; }
@@ -2252,7 +2263,7 @@ window.files .files-zoom-4 .files-row .readout { font-size: 13px; }
 window.files .files-zoom-5 listview > row { min-height: 42px; }
 window.files .files-zoom-5 .files-name { font-size: 16.5px; }
 window.files .files-zoom-5 .files-row .readout { font-size: 14px; }
-window.files .files-zoom button { min-height: 18px; min-width: 18px; padding: 0 2px; }
+window.files .files-zoom { border-spacing: 2px; }
 window.files button.files-zoom-level { min-width: 40px; padding: 0 2px; }
 window.files .files-status { min-height: 18px; padding: 6px 14px 8px; border-top: 1px solid alpha(@line, 0.4); }
 window.files .files-status .readout { color: @t2; font-size: 11px; }
@@ -2387,8 +2398,8 @@ popover.files-menu separator { margin: 4px 6px; background: alpha(@line, 0.9); }
 .music-dim { color: @t2; }
 .music-seek { margin: 0 -6px; }
 .music-transport > button {
-  min-width: 34px;
-  min-height: 28px;
+  min-width: 30px;
+  min-height: 30px;
   padding: 0;
   border: 1px solid @line;
   border-radius: 0;
