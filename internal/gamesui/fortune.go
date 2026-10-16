@@ -154,6 +154,10 @@ func (p *fortune) playerColor(i int) color.NRGBA {
 	return [...]color.NRGBA{{0xC2, 0x3B, 0x22, 255}, {0x2B, 0x4C, 0x7E, 255}, {0xC8, 0x8A, 0x1E, 255}, {0x7B, 0x5E, 0xA7, 255}}[i]
 }
 
+// theme: Small Fortune is a washi board whatever the shell's theme, its
+// window the paper's too.
+func (p *fortune) theme() string { return "washi" }
+
 func (p *fortune) setup(f *frame) {
 	p.f, p.settings, p.people, p.selected, p.hover = f, games.DefaultFortune, 1, -1, -1
 	p.snd = newSynth()

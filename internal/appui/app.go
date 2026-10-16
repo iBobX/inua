@@ -86,7 +86,18 @@ type View interface {
 // Opener is a View that takes the arguments of its first start.
 type Opener interface{ Open(args []string) }
 
+// Themed is a View that keeps a look of its own whatever the shell's
+// theme: the name of a built-in theme ("washi"), or "" for the shell's.
+type Themed interface{ Theme() string }
+
 type external struct{ v View }
+
+func (e external) theme() string {
+	if t, ok := e.v.(Themed); ok {
+		return t.Theme()
+	}
+	return ""
+}
 
 func (e external) build(c *Ctx) *gtk.ApplicationWindow { return e.v.Build(c) }
 func (e external) themeChanged()                       { e.v.ThemeChanged() }
@@ -282,7 +293,11 @@ func (c *Ctx) loadStyle() {
 		gtk.StyleContextAddProviderForDisplay(d, c.css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
 		gtk.StyleContextAddProviderForDisplay(d, c.userCSS, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
-	themeCSS := cfg.ThemeCSS(cmp.Or(cfg.Style.Theme, "yoru"), c.ReadUI)
+	theme := cmp.Or(cfg.Style.Theme, "yoru")
+	if t, ok := c.v.(interface{ theme() string }); ok && t.theme() != "" {
+		theme = t.theme() // an app with a look of its own
+	}
+	themeCSS := cfg.ThemeCSS(theme, c.ReadUI)
 	c.Colors = shell.ThemeColors(themeCSS)
 	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
 	if p := cfg.CSSPath(); p != "" {

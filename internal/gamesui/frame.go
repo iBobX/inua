@@ -120,6 +120,17 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	return f.win
 }
 
+// Theme is the game's own theme, if it keeps one (themed).
+func (v *view) Theme() string {
+	if t, ok := v.g.(themed); ok {
+		return t.theme()
+	}
+	return ""
+}
+
+// themed is a game that keeps a theme of its own, whatever the shell's.
+type themed interface{ theme() string }
+
 func (v *view) ThemeChanged() {
 	v.f.loadColors()
 	v.g.redraw()
