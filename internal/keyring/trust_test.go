@@ -236,3 +236,111 @@ func TestTrustLocked(t *testing.T) {
 		t.Errorf("unlocked: %v, checked %v", v, checked)
 	}
 }
+
+// A path rule lets any program at its path read every secret, whatever
+// its hash; the process still must not be tampered with, an interpreter
+// is matched by its script, and the rule is sealed with the rest.
+func TestPathRules(t *testing.T) {
+	store, err := Open(filepath.Join(t.TempDir(), "index.json"), newMemory())
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "trust.json")
+	tr := NewTrust(path, store.TrustKey)
+	item := ItemKey(Login, "1")
+	gh := Identity{Exe: "/home/x/.local/bin/gh", Hash: "aaa"}
+	tr.Add(item, Trusted{Identity: gh}, false)
+	before, _ := os.ReadFile(path)
+
+	claude := Identity{Exe: "/home/x/.local/share/claude/versions/2.1.300", Hash: "day1"}
+	if v, _, _ := tr.Decide(item, claude); v != Unknown {
+		t.Errorf("before the rule: %v", v)
+	}
+	if err := tr.AddPath("/home/x/.local/share/claude/versions/*", false); err != nil {
+		t.Fatal(err)
+	}
+	claude2 := Identity{Exe: "/home/x/.local/share/claude/versions/2.1.301", Hash: "day2"}
+	for _, id := range []Identity{claude, claude2} {
+		if v, _, checked := tr.Decide(ItemKey(Login, "any"), id); v != Allowed || !checked {
+			t.Errorf("%s: %v %v", id.Exe, v, checked)
+		}
+	}
+	gh2 := gh
+	gh2.Hash = "bbb"
+	if v, _, _ := tr.Decide(item, gh2); v != Changed {
+		t.Errorf("gh, no rule: %v", v)
+	}
+	tr.AddPath("/home/x/.local/bin/gh", false)
+	if v, _, _ := tr.Decide(item, gh2); v != Allowed {
+		t.Errorf("gh changed, with a rule: %v", v)
+	}
+	for _, id := range []Identity{
+		{Exe: "/home/x/.local/share/claude/versions/a/b", Hash: "x"}, // "*" stays in its directory
+		{Exe: "/home/x/.local/share/claude/versions/1", Hash: "x", Tampered: "LD_PRELOAD is set"},
+		{Exe: "/home/x/.local/share/claude/versions/1", Flatpak: "org.example.App"},
+	} {
+		if v, _, _ := tr.Decide(item, id); v == Allowed {
+			t.Errorf("%+v allowed", id)
+		}
+	}
+
+	// An interpreter: the script is the app.
+	tr.AddPath("/home/x/tools/*.py", false)
+	if v, _, _ := tr.Decide(item, Identity{Exe: "/usr/bin/python3", Script: "/home/x/tools/sync.py"}); v != Allowed {
+		t.Errorf("script: %v", v)
+	}
+	tr.AddPath("/usr/bin/python3", false)
+	if v, _, _ := tr.Decide(item, Identity{Exe: "/usr/bin/python3", Script: "-c import os"}); v == Allowed {
+		t.Error("an interpreter's own path let any code it runs through")
+	}
+
+	// Sealed: read again, still trusted; a rule added outside is not.
+	if v, _, _ := NewTrust(path, store.TrustKey).Decide(item, claude); v != Allowed {
+		t.Errorf("read again: %v", v)
+	}
+	if got := ReadPaths(path); len(got) != 4 || got[0].Pattern != "/home/x/.local/share/claude/versions/*" || got[0].Since.IsZero() {
+		t.Errorf("paths %+v", got)
+	}
+	b, _ := os.ReadFile(path)
+	os.WriteFile(path, []byte(strings.Replace(string(b), `"pattern": "/home/x/tools/*.py"`, `"pattern": "/tmp/*"`, 1)), 0o600)
+	if v, _, _ := tr.Decide(item, Identity{Exe: "/tmp/evil"}); v != Unknown || tr.Problem() == "" {
+		t.Errorf("a rule added outside: %v %q", v, tr.Problem())
+	}
+
+	// Without rules, the list is sealed as before there were any.
+	os.WriteFile(path, before, 0o600)
+	if again := NewTrust(path, store.TrustKey); again.Problem() != "" {
+		t.Errorf("an older list: %q", again.Problem())
+	}
+	tr.AddPath("/home/x/.local/bin/gh", false)
+	stamp, _ := os.Stat(path)
+	if err := tr.RemovePath("/nowhere/x/y"); err != nil {
+		t.Fatal(err)
+	}
+	if now, _ := os.Stat(path); !now.ModTime().Equal(stamp.ModTime()) {
+		t.Error("removing a rule the list does not hold wrote it")
+	}
+	tr.RemovePath("/home/x/.local/bin/gh")
+	if again := NewTrust(path, store.TrustKey); again.Problem() != "" || len(ReadPaths(path)) != 0 {
+		t.Errorf("after removing the rule: %q %+v", again.Problem(), ReadPaths(path))
+	}
+}
+
+func TestCheckPattern(t *testing.T) {
+	home := "/home/x"
+	for in, want := range map[string]string{
+		"~/.local/share/claude/versions/*": "/home/x/.local/share/claude/versions/*",
+		"/opt/app/bin/app":                 "/opt/app/bin/app",
+		"/home/x/.local/bin/":              "/home/x/.local/bin",
+		"/home/x/tools/*.py":               "/home/x/tools/*.py",
+	} {
+		if got, err := CheckPattern(in, home); err != nil || got != want {
+			t.Errorf("%s: %q %v, want %q", in, got, err, want)
+		}
+	}
+	for _, in := range []string{"*", "relative/*", "/*", "/usr/*", "/home/*/x", "~/*", "/home/x/*", "~", "/opt/[", "/opt/x/b[ad"} {
+		if got, err := CheckPattern(in, home); err == nil {
+			t.Errorf("%s: kept as %q", in, got)
+		}
+	}
+}

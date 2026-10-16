@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"cmp"
 	"encoding/json"
 	"log"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"codeberg.org/puregotk/puregotk/v4/pango"
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -56,6 +58,7 @@ type passDialog struct {
 	forKicker, forValue, askerApp, askerChain gtk.Label
 	appCard, pkgRow, wasRow                   gtk.Widget
 	appNote, program, script, pkg, was        gtk.Label
+	appSection                                gtk.Label
 	kickers                                   map[string]*gtk.Label // by row: what a copy flashes
 	kickerText                                map[string]string     // a kicker's own text while it says "Copied"
 	copies                                    map[string]int        // copies made of a row: the newest restores its kicker
@@ -182,7 +185,7 @@ func (s *shellUI) openPass(d *passDialog) {
 		"key_dates": &d.dates, "for_kicker": &d.forKicker, "for_value": &d.forValue,
 		"asker_app": &d.askerApp, "asker_chain": &d.askerChain,
 		"app_note": &d.appNote, "app_program": &d.program, "app_script": &d.script,
-		"app_package": &d.pkg, "app_was": &d.was,
+		"app_package": &d.pkg, "app_was": &d.was, "app_section": &d.appSection,
 	} {
 		ui.Get(id, l)
 	}
@@ -329,6 +332,9 @@ func fillApproval(d *passDialog) string {
 	case a.Agent:
 		title = i18n.Tf("Let %s do this?", q.App)
 		sub = i18n.T("An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session.")
+	case a.AllowPath != "":
+		title = i18n.T("Let programs at this path read every secret?")
+		sub = i18n.T("Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust.")
 	case a.Reseal:
 		title = i18n.T("Trust the list of apps again?")
 		sub = i18n.Nf("The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking.",
@@ -349,9 +355,17 @@ func fillApproval(d *passDialog) string {
 	d.message.SetVisible(false)
 
 	d.appCard.SetVisible(!a.Reseal)
-	d.asks.SetVisible(!a.Reseal && q.App != "")
-	d.program.SetText(a.Program)
-	d.program.SetTooltipText(a.Program)
+	d.asks.SetVisible(!a.Reseal && a.AllowPath == "" && q.App != "")
+	if a.AllowPath != "" {
+		d.appSection.SetMarkup(i18n.T("<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"))
+		d.kickers["row_program"].SetText(i18n.T("PATH"))
+		// All of it: it is what the user allows.
+		d.program.SetEllipsize(pango.EllipsizeNoneValue)
+		d.program.SetWrap(true)
+		d.program.SetWrapMode(pango.WrapCharValue)
+	}
+	d.program.SetText(cmp.Or(a.AllowPath, a.Program))
+	d.program.SetTooltipText(cmp.Or(a.AllowPath, a.Program))
 	what := a.Script
 	if a.Flatpak != "" {
 		what = i18n.Tf("Flatpak: %s", a.Flatpak)
@@ -381,6 +395,9 @@ func (s *shellUI) approveButtons(d *passDialog, ok, cancel, notok *gtk.Button) {
 	if a == nil {
 		a = &pinentry.Approval{}
 	}
+	// No answer is pushed: allowing looks like the others.
+	ok.RemoveCssClass("suggested-action")
+	ok.AddCssClass("outlined")
 	cancel.SetLabel(i18n.T("Deny"))
 	notok.SetLabel(i18n.T("Allow once"))
 	ok.SetLabel(i18n.T("Always allow"))
@@ -394,6 +411,10 @@ func (s *shellUI) approveButtons(d *passDialog, ok, cancel, notok *gtk.Button) {
 	case a.Reseal:
 		cancel.SetLabel(i18n.T("Cancel"))
 		ok.SetLabel(i18n.T("Trust"))
+		notok.SetVisible(false)
+	case a.AllowPath != "":
+		cancel.SetLabel(i18n.T("Cancel"))
+		ok.SetLabel(i18n.T("Allow every secret"))
 		notok.SetVisible(false)
 	case a.Tampered != "":
 		ok.SetLabel(i18n.T("Allow once"))

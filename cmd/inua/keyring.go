@@ -22,7 +22,8 @@ import (
 // (docs/feat/keyring.md).
 func cmdKeyring(args []string) error {
 	dry := len(args) == 2 && args[0] == "import" && (args[1] == "-n" || args[1] == "--dry-run")
-	if len(args) != 1 && !dry {
+	pattern := len(args) == 2 && (args[0] == "allow" || args[0] == "disallow")
+	if len(args) != 1 && !dry && !pattern {
 		usage()
 	}
 	cfg, _, err := config.Load(config.DefaultPath())
@@ -46,6 +47,12 @@ func cmdKeyring(args []string) error {
 		return keyringReplace(pass)
 	case "lock":
 		return keyringLock()
+	case "paths":
+		return keyringPaths()
+	case "allow", "disallow":
+		if pattern {
+			return keyringAllow(args[0] == "allow", args[1])
+		}
 	}
 	usage()
 	return nil
@@ -116,6 +123,56 @@ func keyringStatus(pass keyring.Pass) error {
 
 // keyringLock has the running inua-keyring forget the secrets it keeps
 // unlocked.
+// keyringPaths lists the paths whose programs read every secret.
+func keyringPaths() error {
+	rules := keyring.ReadPaths(keyring.TrustPath())
+	if len(rules) == 0 {
+		fmt.Println("No path is allowed: each app is trusted with its secrets one by one.")
+		return nil
+	}
+	for _, r := range rules {
+		fmt.Printf("%s\t(since %s)\n", r.Pattern, r.Since.Local().Format("2006-01-02"))
+	}
+	return nil
+}
+
+// keyringAllow lets programs at pattern read every secret, once the user
+// says so in inua-keyring's question, or drops the rule.
+func keyringAllow(allow bool, pattern string) error {
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	if _, ours := keyring.Serving(conn); !ours {
+		return errors.New("inua-keyring is not running")
+	}
+	home, _ := os.UserHomeDir()
+	if !allow {
+		if p, err := keyring.CheckPattern(pattern, home); err == nil {
+			pattern = p // as it was kept
+		}
+		if err := keyring.DisallowPath(conn, pattern); err != nil {
+			return err
+		}
+		fmt.Printf("Programs at %s are asked about again.\n", pattern)
+		return nil
+	}
+	if _, err := keyring.CheckPattern(pattern, home); err != nil {
+		return err
+	}
+	fmt.Println("inua-keyring asks you to confirm, in the shell's dialog…")
+	kept, added, err := keyring.AllowPath(conn, pattern)
+	if err != nil {
+		return err
+	}
+	if !added {
+		return errors.New("not allowed: you said no")
+	}
+	fmt.Printf("Programs at %s read every secret without asking.\n", kept)
+	return nil
+}
+
 func keyringLock() error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {

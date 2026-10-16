@@ -179,7 +179,7 @@ func fileExists(p string) bool { _, err := os.Stat(p); return err == nil }
 // a secret; an error when no shell listens.
 func askShell(ctx context.Context, q keyring.Question) (keyring.Answer, error) {
 	ap := &pinentry.Approval{Program: q.Identity.Exe, Script: q.Identity.Script, Flatpak: q.Identity.Flatpak,
-		Package: q.Package, Tampered: q.Tampered, Reseal: q.Reseal, Apps: q.Apps}
+		Package: q.Package, Tampered: q.Tampered, Reseal: q.Reseal, Apps: q.Apps, AllowPath: q.Path}
 	if ap.Package == "" && q.Identity.System {
 		ap.Package = keyring.Package(q.Identity.Exe)
 	}

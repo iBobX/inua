@@ -278,3 +278,37 @@ func TestOwnInterface(t *testing.T) {
 		t.Errorf("after resealing: %q", problem)
 	}
 }
+
+// A path rule is added only once the user said so, in inua-keyring's own
+// question; a pattern that lets too much through is refused unasked.
+func TestAllowPath(t *testing.T) {
+	a := &asker{ans: Deny}
+	addr, s, trustPath, _ := serveTrust(t, a)
+	s.KeepUnlocked(NewVault())
+	lookup(t, addr)
+	conn := dbustest.Conn(t, addr)
+	n := a.asked()
+	if _, added, err := AllowPath(conn, "/opt/app/bin/*"); added || err != nil || len(ReadPaths(trustPath)) != 0 {
+		t.Errorf("added though the user said no: %v %v", added, err)
+	}
+	a.mu.Lock()
+	q := a.qs[n]
+	a.ans = AlwaysAllow
+	a.mu.Unlock()
+	if q.Path != "/opt/app/bin/*" {
+		t.Errorf("the question %+v", q)
+	}
+	if kept, added, err := AllowPath(conn, "/opt/app/bin/*"); !added || err != nil || kept != "/opt/app/bin/*" {
+		t.Errorf("allow: %q %v %v", kept, added, err)
+	}
+	if p := ReadPaths(trustPath); len(p) != 1 {
+		t.Errorf("paths %+v", p)
+	}
+	n = a.asked()
+	if _, _, err := AllowPath(conn, "/*"); err == nil || a.asked() != n {
+		t.Errorf("too broad: %v, asked %d", err, a.asked()-n)
+	}
+	if err := DisallowPath(conn, "/opt/app/bin/*"); err != nil || len(ReadPaths(trustPath)) != 0 {
+		t.Errorf("disallow: %v %+v", err, ReadPaths(trustPath))
+	}
+}

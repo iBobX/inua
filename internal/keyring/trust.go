@@ -272,10 +272,20 @@ type Trusted struct {
 }
 
 // trustDoc is the trust file: the apps trusted with each item
-// ("collection/item"), and their HMAC.
+// ("collection/item"), the paths whose programs read every secret, and
+// their HMAC.
 type trustDoc struct {
 	Items map[string][]Trusted `json:"items"`
+	Paths []PathRule           `json:"paths,omitempty"`
 	MAC   string               `json:"mac,omitempty"`
+}
+
+// PathRule lets any program at a path read every secret, whatever its
+// hash: for an app the user keeps up to date that changes every day. The
+// path is a pattern (path/filepath.Match: "*" within a directory).
+type PathRule struct {
+	Pattern string    `json:"pattern"`
+	Since   time.Time `json:"since"`
 }
 
 // Verdict is what the trust list says of a read.
@@ -349,11 +359,17 @@ func (t *Trust) load() {
 	t.doc = doc
 }
 
-// mac seals the items with key.
-func mac(items map[string][]Trusted, key []byte) string {
-	b, _ := json.Marshal(items) // maps marshal in key order
+// mac seals the items and the paths with key; a list without paths is
+// sealed as before there were any.
+func mac(doc trustDoc, key []byte) string {
+	b, _ := json.Marshal(doc.Items) // maps marshal in key order
 	m := hmac.New(sha256.New, key)
 	m.Write(b)
+	if len(doc.Paths) > 0 {
+		p, _ := json.Marshal(doc.Paths)
+		m.Write([]byte("\x00paths"))
+		m.Write(p)
+	}
 	return base64.StdEncoding.EncodeToString(m.Sum(nil))
 }
 
@@ -366,7 +382,7 @@ func (t *Trust) check() {
 	if err != nil {
 		return // not yet: locked
 	}
-	want := mac(t.doc.Items, key)
+	want := mac(t.doc, key)
 	clear(key)
 	t.checked = true
 	if !hmac.Equal([]byte(want), []byte(t.doc.MAC)) {
@@ -399,10 +415,92 @@ func (t *Trust) Decide(item string, id Identity) (v Verdict, was *Trusted, check
 			if e.Hash == id.Hash || (e.System && id.System) {
 				return Allowed, nil, t.checked
 			}
+			if matchesPath(t.doc.Paths, id) {
+				return Allowed, nil, t.checked
+			}
 			return Changed, &e, t.checked
 		}
 	}
+	if matchesPath(t.doc.Paths, id) {
+		return Allowed, nil, t.checked
+	}
 	return Unknown, nil, t.checked
+}
+
+// matchesPath says whether a rule lets id read every secret: its program
+// is at a rule's path, or, for an interpreter, the script it runs is. A
+// Flatpak app, and an interpreter running no script file, match none.
+func matchesPath(rules []PathRule, id Identity) bool {
+	if id.Flatpak != "" || len(rules) == 0 {
+		return false
+	}
+	target := id.Exe
+	if interpreters.MatchString(filepath.Base(id.Exe)) {
+		if id.Script == "" || strings.HasPrefix(id.Script, "-") {
+			return false
+		}
+		target = id.Script
+	}
+	for _, r := range rules {
+		if ok, _ := filepath.Match(r.Pattern, target); ok {
+			return true
+		}
+	}
+	return false
+}
+
+// CheckPattern makes a path rule's pattern: "~/" for the home directory,
+// cleaned, and absolute. It refuses one that would let too much through:
+// a pattern that is not one, or whose fixed directory, before its first
+// wildcard, is less than two deep, or the home directory or above it.
+func CheckPattern(pattern, home string) (string, error) {
+	p := strings.TrimSpace(pattern)
+	if p == "~" || strings.HasPrefix(p, "~/") {
+		p = filepath.Join(home, strings.TrimPrefix(p, "~"))
+	}
+	if !filepath.IsAbs(p) {
+		return "", fmt.Errorf("%q is not an absolute path", pattern)
+	}
+	p = filepath.Clean(p)
+	if _, err := filepath.Match(p, ""); err != nil {
+		return "", fmt.Errorf("%q is not a pattern: %w", pattern, err)
+	}
+	fixed := filepath.Dir(p) // the directory of a path without wildcards
+	if i := strings.IndexAny(p, `*?[\`); i >= 0 {
+		fixed = filepath.Dir(p[:i+1])
+	}
+	h := filepath.Clean(home)
+	switch {
+	case fixed == "/" || !strings.Contains(strings.Trim(fixed, "/"), "/"):
+		return "", fmt.Errorf("%q lets too much through: name a directory at least two deep before any wildcard", pattern)
+	case home != "" && (fixed == h || strings.HasPrefix(h+"/", fixed+"/")):
+		return "", fmt.Errorf("%q lets too much through: name a directory inside your home, not the home itself", pattern)
+	}
+	return p, nil
+}
+
+// AddPath lets programs at pattern (made by CheckPattern) read every
+// secret, and seals the list. ask lets gpg-agent ask for the passphrase.
+func (t *Trust) AddPath(pattern string, ask bool) error {
+	return t.change(ask, adding, func(doc *trustDoc) {
+		doc.Paths = slices.DeleteFunc(doc.Paths, func(r PathRule) bool { return r.Pattern == pattern })
+		doc.Paths = append(doc.Paths, PathRule{Pattern: pattern, Since: time.Now()})
+	})
+}
+
+// RemovePath drops a path rule. As Remove, a list not trusted stays so;
+// a rule it does not hold changes nothing, and asks for nothing.
+func (t *Trust) RemovePath(pattern string) error {
+	t.mu.Lock()
+	t.load()
+	held := slices.ContainsFunc(t.doc.Paths, func(r PathRule) bool { return r.Pattern == pattern })
+	t.mu.Unlock()
+	if !held {
+		return nil
+	}
+	return t.change(true, removing, func(doc *trustDoc) {
+		doc.Paths = slices.DeleteFunc(doc.Paths, func(r PathRule) bool { return r.Pattern == pattern })
+	})
 }
 
 // Problem is why the list is not trusted; "" when it is, or is not yet
@@ -504,13 +602,13 @@ func (t *Trust) change(ask bool, how changeKind, f func(*trustDoc)) error {
 	case t.bad == "" && unsealed:
 		return errors.New("the list changed meanwhile; try again")
 	}
-	doc := trustDoc{Items: map[string][]Trusted{}}
+	doc := trustDoc{Items: map[string][]Trusted{}, Paths: slices.Clone(t.doc.Paths)}
 	for k, v := range t.doc.Items {
 		doc.Items[k] = slices.Clone(v)
 	}
 	f(&doc)
 	if !unsealed {
-		doc.MAC = mac(doc.Items, key)
+		doc.MAC = mac(doc, key)
 	}
 	b, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
@@ -539,12 +637,21 @@ func (t *Trust) change(ask bool, how changeKind, f func(*trustDoc)) error {
 // ReadTrust lists the apps trusted with each item as the file at path
 // holds them, for Settings; inua-keyring says whether it trusts the file.
 func ReadTrust(path string) map[string][]Trusted {
+	return readTrustDoc(path).Items
+}
+
+// ReadPaths lists the path rules as the file at path holds them.
+func ReadPaths(path string) []PathRule {
+	return readTrustDoc(path).Paths
+}
+
+func readTrustDoc(path string) trustDoc {
 	var doc trustDoc
 	b, err := os.ReadFile(path)
 	if err != nil || json.Unmarshal(b, &doc) != nil {
-		return nil
+		return trustDoc{}
 	}
-	return doc.Items
+	return doc
 }
 
 // newTrustKey is a new HMAC key, as kept in pass.

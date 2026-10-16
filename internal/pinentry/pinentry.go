@@ -81,6 +81,9 @@ type Approval struct {
 	// it was changed outside inua-keyring; Apps is how many it has.
 	Reseal bool `json:"reseal,omitempty"`
 	Apps   int  `json:"apps,omitempty"`
+	// AllowPath asks instead whether programs at this path (a pattern)
+	// may read every secret without asking.
+	AllowPath string `json:"allow_path,omitempty"`
 	// Agent asks instead whether an AI agent may use one of inua's tools
 	// (inua as an MCP server): Action is what the call does ("Closing
 	// Firefox"); Program is the agent's program. "always" then means for

@@ -429,7 +429,8 @@ serve_listen = %s
 # inua-keyring keeps apps' secrets (the Secret Service: browsers' keys,
 # Wi-Fi passwords, the assistant's API keys) in pass, under this folder
 # of the password store (PASSWORD_STORE_DIR, else ~/.password-store).
-# inua keyring status|import|enable|disable: see docs/features.md.
+# inua keyring status|import|enable|disable|paths|allow|disallow: see
+# docs/features.md.
 folder = %s
 
 # A notification when an app reads its first secret since inua-keyring

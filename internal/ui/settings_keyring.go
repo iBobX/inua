@@ -48,6 +48,14 @@ type keyringSettings struct {
 	apps                                []keyringApp // the trusted apps
 	shown                               []keyringApp // those the filter lets through, as listed
 
+	// The paths whose programs read every secret (keyring.PathRule).
+	paths                    gtk.Box
+	pathsCount, trustedTotal gtk.Label
+	pathEntry                gtk.Entry
+	pathAdd                  gtk.Button
+	pathNote                 gtk.Label
+	rules                    []keyring.PathRule
+
 	groups []keyring.Reads // the rows, as listed
 	rows   []*gtk.Button
 	open   int // the row the panel shows; -1 for none
@@ -79,11 +87,17 @@ func (s *shellUI) getKeyringSettings(ui *gtkx.Builder) {
 	ui.Get("keyring_trusted_back", &k.back)
 	ui.Get("keyring_pages", &k.pages)
 	ui.Get("keyring_trusted_filter", &k.filter)
+	ui.Get("keyring_paths", &k.paths)
+	ui.Get("keyring_paths_count", &k.pathsCount)
+	ui.Get("keyring_trusted_total", &k.trustedTotal)
+	ui.Get("keyring_path_entry", &k.pathEntry)
+	ui.Get("keyring_path_add", &k.pathAdd)
+	ui.Get("keyring_path_note", &k.pathNote)
 	k.open = -1
 	k.notify.ConnectStateSet(&s.onSettingsSwitch)
 	k.onFilter = func(gtk.SearchEntry) { s.listTrustedApps() }
 	k.filter.ConnectSearchChanged(&k.onFilter)
-	for _, b := range []*gtk.Button{&k.refresh, &k.close, &k.lock, &k.reseal, &k.trustedOpen, &k.back} {
+	for _, b := range []*gtk.Button{&k.refresh, &k.close, &k.lock, &k.reseal, &k.trustedOpen, &k.back, &k.pathAdd} {
 		b.ConnectClicked(&s.onSettingsButton)
 	}
 	for _, d := range []*gtk.DropDown{&k.lockAfter, &k.untrusted} {
@@ -140,6 +154,56 @@ func (s *shellUI) keyringButton(name string) bool {
 		go func() { // inua-keyring asks the user, in the shell's dialog
 			if conn, err := system.SessionBus(); err == nil {
 				if _, err := keyring.ResealTrust(conn); err != nil {
+					log.Printf("settings: keyring: %v", err)
+				}
+				conn.Close()
+			}
+			gtkx.Post(s.showKeyringReads)
+		}()
+	case name == "keyring_path_add":
+		pattern := strings.TrimSpace(k.pathEntry.GetText())
+		if pattern == "" {
+			return true
+		}
+		k.pathAdd.SetSensitive(false)
+		k.pathNote.SetVisible(false)
+		go func() { // inua-keyring asks the user, in the shell's dialog
+			note, added := i18n.T("Cannot reach inua-keyring"), false
+			if conn, err := system.SessionBus(); err == nil {
+				var kept string
+				switch kept, added, err = keyring.AllowPath(conn, pattern); {
+				case err != nil:
+					note = i18n.Tf("Not added: %s", err.Error())
+				case !added:
+					note = i18n.T("Not added: you said no.")
+				default:
+					note = i18n.Tf("Added %s.", kept)
+				}
+				conn.Close()
+			}
+			gtkx.Post(func() {
+				if s.settings.win == nil {
+					return
+				}
+				k.pathAdd.SetSensitive(true)
+				k.pathNote.SetText(note)
+				k.pathNote.SetVisible(true)
+				toggle(&k.pathNote.Widget, "warn-text", !added)
+				if added {
+					k.pathEntry.SetText("")
+				}
+				s.showKeyringReads()
+			})
+		}()
+	case strings.HasPrefix(name, "keyring-path-rm:"):
+		i, _ := strconv.Atoi(strings.TrimPrefix(name, "keyring-path-rm:"))
+		if i < 0 || i >= len(k.rules) {
+			return true
+		}
+		pattern := k.rules[i].Pattern
+		go func() {
+			if conn, err := system.SessionBus(); err == nil {
+				if err := keyring.DisallowPath(conn, pattern); err != nil {
 					log.Printf("settings: keyring: %v", err)
 				}
 				conn.Close()
@@ -330,6 +394,7 @@ func (s *shellUI) showKeyringReads() {
 			conn.Close()
 		}
 		apps := keyringApps(folder)
+		rules := keyring.ReadPaths(keyring.TrustPath())
 		reads, err := keyring.ReadAccess(keyring.AccessPath())
 		gtkx.Post(func() {
 			if s.settings.win == nil {
@@ -341,7 +406,7 @@ func (s *shellUI) showKeyringReads() {
 			k.problem.SetVisible(problem != "")
 			k.problemText.SetText(keyringProblem(problem))
 			k.reseal.SetSensitive(true)
-			s.showTrustedApps(apps, problem)
+			s.showTrustedApps(apps, rules, problem)
 			gtkx.Clear(&k.reads)
 			if err != nil {
 				k.none.SetText(i18n.Tf("The record of reads cannot be read: %s", err.Error()))
@@ -462,12 +527,13 @@ func keyringApps(folder string) []keyringApp {
 	return out
 }
 
-// showTrustedApps takes the trusted apps read, says how many on the
-// Keyring page, and lists them on their own page; problem is why the list
-// is not trusted.
-func (s *shellUI) showTrustedApps(apps []keyringApp, problem string) {
+// showTrustedApps takes the trusted apps and paths read, says how many on
+// the Keyring page, and lists them on their own page; problem is why the
+// list is not trusted.
+func (s *shellUI) showTrustedApps(apps []keyringApp, rules []keyring.PathRule, problem string) {
 	k := &s.settings.keyring
-	k.apps = apps
+	k.apps, k.rules = apps, rules
+	s.listKeyringPaths()
 	secrets := map[string]bool{}
 	for _, a := range apps {
 		secrets[a.item] = true
@@ -481,11 +547,20 @@ func (s *shellUI) showTrustedApps(apps []keyringApp, problem string) {
 	switch {
 	case problem != "":
 		sum = i18n.T("Not trusted: changed outside inua-keyring. Every app is asked about.")
-	case len(apps) == 0:
+	case len(apps) == 0 && len(rules) == 0:
 		sum = i18n.T("None yet: each app is asked about the first time it reads a secret")
+	}
+	if problem == "" && len(rules) > 0 {
+		sum = i18n.Nf("%s · %d allowed path", "%s · %d allowed paths", len(rules), count, len(rules))
 	}
 	k.trustedSum.SetText(sum)
 	toggle(&k.trustedSum.Widget, "warn-text", problem != "")
+	k.trustedTotal.SetText(sum)
+	toggle(&k.trustedTotal.Widget, "warn-text", problem != "")
+	k.pathsCount.SetText(i18n.Nf("%d path", "%d paths", len(rules), len(rules)))
+	if len(rules) == 0 {
+		k.pathsCount.SetText(i18n.T("None"))
+	}
 	s.listTrustedApps()
 }
 
@@ -565,6 +640,40 @@ func (s *shellUI) listTrustedApps() {
 		rm.ConnectClicked(&s.onSettingsButton)
 		gtkx.Append(row, &rm.Widget)
 		gtkx.Append(&k.trusted, &row.Widget)
+	}
+}
+
+// listKeyringPaths lists the allowed paths, each with when and Remove.
+func (s *shellUI) listKeyringPaths() {
+	k := &s.settings.keyring
+	gtkx.Clear(&k.paths)
+	for i, r := range k.rules {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		row.AddCssClass("row")
+		img := gtk.NewImageFromIconName("folder-symbolic")
+		img.SetValign(gtk.AlignCenterValue)
+		gtkx.Append(row, &img.Widget)
+		l := gtk.NewLabel(r.Pattern)
+		l.AddCssClass("mono-sub")
+		l.SetXalign(0)
+		l.SetHexpand(true)
+		l.SetEllipsize(2) // middle
+		l.SetTooltipText(r.Pattern)
+		gtkx.Append(row, &l.Widget)
+		if !r.Since.IsZero() {
+			when := gtk.NewLabel(i18n.Tf("since %s", i18n.Time(r.Since.Local(), "Jan 2, 2006")))
+			when.AddCssClass("sub")
+			when.SetValign(gtk.AlignCenterValue)
+			gtkx.Append(row, &when.Widget)
+		}
+		rm := gtk.NewButtonWithLabel(i18n.T("Remove"))
+		rm.AddCssClass("outlined")
+		rm.SetValign(gtk.AlignCenterValue)
+		rm.SetName(fmt.Sprintf("keyring-path-rm:%d", i))
+		rm.SetTooltipText(i18n.T("Stop allowing it: its programs are asked about again"))
+		rm.ConnectClicked(&s.onSettingsButton)
+		gtkx.Append(row, &rm.Widget)
+		gtkx.Append(&k.paths, &row.Widget)
 	}
 }
 

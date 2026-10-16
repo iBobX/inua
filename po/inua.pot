@@ -17,7 +17,7 @@ msgid "inua's assistant"
 msgstr ""
 
 #: cmd/inua-keyring/main.go:117
-#: internal/ui/settings_keyring.go:250
+#: internal/ui/settings_keyring.go:314
 #: ui/settings.ui:3512
 msgid "Keyring"
 msgstr ""
@@ -719,12 +719,13 @@ msgstr ""
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:366
-#: internal/ui/askpass.go:427
-#: internal/ui/askpass.go:431
-#: internal/ui/askpass.go:433
+#: internal/ui/askpass.go:380
+#: internal/ui/askpass.go:448
+#: internal/ui/askpass.go:452
+#: internal/ui/askpass.go:454
 #: internal/ui/settings_about.go:187
-#: internal/ui/settings_keyring.go:555
+#: internal/ui/settings_keyring.go:630
+#: internal/ui/settings_keyring.go:664
 msgid "Jan 2, 2006"
 msgstr ""
 
@@ -882,7 +883,7 @@ msgstr ""
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/ui/askpass.go:516
+#: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
 msgstr ""
@@ -1247,7 +1248,7 @@ msgstr ""
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
 #: internal/filesui/window.go:712
-#: internal/ui/askpass.go:200
+#: internal/ui/askpass.go:203
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2718
@@ -1350,7 +1351,7 @@ msgstr ""
 
 #: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
-#: internal/ui/settings_keyring.go:475
+#: internal/ui/settings_keyring.go:541
 msgid "%d app"
 msgid_plural "%d apps"
 msgstr[0] ""
@@ -1361,28 +1362,29 @@ msgid "None: an app reading it is asked about first."
 msgstr ""
 
 #: internal/appui/pass.go:1043
-#: internal/ui/askpass.go:357
-#: internal/ui/settings_keyring.go:539
+#: internal/ui/askpass.go:371
+#: internal/ui/settings_keyring.go:614
 msgid "Flatpak: %s"
 msgstr ""
 
 #: internal/appui/pass.go:1048
 #: internal/appui/pass.go:1070
-#: internal/ui/settings_keyring.go:394
-#: internal/ui/settings_keyring.go:402
-#: internal/ui/settings_keyring.go:544
+#: internal/ui/settings_keyring.go:459
+#: internal/ui/settings_keyring.go:467
+#: internal/ui/settings_keyring.go:619
 msgid "%s · %s"
 msgstr ""
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
-#: internal/ui/settings_keyring.go:560
+#: internal/ui/settings_keyring.go:635
+#: internal/ui/settings_keyring.go:669
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr ""
 
 #: internal/appui/pass.go:1055
-#: internal/ui/settings_keyring.go:564
+#: internal/ui/settings_keyring.go:639
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr ""
 
@@ -1397,7 +1399,7 @@ msgstr ""
 #: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/filesui/pane.go:1358
-#: internal/ui/settings_keyring.go:433
+#: internal/ui/settings_keyring.go:498
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr ""
@@ -1409,27 +1411,27 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: internal/appui/pass.go:1080
-#: internal/ui/settings_keyring.go:575
+#: internal/ui/settings_keyring.go:684
 msgid "trusted"
 msgstr ""
 
 #: internal/appui/pass.go:1082
-#: internal/ui/settings_keyring.go:577
+#: internal/ui/settings_keyring.go:686
 msgid "allowed once"
 msgstr ""
 
 #: internal/appui/pass.go:1084
-#: internal/ui/settings_keyring.go:579
+#: internal/ui/settings_keyring.go:688
 msgid "allowed, and trusted from now on"
 msgstr ""
 
 #: internal/appui/pass.go:1086
-#: internal/ui/settings_keyring.go:581
+#: internal/ui/settings_keyring.go:690
 msgid "denied"
 msgstr ""
 
 #: internal/appui/pass.go:1088
-#: internal/ui/settings_keyring.go:583
+#: internal/ui/settings_keyring.go:692
 msgid "allowed: no one to ask"
 msgstr ""
 
@@ -1756,7 +1758,7 @@ msgstr ""
 
 #: internal/appui/sysmon.go:786
 #: internal/filesui/kinds.go:38
-#: internal/ui/settings_keyring.go:252
+#: internal/ui/settings_keyring.go:316
 msgid "Program"
 msgstr ""
 
@@ -1793,7 +1795,7 @@ msgid "%s · %s ago"
 msgstr ""
 
 #: internal/appui/sysmon.go:836
-#: internal/ui/settings_keyring.go:224
+#: internal/ui/settings_keyring.go:288
 msgid "Jan 2 15:04:05"
 msgstr ""
 
@@ -1868,7 +1870,7 @@ msgstr ""
 #: internal/ui/settings_ai.go:378
 #: internal/viewerui/app.go:791
 #: ui/gpg.ui:1342
-#: ui/settings.ui:4437
+#: ui/settings.ui:4590
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr ""
@@ -2268,6 +2270,7 @@ msgid "IN USE"
 msgstr ""
 
 #: internal/appui/tailscale.go:601
+#: internal/ui/settings_keyring.go:562
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr ""
@@ -2409,7 +2412,7 @@ msgstr ""
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:4654
+#: ui/settings.ui:4807
 msgid "Off"
 msgstr ""
 
@@ -2530,8 +2533,9 @@ msgstr ""
 #: internal/filesui/cards.go:610
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
-#: internal/ui/askpass.go:267
-#: internal/ui/askpass.go:395
+#: internal/ui/askpass.go:270
+#: internal/ui/askpass.go:412
+#: internal/ui/askpass.go:416
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/files.ui:155
@@ -2546,7 +2550,7 @@ msgid "Cancel"
 msgstr ""
 
 #: internal/appui/workshop.go:995
-#: internal/ui/askpass.go:266
+#: internal/ui/askpass.go:269
 msgid "OK"
 msgstr ""
 
@@ -2749,7 +2753,7 @@ msgid "Don't"
 msgstr ""
 
 #: internal/assistantui/assistantui.go:489
-#: internal/ui/askpass.go:390
+#: internal/ui/askpass.go:407
 #: internal/workshop/session.go:406
 msgid "Allow"
 msgstr ""
@@ -3519,7 +3523,7 @@ msgstr[1] ""
 
 #: internal/filesui/cards.go:454
 #: internal/filesui/cards.go:735
-#: ui/settings.ui:4192
+#: ui/settings.ui:4345
 msgid "Close"
 msgstr ""
 
@@ -7774,177 +7778,197 @@ msgstr ""
 msgid "Snooze"
 msgstr ""
 
-#: internal/ui/askpass.go:69
+#: internal/ui/askpass.go:72
 msgid "password: want one JSON request"
 msgstr ""
 
-#: internal/ui/askpass.go:111
+#: internal/ui/askpass.go:114
 msgid "not ok"
 msgstr ""
 
-#: internal/ui/askpass.go:226
+#: internal/ui/askpass.go:229
 msgid "Passphrase Required"
 msgstr ""
 
-#: internal/ui/askpass.go:226
+#: internal/ui/askpass.go:229
 msgid "Confirm"
 msgstr ""
 
-#: internal/ui/askpass.go:226
+#: internal/ui/askpass.go:229
 msgid "Message"
 msgstr ""
 
-#: internal/ui/askpass.go:228
+#: internal/ui/askpass.go:231
 msgid "Unlock OpenPGP Key"
 msgstr ""
 
-#: internal/ui/askpass.go:244
+#: internal/ui/askpass.go:247
 msgid "Passphrase"
 msgstr ""
 
-#: internal/ui/askpass.go:327
 #: internal/ui/askpass.go:330
+#: internal/ui/askpass.go:333
 #: internal/workshop/session.go:406
 msgid "Let %s do this?"
 msgstr ""
 
-#: internal/ui/askpass.go:328
+#: internal/ui/askpass.go:331
 msgid "The assistant needs this to answer you. Deny, and it will say it could not."
 msgstr ""
 
-#: internal/ui/askpass.go:331
+#: internal/ui/askpass.go:334
 msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
 msgstr ""
 
-#: internal/ui/askpass.go:333
+#: internal/ui/askpass.go:336
+msgid "Let programs at this path read every secret?"
+msgstr ""
+
+#: internal/ui/askpass.go:337
+msgid "Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust."
+msgstr ""
+
+#: internal/ui/askpass.go:339
 msgid "Trust the list of apps again?"
 msgstr ""
 
-#: internal/ui/askpass.go:334
+#: internal/ui/askpass.go:340
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/ui/askpass.go:337
+#: internal/ui/askpass.go:343
 msgid "%s has changed since you allowed it"
 msgstr ""
 
-#: internal/ui/askpass.go:338
+#: internal/ui/askpass.go:344
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr ""
 
-#: internal/ui/askpass.go:340
+#: internal/ui/askpass.go:346
 msgid "Allow %s to read a secret?"
 msgstr ""
 
-#: internal/ui/askpass.go:341
+#: internal/ui/askpass.go:347
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr ""
 
-#: internal/ui/askpass.go:344
+#: internal/ui/askpass.go:350
 msgid "It can only be allowed once: %s."
 msgstr ""
 
-#: internal/ui/askpass.go:365
+#: internal/ui/askpass.go:360
+msgid "<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"
+msgstr ""
+
+#: internal/ui/askpass.go:361
+msgid "PATH"
+msgstr ""
+
+#: internal/ui/askpass.go:379
 msgid "Changed since you allowed it"
 msgstr ""
 
-#: internal/ui/askpass.go:368
+#: internal/ui/askpass.go:382
 msgid "%s · as %s"
 msgstr ""
 
-#: internal/ui/askpass.go:384
+#: internal/ui/askpass.go:401
 msgid "Deny"
 msgstr ""
 
-#: internal/ui/askpass.go:385
-#: internal/ui/askpass.go:399
+#: internal/ui/askpass.go:402
+#: internal/ui/askpass.go:420
 msgid "Allow once"
 msgstr ""
 
-#: internal/ui/askpass.go:386
+#: internal/ui/askpass.go:403
 msgid "Always allow"
 msgstr ""
 
-#: internal/ui/askpass.go:393
+#: internal/ui/askpass.go:410
 msgid "Allow for this session"
 msgstr ""
 
-#: internal/ui/askpass.go:396
+#: internal/ui/askpass.go:413
 msgid "Trust"
 msgstr ""
 
-#: internal/ui/askpass.go:415
+#: internal/ui/askpass.go:417
+msgid "Allow every secret"
+msgstr ""
+
+#: internal/ui/askpass.go:436
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr ""
 
-#: internal/ui/askpass.go:417
+#: internal/ui/askpass.go:438
 msgid "Enter the passphrase so %s can use this key."
 msgstr ""
 
-#: internal/ui/askpass.go:419
+#: internal/ui/askpass.go:440
 msgid "Enter the passphrase to use this key."
 msgstr ""
 
-#: internal/ui/askpass.go:431
+#: internal/ui/askpass.go:452
 msgid "%s · expired %s"
 msgstr ""
 
-#: internal/ui/askpass.go:433
+#: internal/ui/askpass.go:454
 msgid "%s · expires %s"
 msgstr ""
 
-#: internal/ui/askpass.go:448
+#: internal/ui/askpass.go:469
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr ""
 
-#: internal/ui/askpass.go:450
+#: internal/ui/askpass.go:471
 msgid "SECRET"
 msgstr ""
 
-#: internal/ui/askpass.go:453
+#: internal/ui/askpass.go:474
 msgid "ACTION"
 msgstr ""
 
-#: internal/ui/askpass.go:535
+#: internal/ui/askpass.go:556
 msgid "Encryption subkey"
 msgstr ""
 
-#: internal/ui/askpass.go:537
+#: internal/ui/askpass.go:558
 msgid "Signing subkey"
 msgstr ""
 
-#: internal/ui/askpass.go:539
+#: internal/ui/askpass.go:560
 msgid "Authentication subkey"
 msgstr ""
 
-#: internal/ui/askpass.go:541
+#: internal/ui/askpass.go:562
 msgid "Subkey"
 msgstr ""
 
-#: internal/ui/askpass.go:543
+#: internal/ui/askpass.go:564
 msgid "Primary key"
 msgstr ""
 
-#: internal/ui/askpass.go:590
+#: internal/ui/askpass.go:611
 msgid "Show the private details (Ctrl+H)"
 msgstr ""
 
-#: internal/ui/askpass.go:593
+#: internal/ui/askpass.go:614
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr ""
 
-#: internal/ui/askpass.go:652
+#: internal/ui/askpass.go:673
 msgid "Hidden while the screen is being recorded or shared."
 msgstr ""
 
-#: internal/ui/askpass.go:655
+#: internal/ui/askpass.go:676
 msgid "Hidden for the screenshot."
 msgstr ""
 
-#: internal/ui/askpass.go:702
+#: internal/ui/askpass.go:723
 msgid "The passphrases do not match."
 msgstr ""
 
@@ -8629,7 +8653,7 @@ msgid "Chat"
 msgstr ""
 
 #: internal/ui/settings_ai.go:411
-#: internal/ui/settings_keyring.go:248
+#: internal/ui/settings_keyring.go:312
 msgid "Decision"
 msgstr ""
 
@@ -8799,205 +8823,235 @@ msgid "Not added: the folder has no SVG files"
 msgstr ""
 
 #: internal/ui/settings_custom.go:165
+#: internal/ui/settings_keyring.go:176
 msgid "Not added: %s"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:197
-#: ui/settings.ui:4180
+#: internal/ui/settings_keyring.go:171
+msgid "Cannot reach inua-keyring"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:178
+msgid "Not added: you said no."
+msgstr ""
+
+#: internal/ui/settings_keyring.go:180
+msgid "Added %s."
+msgstr ""
+
+#: internal/ui/settings_keyring.go:261
+#: ui/settings.ui:4333
 msgid "<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:199
+#: internal/ui/settings_keyring.go:263
 msgid "<span alpha='55%'>[</span>PASSPHRASE<span alpha='55%'>]</span>"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:219
+#: internal/ui/settings_keyring.go:283
 msgid "Not in pass: the session keyring is kept in memory"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:221
+#: internal/ui/settings_keyring.go:285
 msgid "Not recorded"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:227
+#: internal/ui/settings_keyring.go:291
 msgid "%d reads, %s to %s"
 msgid_plural "%d reads, %s to %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/ui/settings_keyring.go:229
+#: internal/ui/settings_keyring.go:293
 msgid "Not known"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:232
-#: internal/ui/settings_keyring.go:392
-#: internal/ui/settings_keyring.go:399
+#: internal/ui/settings_keyring.go:296
+#: internal/ui/settings_keyring.go:457
+#: internal/ui/settings_keyring.go:464
 msgid "pid %d"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:234
+#: internal/ui/settings_keyring.go:298
 msgid "pid %d, still running"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:236
+#: internal/ui/settings_keyring.go:300
 msgid "pid %d, ended"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:238
+#: internal/ui/settings_keyring.go:302
 msgid "Secret"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:240
+#: internal/ui/settings_keyring.go:304
 msgid "For"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:247
+#: internal/ui/settings_keyring.go:311
 msgid "Answer"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:249
+#: internal/ui/settings_keyring.go:313
 msgid "In pass"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:251
+#: internal/ui/settings_keyring.go:315
 msgid "App"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:253
+#: internal/ui/settings_keyring.go:317
 msgid "Command line"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:254
+#: internal/ui/settings_keyring.go:318
 msgid "Runs under"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:255
+#: internal/ui/settings_keyring.go:319
 msgid "Process"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:256
+#: internal/ui/settings_keyring.go:320
 msgid "Bus name"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:257
+#: internal/ui/settings_keyring.go:321
 msgid "When"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:272
+#: internal/ui/settings_keyring.go:336
 msgid "Entered"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:274
+#: internal/ui/settings_keyring.go:338
 msgid "cancelled"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:276
+#: internal/ui/settings_keyring.go:340
 msgid "the dialog could not be shown"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:309
+#: internal/ui/settings_keyring.go:373
 msgid "Looking…"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:312
+#: internal/ui/settings_keyring.go:376
 msgid "Cannot reach the session bus"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:313
+#: internal/ui/settings_keyring.go:377
 msgid "inua-keyring is not running"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:317
+#: internal/ui/settings_keyring.go:381
 msgid "%s serves it, keeping the secrets in pass"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:320
+#: internal/ui/settings_keyring.go:384
 msgid "Locked: the next read decrypts with gpg, which may ask for your passphrase"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:322
+#: internal/ui/settings_keyring.go:386
 msgid "Kept in protected memory since the first read, so reads ask for nothing"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:326
+#: internal/ui/settings_keyring.go:390
 msgid "%s serves it, not inua-keyring; inua keyring replace switches"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:328
+#: internal/ui/settings_keyring.go:392
 msgid "No one serves it now; D-Bus starts it on the first request"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:347
+#: internal/ui/settings_keyring.go:412
 msgid "The record of reads cannot be read: %s"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:349
+#: internal/ui/settings_keyring.go:414
 #: ui/settings.ui:3972
 msgid "No app has read a secret yet."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:370
+#: internal/ui/settings_keyring.go:435
 msgid "%s read “%s”"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:372
+#: internal/ui/settings_keyring.go:437
 msgid "%s was denied “%s”"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:375
+#: internal/ui/settings_keyring.go:440
 msgid "%s asked for the passphrase"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:397
+#: internal/ui/settings_keyring.go:462
 msgid "session keyring, in memory"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:405
+#: internal/ui/settings_keyring.go:470
 msgid "%s · %d times in a row"
 msgid_plural "%s · %d times in a row"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/ui/settings_keyring.go:423
+#: internal/ui/settings_keyring.go:488
 msgid "Show the details"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:439
+#: internal/ui/settings_keyring.go:504
 msgid "It was changed outside inua-keyring, so every app is asked about until you trust it again. Look through it first."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:441
+#: internal/ui/settings_keyring.go:506
 msgid "It cannot be read: %s. Every app is asked about."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:477
+#: internal/ui/settings_keyring.go:543
 msgid "%s, trusted with %d secret"
 msgid_plural "%s, trusted with %d secrets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/ui/settings_keyring.go:483
+#: internal/ui/settings_keyring.go:549
 msgid "Not trusted: changed outside inua-keyring. Every app is asked about."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:485
+#: internal/ui/settings_keyring.go:551
 msgid "None yet: each app is asked about the first time it reads a secret"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:518
+#: internal/ui/settings_keyring.go:554
+msgid "%s · %d allowed path"
+msgid_plural "%s · %d allowed paths"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/settings_keyring.go:560
+msgid "%d path"
+msgid_plural "%d paths"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/ui/settings_keyring.go:593
 msgid "No app is trusted yet: each app is asked about the first time it reads a secret."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:520
+#: internal/ui/settings_keyring.go:595
 msgid "No trusted app matches “%s”."
 msgstr ""
 
-#: internal/ui/settings_keyring.go:531
+#: internal/ui/settings_keyring.go:606
 msgid "%s reads “%s”"
 msgstr ""
 
-#: internal/ui/settings_keyring.go:555
+#: internal/ui/settings_keyring.go:630
+#: internal/ui/settings_keyring.go:664
 msgid "since %s"
+msgstr ""
+
+#: internal/ui/settings_keyring.go:673
+msgid "Stop allowing it: its programs are asked about again"
 msgstr ""
 
 #: internal/ui/shortcuts.go:88
@@ -9062,7 +9116,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr ""
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5243
+#: ui/settings.ui:5396
 msgid "Upgrade"
 msgstr ""
 
@@ -10028,7 +10082,7 @@ msgstr ""
 
 #: ui/settings.ui:173
 #: ui/settings.ui:431
-#: ui/settings.ui:4456
+#: ui/settings.ui:4609
 msgid "Add…"
 msgstr ""
 
@@ -10753,192 +10807,212 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: ui/settings.ui:4070
-msgid "Filter by app, program or secret"
-msgstr ""
-
-#: ui/settings.ui:4095
+#: ui/settings.ui:4088
 msgid "The list is not trusted"
 msgstr ""
 
-#: ui/settings.ui:4116
+#: ui/settings.ui:4109
 msgid "Trust this list again"
 msgstr ""
 
-#: ui/settings.ui:4224
+#: ui/settings.ui:4149
+msgid "<span alpha='55%'>[</span>ALLOWED PATHS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:4176
+msgid "Any program at one of these paths reads every secret without asking, even after it changes: for an app that updates every day. inua-keyring asks you before a path is added."
+msgstr ""
+
+#: ui/settings.ui:4196
+msgid "A path; * within a folder: ~/.local/share/app/versions/*"
+msgstr ""
+
+#: ui/settings.ui:4205
+msgid "Allow path"
+msgstr ""
+
+#: ui/settings.ui:4250
+msgid "<span alpha='55%'>[</span>APPS<span alpha='55%'>]</span>"
+msgstr ""
+
+#: ui/settings.ui:4265
+msgid "Filter by app, program or secret"
+msgstr ""
+
+#: ui/settings.ui:4377
 msgid "Shortcuts"
 msgstr ""
 
-#: ui/settings.ui:4254
+#: ui/settings.ui:4407
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr ""
 
-#: ui/settings.ui:4283
-#: ui/settings.ui:5142
+#: ui/settings.ui:4436
+#: ui/settings.ui:5295
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4291
+#: ui/settings.ui:4444
 msgid "The shell's own actions"
 msgstr ""
 
-#: ui/settings.ui:4340
+#: ui/settings.ui:4493
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4348
+#: ui/settings.ui:4501
 msgid "With grim and slurp"
 msgstr ""
 
-#: ui/settings.ui:4397
+#: ui/settings.ui:4550
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4405
+#: ui/settings.ui:4558
 msgid "Your own commands"
 msgstr ""
 
-#: ui/settings.ui:4447
+#: ui/settings.ui:4600
 msgid "Command, e.g. kitty"
 msgstr ""
 
-#: ui/settings.ui:4457
+#: ui/settings.ui:4610
 msgid "Add, then press its shortcut"
 msgstr ""
 
-#: ui/settings.ui:4492
+#: ui/settings.ui:4645
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4500
+#: ui/settings.ui:4653
 msgid "Other shortcuts, from hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:4545
+#: ui/settings.ui:4698
 msgid "Keyboard"
 msgstr ""
 
-#: ui/settings.ui:4593
+#: ui/settings.ui:4746
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4601
+#: ui/settings.ui:4754
 msgid "Every keyboard"
 msgstr ""
 
-#: ui/settings.ui:4631
+#: ui/settings.ui:4784
 msgid "Swap Ctrl and Alt"
 msgstr ""
 
-#: ui/settings.ui:4640
+#: ui/settings.ui:4793
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr ""
 
-#: ui/settings.ui:4655
+#: ui/settings.ui:4808
 msgid "Left side"
 msgstr ""
 
-#: ui/settings.ui:4656
+#: ui/settings.ui:4809
 msgid "Both sides"
 msgstr ""
 
-#: ui/settings.ui:4683
-#: ui/settings.ui:4706
+#: ui/settings.ui:4836
+#: ui/settings.ui:4859
 msgid "Caps Lock"
 msgstr ""
 
-#: ui/settings.ui:4692
+#: ui/settings.ui:4845
 msgid "What the Caps Lock key does"
 msgstr ""
 
-#: ui/settings.ui:4707
+#: ui/settings.ui:4860
 msgid "Escape"
 msgstr ""
 
-#: ui/settings.ui:4708
+#: ui/settings.ui:4861
 msgid "Ctrl"
 msgstr ""
 
-#: ui/settings.ui:4746
-#: ui/settings.ui:5028
+#: ui/settings.ui:4899
+#: ui/settings.ui:5181
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4754
-#: ui/settings.ui:5036
+#: ui/settings.ui:4907
+#: ui/settings.ui:5189
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr ""
 
-#: ui/settings.ui:4805
-#: ui/settings.ui:5072
+#: ui/settings.ui:4958
+#: ui/settings.ui:5225
 msgid "Use hyprland.conf"
 msgstr ""
 
-#: ui/settings.ui:4806
+#: ui/settings.ui:4959
 msgid "Stop setting keyboard options in inua"
 msgstr ""
 
-#: ui/settings.ui:4837
+#: ui/settings.ui:4990
 msgid "Mouse & Touch"
 msgstr ""
 
-#: ui/settings.ui:4885
+#: ui/settings.ui:5038
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:4893
+#: ui/settings.ui:5046
 msgid "Every touchpad"
 msgstr ""
 
-#: ui/settings.ui:4923
+#: ui/settings.ui:5076
 msgid "Pointer speed"
 msgstr ""
 
-#: ui/settings.ui:4974
+#: ui/settings.ui:5127
 msgid "Acceleration"
 msgstr ""
 
-#: ui/settings.ui:4983
+#: ui/settings.ui:5136
 msgid "Faster swipes move the pointer further"
 msgstr ""
 
-#: ui/settings.ui:5073
+#: ui/settings.ui:5226
 msgid "Stop setting the touchpad in inua"
 msgstr ""
 
-#: ui/settings.ui:5104
+#: ui/settings.ui:5257
 msgid "About"
 msgstr ""
 
-#: ui/settings.ui:5150
+#: ui/settings.ui:5303
 msgid "The version, and new releases"
 msgstr ""
 
-#: ui/settings.ui:5180
+#: ui/settings.ui:5333
 msgid "Version"
 msgstr ""
 
-#: ui/settings.ui:5216
+#: ui/settings.ui:5369
 msgid "Updates"
 msgstr ""
 
-#: ui/settings.ui:5252
+#: ui/settings.ui:5405
 msgid "Check for updates"
 msgstr ""
 
-#: ui/settings.ui:5278
+#: ui/settings.ui:5431
 msgid "Check every day"
 msgstr ""
 
-#: ui/settings.ui:5287
+#: ui/settings.ui:5440
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr ""
 
-#: ui/settings.ui:5332
+#: ui/settings.ui:5485
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr ""
 
-#: ui/settings.ui:5340
+#: ui/settings.ui:5493
 msgid "What the latest release changed"
 msgstr ""
 

@@ -2892,17 +2892,11 @@ ApplicationWindow settings {
                     label:  _("<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>");
                   }
 
-                  Label keyring_trusted_count {
+                  Label keyring_trusted_total {
                     styles ["section-meta"]
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
-                  }
-
-                  SearchEntry keyring_trusted_filter {
-                    placeholder-text:  _("Filter by app, program or secret");
-                    width-chars: 28;
-                    valign: center;
                   }
                 }
 
@@ -2945,18 +2939,132 @@ ApplicationWindow settings {
 
                   Box {
                     orientation: vertical;
+                    margin-top: 12;
 
-                    // Filled from Go: a row for each app and secret.
-                    Box keyring_trusted {
+                    // Paths whose programs read every secret, whatever
+                    // their hash: for apps that change every day. Added
+                    // only once inua-keyring's own question says so.
+                    Box {
+                      styles ["section"]
                       orientation: vertical;
+
+                      Box {
+                        styles ["section-head"]
+                        spacing: 10;
+
+                        Box {
+                          styles ["mark"]
+                          valign: center;
+                        }
+
+                        Label {
+                          styles ["section-label"]
+                          use-markup: true;
+                          label:  _("<span alpha='55%'>[</span>ALLOWED PATHS<span alpha='55%'>]</span>");
+                        }
+
+                        Label keyring_paths_count {
+                          styles ["section-meta"]
+                          hexpand: true;
+                          xalign: 0;
+                          ellipsize: end;
+                        }
+                      }
+
+                      Box {
+                        styles ["section-body"]
+                        orientation: vertical;
+                        spacing: 8;
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Any program at one of these paths reads every secret without asking, even after it changes: for an app that updates every day. inua-keyring asks you before a path is added.");
+                          xalign: 0;
+                          wrap: true;
+                          margin-top: 8;
+                        }
+
+                        // Filled from Go: a row for each path.
+                        Box keyring_paths {
+                          orientation: vertical;
+                        }
+
+                        Box {
+                          spacing: 8;
+
+                          Entry keyring_path_entry {
+                            styles ["mono-entry"]
+                            hexpand: true;
+                            placeholder-text:  _("A path; * within a folder: ~/.local/share/app/versions/*");
+                          }
+
+                          Button keyring_path_add {
+                            styles ["outlined"]
+                            name: "keyring_path_add";
+                            label:  _("Allow path");
+                          }
+                        }
+
+                        Label keyring_path_note {
+                          styles ["sub"]
+                          xalign: 0;
+                          wrap: true;
+                          visible: false;
+                        }
+                      }
                     }
 
-                    Label keyring_trusted_none {
-                      styles ["sub"]
-                      xalign: 0;
-                      wrap: true;
-                      margin-top: 12;
-                      visible: false;
+                    // Each app trusted with a secret.
+                    Box {
+                      styles ["section"]
+                      orientation: vertical;
+
+                      Box {
+                        styles ["section-head"]
+                        spacing: 10;
+
+                        Box {
+                          styles ["mark"]
+                          valign: center;
+                        }
+
+                        Label {
+                          styles ["section-label"]
+                          use-markup: true;
+                          label:  _("<span alpha='55%'>[</span>APPS<span alpha='55%'>]</span>");
+                        }
+
+                        Label keyring_trusted_count {
+                          styles ["section-meta"]
+                          hexpand: true;
+                          xalign: 0;
+                          ellipsize: end;
+                        }
+
+                        SearchEntry keyring_trusted_filter {
+                          placeholder-text:  _("Filter by app, program or secret");
+                          width-chars: 28;
+                          valign: center;
+                        }
+                      }
+
+                      Box {
+                        styles ["section-body"]
+                        orientation: vertical;
+
+                        // Filled from Go: a row for each app and secret.
+                        Box keyring_trusted {
+                          orientation: vertical;
+                        }
+
+                        Label keyring_trusted_none {
+                          styles ["sub"]
+                          xalign: 0;
+                          wrap: true;
+                          margin-top: 12;
+                          visible: false;
+                        }
+                      }
                     }
                   }
                 }

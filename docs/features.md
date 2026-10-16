@@ -238,7 +238,23 @@ run with `LD_PRELOAD`, `LD_AUDIT` or `LD_LIBRARY_PATH` can only be
 allowed once. The list is kept in `~/.local/state/inua/keyring-trust.json`,
 sealed with a key kept in pass; changed outside inua-keyring, it is not
 trusted until you trust it again in Settings → Keyring. Its Trusted apps
-page lists them, with a filter and Remove; the Pass app shows, under an
+page lists them, with a filter and Remove.
+
+An app that updates itself every day (`~/.local/share/claude/versions/…`)
+would be asked about after each update. An allowed path lets any program
+at it read every secret, whatever its hash: a pattern, `*` matching
+within a folder (`~/.local/share/claude/versions/*`); for a script, the
+script's path. Add one under Allowed paths on the Trusted apps page, or
+with `inua keyring allow PATTERN`: inua-keyring asks you in its own
+dialog first, so another program cannot add one; `inua keyring paths`
+lists them, `inua keyring disallow PATTERN` and Remove drop one. A
+pattern that lets too much through (`/*`, your home folder itself, less
+than two folders before its first wildcard) is refused. The paths are
+sealed with the rest of the list; an app run with `LD_PRELOAD` and the
+like is still only allowed once. Allow only a folder that only you and
+the app's updater write to: any program put there reads everything.
+
+The Pass app shows, under an
 entry of inua-keyring's, the apps trusted with it and its last reads. With no inua shell to ask in,
 `keyring.untrusted` decides ("allow", the default, or "deny"). This keeps
 programs from reading secrets they were never given; a program running

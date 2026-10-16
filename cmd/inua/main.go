@@ -8,7 +8,7 @@
 //	inua config hyprland [path]                      check that Hyprland starts inua-shell and sources inua.conf
 //	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
 //	inua init [-force] [-pinentry ask|replace|keep] [-dir dir]  write the sample configuration
-//	inua keyring status|import|enable|disable|replace|lock  the Secret Service kept in pass
+//	inua keyring status|import|enable|disable|replace|lock|paths|allow|disallow  the Secret Service kept in pass
 //	inua workshop list|new|install|remove|run|dev    the light apps users write
 //	inua mcp                                         inua as an MCP server on stdio, for an AI agent
 //	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
@@ -96,6 +96,7 @@ func usage() {
   inua config apply
   inua init [-force] [-pinentry ask|replace|keep] [-dir dir]
   inua keyring status|import [-n]|enable|disable|replace|lock
+  inua keyring paths | allow PATTERN | disallow PATTERN
   inua workshop list|new [--js] DIR [NAME]|install [-y] URL|DIR|remove ID|run ID|DIR|dev DIR
   inua mcp
   inua upgrade [-check] [-force] [-version vX.Y.Z]

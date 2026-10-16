@@ -41,6 +41,9 @@ type Question struct {
 	// was changed outside; Apps is how many entries it has.
 	Reseal bool `json:"reseal,omitempty"`
 	Apps   int  `json:"apps,omitempty"`
+	// Path: the question is whether programs at this path (a PathRule's
+	// pattern) may read every secret without asking.
+	Path string `json:"path,omitempty"`
 }
 
 // How a read went, as the record of reads keeps it (Access.Decision).
@@ -351,11 +354,57 @@ func (o ownObj) Reseal() (bool, *dbus.Error) {
 	return true, nil
 }
 
+// AllowPath lets programs at pattern read every secret, once the user
+// said so in inua-keyring's own question: a program can't add a rule by
+// calling this. It returns the pattern as kept (CheckPattern), and false
+// when the user said no.
+func (o ownObj) AllowPath(pattern string) (string, bool, *dbus.Error) {
+	s := o.s
+	if s.Trust == nil {
+		return "", false, failed(errors.New("there is no trust list"))
+	}
+	home, _ := os.UserHomeDir()
+	p, err := CheckPattern(pattern, home)
+	if err != nil {
+		return "", false, failed(err)
+	}
+	if s.Trust.Problem() != "" {
+		return p, false, failed(ErrUntrusted)
+	}
+	if s.Ask == nil {
+		return p, false, failed(errors.New("there is no one to ask"))
+	}
+	ans, err := s.Ask(context.Background(), Question{Path: p})
+	if err != nil {
+		return p, false, failed(err)
+	}
+	if ans != AlwaysAllow {
+		return p, false, nil
+	}
+	if err := s.Trust.AddPath(p, true); err != nil {
+		return p, false, failed(fmt.Errorf("adding the path: %w", err))
+	}
+	return p, true, nil
+}
+
+// DisallowPath drops a path rule: its programs are asked about again.
+func (o ownObj) DisallowPath(pattern string) *dbus.Error {
+	if o.s.Trust == nil {
+		return nil
+	}
+	if err := o.s.Trust.RemovePath(pattern); err != nil {
+		return failed(err)
+	}
+	return nil
+}
+
 const ownXML = `<interface name="io.github.lyricat.Inua.Keyring">
   <method name="Lock"/>
   <method name="State"><arg name="unlocked" type="b" direction="out"/><arg name="problem" type="s" direction="out"/></method>
   <method name="Untrust"><arg name="item" type="s" direction="in"/><arg name="exe" type="s" direction="in"/><arg name="script" type="s" direction="in"/><arg name="flatpak" type="s" direction="in"/></method>
   <method name="Reseal"><arg name="sealed" type="b" direction="out"/></method>
+  <method name="AllowPath"><arg name="pattern" type="s" direction="in"/><arg name="kept" type="s" direction="out"/><arg name="added" type="b" direction="out"/></method>
+  <method name="DisallowPath"><arg name="pattern" type="s" direction="in"/></method>
  </interface>`
 
 // --- for the command line and Settings ---
@@ -386,4 +435,16 @@ func ResealTrust(conn *dbus.Conn) (bool, error) {
 	var ok bool
 	err := own(conn).Call(ownIface+".Reseal", 0).Store(&ok)
 	return ok, err
+}
+
+// AllowPath asks the running inua-keyring to let programs at pattern read
+// every secret; it asks the user first. kept is the pattern as kept.
+func AllowPath(conn *dbus.Conn, pattern string) (kept string, added bool, err error) {
+	err = own(conn).Call(ownIface+".AllowPath", 0, pattern).Store(&kept, &added)
+	return
+}
+
+// DisallowPath asks the running inua-keyring to drop a path rule.
+func DisallowPath(conn *dbus.Conn, pattern string) error {
+	return own(conn).Call(ownIface+".DisallowPath", 0, pattern).Err
 }
