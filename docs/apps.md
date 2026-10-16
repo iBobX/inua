@@ -263,7 +263,19 @@ inua-keyring, see the shell's features; without one, in
 `config.toml`. One
 profile answers first; others marked Fallback take over, in order, when it
 fails, and the window's drop-down switches profile for a conversation.
-Each profile's abilities say what it is for, as two chips under its
+The profiles are listed one a row (the provider's initials, the name,
+provider · model, what it does); a row clicked opens its settings in a
+panel beside the page, as in Mister Morph's Console. As in macOS, the
+window keeps its size: the panel slides in and the page gives up the
+width, in one animation, and takes it back when the panel closes. Only
+when the page would get narrower than it can be does the window widen
+first, by what is missing, to its right while there is room (so does
+the Keyring page's panel). It has **Benchmark**:
+it tries the profile as inua uses it, alone, without fallbacks (a short
+answer, a tool call through the agent, a quick choice on the decision
+route; only the ones its abilities allow), each test running, then
+passed or failed with how long it took; a test clicked shows what the
+model answered. Each profile's abilities say what it is for, as two chips under its
 endpoint: **Chat** (it answers and runs tasks) and **Decision** (it makes
 quick choices from a list, as the games' AI players do); a line under
 them says what the ones on allow. A profile with only Decision is never

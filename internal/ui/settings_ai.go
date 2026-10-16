@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
@@ -34,7 +35,15 @@ type aiSettings struct {
 	list                          gtk.Box
 	keysNote                      gtk.Label
 	cards                         []*aiCard
-	names, choosers               []string // the drop-downs' profiles: the one that answers, the one for quick choices
+	detail                        gtk.Revealer // the panel beside the page: the open profile's settings
+	panel                         sidePanel
+	scroll                        gtk.ScrolledWindow // the page's
+	shown                         int                // the profile the panel showed last, its row kept in place as it closes
+	detailHead                    gtk.Label
+	detailStack                   gtk.Stack
+	open                          int          // the profile the panel shows; -1 for none
+	bench                         *benchDialog // the Benchmark dialog, while open
+	names, choosers               []string     // the drop-downs' profiles: the one that answers, the one for quick choices
 	listen, endpoint, token       gtk.Entry
 	serve                         gtk.Switch
 	serveNote                     gtk.Label
@@ -54,9 +63,14 @@ type aiSettings struct {
 	renames  [][2]string // profile renames whose keys move when the settings are saved
 }
 
-// aiCard is one profile's card, kept while the profiles keep their count
-// and order, so typing in it keeps the caret.
+// aiCard is one profile's row in [PROFILES] and its page of settings in
+// the panel beside the page, kept while the profiles keep their count and
+// order, so typing in it keeps the caret.
 type aiCard struct {
+	row                             *gtk.Button // in [PROFILES]; title is its name
+	rowMark, rowMeta, rowRole       *gtk.Label  // the provider's initials, provider · model, what it does
+	page                            *gtk.Box    // its settings, a page of the panel's stack
+	bench                           *gtk.Button
 	title, state                    gtk.Label
 	name, model, endpoint, env, key *gtk.Entry
 	provider, reasoning             *gtk.DropDown
@@ -95,6 +109,14 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	ui.Get("ai_decision", &a.decision)
 	ui.Get("ai_route", &a.route)
 	ui.Get("ai_profiles", &a.list)
+	ui.Get("ai_detail", &a.detail)
+	ui.Get("scroll_ai", &a.scroll)
+	s.initPanel(&a.panel, &a.detail, &a.scroll, 420)
+	ui.Get("ai_detail_head", &a.detailHead)
+	ui.Get("ai_detail_stack", &a.detailStack)
+	var closeDetail gtk.Button
+	ui.Get("ai_detail_close", &closeDetail)
+	closeDetail.ConnectClicked(&s.onSettingsButton)
 	ui.Get("ai_keys_note", &a.keysNote)
 	ui.Get("ai_serve_listen", &a.listen)
 	ui.Get("ai_serve_enable", &a.serve)
@@ -127,7 +149,7 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 		s.settings.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	a.cards, a.names, a.choosers = nil, nil, nil
+	a.cards, a.names, a.choosers, a.open, a.shown = nil, nil, nil, -1, -1
 	if a.keys == nil {
 		a.keys = keys.New()
 	}
@@ -251,6 +273,49 @@ func (s *shellUI) showAISettings() {
 	for i, p := range c.Profiles {
 		s.fillAICard(a.cards[i], i, p, a.saved, a.savedErr)
 	}
+	if a.open >= len(a.cards) {
+		a.open = -1
+	}
+	s.showAIDetail()
+}
+
+// showAIDetail shows the open profile's settings in the panel, marking its
+// row; none closes the panel.
+func (s *shellUI) showAIDetail() {
+	a := &s.settings.ai
+	for i, card := range a.cards {
+		toggle(&card.row.Widget, "on", i == a.open)
+	}
+	if a.open < 0 {
+		var row *gtk.Widget
+		if a.shown >= 0 && a.shown < len(a.cards) {
+			row = &a.cards[a.shown].row.Widget
+		}
+		s.showPanel(&a.panel, false, row)
+		return
+	}
+	a.shown = a.open
+	a.detailStack.SetVisibleChildName(fmt.Sprintf("p%d", a.open))
+	name := s.cfg.Assistant.Profiles[a.open].Name
+	// A profile's name is letters, digits, "-" and "_": no markup in it.
+	a.detailHead.SetMarkup("<span alpha='55%'>[</span>" + strings.ToUpper(name) + "<span alpha='55%'>]</span>")
+	s.showPanel(&a.panel, true, &a.cards[a.open].row.Widget)
+}
+
+// initials are a provider's for its row: "OpenAI" OA, "Google Gemini" GG.
+func initials(name string) string {
+	var out []rune
+	for _, w := range strings.FieldsFunc(name, func(r rune) bool { return r == ' ' || r == '-' || r == '(' || r == '_' }) {
+		if r := []rune(w); len(r) > 0 && len(out) < 2 {
+			out = append(out, unicode.ToUpper(r[0]))
+		}
+	}
+	if len(out) == 1 {
+		if r := []rune(name); len(r) > 1 {
+			out = append(out, unicode.ToLower(r[1]))
+		}
+	}
+	return string(out)
 }
 
 // aiNames are the profiles that answer, for the drop-down of the one
@@ -271,7 +336,7 @@ func aiNames(c config.Assistant) (answer, choose []string) {
 func (s *shellUI) buildAICards(n int) {
 	st := &s.settings
 	a := &st.ai
-	for _, card := range a.cards { // their widgets go with the box's children
+	for _, card := range a.cards { // their widgets go with the rows and pages
 		for _, e := range []*gtk.Entry{card.name, card.model, card.endpoint, card.key} {
 			delete(st.entries, e.GoPointer())
 		}
@@ -279,6 +344,7 @@ func (s *shellUI) buildAICards(n int) {
 		delete(st.drops, card.reasoning.GoPointer())
 		card.pop.Unparent()
 		card.pop.Unref()
+		a.detailStack.Remove(&card.page.Widget)
 	}
 	gtkx.Clear(&a.list)
 	a.cards = nil
@@ -302,41 +368,51 @@ func (s *shellUI) buildAICards(n int) {
 	}
 	for i := range n {
 		card := &aiCard{}
-		box := gtk.NewBox(gtk.OrientationVerticalValue, 10)
-		box.AddCssClass("ai-card")
 
-		head := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+		// Its row in [PROFILES]: the provider's initials, the name, the
+		// provider and model, and what it does.
+		card.row = gtk.NewButton()
+		card.row.AddCssClass("ai-row")
+		card.row.SetName(fmt.Sprintf("ai-open:%d", i))
+		card.row.ConnectClicked(&s.onSettingsButton)
+		line := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+		card.rowMark = gtk.NewLabel("")
+		card.rowMark.AddCssClass("ai-mark")
+		card.rowMark.SetValign(gtk.AlignCenterValue)
+		line.Append(&card.rowMark.Widget)
 		texts := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		texts.SetHexpand(true)
 		card.title = *gtk.NewLabel("")
 		card.title.AddCssClass("title")
 		card.title.SetXalign(0)
+		card.title.SetEllipsize(3) // end
+		card.rowMeta = gtk.NewLabel("")
+		card.rowMeta.AddCssClass("sub")
+		card.rowMeta.SetXalign(0)
+		card.rowMeta.SetEllipsize(3)
+		texts.Append(&card.title.Widget)
+		texts.Append(&card.rowMeta.Widget)
+		gtkx.Append(line, &texts.Widget)
+		card.rowRole = gtk.NewLabel("")
+		card.rowRole.AddCssClass("sub")
+		card.rowRole.SetValign(gtk.AlignCenterValue)
+		line.Append(&card.rowRole.Widget)
+		caret := gtk.NewImageFromIconName("go-next-symbolic")
+		caret.SetValign(gtk.AlignCenterValue)
+		gtkx.Append(line, &caret.Widget)
+		card.row.SetChild(&line.Widget)
+		line.Unref()
+		a.list.Append(&card.row.Widget)
+
+		// Its settings, a page of the panel.
+		card.page = gtk.NewBox(gtk.OrientationVerticalValue, 14)
+		card.page.AddCssClass("ai-card")
 		card.state = *gtk.NewLabel("")
 		card.state.AddCssClass("sub")
 		card.state.SetXalign(0)
 		card.state.SetWrap(true)
-		texts.Append(&card.title.Widget)
-		texts.Append(&card.state.Widget)
-		gtkx.Append(head, &texts.Widget)
-		button := func(action, icon, tip string) *gtk.Button {
-			b := gtk.NewButtonFromIconName(icon)
-			b.AddCssClass("plain")
-			b.SetName(fmt.Sprintf("ai-%s:%d", action, i))
-			b.SetTooltipText(tip)
-			b.SetValign(gtk.AlignCenterValue)
-			b.ConnectClicked(&s.onSettingsButton)
-			head.Append(&b.Widget)
-			return b // unreferenced with the card's other widgets
-		}
-		card.up = button("up", "pan-up-symbolic", i18n.T("Move up (fallbacks are tried in this order)"))
-		card.down = button("down", "pan-down-symbolic", i18n.T("Move down"))
-		card.remove = button("remove", "window-close-symbolic", i18n.T("Remove this profile"))
-		gtkx.Append(box, &head.Widget)
+		card.page.Append(&card.state.Widget)
 
-		grid := gtk.NewGrid()
-		grid.SetColumnSpacing(12)
-		grid.SetRowSpacing(8)
-		grid.SetColumnHomogeneous(true)
 		entry := func(field, placeholder string) *gtk.Entry {
 			e := gtk.NewEntry()
 			e.SetName(fmt.Sprintf("ai-%s:%d", field, i))
@@ -365,18 +441,17 @@ func (s *shellUI) buildAICards(n int) {
 		card.key = entry("key", i18n.T("Paste a key, then Save"))
 		card.key.SetVisibility(false)
 		card.key.AddCssClass("mono-entry")
-		field := func(label string, w *gtk.Widget, col, row, width int) {
+		field := func(label string, w *gtk.Widget) {
 			f := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 			l := gtk.NewLabel(label)
 			l.AddCssClass("label")
 			l.SetXalign(0)
 			gtkx.Append(f, &l.Widget)
 			f.Append(w)
-			grid.Attach(&f.Widget, int32(col), int32(row), int32(width), 1)
-			f.Unref()
+			gtkx.Append(card.page, &f.Widget)
 		}
-		field(i18n.T("Name"), &card.name.Widget, 0, 0, 1)
-		field(i18n.T("Provider"), &card.provider.Widget, 1, 0, 1)
+		field(i18n.T("Name"), &card.name.Widget)
+		field(i18n.T("Provider"), &card.provider.Widget)
 		modelRow := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
 		modelRow.Append(&card.model.Widget)
 		card.listModels = gtk.NewButtonFromIconName("system-search-symbolic")
@@ -386,10 +461,10 @@ func (s *shellUI) buildAICards(n int) {
 		card.listModels.ConnectClicked(&s.onSettingsButton)
 		modelRow.Append(&card.listModels.Widget)
 		s.buildAIModelsPop(card)
-		field(i18n.T("Model"), &modelRow.Widget, 0, 1, 1)
+		field(i18n.T("Model"), &modelRow.Widget)
 		modelRow.Unref()
-		field(i18n.T("Reasoning"), &card.reasoning.Widget, 1, 1, 1)
-		field(i18n.T("Endpoint"), &card.endpoint.Widget, 0, 2, 2)
+		field(i18n.T("Reasoning"), &card.reasoning.Widget)
+		field(i18n.T("Endpoint"), &card.endpoint.Widget)
 		abilities := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 		chips := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		chip := func(ability, label string) (*gtk.ToggleButton, *gtk.Image) {
@@ -415,8 +490,7 @@ func (s *shellUI) buildAICards(n int) {
 		card.abilities.SetXalign(0)
 		card.abilities.SetWrap(true)
 		abilities.Append(&card.abilities.Widget)
-		field(i18n.T("Abilities"), &abilities.Widget, 0, 3, 2)
-		abilities.Unref()
+		field(i18n.T("Abilities"), &abilities.Widget)
 		keyRow := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		keyRow.Append(&card.key.Widget)
 		card.save = gtk.NewButtonWithLabel(i18n.T("Save"))
@@ -428,33 +502,60 @@ func (s *shellUI) buildAICards(n int) {
 		}
 		card.save.SetName(fmt.Sprintf("ai-keysave:%d", i))
 		card.forget.SetName(fmt.Sprintf("ai-keyforget:%d", i))
-		field(i18n.T("API key"), &keyRow.Widget, 0, 4, 2)
-		keyRow.Unref()
-		gtkx.Append(box, &grid.Widget)
+		field(i18n.T("API key"), &keyRow.Widget)
 
-		row := func(field, text string) (*gtk.Box, *gtk.Switch) {
-			r := gtk.NewBox(gtk.OrientationHorizontalValue, 16)
-			l := gtk.NewLabel(text)
-			l.AddCssClass("sub")
-			l.SetXalign(0)
-			l.SetHexpand(true)
-			l.SetWrap(true)
-			gtkx.Append(r, &l.Widget)
-			sw := gtk.NewSwitch()
-			sw.SetName(fmt.Sprintf("ai-%s:%d", field, i))
-			sw.SetValign(gtk.AlignCenterValue)
-			sw.ConnectStateSet(&s.onSettingsSwitch)
-			r.Append(&sw.Widget)
-			box.Append(&r.Widget)
-			return r, sw
+		card.fallbackRow = gtk.NewBox(gtk.OrientationHorizontalValue, 16)
+		l := gtk.NewLabel(i18n.T("Fallback: answers when the profiles above it fail"))
+		l.AddCssClass("sub")
+		l.SetXalign(0)
+		l.SetHexpand(true)
+		l.SetWrap(true)
+		gtkx.Append(card.fallbackRow, &l.Widget)
+		card.fallback = gtk.NewSwitch()
+		card.fallback.SetName(fmt.Sprintf("ai-fallback:%d", i))
+		card.fallback.SetValign(gtk.AlignCenterValue)
+		card.fallback.ConnectStateSet(&s.onSettingsSwitch)
+		card.fallbackRow.Append(&card.fallback.Widget)
+		card.page.Append(&card.fallbackRow.Widget)
+
+		// Benchmark, the order (fallbacks are tried in it), and Remove.
+		actions := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+		actions.AddCssClass("ai-actions")
+		button := func(action, icon, label, tip string) *gtk.Button {
+			b := gtk.NewButtonFromIconName(icon)
+			if label != "" {
+				b = gtk.NewButton()
+				inner := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+				img := gtk.NewImageFromIconName(icon)
+				gtkx.Append(inner, &img.Widget)
+				lb := gtk.NewLabel(label)
+				gtkx.Append(inner, &lb.Widget)
+				b.SetChild(&inner.Widget)
+				inner.Unref()
+			}
+			b.AddCssClass("outlined")
+			b.SetName(fmt.Sprintf("ai-%s:%d", action, i))
+			b.SetTooltipText(tip)
+			b.ConnectClicked(&s.onSettingsButton)
+			actions.Append(&b.Widget)
+			return b // unreferenced with the card's other widgets
 		}
-		card.fallbackRow, card.fallback = row("fallback", i18n.T("Fallback: answers when the profiles above it fail"))
+		card.bench = button("bench", "inua-benchmark-symbolic", i18n.T("Benchmark"), i18n.T("Try the profile as inua uses it"))
+		gap := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+		gap.SetHexpand(true)
+		gtkx.Append(actions, &gap.Widget)
+		card.up = button("up", "pan-up-symbolic", "", i18n.T("Move up (fallbacks are tried in this order)"))
+		card.down = button("down", "pan-down-symbolic", "", i18n.T("Move down"))
+		card.remove = button("remove", "user-trash-symbolic", i18n.T("Remove"), i18n.T("Remove this profile"))
+		card.remove.AddCssClass("danger")
+		gtkx.Append(card.page, &actions.Widget)
 
-		gtkx.Append(&a.list, &box.Widget)
-		// The card's box owns them now; the card keeps pointers.
-		for _, o := range []interface{ Unref() }{&card.title, &card.state, card.name, card.model, card.endpoint,
-			card.key, card.provider, card.reasoning, card.fallback, card.fallbackRow, card.up, card.down, card.remove,
-			card.save, card.forget, card.listModels, card.chat, card.decision, card.chatMark, card.decisionMark, card.abilities} { // texts and grid went with gtkx.Append
+		a.detailStack.AddNamed(&card.page.Widget, fmt.Sprintf("p%d", i))
+		// The row and the page own them now; the card keeps pointers.
+		for _, o := range []interface{ Unref() }{card.row, card.rowMark, &card.title, card.rowMeta, card.rowRole, card.page,
+			&card.state, card.name, card.model, card.endpoint, card.key, card.provider, card.reasoning, card.fallback,
+			card.fallbackRow, card.up, card.down, card.remove, card.bench, card.save, card.forget, card.listModels,
+			card.chat, card.decision, card.chatMark, card.decisionMark, card.abilities, keyRow, abilities} {
 			o.Unref()
 		}
 		a.cards = append(a.cards, card)
@@ -474,7 +575,13 @@ func aiProviderNames() []string {
 // when they could not be read).
 func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[string]uint64, err error) {
 	c := s.cfg.Assistant
-	card.title.SetText(p.Name + " · " + p.Model)
+	card.title.SetText(p.Name)
+	provider := p.Provider
+	if i := slices.Index(config.AIProviderIDs(), p.Provider); i >= 0 {
+		provider = config.AIProviders[i].Name
+	}
+	card.rowMeta.SetText(provider + " · " + p.Model)
+	card.rowMark.SetText(initials(provider))
 	setEntry(card.name, p.Name)
 	setEntry(card.model, p.Model)
 	setEntry(card.endpoint, p.Endpoint)
@@ -551,7 +658,23 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 		key = i18n.T("No key yet: this profile is skipped")
 	}
 	card.state.SetText(role + key)
-	toggle(&card.state.Widget, "missing", err != nil || (saved[p.Name] == 0 && !strings.HasSuffix(p.Provider, "_compatible")))
+	missing := err != nil || (saved[p.Name] == 0 && !strings.HasSuffix(p.Provider, "_compatible"))
+	toggle(&card.state.Widget, "missing", missing)
+	var roles []string
+	switch {
+	case p.Name == c.Profile:
+		roles = append(roles, i18n.T("Answers"))
+	case slices.Contains(c.Fallback, p.Name):
+		roles = append(roles, i18n.Tf("Fallback %d", slices.Index(c.Fallback, p.Name)+1))
+	}
+	if p.Name == c.DecisionProfile() {
+		roles = append(roles, i18n.T("Quick choices"))
+	}
+	if missing {
+		roles = append(roles, i18n.T("No key"))
+	}
+	card.rowRole.SetText(strings.Join(roles, " · "))
+	toggle(&card.rowRole.Widget, "missing", missing)
 	card.forget.SetVisible(saved[p.Name] != 0)
 	if saved[p.Name] != 0 {
 		card.key.SetPlaceholderText(i18n.T("Saved; paste another to replace it"))
@@ -751,6 +874,11 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 
 // aiButton carries out the AI page's buttons; false for a button not its.
 func (s *shellUI) aiButton(name string) bool {
+	if name == "ai_detail_close" {
+		s.settings.ai.open = -1
+		s.showAIDetail()
+		return true
+	}
 	if name == "mcp_copy" {
 		clip := s.settings.win.GetClipboard()
 		clip.SetText(s.settings.ai.mcpCommand.GetText())
@@ -824,6 +952,7 @@ func (s *shellUI) aiButton(name string) bool {
 			}
 		}
 		a.Profiles = append(slices.Clone(a.Profiles), p)
+		s.settings.ai.open = len(a.Profiles) - 1 // its settings, to fill in
 		s.changeSettings(c)
 		return true
 	}
@@ -835,6 +964,18 @@ func (s *shellUI) aiButton(name string) bool {
 		return true
 	}
 	switch card := s.settings.ai.cards[i]; field {
+	case "open":
+		st := &s.settings.ai
+		if st.open == i {
+			st.open = -1 // a second click closes it
+		} else {
+			st.open = i
+		}
+		s.showAIDetail()
+		return true
+	case "bench":
+		s.benchAI(a.Profiles[i].Name)
+		return true
 	case "models":
 		s.listAIModels(card, a.Profiles[i])
 		return true
@@ -854,6 +995,12 @@ func (s *shellUI) aiButton(name string) bool {
 		}
 		profiles[i], profiles[j] = profiles[j], profiles[i]
 		a.Profiles = profiles
+		switch st := &s.settings.ai; st.open { // the panel follows the profile
+		case i:
+			st.open = j
+		case j:
+			st.open = i
+		}
 		var order []string
 		for _, q := range profiles {
 			if slices.Contains(a.Fallback, q.Name) {
@@ -866,6 +1013,12 @@ func (s *shellUI) aiButton(name string) bool {
 			return true
 		}
 		a.Profiles = slices.Delete(profiles, i, i+1)
+		switch st := &s.settings.ai; {
+		case st.open == i:
+			st.open = -1
+		case st.open > i:
+			st.open--
+		}
 		a.Fallback = slices.DeleteFunc(slices.Clone(a.Fallback), func(f string) bool { return f == p.Name })
 		if a.Profile == p.Name {
 			a.Profile = a.Profiles[0].Name

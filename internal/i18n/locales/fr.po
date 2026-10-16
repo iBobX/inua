@@ -14,13 +14,21 @@ msgstr "L'assistant est éteint. Activez-le dans Paramètres → AI."
 msgid "No profile makes quick choices. Turn on Decision for one in Settings → AI."
 msgstr "Aucun profil ne fait de choix rapides. Activez Décision pour l'un d'eux dans Paramètres → AI."
 
+#: cmd/inua-assistant/bench.go:47
+msgid "No profile %s"
+msgstr "Aucun profil %s"
+
+#: cmd/inua-assistant/bench.go:60
+msgid "No API key for %s: type one and Save first."
+msgstr "Pas de clé d'API pour %s : saisissez-en une et enregistrez d'abord."
+
 #: cmd/inua-assistant/mcp.go:57
 msgid "inua's assistant"
 msgstr "l’assistant d’inua"
 
 #: cmd/inua-keyring/main.go:117
-#: internal/ui/settings_keyring.go:314
-#: ui/settings.ui:3512
+#: internal/ui/settings_keyring.go:324
+#: ui/settings.ui:3579
 msgid "Keyring"
 msgstr "Trousseau"
 
@@ -703,7 +711,7 @@ msgid "5 years"
 msgstr "5 ans"
 
 #: internal/appui/gpg.go:144
-#: ui/settings.ui:3704
+#: ui/settings.ui:3771
 msgid "Never"
 msgstr "Jamais"
 
@@ -725,9 +733,9 @@ msgstr "créée le %s"
 #: internal/ui/askpass.go:448
 #: internal/ui/askpass.go:452
 #: internal/ui/askpass.go:454
-#: internal/ui/settings_about.go:187
-#: internal/ui/settings_keyring.go:630
-#: internal/ui/settings_keyring.go:664
+#: internal/ui/settings_about.go:196
+#: internal/ui/settings_keyring.go:640
+#: internal/ui/settings_keyring.go:674
 msgid "Jan 2, 2006"
 msgstr "2 Jan 2006"
 
@@ -1197,8 +1205,8 @@ msgid "Top level"
 msgstr "Niveau supérieur"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:673
-#: internal/ui/settings.go:700
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:704
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d entrée"
@@ -1253,7 +1261,7 @@ msgstr "Masquer"
 #: internal/ui/askpass.go:203
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
-#: ui/settings.ui:2718
+#: ui/settings.ui:2721
 msgid "Copy"
 msgstr "Copier"
 
@@ -1353,7 +1361,7 @@ msgstr "APPS DE CONFIANCE"
 
 #: internal/appui/pass.go:1035
 #: internal/appui/workshop_manager.go:50
-#: internal/ui/settings_keyring.go:541
+#: internal/ui/settings_keyring.go:551
 msgid "%d app"
 msgid_plural "%d apps"
 msgstr[0] "%d app"
@@ -1365,28 +1373,29 @@ msgstr "Aucune : une app qui le lit fait d’abord l’objet d’une question."
 
 #: internal/appui/pass.go:1043
 #: internal/ui/askpass.go:371
-#: internal/ui/settings_keyring.go:614
+#: internal/ui/settings_keyring.go:624
 msgid "Flatpak: %s"
 msgstr "Flatpak : %s"
 
 #: internal/appui/pass.go:1048
 #: internal/appui/pass.go:1070
-#: internal/ui/settings_keyring.go:459
-#: internal/ui/settings_keyring.go:467
-#: internal/ui/settings_keyring.go:619
+#: internal/ui/settings_keyring.go:469
+#: internal/ui/settings_keyring.go:477
+#: internal/ui/settings_keyring.go:629
 msgid "%s · %s"
 msgstr "%s · %s"
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
-#: internal/ui/settings_keyring.go:635
-#: internal/ui/settings_keyring.go:669
+#: internal/ui/settings_ai.go:549
+#: internal/ui/settings_keyring.go:645
+#: internal/ui/settings_keyring.go:679
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "Retirer"
 
 #: internal/appui/pass.go:1055
-#: internal/ui/settings_keyring.go:639
+#: internal/ui/settings_keyring.go:649
 msgid "Stop trusting it: it is asked about at its next read"
 msgstr "Ne plus lui faire confiance : la question sera posée à sa prochaine lecture"
 
@@ -1401,7 +1410,7 @@ msgstr "Aucune app ne l’a encore lu."
 #: internal/appui/pass.go:1066
 #: internal/appui/sysmon.go:965
 #: internal/filesui/pane.go:1358
-#: internal/ui/settings_keyring.go:498
+#: internal/ui/settings_keyring.go:508
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
 msgstr "2 Jan 15:04"
@@ -1413,27 +1422,27 @@ msgstr[0] "%s · %d fois"
 msgstr[1] "%s · %d fois"
 
 #: internal/appui/pass.go:1080
-#: internal/ui/settings_keyring.go:684
+#: internal/ui/settings_keyring.go:694
 msgid "trusted"
 msgstr "de confiance"
 
 #: internal/appui/pass.go:1082
-#: internal/ui/settings_keyring.go:686
+#: internal/ui/settings_keyring.go:696
 msgid "allowed once"
 msgstr "autorisée une fois"
 
 #: internal/appui/pass.go:1084
-#: internal/ui/settings_keyring.go:688
+#: internal/ui/settings_keyring.go:698
 msgid "allowed, and trusted from now on"
 msgstr "autorisée, et de confiance désormais"
 
 #: internal/appui/pass.go:1086
-#: internal/ui/settings_keyring.go:690
+#: internal/ui/settings_keyring.go:700
 msgid "denied"
 msgstr "refusée"
 
 #: internal/appui/pass.go:1088
-#: internal/ui/settings_keyring.go:692
+#: internal/ui/settings_keyring.go:702
 msgid "allowed: no one to ask"
 msgstr "autorisée : personne à qui demander"
 
@@ -1479,7 +1488,7 @@ msgstr "Une image avec un code QR"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:810
+#: internal/ui/settings.go:814
 msgid "Images"
 msgstr "Images"
 
@@ -1508,12 +1517,12 @@ msgid "Range start"
 msgstr "Début de gamme"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:85
+#: internal/ui/settings_ai.go:99
 msgid "High"
 msgstr "Élevé"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:85
+#: internal/ui/settings_ai.go:99
 msgid "Low"
 msgstr "Faible"
 
@@ -1760,7 +1769,7 @@ msgstr "Commande"
 
 #: internal/appui/sysmon.go:786
 #: internal/filesui/kinds.go:38
-#: internal/ui/settings_keyring.go:316
+#: internal/ui/settings_keyring.go:326
 msgid "Program"
 msgstr "Programme"
 
@@ -1797,7 +1806,7 @@ msgid "%s · %s ago"
 msgstr "%[1]s · Il y a %[2]s"
 
 #: internal/appui/sysmon.go:836
-#: internal/ui/settings_keyring.go:288
+#: internal/ui/settings_keyring.go:298
 msgid "Jan 2 15:04:05"
 msgstr "2 Jan 15:04:05"
 
@@ -1863,16 +1872,16 @@ msgstr "ORDINATEUR"
 
 #: internal/appui/sysmon.go:959
 #: internal/appui/sysmon.go:971
-#: internal/ui/settings_ai.go:389
+#: internal/ui/settings_ai.go:464
 msgid "Model"
 msgstr "Modèle"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
-#: internal/ui/settings_ai.go:378
+#: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/gpg.ui:1342
-#: ui/settings.ui:4590
+#: ui/settings.ui:4657
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "Nom"
@@ -2272,7 +2281,7 @@ msgid "IN USE"
 msgstr "EN UTILISATION"
 
 #: internal/appui/tailscale.go:601
-#: internal/ui/settings_keyring.go:562
+#: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
 msgstr "Aucun"
@@ -2414,7 +2423,7 @@ msgstr "Lecture impossible : %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:4807
+#: ui/settings.ui:4874
 msgid "Off"
 msgstr "Désactivé"
 
@@ -2566,7 +2575,7 @@ msgid "Open"
 msgstr "Ouvrir"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/ui/settings_ai.go:422
+#: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/pass.ui:490
 msgid "Save"
@@ -2674,7 +2683,7 @@ msgid "Cannot read the key of %s: %v"
 msgstr "Impossible de lire la clé de %[1]s : %[2]v"
 
 #: internal/assistant/assistant.go:150
-#: internal/ui/settings_ai.go:794
+#: internal/ui/settings_ai.go:922
 msgid "Cannot read the Console token: %s"
 msgstr "Impossible de lire le jeton de console : %s"
 
@@ -2696,7 +2705,7 @@ msgstr "Exécution d’un script avec les outils"
 
 #: internal/assistantui/assistantui.go:37
 #: ui/assistant.ui:35
-#: ui/settings.ui:2004
+#: ui/settings.ui:2007
 #: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
 msgid "Assistant"
 msgstr "Assistant"
@@ -2769,7 +2778,7 @@ msgid "Canceled"
 msgstr "Annulé"
 
 #: internal/assistantui/assistantui.go:514
-#: ui/settings.ui:3759
+#: ui/settings.ui:3826
 msgid "Allowed"
 msgstr "Autorisé"
 
@@ -3525,7 +3534,9 @@ msgstr[1] "… et %d de plus"
 
 #: internal/filesui/cards.go:454
 #: internal/filesui/cards.go:735
-#: ui/settings.ui:4345
+#: internal/ui/settings_bench.go:139
+#: ui/settings.ui:2880
+#: ui/settings.ui:4412
 msgid "Close"
 msgstr "Fermer"
 
@@ -6752,6 +6763,7 @@ msgid "Pay $50 bail"
 msgstr "Payer une caution de 50 $"
 
 #: internal/gamesui/fortune_ai.go:80
+#: internal/ui/settings_bench.go:217
 msgid "inua-assistant is not installed"
 msgstr "inua-assistant n’est pas installé"
 
@@ -6883,7 +6895,7 @@ msgstr "Quitter vers le menu"
 
 #: internal/gamesui/fortune_menu.go:109
 #: ui/gpg.ui:633
-#: ui/settings.ui:4045
+#: ui/settings.ui:4112
 msgid "Back"
 msgstr "Retour"
 
@@ -7352,7 +7364,7 @@ msgid "Lock Screen"
 msgstr "Verrouiller l’écran"
 
 #: internal/shell/commands.go:27
-#: ui/settings.ui:3656
+#: ui/settings.ui:3723
 msgid "Lock now"
 msgstr "Verrouiller maintenant"
 
@@ -8004,7 +8016,7 @@ msgid "Search clipboard history"
 msgstr "Rechercher dans l’historique"
 
 #: internal/ui/clipboard.go:335
-#: ui/settings.ui:3108
+#: ui/settings.ui:3175
 msgid "Clipboard"
 msgstr "Presse-papiers"
 
@@ -8177,7 +8189,7 @@ msgstr "Mot de passe erroné"
 
 #: internal/ui/lock.go:269
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:144
+#: internal/ui/settings_about.go:153
 msgid "Checking…"
 msgstr "Vérification…"
 
@@ -8187,7 +8199,7 @@ msgstr "Le mot de passe n'a pas pu être vérifié"
 
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
-#: ui/settings.ui:2844
+#: ui/settings.ui:2911
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -8400,391 +8412,416 @@ msgstr "Capture d'écran copiée"
 msgid "Screenshot taken"
 msgstr "Capture d'écran prise"
 
-#: internal/ui/settings.go:252
+#: internal/ui/settings.go:253
 msgid "Not restarted: %s"
 msgstr "Non redémarré : %s"
 
-#: internal/ui/settings.go:270
-#: internal/ui/settings.go:646
-#: internal/ui/settings.go:663
+#: internal/ui/settings.go:271
+#: internal/ui/settings.go:650
+#: internal/ui/settings.go:667
 msgid "%d%%"
 msgstr "%d %%"
 
-#: internal/ui/settings.go:626
+#: internal/ui/settings.go:630
 #: ui/settings.ui:384
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:626
+#: internal/ui/settings.go:630
 #: ui/settings.ui:385
 msgid "System theme"
 msgstr "Thème système"
 
-#: internal/ui/settings.go:699
+#: internal/ui/settings.go:703
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:701
+#: internal/ui/settings.go:705
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d texte"
 msgstr[1] "%d textes"
 
-#: internal/ui/settings.go:702
+#: internal/ui/settings.go:706
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d image"
 msgstr[1] "%d images"
 
-#: internal/ui/settings.go:703
+#: internal/ui/settings.go:707
 msgid "%.1f KB"
 msgstr "%.1f Ko"
 
-#: internal/ui/settings.go:782
+#: internal/ui/settings.go:786
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "Non sauvegardé : %s"
 
-#: internal/ui/settings.go:808
+#: internal/ui/settings.go:812
 msgid "Choose a wallpaper"
 msgstr "Choisir un fond d'écran"
 
-#: internal/ui/settings.go:850
+#: internal/ui/settings.go:854
 msgid "Off: another notification daemon can show them"
 msgstr "Désactivé : un autre démon de notification peut les afficher"
 
-#: internal/ui/settings.go:852
+#: internal/ui/settings.go:856
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "Bannières puis centre de notifications (cloche de la barre ou Super+N)"
 
-#: internal/ui/settings.go:854
+#: internal/ui/settings.go:858
 msgid "Waiting: another notification daemon is running"
 msgstr "En attente : un autre démon de notification est en cours d'exécution"
 
-#: internal/ui/settings.go:872
+#: internal/ui/settings.go:876
 msgid "Nothing pinned"
 msgstr "Aucune application épinglée"
 
-#: internal/ui/settings.go:888
+#: internal/ui/settings.go:892
 msgid "%s (not installed)"
 msgstr "%s (non installé)"
 
-#: internal/ui/settings.go:901
+#: internal/ui/settings.go:905
 msgid "Move earlier"
 msgstr "Déplacer avant"
 
-#: internal/ui/settings.go:902
+#: internal/ui/settings.go:906
 msgid "Move later"
 msgstr "Déplacer après"
 
-#: internal/ui/settings.go:903
+#: internal/ui/settings.go:907
 msgid "Remove from the dock"
 msgstr "Retirer du dock"
 
-#: internal/ui/settings_about.go:132
+#: internal/ui/settings_about.go:141
 msgid "inua %s, built from source"
 msgstr "inua %s, construit à partir des sources"
 
-#: internal/ui/settings_about.go:139
+#: internal/ui/settings_about.go:148
 msgid "Upgrade to %s"
 msgstr "Mise à niveau vers %s"
 
-#: internal/ui/settings_about.go:142
+#: internal/ui/settings_about.go:151
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "Mise à jour… le shell redémarre sur la nouvelle version"
 
-#: internal/ui/settings_about.go:148
+#: internal/ui/settings_about.go:157
 msgid "Could not reach GitHub: %s"
 msgstr "Impossible d'accéder à GitHub : %s"
 
-#: internal/ui/settings_about.go:150
+#: internal/ui/settings_about.go:159
 msgid "Not checked yet"
 msgstr "Pas encore vérifié"
 
-#: internal/ui/settings_about.go:152
+#: internal/ui/settings_about.go:161
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "La dernière version est %s ; cette version ne peut pas être comparée à elle"
 
-#: internal/ui/settings_about.go:154
+#: internal/ui/settings_about.go:163
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s est disponible ; la mise à jour remplacera cette compilation depuis les sources"
 
-#: internal/ui/settings_about.go:156
+#: internal/ui/settings_about.go:165
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s est disponible"
 
-#: internal/ui/settings_about.go:158
+#: internal/ui/settings_about.go:167
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "À jour : %[1]s est la dernière version (vérifié %[2]s)"
 
-#: internal/ui/settings_about.go:160
+#: internal/ui/settings_about.go:169
 msgid "Newer than the latest release, %s"
 msgstr "Plus récent que la dernière version, %s"
 
-#: internal/ui/settings_about.go:170
+#: internal/ui/settings_about.go:179
 msgid "Shown once the releases are read"
 msgstr "Affiché une fois les communiqués lus"
 
-#: internal/ui/settings_about.go:172
+#: internal/ui/settings_about.go:181
 msgid "Reading the releases…"
 msgstr "Lecture des versions…"
 
-#: internal/ui/settings_about.go:193
+#: internal/ui/settings_about.go:202
 msgid "installed"
 msgstr "installé"
 
-#: internal/ui/settings_about.go:197
+#: internal/ui/settings_about.go:206
 msgid "On GitHub"
 msgstr "Sur GitHub"
 
-#: internal/ui/settings_ai.go:85
+#: internal/ui/settings_ai.go:99
 msgid "Model default"
 msgstr "Valeur par défaut du modèle"
 
-#: internal/ui/settings_ai.go:85
+#: internal/ui/settings_ai.go:99
 msgid "Minimal"
 msgstr "Minime"
 
-#: internal/ui/settings_ai.go:85
+#: internal/ui/settings_ai.go:99
 #: ui/settings.ui:1415
 msgid "Medium"
 msgstr "Moyen"
 
-#: internal/ui/settings_ai.go:134
+#: internal/ui/settings_ai.go:156
 msgid "Keys typed here are kept in %s"
 msgstr "Les clés saisies ici sont conservées dans %s"
 
-#: internal/ui/settings_ai.go:173
+#: internal/ui/settings_ai.go:195
 msgid "key not moved"
 msgstr "Clé non déplacée"
 
-#: internal/ui/settings_ai.go:204
+#: internal/ui/settings_ai.go:226
 msgid "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
 msgstr "Utilisez cette URL et le jeton dans la console. Depuis un autre ordinateur, utilisez l'adresse accessible de ce bureau."
 
-#: internal/ui/settings_ai.go:207
+#: internal/ui/settings_ai.go:229
 msgid "Turn on Assistant to serve this endpoint."
 msgstr "Activez l'Assistant pour servir ce point de terminaison."
 
-#: internal/ui/settings_ai.go:209
+#: internal/ui/settings_ai.go:231
 msgid "HTTP serving is off. The assistant still runs in the background."
 msgstr "Le service HTTP est désactivé. L'assistant fonctionne toujours en arrière-plan."
 
-#: internal/ui/settings_ai.go:211
+#: internal/ui/settings_ai.go:233
 msgid "Create a token to allow Console connections."
 msgstr "Créez un jeton pour autoriser les connexions à la console."
 
-#: internal/ui/settings_ai.go:218
+#: internal/ui/settings_ai.go:240
 msgid "Reading keyring…"
 msgstr "Porte-clés lecture…"
 
-#: internal/ui/settings_ai.go:220
+#: internal/ui/settings_ai.go:242
 msgid "Hide token"
 msgstr "Masquer le jeton"
 
-#: internal/ui/settings_ai.go:222
-#: ui/settings.ui:2512
+#: internal/ui/settings_ai.go:244
+#: ui/settings.ui:2515
 msgid "Create token"
 msgstr "Créer un jeton"
 
-#: internal/ui/settings_ai.go:224
+#: internal/ui/settings_ai.go:246
 msgid "Show token"
 msgstr "Afficher le jeton"
 
-#: internal/ui/settings_ai.go:235
+#: internal/ui/settings_ai.go:257
 msgid "The one that answers"
 msgstr "Le profil de réponse"
 
-#: internal/ui/settings_ai.go:243
+#: internal/ui/settings_ai.go:265
 msgid "Then, when it fails: %s"
 msgstr "Puis, en cas d'échec : %s"
 
-#: internal/ui/settings_ai.go:245
+#: internal/ui/settings_ai.go:267
 msgid "The profile asked first; turn on Fallback on others to try them when it fails"
 msgstr "Profil initial ; activez le secours sur les autres pour les essayer en cas d’échec"
 
-#: internal/ui/settings_ai.go:331
-msgid "Move up (fallbacks are tried in this order)"
-msgstr "Monter (les replis sont tentés dans cet ordre)"
-
-#: internal/ui/settings_ai.go:332
-msgid "Move down"
-msgstr "Descendre"
-
-#: internal/ui/settings_ai.go:333
-msgid "Remove this profile"
-msgstr "Supprimer ce profil"
-
-#: internal/ui/settings_ai.go:356
+#: internal/ui/settings_ai.go:432
 msgid "a name: work, fast, local …"
 msgstr "un nom : travail, rapide, local..."
 
-#: internal/ui/settings_ai.go:358
+#: internal/ui/settings_ai.go:434
 msgid "the model's ID"
 msgstr "Identifiant du modèle"
 
-#: internal/ui/settings_ai.go:359
+#: internal/ui/settings_ai.go:435
 msgid "the provider's own"
 msgstr "propre au fournisseur"
 
-#: internal/ui/settings_ai.go:365
-#: internal/ui/settings_ai.go:559
+#: internal/ui/settings_ai.go:441
+#: internal/ui/settings_ai.go:682
 msgid "Paste a key, then Save"
 msgstr "Collez une clé, puis enregistrez"
 
-#: internal/ui/settings_ai.go:379
+#: internal/ui/settings_ai.go:454
 msgid "Provider"
 msgstr "Fournisseur"
 
-#: internal/ui/settings_ai.go:385
-#: internal/ui/settings_ai.go:521
+#: internal/ui/settings_ai.go:460
+#: internal/ui/settings_ai.go:628
 msgid "List the provider's models"
 msgstr "Lister les modèles du fournisseur"
 
-#: internal/ui/settings_ai.go:391
+#: internal/ui/settings_ai.go:466
 msgid "Reasoning"
 msgstr "Niveau de raisonnement"
 
-#: internal/ui/settings_ai.go:392
+#: internal/ui/settings_ai.go:467
 msgid "Endpoint"
 msgstr "Point final"
 
-#: internal/ui/settings_ai.go:410
+#: internal/ui/settings_ai.go:485
 msgid "Chat"
 msgstr "Discussion"
 
-#: internal/ui/settings_ai.go:411
-#: internal/ui/settings_keyring.go:312
+#: internal/ui/settings_ai.go:486
+#: internal/ui/settings_keyring.go:322
 msgid "Decision"
 msgstr "Décision"
 
-#: internal/ui/settings_ai.go:418
+#: internal/ui/settings_ai.go:493
 msgid "Abilities"
 msgstr "Capacités"
 
-#: internal/ui/settings_ai.go:423
+#: internal/ui/settings_ai.go:497
 msgid "Forget"
 msgstr "Supprimer la clé"
 
-#: internal/ui/settings_ai.go:431
+#: internal/ui/settings_ai.go:505
 msgid "API key"
 msgstr "Clé API"
 
-#: internal/ui/settings_ai.go:451
+#: internal/ui/settings_ai.go:508
 msgid "Fallback: answers when the profiles above it fail"
 msgstr "Secours : répond si les profils précédents échouent"
 
-#: internal/ui/settings_ai.go:511
+#: internal/ui/settings_ai.go:543
+#: internal/ui/settings_bench.go:115
+msgid "Benchmark"
+msgstr "Banc d'essai"
+
+#: internal/ui/settings_ai.go:543
+msgid "Try the profile as inua uses it"
+msgstr "Essaie le profil comme inua l'utilise"
+
+#: internal/ui/settings_ai.go:547
+msgid "Move up (fallbacks are tried in this order)"
+msgstr "Monter (les replis sont tentés dans cet ordre)"
+
+#: internal/ui/settings_ai.go:548
+msgid "Move down"
+msgstr "Descendre"
+
+#: internal/ui/settings_ai.go:549
+msgid "Remove this profile"
+msgstr "Supprimer ce profil"
+
+#: internal/ui/settings_ai.go:618
 msgid "This provider makes quick choices only"
 msgstr "Ce fournisseur ne fait que des choix rapides"
 
-#: internal/ui/settings_ai.go:513
+#: internal/ui/settings_ai.go:620
 msgid "The profile that answers chats"
 msgstr "Le profil qui répond discute"
 
-#: internal/ui/settings_ai.go:519
-#: internal/ui/settings_ai.go:966
+#: internal/ui/settings_ai.go:626
+#: internal/ui/settings_ai.go:1119
 msgid "This provider does not list its models"
 msgstr "Ce fournisseur ne liste pas ses modèles"
 
-#: internal/ui/settings_ai.go:533
+#: internal/ui/settings_ai.go:640
 msgid "Answers first. "
 msgstr "Répond en premier. "
 
-#: internal/ui/settings_ai.go:535
+#: internal/ui/settings_ai.go:642
 msgid "Fallback %d. "
 msgstr "Repli %d. "
 
-#: internal/ui/settings_ai.go:538
+#: internal/ui/settings_ai.go:645
 msgid "Makes the quick choices. "
 msgstr "Fait les choix rapides. "
 
-#: internal/ui/settings_ai.go:543
+#: internal/ui/settings_ai.go:650
 msgid "The saved keys cannot be read: %s"
 msgstr "Les clés enregistrées ne sont pas lisibles : %s"
 
-#: internal/ui/settings_ai.go:545
+#: internal/ui/settings_ai.go:652
 msgid "Key saved"
 msgstr "Clé enregistrée"
 
-#: internal/ui/settings_ai.go:547
+#: internal/ui/settings_ai.go:654
 msgid "No key (a local server may want none)"
 msgstr "Pas de clé (un serveur local peut n'en vouloir aucune)"
 
-#: internal/ui/settings_ai.go:549
+#: internal/ui/settings_ai.go:656
 msgid "No key yet: the assistant cannot answer"
 msgstr "Clé manquante : l’assistant ne peut pas répondre"
 
-#: internal/ui/settings_ai.go:551
+#: internal/ui/settings_ai.go:658
 msgid "No key yet: this profile is skipped"
 msgstr "Clé manquante : ce profil est ignoré"
 
-#: internal/ui/settings_ai.go:557
+#: internal/ui/settings_ai.go:666
+msgid "Answers"
+msgstr "Répond"
+
+#: internal/ui/settings_ai.go:668
+msgid "Fallback %d"
+msgstr "Secours %d"
+
+#: internal/ui/settings_ai.go:671
+msgid "Quick choices"
+msgstr "Choix rapides"
+
+#: internal/ui/settings_ai.go:674
+msgid "No key"
+msgstr "Pas de clé"
+
+#: internal/ui/settings_ai.go:680
 msgid "Saved; paste another to replace it"
 msgstr "Enregistré ; collez-en un autre pour le remplacer"
 
-#: internal/ui/settings_ai.go:758
+#: internal/ui/settings_ai.go:886
 msgid "Command copied"
 msgstr "Commande copiée"
 
-#: internal/ui/settings_ai.go:765
+#: internal/ui/settings_ai.go:893
 msgid "Endpoint URL copied"
 msgstr "URL du point de terminaison copiée"
 
-#: internal/ui/settings_ai.go:796
+#: internal/ui/settings_ai.go:924
 msgid "No Console token. Create one first."
 msgstr "Pas de jeton de console. Créez-en un d’abord."
 
-#: internal/ui/settings_ai.go:801
+#: internal/ui/settings_ai.go:929
 msgid "Token copied"
 msgstr "Jeton copié"
 
-#: internal/ui/settings_ai.go:876
+#: internal/ui/settings_ai.go:1029
 msgid "key not removed"
 msgstr "Clé non supprimée"
 
-#: internal/ui/settings_ai.go:887
+#: internal/ui/settings_ai.go:1040
 msgid "key not saved"
 msgstr "Clé non enregistrée"
 
-#: internal/ui/settings_ai.go:898
+#: internal/ui/settings_ai.go:1051
 msgid "Chats and runs tasks with inua's tools. Also makes quick choices from a list, as the games' AI players do."
 msgstr "Discute et fait des tâches avec les outils d'inua. Fait aussi des choix rapides dans une liste, comme les joueurs IA des jeux."
 
-#: internal/ui/settings_ai.go:900
+#: internal/ui/settings_ai.go:1053
 msgid "Chats and runs tasks with inua's tools. The games' AI players do not use it."
 msgstr "Discute et fait des tâches avec les outils d'inua. Les joueurs IA des jeux ne l'utilisent pas."
 
-#: internal/ui/settings_ai.go:902
+#: internal/ui/settings_ai.go:1055
 msgid "Makes only quick choices from a list (yes or no, one of a few), as the games' AI players do. It cannot chat or run tasks."
 msgstr "Ne fait que des choix rapides dans une liste (oui ou non, un parmi quelques-uns), comme les joueurs IA des jeux. Ne peut ni discuter ni faire de tâches."
 
-#: internal/ui/settings_ai.go:904
+#: internal/ui/settings_ai.go:1057
 msgid "Neither chats nor makes quick choices: inua does not use it."
 msgstr "Ne discute pas et ne fait pas de choix rapides : inua ne l'utilise pas."
 
-#: internal/ui/settings_ai.go:914
+#: internal/ui/settings_ai.go:1067
 msgid "Search models"
 msgstr "Rechercher des modèles"
 
-#: internal/ui/settings_ai.go:944
+#: internal/ui/settings_ai.go:1097
 msgid "Listing models…"
 msgstr "Liste des modèles…"
 
-#: internal/ui/settings_ai.go:968
+#: internal/ui/settings_ai.go:1121
 msgid "Type the server's endpoint first."
 msgstr "Saisissez d'abord l'endpoint du serveur."
 
-#: internal/ui/settings_ai.go:970
+#: internal/ui/settings_ai.go:1123
 msgid "Cannot list the models: %s"
 msgstr "Impossible de lister les modèles : %s"
 
-#: internal/ui/settings_ai.go:972
+#: internal/ui/settings_ai.go:1125
 msgid "The provider lists no models."
 msgstr "Le fournisseur ne liste aucun modèle."
 
-#: internal/ui/settings_ai.go:1008
+#: internal/ui/settings_ai.go:1161
 msgid "No model matches."
 msgstr "Aucun modèle ne correspond."
 
@@ -8795,6 +8832,68 @@ msgstr "Aucun choisi"
 #: internal/ui/settings_apps.go:110
 msgid "%s (inua)"
 msgstr "%s (inua)"
+
+#: internal/ui/settings_bench.go:73
+msgid "Text reply"
+msgstr "Réponse texte"
+
+#: internal/ui/settings_bench.go:73
+msgid "The model answered"
+msgstr "Le modèle a répondu"
+
+#: internal/ui/settings_bench.go:73
+msgid "The model did not answer"
+msgstr "Le modèle n'a pas répondu"
+
+#: internal/ui/settings_bench.go:75
+msgid "Tool calling"
+msgstr "Appel d'outils"
+
+#: internal/ui/settings_bench.go:75
+msgid "The model can call tools"
+msgstr "Le modèle peut appeler des outils"
+
+#: internal/ui/settings_bench.go:75
+msgid "The model did not call the tool"
+msgstr "Le modèle n'a pas appelé l'outil"
+
+#: internal/ui/settings_bench.go:77
+msgid "Quick choice (decision route)"
+msgstr "Choix rapide (route de décision)"
+
+#: internal/ui/settings_bench.go:77
+msgid "The model picks from a list"
+msgstr "Le modèle choisit dans une liste"
+
+#: internal/ui/settings_bench.go:77
+msgid "The model did not pick the right option"
+msgstr "Le modèle n'a pas choisi la bonne option"
+
+#: internal/ui/settings_bench.go:137
+#: internal/ui/settings_bench.go:204
+msgid "Run again"
+msgstr "Relancer"
+
+#: internal/ui/settings_bench.go:187
+#: internal/ui/settings_bench.go:332
+msgid "Running…"
+msgstr "En cours…"
+
+#: internal/ui/settings_bench.go:296
+msgid "Show what the model answered"
+msgstr "Afficher la réponse du modèle"
+
+#: internal/ui/settings_bench.go:347
+msgid "Passed"
+msgstr "Réussi"
+
+#: internal/ui/settings_bench.go:350
+msgid "Failed"
+msgstr "Échoué"
+
+#: internal/ui/settings_bench.go:363
+msgid "No answer"
+msgstr "Pas de réponse"
 
 #: internal/ui/settings_custom.go:74
 msgid "Not moved to the trash: %s"
@@ -8825,234 +8924,234 @@ msgid "Not added: the folder has no SVG files"
 msgstr ""
 
 #: internal/ui/settings_custom.go:165
-#: internal/ui/settings_keyring.go:176
+#: internal/ui/settings_keyring.go:181
 msgid "Not added: %s"
 msgstr "Non ajouté : %s"
 
-#: internal/ui/settings_keyring.go:171
+#: internal/ui/settings_keyring.go:176
 msgid "Cannot reach inua-keyring"
 msgstr "Impossible de joindre inua-keyring"
 
-#: internal/ui/settings_keyring.go:178
+#: internal/ui/settings_keyring.go:183
 msgid "Not added: you said no."
 msgstr "Non ajouté : vous avez refusé."
 
-#: internal/ui/settings_keyring.go:180
+#: internal/ui/settings_keyring.go:185
 msgid "Added %s."
 msgstr "%s ajouté."
 
-#: internal/ui/settings_keyring.go:261
-#: ui/settings.ui:4333
+#: internal/ui/settings_keyring.go:270
+#: ui/settings.ui:4400
 msgid "<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>LECTURE<span alpha='55%'>]</span>"
 
-#: internal/ui/settings_keyring.go:263
+#: internal/ui/settings_keyring.go:272
 msgid "<span alpha='55%'>[</span>PASSPHRASE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>PHRASE SECRÈTE<span alpha='55%'>]</span>"
 
-#: internal/ui/settings_keyring.go:283
+#: internal/ui/settings_keyring.go:293
 msgid "Not in pass: the session keyring is kept in memory"
 msgstr "Pas dans pass : le trousseau de session est gardé en mémoire"
 
-#: internal/ui/settings_keyring.go:285
+#: internal/ui/settings_keyring.go:295
 msgid "Not recorded"
 msgstr "Non enregistré"
 
-#: internal/ui/settings_keyring.go:291
+#: internal/ui/settings_keyring.go:301
 msgid "%d reads, %s to %s"
 msgid_plural "%d reads, %s to %s"
 msgstr[0] "%d lecture, %s à %s"
 msgstr[1] "%d lectures, de %s à %s"
 
-#: internal/ui/settings_keyring.go:293
+#: internal/ui/settings_keyring.go:303
 msgid "Not known"
 msgstr "Inconnu"
 
-#: internal/ui/settings_keyring.go:296
-#: internal/ui/settings_keyring.go:457
-#: internal/ui/settings_keyring.go:464
+#: internal/ui/settings_keyring.go:306
+#: internal/ui/settings_keyring.go:467
+#: internal/ui/settings_keyring.go:474
 msgid "pid %d"
 msgstr "pid %d"
 
-#: internal/ui/settings_keyring.go:298
+#: internal/ui/settings_keyring.go:308
 msgid "pid %d, still running"
 msgstr "pid %d, toujours en cours"
 
-#: internal/ui/settings_keyring.go:300
+#: internal/ui/settings_keyring.go:310
 msgid "pid %d, ended"
 msgstr "pid %d, terminé"
 
-#: internal/ui/settings_keyring.go:302
+#: internal/ui/settings_keyring.go:312
 msgid "Secret"
 msgstr "Secret"
 
-#: internal/ui/settings_keyring.go:304
+#: internal/ui/settings_keyring.go:314
 msgid "For"
 msgstr "Pour"
 
-#: internal/ui/settings_keyring.go:311
+#: internal/ui/settings_keyring.go:321
 msgid "Answer"
 msgstr "Réponse"
 
-#: internal/ui/settings_keyring.go:313
+#: internal/ui/settings_keyring.go:323
 msgid "In pass"
 msgstr "Dans pass"
 
-#: internal/ui/settings_keyring.go:315
+#: internal/ui/settings_keyring.go:325
 msgid "App"
 msgstr "Application"
 
-#: internal/ui/settings_keyring.go:317
+#: internal/ui/settings_keyring.go:327
 msgid "Command line"
 msgstr "Ligne de commande"
 
-#: internal/ui/settings_keyring.go:318
+#: internal/ui/settings_keyring.go:328
 msgid "Runs under"
 msgstr "Lancé depuis"
 
-#: internal/ui/settings_keyring.go:319
+#: internal/ui/settings_keyring.go:329
 msgid "Process"
 msgstr "Processus"
 
-#: internal/ui/settings_keyring.go:320
+#: internal/ui/settings_keyring.go:330
 msgid "Bus name"
 msgstr "Nom sur le bus"
 
-#: internal/ui/settings_keyring.go:321
+#: internal/ui/settings_keyring.go:331
 msgid "When"
 msgstr "Quand"
 
-#: internal/ui/settings_keyring.go:336
+#: internal/ui/settings_keyring.go:346
 msgid "Entered"
 msgstr "Saisie"
 
-#: internal/ui/settings_keyring.go:338
+#: internal/ui/settings_keyring.go:348
 msgid "cancelled"
 msgstr "annulée"
 
-#: internal/ui/settings_keyring.go:340
+#: internal/ui/settings_keyring.go:350
 msgid "the dialog could not be shown"
 msgstr "la boîte de dialogue n’a pas pu s’afficher"
 
-#: internal/ui/settings_keyring.go:373
+#: internal/ui/settings_keyring.go:383
 msgid "Looking…"
 msgstr "Vérification…"
 
-#: internal/ui/settings_keyring.go:376
+#: internal/ui/settings_keyring.go:386
 msgid "Cannot reach the session bus"
 msgstr "Impossible de joindre le bus de session"
 
-#: internal/ui/settings_keyring.go:377
+#: internal/ui/settings_keyring.go:387
 msgid "inua-keyring is not running"
 msgstr "inua-keyring ne tourne pas"
 
-#: internal/ui/settings_keyring.go:381
+#: internal/ui/settings_keyring.go:391
 msgid "%s serves it, keeping the secrets in pass"
 msgstr "%s le fournit et garde les secrets dans pass"
 
-#: internal/ui/settings_keyring.go:384
+#: internal/ui/settings_keyring.go:394
 msgid "Locked: the next read decrypts with gpg, which may ask for your passphrase"
 msgstr "Verrouillé : la prochaine lecture déchiffre avec gpg, qui peut demander votre phrase secrète"
 
-#: internal/ui/settings_keyring.go:386
+#: internal/ui/settings_keyring.go:396
 msgid "Kept in protected memory since the first read, so reads ask for nothing"
 msgstr "Gardés en mémoire protégée depuis la première lecture : les lectures ne demandent rien"
 
-#: internal/ui/settings_keyring.go:390
+#: internal/ui/settings_keyring.go:400
 msgid "%s serves it, not inua-keyring; inua keyring replace switches"
 msgstr "%s le fournit, pas inua-keyring ; inua keyring replace change cela"
 
-#: internal/ui/settings_keyring.go:392
+#: internal/ui/settings_keyring.go:402
 msgid "No one serves it now; D-Bus starts it on the first request"
 msgstr "Personne ne le fournit ; D-Bus le lance à la première demande"
 
-#: internal/ui/settings_keyring.go:412
+#: internal/ui/settings_keyring.go:422
 msgid "The record of reads cannot be read: %s"
 msgstr "Impossible de lire le journal des lectures : %s"
 
-#: internal/ui/settings_keyring.go:414
-#: ui/settings.ui:3972
+#: internal/ui/settings_keyring.go:424
+#: ui/settings.ui:4039
 msgid "No app has read a secret yet."
 msgstr "Aucune application n’a encore lu de secret."
 
-#: internal/ui/settings_keyring.go:435
+#: internal/ui/settings_keyring.go:445
 msgid "%s read “%s”"
 msgstr "%s a lu « %s »"
 
-#: internal/ui/settings_keyring.go:437
+#: internal/ui/settings_keyring.go:447
 msgid "%s was denied “%s”"
 msgstr "%s s’est vu refuser « %s »"
 
-#: internal/ui/settings_keyring.go:440
+#: internal/ui/settings_keyring.go:450
 msgid "%s asked for the passphrase"
 msgstr "%s a demandé la phrase secrète"
 
-#: internal/ui/settings_keyring.go:462
+#: internal/ui/settings_keyring.go:472
 msgid "session keyring, in memory"
 msgstr "trousseau de session, en mémoire"
 
-#: internal/ui/settings_keyring.go:470
+#: internal/ui/settings_keyring.go:480
 msgid "%s · %d times in a row"
 msgid_plural "%s · %d times in a row"
 msgstr[0] "%s · %d fois de suite"
 msgstr[1] "%s · %d fois de suite"
 
-#: internal/ui/settings_keyring.go:488
+#: internal/ui/settings_keyring.go:498
 msgid "Show the details"
 msgstr "Voir les détails"
 
-#: internal/ui/settings_keyring.go:504
+#: internal/ui/settings_keyring.go:514
 msgid "It was changed outside inua-keyring, so every app is asked about until you trust it again. Look through it first."
 msgstr "Elle a été modifiée hors d’inua-keyring : chaque app fait l’objet d’une question jusqu’à ce que vous lui refassiez confiance. Parcourez-la d’abord."
 
-#: internal/ui/settings_keyring.go:506
+#: internal/ui/settings_keyring.go:516
 msgid "It cannot be read: %s. Every app is asked about."
 msgstr "Elle ne peut pas être lue : %s. Chaque app fait l’objet d’une question."
 
-#: internal/ui/settings_keyring.go:543
+#: internal/ui/settings_keyring.go:553
 msgid "%s, trusted with %d secret"
 msgid_plural "%s, trusted with %d secrets"
 msgstr[0] "%s, de confiance pour %d secret"
 msgstr[1] "%s, de confiance pour %d secrets"
 
-#: internal/ui/settings_keyring.go:549
+#: internal/ui/settings_keyring.go:559
 msgid "Not trusted: changed outside inua-keyring. Every app is asked about."
 msgstr "Pas de confiance : modifiée hors d’inua-keyring. Chaque app fait l’objet d’une question."
 
-#: internal/ui/settings_keyring.go:551
+#: internal/ui/settings_keyring.go:561
 msgid "None yet: each app is asked about the first time it reads a secret"
 msgstr "Aucune pour l’instant : chaque app fait l’objet d’une question la première fois qu’elle lit un secret"
 
-#: internal/ui/settings_keyring.go:554
+#: internal/ui/settings_keyring.go:564
 msgid "%s · %d allowed path"
 msgid_plural "%s · %d allowed paths"
 msgstr[0] "%s · %d chemin autorisé"
 msgstr[1] "%s · %d chemins autorisés"
 
-#: internal/ui/settings_keyring.go:560
+#: internal/ui/settings_keyring.go:570
 msgid "%d path"
 msgid_plural "%d paths"
 msgstr[0] "%d chemin"
 msgstr[1] "%d chemins"
 
-#: internal/ui/settings_keyring.go:593
+#: internal/ui/settings_keyring.go:603
 msgid "No app is trusted yet: each app is asked about the first time it reads a secret."
 msgstr "Aucune app de confiance pour l’instant : chacune fait l’objet d’une question la première fois qu’elle lit un secret."
 
-#: internal/ui/settings_keyring.go:595
+#: internal/ui/settings_keyring.go:605
 msgid "No trusted app matches “%s”."
 msgstr "Aucune app de confiance ne correspond à « %s »."
 
-#: internal/ui/settings_keyring.go:606
+#: internal/ui/settings_keyring.go:616
 msgid "%s reads “%s”"
 msgstr "%s lit « %s »"
 
-#: internal/ui/settings_keyring.go:630
-#: internal/ui/settings_keyring.go:664
+#: internal/ui/settings_keyring.go:640
+#: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "depuis %s"
 
-#: internal/ui/settings_keyring.go:673
+#: internal/ui/settings_keyring.go:683
 msgid "Stop allowing it: its programs are asked about again"
 msgstr "Ne plus l'autoriser : ses programmes sont de nouveau demandés"
 
@@ -9118,7 +9217,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "Mise à niveau %s avec : mise à niveau inua"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5396
+#: ui/settings.ui:5463
 msgid "Upgrade"
 msgstr "Mise à niveau"
 
@@ -10084,7 +10183,7 @@ msgstr ""
 
 #: ui/settings.ui:173
 #: ui/settings.ui:431
-#: ui/settings.ui:4609
+#: ui/settings.ui:4676
 msgid "Add…"
 msgstr "Ajouter…"
 
@@ -10425,596 +10524,596 @@ msgstr "Ce qui ouvre les liens, dossiers et fichiers"
 msgid "Saved where other apps read them too: ~/.config/mimeapps.list, and for the terminal xdg-terminals.list and the launcher's terminal."
 msgstr "Enregistré là où les autres applications le lisent aussi : ~/.config/mimeapps.list, et pour le terminal xdg-terminals.list et le terminal du lanceur."
 
-#: ui/settings.ui:1966
+#: ui/settings.ui:1969
 msgid "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:1974
+#: ui/settings.ui:1977
 msgid "An agent with inua's tools, run by Mister Morph"
 msgstr "Un agent utilisant les outils d’inua, exécuté par Mister Morph"
 
-#: ui/settings.ui:2013
+#: ui/settings.ui:2016
 msgid "Ask it from the launcher (the last row, or ? first) or open Assistant"
 msgstr "Demandez-le depuis le lanceur (la dernière ligne, ou ? en premier) ou ouvrez l'Assistant"
 
-#: ui/settings.ui:2047
+#: ui/settings.ui:2050
 msgid "Answers with"
 msgstr "Profil de réponse"
 
-#: ui/settings.ui:2056
+#: ui/settings.ui:2059
 msgid "The profile asked first; the assistant's window can switch for a conversation"
 msgstr "Profil initial ; changez-le pour une conversation dans l’assistant"
 
-#: ui/settings.ui:2090
+#: ui/settings.ui:2093
 msgid "Quick choices with"
 msgstr "Profil des choix rapides"
 
-#: ui/settings.ui:2099
+#: ui/settings.ui:2102
 msgid "The profile that picks from a fixed list, as an AI player in the games does"
 msgstr "Le profil qui choisit dans une liste fixe, comme un joueur IA dans les jeux"
 
-#: ui/settings.ui:2133
-#: ui/settings.ui:2674
+#: ui/settings.ui:2136
+#: ui/settings.ui:2677
 msgid "Ask before changes"
 msgstr "Demander avant les modifications"
 
-#: ui/settings.ui:2142
+#: ui/settings.ui:2145
 msgid "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask"
 msgstr "Wi-Fi, volume, fenêtres, presse-papiers… ; le pouvoir, la fin des processus et la fermeture des fenêtres demandent toujours"
 
-#: ui/settings.ui:2176
+#: ui/settings.ui:2179
 msgid "Search the web"
 msgstr "Rechercher sur le Web"
 
-#: ui/settings.ui:2185
+#: ui/settings.ui:2188
 msgid "Mister Morph's web search and page reading"
 msgstr "Recherche web et lecture de pages de Mister Morph"
 
-#: ui/settings.ui:2219
+#: ui/settings.ui:2222
 msgid "Read files"
 msgstr "Lire des fichiers"
 
-#: ui/settings.ui:2228
+#: ui/settings.ui:2231
 msgid "Any file you can read; asks each time"
 msgstr "N'importe quel fichier que vous pouvez lire ; demande à chaque fois"
 
-#: ui/settings.ui:2262
+#: ui/settings.ui:2265
 msgid "Run commands"
 msgstr "Exécuter des commandes"
 
-#: ui/settings.ui:2271
+#: ui/settings.ui:2274
 msgid "A shell, as you; asks each time"
 msgstr "Exécute un shell avec vos droits ; demande à chaque fois"
 
-#: ui/settings.ui:2316
+#: ui/settings.ui:2319
 msgid "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>POINT DE FIN DE LA CONSOLE<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2324
+#: ui/settings.ui:2327
 msgid "Connect other Consoles to this desktop"
 msgstr "Connectez d'autres consoles à ce bureau"
 
-#: ui/settings.ui:2354
-#: ui/settings.ui:2373
+#: ui/settings.ui:2357
+#: ui/settings.ui:2376
 msgid "Serve endpoint"
 msgstr "Servir le point final"
 
-#: ui/settings.ui:2363
+#: ui/settings.ui:2366
 msgid "Allow Console connections; the assistant keeps running when this is off"
 msgstr "Autoriser les connexions à la console ; l'assistant continue de fonctionner quand il est éteint"
 
-#: ui/settings.ui:2398
+#: ui/settings.ui:2401
 msgid "Listen address"
 msgstr "Adresse d'écoute"
 
-#: ui/settings.ui:2407
+#: ui/settings.ui:2410
 msgid "Host:port; kept when serving is off"
 msgstr "Hôte : port ; conservé lorsque le service est arrêté"
 
-#: ui/settings.ui:2418
+#: ui/settings.ui:2421
 msgid "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port."
 msgstr "Utilisez host:port, avec un port de 1 à 65535. Pour IPv6, utilisez [address]:port."
 
-#: ui/settings.ui:2440
+#: ui/settings.ui:2443
 msgid "Endpoint URL"
 msgstr "URL du point de terminaison"
 
-#: ui/settings.ui:2451
+#: ui/settings.ui:2454
 msgid "Set a listen address first"
 msgstr "Définir d'abord une adresse d'écoute"
 
-#: ui/settings.ui:2460
+#: ui/settings.ui:2463
 msgid "Copy URL"
 msgstr "Copier l'URL"
 
-#: ui/settings.ui:2491
+#: ui/settings.ui:2494
 msgid "Access token"
 msgstr "Jeton d'accès"
 
-#: ui/settings.ui:2503
+#: ui/settings.ui:2506
 msgid "Token hidden"
 msgstr "Jeton caché"
 
-#: ui/settings.ui:2521
+#: ui/settings.ui:2524
 msgid "Copy token"
 msgstr "Copier le jeton"
 
-#: ui/settings.ui:2531
+#: ui/settings.ui:2534
 msgid "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase."
 msgstr "Conservé dans le porte-clés (pass avec inua-keyring). Le créer ou le lire peut vous demander votre phrase secrète."
 
-#: ui/settings.ui:2568
+#: ui/settings.ui:2571
 msgid "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2576
+#: ui/settings.ui:2579
 msgid "Let AI agents on this computer use inua's tools"
 msgstr "Laissez les agents d’IA de cet ordinateur utiliser les outils d’inua"
 
-#: ui/settings.ui:2606
-#: ui/settings.ui:2625
+#: ui/settings.ui:2609
+#: ui/settings.ui:2628
 msgid "MCP server"
 msgstr "Serveur MCP"
 
-#: ui/settings.ui:2615
+#: ui/settings.ui:2618
 msgid "Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way."
 msgstr "Des agents comme Claude Code ou Codex voient les fenêtres, ouvrent des apps, changent des réglages et plus, via inua mcp. L’assistant utilise ces outils dans tous les cas."
 
-#: ui/settings.ui:2650
+#: ui/settings.ui:2653
 msgid "What agents may do"
 msgstr "Ce que les agents peuvent faire"
 
-#: ui/settings.ui:2659
+#: ui/settings.ui:2662
 msgid "Closing windows, ending processes, power, the clipboard and notifications always ask"
 msgstr "Fermer des fenêtres, arrêter des processus, l’alimentation, le presse-papiers et les notifications demandent toujours"
 
-#: ui/settings.ui:2673
+#: ui/settings.ui:2676
 msgid "Look only"
 msgstr "Regarder seulement"
 
-#: ui/settings.ui:2675
+#: ui/settings.ui:2678
 msgid "Change without asking"
 msgstr "Modifier sans demander"
 
-#: ui/settings.ui:2698
+#: ui/settings.ui:2701
 msgid "Connect an agent"
 msgstr "Connecter un agent"
 
-#: ui/settings.ui:2728
+#: ui/settings.ui:2731
 msgid "Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog."
 msgstr "Autres agents : un serveur stdio qui lance inua mcp. Chaque appel est consigné ; les demandes s’affichent dans la boîte de dialogue d’inua."
 
-#: ui/settings.ui:2765
+#: ui/settings.ui:2768
 msgid "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>PROFILS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2773
+#: ui/settings.ui:2776
 msgid "The models it can use; fallbacks answer when the first fails"
 msgstr "Modèles disponibles ; les modèles de secours répondent si le premier échoue"
 
-#: ui/settings.ui:2803
+#: ui/settings.ui:2806
 msgid "Add Profile"
 msgstr "Ajouter un profil"
 
-#: ui/settings.ui:2882
+#: ui/settings.ui:2949
 msgid "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2890
+#: ui/settings.ui:2957
 msgid "Banners, then the notification center"
 msgstr "Des bannières, puis le centre de notifications"
 
-#: ui/settings.ui:2920
+#: ui/settings.ui:2987
 msgid "Show notifications"
 msgstr "Afficher les notifications"
 
-#: ui/settings.ui:2962
+#: ui/settings.ui:3029
 msgid "Banner duration"
 msgstr "Durée de la bannière"
 
-#: ui/settings.ui:2971
+#: ui/settings.ui:3038
 msgid "How long a banner shows; critical ones stay"
 msgstr "Combien de temps une bannière s'affiche ; les plus critiques restent"
 
-#: ui/settings.ui:2985
+#: ui/settings.ui:3052
 msgid "3 seconds"
 msgstr "3 secondes"
 
-#: ui/settings.ui:2986
+#: ui/settings.ui:3053
 msgid "5 seconds"
 msgstr "5 secondes"
 
-#: ui/settings.ui:2987
+#: ui/settings.ui:3054
 msgid "8 seconds"
 msgstr "8 secondes"
 
-#: ui/settings.ui:2988
+#: ui/settings.ui:3055
 msgid "12 seconds"
 msgstr "12 secondes"
 
-#: ui/settings.ui:3015
+#: ui/settings.ui:3082
 msgid "Critical during Focus"
 msgstr "Alertes urgentes en mode Ne pas déranger"
 
-#: ui/settings.ui:3024
+#: ui/settings.ui:3091
 msgid "Critical notifications still show banners"
 msgstr "Les notifications critiques affichent toujours des bannières"
 
-#: ui/settings.ui:3058
+#: ui/settings.ui:3125
 msgid "Keep a history"
 msgstr "Garder un historique"
 
-#: ui/settings.ui:3067
+#: ui/settings.ui:3134
 msgid "The last 500 notifications, dismissed ones too, for the assistant, agents and workshop apps allowed to read them. Off clears it."
 msgstr "Les 500 dernières notifications, même rejetées, pour l’assistant, les agents et les apps de l’atelier autorisés à les lire. Désactiver l’efface."
 
-#: ui/settings.ui:3146
+#: ui/settings.ui:3213
 msgid "<span alpha='55%'>[</span>CLIPBOARD<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>PRESSE-PAPIERS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3154
+#: ui/settings.ui:3221
 msgid "History, panel appearance and pasting"
 msgstr "Historique, apparence du panneau et collage"
 
-#: ui/settings.ui:3184
+#: ui/settings.ui:3251
 msgid "Keep a clipboard history"
 msgstr "Conserver un historique du presse-papiers"
 
-#: ui/settings.ui:3193
+#: ui/settings.ui:3260
 msgid "Text and images you copy, kept on this computer; a password manager's copies are left out"
 msgstr "Le texte et les images que vous copiez, conservés sur cet ordinateur ; les copies d’un gestionnaire de mots de passe sont exclues"
 
-#: ui/settings.ui:3223
+#: ui/settings.ui:3290
 msgid "Never record copies from"
 msgstr "Ne jamais enregistrer les copies de"
 
-#: ui/settings.ui:3233
+#: ui/settings.ui:3300
 msgid "pass, keepassxc, …"
 msgstr "pass, keepassxc, …"
 
-#: ui/settings.ui:3241
+#: ui/settings.ui:3308
 msgid "Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from"
 msgstr "Programmes ou classes de fenêtre, séparés par des virgules. Le programme qui a lancé wl-copy et la fenêtre active sont vérifiés ; survolez une entrée de l’historique pour voir sa provenance"
 
-#: ui/settings.ui:3267
+#: ui/settings.ui:3334
 msgid "Show in top bar"
 msgstr "Afficher dans la barre du haut"
 
-#: ui/settings.ui:3276
+#: ui/settings.ui:3343
 msgid "A button in the status area opens the clipboard history"
 msgstr "Un bouton dans la zone d’état ouvre l’historique du presse-papiers"
 
-#: ui/settings.ui:3310
+#: ui/settings.ui:3377
 msgid "Paste on click"
 msgstr "Coller au clic"
 
-#: ui/settings.ui:3319
+#: ui/settings.ui:3386
 msgid "Clicking an entry pastes it into the window you were in; off only copies it"
 msgstr "Cliquer sur une entrée la colle dans la fenêtre où vous étiez ; désactivé, elle est seulement copiée"
 
-#: ui/settings.ui:3353
+#: ui/settings.ui:3420
 msgid "Panel opacity"
 msgstr "Opacité du panneau"
 
-#: ui/settings.ui:3404
+#: ui/settings.ui:3471
 msgid "History limit"
 msgstr "Limite de l’historique"
 
-#: ui/settings.ui:3413
+#: ui/settings.ui:3480
 msgid "How many entries it keeps; the oldest go first"
 msgstr "Combien d’entrées il garde ; les plus anciennes partent d’abord"
 
-#: ui/settings.ui:3447
+#: ui/settings.ui:3514
 msgid "History storage"
 msgstr "Stockage de l’historique"
 
-#: ui/settings.ui:3456
+#: ui/settings.ui:3523
 msgid "Loading history…"
 msgstr "Chargement de l’historique…"
 
-#: ui/settings.ui:3469
+#: ui/settings.ui:3536
 msgid "Reveal in File Manager"
 msgstr "Afficher dans le gestionnaire de fichiers"
 
-#: ui/settings.ui:3480
+#: ui/settings.ui:3547
 msgid "Clear the history"
 msgstr "Effacer l’historique"
 
-#: ui/settings.ui:3561
+#: ui/settings.ui:3628
 msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>TROUSSEAU<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3569
+#: ui/settings.ui:3636
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "Les secrets des applications : clés des navigateurs, mots de passe Wi-Fi, clés d’API"
 
-#: ui/settings.ui:3599
+#: ui/settings.ui:3666
 msgid "Secret Service"
 msgstr "Secret Service"
 
-#: ui/settings.ui:3635
+#: ui/settings.ui:3702
 msgid "Unlocked secrets"
 msgstr "Secrets déverrouillés"
 
-#: ui/settings.ui:3681
+#: ui/settings.ui:3748
 msgid "Lock when unused"
 msgstr "Verrouiller sans usage"
 
-#: ui/settings.ui:3690
+#: ui/settings.ui:3757
 msgid "It locks with the screen and before suspend, and after this long without a read"
 msgstr "Il se verrouille avec l’écran et avant la mise en veille, et après ce délai sans lecture"
 
-#: ui/settings.ui:3705
+#: ui/settings.ui:3772
 msgid "5 minutes"
 msgstr "5 minutes"
 
-#: ui/settings.ui:3706
+#: ui/settings.ui:3773
 msgid "15 minutes"
 msgstr "15 minutes"
 
-#: ui/settings.ui:3707
+#: ui/settings.ui:3774
 msgid "30 minutes"
 msgstr "30 minutes"
 
-#: ui/settings.ui:3708
+#: ui/settings.ui:3775
 msgid "1 hour"
 msgstr "1 heure"
 
-#: ui/settings.ui:3709
+#: ui/settings.ui:3776
 msgid "4 hours"
 msgstr "4 heures"
 
-#: ui/settings.ui:3736
+#: ui/settings.ui:3803
 msgid "With no one to ask"
 msgstr "Sans personne à qui demander"
 
-#: ui/settings.ui:3745
+#: ui/settings.ui:3812
 msgid "A read by an app not trusted with the secret, while the inua shell is not running"
 msgstr "Une lecture par une app sans confiance pour le secret, quand le shell inua ne tourne pas"
 
-#: ui/settings.ui:3760
+#: ui/settings.ui:3827
 msgid "Denied"
 msgstr "Refusée"
 
-#: ui/settings.ui:3787
+#: ui/settings.ui:3854
 msgid "Tell when an app reads a secret"
 msgstr "Prévenir quand une application lit un secret"
 
-#: ui/settings.ui:3796
+#: ui/settings.ui:3863
 msgid "A notification for each app's first read since inua-keyring started"
 msgstr "Une notification pour la première lecture de chaque application depuis le démarrage d’inua-keyring"
 
-#: ui/settings.ui:3841
-#: ui/settings.ui:4055
+#: ui/settings.ui:3908
+#: ui/settings.ui:4122
 msgid "<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>APPS DE CONFIANCE<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3849
+#: ui/settings.ui:3916
 msgid "Apps that read a secret without asking; any other app is asked about first"
 msgstr "Apps qui lisent un secret sans demander ; toute autre fait d’abord l’objet d’une question"
 
-#: ui/settings.ui:3885
+#: ui/settings.ui:3952
 msgid "Trusted apps"
 msgstr "Apps de confiance"
 
-#: ui/settings.ui:3940
+#: ui/settings.ui:4007
 msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>LECTURES<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3948
+#: ui/settings.ui:4015
 msgid "Every secret inua-keyring handed out and passphrase asked for, newest first"
 msgstr "Chaque secret remis par inua-keyring et chaque phrase secrète demandée, du plus récent au plus ancien"
 
-#: ui/settings.ui:3994
+#: ui/settings.ui:4061
 msgid "Refresh"
 msgstr "Actualiser"
 
-#: ui/settings.ui:4088
+#: ui/settings.ui:4155
 msgid "The list is not trusted"
 msgstr "La liste n’est pas de confiance"
 
-#: ui/settings.ui:4109
+#: ui/settings.ui:4176
 msgid "Trust this list again"
 msgstr "Refaire confiance à cette liste"
 
-#: ui/settings.ui:4149
+#: ui/settings.ui:4216
 msgid "<span alpha='55%'>[</span>ALLOWED PATHS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHEMINS AUTORISÉS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4176
+#: ui/settings.ui:4243
 msgid "Any program at one of these paths reads every secret without asking, even after it changes: for an app that updates every day. inua-keyring asks you before a path is added."
 msgstr "Tout programme de l'un de ces chemins lit tous les secrets sans demander, même après avoir changé : pour une app mise à jour chaque jour. inua-keyring vous demande avant d'ajouter un chemin."
 
-#: ui/settings.ui:4196
+#: ui/settings.ui:4263
 msgid "A path; * within a folder: ~/.local/share/app/versions/*"
 msgstr "Un chemin ; * dans un dossier : ~/.local/share/app/versions/*"
 
-#: ui/settings.ui:4205
+#: ui/settings.ui:4272
 msgid "Allow path"
 msgstr "Autoriser le chemin"
 
-#: ui/settings.ui:4250
+#: ui/settings.ui:4317
 msgid "<span alpha='55%'>[</span>APPS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>APPS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4265
+#: ui/settings.ui:4332
 msgid "Filter by app, program or secret"
 msgstr "Filtrer par app, programme ou secret"
 
-#: ui/settings.ui:4377
+#: ui/settings.ui:4444
 msgid "Shortcuts"
 msgstr "Raccourcis clavier"
 
-#: ui/settings.ui:4407
+#: ui/settings.ui:4474
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "Appuyez sur le nouveau raccourci. Esc annule ; Retour arrière le désactive."
 
-#: ui/settings.ui:4436
-#: ui/settings.ui:5295
+#: ui/settings.ui:4503
+#: ui/settings.ui:5362
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4444
+#: ui/settings.ui:4511
 msgid "The shell's own actions"
 msgstr "Les propres actions de l'obus"
 
-#: ui/settings.ui:4493
+#: ui/settings.ui:4560
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>Captures d'écran<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4501
+#: ui/settings.ui:4568
 msgid "With grim and slurp"
 msgstr "Avec grim et slurp"
 
-#: ui/settings.ui:4550
+#: ui/settings.ui:4617
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>PERSONNALISÉ<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4558
+#: ui/settings.ui:4625
 msgid "Your own commands"
 msgstr "Vos propres commandes"
 
-#: ui/settings.ui:4600
+#: ui/settings.ui:4667
 msgid "Command, e.g. kitty"
 msgstr "Commande, par exemple kitty"
 
-#: ui/settings.ui:4610
+#: ui/settings.ui:4677
 msgid "Add, then press its shortcut"
 msgstr "Ajouter, puis appuyer sur son raccourci"
 
-#: ui/settings.ui:4645
+#: ui/settings.ui:4712
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4653
+#: ui/settings.ui:4720
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "Autres raccourcis, depuis hyprland.conf"
 
-#: ui/settings.ui:4698
+#: ui/settings.ui:4765
 msgid "Keyboard"
 msgstr "Clavier"
 
-#: ui/settings.ui:4746
+#: ui/settings.ui:4813
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4754
+#: ui/settings.ui:4821
 msgid "Every keyboard"
 msgstr "Chaque clavier"
 
-#: ui/settings.ui:4784
+#: ui/settings.ui:4851
 msgid "Swap Ctrl and Alt"
 msgstr "Permuter Ctrl et Alt"
 
-#: ui/settings.ui:4793
+#: ui/settings.ui:4860
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt agit comme Ctrl et Ctrl comme Alt"
 
-#: ui/settings.ui:4808
+#: ui/settings.ui:4875
 msgid "Left side"
 msgstr "Côté gauche"
 
-#: ui/settings.ui:4809
+#: ui/settings.ui:4876
 msgid "Both sides"
 msgstr "Les deux côtés"
 
-#: ui/settings.ui:4836
-#: ui/settings.ui:4859
+#: ui/settings.ui:4903
+#: ui/settings.ui:4926
 msgid "Caps Lock"
 msgstr "Verrouillage des majuscules"
 
-#: ui/settings.ui:4845
+#: ui/settings.ui:4912
 msgid "What the Caps Lock key does"
 msgstr "Ce que fait la touche Caps Lock"
 
-#: ui/settings.ui:4860
+#: ui/settings.ui:4927
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:4861
+#: ui/settings.ui:4928
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:4899
-#: ui/settings.ui:5181
+#: ui/settings.ui:4966
+#: ui/settings.ui:5248
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4907
-#: ui/settings.ui:5189
+#: ui/settings.ui:4974
+#: ui/settings.ui:5256
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua les écrit dans le fichier inua.conf d'Hyprland"
 
-#: ui/settings.ui:4958
-#: ui/settings.ui:5225
+#: ui/settings.ui:5025
+#: ui/settings.ui:5292
 msgid "Use hyprland.conf"
 msgstr "Utilisez hyprland.conf"
 
-#: ui/settings.ui:4959
+#: ui/settings.ui:5026
 msgid "Stop setting keyboard options in inua"
 msgstr "Arrêtez de définir les options du clavier dans Inua"
 
-#: ui/settings.ui:4990
+#: ui/settings.ui:5057
 msgid "Mouse & Touch"
 msgstr "Souris et pavé tactile"
 
-#: ui/settings.ui:5038
+#: ui/settings.ui:5105
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5046
+#: ui/settings.ui:5113
 msgid "Every touchpad"
 msgstr "Chaque pavé tactile"
 
-#: ui/settings.ui:5076
+#: ui/settings.ui:5143
 msgid "Pointer speed"
 msgstr "Vitesse du pointeur"
 
-#: ui/settings.ui:5127
+#: ui/settings.ui:5194
 msgid "Acceleration"
 msgstr "Accélération"
 
-#: ui/settings.ui:5136
+#: ui/settings.ui:5203
 msgid "Faster swipes move the pointer further"
 msgstr "Des balayages plus rapides déplacent le pointeur plus loin"
 
-#: ui/settings.ui:5226
+#: ui/settings.ui:5293
 msgid "Stop setting the touchpad in inua"
 msgstr "Arrêtez de configurer le pavé tactile dans Inua"
 
-#: ui/settings.ui:5257
+#: ui/settings.ui:5324
 msgid "About"
 msgstr "À propos"
 
-#: ui/settings.ui:5303
+#: ui/settings.ui:5370
 msgid "The version, and new releases"
 msgstr "La version, et les nouveautés"
 
-#: ui/settings.ui:5333
+#: ui/settings.ui:5400
 msgid "Version"
 msgstr "Version"
 
-#: ui/settings.ui:5369
+#: ui/settings.ui:5436
 msgid "Updates"
 msgstr "Mises à jour"
 
-#: ui/settings.ui:5405
+#: ui/settings.ui:5472
 msgid "Check for updates"
 msgstr "Vérifier les mises à jour"
 
-#: ui/settings.ui:5431
+#: ui/settings.ui:5498
 msgid "Check every day"
 msgstr "Vérifier tous les jours"
 
-#: ui/settings.ui:5440
+#: ui/settings.ui:5507
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "Une notification indique la sortie d'une nouvelle version, avec un bouton pour mettre à niveau"
 
-#: ui/settings.ui:5485
+#: ui/settings.ui:5552
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5493
+#: ui/settings.ui:5560
 msgid "What the latest release changed"
 msgstr "Ce que la dernière version a changé"
 

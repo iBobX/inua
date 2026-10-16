@@ -47,7 +47,16 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	a.daily.ConnectStateSet(&s.onSettingsSwitch)
 	s.onSettingsPage = func(uintptr, uintptr, uintptr) {
 		s.selectSettingsIndex() // the page turned from Go: `inua settings PAGE`
-		switch page := s.settings.pages.GetVisibleChildName(); {
+		page := s.settings.pages.GetVisibleChildName()
+		// A page left closes its panel, which gives the width back.
+		if a := &s.settings.ai; page != "ai" && a.open >= 0 {
+			a.open = -1
+			s.showAIDetail()
+		}
+		if page != "keyring" && s.settings.keyring.open >= 0 {
+			s.openKeyringRead(-1)
+		}
+		switch {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()
 		case page == "keyring":

@@ -33,6 +33,9 @@ type keyringSettings struct {
 	reads       gtk.Box
 	refresh     gtk.Button
 	detail      gtk.Revealer
+	panel       sidePanel
+	scroll      gtk.ScrolledWindow // the reads' page
+	lastRead    int                // the read the panel showed last
 	head        gtk.Label
 	fields      gtk.Box
 	close       gtk.Button
@@ -69,6 +72,8 @@ func (s *shellUI) getKeyringSettings(ui *gtkx.Builder) {
 	ui.Get("keyring_reads", &k.reads)
 	ui.Get("keyring_refresh", &k.refresh)
 	ui.Get("keyring_detail", &k.detail)
+	ui.Get("scroll_keyring", &k.scroll)
+	s.initPanel(&k.panel, &k.detail, &k.scroll, 300)
 	ui.Get("keyring_detail_head", &k.head)
 	ui.Get("keyring_detail_fields", &k.fields)
 	ui.Get("keyring_detail_close", &k.close)
@@ -93,7 +98,7 @@ func (s *shellUI) getKeyringSettings(ui *gtkx.Builder) {
 	ui.Get("keyring_path_entry", &k.pathEntry)
 	ui.Get("keyring_path_add", &k.pathAdd)
 	ui.Get("keyring_path_note", &k.pathNote)
-	k.open = -1
+	k.open, k.lastRead = -1, -1
 	k.notify.ConnectStateSet(&s.onSettingsSwitch)
 	k.onFilter = func(gtk.SearchEntry) { s.listTrustedApps() }
 	k.filter.ConnectSearchChanged(&k.onFilter)
@@ -255,7 +260,11 @@ func (s *shellUI) openKeyringRead(i int) {
 	}
 	k.open = i
 	if i < 0 {
-		k.detail.SetRevealChild(false)
+		var row *gtk.Widget
+		if k.lastRead >= 0 && k.lastRead < len(k.rows) {
+			row = &k.rows[k.lastRead].Widget
+		}
+		s.showPanel(&k.panel, false, row)
 		return
 	}
 	head := i18n.T("<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>")
@@ -267,7 +276,8 @@ func (s *shellUI) openKeyringRead(i int) {
 	for _, f := range keyringFields(k.groups[i]) {
 		gtkx.Append(&k.fields, &keyringField(f).Widget)
 	}
-	k.detail.SetRevealChild(true)
+	k.lastRead = i
+	s.showPanel(&k.panel, true, &k.rows[i].Widget)
 }
 
 // keyringFieldText is a field of the side panel: a name and its value.

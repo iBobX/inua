@@ -1366,657 +1366,709 @@ ApplicationWindow settings {
         name: "ai";
         title:  _("AI");
 
-        child: Overlay {
-          child: ScrolledWindow scroll_ai {
-            hscrollbar-policy: never;
+        // The page, and beside it the profile clicked in [PROFILES]: its
+        // settings, as Mister Morph's Console has them.
+        child: Box {
+          Overlay {
+            hexpand: true;
 
-            Box {
-              styles ["page"]
-              orientation: vertical;
+            child: ScrolledWindow scroll_ai {
+              hscrollbar-policy: never;
 
-              // [ASSISTANT]
               Box {
-                styles ["section"]
+                styles ["page"]
                 orientation: vertical;
 
+                // [ASSISTANT]
                 Box {
-                  styles ["section-head"]
-                  spacing: 10;
-
-                  Box {
-                    styles ["mark"]
-                    valign: center;
-                  }
-
-                  Label {
-                    styles ["section-label"]
-                    use-markup: true;
-                    label:  _("<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>");
-                  }
-
-                  Label {
-                    styles ["section-meta"]
-                    label:  _("An agent with inua's tools, run by Mister Morph");
-                    hexpand: true;
-                    xalign: 0;
-                    ellipsize: end;
-                  }
-                }
-
-                Box {
-                  styles ["section-body"]
+                  styles ["section"]
                   orientation: vertical;
 
                   Box {
-                    styles ["row"]
-                    spacing: 16;
+                    styles ["section-head"]
+                    spacing: 10;
 
                     Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Assistant");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Ask it from the launcher (the last row, or ? first) or open Assistant");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_enable {
-                      name: "ai_enable";
+                      styles ["mark"]
                       valign: center;
                     }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Answers with");
-                        xalign: 0;
-                      }
-
-                      Label ai_route {
-                        styles ["sub"]
-                        label:  _("The profile asked first; the assistant's window can switch for a conversation");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    DropDown ai_profile {
-                      name: "ai_profile";
-                      valign: center;
-                    }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Quick choices with");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("The profile that picks from a fixed list, as an AI player in the games does");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    DropDown ai_decision {
-                      name: "ai_decision";
-                      valign: center;
-                    }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Ask before changes");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_ask {
-                      name: "ai_ask";
-                      valign: center;
-                    }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Search the web");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Mister Morph's web search and page reading");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_web {
-                      name: "ai_web";
-                      valign: center;
-                    }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Read files");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Any file you can read; asks each time");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_files {
-                      name: "ai_files";
-                      valign: center;
-                    }
-                  }
-
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Run commands");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("A shell, as you; asks each time");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_bash {
-                      name: "ai_bash";
-                      valign: center;
-                    }
-                  }
-                }
-              }
-
-              Box {
-                styles ["section"]
-                orientation: vertical;
-
-                Box {
-                  styles ["section-head"]
-                  spacing: 10;
-
-                  Box {
-                    styles ["mark"]
-                    valign: center;
-                  }
-
-                  Label {
-                    styles ["section-label"]
-                    use-markup: true;
-                    label:  _("<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>");
-                  }
-
-                  Label {
-                    styles ["section-meta"]
-                    label:  _("Connect other Consoles to this desktop");
-                    hexpand: true;
-                    xalign: 0;
-                    ellipsize: end;
-                  }
-                }
-
-                Box {
-                  styles ["section-body"]
-                  orientation: vertical;
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Serve endpoint");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Allow Console connections; the assistant keeps running when this is off");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Switch ai_serve_enable {
-                      name: "ai_serve_enable";
-                      tooltip-text:  _("Serve endpoint");
-                      valign: center;
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
-                      Label {
-                        styles ["title"]
-                        label:  _("Listen address");
-                        xalign: 0;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label:  _("Host:port; kept when serving is off");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Entry ai_serve_listen {
-                      name: "ai-serve-listen";
-                      placeholder-text: "127.0.0.1:8794";
-                      tooltip-text:  _("Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.");
-                      width-chars: 23;
-                      valign: center;
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    orientation: vertical;
-                    spacing: 8;
 
                     Label {
-                      styles ["title"]
-                      label:  _("Endpoint URL");
-                      xalign: 0;
+                      styles ["section-label"]
+                      use-markup: true;
+                      label:  _("<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>");
                     }
 
+                    Label {
+                      styles ["section-meta"]
+                      label:  _("An agent with inua's tools, run by Mister Morph");
+                      hexpand: true;
+                      xalign: 0;
+                      ellipsize: end;
+                    }
+                  }
+
+                  Box {
+                    styles ["section-body"]
+                    orientation: vertical;
+
                     Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Assistant");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Ask it from the launcher (the last row, or ? first) or open Assistant");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_enable {
+                        name: "ai_enable";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Answers with");
+                          xalign: 0;
+                        }
+
+                        Label ai_route {
+                          styles ["sub"]
+                          label:  _("The profile asked first; the assistant's window can switch for a conversation");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown ai_profile {
+                        name: "ai_profile";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Quick choices with");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("The profile that picks from a fixed list, as an AI player in the games does");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown ai_decision {
+                        name: "ai_decision";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Ask before changes");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_ask {
+                        name: "ai_ask";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Search the web");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Mister Morph's web search and page reading");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_web {
+                        name: "ai_web";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Read files");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Any file you can read; asks each time");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_files {
+                        name: "ai_files";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Run commands");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("A shell, as you; asks each time");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_bash {
+                        name: "ai_bash";
+                        valign: center;
+                      }
+                    }
+                  }
+                }
+
+                Box {
+                  styles ["section"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label:  _("<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>");
+                    }
+
+                    Label {
+                      styles ["section-meta"]
+                      label:  _("Connect other Consoles to this desktop");
+                      hexpand: true;
+                      xalign: 0;
+                      ellipsize: end;
+                    }
+                  }
+
+                  Box {
+                    styles ["section-body"]
+                    orientation: vertical;
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Serve endpoint");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Allow Console connections; the assistant keeps running when this is off");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_serve_enable {
+                        name: "ai_serve_enable";
+                        tooltip-text:  _("Serve endpoint");
+                        valign: center;
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Listen address");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Host:port; kept when serving is off");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Entry ai_serve_listen {
+                        name: "ai-serve-listen";
+                        placeholder-text: "127.0.0.1:8794";
+                        tooltip-text:  _("Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port.");
+                        width-chars: 23;
+                        valign: center;
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      orientation: vertical;
                       spacing: 8;
 
-                      Entry ai_serve_url {
-                        editable: false;
-                        hexpand: true;
-                        placeholder-text:  _("Set a listen address first");
-                      }
-
-                      Button ai_url_copy {
-                        styles ["outlined"]
-                        name: "ai_url_copy";
-                        label:  _("Copy URL");
-                      }
-                    }
-
-                    Label ai_serve_note {
-                      styles ["sub"]
-                      xalign: 0;
-                      wrap: true;
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    orientation: vertical;
-                    spacing: 8;
-
-                    Label {
-                      styles ["title"]
-                      label:  _("Access token");
-                      xalign: 0;
-                    }
-
-                    Box {
-                      spacing: 8;
-
-                      Entry ai_serve_token {
-                        editable: false;
-                        visibility: false;
-                        hexpand: true;
-                        placeholder-text:  _("Token hidden");
-                      }
-
-                      Button ai_token_show {
-                        styles ["outlined"]
-                        name: "ai_token_show";
-                        label:  _("Create token");
-                      }
-
-                      Button ai_token_copy {
-                        styles ["outlined"]
-                        name: "ai_token_copy";
-                        label:  _("Copy token");
-                      }
-                    }
-
-                    Label {
-                      styles ["sub"]
-                      label:  _("Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.");
-                      xalign: 0;
-                      wrap: true;
-                    }
-                  }
-                }
-              }
-
-              // [MCP]: inua as an MCP server, for AI agents on this computer.
-              Box {
-                styles ["section"]
-                orientation: vertical;
-
-                Box {
-                  styles ["section-head"]
-                  spacing: 10;
-
-                  Box {
-                    styles ["mark"]
-                    valign: center;
-                  }
-
-                  Label {
-                    styles ["section-label"]
-                    use-markup: true;
-                    label:  _("<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>");
-                  }
-
-                  Label {
-                    styles ["section-meta"]
-                    label:  _("Let AI agents on this computer use inua's tools");
-                    hexpand: true;
-                    xalign: 0;
-                    ellipsize: end;
-                  }
-                }
-
-                Box {
-                  styles ["section-body"]
-                  orientation: vertical;
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-
                       Label {
                         styles ["title"]
-                        label:  _("MCP server");
+                        label:  _("Endpoint URL");
                         xalign: 0;
                       }
 
-                      Label {
+                      Box {
+                        spacing: 8;
+
+                        Entry ai_serve_url {
+                          editable: false;
+                          hexpand: true;
+                          placeholder-text:  _("Set a listen address first");
+                        }
+
+                        Button ai_url_copy {
+                          styles ["outlined"]
+                          name: "ai_url_copy";
+                          label:  _("Copy URL");
+                        }
+                      }
+
+                      Label ai_serve_note {
                         styles ["sub"]
-                        label:  _("Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way.");
                         xalign: 0;
                         wrap: true;
                       }
                     }
 
-                    Switch mcp_enable {
-                      name: "mcp_enable";
-                      tooltip-text:  _("MCP server");
-                      valign: center;
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
+                    Separator {}
 
                     Box {
+                      styles ["row"]
                       orientation: vertical;
-                      hexpand: true;
-                      valign: center;
+                      spacing: 8;
 
                       Label {
                         styles ["title"]
-                        label:  _("What agents may do");
+                        label:  _("Access token");
                         xalign: 0;
+                      }
+
+                      Box {
+                        spacing: 8;
+
+                        Entry ai_serve_token {
+                          editable: false;
+                          visibility: false;
+                          hexpand: true;
+                          placeholder-text:  _("Token hidden");
+                        }
+
+                        Button ai_token_show {
+                          styles ["outlined"]
+                          name: "ai_token_show";
+                          label:  _("Create token");
+                        }
+
+                        Button ai_token_copy {
+                          styles ["outlined"]
+                          name: "ai_token_copy";
+                          label:  _("Copy token");
+                        }
                       }
 
                       Label {
                         styles ["sub"]
-                        label:  _("Closing windows, ending processes, power, the clipboard and notifications always ask");
+                        label:  _("Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase.");
                         xalign: 0;
                         wrap: true;
                       }
                     }
-
-                    DropDown mcp_policy {
-                      name: "mcp_policy";
-                      valign: center;
-
-                      model: StringList {
-                        strings [
-                          _("Look only"),
-                          _("Ask before changes"),
-                          _("Change without asking"),
-                        ]
-                      };
-                    }
                   }
+                }
 
-                  Separator {}
+                // [MCP]: inua as an MCP server, for AI agents on this computer.
+                Box {
+                  styles ["section"]
+                  orientation: vertical;
 
                   Box {
-                    styles ["row"]
-                    orientation: vertical;
-                    spacing: 8;
-
-                    Label {
-                      styles ["title"]
-                      label:  _("Connect an agent");
-                      xalign: 0;
-                    }
+                    styles ["section-head"]
+                    spacing: 10;
 
                     Box {
-                      spacing: 8;
-
-                      Entry mcp_command {
-                        editable: false;
-                        hexpand: true;
-                        text: "claude mcp add inua -- inua mcp";
-                      }
-
-                      Button mcp_copy {
-                        styles ["outlined"]
-                        name: "mcp_copy";
-                        label:  _("Copy");
-                      }
+                      styles ["mark"]
+                      valign: center;
                     }
 
                     Label {
-                      styles ["sub"]
-                      label:  _("Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog.");
+                      styles ["section-label"]
+                      use-markup: true;
+                      label:  _("<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>");
+                    }
+
+                    Label {
+                      styles ["section-meta"]
+                      label:  _("Let AI agents on this computer use inua's tools");
+                      hexpand: true;
                       xalign: 0;
-                      wrap: true;
+                      ellipsize: end;
+                    }
+                  }
+
+                  Box {
+                    styles ["section-body"]
+                    orientation: vertical;
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("MCP server");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way.");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch mcp_enable {
+                        name: "mcp_enable";
+                        tooltip-text:  _("MCP server");
+                        valign: center;
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("What agents may do");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("Closing windows, ending processes, power, the clipboard and notifications always ask");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown mcp_policy {
+                        name: "mcp_policy";
+                        valign: center;
+
+                        model: StringList {
+                          strings [
+                            _("Look only"),
+                            _("Ask before changes"),
+                            _("Change without asking"),
+                          ]
+                        };
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      orientation: vertical;
+                      spacing: 8;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Connect an agent");
+                        xalign: 0;
+                      }
+
+                      Box {
+                        spacing: 8;
+
+                        Entry mcp_command {
+                          editable: false;
+                          hexpand: true;
+                          text: "claude mcp add inua -- inua mcp";
+                        }
+
+                        Button mcp_copy {
+                          styles ["outlined"]
+                          name: "mcp_copy";
+                          label:  _("Copy");
+                        }
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label:  _("Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog.");
+                        xalign: 0;
+                        wrap: true;
+                      }
                     }
                   }
                 }
-              }
 
-              // [PROFILES]: Go fills ai_profiles, a card for each.
-              Box {
-                styles ["section"]
-                orientation: vertical;
-
+                // [PROFILES]: Go fills ai_profiles, a row for each; a row
+                // clicked opens its settings in the panel beside the page.
                 Box {
-                  styles ["section-head"]
-                  spacing: 10;
+                  styles ["section"]
+                  orientation: vertical;
 
                   Box {
-                    styles ["mark"]
-                    valign: center;
+                    styles ["section-head"]
+                    spacing: 10;
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+
+                    Label {
+                      styles ["section-label"]
+                      use-markup: true;
+                      label:  _("<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>");
+                    }
+
+                    Label {
+                      styles ["section-meta"]
+                      label:  _("The models it can use; fallbacks answer when the first fails");
+                      hexpand: true;
+                      xalign: 0;
+                      ellipsize: end;
+                    }
                   }
 
-                  Label {
-                    styles ["section-label"]
-                    use-markup: true;
-                    label:  _("<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>");
-                  }
-
-                  Label {
-                    styles ["section-meta"]
-                    label:  _("The models it can use; fallbacks answer when the first fails");
-                    hexpand: true;
-                    xalign: 0;
-                    ellipsize: end;
-                  }
-                }
-
-                Box {
-                  styles ["section-body"]
-                  orientation: vertical;
-                  spacing: 10;
-
-                  Box ai_profiles {
+                  Box {
+                    styles ["section-body"]
                     orientation: vertical;
                     spacing: 10;
-                  }
 
-                  Box {
-                    spacing: 8;
-
-                    Button ai_add {
-                      styles ["outlined"]
-                      name: "ai_add";
-                      label:  _("Add Profile");
+                    Box ai_profiles {
+                      orientation: vertical;
+                      spacing: 6;
                     }
 
-                    // Where keys go: the keyring, or a file.
-                    Label ai_keys_note {
-                      styles ["sub"]
-                      hexpand: true;
-                      xalign: 0;
-                      wrap: true;
+                    Box {
+                      spacing: 8;
+
+                      Button ai_add {
+                        styles ["outlined"]
+                        name: "ai_add";
+                        label:  _("Add Profile");
+                      }
+
+                      // Where keys go: the keyring, or a file.
+                      Label ai_keys_note {
+                        styles ["sub"]
+                        hexpand: true;
+                        xalign: 0;
+                        wrap: true;
+                      }
                     }
                   }
+                }
+              }
+            };
+
+            // The head of the section scrolled under the top edge.
+            [overlay]
+            Box sticky_ai {
+              styles ["section-head", "sticky"]
+              spacing: 10;
+              valign: start;
+              visible: false;
+            }
+          }
+
+          Revealer ai_detail {
+            hexpand: false;
+            transition-type: slide_left;
+            transition-duration: 160;
+            reveal-child: false;
+
+            Box {
+              styles ["side-panel", "ai-panel"]
+              orientation: vertical;
+              width-request: 420;
+
+              Box {
+                styles ["side-head"]
+                spacing: 8;
+
+                Label ai_detail_head {
+                  styles ["section-label"]
+                  use-markup: true;
+                  hexpand: true;
+                  xalign: 0;
+                  ellipsize: end;
+                }
+
+                Button ai_detail_close {
+                  styles ["plain"]
+                  name: "ai_detail_close";
+                  icon-name: "window-close-symbolic";
+                  tooltip-text:  _("Close");
+                  valign: center;
+                }
+              }
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                // Filled from Go: the settings of each profile, one shown.
+                Stack ai_detail_stack {
+                  styles ["side-body"]
+                  vhomogeneous: false;
                 }
               }
             }
-          };
-
-          // The head of the section scrolled under the top edge.
-          [overlay]
-          Box sticky_ai {
-            styles ["section-head", "sticky"]
-            spacing: 10;
-            valign: start;
-            visible: false;
           }
         };
       }

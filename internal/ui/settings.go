@@ -32,8 +32,9 @@ import (
 // shell at once (applyConfig) and is saved to the settings file shortly
 // after the last one.
 type settings struct {
-	win  *gtk.ApplicationWindow // nil while closed
-	refs gtkx.Scope
+	win     *gtk.ApplicationWindow // nil while closed
+	overlay *gtk.Overlay           // over the window's page, for the Benchmark dialog; made on its first use
+	refs    gtkx.Scope
 
 	status, clockPreview  gtk.Label
 	pages                 gtk.Stack
@@ -286,7 +287,9 @@ func (s *shellUI) bindSettingsHandlers() {
 			return true
 		}
 		if keyval == keyEscape {
-			s.closeSettings()
+			if !s.closeBench() { // the dialog first
+				s.closeSettings()
+			}
 			return true
 		}
 		return false
@@ -494,12 +497,13 @@ func (s *shellUI) closeSettings() {
 		return
 	}
 	s.stopRecording()
+	s.closeBench()
 	if st.dirty {
 		s.saveSettings()
 	}
 	st.win.Destroy()
 	st.refs.Release()
-	st.win, st.swatches, st.entries, st.drops, st.sticky = nil, nil, nil, nil, nil
+	st.win, st.swatches, st.entries, st.drops, st.sticky, st.overlay = nil, nil, nil, nil, nil, nil
 }
 
 // buildSwatches adds one button per theme: its ground with its accent and

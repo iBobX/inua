@@ -2,7 +2,8 @@
 // tools (docs/feat/assistant.md). `inua-assistant --ask "…"` asks a
 // question; with the window already open, the question goes to it.
 // `inua-assistant --mcp` is inua as an MCP server (docs/feat/mcp.md);
-// `inua-assistant --answer` answers the games' questions on stdio.
+// `inua-assistant --answer` answers the games' questions on stdio;
+// `inua-assistant --benchmark PROFILE` runs a profile's benchmarks.
 package main
 
 import (
@@ -27,7 +28,14 @@ func main() {
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory")
 	mcpServer := flag.Bool("mcp", false, "be inua's MCP server on stdio, for an AI agent (inua mcp)")
 	answerer := flag.Bool("answer", false, "answer questions on stdio, a JSON object a line, without tools (for the games)")
+	bench := flag.String("benchmark", "", "run a profile's benchmarks, a JSON object a line (for Settings → AI)")
 	flag.Parse()
+	if *bench != "" {
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		code := runBenchmark(ctx, *bench)
+		stop()
+		os.Exit(code)
+	}
 	if *answerer {
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		code := runAnswer(ctx)

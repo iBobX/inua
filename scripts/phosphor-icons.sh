@@ -222,6 +222,7 @@ pass-paypal-logo                      paypal-logo
 pass-pinterest-logo                   pinterest-logo
 pass-reddit-logo                      reddit-logo
 pass-shield-check                     shield-check
+inua-benchmark                        gauge
 pass-shopping-cart                    shopping-cart
 pass-slack-logo                       slack-logo
 pass-spotify-logo                     spotify-logo
