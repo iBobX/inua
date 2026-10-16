@@ -46,6 +46,7 @@ func (p *fortune) hostLobby() {
 	p.net = fortunenet.NewHost(fortunenet.Options{
 		Settings: p.settings,
 		Local:    local,
+		Open:     p.open,
 		Run:      gtkx.Post,
 		Changed:  p.netChanged,
 		Events:   p.netEvents,

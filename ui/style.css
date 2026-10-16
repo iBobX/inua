@@ -1652,15 +1652,31 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .fortune-cash.loss { color: @danger; }
 /* Before a game: the cities, the choices, Start. */
 .fortune-setup { padding: 24px; }
-.fortune-setup-title { font-family: "Shippori Mincho", "Noto Serif CJK JP", serif; font-size: 28px; font-weight: 500; color: @t0; margin-bottom: 18px; }
+.fortune-setup-title { font-family: "Shippori Mincho", "Noto Serif CJK JP", serif; font-size: 28px; font-weight: 500; color: @t0; margin-bottom: 14px; }
 .settings button.fortune-city { padding: 8px; border: 1px solid alpha(@line, 0.9); border-radius: 6px; background: transparent; box-shadow: none; }
 .settings button.fortune-city:hover { background: alpha(@t0, 0.04); }
 .settings button.fortune-city:checked { border-color: @accent; background: alpha(@accent, 0.08); box-shadow: inset 0 0 0 1px @accent; }
 .fortune-city-name { margin-top: 6px; font-size: 15px; font-weight: 500; color: @t0; }
 .fortune-city-sub { font-size: 12px; color: @t2; }
 .fortune-options { margin: 26px 0 22px; }
+.fortune-setup-col { padding: 16px 20px 0; border: 1px solid alpha(@line, 0.9); border-radius: 8px; background: alpha(@surface, 0.55); }
+.fortune-setup-col .fortune-options { margin: 14px 0 16px; }
+.fortune-roster { margin-top: 2px; }
+.fortune-roster .fortune-player { padding: 10px 2px; }
+.fortune-roster dropdown.fortune-seat { min-width: 136px; }
+.fortune-roster .fortune-player.open { opacity: 0.55; }
+.fortune-map-info { margin: 8px 0 10px; }
+.fortune-city-pick { margin-top: 4px; font-size: 12.5px; color: @t1; }
+.settings .fortune-setup-col button.fortune-city { padding: 5px; }
+.fortune-menu-pop { padding: 4px; }
+.settings button.fortune-menu-item { min-width: 170px; padding: 7px 14px; font-weight: 400; }
+.settings button.fortune-menu-item label { margin: 0; }
+.fortune-compendium-section { margin-bottom: 18px; padding-bottom: 18px; }
+.fortune-compendium-section > .fortune-kicker { margin-bottom: 12px; }
+.fortune-compendium-rules { font-size: 13px; line-height: 1.5; color: @t1; }
 .fortune-option { font-size: 13px; color: @t1; }
 .settings button.fortune-start { min-height: 40px; padding: 0 24px; font-weight: 500; }
+.fortune-setup > button.fortune-start { margin-top: 16px; }
 
 /* A row of choices above a board: Minesweeper's sizes. */
 .game-choices { margin: 2px 0 12px; }

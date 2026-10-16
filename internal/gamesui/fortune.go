@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"image/color"
+	"math"
 	"math/bits"
 	"math/rand/v2"
 	"slices"
@@ -112,15 +113,38 @@ type fortune struct {
 	handBorn      map[int]time.Time
 	handCards     []*canvas
 
-	// The setup: a card for each city, the choices, Start.
-	cities      []*canvas
-	cards       map[int]*image // each city's card, drawn once at the screen's scale
-	cardAt      float64
-	picks       map[string][]*gtk.ToggleButton
-	start       *gtk.Button
-	onPick      func(gtk.ToggleButton)
-	onStart     func(gtk.Button)
-	onBuildRule func(gtk.Switch, bool) bool
+	// The setup: who plays (roster), the map chosen large (previewCv,
+	// drawn once into preview for previewCity at previewAt), its name and
+	// buildings, a card for each city, the choices, Start.
+	seats        [4]int // each seat's choice: seatHot, a computer player, seatOpen
+	seatDrops    [4]*gtk.DropDown
+	seatNames    [4]*gtk.Label
+	seatRows     [4]*gtk.Box
+	seatSubs     [4]*gtk.Label
+	fillingSeats bool
+	open         int // the seats open, on the network
+	onSeat       func(uintptr, uintptr, uintptr)
+
+	// The game menu (fortune_menu.go), in the header: its Restart item, and
+	// the page the compendium goes back to.
+	menu                *gtk.MenuButton
+	restartItem         *gtk.Button
+	backTo              string
+	onMenu, onBack      func(gtk.Button)
+	onMenuOpen          func(uintptr, uintptr, uintptr)
+	previewCv, piecesCv *canvas
+	preview             *image
+	previewCity         int
+	previewAt           float64
+	mapName, mapSub     *gtk.Label
+	cities              []*canvas
+	cards               map[int]*image // each city's card, drawn once at the screen's scale
+	cardAt              float64
+	picks               map[string][]*gtk.ToggleButton
+	start               *gtk.Button
+	onPick              func(gtk.ToggleButton)
+	onStart             func(gtk.Button)
+	onBuildRule         func(gtk.Switch, bool) bool
 
 	onPrimary, onSecondary, onBuild, onSell func(gtk.Button)
 	onCard                                  func(gtk.Button) // "buy:offer" or "play:card:target"
@@ -160,6 +184,7 @@ func (p *fortune) theme() string { return "washi" }
 
 func (p *fortune) setup(f *frame) {
 	p.f, p.settings, p.people, p.selected, p.hover = f, games.DefaultFortune, 1, -1, -1
+	p.seats = [4]int{seatHot, 1, 2, seatOpen} // you, Mika and Ren
 	p.snd = newSynth()
 	f.win.SetDefaultSize(1440, 900)
 	f.status.SetVisible(false) // the board and the panel say it all
@@ -175,6 +200,8 @@ func (p *fortune) setup(f *frame) {
 	p.pages.SetVexpand(true)
 	p.pages.AddNamed(&p.setupPage().Widget, "setup")
 	p.pages.AddNamed(&p.setupLobby().Widget, "lobby")
+	p.pages.AddNamed(&p.setupCompendium().Widget, "compendium")
+	p.setupMenu(f)
 
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 18)
 	p.cv = newCanvas(1000, 760, p.paint)
@@ -265,15 +292,18 @@ func (p *fortune) setup(f *frame) {
 	p.cv.area.AddController(&motion.EventController)
 }
 
-// setupPage is the page before a game: the cities, each a card with its
-// board's middle, then the rounds, the starting money, the rivals, and
-// Start.
+// setupPage is the page before a game, in two columns, as a strategy
+// game's new game is: on the left the players, who sits where (people at
+// this screen, computer rivals, seats open to the network), with the
+// choices that make them; on the right the map, the city chosen large
+// with its buildings, the four to pick from, and the game's rules; Start
+// at the foot.
 func (p *fortune) setupPage() *gtk.Box {
 	page := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	page.AddCssClass("fortune-setup")
 	page.SetHalign(gtk.AlignCenterValue)
 	page.SetValign(gtk.AlignCenterValue)
-	head := gtk.NewLabel(i18n.T("Where do you play?"))
+	head := gtk.NewLabel(i18n.T("New game"))
 	head.AddCssClass("fortune-setup-title")
 	head.SetXalign(0)
 	gtkx.Append(page, &head.Widget)
@@ -288,15 +318,11 @@ func (p *fortune) setupPage() *gtk.Box {
 		switch kind {
 		case "city":
 			p.settings.City = i
+			p.showMap()
 		case "rounds":
 			p.settings.Rounds = games.FortuneRounds[i]
 		case "cash":
 			p.settings.Cash = games.FortuneCash[i]
-		case "people":
-			p.people = i
-			p.fitRivals()
-		case "rivals":
-			p.settings.Rivals = i
 		case "dice":
 			p.settings.Dice = i + 1
 		}
@@ -314,49 +340,33 @@ func (p *fortune) setupPage() *gtk.Box {
 		p.picks[kind] = append(p.picks[kind], b)
 		return b
 	}
-
-	cities := gtk.NewBox(gtk.OrientationHorizontalValue, 14)
-	cities.SetHomogeneous(true)
-	for i, c := range games.FortuneCities {
-		card := gtk.NewBox(gtk.OrientationVerticalValue, 4)
-		cv := newCanvas(cityCardW, cityCardH, func(pn pen) { p.paintCard(pn, i) })
-		cv.area.SetSizeRequest(cityCardW, cityCardH)
-		cv.area.SetFocusable(false)
-		p.cities = append(p.cities, cv)
-		gtkx.Append(card, &cv.area.Widget)
-		// Its buildings: houses, a hotel, a tree.
-		pieces := newCanvas(cityCardW, cityPiecesH, func(pn pen) { paintCityPieces(pn, i) })
-		pieces.area.SetSizeRequest(cityCardW, cityPiecesH)
-		pieces.area.SetFocusable(false)
-		p.cities = append(p.cities, pieces)
-		gtkx.Append(card, &pieces.area.Widget)
-		name := gtk.NewLabel(i18n.T(c.Name))
-		if c.Local != c.Name {
-			name.SetText(c.Local + "  " + i18n.T(c.Name))
-		}
-		name.AddCssClass("fortune-city-name")
-		name.SetXalign(0)
-		gtkx.Append(card, &name.Widget)
-		art := cityArts[i]
-		sub := gtk.NewLabel(i18n.Tf("%s and %s", i18n.T(art.houseWord), i18n.T(art.hotelWord)))
-		sub.AddCssClass("fortune-city-sub")
-		sub.SetXalign(0)
-		gtkx.Append(card, &sub.Widget)
-		b := pick("city", i, i == p.settings.City, &card.Widget)
-		b.AddCssClass("fortune-city")
-		gtkx.Append(cities, &b.Widget)
+	column := func(kicker string) *gtk.Box {
+		col := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+		col.AddCssClass("fortune-setup-col")
+		k := gtk.NewLabel(kicker)
+		k.AddCssClass("kicker")
+		k.AddCssClass("fortune-kicker")
+		k.SetXalign(0)
+		gtkx.Append(col, &k.Widget)
+		return col
 	}
-	gtkx.Append(page, &cities.Widget)
-
-	opts := gtk.NewGrid()
-	opts.AddCssClass("fortune-options")
-	opts.SetRowSpacing(10)
-	opts.SetColumnSpacing(18)
-	row := func(n int, label string, kind string, names []string, on int) {
-		l := gtk.NewLabel(label)
-		l.AddCssClass("fortune-option")
-		l.SetXalign(0)
-		opts.Attach(&l.Widget, 0, int32(n), 1, 1)
+	options := func(col *gtk.Box) func(label string, control *gtk.Widget) {
+		grid := gtk.NewGrid()
+		grid.AddCssClass("fortune-options")
+		grid.SetRowSpacing(10)
+		grid.SetColumnSpacing(18)
+		gtkx.Append(col, &grid.Widget)
+		n := int32(0)
+		return func(label string, control *gtk.Widget) {
+			l := gtk.NewLabel(label)
+			l.AddCssClass("fortune-option")
+			l.SetXalign(0)
+			grid.Attach(&l.Widget, 0, n, 1, 1)
+			grid.Attach(control, 1, n, 1, 1)
+			n++
+		}
+	}
+	segments := func(kind string, names []string, on int) *gtk.Widget {
 		seg := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 		seg.AddCssClass("segmented")
 		seg.AddCssClass("linked")
@@ -364,8 +374,125 @@ func (p *fortune) setupPage() *gtk.Box {
 			lb := gtk.NewLabel(name)
 			gtkx.Append(seg, &pick(kind, i, i == on, &lb.Widget).Widget)
 		}
-		opts.Attach(&seg.Widget, 1, int32(n), 1, 1)
+		return &seg.Widget
 	}
+	toggle := func(on bool, handler *func(gtk.Switch, bool) bool) *gtk.Widget {
+		sw := gtk.NewSwitch()
+		sw.SetActive(on)
+		sw.SetHalign(gtk.AlignStartValue)
+		sw.SetValign(gtk.AlignCenterValue)
+		sw.ConnectStateSet(handler)
+		return &sw.Widget
+	}
+
+	cols := gtk.NewBox(gtk.OrientationHorizontalValue, 24)
+
+	// The players: a seat to a row, each a person at this screen, a
+	// computer player, or open; then the network.
+	left := column(i18n.T("PLAYERS"))
+	left.SetSizeRequest(400, -1)
+	roster := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	roster.AddCssClass("fortune-roster")
+	choices := []string{i18n.T("Hot seat")}
+	for _, r := range games.Rivals {
+		choices = append(choices, i18n.T(r.Name))
+	}
+	choices = append(choices, i18n.T("Open seat"))
+	p.onSeat = func(ptr, _, _ uintptr) {
+		for i, d := range p.seatDrops {
+			if d != nil && d.GoPointer() == ptr && !p.fillingSeats {
+				p.setSeat(i, int(d.GetSelected()))
+			}
+		}
+	}
+	for i := range p.seats {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 14)
+		row.AddCssClass("fortune-player")
+		d := gtk.NewDropDownFromStrings(choices)
+		d.AddCssClass("fortune-seat")
+		d.SetSelected(uint32(p.seats[i]))
+		d.SetValign(gtk.AlignCenterValue)
+		gtkx.ConnectNotify(d, "selected", &p.onSeat)
+		p.seatDrops[i] = d
+		gtkx.Append(row, &d.Widget)
+		who := gtk.NewBox(gtk.OrientationVerticalValue, 1)
+		who.SetHexpand(true)
+		who.SetValign(gtk.AlignCenterValue)
+		p.seatNames[i] = gtk.NewLabel("")
+		p.seatNames[i].SetXalign(0)
+		gtkx.Append(who, &p.seatNames[i].Widget)
+		p.seatSubs[i] = gtk.NewLabel("")
+		p.seatSubs[i].AddCssClass("fortune-city-sub")
+		p.seatSubs[i].SetXalign(0)
+		p.seatSubs[i].SetEllipsize(3) // end
+		gtkx.Append(who, &p.seatSubs[i].Widget)
+		gtkx.Append(row, &who.Widget)
+		p.seatRows[i] = row
+		gtkx.Append(roster, &row.Widget)
+	}
+	gtkx.Append(left, &roster.Widget)
+	spacer := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	spacer.SetVexpand(true)
+	gtkx.Append(left, &spacer.Widget)
+	players := options(left)
+	p.onHostRule = func(_ gtk.Switch, on bool) bool {
+		p.hostOn = on
+		p.fitSeats()
+		return false
+	}
+	players(i18n.T("On the network"), toggle(p.hostOn, &p.onHostRule))
+	gtkx.Append(cols, &left.Widget)
+
+	// The map: the city chosen, large, with its buildings; the four; the
+	// rules.
+	right := column(i18n.T("MAP"))
+	p.previewCv = newCanvas(cityCardW*previewK, cityCardH*previewK, p.paintPreview)
+	p.previewCv.area.SetSizeRequest(int32(cityCardW*previewK), int32(cityCardH*previewK))
+	p.previewCv.area.SetFocusable(false)
+	p.cities = append(p.cities, p.previewCv)
+	gtkx.Append(right, &p.previewCv.area.Widget)
+	info := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	info.AddCssClass("fortune-map-info")
+	names := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	names.SetHexpand(true)
+	names.SetValign(gtk.AlignCenterValue)
+	p.mapName = gtk.NewLabel("")
+	p.mapName.AddCssClass("fortune-city-name")
+	p.mapName.SetXalign(0)
+	gtkx.Append(names, &p.mapName.Widget)
+	p.mapSub = gtk.NewLabel("")
+	p.mapSub.AddCssClass("fortune-city-sub")
+	p.mapSub.SetXalign(0)
+	gtkx.Append(names, &p.mapSub.Widget)
+	gtkx.Append(info, &names.Widget)
+	p.piecesCv = newCanvas(cityCardW, cityPiecesH, func(pn pen) { paintCityPieces(pn, p.settings.City) })
+	p.piecesCv.area.SetSizeRequest(int32(cityCardW), int32(cityPiecesH))
+	p.piecesCv.area.SetFocusable(false)
+	p.cities = append(p.cities, p.piecesCv)
+	gtkx.Append(info, &p.piecesCv.area.Widget)
+	gtkx.Append(right, &info.Widget)
+
+	cities := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	cities.SetHomogeneous(true)
+	for i, c := range games.FortuneCities {
+		card := gtk.NewBox(gtk.OrientationVerticalValue, 4)
+		cv := newCanvas(cityCardW/2, cityCardH/2, func(pn pen) {
+			pn.Scale(0.5, 0.5)
+			p.paintCard(pn, i)
+		})
+		cv.area.SetSizeRequest(int32(cityCardW/2), int32(cityCardH/2))
+		cv.area.SetFocusable(false)
+		p.cities = append(p.cities, cv)
+		gtkx.Append(card, &cv.area.Widget)
+		name := gtk.NewLabel(i18n.T(c.Name))
+		name.AddCssClass("fortune-city-pick")
+		gtkx.Append(card, &name.Widget)
+		b := pick("city", i, i == p.settings.City, &card.Widget)
+		b.AddCssClass("fortune-city")
+		gtkx.Append(cities, &b.Widget)
+	}
+	gtkx.Append(right, &cities.Widget)
+
 	var rounds, cash []string
 	for _, r := range games.FortuneRounds {
 		rounds = append(rounds, fmt.Sprint(r))
@@ -373,89 +500,176 @@ func (p *fortune) setupPage() *gtk.Box {
 	for _, c := range games.FortuneCash {
 		cash = append(cash, "$"+thousands(c))
 	}
-	row(0, i18n.T("Rounds"), "rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds))
-	row(1, i18n.T("Starting money"), "cash", cash, slices.Index(games.FortuneCash, p.settings.Cash))
-	row(2, i18n.T("People at this screen"), "people", []string{"0", "1", "2", "3", "4"}, p.people)
-	row(3, i18n.T("Rivals"), "rivals", []string{i18n.T("None"), i18n.T("Mika"), i18n.T("Mika, Ren"), i18n.T("Mika, Ren, Sol")}, p.settings.Rivals)
-	p.fitRivals()
-	row(4, i18n.T("Dice"), "dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0))
-	l := gtk.NewLabel(i18n.T("Build the day you buy"))
-	l.AddCssClass("fortune-option")
-	l.SetXalign(0)
-	opts.Attach(&l.Widget, 0, 5, 1, 1)
-	build := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-	sw := gtk.NewSwitch()
-	sw.SetActive(p.settings.BuildOnBuy)
-	sw.SetValign(gtk.AlignCenterValue)
+	rules := options(right)
+	rules(i18n.T("Rounds"), segments("rounds", rounds, slices.Index(games.FortuneRounds, p.settings.Rounds)))
+	rules(i18n.T("Starting money"), segments("cash", cash, slices.Index(games.FortuneCash, p.settings.Cash)))
+	rules(i18n.T("Dice"), segments("dice", []string{i18n.T("One die"), i18n.T("Two dice")}, max(1, p.settings.Dice)-1+boolInt(p.settings.Dice == 0)))
 	p.onBuildRule = func(_ gtk.Switch, on bool) bool {
 		p.settings.BuildOnBuy = on
 		return false
 	}
-	sw.ConnectStateSet(&p.onBuildRule)
-	gtkx.Append(build, &sw.Widget)
-	note := gtk.NewLabel(i18n.T("A street you buy may go up a level that same turn"))
-	note.AddCssClass("fortune-city-sub")
-	gtkx.Append(build, &note.Widget)
-	opts.Attach(&build.Widget, 1, 5, 1, 1)
-	l = gtk.NewLabel(i18n.T("On the network"))
-	l.AddCssClass("fortune-option")
-	l.SetXalign(0)
-	opts.Attach(&l.Widget, 0, 6, 1, 1)
-	host := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-	sw = gtk.NewSwitch()
-	sw.SetActive(p.hostOn)
-	sw.SetValign(gtk.AlignCenterValue)
-	p.onHostRule = func(_ gtk.Switch, on bool) bool {
-		p.hostOn = on
-		p.fitRivals()
-		return false
-	}
-	sw.ConnectStateSet(&p.onHostRule)
-	gtkx.Append(host, &sw.Widget)
-	note = gtk.NewLabel(i18n.T("Others on this network join from a browser; you may play or only host"))
-	note.AddCssClass("fortune-city-sub")
-	gtkx.Append(host, &note.Widget)
-	opts.Attach(&host.Widget, 1, 6, 1, 1)
-	gtkx.Append(page, &opts.Widget)
+	rules(i18n.T("Build the day you buy"), toggle(p.settings.BuildOnBuy, &p.onBuildRule))
+	gtkx.Append(cols, &right.Widget)
+	gtkx.Append(page, &cols.Widget)
 
 	p.onStart = func(gtk.Button) { p.begin() }
 	p.start = button(p.startLabel(), &p.onStart)
 	p.start.RemoveCssClass("outlined")
 	p.start.AddCssClass("primary")
 	p.start.AddCssClass("fortune-start")
-	p.start.SetHalign(gtk.AlignStartValue)
+	p.start.SetHalign(gtk.AlignEndValue)
 	gtkx.Append(page, &p.start.Widget)
+	p.fitSeats()
+	p.showMap()
 	return page
 }
 
-// fitRivals offers the computer players that make two to four players
-// with the people, and picks the nearest of them if the one picked does
-// not; on the network, visitors may make up the rest, and the people at
-// the screen may be none.
-func (p *fortune) fitRivals() {
-	people, rivals := p.picks["people"], p.picks["rivals"]
-	if len(people) == 0 || len(rivals) == 0 {
+// showMap shows the city chosen in the map column: large, its name, its
+// buildings.
+func (p *fortune) showMap() {
+	c := games.FortuneCities[p.settings.City]
+	name := i18n.T(c.Name)
+	if c.Local != c.Name {
+		name = c.Local + "  " + name
+	}
+	p.mapName.SetText(name)
+	art := cityArts[p.settings.City]
+	p.mapSub.SetText(i18n.Tf("%s and %s", i18n.T(art.houseWord), i18n.T(art.hotelWord)))
+	p.previewCv.redraw()
+	p.piecesCv.redraw()
+}
+
+// The seats' choices: a person at this screen (a hot seat), one of the
+// computer players (games.Rivals, by 1 + its index), an open seat.
+const (
+	seatHot  = 0
+	seatOpen = 4
+)
+
+// setSeat makes seat i choice c; a computer player another seat has
+// moves that seat to the next one free, or opens it.
+func (p *fortune) setSeat(i, c int) {
+	p.seats[i] = c
+	if c != seatHot && c != seatOpen {
+		for j := range p.seats {
+			if j != i && p.seats[j] == c {
+				p.seats[j] = seatOpen
+				for k := 1; k <= len(games.Rivals); k++ {
+					if !slices.Contains(p.seats[:], k) {
+						p.seats[j] = k
+						break
+					}
+				}
+			}
+		}
+	}
+	p.fitSeats()
+}
+
+// fitSeats takes the game's players from the seats: the people, the
+// computer players by name, the seats open on the network; names each
+// row and dots it in the colour its player will have (people first, then
+// visitors, then the computer players); and lets Start start a game that
+// can be played.
+func (p *fortune) fitSeats() {
+	if p.start == nil {
 		return
 	}
-	people[0].SetSensitive(p.hostOn)
-	if p.people == 0 && !p.hostOn {
-		people[1].SetActive(true) // its toggle fits the rivals again
-		return
+	p.fillingSeats = true
+	defer func() { p.fillingSeats = false }()
+	p.people, p.open = 0, 0
+	var rivals []string
+	for _, c := range p.seats {
+		switch c {
+		case seatHot:
+			p.people++
+		case seatOpen:
+			p.open++
+		default:
+			rivals = append(rivals, games.Rivals[c-1].Name)
+		}
 	}
-	least := 2 - p.people
+	p.settings.Rivals, p.settings.RivalNames = len(rivals), rivals
+	open := 0
 	if p.hostOn {
-		least = 0
+		open = p.open
 	}
-	fit := max(least, min(p.settings.Rivals, 4-p.people))
-	for k, b := range rivals {
-		b.SetSensitive(k >= least && p.people+k <= 4)
+	hot, visitor, cpu := 0, 0, 0
+	for i, c := range p.seats {
+		p.seatDrops[i].SetSelected(uint32(c))
+		var name, sub, about string
+		var player int
+		switch c {
+		case seatHot:
+			player = hot
+			hot++
+			sub = i18n.T("at this screen")
+			switch {
+			case p.people > 1:
+				name = i18n.Tf("Player %d", hot)
+			case p.hostOn:
+				name = hostName()
+			default:
+				name = i18n.T("You")
+			}
+		case seatOpen:
+			player = p.people + visitor
+			visitor++
+			name = i18n.T("Open seat")
+			sub = i18n.T("empty: no one plays here")
+			if p.hostOn {
+				sub = i18n.T("for a visitor in a browser")
+			}
+		default:
+			player = p.people + open + cpu
+			cpu++
+			r := games.Rivals[c-1]
+			name, sub, about = i18n.T(r.Name), i18n.T(r.Title), i18n.T(r.About)
+		}
+		p.seatSubs[i].SetText(sub)
+		p.seatRows[i].SetTooltipText(about)
+		markup := html.EscapeString(name)
+		if c != seatOpen || p.hostOn {
+			col := p.playerColor(min(player, 3))
+			markup = fmt.Sprintf(`<span foreground="#%02x%02x%02x">●</span>  %s`, col.R, col.G, col.B, markup)
+		} else {
+			markup = "<span alpha=\"1\">●</span>  " + markup // no one sits there
+		}
+		p.seatNames[i].SetMarkup(markup)
+		if c == seatOpen && !p.hostOn {
+			p.seatRows[i].AddCssClass("open")
+		} else {
+			p.seatRows[i].RemoveCssClass("open")
+		}
 	}
-	if fit != p.settings.Rivals {
-		rivals[fit].SetActive(true) // its toggle sets the settings
+	can := p.people >= 1 && p.people+len(rivals) >= 2
+	if p.hostOn {
+		can = p.people+open >= 1 && p.people+len(rivals)+open >= 2
 	}
-	if p.start != nil {
-		p.start.SetLabel(p.startLabel())
+	p.start.SetSensitive(can)
+	p.start.SetLabel(p.startLabel())
+}
+
+// previewK is how much larger than its card the map column shows a city.
+const previewK = 1.6
+
+// paintPreview draws the city chosen, previewK times a card's size, from
+// an image drawn once for it at the screen's scale.
+func (p *fortune) paintPreview(pn pen) {
+	scale := pn.DeviceScale()
+	if p.preview == nil || p.previewCity != p.settings.City || math.Abs(scale-p.previewAt) > 0.01 {
+		if p.preview != nil {
+			p.preview.Free()
+		}
+		p.preview = newImage(int(math.Ceil(cityCardW*previewK*scale)), int(math.Ceil(cityCardH*previewK*scale)))
+		p.preview.Draw(func(q pen) {
+			q.Scale(previewK*scale, previewK*scale)
+			q.Round()
+			paintCityCard(q, p.settings.City)
+		})
+		p.previewCity, p.previewAt = p.settings.City, scale
 	}
+	pn.Blit(p.preview, 1/scale, false)
 }
 
 // startLabel is what Start says: where the game is, or that it opens to

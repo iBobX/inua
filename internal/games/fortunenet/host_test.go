@@ -426,3 +426,46 @@ func TestFortuneNetArt(t *testing.T) {
 		}
 	}
 }
+
+// Open seats cap the visitors: one more joins to watch.
+func TestFortuneNetOpenSeats(t *testing.T) {
+	x := &testHost{}
+	x.Host = NewHost(Options{
+		Settings: games.FortuneSettings{Rivals: 0},
+		Local:    []string{"Ann"},
+		Open:     1,
+		Run:      func(f func()) { x.mu.Lock(); defer x.mu.Unlock(); f() },
+	})
+	if err := x.Serve("127.0.0.1:0"); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { x.do(func() { x.Close() }) })
+	_, ben := x.join(t, "Ben", "")
+	_, cy := x.join(t, "Cy", "")
+	if ben.Seat != 1 || cy.Seat != -1 {
+		t.Errorf("Ben %d, Cy %d", ben.Seat, cy.Seat)
+	}
+}
+
+// Restarting: a new game, the visitor in the same seat, the computer
+// players asked for again.
+func TestFortuneNetRestart(t *testing.T) {
+	x := newTestHost(t, []string{"Ann"}, 1)
+	ben, hello := x.join(t, "Ben", "")
+	x.do(func() { x.Start() })
+	var start startMsg
+	ben.expect("start", &start)
+	x.do(func() {
+		x.Act(0, Action{Do: "roll"})
+		if !x.Restart() {
+			t.Fatal("not restarted")
+		}
+		if len(x.Seats) != 3 || x.Seats[1].Name != "Ben" || x.Seats[2].Kind != Computer || x.Game.Round != 1 || x.Game.Turn != 0 {
+			t.Fatalf("seats %d, round %d, turn %d", len(x.Seats), x.Game.Round, x.Game.Turn)
+		}
+	})
+	ben.expect("start", &start)
+	if start.You != hello.Seat || len(start.Players) != 3 {
+		t.Fatalf("restarted as %d with %d players", start.You, len(start.Players))
+	}
+}

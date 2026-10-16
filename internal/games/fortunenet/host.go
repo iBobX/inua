@@ -14,6 +14,7 @@ package fortunenet
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"slices"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -52,6 +53,9 @@ type Options struct {
 	// Local are the names of the people at the host's screen, playing
 	// first; none when the host only hosts.
 	Local []string
+	// Open is how many seats are open to visitors: 0 for as many as there
+	// is room for.
+	Open int
 	// Run runs f where the Host lives, one f at a time.
 	Run func(f func())
 	// Changed tells the host's screen that the lobby or the game changed;
@@ -125,12 +129,23 @@ func NewHost(opt Options) *Host {
 }
 
 // Room is how many more visitors the lobby takes: up to four players
-// with the computer players asked for, while the game has not started.
+// with the computer players asked for, and the seats open (Options.Open),
+// while the game has not started.
 func (h *Host) Room() int {
 	if h.Game != nil {
 		return 0
 	}
-	return max(0, MaxPlayers-len(h.Seats)-h.opt.Settings.Rivals)
+	room := MaxPlayers - len(h.Seats) - h.opt.Settings.Rivals
+	if h.opt.Open > 0 {
+		visitors := 0
+		for _, s := range h.Seats {
+			if s.Kind == Visitor {
+				visitors++
+			}
+		}
+		room = min(room, h.opt.Open-visitors)
+	}
+	return max(0, room)
 }
 
 // CanStart reports whether the game can start: one person at least, two
@@ -169,6 +184,33 @@ func (h *Host) Start() bool {
 	}
 	h.Flush()
 	return true
+}
+
+// Restart starts the game again with the same people and visitors, and
+// the computer players asked for; those sent away stay away. Every
+// browser starts over in its seat. False before a game.
+func (h *Host) Restart() bool {
+	if h.Game == nil {
+		return false
+	}
+	if h.cpu != nil {
+		h.cpu.Stop()
+		h.cpu = nil
+	}
+	old := h.Seats
+	h.Seats = nil
+	for _, s := range old {
+		if s.Kind != Computer && !s.Kicked {
+			h.Seats = append(h.Seats, s)
+		}
+	}
+	for c := range h.clients { // their seats, where they are now
+		if c.seat >= 0 && c.seat < len(old) {
+			c.seat = slices.Index(h.Seats, old[c.seat])
+		}
+	}
+	h.Game = nil
+	return h.Start()
 }
 
 // Kick sends a visitor away: out of the lobby, or, in a game, their seat

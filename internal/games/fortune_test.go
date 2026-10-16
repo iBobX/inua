@@ -448,3 +448,45 @@ func TestFortuneOverWithoutPeople(t *testing.T) {
 		t.Fatalf("phase %v winner %d", g.Phase, g.Winner)
 	}
 }
+
+// The computer players take the names asked for, Mika, Ren and Sol
+// for those not named.
+func TestFortuneRivalNames(t *testing.T) {
+	g := NewFortune(FortuneSettings{Humans: []string{"Ann"}, Rivals: 3, RivalNames: []string{"Sol", "Mika"}}, 1)
+	var names []string
+	for _, p := range g.Players[1:] {
+		names = append(names, p.Name)
+	}
+	if strings.Join(names, " ") != "Sol Mika Sol" {
+		t.Errorf("names %v", names)
+	}
+}
+
+// The computer players play their characters: Mika keeps cash in hand and
+// leaves a dear street of a group not begun, Ren buys it; with cash short
+// of Mika's cushion for a lone street, Sol still builds there.
+func TestFortuneRivalCharacters(t *testing.T) {
+	g := NewFortune(FortuneSettings{Humans: []string{"Ann"}, Rivals: 3, RivalNames: []string{"Mika", "Ren", "Sol"}}, 1)
+	mika, ren, sol := 1, 2, 3
+	if g.Players[mika].Rival != 0 || g.Players[ren].Rival != 1 || g.Players[sol].Rival != 2 {
+		t.Fatalf("characters %d %d %d", g.Players[mika].Rival, g.Players[ren].Rival, g.Players[sol].Rival)
+	}
+	dear := 79 // $400, its group not begun
+	for _, pi := range []int{mika, ren} {
+		g.Players[pi].Cash = 1000
+	}
+	if g.cpuWants(mika, dear) || !g.cpuWants(ren, dear) {
+		t.Errorf("a $400 street: Mika %v, Ren %v", g.cpuWants(mika, dear), g.cpuWants(ren, dear))
+	}
+	for _, pi := range []int{mika, sol} {
+		g.Owner[dear], g.Houses[dear] = pi, 0
+		g.CanRaise = [len(Board)]bool{}
+		g.CanRaise[dear] = true
+		g.Turn, g.Phase = pi, PhaseEnd
+		g.Players[pi].Cash = HouseCost(dear) + 300 // over Sol's cushion, under Mika's
+		g.cpuBuild(pi)
+		if built := g.Houses[dear] > 0; built != (pi == sol) {
+			t.Errorf("player %d built on a lone street: %v", pi, built)
+		}
+	}
+}

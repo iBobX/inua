@@ -152,7 +152,6 @@ const (
 	StartPay   = 400 // for passing Start: a lap is long
 	Bail       = 50  // the way out of jail
 	Hotel      = 5   // buildings on a street: four houses, then a hotel
-	cpuReserve = 150
 )
 
 // HouseCost is the price of one building on a street: a house, or the
@@ -179,6 +178,7 @@ type FortunePlayer struct {
 	RentFree  bool       // a Free Rent card waits for the next rent
 	Turtle    int        // rolls left that walk one square
 	Asleep    bool       // misses the next turn
+	Rival     int        // a computer player's character: its index in Rivals
 }
 
 // Computer reports whether the computer plays this player's turns.
@@ -304,8 +304,6 @@ type Fortune struct {
 	rng    *rand.Rand
 }
 
-var cpuNames = []string{i18n.M("Mika"), i18n.M("Ren"), i18n.M("Sol")}
-
 // NewFortune starts a game as s says; what s leaves at zero is
 // DefaultFortune's. The people play first, then the computer players.
 func NewFortune(s FortuneSettings, seed uint64) *Fortune {
@@ -316,7 +314,7 @@ func NewFortune(s FortuneSettings, seed uint64) *Fortune {
 	} else {
 		rivals = s.Rivals // none is none, with people enough
 	}
-	rivals = max(0, min(rivals, 4-len(humans), len(cpuNames)))
+	rivals = max(0, min(rivals, 4-len(humans), len(Rivals)))
 	if len(humans)+rivals < 2 {
 		rivals = 1
 	}
@@ -329,7 +327,11 @@ func NewFortune(s FortuneSettings, seed uint64) *Fortune {
 		g.Players = append(g.Players, FortunePlayer{Name: cmp.Or(name, i18n.Tf("Player %d", i+1)), Cash: cash})
 	}
 	for i := range rivals {
-		g.Players = append(g.Players, FortunePlayer{Name: cpuNames[i], CPU: true, Cash: cash})
+		name := Rivals[i].Name
+		if i < len(s.RivalNames) && s.RivalNames[i] != "" {
+			name = s.RivalNames[i]
+		}
+		g.Players = append(g.Players, FortunePlayer{Name: name, CPU: true, Cash: cash, Rival: RivalNamed(name)})
 	}
 	for i := range g.Owner {
 		g.Owner[i] = -1
@@ -1037,7 +1039,7 @@ func (g *Fortune) PlayCPU() bool {
 			break // a card walked it
 		}
 		p := &g.Players[pi]
-		if p.InJail && p.Cash >= Bail+400 {
+		if p.InJail && p.Cash >= Bail+g.rival(pi).BailAt {
 			g.PayBail()
 		}
 		g.roll(g.throw())
@@ -1103,15 +1105,18 @@ func (g *Fortune) SetAway(player int, away bool) {
 // cpuWants: buy when the cash after it stays above a reserve, or when
 // the street adds to a group it has started.
 func (g *Fortune) cpuWants(pi, sq int) bool {
-	p := g.Players[pi]
+	p, r := g.Players[pi], g.rival(pi)
 	if Board[sq].Kind == Street {
 		for _, o := range Group(Board[sq].Group) {
 			if o != sq && g.Owner[o] == pi {
-				return p.Cash >= Board[sq].Price
+				return p.Cash-Board[sq].Price >= r.Reserve/3 // a group begun: worth stretching for
 			}
 		}
+		if r.BuyCheap > 0 && Board[sq].Price > r.BuyCheap {
+			return false
+		}
 	}
-	return p.Cash-Board[sq].Price >= cpuReserve
+	return p.Cash-Board[sq].Price >= r.Reserve
 }
 
 // cpuBuild raises the streets it passed this turn a level each, keeping
@@ -1133,12 +1138,13 @@ func (g *Fortune) cpuBuild(pi int) {
 	}
 	slices.SortFunc(sqs, func(a, b int) int { return score(a) - score(b) })
 	g.Phase = PhaseEnd
+	r := g.rival(pi)
 	for _, sq := range sqs {
-		reserve := cpuReserve + 100
+		reserve := r.BuildReserve
 		if !g.HasGroup(pi, Board[sq].Group) {
-			reserve = cpuReserve + 300
+			reserve = r.LoneReserve
 		}
-		if g.Players[pi].Cash-HouseCost(sq) < reserve {
+		if reserve < 0 || g.Players[pi].Cash-HouseCost(sq) < reserve {
 			continue
 		}
 		g.Build(sq)

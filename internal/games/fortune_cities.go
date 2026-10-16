@@ -95,7 +95,10 @@ type FortuneSettings struct {
 	// Humans are the people's names, one to four, playing in this order
 	// before the computer players; none is one person, "You". With
 	// people named, Rivals 0 is no computer player, not the default.
-	Humans                     []string
+	Humans []string
+	// RivalNames name the computer players, in order: Mika, Ren and Sol
+	// when none, or for those not named.
+	RivalNames                 []string
 	Rivals, Rounds, Cash, City int
 	Dice                       int
 	BuildOnBuy                 bool
@@ -103,12 +106,12 @@ type FortuneSettings struct {
 
 // The choices a game offers: rounds, starting cash.
 var (
-	FortuneRounds = []int{30, 45, 60, 90}
-	FortuneCash   = []int{1000, 1500, 2000, 3000}
+	FortuneRounds = []int{30, 60, 90, 120}
+	FortuneCash   = []int{1000, 2000, 3000, 5000}
 )
 
-// DefaultFortune is a game against two, 45 rounds, $1,500 each, in Tokyo.
-var DefaultFortune = FortuneSettings{Rivals: 2, Rounds: 45, Cash: 1500}
+// DefaultFortune is a game against two, 60 rounds, $2,000 each, in Tokyo.
+var DefaultFortune = FortuneSettings{Rivals: 2, Rounds: 60, Cash: 2000}
 
 // SquareName is a square's name in the game's city.
 func (g *Fortune) SquareName(sq int) string { return i18n.T(FortuneCities[g.City].SquareName(sq)) }

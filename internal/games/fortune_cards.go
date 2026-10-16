@@ -321,12 +321,13 @@ func (g *Fortune) play(i, target int) {
 // cpuShop buys what the computer player wants from the shop, keeping a
 // reserve: the cards it plays best first, two at most.
 func (g *Fortune) cpuShop(pi int) {
-	rank := []CardKind{CardRequisition, CardDice, CardPermit, CardDemolish, CardFreeRent, CardSleep, CardTurtle, CardAudit, CardRob, CardJailPass}
-	for bought := 0; bought < 2; {
+	rv := g.rival(pi)
+	rank := rv.Likes
+	for bought := 0; bought < rv.Cards; {
 		best := -1
 		for i, c := range g.Offer {
 			r := slices.Index(rank, c)
-			if r >= 0 && g.Players[pi].Cash-Cards[c].Price >= cpuReserve+250 && (best < 0 || r < slices.Index(rank, g.Offer[best])) {
+			if r >= 0 && g.Players[pi].Cash-Cards[c].Price >= rv.CardReserve && (best < 0 || r < slices.Index(rank, g.Offer[best])) {
 				best = i
 			}
 		}
@@ -357,7 +358,7 @@ func (g *Fortune) cpuCards(pi int, before bool) {
 // cpuTarget is what the computer player would play a card on now, and
 // whether it would.
 func (g *Fortune) cpuTarget(pi int, c CardKind, before bool) (int, bool) {
-	p := g.Players[pi]
+	p, rv := g.Players[pi], g.rival(pi)
 	// The leading rival, by worth, and the one with the most cash.
 	lead, rich := -1, -1
 	for t, q := range g.Players {
@@ -384,7 +385,7 @@ func (g *Fortune) cpuTarget(pi int, c CardKind, before bool) (int, bool) {
 			return 0, false
 		}
 		steps, gain := g.cpuBestSteps(pi)
-		return steps, gain >= 120
+		return steps, gain >= rv.DiceGain
 	case CardRequisition:
 		o := g.Owner[p.At]
 		if !IsProperty(p.At) || o < 0 || o == pi {
@@ -397,7 +398,7 @@ func (g *Fortune) cpuTarget(pi int, c CardKind, before bool) (int, bool) {
 				mine = mine || g.Owner[sq] == pi
 			}
 		}
-		return 0, p.Cash-cost >= cpuReserve && (mine || cost*3 <= p.Cash)
+		return 0, p.Cash-cost >= rv.Reserve && (mine || cost*3 <= p.Cash)
 	case CardRob:
 		most := -1
 		for t, q := range g.Players {
@@ -427,10 +428,16 @@ func (g *Fortune) cpuTarget(pi int, c CardKind, before bool) (int, bool) {
 		}
 		return best, best >= 0
 	case CardTurtle:
-		return lead, before && g.Players[lead].Turtle == 0 && g.Worth(lead) > g.Worth(pi)
+		return lead, before && g.Players[lead].Turtle == 0 && (rv.Mean || g.Worth(lead) > g.Worth(pi))
 	case CardSleep:
+		if rv.Mean { // the leader, as soon as there is one
+			return lead, g.Worth(lead) >= g.Worth(pi)
+		}
 		return lead, g.Worth(lead) > g.Worth(pi)*11/10
 	case CardAudit:
+		if rv.Mean {
+			return rich, g.Players[rich].Cash >= 300
+		}
 		return rich, g.Players[rich].Cash >= 600
 	case CardEqual:
 		total, n := 0, 0
@@ -459,8 +466,6 @@ func (g *Fortune) cpuBestSteps(pi int) (int, int) {
 				return 0
 			case o >= 0:
 				return -g.Rent(sq)
-			case p.Cash-Board[sq].Price < cpuReserve:
-				return 0
 			case g.cpuWants(pi, sq):
 				return Board[sq].Price / 2
 			}
