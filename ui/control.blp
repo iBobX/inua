@@ -65,7 +65,7 @@ ApplicationWindow control {
           ToggleButton power {
             styles ["plain"]
             icon-name: "system-shutdown-symbolic";
-            tooltip-text:  _("Suspend, restart, shut down, log out");
+            tooltip-text:  _("Suspend, hibernate, restart, shut down, log out");
           }
         }
 
@@ -94,6 +94,24 @@ ApplicationWindow control {
 
                 Label suspend_label {
                   label:  _("Suspend");
+                }
+              }
+            }
+
+            Button hibernate {
+              styles ["power"]
+              name: "hibernate";
+
+              Box {
+                orientation: vertical;
+                spacing: 6;
+
+                Image {
+                  icon-name: "system-suspend-symbolic";
+                }
+
+                Label hibernate_label {
+                  label: _("Hibernate");
                 }
               }
             }

@@ -88,7 +88,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           <class name="plain"/>
                         </style>
                         <property name="icon-name">system-shutdown-symbolic</property>
-                        <property name="tooltip-text" translatable="yes">Suspend, restart, shut down, log out</property>
+                        <property name="tooltip-text" translatable="yes">Suspend, hibernate, restart, shut down, log out</property>
                       </object>
                     </child>
                   </object>
@@ -122,6 +122,30 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                 <child>
                                   <object class="GtkLabel" id="suspend_label">
                                     <property name="label" translatable="yes">Suspend</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="hibernate">
+                            <style>
+                              <class name="power"/>
+                            </style>
+                            <property name="name">hibernate</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">1</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">system-suspend-symbolic</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="hibernate_label">
+                                    <property name="label" translatable="yes">Hibernate</property>
                                   </object>
                                 </child>
                               </object>
