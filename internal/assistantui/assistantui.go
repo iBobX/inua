@@ -283,34 +283,7 @@ func (v *view) setUp() {
 		return
 	}
 	// The keyring may ask for its passphrase (pass: gpg's) here.
-	k := keys.New()
-	savedAt, err := k.Saved()
-	if err != nil {
-		say(i18n.Tf("Cannot read the saved keys: %s", err.Error()))
-		return
-	}
-	saved := map[string]string{}
-	for _, p := range cfg.Assistant.Profiles {
-		if savedAt[p.Name] == 0 {
-			continue
-		}
-		if saved[p.Name], err = k.Get(p.Name); err != nil {
-			say(i18n.Tf("Cannot read the key of %s: %v", p.Name, err))
-			return
-		}
-	}
-	if cfg.Assistant.ServeEnable {
-		if saved[keys.ServeTokenKey], err = k.ServeToken(false); err != nil {
-			say(i18n.Tf("Cannot read the Console token: %s", err.Error()))
-			return
-		}
-	}
-	set, err := assistant.SettingsFrom(cfg.Assistant, saved)
-	if errors.Is(err, assistant.ErrNoKey) {
-		p, _ := cfg.Assistant.ProfileNamed(cfg.Assistant.Profile)
-		say(i18n.Tf("No API key for %s (%s): type one in Settings → AI.", p.Name, p.Model))
-		return
-	}
+	set, err := assistant.Load(cfg.Assistant, keys.New())
 	if err != nil {
 		say(err.Error())
 		return

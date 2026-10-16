@@ -229,14 +229,22 @@ or with `inua-assistant --ask "…"`; questions go to the open window and
 keep its conversation, and + starts a new one.
 
 Set it up in Settings → AI. Each profile is a model: a provider
-(OpenAI, Anthropic, Gemini, xAI, DeepSeek, Kimi, OpenRouter, Groq, or a
-compatible server such as one on this computer), the model, and its key,
+(OpenAI, Anthropic, Gemini, xAI, DeepSeek, Kimi, OpenRouter, Groq, a
+compatible server such as one on this computer, or TypeSafe, which only
+makes quick choices), the model, and its key,
 typed there (kept in the keyring, the Secret Service: in pass with
 inua-keyring, see the shell's features; without one, in
 `~/.local/share/inua/keys.json`, readable only by you); never in
 `config.toml`. One
 profile answers first; others marked Fallback take over, in order, when it
 fails, and the window's drop-down switches profile for a conversation.
+Each profile's abilities say what it is for, as two chips under its
+endpoint: **Chat** (it answers and runs tasks) and **Decision** (it makes
+quick choices from a list, as the games' AI players do); a line under
+them says what the ones on allow. A profile with only Decision is never
+asked a question. The button beside the model lists the provider's
+models (its own list, asked with the profile's key), to search and pick
+one.
 What the tools read is sent to the provider answering.
 
 ### Console endpoint

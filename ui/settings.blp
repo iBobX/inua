@@ -1482,6 +1482,38 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
+                        label:  _("Quick choices with");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label:  _("The profile that picks from a fixed list, as an AI player in the games does");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown ai_decision {
+                      name: "ai_decision";
+                      valign: center;
+                    }
+                  }
+
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
                         label:  _("Ask before changes");
                         xalign: 0;
                       }

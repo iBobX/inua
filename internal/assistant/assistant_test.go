@@ -235,6 +235,54 @@ func TestSettings(t *testing.T) {
 	}
 }
 
+// Abilities: the window switches only to profiles that answer, quick
+// choices go only to profiles that make them, the one for them first.
+func TestAbilities(t *testing.T) {
+	c := config.Default().Assistant
+	c.Profiles = []config.AIProfile{
+		{Name: "main", Provider: "openai", Model: "gpt-5.2", Abilities: []string{"text"}},
+		{Name: "both", Provider: "openai", Model: "gpt-5-mini"},
+		{Name: "judge", Provider: "openai", Model: "gpt-6-luna", Abilities: []string{"decision"}},
+		{Name: "nokey", Provider: "openai", Model: "gpt-5-mini", Abilities: []string{"decision"}},
+	}
+	c.Profile, c.Fallback = "main", []string{"judge", "both"}
+	keys := map[string]string{"main": "k", "judge": "k", "both": "k"}
+	for _, tc := range []struct{ decision, want string }{
+		{"", "both"},       // main makes none: the first that does
+		{"judge", "judge"}, // as asked
+		{"nokey", "both"},  // without a key: the first that does
+	} {
+		c.Decision = tc.decision
+		s, err := SettingsFrom(c, keys)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if s.Decision != tc.want || fmt.Sprint(s.Fallback) != "[both]" {
+			t.Errorf("decision %q: %+v", tc.decision, s)
+		}
+	}
+	c.Decision = "judge"
+	s, _ := SettingsFrom(c, keys)
+	s.StateDir, s.CacheDir = t.TempDir(), t.TempDir()
+	a, err := New(s, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fmt.Sprint(a.Profiles()) != "[main both]" || fmt.Sprint(a.Choosers()) != "[judge both]" {
+		t.Errorf("profiles %q, choosers %q", a.Profiles(), a.Choosers())
+	}
+	if a.UseProfile("judge") == nil {
+		t.Error("switched to a profile that only chooses")
+	}
+	if _, err := a.Choose(context.Background(), "main", "Pick.", "", []string{"a", "b"}); err == nil || errors.Is(err, ErrNoChoice) {
+		t.Errorf("main chose: %v", err)
+	}
+	c.Profile = "judge"
+	if _, err := SettingsFrom(c, keys); err == nil {
+		t.Error("judge answers")
+	}
+}
+
 func TestProfiles(t *testing.T) {
 	var models []string
 	var mu sync.Mutex

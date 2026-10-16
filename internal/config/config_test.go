@@ -479,14 +479,82 @@ model = "x"
 	for _, p := range a.Profiles {
 		names = append(names, p.Name)
 	}
-	// "default" is Mister Morph's, a name twice and an unknown provider are
-	// left out; the profile falls back to the first; fallbacks are the
-	// others, once each.
-	if fmt.Sprint(names) != "[work local]" || a.Profile != "work" || fmt.Sprint(a.Fallback) != "[local]" {
+	// "default" is Mister Morph's and a name twice is left out; a provider
+	// inua does not list is kept, for Mister Morph to know; the profile
+	// falls back to the first; fallbacks are the others, once each.
+	if fmt.Sprint(names) != "[work local odd]" || a.Profile != "work" || fmt.Sprint(a.Fallback) != "[local]" {
 		t.Errorf("%+v", a)
 	}
-	if len(w) != 7 {
+	if len(w) != 6 {
 		t.Errorf("warnings %q", w)
+	}
+	// Saved, it stays.
+	again, _, err := Load(write(t, Format(c)))
+	if err != nil || len(again.Assistant.Profiles) != 3 || again.Assistant.Profiles[2].Provider != "nobody" {
+		t.Errorf("saved again: %+v %v", again.Assistant.Profiles, err)
+	}
+}
+
+// Abilities say what a profile is for; the profile that answers, its
+// fallbacks and the one for quick choices have the abilities for it.
+func TestAssistantAbilities(t *testing.T) {
+	c, w, err := Load(write(t, `[assistant]
+profile = "judge"
+fallback = ["judge", "art", "chat"]
+decision = "chat"
+
+[[assistant.profiles]]
+name = "judge"
+provider = "openai"
+model = "gpt-6-luna"
+abilities = ["decision", "decision", "telepathy"]
+
+[[assistant.profiles]]
+name = "art"
+provider = "openai"
+model = "gpt-image-2"
+abilities = ["image"]
+
+[[assistant.profiles]]
+name = "chat"
+provider = "openai"
+model = "gpt-5.2"
+abilities = ["text"]
+
+[[assistant.profiles]]
+name = "both"
+provider = "openai"
+model = "gpt-5.2"
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := c.Assistant
+	judge, _ := a.ProfileNamed("judge")
+	if fmt.Sprint(judge.Abilities) != "[decision]" || judge.Can(AbilityText) || !judge.Can(AbilityDecision) {
+		t.Errorf("judge %+v", judge)
+	}
+	if both, _ := a.ProfileNamed("both"); !both.Can(AbilityText) || !both.Can(AbilityDecision) || both.Can(AbilityImage) ||
+		fmt.Sprint(both.AbilityList()) != "[text decision]" {
+		t.Errorf("both %+v", both)
+	}
+	// judge only chooses and art only draws: chat answers, alone; chat
+	// makes no quick choices, so the one that answers would, and as it
+	// cannot, judge does.
+	if a.Profile != "chat" || a.Fallback != nil || a.Decision != "" || a.DecisionProfile() != "judge" {
+		t.Errorf("%+v", a)
+	}
+	if len(w) != 6 {
+		t.Errorf("warnings %q", w)
+	}
+	if got := WithAbility(nil, AbilityText, false); fmt.Sprint(got) != "[decision]" {
+		t.Errorf("without text: %q", got)
+	}
+	if got := WithAbility([]string{AbilityDecision}, AbilityText, true); got != nil {
+		t.Errorf("both again: %q", got)
+	}
+	if got := WithAbility([]string{AbilityImage}, AbilityDecision, true); fmt.Sprint(got) != "[decision image]" {
+		t.Errorf("image kept: %q", got)
 	}
 }
 
@@ -567,5 +635,34 @@ func TestClipboard(t *testing.T) {
 		if err != nil || got.Enable != c.enable || got.Opacity != c.opacity || got.Limit != c.keep || (len(warnings) > 0) != c.warned {
 			t.Errorf("%q: %+v %v %v", c.file, got, warnings, err)
 		}
+	}
+}
+
+// TypeSafe only makes quick choices, whatever its abilities say; it
+// cannot be the profile that answers.
+func TestTypeSafe(t *testing.T) {
+	c, w, err := Load(write(t, `[assistant]
+profile = "ts"
+decision = "ts"
+
+[[assistant.profiles]]
+name = "ts"
+provider = "typesafe"
+model = "jev-1.13.0"
+abilities = ["text"]
+
+[[assistant.profiles]]
+name = "chat"
+provider = "openai"
+model = "gpt-5.2"
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := c.Assistant
+	ts, _ := a.ProfileNamed("ts")
+	if fmt.Sprint(ts.Abilities) != "[decision]" || ts.Can(AbilityText) || !ts.Can(AbilityDecision) ||
+		a.Profile != "chat" || a.Decision != "ts" || len(w) != 2 {
+		t.Errorf("%+v %q", a, w)
 	}
 }

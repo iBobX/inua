@@ -11,7 +11,7 @@ msgstr "inua 助理"
 
 #: cmd/inua-keyring/main.go:117
 #: internal/ui/settings_keyring.go:250
-#: ui/settings.ui:3469
+#: ui/settings.ui:3512
 msgid "Keyring"
 msgstr "鑰匙圈"
 
@@ -614,7 +614,7 @@ msgid "Reset"
 msgstr "重設"
 
 #: internal/appui/clock.go:496
-#: internal/assistantui/assistantui.go:458
+#: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
 msgid "Stop"
 msgstr "停止"
@@ -694,7 +694,7 @@ msgid "5 years"
 msgstr "5 年"
 
 #: internal/appui/gpg.go:144
-#: ui/settings.ui:3661
+#: ui/settings.ui:3704
 msgid "Never"
 msgstr "永不過期"
 
@@ -1236,7 +1236,7 @@ msgstr "隱藏"
 #: internal/ui/askpass.go:200
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
-#: ui/settings.ui:2675
+#: ui/settings.ui:2718
 msgid "Copy"
 msgstr "複製"
 
@@ -1486,12 +1486,12 @@ msgid "Range start"
 msgstr "範圍起始"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:65
+#: internal/ui/settings_ai.go:85
 msgid "High"
 msgstr "高"
 
 #: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:65
+#: internal/ui/settings_ai.go:85
 msgid "Low"
 msgstr "低"
 
@@ -1839,16 +1839,16 @@ msgstr "計算機"
 
 #: internal/appui/sysmon.go:959
 #: internal/appui/sysmon.go:971
-#: internal/ui/settings_ai.go:323
+#: internal/ui/settings_ai.go:389
 msgid "Model"
 msgstr "模型"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
-#: internal/ui/settings_ai.go:321
+#: internal/ui/settings_ai.go:378
 #: internal/viewerui/app.go:791
 #: ui/gpg.ui:1342
-#: ui/settings.ui:4394
+#: ui/settings.ui:4437
 #: ui/sysmon.ui:96
 msgid "Name"
 msgstr "名稱"
@@ -2387,7 +2387,7 @@ msgstr "無法播放：%s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
-#: ui/settings.ui:4611
+#: ui/settings.ui:4654
 msgid "Off"
 msgstr "關閉"
 
@@ -2538,7 +2538,7 @@ msgid "Open"
 msgstr "開啟"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/ui/settings_ai.go:328
+#: internal/ui/settings_ai.go:422
 #: ui/clock.ui:252
 #: ui/pass.ui:490
 msgid "Save"
@@ -2637,7 +2637,24 @@ msgstr "安裝"
 msgid "Installed %s; the launcher and the dock's drawer list it."
 msgstr "已安裝 %s；啟動器和 Dock 的抽屜裡會列出它。"
 
-#: internal/assistant/assistant.go:430
+#: internal/assistant/assistant.go:137
+msgid "Cannot read the saved keys: %s"
+msgstr "無法讀取已儲存的金鑰:%s"
+
+#: internal/assistant/assistant.go:145
+msgid "Cannot read the key of %s: %v"
+msgstr "無法讀取%[1]s的金鑰:%[2]v"
+
+#: internal/assistant/assistant.go:150
+#: internal/ui/settings_ai.go:794
+msgid "Cannot read the Console token: %s"
+msgstr "無法讀取控制台令牌：%s"
+
+#: internal/assistant/assistant.go:156
+msgid "No API key for %s (%s): type one in Settings → AI."
+msgstr "%[1]s (%[2]s) 沒有 API 金鑰:在「設定」→「AI」中鍵入一個。"
+
+#: internal/assistant/assistant.go:585
 msgid "Remote Console: %s"
 msgstr "遠端控制台:%s"
 
@@ -2684,72 +2701,55 @@ msgstr "%s 從這裡回答"
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "助手關閉。在“設定”→“AI”中將其開啟。"
 
-#: internal/assistantui/assistantui.go:289
-msgid "Cannot read the saved keys: %s"
-msgstr "無法讀取已儲存的金鑰:%s"
-
-#: internal/assistantui/assistantui.go:298
-msgid "Cannot read the key of %s: %v"
-msgstr "無法讀取%[1]s的金鑰:%[2]v"
-
-#: internal/assistantui/assistantui.go:304
-#: internal/ui/settings_ai.go:602
-msgid "Cannot read the Console token: %s"
-msgstr "無法讀取控制台令牌：%s"
-
-#: internal/assistantui/assistantui.go:311
-msgid "No API key for %s (%s): type one in Settings → AI."
-msgstr "%[1]s (%[2]s) 沒有 API 金鑰:在「設定」→「AI」中鍵入一個。"
-
-#: internal/assistantui/assistantui.go:360
+#: internal/assistantui/assistantui.go:333
 msgid "Could not start the Console endpoint: %s"
 msgstr "無法啟動控制台端點：%s"
 
-#: internal/assistantui/assistantui.go:465
+#: internal/assistantui/assistantui.go:438
 msgid "✕ Not done: %s"
 msgstr "✕ 未完成:%s"
 
-#: internal/assistantui/assistantui.go:476
+#: internal/assistantui/assistantui.go:449
 #: ui/assistant.ui:136
 msgid "Ask"
 msgstr "詢問"
 
-#: internal/assistantui/assistantui.go:480
+#: internal/assistantui/assistantui.go:453
 msgid "Stopped."
 msgstr "停止。"
 
-#: internal/assistantui/assistantui.go:483
+#: internal/assistantui/assistantui.go:456
 msgid "Something went wrong: %s"
 msgstr "出了點問題:%s"
 
-#: internal/assistantui/assistantui.go:486
+#: internal/assistantui/assistantui.go:459
 msgid "(no answer)"
 msgstr "(無人回應)"
 
-#: internal/assistantui/assistantui.go:516
+#: internal/assistantui/assistantui.go:489
 msgid "Don't"
 msgstr "拒絕"
 
-#: internal/assistantui/assistantui.go:516
+#: internal/assistantui/assistantui.go:489
 #: internal/ui/askpass.go:390
 #: internal/workshop/session.go:406
 msgid "Allow"
 msgstr "允許"
 
-#: internal/assistantui/assistantui.go:537
+#: internal/assistantui/assistantui.go:510
 msgid "Not allowed"
 msgstr "不允許"
 
-#: internal/assistantui/assistantui.go:539
+#: internal/assistantui/assistantui.go:512
 msgid "Canceled"
 msgstr "已取消"
 
-#: internal/assistantui/assistantui.go:541
-#: ui/settings.ui:3716
+#: internal/assistantui/assistantui.go:514
+#: ui/settings.ui:3759
 msgid "Allowed"
 msgstr "允許"
 
-#: internal/assistantui/assistantui.go:630
+#: internal/assistantui/assistantui.go:603
 msgid "TRY"
 msgstr "嘗試"
 
@@ -3498,7 +3498,7 @@ msgstr[0] "……還有 %d 項"
 
 #: internal/filesui/cards.go:454
 #: internal/filesui/cards.go:735
-#: ui/settings.ui:4149
+#: ui/settings.ui:4192
 msgid "Close"
 msgstr "關閉"
 
@@ -6785,7 +6785,7 @@ msgstr "返回選單"
 
 #: internal/gamesui/fortune_menu.go:109
 #: ui/gpg.ui:633
-#: ui/settings.ui:4002
+#: ui/settings.ui:4045
 msgid "Back"
 msgstr "返回"
 
@@ -7253,7 +7253,7 @@ msgid "Lock Screen"
 msgstr "鎖定螢幕"
 
 #: internal/shell/commands.go:27
-#: ui/settings.ui:3613
+#: ui/settings.ui:3656
 msgid "Lock now"
 msgstr "立即鎖定"
 
@@ -7884,7 +7884,7 @@ msgid "Search clipboard history"
 msgstr "搜尋剪貼簿歷史"
 
 #: internal/ui/clipboard.go:335
-#: ui/settings.ui:3065
+#: ui/settings.ui:3108
 msgid "Clipboard"
 msgstr "剪貼簿"
 
@@ -8065,7 +8065,7 @@ msgstr "無法檢查密碼"
 
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
-#: ui/settings.ui:2801
+#: ui/settings.ui:2844
 msgid "Notifications"
 msgstr "通知"
 
@@ -8413,176 +8413,255 @@ msgstr "已安裝"
 msgid "On GitHub"
 msgstr "在 GitHub 上"
 
-#: internal/ui/settings_ai.go:65
+#: internal/ui/settings_ai.go:85
 msgid "Model default"
 msgstr "模型預設"
 
-#: internal/ui/settings_ai.go:65
+#: internal/ui/settings_ai.go:85
 msgid "Minimal"
 msgstr "最小"
 
-#: internal/ui/settings_ai.go:65
+#: internal/ui/settings_ai.go:85
 #: ui/settings.ui:1415
 msgid "Medium"
 msgstr "中"
 
-#: internal/ui/settings_ai.go:111
+#: internal/ui/settings_ai.go:134
 msgid "Keys typed here are kept in %s"
 msgstr "此處輸入的金鑰保存在%s中"
 
-#: internal/ui/settings_ai.go:150
+#: internal/ui/settings_ai.go:173
 msgid "key not moved"
 msgstr "金鑰未移轉"
 
-#: internal/ui/settings_ai.go:181
+#: internal/ui/settings_ai.go:204
 msgid "Use this URL and the token in Console. From another computer, use this desktop's reachable address."
 msgstr "在控制台中使用該網址和令牌。在另一台電腦上，使用此桌面的可存取位址。"
 
-#: internal/ui/settings_ai.go:184
+#: internal/ui/settings_ai.go:207
 msgid "Turn on Assistant to serve this endpoint."
 msgstr "開啟助手來服務該端點。"
 
-#: internal/ui/settings_ai.go:186
+#: internal/ui/settings_ai.go:209
 msgid "HTTP serving is off. The assistant still runs in the background."
 msgstr "HTTP服務關閉。助手仍在後台運作。"
 
-#: internal/ui/settings_ai.go:188
+#: internal/ui/settings_ai.go:211
 msgid "Create a token to allow Console connections."
 msgstr "建立令牌以允許控制台連線。"
 
-#: internal/ui/settings_ai.go:195
+#: internal/ui/settings_ai.go:218
 msgid "Reading keyring…"
 msgstr "正在讀取鑰匙圈..."
 
-#: internal/ui/settings_ai.go:197
+#: internal/ui/settings_ai.go:220
 msgid "Hide token"
 msgstr "隱藏式令牌"
 
-#: internal/ui/settings_ai.go:199
-#: ui/settings.ui:2469
+#: internal/ui/settings_ai.go:222
+#: ui/settings.ui:2512
 msgid "Create token"
 msgstr "建立令牌"
 
-#: internal/ui/settings_ai.go:201
+#: internal/ui/settings_ai.go:224
 msgid "Show token"
 msgstr "顯示令牌"
 
-#: internal/ui/settings_ai.go:216
+#: internal/ui/settings_ai.go:235
+msgid "The one that answers"
+msgstr "與回答使用的相同"
+
+#: internal/ui/settings_ai.go:243
 msgid "Then, when it fails: %s"
 msgstr "那麼，失敗時：%s"
 
-#: internal/ui/settings_ai.go:218
+#: internal/ui/settings_ai.go:245
 msgid "The profile asked first; turn on Fallback on others to try them when it fails"
 msgstr "優先使用的模型設定；為其他設定啟用備用，以便失敗時依序嘗試"
 
-#: internal/ui/settings_ai.go:274
+#: internal/ui/settings_ai.go:331
 msgid "Move up (fallbacks are tried in this order)"
 msgstr "向上移動（按此順序嘗試回退）"
 
-#: internal/ui/settings_ai.go:275
+#: internal/ui/settings_ai.go:332
 msgid "Move down"
 msgstr "下移"
 
-#: internal/ui/settings_ai.go:276
+#: internal/ui/settings_ai.go:333
 msgid "Remove this profile"
 msgstr "刪除此模型設定"
 
-#: internal/ui/settings_ai.go:299
+#: internal/ui/settings_ai.go:356
 msgid "a name: work, fast, local …"
 msgstr "名字：工作、快速、在地…"
 
-#: internal/ui/settings_ai.go:301
+#: internal/ui/settings_ai.go:358
 msgid "the model's ID"
 msgstr "模型 ID"
 
-#: internal/ui/settings_ai.go:302
+#: internal/ui/settings_ai.go:359
 msgid "the provider's own"
 msgstr "提供者自己的"
 
-#: internal/ui/settings_ai.go:308
-#: internal/ui/settings_ai.go:407
+#: internal/ui/settings_ai.go:365
+#: internal/ui/settings_ai.go:559
 msgid "Paste a key, then Save"
 msgstr "貼上密鑰，然後儲存"
 
-#: internal/ui/settings_ai.go:322
+#: internal/ui/settings_ai.go:379
 msgid "Provider"
 msgstr "服務商"
 
-#: internal/ui/settings_ai.go:324
+#: internal/ui/settings_ai.go:385
+#: internal/ui/settings_ai.go:521
+msgid "List the provider's models"
+msgstr "列出服務商的模型"
+
+#: internal/ui/settings_ai.go:391
 msgid "Reasoning"
 msgstr "推理強度"
 
-#: internal/ui/settings_ai.go:325
+#: internal/ui/settings_ai.go:392
 msgid "Endpoint"
 msgstr "端點"
 
-#: internal/ui/settings_ai.go:329
+#: internal/ui/settings_ai.go:410
+msgid "Chat"
+msgstr "聊天"
+
+#: internal/ui/settings_ai.go:411
+#: internal/ui/settings_keyring.go:248
+msgid "Decision"
+msgstr "決定"
+
+#: internal/ui/settings_ai.go:418
+msgid "Abilities"
+msgstr "能力"
+
+#: internal/ui/settings_ai.go:423
 msgid "Forget"
 msgstr "刪除金鑰"
 
-#: internal/ui/settings_ai.go:337
+#: internal/ui/settings_ai.go:431
 msgid "API key"
 msgstr "API 金鑰"
 
-#: internal/ui/settings_ai.go:342
+#: internal/ui/settings_ai.go:451
 msgid "Fallback: answers when the profiles above it fail"
 msgstr "備用：前面的模型設定失敗時使用"
 
-#: internal/ui/settings_ai.go:384
+#: internal/ui/settings_ai.go:511
+msgid "This provider makes quick choices only"
+msgstr "該服務商只做快速選擇"
+
+#: internal/ui/settings_ai.go:513
+msgid "The profile that answers chats"
+msgstr "負責回答的模型設定必須能聊天"
+
+#: internal/ui/settings_ai.go:519
+#: internal/ui/settings_ai.go:966
+msgid "This provider does not list its models"
+msgstr "該服務商不提供模型清單"
+
+#: internal/ui/settings_ai.go:533
 msgid "Answers first. "
 msgstr "先回答。 "
 
-#: internal/ui/settings_ai.go:386
+#: internal/ui/settings_ai.go:535
 msgid "Fallback %d. "
 msgstr "後備%d。 "
 
-#: internal/ui/settings_ai.go:391
+#: internal/ui/settings_ai.go:538
+msgid "Makes the quick choices. "
+msgstr "負責快速選擇。 "
+
+#: internal/ui/settings_ai.go:543
 msgid "The saved keys cannot be read: %s"
 msgstr "無法讀取已儲存的金鑰：%s"
 
-#: internal/ui/settings_ai.go:393
+#: internal/ui/settings_ai.go:545
 msgid "Key saved"
 msgstr "金鑰已儲存"
 
-#: internal/ui/settings_ai.go:395
+#: internal/ui/settings_ai.go:547
 msgid "No key (a local server may want none)"
 msgstr "沒有金鑰（本機伺服器可能不需要金鑰）"
 
-#: internal/ui/settings_ai.go:397
+#: internal/ui/settings_ai.go:549
 msgid "No key yet: the assistant cannot answer"
 msgstr "尚未設定金鑰，助理無法回答"
 
-#: internal/ui/settings_ai.go:399
+#: internal/ui/settings_ai.go:551
 msgid "No key yet: this profile is skipped"
 msgstr "尚未設定金鑰，將略過此設定"
 
-#: internal/ui/settings_ai.go:405
+#: internal/ui/settings_ai.go:557
 msgid "Saved; paste another to replace it"
 msgstr "已儲存；貼上另一個來替換它"
 
-#: internal/ui/settings_ai.go:566
+#: internal/ui/settings_ai.go:758
 msgid "Command copied"
 msgstr "已複製指令"
 
-#: internal/ui/settings_ai.go:573
+#: internal/ui/settings_ai.go:765
 msgid "Endpoint URL copied"
 msgstr "端點 URL 已複製"
 
-#: internal/ui/settings_ai.go:604
+#: internal/ui/settings_ai.go:796
 msgid "No Console token. Create one first."
 msgstr "無控制台令牌。先創建一個。"
 
-#: internal/ui/settings_ai.go:609
+#: internal/ui/settings_ai.go:801
 msgid "Token copied"
 msgstr "令牌已複製"
 
-#: internal/ui/settings_ai.go:674
+#: internal/ui/settings_ai.go:876
 msgid "key not removed"
 msgstr "金鑰未刪除"
 
-#: internal/ui/settings_ai.go:685
+#: internal/ui/settings_ai.go:887
 msgid "key not saved"
 msgstr "金鑰未儲存"
+
+#: internal/ui/settings_ai.go:898
+msgid "Chats and runs tasks with inua's tools. Also makes quick choices from a list, as the games' AI players do."
+msgstr "可以聊天，並用 inua 的工具執行任務。也可以從清單中快速選擇，例如遊戲裡的 AI 玩家。"
+
+#: internal/ui/settings_ai.go:900
+msgid "Chats and runs tasks with inua's tools. The games' AI players do not use it."
+msgstr "可以聊天，並用 inua 的工具執行任務。遊戲裡的 AI 玩家不使用它。"
+
+#: internal/ui/settings_ai.go:902
+msgid "Makes only quick choices from a list (yes or no, one of a few), as the games' AI players do. It cannot chat or run tasks."
+msgstr "只從清單中快速選擇（是或否、幾項中的一項），例如遊戲裡的 AI 玩家。不能聊天或執行任務。"
+
+#: internal/ui/settings_ai.go:904
+msgid "Neither chats nor makes quick choices: inua does not use it."
+msgstr "既不聊天也不做快速選擇：inua 不使用它。"
+
+#: internal/ui/settings_ai.go:914
+msgid "Search models"
+msgstr "搜尋模型"
+
+#: internal/ui/settings_ai.go:944
+msgid "Listing models…"
+msgstr "正在列出模型…"
+
+#: internal/ui/settings_ai.go:968
+msgid "Type the server's endpoint first."
+msgstr "請先填寫伺服器的端點。"
+
+#: internal/ui/settings_ai.go:970
+msgid "Cannot list the models: %s"
+msgstr "無法列出模型：%s"
+
+#: internal/ui/settings_ai.go:972
+msgid "The provider lists no models."
+msgstr "服務商沒有列出模型。"
+
+#: internal/ui/settings_ai.go:1008
+msgid "No model matches."
+msgstr "沒有符合的模型。"
 
 #: internal/ui/settings_apps.go:88
 msgid "None chosen"
@@ -8625,7 +8704,7 @@ msgid "Not added: %s"
 msgstr ""
 
 #: internal/ui/settings_keyring.go:197
-#: ui/settings.ui:4137
+#: ui/settings.ui:4180
 msgid "<span alpha='55%'>[</span>READ<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>讀取<span alpha='55%'>]</span>"
 
@@ -8675,10 +8754,6 @@ msgstr "用於"
 #: internal/ui/settings_keyring.go:247
 msgid "Answer"
 msgstr "結果"
-
-#: internal/ui/settings_keyring.go:248
-msgid "Decision"
-msgstr "決定"
 
 #: internal/ui/settings_keyring.go:249
 msgid "In pass"
@@ -8757,7 +8832,7 @@ msgid "The record of reads cannot be read: %s"
 msgstr "無法讀取讀取紀錄：%s"
 
 #: internal/ui/settings_keyring.go:349
-#: ui/settings.ui:3929
+#: ui/settings.ui:3972
 msgid "No app has read a secret yet."
 msgstr "還沒有應用程式讀取過密鑰。"
 
@@ -8885,7 +8960,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 升級方式:inua 升級"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5200
+#: ui/settings.ui:5243
 msgid "Upgrade"
 msgstr "升級"
 
@@ -9850,7 +9925,7 @@ msgstr ""
 
 #: ui/settings.ui:173
 #: ui/settings.ui:431
-#: ui/settings.ui:4413
+#: ui/settings.ui:4456
 msgid "Add…"
 msgstr "新增…"
 
@@ -10216,547 +10291,555 @@ msgid "The profile asked first; the assistant's window can switch for a conversa
 msgstr "優先使用的模型設定；可在助理視窗為目前對話切換"
 
 #: ui/settings.ui:2090
-#: ui/settings.ui:2631
+msgid "Quick choices with"
+msgstr "快速選擇使用的模型設定"
+
+#: ui/settings.ui:2099
+msgid "The profile that picks from a fixed list, as an AI player in the games does"
+msgstr "從固定清單中做選擇的設定檔，例如遊戲中的 AI 玩家"
+
+#: ui/settings.ui:2133
+#: ui/settings.ui:2674
 msgid "Ask before changes"
 msgstr "變更前詢問"
 
-#: ui/settings.ui:2099
+#: ui/settings.ui:2142
 msgid "Wi-Fi, volume, windows, the clipboard …; power, ending processes and closing windows always ask"
 msgstr "Wi-Fi、音量、視窗、剪貼簿…；電源供應器、結束進程和關閉視窗總是詢問"
 
-#: ui/settings.ui:2133
+#: ui/settings.ui:2176
 msgid "Search the web"
 msgstr "搜尋網絡"
 
-#: ui/settings.ui:2142
+#: ui/settings.ui:2185
 msgid "Mister Morph's web search and page reading"
 msgstr "使用 Mister Morph 搜尋網路和讀取網頁"
 
-#: ui/settings.ui:2176
+#: ui/settings.ui:2219
 msgid "Read files"
 msgstr "讀取文件"
 
-#: ui/settings.ui:2185
+#: ui/settings.ui:2228
 msgid "Any file you can read; asks each time"
 msgstr "您可以讀取的任何文件；每次都會詢問"
 
-#: ui/settings.ui:2219
+#: ui/settings.ui:2262
 msgid "Run commands"
 msgstr "運行指令"
 
-#: ui/settings.ui:2228
+#: ui/settings.ui:2271
 msgid "A shell, as you; asks each time"
 msgstr "以您的身分執行 shell 指令，每次都會詢問"
 
-#: ui/settings.ui:2273
+#: ui/settings.ui:2316
 msgid "<span alpha='55%'>[</span>CONSOLE ENDPOINT<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>控制台端點<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2281
+#: ui/settings.ui:2324
 msgid "Connect other Consoles to this desktop"
 msgstr "將其他控制台連接到該桌面"
 
-#: ui/settings.ui:2311
-#: ui/settings.ui:2330
+#: ui/settings.ui:2354
+#: ui/settings.ui:2373
 msgid "Serve endpoint"
 msgstr "服務端點"
 
-#: ui/settings.ui:2320
+#: ui/settings.ui:2363
 msgid "Allow Console connections; the assistant keeps running when this is off"
 msgstr "允許控制台連接；關閉時助手會繼續運行"
 
-#: ui/settings.ui:2355
+#: ui/settings.ui:2398
 msgid "Listen address"
 msgstr "監聽地址"
 
-#: ui/settings.ui:2364
+#: ui/settings.ui:2407
 msgid "Host:port; kept when serving is off"
 msgstr "主機：連接埠；服務關閉時保留"
 
-#: ui/settings.ui:2375
+#: ui/settings.ui:2418
 msgid "Use host:port, with a port from 1 to 65535. For IPv6, use [address]:port."
 msgstr "使用主機:端口，端口範圍為1到65535。對於IPv6，使用[位址]:連接埠。"
 
-#: ui/settings.ui:2397
+#: ui/settings.ui:2440
 msgid "Endpoint URL"
 msgstr "端點 URL"
 
-#: ui/settings.ui:2408
+#: ui/settings.ui:2451
 msgid "Set a listen address first"
 msgstr "先設定監聽地址"
 
-#: ui/settings.ui:2417
+#: ui/settings.ui:2460
 msgid "Copy URL"
 msgstr "複製網址"
 
-#: ui/settings.ui:2448
+#: ui/settings.ui:2491
 msgid "Access token"
 msgstr "訪問令牌"
 
-#: ui/settings.ui:2460
+#: ui/settings.ui:2503
 msgid "Token hidden"
 msgstr "令牌隱藏"
 
-#: ui/settings.ui:2478
+#: ui/settings.ui:2521
 msgid "Copy token"
 msgstr "複製令牌"
 
-#: ui/settings.ui:2488
+#: ui/settings.ui:2531
 msgid "Kept in the keyring (pass with inua-keyring). Creating or reading it may ask for your passphrase."
 msgstr "保存在密鑰環中(與inua-keyring一起傳遞)。建立或閱讀它可能會要求您輸入密碼。"
 
-#: ui/settings.ui:2525
+#: ui/settings.ui:2568
 msgid "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>MCP<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2533
+#: ui/settings.ui:2576
 msgid "Let AI agents on this computer use inua's tools"
 msgstr "讓這台電腦上的 AI 代理使用 inua 的工具"
 
-#: ui/settings.ui:2563
-#: ui/settings.ui:2582
+#: ui/settings.ui:2606
+#: ui/settings.ui:2625
 msgid "MCP server"
 msgstr "MCP 伺服器"
 
-#: ui/settings.ui:2572
+#: ui/settings.ui:2615
 msgid "Agents such as Claude Code or Codex see the windows, open apps, change settings and more, through inua mcp. The assistant uses these tools either way."
 msgstr "Claude Code、Codex 等代理可透過 inua mcp 查看視窗、開啟應用程式、變更設定等。無論開關如何，助理都會使用這些工具。"
 
-#: ui/settings.ui:2607
+#: ui/settings.ui:2650
 msgid "What agents may do"
 msgstr "代理可以做什麼"
 
-#: ui/settings.ui:2616
+#: ui/settings.ui:2659
 msgid "Closing windows, ending processes, power, the clipboard and notifications always ask"
 msgstr "關閉視窗、結束程序、電源、剪貼簿和通知一律會詢問"
 
-#: ui/settings.ui:2630
+#: ui/settings.ui:2673
 msgid "Look only"
 msgstr "只能查看"
 
-#: ui/settings.ui:2632
+#: ui/settings.ui:2675
 msgid "Change without asking"
 msgstr "無須詢問即可變更"
 
-#: ui/settings.ui:2655
+#: ui/settings.ui:2698
 msgid "Connect an agent"
 msgstr "連線代理"
 
-#: ui/settings.ui:2685
+#: ui/settings.ui:2728
 msgid "Other agents: a stdio server that runs inua mcp. Each call is recorded; asking happens in inua's dialog."
 msgstr "其他代理：一個執行 inua mcp 的 stdio 伺服器。每次呼叫都會記錄；詢問在 inua 的對話框中進行。"
 
-#: ui/settings.ui:2722
+#: ui/settings.ui:2765
 msgid "<span alpha='55%'>[</span>PROFILES<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>模型設定<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2730
+#: ui/settings.ui:2773
 msgid "The models it can use; fallbacks answer when the first fails"
 msgstr "可使用的模型；首選模型失敗時嘗試備用模型"
 
-#: ui/settings.ui:2760
+#: ui/settings.ui:2803
 msgid "Add Profile"
 msgstr "新增模型設定"
 
-#: ui/settings.ui:2839
+#: ui/settings.ui:2882
 msgid "<span alpha='55%'>[</span>NOTIFICATIONS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>通知<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:2847
+#: ui/settings.ui:2890
 msgid "Banners, then the notification center"
 msgstr "橫幅、接通知中心"
 
-#: ui/settings.ui:2877
+#: ui/settings.ui:2920
 msgid "Show notifications"
 msgstr "顯示通知"
 
-#: ui/settings.ui:2919
+#: ui/settings.ui:2962
 msgid "Banner duration"
 msgstr "橫幅持續時間"
 
-#: ui/settings.ui:2928
+#: ui/settings.ui:2971
 msgid "How long a banner shows; critical ones stay"
 msgstr "橫幅顯示多長時間；關鍵的留下來"
 
-#: ui/settings.ui:2942
+#: ui/settings.ui:2985
 msgid "3 seconds"
 msgstr "3秒"
 
-#: ui/settings.ui:2943
+#: ui/settings.ui:2986
 msgid "5 seconds"
 msgstr "5秒"
 
-#: ui/settings.ui:2944
+#: ui/settings.ui:2987
 msgid "8 seconds"
 msgstr "8秒"
 
-#: ui/settings.ui:2945
+#: ui/settings.ui:2988
 msgid "12 seconds"
 msgstr "12秒"
 
-#: ui/settings.ui:2972
+#: ui/settings.ui:3015
 msgid "Critical during Focus"
 msgstr "專注模式下顯示緊急通知"
 
-#: ui/settings.ui:2981
+#: ui/settings.ui:3024
 msgid "Critical notifications still show banners"
 msgstr "重要通知仍顯示橫幅"
 
-#: ui/settings.ui:3015
+#: ui/settings.ui:3058
 msgid "Keep a history"
 msgstr "保留歷史"
 
-#: ui/settings.ui:3024
+#: ui/settings.ui:3067
 msgid "The last 500 notifications, dismissed ones too, for the assistant, agents and workshop apps allowed to read them. Off clears it."
 msgstr "最近 500 則通知（含已關閉的），供獲准讀取的助理、代理和工坊應用程式使用。關閉即清空。"
 
-#: ui/settings.ui:3103
+#: ui/settings.ui:3146
 msgid "<span alpha='55%'>[</span>CLIPBOARD<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>剪貼簿<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3111
+#: ui/settings.ui:3154
 msgid "History, panel appearance and pasting"
 msgstr "歷史、面板外觀與貼上"
 
-#: ui/settings.ui:3141
+#: ui/settings.ui:3184
 msgid "Keep a clipboard history"
 msgstr "保留剪貼簿歷史"
 
-#: ui/settings.ui:3150
+#: ui/settings.ui:3193
 msgid "Text and images you copy, kept on this computer; a password manager's copies are left out"
 msgstr "你複製的文字和圖片,只保存在這台電腦上;密碼管理器複製的內容不會保存"
 
-#: ui/settings.ui:3180
+#: ui/settings.ui:3223
 msgid "Never record copies from"
 msgstr "從不記錄來自以下來源的複製"
 
-#: ui/settings.ui:3190
+#: ui/settings.ui:3233
 msgid "pass, keepassxc, …"
 msgstr "pass, keepassxc, …"
 
-#: ui/settings.ui:3198
+#: ui/settings.ui:3241
 msgid "Programs or window classes, separated by commas. The program that ran wl-copy and the focused window are checked; hover over an entry in the history to see where it came from"
 msgstr "程式或視窗類別，以逗號分隔。會檢查執行 wl-copy 的程式和目前聚焦的視窗；將指標停在歷史項目上可查看其來源"
 
-#: ui/settings.ui:3224
+#: ui/settings.ui:3267
 msgid "Show in top bar"
 msgstr "在頂列顯示"
 
-#: ui/settings.ui:3233
+#: ui/settings.ui:3276
 msgid "A button in the status area opens the clipboard history"
 msgstr "狀態區的按鈕可開啟剪貼簿歷史"
 
-#: ui/settings.ui:3267
+#: ui/settings.ui:3310
 msgid "Paste on click"
 msgstr "點擊即貼上"
 
-#: ui/settings.ui:3276
+#: ui/settings.ui:3319
 msgid "Clicking an entry pastes it into the window you were in; off only copies it"
 msgstr "點擊項目會把它貼到你之前所在的視窗;關閉後只複製"
 
-#: ui/settings.ui:3310
+#: ui/settings.ui:3353
 msgid "Panel opacity"
 msgstr "面板不透明度"
 
-#: ui/settings.ui:3361
+#: ui/settings.ui:3404
 msgid "History limit"
 msgstr "歷史筆數上限"
 
-#: ui/settings.ui:3370
+#: ui/settings.ui:3413
 msgid "How many entries it keeps; the oldest go first"
 msgstr "保留多少筆;最舊的先刪除"
 
-#: ui/settings.ui:3404
+#: ui/settings.ui:3447
 msgid "History storage"
 msgstr "歷史佔用"
 
-#: ui/settings.ui:3413
+#: ui/settings.ui:3456
 msgid "Loading history…"
 msgstr "正在讀取歷史…"
 
-#: ui/settings.ui:3426
+#: ui/settings.ui:3469
 msgid "Reveal in File Manager"
 msgstr "在檔案管理員中顯示"
 
-#: ui/settings.ui:3437
+#: ui/settings.ui:3480
 msgid "Clear the history"
 msgstr "清除歷史"
 
-#: ui/settings.ui:3518
+#: ui/settings.ui:3561
 msgid "<span alpha='55%'>[</span>KEYRING<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>鑰匙圈<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3526
+#: ui/settings.ui:3569
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "應用程式的密鑰：瀏覽器金鑰、Wi-Fi 密碼、API 金鑰"
 
-#: ui/settings.ui:3556
+#: ui/settings.ui:3599
 msgid "Secret Service"
 msgstr "Secret Service"
 
-#: ui/settings.ui:3592
+#: ui/settings.ui:3635
 msgid "Unlocked secrets"
 msgstr "已解鎖的機密"
 
-#: ui/settings.ui:3638
+#: ui/settings.ui:3681
 msgid "Lock when unused"
 msgstr "閒置時鎖定"
 
-#: ui/settings.ui:3647
+#: ui/settings.ui:3690
 msgid "It locks with the screen and before suspend, and after this long without a read"
 msgstr "隨螢幕鎖定與暫停前鎖定，並在這麼久沒有讀取後鎖定"
 
-#: ui/settings.ui:3662
+#: ui/settings.ui:3705
 msgid "5 minutes"
 msgstr "5 分鐘"
 
-#: ui/settings.ui:3663
+#: ui/settings.ui:3706
 msgid "15 minutes"
 msgstr "15 分鐘"
 
-#: ui/settings.ui:3664
+#: ui/settings.ui:3707
 msgid "30 minutes"
 msgstr "30 分鐘"
 
-#: ui/settings.ui:3665
+#: ui/settings.ui:3708
 msgid "1 hour"
 msgstr "1 小時"
 
-#: ui/settings.ui:3666
+#: ui/settings.ui:3709
 msgid "4 hours"
 msgstr "4 小時"
 
-#: ui/settings.ui:3693
+#: ui/settings.ui:3736
 msgid "With no one to ask"
 msgstr "無人可詢問時"
 
-#: ui/settings.ui:3702
+#: ui/settings.ui:3745
 msgid "A read by an app not trusted with the secret, while the inua shell is not running"
 msgstr "inua shell 未執行時，未獲信任的應用程式對機密的讀取"
 
-#: ui/settings.ui:3717
+#: ui/settings.ui:3760
 msgid "Denied"
 msgstr "拒絕"
 
-#: ui/settings.ui:3744
+#: ui/settings.ui:3787
 msgid "Tell when an app reads a secret"
 msgstr "應用程式讀取密鑰時通知"
 
-#: ui/settings.ui:3753
+#: ui/settings.ui:3796
 msgid "A notification for each app's first read since inua-keyring started"
 msgstr "inua-keyring 啟動後，每個應用程式首次讀取時發出通知"
 
-#: ui/settings.ui:3798
-#: ui/settings.ui:4012
+#: ui/settings.ui:3841
+#: ui/settings.ui:4055
 msgid "<span alpha='55%'>[</span>TRUSTED APPS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>受信任的應用程式<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3806
+#: ui/settings.ui:3849
 msgid "Apps that read a secret without asking; any other app is asked about first"
 msgstr "無須詢問即可讀取機密的應用程式；其他應用程式會先詢問"
 
-#: ui/settings.ui:3842
+#: ui/settings.ui:3885
 msgid "Trusted apps"
 msgstr "受信任的應用程式"
 
-#: ui/settings.ui:3897
+#: ui/settings.ui:3940
 msgid "<span alpha='55%'>[</span>READS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>讀取<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:3905
+#: ui/settings.ui:3948
 msgid "Every secret inua-keyring handed out and passphrase asked for, newest first"
 msgstr "inua-keyring 交出的每個密鑰和要求的每個密碼短語，最新的在前"
 
-#: ui/settings.ui:3951
+#: ui/settings.ui:3994
 msgid "Refresh"
 msgstr "重新整理"
 
-#: ui/settings.ui:4027
+#: ui/settings.ui:4070
 msgid "Filter by app, program or secret"
 msgstr "依應用程式、程式或機密篩選"
 
-#: ui/settings.ui:4052
+#: ui/settings.ui:4095
 msgid "The list is not trusted"
 msgstr "該清單不受信任"
 
-#: ui/settings.ui:4073
+#: ui/settings.ui:4116
 msgid "Trust this list again"
 msgstr "再次信任此清單"
 
-#: ui/settings.ui:4181
+#: ui/settings.ui:4224
 msgid "Shortcuts"
 msgstr "快捷鍵"
 
-#: ui/settings.ui:4211
+#: ui/settings.ui:4254
 msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "按新的捷徑。 Esc 取消；退格鍵將其關閉。"
 
-#: ui/settings.ui:4240
-#: ui/settings.ui:5099
+#: ui/settings.ui:4283
+#: ui/settings.ui:5142
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4248
+#: ui/settings.ui:4291
 msgid "The shell's own actions"
 msgstr "shell自身的動作"
 
-#: ui/settings.ui:4297
+#: ui/settings.ui:4340
 msgid "<span alpha='55%'>[</span>SCREENSHOTS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>螢幕截圖<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4305
+#: ui/settings.ui:4348
 msgid "With grim and slurp"
 msgstr "使用 grim 和 slurp"
 
-#: ui/settings.ui:4354
+#: ui/settings.ui:4397
 msgid "<span alpha='55%'>[</span>CUSTOM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>自訂<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4362
+#: ui/settings.ui:4405
 msgid "Your own commands"
 msgstr "你自己的命令"
 
-#: ui/settings.ui:4404
+#: ui/settings.ui:4447
 msgid "Command, e.g. kitty"
 msgstr "指令，例如 kitty"
 
-#: ui/settings.ui:4414
+#: ui/settings.ui:4457
 msgid "Add, then press its shortcut"
 msgstr "添加，然後按其快捷鍵"
 
-#: ui/settings.ui:4449
+#: ui/settings.ui:4492
 msgid "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4457
+#: ui/settings.ui:4500
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "其他快捷方式，來自hyprland.conf"
 
-#: ui/settings.ui:4502
+#: ui/settings.ui:4545
 msgid "Keyboard"
 msgstr "鍵盤"
 
-#: ui/settings.ui:4550
+#: ui/settings.ui:4593
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>按鍵<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4558
+#: ui/settings.ui:4601
 msgid "Every keyboard"
 msgstr "每個鍵盤"
 
-#: ui/settings.ui:4588
+#: ui/settings.ui:4631
 msgid "Swap Ctrl and Alt"
 msgstr "交換 Ctrl 和 Alt"
 
-#: ui/settings.ui:4597
+#: ui/settings.ui:4640
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt充當Ctrl，並且Ctrl充當Alt"
 
-#: ui/settings.ui:4612
+#: ui/settings.ui:4655
 msgid "Left side"
 msgstr "左側"
 
-#: ui/settings.ui:4613
+#: ui/settings.ui:4656
 msgid "Both sides"
 msgstr "左右兩側"
 
-#: ui/settings.ui:4640
-#: ui/settings.ui:4663
+#: ui/settings.ui:4683
+#: ui/settings.ui:4706
 msgid "Caps Lock"
 msgstr "大寫鎖定"
 
-#: ui/settings.ui:4649
+#: ui/settings.ui:4692
 msgid "What the Caps Lock key does"
 msgstr "Caps Lock鍵的作用"
 
-#: ui/settings.ui:4664
+#: ui/settings.ui:4707
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:4665
+#: ui/settings.ui:4708
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:4703
-#: ui/settings.ui:4985
+#: ui/settings.ui:4746
+#: ui/settings.ui:5028
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>來源<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4711
-#: ui/settings.ui:4993
+#: ui/settings.ui:4754
+#: ui/settings.ui:5036
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua 將這些寫入 Hyprland 的 inua.conf"
 
-#: ui/settings.ui:4762
-#: ui/settings.ui:5029
+#: ui/settings.ui:4805
+#: ui/settings.ui:5072
 msgid "Use hyprland.conf"
 msgstr "使用hyprland.conf"
 
-#: ui/settings.ui:4763
+#: ui/settings.ui:4806
 msgid "Stop setting keyboard options in inua"
 msgstr "停止在inua中設定鍵盤選項"
 
-#: ui/settings.ui:4794
+#: ui/settings.ui:4837
 msgid "Mouse & Touch"
 msgstr "滑鼠與觸控板"
 
-#: ui/settings.ui:4842
+#: ui/settings.ui:4885
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>指針<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4850
+#: ui/settings.ui:4893
 msgid "Every touchpad"
 msgstr "每個觸控板"
 
-#: ui/settings.ui:4880
+#: ui/settings.ui:4923
 msgid "Pointer speed"
 msgstr "指針速度"
 
-#: ui/settings.ui:4931
+#: ui/settings.ui:4974
 msgid "Acceleration"
 msgstr "加速度"
 
-#: ui/settings.ui:4940
+#: ui/settings.ui:4983
 msgid "Faster swipes move the pointer further"
 msgstr "更快的滑動使指針移動得更遠"
 
-#: ui/settings.ui:5030
+#: ui/settings.ui:5073
 msgid "Stop setting the touchpad in inua"
 msgstr "停止在inua中設定觸控板"
 
-#: ui/settings.ui:5061
+#: ui/settings.ui:5104
 msgid "About"
 msgstr "關於"
 
-#: ui/settings.ui:5107
+#: ui/settings.ui:5150
 msgid "The version, and new releases"
 msgstr "版本與新版本"
 
-#: ui/settings.ui:5137
+#: ui/settings.ui:5180
 msgid "Version"
 msgstr "版本"
 
-#: ui/settings.ui:5173
+#: ui/settings.ui:5216
 msgid "Updates"
 msgstr "更新"
 
-#: ui/settings.ui:5209
+#: ui/settings.ui:5252
 msgid "Check for updates"
 msgstr "檢查更新"
 
-#: ui/settings.ui:5235
+#: ui/settings.ui:5278
 msgid "Check every day"
 msgstr "每天檢查"
 
-#: ui/settings.ui:5244
+#: ui/settings.ui:5287
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "新版本發佈時會出現通知，並附有升級按鈕"
 
-#: ui/settings.ui:5289
+#: ui/settings.ui:5332
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>變更日誌<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5297
+#: ui/settings.ui:5340
 msgid "What the latest release changed"
 msgstr "最新版本改變了什麼"
 

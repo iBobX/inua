@@ -136,6 +136,9 @@ type shellUI struct {
 	onTrayMenuClosed       func(gtk.Popover)
 	onSettingsEntry        func(uintptr, uintptr)
 	onSettingsSwitch       func(gtk.Switch, bool) bool
+	onAIAbility            func(gtk.ToggleButton)
+	onAIModelSearch        func(gtk.SearchEntry)
+	onAIModelPick          func(gtk.Button)
 	onSettingsDrop         func(uintptr, uintptr, uintptr)
 	onSettingsPage         func(uintptr, uintptr, uintptr)
 	onDefaultApp           func(uintptr, uintptr, uintptr)
