@@ -5,6 +5,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: cmd/inua-assistant/answer.go:36
+#: internal/assistantui/assistantui.go:277
+msgid "The assistant is turned off. Turn it on in Settings → AI."
+msgstr "El asistente está apagado. Actívalo en Configuración → AI."
+
+#: cmd/inua-assistant/answer.go:52
+msgid "No profile makes quick choices. Turn on Decision for one in Settings → AI."
+msgstr "Ningún perfil hace elecciones rápidas. Activa Decisión en uno en Configuración → AI."
+
 #: cmd/inua-assistant/mcp.go:57
 msgid "inua's assistant"
 msgstr "el asistente de inua"
@@ -2521,8 +2530,8 @@ msgstr "Bloque desconocido %q"
 #: internal/filesui/cards.go:389
 #: internal/filesui/cards.go:427
 #: internal/filesui/cards.go:610
-#: internal/games/fortunenet/texts.go:75
-#: internal/gamesui/fortune_host.go:234
+#: internal/games/fortunenet/texts.go:76
+#: internal/gamesui/fortune_host.go:236
 #: internal/ui/askpass.go:267
 #: internal/ui/askpass.go:395
 #: ui/clock.ui:244
@@ -2711,10 +2720,6 @@ msgstr "¿Qué tiempo hace esta tarde en Kioto?"
 #: internal/assistantui/assistantui.go:134
 msgid "%s answers from here"
 msgstr "%s responde desde aquí"
-
-#: internal/assistantui/assistantui.go:277
-msgid "The assistant is turned off. Turn it on in Settings → AI."
-msgstr "El asistente está apagado. Actívalo en Configuración → AI."
 
 #: internal/assistantui/assistantui.go:333
 msgid "Could not start the Console endpoint: %s"
@@ -4164,7 +4169,7 @@ msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "No se encontró ningún terminal: instale xdg-terminal-exec o defina $TERMINAL."
 
 #: internal/games/fortune.go:54
-#: internal/games/fortunenet/texts.go:61
+#: internal/games/fortunenet/texts.go:62
 #: internal/gamesui/fortune_board.go:881
 #: internal/gamesui/fortune_menu.go:181
 #: internal/gamesui/fortune_panel.go:144
@@ -4201,212 +4206,212 @@ msgstr "Ir a la cárcel"
 msgid "Luxury Tax"
 msgstr "Impuesto de lujo"
 
-#: internal/games/fortune.go:313
-#: internal/gamesui/fortune.go:613
+#: internal/games/fortune.go:314
+#: internal/gamesui/fortune.go:648
 msgid "You"
 msgstr "Tú"
 
-#: internal/games/fortune.go:327
-#: internal/gamesui/fortune.go:609
-#: internal/gamesui/fortune_host.go:43
+#: internal/games/fortune.go:329
+#: internal/gamesui/fortune.go:644
+#: internal/gamesui/fortune_host.go:44
 msgid "Player %d"
 msgstr "Jugador %d"
 
-#: internal/games/fortune.go:497
+#: internal/games/fortune.go:502
 msgid "a house"
 msgstr "una casa"
 
-#: internal/games/fortune.go:499
+#: internal/games/fortune.go:504
 msgid "a hotel"
 msgstr "un hotel"
 
-#: internal/games/fortune.go:501
+#: internal/games/fortune.go:506
 msgid "%s built %s on %s ($%d)."
 msgstr "%[1]s construyó %[2]s sobre %[3]s ($%[4]d)."
 
-#: internal/games/fortune.go:512
+#: internal/games/fortune.go:517
 msgid "%s sold a building on %s for $%d."
 msgstr "%[1]s vendió un edificio en %[2]s por $%[3]d."
 
-#: internal/games/fortune.go:550
+#: internal/games/fortune.go:555
 msgid "%s paid $%d bail."
 msgstr "%[1]s pagó una fianza de $%[2]d."
 
-#: internal/games/fortune.go:586
+#: internal/games/fortune.go:591
 #: internal/games/fortune_cards.go:136
 msgid "%s bought %s for $%d."
 msgstr "%[1]s compró %[2]s por $%[3]d."
 
-#: internal/games/fortune.go:600
-#: internal/games/fortunenet/texts.go:88
+#: internal/games/fortune.go:605
+#: internal/games/fortunenet/texts.go:89
 #: internal/gamesui/fortune_menu.go:175
 #: internal/gamesui/fortune_panel.go:276
 msgid "a double"
 msgstr "un doble"
 
-#: internal/games/fortune.go:602
-#: internal/games/fortunenet/texts.go:89
+#: internal/games/fortune.go:607
+#: internal/games/fortunenet/texts.go:90
 #: internal/gamesui/fortune_panel.go:276
 msgid "a six"
 msgstr "un seis"
 
-#: internal/games/fortune.go:604
+#: internal/games/fortune.go:609
 msgid "%s rolled %s and walked out of jail."
 msgstr "%[1]s rodó %[2]s y salió de la cárcel."
 
-#: internal/games/fortune.go:607
+#: internal/games/fortune.go:612
 msgid "%s stays in jail."
 msgstr "%s permanece en la cárcel."
 
-#: internal/games/fortune.go:611
+#: internal/games/fortune.go:616
 msgid "%s paid $%d bail after three tries."
 msgstr "%[1]s pagó una fianza de $%[2]d después de tres intentos."
 
-#: internal/games/fortune.go:620
+#: internal/games/fortune.go:625
 msgid "%s is a turtle: one square."
 msgstr ""
 
-#: internal/games/fortune.go:625
+#: internal/games/fortune.go:630
 msgid "Three doubles in a row: %s goes to jail."
 msgstr "Tres dobletes seguidos: %s va a la cárcel."
 
-#: internal/games/fortune.go:686
+#: internal/games/fortune.go:691
 msgid "%s took the road through %s."
 msgstr "%[1]s tomó la carretera que pasa por %[2]s."
 
-#: internal/games/fortune.go:689
+#: internal/games/fortune.go:694
 msgid "%s passed Start: +$%d."
 msgstr "%[1]s pasó Inicio: +$%[2]d."
 
-#: internal/games/fortune.go:732
+#: internal/games/fortune.go:737
 msgid "%s cannot afford %s."
 msgstr "%[1]s no puede permitirse el lujo de %[2]s."
 
-#: internal/games/fortune.go:736
+#: internal/games/fortune.go:741
 msgid "%s owed %s rent for %s and paid nothing: Free Rent."
 msgstr ""
 
-#: internal/games/fortune.go:742
+#: internal/games/fortune.go:747
 msgid "%s paid %s $%d rent for %s."
 msgstr "%[1]s pagó a %[2]s $%[3]d de alquiler por %[4]s."
 
-#: internal/games/fortune.go:748
+#: internal/games/fortune.go:753
 msgid "%s paid $%d %s into the fountain."
 msgstr "%[1]s pagó $%[2]d %[3]s en la fuente."
 
-#: internal/games/fortune.go:751
+#: internal/games/fortune.go:756
 msgid "%s took $%d from the fountain."
 msgstr "%[1]s tomó $%[2]d de la fuente."
 
-#: internal/games/fortune.go:755
+#: internal/games/fortune.go:760
 msgid "The fountain is empty."
 msgstr "La fuente está vacía."
 
-#: internal/games/fortune.go:758
+#: internal/games/fortune.go:763
 msgid "%s goes to jail."
 msgstr "%s va a la cárcel."
 
-#: internal/games/fortune.go:782
+#: internal/games/fortune.go:787
 msgid "A double: roll again."
 msgstr "Un doble: tirar de nuevo."
 
-#: internal/games/fortune.go:797
+#: internal/games/fortune.go:802
 msgid "A street fair pays out: collect $60."
 msgstr "Una feria callejera da resultados: recauda 60 dólares."
 
-#: internal/games/fortune.go:798
+#: internal/games/fortune.go:803
 msgid "Advance to Start."
 msgstr "Avance al inicio."
 
-#: internal/games/fortune.go:799
+#: internal/games/fortune.go:804
 msgid "Your bicycle needs a new chain: pay $40."
 msgstr "Su bicicleta necesita una cadena nueva: pague $40."
 
-#: internal/games/fortune.go:800
+#: internal/games/fortune.go:805
 msgid "Go back three squares."
 msgstr "Retroceder tres casillas."
 
-#: internal/games/fortune.go:801
+#: internal/games/fortune.go:806
 msgid "It is your birthday: every player gives you $25."
 msgstr "Es tu cumpleaños: cada jugador te regala 25 dólares."
 
-#: internal/games/fortune.go:802
+#: internal/games/fortune.go:807
 msgid "Roof repairs: pay $25 for each building."
 msgstr "Reparaciones de techo: pagar $25 por cada edificio."
 
-#: internal/games/fortune.go:803
+#: internal/games/fortune.go:808
 msgid "A refund from the tax office: collect $80."
 msgstr "Un reembolso de la oficina de impuestos: cobrar $80."
 
-#: internal/games/fortune.go:804
+#: internal/games/fortune.go:809
 msgid "Catch a ride to the next station or pier."
 msgstr "Tome un viaje a la siguiente estación o muelle."
 
-#: internal/games/fortune.go:805
+#: internal/games/fortune.go:810
 msgid "A night out: go to %s."
 msgstr "Una noche de fiesta: ve a %s."
 
-#: internal/games/fortune.go:806
+#: internal/games/fortune.go:811
 msgid "Your shares paid a dividend: collect $100."
 msgstr "Sus acciones pagaron un dividendo: cobre $100."
 
-#: internal/games/fortune.go:807
+#: internal/games/fortune.go:812
 msgid "Hotel inspection: pay $40 for each building."
 msgstr "Inspección de hotel: pagar $40 por cada edificio."
 
-#: internal/games/fortune.go:808
+#: internal/games/fortune.go:813
 msgid "A parking fine: pay $30."
 msgstr "Una multa de estacionamiento: pagar $30."
 
-#: internal/games/fortune.go:809
+#: internal/games/fortune.go:814
 msgid "You won a crossword: collect $50."
 msgstr "Ganaste un crucigrama: recauda $50."
 
-#: internal/games/fortune.go:810
+#: internal/games/fortune.go:815
 msgid "Buy everyone lunch: pay each player $15."
 msgstr "Invíteles el almuerzo a todos: pague a cada jugador $15."
 
-#: internal/games/fortune.go:811
+#: internal/games/fortune.go:816
 msgid "Caught jaywalking: go to jail."
 msgstr "Atrapado cruzando la calle imprudentemente: ir a la cárcel."
 
-#: internal/games/fortune.go:812
+#: internal/games/fortune.go:817
 msgid "A card left on a bench: take it."
 msgstr ""
 
-#: internal/games/fortune.go:813
+#: internal/games/fortune.go:818
 msgid "The shopkeeper owes you a favour: take a card."
 msgstr ""
 
-#: internal/games/fortune.go:814
+#: internal/games/fortune.go:819
 msgid "You won a raffle: take a card."
 msgstr ""
 
-#: internal/games/fortune.go:843
+#: internal/games/fortune.go:848
 msgid "Chance for %s: %s"
 msgstr "Posibilidad de %[1]s: %[2]s"
 
-#: internal/games/fortune.go:846
+#: internal/games/fortune.go:851
 msgid "%s takes a card: %s."
 msgstr ""
 
-#: internal/games/fortune.go:943
+#: internal/games/fortune.go:948
 msgid "%s sold a house on %s for $%d."
 msgstr "%[1]s vendió una casa en %[2]s por $%[3]d."
 
-#: internal/games/fortune.go:947
+#: internal/games/fortune.go:952
 msgid "%s sold %s to the bank for $%d."
 msgstr "%[1]s vendió %[2]s al banco por $%[3]d."
 
-#: internal/games/fortune.go:961
+#: internal/games/fortune.go:966
 msgid "%s is bankrupt and out of the game."
 msgstr "%s está en quiebra y fuera del juego."
 
-#: internal/games/fortune.go:996
+#: internal/games/fortune.go:1001
 msgid "%s sleeps through their turn."
 msgstr ""
 
-#: internal/games/fortune.go:1016
+#: internal/games/fortune.go:1021
 msgid "%s won with $%d in worth."
 msgstr "%[1]s ganó con un valor de $%[2]d."
 
@@ -4535,7 +4540,7 @@ msgid "%s played %s and took %s from %s."
 msgstr ""
 
 #: internal/games/fortune_cards.go:276
-#: internal/games/fortunenet/texts.go:81
+#: internal/games/fortunenet/texts.go:82
 msgid "a card"
 msgstr ""
 
@@ -5876,15 +5881,23 @@ msgstr "el embaucador"
 msgid "Lives by the cards: sleeping pills, turtles and audits for whoever leads; builds anywhere."
 msgstr "Vive de las cartas: somníferos, tortugas y auditorías para quien va primero; construye en cualquier sitio."
 
-#: internal/games/fortunenet/host.go:224
+#: internal/games/fortuneai/fortuneai.go:425
+msgid "The AI keeps not answering: the computer plays for %s from now on."
+msgstr "La IA sigue sin responder: a partir de ahora el ordenador juega por %s."
+
+#: internal/games/fortuneai/fortuneai.go:427
+msgid "No answer from the AI: the computer plays this turn for %s."
+msgstr "La IA no responde: el ordenador juega este turno por %s."
+
+#: internal/games/fortunenet/host.go:233
 msgid "The host sent you away."
 msgstr "El anfitrión te ha echado."
 
-#: internal/games/fortunenet/host.go:361
+#: internal/games/fortunenet/host.go:373
 msgid "That is not this game's code."
 msgstr "Ese no es el código de esta partida."
 
-#: internal/games/fortunenet/host.go:368
+#: internal/games/fortunenet/host.go:380
 msgid "Your seat was taken up in another window."
 msgstr "Tu asiento se ha abierto en otra ventana."
 
@@ -5927,7 +5940,7 @@ msgid "%s · %d rounds · $%s each"
 msgstr "%s · %d rondas · $%s cada uno"
 
 #: internal/games/fortunenet/texts.go:26
-#: internal/gamesui/fortune_host.go:140
+#: internal/gamesui/fortune_host.go:142
 msgid "Room for %d more"
 msgstr "Caben %d más"
 
@@ -5936,369 +5949,374 @@ msgid "at the host's screen"
 msgstr "en la pantalla del anfitrión"
 
 #: internal/games/fortunenet/texts.go:28
-#: internal/gamesui/fortune_host.go:128
+#: internal/gamesui/fortune_host.go:130
 msgid "in a browser"
 msgstr "en un navegador"
 
 #: internal/games/fortunenet/texts.go:30
-#: internal/gamesui/fortune.go:1049
+#: internal/gamesui/fortune.go:1106
 msgid " · away, the computer plays"
 msgstr " · ausente, juega el ordenador"
 
 #: internal/games/fortunenet/texts.go:31
-#: internal/gamesui/fortune.go:236
-#: internal/gamesui/fortune.go:392
+#: internal/gamesui/fortune.go:1109
+msgid " · the AI plays"
+msgstr " · juega la IA"
+
+#: internal/games/fortunenet/texts.go:32
+#: internal/gamesui/fortune.go:252
+#: internal/gamesui/fortune.go:408
 msgid "PLAYERS"
 msgstr "JUGADORES"
 
-#: internal/games/fortunenet/texts.go:32
-#: internal/gamesui/fortune.go:240
+#: internal/games/fortunenet/texts.go:33
+#: internal/gamesui/fortune.go:256
 msgid "SQUARE"
 msgstr "CASILLA"
 
-#: internal/games/fortunenet/texts.go:33
-#: internal/gamesui/fortune.go:260
+#: internal/games/fortunenet/texts.go:34
+#: internal/gamesui/fortune.go:276
 msgid "WHAT HAPPENED"
 msgstr "QUE PASO"
 
-#: internal/games/fortunenet/texts.go:34
-#: internal/gamesui/fortune.go:192
+#: internal/games/fortunenet/texts.go:35
+#: internal/gamesui/fortune.go:208
 msgid "ROUND"
 msgstr "RONDA"
 
-#: internal/games/fortunenet/texts.go:35
-#: internal/gamesui/fortune.go:193
+#: internal/games/fortunenet/texts.go:36
+#: internal/gamesui/fortune.go:209
 msgid "FOUNTAIN"
 msgstr "FUENTE"
 
-#: internal/games/fortunenet/texts.go:36
-#: internal/gamesui/fortune.go:247
-#: internal/gamesui/fortune.go:1089
+#: internal/games/fortunenet/texts.go:37
+#: internal/gamesui/fortune.go:263
+#: internal/gamesui/fortune.go:1152
 msgid "Roll the dice"
 msgstr "Tirar los dados"
 
-#: internal/games/fortunenet/texts.go:37
-#: internal/gamesui/fortune.go:1092
+#: internal/games/fortunenet/texts.go:38
+#: internal/gamesui/fortune.go:1155
 msgid "Roll for a double"
 msgstr "Intenta sacar dobles"
 
-#: internal/games/fortunenet/texts.go:38
-#: internal/gamesui/fortune.go:1092
+#: internal/games/fortunenet/texts.go:39
+#: internal/gamesui/fortune.go:1155
 msgid "Roll for a six"
 msgstr "Tirada para un seis"
 
-#: internal/games/fortunenet/texts.go:39
+#: internal/games/fortunenet/texts.go:40
 msgid "Pay $%d bail"
 msgstr "Pagar $%d de fianza"
 
-#: internal/games/fortunenet/texts.go:40
-#: internal/gamesui/fortune.go:1099
+#: internal/games/fortunenet/texts.go:41
+#: internal/gamesui/fortune.go:1162
 #: internal/gamesui/fortune_panel.go:464
 msgid "Buy it for $%d"
 msgstr "Cómprelo por $%d"
 
-#: internal/games/fortunenet/texts.go:41
-#: internal/gamesui/fortune.go:1101
+#: internal/games/fortunenet/texts.go:42
+#: internal/gamesui/fortune.go:1164
 msgid "Don't buy"
 msgstr "No comprar"
 
-#: internal/games/fortunenet/texts.go:42
-#: internal/gamesui/fortune.go:1105
+#: internal/games/fortunenet/texts.go:43
+#: internal/gamesui/fortune.go:1168
 #: internal/gamesui/fortune_panel.go:376
 msgid "Leave the shop"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:43
-#: internal/gamesui/fortune.go:1108
+#: internal/games/fortunenet/texts.go:44
+#: internal/gamesui/fortune.go:1171
 msgid "End turn"
 msgstr "Fin de turno"
 
-#: internal/games/fortunenet/texts.go:44
-#: internal/gamesui/fortune.go:1083
+#: internal/games/fortunenet/texts.go:45
+#: internal/gamesui/fortune.go:1143
 msgid "%s is playing…"
 msgstr "Es el turno de %s…"
 
-#: internal/games/fortunenet/texts.go:45
+#: internal/games/fortunenet/texts.go:46
 #: internal/gamesui/fortune_board.go:1115
 msgid "Your turn"
 msgstr "Tu turno"
 
-#: internal/games/fortunenet/texts.go:46
+#: internal/games/fortunenet/texts.go:47
 #: internal/gamesui/fortune_board.go:1113
 msgid "%s's turn"
 msgstr "El turno de %s"
 
-#: internal/games/fortunenet/texts.go:47
+#: internal/games/fortunenet/texts.go:48
 #: internal/gamesui/fortune_board.go:1139
 msgid "round %d of %d"
 msgstr "ronda %[1]d de %[2]d"
 
-#: internal/games/fortunenet/texts.go:48
-#: internal/gamesui/fortune.go:1028
+#: internal/games/fortunenet/texts.go:49
+#: internal/gamesui/fortune.go:1085
 msgid "worth $%s"
 msgstr "valor $%s"
 
-#: internal/games/fortunenet/texts.go:49
-#: internal/gamesui/fortune.go:1031
+#: internal/games/fortunenet/texts.go:50
+#: internal/gamesui/fortune.go:1088
 msgid "bankrupt"
 msgstr "en quiebra"
 
-#: internal/games/fortunenet/texts.go:50
-#: internal/gamesui/fortune.go:1033
+#: internal/games/fortunenet/texts.go:51
+#: internal/gamesui/fortune.go:1090
 msgid " · in jail"
 msgstr "· en la carcel"
 
-#: internal/games/fortunenet/texts.go:51
-#: internal/gamesui/fortune.go:1040
+#: internal/games/fortunenet/texts.go:52
+#: internal/gamesui/fortune.go:1097
 msgid " · free rent"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:52
-#: internal/gamesui/fortune.go:1043
+#: internal/games/fortunenet/texts.go:53
+#: internal/gamesui/fortune.go:1100
 msgid " · turtle"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:53
-#: internal/gamesui/fortune.go:1046
+#: internal/games/fortunenet/texts.go:54
+#: internal/gamesui/fortune.go:1103
 msgid " · asleep"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:54
+#: internal/games/fortunenet/texts.go:55
 #: internal/gamesui/fortune_panel.go:160
 msgid "For sale: $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:55
+#: internal/games/fortunenet/texts.go:56
 #: internal/gamesui/fortune_panel.go:162
 msgid "%s owns it"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:56
+#: internal/games/fortunenet/texts.go:57
 #: internal/gamesui/fortune_panel.go:164
 msgid "You own it"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:57
+#: internal/games/fortunenet/texts.go:58
 #: internal/gamesui/fortune_panel.go:168
 msgid "rent now"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:58
+#: internal/games/fortunenet/texts.go:59
 #: internal/gamesui/fortune_panel.go:138
 msgid "Street · price $%d · building $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:59
+#: internal/games/fortunenet/texts.go:60
 #: internal/gamesui/fortune_panel.go:140
 msgid "Station or pier · price $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:60
+#: internal/games/fortunenet/texts.go:61
 #: internal/gamesui/fortune_panel.go:142
 msgid "Utility · price $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:62
+#: internal/games/fortunenet/texts.go:63
 #: internal/gamesui/fortune_menu.go:182
 #: internal/gamesui/fortune_panel.go:146
 msgid "Card shop"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:63
+#: internal/games/fortunenet/texts.go:64
 #: internal/gamesui/fortune_panel.go:148
 msgid "Tax · $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:64
+#: internal/games/fortunenet/texts.go:65
 #: internal/gamesui/fortune_panel.go:150
 msgid "Corner"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:65
+#: internal/games/fortunenet/texts.go:66
 #: internal/gamesui/fortune_panel.go:125
 msgid "House · $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:66
+#: internal/games/fortunenet/texts.go:67
 #: internal/gamesui/fortune_panel.go:122
 msgid "Hotel · $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:67
+#: internal/games/fortunenet/texts.go:68
 #: internal/gamesui/fortune_panel.go:119
 msgid "Hotel built"
 msgstr "Hotel construido"
 
-#: internal/games/fortunenet/texts.go:68
+#: internal/games/fortunenet/texts.go:69
 #: internal/gamesui/fortune_panel.go:127
 msgid "Sell · $%d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:69
+#: internal/games/fortunenet/texts.go:70
 #: internal/gamesui/fortune_panel.go:480
 msgid "Your cards · %d of %d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:70
+#: internal/games/fortunenet/texts.go:71
 #: internal/gamesui/fortune_panel.go:478
 msgid "Your cards · %d of %d · click one to play it"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:71
+#: internal/games/fortunenet/texts.go:72
 #: internal/gamesui/fortune_panel.go:368
 msgid "Click a card to buy it: any of them, or none."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:72
+#: internal/games/fortunenet/texts.go:73
 #: internal/gamesui/fortune_panel.go:511
 msgid "On whom?"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:73
+#: internal/games/fortunenet/texts.go:74
 #: internal/gamesui/fortune_panel.go:513
 msgid "How many squares?"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:74
+#: internal/games/fortunenet/texts.go:75
 msgid "Pick a square on the board"
 msgstr "Elige una casilla del tablero"
 
-#: internal/games/fortunenet/texts.go:76
+#: internal/games/fortunenet/texts.go:77
 #: internal/gamesui/fortune_board.go:1083
 msgid "%s won."
 msgstr "Ganó %s."
 
-#: internal/games/fortunenet/texts.go:77
+#: internal/games/fortunenet/texts.go:78
 #: internal/gamesui/fortune_board.go:1085
 msgid "You won!"
 msgstr "¡Ganaste!"
 
-#: internal/games/fortunenet/texts.go:78
+#: internal/games/fortunenet/texts.go:79
 #: internal/gamesui/fortune_board.go:1100
 msgid "%s (bankrupt)"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:79
+#: internal/games/fortunenet/texts.go:80
 #: internal/gamesui/fortune_panel.go:234
 msgid "Bare"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:80
+#: internal/games/fortunenet/texts.go:81
 #: internal/gamesui/fortune_panel.go:237
 msgid "Hotel"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:82
+#: internal/games/fortunenet/texts.go:83
 #: internal/gamesui/fortune_menu.go:180
 #: internal/gamesui/fortune_panel.go:271
 msgid "The rent is the dice times this."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:83
+#: internal/games/fortunenet/texts.go:84
 msgid "Sound on: M turns it off"
 msgstr "Sonido activado: M lo apaga"
 
-#: internal/games/fortunenet/texts.go:84
+#: internal/games/fortunenet/texts.go:85
 msgid "Sound off: M turns it on"
 msgstr "Sonido desactivado: M lo activa"
 
-#: internal/games/fortunenet/texts.go:85
+#: internal/games/fortunenet/texts.go:86
 #: internal/gamesui/fortune_menu.go:179
 #: internal/gamesui/fortune_panel.go:265
 msgid "The rent is by how many piers the owner has."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:87
+#: internal/games/fortunenet/texts.go:88
 #: internal/gamesui/fortune_menu.go:174
 #: internal/gamesui/fortune_panel.go:273
 msgid "Collect $%d every time you pass."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:88
 #: internal/games/fortunenet/texts.go:89
+#: internal/games/fortunenet/texts.go:90
 #: internal/gamesui/fortune_menu.go:175
 #: internal/gamesui/fortune_panel.go:275
 msgid "Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go."
 msgstr "Sólo de visita, a menos que se envíe aquí. En la cárcel, tira %s para salir, o paga $50 antes de tirar; Después de tres intentos, pagas y te vas."
 
-#: internal/games/fortunenet/texts.go:90
+#: internal/games/fortunenet/texts.go:91
 #: internal/gamesui/fortune_panel.go:278
 msgid "Taxes and fines go into the fountain; the next player to land here takes it all: $%d now."
 msgstr "Los impuestos y las multas van a la fuente; el siguiente jugador que llegue aquí se lo lleva todo: $%d ahora."
 
-#: internal/games/fortunenet/texts.go:91
+#: internal/games/fortunenet/texts.go:92
 #: internal/gamesui/fortune_menu.go:177
 #: internal/gamesui/fortune_panel.go:280
 msgid "Straight to jail, without passing Start."
 msgstr "Directo a la cárcel, sin pasar Start."
 
-#: internal/games/fortunenet/texts.go:92
+#: internal/games/fortunenet/texts.go:93
 #: internal/gamesui/fortune_menu.go:181
 #: internal/gamesui/fortune_panel.go:282
 msgid "Draw a card: money, a fine, a trip, or a card for your hand."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:93
+#: internal/games/fortunenet/texts.go:94
 #: internal/gamesui/fortune_menu.go:182
 #: internal/gamesui/fortune_panel.go:284
 msgid "Three cards on offer: buy any of them, or none. A hand holds up to %d cards."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:94
+#: internal/games/fortunenet/texts.go:95
 #: internal/gamesui/fortune_menu.go:183
 #: internal/gamesui/fortune_panel.go:286
 msgid "Pay $%d into the fountain."
 msgstr "Pague $%d en la fuente."
 
-#: internal/games/fortunenet/texts.go:95
+#: internal/games/fortunenet/texts.go:96
 #: internal/gamesui/fortune_panel.go:244
 msgid "The whole group: bare rent doubled, built rents half again."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:96
+#: internal/games/fortunenet/texts.go:97
 #: internal/gamesui/fortune_menu.go:178
 #: internal/gamesui/fortune_panel.go:246
 msgid "With the whole group: bare rent doubled, built rents half again."
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:97
+#: internal/games/fortunenet/texts.go:98
 #: internal/gamesui/fortune_panel.go:259
 msgid "Group:"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:98
+#: internal/games/fortunenet/texts.go:99
 #: internal/gamesui/fortune_panel.go:269
 msgid "× %d"
 msgstr ""
 
-#: internal/games/fortunenet/texts.go:100
+#: internal/games/fortunenet/texts.go:101
 #: internal/gamesui/fortune_panel.go:263
 msgid "%d pier"
 msgid_plural "%d piers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/games/fortunenet/texts.go:103
+#: internal/games/fortunenet/texts.go:104
 #: internal/gamesui/fortune_panel.go:269
 msgid "%d utility"
 msgid_plural "%d utilities"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/games/fortunenet/texts.go:106
-#: internal/gamesui/fortune.go:1037
+#: internal/games/fortunenet/texts.go:107
+#: internal/gamesui/fortune.go:1094
 msgid " · %d card"
 msgid_plural " · %d cards"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/games/fortunenet/texts.go:109
+#: internal/games/fortunenet/texts.go:110
 msgid "and %d computer player"
 msgid_plural "and %d computer players"
 msgstr[0] "y %d jugador del ordenador"
 msgstr[1] "y %d jugadores del ordenador"
 
-#: internal/games/fortunenet/texts.go:112
+#: internal/games/fortunenet/texts.go:113
 #: internal/gamesui/fortune_panel.go:239
 msgid "%d house"
 msgid_plural "%d houses"
@@ -6639,85 +6657,128 @@ msgstr ""
 msgid "Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  M sound  ·  click a square to see it  ·  drag, scroll or arrows to look about  ·  Home your pawn"
 msgstr ""
 
-#: internal/gamesui/fortune.go:194
+#: internal/gamesui/fortune.go:210
 msgid "JOIN CODE"
 msgstr "CÓDIGO"
 
-#: internal/gamesui/fortune.go:306
-#: internal/gamesui/fortune.go:1080
+#: internal/gamesui/fortune.go:322
+#: internal/gamesui/fortune.go:1140
 #: ui/game.ui:76
 msgid "New game"
 msgstr "Nuevo juego"
 
-#: internal/gamesui/fortune.go:396
+#: internal/gamesui/fortune.go:412
 msgid "Hot seat"
 msgstr "Mismo equipo"
 
-#: internal/gamesui/fortune.go:400
-#: internal/gamesui/fortune.go:618
+#: internal/gamesui/fortune.go:416
+#: internal/gamesui/fortune_ai.go:199
+#: ui/settings.ui:1928
+msgid "AI"
+msgstr "IA"
+
+#: internal/gamesui/fortune.go:416
+#: internal/gamesui/fortune.go:653
 msgid "Open seat"
 msgstr "Asiento libre"
 
-#: internal/gamesui/fortune.go:443
+#: internal/gamesui/fortune.go:468
 msgid "On the network"
 msgstr "En la red"
 
-#: internal/gamesui/fortune.go:448
+#: internal/gamesui/fortune.go:473
 msgid "MAP"
 msgstr "MAPA"
 
-#: internal/gamesui/fortune.go:504
+#: internal/gamesui/fortune.go:529
 msgid "Rounds"
 msgstr "Rondas"
 
-#: internal/gamesui/fortune.go:505
+#: internal/gamesui/fortune.go:530
 msgid "Starting money"
 msgstr "Dinero inicial"
 
-#: internal/gamesui/fortune.go:506
+#: internal/gamesui/fortune.go:531
 msgid "Dice"
 msgstr "Dados"
 
-#: internal/gamesui/fortune.go:506
+#: internal/gamesui/fortune.go:531
 msgid "One die"
 msgstr "Un dado"
 
-#: internal/gamesui/fortune.go:506
+#: internal/gamesui/fortune.go:531
 msgid "Two dice"
 msgstr "Dos dados"
 
-#: internal/gamesui/fortune.go:511
+#: internal/gamesui/fortune.go:536
 msgid "Build the day you buy"
 msgstr "Construye el día que compras"
 
-#: internal/gamesui/fortune.go:537
+#: internal/gamesui/fortune.go:562
 msgid "%s and %s"
 msgstr "%[1]s y %[2]s"
 
-#: internal/gamesui/fortune.go:606
-#: internal/gamesui/fortune_host.go:128
+#: internal/gamesui/fortune.go:641
+#: internal/gamesui/fortune_host.go:130
 msgid "at this screen"
 msgstr "en esta pantalla"
 
-#: internal/gamesui/fortune.go:619
+#: internal/gamesui/fortune.go:654
 msgid "empty: no one plays here"
 msgstr "vacío: nadie juega aquí"
 
-#: internal/gamesui/fortune.go:621
+#: internal/gamesui/fortune.go:656
 msgid "for a visitor in a browser"
 msgstr "para un visitante en un navegador"
 
-#: internal/gamesui/fortune.go:679
+#: internal/gamesui/fortune.go:723
 msgid "Open the game to the network"
 msgstr "Abrir la partida a la red"
 
-#: internal/gamesui/fortune.go:681
+#: internal/gamesui/fortune.go:725
 msgid "Start in %s"
 msgstr "Iniciar en %s"
 
-#: internal/gamesui/fortune.go:1093
+#: internal/gamesui/fortune.go:1145
+msgid "%s is thinking…"
+msgstr "%s está pensando…"
+
+#: internal/gamesui/fortune.go:1156
 msgid "Pay $50 bail"
 msgstr "Pagar $50 de fianza"
+
+#: internal/gamesui/fortune_ai.go:80
+msgid "inua-assistant is not installed"
+msgstr "inua-assistant no está instalado"
+
+#: internal/gamesui/fortune_ai.go:113
+msgid "the AI picked the wrong option"
+msgstr "la IA eligió la opción equivocada"
+
+#: internal/gamesui/fortune_ai.go:143
+msgid "the AI did not answer in time"
+msgstr "la IA no respondió a tiempo"
+
+#: internal/gamesui/fortune_ai.go:156
+#: internal/gamesui/fortune_ai.go:162
+msgid "checking the AI…"
+msgstr "comprobando la IA…"
+
+#: internal/gamesui/fortune_ai.go:164
+msgid "this profile did not answer"
+msgstr "este perfil no respondió"
+
+#: internal/gamesui/fortune_ai.go:172
+msgid "the AI: %s"
+msgstr "la IA: %s"
+
+#: internal/gamesui/fortune_ai.go:202
+msgid "AI %d"
+msgstr "IA %d"
+
+#: internal/gamesui/fortune_ai.go:216
+msgid "The profile of Settings → AI this player asks"
+msgstr "El perfil de Configuración → AI al que pregunta este jugador"
 
 #: internal/gamesui/fortune_board.go:890
 msgid "START\ncollect $%d"
@@ -6775,27 +6836,27 @@ msgstr "villas"
 msgid "palazzi"
 msgstr "palacios"
 
-#: internal/gamesui/fortune_host.go:60
+#: internal/gamesui/fortune_host.go:62
 msgid "The game could not open to the network: %v"
 msgstr "No se pudo abrir la partida a la red: %v"
 
-#: internal/gamesui/fortune_host.go:88
+#: internal/gamesui/fortune_host.go:90
 msgid "Host"
 msgstr "Anfitrión"
 
-#: internal/gamesui/fortune_host.go:132
+#: internal/gamesui/fortune_host.go:134
 msgid "Send away"
 msgstr "Echar"
 
-#: internal/gamesui/fortune_host.go:138
+#: internal/gamesui/fortune_host.go:140
 msgid "Waiting for visitors: open the link on a phone or a computer on the same network."
 msgstr "Esperando visitantes: abre el enlace en un teléfono o un ordenador de la misma red."
 
-#: internal/gamesui/fortune_host.go:178
+#: internal/gamesui/fortune_host.go:180
 msgid "Others join from a browser"
 msgstr "Otros se unen desde un navegador"
 
-#: internal/gamesui/fortune_host.go:229
+#: internal/gamesui/fortune_host.go:231
 msgid "Start the game"
 msgstr "Empezar la partida"
 
@@ -10309,10 +10370,6 @@ msgstr "Qué abre enlaces, carpetas y archivos"
 #: ui/settings.ui:1898
 msgid "Saved where other apps read them too: ~/.config/mimeapps.list, and for the terminal xdg-terminals.list and the launcher's terminal."
 msgstr "Se guarda donde otras aplicaciones también lo leen: ~/.config/mimeapps.list y, para el terminal, xdg-terminals.list y el terminal del lanzador."
-
-#: ui/settings.ui:1928
-msgid "AI"
-msgstr "IA"
 
 #: ui/settings.ui:1966
 msgid "<span alpha='55%'>[</span>ASSISTANT<span alpha='55%'>]</span>"

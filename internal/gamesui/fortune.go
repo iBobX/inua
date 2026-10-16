@@ -14,7 +14,9 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"github.com/makiuchi-d/gozxing"
 
+	"github.com/lyricat/inua/internal/assistant/answer"
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/fortuneai"
 	"github.com/lyricat/inua/internal/games/fortunenet"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -116,7 +118,7 @@ type fortune struct {
 	// The setup: who plays (roster), the map chosen large (previewCv,
 	// drawn once into preview for previewCity at previewAt), its name and
 	// buildings, a card for each city, the choices, Start.
-	seats        [4]int // each seat's choice: seatHot, a computer player, seatOpen
+	seats        [4]int // each seat's choice: seatHot, a computer player, seatAI, seatOpen
 	seatDrops    [4]*gtk.DropDown
 	seatNames    [4]*gtk.Label
 	seatRows     [4]*gtk.Box
@@ -124,6 +126,20 @@ type fortune struct {
 	fillingSeats bool
 	open         int // the seats open, on the network
 	onSeat       func(uintptr, uintptr, uintptr)
+
+	// The user's AI (fortune_ai.go): whether its program started, why not,
+	// and once it did, the program and the driver of its players; the
+	// profile each seat asks, picked in profileDrops, and whether each
+	// profile asked answers.
+	aiState      aiState
+	aiWhy        string
+	aiClient     *answer.Client
+	ai           *fortuneai.Driver
+	seatProfile  [4]string
+	profileDrops [4]*gtk.DropDown
+	checks       map[string]*aiCheck
+	aiProfiles   []string // the AI players', in their order
+	onProfile    func(uintptr, uintptr, uintptr)
 
 	// The game menu (fortune_menu.go), in the header: its Restart item, and
 	// the page the compendium goes back to.
@@ -397,7 +413,7 @@ func (p *fortune) setupPage() *gtk.Box {
 	for _, r := range games.Rivals {
 		choices = append(choices, i18n.T(r.Name))
 	}
-	choices = append(choices, i18n.T("Open seat"))
+	choices = append(choices, i18n.T("AI"), i18n.T("Open seat"))
 	p.onSeat = func(ptr, _, _ uintptr) {
 		for i, d := range p.seatDrops {
 			if d != nil && d.GoPointer() == ptr && !p.fillingSeats {
@@ -414,7 +430,13 @@ func (p *fortune) setupPage() *gtk.Box {
 		d.SetValign(gtk.AlignCenterValue)
 		gtkx.ConnectNotify(d, "selected", &p.onSeat)
 		p.seatDrops[i] = d
-		gtkx.Append(row, &d.Widget)
+		// The seat's choice, and under it, for the AI, its profile.
+		drops := gtk.NewBox(gtk.OrientationVerticalValue, 6)
+		drops.SetValign(gtk.AlignCenterValue)
+		gtkx.Append(drops, &d.Widget)
+		p.profileDrops[i] = p.profileDrop()
+		gtkx.Append(drops, &p.profileDrops[i].Widget)
+		gtkx.Append(row, &drops.Widget)
 		who := gtk.NewBox(gtk.OrientationVerticalValue, 1)
 		who.SetHexpand(true)
 		who.SetValign(gtk.AlignCenterValue)
@@ -425,6 +447,9 @@ func (p *fortune) setupPage() *gtk.Box {
 		p.seatSubs[i].AddCssClass("fortune-city-sub")
 		p.seatSubs[i].SetXalign(0)
 		p.seatSubs[i].SetEllipsize(3) // end
+		p.seatSubs[i].SetWrap(true)   // why the AI cannot play: two lines
+		p.seatSubs[i].SetLines(2)
+		p.seatSubs[i].SetMaxWidthChars(28)
 		gtkx.Append(who, &p.seatSubs[i].Widget)
 		gtkx.Append(row, &who.Widget)
 		p.seatRows[i] = row
@@ -540,17 +565,22 @@ func (p *fortune) showMap() {
 }
 
 // The seats' choices: a person at this screen (a hot seat), one of the
-// computer players (games.Rivals, by 1 + its index), an open seat.
+// computer players (games.Rivals, by 1 + its index), the user's AI, an
+// open seat.
 const (
 	seatHot  = 0
-	seatOpen = 4
+	seatAI   = 4
+	seatOpen = 5
 )
 
 // setSeat makes seat i choice c; a computer player another seat has
 // moves that seat to the next one free, or opens it.
 func (p *fortune) setSeat(i, c int) {
 	p.seats[i] = c
-	if c != seatHot && c != seatOpen {
+	if c == seatAI {
+		p.checkAI()
+	}
+	if c > seatHot && c <= len(games.Rivals) {
 		for j := range p.seats {
 			if j != i && p.seats[j] == c {
 				p.seats[j] = seatOpen
@@ -579,22 +609,27 @@ func (p *fortune) fitSeats() {
 	defer func() { p.fillingSeats = false }()
 	p.people, p.open = 0, 0
 	var rivals []string
+	ais := 0
 	for _, c := range p.seats {
 		switch c {
 		case seatHot:
 			p.people++
 		case seatOpen:
 			p.open++
+		case seatAI:
+			ais++
 		default:
 			rivals = append(rivals, games.Rivals[c-1].Name)
 		}
 	}
 	p.settings.Rivals, p.settings.RivalNames = len(rivals), rivals
+	p.settings.AIs, p.aiProfiles = p.aiPlayers()
+	aiReady := true
 	open := 0
 	if p.hostOn {
 		open = p.open
 	}
-	hot, visitor, cpu := 0, 0, 0
+	hot, visitor, ai, cpu := 0, 0, 0, 0
 	for i, c := range p.seats {
 		p.seatDrops[i].SetSelected(uint32(c))
 		var name, sub, about string
@@ -620,12 +655,20 @@ func (p *fortune) fitSeats() {
 			if p.hostOn {
 				sub = i18n.T("for a visitor in a browser")
 			}
+		case seatAI:
+			player = p.people + open + ai
+			name = p.settings.AIs[ai]
+			ai++
+			var ready bool
+			sub, about, ready = p.aiSeat(i)
+			aiReady = aiReady && ready
 		default:
-			player = p.people + open + cpu
+			player = p.people + open + ais + cpu
 			cpu++
 			r := games.Rivals[c-1]
 			name, sub, about = i18n.T(r.Name), i18n.T(r.Title), i18n.T(r.About)
 		}
+		p.fitProfileDrop(i)
 		p.seatSubs[i].SetText(sub)
 		p.seatRows[i].SetTooltipText(about)
 		markup := html.EscapeString(name)
@@ -642,10 +685,11 @@ func (p *fortune) fitSeats() {
 			p.seatRows[i].RemoveCssClass("open")
 		}
 	}
-	can := p.people >= 1 && p.people+len(rivals) >= 2
+	can := p.people >= 1 && p.people+ais+len(rivals) >= 2
 	if p.hostOn {
-		can = p.people+open >= 1 && p.people+len(rivals)+open >= 2
+		can = p.people+open >= 1 && p.people+ais+len(rivals)+open >= 2
 	}
+	can = can && aiReady
 	p.start.SetSensitive(can)
 	p.start.SetLabel(p.startLabel())
 }
@@ -685,6 +729,14 @@ func (p *fortune) startLabel() string {
 // is over.
 func (p *fortune) reset() {
 	p.hostClose()
+	if p.ai != nil {
+		p.ai.Stop()
+	}
+	p.forgetFailures() // the AI may have been set up since
+	if slices.Contains(p.seats[:], seatAI) {
+		p.checkAI()
+	}
+	p.fitSeats()
 	p.pages.SetVisibleChildName("setup")
 	p.round.SetText("—")
 	p.pot.SetText("—")
@@ -705,6 +757,9 @@ func (p *fortune) begin() {
 	var here uint8
 	for i := range p.people {
 		here |= games.Seat(i)
+	}
+	if p.ai != nil {
+		p.ai.SetProfiles(p.aiProfiles)
 	}
 	p.newGame(games.NewFortune(s, uint64(time.Now().UnixNano())), here)
 }
@@ -745,6 +800,7 @@ func (p *fortune) newGame(g *games.Fortune, here uint8) {
 	p.refresh()
 	p.cv.redraw()
 	p.cv.area.GrabFocus()
+	p.aiNext()
 }
 
 func (p *fortune) redraw() {
@@ -924,6 +980,7 @@ func (p *fortune) step(dt float64) bool {
 				p.soundsFrom(old, p.shown)
 				p.refresh()
 				p.ring()
+				p.aiNext()
 			}
 			return len(p.fx) > 0 // until the money has flown
 		}
@@ -1048,6 +1105,9 @@ func (p *fortune) refresh() {
 			if pl.Away {
 				status += i18n.T(" · away, the computer plays")
 			}
+			if pl.AI {
+				status += i18n.T(" · the AI plays")
+			}
 		}
 		mark := ""
 		if i == g.Turn && g.Phase != games.PhaseOver {
@@ -1081,6 +1141,9 @@ func (p *fortune) refresh() {
 		p.primary.SetSensitive(true)
 	case p.busy() || !p.mine():
 		p.primary.SetLabel(i18n.Tf("%s is playing…", g.Players[g.Turn].Name))
+		if g.Players[g.Turn].AI && !p.busy() {
+			p.primary.SetLabel(i18n.Tf("%s is thinking…", g.Players[g.Turn].Name))
+		}
 		if g.Turn == p.me {
 			p.primary.SetLabel("…")
 		}

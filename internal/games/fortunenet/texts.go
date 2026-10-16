@@ -28,6 +28,7 @@ func webTexts() texts {
 		"visitor":     i18n.T("in a browser"),
 		"you":         i18n.T("you"),
 		"away":        i18n.T(" · away, the computer plays"),
+		"ai":          i18n.T(" · the AI plays"),
 		"players":     i18n.T("PLAYERS"),
 		"square":      i18n.T("SQUARE"),
 		"happened":    i18n.T("WHAT HAPPENED"),

@@ -98,7 +98,10 @@ type FortuneSettings struct {
 	Humans []string
 	// RivalNames name the computer players, in order: Mika, Ren and Sol
 	// when none, or for those not named.
-	RivalNames                 []string
+	RivalNames []string
+	// AIs name the players the user's AI plays, after the people and
+	// before the computer players.
+	AIs                        []string
 	Rivals, Rounds, Cash, City int
 	Dice                       int
 	BuildOnBuy                 bool

@@ -1,6 +1,7 @@
 package fortunenet
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/fortuneai"
 )
 
 func init() {
@@ -467,5 +469,55 @@ func TestFortuneNetRestart(t *testing.T) {
 	ben.expect("start", &start)
 	if start.You != hello.Seat || len(start.Players) != 3 {
 		t.Fatalf("restarted as %d with %d players", start.You, len(start.Players))
+	}
+}
+
+// An AI player sits after the people, and the host has the AI play it.
+func TestFortuneNetAI(t *testing.T) {
+	var mu sync.Mutex
+	asked := 0
+	x := &testHost{}
+	run := func(f func()) { x.mu.Lock(); defer x.mu.Unlock(); f() }
+	x.Host = NewHost(Options{
+		Settings: games.FortuneSettings{AIs: []string{"AI"}, Rivals: 1, Rounds: 30, Cash: 1500},
+		Local:    []string{"Ann"},
+		Run:      run,
+		AI: fortuneai.New(func(context.Context, string, string, string, []string) (int, error) {
+			mu.Lock()
+			defer mu.Unlock()
+			asked++
+			return 0, nil
+		}, run),
+		Seed: 1,
+	})
+	t.Cleanup(func() { x.do(func() { x.Close() }) })
+	x.do(func() {
+		if x.Room() != 1 {
+			t.Errorf("room %d, want 1", x.Room())
+		}
+		x.Start()
+		if kinds := []SeatKind{x.Seats[0].Kind, x.Seats[1].Kind, x.Seats[2].Kind}; kinds[1] != AI || kinds[2] != Computer {
+			t.Errorf("seats %v", kinds)
+		}
+		if x.Act(1, Action{Do: "roll"}) {
+			t.Error("a move made for the AI's seat")
+		}
+		x.Game.SetAway(0, true) // the computer plays Ann's turns
+		x.Flush()
+	})
+	deadline := time.Now().Add(20 * time.Second)
+	for {
+		var round int
+		x.do(func() { round = x.Game.Round })
+		mu.Lock()
+		n := asked
+		mu.Unlock()
+		if round >= 4 && n > 0 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("round %d, the AI asked %d times", round, n)
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
 }

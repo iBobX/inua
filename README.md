@@ -37,7 +37,7 @@ and a settings window, in one calm visual language. It works with
 | **Viewer** | Images, PDFs, Markdown and plain text: steps through the files of a folder, zooms, shows the details; `inua-viewer`, see [docs/apps.md](docs/apps.md#viewer). |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music (a player in Winamp's spirit, with an equalizer and a spectrum) and Video. |
 | **Workshop** | Write your own light apps in any language: the program describes its window in inua's building blocks and inua draws it in the shell's look. `inua workshop new`, `dev`, `install`; see [docs/workshop.md](docs/workshop.md). |
-| **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer, with others at the screen or, on the same network, in a browser. Each has its own launcher, or run `inua-games minesweeper`. |
+| **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer or your AI, with others at the screen or, on the same network, in a browser. Each has its own launcher, or run `inua-games minesweeper`. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
 

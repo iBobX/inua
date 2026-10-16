@@ -20,6 +20,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/fortuneai"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -30,6 +31,7 @@ const (
 	Local    SeatKind = iota // a person at the host's screen
 	Visitor                  // a person in a browser
 	Computer                 // a computer player
+	AI                       // the host's AI (fortuneai)
 )
 
 // Seat is a player of the game, or of the lobby before it.
@@ -47,8 +49,8 @@ type Seat struct {
 
 // Options set up a Host.
 type Options struct {
-	// The game's settings: its Rivals are the computer players after the
-	// people, as many as there is room for.
+	// The game's settings: its AIs and Rivals are the AI and computer
+	// players after the people, as many as there is room for.
 	Settings games.FortuneSettings
 	// Local are the names of the people at the host's screen, playing
 	// first; none when the host only hosts.
@@ -74,7 +76,9 @@ type Options struct {
 	// Pieces are what stands on a city's board where the host's screen
 	// has it: landmarks, trees, the fountain.
 	Pieces func(city int) []Piece
-	Seed   uint64
+	// AI plays the AI players, with the host's AI; nil when none play.
+	AI   *fortuneai.Driver
+	Seed uint64
 }
 
 // Picture is a picture of the game's, a PNG. A piece that stands on the
@@ -135,7 +139,7 @@ func (h *Host) Room() int {
 	if h.Game != nil {
 		return 0
 	}
-	room := MaxPlayers - len(h.Seats) - h.opt.Settings.Rivals
+	room := MaxPlayers - len(h.Seats) - len(h.opt.Settings.AIs) - h.opt.Settings.Rivals
 	if h.opt.Open > 0 {
 		visitors := 0
 		for _, s := range h.Seats {
@@ -168,10 +172,15 @@ func (h *Host) Start() bool {
 	if len(s.Humans) == 1 && h.Seats[0].Kind == Local {
 		s.Humans = nil // one person at the screen: "You"
 	}
-	s.Rivals = min(s.Rivals, MaxPlayers-len(h.Seats))
+	s.AIs = s.AIs[:min(len(s.AIs), MaxPlayers-len(h.Seats))]
+	s.Rivals = min(s.Rivals, MaxPlayers-len(h.Seats)-len(s.AIs))
 	h.Game = games.NewFortune(s, h.opt.Seed)
 	for _, p := range h.Game.Players[len(h.Seats):] {
-		h.Seats = append(h.Seats, &Seat{Name: p.Name, Kind: Computer})
+		kind := Computer
+		if p.AI {
+			kind = AI
+		}
+		h.Seats = append(h.Seats, &Seat{Name: p.Name, Kind: kind})
 	}
 	for i, seat := range h.Seats {
 		if seat.Kind == Visitor && !seat.Here {
@@ -200,7 +209,7 @@ func (h *Host) Restart() bool {
 	old := h.Seats
 	h.Seats = nil
 	for _, s := range old {
-		if s.Kind != Computer && !s.Kicked {
+		if s.Kind != Computer && s.Kind != AI && !s.Kicked {
 			h.Seats = append(h.Seats, s)
 		}
 	}
@@ -242,7 +251,7 @@ func (h *Host) Kick(seat int) {
 // or a visitor; false when it is not theirs to do now.
 func (h *Host) Act(seat int, a Action) bool {
 	g := h.Game
-	if g == nil || seat != g.Turn || g.Players[seat].Computer() {
+	if g == nil || seat != g.Turn || g.Players[seat].Computer() || g.Players[seat].AI {
 		return false
 	}
 	var ok bool
@@ -302,6 +311,9 @@ func (h *Host) Flush() {
 		c.send(h.stateMsg(c))
 	}
 	h.changed()
+	if h.opt.AI != nil {
+		h.opt.AI.Next(h.Game, time.Duration(float64(pace(events))*paceScale), h.Flush)
+	}
 	if h.Game.Phase == games.PhaseCPU && h.cpu == nil {
 		h.cpu = time.AfterFunc(time.Duration(float64(pace(events))*paceScale), func() {
 			h.opt.Run(func() {

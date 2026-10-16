@@ -317,6 +317,7 @@ function renderPanel() {
       if (p.turtle > 0) status += T.turtle;
       if (p.asleep) status += T.asleep;
       if (p.away) status += T.away;
+      if (p.kind === 'ai') status += T.ai;
     }
     const name = el('span', 'name', p.name + (i === seat ? ` (${T.you})` : ''));
     const cash = el('span', 'cash', '$' + money(v.Cash[i]));

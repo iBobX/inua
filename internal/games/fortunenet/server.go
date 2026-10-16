@@ -135,6 +135,9 @@ func lanFirst(url string) bool {
 // where the Host lives.
 func (h *Host) Close() {
 	h.closed = true
+	if h.opt.AI != nil {
+		h.opt.AI.Stop()
+	}
 	if h.cpu != nil {
 		h.cpu.Stop()
 	}

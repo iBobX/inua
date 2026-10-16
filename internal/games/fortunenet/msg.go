@@ -39,7 +39,7 @@ type byeMsg struct {
 
 type seatMsg struct {
 	Name   string `json:"name"`
-	Kind   string `json:"kind"` // local, visitor, computer
+	Kind   string `json:"kind"` // local, visitor, computer, ai
 	Here   bool   `json:"here"`
 	Away   bool   `json:"away"`
 	Kicked bool   `json:"kicked"`
@@ -194,7 +194,7 @@ var targetNames = [...]string{games.TargetNone: "none", games.TargetPlayer: "pla
 func (h *Host) seatMsgs() []seatMsg {
 	var out []seatMsg
 	for i, s := range h.Seats {
-		m := seatMsg{Name: s.Name, Kind: [...]string{"local", "visitor", "computer"}[s.Kind], Here: s.Here || s.Kind != Visitor, Kicked: s.Kicked}
+		m := seatMsg{Name: s.Name, Kind: [...]string{"local", "visitor", "computer", "ai"}[s.Kind], Here: s.Here || s.Kind != Visitor, Kicked: s.Kicked}
 		if h.Game != nil {
 			m.Name, m.Away = h.Game.Players[i].Name, h.Game.Players[i].Away
 		}
@@ -206,7 +206,7 @@ func (h *Host) seatMsgs() []seatMsg {
 func (h *Host) lobbyMsg(c *client) lobbyMsg {
 	s := h.opt.Settings
 	city := games.FortuneCities[max(0, min(len(games.FortuneCities)-1, s.City))]
-	return lobbyMsg{T: "lobby", Seats: h.seatMsgs(), You: c.seat, Room: h.Room(), Rivals: s.Rivals,
+	return lobbyMsg{T: "lobby", Seats: h.seatMsgs(), You: c.seat, Room: h.Room(), Rivals: s.Rivals + len(s.AIs),
 		City: i18n.T(city.Name), Rounds: cmp.Or(s.Rounds, games.DefaultFortune.Rounds), Cash: cmp.Or(s.Cash, games.DefaultFortune.Cash), Text: webTexts()}
 }
 

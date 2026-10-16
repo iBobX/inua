@@ -18,6 +18,7 @@ import (
 	"github.com/makiuchi-d/gozxing/qrcode"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/fortuneai"
 	"github.com/lyricat/inua/internal/games/fortunenet"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -53,6 +54,7 @@ func (p *fortune) hostLobby() {
 		Print:    boardJPEG,
 		Art:      artPicture,
 		Pieces:   cityPieces,
+		AI:       p.netAI(),
 		Seed:     uint64(time.Now().UnixNano()),
 	})
 	p.lobbyNote.SetText("")
@@ -446,4 +448,13 @@ func boardJPEG(city int) []byte {
 		return nil
 	}
 	return b.Bytes()
+}
+
+// netAI is the driver of the AI players for the host, when any play.
+func (p *fortune) netAI() *fortuneai.Driver {
+	if len(p.settings.AIs) == 0 || p.ai == nil {
+		return nil
+	}
+	p.ai.SetProfiles(p.aiProfiles)
+	return p.ai
 }

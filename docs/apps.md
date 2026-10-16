@@ -27,14 +27,39 @@ rules behind its ⓘ button, its keys along the bottom, and New game (N).
 | --- | --- | --- |
 | Minesweeper (扫雷) | `inua-games minesweeper` | 9×9, 16×16 or 30×16. The first square is always safe; right-click flags; click a number with its flags placed to open around it. Best times are kept. |
 | Space Pinball (太空弹球) | `inua-games space-pinball` | After the Windows table: fly missions from the mission targets and the launch ramp to climb nine ranks, with fuel to keep up, a hyperspace ramp of five levels, a black hole that locks balls for multiball, a wormhole, a skill shot picked by the plunger's pull, nudging and tilt, an end-of-ball bonus and sound. A display beside the table shows the rank, the mission and its clock, fuel and the latest news. |
-| Small Fortune (大富翁) | `inua-games small-fortune` | A property game for two to four players: people taking turns at the screen, people in a browser on the same network, and computer players, on a printed washi board, seen from above and in front and larger than the window: drag it, scroll or use the arrow keys to look about, and Home to find your pawn; a pawn on the move is followed. A ring of 80 squares is laid along a track shaped like the city (the Yamanote Line, Manhattan, Puxi in the Huangpu's bend, Rome's walls), with two branch roads of 16 squares across it or, in New York, over the rivers (at a fork, chance picks the road), and the city's landmarks standing on the map; 72 streets in 24 colour groups, four stations or piers, two utilities (78 properties), Chance, twelve card shops, jail, and a fountain that collects taxes and fines. Before a game, choose the city (Tokyo, New York, Shanghai or Rome, each with its own names and buildings), the rounds (30 to 90), the starting money, how many people play at the screen (none, when you only host), the rivals (none with two people or more), whether others join from a browser, and the rules: one die or two, and whether a street may go up a level the turn it is bought. Every street of yours you pass or land on may go up one level that turn, four houses then a hotel; a whole colour group doubles bare rent and adds half to built rents. Passing Start pays $400. Cards come from Chance and the card shops (three on offer, buy any of them); a hand holds ten, played any number in your turn before the roll or after the move: Loaded Dice (walk the steps you choose), Free Rent, Requisition (buy the rival's property you stand on at its cost), Pickpocket (a card from a rival), Demolition, Building Permit, Turtle (one square a roll, three times), Swap Places, Jail Pass, Tax Audit, Fair Shares and Sleeping Pill (a rival misses a turn). The computer players buy and play cards too. After the last round, or when one player is left, the most worth wins. |
+| Small Fortune (大富翁) | `inua-games small-fortune` | A property game for two to four players: people taking turns at the screen, people in a browser on the same network, and computer players, on a printed washi board, seen from above and in front and larger than the window: drag it, scroll or use the arrow keys to look about, and Home to find your pawn; a pawn on the move is followed. A ring of 80 squares is laid along a track shaped like the city (the Yamanote Line, Manhattan, Puxi in the Huangpu's bend, Rome's walls), with two branch roads of 16 squares across it or, in New York, over the rivers (at a fork, chance picks the road), and the city's landmarks standing on the map; 72 streets in 24 colour groups, four stations or piers, two utilities (78 properties), Chance, twelve card shops, jail, and a fountain that collects taxes and fines. Before a game, choose who sits in each of the four seats (a hot seat for a person at the screen; Mika, the careful banker, Ren, the bold developer, or Sol, the trickster, computer players each with a way of playing of its own; the AI; or an open seat, for a visitor in a browser or no one), whether others join from a browser, the city (Tokyo, New York, Shanghai or Rome, each with its own names and buildings), the rounds (30 to 120), the starting money ($1,000 to $5,000), and the rules: one die or two, and whether a street may go up a level the turn it is bought. The game menu restarts the game, opens the compendium (every card, the kinds of squares, the rivals and the rules), or goes back to the setup. Every street of yours you pass or land on may go up one level that turn, four houses then a hotel; a whole colour group doubles bare rent and adds half to built rents. Passing Start pays $400. Cards come from Chance and the card shops (three on offer, buy any of them); a hand holds ten, played any number in your turn before the roll or after the move: Loaded Dice (walk the steps you choose), Free Rent, Requisition (buy the rival's property you stand on at its cost), Pickpocket (a card from a rival), Demolition, Building Permit, Turtle (one square a roll, three times), Swap Places, Jail Pass, Tax Audit, Fair Shares and Sleeping Pill (a rival misses a turn). The computer players buy and play cards too. After the last round, or when one player is left, the most worth wins. |
 
 Pinball pauses with P, and on its own when its window is
 left; M turns its sound off (it plays through `pw-cat`, silent without it). Games are kept in memory; best scores are kept in
 `~/.local/share/inua/games.json`. No accounts or database; only Small
-Fortune uses the network, and only when you open a game to it.
+Fortune uses the network: when you open a game to it, and when the AI
+plays.
 Small Fortune is a property game with its own board and rules, not a
 copy of a commercial one.
+
+### The AI in Small Fortune
+
+A seat set to **AI** is played by a profile of Settings → AI that makes
+quick choices (its **Decision** ability on): with more than one, a
+second drop-down under the seat picks it (first the profile for **Quick
+choices with**), and two seats
+may play two profiles against each other, each player named for its
+profile. Choosing it starts `inua-assistant --answer` and has each
+profile chosen pick from a small choice: the seat names the model when
+it does, or says why it cannot (the assistant turned off, no key, the
+no profile for quick choices, the profile not answering, no answer in
+time; the whole error in the
+tooltip), and Start waits for it. In the game, at each choice of the
+AI's with more than one move, the model picks one of the moves it may
+make, told the rules in short and judging the game as it would see it
+(its own cards, not the others'), with Mister Morph's Evaluate (the
+decision route): it can only pick, not write. A profile that cannot
+choose so is asked instead, the moves numbered, if it answers questions. A roll with nothing
+else to do is made without asking. The model has no tools. When it does
+not answer, or picks no move, the computer finishes that turn; after
+three such turns, it plays the seat for the rest of the game. Each move
+takes two to four seconds, and a game asks a few hundred times. On the network the host's computer asks,
+and the visitors need nothing set up.
 
 ### Small Fortune on the network
 

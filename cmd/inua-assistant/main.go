@@ -1,7 +1,8 @@
 // Command inua-assistant is the assistant's window: an agent with inua's
 // tools (docs/feat/assistant.md). `inua-assistant --ask "…"` asks a
 // question; with the window already open, the question goes to it.
-// `inua-assistant --mcp` is inua as an MCP server (docs/feat/mcp.md).
+// `inua-assistant --mcp` is inua as an MCP server (docs/feat/mcp.md);
+// `inua-assistant --answer` answers the games' questions on stdio.
 package main
 
 import (
@@ -25,7 +26,14 @@ func main() {
 	serveToken := flag.Bool("serve-token", false, "print the Console token from the keyring, creating it if missing")
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory")
 	mcpServer := flag.Bool("mcp", false, "be inua's MCP server on stdio, for an AI agent (inua mcp)")
+	answerer := flag.Bool("answer", false, "answer questions on stdio, a JSON object a line, without tools (for the games)")
 	flag.Parse()
+	if *answerer {
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		code := runAnswer(ctx)
+		stop()
+		os.Exit(code)
+	}
 	if *mcpServer {
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		code := runMCP(ctx)

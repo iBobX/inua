@@ -168,17 +168,18 @@ var pierRent = [...]int{0, 25, 50, 100, 200}
 type FortunePlayer struct {
 	Name string
 	// CPU is a computer player; Away a person's seat the computer plays
-	// while they are gone (SetAway).
-	CPU, Away bool
-	Out       bool
-	Cash, At  int
-	InJail    bool
-	JailTries int
-	Cards     []CardKind // the hand, at most HandMax
-	RentFree  bool       // a Free Rent card waits for the next rent
-	Turtle    int        // rolls left that walk one square
-	Asleep    bool       // misses the next turn
-	Rival     int        // a computer player's character: its index in Rivals
+	// while they are gone (SetAway); AI a seat the user's AI plays, moving
+	// as a person does, from outside (fortuneai).
+	CPU, Away, AI bool
+	Out           bool
+	Cash, At      int
+	InJail        bool
+	JailTries     int
+	Cards         []CardKind // the hand, at most HandMax
+	RentFree      bool       // a Free Rent card waits for the next rent
+	Turtle        int        // rolls left that walk one square
+	Asleep        bool       // misses the next turn
+	Rival         int        // a computer player's character: its index in Rivals
 }
 
 // Computer reports whether the computer plays this player's turns.
@@ -314,8 +315,9 @@ func NewFortune(s FortuneSettings, seed uint64) *Fortune {
 	} else {
 		rivals = s.Rivals // none is none, with people enough
 	}
-	rivals = max(0, min(rivals, 4-len(humans), len(Rivals)))
-	if len(humans)+rivals < 2 {
+	ais := min(len(s.AIs), 4-len(humans))
+	rivals = max(0, min(rivals, 4-len(humans)-ais, len(Rivals)))
+	if len(humans)+ais+rivals < 2 {
 		rivals = 1
 	}
 	cash := cmp.Or(s.Cash, DefaultFortune.Cash)
@@ -325,6 +327,9 @@ func NewFortune(s FortuneSettings, seed uint64) *Fortune {
 	g.choose = func(roads []int) int { return roads[g.rng.IntN(len(roads))] }
 	for i, name := range humans {
 		g.Players = append(g.Players, FortunePlayer{Name: cmp.Or(name, i18n.Tf("Player %d", i+1)), Cash: cash})
+	}
+	for _, name := range s.AIs[:min(len(s.AIs), 4-len(g.Players))] {
+		g.Players = append(g.Players, FortunePlayer{Name: name, AI: true, Cash: cash})
 	}
 	for i := range rivals {
 		name := Rivals[i].Name
@@ -963,7 +968,7 @@ func (g *Fortune) bankrupt(pi int) {
 	for _, q := range g.Players {
 		if !q.Out {
 			left++
-			if !q.CPU {
+			if !q.CPU && !q.AI {
 				people++
 			}
 		}
@@ -1070,7 +1075,7 @@ func (g *Fortune) SetAway(player int, away bool) {
 		return
 	}
 	p := &g.Players[player]
-	if p.CPU || p.Away == away || g.Phase == PhaseOver {
+	if p.CPU || p.AI || p.Away == away || g.Phase == PhaseOver {
 		return
 	}
 	p.Away = away
@@ -1098,6 +1103,35 @@ func (g *Fortune) SetAway(player int, away bool) {
 			g.Phase = PhaseCPU // a double: it rolls again
 		case PhaseEnd:
 			g.cpuEnd(player)
+		}
+	}
+}
+
+// PlayOn has the computer finish the turn of the player whose turn it is,
+// from where it stands, as for a person away; why, when not empty, is
+// told first.
+func (g *Fortune) PlayOn(why string) {
+	pi := g.Turn
+	if why != "" {
+		g.note(pi, 0, 0, "%s", why)
+	}
+	for g.Turn == pi && g.Phase != PhaseOver {
+		switch g.Phase {
+		case PhaseRoll, PhaseCPU:
+			g.Phase = PhaseCPU
+			g.PlayCPU()
+			return
+		case PhaseBuy:
+			if g.cpuWants(pi, g.Players[pi].At) {
+				g.buy(pi)
+			}
+			g.afterMove()
+		case PhaseShop:
+			g.cpuShop(pi)
+			g.LeaveShop()
+		case PhaseEnd:
+			g.cpuEnd(pi)
+			return
 		}
 	}
 }
