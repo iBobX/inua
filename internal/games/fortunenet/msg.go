@@ -109,22 +109,28 @@ type branchMsg struct {
 // startMsg is the game a browser is in: the board, the cards, the
 // players, which of them it plays (-1 to watch), and the words it shows.
 type startMsg struct {
-	T        string      `json:"t"`
-	You      int         `json:"you"`
-	City     string      `json:"city"` // its ID: tokyo, new-york …
-	CityName string      `json:"cityName"`
-	Local    string      `json:"local"`
-	Rounds   int         `json:"rounds"`
-	OneDie   bool        `json:"oneDie"`
-	Size     float64     `json:"size"` // the board's side, in its units
-	Band     float64     `json:"band"` // a street's colour band
-	Print    bool        `json:"print"`
-	Squares  []squareMsg `json:"squares"`
-	Branches []branchMsg `json:"branches"`
-	Cards    []cardMsg   `json:"cards"`
-	Players  []seatMsg   `json:"players"`
-	HandMax  int         `json:"handMax"`
-	Text     texts       `json:"text"`
+	T        string  `json:"t"`
+	You      int     `json:"you"`
+	City     string  `json:"city"` // its ID: tokyo, new-york …
+	CityName string  `json:"cityName"`
+	Local    string  `json:"local"`
+	Rounds   int     `json:"rounds"`
+	OneDie   bool    `json:"oneDie"`
+	Size     float64 `json:"size"` // the board's side, in its units
+	Band     float64 `json:"band"` // a street's colour band
+	Print    bool    `json:"print"`
+	Art      bool    `json:"art"` // pictures at /art/
+	// PierRents are a pier's rent by how many its owner has; UtilityTimes
+	// what a utility charges a point of the dice, by how many.
+	PierRents    []int       `json:"pierRents"`
+	UtilityTimes []int       `json:"utilityTimes"`
+	Pieces       []Piece     `json:"pieces"` // what stands on the board
+	Squares      []squareMsg `json:"squares"`
+	Branches     []branchMsg `json:"branches"`
+	Cards        []cardMsg   `json:"cards"`
+	Players      []seatMsg   `json:"players"`
+	HandMax      int         `json:"handMax"`
+	Text         texts       `json:"text"`
 }
 
 type playerMsg struct {
@@ -209,7 +215,16 @@ func (h *Host) startMsg(c *client) startMsg {
 	city := games.FortuneCities[g.City]
 	m := startMsg{T: "start", You: c.seat, City: city.ID, CityName: i18n.T(city.Name), Local: city.Local,
 		Rounds: g.Rounds, OneDie: g.OneDie, Players: h.seatMsgs(), HandMax: games.HandMax, Text: webTexts(),
-		Size: games.ArtBoard * games.MapK, Band: games.TrackBand, Print: h.opt.Print != nil}
+		Size: games.ArtBoard * games.MapK, Band: games.TrackBand, Print: h.opt.Print != nil, Art: h.opt.Art != nil}
+	if h.opt.Pieces != nil {
+		m.Pieces = h.opt.Pieces(g.City)
+	}
+	for n := range 5 {
+		m.PierRents = append(m.PierRents, games.PierRent(n))
+	}
+	for n := range 3 {
+		m.UtilityTimes = append(m.UtilityTimes, games.UtilityTimes(n))
+	}
 	tr := games.TrackOf(g.City)
 	for sq, s := range games.Board {
 		sm := squareMsg{Tile: tileOf(tr.Tiles[sq]), Name: g.SquareName(sq), Kind: kindNames[s.Kind], Group: s.Group, Price: s.Price, Next: games.Next(sq)}

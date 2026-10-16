@@ -61,7 +61,34 @@ type Options struct {
 	// Print is the board's print for a city, as the host's screen shows
 	// it: a JPEG for the browsers' board; nil, a plain board.
 	Print func(city int) []byte
-	Seed  uint64
+	// Art is a picture of the game's as the host's screen draws it:
+	// "card-N" (card kind N), "card-N-price" (with its price tag),
+	// "card-back", "sign-N" (square N's sign), "house-A-O" and "hotel-A-O"
+	// (along the track or across it, A 1 or 0, its owner O), and the
+	// pieces Pieces names; nil when it has none.
+	Art func(city int, name string) *Picture
+	// Pieces are what stands on a city's board where the host's screen
+	// has it: landmarks, trees, the fountain.
+	Pieces func(city int) []Piece
+	Seed   uint64
+}
+
+// Picture is a picture of the game's, a PNG. A piece that stands on the
+// board has its size too, in board units, and its foot: FootX from its
+// left, its lowest edge Dv in front of the point it stands at (towards
+// the viewer, as the host's screen looks at the board).
+type Picture struct {
+	PNG       []byte
+	W, H      float64
+	FootX, Dv float64
+}
+
+// Piece is something standing on the board: its picture's name (Art),
+// and the board point it stands at.
+type Piece struct {
+	Name string  `json:"name"`
+	X    float64 `json:"x"`
+	Y    float64 `json:"y"`
 }
 
 // MaxPlayers is how many players a game has at most.
@@ -77,7 +104,8 @@ type Host struct {
 	cpu     *time.Timer // the computer's next move, paced to the board
 	closed  bool
 	srv     *server
-	print   []byte // the board's print, once asked for
+	print   []byte              // the board's print, once asked for
+	art     map[string]*Picture // the pictures, each once asked for
 }
 
 // paceScale speeds the computer's pace up, for tests.

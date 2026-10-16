@@ -78,11 +78,29 @@ func webTexts() texts {
 		"bankruptOf":  i18n.T("%s (bankrupt)"),
 		"tierBare":    i18n.T("Bare"),
 		"tierHotel":   i18n.T("Hotel"),
-		"cardGot":     i18n.T("%s got a card"),
-		"cardPlayed":  i18n.T("%s played %s"),
 		"aCard":       i18n.T("a card"),
 		"rentByDice":  i18n.T("The rent is the dice times this."),
+		"soundOn":     i18n.T("Sound on: M turns it off"),
+		"soundOff":    i18n.T("Sound off: M turns it on"),
 		"rentByPiers": i18n.T("The rent is by how many piers the owner has."),
+	}
+	t["noteStart"] = i18n.Tf("Collect $%d every time you pass.", games.StartPay)
+	t["noteJailDouble"] = i18n.Tf("Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go.", i18n.T("a double"))
+	t["noteJailSix"] = i18n.Tf("Only visiting, unless sent here. In jail, roll %s to leave, or pay $50 before rolling; after three tries you pay and go.", i18n.T("a six"))
+	t["noteFountain"] = i18n.T("Taxes and fines go into the fountain; the next player to land here takes it all: $%d now.")
+	t["noteGoToJail"] = i18n.T("Straight to jail, without passing Start.")
+	t["noteChance"] = i18n.T("Draw a card: money, a fine, a trip, or a card for your hand.")
+	t["noteShop"] = i18n.Tf("Three cards on offer: buy any of them, or none. A hand holds up to %d cards.", games.HandMax)
+	t["noteTax"] = i18n.T("Pay $%d into the fountain.")
+	t["wholeGroup"] = i18n.T("The whole group: bare rent doubled, built rents half again.")
+	t["withGroup"] = i18n.T("With the whole group: bare rent doubled, built rents half again.")
+	t["group"] = i18n.T("Group:")
+	t["times"] = i18n.T("× %d")
+	for n := 1; n <= 4; n++ {
+		t[fmt.Sprint("piers", n)] = i18n.Nf("%d pier", "%d piers", n, n)
+	}
+	for n := 1; n <= 2; n++ {
+		t[fmt.Sprint("utilities", n)] = i18n.Nf("%d utility", "%d utilities", n, n)
 	}
 	for n := 1; n <= games.HandMax; n++ {
 		t[fmt.Sprint("cards", n)] = i18n.Nf(" · %d card", " · %d cards", n, n)

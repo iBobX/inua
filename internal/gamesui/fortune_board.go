@@ -1019,13 +1019,18 @@ func drop(pn pen, x, y float64, col color.NRGBA) {
 	pn.Fill()
 }
 
-// fountain draws the Fountain corner's stone basin, its water and spout,
-// and the pot above it.
+// fountain draws the Fountain corner's fountain, and the pot above it.
 func (p *fortune) fountain(pn pen, u, v float64, pot int) {
-	if !p.art().spout {
+	fountainPiece(pn, u, v, p.art().spout)
+	label := project(u+10, v+10, 30)
+	pn.Text(fmt.Sprintf("$%d", pot), minchoBold+" 9.5", label.X, label.Y, 0.5, 0.5, washiShu)
+}
+
+// fountainPiece draws the fountain: a stone basin, its water and a
+// bamboo spout (spout), else a jet.
+func fountainPiece(pn pen, u, v float64, spout bool) {
+	if !spout {
 		jetFountain(pn, u, v)
-		label := project(u+10, v+10, 30)
-		pn.Text(fmt.Sprintf("$%d", pot), minchoBold+" 9.5", label.X, label.Y, 0.5, 0.5, washiShu)
 		return
 	}
 	const rb = 16.0
@@ -1050,8 +1055,6 @@ func (p *fortune) fountain(pn pen, u, v float64, pot int) {
 	pn.MoveTo(s1.X, s1.Y)
 	pn.Curve(s1.X-2, s1.Y+3, w.X+1, w.Y-4, w.X, w.Y)
 	pn.Stroke()
-	label := project(u+10, v+10, 30)
-	pn.Text(fmt.Sprintf("$%d", pot), minchoBold+" 9.5", label.X, label.Y, 0.5, 0.5, washiShu)
 }
 
 // paintMiddle sets the latest news and whose turn it is on a slip of paper

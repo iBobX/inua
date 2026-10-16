@@ -1,6 +1,7 @@
 package fortunenet
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"embed"
 	"encoding/hex"
@@ -9,12 +10,15 @@ import (
 	"io/fs"
 	"net"
 	"net/http"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
+
+	samples "github.com/lyricat/inua/config"
 )
 
 // web is the page visitors play on.
@@ -72,6 +76,8 @@ func (h *Host) Serve(addr string) error {
 	mux.HandleFunc("/ws", h.serveWS)
 	mux.HandleFunc("/board.jpg", h.servePrint)
 	mux.HandleFunc("/texts.json", serveTexts)
+	mux.HandleFunc("/art/", h.serveArt)
+	mux.HandleFunc("/icons/", serveIcon)
 	h.srv = &server{http: &http.Server{Handler: mux, ReadHeaderTimeout: 10 * time.Second}, port: ln.Addr().(*net.TCPAddr).Port}
 	go h.srv.http.Serve(ln)
 	return nil
@@ -222,6 +228,71 @@ func (h *Host) servePrint(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Header().Set("Cache-Control", "no-cache")
+	w.Write(b)
+}
+
+// artName is a picture the page may ask for (Options.Art).
+var artName = regexp.MustCompile(`^(card-\d{1,2}(-price)?|card-back|sign-\d{1,3}|(house|hotel)-[01]-[0-3]|piece-\d{1,3})$`)
+
+// serveArt serves a picture of the game's, drawn by the host's screen the
+// first time it is asked for: /art/NAME.png.
+func (h *Host) serveArt(w http.ResponseWriter, r *http.Request) {
+	name := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/art/"), ".png")
+	if !artName.MatchString(name) {
+		http.NotFound(w, r)
+		return
+	}
+	ch := make(chan *Picture, 1)
+	h.opt.Run(func() {
+		pic, ok := h.art[name]
+		if !ok && h.Game != nil && h.opt.Art != nil && !h.closed {
+			pic = h.opt.Art(h.Game.City, name)
+			if h.art == nil {
+				h.art = map[string]*Picture{}
+			}
+			h.art[name] = pic
+		}
+		ch <- pic
+	})
+	var pic *Picture
+	select {
+	case pic = <-ch:
+	case <-time.After(30 * time.Second):
+	case <-r.Context().Done():
+		return
+	}
+	if pic == nil || pic.PNG == nil {
+		http.NotFound(w, r)
+		return
+	}
+	b := pic.PNG
+	if pic.W > 0 { // a piece standing on the board: its size and foot
+		w.Header().Set("X-Piece", fmt.Sprintf("%.2f %.2f %.2f %.2f", pic.W, pic.H, pic.FootX, pic.Dv))
+	}
+	sum := sha256.Sum256(b)
+	w.Header().Set("ETag", `"`+hex.EncodeToString(sum[:8])+`"`)
+	w.Header().Set("Cache-Control", "no-cache")
+	http.ServeContent(w, r, name+".png", time.Time{}, bytes.NewReader(b))
+}
+
+var iconName = regexp.MustCompile(`^(fortune-[a-z]+|audio-volume-(high|muted))\.svg$`)
+
+// serveIcon serves one of the game's icons, the shell's own in Phosphor's
+// bold weight (inua's sample icon set): /icons/fortune-house.svg. The
+// regular weight's hairlines all but vanish in a browser at their size.
+func serveIcon(w http.ResponseWriter, r *http.Request) {
+	name := strings.TrimPrefix(r.URL.Path, "/icons/")
+	if !iconName.MatchString(name) {
+		http.NotFound(w, r)
+		return
+	}
+	b, err := fs.ReadFile(samples.FS, samples.IconSet+"/"+strings.TrimSuffix(name, ".svg")+"-symbolic.svg")
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "image/svg+xml")
+	w.Header().Set("Cache-Control", "max-age=86400")
 	w.Write(b)
 }
 

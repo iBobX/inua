@@ -362,3 +362,67 @@ func TestFortuneNetBridges(t *testing.T) {
 		}
 	}
 }
+
+// The game's pictures, by the names the page may ask for, each drawn
+// once; and its icons, from the shell's own.
+func TestFortuneNetArt(t *testing.T) {
+	drawn := map[string]int{}
+	x := &testHost{}
+	x.Host = NewHost(Options{
+		Settings: games.FortuneSettings{Rivals: 1},
+		Local:    []string{"Ann"},
+		Run:      func(f func()) { x.mu.Lock(); defer x.mu.Unlock(); f() },
+		Art: func(city int, name string) *Picture {
+			drawn[name]++
+			pic := &Picture{PNG: []byte("png:" + name)}
+			if name == "piece-0" {
+				pic.W, pic.H, pic.FootX, pic.Dv = 40, 120, 20, 4
+			}
+			return pic
+		},
+	})
+	if err := x.Serve("127.0.0.1:0"); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { x.do(func() { x.Close() }) })
+	x.do(func() { x.Start() })
+	get := func(path string) (int, string) {
+		t.Helper()
+		res, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d%s", x.Port(), path))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer res.Body.Close()
+		b, _ := io.ReadAll(res.Body)
+		return res.StatusCode, string(b)
+	}
+	for _, name := range []string{"card-3", "card-11-price", "card-back", "sign-80", "house-1-3", "hotel-0-0", "piece-0", "card-3"} {
+		if code, body := get("/art/" + name + ".png"); code != 200 || body != "png:"+name {
+			t.Errorf("%s: %d %q", name, code, body)
+		}
+	}
+	res, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d/art/piece-0.png", x.Port()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	res.Body.Close()
+	if got := res.Header.Get("X-Piece"); got != "40.00 120.00 20.00 4.00" {
+		t.Errorf("piece: %q", got)
+	}
+	if drawn["card-3"] != 1 {
+		t.Errorf("card-3 drawn %d times", drawn["card-3"])
+	}
+	for _, name := range []string{"board", "card-", "sign-1234", "../texts.json", "card-3.png.png", "house-2-0", "hotel-1-4"} {
+		if code, _ := get("/art/" + name + ".png"); code != http.StatusNotFound {
+			t.Errorf("%s: %d", name, code)
+		}
+	}
+	if code, body := get("/icons/fortune-house.svg"); code != 200 || !strings.Contains(body, "<svg") {
+		t.Errorf("icon: %d %.40q", code, body)
+	}
+	for _, path := range []string{"/icons/fortune-house", "/icons/view-app-grid.svg", "/icons/..%2Fui.go"} {
+		if code, _ := get(path); code != http.StatusNotFound {
+			t.Errorf("%s: %d", path, code)
+		}
+	}
+}
