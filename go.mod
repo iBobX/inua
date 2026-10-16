@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
-	github.com/quailyquaily/mistermorph v0.3.57
+	github.com/quailyquaily/mistermorph v0.3.58
 	github.com/yuin/goldmark v1.7.16
 	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
@@ -59,7 +59,7 @@ require (
 	github.com/openai/openai-go/v3 v3.42.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
-	github.com/quailyquaily/uniai v0.1.68 // indirect
+	github.com/quailyquaily/uniai v0.1.69 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
