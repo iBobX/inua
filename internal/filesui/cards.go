@@ -77,7 +77,16 @@ func (w *window) openCard(c *card, parts cardParts) {
 			btn.AddCssClass(b.class)
 		}
 		action := b.action
+		typed := i == c.def && (parts.entry || parts.secret)
 		w.app.h.click(btn, func() {
+			// A card that is typed in: its default button does what Enter
+			// does, its action reading what was typed (closing the card
+			// first would clear the password) and deciding whether the
+			// card closes.
+			if typed && action != nil {
+				action()
+				return
+			}
 			w.closeCard()
 			if action != nil {
 				action()
