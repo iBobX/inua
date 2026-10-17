@@ -385,23 +385,30 @@ func (o *Overview) Select(index int) (hypr.Workspace, string, bool) {
 	return c.Workspace, "", true
 }
 
-// BarWorkspaces uses the same unfiltered ordering as overview slots. Closed
-// models refresh from the supplied snapshot; open models retain frozen ranks.
+// BarWorkspaces is the workspaces a display shows in the bar: the bar's own
+// list (BarWorkspaces above), in the order this model uses — the MRU history
+// when it is on, the workspace's own order otherwise. A workspace with no
+// windows keeps its mark: the bar says where the display can be, while the
+// overview's cards say where the windows are.
 func (o Overview) BarWorkspaces(snap hypr.Snapshot, connector string, all bool) []hypr.Workspace {
-	o.Query = ""
-	o.Cards = nil
-	o.AllCards = nil
-	o.frozenOrder = slices.Clone(o.frozenOrder)
-	o.moves = slices.Clone(o.moves)
-	o.reservations = maps.Clone(o.reservations)
-	o.refresh(snap)
-	var out []hypr.Workspace
-	for _, card := range o.AllCards {
-		if !card.New && (all || !knownMonitor(snap, connector) || card.Workspace.Monitor == connector) {
-			out = append(out, card.Workspace)
-		}
+	workspaces := BarWorkspaces(snap, connector, all)
+	if !o.MRU {
+		return workspaces
 	}
-	return out
+	slices.SortFunc(workspaces, func(a, b hypr.Workspace) int {
+		ha, hb := slices.Index(o.History, a.ID), slices.Index(o.History, b.ID)
+		if ha < 0 {
+			ha = 100000 + min(workspaceHistory(OverviewCard{Workspace: a}), 100000)
+		}
+		if hb < 0 {
+			hb = 100000 + min(workspaceHistory(OverviewCard{Workspace: b}), 100000)
+		}
+		if ha != hb {
+			return ha - hb
+		}
+		return a.ID - b.ID
+	})
+	return workspaces
 }
 
 // WorkspaceSlot resolves the unfiltered visual slot, including New, without

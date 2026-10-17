@@ -70,6 +70,26 @@ func TestOverviewSelectionSurvivesWorkspaceRemoval(t *testing.T) {
 		t.Fatalf("new-card selection lost: %+v", c)
 	}
 }
+func TestOverviewHidesEmptyWorkspacesButBarShowsThem(t *testing.T) {
+	snap := overviewFixture()
+	snap.Workspaces = append(snap.Workspaces, hypr.Workspace{ID: 3, Name: "3", Monitor: "A"})
+	o := Overview{}
+	o.Show(snap)
+	if got := overviewIDs(&o, "A"); !slices.Equal(got, []int{1, 2}) {
+		t.Fatalf("overview shows empty workspace: %v", got)
+	}
+	if got := ids(o.BarWorkspaces(snap, "A", false)); !slices.Equal(got, []int{1, 2, 3}) {
+		t.Fatalf("bar hides empty workspace: %v", got)
+	}
+}
+func TestOverviewMRUBarIncludesEmptyWorkspaces(t *testing.T) {
+	snap := overviewFixture()
+	snap.Workspaces = append(snap.Workspaces, hypr.Workspace{ID: 3, Name: "3", Monitor: "A"})
+	o := Overview{MRU: true, History: []int{2, 1}}
+	if got := ids(o.BarWorkspaces(snap, "A", false)); !slices.Equal(got, []int{2, 1, 3}) {
+		t.Fatalf("MRU bar workspaces: %v", got)
+	}
+}
 func TestOverviewNeverShowsEmptyWorkspacesAndKeepsMonitorGroups(t *testing.T) {
 	snap := overviewFixture()
 	snap.Workspaces = append(snap.Workspaces, hypr.Workspace{ID: 3, Name: "3", Monitor: "A"}, hypr.Workspace{ID: 10, Name: "10", Monitor: "B"})
@@ -78,11 +98,9 @@ func TestOverviewNeverShowsEmptyWorkspacesAndKeepsMonitorGroups(t *testing.T) {
 	for _, mru := range []bool{false, true} {
 		o := Overview{MRU: mru}
 		o.Show(snap)
-		if got := ids(o.BarWorkspaces(snap, "A", false)); !slices.Equal(got, []int{1, 2}) {
-			t.Fatalf("bar A (mru=%v): %v", mru, got)
-		}
-		if got := ids(o.BarWorkspaces(snap, "B", false)); !slices.Equal(got, []int{4, 22}) && !slices.Equal(got, []int{22, 4}) {
-			t.Fatalf("bar B (mru=%v): %v", mru, got)
+		wantB := []int{4, 10, 12, 22}
+		if got := ids(o.BarWorkspaces(snap, "B", false)); !slices.Equal(got, wantB) {
+			t.Fatalf("bar B (mru=%v): %v, want %v", mru, got, wantB)
 		}
 		lastMonitor := ""
 		newSeen := map[string]bool{}
