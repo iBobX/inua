@@ -2482,6 +2482,12 @@ window.files button.files-card-item:hover { background: alpha(@accent, 0.06); }
 window.files button.files-card-item.selected { border-color: alpha(@accent, 0.3); background: alpha(@accent, 0.12); }
 window.files button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
 window.files button.destructive-action { border: 1px solid @danger; background: @danger; color: @app; }
+/* Filled, they stay filled when hovered (not the outlined buttons' tint,
+   which left the dark label on a dark ground) and while at work. */
+window.files button.suggested-action:hover { border-color: @accent; background: mix(@accent, @t0, 0.14); }
+window.files button.destructive-action:hover { border-color: @danger; background: mix(@danger, @t0, 0.14); }
+window.files button.suggested-action:disabled { border-color: @accent; background: @accent; color: @app; opacity: 0.6; }
+window.files button.destructive-action:disabled { border-color: @danger; background: @danger; color: @app; opacity: 0.6; }
 window.files .files-keys-head { margin: 14px 0 6px; }
 window.files .files-keys-row { min-height: 24px; }
 window.files .files-key { min-width: 190px; color: @accent; }

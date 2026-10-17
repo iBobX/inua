@@ -33,6 +33,8 @@ type card struct {
 	pick   int
 	picked func(item string)
 	ptrs   []uintptr
+	btns   []*gtk.Button
+	busy   bool // its default button's action is under way
 }
 
 type cardButton struct {
@@ -93,6 +95,7 @@ func (w *window) openCard(c *card, parts cardParts) {
 			}
 		})
 		c.ptrs = append(c.ptrs, btn.GoPointer())
+		c.btns = append(c.btns, btn)
 		gtkx.Append(&w.cardButtons, &btn.Widget)
 		if i == c.def {
 			btn.AddCssClass("default")
@@ -192,7 +195,7 @@ func (w *window) cardDefault() {
 		picked(item)
 		return
 	}
-	if c.def >= 0 && c.def < len(c.buttons) {
+	if c.def >= 0 && c.def < len(c.buttons) && !c.busy {
 		action := c.buttons[c.def].action
 		// The action may keep the card open (a name taken): it decides.
 		if action != nil {
@@ -204,6 +207,34 @@ func (w *window) cardDefault() {
 func (w *window) cardEdited() {
 	if c := w.card; c != nil && c.edited != nil {
 		c.edited(w.cardEntry.GetText())
+	}
+}
+
+// cardBusy shows the card at work: its default button says what it is
+// doing, and it and the card's other actions are not pressed again, by a
+// click or Enter, until cardBusy("") gives them back.
+func (w *window) cardBusy(doing string) {
+	if c := w.card; c != nil {
+		w.cardBusyAt(c.def, doing)
+	}
+}
+
+// cardBusyAt is cardBusy for button i.
+func (w *window) cardBusyAt(i int, doing string) {
+	c := w.card
+	if c == nil || i < 0 || i >= len(c.btns) {
+		return
+	}
+	c.busy = doing != ""
+	for j, b := range c.btns {
+		if c.buttons[j].action != nil {
+			b.SetSensitive(!c.busy)
+		}
+	}
+	if c.busy {
+		c.btns[i].SetLabel(doing)
+	} else {
+		c.btns[i].SetLabel(c.buttons[i].label)
 	}
 }
 
@@ -619,7 +650,8 @@ func (w *window) askPassphrase(v disks.Volume) {
 		{label: i18n.T("Cancel")},
 		{label: i18n.T("Unlock"), class: "suggested-action", action: func() {
 			pass := w.cardSecret.GetText()
-			w.cardFail(i18n.T("Unlocking…"))
+			w.cardFail("")
+			w.cardBusy(i18n.T("Unlocking…"))
 			go func() {
 				ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 				defer cancel()
@@ -640,6 +672,7 @@ func (w *window) askPassphrase(v disks.Volume) {
 						return
 					}
 					if err != nil {
+						w.cardBusy("")
 						w.cardFail(i18n.T("That passphrase does not open it."))
 						w.cardSecret.SetText("")
 						return
