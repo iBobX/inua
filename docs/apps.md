@@ -470,7 +470,7 @@ starts at login while it is on. See [mobile-link.md](mobile-link.md).
 
 The file manager, a program of its own: `inua-files [PATH …]`. One or
 two panes of a folder as a list or a grid, a sidebar of places, drives and
-network shares, and the details of the selection; every action has a key,
+remote disks (SFTP, SMB, WebDAV, FTP, S3 and R2, mounted by rclone), and the details of the selection; every action has a key,
 and typing filters the folder. It serves `org.freedesktop.FileManager1`,
 so "Show in folder" opens it; `inua-files -default` makes it the
 desktop's file manager in place of Nautilus. See [files.md](files.md).

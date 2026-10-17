@@ -2467,6 +2467,18 @@ window.files .files-card-title {
 }
 window.files .files-card .sub { color: @t1; font-size: 13.5px; }
 window.files .files-card-error { color: @danger; font-size: 13px; }
+/* A remote disk's setup: its kinds as a segmented control (as the pane's
+   list | grid), then a label beside each field. */
+window.files box.files-kinds { padding: 2px; border: 1px solid alpha(@line, 0.7); background: @app; }
+window.files box.files-kinds > button { min-height: 26px; padding: 0 12px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @t2; font-size: 12.5px; font-weight: 500; }
+window.files box.files-kinds > button:hover { background: alpha(@t0, 0.06); color: @t0; }
+window.files box.files-kinds > button:checked { background: alpha(@accent, 0.16); color: @accent; }
+/* A remote disk's edit button: there while the pointer is on its row, or
+   the keys are on the button. */
+window.files button.files-side-edit { opacity: 0; color: @t2; }
+window.files button.files-side-edit:hover { color: @t0; }
+window.files .files-side-row:hover button.files-side-edit, window.files button.files-side-edit:focus-visible { opacity: 1; }
+window.files .files-form-label { min-width: 116px; color: @t1; font-size: 13px; } /* a column as wide for every kind */
 window.files .files-card-list { padding: 2px 0; }
 window.files button.files-card-item {
   min-height: 36px;

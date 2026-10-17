@@ -6,7 +6,6 @@ import (
 	"errors"
 	"io"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -153,116 +152,6 @@ func SpaceOf(path string) (Space, error) {
 	}
 	bs := uint64(st.Bsize)
 	return Space{Total: st.Blocks * bs, Free: st.Bavail * bs}, nil
-}
-
-// GVfsDir is where GVfs shows its mounts as folders (FUSE).
-func GVfsDir() string {
-	if d := os.Getenv("XDG_RUNTIME_DIR"); d != "" {
-		return filepath.Join(d, "gvfs")
-	}
-	return filepath.Join("/run/user", strconv.Itoa(os.Getuid()), "gvfs")
-}
-
-// NetMount is a network share GVfs has mounted.
-type NetMount struct {
-	Path   string // its folder under GVfsDir
-	URI    string // smb://server/share, sftp://user@host/ …
-	Name   string // as the sidebar shows it
-	Scheme string
-}
-
-// NetMounts lists GVfs's mounts by their folders, which GVfs names
-// "smb-share:server=nas,share=media" and "sftp:host=box,user=ann".
-func NetMounts() []NetMount {
-	es, err := os.ReadDir(GVfsDir())
-	if err != nil {
-		return nil
-	}
-	var out []NetMount
-	for _, e := range es {
-		if m, ok := ParseGVfsName(e.Name()); ok {
-			m.Path = filepath.Join(GVfsDir(), e.Name())
-			out = append(out, m)
-		}
-	}
-	return out
-}
-
-// ParseGVfsName reads a GVfs FUSE folder's name back into a URI and a name
-// to show.
-func ParseGVfsName(dir string) (NetMount, bool) {
-	kind, rest, ok := strings.Cut(dir, ":")
-	if !ok {
-		return NetMount{}, false
-	}
-	kv := map[string]string{}
-	for part := range strings.SplitSeq(rest, ",") {
-		k, v, _ := strings.Cut(part, "=")
-		kv[k] = unescapeGVfs(v)
-	}
-	m := NetMount{Scheme: kind}
-	host := kv["host"]
-	if kv["port"] != "" {
-		host += ":" + kv["port"]
-	}
-	user := ""
-	if kv["user"] != "" {
-		user = kv["user"] + "@"
-	}
-	switch kind {
-	case "smb-share":
-		m.Scheme = "smb"
-		server := kv["server"]
-		m.URI = "smb://" + user + server + "/" + kv["share"]
-		m.Name = kv["share"] + " on " + server
-	case "sftp", "ftp", "ftps", "afp-volume", "nfs":
-		if kind == "afp-volume" {
-			m.Scheme = "afp"
-		}
-		m.URI = m.Scheme + "://" + user + host + "/" + strings.TrimPrefix(kv["prefix"], "/")
-		m.Name = host
-		if kv["volume"] != "" {
-			m.URI = m.Scheme + "://" + user + host + "/" + kv["volume"]
-			m.Name = kv["volume"] + " on " + host
-		}
-	case "dav", "davs":
-		scheme := kind
-		if kv["ssl"] == "true" {
-			scheme = "davs"
-		}
-		m.Scheme = scheme
-		m.URI = scheme + "://" + user + host + kv["prefix"]
-		m.Name = host
-	case "mtp", "gphoto2":
-		m.URI = kind + "://" + kv["host"] + "/"
-		m.Name = strings.ReplaceAll(kv["host"], "_", " ")
-	default:
-		if host == "" {
-			return NetMount{}, false
-		}
-		m.URI = kind + "://" + user + host + "/"
-		m.Name = host
-	}
-	return m, true
-}
-
-// unescapeGVfs undoes GVfs's %XX escapes in a FUSE folder's name.
-func unescapeGVfs(s string) string {
-	if !strings.Contains(s, "%") {
-		return s
-	}
-	var b strings.Builder
-	for i := 0; i < len(s); i++ {
-		if s[i] == '%' && i+2 < len(s) {
-			if n, err := strconv.ParseUint(s[i+1:i+3], 16, 8); err == nil {
-				b.WriteByte(byte(n))
-				i += 2
-				continue
-			}
-		}
-		b.WriteByte(s[i])
-	}
-	return b.String()
 }
 
 // WatchMounts calls changed (on its own goroutine) after the mount table

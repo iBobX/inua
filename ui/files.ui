@@ -223,6 +223,14 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="xalign">0</property>
                     <property name="wrap">true</property>
                     <property name="wrap-mode">2</property>
+                    <property name="max-width-chars">50</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="card_form">
+                    <property name="orientation">1</property>
+                    <property name="spacing">14</property>
+                    <property name="visible">false</property>
                   </object>
                 </child>
                 <child>
@@ -263,9 +271,21 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="card_buttons">
-                    <property name="halign">2</property>
+                  <object class="GtkBox">
                     <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkBox" id="card_aside">
+                        <property name="hexpand">true</property>
+                        <property name="halign">1</property>
+                        <property name="spacing">8</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="card_buttons">
+                        <property name="halign">2</property>
+                        <property name="spacing">8</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

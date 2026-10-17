@@ -4,6 +4,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/lyricat/inua/internal/apps/files/remote"
 	"github.com/lyricat/inua/internal/apps/store"
 )
 
@@ -28,9 +29,10 @@ type Settings struct {
 	Sidebar  bool                   `json:"sidebar"`
 	Details  bool                   `json:"details"`
 	Dual     bool                   `json:"dual"`
-	Zoom     int                    `json:"zoom"`    // -2 … 3: the rows' and icons' size
-	Columns  []SortBy               `json:"columns"` // the list's columns after the name, in order
-	Servers  []string               `json:"servers,omitempty"`
+	Zoom     int                    `json:"zoom"`              // -2 … 3: the rows' and icons' size
+	Columns  []SortBy               `json:"columns"`           // the list's columns after the name, in order
+	Remote   []remote.Disk          `json:"remote,omitempty"`  // the remote disks connected to, by name
+	Servers  []string               `json:"servers,omitempty"` // before remote disks: the addresses used
 	Jumps    Jumps                  `json:"jumps"`
 	Width    int                    `json:"width,omitempty"`
 	Height   int                    `json:"height,omitempty"`
@@ -71,7 +73,25 @@ func LoadSettings() *Settings {
 	if s.Folders == nil {
 		s.Folders = map[string]*FolderView{}
 	}
+	s.adoptServers()
 	return s
+}
+
+// adoptServers makes the servers used before remote disks into disks: the
+// addresses a remote disk can be at, each named as a new one would be.
+func (s *Settings) adoptServers() {
+	if len(s.Servers) == 0 {
+		return
+	}
+	for _, uri := range s.Servers {
+		a, err := remote.Parse(uri)
+		if _, found := remote.Find(s.Remote, uri); err != nil || found {
+			continue
+		}
+		s.Remote = append(s.Remote, remote.Disk{Name: remote.FreeName(a.Name(), s.Remote), Address: a.String()})
+	}
+	s.Servers = nil
+	s.modified = true
 }
 
 // Save writes the settings when they changed.
@@ -116,14 +136,18 @@ func (s *Settings) Visited(dir string) {
 	s.modified = true
 }
 
-// AddServer puts a server address first among those used.
-func (s *Settings) AddServer(uri string) {
-	out := []string{uri}
-	for _, u := range s.Servers {
-		if u != uri && len(out) < 12 {
-			out = append(out, u)
-		}
+// SaveDisk keeps a remote disk, in the place of the one of its name.
+func (s *Settings) SaveDisk(d remote.Disk) {
+	if i := slices.IndexFunc(s.Remote, func(x remote.Disk) bool { return x.Name == d.Name }); i >= 0 {
+		s.Remote[i] = d
+	} else {
+		s.Remote = append(s.Remote, d)
 	}
-	s.Servers = out
+	s.modified = true
+}
+
+// ForgetDisk takes a remote disk off the list.
+func (s *Settings) ForgetDisk(name string) {
+	s.Remote = slices.DeleteFunc(s.Remote, func(x remote.Disk) bool { return x.Name == name })
 	s.modified = true
 }

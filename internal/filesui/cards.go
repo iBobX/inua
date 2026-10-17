@@ -33,6 +33,7 @@ type card struct {
 	pick   int
 	picked func(item string)
 	ptrs   []uintptr
+	closed func() // when it closes: what a form forgets
 	btns   []*gtk.Button
 	busy   bool // its default button's action is under way
 }
@@ -41,6 +42,7 @@ type cardButton struct {
 	label  string
 	class  string // suggested-action, destructive-action
 	action func()
+	aside  bool // at the start, apart from the rest; it leaves the card open
 }
 
 // cardParts says which of the card's parts a card shows.
@@ -48,10 +50,13 @@ type cardParts struct {
 	title, text      string
 	entry, secret    bool
 	entryText        string
+	entryHint        string // the entry's placeholder, and the password's
+	secretHint       string
 	check            string
 	checked          bool // the check is on at first
 	list             bool
-	listHeight       int // the list's most, when not the usual
+	listHeight       int  // the list's most, when not the usual
+	form             bool // the card fills card_form itself
 	selectStem, mono bool
 }
 
@@ -61,12 +66,15 @@ func (w *window) openCard(c *card, parts cardParts) {
 	w.cardTitle.SetText(parts.title)
 	w.cardText.SetText(parts.text)
 	w.cardText.SetVisible(parts.text != "")
+	w.cardForm.SetVisible(parts.form)
 	w.cardError.SetText("")
 	w.cardError.SetVisible(false)
 	w.cardEntry.SetVisible(parts.entry)
 	setClass(&w.cardEntry.Widget, "mono-entry", parts.mono)
+	w.cardEntry.SetPlaceholderText(parts.entryHint)
 	w.cardSecret.SetVisible(parts.secret)
 	w.cardSecret.SetText("")
+	w.cardSecret.SetPropertyPlaceholderText(parts.secretHint)
 	w.cardScroll.SetVisible(parts.list)
 	w.cardScroll.SetMaxContentHeight(int32(cmp.Or(parts.listHeight, 340)))
 	w.cardCheck.SetVisible(parts.check != "")
@@ -79,13 +87,13 @@ func (w *window) openCard(c *card, parts cardParts) {
 			btn.AddCssClass(b.class)
 		}
 		action := b.action
-		typed := i == c.def && (parts.entry || parts.secret)
+		typed := i == c.def && (parts.entry || parts.secret || parts.form)
 		w.app.h.click(btn, func() {
 			// A card that is typed in: its default button does what Enter
 			// does, its action reading what was typed (closing the card
 			// first would clear the password) and deciding whether the
 			// card closes.
-			if typed && action != nil {
+			if (typed || b.aside) && action != nil {
 				action()
 				return
 			}
@@ -96,7 +104,11 @@ func (w *window) openCard(c *card, parts cardParts) {
 		})
 		c.ptrs = append(c.ptrs, btn.GoPointer())
 		c.btns = append(c.btns, btn)
-		gtkx.Append(&w.cardButtons, &btn.Widget)
+		if b.aside {
+			gtkx.Append(&w.cardAside, &btn.Widget)
+		} else {
+			gtkx.Append(&w.cardButtons, &btn.Widget)
+		}
 		if i == c.def {
 			btn.AddCssClass("default")
 		}
@@ -126,6 +138,11 @@ func (w *window) closeCard() {
 	}
 	w.card = nil
 	w.app.h.forget(c.ptrs)
+	if c.closed != nil {
+		c.closed()
+	}
+	gtkx.Clear(&w.cardForm)
+	gtkx.Clear(&w.cardAside)
 	gtkx.Clear(&w.cardButtons)
 	gtkx.Clear(&w.cardList)
 	w.cardLayer.SetVisible(false)
@@ -163,7 +180,7 @@ func (w *window) cardKey(keyval uint32, state gdk.ModifierType) bool {
 		w.markPick()
 		return true
 	}
-	if state&gdk.ControlMaskValue == 0 && len(c.buttons) > 0 && !w.cardEntry.GetVisible() && !w.cardSecret.GetVisible() {
+	if state&gdk.ControlMaskValue == 0 && len(c.buttons) > 0 && !w.cardEntry.GetVisible() && !w.cardSecret.GetVisible() && !w.cardForm.GetVisible() {
 		// A question's buttons by their first letter: R(eplace), S(kip) …
 		r := rune(gdk.KeyvalToUnicode(gdk.KeyvalToLower(keyval)))
 		for _, b := range c.buttons {
@@ -518,90 +535,6 @@ func (w *window) fillJump(q string) {
 		subs = append(subs, shortHome(d))
 	}
 	w.setCardList(items, labels, subs)
-}
-
-// --- servers ---
-
-// askServer asks for a server's address, with those used before.
-func (w *window) askServer() {
-	c := &card{def: -1}
-	p := w.cur()
-	c.picked = func(uri string) { w.connect(p, uri) }
-	c.edited = func(q string) { w.fillServers(q) }
-	w.openCard(c, cardParts{
-		title: i18n.T("Connect to a server"),
-		text:  i18n.T("smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"),
-		entry: true, list: true, mono: true,
-	})
-	w.fillServers("")
-}
-
-func (w *window) fillServers(q string) {
-	items, labels, subs := []string{""}, []string{""}, []string{""}
-	q = strings.TrimSpace(q)
-	if q != "" {
-		labels[0], subs[0] = q, i18n.T("Connect")
-	} else {
-		items, labels, subs = nil, nil, nil
-	}
-	for _, s := range files.Rank(w.app.settings.Servers, q, func(s string) string { return s }) {
-		if s != q {
-			items, labels, subs = append(items, s), append(labels, s), append(subs, i18n.T("Used before"))
-		}
-	}
-	w.setCardList(items, labels, subs)
-}
-
-// connect mounts a server's share through GVfs and opens it in p. GTK
-// asks for the password in its own dialog when the server wants one.
-func (w *window) connect(p *pane, uri string) {
-	uri = strings.TrimSpace(uri)
-	if uri == "" {
-		return
-	}
-	f := gio.FileNewForUri(uri)
-	op := gtk.NewMountOperation(&w.win.Window)
-	w.flash(i18n.Tf("Connecting to %s…", uri))
-	id := w.app.h.callback(func(result uintptr) {
-		defer unrefObject(f)
-		defer op.Unref()
-		_, err := f.MountEnclosingVolumeFinish(&gio.AsyncResultBase{Ptr: result})
-		if err != nil && !strings.Contains(err.Error(), "already mounted") {
-			if !strings.Contains(strings.ToLower(err.Error()), "cancel") {
-				w.flash(i18n.Tf("%s could not be reached: %v", uri, err))
-			}
-			return
-		}
-		w.app.settings.AddServer(uri)
-		path := f.GetPath() // GVfs's FUSE folder for it
-		if path == "" {
-			w.flash(i18n.T("Connected, but GVfs's FUSE folder is missing (is gvfs-fuse installed?)."))
-			return
-		}
-		p.goTo(path, true)
-		w.app.refreshMounts()
-	})
-	f.MountEnclosingVolume(0, &op.MountOperation, nil, &w.app.h.onAsync, id)
-}
-
-// disconnect unmounts a network share.
-func (w *window) disconnect(m files.NetMount) {
-	w.leave(m.Path)
-	f := gio.FileNewForUri(m.URI)
-	mount, err := f.FindEnclosingMount(nil)
-	unrefObject(f)
-	if err != nil || mount == nil {
-		w.flash(i18n.Tf("%s is not mounted.", m.Name))
-		return
-	}
-	id := w.app.h.callback(func(result uintptr) {
-		defer unrefObject(mount)
-		if _, err := mount.UnmountWithOperationFinish(&gio.AsyncResultBase{Ptr: result}); err != nil {
-			w.flash(i18n.Tf("%s could not be disconnected: %v", m.Name, err))
-		}
-		w.app.refreshMounts()
-	})
-	mount.UnmountWithOperation(0, nil, nil, &w.app.h.onAsync, id)
 }
 
 // leave moves panes that are in dir (a drive or share going away) home.

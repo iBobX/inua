@@ -29,6 +29,7 @@ type window struct {
 	jobBar                                   gtk.ProgressBar
 
 	cardLayer, cardBox, cardList, cardButtons gtk.Box
+	cardForm, cardAside                       gtk.Box
 	cardTitle, cardText, cardError            gtk.Label
 	cardEntry                                 gtk.Entry
 	cardSecret                                gtk.PasswordEntry
@@ -73,6 +74,8 @@ func (a *App) newWindow() *window {
 	ui.Get("card_buttons", &w.cardButtons)
 	ui.Get("card_title", &w.cardTitle)
 	ui.Get("card_text", &w.cardText)
+	ui.Get("card_form", &w.cardForm)
+	ui.Get("card_aside", &w.cardAside)
 	ui.Get("card_error", &w.cardError)
 	ui.Get("card_entry", &w.cardEntry)
 	ui.Get("card_secret", &w.cardSecret)
@@ -278,7 +281,7 @@ func (w *window) syncTitle() {
 	w.win.SetTitle(t)
 }
 
-// open shows a folder, or a server's share, in the pane with the keys.
+// open shows a folder, or a remote disk, in the pane with the keys.
 func (w *window) open(target string) {
 	p := w.cur()
 	if strings.HasPrefix(target, trashKey) {
@@ -287,7 +290,7 @@ func (w *window) open(target string) {
 	}
 	if !files.IsLocalURI(target) {
 		p.goTo(files.Home(), false)
-		w.connect(p, target)
+		w.connectRemote(p, target)
 		return
 	}
 	p.goTo(target, p.dir != "")
@@ -933,5 +936,3 @@ func (w *window) terminal(dir string) {
 	}
 	w.flash(i18n.T("No terminal was found: install xdg-terminal-exec or set $TERMINAL."))
 }
-
-func unrefObject(o gobject.Ptr) { (&gobject.Object{Ptr: o.GoPointer()}).Unref() }

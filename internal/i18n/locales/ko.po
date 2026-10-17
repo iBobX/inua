@@ -279,8 +279,8 @@ msgstr "%s에서 온 파일"
 #: internal/apps/connect/share.go:129
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:697
+#: internal/filesui/cards.go:673
+#: internal/filesui/window.go:700
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
 msgid "Open"
@@ -505,6 +505,8 @@ msgstr "승인 대기 중"
 
 #: internal/apps/tailscale/status.go:273
 #: internal/appui/tailscale.go:152
+#: internal/filesui/remote.go:170
+#: internal/filesui/remotesetup.go:418
 #: internal/shell/status.go:128
 msgid "Connecting…"
 msgstr "연결 중..."
@@ -644,7 +646,7 @@ msgstr "비디오"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/filesui/cards.go:373
+#: internal/filesui/cards.go:430
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
@@ -1220,8 +1222,8 @@ msgid "The decrypted copy goes to the trash, where it can be restored from; the 
 msgstr "복호화한 사본은 휴지통으로 가며 거기서 복원할 수 있습니다. 암호화된 파일은 남습니다."
 
 #: internal/appui/gpg.go:1537
-#: internal/filesui/cards.go:712
-#: internal/filesui/window.go:731
+#: internal/filesui/cards.go:687
+#: internal/filesui/window.go:734
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -1397,7 +1399,7 @@ msgstr "숨기기"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/filesui/window.go:713
+#: internal/filesui/window.go:716
 #: internal/ui/askpass.go:203
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1596,7 +1598,7 @@ msgid "It is not an image this app reads (PNG or JPEG)."
 msgstr "이 앱이 읽는 이미지(PNG 또는 JPEG)가 아닙니다."
 
 #: internal/appui/pass_otp.go:189
-#: internal/filesui/cards.go:435
+#: internal/filesui/cards.go:492
 msgid "Replace"
 msgstr "바꾸기"
 
@@ -1759,7 +1761,6 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
 #: internal/shell/dock.go:298
 msgid "NETWORK"
@@ -1858,6 +1859,11 @@ msgid "Parent"
 msgstr "부모"
 
 #: internal/appui/sysmon.go:778
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:45
+#: internal/filesui/remotesetup.go:54
+#: internal/filesui/remotesetup.go:60
+#: internal/filesui/remotesetup.go:66
 msgid "User"
 msgstr "사용자"
 
@@ -1919,6 +1925,11 @@ msgstr "프로그램"
 
 #: internal/appui/sysmon.go:786
 #: internal/filesui/kinds.go:34
+#: internal/filesui/remotesetup.go:47
+#: internal/filesui/remotesetup.go:53
+#: internal/filesui/remotesetup.go:68
+#: internal/filesui/remotesetup.go:75
+#: internal/filesui/remotesetup.go:83
 #: internal/viewerui/app.go:792
 msgid "Folder"
 msgstr "폴더"
@@ -2021,6 +2032,7 @@ msgstr "모델"
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
+#: internal/filesui/remotesetup.go:226
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/connect.ui:290
@@ -2682,12 +2694,15 @@ msgstr "알 수 없는 블록 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
-#: internal/filesui/cards.go:285
-#: internal/filesui/cards.go:334
-#: internal/filesui/cards.go:372
-#: internal/filesui/cards.go:389
-#: internal/filesui/cards.go:427
-#: internal/filesui/cards.go:610
+#: internal/filesui/cards.go:342
+#: internal/filesui/cards.go:391
+#: internal/filesui/cards.go:429
+#: internal/filesui/cards.go:446
+#: internal/filesui/cards.go:484
+#: internal/filesui/cards.go:583
+#: internal/filesui/remote.go:159
+#: internal/filesui/remote.go:219
+#: internal/filesui/remotesetup.go:152
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:660
@@ -3600,26 +3615,27 @@ msgstr "텍스트 편집기"
 msgid "Opens plain text"
 msgstr "일반 텍스트 열기"
 
-#: internal/filesui/app.go:69
-#: internal/filesui/cards.go:708
+#: internal/filesui/app.go:71
+#: internal/filesui/cards.go:683
+#: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
-#: internal/filesui/window.go:90
-#: internal/filesui/window.go:268
+#: internal/filesui/window.go:93
+#: internal/filesui/window.go:271
 #: ui/gpg.ui:445
 #: ui/gpg.ui:810
 #: config/apps/io.github.lyricat.Inua.Files.desktop:3
 msgid "Files"
 msgstr "파일"
 
-#: internal/filesui/app.go:227
+#: internal/filesui/app.go:229
 msgid "%s is plugged in."
 msgstr "%s이(가) 연결되었습니다."
 
-#: internal/filesui/app.go:306
+#: internal/filesui/app.go:307
 msgid "There are no files on the clipboard."
 msgstr "클립보드에 파일이 없습니다."
 
-#: internal/filesui/app.go:360
+#: internal/filesui/app.go:361
 msgid "Nothing to undo."
 msgstr "실행 취소할 작업이 없습니다."
 
@@ -3637,364 +3653,324 @@ msgid "%d item"
 msgid_plural "%d items"
 msgstr[0] "%d개 항목"
 
-#: internal/filesui/cards.go:286
-#: internal/filesui/cards.go:306
-#: internal/filesui/cards.go:711
+#: internal/filesui/cards.go:343
+#: internal/filesui/cards.go:363
+#: internal/filesui/cards.go:686
 msgid "Rename"
 msgstr "이름 바꾸기"
 
-#: internal/filesui/cards.go:298
-#: internal/filesui/cards.go:343
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
 msgid "“%s” is taken here."
 msgstr "여기에 “%s”이(가) 이미 있습니다."
 
-#: internal/filesui/cards.go:313
+#: internal/filesui/cards.go:370
 msgid "A name cannot be empty."
 msgstr "이름은 비워 둘 수 없습니다."
 
-#: internal/filesui/cards.go:315
+#: internal/filesui/cards.go:372
 msgid "“%s” is not a name."
 msgstr "“%s”은(는) 이름으로 쓸 수 없습니다."
 
-#: internal/filesui/cards.go:317
+#: internal/filesui/cards.go:374
 msgid "A name cannot hold “/”."
 msgstr "이름에 “/”를 넣을 수 없습니다."
 
-#: internal/filesui/cards.go:319
+#: internal/filesui/cards.go:376
 msgid "The name is too long."
 msgstr "이름이 너무 깁니다."
 
-#: internal/filesui/cards.go:327
+#: internal/filesui/cards.go:384
 msgid "New file"
 msgstr "새 파일"
 
-#: internal/filesui/cards.go:327
+#: internal/filesui/cards.go:384
 msgid "Untitled"
 msgstr "제목 없음"
 
-#: internal/filesui/cards.go:329
+#: internal/filesui/cards.go:386
 msgid "New folder"
 msgstr "새 폴더"
 
-#: internal/filesui/cards.go:329
+#: internal/filesui/cards.go:386
 msgid "New Folder"
 msgstr "새 폴더"
 
-#: internal/filesui/cards.go:335
+#: internal/filesui/cards.go:392
 msgid "Make"
 msgstr "만들기"
 
-#: internal/filesui/cards.go:367
+#: internal/filesui/cards.go:424
 msgid "Delete %d item for good?"
 msgid_plural "Delete %d items for good?"
 msgstr[0] "%d개 항목을 영구히 삭제할까요?"
 
-#: internal/filesui/cards.go:369
+#: internal/filesui/cards.go:426
 msgid "Delete “%s” for good?"
 msgstr "“%s”을(를) 영구히 삭제할까요?"
 
-#: internal/filesui/cards.go:384
+#: internal/filesui/cards.go:441
 msgid "They do not go to the trash, and this cannot be undone."
 msgstr "휴지통으로 가지 않으며 되돌릴 수 없습니다."
 
-#: internal/filesui/cards.go:390
+#: internal/filesui/cards.go:447
 #: internal/filesui/sidebar.go:55
-#: internal/filesui/window.go:670
-#: internal/filesui/window.go:676
+#: internal/filesui/window.go:673
+#: internal/filesui/window.go:679
 #: internal/shell/commands.go:32
 #: ui/filespane.ui:250
 msgid "Empty Trash"
 msgstr "휴지통 비우기"
 
-#: internal/filesui/cards.go:407
+#: internal/filesui/cards.go:464
 msgid "Empty the trash?"
 msgstr "휴지통을 비울까요?"
 
-#: internal/filesui/cards.go:407
+#: internal/filesui/cards.go:464
 msgid "Everything in it is deleted for good, on every drive."
 msgstr "모든 드라이브에 있는 내용이 영구히 삭제됩니다."
 
-#: internal/filesui/cards.go:424
+#: internal/filesui/cards.go:481
 msgid "There: %s, %s. This one: %s, %s."
 msgstr "기존: %s, %s. 이것: %s, %s."
 
-#: internal/filesui/cards.go:428
+#: internal/filesui/cards.go:485
 msgid "Skip"
 msgstr "건너뛰기"
 
-#: internal/filesui/cards.go:429
+#: internal/filesui/cards.go:486
 msgid "Keep both"
 msgstr "둘 다 유지"
 
-#: internal/filesui/cards.go:433
+#: internal/filesui/cards.go:490
 msgid "Merge"
 msgstr "병합"
 
-#: internal/filesui/cards.go:438
+#: internal/filesui/cards.go:495
 msgid "“%s” is already in %s"
 msgstr "“%s”이(가) 이미 %s에 있습니다"
 
-#: internal/filesui/cards.go:440
+#: internal/filesui/cards.go:497
 msgid "A folder “%s” is already in %s"
 msgstr "폴더 “%s”이(가) 이미 %s에 있습니다"
 
-#: internal/filesui/cards.go:443
-#: ui/files.ui:253
+#: internal/filesui/cards.go:500
+#: ui/files.ui:261
 msgid "Do the same for the rest"
 msgstr "나머지도 똑같이 처리"
 
-#: internal/filesui/cards.go:452
+#: internal/filesui/cards.go:509
 msgid "… and %d more"
 msgid_plural "… and %d more"
 msgstr[0] "… 그 외 %d개"
 
-#: internal/filesui/cards.go:454
-#: internal/filesui/cards.go:735
+#: internal/filesui/cards.go:511
+#: internal/filesui/cards.go:710
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
 msgid "Close"
 msgstr "닫기"
 
-#: internal/filesui/cards.go:455
+#: internal/filesui/cards.go:512
 msgid "Some items could not be done"
 msgstr "일부 항목을 처리하지 못했습니다"
 
-#: internal/filesui/cards.go:464
+#: internal/filesui/cards.go:521
 msgid "Jump to a folder"
 msgstr "폴더로 이동"
 
-#: internal/filesui/cards.go:492
-msgid "Connect to a server"
-msgstr "서버에 연결"
-
-#: internal/filesui/cards.go:493
-msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
-msgstr "smb://서버/공유, sftp://사용자@호스트/폴더, ftp://, dav://, nfs://"
-
-#: internal/filesui/cards.go:503
-#: ui/remote.ui:523
-#: ui/vm.ui:1548
-#: ui/vm.ui:1569
-msgid "Connect"
-msgstr "연결"
-
-#: internal/filesui/cards.go:509
-msgid "Used before"
-msgstr "이전에 사용"
-
-#: internal/filesui/cards.go:524
-#: internal/remoteui/stream.go:134
-msgid "Connecting to %s…"
-msgstr "%s에 연결하는 중…"
-
-#: internal/filesui/cards.go:531
-msgid "%s could not be reached: %v"
-msgstr "%s에 연결할 수 없습니다: %v"
-
-#: internal/filesui/cards.go:538
-msgid "Connected, but GVfs's FUSE folder is missing (is gvfs-fuse installed?)."
-msgstr "연결했지만 GVfs의 FUSE 폴더가 없습니다(gvfs-fuse가 설치되어 있나요?)."
-
-#: internal/filesui/cards.go:554
-msgid "%s is not mounted."
-msgstr "%s이(가) 마운트되어 있지 않습니다."
-
-#: internal/filesui/cards.go:560
-msgid "%s could not be disconnected: %v"
-msgstr "%s의 연결을 끊을 수 없습니다: %v"
-
-#: internal/filesui/cards.go:591
+#: internal/filesui/cards.go:564
 msgid "Mounting %s…"
 msgstr "%s 마운트 중…"
 
-#: internal/filesui/cards.go:611
+#: internal/filesui/cards.go:584
 msgid "Unlock"
 msgstr "잠금 해제"
 
-#: internal/filesui/cards.go:613
+#: internal/filesui/cards.go:587
 msgid "Unlocking…"
 msgstr "잠금 해제 중…"
 
-#: internal/filesui/cards.go:634
+#: internal/filesui/cards.go:609
 msgid "That passphrase does not open it."
 msgstr "이 암호로는 열 수 없습니다."
 
-#: internal/filesui/cards.go:648
+#: internal/filesui/cards.go:623
 msgid "Unlock %s"
 msgstr "%s 잠금 해제"
 
-#: internal/filesui/cards.go:649
+#: internal/filesui/cards.go:624
 msgid "The drive is encrypted. Its passphrase is not kept."
 msgstr "이 드라이브는 암호화되어 있습니다. 암호는 저장되지 않습니다."
 
-#: internal/filesui/cards.go:659
+#: internal/filesui/cards.go:634
 msgid "Ejecting %s…"
 msgstr "%s 꺼내는 중…"
 
-#: internal/filesui/cards.go:670
+#: internal/filesui/cards.go:645
 msgid "%s can be removed now."
 msgstr "이제 %s을(를) 분리할 수 있습니다."
 
-#: internal/filesui/cards.go:672
+#: internal/filesui/cards.go:647
 msgid "%s is unmounted."
 msgstr "%s의 마운트를 해제했습니다."
 
-#: internal/filesui/cards.go:682
+#: internal/filesui/cards.go:657
 msgid "%s is in use: close the files open on it first."
 msgstr "%s이(가) 사용 중입니다. 먼저 열린 파일을 닫으세요."
 
-#: internal/filesui/cards.go:684
+#: internal/filesui/cards.go:659
 msgid "Not allowed."
 msgstr "허용되지 않습니다."
 
-#: internal/filesui/cards.go:686
+#: internal/filesui/cards.go:661
 #: internal/remoteui/stream.go:468
 msgid "%s: %v"
 msgstr "%s: %v"
 
-#: internal/filesui/cards.go:697
+#: internal/filesui/cards.go:672
 msgid "Moving"
 msgstr "이동"
 
-#: internal/filesui/cards.go:699
+#: internal/filesui/cards.go:674
 msgid "Parent folder"
 msgstr "상위 폴더"
 
-#: internal/filesui/cards.go:700
+#: internal/filesui/cards.go:675
 msgid "Back / forward"
 msgstr "뒤로 / 앞으로"
 
-#: internal/filesui/cards.go:701
+#: internal/filesui/cards.go:676
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
-#: internal/filesui/window.go:275
+#: internal/filesui/window.go:278
 msgid "Home"
 msgstr "홈"
 
-#: internal/filesui/cards.go:702
+#: internal/filesui/cards.go:677
 msgid "The sidebar's places"
 msgstr "사이드바의 위치"
 
-#: internal/filesui/cards.go:703
+#: internal/filesui/cards.go:678
 msgid "Type a path or a server"
 msgstr "경로 또는 서버 입력"
 
-#: internal/filesui/cards.go:704
+#: internal/filesui/cards.go:679
 msgid "Jump to a folder used before"
 msgstr "이전에 사용한 폴더로 이동"
 
-#: internal/filesui/cards.go:705
+#: internal/filesui/cards.go:680
 #: ui/filespane.ui:115
 msgid "Search below this folder"
 msgstr "이 폴더 아래 검색"
 
-#: internal/filesui/cards.go:706
+#: internal/filesui/cards.go:681
 msgid "Letters"
 msgstr "글자"
 
-#: internal/filesui/cards.go:706
+#: internal/filesui/cards.go:681
 msgid "Filter this folder; Esc clears"
 msgstr "이 폴더 필터링, Esc로 지우기"
 
-#: internal/filesui/cards.go:709
+#: internal/filesui/cards.go:684
 msgid "Copy / cut / paste"
 msgstr "복사 / 잘라내기 / 붙여넣기"
 
-#: internal/filesui/cards.go:710
+#: internal/filesui/cards.go:685
 msgid "Copy the paths (none selected: the folder's)"
 msgstr "경로 복사(선택 없으면 폴더 경로)"
 
-#: internal/filesui/cards.go:713
+#: internal/filesui/cards.go:688
 msgid "Delete for good"
 msgstr "영구 삭제"
 
-#: internal/filesui/cards.go:714
+#: internal/filesui/cards.go:689
 msgid "New folder / new file"
 msgstr "새 폴더 / 새 파일"
 
-#: internal/filesui/cards.go:715
+#: internal/filesui/cards.go:690
 msgid "Undo"
 msgstr "실행 취소"
 
-#: internal/filesui/cards.go:716
+#: internal/filesui/cards.go:691
 msgid "Copy / move to the other pane"
 msgstr "다른 창으로 복사 / 이동"
 
-#: internal/filesui/cards.go:717
-#: internal/filesui/window.go:699
+#: internal/filesui/cards.go:692
+#: internal/filesui/window.go:702
 msgid "Open with…"
 msgstr "다른 앱으로 열기…"
 
-#: internal/filesui/cards.go:718
-#: internal/filesui/window.go:745
+#: internal/filesui/cards.go:693
+#: internal/filesui/window.go:748
 msgid "Bookmark"
 msgstr "북마크"
 
-#: internal/filesui/cards.go:719
-#: internal/filesui/window.go:685
+#: internal/filesui/cards.go:694
+#: internal/filesui/window.go:688
 msgid "Terminal here"
 msgstr "여기에서 터미널 열기"
 
-#: internal/filesui/cards.go:721
+#: internal/filesui/cards.go:696
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
 msgstr "창"
 
-#: internal/filesui/cards.go:722
+#: internal/filesui/cards.go:697
 msgid "New tab / close tab"
 msgstr "새 탭 / 탭 닫기"
 
-#: internal/filesui/cards.go:723
+#: internal/filesui/cards.go:698
 msgid "Next / previous tab"
 msgstr "다음 / 이전 탭"
 
-#: internal/filesui/cards.go:724
-#: internal/filesui/window.go:702
+#: internal/filesui/cards.go:699
+#: internal/filesui/window.go:705
 msgid "Middle click"
 msgstr "가운데 클릭"
 
-#: internal/filesui/cards.go:724
+#: internal/filesui/cards.go:699
 msgid "A folder in a new tab"
 msgstr "새 탭에서 폴더 열기"
 
-#: internal/filesui/cards.go:725
+#: internal/filesui/cards.go:700
 msgid "List / grid"
 msgstr "목록 / 격자"
 
-#: internal/filesui/cards.go:726
-#: internal/filesui/window.go:690
+#: internal/filesui/cards.go:701
+#: internal/filesui/window.go:693
 msgid "Hidden files"
 msgstr "숨김 파일"
 
-#: internal/filesui/cards.go:727
+#: internal/filesui/cards.go:702
 msgid "Two panes, the other pane"
 msgstr "두 창, 다른 창"
 
-#: internal/filesui/cards.go:728
+#: internal/filesui/cards.go:703
 msgid "Sidebar"
 msgstr "사이드바"
 
-#: internal/filesui/cards.go:729
-#: internal/filesui/window.go:737
+#: internal/filesui/cards.go:704
+#: internal/filesui/window.go:740
 msgid "Details"
 msgstr "세부 정보"
 
-#: internal/filesui/cards.go:730
+#: internal/filesui/cards.go:705
 msgid "Bigger / smaller / normal"
 msgstr "크게 / 작게 / 보통"
 
-#: internal/filesui/cards.go:731
+#: internal/filesui/cards.go:706
 msgid "New window, close it"
 msgstr "새 창, 창 닫기"
 
-#: internal/filesui/cards.go:732
-#: internal/filesui/window.go:691
+#: internal/filesui/cards.go:707
+#: internal/filesui/window.go:694
 msgid "Reload"
 msgstr "새로 고침"
 
-#: internal/filesui/cards.go:736
+#: internal/filesui/cards.go:711
 msgid "Keys"
 msgstr "단축키"
 
@@ -4068,7 +4044,7 @@ msgstr "파일 크기"
 #: internal/filesui/pane.go:892
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
-#: internal/filesui/window.go:271
+#: internal/filesui/window.go:274
 msgid "Trash"
 msgstr "휴지통"
 
@@ -4250,6 +4226,331 @@ msgstr "15:04"
 msgid "Jan 2 2006"
 msgstr "2006년 1월 2일"
 
+#: internal/filesui/remote.go:59
+#: internal/remoteui/stream.go:134
+msgid "Connecting to %s…"
+msgstr "%s에 연결하는 중…"
+
+#: internal/filesui/remote.go:160
+#: internal/filesui/remotesetup.go:132
+#: ui/remote.ui:523
+#: ui/vm.ui:1548
+#: ui/vm.ui:1569
+msgid "Connect"
+msgstr "연결"
+
+#: internal/filesui/remote.go:164
+#: internal/filesui/remotesetup.go:340
+msgid "Both the key's ID and its secret are needed."
+msgstr "키 ID와 비밀 키가 모두 필요합니다."
+
+#: internal/filesui/remote.go:176
+msgid "Sign in to %s"
+msgstr "%s에 로그인"
+
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:46
+#: internal/filesui/remotesetup.go:55
+#: internal/filesui/remotesetup.go:61
+#: internal/filesui/remotesetup.go:67
+#: ui/lock.ui:76
+#: ui/polkit.ui:690
+msgid "Password"
+msgstr "비밀번호"
+
+#: internal/filesui/remote.go:181
+msgid "Keys for %s"
+msgstr "%s의 키"
+
+#: internal/filesui/remote.go:182
+#: internal/filesui/remotesetup.go:76
+#: internal/filesui/remotesetup.go:84
+msgid "Access key ID"
+msgstr "액세스 키 ID"
+
+#: internal/filesui/remote.go:182
+#: internal/filesui/remotesetup.go:77
+#: internal/filesui/remotesetup.go:85
+msgid "Secret access key"
+msgstr "비밀 액세스 키"
+
+#: internal/filesui/remote.go:185
+#: internal/filesui/remotesetup.go:158
+msgid "Remember in the keyring"
+msgstr "키링에 기억"
+
+#: internal/filesui/remote.go:199
+msgid "Disconnecting %s…"
+msgstr "%s의 연결을 끊는 중…"
+
+#: internal/filesui/remote.go:208
+msgid "%s is disconnected."
+msgstr "%s의 연결을 끊었습니다."
+
+#: internal/filesui/remote.go:220
+#: internal/filesui/remote.go:273
+#: internal/ui/settings_ai.go:497
+#: ui/remote.ui:492
+msgid "Forget"
+msgstr "키 삭제"
+
+#: internal/filesui/remote.go:247
+msgid "Forget %s?"
+msgstr "%s을(를) 잊을까요?"
+
+#: internal/filesui/remote.go:248
+msgid "Its address and its password go from here. Nothing on the server changes."
+msgstr "주소와 비밀번호를 여기서 지웁니다. 서버에서는 아무것도 바뀌지 않습니다."
+
+#: internal/filesui/remote.go:255
+msgid "REMOTE DISKS"
+msgstr "원격 디스크"
+
+#: internal/filesui/remote.go:266
+#: internal/filesui/sidebar.go:68
+msgid "%s free of %s"
+msgstr "%s 남음 / %s"
+
+#: internal/filesui/remote.go:269
+msgid "Disconnect"
+msgstr "연결 끊기"
+
+#: internal/filesui/remote.go:272
+#: internal/filesui/sidebar.go:183
+msgid "Edit…"
+msgstr "편집…"
+
+#: internal/filesui/remote.go:276
+msgid "Remote disk…"
+msgstr "원격 디스크…"
+
+#: internal/filesui/remote.go:308
+msgid "A remote disk cannot be at %s://."
+msgstr "원격 디스크는 %s://에 있을 수 없습니다."
+
+#: internal/filesui/remote.go:310
+msgid "Leave the password out of the address: it is asked for, and kept in the keyring."
+msgstr "주소에 비밀번호를 넣지 마세요. 따로 묻고 키링에 보관합니다."
+
+#: internal/filesui/remote.go:312
+msgid "A server is needed."
+msgstr "서버가 필요합니다."
+
+#: internal/filesui/remote.go:314
+msgid "An SMB disk needs a share: smb://server/share."
+msgstr "SMB 디스크에는 공유 이름이 필요합니다: smb://server/share"
+
+#: internal/filesui/remote.go:316
+msgid "The address has a line break in it."
+msgstr "주소에 줄바꿈이 있습니다."
+
+#: internal/filesui/remote.go:318
+msgid "A bucket is needed."
+msgstr "버킷이 필요합니다."
+
+#: internal/filesui/remote.go:320
+msgid "A WebDAV URL starts with https:// or http://."
+msgstr "WebDAV URL은 https:// 또는 http://로 시작합니다."
+
+#: internal/filesui/remote.go:322
+msgid "A port is a number from 1 to 65535."
+msgstr "포트는 1부터 65535까지의 숫자입니다."
+
+#: internal/filesui/remote.go:324
+msgid "An address starts with sftp://, smb://, s3:// …"
+msgstr "주소는 sftp://, smb://, s3:// 등으로 시작합니다."
+
+#: internal/filesui/remote.go:333
+msgid "%s did not answer in time."
+msgstr "%s이(가) 제시간에 응답하지 않았습니다."
+
+#: internal/filesui/remote.go:336
+#: internal/filesui/remotesetup.go:404
+msgid "“%s” cannot be a folder's name in ~/Remote."
+msgstr "“%s”은(는) ~/Remote의 폴더 이름이 될 수 없습니다."
+
+#: internal/filesui/remote.go:338
+#: internal/filesui/remote.go:361
+msgid "%s could not be connected: %s"
+msgstr "%s에 연결할 수 없습니다: %s"
+
+#: internal/filesui/remote.go:342
+msgid "Remote disks need the %s package."
+msgstr "원격 디스크에는 %s 패키지가 필요합니다."
+
+#: internal/filesui/remote.go:345
+msgid "Those keys were refused."
+msgstr "그 키가 거부되었습니다."
+
+#: internal/filesui/remote.go:347
+msgid "The server refused that user or password."
+msgstr "서버가 그 사용자 또는 비밀번호를 거부했습니다."
+
+#: internal/filesui/remote.go:349
+msgid "%s's SSH host key is unknown or changed: check it with ssh first."
+msgstr "%s의 SSH 호스트 키를 모르거나 바뀌었습니다. 먼저 ssh로 확인하세요."
+
+#: internal/filesui/remote.go:351
+msgid "%s does not answer."
+msgstr "%s이(가) 응답하지 않습니다."
+
+#: internal/filesui/remote.go:353
+msgid "%s is not there."
+msgstr "%s이(가) 없습니다."
+
+#: internal/filesui/remote.go:355
+msgid "%s has files in it: a disk is mounted only on an empty folder."
+msgstr "%s에 파일이 있습니다. 디스크는 빈 폴더에만 마운트됩니다."
+
+#: internal/filesui/remote.go:357
+msgid "%s is in use: close what has a file open on it."
+msgstr "%s이(가) 사용 중입니다. 그 안의 파일을 연 프로그램을 닫으세요."
+
+#: internal/filesui/remote.go:359
+msgid "This rclone is too old for %s://; 1.60 or later has it."
+msgstr "이 rclone은 %s://에 너무 오래되었습니다. 1.60 이상이 지원합니다."
+
+#: internal/filesui/remotesetup.go:40
+msgid "optional"
+msgstr "선택"
+
+#: internal/filesui/remotesetup.go:44
+#: internal/filesui/remotesetup.go:51
+#: internal/filesui/remotesetup.go:65
+msgid "Server"
+msgstr "서버"
+
+#: internal/filesui/remotesetup.go:44
+#: internal/filesui/remotesetup.go:65
+msgid "host, or host:port"
+msgstr "호스트 또는 호스트:포트"
+
+#: internal/filesui/remotesetup.go:46
+msgid "empty: your SSH keys"
+msgstr "비우면: SSH 키 사용"
+
+#: internal/filesui/remotesetup.go:47
+msgid "empty: the home folder"
+msgstr "비우면: 홈 폴더"
+
+#: internal/filesui/remotesetup.go:52
+msgid "Share"
+msgstr "공유"
+
+#: internal/filesui/remotesetup.go:54
+msgid "empty: as a guest"
+msgstr "비우면: 게스트"
+
+#: internal/filesui/remotesetup.go:59
+msgid "URL"
+msgstr "URL"
+
+#: internal/filesui/remotesetup.go:61
+msgid "or an app password"
+msgstr "또는 앱 비밀번호"
+
+#: internal/filesui/remotesetup.go:66
+msgid "empty: anonymous"
+msgstr "비우면: 익명"
+
+#: internal/filesui/remotesetup.go:69
+msgid "Encrypted (FTPS)"
+msgstr "암호화(FTPS)"
+
+#: internal/filesui/remotesetup.go:73
+#: internal/ui/settings_ai.go:467
+msgid "Endpoint"
+msgstr "엔드포인트"
+
+#: internal/filesui/remotesetup.go:73
+msgid "s3.amazonaws.com, or your server's host"
+msgstr "s3.amazonaws.com 또는 서버의 호스트"
+
+#: internal/filesui/remotesetup.go:74
+#: internal/filesui/remotesetup.go:82
+msgid "Bucket"
+msgstr "버킷"
+
+#: internal/filesui/remotesetup.go:81
+msgid "Account ID"
+msgstr "계정 ID"
+
+#: internal/filesui/remotesetup.go:81
+msgid "on the R2 page of Cloudflare's dashboard"
+msgstr "Cloudflare 대시보드의 R2 페이지에 있습니다"
+
+#: internal/filesui/remotesetup.go:84
+msgid "an R2 API token's"
+msgstr "R2 API 토큰의 것"
+
+#: internal/filesui/remotesetup.go:114
+msgid "A server you reach with ssh."
+msgstr "ssh로 접속하는 서버."
+
+#: internal/filesui/remotesetup.go:116
+msgid "A Windows or Samba share, a NAS."
+msgstr "Windows 또는 Samba 공유, NAS."
+
+#: internal/filesui/remotesetup.go:118
+msgid "Nextcloud, ownCloud or another WebDAV server: the URL its settings show."
+msgstr "Nextcloud, ownCloud 또는 다른 WebDAV 서버. 설정에 표시되는 URL을 넣으세요."
+
+#: internal/filesui/remotesetup.go:120
+msgid "An FTP server."
+msgstr "FTP 서버."
+
+#: internal/filesui/remotesetup.go:122
+msgid "Amazon S3, or another S3 server (MinIO, Backblaze B2, Wasabi) by its endpoint."
+msgstr "Amazon S3 또는 다른 S3 서버(MinIO, Backblaze B2, Wasabi)를 엔드포인트로 지정."
+
+#: internal/filesui/remotesetup.go:124
+msgid "A Cloudflare R2 bucket, with an R2 API token's keys."
+msgstr "Cloudflare R2 버킷. R2 API 토큰의 키로 연결합니다."
+
+#: internal/filesui/remotesetup.go:132
+msgid "Remote disk"
+msgstr "원격 디스크"
+
+#: internal/filesui/remotesetup.go:134
+msgid "Change %s"
+msgstr "%s 변경"
+
+#: internal/filesui/remotesetup.go:134
+msgid "Save and connect"
+msgstr "저장하고 연결"
+
+#: internal/filesui/remotesetup.go:151
+msgid "Test connection"
+msgstr "연결 테스트"
+
+#: internal/filesui/remotesetup.go:227
+msgid "from the server, the share or the bucket"
+msgstr "서버, 공유 또는 버킷에서"
+
+#: internal/filesui/remotesetup.go:243
+msgid "empty: the one kept"
+msgstr "비우면: 저장된 것"
+
+#: internal/filesui/remotesetup.go:367
+msgid "Testing…"
+msgstr "테스트 중…"
+
+#: internal/filesui/remotesetup.go:378
+msgid "%s does not connect"
+msgstr "%s에 연결되지 않습니다"
+
+#: internal/filesui/remotesetup.go:381
+msgid "%s connects"
+msgstr "%s에 연결됩니다"
+
+#: internal/filesui/remotesetup.go:381
+msgid "Its folder can be read."
+msgstr "폴더를 읽을 수 있습니다."
+
+#: internal/filesui/remotesetup.go:409
+msgid "Another remote disk is called “%s”."
+msgstr "“%s”이라는 원격 디스크가 이미 있습니다."
+
 #: internal/filesui/sidebar.go:36
 msgid "PLACES"
 msgstr "위치"
@@ -4268,34 +4569,22 @@ msgstr "장치"
 msgid "Computer"
 msgstr "컴퓨터"
 
-#: internal/filesui/sidebar.go:68
-msgid "%s free of %s"
-msgstr "%s 남음 / %s"
-
 #: internal/filesui/sidebar.go:71
 msgid "%s, locked"
 msgstr "%s, 잠김"
 
 #: internal/filesui/sidebar.go:82
-#: internal/filesui/sidebar.go:186
+#: internal/filesui/sidebar.go:193
 msgid "Eject"
 msgstr "꺼내기"
 
-#: internal/filesui/sidebar.go:106
-msgid "Disconnect"
-msgstr "연결 끊기"
-
-#: internal/filesui/sidebar.go:108
-msgid "Connect to a server…"
-msgstr "서버에 연결…"
-
-#: internal/filesui/sidebar.go:157
-#: internal/filesui/window.go:702
+#: internal/filesui/sidebar.go:154
+#: internal/filesui/window.go:705
 msgid "Open in a new tab"
 msgstr "새 탭에서 열기"
 
-#: internal/filesui/sidebar.go:158
-#: internal/filesui/window.go:703
+#: internal/filesui/sidebar.go:155
+#: internal/filesui/window.go:706
 msgid "Open in a new window"
 msgstr "새 창에서 열기"
 
@@ -4323,100 +4612,100 @@ msgstr "어시스턴트가 폴더를 정리하려면 설정 → AI에서 명령 
 msgid "Asked the assistant to tidy %s."
 msgstr "어시스턴트에게 %s 정리를 맡겼습니다."
 
-#: internal/filesui/window.go:673
+#: internal/filesui/window.go:676
 msgid "Restore"
 msgstr "복원"
 
-#: internal/filesui/window.go:674
-#: internal/filesui/window.go:732
+#: internal/filesui/window.go:677
+#: internal/filesui/window.go:735
 msgid "Delete for good…"
 msgstr "영구 삭제…"
 
-#: internal/filesui/window.go:681
+#: internal/filesui/window.go:684
 msgid "New folder…"
 msgstr "새 폴더…"
 
-#: internal/filesui/window.go:682
+#: internal/filesui/window.go:685
 msgid "New file…"
 msgstr "새 파일…"
 
-#: internal/filesui/window.go:683
+#: internal/filesui/window.go:686
 msgid "Paste"
 msgstr "붙여넣기"
 
-#: internal/filesui/window.go:686
-#: internal/filesui/window.go:718
+#: internal/filesui/window.go:689
+#: internal/filesui/window.go:721
 msgid "Tidy with AI…"
 msgstr "AI로 정리…"
 
-#: internal/filesui/window.go:687
+#: internal/filesui/window.go:690
 msgid "Copy the folder's path"
 msgstr "폴더 경로 복사"
 
-#: internal/filesui/window.go:705
+#: internal/filesui/window.go:708
 msgid "Open in the other pane"
 msgstr "다른 창에서 열기"
 
-#: internal/filesui/window.go:709
+#: internal/filesui/window.go:712
 msgid "Show in its folder"
 msgstr "해당 폴더에서 보기"
 
-#: internal/filesui/window.go:712
+#: internal/filesui/window.go:715
 msgid "Cut"
 msgstr "잘라내기"
 
-#: internal/filesui/window.go:714
+#: internal/filesui/window.go:717
 msgid "Copy the path"
 msgstr "경로 복사"
 
-#: internal/filesui/window.go:717
+#: internal/filesui/window.go:720
 msgid "Paste into the folder"
 msgstr "폴더에 붙여넣기"
 
-#: internal/filesui/window.go:722
+#: internal/filesui/window.go:725
 msgid "Copy to the other pane"
 msgstr "다른 창으로 복사"
 
-#: internal/filesui/window.go:723
+#: internal/filesui/window.go:726
 msgid "Move to the other pane"
 msgstr "다른 창으로 이동"
 
-#: internal/filesui/window.go:728
+#: internal/filesui/window.go:731
 msgid "Rename…"
 msgstr "이름 바꾸기…"
 
-#: internal/filesui/window.go:743
+#: internal/filesui/window.go:746
 msgid "Remove the bookmark"
 msgstr "북마크 제거"
 
-#: internal/filesui/window.go:798
+#: internal/filesui/window.go:801
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "%d개 항목을 잘라냈습니다. 붙여넣으면 이동합니다."
 
-#: internal/filesui/window.go:800
+#: internal/filesui/window.go:803
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "%d개 항목을 복사했습니다."
 
-#: internal/filesui/window.go:808
+#: internal/filesui/window.go:811
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "%d개 경로를 복사했습니다."
 
-#: internal/filesui/window.go:878
+#: internal/filesui/window.go:881
 msgid "Bookmarked %s."
 msgstr "%s을(를) 북마크했습니다."
 
-#: internal/filesui/window.go:880
+#: internal/filesui/window.go:883
 msgid "Removed the bookmark of %s."
 msgstr "%s의 북마크를 제거했습니다."
 
-#: internal/filesui/window.go:905
+#: internal/filesui/window.go:908
 msgid "Copied %s."
 msgstr "%s을(를) 복사했습니다."
 
-#: internal/filesui/window.go:934
+#: internal/filesui/window.go:937
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "터미널을 찾을 수 없습니다. xdg-terminal-exec를 설치하거나 $TERMINAL을 설정하세요."
 
@@ -9025,10 +9314,6 @@ msgstr "제공자의 모델 목록 보기"
 msgid "Reasoning"
 msgstr "추론 수준"
 
-#: internal/ui/settings_ai.go:467
-msgid "Endpoint"
-msgstr "엔드포인트"
-
 #: internal/ui/settings_ai.go:485
 msgid "Chat"
 msgstr "채팅"
@@ -9041,11 +9326,6 @@ msgstr "결정"
 #: internal/ui/settings_ai.go:493
 msgid "Abilities"
 msgstr "기능"
-
-#: internal/ui/settings_ai.go:497
-#: ui/remote.ui:492
-msgid "Forget"
-msgstr "키 삭제"
 
 #: internal/ui/settings_ai.go:505
 msgid "API key"
@@ -10393,8 +10673,8 @@ msgid "Parent folder (Alt+↑)"
 msgstr "상위 폴더(Alt+↑)"
 
 #: ui/filespane.ui:102
-msgid "A path, or a server: sftp://host/dir, smb://server/share"
-msgstr "경로 또는 서버: sftp://호스트/디렉터리, smb://서버/공유"
+msgid "A path, or a remote disk: sftp://host/dir, smb://server/share"
+msgstr "경로 또는 원격 디스크: sftp://host/dir, smb://server/share"
 
 #: ui/filespane.ui:129
 msgid "Edit the path (Ctrl+L)"
@@ -10609,11 +10889,6 @@ msgstr "↵ 열림"
 #: ui/launcher.ui:134
 msgid "Esc  close"
 msgstr "Esc 닫기"
-
-#: ui/lock.ui:76
-#: ui/polkit.ui:690
-msgid "Password"
-msgstr "비밀번호"
 
 #: ui/music.ui:55
 #: ui/video.ui:153

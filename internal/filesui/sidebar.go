@@ -21,7 +21,7 @@ type sideItem struct {
 }
 
 // buildSidebar fills the sidebar: places, the trash, drives and other
-// mounts, network shares.
+// mounts, remote disks.
 func (w *window) buildSidebar() {
 	w.app.h.forget(w.sidePtr)
 	w.sidePtr = w.sidePtr[:0]
@@ -56,7 +56,7 @@ func (w *window) buildSidebar() {
 
 	w.sideHead(i18n.T("DEVICES"))
 	w.sideEntry(i18n.T("Computer"), "", "computer", "/", func() { w.cur().goTo("/", true) }, nil)
-	shown := map[string]bool{}
+	shown := w.app.remotePoints() // listed as remote disks
 	for _, v := range w.app.volumes {
 		v := v
 		sub := disks.Size(v.Size)
@@ -95,17 +95,7 @@ func (w *window) buildSidebar() {
 		w.sideEntry(filepath.Base(path), m.FSType, icon, path, func() { w.cur().goTo(path, true) }, nil)
 	}
 
-	w.sideHead(i18n.T("NETWORK"))
-	for _, n := range w.app.nets {
-		n := n
-		icon := "folder-remote"
-		if n.Scheme == "mtp" || n.Scheme == "gphoto2" {
-			icon = "phone"
-		}
-		w.sideEntry(n.Name, n.URI, icon, n.Path, func() { w.cur().goTo(n.Path, true) }, func() { w.disconnect(n) },
-			menuItem{label: i18n.T("Disconnect"), run: func() { w.disconnect(n) }})
-	}
-	w.sideEntry(i18n.T("Connect to a server…"), "", "network-workgroup", "", func() { w.askServer() }, nil)
+	w.remoteSide()
 	w.markSidebar()
 }
 
@@ -118,11 +108,18 @@ func (w *window) sideHead(text string) {
 }
 
 // sideEntry adds an entry: a button that opens it and, for a drive or a
-// share, a button that ejects or disconnects it.
+// remote disk, a button that ejects or disconnects it.
+//
+// sideEditEntry is sideEntry with a button that changes the entry's
+// setup (a remote disk's), shown while the pointer is on the row.
 //
 // A right click shows its menu: opening it in a new tab or window, and
 // what more there is to do with it (extra).
 func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), extra ...menuItem) {
+	w.sideEditEntry(name, sub, icon, path, open, eject, nil, extra...)
+}
+
+func (w *window) sideEditEntry(name, sub, icon, path string, open, eject, edit func(), extra ...menuItem) {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	row.AddCssClass("files-side-row")
 	b := gtk.NewButton()
@@ -178,6 +175,16 @@ func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), ext
 	}
 	w.side = append(w.side, sideItem{path: path, button: b, open: open})
 	gtkx.Append(row, &b.Widget)
+	if edit != nil {
+		e := gtk.NewButtonFromIconName("document-edit-symbolic")
+		e.AddCssClass("plain")
+		e.AddCssClass("files-side-edit")
+		e.SetValign(gtk.AlignCenterValue)
+		e.SetTooltipText(i18n.T("Edit…"))
+		w.app.h.click(e, edit)
+		w.sidePtr = append(w.sidePtr, e.GoPointer())
+		gtkx.Append(row, &e.Widget)
+	}
 	if eject != nil {
 		e := gtk.NewButtonFromIconName("media-eject-symbolic")
 		e.AddCssClass("plain")

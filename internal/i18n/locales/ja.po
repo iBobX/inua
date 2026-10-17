@@ -279,8 +279,8 @@ msgstr "%s からのファイル"
 #: internal/apps/connect/share.go:129
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:697
+#: internal/filesui/cards.go:673
+#: internal/filesui/window.go:700
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
 msgid "Open"
@@ -505,6 +505,8 @@ msgstr "承認待ち"
 
 #: internal/apps/tailscale/status.go:273
 #: internal/appui/tailscale.go:152
+#: internal/filesui/remote.go:170
+#: internal/filesui/remotesetup.go:418
 #: internal/shell/status.go:128
 msgid "Connecting…"
 msgstr "接続中…"
@@ -644,7 +646,7 @@ msgstr "ビデオ"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/filesui/cards.go:373
+#: internal/filesui/cards.go:430
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
@@ -1220,8 +1222,8 @@ msgid "The decrypted copy goes to the trash, where it can be restored from; the 
 msgstr "復号したコピーはゴミ箱に移り、そこから戻せます。暗号化されたファイルは残ります。"
 
 #: internal/appui/gpg.go:1537
-#: internal/filesui/cards.go:712
-#: internal/filesui/window.go:731
+#: internal/filesui/cards.go:687
+#: internal/filesui/window.go:734
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -1397,7 +1399,7 @@ msgstr "ヒデ"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/filesui/window.go:713
+#: internal/filesui/window.go:716
 #: internal/ui/askpass.go:203
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -1596,7 +1598,7 @@ msgid "It is not an image this app reads (PNG or JPEG)."
 msgstr "このアプリが読める画像（PNG または JPEG）ではありません。"
 
 #: internal/appui/pass_otp.go:189
-#: internal/filesui/cards.go:435
+#: internal/filesui/cards.go:492
 msgid "Replace"
 msgstr "置き換え"
 
@@ -1759,7 +1761,6 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1031
-#: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
 #: internal/shell/dock.go:298
 msgid "NETWORK"
@@ -1858,6 +1859,11 @@ msgid "Parent"
 msgstr "親"
 
 #: internal/appui/sysmon.go:778
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:45
+#: internal/filesui/remotesetup.go:54
+#: internal/filesui/remotesetup.go:60
+#: internal/filesui/remotesetup.go:66
 msgid "User"
 msgstr "ユーザー"
 
@@ -1919,6 +1925,11 @@ msgstr "プログラム"
 
 #: internal/appui/sysmon.go:786
 #: internal/filesui/kinds.go:34
+#: internal/filesui/remotesetup.go:47
+#: internal/filesui/remotesetup.go:53
+#: internal/filesui/remotesetup.go:68
+#: internal/filesui/remotesetup.go:75
+#: internal/filesui/remotesetup.go:83
 #: internal/viewerui/app.go:792
 msgid "Folder"
 msgstr "フォルダー"
@@ -2021,6 +2032,7 @@ msgstr "モデル"
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
+#: internal/filesui/remotesetup.go:226
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/connect.ui:290
@@ -2682,12 +2694,15 @@ msgstr "不明な部品 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
-#: internal/filesui/cards.go:285
-#: internal/filesui/cards.go:334
-#: internal/filesui/cards.go:372
-#: internal/filesui/cards.go:389
-#: internal/filesui/cards.go:427
-#: internal/filesui/cards.go:610
+#: internal/filesui/cards.go:342
+#: internal/filesui/cards.go:391
+#: internal/filesui/cards.go:429
+#: internal/filesui/cards.go:446
+#: internal/filesui/cards.go:484
+#: internal/filesui/cards.go:583
+#: internal/filesui/remote.go:159
+#: internal/filesui/remote.go:219
+#: internal/filesui/remotesetup.go:152
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:660
@@ -3600,26 +3615,27 @@ msgstr "テキストエディター"
 msgid "Opens plain text"
 msgstr "プレーンテキストを開く"
 
-#: internal/filesui/app.go:69
-#: internal/filesui/cards.go:708
+#: internal/filesui/app.go:71
+#: internal/filesui/cards.go:683
+#: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
-#: internal/filesui/window.go:90
-#: internal/filesui/window.go:268
+#: internal/filesui/window.go:93
+#: internal/filesui/window.go:271
 #: ui/gpg.ui:445
 #: ui/gpg.ui:810
 #: config/apps/io.github.lyricat.Inua.Files.desktop:3
 msgid "Files"
 msgstr "ファイル"
 
-#: internal/filesui/app.go:227
+#: internal/filesui/app.go:229
 msgid "%s is plugged in."
 msgstr "%s が接続されました。"
 
-#: internal/filesui/app.go:306
+#: internal/filesui/app.go:307
 msgid "There are no files on the clipboard."
 msgstr "クリップボードにファイルがありません。"
 
-#: internal/filesui/app.go:360
+#: internal/filesui/app.go:361
 msgid "Nothing to undo."
 msgstr "元に戻す操作はありません。"
 
@@ -3637,364 +3653,324 @@ msgid "%d item"
 msgid_plural "%d items"
 msgstr[0] "%d 項目"
 
-#: internal/filesui/cards.go:286
-#: internal/filesui/cards.go:306
-#: internal/filesui/cards.go:711
+#: internal/filesui/cards.go:343
+#: internal/filesui/cards.go:363
+#: internal/filesui/cards.go:686
 msgid "Rename"
 msgstr "名前を変更"
 
-#: internal/filesui/cards.go:298
-#: internal/filesui/cards.go:343
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
 msgid "“%s” is taken here."
 msgstr "「%s」はここにすでにあります。"
 
-#: internal/filesui/cards.go:313
+#: internal/filesui/cards.go:370
 msgid "A name cannot be empty."
 msgstr "名前を空にはできません。"
 
-#: internal/filesui/cards.go:315
+#: internal/filesui/cards.go:372
 msgid "“%s” is not a name."
 msgstr "「%s」は名前にできません。"
 
-#: internal/filesui/cards.go:317
+#: internal/filesui/cards.go:374
 msgid "A name cannot hold “/”."
 msgstr "名前に「/」は使えません。"
 
-#: internal/filesui/cards.go:319
+#: internal/filesui/cards.go:376
 msgid "The name is too long."
 msgstr "名前が長すぎます。"
 
-#: internal/filesui/cards.go:327
+#: internal/filesui/cards.go:384
 msgid "New file"
 msgstr "新規ファイル"
 
-#: internal/filesui/cards.go:327
+#: internal/filesui/cards.go:384
 msgid "Untitled"
 msgstr "無題"
 
-#: internal/filesui/cards.go:329
+#: internal/filesui/cards.go:386
 msgid "New folder"
 msgstr "新規フォルダー"
 
-#: internal/filesui/cards.go:329
+#: internal/filesui/cards.go:386
 msgid "New Folder"
 msgstr "新規フォルダー"
 
-#: internal/filesui/cards.go:335
+#: internal/filesui/cards.go:392
 msgid "Make"
 msgstr "作成"
 
-#: internal/filesui/cards.go:367
+#: internal/filesui/cards.go:424
 msgid "Delete %d item for good?"
 msgid_plural "Delete %d items for good?"
 msgstr[0] "%d 項目を完全に削除しますか？"
 
-#: internal/filesui/cards.go:369
+#: internal/filesui/cards.go:426
 msgid "Delete “%s” for good?"
 msgstr "「%s」を完全に削除しますか？"
 
-#: internal/filesui/cards.go:384
+#: internal/filesui/cards.go:441
 msgid "They do not go to the trash, and this cannot be undone."
 msgstr "ゴミ箱には移動せず、元に戻せません。"
 
-#: internal/filesui/cards.go:390
+#: internal/filesui/cards.go:447
 #: internal/filesui/sidebar.go:55
-#: internal/filesui/window.go:670
-#: internal/filesui/window.go:676
+#: internal/filesui/window.go:673
+#: internal/filesui/window.go:679
 #: internal/shell/commands.go:32
 #: ui/filespane.ui:250
 msgid "Empty Trash"
 msgstr "ゴミ箱を空にする"
 
-#: internal/filesui/cards.go:407
+#: internal/filesui/cards.go:464
 msgid "Empty the trash?"
 msgstr "ゴミ箱を空にしますか？"
 
-#: internal/filesui/cards.go:407
+#: internal/filesui/cards.go:464
 msgid "Everything in it is deleted for good, on every drive."
 msgstr "すべてのドライブ上の中身が完全に削除されます。"
 
-#: internal/filesui/cards.go:424
+#: internal/filesui/cards.go:481
 msgid "There: %s, %s. This one: %s, %s."
 msgstr "既存：%s、%s。こちら：%s、%s。"
 
-#: internal/filesui/cards.go:428
+#: internal/filesui/cards.go:485
 msgid "Skip"
 msgstr "スキップ"
 
-#: internal/filesui/cards.go:429
+#: internal/filesui/cards.go:486
 msgid "Keep both"
 msgstr "両方残す"
 
-#: internal/filesui/cards.go:433
+#: internal/filesui/cards.go:490
 msgid "Merge"
 msgstr "統合"
 
-#: internal/filesui/cards.go:438
+#: internal/filesui/cards.go:495
 msgid "“%s” is already in %s"
 msgstr "「%s」は %s にすでにあります"
 
-#: internal/filesui/cards.go:440
+#: internal/filesui/cards.go:497
 msgid "A folder “%s” is already in %s"
 msgstr "フォルダー「%s」は %s にすでにあります"
 
-#: internal/filesui/cards.go:443
-#: ui/files.ui:253
+#: internal/filesui/cards.go:500
+#: ui/files.ui:261
 msgid "Do the same for the rest"
 msgstr "残りも同じようにする"
 
-#: internal/filesui/cards.go:452
+#: internal/filesui/cards.go:509
 msgid "… and %d more"
 msgid_plural "… and %d more"
 msgstr[0] "…ほか %d 件"
 
-#: internal/filesui/cards.go:454
-#: internal/filesui/cards.go:735
+#: internal/filesui/cards.go:511
+#: internal/filesui/cards.go:710
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
 msgid "Close"
 msgstr "閉じる"
 
-#: internal/filesui/cards.go:455
+#: internal/filesui/cards.go:512
 msgid "Some items could not be done"
 msgstr "一部の項目を処理できませんでした"
 
-#: internal/filesui/cards.go:464
+#: internal/filesui/cards.go:521
 msgid "Jump to a folder"
 msgstr "フォルダーへジャンプ"
 
-#: internal/filesui/cards.go:492
-msgid "Connect to a server"
-msgstr "サーバーに接続"
-
-#: internal/filesui/cards.go:493
-msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
-msgstr "smb://サーバー/共有, sftp://ユーザー@ホスト/フォルダー, ftp://, dav://, nfs://"
-
-#: internal/filesui/cards.go:503
-#: ui/remote.ui:523
-#: ui/vm.ui:1548
-#: ui/vm.ui:1569
-msgid "Connect"
-msgstr "接続"
-
-#: internal/filesui/cards.go:509
-msgid "Used before"
-msgstr "以前使用"
-
-#: internal/filesui/cards.go:524
-#: internal/remoteui/stream.go:134
-msgid "Connecting to %s…"
-msgstr "%s に接続しています…"
-
-#: internal/filesui/cards.go:531
-msgid "%s could not be reached: %v"
-msgstr "%s に接続できません：%v"
-
-#: internal/filesui/cards.go:538
-msgid "Connected, but GVfs's FUSE folder is missing (is gvfs-fuse installed?)."
-msgstr "接続しましたが、GVfs の FUSE フォルダーがありません（gvfs-fuse はインストールされていますか？）。"
-
-#: internal/filesui/cards.go:554
-msgid "%s is not mounted."
-msgstr "%s はマウントされていません。"
-
-#: internal/filesui/cards.go:560
-msgid "%s could not be disconnected: %v"
-msgstr "%s を切断できません：%v"
-
-#: internal/filesui/cards.go:591
+#: internal/filesui/cards.go:564
 msgid "Mounting %s…"
 msgstr "%s をマウントしています…"
 
-#: internal/filesui/cards.go:611
+#: internal/filesui/cards.go:584
 msgid "Unlock"
 msgstr "ロック解除"
 
-#: internal/filesui/cards.go:613
+#: internal/filesui/cards.go:587
 msgid "Unlocking…"
 msgstr "ロックを解除しています…"
 
-#: internal/filesui/cards.go:634
+#: internal/filesui/cards.go:609
 msgid "That passphrase does not open it."
 msgstr "このパスフレーズでは開けません。"
 
-#: internal/filesui/cards.go:648
+#: internal/filesui/cards.go:623
 msgid "Unlock %s"
 msgstr "%s のロックを解除"
 
-#: internal/filesui/cards.go:649
+#: internal/filesui/cards.go:624
 msgid "The drive is encrypted. Its passphrase is not kept."
 msgstr "このドライブは暗号化されています。パスフレーズは保存されません。"
 
-#: internal/filesui/cards.go:659
+#: internal/filesui/cards.go:634
 msgid "Ejecting %s…"
 msgstr "%s を取り出しています…"
 
-#: internal/filesui/cards.go:670
+#: internal/filesui/cards.go:645
 msgid "%s can be removed now."
 msgstr "%s を取り外せます。"
 
-#: internal/filesui/cards.go:672
+#: internal/filesui/cards.go:647
 msgid "%s is unmounted."
 msgstr "%s をアンマウントしました。"
 
-#: internal/filesui/cards.go:682
+#: internal/filesui/cards.go:657
 msgid "%s is in use: close the files open on it first."
 msgstr "%s は使用中です。先に開いているファイルを閉じてください。"
 
-#: internal/filesui/cards.go:684
+#: internal/filesui/cards.go:659
 msgid "Not allowed."
 msgstr "許可されていません。"
 
-#: internal/filesui/cards.go:686
+#: internal/filesui/cards.go:661
 #: internal/remoteui/stream.go:468
 msgid "%s: %v"
 msgstr "%s：%v"
 
-#: internal/filesui/cards.go:697
+#: internal/filesui/cards.go:672
 msgid "Moving"
 msgstr "移動"
 
-#: internal/filesui/cards.go:699
+#: internal/filesui/cards.go:674
 msgid "Parent folder"
 msgstr "親フォルダー"
 
-#: internal/filesui/cards.go:700
+#: internal/filesui/cards.go:675
 msgid "Back / forward"
 msgstr "戻る / 進む"
 
-#: internal/filesui/cards.go:701
+#: internal/filesui/cards.go:676
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
-#: internal/filesui/window.go:275
+#: internal/filesui/window.go:278
 msgid "Home"
 msgstr "ホーム"
 
-#: internal/filesui/cards.go:702
+#: internal/filesui/cards.go:677
 msgid "The sidebar's places"
 msgstr "サイドバーの場所"
 
-#: internal/filesui/cards.go:703
+#: internal/filesui/cards.go:678
 msgid "Type a path or a server"
 msgstr "パスまたはサーバーを入力"
 
-#: internal/filesui/cards.go:704
+#: internal/filesui/cards.go:679
 msgid "Jump to a folder used before"
 msgstr "以前使ったフォルダーへジャンプ"
 
-#: internal/filesui/cards.go:705
+#: internal/filesui/cards.go:680
 #: ui/filespane.ui:115
 msgid "Search below this folder"
 msgstr "このフォルダー以下を検索"
 
-#: internal/filesui/cards.go:706
+#: internal/filesui/cards.go:681
 msgid "Letters"
 msgstr "文字"
 
-#: internal/filesui/cards.go:706
+#: internal/filesui/cards.go:681
 msgid "Filter this folder; Esc clears"
 msgstr "このフォルダーを絞り込む（Esc で解除）"
 
-#: internal/filesui/cards.go:709
+#: internal/filesui/cards.go:684
 msgid "Copy / cut / paste"
 msgstr "コピー / 切り取り / 貼り付け"
 
-#: internal/filesui/cards.go:710
+#: internal/filesui/cards.go:685
 msgid "Copy the paths (none selected: the folder's)"
 msgstr "パスをコピー（未選択ならフォルダーのパス）"
 
-#: internal/filesui/cards.go:713
+#: internal/filesui/cards.go:688
 msgid "Delete for good"
 msgstr "完全に削除"
 
-#: internal/filesui/cards.go:714
+#: internal/filesui/cards.go:689
 msgid "New folder / new file"
 msgstr "新規フォルダー / 新規ファイル"
 
-#: internal/filesui/cards.go:715
+#: internal/filesui/cards.go:690
 msgid "Undo"
 msgstr "元に戻す"
 
-#: internal/filesui/cards.go:716
+#: internal/filesui/cards.go:691
 msgid "Copy / move to the other pane"
 msgstr "もう一方のペインへコピー / 移動"
 
-#: internal/filesui/cards.go:717
-#: internal/filesui/window.go:699
+#: internal/filesui/cards.go:692
+#: internal/filesui/window.go:702
 msgid "Open with…"
 msgstr "アプリケーションで開く…"
 
-#: internal/filesui/cards.go:718
-#: internal/filesui/window.go:745
+#: internal/filesui/cards.go:693
+#: internal/filesui/window.go:748
 msgid "Bookmark"
 msgstr "ブックマーク"
 
-#: internal/filesui/cards.go:719
-#: internal/filesui/window.go:685
+#: internal/filesui/cards.go:694
+#: internal/filesui/window.go:688
 msgid "Terminal here"
 msgstr "ここで端末を開く"
 
-#: internal/filesui/cards.go:721
+#: internal/filesui/cards.go:696
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
 msgstr "窓"
 
-#: internal/filesui/cards.go:722
+#: internal/filesui/cards.go:697
 msgid "New tab / close tab"
 msgstr "新しいタブ / タブを閉じる"
 
-#: internal/filesui/cards.go:723
+#: internal/filesui/cards.go:698
 msgid "Next / previous tab"
 msgstr "次 / 前のタブ"
 
-#: internal/filesui/cards.go:724
-#: internal/filesui/window.go:702
+#: internal/filesui/cards.go:699
+#: internal/filesui/window.go:705
 msgid "Middle click"
 msgstr "中クリック"
 
-#: internal/filesui/cards.go:724
+#: internal/filesui/cards.go:699
 msgid "A folder in a new tab"
 msgstr "フォルダーを新しいタブで"
 
-#: internal/filesui/cards.go:725
+#: internal/filesui/cards.go:700
 msgid "List / grid"
 msgstr "リスト / グリッド"
 
-#: internal/filesui/cards.go:726
-#: internal/filesui/window.go:690
+#: internal/filesui/cards.go:701
+#: internal/filesui/window.go:693
 msgid "Hidden files"
 msgstr "隠しファイル"
 
-#: internal/filesui/cards.go:727
+#: internal/filesui/cards.go:702
 msgid "Two panes, the other pane"
 msgstr "2 ペイン、もう一方のペイン"
 
-#: internal/filesui/cards.go:728
+#: internal/filesui/cards.go:703
 msgid "Sidebar"
 msgstr "サイドバー"
 
-#: internal/filesui/cards.go:729
-#: internal/filesui/window.go:737
+#: internal/filesui/cards.go:704
+#: internal/filesui/window.go:740
 msgid "Details"
 msgstr "詳細"
 
-#: internal/filesui/cards.go:730
+#: internal/filesui/cards.go:705
 msgid "Bigger / smaller / normal"
 msgstr "大きく / 小さく / 標準"
 
-#: internal/filesui/cards.go:731
+#: internal/filesui/cards.go:706
 msgid "New window, close it"
 msgstr "新しいウィンドウ、ウィンドウを閉じる"
 
-#: internal/filesui/cards.go:732
-#: internal/filesui/window.go:691
+#: internal/filesui/cards.go:707
+#: internal/filesui/window.go:694
 msgid "Reload"
 msgstr "再読み込み"
 
-#: internal/filesui/cards.go:736
+#: internal/filesui/cards.go:711
 msgid "Keys"
 msgstr "キー"
 
@@ -4068,7 +4044,7 @@ msgstr "ファイルのサイズ"
 #: internal/filesui/pane.go:892
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
-#: internal/filesui/window.go:271
+#: internal/filesui/window.go:274
 msgid "Trash"
 msgstr "ゴミ箱"
 
@@ -4250,6 +4226,331 @@ msgstr "15:04"
 msgid "Jan 2 2006"
 msgstr "2006年1月2日"
 
+#: internal/filesui/remote.go:59
+#: internal/remoteui/stream.go:134
+msgid "Connecting to %s…"
+msgstr "%s に接続しています…"
+
+#: internal/filesui/remote.go:160
+#: internal/filesui/remotesetup.go:132
+#: ui/remote.ui:523
+#: ui/vm.ui:1548
+#: ui/vm.ui:1569
+msgid "Connect"
+msgstr "接続"
+
+#: internal/filesui/remote.go:164
+#: internal/filesui/remotesetup.go:340
+msgid "Both the key's ID and its secret are needed."
+msgstr "キーの ID とシークレットの両方が必要です。"
+
+#: internal/filesui/remote.go:176
+msgid "Sign in to %s"
+msgstr "%s にサインイン"
+
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:46
+#: internal/filesui/remotesetup.go:55
+#: internal/filesui/remotesetup.go:61
+#: internal/filesui/remotesetup.go:67
+#: ui/lock.ui:76
+#: ui/polkit.ui:690
+msgid "Password"
+msgstr "パスワード"
+
+#: internal/filesui/remote.go:181
+msgid "Keys for %s"
+msgstr "%s のキー"
+
+#: internal/filesui/remote.go:182
+#: internal/filesui/remotesetup.go:76
+#: internal/filesui/remotesetup.go:84
+msgid "Access key ID"
+msgstr "アクセスキー ID"
+
+#: internal/filesui/remote.go:182
+#: internal/filesui/remotesetup.go:77
+#: internal/filesui/remotesetup.go:85
+msgid "Secret access key"
+msgstr "シークレットアクセスキー"
+
+#: internal/filesui/remote.go:185
+#: internal/filesui/remotesetup.go:158
+msgid "Remember in the keyring"
+msgstr "キーリングに保存する"
+
+#: internal/filesui/remote.go:199
+msgid "Disconnecting %s…"
+msgstr "%s を切断しています…"
+
+#: internal/filesui/remote.go:208
+msgid "%s is disconnected."
+msgstr "%s を切断しました。"
+
+#: internal/filesui/remote.go:220
+#: internal/filesui/remote.go:273
+#: internal/ui/settings_ai.go:497
+#: ui/remote.ui:492
+msgid "Forget"
+msgstr "キーを削除"
+
+#: internal/filesui/remote.go:247
+msgid "Forget %s?"
+msgstr "%s を削除しますか？"
+
+#: internal/filesui/remote.go:248
+msgid "Its address and its password go from here. Nothing on the server changes."
+msgstr "アドレスとパスワードをここから削除します。サーバー上のものは何も変わりません。"
+
+#: internal/filesui/remote.go:255
+msgid "REMOTE DISKS"
+msgstr "リモートディスク"
+
+#: internal/filesui/remote.go:266
+#: internal/filesui/sidebar.go:68
+msgid "%s free of %s"
+msgstr "%s 空き（全 %s）"
+
+#: internal/filesui/remote.go:269
+msgid "Disconnect"
+msgstr "切断"
+
+#: internal/filesui/remote.go:272
+#: internal/filesui/sidebar.go:183
+msgid "Edit…"
+msgstr "編集…"
+
+#: internal/filesui/remote.go:276
+msgid "Remote disk…"
+msgstr "リモートディスク…"
+
+#: internal/filesui/remote.go:308
+msgid "A remote disk cannot be at %s://."
+msgstr "リモートディスクは %s:// には置けません。"
+
+#: internal/filesui/remote.go:310
+msgid "Leave the password out of the address: it is asked for, and kept in the keyring."
+msgstr "パスワードはアドレスに含めないでください。別に尋ね、キーリングに保管します。"
+
+#: internal/filesui/remote.go:312
+msgid "A server is needed."
+msgstr "サーバーが必要です。"
+
+#: internal/filesui/remote.go:314
+msgid "An SMB disk needs a share: smb://server/share."
+msgstr "SMB ディスクには共有名が必要です：smb://server/share"
+
+#: internal/filesui/remote.go:316
+msgid "The address has a line break in it."
+msgstr "アドレスに改行が含まれています。"
+
+#: internal/filesui/remote.go:318
+msgid "A bucket is needed."
+msgstr "バケットが必要です。"
+
+#: internal/filesui/remote.go:320
+msgid "A WebDAV URL starts with https:// or http://."
+msgstr "WebDAV の URL は https:// か http:// で始まります。"
+
+#: internal/filesui/remote.go:322
+msgid "A port is a number from 1 to 65535."
+msgstr "ポートは 1 から 65535 の数です。"
+
+#: internal/filesui/remote.go:324
+msgid "An address starts with sftp://, smb://, s3:// …"
+msgstr "アドレスは sftp://、smb://、s3:// などで始まります。"
+
+#: internal/filesui/remote.go:333
+msgid "%s did not answer in time."
+msgstr "%s が時間内に応答しませんでした。"
+
+#: internal/filesui/remote.go:336
+#: internal/filesui/remotesetup.go:404
+msgid "“%s” cannot be a folder's name in ~/Remote."
+msgstr "「%s」は ~/Remote のフォルダー名にできません。"
+
+#: internal/filesui/remote.go:338
+#: internal/filesui/remote.go:361
+msgid "%s could not be connected: %s"
+msgstr "%s に接続できません：%s"
+
+#: internal/filesui/remote.go:342
+msgid "Remote disks need the %s package."
+msgstr "リモートディスクには %s パッケージが必要です。"
+
+#: internal/filesui/remote.go:345
+msgid "Those keys were refused."
+msgstr "そのキーは拒否されました。"
+
+#: internal/filesui/remote.go:347
+msgid "The server refused that user or password."
+msgstr "サーバーがそのユーザーまたはパスワードを拒否しました。"
+
+#: internal/filesui/remote.go:349
+msgid "%s's SSH host key is unknown or changed: check it with ssh first."
+msgstr "%s の SSH ホスト鍵が未登録か変更されています。先に ssh で確認してください。"
+
+#: internal/filesui/remote.go:351
+msgid "%s does not answer."
+msgstr "%s が応答しません。"
+
+#: internal/filesui/remote.go:353
+msgid "%s is not there."
+msgstr "%s は見つかりません。"
+
+#: internal/filesui/remote.go:355
+msgid "%s has files in it: a disk is mounted only on an empty folder."
+msgstr "%s にファイルがあります。ディスクは空のフォルダーにしかマウントされません。"
+
+#: internal/filesui/remote.go:357
+msgid "%s is in use: close what has a file open on it."
+msgstr "%s は使用中です。そこでファイルを開いているものを閉じてください。"
+
+#: internal/filesui/remote.go:359
+msgid "This rclone is too old for %s://; 1.60 or later has it."
+msgstr "この rclone は %s:// には古すぎます。1.60 以降が対応しています。"
+
+#: internal/filesui/remotesetup.go:40
+msgid "optional"
+msgstr "任意"
+
+#: internal/filesui/remotesetup.go:44
+#: internal/filesui/remotesetup.go:51
+#: internal/filesui/remotesetup.go:65
+msgid "Server"
+msgstr "サーバー"
+
+#: internal/filesui/remotesetup.go:44
+#: internal/filesui/remotesetup.go:65
+msgid "host, or host:port"
+msgstr "ホスト、または ホスト:ポート"
+
+#: internal/filesui/remotesetup.go:46
+msgid "empty: your SSH keys"
+msgstr "空欄：SSH 鍵を使う"
+
+#: internal/filesui/remotesetup.go:47
+msgid "empty: the home folder"
+msgstr "空欄：ホームフォルダー"
+
+#: internal/filesui/remotesetup.go:52
+msgid "Share"
+msgstr "共有"
+
+#: internal/filesui/remotesetup.go:54
+msgid "empty: as a guest"
+msgstr "空欄：ゲスト"
+
+#: internal/filesui/remotesetup.go:59
+msgid "URL"
+msgstr "URL"
+
+#: internal/filesui/remotesetup.go:61
+msgid "or an app password"
+msgstr "またはアプリパスワード"
+
+#: internal/filesui/remotesetup.go:66
+msgid "empty: anonymous"
+msgstr "空欄：匿名"
+
+#: internal/filesui/remotesetup.go:69
+msgid "Encrypted (FTPS)"
+msgstr "暗号化（FTPS）"
+
+#: internal/filesui/remotesetup.go:73
+#: internal/ui/settings_ai.go:467
+msgid "Endpoint"
+msgstr "エンドポイント"
+
+#: internal/filesui/remotesetup.go:73
+msgid "s3.amazonaws.com, or your server's host"
+msgstr "s3.amazonaws.com、またはサーバーのホスト"
+
+#: internal/filesui/remotesetup.go:74
+#: internal/filesui/remotesetup.go:82
+msgid "Bucket"
+msgstr "バケット"
+
+#: internal/filesui/remotesetup.go:81
+msgid "Account ID"
+msgstr "アカウント ID"
+
+#: internal/filesui/remotesetup.go:81
+msgid "on the R2 page of Cloudflare's dashboard"
+msgstr "Cloudflare ダッシュボードの R2 ページにあります"
+
+#: internal/filesui/remotesetup.go:84
+msgid "an R2 API token's"
+msgstr "R2 API トークンのもの"
+
+#: internal/filesui/remotesetup.go:114
+msgid "A server you reach with ssh."
+msgstr "ssh で接続できるサーバー。"
+
+#: internal/filesui/remotesetup.go:116
+msgid "A Windows or Samba share, a NAS."
+msgstr "Windows や Samba の共有、NAS。"
+
+#: internal/filesui/remotesetup.go:118
+msgid "Nextcloud, ownCloud or another WebDAV server: the URL its settings show."
+msgstr "Nextcloud、ownCloud などの WebDAV サーバー。設定に表示される URL を入れます。"
+
+#: internal/filesui/remotesetup.go:120
+msgid "An FTP server."
+msgstr "FTP サーバー。"
+
+#: internal/filesui/remotesetup.go:122
+msgid "Amazon S3, or another S3 server (MinIO, Backblaze B2, Wasabi) by its endpoint."
+msgstr "Amazon S3、またはほかの S3 サーバー（MinIO、Backblaze B2、Wasabi）をエンドポイントで指定。"
+
+#: internal/filesui/remotesetup.go:124
+msgid "A Cloudflare R2 bucket, with an R2 API token's keys."
+msgstr "Cloudflare R2 のバケット。R2 API トークンのキーで接続します。"
+
+#: internal/filesui/remotesetup.go:132
+msgid "Remote disk"
+msgstr "リモートディスク"
+
+#: internal/filesui/remotesetup.go:134
+msgid "Change %s"
+msgstr "%s を変更"
+
+#: internal/filesui/remotesetup.go:134
+msgid "Save and connect"
+msgstr "保存して接続"
+
+#: internal/filesui/remotesetup.go:151
+msgid "Test connection"
+msgstr "接続をテスト"
+
+#: internal/filesui/remotesetup.go:227
+msgid "from the server, the share or the bucket"
+msgstr "サーバー、共有、バケットから"
+
+#: internal/filesui/remotesetup.go:243
+msgid "empty: the one kept"
+msgstr "空欄：保存済みのもの"
+
+#: internal/filesui/remotesetup.go:367
+msgid "Testing…"
+msgstr "テスト中…"
+
+#: internal/filesui/remotesetup.go:378
+msgid "%s does not connect"
+msgstr "%s に接続できません"
+
+#: internal/filesui/remotesetup.go:381
+msgid "%s connects"
+msgstr "%s に接続できます"
+
+#: internal/filesui/remotesetup.go:381
+msgid "Its folder can be read."
+msgstr "フォルダーを読めます。"
+
+#: internal/filesui/remotesetup.go:409
+msgid "Another remote disk is called “%s”."
+msgstr "「%s」という名前のリモートディスクがすでにあります。"
+
 #: internal/filesui/sidebar.go:36
 msgid "PLACES"
 msgstr "場所"
@@ -4268,34 +4569,22 @@ msgstr "デバイス"
 msgid "Computer"
 msgstr "コンピューター"
 
-#: internal/filesui/sidebar.go:68
-msgid "%s free of %s"
-msgstr "%s 空き（全 %s）"
-
 #: internal/filesui/sidebar.go:71
 msgid "%s, locked"
 msgstr "%s、ロック中"
 
 #: internal/filesui/sidebar.go:82
-#: internal/filesui/sidebar.go:186
+#: internal/filesui/sidebar.go:193
 msgid "Eject"
 msgstr "取り出す"
 
-#: internal/filesui/sidebar.go:106
-msgid "Disconnect"
-msgstr "切断"
-
-#: internal/filesui/sidebar.go:108
-msgid "Connect to a server…"
-msgstr "サーバーに接続…"
-
-#: internal/filesui/sidebar.go:157
-#: internal/filesui/window.go:702
+#: internal/filesui/sidebar.go:154
+#: internal/filesui/window.go:705
 msgid "Open in a new tab"
 msgstr "新しいタブで開く"
 
-#: internal/filesui/sidebar.go:158
-#: internal/filesui/window.go:703
+#: internal/filesui/sidebar.go:155
+#: internal/filesui/window.go:706
 msgid "Open in a new window"
 msgstr "新しいウィンドウで開く"
 
@@ -4323,100 +4612,100 @@ msgstr "アシスタントがフォルダーを整理できるよう、「設定
 msgid "Asked the assistant to tidy %s."
 msgstr "%s の整理をアシスタントに頼みました。"
 
-#: internal/filesui/window.go:673
+#: internal/filesui/window.go:676
 msgid "Restore"
 msgstr "復元"
 
-#: internal/filesui/window.go:674
-#: internal/filesui/window.go:732
+#: internal/filesui/window.go:677
+#: internal/filesui/window.go:735
 msgid "Delete for good…"
 msgstr "完全に削除…"
 
-#: internal/filesui/window.go:681
+#: internal/filesui/window.go:684
 msgid "New folder…"
 msgstr "新規フォルダー…"
 
-#: internal/filesui/window.go:682
+#: internal/filesui/window.go:685
 msgid "New file…"
 msgstr "新規ファイル…"
 
-#: internal/filesui/window.go:683
+#: internal/filesui/window.go:686
 msgid "Paste"
 msgstr "貼り付け"
 
-#: internal/filesui/window.go:686
-#: internal/filesui/window.go:718
+#: internal/filesui/window.go:689
+#: internal/filesui/window.go:721
 msgid "Tidy with AI…"
 msgstr "AI で整理…"
 
-#: internal/filesui/window.go:687
+#: internal/filesui/window.go:690
 msgid "Copy the folder's path"
 msgstr "フォルダーのパスをコピー"
 
-#: internal/filesui/window.go:705
+#: internal/filesui/window.go:708
 msgid "Open in the other pane"
 msgstr "もう一方のペインで開く"
 
-#: internal/filesui/window.go:709
+#: internal/filesui/window.go:712
 msgid "Show in its folder"
 msgstr "フォルダー内で表示"
 
-#: internal/filesui/window.go:712
+#: internal/filesui/window.go:715
 msgid "Cut"
 msgstr "切り取り"
 
-#: internal/filesui/window.go:714
+#: internal/filesui/window.go:717
 msgid "Copy the path"
 msgstr "パスをコピー"
 
-#: internal/filesui/window.go:717
+#: internal/filesui/window.go:720
 msgid "Paste into the folder"
 msgstr "フォルダーに貼り付け"
 
-#: internal/filesui/window.go:722
+#: internal/filesui/window.go:725
 msgid "Copy to the other pane"
 msgstr "もう一方のペインへコピー"
 
-#: internal/filesui/window.go:723
+#: internal/filesui/window.go:726
 msgid "Move to the other pane"
 msgstr "もう一方のペインへ移動"
 
-#: internal/filesui/window.go:728
+#: internal/filesui/window.go:731
 msgid "Rename…"
 msgstr "名前を変更…"
 
-#: internal/filesui/window.go:743
+#: internal/filesui/window.go:746
 msgid "Remove the bookmark"
 msgstr "ブックマークを削除"
 
-#: internal/filesui/window.go:798
+#: internal/filesui/window.go:801
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "%d 項目を切り取りました。貼り付けると移動します。"
 
-#: internal/filesui/window.go:800
+#: internal/filesui/window.go:803
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "%d 項目をコピーしました。"
 
-#: internal/filesui/window.go:808
+#: internal/filesui/window.go:811
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "%d 個のパスをコピーしました。"
 
-#: internal/filesui/window.go:878
+#: internal/filesui/window.go:881
 msgid "Bookmarked %s."
 msgstr "%s をブックマークしました。"
 
-#: internal/filesui/window.go:880
+#: internal/filesui/window.go:883
 msgid "Removed the bookmark of %s."
 msgstr "%s のブックマークを削除しました。"
 
-#: internal/filesui/window.go:905
+#: internal/filesui/window.go:908
 msgid "Copied %s."
 msgstr "%s をコピーしました。"
 
-#: internal/filesui/window.go:934
+#: internal/filesui/window.go:937
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "端末が見つかりません。xdg-terminal-exec をインストールするか $TERMINAL を設定してください。"
 
@@ -9025,10 +9314,6 @@ msgstr "プロバイダーのモデルを一覧"
 msgid "Reasoning"
 msgstr "推論の強度"
 
-#: internal/ui/settings_ai.go:467
-msgid "Endpoint"
-msgstr "エンドポイント"
-
 #: internal/ui/settings_ai.go:485
 msgid "Chat"
 msgstr "チャット"
@@ -9041,11 +9326,6 @@ msgstr "判断"
 #: internal/ui/settings_ai.go:493
 msgid "Abilities"
 msgstr "機能"
-
-#: internal/ui/settings_ai.go:497
-#: ui/remote.ui:492
-msgid "Forget"
-msgstr "キーを削除"
 
 #: internal/ui/settings_ai.go:505
 msgid "API key"
@@ -10393,8 +10673,8 @@ msgid "Parent folder (Alt+↑)"
 msgstr "親フォルダー（Alt+↑）"
 
 #: ui/filespane.ui:102
-msgid "A path, or a server: sftp://host/dir, smb://server/share"
-msgstr "パスまたはサーバー：sftp://ホスト/ディレクトリ, smb://サーバー/共有"
+msgid "A path, or a remote disk: sftp://host/dir, smb://server/share"
+msgstr "パス、またはリモートディスク：sftp://host/dir、smb://server/share"
 
 #: ui/filespane.ui:129
 msgid "Edit the path (Ctrl+L)"
@@ -10609,11 +10889,6 @@ msgstr "↵ 開く"
 #: ui/launcher.ui:134
 msgid "Esc  close"
 msgstr "Esc 閉じる"
-
-#: ui/lock.ui:76
-#: ui/polkit.ui:690
-msgid "Password"
-msgstr "パスワード"
 
 #: ui/music.ui:55
 #: ui/video.ui:153

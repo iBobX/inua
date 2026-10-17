@@ -796,7 +796,7 @@ func (p *pane) activate(pos uint32) {
 }
 
 // typedLocation goes where the path entry says: a folder, a file's
-// folder with the file selected, or a server to mount.
+// folder with the file selected, or a remote disk to connect.
 func (p *pane) typedLocation() {
 	t := strings.TrimSpace(p.location.GetText())
 	p.pathStack.SetVisibleChildName("crumbs")
@@ -809,7 +809,7 @@ func (p *pane) typedLocation() {
 		return
 	}
 	if !files.IsLocalURI(t) {
-		p.w.connect(p, t)
+		p.w.connectRemote(p, t)
 		return
 	}
 	if local, ok := files.PathOfURI(t); ok {

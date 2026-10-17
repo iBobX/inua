@@ -15,6 +15,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/lyricat/inua/internal/apps/files/remote"
 )
 
 func write(t *testing.T, path, data string) {
@@ -305,26 +307,6 @@ func TestMountinfo(t *testing.T) {
 	}
 	if m, _ := MountOf(ms, "/etc/hosts"); m.Point != "/" {
 		t.Fatalf("root: %+v", m)
-	}
-}
-
-func TestParseGVfsName(t *testing.T) {
-	cases := map[string][2]string{
-		"smb-share:server=nas.local,share=media":         {"smb://nas.local/media", "media on nas.local"},
-		"smb-share:domain=W,server=nas,share=x,user=ann": {"smb://ann@nas/x", "x on nas"},
-		"sftp:host=box.example.com,user=ann":             {"sftp://ann@box.example.com/", "box.example.com"},
-		"sftp:host=box,port=2222":                        {"sftp://box:2222/", "box:2222"},
-		"dav:host=cloud,ssl=true,prefix=%2Fremote.php":   {"davs://cloud/remote.php", "cloud"},
-		"mtp:host=Google_Pixel_8_ABC":                    {"mtp://Google_Pixel_8_ABC/", "Google Pixel 8 ABC"},
-	}
-	for dir, want := range cases {
-		m, ok := ParseGVfsName(dir)
-		if !ok || m.URI != want[0] || m.Name != want[1] {
-			t.Errorf("%s: %+v", dir, m)
-		}
-	}
-	if _, ok := ParseGVfsName("garbage"); ok {
-		t.Error("not a GVfs name")
 	}
 }
 
@@ -814,6 +796,27 @@ func TestToggleColumn(t *testing.T) {
 	s.ToggleColumn(BySize)
 	if s.ShowsColumn(BySize) || len(s.Columns) != 3 {
 		t.Fatalf("off: %v", s.Columns)
+	}
+}
+
+func TestServersUsedBeforeBecomeRemoteDisks(t *testing.T) {
+	s := &Settings{
+		Remote:  []remote.Disk{{Name: "nas", Address: "smb://nas/media"}},
+		Servers: []string{"sftp://ann@box/srv", "smb://nas/media", "mtp://phone/", "smb://nas2/media"},
+	}
+	s.adoptServers()
+	want := []remote.Disk{
+		{Name: "nas", Address: "smb://nas/media"},
+		{Name: "box", Address: "sftp://ann@box/srv"},
+		{Name: "media", Address: "smb://nas2/media"},
+	}
+	if !slices.Equal(s.Remote, want) || s.Servers != nil || !s.modified {
+		t.Errorf("Remote = %+v, Servers = %v", s.Remote, s.Servers)
+	}
+	s.SaveDisk(remote.Disk{Name: "box", Address: "sftp://bob@box/srv"})
+	s.ForgetDisk("nas")
+	if len(s.Remote) != 2 || s.Remote[0].Address != "sftp://bob@box/srv" {
+		t.Errorf("after saving and forgetting: %+v", s.Remote)
 	}
 }
 

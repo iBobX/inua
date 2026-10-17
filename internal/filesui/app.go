@@ -1,5 +1,5 @@
 // Package filesui is inua-files' windows (docs/files.md): the sidebar of
-// places, devices and network shares, one or two panes of a folder as a
+// places, devices and remote disks, one or two panes of a folder as a
 // list or a grid, the details of the selection, and the operations
 // running. The logic is internal/apps/files; this is the view.
 package filesui
@@ -15,7 +15,6 @@ import (
 	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
-	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"github.com/godbus/dbus/v5"
@@ -23,6 +22,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/files"
 	"github.com/lyricat/inua/internal/apps/files/disks"
 	"github.com/lyricat/inua/internal/apps/files/fm1"
+	"github.com/lyricat/inua/internal/apps/files/remote"
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -45,7 +45,9 @@ type App struct {
 	disks   *disks.Client // nil without the system bus
 	volumes []disks.Volume
 	mounts  []files.Mount
-	nets    []files.NetMount
+	remote  *remote.Engine
+	secrets remote.Secrets
+	keyring bool // a Secret Service is there to remember passwords in (until found not)
 
 	users, groups map[uint32]string // owners' names, looked up once
 	folders       map[string]string // folders' icons, by path
@@ -53,14 +55,14 @@ type App struct {
 	clip  []string // what this app last put on the clipboard
 	cut   bool
 	undos []files.Undo
-
-	onMountsChanged func(gio.VolumeMonitor, uintptr)
-	monitor         *gio.VolumeMonitor
 }
 
 // New makes the app; Register gives it to appui once it holds its name.
 func New() *App {
-	return &App{kinds: kinds{}, thumbs: newThumbs(), counts: newCounts(), users: map[uint32]string{}, groups: map[uint32]string{}, folders: map[string]string{}}
+	return &App{
+		kinds: kinds{}, thumbs: newThumbs(), counts: newCounts(), users: map[uint32]string{}, groups: map[uint32]string{}, folders: map[string]string{},
+		remote: remote.New(mountPoints), secrets: remote.NewSecrets(), keyring: true,
+	}
 }
 
 // Register makes a the "files" light app, its every start its own: a
@@ -177,9 +179,13 @@ func (a *App) folderIcon(path string) string {
 
 // --- devices ---
 
-// watchDevices reads the drives, mounts and network shares, and follows
-// them: UDisks2's signals, the mount table, GVfs's monitor.
+// watchDevices reads the drives and mounts, and follows them: UDisks2's
+// signals, the mount table (which remote disks are in too).
 func (a *App) watchDevices() {
+	go func() {
+		ok := a.secrets.Available()
+		gtkx.Post(func() { a.keyring = ok })
+	}()
 	a.refreshMounts()
 	if conn, err := dbus.ConnectSystemBus(); err == nil {
 		a.disks = disks.New(conn)
@@ -193,10 +199,6 @@ func (a *App) watchDevices() {
 	if err := files.WatchMounts(context.Background(), func() { gtkx.Post(a.refreshMounts) }); err != nil {
 		log.Printf("files: following mounts: %v", err)
 	}
-	a.monitor = gio.VolumeMonitorGet()
-	a.onMountsChanged = func(gio.VolumeMonitor, uintptr) { a.h.later(200, a.refreshMounts) }
-	a.monitor.ConnectMountAdded(&a.onMountsChanged)
-	a.monitor.ConnectMountRemoved(&a.onMountsChanged)
 }
 
 func (a *App) refreshVolumes() {
@@ -234,9 +236,8 @@ func (a *App) refreshVolumes() {
 func (a *App) refreshMounts() {
 	go func() {
 		ms, _ := files.ReadMounts()
-		nets := files.NetMounts()
 		gtkx.Post(func() {
-			a.mounts, a.nets = ms, nets
+			a.mounts = ms
 			a.sidebarsChanged()
 		})
 	}()

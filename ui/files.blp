@@ -165,6 +165,14 @@ ApplicationWindow files {
           xalign: 0;
           wrap: true;
           wrap-mode: word_char;
+          max-width-chars: 50; // wraps within the card, not widening it
+        }
+
+        // A form the card builds for itself: a remote disk's setup.
+        Box card_form {
+          orientation: vertical;
+          spacing: 14;
+          visible: false;
         }
 
         Entry card_entry {}
@@ -194,9 +202,21 @@ ApplicationWindow files {
           wrap: true;
         }
 
-        Box card_buttons {
-          halign: end;
+        // Its buttons: one beside the rest at the start (Test connection),
+        // the others at the end.
+        Box {
           spacing: 8;
+
+          Box card_aside {
+            hexpand: true;
+            halign: start;
+            spacing: 8;
+          }
+
+          Box card_buttons {
+            halign: end;
+            spacing: 8;
+          }
         }
       }
     }
