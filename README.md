@@ -264,7 +264,7 @@ Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
 
 Documentation: [the shell in detail](docs/features.md), [light apps](docs/apps.md), [workshop](docs/workshop.md), [MCP tools](docs/mcp.md),
 [design](docs/design.md), [architecture](docs/architecture.md),
-[toolkit choice](docs/toolkit.md), [setup](config/README.md).
+[toolkit choice](docs/toolkit.md), [workarounds](docs/workarounds.md), [setup](config/README.md).
 
 ## Credits
 

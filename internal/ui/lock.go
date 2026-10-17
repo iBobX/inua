@@ -221,7 +221,10 @@ func (s *shellUI) buildLockSurface(mon *gdk.Monitor) {
 
 	sf.user.SetText(userName())
 	sf.password.ConnectActivate(&s.onLockActivate)
-	sf.win.SetApplication(s.app)
+	// Not in s.app: gtk4-layer-shell up to 1.3.0 unrealizes a lock window
+	// before destroying it, and on GTK 4.22 taking an unrealized window out
+	// of its application is a use-after-free that crashes every unlock
+	// (gtk4-layer-shell#122). The lock window needs no application actions.
 	l.surfaces = append(l.surfaces, sf)
 	s.showLockClock()
 	s.showLockMessage("", false)
