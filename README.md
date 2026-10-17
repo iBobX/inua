@@ -35,6 +35,7 @@ and a settings window, in one calm visual language. It works with
 | **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. It stays running with the desktop and can serve as an [endpoint for other Consoles](docs/apps.md#console-endpoint). Its tools come from inua's [MCP server](docs/apps.md#mcp-inuas-tools-for-the-assistant-and-for-agents), which AI agents such as Claude Code can use too, through `inua mcp` ([the tools](docs/mcp.md)). |
 | **Files** | A file manager to replace Nautilus, keyboard first: one or two panes, list or grid, filter by typing, jump to folders used before, search, details; drives and USB sticks through UDisks2 (mount, unlock, eject), network shares through GVfs, the freedesktop trash, undo; `inua-files`, see [docs/files.md](docs/files.md). |
 | **Viewer** | Images, PDFs, Markdown and plain text: steps through the files of a folder, zooms, shows the details; `inua-viewer`, see [docs/apps.md](docs/apps.md#viewer). |
+| **Windows VM** | A Windows guest of its own, run by Docker (Dockur) with KVM and reached over RDP: one page for each stage, the host checks with their fixes, the guest password in the Secret Service; `inua-vm`, see [docs/apps.md](docs/apps.md#windows-vm). |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music (a player in Winamp's spirit, with an equalizer and a spectrum) and Video. |
 | **Workshop** | Write your own light apps in any language: the program describes its window in inua's building blocks and inua draws it in the shell's look. `inua workshop new`, `dev`, `install`; see [docs/workshop.md](docs/workshop.md). |
 | **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer or your AI, with others at the screen or, on the same network, in a browser. Each has its own launcher, or run `inua-games minesweeper`. |
@@ -59,6 +60,37 @@ System features use the services you probably already run: NetworkManager,
 BlueZ, UPower, power-profiles-daemon, PipeWire. Without one, its part of the
 shell says "Unavailable" instead. The full list is in
 [docs/design.md](docs/design.md#packages).
+
+## Windows VM
+
+`inua-vm` is the Windows guest's manager, a program of its own like
+`inua-files`: one guest, run by Docker (Dockur) with KVM and reached over
+RDP. Its window walks one path, one page at a time: the host checks to fix
+when something is missing (KVM, Docker, Compose v2, FreeRDP, …); a
+recommended profile and **Install Windows** when nothing is installed yet;
+the web console, and stopping without losing the disk, while Windows
+installs itself; then **Start**, **Connect** and **Stop**. Removing the
+guest keeps its disk and its password — deleting the Windows installation
+is its own, confirmed action. There is no ISO to prepare: the container
+fetches Windows' own installation media and installs it unattended, which
+is what takes tens of minutes. **Choose ISO…** installs from an ISO of
+yours instead, which the container only reads.
+
+`inua-vm --doctor` and `inua-vm --status [--json]` print the same checks for
+scripts, and so does `inua vm doctor|status`; `inua-vm --start` and
+`--stop` run the guest without a window. The image is pinned by version and
+digest, the guest password is kept in the Secret Service (never in the
+project or in your configuration), and every published port binds to
+127.0.0.1.
+
+Two things the window says outright: the web console on 127.0.0.1:8006 has
+no login of its own, and Windows needs a licence. Docker socket access is
+as good as root on the host, so inua explains it and never offers to add
+you to the `docker` group: it names the command, for whoever decides they
+want it, and points at rootless Docker or Podman instead. The `kvm` group
+fix, which grants one device, stays. Docker Engine with Compose v2, KVM,
+FreeRDP and `xdg-open` must be installed: the window names whichever is
+missing and which packages provide it.
 
 ## Install
 

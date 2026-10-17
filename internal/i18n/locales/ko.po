@@ -509,9 +509,11 @@ msgstr "비디오"
 #: internal/appui/pass.go:801
 #: internal/filesui/cards.go:373
 #: internal/ui/clipboard.go:459
+#: internal/vmui/window.go:299
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
 #: ui/pass.ui:249
+#: ui/vm.ui:1464
 msgid "Delete"
 msgstr "삭제"
 
@@ -614,6 +616,7 @@ msgstr "%s 제거"
 
 #: internal/appui/clock.go:402
 #: ui/pass.ui:238
+#: ui/vm.ui:260
 msgid "Edit"
 msgstr "편집하다"
 
@@ -622,6 +625,8 @@ msgstr "편집하다"
 #: internal/gamesui/fortune_menu.go:174
 #: ui/clock.ui:339
 #: ui/clock.ui:406
+#: ui/vm.ui:1313
+#: ui/vm.ui:1334
 msgid "Start"
 msgstr "시작"
 
@@ -633,6 +638,11 @@ msgstr "초기화"
 #: internal/appui/clock.go:496
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
+#: ui/vm.ui:821
+#: ui/vm.ui:1006
+#: ui/vm.ui:1027
+#: ui/vm.ui:1634
+#: ui/vm.ui:1655
 msgid "Stop"
 msgstr "중지"
 
@@ -1380,7 +1390,11 @@ msgstr "%s · %s"
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
+#: internal/vmui/window.go:287
+#: internal/vmui/window.go:288
 #: ui/stocks.ui:292
+#: ui/vm.ui:865
+#: ui/vm.ui:1420
 msgid "Remove"
 msgstr "제거"
 
@@ -1607,7 +1621,7 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -2737,6 +2751,7 @@ msgid "Stopped."
 msgstr "중지되었습니다."
 
 #: internal/assistantui/assistantui.go:456
+#: internal/vmui/window.go:763
 msgid "Something went wrong: %s"
 msgstr "문제가 발생했습니다: %s"
 
@@ -3539,6 +3554,8 @@ msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
 msgstr "smb://서버/공유, sftp://사용자@호스트/폴더, ftp://, dav://, nfs://"
 
 #: internal/filesui/cards.go:503
+#: ui/vm.ui:1548
+#: ui/vm.ui:1569
 msgid "Connect"
 msgstr "연결"
 
@@ -7143,7 +7160,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "실행기"
@@ -7176,7 +7193,7 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:286
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7389,7 +7406,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:286
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -7536,12 +7553,12 @@ msgid "Web search"
 msgstr "웹 검색"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "EVERYDAY"
 msgstr "매일"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "TOOLS"
 msgstr "도구"
 
@@ -7550,42 +7567,42 @@ msgid "PLAY"
 msgstr "재생"
 
 #: internal/shell/dock.go:273
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "DEVELOPMENT"
 msgstr "개발"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "MEDIA"
 msgstr "미디어"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "GAMES"
 msgstr "게임"
 
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "OTHER"
 msgstr "기타"
 
-#: internal/shell/dock.go:322
+#: internal/shell/dock.go:323
 msgid "WORKSHOP"
 msgstr "워크숍"
 
@@ -9442,6 +9459,229 @@ msgstr "찾을 수 없음"
 msgid "Could not open the link"
 msgstr "링크를 열 수 없습니다"
 
+#: internal/vmui/app.go:21
+#: internal/vmui/window.go:791
+#: ui/vm.ui:14
+#: ui/vm.ui:37
+#: config/apps/io.github.lyricat.Inua.VM.desktop:3
+msgid "Windows VM"
+msgstr "Windows 가상 머신"
+
+#: internal/vmui/service.go:322
+msgid "Windows installs from %s, which is not there any more."
+msgstr "Windows를 %s에서 설치하는데, 이 파일이 더 이상 없습니다."
+
+#: internal/vmui/window.go:281
+msgid "Confirm remove"
+msgstr "제거 확인"
+
+#: internal/vmui/window.go:293
+msgid "Confirm delete"
+msgstr "삭제 확인"
+
+#: internal/vmui/window.go:300
+#: ui/vm.ui:612
+msgid "Delete disk"
+msgstr "디스크 삭제"
+
+#: internal/vmui/window.go:327
+msgid "The fix did not work: %v"
+msgstr "수정에 실패했습니다: %v"
+
+#: internal/vmui/window.go:332
+msgid "Done. Log out and back in for it to take effect."
+msgstr "완료。변경 사항을 적용하려면 로그아웃한 후 다시 로그인하세요。"
+
+#: internal/vmui/window.go:335
+msgid "Done."
+msgstr "완료。"
+
+#: internal/vmui/window.go:378
+msgid "Log out to finish"
+msgstr "완료하려면 로그아웃하세요"
+
+#: internal/vmui/window.go:379
+msgid "The change takes effect the next time you log in."
+msgstr "변경 사항은 다음번 로그인 시 적용됩니다."
+
+#: internal/vmui/window.go:470
+msgid "Fix"
+msgstr "수정"
+
+#: internal/vmui/window.go:472
+msgid "Add me to %s"
+msgstr "%s 그룹에 추가"
+
+#: internal/vmui/window.go:507
+msgid "Start inua-keyring, or install a Secret Service."
+msgstr "inua-keyring을 시작하거나 Secret Service를 설치하세요."
+
+#: internal/vmui/window.go:511
+msgid "Turn on virtualization (Intel VT-x or AMD-V) in the firmware settings."
+msgstr "펌웨어 설정에서 가상화(Intel VT-x 또는 AMD-V)를 켜 주세요."
+
+#: internal/vmui/window.go:516
+msgid "Add %s to your NixOS configuration."
+msgstr "%s을(를) NixOS 설정에 추가합니다."
+
+#: internal/vmui/window.go:532
+msgid "Operating system"
+msgstr "운영 체제"
+
+#: internal/vmui/window.go:534
+msgid "Hardware virtualization (KVM)"
+msgstr "하드웨어 가상화 (KVM)"
+
+#: internal/vmui/window.go:536
+msgid "Docker"
+msgstr "Docker"
+
+#: internal/vmui/window.go:538
+msgid "Docker Compose v2"
+msgstr "Docker Compose v2"
+
+#: internal/vmui/window.go:540
+msgid "FreeRDP"
+msgstr "FreeRDP"
+
+#: internal/vmui/window.go:542
+msgid "Browser opener"
+msgstr "브라우저 실행 명령"
+
+#: internal/vmui/window.go:544
+msgid "Disk space"
+msgstr "디스크 공간"
+
+#: internal/vmui/window.go:546
+msgid "Network device (TUN)"
+msgstr "네트워크 장치 (TUN)"
+
+#: internal/vmui/window.go:548
+#: ui/settings.ui:3819
+msgid "Secret Service"
+msgstr "Secret Service"
+
+#: internal/vmui/window.go:562
+msgid "Your user may not use Docker's socket. Joining the docker group would let anything running as you control this machine as root, so Inua will not do it for you: run `sudo gpasswd -a $USER docker` yourself if you accept that, or use rootless Docker or Podman instead."
+msgstr "사용자가 Docker 소켓을 사용할 수 없습니다. docker 그룹에 들어가면 사용자 권한으로 실행되는 모든 것이 이 머신을 root와 동등하게 제어할 수 있으므로, Inua는 대신 해 주지 않습니다. 이를 받아들인다면 `sudo gpasswd -a $USER docker`를 직접 실행하거나, rootless Docker나 Podman을 사용하세요."
+
+#: internal/vmui/window.go:566
+msgid "Not installed on this system."
+msgstr "이 시스템에는 설치되어 있지 않습니다."
+
+#: internal/vmui/window.go:568
+msgid "Installed, but your user may not use it."
+msgstr "설치되어 있지만 사용자가 사용할 수 없습니다."
+
+#: internal/vmui/window.go:570
+msgid "Installed, but not running."
+msgstr "설치되어 있지만 실행 중이 아닙니다."
+
+#: internal/vmui/window.go:572
+msgid "Windows VM needs Linux."
+msgstr "Windows 가상 머신에는 Linux가 필요합니다."
+
+#: internal/vmui/window.go:574
+msgid "Could not be checked."
+msgstr "확인할 수 없습니다."
+
+#: internal/vmui/window.go:593
+msgid "A balanced profile leaves memory and CPU for your system."
+msgstr "균형 설정은 시스템을 위해 메모리와 CPU를 남깁니다."
+
+#: internal/vmui/window.go:611
+msgid "Windows 11, downloaded from Microsoft."
+msgstr "Windows 11, Microsoft에서 내려받습니다."
+
+#: internal/vmui/window.go:612
+#: ui/vm.ui:471
+msgid "Choose ISO…"
+msgstr "ISO 선택…"
+
+#: internal/vmui/window.go:615
+#: internal/vmui/window.go:618
+msgid "Change…"
+msgstr "변경…"
+
+#: internal/vmui/window.go:617
+msgid "%s is not there any more."
+msgstr "%s 파일이 더 이상 없습니다."
+
+#: internal/vmui/window.go:622
+msgid "Files from a previous attempt are still here. Install reuses them; delete them to start over."
+msgstr "이전 시도의 파일이 아직 있습니다. 설치는 그것들을 다시 사용합니다. 처음부터 하려면 삭제하세요."
+
+#: internal/vmui/window.go:624
+msgid "Installs Windows from the ISO, which stays as it is; takes 20+ minutes."
+msgstr "ISO로 Windows를 설치합니다. ISO는 그대로 둡니다. 20분 이상 걸립니다."
+
+#: internal/vmui/window.go:626
+#: ui/vm.ui:502
+msgid "Downloads about 8 GB and installs Windows; takes 30+ minutes."
+msgstr "약 8 GB를 내려받아 Windows를 설치합니다. 30분 이상 걸립니다."
+
+#: internal/vmui/window.go:636
+msgid "Choose a Windows ISO"
+msgstr "Windows ISO 선택"
+
+#: internal/vmui/window.go:638
+msgid "Disc images (ISO)"
+msgstr "디스크 이미지(ISO)"
+
+#: internal/vmui/window.go:695
+msgid "Windows is installing; this takes a while."
+msgstr "Windows를 설치하는 중입니다. 시간이 걸립니다."
+
+#: internal/vmui/window.go:697
+#: internal/vmui/window.go:740
+msgid "Stopping…"
+msgstr "중지 중…"
+
+#: internal/vmui/window.go:699
+msgid "The installation is paused. Continue to resume."
+msgstr "설치가 일시 중지되었습니다. 계속하면 다시 시작합니다."
+
+#: internal/vmui/window.go:742
+msgid "Windows is starting; ready in a minute or two."
+msgstr "Windows가 시작 중입니다. 1~2분이면 준비됩니다."
+
+#: internal/vmui/window.go:767
+msgid "This system is missing something Windows needs"
+msgstr "이 시스템에는 Windows에 필요한 것이 없습니다"
+
+#: internal/vmui/window.go:770
+msgid "Files from a previous attempt are still here"
+msgstr "이전 시도의 파일이 아직 있습니다"
+
+#: internal/vmui/window.go:772
+msgid "Not installed yet"
+msgstr "설치되지 않음"
+
+#: internal/vmui/window.go:775
+#: internal/vmui/window.go:783
+msgid "Stopping"
+msgstr "중지 중"
+
+#: internal/vmui/window.go:778
+msgid "Installing Windows"
+msgstr "Windows 설치 중"
+
+#: internal/vmui/window.go:780
+msgid "Installation paused"
+msgstr "설치 일시 중지"
+
+#: internal/vmui/window.go:785
+msgid "Windows is starting"
+msgstr "Windows 시작 중"
+
+#: internal/vmui/window.go:787
+msgid "Windows is running"
+msgstr "Windows 실행 중"
+
+#: internal/vmui/window.go:789
+msgid "Stopped"
+msgstr "중지됨"
+
 #: internal/workshop/session.go:141
 msgid "It ended before saying hello; what it wrote is below."
 msgstr "인사하기 전에 끝났습니다. 출력은 아래에 있습니다."
@@ -10822,10 +11062,6 @@ msgstr "<span alpha='55%'>[</span>키링<span alpha='55%'>]</span>"
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "앱의 비밀: 브라우저 키, Wi-Fi 비밀번호, API 키"
 
-#: ui/settings.ui:3819
-msgid "Secret Service"
-msgstr "Secret Service"
-
 #: ui/settings.ui:3855
 msgid "Unlocked secrets"
 msgstr "잠금 해제된 비밀"
@@ -11270,6 +11506,190 @@ msgstr "세부 정보 (I)"
 msgid "Open a File…"
 msgstr "파일 열기…"
 
+#: ui/vm.ui:93
+msgid "[HOST]"
+msgstr "[호스트]"
+
+#: ui/vm.ui:159
+#: ui/vm.ui:1075
+#: ui/vm.ui:1511
+msgid "[GUEST]"
+msgstr "[게스트]"
+
+#: ui/vm.ui:196
+msgid "Recommended profile"
+msgstr "권장 설정"
+
+#: ui/vm.ui:217
+msgid "Use it"
+msgstr "사용"
+
+#: ui/vm.ui:239
+msgid "Advanced configuration"
+msgstr "고급 설정"
+
+#: ui/vm.ui:248
+msgid "Set memory, CPU cores and disk size yourself."
+msgstr "메모리, CPU 코어, 디스크 크기를 직접 설정합니다."
+
+#: ui/vm.ui:284
+#: ui/vm.ui:1106
+msgid "Memory (MiB)"
+msgstr "메모리 (MiB)"
+
+#: ui/vm.ui:318
+#: ui/vm.ui:1155
+msgid "CPU cores"
+msgstr "CPU 코어"
+
+#: ui/vm.ui:352
+#: ui/vm.ui:1204
+msgid "Disk size (GiB)"
+msgstr "디스크 크기 (GiB)"
+
+#: ui/vm.ui:409
+msgid "[INSTALL]"
+msgstr "[설치]"
+
+#: ui/vm.ui:439
+msgid "Installer"
+msgstr "설치 미디어"
+
+#: ui/vm.ui:460
+msgid "Download instead"
+msgstr "대신 내려받기"
+
+#: ui/vm.ui:493
+#: ui/vm.ui:525
+msgid "Install Windows"
+msgstr "Windows 설치"
+
+#: ui/vm.ui:512
+msgid "Windows needs a licence of its own."
+msgstr "Windows에는 자체 라이선스가 필요합니다."
+
+#: ui/vm.ui:561
+msgid "[DISK]"
+msgstr "[디스크]"
+
+#: ui/vm.ui:590
+msgid "Previous files"
+msgstr "이전 파일"
+
+#: ui/vm.ui:599
+msgid "Permanently deletes leftover install files. Cannot be undone."
+msgstr "이전 설치 파일을 영구히 삭제합니다. 되돌릴 수 없습니다."
+
+#: ui/vm.ui:659
+#: ui/vm.ui:910
+msgid "[PROGRESS]"
+msgstr "[진행]"
+
+#: ui/vm.ui:711
+msgid "Watch the installation"
+msgstr "설치 과정 보기"
+
+#: ui/vm.ui:720
+msgid "The installer screen is in your browser. The web console on 127.0.0.1:8006 has no login of its own."
+msgstr "설치 프로그램 화면은 브라우저에 있습니다. 127.0.0.1:8006의 웹 콘솔에는 자체 로그인이 없습니다."
+
+#: ui/vm.ui:733
+#: ui/vm.ui:984
+#: ui/vm.ui:1612
+msgid "Open web console"
+msgstr "웹 콘솔 열기"
+
+#: ui/vm.ui:755
+msgid "Continue installation"
+msgstr "설치 계속"
+
+#: ui/vm.ui:764
+msgid "Starts the container; Windows installs itself inside it."
+msgstr "컨테이너를 시작합니다. Windows는 그 안에서 스스로 설치됩니다."
+
+#: ui/vm.ui:777
+msgid "Continue"
+msgstr "계속"
+
+#: ui/vm.ui:799
+msgid "Stop waiting"
+msgstr "기다리기 중지"
+
+#: ui/vm.ui:808
+msgid "Stops the container; the disk is kept. Reopen to resume."
+msgstr "컨테이너를 중지하고 디스크는 남깁니다. 다시 열면 이어집니다."
+
+#: ui/vm.ui:843
+msgid "Abandon installation"
+msgstr "설치 포기"
+
+#: ui/vm.ui:852
+msgid "Removes the project so you can start over. Downloaded files stay."
+msgstr "프로젝트를 제거해 다시 시작할 수 있게 합니다. 내려받은 파일은 남습니다."
+
+#: ui/vm.ui:962
+#: ui/vm.ui:1591
+msgid "Web console"
+msgstr "웹 콘솔"
+
+#: ui/vm.ui:971
+msgid "The guest screen is in your browser until RDP is ready."
+msgstr "RDP가 준비될 때까지 게스트 화면은 브라우저에 있습니다."
+
+#: ui/vm.ui:1015
+#: ui/vm.ui:1643
+msgid "Stops the guest; the disk is kept."
+msgstr "게스트를 중지하고 디스크는 남깁니다."
+
+#: ui/vm.ui:1137
+#: ui/vm.ui:1186
+msgid "Takes effect on next start."
+msgstr "다음 시작에 적용됩니다."
+
+#: ui/vm.ui:1228
+msgid "Enlarging needs a manual partition resize inside Windows."
+msgstr "확장하려면 Windows 안에서 수동으로 파티션을 조정해야 합니다."
+
+#: ui/vm.ui:1249
+msgid "Apply"
+msgstr "적용"
+
+#: ui/vm.ui:1284
+msgid "[ACTIONS]"
+msgstr "[동작]"
+
+#: ui/vm.ui:1322
+msgid "Starts the guest; ready in a minute or two."
+msgstr "게스트를 시작합니다. 1~2분이면 준비됩니다."
+
+#: ui/vm.ui:1369
+msgid "[REMOVE]"
+msgstr "[제거]"
+
+#: ui/vm.ui:1398
+msgid "Remove VM"
+msgstr "가상 머신 제거"
+
+#: ui/vm.ui:1407
+msgid "Deletes the container and project. The disk and its password stay."
+msgstr "컨테이너와 프로젝트를 삭제합니다. 디스크와 비밀번호는 남습니다."
+
+#: ui/vm.ui:1442
+msgid "Delete disk data"
+msgstr "디스크 데이터 삭제"
+
+#: ui/vm.ui:1451
+msgid "Permanently deletes the Windows disk. Cannot be undone."
+msgstr "Windows 디스크를 영구히 삭제합니다. 되돌릴 수 없습니다."
+
+#: ui/vm.ui:1557
+msgid "Opens FreeRDP."
+msgstr "FreeRDP를 엽니다."
+
+#: ui/vm.ui:1600
+msgid "The guest screen in the browser."
+msgstr "브라우저에 있는 게스트 화면."
+
 #: ui/weather.ui:30
 msgid "Previous place"
 msgstr "이전 장소"
@@ -11419,6 +11839,14 @@ msgstr "Tailnet의 장치, 종료 노드 및 이 장치의 Tailscale 설정"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;네트워크;출구 노드;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.VM.desktop:10
+msgid "Run a Windows virtual machine"
+msgstr "Windows 가상 머신 실행"
+
+#: config/apps/io.github.lyricat.Inua.VM.desktop:20
+msgid "virtual machine;windows;docker;kvm;rdp;guest;"
+msgstr "가상 머신;windows;docker;kvm;rdp;게스트;"
 
 #: config/apps/io.github.lyricat.Inua.Video.desktop:10
 msgid "Watch videos"

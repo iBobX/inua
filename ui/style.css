@@ -2638,3 +2638,30 @@ window.video.video-loaded .video-empty { opacity: 0; }
   color: white;
 }
 .video-notice button.plain { color: @accent; }
+
+/* --- Windows VM ------------------------------------------------------ */
+
+/* The manager window reuses the settings window's sections, rows and fields;
+   only what is particular to it is here. Its pages sit on a stack whose
+   switcher is hidden: Go picks the page from the guest's state. */
+
+.vmpage .vm-head { padding: 14px 24px; border-bottom: 1px solid alpha(@line, 0.55); }
+.vmpage .vm-title { font-size: 17px; color: @t0; }
+
+/* The headline's status mark: filled while the guest is up, hollow when it
+   is not (as the control center's tiles and the bar's marks do it). */
+.vmpage .vm-head .mark.on { background: @accent; border-color: @accent; }
+
+/* The pages' sections carry their own margins, as the settings window's do. */
+.vmpage .section { margin: 18px 24px 22px; }
+
+/* A host check that failed: the mark is the one thing that stands out. */
+.vmpage .vm-check-rows .mark { background: @danger; border-color: @danger; }
+
+/* The installation takes a while and reports no figure, so the bar is a
+   moving indeterminate one rather than a percentage. */
+.vmpage progressbar { min-height: 3px; }
+
+.vmpage button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
+.vmpage button.suggested-action:disabled { opacity: 0.45; }
+.vmpage spinbutton { min-width: 8em; }

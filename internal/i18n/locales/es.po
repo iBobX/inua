@@ -509,9 +509,11 @@ msgstr "Vídeo"
 #: internal/appui/pass.go:801
 #: internal/filesui/cards.go:373
 #: internal/ui/clipboard.go:459
+#: internal/vmui/window.go:299
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
 #: ui/pass.ui:249
+#: ui/vm.ui:1464
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -614,6 +616,7 @@ msgstr "Eliminar %s"
 
 #: internal/appui/clock.go:402
 #: ui/pass.ui:238
+#: ui/vm.ui:260
 msgid "Edit"
 msgstr "Editar"
 
@@ -622,6 +625,8 @@ msgstr "Editar"
 #: internal/gamesui/fortune_menu.go:174
 #: ui/clock.ui:339
 #: ui/clock.ui:406
+#: ui/vm.ui:1313
+#: ui/vm.ui:1334
 msgid "Start"
 msgstr "Iniciar"
 
@@ -633,6 +638,11 @@ msgstr "Restablecer"
 #: internal/appui/clock.go:496
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
+#: ui/vm.ui:821
+#: ui/vm.ui:1006
+#: ui/vm.ui:1027
+#: ui/vm.ui:1634
+#: ui/vm.ui:1655
 msgid "Stop"
 msgstr "Detener"
 
@@ -1390,7 +1400,11 @@ msgstr "%s · %s"
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
+#: internal/vmui/window.go:287
+#: internal/vmui/window.go:288
 #: ui/stocks.ui:292
+#: ui/vm.ui:865
+#: ui/vm.ui:1420
 msgid "Remove"
 msgstr "Quitar"
 
@@ -1618,7 +1632,7 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "NETWORK"
 msgstr "RED"
 
@@ -2752,6 +2766,7 @@ msgid "Stopped."
 msgstr "Detenido."
 
 #: internal/assistantui/assistantui.go:456
+#: internal/vmui/window.go:763
 msgid "Something went wrong: %s"
 msgstr "Algo salió mal: %s"
 
@@ -3557,6 +3572,8 @@ msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
 msgstr "smb://servidor/recurso, sftp://usuario@host/carpeta, ftp://, dav://, nfs://"
 
 #: internal/filesui/cards.go:503
+#: ui/vm.ui:1548
+#: ui/vm.ui:1569
 msgid "Connect"
 msgstr "Conectar"
 
@@ -7177,7 +7194,7 @@ msgid "SPACE PINBALL"
 msgstr "PINBALL ESPACIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "Lanzador"
@@ -7210,7 +7227,7 @@ msgstr "Enfoque activado o desactivado"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:286
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7423,7 +7440,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Pulsa Enter otra vez para vaciar la papelera"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:285
+#: internal/shell/dock.go:286
 msgid "inua's settings"
 msgstr "configuración de inua"
 
@@ -7570,12 +7587,12 @@ msgid "Web search"
 msgstr "Búsqueda web"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "EVERYDAY"
 msgstr "TODOS LOS DÍAS"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:295
+#: internal/shell/dock.go:296
 msgid "TOOLS"
 msgstr "HERRAMIENTAS"
 
@@ -7584,42 +7601,42 @@ msgid "PLAY"
 msgstr "JUGAR"
 
 #: internal/shell/dock.go:273
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SISTEMA"
 
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 msgid "Find apps, windows and answers"
 msgstr "Encuentra aplicaciones, ventanas y respuestas"
 
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "Capture an area, a window or a screen"
 msgstr "Capturar un área, una ventana o una pantalla"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "DEVELOPMENT"
 msgstr "DESARROLLO"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "MEDIA"
 msgstr "MULTIMEDIA"
 
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "GAMES"
 msgstr "JUEGOS"
 
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "OTHER"
 msgstr "OTRAS"
 
-#: internal/shell/dock.go:322
+#: internal/shell/dock.go:323
 msgid "WORKSHOP"
 msgstr "TALLER"
 
@@ -9488,6 +9505,229 @@ msgstr "No encontrado"
 msgid "Could not open the link"
 msgstr "No se pudo abrir el enlace"
 
+#: internal/vmui/app.go:21
+#: internal/vmui/window.go:791
+#: ui/vm.ui:14
+#: ui/vm.ui:37
+#: config/apps/io.github.lyricat.Inua.VM.desktop:3
+msgid "Windows VM"
+msgstr "Máquina virtual de Windows"
+
+#: internal/vmui/service.go:322
+msgid "Windows installs from %s, which is not there any more."
+msgstr "Windows se instala desde %s, que ya no está."
+
+#: internal/vmui/window.go:281
+msgid "Confirm remove"
+msgstr "Confirmar la eliminación"
+
+#: internal/vmui/window.go:293
+msgid "Confirm delete"
+msgstr "Confirmar la eliminación"
+
+#: internal/vmui/window.go:300
+#: ui/vm.ui:612
+msgid "Delete disk"
+msgstr "Eliminar el disco"
+
+#: internal/vmui/window.go:327
+msgid "The fix did not work: %v"
+msgstr "La corrección no funcionó: %v"
+
+#: internal/vmui/window.go:332
+msgid "Done. Log out and back in for it to take effect."
+msgstr "Listo. Cierra sesión y vuelve a iniciarla para que surta efecto."
+
+#: internal/vmui/window.go:335
+msgid "Done."
+msgstr "Listo."
+
+#: internal/vmui/window.go:378
+msgid "Log out to finish"
+msgstr "Cierra sesión para terminar"
+
+#: internal/vmui/window.go:379
+msgid "The change takes effect the next time you log in."
+msgstr "El cambio surtirá efecto la próxima vez que inicies sesión."
+
+#: internal/vmui/window.go:470
+msgid "Fix"
+msgstr "Corregir"
+
+#: internal/vmui/window.go:472
+msgid "Add me to %s"
+msgstr "Añadirme al grupo %s"
+
+#: internal/vmui/window.go:507
+msgid "Start inua-keyring, or install a Secret Service."
+msgstr "Inicia inua-keyring o instala un Secret Service."
+
+#: internal/vmui/window.go:511
+msgid "Turn on virtualization (Intel VT-x or AMD-V) in the firmware settings."
+msgstr "Activa la virtualización (Intel VT-x o AMD-V) en la configuración del firmware."
+
+#: internal/vmui/window.go:516
+msgid "Add %s to your NixOS configuration."
+msgstr "Añade %s a tu configuración de NixOS."
+
+#: internal/vmui/window.go:532
+msgid "Operating system"
+msgstr "Sistema operativo"
+
+#: internal/vmui/window.go:534
+msgid "Hardware virtualization (KVM)"
+msgstr "Virtualización por hardware (KVM)"
+
+#: internal/vmui/window.go:536
+msgid "Docker"
+msgstr "Docker"
+
+#: internal/vmui/window.go:538
+msgid "Docker Compose v2"
+msgstr "Docker Compose v2"
+
+#: internal/vmui/window.go:540
+msgid "FreeRDP"
+msgstr "FreeRDP"
+
+#: internal/vmui/window.go:542
+msgid "Browser opener"
+msgstr "Abridor de navegador"
+
+#: internal/vmui/window.go:544
+msgid "Disk space"
+msgstr "Espacio en disco"
+
+#: internal/vmui/window.go:546
+msgid "Network device (TUN)"
+msgstr "Dispositivo de red (TUN)"
+
+#: internal/vmui/window.go:548
+#: ui/settings.ui:3819
+msgid "Secret Service"
+msgstr "Secret Service"
+
+#: internal/vmui/window.go:562
+msgid "Your user may not use Docker's socket. Joining the docker group would let anything running as you control this machine as root, so Inua will not do it for you: run `sudo gpasswd -a $USER docker` yourself if you accept that, or use rootless Docker or Podman instead."
+msgstr "Tu usuario no puede usar el socket de Docker. Unirse al grupo docker permitiría que todo lo que se ejecuta como tú controle esta máquina como root, así que Inua no lo hará por ti: ejecuta `sudo gpasswd -a $USER docker` tú mismo si lo aceptas, o usa Docker sin root o Podman en su lugar."
+
+#: internal/vmui/window.go:566
+msgid "Not installed on this system."
+msgstr "No está instalado en este sistema."
+
+#: internal/vmui/window.go:568
+msgid "Installed, but your user may not use it."
+msgstr "Instalado, pero tu usuario no puede usarlo."
+
+#: internal/vmui/window.go:570
+msgid "Installed, but not running."
+msgstr "Instalado, pero no en ejecución."
+
+#: internal/vmui/window.go:572
+msgid "Windows VM needs Linux."
+msgstr "La máquina virtual de Windows necesita Linux."
+
+#: internal/vmui/window.go:574
+msgid "Could not be checked."
+msgstr "No se pudo comprobar."
+
+#: internal/vmui/window.go:593
+msgid "A balanced profile leaves memory and CPU for your system."
+msgstr "Un perfil equilibrado reserva memoria y CPU para tu sistema."
+
+#: internal/vmui/window.go:611
+msgid "Windows 11, downloaded from Microsoft."
+msgstr "Windows 11, descargado de Microsoft."
+
+#: internal/vmui/window.go:612
+#: ui/vm.ui:471
+msgid "Choose ISO…"
+msgstr "Elegir ISO…"
+
+#: internal/vmui/window.go:615
+#: internal/vmui/window.go:618
+msgid "Change…"
+msgstr "Cambiar…"
+
+#: internal/vmui/window.go:617
+msgid "%s is not there any more."
+msgstr "%s ya no está."
+
+#: internal/vmui/window.go:622
+msgid "Files from a previous attempt are still here. Install reuses them; delete them to start over."
+msgstr "Quedan archivos de un intento anterior. La instalación los reutiliza; bórralos para empezar de nuevo."
+
+#: internal/vmui/window.go:624
+msgid "Installs Windows from the ISO, which stays as it is; takes 20+ minutes."
+msgstr "Instala Windows desde el ISO, que queda tal cual; tarda más de 20 minutos."
+
+#: internal/vmui/window.go:626
+#: ui/vm.ui:502
+msgid "Downloads about 8 GB and installs Windows; takes 30+ minutes."
+msgstr "Descarga unos 8 GB e instala Windows; tarda más de 30 minutos."
+
+#: internal/vmui/window.go:636
+msgid "Choose a Windows ISO"
+msgstr "Elegir un ISO de Windows"
+
+#: internal/vmui/window.go:638
+msgid "Disc images (ISO)"
+msgstr "Imágenes de disco (ISO)"
+
+#: internal/vmui/window.go:695
+msgid "Windows is installing; this takes a while."
+msgstr "Windows se está instalando; tarda un rato."
+
+#: internal/vmui/window.go:697
+#: internal/vmui/window.go:740
+msgid "Stopping…"
+msgstr "Deteniendo…"
+
+#: internal/vmui/window.go:699
+msgid "The installation is paused. Continue to resume."
+msgstr "La instalación está en pausa. Continúa para reanudarla."
+
+#: internal/vmui/window.go:742
+msgid "Windows is starting; ready in a minute or two."
+msgstr "Windows está iniciando; listo en un minuto o dos."
+
+#: internal/vmui/window.go:767
+msgid "This system is missing something Windows needs"
+msgstr "A este sistema le falta algo que Windows necesita"
+
+#: internal/vmui/window.go:770
+msgid "Files from a previous attempt are still here"
+msgstr "Quedan archivos de un intento anterior"
+
+#: internal/vmui/window.go:772
+msgid "Not installed yet"
+msgstr "Sin instalar"
+
+#: internal/vmui/window.go:775
+#: internal/vmui/window.go:783
+msgid "Stopping"
+msgstr "Deteniendo"
+
+#: internal/vmui/window.go:778
+msgid "Installing Windows"
+msgstr "Instalando Windows"
+
+#: internal/vmui/window.go:780
+msgid "Installation paused"
+msgstr "Instalación en pausa"
+
+#: internal/vmui/window.go:785
+msgid "Windows is starting"
+msgstr "Windows está iniciando"
+
+#: internal/vmui/window.go:787
+msgid "Windows is running"
+msgstr "Windows está en ejecución"
+
+#: internal/vmui/window.go:789
+msgid "Stopped"
+msgstr "Detenido"
+
 #: internal/workshop/session.go:141
 msgid "It ended before saying hello; what it wrote is below."
 msgstr "Terminó antes de saludar; lo que escribió está abajo."
@@ -10868,10 +11108,6 @@ msgstr "<span alpha='55%'>[</span>LLAVERO<span alpha='55%'>]</span>"
 msgid "Apps' secrets: browsers' keys, Wi-Fi passwords, API keys"
 msgstr "Los secretos de las aplicaciones: claves del navegador, contraseñas Wi-Fi, claves de API"
 
-#: ui/settings.ui:3819
-msgid "Secret Service"
-msgstr "Secret Service"
-
 #: ui/settings.ui:3855
 msgid "Unlocked secrets"
 msgstr "Secretos desbloqueados"
@@ -11316,6 +11552,190 @@ msgstr "Detalles (I)"
 msgid "Open a File…"
 msgstr "Abrir un archivo…"
 
+#: ui/vm.ui:93
+msgid "[HOST]"
+msgstr "[ANFITRIÓN]"
+
+#: ui/vm.ui:159
+#: ui/vm.ui:1075
+#: ui/vm.ui:1511
+msgid "[GUEST]"
+msgstr "[INVITADO]"
+
+#: ui/vm.ui:196
+msgid "Recommended profile"
+msgstr "Perfil recomendado"
+
+#: ui/vm.ui:217
+msgid "Use it"
+msgstr "Usar"
+
+#: ui/vm.ui:239
+msgid "Advanced configuration"
+msgstr "Configuración avanzada"
+
+#: ui/vm.ui:248
+msgid "Set memory, CPU cores and disk size yourself."
+msgstr "Configura tú mismo la memoria, los núcleos de CPU y el tamaño del disco."
+
+#: ui/vm.ui:284
+#: ui/vm.ui:1106
+msgid "Memory (MiB)"
+msgstr "Memoria (MiB)"
+
+#: ui/vm.ui:318
+#: ui/vm.ui:1155
+msgid "CPU cores"
+msgstr "Núcleos de CPU"
+
+#: ui/vm.ui:352
+#: ui/vm.ui:1204
+msgid "Disk size (GiB)"
+msgstr "Tamaño del disco (GiB)"
+
+#: ui/vm.ui:409
+msgid "[INSTALL]"
+msgstr "[INSTALAR]"
+
+#: ui/vm.ui:439
+msgid "Installer"
+msgstr "Instalador"
+
+#: ui/vm.ui:460
+msgid "Download instead"
+msgstr "Descargar en su lugar"
+
+#: ui/vm.ui:493
+#: ui/vm.ui:525
+msgid "Install Windows"
+msgstr "Instalar Windows"
+
+#: ui/vm.ui:512
+msgid "Windows needs a licence of its own."
+msgstr "Windows necesita su propia licencia."
+
+#: ui/vm.ui:561
+msgid "[DISK]"
+msgstr "[DISCO]"
+
+#: ui/vm.ui:590
+msgid "Previous files"
+msgstr "Archivos anteriores"
+
+#: ui/vm.ui:599
+msgid "Permanently deletes leftover install files. Cannot be undone."
+msgstr "Elimina permanentemente los archivos de la instalación anterior. No se puede deshacer."
+
+#: ui/vm.ui:659
+#: ui/vm.ui:910
+msgid "[PROGRESS]"
+msgstr "[PROGRESO]"
+
+#: ui/vm.ui:711
+msgid "Watch the installation"
+msgstr "Ver la instalación"
+
+#: ui/vm.ui:720
+msgid "The installer screen is in your browser. The web console on 127.0.0.1:8006 has no login of its own."
+msgstr "La pantalla del instalador está en tu navegador. La consola web en 127.0.0.1:8006 no tiene inicio de sesión propio."
+
+#: ui/vm.ui:733
+#: ui/vm.ui:984
+#: ui/vm.ui:1612
+msgid "Open web console"
+msgstr "Abrir la consola web"
+
+#: ui/vm.ui:755
+msgid "Continue installation"
+msgstr "Continuar la instalación"
+
+#: ui/vm.ui:764
+msgid "Starts the container; Windows installs itself inside it."
+msgstr "Inicia el contenedor; Windows se instala solo dentro."
+
+#: ui/vm.ui:777
+msgid "Continue"
+msgstr "Continuar"
+
+#: ui/vm.ui:799
+msgid "Stop waiting"
+msgstr "Dejar de esperar"
+
+#: ui/vm.ui:808
+msgid "Stops the container; the disk is kept. Reopen to resume."
+msgstr "Detiene el contenedor; el disco se conserva. Reabre para continuar."
+
+#: ui/vm.ui:843
+msgid "Abandon installation"
+msgstr "Abandonar la instalación"
+
+#: ui/vm.ui:852
+msgid "Removes the project so you can start over. Downloaded files stay."
+msgstr "Elimina el proyecto para empezar de nuevo. Los archivos descargados se conservan."
+
+#: ui/vm.ui:962
+#: ui/vm.ui:1591
+msgid "Web console"
+msgstr "Consola web"
+
+#: ui/vm.ui:971
+msgid "The guest screen is in your browser until RDP is ready."
+msgstr "La pantalla del invitado está en tu navegador hasta que RDP esté listo."
+
+#: ui/vm.ui:1015
+#: ui/vm.ui:1643
+msgid "Stops the guest; the disk is kept."
+msgstr "Detiene el invitado; el disco se conserva."
+
+#: ui/vm.ui:1137
+#: ui/vm.ui:1186
+msgid "Takes effect on next start."
+msgstr "Surte efecto en el próximo inicio."
+
+#: ui/vm.ui:1228
+msgid "Enlarging needs a manual partition resize inside Windows."
+msgstr "Ampliar requiere redimensionar la partición manualmente dentro de Windows."
+
+#: ui/vm.ui:1249
+msgid "Apply"
+msgstr "Aplicar"
+
+#: ui/vm.ui:1284
+msgid "[ACTIONS]"
+msgstr "[ACCIONES]"
+
+#: ui/vm.ui:1322
+msgid "Starts the guest; ready in a minute or two."
+msgstr "Inicia el invitado; listo en uno o dos minutos."
+
+#: ui/vm.ui:1369
+msgid "[REMOVE]"
+msgstr "[ELIMINAR]"
+
+#: ui/vm.ui:1398
+msgid "Remove VM"
+msgstr "Eliminar la VM"
+
+#: ui/vm.ui:1407
+msgid "Deletes the container and project. The disk and its password stay."
+msgstr "Elimina el contenedor y el proyecto. El disco y su contraseña se conservan."
+
+#: ui/vm.ui:1442
+msgid "Delete disk data"
+msgstr "Eliminar los datos del disco"
+
+#: ui/vm.ui:1451
+msgid "Permanently deletes the Windows disk. Cannot be undone."
+msgstr "Elimina el disco de Windows de forma permanente. No se puede deshacer."
+
+#: ui/vm.ui:1557
+msgid "Opens FreeRDP."
+msgstr "Abre FreeRDP."
+
+#: ui/vm.ui:1600
+msgid "The guest screen in the browser."
+msgstr "La pantalla del invitado en el navegador."
+
 #: ui/weather.ui:30
 msgid "Previous place"
 msgstr "Lugar anterior"
@@ -11465,6 +11885,14 @@ msgstr "Los dispositivos de su tailnet, los nodos de salida y la configuración 
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;red;nodo de salida;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.VM.desktop:10
+msgid "Run a Windows virtual machine"
+msgstr "Ejecutar una máquina virtual de Windows"
+
+#: config/apps/io.github.lyricat.Inua.VM.desktop:20
+msgid "virtual machine;windows;docker;kvm;rdp;guest;"
+msgstr "máquina virtual;windows;docker;kvm;rdp;invitado;"
 
 #: config/apps/io.github.lyricat.Inua.Video.desktop:10
 msgid "Watch videos"
