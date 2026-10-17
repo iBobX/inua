@@ -455,8 +455,8 @@ func (a Assistant) DecisionProfile() string {
 	return ""
 }
 
-// AssistantTools are the built-in tools the assistant may add, the first
-// two by default; the rest read files or run commands, and ask each time.
+// AssistantTools are the built-in tools the assistant may add; all but
+// read_file by default. read_file and bash ask before each use.
 var AssistantTools = []string{"web_search", "url_fetch", "read_file", "bash"}
 
 // Keyring is inua-keyring, the Secret Service kept in pass
@@ -617,7 +617,7 @@ func Default() Config {
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
-		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
+		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch", "bash"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring", Untrusted: "allow"},
 		MCP:     MCP{Policy: "ask"},

@@ -246,10 +246,10 @@ it; opening it again returns to the same conversation. Ask
 it about this computer ("what is using the CPU?", "what did I miss?",
 "which devices on my tailnet are online?") or to do something ("turn on
 Focus and set the volume to 30%", "move Firefox to workspace 2"); it can
-also search the web. The answer streams in, with a line for each thing it
-does; anything that changes the system waits for Allow, and powering off,
-ending processes, closing windows and the opt-in file and shell tools ask
-every time. Ask from the launcher (the last row, or `?` before the query)
+also search the web and run shell commands. The answer streams in, with a
+line for each thing it does; anything that changes the system waits for
+Allow, and powering off, ending processes, closing windows, a shell
+command and reading a file (an opt-in tool) ask every time. Ask from the launcher (the last row, or `?` before the query)
 or with `inua-assistant --ask "…"`; questions go to the open window and
 keep its conversation, and + starts a new one.
 
