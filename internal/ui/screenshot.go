@@ -37,7 +37,8 @@ const shotEntry = "inua-screenshot"
 type shooter struct {
 	open, busy bool
 	mode       string // "area", "window", "screen", or "color" to pick a colour
-	record     bool   // the choice is recorded, not taken as a picture
+	record     bool
+	silentNext bool
 	surfaces   []*shotSurface
 	refs       gtkx.Scope
 	filling    bool        // setting the mode buttons from Go
@@ -153,6 +154,7 @@ func (s *shellUI) bindShotHandlers() {
 	s.onShotKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
 		switch keyval {
 		case keyEscape:
+			s.shot.silentNext = false
 			s.closeShot("")
 		case keySpace:
 			if sh.mode == "color" {
@@ -180,42 +182,55 @@ func (s *shellUI) bindShotHandlers() {
 			s.setShotMode(b.GetName())
 		}
 	}
-	s.onShotCancel = func(gtk.Button) { s.closeShot("") }
+	s.onShotCancel = func(gtk.Button) {
+		sh.silentNext = false
+		s.closeShot("")
+	}
 	s.onShotRecord = func(b gtk.ToggleButton) {
 		if !sh.filling {
+			sh.silentNext = false
 			sh.record = b.GetActive()
 			s.setShotMode(sh.mode)
 		}
 	}
 }
 
-// screenshotRequest answers `inua call screenshot area|window|screen`:
-// the tool, or the focused screen or window at once; `color` picks a
-// colour, `record` opens the tool to record, `stop` ends a recording.
+// screenshotRequest answers `inua call screenshot area|silent-area|window|screen`:
+// the selection tool, or the focused screen or window at once; `color` picks
+// a colour, `record` opens the tool to record, and `stop` ends a recording.
 func (s *shellUI) screenshotRequest(fn string) bool {
+	sh := &s.shot
+	sh.silentNext = fn == "silent-area"
 	switch fn {
-	case "area", "open":
-		s.shot.record = s.shot.open && s.shot.record
+	case "area", "silent-area", "open":
+		sh.record = sh.open && sh.record
 		s.openShot("area")
 	case "color":
-		s.shot.record = false
+		sh.silentNext = false
+		sh.record = false
 		s.openShot("color")
 	case "record":
+		sh.silentNext = false
 		if s.recordingNow() {
 			s.stopScreenRecording()
 		} else {
-			s.shot.record = true
+			sh.record = true
 			s.openShot("area")
 		}
 	case "stop":
+		sh.silentNext = false
 		s.stopScreenRecording()
 	case "pick-window":
+		sh.silentNext = false
 		s.openShot("window")
 	case "pick-screen":
+		sh.silentNext = false
 		s.openShot("screen")
 	case "screen", "window":
+		sh.silentNext = false
 		s.shootNow(fn)
 	case "close":
+		sh.silentNext = false
 		s.closeShot("")
 	default:
 		return false
@@ -570,7 +585,11 @@ func (s *shellUI) takeShot(sf *shotSurface, r shell.Rect) {
 		return
 	}
 	s.closeCapture("")
-	s.openShotDrawer() // at once; the shot joins it when written
+	silent := sh.silentNext
+	sh.silentNext = false
+	if !silent {
+		s.openShotDrawer() // at once; the shot joins it when written
+	}
 	go func() {
 		defer os.Remove(file)
 		img, err := readPNG(file)

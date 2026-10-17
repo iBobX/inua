@@ -465,7 +465,7 @@ policy = %s
 # else, and the keys its action had in hyprland.conf ("replaces"). Actions
 # without an entry keep their hyprland.conf shortcuts. An action is one of
 #   launcher windows overview control notifications clipboard focus settings restart lock
-#   shot-area shot-screen shot-window shot-record color
+#   shot-area shot-area-silent shot-screen shot-window shot-record color
 # or "exec" with a command. keys = "" turns the action's shortcut off.
 #
 #   [[shortcuts]]

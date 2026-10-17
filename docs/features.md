@@ -124,9 +124,10 @@ the system's `unix_chkpwd`; repeated wrong ones wait longer each time.
 
 Print opens the screenshot tool over a still of every screen: drag out an
 area, click a window or a screen. Each shot is saved and copied, then
-shown as a notification with its thumbnail, and the recent shots and
-recordings wait in a drawer to drag into other apps. Shift+Print takes the
-whole screen at once. With Record on, the choice is recorded instead
+shown as a notification with its thumbnail. Ctrl+Print does the same and
+then opens the drawer, where the recent shots and recordings wait to drag
+into other apps (Print alone leaves it closed: most shots go straight to
+the clipboard). Shift+Print takes the whole screen at once. With Record on, the choice is recorded instead
 (wf-recorder) until the red square in the bar stops it. `inua call
 screenshot color` picks a colour from the still with a loupe.
 

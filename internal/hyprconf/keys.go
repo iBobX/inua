@@ -31,6 +31,7 @@ var Actions = []Action{
 	{ID: "restart", Label: i18n.M("Restart the shell")},
 	{ID: "lock", Label: i18n.M("Lock the screen")},
 	{ID: "shot-area", Label: i18n.M("Take a screenshot"), Shot: true},
+	{ID: "shot-area-silent", Label: i18n.M("Silent screenshot"), Shot: true},
 	{ID: "shot-screen", Label: i18n.M("The whole screen, at once"), Shot: true},
 	{ID: "shot-window", Label: i18n.M("The focused window, at once"), Shot: true},
 	{ID: "shot-record", Label: i18n.M("Record the screen (again: stop)"), Shot: true},
@@ -62,6 +63,8 @@ func Command(c config.Config, action string) string {
 		return c.Control.Lock
 	case "shot-area":
 		return "inua call screenshot area"
+	case "shot-area-silent":
+		return "inua call screenshot silent-area"
 	case "shot-screen":
 		return "inua call screenshot screen"
 	case "shot-window":

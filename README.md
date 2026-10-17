@@ -157,7 +157,8 @@ pcall(require, "inua")    -- keep this last; loads inua.lua
 | Super+N | Notification center |
 | Super+Comma | Settings |
 | Super+L | Lock the screen |
-| Print | Screenshot tool (Space switches area and window) |
+| Print | Screenshot tool, saved and copied quietly (Space switches area and window) |
+| Ctrl+Print | Screenshot tool, then the drawer of recent shots |
 | Super+Shift+R | Restart the shell |
 
 Everything is also a command, for scripts and your own shortcuts:

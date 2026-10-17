@@ -112,9 +112,7 @@ type Screenshot struct {
 	// Empty: they are not saved.
 	Folder string `toml:"folder"`
 	// Copy puts each screenshot on the clipboard as well.
-	Copy bool `toml:"copy"`
-	// Recordings is where screen recordings are saved, "~/" for the home
-	// directory.
+	Copy       bool   `toml:"copy"`
 	Recordings string `toml:"recordings"`
 }
 
@@ -168,7 +166,7 @@ type Shortcut struct {
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
 	"launcher", "windows", "overview", "control", "notifications", "clipboard", "focus", "settings", "restart", "lock",
-	"shot-area", "shot-screen", "shot-window", "shot-record", "color",
+	"shot-area", "shot-area-silent", "shot-screen", "shot-window", "shot-record", "color",
 }
 
 // renamedActions are actions that became others; a config naming one is
@@ -617,6 +615,10 @@ func Default() Config {
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
+		Shortcuts: []Shortcut{
+			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
+			{Action: "shot-area", Keys: "CTRL+Print", Replaces: []string{"CTRL+Print"}},
+		},
 		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch", "bash"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring", Untrusted: "allow"},
