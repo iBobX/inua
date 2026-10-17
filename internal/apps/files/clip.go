@@ -65,11 +65,14 @@ func ParseClipboard(s string) (paths []string, cut bool) {
 }
 
 // IsLocalURI says whether s names a local file rather than a network
-// location.
+// location: a path, absolute or relative (`open .`, `open Downloads`), or
+// a file:// URI.
 func IsLocalURI(s string) bool {
 	if strings.HasPrefix(s, "/") || strings.HasPrefix(s, "~") {
 		return true
 	}
-	u, err := url.Parse(s)
-	return err == nil && u.Scheme == "file"
+	if u, err := url.Parse(s); err == nil && u.Scheme != "" {
+		return u.Scheme == "file"
+	}
+	return true // no scheme: a path, relative to where it was given
 }

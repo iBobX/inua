@@ -816,3 +816,15 @@ func TestToggleColumn(t *testing.T) {
 		t.Fatalf("off: %v", s.Columns)
 	}
 }
+
+func TestIsLocalURITakesRelativePaths(t *testing.T) {
+	for s, want := range map[string]bool{
+		"/srv": true, "~/Downloads": true, "file:///srv": true,
+		".": true, "Downloads": true, "../notes/todo.txt": true,
+		"sftp://box/srv": false, "smb://nas/media": false, "trash:": false,
+	} {
+		if got := IsLocalURI(s); got != want {
+			t.Errorf("IsLocalURI(%q) = %v, want %v", s, got, want)
+		}
+	}
+}

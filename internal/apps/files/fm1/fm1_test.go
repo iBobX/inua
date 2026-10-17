@@ -83,3 +83,20 @@ func TestStandardNameQueued(t *testing.T) {
 		t.Fatalf("taken over when it left; owner %s", owner)
 	}
 }
+
+// TestSplitResolvesRelativePaths: `open .` and `open Downloads` give
+// inua-files paths relative to where they were typed, which are made
+// absolute before a running instance, elsewhere, is handed them.
+func TestSplitResolvesRelativePaths(t *testing.T) {
+	dir := t.TempDir()
+	os.Mkdir(filepath.Join(dir, "Downloads"), 0o755)
+	os.WriteFile(filepath.Join(dir, "notes.txt"), nil, 0o644)
+	t.Chdir(dir)
+	folders, items := Split([]string{".", "Downloads", "notes.txt", "sftp://box/srv"})
+	if want := []string{dir, filepath.Join(dir, "Downloads"), "sftp://box/srv"}; !slices.Equal(folders, want) {
+		t.Errorf("folders = %q, want %q", folders, want)
+	}
+	if want := []string{filepath.Join(dir, "notes.txt")}; !slices.Equal(items, want) {
+		t.Errorf("items = %q, want %q", items, want)
+	}
+}

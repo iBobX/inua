@@ -30,7 +30,9 @@ inua-files -default=false                 give the job back (removes what -defau
 ```
 
 `inua-files trash:` opens the trash; `inua-files sftp://host/dir` mounts
-the share first.
+the share first. A path may be relative to where it is typed, and once
+inua-files is the file manager (`-default`), `open PATH` (xdg-open)
+opens a folder in it: `open .`, `open ~/Downloads`.
 
 ## Window
 
