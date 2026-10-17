@@ -181,9 +181,14 @@ func BuildSnapshot(q QueryResult, urgent map[string]bool) (Snapshot, error) {
 
 	monName := map[int]string{}
 	shown := map[int]string{} // workspace id -> monitor name
+	workspaceMonitor := map[string]bool{}
+	for _, w := range wss {
+		workspaceMonitor[w.Monitor] = true
+	}
 	focusedMon := ""
 	for i, m := range mons {
-		if m.Disabled {
+		hasGeometry := m.Width > 0 && m.Height > 0
+		if m.Disabled && (!workspaceMonitor[m.Name] || !hasGeometry) {
 			continue
 		}
 		monName[m.ID] = m.Name

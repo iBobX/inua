@@ -88,6 +88,29 @@ func TestBuildSnapshot(t *testing.T) {
 	}
 }
 
+func TestBuildSnapshotKeepsDisabledMonitorWithWorkspace(t *testing.T) {
+	s, err := BuildSnapshot(QueryResult{
+		Monitors: []byte(`[
+			{"id":0,"name":"HDMI-A-1","width":1280,"height":1024,"scale":1,"focused":true,"disabled":true,"activeWorkspace":{"id":0}},
+			{"id":1,"name":"HDMI-A-2","width":3840,"height":2160,"scale":2,"disabled":true,"activeWorkspace":{"id":0}},
+			{"id":2,"name":"disconnected","disabled":true,"activeWorkspace":{"id":0}}
+		]`),
+		Workspaces: []byte(`[
+			{"id":1,"name":"1","monitor":"HDMI-A-1"},
+			{"id":2,"name":"2","monitor":"HDMI-A-2"}
+		]`),
+		Clients: []byte(clientsJSON), ActiveWindow: []byte(`{"address":"0xaa"}`),
+	}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Monitors) != 2 || s.Monitors[0].Name != "HDMI-A-1" || s.Monitors[1].Width != 3840 {
+		t.Fatalf("workspace-linked monitors not retained: %+v", s.Monitors)
+	}
+	if s.FocusedMonitor != "HDMI-A-1" {
+		t.Fatalf("focused monitor = %q", s.FocusedMonitor)
+	}
+}
 func TestBuildSnapshotNoActiveWindow(t *testing.T) {
 	s, err := BuildSnapshot(QueryResult{
 		Monitors: []byte(`[]`), Workspaces: []byte(`[]`), Clients: []byte(`[]`), ActiveWindow: []byte(`{}`),
