@@ -964,6 +964,159 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                     <child>
                                       <object class="GtkBox">
                                         <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Bar spacing</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Choose the standard or compact bar layout</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="bar_density">
+                                            <property name="name">bar_density</property>
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item translatable="yes">Default</item>
+                                                  <item translatable="yes">Compact</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="width-request">260</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Empty workspace transparency</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="bar_empty_transparency_val">
+                                                <style>
+                                                  <class name="readout"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkScale" id="bar_empty_transparency">
+                                            <property name="name">bar_empty_transparency</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="draw-value">false</property>
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="lower">0</property>
+                                                <property name="upper">80</property>
+                                                <property name="step-increment">1</property>
+                                                <property name="page-increment">5</property>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="width-request">260</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Window workspace transparency</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="bar_window_transparency_val">
+                                                <style>
+                                                  <class name="readout"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkScale" id="bar_window_transparency">
+                                            <property name="name">bar_window_transparency</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="draw-value">false</property>
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="lower">0</property>
+                                                <property name="upper">80</property>
+                                                <property name="step-increment">1</property>
+                                                <property name="page-increment">5</property>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSeparator"></object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
                                           <class name="field"/>
                                         </style>
                                         <property name="orientation">1</property>

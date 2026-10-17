@@ -46,6 +46,8 @@ type bar struct {
 	clockButton gtk.Button // opens the calendar panel
 	recTime     gtk.Label
 	refs        gtkx.Scope
+	edgeGaps    bool
+	compact     bool
 
 	// The workspaces this bar shows, and their buttons by id, owned by the
 	// workspaces box. Buttons are kept across updates so a focus change
@@ -142,6 +144,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("bat_label", &b.batLabel)
 	ui.Close()
 	b.setEdgeGap(s.cfg.Style.EdgeGaps)
+	b.setDensity(s.cfg.Bar.Density)
 	b.status.ConnectClicked(&s.onControlButton)
 	b.notes.ConnectClicked(&s.onNotesButton)
 	b.clipboard.ConnectClicked(&s.onClipboardButton)
@@ -197,13 +200,53 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 // setEdgeGap insets the bar from the screen edges by 4 px, or not
 // (style.edge_gaps).
 func (b *bar) setEdgeGap(gaps bool) {
+	b.edgeGaps = gaps
 	margin := int32(0)
 	if gaps {
 		margin = 4
 	}
-	b.island.SetMarginTop(margin)
+	topMargin := margin
+	if b.compact && gaps {
+		topMargin = 1
+	}
+	b.island.SetMarginTop(topMargin)
 	b.island.SetMarginStart(margin)
 	b.island.SetMarginEnd(margin)
+}
+
+// setDensity applies the selected bar spacing without rebuilding the surface.
+func (b *bar) setDensity(density string) {
+	compact := density == "compact"
+	b.compact = compact
+	height := int32(30)
+	spacing := int32(5)
+	if compact {
+		height = 24
+		spacing = 4
+	}
+	b.workspaces.SetSpacing(spacing)
+	if compact {
+		b.win.AddCssClass("compact")
+		b.island.SetSizeRequest(-1, 24)
+		topMargin := int32(0)
+		if b.edgeGaps {
+			topMargin = 1
+		}
+		b.island.SetMarginTop(topMargin)
+	} else {
+		b.win.RemoveCssClass("compact")
+		b.island.SetSizeRequest(-1, 30)
+		margin := int32(0)
+		if b.edgeGaps {
+			margin = 4
+		}
+		b.island.SetMarginTop(margin)
+	}
+	// A mapped GTK4 Layer Shell surface does not resize from its child's
+	// size request alone. Updating the toplevel default size reconfigures
+	// the surface and its automatically calculated exclusive zone as well.
+	b.win.SetDefaultSize(-1, height)
+	b.win.QueueResize()
 }
 
 func (b *bar) setClock(s *shellUI, now time.Time) {
@@ -212,6 +255,27 @@ func (b *bar) setClock(s *shellUI, now time.Time) {
 
 func (b *bar) setHypr(s *shellUI, snap hypr.Snapshot) {
 	name := b.connector()
+	activeWorkspace := 0
+	for _, mon := range snap.Monitors {
+		if mon.Name == name {
+			activeWorkspace = mon.ActiveWorkspaceID
+			break
+		}
+	}
+	hasWindows := false
+	for _, win := range snap.Toplevels {
+		if win.WorkspaceID == activeWorkspace {
+			hasWindows = true
+			break
+		}
+	}
+	if hasWindows {
+		b.win.RemoveCssClass("empty")
+		b.win.AddCssClass("occupied")
+	} else {
+		b.win.RemoveCssClass("occupied")
+		b.win.AddCssClass("empty")
+	}
 	b.title.SetText(shell.BarTitle(snap, name))
 	order := s.overview.st
 	order.MRU = s.cfg.Overview.MRU

@@ -15,7 +15,7 @@ import (
 func Format(c Config) string {
 	return fmt.Sprintf(template,
 		q(c.Language),
-		c.Bar.Enable, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray,
+		c.Bar.Enable, q(c.Bar.Density), c.Bar.EmptyTransparency, c.Bar.WindowTransparency, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray,
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
@@ -173,6 +173,14 @@ language = %s
 # (Super+Space), control center (Super+A) and notification center (Super+N)
 # are still a key away.
 enable = %t
+
+# Bar density: "default" or "compact". Compact saves vertical screen space.
+density = %s
+
+# Background transparency, from 0%% (opaque) to 80%% (more transparent).
+# Empty workspaces and workspaces with windows can be tuned separately.
+empty_transparency = %d
+window_transparency = %d
 
 # Clock, in strftime format: %%a %%A weekday, %%b %%B month, %%d %%e day, %%m month,
 # %%Y year, %%H %%I hour (24h/12h), %%M minute, %%S second, %%p AM/PM.

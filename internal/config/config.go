@@ -49,6 +49,11 @@ type Bar struct {
 	// Enable shows the bar. Off, the launcher, control center and
 	// notification center are still a key away.
 	Enable bool `toml:"enable"`
+	// Density is "default" or "compact"; compact reduces the bar's height and spacing.
+	Density string `toml:"density"`
+	// EmptyTransparency and WindowTransparency are background transparency percentages (0-80).
+	EmptyTransparency  int `toml:"empty_transparency"`
+	WindowTransparency int `toml:"window_transparency"`
 	// Clock is a strftime format (see Strftime).
 	Clock string `toml:"clock"`
 	// Workspaces is "monitor" (each bar shows its monitor's workspaces)
@@ -597,11 +602,14 @@ func Default() Config {
 	return Config{
 		Language: "auto",
 		Bar: Bar{
-			Enable:     true,
-			Clock:      "%a %b %-d  %H:%M",
-			Workspaces: "monitor",
-			Title:      true,
-			Tray:       true,
+			Enable:             true,
+			Density:            "default",
+			EmptyTransparency:  30,
+			WindowTransparency: 15,
+			Clock:              "%a %b %-d  %H:%M",
+			Workspaces:         "monitor",
+			Title:              true,
+			Tray:               true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
 		Overview: Overview{MRU: false, PerMonitor: true},
@@ -678,6 +686,17 @@ func (c *Config) validate() []string {
 		*v = def
 	}
 	oneOf("bar.workspaces", &c.Bar.Workspaces, d.Bar.Workspaces, "monitor", "all")
+	oneOf("bar.density", &c.Bar.Density, d.Bar.Density, "default", "compact")
+	for _, setting := range []struct {
+		name  string
+		value *int
+		def   int
+	}{{"bar.empty_transparency", &c.Bar.EmptyTransparency, d.Bar.EmptyTransparency}, {"bar.window_transparency", &c.Bar.WindowTransparency, d.Bar.WindowTransparency}} {
+		if *setting.value < 0 || *setting.value > 80 {
+			w = append(w, fmt.Sprintf("%s = %d: want 0..80; using %d", setting.name, *setting.value, setting.def))
+			*setting.value = setting.def
+		}
+	}
 	oneOf("launcher.mode", &c.Launcher.Mode, d.Launcher.Mode, "apps", "windows")
 	if !ValidSearchURL(c.Launcher.Search) {
 		w = append(w, fmt.Sprintf("launcher.search = %q: want a web address with %%s for the words; using %q", c.Launcher.Search, d.Launcher.Search))

@@ -27,6 +27,7 @@ type styles struct {
 	wallpaper *gtk.CssProvider // window.wallpaper
 	clipboard *gtk.CssProvider // clipboard card opacity
 	swatches  *gtk.CssProvider // the settings window's theme swatches
+	bar       *gtk.CssProvider // per-workspace bar background transparency
 }
 
 func (s *shellUI) theme() string { return cmp.Or(s.cfg.Style.Theme, "yoru") }
@@ -57,6 +58,20 @@ func (s *shellUI) loadStyles() {
 	s.loadIcons()
 	s.loadClipboardStyle()
 	s.loadSwatchStyle()
+	s.loadBarStyle()
+}
+
+func (s *shellUI) loadBarStyle() {
+	st := &s.styles
+	if st.bar == nil {
+		st.bar = gtk.NewCssProvider()
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.bar, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION+1))
+	}
+	empty := 1 - float64(s.cfg.Bar.EmptyTransparency)/100
+	occupied := 1 - float64(s.cfg.Bar.WindowTransparency)/100
+	st.bar.LoadFromString(fmt.Sprintf(
+		".bar.empty .island { background: alpha(@app, %.2f); }\n.bar.occupied .island { background: alpha(@app, %.2f); }\n",
+		empty, occupied))
 }
 
 func (s *shellUI) loadClipboardStyle() {
@@ -159,10 +174,16 @@ func (s *shellUI) applyConfig(c config.Config) {
 	if old.Style != c.Style {
 		s.loadStyles()
 	}
+	if old.Bar.EmptyTransparency != c.Bar.EmptyTransparency || old.Bar.WindowTransparency != c.Bar.WindowTransparency {
+		s.loadBarStyle()
+	}
 	if old.Style.Theme != c.Style.Theme || old.Background != c.Background || old.Dir != c.Dir {
 		s.loadWallpaper()
 	}
 	for _, b := range s.bars {
+		if old.Bar.Density != c.Bar.Density {
+			b.setDensity(c.Bar.Density)
+		}
 		if old.Style.EdgeGaps != c.Style.EdgeGaps {
 			b.setEdgeGap(c.Style.EdgeGaps)
 		}

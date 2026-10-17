@@ -19,6 +19,14 @@ language = "auto"
 # are still a key away.
 enable = true
 
+# Bar density: "default" or "compact". Compact saves vertical screen space.
+density = "default"
+
+# Background transparency, from 0% (opaque) to 80% (more transparent).
+# Empty workspaces and workspaces with windows can be tuned separately.
+empty_transparency = 30
+window_transparency = 15
+
 # Clock, in strftime format: %a %A weekday, %b %B month, %d %e day, %m month,
 # %Y year, %H %I hour (24h/12h), %M minute, %S second, %p AM/PM.
 # A '-' drops zero padding (%-d, %-H). With seconds, the clock ticks every

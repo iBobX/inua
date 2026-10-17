@@ -116,6 +116,20 @@ button.image-button { padding-left: 0; padding-right: 0; }
   border-radius: 4px;
   padding: 0 8px 0 12px;
 }
+.bar.compact .island {
+  background: alpha(@app, 0.84);
+  border: none;
+  padding: 0 6px 0 8px;
+}
+.bar.compact .clock { font-size: 11px; }
+.bar.compact .workspaces button.active,
+.bar.compact .workspaces button.focused { min-width: 16px; }
+.bar.compact button.status,
+.bar.compact button.clipboard,
+.bar.compact button.notes,
+.bar.compact button.clock-button,
+.bar.compact .tray button { min-height: 0; padding: 1px 6px; margin: 1px 0; }
+.bar.compact .tray button { padding-left: 4px; padding-right: 4px; }
 .bar .title { color: @t1; }
 .bar .clock {
   color: @t0; /* not the button's colour it sits in */

@@ -44,22 +44,22 @@ type settings struct {
 	swatchNames           []string               // the themes the swatches show
 	themeTrash, iconTrash gtk.Button             // for the user's theme or icon set in use
 
-	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory gtk.Switch
-	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                gtk.Switch
-	clipEnable, clipBar, clipPaste                                   gtk.Switch
-	dockSize, dockPosition                                           gtk.DropDown
-	dockPinned                                                       gtk.Box
-	bgImage, bgColor, clock, terminal, lock, screenshot              gtk.Entry
-	clipSensitive                                                    gtk.Entry
-	bgFit, ws, launchMode, swap, caps, icons, banner                 gtk.DropDown
-	clipLimit                                                        gtk.DropDown
-	clipLimits                                                       []int // clipLimit's choices
-	textScale                                                        gtk.DropDown
-	textScales                                                       []int    // textScale's choices
-	iconSets                                                         []string // icons' choices
-	tpSpeed, clipOpacity                                             gtk.Scale
-	clipOpacityVal, clipStats                                        gtk.Label
-	clipClear, clipReveal                                            gtk.Button
+	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory             gtk.Switch
+	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                            gtk.Switch
+	clipEnable, clipBar, clipPaste                                               gtk.Switch
+	dockSize, dockPosition, barDensity                                           gtk.DropDown
+	dockPinned                                                                   gtk.Box
+	bgImage, bgColor, clock, terminal, lock, screenshot                          gtk.Entry
+	clipSensitive                                                                gtk.Entry
+	bgFit, ws, launchMode, swap, caps, icons, banner                             gtk.DropDown
+	clipLimit                                                                    gtk.DropDown
+	clipLimits                                                                   []int // clipLimit's choices
+	textScale                                                                    gtk.DropDown
+	textScales                                                                   []int    // textScale's choices
+	iconSets                                                                     []string // icons' choices
+	tpSpeed, clipOpacity, barEmptyTransparency, barWindowTransparency            gtk.Scale
+	clipOpacityVal, clipStats, barEmptyTransparencyVal, barWindowTransparencyVal gtk.Label
+	clipClear, clipReveal                                                        gtk.Button
 
 	// Keyboard and touchpad: where the settings come from, and why they
 	// would do nothing.
@@ -99,11 +99,12 @@ var themeKanji = map[string]string{
 }
 
 var (
-	fitChoices  = config.Fits
-	wsChoices   = []string{"monitor", "all"}
-	modeChoices = []string{"apps", "windows"}
-	swapChoices = []string{"", "left", "both"}
-	capsChoices = []string{"", "escape", "ctrl"}
+	fitChoices   = config.Fits
+	wsChoices    = []string{"monitor", "all"}
+	barDensities = []string{"default", "compact"}
+	modeChoices  = []string{"apps", "windows"}
+	swapChoices  = []string{"", "left", "both"}
+	capsChoices  = []string{"", "escape", "ctrl"}
 )
 
 func (s *shellUI) bindSettingsHandlers() {
@@ -175,6 +176,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Background.Fit = pick(fitChoices, i, c.Background.Fit)
 		case "ws":
 			c.Bar.Workspaces = pick(wsChoices, i, c.Bar.Workspaces)
+		case "bar_density":
+			c.Bar.Density = pick(barDensities, i, c.Bar.Density)
 		case "launch_mode":
 			c.Launcher.Mode = pick(modeChoices, i, c.Launcher.Mode)
 		case "dock_size":
@@ -272,6 +275,18 @@ func (s *shellUI) bindSettingsHandlers() {
 			s.changeSettings(c)
 			return false
 		}
+		if r.GetName() == "bar_empty_transparency" || r.GetName() == "bar_window_transparency" {
+			val := int(math.Round(v))
+			if r.GetName() == "bar_empty_transparency" {
+				c.Bar.EmptyTransparency = val
+				s.settings.barEmptyTransparencyVal.SetText(i18n.Tf("%d%%", val))
+			} else {
+				c.Bar.WindowTransparency = val
+				s.settings.barWindowTransparencyVal.SetText(i18n.Tf("%d%%", val))
+			}
+			s.changeSettings(c)
+			return false
+		}
 		v = math.Round(max(-1, min(v, 1))*20) / 20 // the steps of 0.05
 		c.Input.TouchpadSpeed = &v
 		s.changeSettings(c)
@@ -358,6 +373,11 @@ func (s *shellUI) openSettings() {
 	ui.Get("screenshot", &st.screenshot)
 	ui.Get("bg_fit", &st.bgFit)
 	ui.Get("ws", &st.ws)
+	ui.Get("bar_density", &st.barDensity)
+	ui.Get("bar_empty_transparency", &st.barEmptyTransparency)
+	ui.Get("bar_empty_transparency_val", &st.barEmptyTransparencyVal)
+	ui.Get("bar_window_transparency", &st.barWindowTransparency)
+	ui.Get("bar_window_transparency_val", &st.barWindowTransparencyVal)
 	ui.Get("launch_mode", &st.launchMode)
 	ui.Get("icons", &st.icons)
 	ui.Get("language", &st.language)
@@ -437,7 +457,7 @@ func (s *shellUI) openSettings() {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.textScale, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.barDensity, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.textScale, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
@@ -449,6 +469,8 @@ func (s *shellUI) openSettings() {
 	}
 	st.tpSpeed.ConnectChangeValue(&s.onSettingsScale)
 	st.clipOpacity.ConnectChangeValue(&s.onSettingsScale)
+	st.barEmptyTransparency.ConnectChangeValue(&s.onSettingsScale)
+	st.barWindowTransparency.ConnectChangeValue(&s.onSettingsScale)
 	s.buildSwatches()
 	st.hyprKb = s.hyprKbOptions()
 	st.sc.binds = s.hyprBinds()
@@ -599,6 +621,11 @@ func (s *shellUI) showSettings() {
 	st.bgFit.SetSelected(uint32(max(0, slices.Index(fitChoices, c.Background.Fit))))
 	st.ws.SetSelected(uint32(max(0, slices.Index(wsChoices, c.Bar.Workspaces))))
 	st.launchMode.SetSelected(uint32(max(0, slices.Index(modeChoices, c.Launcher.Mode))))
+	st.barDensity.SetSelected(uint32(max(0, slices.Index(barDensities, c.Bar.Density))))
+	st.barEmptyTransparency.SetValue(float64(c.Bar.EmptyTransparency))
+	st.barEmptyTransparencyVal.SetText(i18n.Tf("%d%%", c.Bar.EmptyTransparency))
+	st.barWindowTransparency.SetValue(float64(c.Bar.WindowTransparency))
+	st.barWindowTransparencyVal.SetText(i18n.Tf("%d%%", c.Bar.WindowTransparency))
 	s.showIconSets()
 	s.showTextScale()
 	st.language.SetSelected(uint32(max(0, slices.Index(config.Languages, c.Language))))
