@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"math"
@@ -57,8 +56,13 @@ type control struct {
 	power       gtk.ToggleButton
 	powerReveal gtk.Revealer
 	powerLabels map[string]*gtk.Label // by action
-	armed       string                // the action waiting for its second click
-	armGen      uintptr
+	// Hibernate shows as logind last said (system.CanHibernate), asked
+	// again off the main loop each time the control center opens.
+	hibernate       *gtk.Button
+	canHibernate    bool
+	askingHibernate bool
+	armed           string // the action waiting for its second click
+	armGen          uintptr
 
 	// A slider the user moved recently is not reset from service updates,
 	// which lag behind the drag.
@@ -234,7 +238,9 @@ func (s *shellUI) buildControl() {
 		ui.Get(a+"_label", l)
 		powerButtons[a], c.powerLabels[a] = b, l
 	}
-	powerButtons["hibernate"].SetVisible(canHibernate())
+	c.hibernate = powerButtons["hibernate"]
+	c.hibernate.SetVisible(c.canHibernate)
+	s.askHibernate()
 	c.armed = ""
 	ui.Get("lock", &lock)
 	ui.Get("screenshot", &screenshot)
@@ -484,18 +490,27 @@ var powerLabel = map[string][2]string{
 	"logout":    {i18n.M("Log out"), i18n.M("Log out?")},
 }
 
-// canHibernate asks logind whether hibernation is configured and available.
-func canHibernate() bool {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-	out, err := exec.CommandContext(ctx, "busctl", "--system", "call",
-		"org.freedesktop.login1", "/org/freedesktop/login1",
-		"org.freedesktop.login1.Manager", "CanHibernate").Output()
-	if err != nil {
-		return false
+// askHibernate asks logind whether the machine can hibernate, off the main
+// loop, and shows Hibernate or not as it says.
+func (s *shellUI) askHibernate() {
+	c := &s.control
+	if c.askingHibernate {
+		return
 	}
-	status := strings.TrimSpace(string(out))
-	return status == `s "yes"` || status == `s "challenge"`
+	c.askingHibernate = true
+	go func() {
+		can, err := system.CanHibernate(system.SystemBus)
+		if err != nil {
+			log.Printf("control: %v", err)
+		}
+		gtkx.Post(func() {
+			c.askingHibernate = false
+			c.canHibernate = can
+			if c.open && c.hibernate != nil {
+				c.hibernate.SetVisible(can)
+			}
+		})
+	}()
 }
 
 // powerAction suspends at once (locking the screen first); hibernate, restart,
