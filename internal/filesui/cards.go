@@ -277,8 +277,13 @@ func (w *window) setCardList(items, labels, subs []string, icons ...*gio.IconBas
 		t := text(labels[i], sub)
 		if i < len(icons) && icons[i] != nil && icons[i].Ptr != 0 {
 			row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-			img := gtk.NewImageFromGicon(icons[i])
+			// An app's icon from the desktop's theme, which the window's
+			// does not inherit.
+			img := gtk.NewImage()
 			img.SetPixelSize(24)
+			p := w.app.icons.theme.LookupByGicon(icons[i], 24, img.GetScaleFactor(), gtk.TextDirLtrValue, regular)
+			img.SetFromPaintable(p)
+			p.Unref()
 			gtkx.Append(row, &img.Widget)
 			t.SetHexpand(true)
 			gtkx.Append(row, &t.Widget)

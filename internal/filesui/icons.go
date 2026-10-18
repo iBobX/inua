@@ -27,6 +27,14 @@ func newThemeIcons(name string) *themeIcons {
 	return t
 }
 
+// read reads the theme, the whole chain of themes it inherits (a quarter
+// of a second for a large one), on a thread of its own: once made, a
+// GtkIconTheme takes lookups from any thread, and one meanwhile waits for
+// the theme.
+func (t *themeIcons) read() {
+	go t.theme.HasIcon("folder")
+}
+
 const regular = gtk.IconLookupForceRegularValue
 
 // named is the icon called name (else "text-x-generic") at size.

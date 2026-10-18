@@ -330,7 +330,8 @@ windows to PNG files for checking layouts without a screenshot tool.
   tokens it changes (`config.ThemeCSS`).
 - Icons: Phosphor's regular icons (`ui/icons`, MIT), written as an icon
   theme for the shell's process that inherits the system's; app and tray
-  icons stay the system's. `style.icons = "system"` uses the system theme
+  icons stay the system's. inua's apps write one that inherits Adwaita,
+  set before they start (docs/performance.md). `style.icons = "system"` uses the system theme
   throughout. A user's set, `icons/<name>/` beside `config.toml`, is
   copied over the Phosphor icons into an icon theme of its own name
   (`shell.IconTheme`), in the shell and in inua's apps.

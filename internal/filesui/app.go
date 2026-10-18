@@ -75,12 +75,17 @@ func Register(a *App) {
 	appui.RegisterMany("files", "Files", i18n.M("Files"), func() appui.View { return a })
 }
 
+// Prepare reads the desktop's icon theme while GTK starts.
+func (a *App) Prepare(c *appui.Ctx) {
+	a.icons = newThemeIcons(c.DesktopIcons())
+	a.icons.read()
+}
+
 // Build makes the first window; Open then says where it goes.
 func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.h = newHub()
 	a.settings = files.LoadSettings()
-	a.icons = newThemeIcons(c.DesktopIcons)
 	w := a.newWindow()
 	a.watchDevices()
 	return &w.win

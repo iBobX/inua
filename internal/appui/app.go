@@ -86,6 +86,11 @@ type View interface {
 // Opener is a View that takes the arguments of its first start.
 type Opener interface{ Open(args []string) }
 
+// Preparer is a View with work to begin before the application starts,
+// such as on a thread of its own while GTK starts: Prepare runs once, on
+// the main thread, before Build.
+type Preparer interface{ Prepare(c *Ctx) }
+
 // Themed is a View that keeps a look of its own whatever the shell's
 // theme: the name of a built-in theme ("washi"), or "" for the shell's.
 type Themed interface{ Theme() string }
@@ -97,6 +102,12 @@ func (e external) theme() string {
 		return t.Theme()
 	}
 	return ""
+}
+
+func (e external) prepare(c *Ctx) {
+	if p, ok := e.v.(Preparer); ok {
+		p.Prepare(c)
+	}
 }
 
 func (e external) build(c *Ctx) *gtk.ApplicationWindow { return e.v.Build(c) }
@@ -142,10 +153,7 @@ type Ctx struct {
 	StartHidden bool
 	UIDir       string // read layouts from here instead of the embedded copy
 	Colors      map[string]string
-	// DesktopIcons is the desktop's icon theme (the XDG settings portal's,
-	// else GTK's), which the apps' own Phosphor theme inherits.
-	DesktopIcons string
-	refs         gtkx.Scope
+	refs        gtkx.Scope
 
 	cfgPath   string
 	cfgMod    time.Time
@@ -157,6 +165,8 @@ type Ctx struct {
 	open      func(gio.Application, uintptr, int32, string)
 	activate  func(gio.Application)
 	iconTheme string // the apps' icon theme in use, "" before loadIcons
+	gtkIcons  string // GTK's icon theme before loadIcons set the apps'
+	desktop   string // DesktopIcons, once asked
 }
 
 // Run runs the named app until its window closes. A second start of the
@@ -191,8 +201,18 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	if files {
 		flags |= gio.GApplicationHandlesOpenValue
 	}
+	// The apps' icon theme is in place before the application starts:
+	// GtkApplication's start looks its icon up, which reads the whole
+	// chain of the icon theme set then, and a change after reads the new
+	// chain again.
+	gtk.Init()
+	c := &Ctx{UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
+	c.loadIcons()
+	if p, ok := v.(interface{ prepare(*Ctx) }); ok {
+		p.prepare(c)
+	}
 	app := gtk.NewApplication(appID, flags)
-	c := &Ctx{App: app, UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
+	c.App = app
 	opened := false // the files of the first start went to open already
 	c.activate = func(gio.Application) {
 		if c.win != nil { // started again: the window comes to the user
@@ -201,7 +221,6 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 			return
 		}
 		c.loadStyle()
-		c.loadIcons()
 		c.win = c.v.build(c)
 		c.win.SetApplication(app)
 		c.win.SetTitle(i18n.T(title))
@@ -324,19 +343,19 @@ func (c *Ctx) followConfig() {
 // loadIcons draws the apps' own icons from the Phosphor set inua ships
 // (ui/icons), with the user's set over them when style.icons names one;
 // "system" still means Phosphor here. The apps write the set as an icon
-// theme of their own, which inherits the system's for app icons and any
-// icon the set lacks.
+// theme of their own, which inherits Adwaita for any icon the set lacks:
+// inheriting the desktop's theme made every start read that theme's
+// chain, a quarter of a second for a large one such as Numix-Circle.
+// What shows the desktop's icons (Files' files and apps) looks them up in
+// DesktopIcons.
 func (c *Ctx) loadIcons() {
 	cfg := c.config()
-	if c.DesktopIcons == "" {
+	if c.iconTheme == "" {
 		var v gobject.Value
 		v.Init(gobject.TypeStringVal)
 		gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &v)
-		c.DesktopIcons = cmp.Or(desktopIconTheme(), v.GetString(), "Adwaita")
+		c.gtkIcons = v.GetString()
 		v.Unset()
-		if strings.HasPrefix(c.DesktopIcons, "inua-") {
-			c.DesktopIcons = "Adwaita"
-		}
 	}
 	overlay := cfg.IconSetDir()
 	name := appIconTheme
@@ -354,15 +373,27 @@ func (c *Ctx) loadIcons() {
 		log.Printf("icons: %v", err)
 		return
 	}
+	if c.iconTheme == name {
+		// The set's files may have changed: make GTK read them again.
+		gtkx.SetStringSetting("gtk-icon-theme-name", "hicolor")
+	}
+	gtkx.SetStringSetting("gtk-icon-theme-name", name)
 	if c.iconTheme == "" {
 		gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault()).AddSearchPath(dir)
 	}
-	if c.iconTheme == name {
-		// The set's files may have changed: make GTK read them again.
-		gtkx.SetStringSetting("gtk-icon-theme-name", c.DesktopIcons)
-	}
-	gtkx.SetStringSetting("gtk-icon-theme-name", name)
 	c.iconTheme = name
+}
+
+// DesktopIcons is the desktop's icon theme: the XDG settings portal's,
+// else GTK's, else Adwaita.
+func (c *Ctx) DesktopIcons() string {
+	if c.desktop == "" {
+		c.desktop = cmp.Or(desktopIconTheme(), c.gtkIcons, "Adwaita")
+		if strings.HasPrefix(c.desktop, "inua-") {
+			c.desktop = "Adwaita"
+		}
+	}
+	return c.desktop
 }
 
 // desktopIconTheme is the icon theme the desktop's settings choose, read
@@ -397,7 +428,7 @@ func (c *Ctx) writeIconTheme(dir, name, overlay string) error {
 	t := shell.IconTheme{
 		Name:     name,
 		Comment:  "Icons for inua's light apps (written by inua-apps)",
-		Inherits: c.DesktopIcons,
+		Inherits: "Adwaita",
 		Read:     func(file string) string { return c.ReadUI("icons/" + file) },
 		Overlay:  overlay,
 	}

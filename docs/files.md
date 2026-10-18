@@ -16,8 +16,10 @@ in colour: the theme the XDG settings portal names
 (`org.gnome.desktop.interface icon-theme`, else GTK's setting), with
 GIO's icon for each MIME type (the theme's specific one, else its generic
 one) and the theme's own icons for home and the user folders. They are
-looked up in an icon theme of that name alone: the window's theme is the
-apps' Phosphor set, and GTK would take its symbolic icons for these names.
+looked up in an icon theme of that name alone, as are the apps offered to
+open a file with: the window's theme is the apps' Phosphor set, which
+inherits Adwaita, and GTK would take its symbolic icons for these names.
+The theme is read on a thread of its own while GTK starts.
 
 It is a program of its own (`cmd/inua-files`), like `inua-games` and
 `inua-assistant`, so `inua-apps` does not grow and the file manager can

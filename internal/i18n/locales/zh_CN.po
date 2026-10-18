@@ -279,7 +279,7 @@ msgstr "来自 %s 的文件"
 #: internal/apps/connect/share.go:129
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:673
+#: internal/filesui/cards.go:678
 #: internal/filesui/window.go:700
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
@@ -646,7 +646,7 @@ msgstr "视频"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/filesui/cards.go:430
+#: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
@@ -1222,7 +1222,7 @@ msgid "The decrypted copy goes to the trash, where it can be restored from; the 
 msgstr "解密出的副本会移到回收站，可从那里恢复；加密文件保留。"
 
 #: internal/appui/gpg.go:1537
-#: internal/filesui/cards.go:687
+#: internal/filesui/cards.go:692
 #: internal/filesui/window.go:741
 #: ui/settings.ui:184
 #: ui/settings.ui:442
@@ -1598,7 +1598,7 @@ msgid "It is not an image this app reads (PNG or JPEG)."
 msgstr "这不是本应用能读取的图片（PNG 或 JPEG）。"
 
 #: internal/appui/pass_otp.go:189
-#: internal/filesui/cards.go:492
+#: internal/filesui/cards.go:497
 msgid "Replace"
 msgstr "替换"
 
@@ -2699,12 +2699,12 @@ msgstr "未知的组件 %q"
 #: internal/connectui/window.go:429
 #: internal/filesui/archive.go:49
 #: internal/filesui/archive.go:309
-#: internal/filesui/cards.go:342
-#: internal/filesui/cards.go:391
-#: internal/filesui/cards.go:429
-#: internal/filesui/cards.go:446
-#: internal/filesui/cards.go:484
-#: internal/filesui/cards.go:583
+#: internal/filesui/cards.go:347
+#: internal/filesui/cards.go:396
+#: internal/filesui/cards.go:434
+#: internal/filesui/cards.go:451
+#: internal/filesui/cards.go:489
+#: internal/filesui/cards.go:588
 #: internal/filesui/remote.go:159
 #: internal/filesui/remote.go:219
 #: internal/filesui/remotesetup.go:152
@@ -3622,7 +3622,7 @@ msgid "Opens plain text"
 msgstr "打开纯文本"
 
 #: internal/filesui/app.go:75
-#: internal/filesui/cards.go:683
+#: internal/filesui/cards.go:688
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
 #: internal/filesui/window.go:93
@@ -3633,15 +3633,15 @@ msgstr "打开纯文本"
 msgid "Files"
 msgstr "文件"
 
-#: internal/filesui/app.go:233
+#: internal/filesui/app.go:238
 msgid "%s is plugged in."
 msgstr "%s 已插入。"
 
-#: internal/filesui/app.go:311
+#: internal/filesui/app.go:316
 msgid "There are no files on the clipboard."
 msgstr "剪贴板上没有文件。"
 
-#: internal/filesui/app.go:365
+#: internal/filesui/app.go:370
 msgid "Nothing to undo."
 msgstr "没有可撤销的操作。"
 
@@ -3756,8 +3756,8 @@ msgid "The two passwords differ."
 msgstr "两次输入的密码不一致。"
 
 #: internal/filesui/archive.go:263
-#: internal/filesui/cards.go:355
-#: internal/filesui/cards.go:400
+#: internal/filesui/cards.go:360
+#: internal/filesui/cards.go:405
 msgid "“%s” is taken here."
 msgstr "这里已有“%s”。"
 
@@ -3791,63 +3791,63 @@ msgid "%d item"
 msgid_plural "%d items"
 msgstr[0] "%d 项"
 
-#: internal/filesui/cards.go:343
-#: internal/filesui/cards.go:363
-#: internal/filesui/cards.go:686
+#: internal/filesui/cards.go:348
+#: internal/filesui/cards.go:368
+#: internal/filesui/cards.go:691
 #: internal/filesui/renamemany.go:38
 msgid "Rename"
 msgstr "重命名"
 
-#: internal/filesui/cards.go:370
+#: internal/filesui/cards.go:375
 msgid "A name cannot be empty."
 msgstr "名称不能为空。"
 
-#: internal/filesui/cards.go:372
+#: internal/filesui/cards.go:377
 msgid "“%s” is not a name."
 msgstr "“%s”不能用作名称。"
 
-#: internal/filesui/cards.go:374
+#: internal/filesui/cards.go:379
 msgid "A name cannot hold “/”."
 msgstr "名称不能包含“/”。"
 
-#: internal/filesui/cards.go:376
+#: internal/filesui/cards.go:381
 msgid "The name is too long."
 msgstr "名称太长。"
 
-#: internal/filesui/cards.go:384
+#: internal/filesui/cards.go:389
 msgid "New file"
 msgstr "新建文件"
 
-#: internal/filesui/cards.go:384
+#: internal/filesui/cards.go:389
 msgid "Untitled"
 msgstr "未命名"
 
-#: internal/filesui/cards.go:386
+#: internal/filesui/cards.go:391
 msgid "New folder"
 msgstr "新建文件夹"
 
-#: internal/filesui/cards.go:386
+#: internal/filesui/cards.go:391
 msgid "New Folder"
 msgstr "新建文件夹"
 
-#: internal/filesui/cards.go:392
+#: internal/filesui/cards.go:397
 msgid "Make"
 msgstr "创建"
 
-#: internal/filesui/cards.go:424
+#: internal/filesui/cards.go:429
 msgid "Delete %d item for good?"
 msgid_plural "Delete %d items for good?"
 msgstr[0] "永久删除 %d 项？"
 
-#: internal/filesui/cards.go:426
+#: internal/filesui/cards.go:431
 msgid "Delete “%s” for good?"
 msgstr "永久删除“%s”？"
 
-#: internal/filesui/cards.go:441
+#: internal/filesui/cards.go:446
 msgid "They do not go to the trash, and this cannot be undone."
 msgstr "它们不会进入垃圾箱，且无法撤销。"
 
-#: internal/filesui/cards.go:447
+#: internal/filesui/cards.go:452
 #: internal/filesui/sidebar.go:55
 #: internal/filesui/window.go:673
 #: internal/filesui/window.go:679
@@ -3856,255 +3856,255 @@ msgstr "它们不会进入垃圾箱，且无法撤销。"
 msgid "Empty Trash"
 msgstr "清空垃圾箱"
 
-#: internal/filesui/cards.go:464
+#: internal/filesui/cards.go:469
 msgid "Empty the trash?"
 msgstr "清空垃圾箱？"
 
-#: internal/filesui/cards.go:464
+#: internal/filesui/cards.go:469
 msgid "Everything in it is deleted for good, on every drive."
 msgstr "其中所有内容都会被永久删除，包括所有磁盘上的。"
 
-#: internal/filesui/cards.go:481
+#: internal/filesui/cards.go:486
 msgid "There: %s, %s. This one: %s, %s."
 msgstr "已有的：%s，%s。这个：%s，%s。"
 
-#: internal/filesui/cards.go:485
+#: internal/filesui/cards.go:490
 msgid "Skip"
 msgstr "跳过"
 
-#: internal/filesui/cards.go:486
+#: internal/filesui/cards.go:491
 msgid "Keep both"
 msgstr "保留两者"
 
-#: internal/filesui/cards.go:490
+#: internal/filesui/cards.go:495
 msgid "Merge"
 msgstr "合并"
 
-#: internal/filesui/cards.go:495
+#: internal/filesui/cards.go:500
 msgid "“%s” is already in %s"
 msgstr "“%s”已在 %s 中"
 
-#: internal/filesui/cards.go:497
+#: internal/filesui/cards.go:502
 msgid "A folder “%s” is already in %s"
 msgstr "文件夹“%s”已在 %s 中"
 
-#: internal/filesui/cards.go:500
+#: internal/filesui/cards.go:505
 #: ui/files.ui:261
 msgid "Do the same for the rest"
 msgstr "其余的也这样处理"
 
-#: internal/filesui/cards.go:509
+#: internal/filesui/cards.go:514
 msgid "… and %d more"
 msgid_plural "… and %d more"
 msgstr[0] "……还有 %d 项"
 
-#: internal/filesui/cards.go:511
-#: internal/filesui/cards.go:710
+#: internal/filesui/cards.go:516
+#: internal/filesui/cards.go:715
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
 msgid "Close"
 msgstr "关闭"
 
-#: internal/filesui/cards.go:512
+#: internal/filesui/cards.go:517
 msgid "Some items could not be done"
 msgstr "部分项目未能完成"
 
-#: internal/filesui/cards.go:521
+#: internal/filesui/cards.go:526
 msgid "Jump to a folder"
 msgstr "跳转到文件夹"
 
-#: internal/filesui/cards.go:564
+#: internal/filesui/cards.go:569
 msgid "Mounting %s…"
 msgstr "正在挂载 %s……"
 
-#: internal/filesui/cards.go:584
+#: internal/filesui/cards.go:589
 msgid "Unlock"
 msgstr "解锁"
 
-#: internal/filesui/cards.go:587
+#: internal/filesui/cards.go:592
 msgid "Unlocking…"
 msgstr "正在解锁……"
 
-#: internal/filesui/cards.go:609
+#: internal/filesui/cards.go:614
 msgid "That passphrase does not open it."
 msgstr "这个口令无法打开它。"
 
-#: internal/filesui/cards.go:623
+#: internal/filesui/cards.go:628
 msgid "Unlock %s"
 msgstr "解锁 %s"
 
-#: internal/filesui/cards.go:624
+#: internal/filesui/cards.go:629
 msgid "The drive is encrypted. Its passphrase is not kept."
 msgstr "该磁盘已加密。口令不会被保存。"
 
-#: internal/filesui/cards.go:634
+#: internal/filesui/cards.go:639
 msgid "Ejecting %s…"
 msgstr "正在弹出 %s……"
 
-#: internal/filesui/cards.go:645
+#: internal/filesui/cards.go:650
 msgid "%s can be removed now."
 msgstr "现在可以拔出 %s 了。"
 
-#: internal/filesui/cards.go:647
+#: internal/filesui/cards.go:652
 msgid "%s is unmounted."
 msgstr "%s 已卸载。"
 
-#: internal/filesui/cards.go:657
+#: internal/filesui/cards.go:662
 msgid "%s is in use: close the files open on it first."
 msgstr "%s 正在使用：请先关闭其上打开的文件。"
 
-#: internal/filesui/cards.go:659
+#: internal/filesui/cards.go:664
 msgid "Not allowed."
 msgstr "不允许。"
 
-#: internal/filesui/cards.go:661
+#: internal/filesui/cards.go:666
 #: internal/remoteui/stream.go:472
 msgid "%s: %v"
 msgstr "%s：%v"
 
-#: internal/filesui/cards.go:672
+#: internal/filesui/cards.go:677
 msgid "Moving"
 msgstr "移动"
 
-#: internal/filesui/cards.go:674
+#: internal/filesui/cards.go:679
 msgid "Parent folder"
 msgstr "上级文件夹"
 
-#: internal/filesui/cards.go:675
+#: internal/filesui/cards.go:680
 msgid "Back / forward"
 msgstr "后退 / 前进"
 
-#: internal/filesui/cards.go:676
+#: internal/filesui/cards.go:681
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
 #: internal/filesui/window.go:278
 msgid "Home"
 msgstr "主文件夹"
 
-#: internal/filesui/cards.go:677
+#: internal/filesui/cards.go:682
 msgid "The sidebar's places"
 msgstr "侧边栏中的位置"
 
-#: internal/filesui/cards.go:678
+#: internal/filesui/cards.go:683
 msgid "Type a path or a server"
 msgstr "输入路径或服务器"
 
-#: internal/filesui/cards.go:679
+#: internal/filesui/cards.go:684
 msgid "Jump to a folder used before"
 msgstr "跳转到用过的文件夹"
 
-#: internal/filesui/cards.go:680
+#: internal/filesui/cards.go:685
 #: ui/filespane.ui:115
 msgid "Search below this folder"
 msgstr "在此文件夹下搜索"
 
-#: internal/filesui/cards.go:681
+#: internal/filesui/cards.go:686
 msgid "Letters"
 msgstr "字母"
 
-#: internal/filesui/cards.go:681
+#: internal/filesui/cards.go:686
 msgid "Filter this folder; Esc clears"
 msgstr "筛选此文件夹；Esc 清除"
 
-#: internal/filesui/cards.go:684
+#: internal/filesui/cards.go:689
 msgid "Copy / cut / paste"
 msgstr "复制 / 剪切 / 粘贴"
 
-#: internal/filesui/cards.go:685
+#: internal/filesui/cards.go:690
 msgid "Copy the paths (none selected: the folder's)"
 msgstr "复制路径（未选择时复制文件夹路径）"
 
-#: internal/filesui/cards.go:688
+#: internal/filesui/cards.go:693
 msgid "Delete for good"
 msgstr "永久删除"
 
-#: internal/filesui/cards.go:689
+#: internal/filesui/cards.go:694
 msgid "New folder / new file"
 msgstr "新建文件夹 / 新建文件"
 
-#: internal/filesui/cards.go:690
+#: internal/filesui/cards.go:695
 msgid "Undo"
 msgstr "撤销"
 
-#: internal/filesui/cards.go:691
+#: internal/filesui/cards.go:696
 msgid "Copy / move to the other pane"
 msgstr "复制 / 移动到另一窗格"
 
-#: internal/filesui/cards.go:692
+#: internal/filesui/cards.go:697
 #: internal/filesui/window.go:702
 msgid "Open with…"
 msgstr "打开方式……"
 
-#: internal/filesui/cards.go:693
+#: internal/filesui/cards.go:698
 #: internal/filesui/window.go:755
 msgid "Bookmark"
 msgstr "添加书签"
 
-#: internal/filesui/cards.go:694
+#: internal/filesui/cards.go:699
 #: internal/filesui/window.go:688
 msgid "Terminal here"
 msgstr "在此打开终端"
 
-#: internal/filesui/cards.go:696
+#: internal/filesui/cards.go:701
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
 msgstr "窗口"
 
-#: internal/filesui/cards.go:697
+#: internal/filesui/cards.go:702
 msgid "New tab / close tab"
 msgstr "新建标签页 / 关闭标签页"
 
-#: internal/filesui/cards.go:698
+#: internal/filesui/cards.go:703
 msgid "Next / previous tab"
 msgstr "下一个 / 上一个标签页"
 
-#: internal/filesui/cards.go:699
+#: internal/filesui/cards.go:704
 #: internal/filesui/window.go:705
 msgid "Middle click"
 msgstr "中键点击"
 
-#: internal/filesui/cards.go:699
+#: internal/filesui/cards.go:704
 msgid "A folder in a new tab"
 msgstr "在新标签页中打开文件夹"
 
-#: internal/filesui/cards.go:700
+#: internal/filesui/cards.go:705
 msgid "List / grid"
 msgstr "列表 / 网格"
 
-#: internal/filesui/cards.go:701
+#: internal/filesui/cards.go:706
 #: internal/filesui/window.go:693
 msgid "Hidden files"
 msgstr "隐藏文件"
 
-#: internal/filesui/cards.go:702
+#: internal/filesui/cards.go:707
 msgid "Two panes, the other pane"
 msgstr "双窗格，切换窗格"
 
-#: internal/filesui/cards.go:703
+#: internal/filesui/cards.go:708
 msgid "Sidebar"
 msgstr "侧边栏"
 
-#: internal/filesui/cards.go:704
+#: internal/filesui/cards.go:709
 #: internal/filesui/window.go:747
 msgid "Details"
 msgstr "详细信息"
 
-#: internal/filesui/cards.go:705
+#: internal/filesui/cards.go:710
 msgid "Bigger / smaller / normal"
 msgstr "放大 / 缩小 / 正常"
 
-#: internal/filesui/cards.go:706
+#: internal/filesui/cards.go:711
 msgid "New window, close it"
 msgstr "新窗口，关闭窗口"
 
-#: internal/filesui/cards.go:707
+#: internal/filesui/cards.go:712
 #: internal/filesui/window.go:694
 msgid "Reload"
 msgstr "重新加载"
 
-#: internal/filesui/cards.go:711
+#: internal/filesui/cards.go:716
 msgid "Keys"
 msgstr "快捷键"
 
