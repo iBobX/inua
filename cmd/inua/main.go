@@ -6,7 +6,7 @@
 //	inua hypr dump | watch                           inspect Hyprland state
 //	inua config check [path] | path                  check the settings file
 //	inua config hyprland [path]                      check that Hyprland starts inua-shell and sources inua.conf
-//	inua config apply                                write hypr/inua.conf from [input] and reload Hyprland
+//	inua config apply                                write hypr/inua.conf from [input], [displays] and [[shortcuts]] (the built-in display as the lid is now) and reload Hyprland
 //	inua init [-force] [-pinentry ask|replace|keep] [-dir dir]  write the sample configuration
 //	inua keyring status|import|enable|disable|replace|lock|paths|allow|disallow  the Secret Service kept in pass
 //	inua workshop list|new|install|remove|run|dev    the light apps users write

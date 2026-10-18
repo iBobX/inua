@@ -31,6 +31,7 @@ type Config struct {
 	Style      Style      `toml:"style"`
 	Background Background `toml:"background"`
 	Input      Input      `toml:"input"`
+	Displays   Displays   `toml:"displays"`
 	Notify     Notify     `toml:"notifications"`
 	Dock       Dock       `toml:"dock"`
 	Assistant  Assistant  `toml:"assistant"`
@@ -576,6 +577,89 @@ type Input struct {
 	TouchpadAccel string `toml:"touchpad_accel"`
 }
 
+// Displays is how the monitors are set up. Like [input], Hyprland applies
+// it: the rules are written to hypr/inua.conf as monitor rules, after
+// hyprland.conf's, so they win.
+type Displays struct {
+	// LidOff turns the built-in display off while the lid is closed and
+	// another display is connected; opening the lid turns it on again.
+	LidOff bool `toml:"lid_off"`
+	// Monitors are the displays set in inua's settings window; one not
+	// listed stays as hyprland.conf has it.
+	Monitors []Monitor `toml:"monitors"`
+}
+
+// Monitor is one display's settings, a Hyprland monitor rule.
+type Monitor struct {
+	// Output is the display: a connector ("eDP-1"), or "desc:" and its
+	// description, which follows it from one port to another.
+	Output string `toml:"output"`
+	// Disabled leaves the display off.
+	Disabled bool `toml:"disabled"`
+	// Mode is "WIDTHxHEIGHT@HZ", or "" for the display's preferred mode.
+	Mode string `toml:"mode"`
+	// Position is one of MonitorPositions ("" is "auto"), or "XxY" in
+	// the layout's logical pixels.
+	Position string `toml:"position"`
+	// Scale is 0.25 to 4, or 0 for Hyprland's choice.
+	Scale float64 `toml:"scale"`
+	// Mirror is the output this one shows the same picture as; "" for none.
+	Mirror string `toml:"mirror"`
+}
+
+// MonitorPositions are the positions a monitor can take beside the others,
+// as Hyprland names them.
+var MonitorPositions = []string{"auto", "auto-left", "auto-right", "auto-up", "auto-down"}
+
+var (
+	monitorModeRe = regexp.MustCompile(`^[1-9][0-9]*x[1-9][0-9]*(@[0-9]+(\.[0-9]+)?)?$`)
+	monitorPosRe  = regexp.MustCompile(`^-?[0-9]+x-?[0-9]+$`)
+	outputRe      = regexp.MustCompile(`^[^,\n"\\]+$`)
+)
+
+// ValidMonitor reports what is wrong with m, or "".
+func ValidMonitor(m Monitor) string {
+	switch {
+	case !outputRe.MatchString(m.Output) || strings.TrimSpace(m.Output) != m.Output:
+		return "want an output such as \"DP-1\" or \"desc:…\""
+	case m.Mode != "" && m.Mode != "preferred" && !monitorModeRe.MatchString(m.Mode):
+		return fmt.Sprintf("mode %q: want WIDTHxHEIGHT@HZ", m.Mode)
+	case m.Position != "" && !slices.Contains(MonitorPositions, m.Position) && !monitorPosRe.MatchString(m.Position):
+		return fmt.Sprintf("position %q: want %s or XxY", m.Position, strings.Join(MonitorPositions, ", "))
+	case m.Scale != 0 && (m.Scale < 0.25 || m.Scale > 4):
+		return fmt.Sprintf("scale %v: want 0.25 to 4, or 0 for automatic", m.Scale)
+	case m.Mirror != "" && (!outputRe.MatchString(m.Mirror) || m.Mirror == m.Output):
+		return fmt.Sprintf("mirror %q: want another output", m.Mirror)
+	}
+	return ""
+}
+
+// MonitorFor is the rule for output, or false.
+func (d Displays) MonitorFor(output string) (Monitor, bool) {
+	for _, m := range d.Monitors {
+		if m.Output == output {
+			return m, true
+		}
+	}
+	return Monitor{}, false
+}
+
+// WithMonitor is the monitors with m in place of the rule for its output,
+// or added.
+func (d Displays) WithMonitor(m Monitor) []Monitor {
+	out := slices.Clone(d.Monitors)
+	if i := slices.IndexFunc(out, func(o Monitor) bool { return o.Output == m.Output }); i >= 0 {
+		out[i] = m
+		return out
+	}
+	return append(out, m)
+}
+
+// WithoutMonitor is the monitors without the rule for output.
+func (d Displays) WithoutMonitor(output string) []Monitor {
+	return slices.DeleteFunc(slices.Clone(d.Monitors), func(m Monitor) bool { return m.Output == output })
+}
+
 // Fits are the ways an image fills a monitor: cover (fill, cropping),
 // contain (whole image, bars around it), tile (repeat at its own size),
 // center (its own size, centred).
@@ -619,6 +703,7 @@ func Default() Config {
 		},
 		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true, TextScale: 100},
 		Background: Background{Enable: true, Fit: "cover"},
+		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
@@ -766,6 +851,19 @@ func (c *Config) validate() []string {
 	if a := c.Input.TouchpadAccel; a != "" && a != "adaptive" && a != "flat" {
 		w = append(w, fmt.Sprintf("input.touchpad_accel = %q: want \"adaptive\" or \"flat\"; leaving it to hyprland.conf", a))
 		c.Input.TouchpadAccel = ""
+	}
+	outputs := map[string]bool{}
+	for i := len(c.Displays.Monitors) - 1; i >= 0; i-- { // the last rule for an output wins, as in Hyprland
+		m := c.Displays.Monitors[i]
+		if problem := ValidMonitor(m); problem != "" || outputs[m.Output] {
+			if problem == "" {
+				problem = "a later rule is for the same output"
+			}
+			w = append(w, fmt.Sprintf("displays.monitors %q: %s; leaving it to hyprland.conf", m.Output, problem))
+			c.Displays.Monitors = slices.Delete(c.Displays.Monitors, i, i+1)
+			continue
+		}
+		outputs[m.Output] = true
 	}
 	if c.Control.Screenshot == OldScreenshotCommand {
 		c.Control.Screenshot = d.Control.Screenshot

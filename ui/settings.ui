@@ -4914,6 +4914,144 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             </child>
             <child>
               <object class="GtkStackPage">
+                <property name="name">displays</property>
+                <property name="title" translatable="yes">Displays</property>
+                <property name="child">
+                  <object class="GtkOverlay">
+                    <property name="child">
+                      <object class="GtkScrolledWindow" id="scroll_displays">
+                        <property name="hscrollbar-policy">2</property>
+                        <child>
+                          <object class="GtkBox" id="displays_page">
+                            <style>
+                              <class name="page"/>
+                            </style>
+                            <property name="orientation">1</property>
+                            <child>
+                              <object class="GtkLabel" id="displays_warn">
+                                <style>
+                                  <class name="warn"/>
+                                </style>
+                                <property name="visible">false</property>
+                                <property name="xalign">0</property>
+                                <property name="wrap">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="displays_lid">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <property name="visible">false</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;LID&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">With another display connected</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Closing the lid turns off the built-in display</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Its windows move to the other display. Open the lid to use both.</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="lid_off">
+                                            <property name="name">lid_off</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <child type="overlay">
+                      <object class="GtkBox" id="sticky_displays">
+                        <style>
+                          <class name="section-head"/>
+                          <class name="sticky"/>
+                        </style>
+                        <property name="spacing">10</property>
+                        <property name="valign">1</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
                 <property name="name">keyboard</property>
                 <property name="title" translatable="yes">Keyboard</property>
                 <property name="child">

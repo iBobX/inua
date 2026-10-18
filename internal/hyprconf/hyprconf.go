@@ -1,5 +1,5 @@
 // Package hyprconf writes the Hyprland settings inua manages (config.toml's
-// [input] and [[shortcuts]]) to hypr/inua.conf next to hyprland.conf, which sources it after
+// [input], [displays] and [[shortcuts]]) to hypr/inua.conf next to hyprland.conf, which sources it after
 // its own settings; for a Lua config (Hyprland 0.55 and later), to
 // hypr/inua.lua, which hyprland.lua requires. Hyprland reads the file at start and on every reload
 // (including the one it does when the file changes), so the settings hold
@@ -105,9 +105,17 @@ func RunsLua(ctx context.Context, client *hypr.Client) bool {
 	return err == nil && strings.TrimSpace(string(reply)) == "ok"
 }
 
+// Devices is what the file depends on besides the settings.
+type Devices struct {
+	Touchpads []string // the touchpads, by Hyprland's device name
+	Lids      []string // the lid switches, by Hyprland's name ("Lid Switch")
+	PanelsOff []string // the built-in displays to turn off (display.System.PanelsOff)
+}
+
 // Render is the file for the settings. Touchpad settings go in one device
 // block per touchpad, since Hyprland has no touchpad-wide speed.
-func Render(c config.Config, touchpads []string) string {
+func Render(c config.Config, d Devices) string {
+	touchpads := d.Touchpads
 	in := c.Input
 	var b strings.Builder
 	b.WriteString(header)
@@ -130,9 +138,10 @@ func Render(c config.Config, touchpads []string) string {
 			wrote = true
 		}
 	}
-	if !wrote && len(c.Shortcuts) == 0 {
+	if !wrote && len(c.Shortcuts) == 0 && !writesDisplays(c, d) {
 		b.WriteString("\n# Nothing set in inua; hyprland.conf decides.\n")
 	}
+	renderDisplays(&b, c, d)
 	renderShortcuts(&b, c)
 	return b.String()
 }
@@ -166,7 +175,8 @@ hl.window_rule({
 `
 
 // RenderLua is inua.lua for the settings, the Lua form of Render.
-func RenderLua(c config.Config, touchpads []string) string {
+func RenderLua(c config.Config, d Devices) string {
+	touchpads := d.Touchpads
 	in := c.Input
 	var b strings.Builder
 	b.WriteString(luaHeader)
@@ -188,9 +198,10 @@ func RenderLua(c config.Config, touchpads []string) string {
 			wrote = true
 		}
 	}
-	if !wrote && len(c.Shortcuts) == 0 {
+	if !wrote && len(c.Shortcuts) == 0 && !writesDisplays(c, d) {
 		b.WriteString("\n-- Nothing set in inua; hyprland.lua decides.\n")
 	}
+	renderDisplaysLua(&b, c, d)
 	renderShortcutsLua(&b, c)
 	return b.String()
 }
@@ -245,6 +256,7 @@ func Touchpads(devices []byte) ([]string, error) {
 
 // known lists the device names in a file Render or RenderLua wrote, so a touchpad that
 // is unplugged when the file is written (a Bluetooth one) keeps its block.
+// The lid switches are knownLids.
 func known(file string) []string {
 	var names []string
 	re := nameLineRe
@@ -260,7 +272,10 @@ func known(file string) []string {
 }
 
 // Apply writes the file for in at path (inua.conf, or inua.lua: see
-// Target) if it differs from what is there.
+// Target) if it differs from what is there. The built-in display is off in
+// it while the lid is closed and another display is connected (lid_off),
+// so Apply runs again when the lid moves (LidCommand) and when a monitor
+// comes or goes.
 // Hyprland reloads by itself when a file it sources changes; Apply asks it
 // to only if that is turned off (misc:disable_autoreload), since every
 // reload also redoes monitors. client may be nil (Hyprland not running):
@@ -271,7 +286,7 @@ func Apply(ctx context.Context, c config.Config, path string, client *hypr.Clien
 	if err != nil && !os.IsNotExist(err) {
 		return false, err
 	}
-	touchpads := known(string(old))
+	d := Devices{Touchpads: known(string(old)), Lids: knownLids(string(old))}
 	if client != nil {
 		reply, err := client.Request(ctx, "j/devices")
 		if err != nil {
@@ -281,14 +296,24 @@ func Apply(ctx context.Context, c config.Config, path string, client *hypr.Clien
 		if err != nil {
 			return false, fmt.Errorf("hyprland devices: %w", err)
 		}
-		touchpads = append(touchpads, now...)
+		d.Touchpads = append(d.Touchpads, now...)
+		lids, err := Lids(reply)
+		if err != nil {
+			return false, fmt.Errorf("hyprland devices: %w", err)
+		}
+		d.Lids = append(d.Lids, lids...)
 	}
-	slices.Sort(touchpads)
-	touchpads = slices.Compact(touchpads)
+	for _, names := range []*[]string{&d.Touchpads, &d.Lids} {
+		slices.Sort(*names)
+		*names = slices.Compact(*names)
+	}
+	if c.Displays.LidOff {
+		d.PanelsOff = panelsOff()
+	}
 
-	want := Render(c, touchpads)
+	want := Render(c, d)
 	if strings.HasSuffix(path, ".lua") {
-		want = RenderLua(c, touchpads)
+		want = RenderLua(c, d)
 	}
 	if string(old) == want {
 		return false, nil

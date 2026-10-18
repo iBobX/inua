@@ -74,11 +74,12 @@ type settings struct {
 	// controls start from what is in effect.
 	hyprKb string
 
-	sc      shortcutState   // the Shortcuts page
-	ai      aiSettings      // the AI page
-	about   aboutSettings   // the About page
-	keyring keyringSettings // the Keyring page
-	apps    appsSettings    // the Default Apps page
+	sc       shortcutState    // the Shortcuts page
+	ai       aiSettings       // the AI page
+	about    aboutSettings    // the About page
+	keyring  keyringSettings  // the Keyring page
+	apps     appsSettings     // the Default Apps page
+	displays displaysSettings // the Displays page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -153,6 +154,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Clipboard.Bar = on
 		case "clip_paste":
 			c.Clipboard.PasteOnClick = on
+		case "lid_off":
+			c.Displays.LidOff = on
 		case "tp_accel":
 			c.Input.TouchpadAccel = "flat"
 			if on {
@@ -450,6 +453,7 @@ func (s *shellUI) openSettings() {
 	s.getAboutSettings(ui)
 	s.getKeyringSettings(ui)
 	s.getAppsSettings(ui)
+	s.getDisplaySettings(ui)
 	s.buildSettingsIndex()
 	ui.Close()
 
@@ -461,7 +465,7 @@ func (s *shellUI) openSettings() {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste, &st.displays.lidOff} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &themeAdd, &st.themeTrash, &themeFolder, &iconAdd, &st.iconTrash, &iconFolder, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
@@ -489,7 +493,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "displays", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -632,6 +636,7 @@ func (s *shellUI) showSettings() {
 	// The shell chose its language when it started.
 	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
 	s.showInput()
+	s.showDisplays()
 	s.showNotifySettings()
 	s.showDockSettings()
 	s.showClipboardSettings()

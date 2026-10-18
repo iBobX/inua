@@ -250,13 +250,14 @@ msgid "%d%%, charging"
 msgstr "%d %%, en charge"
 
 #: internal/apps/connect/service.go:519
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
+#: internal/ui/settings.go:277
 #: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
+#: internal/ui/settings.go:288
+#: internal/ui/settings.go:630
+#: internal/ui/settings.go:632
+#: internal/ui/settings.go:682
+#: internal/ui/settings.go:699
+#: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d %%"
 
@@ -1355,8 +1356,8 @@ msgid "Top level"
 msgstr "Niveau supérieur"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:704
-#: internal/ui/settings.go:731
+#: internal/ui/settings.go:709
+#: internal/ui/settings.go:736
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d entrée"
@@ -1645,7 +1646,7 @@ msgstr "Une image avec un code QR"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:841
+#: internal/ui/settings.go:846
 msgid "Images"
 msgstr "Images"
 
@@ -2598,8 +2599,10 @@ msgstr "Lecture impossible : %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/ui/settings_displays.go:294
+#: internal/ui/settings_displays.go:412
 #: ui/remote.ui:318
-#: ui/settings.ui:5027
+#: ui/settings.ui:5165
 msgid "Off"
 msgstr "Désactivé"
 
@@ -9146,11 +9149,13 @@ msgstr "Non appliqué à Hyprland : %s"
 
 #: internal/ui/input.go:113
 #: internal/ui/input.go:130
+#: internal/ui/settings_displays.go:310
 msgid "Set by inua"
 msgstr "Défini par inua"
 
 #: internal/ui/input.go:115
 #: internal/ui/input.go:132
+#: internal/ui/settings_displays.go:308
 msgid "Set in hyprland.conf"
 msgstr "Situé dans hyprland.conf"
 
@@ -9419,78 +9424,78 @@ msgstr "Capture d'écran copiée"
 msgid "Screenshot taken"
 msgstr "Capture d'écran prise"
 
-#: internal/ui/settings.go:256
+#: internal/ui/settings.go:259
 msgid "Not restarted: %s"
 msgstr "Non redémarré : %s"
 
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:662
 #: ui/settings.ui:384
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:662
 #: ui/settings.ui:385
 msgid "System theme"
 msgstr "Thème système"
 
-#: internal/ui/settings.go:730
+#: internal/ui/settings.go:735
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:732
+#: internal/ui/settings.go:737
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d texte"
 msgstr[1] "%d textes"
 
-#: internal/ui/settings.go:733
+#: internal/ui/settings.go:738
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d image"
 msgstr[1] "%d images"
 
-#: internal/ui/settings.go:734
+#: internal/ui/settings.go:739
 msgid "%.1f KB"
 msgstr "%.1f Ko"
 
-#: internal/ui/settings.go:813
+#: internal/ui/settings.go:818
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "Non sauvegardé : %s"
 
-#: internal/ui/settings.go:839
+#: internal/ui/settings.go:844
 msgid "Choose a wallpaper"
 msgstr "Choisir un fond d'écran"
 
-#: internal/ui/settings.go:881
+#: internal/ui/settings.go:886
 msgid "Off: another notification daemon can show them"
 msgstr "Désactivé : un autre démon de notification peut les afficher"
 
-#: internal/ui/settings.go:883
+#: internal/ui/settings.go:888
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "Bannières puis centre de notifications (cloche de la barre ou Super+N)"
 
-#: internal/ui/settings.go:885
+#: internal/ui/settings.go:890
 msgid "Waiting: another notification daemon is running"
 msgstr "En attente : un autre démon de notification est en cours d'exécution"
 
-#: internal/ui/settings.go:903
+#: internal/ui/settings.go:908
 msgid "Nothing pinned"
 msgstr "Aucune application épinglée"
 
-#: internal/ui/settings.go:919
+#: internal/ui/settings.go:924
 msgid "%s (not installed)"
 msgstr "%s (non installé)"
 
-#: internal/ui/settings.go:932
+#: internal/ui/settings.go:937
 msgid "Move earlier"
 msgstr "Déplacer avant"
 
-#: internal/ui/settings.go:933
+#: internal/ui/settings.go:938
 msgid "Move later"
 msgstr "Déplacer après"
 
-#: internal/ui/settings.go:934
+#: internal/ui/settings.go:939
 msgid "Remove from the dock"
 msgstr "Retirer du dock"
 
@@ -9921,6 +9926,117 @@ msgstr "Non ajouté : le dossier ne contient aucun fichier SVG"
 msgid "Not added: %s"
 msgstr "Non ajouté : %s"
 
+#: internal/ui/settings_displays.go:51
+#: internal/ui/settings_displays.go:439
+msgid "Automatic"
+msgstr "Automatique"
+
+#: internal/ui/settings_displays.go:52
+msgid "Left of the others"
+msgstr "À gauche des autres"
+
+#: internal/ui/settings_displays.go:53
+msgid "Right of the others"
+msgstr "À droite des autres"
+
+#: internal/ui/settings_displays.go:54
+msgid "Above the others"
+msgstr "Au-dessus des autres"
+
+#: internal/ui/settings_displays.go:55
+msgid "Below the others"
+msgstr "Au-dessous des autres"
+
+#: internal/ui/settings_displays.go:185
+msgid "No displays"
+msgstr "Aucun écran"
+
+#: internal/ui/settings_displays.go:186
+msgid "Hyprland lists no displays"
+msgstr "Hyprland n’indique aucun écran"
+
+#: internal/ui/settings_displays.go:186
+msgid "Is the shell connected to Hyprland?"
+msgstr "Le shell est-il connecté à Hyprland ?"
+
+#: internal/ui/settings_displays.go:220
+msgid "Use this display"
+msgstr "Utiliser cet écran"
+
+#: internal/ui/settings_displays.go:234
+msgid "Preferred"
+msgstr "Préférée"
+
+#: internal/ui/settings_displays.go:245
+#: ui/remote.ui:676
+msgid "Resolution"
+msgstr "Résolution"
+
+#: internal/ui/settings_displays.go:266
+msgid "%s (Hyprland uses %s)"
+msgstr "%s (Hyprland utilise %s)"
+
+#: internal/ui/settings_displays.go:271
+msgid "Scale"
+msgstr "Échelle"
+
+#: internal/ui/settings_displays.go:271
+msgid "Text and windows larger or smaller"
+msgstr "Texte et fenêtres plus grands ou plus petits"
+
+#: internal/ui/settings_displays.go:284
+msgid "Where it is (%s, %s)"
+msgstr "Là où il est (%s, %s)"
+
+#: internal/ui/settings_displays.go:286
+#: ui/settings.ui:1460
+msgid "Position"
+msgstr "Poste"
+
+#: internal/ui/settings_displays.go:297
+#: internal/ui/settings_displays.go:301
+msgid "Same picture as %s"
+msgstr "La même image que %s"
+
+#: internal/ui/settings_displays.go:303
+msgid "Mirror"
+msgstr "Recopie"
+
+#: internal/ui/settings_displays.go:313
+#: ui/settings.ui:5316
+#: ui/settings.ui:5583
+msgid "Use hyprland.conf"
+msgstr "Utilisez hyprland.conf"
+
+#: internal/ui/settings_displays.go:316
+msgid "Stop setting this display in inua"
+msgstr "Ne plus régler cet écran dans inua"
+
+#: internal/ui/settings_displays.go:397
+msgid "Built-in display"
+msgstr "Écran intégré"
+
+#: internal/ui/settings_displays.go:410
+msgid "Off while the lid is closed"
+msgstr "Éteint tant que l’écran est rabattu"
+
+#: internal/ui/settings_displays.go:416
+#: internal/ui/settings_displays.go:419
+msgid "Shows the same picture as %s"
+msgstr "Affiche la même image que %s"
+
+#: internal/ui/settings_displays.go:421
+msgid "%s, at %s"
+msgstr "%s, à %s"
+
+#: internal/ui/settings_displays.go:431
+msgid "%d × %d"
+msgstr "%d × %d"
+
+#: internal/ui/settings_displays.go:433
+msgid "%d × %d, %s Hz"
+msgstr "%d × %d, %s Hz"
+
 #: internal/ui/settings_keyring.go:176
 msgid "Cannot reach inua-keyring"
 msgstr "Impossible de joindre inua-keyring"
@@ -10210,7 +10326,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "Mise à niveau %s avec : mise à niveau inua"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5616
+#: ui/settings.ui:5754
 msgid "Upgrade"
 msgstr "Mise à niveau"
 
@@ -11497,10 +11613,6 @@ msgstr "[FLUX]"
 msgid "for every machine"
 msgstr "pour toutes les machines"
 
-#: ui/remote.ui:676
-msgid "Resolution"
-msgstr "Résolution"
-
 #: ui/remote.ui:685
 msgid "The machine shows its desktop at this size."
 msgstr "La machine affiche son bureau à cette taille."
@@ -11840,10 +11952,6 @@ msgstr "Masquer automatiquement"
 #: ui/settings.ui:1426
 msgid "Comes back when the pointer reaches the dock's screen edge"
 msgstr "Revient lorsque le pointeur atteint le bord de l'écran du dock"
-
-#: ui/settings.ui:1460
-msgid "Position"
-msgstr "Poste"
 
 #: ui/settings.ui:1469
 msgid "Choose a screen edge for the dock"
@@ -12378,7 +12486,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "Appuyez sur le nouveau raccourci. Esc annule ; Retour arrière le désactive."
 
 #: ui/settings.ui:4656
-#: ui/settings.ui:5515
+#: ui/settings.ui:5653
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -12419,130 +12527,145 @@ msgid "Other shortcuts, from hyprland.conf"
 msgstr "Autres raccourcis, depuis hyprland.conf"
 
 #: ui/settings.ui:4918
+msgid "Displays"
+msgstr "Écrans"
+
+#: ui/settings.ui:4967
+msgid "<span alpha='55%'>[</span>LID<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>CAPOT<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:4975
+msgid "With another display connected"
+msgstr "Avec un autre écran branché"
+
+#: ui/settings.ui:5005
+msgid "Closing the lid turns off the built-in display"
+msgstr "Rabattre l’écran éteint l’écran intégré"
+
+#: ui/settings.ui:5015
+msgid "Its windows move to the other display. Open the lid to use both."
+msgstr "Ses fenêtres passent sur l’autre écran. Relevez-le pour utiliser les deux."
+
+#: ui/settings.ui:5056
 msgid "Keyboard"
 msgstr "Clavier"
 
-#: ui/settings.ui:4966
+#: ui/settings.ui:5104
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4974
+#: ui/settings.ui:5112
 msgid "Every keyboard"
 msgstr "Chaque clavier"
 
-#: ui/settings.ui:5004
+#: ui/settings.ui:5142
 msgid "Swap Ctrl and Alt"
 msgstr "Permuter Ctrl et Alt"
 
-#: ui/settings.ui:5013
+#: ui/settings.ui:5151
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt agit comme Ctrl et Ctrl comme Alt"
 
-#: ui/settings.ui:5028
+#: ui/settings.ui:5166
 msgid "Left side"
 msgstr "Côté gauche"
 
-#: ui/settings.ui:5029
+#: ui/settings.ui:5167
 msgid "Both sides"
 msgstr "Les deux côtés"
 
-#: ui/settings.ui:5056
-#: ui/settings.ui:5079
+#: ui/settings.ui:5194
+#: ui/settings.ui:5217
 msgid "Caps Lock"
 msgstr "Verrouillage des majuscules"
 
-#: ui/settings.ui:5065
+#: ui/settings.ui:5203
 msgid "What the Caps Lock key does"
 msgstr "Ce que fait la touche Caps Lock"
 
-#: ui/settings.ui:5080
+#: ui/settings.ui:5218
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:5081
+#: ui/settings.ui:5219
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:5119
-#: ui/settings.ui:5401
+#: ui/settings.ui:5257
+#: ui/settings.ui:5539
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5127
-#: ui/settings.ui:5409
+#: ui/settings.ui:5265
+#: ui/settings.ui:5547
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua les écrit dans le fichier inua.conf d'Hyprland"
 
-#: ui/settings.ui:5178
-#: ui/settings.ui:5445
-msgid "Use hyprland.conf"
-msgstr "Utilisez hyprland.conf"
-
-#: ui/settings.ui:5179
+#: ui/settings.ui:5317
 msgid "Stop setting keyboard options in inua"
 msgstr "Arrêtez de définir les options du clavier dans Inua"
 
-#: ui/settings.ui:5210
+#: ui/settings.ui:5348
 msgid "Mouse & Touch"
 msgstr "Souris et pavé tactile"
 
-#: ui/settings.ui:5258
+#: ui/settings.ui:5396
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5266
+#: ui/settings.ui:5404
 msgid "Every touchpad"
 msgstr "Chaque pavé tactile"
 
-#: ui/settings.ui:5296
+#: ui/settings.ui:5434
 msgid "Pointer speed"
 msgstr "Vitesse du pointeur"
 
-#: ui/settings.ui:5347
+#: ui/settings.ui:5485
 msgid "Acceleration"
 msgstr "Accélération"
 
-#: ui/settings.ui:5356
+#: ui/settings.ui:5494
 msgid "Faster swipes move the pointer further"
 msgstr "Des balayages plus rapides déplacent le pointeur plus loin"
 
-#: ui/settings.ui:5446
+#: ui/settings.ui:5584
 msgid "Stop setting the touchpad in inua"
 msgstr "Arrêtez de configurer le pavé tactile dans Inua"
 
-#: ui/settings.ui:5477
+#: ui/settings.ui:5615
 msgid "About"
 msgstr "À propos"
 
-#: ui/settings.ui:5523
+#: ui/settings.ui:5661
 msgid "The version, and new releases"
 msgstr "La version, et les nouveautés"
 
-#: ui/settings.ui:5553
+#: ui/settings.ui:5691
 msgid "Version"
 msgstr "Version"
 
-#: ui/settings.ui:5589
+#: ui/settings.ui:5727
 msgid "Updates"
 msgstr "Mises à jour"
 
-#: ui/settings.ui:5625
+#: ui/settings.ui:5763
 msgid "Check for updates"
 msgstr "Vérifier les mises à jour"
 
-#: ui/settings.ui:5651
+#: ui/settings.ui:5789
 msgid "Check every day"
 msgstr "Vérifier tous les jours"
 
-#: ui/settings.ui:5660
+#: ui/settings.ui:5798
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "Une notification indique la sortie d'une nouvelle version, avec un bouton pour mettre à niveau"
 
-#: ui/settings.ui:5705
+#: ui/settings.ui:5843
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5713
+#: ui/settings.ui:5851
 msgid "What the latest release changed"
 msgstr "Ce que la dernière version a changé"
 

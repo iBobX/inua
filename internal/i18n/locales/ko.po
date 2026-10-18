@@ -250,13 +250,14 @@ msgid "%d%%, charging"
 msgstr "%d%%, 충전 중"
 
 #: internal/apps/connect/service.go:519
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
+#: internal/ui/settings.go:277
 #: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
+#: internal/ui/settings.go:288
+#: internal/ui/settings.go:630
+#: internal/ui/settings.go:632
+#: internal/ui/settings.go:682
+#: internal/ui/settings.go:699
+#: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d%%"
 
@@ -1348,8 +1349,8 @@ msgid "Top level"
 msgstr "최상위"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:704
-#: internal/ui/settings.go:731
+#: internal/ui/settings.go:709
+#: internal/ui/settings.go:736
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
@@ -1633,7 +1634,7 @@ msgstr "QR 코드가 있는 이미지"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:841
+#: internal/ui/settings.go:846
 msgid "Images"
 msgstr "이미지"
 
@@ -2582,8 +2583,10 @@ msgstr "재생할 수 없습니다: %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/ui/settings_displays.go:294
+#: internal/ui/settings_displays.go:412
 #: ui/remote.ui:318
-#: ui/settings.ui:5027
+#: ui/settings.ui:5165
 msgid "Off"
 msgstr "꺼짐"
 
@@ -9102,11 +9105,13 @@ msgstr "하이프랜드에는 적용되지 않음: %s"
 
 #: internal/ui/input.go:113
 #: internal/ui/input.go:130
+#: internal/ui/settings_displays.go:310
 msgid "Set by inua"
 msgstr "이누아에 의해 설정됨"
 
 #: internal/ui/input.go:115
 #: internal/ui/input.go:132
+#: internal/ui/settings_displays.go:308
 msgid "Set in hyprland.conf"
 msgstr "Hyprland.conf에 설정"
 
@@ -9374,76 +9379,76 @@ msgstr "스크린샷이 복사되었습니다."
 msgid "Screenshot taken"
 msgstr "촬영된 스크린샷"
 
-#: internal/ui/settings.go:256
+#: internal/ui/settings.go:259
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:662
 #: ui/settings.ui:384
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:657
+#: internal/ui/settings.go:662
 #: ui/settings.ui:385
 msgid "System theme"
 msgstr "시스템 테마"
 
-#: internal/ui/settings.go:730
+#: internal/ui/settings.go:735
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:732
+#: internal/ui/settings.go:737
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:733
+#: internal/ui/settings.go:738
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:734
+#: internal/ui/settings.go:739
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:813
+#: internal/ui/settings.go:818
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:839
+#: internal/ui/settings.go:844
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:881
+#: internal/ui/settings.go:886
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:883
+#: internal/ui/settings.go:888
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:885
+#: internal/ui/settings.go:890
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:903
+#: internal/ui/settings.go:908
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:919
+#: internal/ui/settings.go:924
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:932
+#: internal/ui/settings.go:937
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:933
+#: internal/ui/settings.go:938
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:934
+#: internal/ui/settings.go:939
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
@@ -9874,6 +9879,117 @@ msgstr "추가되지 않음: 폴더에 SVG 파일이 없습니다"
 msgid "Not added: %s"
 msgstr "추가하지 않음: %s"
 
+#: internal/ui/settings_displays.go:51
+#: internal/ui/settings_displays.go:439
+msgid "Automatic"
+msgstr "자동"
+
+#: internal/ui/settings_displays.go:52
+msgid "Left of the others"
+msgstr "다른 디스플레이의 왼쪽"
+
+#: internal/ui/settings_displays.go:53
+msgid "Right of the others"
+msgstr "다른 디스플레이의 오른쪽"
+
+#: internal/ui/settings_displays.go:54
+msgid "Above the others"
+msgstr "다른 디스플레이의 위"
+
+#: internal/ui/settings_displays.go:55
+msgid "Below the others"
+msgstr "다른 디스플레이의 아래"
+
+#: internal/ui/settings_displays.go:185
+msgid "No displays"
+msgstr "디스플레이 없음"
+
+#: internal/ui/settings_displays.go:186
+msgid "Hyprland lists no displays"
+msgstr "Hyprland에 디스플레이가 없습니다"
+
+#: internal/ui/settings_displays.go:186
+msgid "Is the shell connected to Hyprland?"
+msgstr "셸이 Hyprland에 연결되어 있나요?"
+
+#: internal/ui/settings_displays.go:220
+msgid "Use this display"
+msgstr "이 디스플레이 사용"
+
+#: internal/ui/settings_displays.go:234
+msgid "Preferred"
+msgstr "권장"
+
+#: internal/ui/settings_displays.go:245
+#: ui/remote.ui:676
+msgid "Resolution"
+msgstr "해상도"
+
+#: internal/ui/settings_displays.go:266
+msgid "%s (Hyprland uses %s)"
+msgstr "%s(Hyprland는 %s 사용)"
+
+#: internal/ui/settings_displays.go:271
+msgid "Scale"
+msgstr "배율"
+
+#: internal/ui/settings_displays.go:271
+msgid "Text and windows larger or smaller"
+msgstr "글자와 창을 크게 또는 작게"
+
+#: internal/ui/settings_displays.go:284
+msgid "Where it is (%s, %s)"
+msgstr "현재 위치 (%s, %s)"
+
+#: internal/ui/settings_displays.go:286
+#: ui/settings.ui:1460
+msgid "Position"
+msgstr "위치"
+
+#: internal/ui/settings_displays.go:297
+#: internal/ui/settings_displays.go:301
+msgid "Same picture as %s"
+msgstr "%s와(과) 같은 화면"
+
+#: internal/ui/settings_displays.go:303
+msgid "Mirror"
+msgstr "미러링"
+
+#: internal/ui/settings_displays.go:313
+#: ui/settings.ui:5316
+#: ui/settings.ui:5583
+msgid "Use hyprland.conf"
+msgstr "Hyprland.conf를 사용하십시오."
+
+#: internal/ui/settings_displays.go:316
+msgid "Stop setting this display in inua"
+msgstr "inua에서 이 디스플레이 설정 중지"
+
+#: internal/ui/settings_displays.go:397
+msgid "Built-in display"
+msgstr "내장 디스플레이"
+
+#: internal/ui/settings_displays.go:410
+msgid "Off while the lid is closed"
+msgstr "덮개가 닫혀 있는 동안 꺼짐"
+
+#: internal/ui/settings_displays.go:416
+#: internal/ui/settings_displays.go:419
+msgid "Shows the same picture as %s"
+msgstr "%s와(과) 같은 화면 표시"
+
+#: internal/ui/settings_displays.go:421
+msgid "%s, at %s"
+msgstr "%s, %s"
+
+#: internal/ui/settings_displays.go:431
+msgid "%d × %d"
+msgstr "%d × %d"
+
+#: internal/ui/settings_displays.go:433
+msgid "%d × %d, %s Hz"
+msgstr "%d × %d, %s Hz"
+
 #: internal/ui/settings_keyring.go:176
 msgid "Cannot reach inua-keyring"
 msgstr "inua-keyring에 연결할 수 없습니다"
@@ -10158,7 +10274,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 업그레이드: inua 업그레이드"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5616
+#: ui/settings.ui:5754
 msgid "Upgrade"
 msgstr "업그레이드"
 
@@ -11444,10 +11560,6 @@ msgstr "[스트림]"
 msgid "for every machine"
 msgstr "모든 컴퓨터에 적용"
 
-#: ui/remote.ui:676
-msgid "Resolution"
-msgstr "해상도"
-
 #: ui/remote.ui:685
 msgid "The machine shows its desktop at this size."
 msgstr "그 컴퓨터가 이 크기로 데스크톱을 보여 줍니다."
@@ -11787,10 +11899,6 @@ msgstr "자동으로 숨기기"
 #: ui/settings.ui:1426
 msgid "Comes back when the pointer reaches the dock's screen edge"
 msgstr "포인터가 도크의 화면 가장자리에 도달하면 다시 나타납니다."
-
-#: ui/settings.ui:1460
-msgid "Position"
-msgstr "위치"
 
 #: ui/settings.ui:1469
 msgid "Choose a screen edge for the dock"
@@ -12325,7 +12433,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "새로운 단축키를 누른다. Esc는 취소합니다. 백스페이스는 이 기능을 끕니다."
 
 #: ui/settings.ui:4656
-#: ui/settings.ui:5515
+#: ui/settings.ui:5653
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -12366,130 +12474,145 @@ msgid "Other shortcuts, from hyprland.conf"
 msgstr "Hyprland.conf의 기타 바로가기"
 
 #: ui/settings.ui:4918
+msgid "Displays"
+msgstr "디스플레이"
+
+#: ui/settings.ui:4967
+msgid "<span alpha='55%'>[</span>LID<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>덮개<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:4975
+msgid "With another display connected"
+msgstr "다른 디스플레이가 연결된 동안"
+
+#: ui/settings.ui:5005
+msgid "Closing the lid turns off the built-in display"
+msgstr "덮개를 닫으면 내장 디스플레이 끄기"
+
+#: ui/settings.ui:5015
+msgid "Its windows move to the other display. Open the lid to use both."
+msgstr "창은 다른 디스플레이로 옮겨집니다. 덮개를 열면 둘 다 사용할 수 있습니다."
+
+#: ui/settings.ui:5056
 msgid "Keyboard"
 msgstr "키보드"
 
-#: ui/settings.ui:4966
+#: ui/settings.ui:5104
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>키<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4974
+#: ui/settings.ui:5112
 msgid "Every keyboard"
 msgstr "모든 키보드"
 
-#: ui/settings.ui:5004
+#: ui/settings.ui:5142
 msgid "Swap Ctrl and Alt"
 msgstr "Ctrl과 Alt를 교환합니다."
 
-#: ui/settings.ui:5013
+#: ui/settings.ui:5151
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt는 Ctrl 역할을 하고, Ctrl은 Alt 역할을 합니다."
 
-#: ui/settings.ui:5028
+#: ui/settings.ui:5166
 msgid "Left side"
 msgstr "왼쪽"
 
-#: ui/settings.ui:5029
+#: ui/settings.ui:5167
 msgid "Both sides"
 msgstr "양쪽"
 
-#: ui/settings.ui:5056
-#: ui/settings.ui:5079
+#: ui/settings.ui:5194
+#: ui/settings.ui:5217
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
-#: ui/settings.ui:5065
+#: ui/settings.ui:5203
 msgid "What the Caps Lock key does"
 msgstr "Caps Lock 키의 기능"
 
-#: ui/settings.ui:5080
+#: ui/settings.ui:5218
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:5081
+#: ui/settings.ui:5219
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:5119
-#: ui/settings.ui:5401
+#: ui/settings.ui:5257
+#: ui/settings.ui:5539
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>소스<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5127
-#: ui/settings.ui:5409
+#: ui/settings.ui:5265
+#: ui/settings.ui:5547
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua는 이것을 Hyprland의 inua.conf에 씁니다."
 
-#: ui/settings.ui:5178
-#: ui/settings.ui:5445
-msgid "Use hyprland.conf"
-msgstr "Hyprland.conf를 사용하십시오."
-
-#: ui/settings.ui:5179
+#: ui/settings.ui:5317
 msgid "Stop setting keyboard options in inua"
 msgstr "inua에서 키보드 옵션 설정을 중지합니다."
 
-#: ui/settings.ui:5210
+#: ui/settings.ui:5348
 msgid "Mouse & Touch"
 msgstr "마우스 및 터치패드"
 
-#: ui/settings.ui:5258
+#: ui/settings.ui:5396
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>포인터<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5266
+#: ui/settings.ui:5404
 msgid "Every touchpad"
 msgstr "모든 터치패드"
 
-#: ui/settings.ui:5296
+#: ui/settings.ui:5434
 msgid "Pointer speed"
 msgstr "포인터 속도"
 
-#: ui/settings.ui:5347
+#: ui/settings.ui:5485
 msgid "Acceleration"
 msgstr "가속"
 
-#: ui/settings.ui:5356
+#: ui/settings.ui:5494
 msgid "Faster swipes move the pointer further"
 msgstr "더 빠르게 스와이프하면 포인터가 더 멀리 이동합니다."
 
-#: ui/settings.ui:5446
+#: ui/settings.ui:5584
 msgid "Stop setting the touchpad in inua"
 msgstr "inua에서 터치패드 설정을 중지합니다."
 
-#: ui/settings.ui:5477
+#: ui/settings.ui:5615
 msgid "About"
 msgstr "소개"
 
-#: ui/settings.ui:5523
+#: ui/settings.ui:5661
 msgid "The version, and new releases"
 msgstr "버전 및 새 릴리스"
 
-#: ui/settings.ui:5553
+#: ui/settings.ui:5691
 msgid "Version"
 msgstr "버전"
 
-#: ui/settings.ui:5589
+#: ui/settings.ui:5727
 msgid "Updates"
 msgstr "업데이트"
 
-#: ui/settings.ui:5625
+#: ui/settings.ui:5763
 msgid "Check for updates"
 msgstr "업데이트 확인"
 
-#: ui/settings.ui:5651
+#: ui/settings.ui:5789
 msgid "Check every day"
 msgstr "매일 확인"
 
-#: ui/settings.ui:5660
+#: ui/settings.ui:5798
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "새 릴리스가 출시되면 업그레이드 버튼과 함께 알림이 표시됩니다."
 
-#: ui/settings.ui:5705
+#: ui/settings.ui:5843
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5713
+#: ui/settings.ui:5851
 msgid "What the latest release changed"
 msgstr "최신 릴리스에서 변경된 사항"
 

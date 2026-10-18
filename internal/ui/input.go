@@ -160,7 +160,7 @@ func (s *shellUI) showSourceWarning() {
 	case len(overrides) > 0:
 		text = i18n.Tf("hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them.", strings.Join(overrides, ", "))
 	}
-	for _, l := range []*gtk.Label{&st.kbWarn, &st.tpWarn, &st.sc.warn} {
+	for _, l := range []*gtk.Label{&st.kbWarn, &st.tpWarn, &st.sc.warn, &st.displays.warn} {
 		l.SetText(text)
 		l.SetVisible(text != "")
 	}

@@ -146,6 +146,9 @@ type shellUI struct {
 	onSettingsDrop         func(uintptr, uintptr, uintptr)
 	onSettingsPage         func(uintptr, uintptr, uintptr)
 	onDefaultApp           func(uintptr, uintptr, uintptr)
+	onDisplayDrop          func(uintptr, uintptr, uintptr)
+	onDisplaySwitch        func(gtk.Switch, bool) bool
+	onDisplayButton        func(gtk.Button)
 	onSettingsIndex        func(gtk.ListBox, uintptr)
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
@@ -527,6 +530,13 @@ func (h hyprHandler) OnEvent(e hypr.Event) {
 	switch e.Name {
 	case "monitoradded", "monitorremoved", "configreloaded":
 		h.s.followMonitors()
+		gtkx.Post(h.s.showDisplays)
+	}
+	switch e.Name {
+	case "monitoradded", "monitorremoved":
+		// A display plugged in or out with the lid closed turns the
+		// built-in one off or on (lid_off).
+		gtkx.Post(h.s.applyHyprland)
 	}
 	if e.Name == "configreloaded" {
 		// inua.conf may have changed what is in effect.

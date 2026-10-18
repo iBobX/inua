@@ -41,6 +41,7 @@ and a settings window, in one calm visual language. It works with
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music (a player in Winamp's spirit, with an equalizer and a spectrum) and Video. |
 | **Workshop** | Write your own light apps in any language: the program describes its window in inua's building blocks and inua draws it in the shell's look. `inua workshop new`, `dev`, `install`; see [docs/workshop.md](docs/workshop.md). |
 | **Games** | Three offline light games: Minesweeper, Space Pinball and Small Fortune, a short property game against the computer or your AI, with others at the screen or, on the same network, in a browser. Each has its own launcher, or run `inua-games minesweeper`. |
+| **Displays** | Resolution, scale, position and mirroring for each display; close the laptop's lid with a monitor connected and the built-in display turns off, open it to use both. |
 | **Keyboard and touchpad** | Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed. |
 | **Themes** | Seven colour themes, Phosphor icons, matching Fcitx 5 themes; your wallpaper or the theme's. |
 
@@ -213,7 +214,7 @@ settings window; editing it by hand works too (`inua call shell reload`
 applies it, `inua config check` checks it). The sample lists every option:
 [config/inua/config.toml](config/inua/config.toml).
 
-Keyboard, touchpad and shortcut settings are Hyprland's, so inua writes them
+Display, keyboard, touchpad and shortcut settings are Hyprland's, so inua writes them
 to `~/.config/hypr/inua.conf`, which your `hyprland.conf` sources (or to
 `inua.lua`, which a `hyprland.lua` requires).
 Restyle anything with `~/.config/inua/style.css`.

@@ -66,7 +66,7 @@ class SessionTest(unittest.TestCase):
     def test_config_is_checked_for_the_shell(self):
         result = self.launch()
         self.assertEqual(result.returncode, 17, result.stderr)
-        self.assertEqual(self.calls.read_text().splitlines(), [f"config hyprland {self.config}"])
+        self.assertEqual(self.calls.read_text().splitlines(), [f"config hyprland {self.config}", "config apply"])
 
     def test_config_without_shell_does_not_start_compositor(self):
         self.executable("inua", '#!/bin/sh\necho "hyprland.conf does not start inua-shell"\nexit 1\n')

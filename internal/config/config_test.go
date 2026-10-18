@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -675,5 +676,61 @@ model = "gpt-5.2"
 	if fmt.Sprint(ts.Abilities) != "[decision]" || ts.Can(AbilityText) || !ts.Can(AbilityDecision) ||
 		a.Profile != "chat" || a.Decision != "ts" || len(w) != 2 {
 		t.Errorf("%+v %q", a, w)
+	}
+}
+
+// Monitor rules survive a save, and bad ones are dropped with a warning.
+func TestDisplays(t *testing.T) {
+	c := Default()
+	c.Displays.LidOff = false
+	c.Displays.Monitors = []Monitor{
+		{Output: "desc:Dell Inc. DELL U2720QM GZF09H3", Mode: "3840x2160@60", Position: "auto-right", Scale: 1.5},
+		{Output: "eDP-1", Disabled: true},
+		{Output: "HDMI-A-1", Position: "-1920x0", Mirror: "eDP-1"},
+	}
+	path := filepath.Join(t.TempDir(), "config.toml")
+	if err := Save(path, c); err != nil {
+		t.Fatal(err)
+	}
+	got, warnings, err := Load(path)
+	if err != nil || len(warnings) > 0 {
+		t.Fatalf("Load: %v %v", err, warnings)
+	}
+	if got.Displays.LidOff || !slices.Equal(got.Displays.Monitors, c.Displays.Monitors) {
+		t.Errorf("got %+v, want %+v", got.Displays, c.Displays)
+	}
+
+	bad := `[displays]
+[[displays.monitors]]
+output = "DP-1"
+mode = "huge"
+[[displays.monitors]]
+output = "DP-2"
+scale = 9
+[[displays.monitors]]
+output = "DP-3"
+position = "left"
+[[displays.monitors]]
+output = "DP-4"
+mirror = "DP-4"
+[[displays.monitors]]
+output = "DP-5"
+scale = 1
+[[displays.monitors]]
+output = "DP-5"
+scale = 2
+`
+	if err := os.WriteFile(path, []byte(bad), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got, warnings, err = Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := []Monitor{{Output: "DP-5", Scale: 2}}; !slices.Equal(got.Displays.Monitors, want) || len(warnings) != 5 {
+		t.Errorf("got %+v, warnings %q", got.Displays.Monitors, warnings)
+	}
+	if !got.Displays.LidOff {
+		t.Error("lid_off is on by default")
 	}
 }

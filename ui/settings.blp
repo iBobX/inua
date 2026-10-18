@@ -3512,6 +3512,107 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "displays";
+        title:  _("Displays");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_displays {
+            hscrollbar-policy: never;
+
+            // The displays' sections follow the lid's, one a display,
+            // laid out by showDisplays.
+            Box displays_page {
+              styles ["page"]
+              orientation: vertical;
+
+              // Why these settings do nothing: hyprland.conf does not source
+              // inua.conf, or sets them again after it.
+              Label displays_warn {
+                styles ["warn"]
+                visible: false;
+                xalign: 0;
+                wrap: true;
+              }
+
+              // [LID]: only on a laptop.
+              Box displays_lid {
+                styles ["section"]
+                orientation: vertical;
+                visible: false;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>LID<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("With another display connected");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Closing the lid turns off the built-in display");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("Its windows move to the other display. Open the lid to use both.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch lid_off {
+                      name: "lid_off";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_displays {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "keyboard";
         title:  _("Keyboard");
 

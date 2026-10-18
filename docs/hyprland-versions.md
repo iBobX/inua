@@ -50,7 +50,7 @@ falls back, so 0.53 never sees a request it rejects.
 | Recording a shortcut (the empty submap) | `dispatch submap inua-record` | `hl.dsp.submap("inua-record")` | `dispatchSubmap` in `internal/ui/shell.go` |
 | The overview's keys | Not installed | `eval` scripts: a raw keyboard listener for the Super tap, `hl.bind` for Super+Tab and Super+1…0, `hl.dsp.event("inua-overview,…")` back to the shell | `internal/ui/overview_keys.go` |
 | Moving windows and workspaces in the overview | (no overview) | `hl.dsp.window.move`, `hl.dsp.workspace.move` | `internal/ui/overview_manage.go` |
-| Settings file | `Render`: `input { kb_options = … }`, `device { … }`, `unbind =` / `bind =`, `submap =` | `RenderLua`: `hl.config({ input = … })`, `hl.device({ … })`, `hl.unbind` / `hl.bind(…, { description = … })`, `hl.define_submap` | `internal/hyprconf` |
+| Settings file | `Render`: `input { kb_options = … }`, `device { … }`, `monitor = …` (`, disable`, `, mirror, …`), `bindl = , switch:…`, `unbind =` / `bind =`, `submap =` | `RenderLua`: `hl.config({ input = … })`, `hl.device({ … })`, `hl.monitor({ … })` (`disabled = true`, `mirror = …`), `hl.bind("switch:…", …, { locked = true })`, `hl.unbind` / `hl.bind(…, { description = … })`, `hl.define_submap` | `internal/hyprconf` |
 | Reading the user's config | `source =` lines, `#` comments | `require` (relative to `hyprland.lua`, `.` or `/` between folders), `--` comments outside strings | `internal/bootstrap/hyprland.go` |
 | Applying settings | Write the file; Hyprland reloads by itself, or `reload` if `misc:disable_autoreload` is set | The same | `hyprconf.Apply` |
 

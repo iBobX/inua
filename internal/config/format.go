@@ -22,6 +22,7 @@ func Format(c Config) string {
 		q(c.Style.Theme), q(c.Style.Icons), c.Style.EdgeGaps, c.Style.TextScale, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
+		c.Displays.LidOff, monitors(c.Displays.Monitors),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
 		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
@@ -52,6 +53,23 @@ func shortcuts(all []Shortcut) string {
 		}
 		if len(sc.Replaces) > 0 {
 			fmt.Fprintf(&b, "replaces = %s\n", list(sc.Replaces))
+		}
+	}
+	return b.String()
+}
+
+// monitors renders the displays' rules as an array of tables under
+// [displays].
+func monitors(all []Monitor) string {
+	var b strings.Builder
+	for _, m := range all {
+		fmt.Fprintf(&b, "\n[[displays.monitors]]\noutput = %s\n", q(m.Output))
+		if m.Disabled {
+			b.WriteString("disabled = true\n")
+		}
+		fmt.Fprintf(&b, "mode = %s\nposition = %s\nscale = %s\n", q(m.Mode), q(m.Position), strconv.FormatFloat(m.Scale, 'f', -1, 64))
+		if m.Mirror != "" {
+			fmt.Fprintf(&b, "mirror = %s\n", q(m.Mirror))
 		}
 	}
 	return b.String()
@@ -310,6 +328,31 @@ color = %s
 
 # Touchpad acceleration: "adaptive" (faster swipes go further) or "flat".
 touchpad_accel = %s
+
+[displays]
+# Monitors, set in the settings window (Displays). inua writes them to
+# ~/.config/hypr/inua.conf as monitor rules after hyprland.conf's, so a
+# display listed here is as it says, and one not listed stays as
+# hyprland.conf has it. After editing by hand: `+"`inua config apply`"+`.
+
+# While a laptop's lid is closed and another display is connected, turn
+# the built-in display off (its workspaces move to the others); opening
+# the lid turns it on again, beside them.
+lid_off = %t
+
+# A display: output is its connector ("DP-1"), or "desc:" and its
+# description (hyprctl monitors) to follow it from port to port. mode is
+# "WIDTHxHEIGHT@HZ" ("" the preferred); position "auto", "auto-left",
+# "auto-right", "auto-up", "auto-down" (beside the others) or "XxY";
+# scale 0.25 to 4 (0 automatic); mirror another output to show the same
+# picture; disabled = true leaves it off.
+#
+#   [[displays.monitors]]
+#   output = "desc:Dell Inc. DELL U2720QM GZF09H3"
+#   mode = "3840x2160@60"
+#   position = "auto-right"
+#   scale = 1.5
+%s
 
 [notifications]
 # Show notifications: a banner for a moment, then the notification center

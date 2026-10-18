@@ -97,7 +97,7 @@ its window to the current workspace.
 
 A two-column settings window for everything: appearance and wallpaper, bar
 and dock, launcher, default apps, AI (the assistant's models),
-notifications, shortcuts, keyboard, mouse and touchpad. Changes apply as
+notifications, shortcuts, displays, keyboard, mouse and touchpad. Changes apply as
 you make them.
 
 Default Apps chooses what opens links (the web browser), mailto: links,
@@ -280,6 +280,25 @@ inua. A puzzle button beside the dock's drawer, there once an app is
 installed, opens the workshop drawer: the apps by the category their
 manifest gives, and the Workshop app to open, install and remove them.
 See [workshop.md](workshop.md).
+
+## Displays
+
+Each display Hyprland has, on or off: turn it on or off, choose its
+resolution, scale and place beside the others, or mirror another. A
+display outside the laptop is set by its description, so its settings
+follow it from one port to another; one never set in inua stays as
+`hyprland.conf` has it ("Use hyprland.conf" gives one back).
+
+On a laptop, closing the lid while another display is connected turns
+the built-in display off, and its windows and workspaces move to the
+other; opening the lid turns it on again, so both are in use
+(`[displays] lid_off`, on by default). Without another display, the lid
+is left to logind, which suspends. inua writes the panel off into
+`inua.conf` and binds the lid switch there to `inua config apply`, so it
+works without the shell running; the shell also applies it when a
+display is plugged in or out, and `inua-session` before Hyprland starts,
+so logging in with the lid closed keeps the panel off from the first
+frame.
 
 ## Keyboard and touchpad
 

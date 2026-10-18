@@ -14,7 +14,7 @@ import (
 func ptr[T any](v T) *T { return &v }
 
 func TestRenderNothing(t *testing.T) {
-	got := Render(config.Config{Input: config.Input{}}, []string{"a-touchpad"})
+	got := Render(config.Config{Input: config.Input{}}, Devices{Touchpads: []string{"a-touchpad"}})
 	if strings.Contains(got, "input {") || strings.Contains(got, "device {") {
 		t.Errorf("unset settings were written:\n%s", got)
 	}
@@ -22,7 +22,7 @@ func TestRenderNothing(t *testing.T) {
 
 func TestRender(t *testing.T) {
 	in := config.Input{KbOptions: ptr("caps:escape,ctrl:swap_lalt_lctl"), TouchpadSpeed: ptr(0.3), TouchpadAccel: "adaptive"}
-	got := Render(config.Config{Input: in}, []string{"acme-inc.-trackpad-2", "elan0000:00-04f3:0000-touchpad"})
+	got := Render(config.Config{Input: in}, Devices{Touchpads: []string{"acme-inc.-trackpad-2", "elan0000:00-04f3:0000-touchpad"}})
 	for _, want := range []string{
 		"input {\n    kb_options = caps:escape,ctrl:swap_lalt_lctl\n}\n",
 		"device {\n    name = acme-inc.-trackpad-2\n    sensitivity = 0.30\n    accel_profile = adaptive\n}\n",
@@ -33,12 +33,12 @@ func TestRender(t *testing.T) {
 		}
 	}
 	// Only what is set: speed without an acceleration profile.
-	got = Render(config.Config{Input: config.Input{TouchpadSpeed: ptr(-0.5)}}, []string{"x-touchpad"})
+	got = Render(config.Config{Input: config.Input{TouchpadSpeed: ptr(-0.5)}}, Devices{Touchpads: []string{"x-touchpad"}})
 	if strings.Contains(got, "accel_profile") || strings.Contains(got, "kb_options") || !strings.Contains(got, "sensitivity = -0.50") {
 		t.Errorf("got\n%s", got)
 	}
 	// An empty kb_options is a setting: it clears hyprland.conf's.
-	if got := Render(config.Config{Input: config.Input{KbOptions: ptr("")}}, nil); !strings.Contains(got, "kb_options = \n") {
+	if got := Render(config.Config{Input: config.Input{KbOptions: ptr("")}}, Devices{}); !strings.Contains(got, "kb_options = \n") {
 		t.Errorf("got\n%s", got)
 	}
 }
@@ -50,7 +50,7 @@ func TestRenderVerifies(t *testing.T) {
 	}
 	path := filepath.Join(t.TempDir(), "hyprland.conf")
 	in := config.Input{KbOptions: ptr("caps:escape"), TouchpadSpeed: ptr(0.3), TouchpadAccel: "flat"}
-	if err := os.WriteFile(path, []byte(Render(config.Config{Input: in}, []string{"x-touchpad"})), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(Render(config.Config{Input: in}, Devices{Touchpads: []string{"x-touchpad"}})), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	out, _ := exec.Command("Hyprland", "--verify-config", "-c", path).CombinedOutput()
@@ -87,7 +87,7 @@ func TestApplyWithoutHyprland(t *testing.T) {
 		t.Errorf("same settings rewrote the file: changed=%v err=%v", changed, err)
 	}
 	// A touchpad the file already has keeps its block while unplugged.
-	old := Render(config.Config{Input: config.Input{TouchpadSpeed: ptr(0.1)}}, []string{"bt-trackpad"})
+	old := Render(config.Config{Input: config.Input{TouchpadSpeed: ptr(0.1)}}, Devices{Touchpads: []string{"bt-trackpad"}})
 	if err := os.WriteFile(path, []byte(old), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -115,8 +115,8 @@ func TestSample(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(got) != Render(config.Config{}, nil) {
-		t.Errorf("config/hypr/%s is not Render(config.Config{}, nil)", Name)
+	if string(got) != Render(config.Config{}, Devices{}) {
+		t.Errorf("config/hypr/%s is not Render(config.Config{}, Devices{})", Name)
 	}
 }
 
@@ -179,7 +179,7 @@ func TestRenderShortcuts(t *testing.T) {
 		{Action: "shot-area", Keys: "", Replaces: []string{"Print"}},
 		{Action: "exec", Keys: "SUPER+SHIFT+Return", Command: "kitty # a comment-looking arg"},
 	}
-	got := Render(c, nil)
+	got := Render(c, Devices{})
 	for _, want := range []string{
 		"unbind = SUPER, Space\n",
 		"unbind = SUPER, D\n",
@@ -209,7 +209,7 @@ func TestRenderShortcuts(t *testing.T) {
 }
 
 func TestRenderLockRestore(t *testing.T) {
-	if got := Render(config.Default(), nil); !strings.Contains(got, "allow_session_lock_restore = true") {
+	if got := Render(config.Default(), Devices{}); !strings.Contains(got, "allow_session_lock_restore = true") {
 		t.Errorf("inua.conf does not let the lock screen take the lock back:\n%s", got)
 	}
 }
@@ -224,7 +224,7 @@ func TestRenderLua(t *testing.T) {
 		{Action: "shot-area", Keys: "", Replaces: []string{"Print"}},
 		{Action: "exec", Keys: "SUPER+SHIFT+Return", Command: `kitty -e sh -c "echo \hi"`, Name: "Terminal"},
 	}
-	got := RenderLua(c, []string{"elan-touchpad"})
+	got := RenderLua(c, Devices{Touchpads: []string{"elan-touchpad"}})
 	for _, want := range []string{
 		"hl.config({ misc = { allow_session_lock_restore = true } })\n",
 		`match = { class = "^(io\\.github\\.lyricat\\.Inua\\..+)$" },`,
@@ -251,7 +251,7 @@ func TestRenderLua(t *testing.T) {
 	if got := luaString("a\tb\nc\x7f"); got != `"a\009b\nc\127"` {
 		t.Errorf("control characters: %s", got)
 	}
-	if got := RenderLua(config.Config{}, []string{"x-touchpad"}); strings.Contains(got, "hl.device") || !strings.Contains(got, "Nothing set in inua") {
+	if got := RenderLua(config.Config{}, Devices{Touchpads: []string{"x-touchpad"}}); strings.Contains(got, "hl.device") || !strings.Contains(got, "Nothing set in inua") {
 		t.Errorf("unset settings were written:\n%s", got)
 	}
 }
@@ -291,7 +291,7 @@ func TestApplyLua(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "hypr")
 	path := filepath.Join(dir, LuaName)
 	ctx := context.Background()
-	old := RenderLua(config.Config{Input: config.Input{TouchpadSpeed: ptr(0.1)}}, []string{"bt-trackpad"})
+	old := RenderLua(config.Config{Input: config.Input{TouchpadSpeed: ptr(0.1)}}, Devices{Touchpads: []string{"bt-trackpad"}})
 	os.MkdirAll(dir, 0o755)
 	if err := os.WriteFile(path, []byte(old), 0o644); err != nil {
 		t.Fatal(err)
