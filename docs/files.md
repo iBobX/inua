@@ -255,6 +255,21 @@ started there, else kitty with `--directory`. The folder is passed rather than o
 terminal that serves its windows from one process (GNOME Terminal) would
 open in its own.
 
+## Tidy with AI
+
+**Tidy with AI…**, in the folder's menu (or a selected folder's), hands the
+folder to inua's assistant (`inua-assistant --ask`): it looks at the files
+(names, kinds, sizes, dates, the first lines of a text file whose name
+says little), makes a plan with Mister Morph's `plan_create` and shows it,
+then moves the files with `bash`. The question it is given sets the rules:
+only inside the folder, its own files into new or existing folders there,
+nothing deleted or overwritten (`mkdir -p`, `mv -n`), hidden files and the
+subfolders' contents left alone, the moves in one command, and their
+reverse written to `.tidy-undo.sh` in the folder, so `sh .tidy-undo.sh`
+there undoes it. It needs the assistant on and its Run commands
+(`bash`) in Settings → AI; Files says which is missing. The assistant has
+`plan_create` whenever it has any of Mister Morph's tools.
+
 ## Window
 
 Files is a normal window, tiled as other apps are: the light apps float,

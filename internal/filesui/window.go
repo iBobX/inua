@@ -683,6 +683,7 @@ func (w *window) menuItems(p *pane) []menuItem {
 			w.item("paste", i18n.T("Paste"), "Ctrl+V"),
 			sep,
 			w.item("terminal", i18n.T("Terminal here"), "Ctrl+Alt+T"),
+			w.item("tidy", i18n.T("Tidy with AI…"), ""),
 			w.item("copy-path", i18n.T("Copy the folder's path"), "Ctrl+Shift+C"),
 			w.item("bookmark", w.bookmarkLabel(p.dir), "Ctrl+D"),
 			sep,
@@ -713,7 +714,8 @@ func (w *window) menuItems(p *pane) []menuItem {
 		w.item("copy-path", i18n.T("Copy the path"), "Ctrl+Shift+C"),
 	)
 	if dir {
-		items = append(items, w.item("paste-into", i18n.T("Paste into the folder"), ""))
+		items = append(items, w.item("paste-into", i18n.T("Paste into the folder"), ""),
+			w.item("tidy-sel", i18n.T("Tidy with AI…"), ""))
 	}
 	if w.dual {
 		items = append(items, sep,
@@ -850,6 +852,16 @@ func (w *window) do(id string) {
 		}
 	case "terminal":
 		w.terminal(p.dir)
+	case "tidy":
+		if p.mode == inFolder {
+			w.tidy(p.dir)
+		}
+	case "tidy-sel":
+		if len(sel) == 1 {
+			if fi, err := os.Stat(sel[0]); err == nil && fi.IsDir() {
+				w.tidy(sel[0])
+			}
+		}
 	case "bookmark", "bookmark-sel":
 		dir := p.dir
 		if id == "bookmark-sel" && len(sel) == 1 {

@@ -278,7 +278,7 @@ msgstr ""
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:698
-#: internal/filesui/window.go:696
+#: internal/filesui/window.go:697
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
 msgid "Open"
@@ -1225,7 +1225,7 @@ msgstr ""
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:712
-#: internal/filesui/window.go:729
+#: internal/filesui/window.go:731
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -1403,7 +1403,7 @@ msgstr ""
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/filesui/window.go:712
+#: internal/filesui/window.go:713
 #: internal/ui/askpass.go:203
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -2845,7 +2845,7 @@ msgstr ""
 msgid "No API key for %s (%s): type one in Settings → AI."
 msgstr ""
 
-#: internal/assistant/assistant.go:585
+#: internal/assistant/assistant.go:589
 msgid "Remote Console: %s"
 msgstr ""
 
@@ -3939,12 +3939,12 @@ msgid "Copy / move to the other pane"
 msgstr ""
 
 #: internal/filesui/cards.go:717
-#: internal/filesui/window.go:698
+#: internal/filesui/window.go:699
 msgid "Open with…"
 msgstr ""
 
 #: internal/filesui/cards.go:718
-#: internal/filesui/window.go:743
+#: internal/filesui/window.go:745
 msgid "Bookmark"
 msgstr ""
 
@@ -3968,7 +3968,7 @@ msgid "Next / previous tab"
 msgstr ""
 
 #: internal/filesui/cards.go:724
-#: internal/filesui/window.go:701
+#: internal/filesui/window.go:702
 msgid "Middle click"
 msgstr ""
 
@@ -3981,7 +3981,7 @@ msgid "List / grid"
 msgstr ""
 
 #: internal/filesui/cards.go:726
-#: internal/filesui/window.go:689
+#: internal/filesui/window.go:690
 msgid "Hidden files"
 msgstr ""
 
@@ -3994,7 +3994,7 @@ msgid "Sidebar"
 msgstr ""
 
 #: internal/filesui/cards.go:729
-#: internal/filesui/window.go:735
+#: internal/filesui/window.go:737
 msgid "Details"
 msgstr ""
 
@@ -4007,7 +4007,7 @@ msgid "New window, close it"
 msgstr ""
 
 #: internal/filesui/cards.go:732
-#: internal/filesui/window.go:690
+#: internal/filesui/window.go:691
 msgid "Reload"
 msgstr ""
 
@@ -4314,12 +4314,12 @@ msgid "Connect to a server…"
 msgstr ""
 
 #: internal/filesui/sidebar.go:157
-#: internal/filesui/window.go:701
+#: internal/filesui/window.go:702
 msgid "Open in a new tab"
 msgstr ""
 
 #: internal/filesui/sidebar.go:158
-#: internal/filesui/window.go:702
+#: internal/filesui/window.go:703
 msgid "Open in a new window"
 msgstr ""
 
@@ -4327,12 +4327,32 @@ msgstr ""
 msgid "Close the tab (Ctrl+W)"
 msgstr ""
 
+#: internal/filesui/tidy.go:20
+msgid "Tidy the folder %[1]s.\n\nFirst look at what is in it: the names, kinds, sizes and dates, and the first lines of a text file whose name says too little. Then make a plan with plan_create and show it to me: the folders to make, which file goes where, and why.\n\nRules:\n- Stay inside %[1]s: make folders in it and move its own files into them. Touch nothing outside it, and leave its subfolders' contents as they are.\n- Never delete and never overwrite: use mkdir -p and mv -n, and leave a file alone when its new name is taken.\n- Use the folders that are already there when they fit.\n- Leave hidden files (names starting with a dot) where they are.\n- Do all the moves in one bash command, so I approve them once.\n- Write the moves back, in the same order reversed, to %[1]s/.tidy-undo.sh, so \"sh .tidy-undo.sh\" in the folder undoes it.\n\nWhen it is done, tell me what went where."
+msgstr ""
+
+#: internal/filesui/tidy.go:42
+msgid "Tidying needs the assistant (inua-assistant), which is not installed."
+msgstr ""
+
+#: internal/filesui/tidy.go:45
+msgid "Turn on the assistant in Settings → AI to tidy folders."
+msgstr ""
+
+#: internal/filesui/tidy.go:48
+msgid "Turn on Run commands in Settings → AI to let the assistant tidy folders."
+msgstr ""
+
+#: internal/filesui/tidy.go:55
+msgid "Asked the assistant to tidy %s."
+msgstr ""
+
 #: internal/filesui/window.go:673
 msgid "Restore"
 msgstr ""
 
 #: internal/filesui/window.go:674
-#: internal/filesui/window.go:730
+#: internal/filesui/window.go:732
 msgid "Delete for good…"
 msgstr ""
 
@@ -4349,76 +4369,81 @@ msgid "Paste"
 msgstr ""
 
 #: internal/filesui/window.go:686
+#: internal/filesui/window.go:718
+msgid "Tidy with AI…"
+msgstr ""
+
+#: internal/filesui/window.go:687
 msgid "Copy the folder's path"
 msgstr ""
 
-#: internal/filesui/window.go:704
+#: internal/filesui/window.go:705
 msgid "Open in the other pane"
 msgstr ""
 
-#: internal/filesui/window.go:708
+#: internal/filesui/window.go:709
 msgid "Show in its folder"
 msgstr ""
 
-#: internal/filesui/window.go:711
+#: internal/filesui/window.go:712
 msgid "Cut"
 msgstr ""
 
-#: internal/filesui/window.go:713
+#: internal/filesui/window.go:714
 msgid "Copy the path"
 msgstr ""
 
-#: internal/filesui/window.go:716
+#: internal/filesui/window.go:717
 msgid "Paste into the folder"
 msgstr ""
 
-#: internal/filesui/window.go:720
+#: internal/filesui/window.go:722
 msgid "Copy to the other pane"
 msgstr ""
 
-#: internal/filesui/window.go:721
+#: internal/filesui/window.go:723
 msgid "Move to the other pane"
 msgstr ""
 
-#: internal/filesui/window.go:726
+#: internal/filesui/window.go:728
 msgid "Rename…"
 msgstr ""
 
-#: internal/filesui/window.go:741
+#: internal/filesui/window.go:743
 msgid "Remove the bookmark"
 msgstr ""
 
-#: internal/filesui/window.go:796
+#: internal/filesui/window.go:798
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:798
+#: internal/filesui/window.go:800
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:806
+#: internal/filesui/window.go:808
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:866
+#: internal/filesui/window.go:878
 msgid "Bookmarked %s."
 msgstr ""
 
-#: internal/filesui/window.go:868
+#: internal/filesui/window.go:880
 msgid "Removed the bookmark of %s."
 msgstr ""
 
-#: internal/filesui/window.go:893
+#: internal/filesui/window.go:905
 msgid "Copied %s."
 msgstr ""
 
-#: internal/filesui/window.go:922
+#: internal/filesui/window.go:934
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr ""
 
