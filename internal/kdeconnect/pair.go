@@ -142,13 +142,20 @@ func (c *Core) AcceptPair(id string) error {
 		return ErrNotPaired
 	}
 	c.stopPairing(d)
+	// Paired before the device is told: it may send at once, and the read
+	// loop drops what an unpaired device sends.
+	d.state = Paired
 	l := d.link
 	c.mu.Unlock()
 	if err := l.Send(NewPacket(TypePair, pairBody{Pair: true})); err != nil {
+		c.mu.Lock()
+		d.state = NotPaired
+		snap := d.snapshot(c.me.Cert.Leaf)
+		c.mu.Unlock()
+		c.changed(snap)
 		return err
 	}
 	c.mu.Lock()
-	d.state = Paired
 	snap := d.snapshot(c.me.Cert.Leaf)
 	c.mu.Unlock()
 	c.trustDevice(snap, d)

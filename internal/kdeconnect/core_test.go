@@ -8,6 +8,7 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -19,6 +20,7 @@ type peer struct {
 	*Core
 	changed chan Device
 	packets chan Packet
+	onPair  atomic.Pointer[func(Device)] // run in the core's own goroutine, as soon as it says a device paired
 }
 
 func newPeer(t *testing.T, ctx context.Context, name string) *peer {
@@ -31,8 +33,13 @@ func newPeer(t *testing.T, ctx context.Context, name string) *peer {
 		Incoming: []string{typePing},
 		Outgoing: []string{typePing},
 		Loopback: true,
-		Changed:  func(d Device) { p.changed <- d },
-		Packet:   func(_ Device, pk Packet) { p.packets <- pk },
+		Changed: func(d Device) {
+			if f := p.onPair.Load(); f != nil && d.Pair == Paired {
+				(*f)(d)
+			}
+			p.changed <- d
+		},
+		Packet: func(_ Device, pk Packet) { p.packets <- pk },
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -122,6 +129,31 @@ func TestPairAndPackets(t *testing.T) {
 	a.await(t, "a unpaired", func(d Device) bool { return d.Pair == NotPaired })
 	if _, ok := a.Store().Get(b.ID()); ok {
 		t.Fatal("a still keeps b as paired")
+	}
+}
+
+// A device told it is paired may send at once; the core that accepted
+// takes what it sends. It used to send its answer before counting the
+// device as paired, so a packet sent back at once could be dropped.
+func TestPacketAsSoonAsPaired(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	a, b := newPeer(t, ctx, "Phone"), newPeer(t, ctx, "Desk")
+	sent := make(chan error, 1)
+	send := func(Device) { sent <- a.Send(b.ID(), NewPacket(typePing, map[string]string{"message": "first"})) }
+	a.onPair.Store(&send)
+	pairBoth(t, a, b)
+	if err := <-sent; err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case p := <-b.packets:
+		var body struct{ Message string }
+		if p.Decode(&body); body.Message != "first" {
+			t.Fatalf("b got %+v", p)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("b dropped the packet sent as soon as a was paired")
 	}
 }
 
