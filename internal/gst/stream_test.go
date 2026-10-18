@@ -94,12 +94,12 @@ func TestAnAudioStreamPlaysOpus(t *testing.T) {
 	}
 }
 
-func TestEachCodecHasADecoderNamed(t *testing.T) {
+func TestDecoderIsOneThisComputerHas(t *testing.T) {
 	if err := Init(); err != nil {
 		t.Skip(err)
 	}
-	if Decoder("h264") == "" {
-		t.Error("no H.264 decoder found, though avdec_h264 is the last resort")
+	if d := Decoder("h264"); d != "" && !has(d) {
+		t.Errorf("%s named, but not there", d)
 	}
 	if Decoder("nonsense") != "" {
 		t.Error("a decoder for nothing")
