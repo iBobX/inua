@@ -224,43 +224,11 @@ func cmdClipboardCapture(args []string) error {
 		io.Copy(io.Discard, os.Stdin)
 		return nil
 	}
-	from := clipboard.FindSource(focusedWindow(), c.Clipboard.SensitiveSources)
-	if clipboard.MarkedSensitive(offeredTypes()) {
-		from.Sensitive = true // a password manager's secret
-	}
+	from := clipboard.Selection(c.Clipboard.SensitiveSources)
 	if from.Sensitive {
 		io.Copy(io.Discard, os.Stdin) // and Capture keeps nothing
 	}
 	return clipboard.Capture(path, c.Clipboard.Limit, from, os.Stdin)
-}
-
-// offeredTypes are the types the clipboard's owner offers now; none when
-// wl-paste cannot say in time.
-func offeredTypes() []string {
-	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
-	defer cancel()
-	out, err := exec.CommandContext(ctx, "wl-paste", "--list-types").Output()
-	if err != nil {
-		return nil
-	}
-	return strings.Split(strings.TrimSpace(string(out)), "\n")
-}
-
-// focusedWindow is the window focused now, as Hyprland names it; none
-// without Hyprland.
-func focusedWindow() clipboard.Window {
-	var w clipboard.Window
-	paths, err := hypr.PathsFromEnv()
-	if err != nil {
-		return w
-	}
-	c := hypr.NewClient(paths)
-	c.Timeout = 300 * time.Millisecond // a copy is not held up for long
-	data, err := c.Request(context.Background(), "j/activewindow")
-	if err == nil {
-		json.Unmarshal(data, &w)
-	}
-	return w
 }
 
 // cmdConfig checks the settings file the way inua-shell reads it.
