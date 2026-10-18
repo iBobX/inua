@@ -382,7 +382,7 @@ func (w *window) switched(s gtk.Switch, on bool) bool {
 	}
 	w.sharingSwitch.SetSensitive(false)
 	w.background(func() error {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 		defer cancel()
 		return w.sharing.SetOn(ctx, on)
 	}, func(err error) {
@@ -417,7 +417,7 @@ func (w *window) virtualChanged() {
 	}
 	w.sharingVirtual.SetSensitive(false)
 	w.background(func() error {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 		defer cancel()
 		return w.sharing.SyncVirtual(ctx)
 	}, func(err error) {

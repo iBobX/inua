@@ -1,6 +1,7 @@
 package hypr
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -35,15 +36,47 @@ var ErrNoInstance = errors.New("no Hyprland session is running")
 // With several running (a nested one in a session), the first started is
 // the session's.
 func FindInstance(runtime string) (Instance, error) {
+	var found Instance
+	first := int64(0)
+	for _, i := range instances(runtime) {
+		// The signature is commit_seconds_random: its second field is when
+		// the instance started.
+		started := int64(0)
+		if f := strings.Split(i.Signature, "_"); len(f) >= 2 {
+			started, _ = strconv.ParseInt(f[1], 10, 64)
+		}
+		if found.PID == 0 || started < first {
+			found, first = i, started
+		}
+	}
+	if found.PID == 0 {
+		return Instance{}, ErrNoInstance
+	}
+	return found, nil
+}
+
+// InstanceOf is the Hyprland that the process pid is, or that it started:
+// start-hyprland runs Hyprland as its child. It finds the session a
+// program started with it belongs to, though another Hyprland runs.
+func InstanceOf(runtime string, pid int) (Instance, error) {
+	for _, i := range instances(runtime) {
+		if i.PID == pid || parent(i.PID) == pid {
+			return i, nil
+		}
+	}
+	return Instance{}, ErrNoInstance
+}
+
+// instances are the Hyprlands running under runtime.
+func instances(runtime string) []Instance {
 	if runtime == "" {
 		runtime = fmt.Sprintf("/run/user/%d", os.Getuid())
 	}
 	dirs, err := os.ReadDir(filepath.Join(runtime, "hypr"))
 	if err != nil {
-		return Instance{}, ErrNoInstance
+		return nil
 	}
-	var found Instance
-	first := int64(0)
+	var found []Instance
 	for _, d := range dirs {
 		lock, err := os.ReadFile(filepath.Join(runtime, "hypr", d.Name(), "hyprland.lock"))
 		if err != nil {
@@ -57,21 +90,24 @@ func FindInstance(runtime string) (Instance, error) {
 		if err != nil || pid <= 0 || syscall.Kill(pid, 0) == syscall.ESRCH {
 			continue
 		}
-		// The signature is commit_seconds_random: its second field is when
-		// the instance started.
-		started := int64(0)
-		if f := strings.Split(d.Name(), "_"); len(f) >= 2 {
-			started, _ = strconv.ParseInt(f[1], 10, 64)
-		}
-		if found.PID == 0 || started < first {
-			found = Instance{Signature: d.Name(), Runtime: runtime, PID: pid, Wayland: lines[1]}
-			first = started
-		}
+		found = append(found, Instance{Signature: d.Name(), Runtime: runtime, PID: pid, Wayland: lines[1]})
 	}
-	if found.PID == 0 {
-		return Instance{}, ErrNoInstance
+	return found
+}
+
+// parent is the process ID of pid's parent, or 0.
+func parent(pid int) int {
+	stat, err := os.ReadFile(fmt.Sprintf("/proc/%d/stat", pid))
+	if err != nil {
+		return 0
 	}
-	return found, nil
+	// pid (comm) state ppid ...: comm may hold spaces and parentheses.
+	f := strings.Fields(string(stat[bytes.LastIndexByte(stat, ')')+1:]))
+	if len(f) < 2 {
+		return 0
+	}
+	ppid, _ := strconv.Atoi(f[1])
+	return ppid
 }
 
 // SessionPaths are the sockets of the Hyprland this process runs under,

@@ -100,6 +100,16 @@ command = "/usr/local/bin/inua-session"
 user = "you"
 ```
 
+Hyprland starts the programs in its `exec-once` lines, inua-shell among
+them, only once a monitor shows a frame, so without a monitor nothing
+would start the shell that adds the screen. `inua-session` therefore
+starts `inua-remote --await-session` beside Hyprland: it waits for that
+Hyprland to answer and adds the screen, and does nothing when the setting
+is off. A session started some other way needs the same.
+
+Sunshine tries every encoder on the screen as it starts, which can take
+most of a minute; inua waits up to two minutes for it to answer.
+
 The size is set with `hyprctl keyword monitor`, which a Lua configuration
 (Hyprland 0.55 and later) may not take; the screen is then Hyprland's
 default size.

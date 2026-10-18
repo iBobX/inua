@@ -3,7 +3,6 @@ package ui
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/lyricat/inua/internal/apps/remotedesk"
 )
@@ -19,7 +18,7 @@ func (s *shellUI) startSharing() {
 		sh := remotedesk.NewSharing()
 		s.syncVirtual(sh)
 		if sh.On() {
-			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 			if err := sh.AtLogin(ctx); err != nil {
 				log.Printf("sharing: %v", err)
 			}
@@ -47,7 +46,7 @@ func (s *shellUI) followMonitors() {
 // monitors say. Without the setting, a screen left from before is
 // removed, and nothing else is done.
 func (s *shellUI) syncVirtual(sh *remotedesk.Sharing) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 	defer cancel()
 	if err := sh.SyncVirtual(ctx); err != nil {
 		log.Printf("sharing: virtual screen: %v", err)

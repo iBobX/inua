@@ -76,6 +76,17 @@ class SessionTest(unittest.TestCase):
         self.assertIn("does not start inua-shell", result.stderr)
         self.assertIn("Hyprland session is unaffected", result.stderr)
 
+    def test_virtual_screen_is_awaited_for_this_hyprland(self):
+        # inua-remote records its arguments and the process it belongs to,
+        # which is the one that becomes the compositor.
+        remote = self.home / "inua-remote-calls"
+        self.executable("inua-remote", f'#!/bin/sh\necho "$* $PPID" > "{remote}.tmp"\nmv "{remote}.tmp" "{remote}"\n')
+        self.executable("start-hyprland", '#!/bin/sh\necho "pid=$$"\nwhile [ ! -e "$HOME/inua-remote-calls" ]; do sleep 0.05; done\nexit 17\n')
+        result = self.launch()
+        self.assertEqual(result.returncode, 17, result.stderr)
+        pid = result.stdout.split("=")[1].strip()
+        self.assertEqual(remote.read_text().split(), ["--await-session", pid])
+
     def test_missing_shell_does_not_start_compositor(self):
         (self.bin / "inua-shell").unlink()
         result = self.launch()

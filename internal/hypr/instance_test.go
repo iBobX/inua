@@ -65,3 +65,23 @@ func TestFindInstanceNone(t *testing.T) {
 		t.Fatalf("only a leftover: err = %v, want ErrNoInstance", err)
 	}
 }
+
+func TestInstanceOfTheSessionStarted(t *testing.T) {
+	runtime := t.TempDir()
+	writeLock(t, runtime, "abc_1700000000_1", 1, "wayland-1") // another session's, started first
+	writeLock(t, runtime, "abc_1800000000_2", os.Getpid(), "wayland-2")
+	// The process itself (an older Hyprland, run without start-hyprland),
+	// and its parent (start-hyprland).
+	for _, pid := range []int{os.Getpid(), os.Getppid()} {
+		i, err := InstanceOf(runtime, pid)
+		if err != nil {
+			t.Fatalf("InstanceOf(%d): %v", pid, err)
+		}
+		if i.Wayland != "wayland-2" {
+			t.Errorf("InstanceOf(%d) = %+v, want the one it started", pid, i)
+		}
+	}
+	if i, err := InstanceOf(runtime, gonePID); !errors.Is(err, ErrNoInstance) {
+		t.Errorf("a process that started none: %+v, %v", i, err)
+	}
+}

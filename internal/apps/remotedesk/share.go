@@ -295,6 +295,11 @@ func (s *Sharing) session() (map[string]string, error) {
 	return env, nil
 }
 
+// StartTimeout is how long Sunshine may take to start: it tries the
+// encoders on the screen first, which took most of a minute on one
+// computer.
+const StartTimeout = 120 * time.Second
+
 // Start shares the desktop: Sunshine runs as a user unit with the
 // session's display, and Start returns once its API answers.
 func (s *Sharing) Start(ctx context.Context) error {
@@ -571,6 +576,35 @@ func (s *Sharing) SyncVirtual(ctx context.Context) error {
 		return err
 	}
 	return s.Start(ctx)
+}
+
+// VirtualAtStart makes the virtual screen, when it is on, in the Hyprland
+// that the process parent starts: inua-session, become start-hyprland.
+// Hyprland runs its exec-once lines only once a monitor shows a frame,
+// so without a monitor nothing would start inua-shell, which makes the
+// screen. It waits for Hyprland to answer, and gives up when parent is
+// gone.
+func (s *Sharing) VirtualAtStart(ctx context.Context, parent int) error {
+	mode := s.Virtual()
+	if mode == "" {
+		return nil
+	}
+	for {
+		i, err := hypr.InstanceOf(s.Getenv("XDG_RUNTIME_DIR"), parent)
+		if err == nil {
+			if _, err = hypr.NewClient(i.Paths()).SyncVirtualScreen(ctx, mode); err == nil {
+				return nil
+			}
+		}
+		if os.Getppid() != parent {
+			return errors.New("sharing: the session ended before Hyprland started")
+		}
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("sharing: virtual screen: %w", err)
+		case <-time.After(250 * time.Millisecond):
+		}
+	}
 }
 
 // ErrNoDevice is no device waiting to pair, or none of the one named.

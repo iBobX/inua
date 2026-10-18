@@ -1,7 +1,9 @@
 package remotedesk
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -10,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/lyricat/inua/internal/hypr"
 )
@@ -176,5 +179,52 @@ func TestSyncVirtualWithoutASession(t *testing.T) {
 	s.Instance = func() (hypr.Instance, error) { return hypr.Instance{}, hypr.ErrNoInstance }
 	if err := s.SyncVirtual(t.Context()); !errors.Is(err, ErrNoSession) {
 		t.Fatalf("SyncVirtual = %v, want ErrNoSession", err)
+	}
+}
+
+func TestVirtualAtStartWaitsForTheSessionsHyprland(t *testing.T) {
+	runtime, err := os.MkdirTemp("", "hy")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.RemoveAll(runtime) })
+	s, _, _ := newSharing(t)
+	s.Getenv = func(k string) string { return map[string]string{"XDG_RUNTIME_DIR": runtime}[k] }
+	if err := s.VirtualAtStart(t.Context(), os.Getppid()); err != nil {
+		t.Fatalf("setting off: %v", err)
+	}
+	if err := s.SetVirtual("1920x1080@60"); err != nil {
+		t.Fatal(err)
+	}
+	// The parent's Hyprland (this process, its child) starts a little later.
+	f := &fakeHypr{monitors: `[]`}
+	sig := "abc_1800000000_1"
+	go func() {
+		time.Sleep(300 * time.Millisecond)
+		serveHypr(t, runtime, sig, f)
+		os.WriteFile(filepath.Join(runtime, "hypr", sig, "hyprland.lock"), []byte(fmt.Sprintf("%d\nwayland-1\n", os.Getpid())), 0o600)
+	}()
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	if err := s.VirtualAtStart(ctx, os.Getppid()); err != nil {
+		t.Fatal(err)
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if !slices.Contains(f.asked, "output create headless "+hypr.VirtualScreen) {
+		t.Errorf("no virtual screen made: asked %q", f.asked)
+	}
+}
+
+func TestVirtualAtStartGivesUp(t *testing.T) {
+	s, _, _ := newSharing(t)
+	s.Getenv = func(k string) string { return map[string]string{"XDG_RUNTIME_DIR": t.TempDir()}[k] }
+	if err := s.SetVirtual("1920x1080@60"); err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 600*time.Millisecond)
+	defer cancel()
+	if err := s.VirtualAtStart(ctx, os.Getppid()); err == nil {
+		t.Fatal("no Hyprland started, and no error")
 	}
 }

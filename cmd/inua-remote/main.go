@@ -8,6 +8,7 @@
 //	inua-remote --virtual-screen on  a screen to share while no monitor is connected (off, or a size)
 //	inua-remote --pair PIN           pair the device waiting, with the PIN it shows
 //	inua-remote --status             whether it is shared, what sharing needs, the devices
+//	inua-remote --await-session      for inua-session: the virtual screen in the Hyprland it starts
 package main
 
 import (
@@ -33,12 +34,14 @@ func main() {
 	wait := flag.Duration("wait", time.Minute, "with --pair: how long to wait for the device to ask")
 	virtual := flag.String("virtual-screen", "", "on: a screen of "+remotedesk.DefaultVirtualMode+" to share while no monitor is connected, or a `size` like 2560x1440@60; off: none")
 	status := flag.Bool("status", false, "whether this desktop is shared, what sharing needs, and the devices waiting and paired")
+	await := flag.Bool("await-session", false, "for inua-session, which starts it before Hyprland: make the virtual screen, when it is on, once Hyprland answers")
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-remote [-ui-dir DIR]")
 		fmt.Fprintln(os.Stderr, "       inua-remote --share on|off")
 		fmt.Fprintln(os.Stderr, "       inua-remote --virtual-screen on|off|WIDTHxHEIGHT@HZ")
 		fmt.Fprintln(os.Stderr, "       inua-remote --pair PIN [--device NAME|ADDRESS] [--name NAME] [--wait 1m]")
 		fmt.Fprintln(os.Stderr, "       inua-remote --status")
+		fmt.Fprintln(os.Stderr, "       inua-remote --await-session")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -53,7 +56,7 @@ func main() {
 			flag.Usage()
 			os.Exit(2)
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 		defer cancel()
 		if err := s.SetOn(ctx, *share == "on"); err != nil {
 			fail(err)
@@ -64,6 +67,14 @@ func main() {
 		pairDevice(s, *pair, *device, *name, *wait)
 	case *status:
 		printStatus(s)
+	case *await:
+		// Hyprland without a monitor runs no exec-once lines, inua-shell
+		// among them, until this makes the virtual screen.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+		if err := s.VirtualAtStart(ctx, os.Getppid()); err != nil {
+			fail(err)
+		}
 	default:
 		remoteui.Register()
 		os.Exit(appui.Run("remote", nil, *uiDir))
@@ -82,7 +93,7 @@ func setVirtual(s *remotedesk.Sharing, mode string) {
 	if err := s.SetVirtual(mode); err != nil {
 		fail(err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
 	defer cancel()
 	err := s.SyncVirtual(ctx)
 	switch {
