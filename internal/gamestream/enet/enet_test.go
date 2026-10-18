@@ -49,7 +49,10 @@ func (h *host) send(cmds ...[]byte) {
 	for _, c := range cmds {
 		d = append(d, c...)
 	}
-	h.udp.WriteToUDP(d, h.client)
+	h.mu.Lock() // serve sets the client, on its own goroutine
+	client := h.client
+	h.mu.Unlock()
+	h.udp.WriteToUDP(d, client)
 }
 
 func cmd(command, channel uint8, seq uint16, body ...[]byte) []byte {
