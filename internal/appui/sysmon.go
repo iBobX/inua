@@ -102,7 +102,7 @@ type sysmonApp struct {
 	armed                      string           // "action:PID" waiting for its second click
 	armedAt                    time.Time
 	noteAt                     time.Time
-	onTick                     glib.SourceFunc
+	onTick, onFirst            glib.SourceFunc
 	onSort                     func(gtk.ToggleButton)
 	onOpen, onAct              func(gtk.Button)
 	onBack                     func(gtk.Button)
@@ -214,8 +214,15 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.lastNet = sysmon.ParseNet(sysmon.ReadFile("proc/net/dev"))
 	a.lastDisk = sysmon.ReadDiskIO()
 	a.lastAt = time.Now()
-	a.sample()
-	glib.TimeoutAdd(1000, &a.onTick, 0)
+	// The first sample comes a quarter second on, about when the window is
+	// first drawn: one taken now would compare readings microseconds apart
+	// (no CPU use, no traffic), and the next came a second later.
+	a.onFirst = func(uintptr) bool {
+		a.sample()
+		glib.TimeoutAdd(1000, &a.onTick, 0)
+		return false
+	}
+	glib.TimeoutAdd(250, &a.onFirst, 0)
 	return win
 }
 
