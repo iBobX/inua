@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -33,6 +34,7 @@ type window struct {
 	pages                                                   gtk.Stack
 	sharingDesc, sharingNeedText, sharingNeedFix            gtk.Label
 	sharingSwitch                                           gtk.Switch
+	sharingVirtual                                          gtk.DropDown
 	sharingNeed, sharingPendingSection, sharingPending      gtk.Box
 	sharingClients                                          gtk.Box
 	machineTitle, machineState, machineAddr                 gtk.Label
@@ -71,6 +73,7 @@ type window struct {
 	onSwitch   func(gtk.Switch, bool) bool
 	onSpin     func(gtk.SpinButton)
 	onNotify   func(uintptr, uintptr, uintptr)
+	onVirtual  func(uintptr, uintptr, uintptr)
 	onClose    func(gtk.Window) bool
 	onAddEnter func(gtk.Entry)
 }
@@ -101,7 +104,7 @@ func openWindow(c *appui.Ctx) *window {
 		"side_sharing_sub": &w.sideSharingSub, "status": &w.status, "side_machines": &w.sideMachines, "pages": &w.pages,
 		"sharing_desc": &w.sharingDesc, "sharing_need_text": &w.sharingNeedText, "sharing_need_fix": &w.sharingNeedFix,
 		"sharing_switch": &w.sharingSwitch, "sharing_need": &w.sharingNeed, "sharing_pending_section": &w.sharingPendingSection,
-		"sharing_pending": &w.sharingPending, "sharing_clients": &w.sharingClients,
+		"sharing_pending": &w.sharingPending, "sharing_clients": &w.sharingClients, "sharing_virtual": &w.sharingVirtual,
 		"machine_title": &w.machineTitle, "machine_state": &w.machineState, "machine_addr": &w.machineAddr,
 		"machine_pin_text": &w.machinePinText, "machine_pin": &w.machinePin, "machine_forget": &w.machineForget,
 		"machine_quit": &w.machineQuit, "machine_pair": &w.machinePair, "machine_connect": &w.machineConnect,
@@ -137,6 +140,8 @@ func openWindow(c *appui.Ctx) *window {
 	for _, d := range []*gtk.DropDown{&w.streamSize, &w.streamFPS, &w.streamCodec} {
 		gtkx.ConnectNotify(d, "selected", &w.onNotify)
 	}
+	w.onVirtual = func(uintptr, uintptr, uintptr) { w.virtualChanged() }
+	gtkx.ConnectNotify(&w.sharingVirtual, "selected", &w.onVirtual)
 	w.onAddEnter = func(gtk.Entry) { w.add() }
 	w.addAddr.ConnectActivate(&w.onAddEnter)
 	w.onClose = func(gtk.Window) bool {
@@ -396,6 +401,34 @@ func (w *window) switched(s gtk.Switch, on bool) bool {
 	return true // the state follows when Sunshine has
 }
 
+// virtualChanged keeps the virtual screen's setting, and adds or removes
+// the screen now.
+func (w *window) virtualChanged() {
+	if w.loading {
+		return
+	}
+	mode := ""
+	if i := int(w.sharingVirtual.GetSelected()); i > 0 && i <= len(remotedesk.VirtualModes) {
+		mode = remotedesk.VirtualModes[i-1]
+	}
+	if err := w.sharing.SetVirtual(mode); err != nil {
+		w.fail(err.Error())
+		return
+	}
+	w.sharingVirtual.SetSensitive(false)
+	w.background(func() error {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		return w.sharing.SyncVirtual(ctx)
+	}, func(err error) {
+		w.sharingVirtual.SetSensitive(true)
+		if err != nil {
+			w.fail(i18n.Tf("The virtual screen did not change: %v", err))
+		}
+		go w.refreshSharing(context.Background())
+	})
+}
+
 func (w *window) save() {
 	if err := w.settings.Save(); err != nil {
 		w.fail(err.Error())
@@ -438,6 +471,7 @@ func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing,
 	w.loading = true
 	w.sharingSwitch.SetActive(on)
 	w.sharingSwitch.SetState(on && (st.Running || !known))
+	w.sharingVirtual.SetSelected(uint32(slices.Index(remotedesk.VirtualModes, w.sharing.Virtual()) + 1))
 	w.loading = false
 
 	need, fix := "", ""

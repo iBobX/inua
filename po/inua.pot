@@ -205,9 +205,9 @@ msgstr ""
 #: internal/apps/connect/service.go:250
 #: internal/connectui/window.go:425
 #: internal/connectui/window.go:434
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
+#: internal/remoteui/window.go:527
+#: internal/remoteui/window.go:696
+#: ui/remote.ui:564
 msgid "Pair"
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 
 #: internal/apps/connect/service.go:509
 #: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
+#: internal/remoteui/window.go:266
 msgid "Connected"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgid "Away"
 msgstr ""
 
 #: internal/apps/connect/service.go:513
-#: internal/remoteui/window.go:256
+#: internal/remoteui/window.go:261
 msgid "Not paired"
 msgstr ""
 
@@ -1616,7 +1616,7 @@ msgstr ""
 #: internal/appui/workshop_manager.go:88
 #: ui/connect.ui:966
 #: ui/pass.ui:818
-#: ui/remote.ui:905
+#: ui/remote.ui:956
 msgid "Add"
 msgstr ""
 
@@ -1906,7 +1906,7 @@ msgid "Private"
 msgstr ""
 
 #: internal/appui/sysmon.go:782
-#: internal/remoteui/window.go:429
+#: internal/remoteui/window.go:462
 msgid "Shared"
 msgstr ""
 
@@ -2589,12 +2589,13 @@ msgstr ""
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/remoteui/window.go:435
+#: internal/remoteui/window.go:468
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: ui/remote.ui:318
 #: ui/settings.ui:5027
 msgid "Off"
 msgstr ""
@@ -2722,7 +2723,7 @@ msgstr ""
 #: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
-#: internal/remoteui/window.go:660
+#: internal/remoteui/window.go:694
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3004,7 +3005,7 @@ msgid "Devices running KDE Connect, GSConnect or Valent find this computer on th
 msgstr ""
 
 #: internal/connectui/window.go:384
-#: internal/remoteui/window.go:432
+#: internal/remoteui/window.go:465
 msgid "Starting…"
 msgstr ""
 
@@ -3033,7 +3034,7 @@ msgid "Accept on %s if it shows this key:"
 msgstr ""
 
 #: internal/connectui/window.go:432
-#: internal/remoteui/window.go:525
+#: internal/remoteui/window.go:559
 msgid "Unpair"
 msgstr ""
 
@@ -3865,7 +3866,7 @@ msgid "Not allowed."
 msgstr ""
 
 #: internal/filesui/cards.go:661
-#: internal/remoteui/stream.go:468
+#: internal/remoteui/stream.go:472
 msgid "%s: %v"
 msgstr ""
 
@@ -4294,7 +4295,7 @@ msgstr ""
 
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
-#: ui/remote.ui:523
+#: ui/remote.ui:574
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
 msgid "Connect"
@@ -4351,7 +4352,7 @@ msgstr ""
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
-#: ui/remote.ui:492
+#: ui/remote.ui:543
 msgid "Forget"
 msgstr ""
 
@@ -8114,139 +8115,147 @@ msgstr ""
 msgid "Ctrl+Alt+Shift+Q disconnects · F: full screen · Z: this desktop's shortcuts"
 msgstr ""
 
-#: internal/remoteui/stream.go:466
+#: internal/remoteui/stream.go:467
 msgid "%s ended the session."
 msgstr ""
 
-#: internal/remoteui/window.go:119
+#: internal/remoteui/stream.go:470
+msgid "%s cannot show its screen: no monitor is connected, or its desktop session is not running. A computer without a monitor can share a virtual screen (Remote Desktop, Sharing)."
+msgstr ""
+
+#: internal/remoteui/window.go:122
 msgid "This computer has no identity to pair with: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:258
+#: internal/remoteui/window.go:263
 msgid "Paired"
 msgstr ""
 
-#: internal/remoteui/window.go:269
+#: internal/remoteui/window.go:274
 msgid "Found on this network"
 msgstr ""
 
-#: internal/remoteui/window.go:271
+#: internal/remoteui/window.go:276
 msgid "Found on the tailnet"
 msgstr ""
 
-#: internal/remoteui/window.go:386
+#: internal/remoteui/window.go:391
 msgid "Sharing did not start: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:430
+#: internal/remoteui/window.go:426
+msgid "The virtual screen did not change: %v"
+msgstr ""
+
+#: internal/remoteui/window.go:463
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr ""
 
-#: internal/remoteui/window.go:433
+#: internal/remoteui/window.go:466
 msgid "Sunshine is starting."
 msgstr ""
 
-#: internal/remoteui/window.go:436
+#: internal/remoteui/window.go:469
 msgid "Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."
 msgstr ""
 
-#: internal/remoteui/window.go:446
+#: internal/remoteui/window.go:480
 msgid "Sharing needs Sunshine, which is not installed."
 msgstr ""
 
-#: internal/remoteui/window.go:447
+#: internal/remoteui/window.go:481
 msgid "Install the package for your system from github.com/LizardByte/Sunshine/releases (Ubuntu: sudo apt install ./sunshine_…_amd64.deb)."
 msgstr ""
 
-#: internal/remoteui/window.go:449
+#: internal/remoteui/window.go:483
 msgid "The other device's keyboard and mouse cannot reach this desktop: /dev/uinput is not yours."
 msgstr ""
 
-#: internal/remoteui/window.go:452
+#: internal/remoteui/window.go:486
 msgid "Sharing needs a graphical session to show."
 msgstr ""
 
-#: internal/remoteui/window.go:477
+#: internal/remoteui/window.go:511
 msgid "A device"
 msgstr ""
 
-#: internal/remoteui/window.go:481
+#: internal/remoteui/window.go:515
 msgid "at %s: type the PIN it shows"
 msgstr ""
 
-#: internal/remoteui/window.go:508
+#: internal/remoteui/window.go:542
 msgid "No device is paired yet."
 msgstr ""
 
-#: internal/remoteui/window.go:513
+#: internal/remoteui/window.go:547
 msgid "The paired devices show while sharing is on."
 msgstr ""
 
-#: internal/remoteui/window.go:546
+#: internal/remoteui/window.go:580
 msgid "A PIN is four digits."
 msgstr ""
 
-#: internal/remoteui/window.go:556
+#: internal/remoteui/window.go:590
 msgid "That is not the PIN %s shows."
 msgstr ""
 
-#: internal/remoteui/window.go:635
+#: internal/remoteui/window.go:669
 msgid "Asking…"
 msgstr ""
 
-#: internal/remoteui/window.go:638
+#: internal/remoteui/window.go:672
 msgid "Connected: its desktop is in a window of its own."
 msgstr ""
 
-#: internal/remoteui/window.go:641
+#: internal/remoteui/window.go:675
 msgid "It does not answer: it is off, or not sharing its desktop."
 msgstr ""
 
-#: internal/remoteui/window.go:643
+#: internal/remoteui/window.go:677
 msgid "It shares with Nvidia's GameStream, which Remote Desktop does not speak."
 msgstr ""
 
-#: internal/remoteui/window.go:645
+#: internal/remoteui/window.go:679
 msgid "It has forgotten this computer: pair again."
 msgstr ""
 
-#: internal/remoteui/window.go:647
+#: internal/remoteui/window.go:681
 msgid "Not paired: pair once, with a PIN typed on it."
 msgstr ""
 
-#: internal/remoteui/window.go:649
+#: internal/remoteui/window.go:683
 msgid "Paired. Its desktop is being streamed; connecting joins in."
 msgstr ""
 
-#: internal/remoteui/window.go:651
+#: internal/remoteui/window.go:685
 msgid "Paired, and ready."
 msgstr ""
 
-#: internal/remoteui/window.go:684
+#: internal/remoteui/window.go:718
 msgid "On %s, open Remote Desktop → Sharing (or Sunshine's PIN page) and type:"
 msgstr ""
 
-#: internal/remoteui/window.go:708
+#: internal/remoteui/window.go:742
 msgid "The PIN typed there was not this one. Pair again."
 msgstr ""
 
-#: internal/remoteui/window.go:711
+#: internal/remoteui/window.go:745
 msgid "Pairing failed: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:767
+#: internal/remoteui/window.go:801
 msgid "Nothing shares a desktop at %s: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:834
+#: internal/remoteui/window.go:868
 msgid "This computer cannot decode it: choose another."
 msgstr ""
 
-#: internal/remoteui/window.go:836
+#: internal/remoteui/window.go:870
 msgid "Decoded by the processor here: slower than the graphics card."
 msgstr ""
 
-#: internal/remoteui/window.go:838
+#: internal/remoteui/window.go:872
 msgid "Decoded by the graphics card here. HEVC and AV1 look better than H.264 at the same bitrate."
 msgstr ""
 
@@ -11354,68 +11363,76 @@ msgstr ""
 msgid "Share this desktop"
 msgstr ""
 
-#: ui/remote.ui:339
+#: ui/remote.ui:296
+msgid "Virtual screen"
+msgstr ""
+
+#: ui/remote.ui:305
+msgid "While no monitor is connected, this computer shows a screen of this size, to share."
+msgstr ""
+
+#: ui/remote.ui:390
 msgid "[WAITING TO PAIR]"
 msgstr ""
 
-#: ui/remote.ui:381
+#: ui/remote.ui:432
 msgid "[PAIRED DEVICES]"
 msgstr ""
 
-#: ui/remote.ui:502
+#: ui/remote.ui:553
 msgid "End its session"
 msgstr ""
 
-#: ui/remote.ui:503
+#: ui/remote.ui:554
 msgid "Ends what is streaming there, for every device"
 msgstr ""
 
-#: ui/remote.ui:587
+#: ui/remote.ui:638
 msgid "[STREAM]"
 msgstr ""
 
-#: ui/remote.ui:597
+#: ui/remote.ui:648
 msgid "for every machine"
 msgstr ""
 
-#: ui/remote.ui:625
+#: ui/remote.ui:676
 msgid "Resolution"
 msgstr ""
 
-#: ui/remote.ui:634
+#: ui/remote.ui:685
 msgid "The machine shows its desktop at this size."
 msgstr ""
 
-#: ui/remote.ui:647
+#: ui/remote.ui:698
 #: ui/settings.ui:1211
 msgid "This monitor's"
 msgstr ""
 
-#: ui/remote.ui:670
+#: ui/remote.ui:721
 msgid "Frames a second"
 msgstr ""
 
-#: ui/remote.ui:709
+#: ui/remote.ui:760
 msgid "Bitrate"
 msgstr ""
 
-#: ui/remote.ui:718
+#: ui/remote.ui:769
 msgid "Megabits a second: more is sharper, and needs a faster network."
 msgstr ""
 
-#: ui/remote.ui:758
+#: ui/remote.ui:809
 msgid "Codec"
 msgstr ""
 
-#: ui/remote.ui:800
+#: ui/remote.ui:851
 msgid "Play the sound on the machine too"
 msgstr ""
 
-#: ui/remote.ui:860
+#: ui/remote.ui:911
 msgid "[ADD A MACHINE]"
 msgstr ""
 
-#: ui/remote.ui:885
+#: ui/remote.ui:936
 msgid "Its address on the network: a name, an IP address, or either with :port."
 msgstr ""
 

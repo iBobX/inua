@@ -11,6 +11,8 @@ Sunshine.
 ```
 inua-remote                    open the window
 inua-remote --share on         share this desktop, now and at login (off: stop)
+inua-remote --virtual-screen on|off|2560x1440@60
+                               a screen to share while no monitor is connected
 inua-remote --pair PIN         pair the device waiting, with the PIN it shows
             [--device NAME|ADDRESS] [--name NAME] [--wait 1m]
 inua-remote --status           whether it is shared, what sharing needs, the
@@ -46,7 +48,11 @@ app, its web interface answering this computer only, and a certificate and
 an admin password of inua's own (the password's salted hash written to
 Sunshine's credentials file, never on a command line). Sunshine runs as the
 user unit `inua-sharing.service`, with this session's display; the shell
-starts it again at login while sharing is on.
+starts it again at login while sharing is on. Run from outside the session
+(`inua-remote --share on` over SSH), it takes the display of the Hyprland
+running for you, found by its `$XDG_RUNTIME_DIR/hypr/*/hyprland.lock`; with
+none running, it refuses rather than start a Sunshine with nothing to
+capture.
 
 A device pairs once: its user picks this computer, their screen shows a
 PIN, and the device appears here under *Waiting to pair*, where the PIN is
@@ -68,7 +74,35 @@ What sharing needs, and the page says so when it is missing:
   reach this desktop through a virtual one. Sunshine's packages install
   the udev rule; without it, the page gives the line that does.
 - **A graphical session**: Sunshine captures the screen of the session
-  inua-remote runs in.
+  inua-remote runs in, or of the one running for you.
+- **A screen**: a computer without a monitor has nothing to capture, and a
+  device connecting to it hears that it cannot show its screen. See below.
+
+### A computer without a monitor
+
+*Virtual screen*, under the sharing switch, is off unless you choose a
+size. With one chosen, the shell adds a headless output to Hyprland,
+`INUA-VIRTUAL` at that size, while no monitor is connected, and removes it
+when one is plugged in; a monitor turned off (a laptop with its lid
+closed) still counts as connected. Sunshine looks for screens and encoders
+as it starts, so a running Sunshine is started again when the virtual
+screen comes or goes. The setting is the file `virtual` in
+`~/.config/inua/sharing/`; `inua-remote --virtual-screen` sets it from a
+shell (`on` is 1920x1080@60).
+
+The output needs the session to be running: for a computer nobody logs
+in to, let the display manager start inua's session by itself. With
+greetd, for example, beside its `default_session`:
+
+```toml
+[initial_session]
+command = "/usr/local/bin/inua-session"
+user = "you"
+```
+
+The size is set with `hyprctl keyword monitor`, which a Lua configuration
+(Hyprland 0.55 and later) may not take; the screen is then Hyprland's
+default size.
 
 Encryption: the control stream, which carries the other device's input,
 is always encrypted (AES-GCM, the session's key). Video and sound are not
@@ -133,8 +167,10 @@ whole session (video, audio, input, and the host ending it); the control
 messages are checked against the host's own way of reading them, and the
 input packets byte for byte. `internal/gst` decodes an H.264 stream it
 encodes itself, and plays Opus into a fake sink. `internal/apps/remotedesk`
-runs against a fake Sunshine API served with the certificate inua made, and
-fake programs for systemd. The window was checked rendered offscreen
+runs against a fake Sunshine API served with the certificate inua made,
+fake programs for systemd, and a fake Hyprland socket for the virtual
+screen; `internal/hypr` finds the running instance among leftover
+directories. The window was checked rendered offscreen
 (Broadway).
 
 Against a real Sunshine (2026.914), sharing a nested Hyprland (`capture =

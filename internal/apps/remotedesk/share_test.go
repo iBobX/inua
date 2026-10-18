@@ -17,6 +17,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/lyricat/inua/internal/hypr"
 )
 
 // fakeSunshine is Sunshine's API, as it answers: it checks the basic
@@ -89,6 +91,7 @@ func newSharing(t *testing.T) (*Sharing, *fakeSunshine, *[]string) {
 		Getenv:   func(k string) string { return map[string]string{"WAYLAND_DISPLAY": "wayland-1", "PATH": "/usr/bin"}[k] },
 		Access:   func(string) error { return nil },
 		Hostname: func() (string, error) { return "desk", nil },
+		Instance: func() (hypr.Instance, error) { return hypr.Instance{}, hypr.ErrNoInstance },
 	}
 	f := &fakeSunshine{t: t, dir: dir, pinned: map[string]string{}}
 	var srv *httptest.Server

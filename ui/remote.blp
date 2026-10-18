@@ -203,6 +203,47 @@ ApplicationWindow remote {
                   }
                 }
 
+                // A screen for a computer without a monitor, chosen by its
+                // user: Off, or its size.
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Virtual screen");
+                      xalign: 0;
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: _("While no monitor is connected, this computer shows a screen of this size, to share.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  DropDown sharing_virtual {
+                    valign: center;
+
+                    model: StringList {
+                      strings [
+                        _("Off"),
+                        "1280 × 720",
+                        "1920 × 1080",
+                        "2560 × 1440",
+                        "3840 × 2160",
+                      ]
+                    };
+                  }
+                }
+
                 // What sharing needs that is not there, and how to get it.
                 Box sharing_need {
                   styles ["row"]

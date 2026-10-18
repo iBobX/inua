@@ -17,6 +17,7 @@ type fakeHyprland struct {
 	mu         sync.Mutex
 	replies    map[string]string
 	dispatched []string
+	requests   []string
 	eventConns []net.Conn
 	queries    int
 	connected  chan struct{}
@@ -85,6 +86,7 @@ func (f *fakeHyprland) serveRequests() {
 			cmd := string(buf[:n])
 			f.mu.Lock()
 			reply, ok := f.replies[cmd]
+			f.requests = append(f.requests, cmd)
 			if cmd == "j/clients" {
 				f.queries++
 			}

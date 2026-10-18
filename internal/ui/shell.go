@@ -71,6 +71,9 @@ type shellUI struct {
 	client    *hypr.Client
 	snap      hypr.Snapshot
 	connected bool
+	// virtual asks for the virtual screen to follow the monitors again
+	// (syncVirtual); a request already waiting covers a new one.
+	virtual chan struct{}
 	// hyprLua: Hyprland runs Lua (0.55 and later; probeLua). The overview
 	// needs it, and focusing and switching use its dispatchers when there,
 	// the classic ones otherwise.
@@ -521,6 +524,10 @@ func (h hyprHandler) OnEvent(e hypr.Event) {
 		on := strings.HasPrefix(e.Data, "1")
 		gtkx.Post(func() { h.s.passCapture(func(m *shell.PassMask) { m.Screencast(on) }) })
 	}
+	switch e.Name {
+	case "monitoradded", "monitorremoved", "configreloaded":
+		h.s.followMonitors()
+	}
 	if e.Name == "configreloaded" {
 		// inua.conf may have changed what is in effect.
 		gtkx.Post(func() {
@@ -535,6 +542,9 @@ func (h hyprHandler) OnEvent(e hypr.Event) {
 }
 func (h hyprHandler) OnConnection(up bool, err error) {
 	log.Printf("hyprland: connected=%v err=%v", up, err)
+	if up { // Hyprland may have started again, without the virtual screen
+		h.s.followMonitors()
+	}
 	gtkx.Post(func() {
 		h.s.connected = up
 		if up {

@@ -460,10 +460,14 @@ func (s *stream) end(err error) {
 		}
 	}
 	var ended *gamestream.ErrHostEnded
+	var status *gamestream.StatusError
 	switch {
 	case err == nil:
 	case errors.As(err, &ended):
 		err = errors.New(i18n.Tf("%s ended the session.", remotedesk.Label(s.m)))
+	case errors.As(err, &status) && status.Code == 503:
+		// Sunshine's answer when it has no screen to capture.
+		err = errors.New(i18n.Tf("%s cannot show its screen: no monitor is connected, or its desktop session is not running. A computer without a monitor can share a virtual screen (Remote Desktop, Sharing).", remotedesk.Label(s.m)))
 	default:
 		err = errors.New(i18n.Tf("%s: %v", remotedesk.Label(s.m), err))
 	}

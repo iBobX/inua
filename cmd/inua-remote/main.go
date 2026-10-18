@@ -5,6 +5,7 @@
 //
 //	inua-remote                      open the window
 //	inua-remote --share on           share this desktop, now and at login (off to stop)
+//	inua-remote --virtual-screen on  a screen to share while no monitor is connected (off, or a size)
 //	inua-remote --pair PIN           pair the device waiting, with the PIN it shows
 //	inua-remote --status             whether it is shared, what sharing needs, the devices
 package main
@@ -30,10 +31,12 @@ func main() {
 	device := flag.String("device", "", "with --pair: the `device` to pair, by its name or address, when several wait")
 	name := flag.String("name", "", "with --pair: the `name` to know the device by here (its own, if not given)")
 	wait := flag.Duration("wait", time.Minute, "with --pair: how long to wait for the device to ask")
+	virtual := flag.String("virtual-screen", "", "on: a screen of "+remotedesk.DefaultVirtualMode+" to share while no monitor is connected, or a `size` like 2560x1440@60; off: none")
 	status := flag.Bool("status", false, "whether this desktop is shared, what sharing needs, and the devices waiting and paired")
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-remote [-ui-dir DIR]")
 		fmt.Fprintln(os.Stderr, "       inua-remote --share on|off")
+		fmt.Fprintln(os.Stderr, "       inua-remote --virtual-screen on|off|WIDTHxHEIGHT@HZ")
 		fmt.Fprintln(os.Stderr, "       inua-remote --pair PIN [--device NAME|ADDRESS] [--name NAME] [--wait 1m]")
 		fmt.Fprintln(os.Stderr, "       inua-remote --status")
 		flag.PrintDefaults()
@@ -55,6 +58,8 @@ func main() {
 		if err := s.SetOn(ctx, *share == "on"); err != nil {
 			fail(err)
 		}
+	case *virtual != "":
+		setVirtual(s, *virtual)
 	case *pair != "":
 		pairDevice(s, *pair, *device, *name, *wait)
 	case *status:
@@ -62,6 +67,29 @@ func main() {
 	default:
 		remoteui.Register()
 		os.Exit(appui.Run("remote", nil, *uiDir))
+	}
+}
+
+// setVirtual turns the virtual screen on or off, and makes it so now
+// when the session is running.
+func setVirtual(s *remotedesk.Sharing, mode string) {
+	switch mode {
+	case "on":
+		mode = remotedesk.DefaultVirtualMode
+	case "off":
+		mode = ""
+	}
+	if err := s.SetVirtual(mode); err != nil {
+		fail(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err := s.SyncVirtual(ctx)
+	switch {
+	case errors.Is(err, remotedesk.ErrNoSession):
+		fmt.Println("No desktop session is running: the setting takes effect when one starts.")
+	case err != nil:
+		fail(err)
 	}
 }
 
@@ -121,13 +149,18 @@ func printStatus(s *remotedesk.Sharing) {
 		version = "not installed"
 	}
 	fmt.Printf("sunshine: %s\nshared: %v (on at login: %v)\n", version, st.Running, s.On())
+	if v := s.Virtual(); v != "" {
+		fmt.Printf("virtual screen: %s, while no monitor is connected\n", v)
+	} else {
+		fmt.Println("virtual screen: off")
+	}
 	switch st.Need {
 	case remotedesk.NeedSunshine:
 		fmt.Println("needs: Sunshine (github.com/LizardByte/Sunshine/releases)")
 	case remotedesk.NeedInput:
 		fmt.Println("needs: /dev/uinput writable by you (udev rule: " + remotedesk.UinputRule + ")")
 	case remotedesk.NeedDisplay:
-		fmt.Println("needs: a graphical session")
+		fmt.Println("needs: a graphical session; none is running (log in on this computer)")
 	}
 	if !st.Running {
 		return

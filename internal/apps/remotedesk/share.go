@@ -7,6 +7,7 @@ package remotedesk
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
@@ -30,6 +31,8 @@ import (
 	"time"
 
 	"golang.org/x/sys/unix"
+
+	"github.com/lyricat/inua/internal/hypr"
 )
 
 // Unit is the systemd user unit Sunshine runs in while the desktop is
@@ -49,6 +52,9 @@ type Sharing struct {
 	Access   func(path string) error // whether the user can write path
 	API      string                  // https://127.0.0.1:47990
 	Hostname func() (string, error)
+	// Instance is the Hyprland running for this user, for a command run
+	// outside the session (over SSH).
+	Instance func() (hypr.Instance, error)
 }
 
 // NewSharing is the sharing of the user's session.
@@ -57,6 +63,7 @@ func NewSharing() *Sharing {
 		Dir: filepath.Join(configHome(), "inua", "sharing"), LookPath: exec.LookPath, Run: run, Getenv: os.Getenv,
 		Access: func(p string) error { return unix.Access(p, unix.W_OK) },
 		API:    fmt.Sprintf("https://127.0.0.1:%d", APIPort), Hostname: os.Hostname,
+		Instance: func() (hypr.Instance, error) { return hypr.FindInstance(os.Getenv("XDG_RUNTIME_DIR")) },
 	}
 }
 
@@ -83,7 +90,7 @@ const (
 	NeedNothing  Need = iota
 	NeedSunshine      // Sunshine is not installed
 	NeedInput         // /dev/uinput is not the user's: the remote side's keys and mouse cannot reach this desktop
-	NeedDisplay       // not in a graphical session
+	NeedDisplay       // no graphical session: not in one, and none running
 )
 
 // Status is what sharing stands at.
@@ -113,7 +120,7 @@ func (s *Sharing) Status(ctx context.Context) Status {
 	}
 	if s.Access(Uinput) != nil {
 		st.Need = NeedInput
-	} else if s.Getenv("WAYLAND_DISPLAY") == "" && s.Getenv("DISPLAY") == "" {
+	} else if _, err := s.session(); err != nil {
 		st.Need = NeedDisplay
 	}
 	out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit)
@@ -251,10 +258,51 @@ func writeCert(certPath, keyPath string) error {
 	return os.WriteFile(certPath, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}), 0600)
 }
 
-// Start shares the desktop: Sunshine runs as a user unit with this
+// ErrNoSession is no graphical session to share: the command runs
+// outside one (over SSH), and no Hyprland is running for this user.
+var ErrNoSession = errors.New("sharing: no desktop session is running on this computer; log in to it first")
+
+// sessionEnv are the variables Sunshine takes from the session: its
+// display, and its bus for the screen and the sound.
+var sessionEnv = []string{"WAYLAND_DISPLAY", "DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_CURRENT_DESKTOP",
+	"HYPRLAND_INSTANCE_SIGNATURE", "DBUS_SESSION_BUS_ADDRESS", "PULSE_SERVER", "PATH"}
+
+// session is the environment of the session to share: this process's,
+// when it runs in one, or else the running Hyprland's. Without either,
+// Sunshine would start with nothing to capture.
+func (s *Sharing) session() (map[string]string, error) {
+	env := map[string]string{}
+	for _, k := range sessionEnv {
+		if v := s.Getenv(k); v != "" {
+			env[k] = v
+		}
+	}
+	if env["WAYLAND_DISPLAY"] != "" || env["DISPLAY"] != "" {
+		return env, nil
+	}
+	i, err := s.Instance()
+	if err != nil {
+		return nil, ErrNoSession
+	}
+	env["WAYLAND_DISPLAY"] = i.Wayland
+	env["XDG_RUNTIME_DIR"] = i.Runtime
+	env["HYPRLAND_INSTANCE_SIGNATURE"] = i.Signature
+	env["XDG_SESSION_TYPE"] = "wayland"
+	env["XDG_CURRENT_DESKTOP"] = "Hyprland"
+	if env["DBUS_SESSION_BUS_ADDRESS"] == "" {
+		env["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=" + filepath.Join(i.Runtime, "bus")
+	}
+	return env, nil
+}
+
+// Start shares the desktop: Sunshine runs as a user unit with the
 // session's display, and Start returns once its API answers.
 func (s *Sharing) Start(ctx context.Context) error {
 	bin, err := s.LookPath("sunshine")
+	if err != nil {
+		return err
+	}
+	env, err := s.session()
 	if err != nil {
 		return err
 	}
@@ -264,11 +312,9 @@ func (s *Sharing) Start(ctx context.Context) error {
 	s.Run(ctx, "systemctl", "--user", "reset-failed", Unit)
 	args := []string{"--user", "--unit=" + Unit, "--description=inua desktop sharing (Sunshine)", "--collect", "--quiet",
 		"--property=Restart=on-failure", "--property=RestartSec=3"}
-	// The unit starts in the user manager's environment; Sunshine needs the
-	// session's display, and its bus for the screen and the sound.
-	for _, k := range []string{"WAYLAND_DISPLAY", "DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_CURRENT_DESKTOP",
-		"HYPRLAND_INSTANCE_SIGNATURE", "DBUS_SESSION_BUS_ADDRESS", "PULSE_SERVER", "PATH"} {
-		if v := s.Getenv(k); v != "" {
+	// The unit starts in the user manager's environment, not the session's.
+	for _, k := range sessionEnv {
+		if v := env[k]; v != "" {
 			args = append(args, "--setenv="+k+"="+v)
 		}
 	}
@@ -456,6 +502,73 @@ func (s *Sharing) AtLogin(ctx context.Context) error {
 	}
 	if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) == "active" {
 		return nil
+	}
+	return s.Start(ctx)
+}
+
+// VirtualModes are the virtual screen's sizes to choose from.
+var VirtualModes = []string{"1280x720@60", "1920x1080@60", "2560x1440@60", "3840x2160@60"}
+
+// DefaultVirtualMode is the virtual screen's size unless another is chosen.
+const DefaultVirtualMode = "1920x1080@60"
+
+// Virtual is the virtual screen's mode ("1920x1080@60"), or "" when there
+// is none: the user turns it on for a computer without a monitor, so it
+// has a screen to share.
+func (s *Sharing) Virtual() string {
+	data, err := os.ReadFile(s.file("virtual"))
+	if err != nil {
+		return ""
+	}
+	mode := strings.TrimSpace(string(data))
+	if _, _, _, ok := hypr.ParseMode(mode); !ok {
+		return ""
+	}
+	return mode
+}
+
+// SetVirtual turns the virtual screen on at mode, or off with "". It is
+// kept for the next login; SyncVirtual makes it so now.
+func (s *Sharing) SetVirtual(mode string) error {
+	if mode != "" {
+		if _, _, _, ok := hypr.ParseMode(mode); !ok {
+			return fmt.Errorf("sharing: virtual screen %q: want WIDTHxHEIGHT@HZ, like %s", mode, DefaultVirtualMode)
+		}
+	}
+	if err := os.MkdirAll(s.Dir, 0700); err != nil {
+		return err
+	}
+	return os.WriteFile(s.file("virtual"), []byte(mode+"\n"), 0600)
+}
+
+// SyncVirtual makes the session's outputs follow the setting: the virtual
+// screen is there while it is on and no monitor is connected, and gone
+// otherwise (hypr.SyncVirtualScreen). Sunshine looks for screens and
+// encoders as it starts, so a running Sunshine is started again when the
+// screen comes or goes. The error is ErrNoSession without a session.
+func (s *Sharing) SyncVirtual(ctx context.Context) error {
+	env, err := s.session()
+	if err != nil {
+		return err
+	}
+	sig := env["HYPRLAND_INSTANCE_SIGNATURE"]
+	if sig == "" {
+		if s.Virtual() == "" {
+			return nil // another desktop, and nothing asked of it
+		}
+		return errors.New("sharing: a virtual screen needs Hyprland")
+	}
+	runtime := cmp.Or(env["XDG_RUNTIME_DIR"], fmt.Sprintf("/run/user/%d", os.Getuid()))
+	client := hypr.NewClient(hypr.Instance{Signature: sig, Runtime: runtime}.Paths())
+	changed, err := client.SyncVirtualScreen(ctx, s.Virtual())
+	if err != nil || !changed {
+		return err
+	}
+	if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) != "active" {
+		return nil
+	}
+	if err := s.Stop(ctx); err != nil {
+		return err
 	}
 	return s.Start(ctx)
 }

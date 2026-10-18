@@ -277,6 +277,57 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                   </object>
                                 </child>
                                 <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="row"/>
+                                    </style>
+                                    <property name="spacing">12</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="orientation">1</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="valign">3</property>
+                                        <property name="spacing">2</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="label"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Virtual screen</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="sub"/>
+                                            </style>
+                                            <property name="label" translatable="yes">While no monitor is connected, this computer shows a screen of this size, to share.</property>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkDropDown" id="sharing_virtual">
+                                        <property name="valign">3</property>
+                                        <property name="model">
+                                          <object class="GtkStringList">
+                                            <items>
+                                              <item translatable="yes">Off</item>
+                                              <item>1280 × 720</item>
+                                              <item>1920 × 1080</item>
+                                              <item>2560 × 1440</item>
+                                              <item>3840 × 2160</item>
+                                            </items>
+                                          </object>
+                                        </property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkBox" id="sharing_need">
                                     <style>
                                       <class name="row"/>

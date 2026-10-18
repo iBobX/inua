@@ -207,9 +207,9 @@ msgstr "%s にキー %s が表示されている場合のみペアリングし�
 #: internal/apps/connect/service.go:250
 #: internal/connectui/window.go:425
 #: internal/connectui/window.go:434
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
+#: internal/remoteui/window.go:527
+#: internal/remoteui/window.go:696
+#: ui/remote.ui:564
 msgid "Pair"
 msgstr "ペアリング"
 
@@ -232,7 +232,7 @@ msgstr "ペアリング中…"
 
 #: internal/apps/connect/service.go:509
 #: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
+#: internal/remoteui/window.go:266
 msgid "Connected"
 msgstr "接続された"
 
@@ -241,7 +241,7 @@ msgid "Away"
 msgstr "接続されていません"
 
 #: internal/apps/connect/service.go:513
-#: internal/remoteui/window.go:256
+#: internal/remoteui/window.go:261
 msgid "Not paired"
 msgstr "未ペアリング"
 
@@ -1606,7 +1606,7 @@ msgstr "置き換え"
 #: internal/appui/workshop_manager.go:88
 #: ui/connect.ui:966
 #: ui/pass.ui:818
-#: ui/remote.ui:905
+#: ui/remote.ui:956
 msgid "Add"
 msgstr "追加"
 
@@ -1896,7 +1896,7 @@ msgid "Private"
 msgstr "プライベート"
 
 #: internal/appui/sysmon.go:782
-#: internal/remoteui/window.go:429
+#: internal/remoteui/window.go:462
 msgid "Shared"
 msgstr "共有"
 
@@ -2575,12 +2575,13 @@ msgstr "再生できません: %s"
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/remoteui/window.go:435
+#: internal/remoteui/window.go:468
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: ui/remote.ui:318
 #: ui/settings.ui:5027
 msgid "Off"
 msgstr "オフ"
@@ -2708,7 +2709,7 @@ msgstr "不明な部品 %q"
 #: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
-#: internal/remoteui/window.go:660
+#: internal/remoteui/window.go:694
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -2990,7 +2991,7 @@ msgid "Devices running KDE Connect, GSConnect or Valent find this computer on th
 msgstr "KDE Connect、GSConnect、Valent を使うデバイスは、このネットワークと tailnet でこのコンピューターを見つけてペアリングできます。"
 
 #: internal/connectui/window.go:384
-#: internal/remoteui/window.go:432
+#: internal/remoteui/window.go:465
 msgid "Starting…"
 msgstr "起動中…"
 
@@ -3019,7 +3020,7 @@ msgid "Accept on %s if it shows this key:"
 msgstr "%s にこのキーが表示されていれば、そちらで承認してください:"
 
 #: internal/connectui/window.go:432
-#: internal/remoteui/window.go:525
+#: internal/remoteui/window.go:559
 msgid "Unpair"
 msgstr "ペアリング解除"
 
@@ -3847,7 +3848,7 @@ msgid "Not allowed."
 msgstr "許可されていません。"
 
 #: internal/filesui/cards.go:661
-#: internal/remoteui/stream.go:468
+#: internal/remoteui/stream.go:472
 msgid "%s: %v"
 msgstr "%s：%v"
 
@@ -4268,7 +4269,7 @@ msgstr "%s に接続しています…"
 
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
-#: ui/remote.ui:523
+#: ui/remote.ui:574
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
 msgid "Connect"
@@ -4325,7 +4326,7 @@ msgstr "%s を切断しました。"
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
-#: ui/remote.ui:492
+#: ui/remote.ui:543
 msgid "Forget"
 msgstr "キーを削除"
 
@@ -8075,139 +8076,147 @@ msgstr "%s — リモートデスクトップ"
 msgid "Ctrl+Alt+Shift+Q disconnects · F: full screen · Z: this desktop's shortcuts"
 msgstr "Ctrl+Alt+Shift+Q で切断 · F：全画面 · Z：このデスクトップのショートカット"
 
-#: internal/remoteui/stream.go:466
+#: internal/remoteui/stream.go:467
 msgid "%s ended the session."
 msgstr "%s がセッションを終了しました。"
 
-#: internal/remoteui/window.go:119
+#: internal/remoteui/stream.go:470
+msgid "%s cannot show its screen: no monitor is connected, or its desktop session is not running. A computer without a monitor can share a virtual screen (Remote Desktop, Sharing)."
+msgstr "%s は画面を表示できません: モニターが接続されていないか、デスクトップセッションが動いていません。モニターのないコンピューターは仮想画面を共有できます（リモートデスクトップ、共有）。"
+
+#: internal/remoteui/window.go:122
 msgid "This computer has no identity to pair with: %v"
 msgstr "このコンピューターにはペアリング用の ID がありません：%v"
 
-#: internal/remoteui/window.go:258
+#: internal/remoteui/window.go:263
 msgid "Paired"
 msgstr "ペアリング済み"
 
-#: internal/remoteui/window.go:269
+#: internal/remoteui/window.go:274
 msgid "Found on this network"
 msgstr "このネットワークで見つかりました"
 
-#: internal/remoteui/window.go:271
+#: internal/remoteui/window.go:276
 msgid "Found on the tailnet"
 msgstr "tailnet で見つかりました"
 
-#: internal/remoteui/window.go:386
+#: internal/remoteui/window.go:391
 msgid "Sharing did not start: %v"
 msgstr "共有を開始できませんでした：%v"
 
-#: internal/remoteui/window.go:430
+#: internal/remoteui/window.go:426
+msgid "The virtual screen did not change: %v"
+msgstr "仮想画面を変更できませんでした: %v"
+
+#: internal/remoteui/window.go:463
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "ほかのデバイスからは、このネットワークと tailnet でこのコンピューターが %s として見えます。デバイスは一度だけ、ここで PIN を入力してペアリングします。"
 
-#: internal/remoteui/window.go:433
+#: internal/remoteui/window.go:466
 msgid "Sunshine is starting."
 msgstr "Sunshine を起動しています。"
 
-#: internal/remoteui/window.go:436
+#: internal/remoteui/window.go:469
 msgid "Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."
 msgstr "ほかのデバイスから、Moonlight やリモートデスクトップでこのデスクトップを表示・操作できます。"
 
-#: internal/remoteui/window.go:446
+#: internal/remoteui/window.go:480
 msgid "Sharing needs Sunshine, which is not installed."
 msgstr "共有には Sunshine が必要ですが、インストールされていません。"
 
-#: internal/remoteui/window.go:447
+#: internal/remoteui/window.go:481
 msgid "Install the package for your system from github.com/LizardByte/Sunshine/releases (Ubuntu: sudo apt install ./sunshine_…_amd64.deb)."
 msgstr "github.com/LizardByte/Sunshine/releases からお使いのシステム向けのパッケージをインストールしてください（Ubuntu：sudo apt install ./sunshine_…_amd64.deb）。"
 
-#: internal/remoteui/window.go:449
+#: internal/remoteui/window.go:483
 msgid "The other device's keyboard and mouse cannot reach this desktop: /dev/uinput is not yours."
 msgstr "相手のデバイスのキーボードとマウスがこのデスクトップに届きません：/dev/uinput にアクセスできません。"
 
-#: internal/remoteui/window.go:452
+#: internal/remoteui/window.go:486
 msgid "Sharing needs a graphical session to show."
 msgstr "共有するにはグラフィカルセッションが必要です。"
 
-#: internal/remoteui/window.go:477
+#: internal/remoteui/window.go:511
 msgid "A device"
 msgstr "デバイス"
 
-#: internal/remoteui/window.go:481
+#: internal/remoteui/window.go:515
 msgid "at %s: type the PIN it shows"
 msgstr "%s から：表示されている PIN を入力"
 
-#: internal/remoteui/window.go:508
+#: internal/remoteui/window.go:542
 msgid "No device is paired yet."
 msgstr "ペアリング済みのデバイスはまだありません。"
 
-#: internal/remoteui/window.go:513
+#: internal/remoteui/window.go:547
 msgid "The paired devices show while sharing is on."
 msgstr "ペアリング済みのデバイスは共有中に表示されます。"
 
-#: internal/remoteui/window.go:546
+#: internal/remoteui/window.go:580
 msgid "A PIN is four digits."
 msgstr "PIN は4桁の数字です。"
 
-#: internal/remoteui/window.go:556
+#: internal/remoteui/window.go:590
 msgid "That is not the PIN %s shows."
 msgstr "それは %s に表示されている PIN ではありません。"
 
-#: internal/remoteui/window.go:635
+#: internal/remoteui/window.go:669
 msgid "Asking…"
 msgstr "問い合わせ中…"
 
-#: internal/remoteui/window.go:638
+#: internal/remoteui/window.go:672
 msgid "Connected: its desktop is in a window of its own."
 msgstr "接続中：デスクトップは別のウィンドウにあります。"
 
-#: internal/remoteui/window.go:641
+#: internal/remoteui/window.go:675
 msgid "It does not answer: it is off, or not sharing its desktop."
 msgstr "応答がありません：電源が切れているか、デスクトップを共有していません。"
 
-#: internal/remoteui/window.go:643
+#: internal/remoteui/window.go:677
 msgid "It shares with Nvidia's GameStream, which Remote Desktop does not speak."
 msgstr "Nvidia の GameStream で共有しています。リモートデスクトップは対応していません。"
 
-#: internal/remoteui/window.go:645
+#: internal/remoteui/window.go:679
 msgid "It has forgotten this computer: pair again."
 msgstr "このコンピューターを忘れています：もう一度ペアリングしてください。"
 
-#: internal/remoteui/window.go:647
+#: internal/remoteui/window.go:681
 msgid "Not paired: pair once, with a PIN typed on it."
 msgstr "未ペアリング：一度、相手側で PIN を入力してペアリングします。"
 
-#: internal/remoteui/window.go:649
+#: internal/remoteui/window.go:683
 msgid "Paired. Its desktop is being streamed; connecting joins in."
 msgstr "ペアリング済み。デスクトップは配信中で、接続すると参加します。"
 
-#: internal/remoteui/window.go:651
+#: internal/remoteui/window.go:685
 msgid "Paired, and ready."
 msgstr "ペアリング済みで、準備完了です。"
 
-#: internal/remoteui/window.go:684
+#: internal/remoteui/window.go:718
 msgid "On %s, open Remote Desktop → Sharing (or Sunshine's PIN page) and type:"
 msgstr "%s でリモートデスクトップ → 共有（または Sunshine の PIN ページ）を開き、次を入力してください："
 
-#: internal/remoteui/window.go:708
+#: internal/remoteui/window.go:742
 msgid "The PIN typed there was not this one. Pair again."
 msgstr "相手側で入力された PIN はこれではありませんでした。もう一度ペアリングしてください。"
 
-#: internal/remoteui/window.go:711
+#: internal/remoteui/window.go:745
 msgid "Pairing failed: %v"
 msgstr "ペアリングに失敗しました：%v"
 
-#: internal/remoteui/window.go:767
+#: internal/remoteui/window.go:801
 msgid "Nothing shares a desktop at %s: %v"
 msgstr "%s でデスクトップを共有しているものはありません：%v"
 
-#: internal/remoteui/window.go:834
+#: internal/remoteui/window.go:868
 msgid "This computer cannot decode it: choose another."
 msgstr "このコンピューターではデコードできません：別のものを選んでください。"
 
-#: internal/remoteui/window.go:836
+#: internal/remoteui/window.go:870
 msgid "Decoded by the processor here: slower than the graphics card."
 msgstr "ここでは CPU でデコードします：グラフィックカードより遅くなります。"
 
-#: internal/remoteui/window.go:838
+#: internal/remoteui/window.go:872
 msgid "Decoded by the graphics card here. HEVC and AV1 look better than H.264 at the same bitrate."
 msgstr "ここではグラフィックカードでデコードします。同じビットレートなら HEVC と AV1 は H.264 よりきれいです。"
 
@@ -11303,68 +11312,76 @@ msgstr "[共有]"
 msgid "Share this desktop"
 msgstr "このデスクトップを共有"
 
-#: ui/remote.ui:339
+#: ui/remote.ui:296
+msgid "Virtual screen"
+msgstr "仮想画面"
+
+#: ui/remote.ui:305
+msgid "While no monitor is connected, this computer shows a screen of this size, to share."
+msgstr "モニターが接続されていない間、このコンピューターは共有用にこのサイズの画面を表示します。"
+
+#: ui/remote.ui:390
 msgid "[WAITING TO PAIR]"
 msgstr "[ペアリング待ち]"
 
-#: ui/remote.ui:381
+#: ui/remote.ui:432
 msgid "[PAIRED DEVICES]"
 msgstr "[ペアリング済みデバイス]"
 
-#: ui/remote.ui:502
+#: ui/remote.ui:553
 msgid "End its session"
 msgstr "セッションを終了"
 
-#: ui/remote.ui:503
+#: ui/remote.ui:554
 msgid "Ends what is streaming there, for every device"
 msgstr "そこで配信中のものを、すべてのデバイスに対して終了します"
 
-#: ui/remote.ui:587
+#: ui/remote.ui:638
 msgid "[STREAM]"
 msgstr "[配信]"
 
-#: ui/remote.ui:597
+#: ui/remote.ui:648
 msgid "for every machine"
 msgstr "すべてのマシン共通"
 
-#: ui/remote.ui:625
+#: ui/remote.ui:676
 msgid "Resolution"
 msgstr "解像度"
 
-#: ui/remote.ui:634
+#: ui/remote.ui:685
 msgid "The machine shows its desktop at this size."
 msgstr "マシンはデスクトップをこのサイズで表示します。"
 
-#: ui/remote.ui:647
+#: ui/remote.ui:698
 #: ui/settings.ui:1211
 msgid "This monitor's"
 msgstr "このモニターの"
 
-#: ui/remote.ui:670
+#: ui/remote.ui:721
 msgid "Frames a second"
 msgstr "フレームレート"
 
-#: ui/remote.ui:709
+#: ui/remote.ui:760
 msgid "Bitrate"
 msgstr "ビットレート"
 
-#: ui/remote.ui:718
+#: ui/remote.ui:769
 msgid "Megabits a second: more is sharper, and needs a faster network."
 msgstr "メガビット毎秒：大きいほど鮮明で、速いネットワークが必要です。"
 
-#: ui/remote.ui:758
+#: ui/remote.ui:809
 msgid "Codec"
 msgstr "コーデック"
 
-#: ui/remote.ui:800
+#: ui/remote.ui:851
 msgid "Play the sound on the machine too"
 msgstr "マシン側でも音を鳴らす"
 
-#: ui/remote.ui:860
+#: ui/remote.ui:911
 msgid "[ADD A MACHINE]"
 msgstr "[マシンを追加]"
 
-#: ui/remote.ui:885
+#: ui/remote.ui:936
 msgid "Its address on the network: a name, an IP address, or either with :port."
 msgstr "ネットワーク上のアドレス：名前、IP アドレス、またはそれに :ポート を付けたもの。"
 
