@@ -30,7 +30,7 @@ jobs:
             blueprint-compiler gir1.2-gtk-4.0
       - name: Go formatting
         run: |
-          unformatted=$(git ls-files '*.go' | xargs gofmt -l)
+          unformatted=$(git ls-files '*.go' ':!third_party' | xargs gofmt -l)
           if [ -n "$unformatted" ]; then
             printf '%s\n' "$unformatted"
             exit 1

@@ -47,7 +47,7 @@ Go packages with tests, and the view thin.
 
 | Risk | Answer |
 | --- | --- |
-| puregotk is experimental, unreleased, and has a few wrong APIs | Pin a commit; use only the patterns `gtkx` wraps; run `scripts/spike.sh shell stress` on upgrades; move to gotk4 if needed |
+| puregotk is experimental, unreleased, and has a few wrong APIs | Carry a trimmed copy of one commit, patched (`third_party/puregotk/INUA.md`); use only the patterns `gtkx` wraps; run `scripts/spike.sh shell stress` on upgrades; move to gotk4 if needed |
 | Ownership and callback rules are easy to get wrong | Interface code goes through `internal/gtkx` (`Append`, `Clear`, `Scope`, `Builder.Get/Take`, long-lived handlers); stress tests watch memory and GTK warnings |
 | Showing the same layer surface again hangs | Overlays build a new window on every open; check whether it happens outside nested sessions and report it to gtk4-layer-shell / Hyprland |
 | More code to update the interface from state | Shell state, search and focus rules live in `internal/shell` with tests; the view only maps state to widgets |

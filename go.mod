@@ -92,3 +92,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+// GTK through puregotk, patched to bind each function on its first call
+// (third_party/puregotk/INUA.md).
+replace codeberg.org/puregotk/puregotk => ./third_party/puregotk
