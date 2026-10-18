@@ -89,3 +89,35 @@ Going further would take a process kept running that starts each app with
 GTK, the style and the icon themes already loaded (a "zygote", as
 Android's), which has its own costs: memory held all the time, and an app's
 crash or leak reaching the next.
+
+## Lessons for the next time
+
+- **Time what the user sees.** Mark the first frame and the moment the
+  real content shows, not only functions. The two largest gains here
+  (System Monitor's numbers and Files' rows, a second each) saved little
+  CPU time: they moved the content forward.
+- **Measure on a real desktop's settings.** The icon theme's cost depends
+  on the theme: a quarter of a second with Numix-Circle, none with
+  Adwaita. A clean test machine would not have shown it.
+- **Look for work done twice and for its order.** The icon theme was read
+  at start and again after the apps switched theme; setting it first
+  removed the second read.
+- **Compare builds fairly.** Run the old and the new build in turns, many
+  times, and take medians: another program's load once added more than a
+  second to every number. When a number looks wrong, read one run's raw
+  marks before believing the summary: a mark printed again later (Mobile
+  Link's list, refreshed every three seconds) once showed a slowdown that
+  was not there.
+- **Try the other way before choosing.** Files' rest of the folder in one
+  frame and in parts finished at the same time; the parts kept every frame
+  short. Only measuring both said so.
+- **Wrong first data is a bug, not slowness.** System Monitor's first
+  sample compared readings microseconds apart.
+- **Find who depends on what a fix changes.** Inheriting Adwaita would have
+  dropped the desktop's app icons from Files' "Open with" list; searching
+  for the desktop theme's users found it before a person did.
+- **Tell the toolkit's cost from ours.** The same window in a few lines of
+  Python and GTK 4 showed the icon theme's cost was GTK's, and
+  `GODEBUG=inittrace=1` showed the bindings' share of the start.
+- **Write down what is left and why.** Costs not worth fixing yet stay in
+  the list above, so they are not measured again from nothing.
