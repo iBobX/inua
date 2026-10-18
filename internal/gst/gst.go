@@ -47,6 +47,10 @@ var (
 	bufferUnmap          func(buf uintptr, info *mapInfo)
 
 	appSinkTryPullSample func(sink uintptr, timeout uint64) uintptr
+	appSrcPushBuffer     func(src, buf uintptr) int32
+	bufferNewAllocate    func(allocator, size, params uintptr) uintptr
+	bufferFill           func(buf, offset uintptr, src unsafe.Pointer, size uintptr) uintptr
+	elementFactoryFind   func(name string) uintptr
 
 	discovererNew             func(timeout uint64, err *uintptr) uintptr
 	discovererDiscoverURI     func(d uintptr, uri string, err *uintptr) uintptr
@@ -155,10 +159,13 @@ func load() error {
 		"gst_util_set_object_arg": &utilSetObjectArg, "gst_sample_get_buffer": &sampleGetBuffer,
 		"gst_sample_get_caps": &sampleGetCaps, "gst_caps_get_structure": &capsGetStructure,
 		"gst_buffer_map": &bufferMap, "gst_buffer_unmap": &bufferUnmap,
+		"gst_buffer_new_allocate": &bufferNewAllocate, "gst_buffer_fill": &bufferFill,
+		"gst_element_factory_find": &elementFactoryFind,
 	} {
 		purego.RegisterLibFunc(f, core, name)
 	}
 	purego.RegisterLibFunc(&appSinkTryPullSample, app, "gst_app_sink_try_pull_sample")
+	purego.RegisterLibFunc(&appSrcPushBuffer, app, "gst_app_src_push_buffer")
 	purego.RegisterLibFunc(&discovererNew, pb, "gst_discoverer_new")
 	purego.RegisterLibFunc(&discovererDiscoverURI, pb, "gst_discoverer_discover_uri")
 	purego.RegisterLibFunc(&discovererInfoGetDuration, pb, "gst_discoverer_info_get_duration")
