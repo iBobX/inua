@@ -187,8 +187,8 @@ msgid "Reply"
 msgstr "답장"
 
 #: internal/apps/connect/service.go:246
-#: internal/apps/connect/share.go:196
-#: internal/apps/connect/share.go:202
+#: internal/apps/connect/share.go:213
+#: internal/apps/connect/share.go:219
 #: internal/connectui/app.go:20
 #: ui/connect.ui:14
 #: ui/connect.ui:32
@@ -260,23 +260,23 @@ msgstr "%d%%, 충전 중"
 msgid "%d%%"
 msgstr "%d%%"
 
-#: internal/apps/connect/share.go:64
+#: internal/apps/connect/share.go:65
 msgid "Text from %s"
 msgstr "%s에서 온 텍스트"
 
-#: internal/apps/connect/share.go:65
+#: internal/apps/connect/share.go:66
 msgid "It is on the clipboard."
 msgstr "클립보드에 있습니다."
 
-#: internal/apps/connect/share.go:112
+#: internal/apps/connect/share.go:115
 msgid "A file from %s did not arrive"
 msgstr "%s에서 보낸 파일이 도착하지 않았습니다"
 
-#: internal/apps/connect/share.go:124
+#: internal/apps/connect/share.go:127
 msgid "A file from %s"
 msgstr "%s에서 온 파일"
 
-#: internal/apps/connect/share.go:126
+#: internal/apps/connect/share.go:129
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:698
@@ -286,21 +286,21 @@ msgstr "%s에서 온 파일"
 msgid "Open"
 msgstr "열기"
 
-#: internal/apps/connect/share.go:126
+#: internal/apps/connect/share.go:129
 #: internal/ui/record.go:163
 #: internal/ui/screenshot.go:808
 msgid "Show in Folder"
 msgstr "폴더에 표시"
 
-#: internal/apps/connect/share.go:143
+#: internal/apps/connect/share.go:160
 msgid "Shared file"
 msgstr "공유된 파일"
 
-#: internal/apps/connect/share.go:197
+#: internal/apps/connect/share.go:214
 msgid "%s did not get %s"
 msgstr "%s에서 %s을(를) 받지 못했습니다"
 
-#: internal/apps/connect/share.go:203
+#: internal/apps/connect/share.go:220
 msgid "Sent %d file to %s"
 msgid_plural "Sent %d files to %s"
 msgstr[0] "%d개의 파일을 %s에 보냈습니다"
@@ -4407,7 +4407,7 @@ msgstr "기회"
 #: internal/gamesui/fortune_board.go:887
 #: internal/gamesui/fortune_panel.go:365
 msgid "Card Shop"
-msgstr ""
+msgstr "카드 상점"
 
 #: internal/games/fortune.go:66
 #: internal/gamesui/fortune_menu.go:183
@@ -4496,7 +4496,7 @@ msgstr "%[1]s는 세 번의 시도 끝에 $%[2]d의 보석금을 지불했습니
 
 #: internal/games/fortune.go:625
 msgid "%s is a turtle: one square."
-msgstr ""
+msgstr "%s은(는) 거북이입니다: 한 칸."
 
 #: internal/games/fortune.go:630
 msgid "Three doubles in a row: %s goes to jail."
@@ -4516,7 +4516,7 @@ msgstr "%[1]s는 %[2]s를 감당할 수 없습니다."
 
 #: internal/games/fortune.go:741
 msgid "%s owed %s rent for %s and paid nothing: Free Rent."
-msgstr ""
+msgstr "%[1]s은(는) %[3]s의 임대료를 %[2]s에게 내야 했지만 아무것도 내지 않았습니다: 임대료 면제."
 
 #: internal/games/fortune.go:747
 msgid "%s paid %s $%d rent for %s."
@@ -4604,15 +4604,15 @@ msgstr "무단횡단하다 적발되어 감옥에 갑니다."
 
 #: internal/games/fortune.go:817
 msgid "A card left on a bench: take it."
-msgstr ""
+msgstr "벤치에 놓인 카드: 가져가세요."
 
 #: internal/games/fortune.go:818
 msgid "The shopkeeper owes you a favour: take a card."
-msgstr ""
+msgstr "가게 주인이 신세를 갚습니다: 카드를 한 장 가져가세요."
 
 #: internal/games/fortune.go:819
 msgid "You won a raffle: take a card."
-msgstr ""
+msgstr "추첨에 당첨되었습니다: 카드를 한 장 가져가세요."
 
 #: internal/games/fortune.go:848
 msgid "Chance for %s: %s"
@@ -4620,7 +4620,7 @@ msgstr "%[1]s에 대한 기회: %[2]s"
 
 #: internal/games/fortune.go:851
 msgid "%s takes a card: %s."
-msgstr ""
+msgstr "%s이(가) 카드를 받았습니다: %s."
 
 #: internal/games/fortune.go:948
 msgid "%s sold a house on %s for $%d."
@@ -4636,7 +4636,7 @@ msgstr "%s는 파산하여 게임에서 제외되었습니다."
 
 #: internal/games/fortune.go:1001
 msgid "%s sleeps through their turn."
-msgstr ""
+msgstr "%s은(는) 잠들어 차례를 쉽니다."
 
 #: internal/games/fortune.go:1021
 msgid "%s won with $%d in worth."
@@ -4644,164 +4644,164 @@ msgstr "%[1]s는 $%[2]d 가치로 승리했습니다."
 
 #: internal/games/fortune_cards.go:53
 msgid "Loaded Dice"
-msgstr ""
+msgstr "조작된 주사위"
 
 #: internal/games/fortune_cards.go:53
 msgid "Before you roll: walk the number of squares you choose instead. At a fork, chance still picks the road."
-msgstr ""
+msgstr "주사위를 굴리기 전에: 대신 원하는 칸 수만큼 이동합니다. 갈림길에서는 여전히 운이 길을 고릅니다."
 
 #: internal/games/fortune_cards.go:54
 msgid "Free Rent"
-msgstr ""
+msgstr "임대료 면제"
 
 #: internal/games/fortune_cards.go:54
 msgid "The next rent you owe is not paid."
-msgstr ""
+msgstr "다음에 낼 임대료를 내지 않습니다."
 
 #: internal/games/fortune_cards.go:55
 msgid "Requisition"
-msgstr ""
+msgstr "강제 매입"
 
 #: internal/games/fortune_cards.go:55
 msgid "Buy the rival's property you stand on, buildings and all, paying its owner what it cost."
-msgstr ""
+msgstr "지금 서 있는 상대의 부동산을 건물째 사들이고, 소유자에게 든 비용을 지불합니다."
 
 #: internal/games/fortune_cards.go:56
 msgid "Pickpocket"
-msgstr ""
+msgstr "소매치기"
 
 #: internal/games/fortune_cards.go:56
 msgid "Take a card, at random, from a rival's hand."
-msgstr ""
+msgstr "상대의 손패에서 카드 한 장을 무작위로 가져옵니다."
 
 #: internal/games/fortune_cards.go:57
 msgid "Demolition"
-msgstr ""
+msgstr "철거"
 
 #: internal/games/fortune_cards.go:57
 msgid "Pull down a building on a rival's street: pick the street on the board first."
-msgstr ""
+msgstr "상대 거리의 건물 하나를 철거합니다: 먼저 판에서 거리를 고르세요."
 
 #: internal/games/fortune_cards.go:58
 msgid "Building Permit"
-msgstr ""
+msgstr "건축 허가"
 
 #: internal/games/fortune_cards.go:58
 msgid "Put up a building on a street of yours, free: pick the street on the board first."
-msgstr ""
+msgstr "내 거리에 건물 하나를 무료로 짓습니다: 먼저 판에서 거리를 고르세요."
 
 #: internal/games/fortune_cards.go:59
 msgid "Turtle"
-msgstr ""
+msgstr "거북이"
 
 #: internal/games/fortune_cards.go:59
 msgid "A player of your choice walks one square a roll for their next three rolls."
-msgstr ""
+msgstr "고른 플레이어는 다음 세 번 동안 한 번에 한 칸씩만 이동합니다."
 
 #: internal/games/fortune_cards.go:60
 msgid "Swap Places"
-msgstr ""
+msgstr "자리 바꾸기"
 
 #: internal/games/fortune_cards.go:60
 msgid "Change places with a rival; neither of you lands anywhere."
-msgstr ""
+msgstr "상대와 자리를 바꿉니다. 둘 다 어느 칸에도 멈춘 것으로 치지 않습니다."
 
 #: internal/games/fortune_cards.go:61
 msgid "Jail Pass"
-msgstr ""
+msgstr "출소권"
 
 #: internal/games/fortune_cards.go:61
 msgid "Walk out of jail before you roll, without paying bail."
-msgstr ""
+msgstr "주사위를 굴리기 전에 보석금 없이 감옥에서 나옵니다."
 
 #: internal/games/fortune_cards.go:62
 msgid "Tax Audit"
-msgstr ""
+msgstr "세무 조사"
 
 #: internal/games/fortune_cards.go:62
 msgid "A rival pays a tenth of their cash into the fountain."
-msgstr ""
+msgstr "상대 한 명이 현금의 10분의 1을 분수에 냅니다."
 
 #: internal/games/fortune_cards.go:63
 msgid "Fair Shares"
-msgstr ""
+msgstr "공평한 분배"
 
 #: internal/games/fortune_cards.go:63
 msgid "Everyone's cash is pooled and shared out equally."
-msgstr ""
+msgstr "모두의 현금을 모아 똑같이 나눕니다."
 
 #: internal/games/fortune_cards.go:64
 msgid "Sleeping Pill"
-msgstr ""
+msgstr "수면제"
 
 #: internal/games/fortune_cards.go:64
 msgid "A rival misses their next turn."
-msgstr ""
+msgstr "상대 한 명이 다음 차례를 쉽니다."
 
 #: internal/games/fortune_cards.go:89
 msgid "%s's hand is full: no card."
-msgstr ""
+msgstr "%s의 손패가 가득 찼습니다: 카드 없음."
 
 #: internal/games/fortune_cards.go:95
 msgid "%s takes a card."
-msgstr ""
+msgstr "%s이(가) 카드를 한 장 받았습니다."
 
 #: internal/games/fortune_cards.go:104
 msgid "%s's hand is full: nothing to buy."
-msgstr ""
+msgstr "%s의 손패가 가득 찼습니다: 살 수 있는 것이 없습니다."
 
 #: internal/games/fortune_cards.go:253
 msgid "%s played %s: %d squares."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: %d칸."
 
 #: internal/games/fortune_cards.go:258
 msgid "%s played %s: no rent next time."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: 다음 임대료 면제."
 
 #: internal/games/fortune_cards.go:265
 msgid "%s played %s and took %s from %s for $%d."
-msgstr ""
+msgstr "%[1]s이(가) %[2]s을(를) 써서 %[4]s에게서 %[3]s을(를) $%[5]d에 가져왔습니다."
 
 #: internal/games/fortune_cards.go:274
 msgid "%s played %s and took %s from %s."
-msgstr ""
+msgstr "%[1]s이(가) %[2]s을(를) 써서 %[4]s에게서 %[3]s을(를) 가져왔습니다."
 
 #: internal/games/fortune_cards.go:276
 #: internal/games/fortunenet/texts.go:82
 msgid "a card"
-msgstr ""
+msgstr "카드"
 
 #: internal/games/fortune_cards.go:281
 msgid "%s played %s: a building on %s, %s's, is pulled down."
-msgstr ""
+msgstr "%[1]s이(가) %[2]s을(를) 썼습니다: %[4]s의 %[3]s에 있는 건물이 철거되었습니다."
 
 #: internal/games/fortune_cards.go:284
 msgid "%s played %s: a building goes up on %s."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: %s에 건물이 올라갑니다."
 
 #: internal/games/fortune_cards.go:287
 msgid "%s played %s: %s walks one square a roll for three rolls."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: %s은(는) 세 번 동안 한 번에 한 칸씩만 이동합니다."
 
 #: internal/games/fortune_cards.go:290
 msgid "%s played %s and changed places with %s."
-msgstr ""
+msgstr "%s이(가) %s을(를) 써서 %s와(과) 자리를 바꿨습니다."
 
 #: internal/games/fortune_cards.go:295
 msgid "%s played %s and walked out of jail."
-msgstr ""
+msgstr "%s이(가) %s을(를) 써서 감옥에서 나왔습니다."
 
 #: internal/games/fortune_cards.go:299
 msgid "%s played %s: %s pays $%d into the fountain."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: %s이(가) 분수에 $%d을(를) 냅니다."
 
 #: internal/games/fortune_cards.go:314
 msgid "%s played %s: everyone now has $%d."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: 이제 모두 $%d을(를) 가집니다."
 
 #: internal/games/fortune_cards.go:317
 msgid "%s played %s: %s sits out the next turn."
-msgstr ""
+msgstr "%s이(가) %s을(를) 썼습니다: %s은(는) 다음 차례를 쉽니다."
 
 #: internal/games/fortune_cities.go:19
 msgid "Tokyo"
@@ -4817,19 +4817,19 @@ msgstr "기타센주"
 
 #: internal/games/fortune_cities.go:21
 msgid "Otsuka"
-msgstr ""
+msgstr "오쓰카"
 
 #: internal/games/fortune_cities.go:21
 msgid "Komagome"
-msgstr ""
+msgstr "고마고메"
 
 #: internal/games/fortune_cities.go:21
 msgid "Tabata"
-msgstr ""
+msgstr "다바타"
 
 #: internal/games/fortune_cities.go:21
 msgid "Oji"
-msgstr ""
+msgstr "오지"
 
 #: internal/games/fortune_cities.go:21
 msgid "Ueno Station"
@@ -4849,15 +4849,15 @@ msgstr "닛포리"
 
 #: internal/games/fortune_cities.go:21
 msgid "Ryogoku"
-msgstr ""
+msgstr "료고쿠"
 
 #: internal/games/fortune_cities.go:21
 msgid "Kuramae"
-msgstr ""
+msgstr "구라마에"
 
 #: internal/games/fortune_cities.go:21
 msgid "Kiyosumi"
-msgstr ""
+msgstr "기요스미"
 
 #: internal/games/fortune_cities.go:23
 msgid "Kanda"
@@ -4877,15 +4877,15 @@ msgstr "도쿄전력"
 
 #: internal/games/fortune_cities.go:23
 msgid "Ningyocho"
-msgstr ""
+msgstr "닌교초"
 
 #: internal/games/fortune_cities.go:23
 msgid "Monzen-Nakacho"
-msgstr ""
+msgstr "몬젠나카초"
 
 #: internal/games/fortune_cities.go:23
 msgid "Tsukishima"
-msgstr ""
+msgstr "쓰키시마"
 
 #: internal/games/fortune_cities.go:23
 msgid "Tokyo Station"
@@ -4905,15 +4905,15 @@ msgstr "시부야"
 
 #: internal/games/fortune_cities.go:23
 msgid "Sangenjaya"
-msgstr ""
+msgstr "산겐자야"
 
 #: internal/games/fortune_cities.go:23
 msgid "Shimokitazawa"
-msgstr ""
+msgstr "시모키타자와"
 
 #: internal/games/fortune_cities.go:23
 msgid "Jiyugaoka"
-msgstr ""
+msgstr "지유가오카"
 
 #: internal/games/fortune_cities.go:25
 msgid "Nakameguro"
@@ -4929,15 +4929,15 @@ msgstr "에비스"
 
 #: internal/games/fortune_cities.go:25
 msgid "Meguro"
-msgstr ""
+msgstr "메구로"
 
 #: internal/games/fortune_cities.go:25
 msgid "Gotanda"
-msgstr ""
+msgstr "고탄다"
 
 #: internal/games/fortune_cities.go:25
 msgid "Osaki"
-msgstr ""
+msgstr "오사키"
 
 #: internal/games/fortune_cities.go:25
 msgid "Shinagawa Station"
@@ -4961,15 +4961,15 @@ msgstr "도쿄 수도"
 
 #: internal/games/fortune_cities.go:25
 msgid "Ikebukuro"
-msgstr ""
+msgstr "이케부쿠로"
 
 #: internal/games/fortune_cities.go:25
 msgid "Takadanobaba"
-msgstr ""
+msgstr "다카다노바바"
 
 #: internal/games/fortune_cities.go:25
 msgid "Waseda"
-msgstr ""
+msgstr "와세다"
 
 #: internal/games/fortune_cities.go:27
 msgid "Toranomon"
@@ -4985,15 +4985,15 @@ msgstr "롯폰기"
 
 #: internal/games/fortune_cities.go:27
 msgid "Kudanshita"
-msgstr ""
+msgstr "구단시타"
 
 #: internal/games/fortune_cities.go:27
 msgid "Nagatacho"
-msgstr ""
+msgstr "나가타초"
 
 #: internal/games/fortune_cities.go:27
 msgid "Kasumigaseki"
-msgstr ""
+msgstr "가스미가세키"
 
 #: internal/games/fortune_cities.go:27
 msgid "Shimbashi Station"
@@ -5001,19 +5001,19 @@ msgstr "신바시역"
 
 #: internal/games/fortune_cities.go:27
 msgid "Hibiya"
-msgstr ""
+msgstr "히비야"
 
 #: internal/games/fortune_cities.go:27
 msgid "Yurakucho"
-msgstr ""
+msgstr "유라쿠초"
 
 #: internal/games/fortune_cities.go:27
 msgid "Nihonbashi"
-msgstr ""
+msgstr "니혼바시"
 
 #: internal/games/fortune_cities.go:27
 msgid "Otemachi"
-msgstr ""
+msgstr "오테마치"
 
 #: internal/games/fortune_cities.go:27
 msgid "Marunouchi"
@@ -5033,7 +5033,7 @@ msgstr "유시마"
 
 #: internal/games/fortune_cities.go:29
 msgid "Nezu"
-msgstr ""
+msgstr "네즈"
 
 #: internal/games/fortune_cities.go:29
 msgid "Hongo"
@@ -5041,7 +5041,7 @@ msgstr "혼고"
 
 #: internal/games/fortune_cities.go:29
 msgid "Sendagi"
-msgstr ""
+msgstr "센다기"
 
 #: internal/games/fortune_cities.go:29
 msgid "Ochanomizu"
@@ -5049,7 +5049,7 @@ msgstr "오차노미즈"
 
 #: internal/games/fortune_cities.go:29
 msgid "Korakuen"
-msgstr ""
+msgstr "고라쿠엔"
 
 #: internal/games/fortune_cities.go:29
 msgid "Suidobashi"
@@ -5057,15 +5057,15 @@ msgstr "스이도바시"
 
 #: internal/games/fortune_cities.go:29
 msgid "Hakusan"
-msgstr ""
+msgstr "하쿠산"
 
 #: internal/games/fortune_cities.go:29
 msgid "Myogadani"
-msgstr ""
+msgstr "묘가다니"
 
 #: internal/games/fortune_cities.go:29
 msgid "Edogawabashi"
-msgstr ""
+msgstr "에도가와바시"
 
 #: internal/games/fortune_cities.go:29
 msgid "Iidabashi"
@@ -5081,7 +5081,7 @@ msgstr "히로오"
 
 #: internal/games/fortune_cities.go:31
 msgid "Nishi-Azabu"
-msgstr ""
+msgstr "니시아자부"
 
 #: internal/games/fortune_cities.go:31
 msgid "Shirokane"
@@ -5093,7 +5093,7 @@ msgstr "타카나와"
 
 #: internal/games/fortune_cities.go:31
 msgid "Sengakuji"
-msgstr ""
+msgstr "센가쿠지"
 
 #: internal/games/fortune_cities.go:31
 msgid "Mita"
@@ -5101,11 +5101,11 @@ msgstr "미타"
 
 #: internal/games/fortune_cities.go:31
 msgid "Tamachi"
-msgstr ""
+msgstr "다마치"
 
 #: internal/games/fortune_cities.go:31
 msgid "Shibaura"
-msgstr ""
+msgstr "시바우라"
 
 #: internal/games/fortune_cities.go:31
 msgid "Hamamatsucho"
@@ -5113,11 +5113,11 @@ msgstr "하마마츠초"
 
 #: internal/games/fortune_cities.go:31
 msgid "Shiodome"
-msgstr ""
+msgstr "시오도메"
 
 #: internal/games/fortune_cities.go:31
 msgid "Shiba Park"
-msgstr ""
+msgstr "시바 공원"
 
 #: internal/games/fortune_cities.go:33
 #: internal/games/fortune_cities.go:33
@@ -5134,19 +5134,19 @@ msgstr "워싱턴 하이츠"
 
 #: internal/games/fortune_cities.go:35
 msgid "Inwood"
-msgstr ""
+msgstr "인우드"
 
 #: internal/games/fortune_cities.go:35
 msgid "Hamilton Heights"
-msgstr ""
+msgstr "해밀턴 하이츠"
 
 #: internal/games/fortune_cities.go:35
 msgid "Morningside Heights"
-msgstr ""
+msgstr "모닝사이드 하이츠"
 
 #: internal/games/fortune_cities.go:35
 msgid "East Harlem"
-msgstr ""
+msgstr "이스트 할렘"
 
 #: internal/games/fortune_cities.go:35
 msgid "Penn Station"
@@ -5166,15 +5166,15 @@ msgstr "로어 이스트 사이드"
 
 #: internal/games/fortune_cities.go:35
 msgid "East Village"
-msgstr ""
+msgstr "이스트 빌리지"
 
 #: internal/games/fortune_cities.go:35
 msgid "Alphabet City"
-msgstr ""
+msgstr "알파벳 시티"
 
 #: internal/games/fortune_cities.go:35
 msgid "Stuyvesant Town"
-msgstr ""
+msgstr "스타이버선트 타운"
 
 #: internal/games/fortune_cities.go:37
 msgid "Williamsburg"
@@ -5194,15 +5194,15 @@ msgstr "콘 에디슨"
 
 #: internal/games/fortune_cities.go:37
 msgid "Park Slope"
-msgstr ""
+msgstr "파크 슬로프"
 
 #: internal/games/fortune_cities.go:37
 msgid "Cobble Hill"
-msgstr ""
+msgstr "코블 힐"
 
 #: internal/games/fortune_cities.go:37
 msgid "Red Hook"
-msgstr ""
+msgstr "레드훅"
 
 #: internal/games/fortune_cities.go:37
 msgid "Grand Central"
@@ -5222,15 +5222,15 @@ msgstr "트라이베카"
 
 #: internal/games/fortune_cities.go:37
 msgid "West Village"
-msgstr ""
+msgstr "웨스트 빌리지"
 
 #: internal/games/fortune_cities.go:37
 msgid "Meatpacking District"
-msgstr ""
+msgstr "미트패킹 디스트릭트"
 
 #: internal/games/fortune_cities.go:37
 msgid "Hudson Square"
-msgstr ""
+msgstr "허드슨 스퀘어"
 
 #: internal/games/fortune_cities.go:39
 msgid "Chelsea"
@@ -5246,15 +5246,15 @@ msgstr "아이언"
 
 #: internal/games/fortune_cities.go:39
 msgid "Union Square"
-msgstr ""
+msgstr "유니언 스퀘어"
 
 #: internal/games/fortune_cities.go:39
 msgid "Madison Square"
-msgstr ""
+msgstr "매디슨 스퀘어"
 
 #: internal/games/fortune_cities.go:39
 msgid "Herald Square"
-msgstr ""
+msgstr "헤럴드 스퀘어"
 
 #: internal/games/fortune_cities.go:39
 msgid "Staten Island Ferry"
@@ -5278,15 +5278,15 @@ msgstr "도시 물 터널"
 
 #: internal/games/fortune_cities.go:39
 msgid "Bryant Park"
-msgstr ""
+msgstr "브라이언트 파크"
 
 #: internal/games/fortune_cities.go:39
 msgid "Turtle Bay"
-msgstr ""
+msgstr "터틀 베이"
 
 #: internal/games/fortune_cities.go:39
 msgid "Sutton Place"
-msgstr ""
+msgstr "서튼 플레이스"
 
 #: internal/games/fortune_cities.go:41
 msgid "Upper West Side"
@@ -5302,15 +5302,15 @@ msgstr "센트럴 파크 사우스"
 
 #: internal/games/fortune_cities.go:41
 msgid "Lincoln Center"
-msgstr ""
+msgstr "링컨 센터"
 
 #: internal/games/fortune_cities.go:41
 msgid "Carnegie Hill"
-msgstr ""
+msgstr "카네기 힐"
 
 #: internal/games/fortune_cities.go:41
 msgid "Lenox Hill"
-msgstr ""
+msgstr "레녹스 힐"
 
 #: internal/games/fortune_cities.go:41
 msgid "Hudson Pier"
@@ -5318,19 +5318,19 @@ msgstr "허드슨 부두"
 
 #: internal/games/fortune_cities.go:41
 msgid "Park Avenue"
-msgstr ""
+msgstr "파크 애비뉴"
 
 #: internal/games/fortune_cities.go:41
 msgid "Madison Avenue"
-msgstr ""
+msgstr "매디슨 애비뉴"
 
 #: internal/games/fortune_cities.go:41
 msgid "Billionaires' Row"
-msgstr ""
+msgstr "억만장자의 거리"
 
 #: internal/games/fortune_cities.go:41
 msgid "Hudson Yards"
-msgstr ""
+msgstr "허드슨 야드"
 
 #: internal/games/fortune_cities.go:41
 msgid "Wall Street"
@@ -5350,7 +5350,7 @@ msgstr "의류 구역"
 
 #: internal/games/fortune_cities.go:43
 msgid "Penn South"
-msgstr ""
+msgstr "펜 사우스"
 
 #: internal/games/fortune_cities.go:43
 msgid "Koreatown"
@@ -5362,7 +5362,7 @@ msgstr "노마드(NoMad)"
 
 #: internal/games/fortune_cities.go:43
 msgid "Rose Hill"
-msgstr ""
+msgstr "로즈 힐"
 
 #: internal/games/fortune_cities.go:43
 msgid "Murray Hill"
@@ -5374,19 +5374,19 @@ msgstr "킵스 베이"
 
 #: internal/games/fortune_cities.go:43
 msgid "Tudor City"
-msgstr ""
+msgstr "튜더 시티"
 
 #: internal/games/fortune_cities.go:43
 msgid "Midtown East"
-msgstr ""
+msgstr "미드타운 이스트"
 
 #: internal/games/fortune_cities.go:43
 msgid "Beekman"
-msgstr ""
+msgstr "비크먼"
 
 #: internal/games/fortune_cities.go:43
 msgid "Roosevelt Island"
-msgstr ""
+msgstr "루스벨트 아일랜드"
 
 #: internal/games/fortune_cities.go:45
 msgid "Battery Park City"
@@ -5398,7 +5398,7 @@ msgstr "금융 지구"
 
 #: internal/games/fortune_cities.go:45
 msgid "Bowling Green"
-msgstr ""
+msgstr "볼링 그린"
 
 #: internal/games/fortune_cities.go:45
 msgid "Seaport"
@@ -5410,7 +5410,7 @@ msgstr "두 개의 브리지"
 
 #: internal/games/fortune_cities.go:45
 msgid "Civic Center"
-msgstr ""
+msgstr "시빅 센터"
 
 #: internal/games/fortune_cities.go:45
 msgid "Bowery"
@@ -5422,19 +5422,19 @@ msgstr "놀리타"
 
 #: internal/games/fortune_cities.go:45
 msgid "NoHo"
-msgstr ""
+msgstr "노호"
 
 #: internal/games/fortune_cities.go:45
 msgid "Astor Place"
-msgstr ""
+msgstr "애스터 플레이스"
 
 #: internal/games/fortune_cities.go:45
 msgid "Cooper Square"
-msgstr ""
+msgstr "쿠퍼 스퀘어"
 
 #: internal/games/fortune_cities.go:45
 msgid "Washington Square"
-msgstr ""
+msgstr "워싱턴 스퀘어"
 
 #: internal/games/fortune_cities.go:47
 msgid "Shanghai"
@@ -5450,19 +5450,19 @@ msgstr "홍커우"
 
 #: internal/games/fortune_cities.go:49
 msgid "Baoshan Road"
-msgstr ""
+msgstr "바오산 로드"
 
 #: internal/games/fortune_cities.go:49
 msgid "Tilanqiao"
-msgstr ""
+msgstr "티란차오"
 
 #: internal/games/fortune_cities.go:49
 msgid "Dalian Road"
-msgstr ""
+msgstr "다롄 로드"
 
 #: internal/games/fortune_cities.go:49
 msgid "Quyang"
-msgstr ""
+msgstr "취양"
 
 #: internal/games/fortune_cities.go:49
 msgid "Railway Station"
@@ -5482,15 +5482,15 @@ msgstr "성신사(city God Temple)"
 
 #: internal/games/fortune_cities.go:49
 msgid "Penglai Road"
-msgstr ""
+msgstr "펑라이 로드"
 
 #: internal/games/fortune_cities.go:49
 msgid "Dapuqiao"
-msgstr ""
+msgstr "다푸차오"
 
 #: internal/games/fortune_cities.go:49
 msgid "Ruijin Road"
-msgstr ""
+msgstr "루이진 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Changle Road"
@@ -5510,15 +5510,15 @@ msgstr "난시 파워"
 
 #: internal/games/fortune_cities.go:51
 msgid "Yuyuan Road"
-msgstr ""
+msgstr "위위안 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Yan'an Road"
-msgstr ""
+msgstr "옌안 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Julu Road"
-msgstr ""
+msgstr "쥐루 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Hongqiao Station"
@@ -5538,15 +5538,15 @@ msgstr "신천지"
 
 #: internal/games/fortune_cities.go:51
 msgid "Taikang Road"
-msgstr ""
+msgstr "타이캉 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Shaanxi South Road"
-msgstr ""
+msgstr "산시난 로드"
 
 #: internal/games/fortune_cities.go:51
 msgid "Maoming Road"
-msgstr ""
+msgstr "마오밍 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Fuxing Park"
@@ -5562,15 +5562,15 @@ msgstr "헝산 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Xujiahui"
-msgstr ""
+msgstr "쉬자후이"
 
 #: internal/games/fortune_cities.go:53
 msgid "Tianping Road"
-msgstr ""
+msgstr "톈핑 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Anfu Road"
-msgstr ""
+msgstr "안푸 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Shiliupu Ferry"
@@ -5594,15 +5594,15 @@ msgstr "양수푸 상수도"
 
 #: internal/games/fortune_cities.go:53
 msgid "Wujiang Road"
-msgstr ""
+msgstr "우장 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Fuzhou Road"
-msgstr ""
+msgstr "푸저우 로드"
 
 #: internal/games/fortune_cities.go:53
 msgid "Weihai Road"
-msgstr ""
+msgstr "웨이하이 로드"
 
 #: internal/games/fortune_cities.go:55
 msgid "Jinqiao"
@@ -5618,15 +5618,15 @@ msgstr "루자쭈이"
 
 #: internal/games/fortune_cities.go:55
 msgid "Zhangjiang"
-msgstr ""
+msgstr "장장"
 
 #: internal/games/fortune_cities.go:55
 msgid "Huamu"
-msgstr ""
+msgstr "화무"
 
 #: internal/games/fortune_cities.go:55
 msgid "Binjiang Avenue"
-msgstr ""
+msgstr "빈장 대로"
 
 #: internal/games/fortune_cities.go:55
 msgid "Bund Ferry"
@@ -5634,19 +5634,19 @@ msgstr "와이탄 페리"
 
 #: internal/games/fortune_cities.go:55
 msgid "Sichuan Road"
-msgstr ""
+msgstr "쓰촨 로드"
 
 #: internal/games/fortune_cities.go:55
 msgid "Yuanmingyuan Road"
-msgstr ""
+msgstr "위안밍위안 로드"
 
 #: internal/games/fortune_cities.go:55
 msgid "Rockbund"
-msgstr ""
+msgstr "록번드"
 
 #: internal/games/fortune_cities.go:55
 msgid "Customs House"
-msgstr ""
+msgstr "세관"
 
 #: internal/games/fortune_cities.go:55
 msgid "Peace Hotel"
@@ -5666,7 +5666,7 @@ msgstr "모간산 로드(Moganshan Road)"
 
 #: internal/games/fortune_cities.go:57
 msgid "Changhua Road"
-msgstr ""
+msgstr "창화 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Changshou Road"
@@ -5678,7 +5678,7 @@ msgstr "차오양"
 
 #: internal/games/fortune_cities.go:57
 msgid "Jiaozhou Road"
-msgstr ""
+msgstr "자오저우 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Zhongshan Park"
@@ -5686,19 +5686,19 @@ msgstr "중산 공원"
 
 #: internal/games/fortune_cities.go:57
 msgid "Changning Road"
-msgstr ""
+msgstr "창닝 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Jiangsu Road"
-msgstr ""
+msgstr "장쑤 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Hongqiao Road"
-msgstr ""
+msgstr "훙차오 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Hongmei Road"
-msgstr ""
+msgstr "훙메이 로드"
 
 #: internal/games/fortune_cities.go:57
 msgid "Gubei"
@@ -5714,7 +5714,7 @@ msgstr "라오시먼(Laoximen)"
 
 #: internal/games/fortune_cities.go:59
 msgid "Xiaonanmen"
-msgstr ""
+msgstr "샤오난먼"
 
 #: internal/games/fortune_cities.go:59
 msgid "Dajing Road"
@@ -5726,7 +5726,7 @@ msgstr "팡방 로드(Fangbang Road)"
 
 #: internal/games/fortune_cities.go:59
 msgid "Zhonghua Road"
-msgstr ""
+msgstr "중화 로드"
 
 #: internal/games/fortune_cities.go:59
 msgid "Henan Road"
@@ -5734,11 +5734,11 @@ msgstr "허난 로드"
 
 #: internal/games/fortune_cities.go:59
 msgid "Cool Docks"
-msgstr ""
+msgstr "쿨 독스"
 
 #: internal/games/fortune_cities.go:59
 msgid "Fuyou Road"
-msgstr ""
+msgstr "푸유 로드"
 
 #: internal/games/fortune_cities.go:59
 msgid "Yu Garden"
@@ -5746,11 +5746,11 @@ msgstr "예원"
 
 #: internal/games/fortune_cities.go:59
 msgid "Renmin Road"
-msgstr ""
+msgstr "런민 로드"
 
 #: internal/games/fortune_cities.go:59
 msgid "Jinling Road"
-msgstr ""
+msgstr "진링 로드"
 
 #: internal/games/fortune_cities.go:61
 msgid "Rome"
@@ -5770,19 +5770,19 @@ msgstr "테스타치오"
 
 #: internal/games/fortune_cities.go:63
 msgid "Marconi"
-msgstr ""
+msgstr "마르코니"
 
 #: internal/games/fortune_cities.go:63
 msgid "Portuense"
-msgstr ""
+msgstr "포르투엔세"
 
 #: internal/games/fortune_cities.go:63
 msgid "Monteverde"
-msgstr ""
+msgstr "몬테베르데"
 
 #: internal/games/fortune_cities.go:63
 msgid "San Paolo"
-msgstr ""
+msgstr "산 파올로"
 
 #: internal/games/fortune_cities.go:63
 msgid "Roma Termini"
@@ -5802,15 +5802,15 @@ msgstr "트라스테베레"
 
 #: internal/games/fortune_cities.go:63
 msgid "Celio"
-msgstr ""
+msgstr "첼리오"
 
 #: internal/games/fortune_cities.go:63
 msgid "San Giovanni"
-msgstr ""
+msgstr "산 조반니"
 
 #: internal/games/fortune_cities.go:63
 msgid "Laterano"
-msgstr ""
+msgstr "라테라노"
 
 #: internal/games/fortune_cities.go:65
 msgid "Borgo Pio"
@@ -5830,15 +5830,15 @@ msgstr "Centrale Elettrica"
 
 #: internal/games/fortune_cities.go:65
 msgid "Flaminio"
-msgstr ""
+msgstr "플라미니오"
 
 #: internal/games/fortune_cities.go:65
 msgid "Delle Vittorie"
-msgstr ""
+msgstr "델레 비토리에"
 
 #: internal/games/fortune_cities.go:65
 msgid "Mazzini"
-msgstr ""
+msgstr "마치니"
 
 #: internal/games/fortune_cities.go:65
 msgid "Stazione Tiburtina"
@@ -5858,15 +5858,15 @@ msgstr "나보나 광장"
 
 #: internal/games/fortune_cities.go:65
 msgid "Via Giulia"
-msgstr ""
+msgstr "줄리아 거리"
 
 #: internal/games/fortune_cities.go:65
 msgid "Piazza Farnese"
-msgstr ""
+msgstr "파르네세 광장"
 
 #: internal/games/fortune_cities.go:65
 msgid "Sant'Eustachio"
-msgstr ""
+msgstr "산테우스타키오"
 
 #: internal/games/fortune_cities.go:67
 msgid "Via del Corso"
@@ -5882,15 +5882,15 @@ msgstr "스페인 광장"
 
 #: internal/games/fortune_cities.go:67
 msgid "Piazza del Popolo"
-msgstr ""
+msgstr "포폴로 광장"
 
 #: internal/games/fortune_cities.go:67
 msgid "Via del Babuino"
-msgstr ""
+msgstr "바부이노 거리"
 
 #: internal/games/fortune_cities.go:67
 msgid "Via Margutta"
-msgstr ""
+msgstr "마르구타 거리"
 
 #: internal/games/fortune_cities.go:67
 msgid "Porto di Ostia"
@@ -5914,15 +5914,15 @@ msgstr "아퀘도토"
 
 #: internal/games/fortune_cities.go:67
 msgid "Campidoglio"
-msgstr ""
+msgstr "캄피돌리오"
 
 #: internal/games/fortune_cities.go:67
 msgid "Fori Imperiali"
-msgstr ""
+msgstr "포리 임페리알리"
 
 #: internal/games/fortune_cities.go:67
 msgid "Piazza Venezia"
-msgstr ""
+msgstr "베네치아 광장"
 
 #: internal/games/fortune_cities.go:69
 msgid "Parioli"
@@ -5938,15 +5938,15 @@ msgstr "빌라 보르게세"
 
 #: internal/games/fortune_cities.go:69
 msgid "Pinciano"
-msgstr ""
+msgstr "핀차노"
 
 #: internal/games/fortune_cities.go:69
 msgid "Ludovisi"
-msgstr ""
+msgstr "루도비시"
 
 #: internal/games/fortune_cities.go:69
 msgid "Quirinale"
-msgstr ""
+msgstr "퀴리날레"
 
 #: internal/games/fortune_cities.go:69
 msgid "Stazione Trastevere"
@@ -5954,19 +5954,19 @@ msgstr "스타치오네 트라스테베레"
 
 #: internal/games/fortune_cities.go:69
 msgid "Via Sistina"
-msgstr ""
+msgstr "시스티나 거리"
 
 #: internal/games/fortune_cities.go:69
 msgid "Trinità dei Monti"
-msgstr ""
+msgstr "트리니타 데이 몬티"
 
 #: internal/games/fortune_cities.go:69
 msgid "Piazza Barberini"
-msgstr ""
+msgstr "바르베리니 광장"
 
 #: internal/games/fortune_cities.go:69
 msgid "Via Frattina"
-msgstr ""
+msgstr "프라티나 거리"
 
 #: internal/games/fortune_cities.go:69
 msgid "Via Condotti"
@@ -5986,7 +5986,7 @@ msgstr "비토리오 광장"
 
 #: internal/games/fortune_cities.go:71
 msgid "Santa Croce"
-msgstr ""
+msgstr "산타 크로체"
 
 #: internal/games/fortune_cities.go:71
 msgid "Pigneto"
@@ -5998,7 +5998,7 @@ msgstr "포르타 마조레"
 
 #: internal/games/fortune_cities.go:71
 msgid "Torpignattara"
-msgstr ""
+msgstr "토르피냐타라"
 
 #: internal/games/fortune_cities.go:71
 msgid "Nomentano"
@@ -6010,19 +6010,19 @@ msgstr "살라리오"
 
 #: internal/games/fortune_cities.go:71
 msgid "Trieste"
-msgstr ""
+msgstr "트리에스테"
 
 #: internal/games/fortune_cities.go:71
 msgid "Coppedè"
-msgstr ""
+msgstr "코페데"
 
 #: internal/games/fortune_cities.go:71
 msgid "Villa Ada"
-msgstr ""
+msgstr "빌라 아다"
 
 #: internal/games/fortune_cities.go:71
 msgid "Villa Torlonia"
-msgstr ""
+msgstr "빌라 토를로니아"
 
 #: internal/games/fortune_cities.go:73
 msgid "Garbatella"
@@ -6034,7 +6034,7 @@ msgstr "피라미드"
 
 #: internal/games/fortune_cities.go:73
 msgid "San Saba"
-msgstr ""
+msgstr "산 사바"
 
 #: internal/games/fortune_cities.go:73
 msgid "Roseto"
@@ -6046,7 +6046,7 @@ msgstr "보카 델라 베리타(Bocca della Verità)"
 
 #: internal/games/fortune_cities.go:73
 msgid "Foro Boario"
-msgstr ""
+msgstr "포로 보아리오"
 
 #: internal/games/fortune_cities.go:73
 msgid "Ghetto"
@@ -6058,19 +6058,19 @@ msgstr "이솔라 티베리나"
 
 #: internal/games/fortune_cities.go:73
 msgid "Portico d'Ottavia"
-msgstr ""
+msgstr "오타비아 회랑"
 
 #: internal/games/fortune_cities.go:73
 msgid "Largo Argentina"
-msgstr ""
+msgstr "라르고 아르젠티나"
 
 #: internal/games/fortune_cities.go:73
 msgid "Teatro di Marcello"
-msgstr ""
+msgstr "마르켈루스 극장"
 
 #: internal/games/fortune_cities.go:73
 msgid "Lungotevere"
-msgstr ""
+msgstr "룽고테베레"
 
 #: internal/games/fortune_rivals.go:29
 msgid "Mika"
@@ -6251,7 +6251,7 @@ msgstr "사지 않기"
 #: internal/gamesui/fortune.go:1168
 #: internal/gamesui/fortune_panel.go:376
 msgid "Leave the shop"
-msgstr ""
+msgstr "상점 나가기"
 
 #: internal/games/fortunenet/texts.go:44
 #: internal/gamesui/fortune.go:1171
@@ -6296,78 +6296,78 @@ msgstr "· 감옥에 있다"
 #: internal/games/fortunenet/texts.go:52
 #: internal/gamesui/fortune.go:1097
 msgid " · free rent"
-msgstr ""
+msgstr " · 임대료 면제"
 
 #: internal/games/fortunenet/texts.go:53
 #: internal/gamesui/fortune.go:1100
 msgid " · turtle"
-msgstr ""
+msgstr " · 거북이"
 
 #: internal/games/fortunenet/texts.go:54
 #: internal/gamesui/fortune.go:1103
 msgid " · asleep"
-msgstr ""
+msgstr " · 잠듦"
 
 #: internal/games/fortunenet/texts.go:55
 #: internal/gamesui/fortune_panel.go:160
 msgid "For sale: $%d"
-msgstr ""
+msgstr "판매 중: $%d"
 
 #: internal/games/fortunenet/texts.go:56
 #: internal/gamesui/fortune_panel.go:162
 msgid "%s owns it"
-msgstr ""
+msgstr "%s 소유"
 
 #: internal/games/fortunenet/texts.go:57
 #: internal/gamesui/fortune_panel.go:164
 msgid "You own it"
-msgstr ""
+msgstr "내 소유"
 
 #: internal/games/fortunenet/texts.go:58
 #: internal/gamesui/fortune_panel.go:168
 msgid "rent now"
-msgstr ""
+msgstr "현재 임대료"
 
 #: internal/games/fortunenet/texts.go:59
 #: internal/gamesui/fortune_panel.go:138
 msgid "Street · price $%d · building $%d"
-msgstr ""
+msgstr "거리 · 가격 $%d · 건물 $%d"
 
 #: internal/games/fortunenet/texts.go:60
 #: internal/gamesui/fortune_panel.go:140
 msgid "Station or pier · price $%d"
-msgstr ""
+msgstr "역 또는 부두 · 가격 $%d"
 
 #: internal/games/fortunenet/texts.go:61
 #: internal/gamesui/fortune_panel.go:142
 msgid "Utility · price $%d"
-msgstr ""
+msgstr "공공시설 · 가격 $%d"
 
 #: internal/games/fortunenet/texts.go:63
 #: internal/gamesui/fortune_menu.go:182
 #: internal/gamesui/fortune_panel.go:146
 msgid "Card shop"
-msgstr ""
+msgstr "카드 상점"
 
 #: internal/games/fortunenet/texts.go:64
 #: internal/gamesui/fortune_panel.go:148
 msgid "Tax · $%d"
-msgstr ""
+msgstr "세금 · $%d"
 
 #: internal/games/fortunenet/texts.go:65
 #: internal/gamesui/fortune_panel.go:150
 msgid "Corner"
-msgstr ""
+msgstr "모퉁이"
 
 #: internal/games/fortunenet/texts.go:66
 #: internal/gamesui/fortune_panel.go:125
 msgid "House · $%d"
-msgstr ""
+msgstr "집 · $%d"
 
 #: internal/games/fortunenet/texts.go:67
 #: internal/gamesui/fortune_panel.go:122
 msgid "Hotel · $%d"
-msgstr ""
+msgstr "호텔 · $%d"
 
 #: internal/games/fortunenet/texts.go:68
 #: internal/gamesui/fortune_panel.go:119
@@ -6377,32 +6377,32 @@ msgstr "호텔 건설"
 #: internal/games/fortunenet/texts.go:69
 #: internal/gamesui/fortune_panel.go:127
 msgid "Sell · $%d"
-msgstr ""
+msgstr "팔기 · $%d"
 
 #: internal/games/fortunenet/texts.go:70
 #: internal/gamesui/fortune_panel.go:480
 msgid "Your cards · %d of %d"
-msgstr ""
+msgstr "내 카드 · %d / %d"
 
 #: internal/games/fortunenet/texts.go:71
 #: internal/gamesui/fortune_panel.go:478
 msgid "Your cards · %d of %d · click one to play it"
-msgstr ""
+msgstr "내 카드 · %d / %d · 클릭해서 사용"
 
 #: internal/games/fortunenet/texts.go:72
 #: internal/gamesui/fortune_panel.go:368
 msgid "Click a card to buy it: any of them, or none."
-msgstr ""
+msgstr "카드를 클릭해서 삽니다: 아무것이나, 또는 사지 않아도 됩니다."
 
 #: internal/games/fortunenet/texts.go:73
 #: internal/gamesui/fortune_panel.go:511
 msgid "On whom?"
-msgstr ""
+msgstr "누구에게?"
 
 #: internal/games/fortunenet/texts.go:74
 #: internal/gamesui/fortune_panel.go:513
 msgid "How many squares?"
-msgstr ""
+msgstr "몇 칸?"
 
 #: internal/games/fortunenet/texts.go:75
 msgid "Pick a square on the board"
@@ -6421,23 +6421,23 @@ msgstr "당신이 이겼어요!"
 #: internal/games/fortunenet/texts.go:79
 #: internal/gamesui/fortune_board.go:1100
 msgid "%s (bankrupt)"
-msgstr ""
+msgstr "%s (파산)"
 
 #: internal/games/fortunenet/texts.go:80
 #: internal/gamesui/fortune_panel.go:234
 msgid "Bare"
-msgstr ""
+msgstr "빈 땅"
 
 #: internal/games/fortunenet/texts.go:81
 #: internal/gamesui/fortune_panel.go:237
 msgid "Hotel"
-msgstr ""
+msgstr "호텔"
 
 #: internal/games/fortunenet/texts.go:83
 #: internal/gamesui/fortune_menu.go:180
 #: internal/gamesui/fortune_panel.go:271
 msgid "The rent is the dice times this."
-msgstr ""
+msgstr "임대료는 주사위 눈에 이 값을 곱한 금액입니다."
 
 #: internal/games/fortunenet/texts.go:84
 msgid "Sound on: M turns it off"
@@ -6451,13 +6451,13 @@ msgstr "소리 꺼짐: M으로 켜기"
 #: internal/gamesui/fortune_menu.go:179
 #: internal/gamesui/fortune_panel.go:265
 msgid "The rent is by how many piers the owner has."
-msgstr ""
+msgstr "임대료는 소유자가 가진 부두 수에 따라 정해집니다."
 
 #: internal/games/fortunenet/texts.go:88
 #: internal/gamesui/fortune_menu.go:174
 #: internal/gamesui/fortune_panel.go:273
 msgid "Collect $%d every time you pass."
-msgstr ""
+msgstr "지나갈 때마다 $%d을(를) 받습니다."
 
 #: internal/games/fortunenet/texts.go:89
 #: internal/games/fortunenet/texts.go:90
@@ -6481,13 +6481,13 @@ msgstr "스타트를 통과하지 못한 채 곧장 감옥으로 보내졌습니
 #: internal/gamesui/fortune_menu.go:181
 #: internal/gamesui/fortune_panel.go:282
 msgid "Draw a card: money, a fine, a trip, or a card for your hand."
-msgstr ""
+msgstr "카드를 뽑습니다: 돈, 벌금, 이동, 또는 손패에 넣을 카드."
 
 #: internal/games/fortunenet/texts.go:94
 #: internal/gamesui/fortune_menu.go:182
 #: internal/gamesui/fortune_panel.go:284
 msgid "Three cards on offer: buy any of them, or none. A hand holds up to %d cards."
-msgstr ""
+msgstr "카드 세 장을 팝니다: 아무것이나 사거나 사지 않아도 됩니다. 손패는 최대 %d장입니다."
 
 #: internal/games/fortunenet/texts.go:95
 #: internal/gamesui/fortune_menu.go:183
@@ -6498,41 +6498,41 @@ msgstr "분수대에 $%d를 지불하세요."
 #: internal/games/fortunenet/texts.go:96
 #: internal/gamesui/fortune_panel.go:244
 msgid "The whole group: bare rent doubled, built rents half again."
-msgstr ""
+msgstr "그룹 전체: 빈 땅 임대료 2배, 건물 임대료 1.5배."
 
 #: internal/games/fortunenet/texts.go:97
 #: internal/gamesui/fortune_menu.go:178
 #: internal/gamesui/fortune_panel.go:246
 msgid "With the whole group: bare rent doubled, built rents half again."
-msgstr ""
+msgstr "그룹 전체를 가지면: 빈 땅 임대료 2배, 건물 임대료 1.5배."
 
 #: internal/games/fortunenet/texts.go:98
 #: internal/gamesui/fortune_panel.go:259
 msgid "Group:"
-msgstr ""
+msgstr "그룹:"
 
 #: internal/games/fortunenet/texts.go:99
 #: internal/gamesui/fortune_panel.go:269
 msgid "× %d"
-msgstr ""
+msgstr "× %d"
 
 #: internal/games/fortunenet/texts.go:101
 #: internal/gamesui/fortune_panel.go:263
 msgid "%d pier"
 msgid_plural "%d piers"
-msgstr[0] ""
+msgstr[0] "부두 %d개"
 
 #: internal/games/fortunenet/texts.go:104
 #: internal/gamesui/fortune_panel.go:269
 msgid "%d utility"
 msgid_plural "%d utilities"
-msgstr[0] ""
+msgstr[0] "공공시설 %d개"
 
 #: internal/games/fortunenet/texts.go:107
 #: internal/gamesui/fortune.go:1094
 msgid " · %d card"
 msgid_plural " · %d cards"
-msgstr[0] ""
+msgstr[0] " · 카드 %d장"
 
 #: internal/games/fortunenet/texts.go:110
 msgid "and %d computer player"
@@ -6543,7 +6543,7 @@ msgstr[0] "와 컴퓨터 플레이어 %d명"
 #: internal/gamesui/fortune_panel.go:239
 msgid "%d house"
 msgid_plural "%d houses"
-msgstr[0] ""
+msgstr[0] "집 %d채"
 
 #: internal/games/pinball_rules.go:63
 msgid "Cadet"
@@ -6873,11 +6873,11 @@ msgstr "A 또는 ← 왼쪽 플리퍼 · D 또는 → 오른쪽 플리퍼 · 플
 
 #: internal/gamesui/catalog.go:27
 msgid "A property game for two to four players, people at the screen taking turns, people in a browser on the same network (set On the network: the lobby shows the link and its QR code) and computer players, on a ring of 80 squares with two branch roads (at a fork, chance picks the road), in Tokyo, New York, Shanghai or Rome: choose the city, the rounds, the starting money, your rivals and the rules (one die or two; building on a street the turn you buy it) before you start. The board is larger than the window: drag it, scroll, or use the arrow keys to look about; Home brings you back to your pawn. Roll the dice and walk the board; with two, a double rolls again and three in a row go to jail. Buy the streets, ferry piers and utilities you land on; rivals landing there pay you rent. Every street of yours your pawn passes or lands on may go up one level that turn (outlined on the board): house by house to four, then a hotel; owning a whole colour group doubles its bare rent and adds half to its built rents. Piers pay more the more of them you own; utilities charge by the dice. Passing Start pays $400. Taxes and fines fill the fountain, and whoever lands there takes it. Cards come from Chance and the card shops, where you may buy any of the three on offer; hold up to ten, and play any number in your turn, before you roll or after you move: Loaded Dice, Free Rent, Requisition, Pickpocket, Demolition, Building Permit, Turtle, Swap Places, Jail Pass, Tax Audit, Fair Shares and Sleeping Pill. A card played on a street takes the square in focus: click it on the board first. Who cannot pay sells buildings and property at half price, or is out. After the last round, or when one player is left, the most worth wins: cash, property and buildings. Keys: Space the main action, R roll, B buy, X pass, E end turn, J pay bail, H build on the square in focus, M the sound on or off, N a new game. The sound plays through pw-cat; without it the game is silent."
-msgstr ""
+msgstr "2~4명이 즐기는 부동산 게임입니다. 화면 앞에서 차례대로 하는 사람, 같은 네트워크의 브라우저로 참여하는 사람(‘네트워크에서’를 켜면 대기실에 링크와 QR 코드가 표시됩니다), 컴퓨터 플레이어가 갈림길 두 개가 있는 80칸짜리 순환 판(갈림길에서는 운이 길을 고릅니다)에서 도쿄, 뉴욕, 상하이 또는 로마를 무대로 겨룹니다. 시작하기 전에 도시, 라운드 수, 시작 자금, 상대, 규칙(주사위 하나 또는 둘, 산 차례에 바로 거리에 지을 수 있는지)을 고르세요. 판은 창보다 크므로 드래그, 스크롤, 화살표 키로 둘러볼 수 있고, Home 키로 내 말로 돌아옵니다. 주사위를 굴려 판을 돕니다. 주사위가 둘이면 더블일 때 한 번 더 굴리고, 세 번 연속이면 감옥에 갑니다. 멈춘 거리, 페리 부두, 공공시설을 살 수 있고, 그곳에 멈춘 상대는 임대료를 냅니다. 내 말이 지나가거나 멈춘 내 거리는 그 차례에 한 단계 올릴 수 있습니다(판에 테두리로 표시됨). 집을 한 채씩 네 채까지, 그다음은 호텔입니다. 한 색 그룹을 모두 가지면 빈 땅 임대료가 2배, 건물 임대료가 1.5배가 됩니다. 부두는 많이 가질수록 더 받고, 공공시설은 주사위 눈에 따라 받습니다. 출발점을 지나면 $400을 받습니다. 세금과 벌금은 분수에 쌓이고, 그곳에 멈춘 사람이 가져갑니다. 카드는 기회 칸과 카드 상점에서 얻습니다. 상점에서는 진열된 세 장 중 아무것이나 살 수 있습니다. 카드는 열 장까지 들 수 있고, 내 차례에 굴리기 전이든 움직인 후든 몇 장이든 쓸 수 있습니다: 조작된 주사위, 임대료 면제, 강제 매입, 소매치기, 철거, 건축 허가, 거북이, 자리 바꾸기, 출소권, 세무 조사, 공평한 분배, 수면제. 거리에 쓰는 카드는 선택한 칸에 적용되므로 먼저 판에서 그 칸을 클릭하세요. 낼 수 없는 사람은 건물과 부동산을 반값에 팔거나 탈락합니다. 마지막 라운드가 끝나거나 한 명만 남으면 자산(현금, 부동산, 건물)이 가장 많은 사람이 이깁니다. 키: Space 주 동작, R 굴리기, B 사기, X 패스, E 차례 끝내기, J 보석금 내기, H 선택한 칸에 짓기, M 소리 켜기/끄기, N 새 게임. 소리는 pw-cat으로 재생되며, 없으면 게임은 무음입니다."
 
 #: internal/gamesui/catalog.go:28
 msgid "Space the main action  ·  R roll  ·  B buy  ·  X pass  ·  E end turn  ·  J pay bail  ·  H build on the square in focus  ·  N new game  ·  M sound  ·  click a square to see it  ·  drag, scroll or arrows to look about  ·  Home your pawn"
-msgstr ""
+msgstr "Space 주 동작  ·  R 굴리기  ·  B 사기  ·  X 패스  ·  E 차례 끝내기  ·  J 보석금 내기  ·  H 선택한 칸에 짓기  ·  N 새 게임  ·  M 소리  ·  칸을 클릭해서 보기  ·  드래그, 스크롤, 화살표로 둘러보기  ·  Home 내 말로"
 
 #: internal/gamesui/fortune.go:210
 msgid "JOIN CODE"
@@ -7005,7 +7005,7 @@ msgstr "이 플레이어가 사용하는 설정 → AI의 프로필"
 
 #: internal/gamesui/fortune_board.go:890
 msgid "START\ncollect $%d"
-msgstr ""
+msgstr "출발\n$%d 받기"
 
 #: internal/gamesui/fortune_board.go:890
 msgid "JAIL\njust visiting"
@@ -7025,7 +7025,7 @@ msgstr "새로운 게임을 시작하려면 N 또는 Space를 누르세요."
 
 #: internal/gamesui/fortune_board.go:1141
 msgid "%s · sound off"
-msgstr ""
+msgstr "%s · 소리 끔"
 
 #: internal/gamesui/fortune_city.go:38
 msgid "machiya"
@@ -7148,7 +7148,7 @@ msgstr "%s의 카드 · %d / %d"
 
 #: internal/gamesui/fortune_panel.go:489
 msgid "Plays on the square in focus: %s."
-msgstr ""
+msgstr "선택한 칸에 사용합니다: %s."
 
 #: internal/gamesui/mines.go:37
 msgid "Small · 9 × 9"
@@ -9252,31 +9252,31 @@ msgstr "응답 없음"
 
 #: internal/ui/settings_custom.go:74
 msgid "Not moved to the trash: %s"
-msgstr ""
+msgstr "휴지통으로 옮기지 못했습니다: %s"
 
 #: internal/ui/settings_custom.go:98
 msgid "Choose a folder of SVG icons"
-msgstr ""
+msgstr "SVG 아이콘 폴더 선택"
 
 #: internal/ui/settings_custom.go:102
 msgid "Choose a theme"
-msgstr ""
+msgstr "테마 선택"
 
 #: internal/ui/settings_custom.go:104
 msgid "Themes (CSS)"
-msgstr ""
+msgstr "테마 (CSS)"
 
 #: internal/ui/settings_custom.go:159
 msgid "Not added: the name %s is taken; rename the file or folder"
-msgstr ""
+msgstr "추가되지 않음: %s 이름이 이미 있습니다. 파일이나 폴더 이름을 바꾸세요"
 
 #: internal/ui/settings_custom.go:161
 msgid "Not added: a theme has @define-color lines with #rrggbb colours"
-msgstr ""
+msgstr "추가되지 않음: 테마에는 #rrggbb 색상의 @define-color 줄이 있어야 합니다"
 
 #: internal/ui/settings_custom.go:163
 msgid "Not added: the folder has no SVG files"
-msgstr ""
+msgstr "추가되지 않음: 폴더에 SVG 파일이 없습니다"
 
 #: internal/ui/settings_custom.go:165
 #: internal/ui/settings_keyring.go:181
@@ -10946,11 +10946,11 @@ msgstr "바, 런처, 제어 센터 및 이 창"
 
 #: ui/settings.ui:151
 msgid "Your themes"
-msgstr ""
+msgstr "내 테마"
 
 #: ui/settings.ui:160
 msgid "A CSS file of @define-color lines, kept in themes beside config.toml"
-msgstr ""
+msgstr "@define-color 줄로 된 CSS 파일, config.toml 옆의 themes에 보관됩니다"
 
 #: ui/settings.ui:173
 #: ui/settings.ui:431
@@ -10960,12 +10960,12 @@ msgstr "추가..."
 
 #: ui/settings.ui:185
 msgid "The theme in use, if it is one of yours"
-msgstr ""
+msgstr "사용 중인 테마(내 테마인 경우)"
 
 #: ui/settings.ui:195
 #: ui/settings.ui:453
 msgid "Open Folder"
-msgstr ""
+msgstr "폴더 열기"
 
 #: ui/settings.ui:231
 msgid "<span alpha='55%'>[</span>TEXT<span alpha='55%'>]</span>"
@@ -11001,15 +11001,15 @@ msgstr "앱 아이콘은 항상 시스템에서 나옵니다."
 
 #: ui/settings.ui:409
 msgid "Your icon sets"
-msgstr ""
+msgstr "내 아이콘 세트"
 
 #: ui/settings.ui:418
 msgid "A folder of SVG icons named like inua's, kept in icons beside config.toml"
-msgstr ""
+msgstr "inua와 같은 이름의 SVG 아이콘 폴더, config.toml 옆의 icons에 보관됩니다"
 
 #: ui/settings.ui:443
 msgid "The icon set in use, if it is one of yours"
-msgstr ""
+msgstr "사용 중인 아이콘 세트(내 것인 경우)"
 
 #: ui/settings.ui:489
 msgid "<span alpha='55%'>[</span>LANGUAGE<span alpha='55%'>]</span>"
