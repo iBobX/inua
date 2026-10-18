@@ -223,11 +223,15 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 		}
 	}
 	cfg := integration.DefaultConfig()
-	cfg.Features = integration.Features{Guard: true} // no skills from disk, no plans
+	// No skills from disk. Plans (Mister Morph's plan_create) go with the
+	// tools: an assistant with tools may plan a longer job before doing it.
+	cfg.Features = integration.Features{Guard: true, PlanTool: len(set.Tools) > 0}
 	// An empty list means every built-in; a name no tool has means none.
 	cfg.BuiltinToolNames = set.Tools
 	if len(cfg.BuiltinToolNames) == 0 {
 		cfg.BuiltinToolNames = []string{"-"}
+	} else {
+		cfg.BuiltinToolNames = append(slices.Clone(set.Tools), "plan_create")
 	}
 	if len(set.Profiles) == 0 {
 		return nil, fmt.Errorf("assistant: no profile")
