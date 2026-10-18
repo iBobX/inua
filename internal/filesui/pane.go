@@ -894,6 +894,11 @@ func (p *pane) completeLocation() {
 // --- the path bar ---
 
 func (p *pane) showCrumbs() {
+	if p == p.w.cur() {
+		// Where the pane with the keys is, wherever it went from.
+		p.w.syncTitle()
+		p.w.markSidebar()
+	}
 	p.buildTabs()
 	p.w.app.h.forget(p.crumbPtr)
 	p.crumbPtr = p.crumbPtr[:0]
