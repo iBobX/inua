@@ -16,6 +16,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 // fakeSunshine is Sunshine's API, as it answers: it checks the basic
@@ -227,5 +228,44 @@ func TestStatusSaysWhatIsMissing(t *testing.T) {
 		if v := version(out); v != want {
 			t.Errorf("version(%q) = %q, want %q", out, v, want)
 		}
+	}
+}
+
+func TestTheDeviceToPairIsChosen(t *testing.T) {
+	laptop := Pairing{ID: "aa", Name: "laptop", Address: "192.168.1.9"}
+	phone := Pairing{ID: "bb", Name: "Phone", Address: "192.168.1.7"}
+	if _, err := Choose(nil, ""); !errors.Is(err, ErrNoDevice) {
+		t.Errorf("none waiting: %v", err)
+	}
+	if p, err := Choose([]Pairing{laptop}, ""); err != nil || p != laptop {
+		t.Errorf("the one waiting: %+v %v", p, err)
+	}
+	var many *ManyError
+	if _, err := Choose([]Pairing{laptop, phone}, ""); !errors.As(err, &many) || len(many.Waiting) != 2 {
+		t.Errorf("two waiting, none named: %v", err)
+	}
+	for _, which := range []string{"phone", "192.168.1.7", "BB"} {
+		if p, err := Choose([]Pairing{laptop, phone}, which); err != nil || p != phone {
+			t.Errorf("%q: %+v %v", which, p, err)
+		}
+	}
+	if _, err := Choose([]Pairing{laptop}, "tv"); !errors.Is(err, ErrNoDevice) {
+		t.Errorf("a name no device has: %v", err)
+	}
+}
+
+func TestAwaitWaitsForTheDevice(t *testing.T) {
+	s, _, _ := newSharing(t)
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	p, err := s.Await(t.Context(), "laptop")
+	if err != nil || p.Name != "laptop" {
+		t.Fatalf("await: %+v %v", p, err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 700*time.Millisecond)
+	defer cancel()
+	if _, err := s.Await(ctx, "tv"); !errors.Is(err, ErrNoDevice) {
+		t.Errorf("a device that never comes: %v", err)
 	}
 }

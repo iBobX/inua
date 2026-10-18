@@ -9,9 +9,12 @@ connect to a desktop inua shares, and Remote Desktop can connect to any
 Sunshine.
 
 ```
-inua-remote               open the window
-inua-remote --share on    share this desktop, now and at login (off: stop)
-inua-remote --status      whether it is shared, and what sharing needs
+inua-remote                    open the window
+inua-remote --share on         share this desktop, now and at login (off: stop)
+inua-remote --pair PIN         pair the device waiting, with the PIN it shows
+            [--device NAME|ADDRESS] [--name NAME] [--wait 1m]
+inua-remote --status           whether it is shared, what sharing needs, the
+                               devices waiting to pair and those paired
 ```
 
 ## The window
@@ -48,6 +51,11 @@ starts it again at login while sharing is on.
 A device pairs once: its user picks this computer, their screen shows a
 PIN, and the device appears here under *Waiting to pair*, where the PIN is
 typed. Paired devices are listed, each with *Unpair*.
+
+Without the window (over SSH, say): `inua-remote --pair 1234` pairs the
+device waiting, waiting up to a minute for it to ask if it has not yet;
+when several wait, `--device` names the one (by its name or address), and
+`--name` is what it is called here (its own name if not given).
 
 What sharing needs, and the page says so when it is missing:
 

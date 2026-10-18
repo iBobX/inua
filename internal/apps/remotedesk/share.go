@@ -459,3 +459,64 @@ func (s *Sharing) AtLogin(ctx context.Context) error {
 	}
 	return s.Start(ctx)
 }
+
+// ErrNoDevice is no device waiting to pair, or none of the one named.
+var ErrNoDevice = errors.New("sharing: no device is waiting to pair")
+
+// ManyError is more than one device waiting, and none chosen.
+type ManyError struct{ Waiting []Pairing }
+
+func (e *ManyError) Error() string {
+	var names []string
+	for _, p := range e.Waiting {
+		names = append(names, p.Name+" ("+p.Address+")")
+	}
+	return "sharing: several devices are waiting to pair: " + strings.Join(names, ", ")
+}
+
+// Choose is the device to pair from those waiting: the one there is, or
+// the one which names (its name, address or ID, in any case).
+func Choose(waiting []Pairing, which string) (Pairing, error) {
+	if which == "" {
+		switch len(waiting) {
+		case 0:
+			return Pairing{}, ErrNoDevice
+		case 1:
+			return waiting[0], nil
+		}
+		return Pairing{}, &ManyError{Waiting: waiting}
+	}
+	var found []Pairing
+	for _, p := range waiting {
+		if strings.EqualFold(p.Name, which) || p.Address == which || strings.EqualFold(p.ID, which) {
+			found = append(found, p)
+		}
+	}
+	switch len(found) {
+	case 0:
+		return Pairing{}, ErrNoDevice
+	case 1:
+		return found[0], nil
+	}
+	return Pairing{}, &ManyError{Waiting: found}
+}
+
+// Await is the device to pair, as Choose finds it, once it is waiting:
+// it asks every half second until ctx ends.
+func (s *Sharing) Await(ctx context.Context, which string) (Pairing, error) {
+	for {
+		waiting, err := s.Pending(ctx)
+		if err != nil {
+			return Pairing{}, err
+		}
+		p, err := Choose(waiting, which)
+		if !errors.Is(err, ErrNoDevice) {
+			return p, err
+		}
+		select {
+		case <-ctx.Done():
+			return Pairing{}, ErrNoDevice
+		case <-time.After(500 * time.Millisecond):
+		}
+	}
+}
