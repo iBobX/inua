@@ -164,6 +164,147 @@ msgstr "%s、%s%d 時間 %d 分"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/connect/battery.go:34
+msgid "%s's battery is low"
+msgstr "%s のバッテリー残量が少なくなっています"
+
+#: internal/apps/connect/battery.go:35
+msgid "%d%% left"
+msgstr "残り %d%%"
+
+#: internal/apps/connect/battery.go:89
+msgid "%s is looking for this computer"
+msgstr "%s がこのコンピューターを探しています"
+
+#: internal/apps/connect/battery.go:90
+msgid "Found it"
+msgstr "見つけました"
+
+#: internal/apps/connect/notifications.go:94
+#: internal/connectui/app.go:38
+#: ui/connectreply.ui:14
+msgid "Reply"
+msgstr "返信"
+
+#: internal/apps/connect/service.go:246
+#: internal/apps/connect/share.go:196
+#: internal/apps/connect/share.go:202
+#: internal/connectui/app.go:20
+#: ui/connect.ui:14
+#: ui/connect.ui:32
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:3
+msgid "Mobile Link"
+msgstr "モバイルリンク"
+
+#: internal/apps/connect/service.go:248
+msgid "%s wants to pair"
+msgstr "%s がペアリングを求めています"
+
+#: internal/apps/connect/service.go:249
+msgid "Pair only if %s shows the key %s."
+msgstr "%s にキー %s が表示されている場合のみペアリングしてください。"
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:425
+#: internal/connectui/window.go:434
+#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:662
+#: ui/remote.ui:513
+msgid "Pair"
+msgstr "ペアリング"
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:426
+msgid "Refuse"
+msgstr "拒否"
+
+#: internal/apps/connect/service.go:292
+msgid "Ping!"
+msgstr "Ping!"
+
+#: internal/apps/connect/service.go:505
+msgid "Wants to pair"
+msgstr "ペアリングを求めています"
+
+#: internal/apps/connect/service.go:507
+msgid "Pairing…"
+msgstr "ペアリング中…"
+
+#: internal/apps/connect/service.go:509
+#: internal/apps/tailscale/status.go:265
+#: internal/remoteui/window.go:261
+msgid "Connected"
+msgstr "接続された"
+
+#: internal/apps/connect/service.go:511
+msgid "Away"
+msgstr "接続されていません"
+
+#: internal/apps/connect/service.go:513
+#: internal/remoteui/window.go:256
+msgid "Not paired"
+msgstr "未ペアリング"
+
+#: internal/apps/connect/service.go:517
+msgid "%d%%, charging"
+msgstr "%d%%、充電中"
+
+#: internal/apps/connect/service.go:519
+#: internal/ui/settings.go:274
+#: internal/ui/settings.go:282
+#: internal/ui/settings.go:285
+#: internal/ui/settings.go:626
+#: internal/ui/settings.go:628
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:694
+msgid "%d%%"
+msgstr "%d%%"
+
+#: internal/apps/connect/share.go:64
+msgid "Text from %s"
+msgstr "%s からのテキスト"
+
+#: internal/apps/connect/share.go:65
+msgid "It is on the clipboard."
+msgstr "クリップボードにあります。"
+
+#: internal/apps/connect/share.go:112
+msgid "A file from %s did not arrive"
+msgstr "%s からのファイルが届きませんでした"
+
+#: internal/apps/connect/share.go:124
+msgid "A file from %s"
+msgstr "%s からのファイル"
+
+#: internal/apps/connect/share.go:126
+#: internal/appui/workshop_blocks.go:427
+#: internal/appui/workshop_manager.go:63
+#: internal/filesui/cards.go:698
+#: internal/filesui/window.go:696
+#: internal/ui/record.go:163
+#: internal/ui/system_ipc.go:241
+msgid "Open"
+msgstr "開く"
+
+#: internal/apps/connect/share.go:126
+#: internal/ui/record.go:163
+#: internal/ui/screenshot.go:808
+msgid "Show in Folder"
+msgstr "フォルダ内で表示"
+
+#: internal/apps/connect/share.go:143
+msgid "Shared file"
+msgstr "共有されたファイル"
+
+#: internal/apps/connect/share.go:197
+msgid "%s did not get %s"
+msgstr "%s は %s を受け取れませんでした"
+
+#: internal/apps/connect/share.go:203
+msgid "Sent %d file to %s"
+msgid_plural "Sent %d files to %s"
+msgstr[0] "%d 個のファイルを %s に送信しました"
+
 #: internal/apps/music/music.go:393
 msgid "Flat"
 msgstr "フラット"
@@ -348,11 +489,6 @@ msgstr "%d 時間後"
 #: internal/apps/tailscale/status.go:191
 msgid "in %d d"
 msgstr "%d 日後"
-
-#: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
-msgid "Connected"
-msgstr "接続された"
 
 #: internal/apps/tailscale/status.go:267
 msgid "Disconnected"
@@ -1388,6 +1524,7 @@ msgstr "%s · %s"
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
+#: internal/connectui/window.go:560
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -1465,6 +1602,7 @@ msgstr "置き換え"
 
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
+#: ui/connect.ui:966
 #: ui/pass.ui:818
 #: ui/remote.ui:905
 msgid "Add"
@@ -1623,7 +1761,7 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "NETWORK"
 msgstr "ネットワーク"
 
@@ -1882,8 +2020,10 @@ msgstr "モデル"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
+#: internal/connectui/window.go:547
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
+#: ui/connect.ui:290
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4810
 #: ui/sysmon.ui:96
@@ -2206,6 +2346,7 @@ msgid "Copy Name"
 msgstr "名前のコピー"
 
 #: internal/appui/tailscale.go:507
+#: ui/connect.ui:621
 msgid "Ping"
 msgstr "Ping"
 
@@ -2420,6 +2561,7 @@ msgid "Cannot play it: %s"
 msgstr "再生できません: %s"
 
 #: internal/appui/video.go:529
+#: internal/connectui/window.go:387
 #: internal/remoteui/window.go:435
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -2539,6 +2681,7 @@ msgid "Unknown building block %q"
 msgstr "不明な部品 %q"
 
 #: internal/appui/workshop.go:990
+#: internal/connectui/window.go:429
 #: internal/filesui/cards.go:285
 #: internal/filesui/cards.go:334
 #: internal/filesui/cards.go:372
@@ -2553,6 +2696,7 @@ msgstr "不明な部品 %q"
 #: internal/ui/askpass.go:416
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/connectreply.ui:49
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -2569,18 +2713,10 @@ msgstr "キャンセル"
 msgid "OK"
 msgstr "わかりました"
 
-#: internal/appui/workshop_blocks.go:427
-#: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:696
-#: internal/ui/record.go:163
-#: internal/ui/system_ipc.go:241
-msgid "Open"
-msgstr "開く"
-
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
+#: ui/connect.ui:420
 #: ui/pass.ui:490
 msgid "Save"
 msgstr "保存"
@@ -2810,6 +2946,84 @@ msgstr "1月"
 #: internal/i18n/time.go:24
 msgid "PM"
 msgstr "午後"
+
+#: internal/connectui/reply.go:39
+msgid "Answer %s"
+msgstr "%s に返信"
+
+#: internal/connectui/reply.go:68
+msgid "Not sent: %v"
+msgstr "送信されませんでした: %v"
+
+#: internal/connectui/window.go:235
+msgid "None found yet: open KDE Connect on your phone."
+msgstr "まだ見つかりません。スマートフォンで KDE Connect を開いてください。"
+
+#: internal/connectui/window.go:355
+msgid "Mobile Link did not start: %v"
+msgstr "モバイルリンクを起動できませんでした: %v"
+
+#: internal/connectui/window.go:381
+msgid "Visible to your devices"
+msgstr "デバイスから見えます"
+
+#: internal/connectui/window.go:382
+msgid "Devices running KDE Connect, GSConnect or Valent find this computer on this network and the tailnet, and pair with it."
+msgstr "KDE Connect、GSConnect、Valent を使うデバイスは、このネットワークと tailnet でこのコンピューターを見つけてペアリングできます。"
+
+#: internal/connectui/window.go:384
+#: internal/remoteui/window.go:432
+msgid "Starting…"
+msgstr "起動中…"
+
+#: internal/connectui/window.go:385
+msgid "The service is starting."
+msgstr "サービスを起動しています。"
+
+#: internal/connectui/window.go:388
+msgid "Share the clipboard and files with your phone, see its notifications and battery here, and use it as a touchpad or a remote."
+msgstr "スマートフォンとクリップボードやファイルを共有し、通知やバッテリーをここで確認し、タッチパッドやリモコンとして使えます。"
+
+#: internal/connectui/window.go:395
+msgid "A device lists them and runs one with a tap, here, as you."
+msgstr "デバイスに一覧が表示され、タップするとこのコンピューターであなたとして実行されます。"
+
+#: internal/connectui/window.go:403
+msgid "The device is gone."
+msgstr "デバイスが見つからなくなりました。"
+
+#: internal/connectui/window.go:427
+msgid "%s asks to pair. Pair only if it shows this key:"
+msgstr "%s がペアリングを求めています。このキーが表示されている場合のみペアリングしてください:"
+
+#: internal/connectui/window.go:430
+msgid "Accept on %s if it shows this key:"
+msgstr "%s にこのキーが表示されていれば、そちらで承認してください:"
+
+#: internal/connectui/window.go:432
+#: internal/remoteui/window.go:525
+msgid "Unpair"
+msgstr "ペアリング解除"
+
+#: internal/connectui/window.go:435
+msgid "Not paired: pair to share with it."
+msgstr "未ペアリング: 共有するにはペアリングしてください。"
+
+#: internal/connectui/window.go:439
+msgid "it connects again when it is on this network or the tailnet"
+msgstr "このネットワークか tailnet に入ると再接続します"
+
+#: internal/connectui/window.go:475
+msgid "Send files"
+msgstr "ファイルを送信"
+
+#: internal/connectui/window.go:517
+msgid "Asked %s to connect."
+msgstr "%s に接続を依頼しました。"
+
+#: internal/connectui/window.go:552
+msgid "What it runs: systemctl suspend"
+msgstr "実行するもの: systemctl suspend"
 
 #: internal/convert/convert.go:97
 msgid "millimetres"
@@ -4045,6 +4259,7 @@ msgid "Remove from the bookmarks"
 msgstr "ブックマークから削除"
 
 #: internal/filesui/sidebar.go:57
+#: ui/connect.ui:112
 #: ui/tailscale.ui:112
 msgid "DEVICES"
 msgstr "デバイス"
@@ -7168,7 +7383,7 @@ msgid "SPACE PINBALL"
 msgstr "スペースピンボール"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "ランチャー"
@@ -7201,7 +7416,7 @@ msgstr "フォーカスのオンまたはオフ"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7377,10 +7592,6 @@ msgstr "%s がセッションを終了しました。"
 msgid "This computer has no identity to pair with: %v"
 msgstr "このコンピューターにはペアリング用の ID がありません：%v"
 
-#: internal/remoteui/window.go:256
-msgid "Not paired"
-msgstr "未ペアリング"
-
 #: internal/remoteui/window.go:258
 msgid "Paired"
 msgstr "ペアリング済み"
@@ -7400,10 +7611,6 @@ msgstr "共有を開始できませんでした：%v"
 #: internal/remoteui/window.go:430
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "ほかのデバイスからは、このネットワークと tailnet でこのコンピューターが %s として見えます。デバイスは一度だけ、ここで PIN を入力してペアリングします。"
-
-#: internal/remoteui/window.go:432
-msgid "Starting…"
-msgstr "起動中…"
 
 #: internal/remoteui/window.go:433
 msgid "Sunshine is starting."
@@ -7437,12 +7644,6 @@ msgstr "デバイス"
 msgid "at %s: type the PIN it shows"
 msgstr "%s から：表示されている PIN を入力"
 
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
-msgid "Pair"
-msgstr "ペアリング"
-
 #: internal/remoteui/window.go:508
 msgid "No device is paired yet."
 msgstr "ペアリング済みのデバイスはまだありません。"
@@ -7450,10 +7651,6 @@ msgstr "ペアリング済みのデバイスはまだありません。"
 #: internal/remoteui/window.go:513
 msgid "The paired devices show while sharing is on."
 msgstr "ペアリング済みのデバイスは共有中に表示されます。"
-
-#: internal/remoteui/window.go:525
-msgid "Unpair"
-msgstr "ペアリング解除"
 
 #: internal/remoteui/window.go:546
 msgid "A PIN is four digits."
@@ -7583,7 +7780,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "もう一度 Enter を押すとゴミ箱を空にします"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "inua's settings"
 msgstr "inuaの設定"
 
@@ -7730,56 +7927,56 @@ msgid "Web search"
 msgstr "ウェブ検索"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "EVERYDAY"
 msgstr "毎日"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "TOOLS"
 msgstr "ツール"
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
 msgid "PLAY"
 msgstr "遊び"
 
-#: internal/shell/dock.go:274
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:300
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "システム"
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "スクリーンショット"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "Capture an area, a window or a screen"
 msgstr "領域、ウィンドウ、または画面をキャプチャする"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "DEVELOPMENT"
 msgstr "開発"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "MEDIA"
 msgstr "メディア"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "GAMES"
 msgstr "ゲーム"
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "OTHER"
 msgstr "その他"
 
-#: internal/shell/dock.go:324
+#: internal/shell/dock.go:325
 msgid "WORKSHOP"
 msgstr "ワークショップ"
 
@@ -8179,6 +8376,7 @@ msgid "Search clipboard history"
 msgstr "クリップボード履歴を検索"
 
 #: internal/ui/clipboard.go:335
+#: ui/connect.ui:727
 #: ui/settings.ui:3328
 msgid "Clipboard"
 msgstr "クリップボード"
@@ -8536,11 +8734,6 @@ msgstr "録音が保存されました"
 msgid "Screen recording"
 msgstr "画面記録"
 
-#: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
-msgid "Show in Folder"
-msgstr "フォルダ内で表示"
-
 #: internal/ui/screenshot.go:434
 msgid "inua screenshot"
 msgstr "イヌアのスクリーンショット"
@@ -8584,16 +8777,6 @@ msgstr "撮影されたスクリーンショット"
 #: internal/ui/settings.go:256
 msgid "Not restarted: %s"
 msgstr "再起動できませんでした: %s"
-
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
-#: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
-msgid "%d%%"
-msgstr "%d%%"
 
 #: internal/ui/settings.go:657
 #: ui/settings.ui:384
@@ -10010,6 +10193,116 @@ msgstr "前に摘みました"
 msgid "Colours you pick show here."
 msgstr "選択した色がここに表示されます。"
 
+#: ui/connect.ui:54
+#: ui/remote.ui:54
+msgid "THIS COMPUTER"
+msgstr "このコンピューター"
+
+#: ui/connect.ui:125
+msgid "Look for devices again"
+msgstr "デバイスを再検索"
+
+#: ui/connect.ui:159
+msgid "Add a device by address…"
+msgstr "アドレスでデバイスを追加…"
+
+#: ui/connect.ui:226
+msgid "[THIS COMPUTER]"
+msgstr "[このコンピューター]"
+
+#: ui/connect.ui:256
+msgid "Connect with your devices"
+msgstr "デバイスと連携"
+
+#: ui/connect.ui:317
+msgid "To pair a phone"
+msgstr "スマートフォンをペアリングするには"
+
+#: ui/connect.ui:326
+msgid "Install KDE Connect on it (from F-Droid, Google Play or the App Store), open it on the same network or the tailnet, and choose this computer. Pair once the key shown there matches the one here."
+msgstr "スマートフォンに KDE Connect をインストールし(F-Droid、Google Play、App Store から)、同じネットワークか tailnet で開いて、このコンピューターを選びます。表示されたキーがここのキーと一致したらペアリングしてください。"
+
+#: ui/connect.ui:362
+msgid "[COMMANDS]"
+msgstr "[コマンド]"
+
+#: ui/connect.ui:372
+msgid "devices run these here"
+msgstr "デバイスがここで実行します"
+
+#: ui/connect.ui:410
+msgid "Add a command"
+msgstr "コマンドを追加"
+
+#: ui/connect.ui:596
+msgid "[SEND]"
+msgstr "[送信]"
+
+#: ui/connect.ui:630
+msgid "Ring"
+msgstr "鳴らす"
+
+#: ui/connect.ui:631
+msgid "Rings the device, to find it"
+msgstr "デバイスを鳴らして見つけます"
+
+#: ui/connect.ui:640
+msgid "Send files…"
+msgstr "ファイルを送信…"
+
+#: ui/connect.ui:654
+msgid "Text, or a link it opens"
+msgstr "テキスト、または開くリンク"
+
+#: ui/connect.ui:663
+#: ui/connectreply.ui:58
+msgid "Send"
+msgstr "送信"
+
+#: ui/connect.ui:697
+msgid "[SHARED WITH IT]"
+msgstr "[共有するもの]"
+
+#: ui/connect.ui:736
+msgid "Text copied on one is there to paste on the other. Passwords stay here."
+msgstr "片方でコピーしたテキストをもう片方で貼り付けられます。パスワードはここに残ります。"
+
+#: ui/connect.ui:768
+msgid "This computer's notifications"
+msgstr "このコンピューターの通知"
+
+#: ui/connect.ui:777
+msgid "They show on the device too. Its own show here when it sends them."
+msgstr "デバイスにも表示されます。デバイスの通知は、送られてくるとここに表示されます。"
+
+#: ui/connect.ui:809
+msgid "Pointer and keyboard"
+msgstr "ポインターとキーボード"
+
+#: ui/connect.ui:818
+msgid "The device works as a touchpad and keyboard here."
+msgstr "デバイスをここのタッチパッドとキーボードとして使えます。"
+
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr "コマンド"
+
+#: ui/connect.ui:859
+msgid "It runs the commands set up on This computer."
+msgstr "「このコンピューター」で設定したコマンドを実行します。"
+
+#: ui/connect.ui:921
+msgid "[ADD A DEVICE]"
+msgstr "[デバイスを追加]"
+
+#: ui/connect.ui:946
+msgid "A device the network's broadcast does not reach: its name or IP address. It is asked to connect here; it shows in the list once it has."
+msgstr "ネットワークのブロードキャストが届かないデバイスの名前または IP アドレス。ここへの接続を依頼し、接続されると一覧に表示されます。"
+
+#: ui/connectreply.ui:36
+msgid "Your answer"
+msgstr "返信内容"
+
 #: ui/control.ui:72
 msgid "Screenshot an area"
 msgstr "エリアのスクリーンショット"
@@ -10513,10 +10806,6 @@ msgstr "別のユーザー"
 #: ui/polkit.ui:741
 msgid "Authenticate"
 msgstr "認証する"
-
-#: ui/remote.ui:54
-msgid "THIS COMPUTER"
-msgstr "このコンピューター"
 
 #: ui/remote.ui:84
 msgid "Sharing"
@@ -12058,6 +12347,14 @@ msgstr "安全なマスを明らかにし、隠された地雷にフラグを立
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "ゲーム;アーケード;パズル;"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:10
+msgid "Your phone and this computer together: clipboard, files, notifications, media and remote input"
+msgstr "スマートフォンとこのコンピューターを連携：クリップボード、ファイル、通知、メディア、リモート入力"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:20
+msgid "kde connect;gsconnect;valent;phone;android;iphone;clipboard;share;notifications;"
+msgstr "kde connect;gsconnect;valent;スマホ;電話;android;iphone;クリップボード;共有;通知;"
 
 #: config/apps/io.github.lyricat.Inua.Music.desktop:10
 msgid "Play music, with a playlist and an equalizer"

@@ -1,0 +1,696 @@
+// Mobile Link: phones and computers running KDE Connect, GSConnect or Valent.
+// The index on the left lists This computer, then the devices (paired, and
+// those found on the network or the tailnet); the page beside it is the
+// one chosen.
+//
+//   this   — the service's switch, this computer's name, how to pair, and
+//            the commands devices may run here
+//   device — a device: pair, accept or refuse its request (the key both
+//            show), forget it; ping, ring, send files or text; what it
+//            may do here
+//   add    — a device by its address, for one the broadcast misses
+using Gtk 4.0;
+
+ApplicationWindow connect {
+  styles ["settings", "connect"]
+  title: _("Mobile Link");
+  default-width: 900;
+  default-height: 640;
+
+  Box {
+    // ── the index ──────────────────────────────────────────────────────
+    Box {
+      styles ["index"]
+      orientation: vertical;
+      width-request: 250;
+      hexpand: false;
+
+      Label {
+        styles ["index-title"]
+        label: _("Mobile Link");
+        xalign: 0;
+      }
+
+      ScrolledWindow {
+        hscrollbar-policy: never;
+        propagate-natural-width: false;
+        vexpand: true;
+
+        Box {
+          styles ["connect-index"]
+          orientation: vertical;
+          spacing: 2;
+
+          Label {
+            styles ["kicker", "connect-kicker"]
+            label: _("THIS COMPUTER");
+            xalign: 0;
+          }
+
+          Button side_this {
+            styles ["index-item"]
+            name: "side_this";
+
+            Box {
+              spacing: 10;
+
+              Image {
+                styles ["index-icon"]
+                icon-name: "connect-this-symbolic";
+              }
+
+              Box {
+                orientation: vertical;
+                hexpand: true;
+
+                Label side_this_title {
+                  styles ["title"]
+                  xalign: 0;
+                  ellipsize: end;
+                }
+
+                Label side_this_sub {
+                  styles ["sub"]
+                  xalign: 0;
+                  ellipsize: end;
+                }
+              }
+            }
+          }
+
+          Box {
+            spacing: 6;
+
+            Label {
+              styles ["kicker", "connect-kicker"]
+              label: _("DEVICES");
+              xalign: 0;
+              hexpand: true;
+            }
+
+            Button side_find {
+              styles ["plain", "connect-find"]
+              name: "side_find";
+              icon-name: "view-refresh-symbolic";
+              tooltip-text: _("Look for devices again");
+              valign: center;
+            }
+          }
+
+          // Paired devices, then those found; Go fills it.
+          Box side_devices {
+            orientation: vertical;
+            spacing: 2;
+          }
+
+          Button side_add {
+            styles ["index-item"]
+            name: "side_add";
+
+            Box {
+              spacing: 10;
+
+              Image {
+                styles ["index-icon"]
+                icon-name: "list-add-symbolic";
+              }
+
+              Label {
+                styles ["title"]
+                label: _("Add a device by address…");
+                xalign: 0;
+              }
+            }
+          }
+        }
+      }
+
+      Label status {
+        styles ["status"]
+        xalign: 0;
+        wrap: true;
+        max-width-chars: 28;
+      }
+    }
+
+    // ── the pages ──────────────────────────────────────────────────────
+    Stack pages {
+      hexpand: true;
+      hhomogeneous: false;
+      transition-type: crossfade;
+      transition-duration: 120;
+
+      StackPage {
+        name: "this";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["page"]
+            orientation: vertical;
+
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  label: _("[THIS COMPUTER]");
+                  hexpand: true;
+                  xalign: 0;
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Connect with your devices");
+                      xalign: 0;
+                    }
+
+                    Label this_desc {
+                      styles ["sub"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Switch this_switch {
+                    name: "this_switch";
+                    valign: center;
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Label {
+                    styles ["label"]
+                    label: _("Name");
+                    hexpand: true;
+                    xalign: 0;
+                  }
+
+                  Label this_name {
+                    styles ["sub"]
+                    selectable: true;
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  orientation: vertical;
+                  spacing: 4;
+
+                  Label {
+                    styles ["label"]
+                    label: _("To pair a phone");
+                    xalign: 0;
+                  }
+
+                  Label {
+                    styles ["sub"]
+                    label: _("Install KDE Connect on it (from F-Droid, Google Play or the App Store), open it on the same network or the tailnet, and choose this computer. Pair once the key shown there matches the one here.");
+                    xalign: 0;
+                    wrap: true;
+                  }
+                }
+              }
+            }
+
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  label: _("[COMMANDS]");
+                  hexpand: true;
+                  xalign: 0;
+                }
+
+                Label {
+                  styles ["section-meta"]
+                  label: _("devices run these here");
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                // A row for each command: its name, what it runs; Go fills it.
+                Box commands {
+                  orientation: vertical;
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 8;
+
+                  Label commands_note {
+                    styles ["sub"]
+                    hexpand: true;
+                    xalign: 0;
+                    wrap: true;
+                  }
+
+                  Button commands_add {
+                    styles ["outlined"]
+                    name: "commands_add";
+                    label: _("Add a command");
+                    valign: center;
+                  }
+
+                  Button commands_save {
+                    styles ["suggested-action"]
+                    name: "commands_save";
+                    label: _("Save");
+                    valign: center;
+                  }
+                }
+              }
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "device";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["page"]
+            orientation: vertical;
+
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label device_title {
+                  styles ["section-label"]
+                  hexpand: true;
+                  xalign: 0;
+                  ellipsize: end;
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["row"]
+                  spacing: 8;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label device_state {
+                      styles ["label"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+
+                    Label device_addr {
+                      styles ["sub"]
+                      xalign: 0;
+                      selectable: true;
+                    }
+                  }
+
+                  Button device_unpair {
+                    styles ["outlined"]
+                    name: "device_unpair";
+                    valign: center;
+                  }
+
+                  Button device_pair {
+                    styles ["suggested-action"]
+                    name: "device_pair";
+                    valign: center;
+                  }
+                }
+
+                // While pairing: the key both screens show.
+                Box device_key_box {
+                  styles ["row", "connect-key"]
+                  orientation: vertical;
+                  spacing: 6;
+                  visible: false;
+
+                  Label device_key_text {
+                    styles ["label"]
+                    xalign: 0;
+                    wrap: true;
+                  }
+
+                  Label device_key {
+                    styles ["connect-key-digits"]
+                    xalign: 0;
+                    selectable: true;
+                  }
+                }
+              }
+            }
+
+            Box device_actions_section {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  label: _("[SEND]");
+                  hexpand: true;
+                  xalign: 0;
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["row"]
+                  spacing: 8;
+
+                  Button device_ping {
+                    styles ["outlined"]
+                    name: "device_ping";
+                    label: _("Ping");
+                  }
+
+                  Button device_ring {
+                    styles ["outlined"]
+                    name: "device_ring";
+                    label: _("Ring");
+                    tooltip-text: _("Rings the device, to find it");
+                  }
+
+                  Button device_files {
+                    styles ["outlined"]
+                    name: "device_files";
+                    label: _("Send files…");
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 8;
+
+                  Entry device_text {
+                    hexpand: true;
+                    placeholder-text: _("Text, or a link it opens");
+                  }
+
+                  Button device_text_send {
+                    styles ["outlined"]
+                    name: "device_text_send";
+                    label: _("Send");
+                  }
+                }
+              }
+            }
+
+            Box device_allow_section {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  label: _("[SHARED WITH IT]");
+                  hexpand: true;
+                  xalign: 0;
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Clipboard");
+                      xalign: 0;
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: _("Text copied on one is there to paste on the other. Passwords stay here.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Switch set_clipboard {
+                    name: "clipboard";
+                    valign: center;
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("This computer's notifications");
+                      xalign: 0;
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: _("They show on the device too. Its own show here when it sends them.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Switch set_notifications {
+                    name: "notifications";
+                    valign: center;
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Pointer and keyboard");
+                      xalign: 0;
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: _("The device works as a touchpad and keyboard here.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Switch set_input {
+                    name: "input";
+                    valign: center;
+                  }
+                }
+
+                Box {
+                  styles ["row"]
+                  spacing: 12;
+
+                  Box {
+                    orientation: vertical;
+                    hexpand: true;
+                    valign: center;
+                    spacing: 2;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Commands");
+                      xalign: 0;
+                    }
+
+                    Label {
+                      styles ["sub"]
+                      label: _("It runs the commands set up on This computer.");
+                      xalign: 0;
+                      wrap: true;
+                    }
+                  }
+
+                  Switch set_commands {
+                    name: "commands";
+                    valign: center;
+                  }
+                }
+              }
+            }
+          }
+        };
+      }
+
+      StackPage {
+        name: "add";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["page"]
+            orientation: vertical;
+
+            Box {
+              styles ["section"]
+              orientation: vertical;
+
+              Box {
+                styles ["section-head"]
+                spacing: 10;
+
+                Label {
+                  styles ["mark"]
+                  valign: center;
+                }
+
+                Label {
+                  styles ["section-label"]
+                  label: _("[ADD A DEVICE]");
+                  hexpand: true;
+                  xalign: 0;
+                }
+              }
+
+              Box {
+                styles ["section-body"]
+                orientation: vertical;
+
+                Box {
+                  styles ["field"]
+                  orientation: vertical;
+                  spacing: 6;
+
+                  Label {
+                    styles ["label"]
+                    label: _("A device the network's broadcast does not reach: its name or IP address. It is asked to connect here; it shows in the list once it has.");
+                    xalign: 0;
+                    wrap: true;
+                  }
+
+                  Box {
+                    spacing: 8;
+
+                    Entry add_addr {
+                      hexpand: true;
+                      placeholder-text: "192.168.1.20, phone.tail1234.ts.net";
+                    }
+
+                    Button add_ok {
+                      styles ["suggested-action"]
+                      name: "add_ok";
+                      label: _("Add");
+                    }
+                  }
+
+                  Label add_error {
+                    styles ["sub", "connect-error"]
+                    xalign: 0;
+                    wrap: true;
+                  }
+                }
+              }
+            }
+          }
+        };
+      }
+    }
+  }
+}

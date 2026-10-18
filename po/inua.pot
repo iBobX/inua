@@ -162,6 +162,148 @@ msgstr ""
 msgid "UTC"
 msgstr ""
 
+#: internal/apps/connect/battery.go:34
+msgid "%s's battery is low"
+msgstr ""
+
+#: internal/apps/connect/battery.go:35
+msgid "%d%% left"
+msgstr ""
+
+#: internal/apps/connect/battery.go:89
+msgid "%s is looking for this computer"
+msgstr ""
+
+#: internal/apps/connect/battery.go:90
+msgid "Found it"
+msgstr ""
+
+#: internal/apps/connect/notifications.go:94
+#: internal/connectui/app.go:38
+#: ui/connectreply.ui:14
+msgid "Reply"
+msgstr ""
+
+#: internal/apps/connect/service.go:246
+#: internal/apps/connect/share.go:196
+#: internal/apps/connect/share.go:202
+#: internal/connectui/app.go:20
+#: ui/connect.ui:14
+#: ui/connect.ui:32
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:3
+msgid "Mobile Link"
+msgstr ""
+
+#: internal/apps/connect/service.go:248
+msgid "%s wants to pair"
+msgstr ""
+
+#: internal/apps/connect/service.go:249
+msgid "Pair only if %s shows the key %s."
+msgstr ""
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:425
+#: internal/connectui/window.go:434
+#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:662
+#: ui/remote.ui:513
+msgid "Pair"
+msgstr ""
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:426
+msgid "Refuse"
+msgstr ""
+
+#: internal/apps/connect/service.go:292
+msgid "Ping!"
+msgstr ""
+
+#: internal/apps/connect/service.go:505
+msgid "Wants to pair"
+msgstr ""
+
+#: internal/apps/connect/service.go:507
+msgid "Pairing…"
+msgstr ""
+
+#: internal/apps/connect/service.go:509
+#: internal/apps/tailscale/status.go:265
+#: internal/remoteui/window.go:261
+msgid "Connected"
+msgstr ""
+
+#: internal/apps/connect/service.go:511
+msgid "Away"
+msgstr ""
+
+#: internal/apps/connect/service.go:513
+#: internal/remoteui/window.go:256
+msgid "Not paired"
+msgstr ""
+
+#: internal/apps/connect/service.go:517
+msgid "%d%%, charging"
+msgstr ""
+
+#: internal/apps/connect/service.go:519
+#: internal/ui/settings.go:274
+#: internal/ui/settings.go:282
+#: internal/ui/settings.go:285
+#: internal/ui/settings.go:626
+#: internal/ui/settings.go:628
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:694
+msgid "%d%%"
+msgstr ""
+
+#: internal/apps/connect/share.go:64
+msgid "Text from %s"
+msgstr ""
+
+#: internal/apps/connect/share.go:65
+msgid "It is on the clipboard."
+msgstr ""
+
+#: internal/apps/connect/share.go:112
+msgid "A file from %s did not arrive"
+msgstr ""
+
+#: internal/apps/connect/share.go:124
+msgid "A file from %s"
+msgstr ""
+
+#: internal/apps/connect/share.go:126
+#: internal/appui/workshop_blocks.go:427
+#: internal/appui/workshop_manager.go:63
+#: internal/filesui/cards.go:698
+#: internal/filesui/window.go:696
+#: internal/ui/record.go:163
+#: internal/ui/system_ipc.go:241
+msgid "Open"
+msgstr ""
+
+#: internal/apps/connect/share.go:126
+#: internal/ui/record.go:163
+#: internal/ui/screenshot.go:808
+msgid "Show in Folder"
+msgstr ""
+
+#: internal/apps/connect/share.go:143
+msgid "Shared file"
+msgstr ""
+
+#: internal/apps/connect/share.go:197
+msgid "%s did not get %s"
+msgstr ""
+
+#: internal/apps/connect/share.go:203
+msgid "Sent %d file to %s"
+msgid_plural "Sent %d files to %s"
+msgstr[0] ""
+msgstr[1] ""
+
 #: internal/apps/music/music.go:393
 msgid "Flat"
 msgstr ""
@@ -345,11 +487,6 @@ msgstr ""
 
 #: internal/apps/tailscale/status.go:191
 msgid "in %d d"
-msgstr ""
-
-#: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
-msgid "Connected"
 msgstr ""
 
 #: internal/apps/tailscale/status.go:267
@@ -1396,6 +1533,7 @@ msgstr ""
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
+#: internal/connectui/window.go:560
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -1474,6 +1612,7 @@ msgstr ""
 
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
+#: ui/connect.ui:966
 #: ui/pass.ui:818
 #: ui/remote.ui:905
 msgid "Add"
@@ -1632,7 +1771,7 @@ msgstr ""
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "NETWORK"
 msgstr ""
 
@@ -1893,8 +2032,10 @@ msgstr ""
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
+#: internal/connectui/window.go:547
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
+#: ui/connect.ui:290
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4810
 #: ui/sysmon.ui:96
@@ -2219,6 +2360,7 @@ msgid "Copy Name"
 msgstr ""
 
 #: internal/appui/tailscale.go:507
+#: ui/connect.ui:621
 msgid "Ping"
 msgstr ""
 
@@ -2433,6 +2575,7 @@ msgid "Cannot play it: %s"
 msgstr ""
 
 #: internal/appui/video.go:529
+#: internal/connectui/window.go:387
 #: internal/remoteui/window.go:435
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -2552,6 +2695,7 @@ msgid "Unknown building block %q"
 msgstr ""
 
 #: internal/appui/workshop.go:990
+#: internal/connectui/window.go:429
 #: internal/filesui/cards.go:285
 #: internal/filesui/cards.go:334
 #: internal/filesui/cards.go:372
@@ -2566,6 +2710,7 @@ msgstr ""
 #: internal/ui/askpass.go:416
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/connectreply.ui:49
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -2582,18 +2727,10 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: internal/appui/workshop_blocks.go:427
-#: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:696
-#: internal/ui/record.go:163
-#: internal/ui/system_ipc.go:241
-msgid "Open"
-msgstr ""
-
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
+#: ui/connect.ui:420
 #: ui/pass.ui:490
 msgid "Save"
 msgstr ""
@@ -2822,6 +2959,84 @@ msgstr ""
 #: internal/config/strftime.go:82
 #: internal/i18n/time.go:24
 msgid "PM"
+msgstr ""
+
+#: internal/connectui/reply.go:39
+msgid "Answer %s"
+msgstr ""
+
+#: internal/connectui/reply.go:68
+msgid "Not sent: %v"
+msgstr ""
+
+#: internal/connectui/window.go:235
+msgid "None found yet: open KDE Connect on your phone."
+msgstr ""
+
+#: internal/connectui/window.go:355
+msgid "Mobile Link did not start: %v"
+msgstr ""
+
+#: internal/connectui/window.go:381
+msgid "Visible to your devices"
+msgstr ""
+
+#: internal/connectui/window.go:382
+msgid "Devices running KDE Connect, GSConnect or Valent find this computer on this network and the tailnet, and pair with it."
+msgstr ""
+
+#: internal/connectui/window.go:384
+#: internal/remoteui/window.go:432
+msgid "Starting…"
+msgstr ""
+
+#: internal/connectui/window.go:385
+msgid "The service is starting."
+msgstr ""
+
+#: internal/connectui/window.go:388
+msgid "Share the clipboard and files with your phone, see its notifications and battery here, and use it as a touchpad or a remote."
+msgstr ""
+
+#: internal/connectui/window.go:395
+msgid "A device lists them and runs one with a tap, here, as you."
+msgstr ""
+
+#: internal/connectui/window.go:403
+msgid "The device is gone."
+msgstr ""
+
+#: internal/connectui/window.go:427
+msgid "%s asks to pair. Pair only if it shows this key:"
+msgstr ""
+
+#: internal/connectui/window.go:430
+msgid "Accept on %s if it shows this key:"
+msgstr ""
+
+#: internal/connectui/window.go:432
+#: internal/remoteui/window.go:525
+msgid "Unpair"
+msgstr ""
+
+#: internal/connectui/window.go:435
+msgid "Not paired: pair to share with it."
+msgstr ""
+
+#: internal/connectui/window.go:439
+msgid "it connects again when it is on this network or the tailnet"
+msgstr ""
+
+#: internal/connectui/window.go:475
+msgid "Send files"
+msgstr ""
+
+#: internal/connectui/window.go:517
+msgid "Asked %s to connect."
+msgstr ""
+
+#: internal/connectui/window.go:552
+msgid "What it runs: systemctl suspend"
 msgstr ""
 
 #: internal/convert/convert.go:97
@@ -4068,6 +4283,7 @@ msgid "Remove from the bookmarks"
 msgstr ""
 
 #: internal/filesui/sidebar.go:57
+#: ui/connect.ui:112
 #: ui/tailscale.ui:112
 msgid "DEVICES"
 msgstr ""
@@ -7200,7 +7416,7 @@ msgid "SPACE PINBALL"
 msgstr ""
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr ""
@@ -7233,7 +7449,7 @@ msgstr ""
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7409,10 +7625,6 @@ msgstr ""
 msgid "This computer has no identity to pair with: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:256
-msgid "Not paired"
-msgstr ""
-
 #: internal/remoteui/window.go:258
 msgid "Paired"
 msgstr ""
@@ -7431,10 +7643,6 @@ msgstr ""
 
 #: internal/remoteui/window.go:430
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
-msgstr ""
-
-#: internal/remoteui/window.go:432
-msgid "Starting…"
 msgstr ""
 
 #: internal/remoteui/window.go:433
@@ -7469,22 +7677,12 @@ msgstr ""
 msgid "at %s: type the PIN it shows"
 msgstr ""
 
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
-msgid "Pair"
-msgstr ""
-
 #: internal/remoteui/window.go:508
 msgid "No device is paired yet."
 msgstr ""
 
 #: internal/remoteui/window.go:513
 msgid "The paired devices show while sharing is on."
-msgstr ""
-
-#: internal/remoteui/window.go:525
-msgid "Unpair"
 msgstr ""
 
 #: internal/remoteui/window.go:546
@@ -7615,7 +7813,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr ""
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "inua's settings"
 msgstr ""
 
@@ -7762,56 +7960,56 @@ msgid "Web search"
 msgstr ""
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "EVERYDAY"
 msgstr ""
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "TOOLS"
 msgstr ""
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
 msgid "PLAY"
 msgstr ""
 
-#: internal/shell/dock.go:274
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:300
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr ""
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "Find apps, windows and answers"
 msgstr ""
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr ""
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "Capture an area, a window or a screen"
 msgstr ""
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "DEVELOPMENT"
 msgstr ""
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "MEDIA"
 msgstr ""
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "GAMES"
 msgstr ""
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "OTHER"
 msgstr ""
 
-#: internal/shell/dock.go:324
+#: internal/shell/dock.go:325
 msgid "WORKSHOP"
 msgstr ""
 
@@ -8212,6 +8410,7 @@ msgid "Search clipboard history"
 msgstr ""
 
 #: internal/ui/clipboard.go:335
+#: ui/connect.ui:727
 #: ui/settings.ui:3328
 msgid "Clipboard"
 msgstr ""
@@ -8572,11 +8771,6 @@ msgstr ""
 msgid "Screen recording"
 msgstr ""
 
-#: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
-msgid "Show in Folder"
-msgstr ""
-
 #: internal/ui/screenshot.go:434
 msgid "inua screenshot"
 msgstr ""
@@ -8619,16 +8813,6 @@ msgstr ""
 
 #: internal/ui/settings.go:256
 msgid "Not restarted: %s"
-msgstr ""
-
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
-#: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
-msgid "%d%%"
 msgstr ""
 
 #: internal/ui/settings.go:657
@@ -10054,6 +10238,116 @@ msgstr ""
 msgid "Colours you pick show here."
 msgstr ""
 
+#: ui/connect.ui:54
+#: ui/remote.ui:54
+msgid "THIS COMPUTER"
+msgstr ""
+
+#: ui/connect.ui:125
+msgid "Look for devices again"
+msgstr ""
+
+#: ui/connect.ui:159
+msgid "Add a device by address…"
+msgstr ""
+
+#: ui/connect.ui:226
+msgid "[THIS COMPUTER]"
+msgstr ""
+
+#: ui/connect.ui:256
+msgid "Connect with your devices"
+msgstr ""
+
+#: ui/connect.ui:317
+msgid "To pair a phone"
+msgstr ""
+
+#: ui/connect.ui:326
+msgid "Install KDE Connect on it (from F-Droid, Google Play or the App Store), open it on the same network or the tailnet, and choose this computer. Pair once the key shown there matches the one here."
+msgstr ""
+
+#: ui/connect.ui:362
+msgid "[COMMANDS]"
+msgstr ""
+
+#: ui/connect.ui:372
+msgid "devices run these here"
+msgstr ""
+
+#: ui/connect.ui:410
+msgid "Add a command"
+msgstr ""
+
+#: ui/connect.ui:596
+msgid "[SEND]"
+msgstr ""
+
+#: ui/connect.ui:630
+msgid "Ring"
+msgstr ""
+
+#: ui/connect.ui:631
+msgid "Rings the device, to find it"
+msgstr ""
+
+#: ui/connect.ui:640
+msgid "Send files…"
+msgstr ""
+
+#: ui/connect.ui:654
+msgid "Text, or a link it opens"
+msgstr ""
+
+#: ui/connect.ui:663
+#: ui/connectreply.ui:58
+msgid "Send"
+msgstr ""
+
+#: ui/connect.ui:697
+msgid "[SHARED WITH IT]"
+msgstr ""
+
+#: ui/connect.ui:736
+msgid "Text copied on one is there to paste on the other. Passwords stay here."
+msgstr ""
+
+#: ui/connect.ui:768
+msgid "This computer's notifications"
+msgstr ""
+
+#: ui/connect.ui:777
+msgid "They show on the device too. Its own show here when it sends them."
+msgstr ""
+
+#: ui/connect.ui:809
+msgid "Pointer and keyboard"
+msgstr ""
+
+#: ui/connect.ui:818
+msgid "The device works as a touchpad and keyboard here."
+msgstr ""
+
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr ""
+
+#: ui/connect.ui:859
+msgid "It runs the commands set up on This computer."
+msgstr ""
+
+#: ui/connect.ui:921
+msgid "[ADD A DEVICE]"
+msgstr ""
+
+#: ui/connect.ui:946
+msgid "A device the network's broadcast does not reach: its name or IP address. It is asked to connect here; it shows in the list once it has."
+msgstr ""
+
+#: ui/connectreply.ui:36
+msgid "Your answer"
+msgstr ""
+
 #: ui/control.ui:72
 msgid "Screenshot an area"
 msgstr ""
@@ -10556,10 +10850,6 @@ msgstr ""
 
 #: ui/polkit.ui:741
 msgid "Authenticate"
-msgstr ""
-
-#: ui/remote.ui:54
-msgid "THIS COMPUTER"
 msgstr ""
 
 #: ui/remote.ui:84
@@ -12101,6 +12391,14 @@ msgstr ""
 #: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:20
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:10
+msgid "Your phone and this computer together: clipboard, files, notifications, media and remote input"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:20
+msgid "kde connect;gsconnect;valent;phone;android;iphone;clipboard;share;notifications;"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.Music.desktop:10

@@ -13,8 +13,9 @@ Video plays the file). The Assistant is a program of its own,
 `inua-assistant`, and so are the file manager, `inua-files`
 ([files.md](files.md)), Viewer, `inua-viewer`, which opens a
 window for each file opened, the Windows guest's manager, `inua-vm`
-([the Windows VM](#windows-vm)), and Remote Desktop, `inua-remote`
-([remote-desktop.md](remote-desktop.md)).
+([the Windows VM](#windows-vm)), Remote Desktop, `inua-remote`
+([remote-desktop.md](remote-desktop.md)), and Mobile Link, `inua-connect`
+([mobile-link.md](mobile-link.md)).
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -453,6 +454,17 @@ machines found on the local network or the tailnet, or added by address,
 are paired with once and connected to in a window of their own (H.264,
 HEVC or AV1, decoded by the graphics card). Any Moonlight app can connect
 to a desktop inua shares. See [remote-desktop.md](remote-desktop.md).
+
+## Mobile Link
+
+`inua-connect` pairs this computer with phones and computers running KDE
+Connect, GSConnect or Valent, found on the local network or the tailnet:
+the clipboard both ways (passwords stay here), files, text and links
+shared, the phone's notifications and battery here and this computer's
+notifications there, this computer's players driven from the phone, the
+phone as a touchpad and keyboard, and commands run from it. The window is a
+view of a service of its own, `inua-connect --service`, which the shell
+starts at login while it is on. See [mobile-link.md](mobile-link.md).
 
 ## Files
 

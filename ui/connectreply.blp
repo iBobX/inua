@@ -1,0 +1,51 @@
+// Connect's answer to a device's notification: what is answered, the
+// message, and Send.
+using Gtk 4.0;
+
+ApplicationWindow connect_reply {
+  styles ["settings", "connect-reply"]
+  title: _("Reply");
+  default-width: 460;
+  resizable: false;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 10;
+
+    Label reply_title {
+      styles ["label"]
+      xalign: 0;
+      wrap: true;
+    }
+
+    Entry reply_text {
+      hexpand: true;
+      placeholder-text: _("Your answer");
+    }
+
+    Box {
+      spacing: 8;
+      halign: end;
+
+      Button reply_cancel {
+        styles ["outlined"]
+        name: "reply_cancel";
+        label: _("Cancel");
+      }
+
+      Button reply_send {
+        styles ["suggested-action"]
+        name: "reply_send";
+        label: _("Send");
+      }
+    }
+
+    Label reply_error {
+      styles ["sub", "connect-error"]
+      xalign: 0;
+      wrap: true;
+      visible: false;
+    }
+  }
+}

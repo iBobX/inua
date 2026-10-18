@@ -164,6 +164,147 @@ msgstr "%s，%s%d 小时 %d 分钟"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/connect/battery.go:34
+msgid "%s's battery is low"
+msgstr "%s 电量不足"
+
+#: internal/apps/connect/battery.go:35
+msgid "%d%% left"
+msgstr "剩余 %d%%"
+
+#: internal/apps/connect/battery.go:89
+msgid "%s is looking for this computer"
+msgstr "%s 正在寻找这台电脑"
+
+#: internal/apps/connect/battery.go:90
+msgid "Found it"
+msgstr "找到了"
+
+#: internal/apps/connect/notifications.go:94
+#: internal/connectui/app.go:38
+#: ui/connectreply.ui:14
+msgid "Reply"
+msgstr "回复"
+
+#: internal/apps/connect/service.go:246
+#: internal/apps/connect/share.go:196
+#: internal/apps/connect/share.go:202
+#: internal/connectui/app.go:20
+#: ui/connect.ui:14
+#: ui/connect.ui:32
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:3
+msgid "Mobile Link"
+msgstr "移动连接"
+
+#: internal/apps/connect/service.go:248
+msgid "%s wants to pair"
+msgstr "%s 请求配对"
+
+#: internal/apps/connect/service.go:249
+msgid "Pair only if %s shows the key %s."
+msgstr "仅当 %s 显示密钥 %s 时才配对。"
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:425
+#: internal/connectui/window.go:434
+#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:662
+#: ui/remote.ui:513
+msgid "Pair"
+msgstr "配对"
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:426
+msgid "Refuse"
+msgstr "拒绝"
+
+#: internal/apps/connect/service.go:292
+msgid "Ping!"
+msgstr "Ping！"
+
+#: internal/apps/connect/service.go:505
+msgid "Wants to pair"
+msgstr "请求配对"
+
+#: internal/apps/connect/service.go:507
+msgid "Pairing…"
+msgstr "正在配对……"
+
+#: internal/apps/connect/service.go:509
+#: internal/apps/tailscale/status.go:265
+#: internal/remoteui/window.go:261
+msgid "Connected"
+msgstr "已连接"
+
+#: internal/apps/connect/service.go:511
+msgid "Away"
+msgstr "不在线"
+
+#: internal/apps/connect/service.go:513
+#: internal/remoteui/window.go:256
+msgid "Not paired"
+msgstr "未配对"
+
+#: internal/apps/connect/service.go:517
+msgid "%d%%, charging"
+msgstr "%d%%，正在充电"
+
+#: internal/apps/connect/service.go:519
+#: internal/ui/settings.go:274
+#: internal/ui/settings.go:282
+#: internal/ui/settings.go:285
+#: internal/ui/settings.go:626
+#: internal/ui/settings.go:628
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:694
+msgid "%d%%"
+msgstr "%d%%"
+
+#: internal/apps/connect/share.go:64
+msgid "Text from %s"
+msgstr "来自 %s 的文本"
+
+#: internal/apps/connect/share.go:65
+msgid "It is on the clipboard."
+msgstr "已在剪贴板中。"
+
+#: internal/apps/connect/share.go:112
+msgid "A file from %s did not arrive"
+msgstr "来自 %s 的文件未能送达"
+
+#: internal/apps/connect/share.go:124
+msgid "A file from %s"
+msgstr "来自 %s 的文件"
+
+#: internal/apps/connect/share.go:126
+#: internal/appui/workshop_blocks.go:427
+#: internal/appui/workshop_manager.go:63
+#: internal/filesui/cards.go:698
+#: internal/filesui/window.go:696
+#: internal/ui/record.go:163
+#: internal/ui/system_ipc.go:241
+msgid "Open"
+msgstr "打开"
+
+#: internal/apps/connect/share.go:126
+#: internal/ui/record.go:163
+#: internal/ui/screenshot.go:808
+msgid "Show in Folder"
+msgstr "在文件夹中显示"
+
+#: internal/apps/connect/share.go:143
+msgid "Shared file"
+msgstr "共享的文件"
+
+#: internal/apps/connect/share.go:197
+msgid "%s did not get %s"
+msgstr "%s 未收到 %s"
+
+#: internal/apps/connect/share.go:203
+msgid "Sent %d file to %s"
+msgid_plural "Sent %d files to %s"
+msgstr[0] "已将 %d 个文件发送到 %s"
+
 #: internal/apps/music/music.go:393
 msgid "Flat"
 msgstr "平直"
@@ -348,11 +489,6 @@ msgstr "%d 小时后"
 #: internal/apps/tailscale/status.go:191
 msgid "in %d d"
 msgstr "%d 天后"
-
-#: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
-msgid "Connected"
-msgstr "已连接"
 
 #: internal/apps/tailscale/status.go:267
 msgid "Disconnected"
@@ -1388,6 +1524,7 @@ msgstr "%s · %s"
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
+#: internal/connectui/window.go:560
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -1465,6 +1602,7 @@ msgstr "替换"
 
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
+#: ui/connect.ui:966
 #: ui/pass.ui:818
 #: ui/remote.ui:905
 msgid "Add"
@@ -1623,7 +1761,7 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "NETWORK"
 msgstr "网络"
 
@@ -1882,8 +2020,10 @@ msgstr "模型"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
+#: internal/connectui/window.go:547
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
+#: ui/connect.ui:290
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4810
 #: ui/sysmon.ui:96
@@ -2206,6 +2346,7 @@ msgid "Copy Name"
 msgstr "复制名称"
 
 #: internal/appui/tailscale.go:507
+#: ui/connect.ui:621
 msgid "Ping"
 msgstr "Ping"
 
@@ -2420,6 +2561,7 @@ msgid "Cannot play it: %s"
 msgstr "无法播放：%s"
 
 #: internal/appui/video.go:529
+#: internal/connectui/window.go:387
 #: internal/remoteui/window.go:435
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -2539,6 +2681,7 @@ msgid "Unknown building block %q"
 msgstr "未知的组件 %q"
 
 #: internal/appui/workshop.go:990
+#: internal/connectui/window.go:429
 #: internal/filesui/cards.go:285
 #: internal/filesui/cards.go:334
 #: internal/filesui/cards.go:372
@@ -2553,6 +2696,7 @@ msgstr "未知的组件 %q"
 #: internal/ui/askpass.go:416
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/connectreply.ui:49
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -2569,18 +2713,10 @@ msgstr "取消"
 msgid "OK"
 msgstr "好的"
 
-#: internal/appui/workshop_blocks.go:427
-#: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:696
-#: internal/ui/record.go:163
-#: internal/ui/system_ipc.go:241
-msgid "Open"
-msgstr "打开"
-
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
+#: ui/connect.ui:420
 #: ui/pass.ui:490
 msgid "Save"
 msgstr "保存"
@@ -2810,6 +2946,84 @@ msgstr "一月"
 #: internal/i18n/time.go:24
 msgid "PM"
 msgstr "下午"
+
+#: internal/connectui/reply.go:39
+msgid "Answer %s"
+msgstr "回复 %s"
+
+#: internal/connectui/reply.go:68
+msgid "Not sent: %v"
+msgstr "未发送：%v"
+
+#: internal/connectui/window.go:235
+msgid "None found yet: open KDE Connect on your phone."
+msgstr "尚未找到：请在手机上打开 KDE Connect。"
+
+#: internal/connectui/window.go:355
+msgid "Mobile Link did not start: %v"
+msgstr "移动连接未能启动：%v"
+
+#: internal/connectui/window.go:381
+msgid "Visible to your devices"
+msgstr "你的设备可见"
+
+#: internal/connectui/window.go:382
+msgid "Devices running KDE Connect, GSConnect or Valent find this computer on this network and the tailnet, and pair with it."
+msgstr "运行 KDE Connect、GSConnect 或 Valent 的设备可在此网络和 tailnet 上找到这台电脑并与之配对。"
+
+#: internal/connectui/window.go:384
+#: internal/remoteui/window.go:432
+msgid "Starting…"
+msgstr "正在启动……"
+
+#: internal/connectui/window.go:385
+msgid "The service is starting."
+msgstr "服务正在启动。"
+
+#: internal/connectui/window.go:388
+msgid "Share the clipboard and files with your phone, see its notifications and battery here, and use it as a touchpad or a remote."
+msgstr "与手机共享剪贴板和文件，在这里查看它的通知和电量，并把它当作触控板或遥控器使用。"
+
+#: internal/connectui/window.go:395
+msgid "A device lists them and runs one with a tap, here, as you."
+msgstr "设备会列出它们，轻点即可在这里以你的身份运行。"
+
+#: internal/connectui/window.go:403
+msgid "The device is gone."
+msgstr "设备已不在。"
+
+#: internal/connectui/window.go:427
+msgid "%s asks to pair. Pair only if it shows this key:"
+msgstr "%s 请求配对。仅当它显示此密钥时才配对："
+
+#: internal/connectui/window.go:430
+msgid "Accept on %s if it shows this key:"
+msgstr "如果 %s 显示此密钥，请在其上接受："
+
+#: internal/connectui/window.go:432
+#: internal/remoteui/window.go:525
+msgid "Unpair"
+msgstr "取消配对"
+
+#: internal/connectui/window.go:435
+msgid "Not paired: pair to share with it."
+msgstr "未配对：配对后即可与它共享。"
+
+#: internal/connectui/window.go:439
+msgid "it connects again when it is on this network or the tailnet"
+msgstr "它回到此网络或 tailnet 时会重新连接"
+
+#: internal/connectui/window.go:475
+msgid "Send files"
+msgstr "发送文件"
+
+#: internal/connectui/window.go:517
+msgid "Asked %s to connect."
+msgstr "已请求 %s 连接。"
+
+#: internal/connectui/window.go:552
+msgid "What it runs: systemctl suspend"
+msgstr "运行的内容：systemctl suspend"
 
 #: internal/convert/convert.go:97
 msgid "millimetres"
@@ -4045,6 +4259,7 @@ msgid "Remove from the bookmarks"
 msgstr "从书签中移除"
 
 #: internal/filesui/sidebar.go:57
+#: ui/connect.ui:112
 #: ui/tailscale.ui:112
 msgid "DEVICES"
 msgstr "装置"
@@ -7168,7 +7383,7 @@ msgid "SPACE PINBALL"
 msgstr "太空弹球"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "启动器"
@@ -7201,7 +7416,7 @@ msgstr "聚焦或关闭"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7377,10 +7592,6 @@ msgstr "%s 结束了会话。"
 msgid "This computer has no identity to pair with: %v"
 msgstr "这台电脑没有用于配对的身份：%v"
 
-#: internal/remoteui/window.go:256
-msgid "Not paired"
-msgstr "未配对"
-
 #: internal/remoteui/window.go:258
 msgid "Paired"
 msgstr "已配对"
@@ -7400,10 +7611,6 @@ msgstr "共享没有启动：%v"
 #: internal/remoteui/window.go:430
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "其他设备在此网络和 tailnet 上会看到这台电脑名为 %s。设备只需配对一次，在这里输入 PIN。"
-
-#: internal/remoteui/window.go:432
-msgid "Starting…"
-msgstr "正在启动……"
 
 #: internal/remoteui/window.go:433
 msgid "Sunshine is starting."
@@ -7437,12 +7644,6 @@ msgstr "一台设备"
 msgid "at %s: type the PIN it shows"
 msgstr "来自 %s：输入它显示的 PIN"
 
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
-msgid "Pair"
-msgstr "配对"
-
 #: internal/remoteui/window.go:508
 msgid "No device is paired yet."
 msgstr "还没有已配对的设备。"
@@ -7450,10 +7651,6 @@ msgstr "还没有已配对的设备。"
 #: internal/remoteui/window.go:513
 msgid "The paired devices show while sharing is on."
 msgstr "共享开启时会显示已配对的设备。"
-
-#: internal/remoteui/window.go:525
-msgid "Unpair"
-msgstr "取消配对"
 
 #: internal/remoteui/window.go:546
 msgid "A PIN is four digits."
@@ -7583,7 +7780,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空回收站"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "inua's settings"
 msgstr "inua的设置"
 
@@ -7730,56 +7927,56 @@ msgid "Web search"
 msgstr "网络搜索"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "EVERYDAY"
 msgstr "日常"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:274
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:300
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系统"
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "Find apps, windows and answers"
 msgstr "查找应用程序、窗口和答案"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "截图"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "Capture an area, a window or a screen"
 msgstr "捕获区域、窗口或屏幕"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "DEVELOPMENT"
 msgstr "开发"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "MEDIA"
 msgstr "媒体"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "GAMES"
 msgstr "游戏"
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "OTHER"
 msgstr "其他"
 
-#: internal/shell/dock.go:324
+#: internal/shell/dock.go:325
 msgid "WORKSHOP"
 msgstr "工坊"
 
@@ -8179,6 +8376,7 @@ msgid "Search clipboard history"
 msgstr "搜索剪贴板历史"
 
 #: internal/ui/clipboard.go:335
+#: ui/connect.ui:727
 #: ui/settings.ui:3328
 msgid "Clipboard"
 msgstr "剪贴板"
@@ -8536,11 +8734,6 @@ msgstr "录屏已保存"
 msgid "Screen recording"
 msgstr "屏幕录制"
 
-#: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
-msgid "Show in Folder"
-msgstr "在文件夹中显示"
-
 #: internal/ui/screenshot.go:434
 msgid "inua screenshot"
 msgstr "inua截图"
@@ -8584,16 +8777,6 @@ msgstr "截图"
 #: internal/ui/settings.go:256
 msgid "Not restarted: %s"
 msgstr "未重新启动：%s"
-
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
-#: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
-msgid "%d%%"
-msgstr "%d%%"
 
 #: internal/ui/settings.go:657
 #: ui/settings.ui:384
@@ -10010,6 +10193,116 @@ msgstr "之前挑选的"
 msgid "Colours you pick show here."
 msgstr "您选择的颜色显示在这里。"
 
+#: ui/connect.ui:54
+#: ui/remote.ui:54
+msgid "THIS COMPUTER"
+msgstr "这台电脑"
+
+#: ui/connect.ui:125
+msgid "Look for devices again"
+msgstr "重新查找设备"
+
+#: ui/connect.ui:159
+msgid "Add a device by address…"
+msgstr "按地址添加设备……"
+
+#: ui/connect.ui:226
+msgid "[THIS COMPUTER]"
+msgstr "[这台电脑]"
+
+#: ui/connect.ui:256
+msgid "Connect with your devices"
+msgstr "与你的设备连接"
+
+#: ui/connect.ui:317
+msgid "To pair a phone"
+msgstr "配对手机"
+
+#: ui/connect.ui:326
+msgid "Install KDE Connect on it (from F-Droid, Google Play or the App Store), open it on the same network or the tailnet, and choose this computer. Pair once the key shown there matches the one here."
+msgstr "在手机上安装 KDE Connect（从 F-Droid、Google Play 或 App Store），在同一网络或 tailnet 上打开它并选择这台电脑。当那边显示的密钥与这里的一致时再配对。"
+
+#: ui/connect.ui:362
+msgid "[COMMANDS]"
+msgstr "[命令]"
+
+#: ui/connect.ui:372
+msgid "devices run these here"
+msgstr "设备在这里运行它们"
+
+#: ui/connect.ui:410
+msgid "Add a command"
+msgstr "添加命令"
+
+#: ui/connect.ui:596
+msgid "[SEND]"
+msgstr "[发送]"
+
+#: ui/connect.ui:630
+msgid "Ring"
+msgstr "响铃"
+
+#: ui/connect.ui:631
+msgid "Rings the device, to find it"
+msgstr "让设备响铃以便找到它"
+
+#: ui/connect.ui:640
+msgid "Send files…"
+msgstr "发送文件……"
+
+#: ui/connect.ui:654
+msgid "Text, or a link it opens"
+msgstr "文本，或它会打开的链接"
+
+#: ui/connect.ui:663
+#: ui/connectreply.ui:58
+msgid "Send"
+msgstr "发送"
+
+#: ui/connect.ui:697
+msgid "[SHARED WITH IT]"
+msgstr "[与它共享]"
+
+#: ui/connect.ui:736
+msgid "Text copied on one is there to paste on the other. Passwords stay here."
+msgstr "在一边复制的文本可在另一边粘贴。密码留在这里。"
+
+#: ui/connect.ui:768
+msgid "This computer's notifications"
+msgstr "这台电脑的通知"
+
+#: ui/connect.ui:777
+msgid "They show on the device too. Its own show here when it sends them."
+msgstr "它们也会显示在设备上。设备发来的通知会显示在这里。"
+
+#: ui/connect.ui:809
+msgid "Pointer and keyboard"
+msgstr "指针和键盘"
+
+#: ui/connect.ui:818
+msgid "The device works as a touchpad and keyboard here."
+msgstr "设备可在这里用作触控板和键盘。"
+
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr "命令"
+
+#: ui/connect.ui:859
+msgid "It runs the commands set up on This computer."
+msgstr "它会运行在“这台电脑”中设置的命令。"
+
+#: ui/connect.ui:921
+msgid "[ADD A DEVICE]"
+msgstr "[添加设备]"
+
+#: ui/connect.ui:946
+msgid "A device the network's broadcast does not reach: its name or IP address. It is asked to connect here; it shows in the list once it has."
+msgstr "网络广播到不了的设备：它的名称或 IP 地址。会请求它连接到这里，连接后会出现在列表中。"
+
+#: ui/connectreply.ui:36
+msgid "Your answer"
+msgstr "你的回复"
+
 #: ui/control.ui:72
 msgid "Screenshot an area"
 msgstr "截取区域"
@@ -10513,10 +10806,6 @@ msgstr "另一用户"
 #: ui/polkit.ui:741
 msgid "Authenticate"
 msgstr "认证"
-
-#: ui/remote.ui:54
-msgid "THIS COMPUTER"
-msgstr "这台电脑"
 
 #: ui/remote.ui:84
 msgid "Sharing"
@@ -12058,6 +12347,14 @@ msgstr "揭示安全方块并标记隐藏的地雷"
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "游戏;街机;益智;"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:10
+msgid "Your phone and this computer together: clipboard, files, notifications, media and remote input"
+msgstr "让手机与这台电脑协同：剪贴板、文件、通知、媒体和远程输入"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:20
+msgid "kde connect;gsconnect;valent;phone;android;iphone;clipboard;share;notifications;"
+msgstr "kde connect;gsconnect;valent;手机;android;iphone;剪贴板;共享;通知;"
 
 #: config/apps/io.github.lyricat.Inua.Music.desktop:10
 msgid "Play music, with a playlist and an equalizer"

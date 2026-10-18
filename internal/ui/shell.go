@@ -391,6 +391,7 @@ func (s *shellUI) start() {
 	s.startAlarms()
 	s.startUpdates()
 	s.startSharing()
+	s.startConnect()
 	s.startSystem()
 	s.startAssistant()
 	s.startClipboardCapture()

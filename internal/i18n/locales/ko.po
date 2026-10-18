@@ -164,6 +164,147 @@ msgstr "%[1]s, %[2]s%[3]d h %[4]d min"
 msgid "UTC"
 msgstr "UTC"
 
+#: internal/apps/connect/battery.go:34
+msgid "%s's battery is low"
+msgstr "%s의 배터리가 부족합니다"
+
+#: internal/apps/connect/battery.go:35
+msgid "%d%% left"
+msgstr "%d%% 남음"
+
+#: internal/apps/connect/battery.go:89
+msgid "%s is looking for this computer"
+msgstr "%s에서 이 컴퓨터를 찾고 있습니다"
+
+#: internal/apps/connect/battery.go:90
+msgid "Found it"
+msgstr "찾았습니다"
+
+#: internal/apps/connect/notifications.go:94
+#: internal/connectui/app.go:38
+#: ui/connectreply.ui:14
+msgid "Reply"
+msgstr "답장"
+
+#: internal/apps/connect/service.go:246
+#: internal/apps/connect/share.go:196
+#: internal/apps/connect/share.go:202
+#: internal/connectui/app.go:20
+#: ui/connect.ui:14
+#: ui/connect.ui:32
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:3
+msgid "Mobile Link"
+msgstr "모바일 링크"
+
+#: internal/apps/connect/service.go:248
+msgid "%s wants to pair"
+msgstr "%s에서 페어링을 요청합니다"
+
+#: internal/apps/connect/service.go:249
+msgid "Pair only if %s shows the key %s."
+msgstr "%s에 키 %s가 표시될 때만 페어링하세요."
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:425
+#: internal/connectui/window.go:434
+#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:662
+#: ui/remote.ui:513
+msgid "Pair"
+msgstr "페어링"
+
+#: internal/apps/connect/service.go:250
+#: internal/connectui/window.go:426
+msgid "Refuse"
+msgstr "거부"
+
+#: internal/apps/connect/service.go:292
+msgid "Ping!"
+msgstr "핑!"
+
+#: internal/apps/connect/service.go:505
+msgid "Wants to pair"
+msgstr "페어링 요청"
+
+#: internal/apps/connect/service.go:507
+msgid "Pairing…"
+msgstr "페어링하는 중…"
+
+#: internal/apps/connect/service.go:509
+#: internal/apps/tailscale/status.go:265
+#: internal/remoteui/window.go:261
+msgid "Connected"
+msgstr "연결됨"
+
+#: internal/apps/connect/service.go:511
+msgid "Away"
+msgstr "연결 안 됨"
+
+#: internal/apps/connect/service.go:513
+#: internal/remoteui/window.go:256
+msgid "Not paired"
+msgstr "페어링 안 됨"
+
+#: internal/apps/connect/service.go:517
+msgid "%d%%, charging"
+msgstr "%d%%, 충전 중"
+
+#: internal/apps/connect/service.go:519
+#: internal/ui/settings.go:274
+#: internal/ui/settings.go:282
+#: internal/ui/settings.go:285
+#: internal/ui/settings.go:626
+#: internal/ui/settings.go:628
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:694
+msgid "%d%%"
+msgstr "%d%%"
+
+#: internal/apps/connect/share.go:64
+msgid "Text from %s"
+msgstr "%s에서 온 텍스트"
+
+#: internal/apps/connect/share.go:65
+msgid "It is on the clipboard."
+msgstr "클립보드에 있습니다."
+
+#: internal/apps/connect/share.go:112
+msgid "A file from %s did not arrive"
+msgstr "%s에서 보낸 파일이 도착하지 않았습니다"
+
+#: internal/apps/connect/share.go:124
+msgid "A file from %s"
+msgstr "%s에서 온 파일"
+
+#: internal/apps/connect/share.go:126
+#: internal/appui/workshop_blocks.go:427
+#: internal/appui/workshop_manager.go:63
+#: internal/filesui/cards.go:698
+#: internal/filesui/window.go:696
+#: internal/ui/record.go:163
+#: internal/ui/system_ipc.go:241
+msgid "Open"
+msgstr "열기"
+
+#: internal/apps/connect/share.go:126
+#: internal/ui/record.go:163
+#: internal/ui/screenshot.go:808
+msgid "Show in Folder"
+msgstr "폴더에 표시"
+
+#: internal/apps/connect/share.go:143
+msgid "Shared file"
+msgstr "공유된 파일"
+
+#: internal/apps/connect/share.go:197
+msgid "%s did not get %s"
+msgstr "%s에서 %s을(를) 받지 못했습니다"
+
+#: internal/apps/connect/share.go:203
+msgid "Sent %d file to %s"
+msgid_plural "Sent %d files to %s"
+msgstr[0] "%d개의 파일을 %s에 보냈습니다"
+
 #: internal/apps/music/music.go:393
 msgid "Flat"
 msgstr "플랫"
@@ -348,11 +489,6 @@ msgstr "%d시간 후"
 #: internal/apps/tailscale/status.go:191
 msgid "in %d d"
 msgstr "%d일 후"
-
-#: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:261
-msgid "Connected"
-msgstr "연결됨"
 
 #: internal/apps/tailscale/status.go:267
 msgid "Disconnected"
@@ -1388,6 +1524,7 @@ msgstr "%s · %s"
 
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
+#: internal/connectui/window.go:560
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -1465,6 +1602,7 @@ msgstr "바꾸기"
 
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
+#: ui/connect.ui:966
 #: ui/pass.ui:818
 #: ui/remote.ui:905
 msgid "Add"
@@ -1623,7 +1761,7 @@ msgstr "GPU"
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -1882,8 +2020,10 @@ msgstr "모델"
 
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
+#: internal/connectui/window.go:547
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
+#: ui/connect.ui:290
 #: ui/gpg.ui:1342
 #: ui/settings.ui:4810
 #: ui/sysmon.ui:96
@@ -2206,6 +2346,7 @@ msgid "Copy Name"
 msgstr "이름 복사"
 
 #: internal/appui/tailscale.go:507
+#: ui/connect.ui:621
 msgid "Ping"
 msgstr "Ping"
 
@@ -2420,6 +2561,7 @@ msgid "Cannot play it: %s"
 msgstr "재생할 수 없습니다: %s"
 
 #: internal/appui/video.go:529
+#: internal/connectui/window.go:387
 #: internal/remoteui/window.go:435
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -2539,6 +2681,7 @@ msgid "Unknown building block %q"
 msgstr "알 수 없는 블록 %q"
 
 #: internal/appui/workshop.go:990
+#: internal/connectui/window.go:429
 #: internal/filesui/cards.go:285
 #: internal/filesui/cards.go:334
 #: internal/filesui/cards.go:372
@@ -2553,6 +2696,7 @@ msgstr "알 수 없는 블록 %q"
 #: internal/ui/askpass.go:416
 #: ui/clock.ui:244
 #: ui/clock.ui:454
+#: ui/connectreply.ui:49
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -2569,18 +2713,10 @@ msgstr "취소"
 msgid "OK"
 msgstr "OK"
 
-#: internal/appui/workshop_blocks.go:427
-#: internal/appui/workshop_manager.go:63
-#: internal/filesui/cards.go:698
-#: internal/filesui/window.go:696
-#: internal/ui/record.go:163
-#: internal/ui/system_ipc.go:241
-msgid "Open"
-msgstr "열기"
-
 #: internal/appui/workshop_blocks.go:438
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
+#: ui/connect.ui:420
 #: ui/pass.ui:490
 msgid "Save"
 msgstr "저장"
@@ -2810,6 +2946,84 @@ msgstr "1월"
 #: internal/i18n/time.go:24
 msgid "PM"
 msgstr "오후"
+
+#: internal/connectui/reply.go:39
+msgid "Answer %s"
+msgstr "%s에 답장"
+
+#: internal/connectui/reply.go:68
+msgid "Not sent: %v"
+msgstr "보내지 못함: %v"
+
+#: internal/connectui/window.go:235
+msgid "None found yet: open KDE Connect on your phone."
+msgstr "아직 찾지 못했습니다. 휴대폰에서 KDE Connect를 여세요."
+
+#: internal/connectui/window.go:355
+msgid "Mobile Link did not start: %v"
+msgstr "모바일 링크를 시작하지 못했습니다: %v"
+
+#: internal/connectui/window.go:381
+msgid "Visible to your devices"
+msgstr "기기에서 볼 수 있음"
+
+#: internal/connectui/window.go:382
+msgid "Devices running KDE Connect, GSConnect or Valent find this computer on this network and the tailnet, and pair with it."
+msgstr "KDE Connect, GSConnect 또는 Valent를 실행하는 기기가 이 네트워크와 tailnet에서 이 컴퓨터를 찾아 페어링합니다."
+
+#: internal/connectui/window.go:384
+#: internal/remoteui/window.go:432
+msgid "Starting…"
+msgstr "시작하는 중…"
+
+#: internal/connectui/window.go:385
+msgid "The service is starting."
+msgstr "서비스를 시작하는 중입니다."
+
+#: internal/connectui/window.go:388
+msgid "Share the clipboard and files with your phone, see its notifications and battery here, and use it as a touchpad or a remote."
+msgstr "휴대폰과 클립보드와 파일을 공유하고, 알림과 배터리를 여기서 보고, 터치패드나 리모컨으로 사용하세요."
+
+#: internal/connectui/window.go:395
+msgid "A device lists them and runs one with a tap, here, as you."
+msgstr "기기에 목록이 표시되고, 탭하면 여기서 사용자 권한으로 실행됩니다."
+
+#: internal/connectui/window.go:403
+msgid "The device is gone."
+msgstr "기기가 사라졌습니다."
+
+#: internal/connectui/window.go:427
+msgid "%s asks to pair. Pair only if it shows this key:"
+msgstr "%s에서 페어링을 요청합니다. 이 키가 표시될 때만 페어링하세요:"
+
+#: internal/connectui/window.go:430
+msgid "Accept on %s if it shows this key:"
+msgstr "%s에 이 키가 표시되면 그쪽에서 수락하세요:"
+
+#: internal/connectui/window.go:432
+#: internal/remoteui/window.go:525
+msgid "Unpair"
+msgstr "페어링 해제"
+
+#: internal/connectui/window.go:435
+msgid "Not paired: pair to share with it."
+msgstr "페어링 안 됨: 공유하려면 페어링하세요."
+
+#: internal/connectui/window.go:439
+msgid "it connects again when it is on this network or the tailnet"
+msgstr "이 네트워크나 tailnet에 있으면 다시 연결됩니다"
+
+#: internal/connectui/window.go:475
+msgid "Send files"
+msgstr "파일 보내기"
+
+#: internal/connectui/window.go:517
+msgid "Asked %s to connect."
+msgstr "%s에 연결을 요청했습니다."
+
+#: internal/connectui/window.go:552
+msgid "What it runs: systemctl suspend"
+msgstr "실행할 명령: systemctl suspend"
 
 #: internal/convert/convert.go:97
 msgid "millimetres"
@@ -4045,6 +4259,7 @@ msgid "Remove from the bookmarks"
 msgstr "북마크에서 제거"
 
 #: internal/filesui/sidebar.go:57
+#: ui/connect.ui:112
 #: ui/tailscale.ui:112
 msgid "DEVICES"
 msgstr "장치"
@@ -7168,7 +7383,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "실행기"
@@ -7201,7 +7416,7 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7377,10 +7592,6 @@ msgstr "%s이(가) 세션을 끝냈습니다."
 msgid "This computer has no identity to pair with: %v"
 msgstr "이 컴퓨터에는 페어링할 신원이 없습니다: %v"
 
-#: internal/remoteui/window.go:256
-msgid "Not paired"
-msgstr "페어링 안 됨"
-
 #: internal/remoteui/window.go:258
 msgid "Paired"
 msgstr "페어링됨"
@@ -7400,10 +7611,6 @@ msgstr "공유를 시작하지 못했습니다: %v"
 #: internal/remoteui/window.go:430
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "다른 기기에서는 이 네트워크와 tailnet에서 이 컴퓨터가 %s(으)로 보입니다. 기기는 여기서 PIN을 입력해 한 번 페어링합니다."
-
-#: internal/remoteui/window.go:432
-msgid "Starting…"
-msgstr "시작하는 중…"
 
 #: internal/remoteui/window.go:433
 msgid "Sunshine is starting."
@@ -7437,12 +7644,6 @@ msgstr "기기"
 msgid "at %s: type the PIN it shows"
 msgstr "%s에서: 표시된 PIN을 입력하세요"
 
-#: internal/remoteui/window.go:493
-#: internal/remoteui/window.go:662
-#: ui/remote.ui:513
-msgid "Pair"
-msgstr "페어링"
-
 #: internal/remoteui/window.go:508
 msgid "No device is paired yet."
 msgstr "아직 페어링된 기기가 없습니다."
@@ -7450,10 +7651,6 @@ msgstr "아직 페어링된 기기가 없습니다."
 #: internal/remoteui/window.go:513
 msgid "The paired devices show while sharing is on."
 msgstr "페어링된 기기는 공유 중에 표시됩니다."
-
-#: internal/remoteui/window.go:525
-msgid "Unpair"
-msgstr "페어링 해제"
 
 #: internal/remoteui/window.go:546
 msgid "A PIN is four digits."
@@ -7583,7 +7780,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -7730,56 +7927,56 @@ msgid "Web search"
 msgstr "웹 검색"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "EVERYDAY"
 msgstr "매일"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:269
+#: internal/shell/dock.go:270
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:274
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:300
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "DEVELOPMENT"
 msgstr "개발"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "MEDIA"
 msgstr "미디어"
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "GAMES"
 msgstr "게임"
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "OTHER"
 msgstr "기타"
 
-#: internal/shell/dock.go:324
+#: internal/shell/dock.go:325
 msgid "WORKSHOP"
 msgstr "워크숍"
 
@@ -8179,6 +8376,7 @@ msgid "Search clipboard history"
 msgstr "클립보드 기록 검색"
 
 #: internal/ui/clipboard.go:335
+#: ui/connect.ui:727
 #: ui/settings.ui:3328
 msgid "Clipboard"
 msgstr "클립보드"
@@ -8536,11 +8734,6 @@ msgstr "녹음이 저장되었습니다."
 msgid "Screen recording"
 msgstr "화면 녹화"
 
-#: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
-msgid "Show in Folder"
-msgstr "폴더에 표시"
-
 #: internal/ui/screenshot.go:434
 msgid "inua screenshot"
 msgstr "이누아 스크린샷"
@@ -8584,16 +8777,6 @@ msgstr "촬영된 스크린샷"
 #: internal/ui/settings.go:256
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
-
-#: internal/ui/settings.go:274
-#: internal/ui/settings.go:282
-#: internal/ui/settings.go:285
-#: internal/ui/settings.go:626
-#: internal/ui/settings.go:628
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:694
-msgid "%d%%"
-msgstr "%d%%"
 
 #: internal/ui/settings.go:657
 #: ui/settings.ui:384
@@ -10010,6 +10193,116 @@ msgstr "이전에 선택됨"
 msgid "Colours you pick show here."
 msgstr "선택한 색상이 여기에 표시됩니다."
 
+#: ui/connect.ui:54
+#: ui/remote.ui:54
+msgid "THIS COMPUTER"
+msgstr "이 컴퓨터"
+
+#: ui/connect.ui:125
+msgid "Look for devices again"
+msgstr "기기 다시 찾기"
+
+#: ui/connect.ui:159
+msgid "Add a device by address…"
+msgstr "주소로 기기 추가…"
+
+#: ui/connect.ui:226
+msgid "[THIS COMPUTER]"
+msgstr "[이 컴퓨터]"
+
+#: ui/connect.ui:256
+msgid "Connect with your devices"
+msgstr "기기와 연결"
+
+#: ui/connect.ui:317
+msgid "To pair a phone"
+msgstr "휴대폰을 페어링하려면"
+
+#: ui/connect.ui:326
+msgid "Install KDE Connect on it (from F-Droid, Google Play or the App Store), open it on the same network or the tailnet, and choose this computer. Pair once the key shown there matches the one here."
+msgstr "휴대폰에 KDE Connect를 설치하고(F-Droid, Google Play 또는 App Store), 같은 네트워크나 tailnet에서 연 다음 이 컴퓨터를 선택하세요. 그쪽에 표시된 키가 여기의 키와 같으면 페어링하세요."
+
+#: ui/connect.ui:362
+msgid "[COMMANDS]"
+msgstr "[명령]"
+
+#: ui/connect.ui:372
+msgid "devices run these here"
+msgstr "기기가 여기서 실행합니다"
+
+#: ui/connect.ui:410
+msgid "Add a command"
+msgstr "명령 추가"
+
+#: ui/connect.ui:596
+msgid "[SEND]"
+msgstr "[보내기]"
+
+#: ui/connect.ui:630
+msgid "Ring"
+msgstr "울리기"
+
+#: ui/connect.ui:631
+msgid "Rings the device, to find it"
+msgstr "기기를 울려서 찾습니다"
+
+#: ui/connect.ui:640
+msgid "Send files…"
+msgstr "파일 보내기…"
+
+#: ui/connect.ui:654
+msgid "Text, or a link it opens"
+msgstr "텍스트 또는 열 링크"
+
+#: ui/connect.ui:663
+#: ui/connectreply.ui:58
+msgid "Send"
+msgstr "보내기"
+
+#: ui/connect.ui:697
+msgid "[SHARED WITH IT]"
+msgstr "[공유 항목]"
+
+#: ui/connect.ui:736
+msgid "Text copied on one is there to paste on the other. Passwords stay here."
+msgstr "한쪽에서 복사한 텍스트를 다른 쪽에서 붙여넣을 수 있습니다. 비밀번호는 여기에 남습니다."
+
+#: ui/connect.ui:768
+msgid "This computer's notifications"
+msgstr "이 컴퓨터의 알림"
+
+#: ui/connect.ui:777
+msgid "They show on the device too. Its own show here when it sends them."
+msgstr "기기에도 표시됩니다. 기기의 알림은 보내오면 여기에 표시됩니다."
+
+#: ui/connect.ui:809
+msgid "Pointer and keyboard"
+msgstr "포인터와 키보드"
+
+#: ui/connect.ui:818
+msgid "The device works as a touchpad and keyboard here."
+msgstr "기기를 여기서 터치패드와 키보드로 사용합니다."
+
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr "명령"
+
+#: ui/connect.ui:859
+msgid "It runs the commands set up on This computer."
+msgstr "'이 컴퓨터'에서 설정한 명령을 실행합니다."
+
+#: ui/connect.ui:921
+msgid "[ADD A DEVICE]"
+msgstr "[기기 추가]"
+
+#: ui/connect.ui:946
+msgid "A device the network's broadcast does not reach: its name or IP address. It is asked to connect here; it shows in the list once it has."
+msgstr "네트워크 브로드캐스트가 닿지 않는 기기의 이름 또는 IP 주소. 여기로 연결하도록 요청하며, 연결되면 목록에 표시됩니다."
+
+#: ui/connectreply.ui:36
+msgid "Your answer"
+msgstr "답장 내용"
+
 #: ui/control.ui:72
 msgid "Screenshot an area"
 msgstr "영역 스크린샷"
@@ -10513,10 +10806,6 @@ msgstr "다른 사용자"
 #: ui/polkit.ui:741
 msgid "Authenticate"
 msgstr "인증하다"
-
-#: ui/remote.ui:54
-msgid "THIS COMPUTER"
-msgstr "이 컴퓨터"
 
 #: ui/remote.ui:84
 msgid "Sharing"
@@ -12058,6 +12347,14 @@ msgstr "안전한 사각형을 드러내고 숨겨진 지뢰를 표시하세요"
 #: config/apps/io.github.lyricat.Inua.SpacePinball.desktop:20
 msgid "games;arcade;puzzle;"
 msgstr "게임;아케이드;퍼즐;"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:10
+msgid "Your phone and this computer together: clipboard, files, notifications, media and remote input"
+msgstr "휴대폰과 이 컴퓨터를 함께: 클립보드, 파일, 알림, 미디어, 원격 입력"
+
+#: config/apps/io.github.lyricat.Inua.MobileLink.desktop:20
+msgid "kde connect;gsconnect;valent;phone;android;iphone;clipboard;share;notifications;"
+msgstr "kde connect;gsconnect;valent;휴대폰;전화;android;iphone;클립보드;공유;알림;"
 
 #: config/apps/io.github.lyricat.Inua.Music.desktop:10
 msgid "Play music, with a playlist and an equalizer"

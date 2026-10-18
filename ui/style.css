@@ -2677,6 +2677,20 @@ window.remote .remote-command { font-family: "Geist Mono", "IBM Plex Mono", mono
 window.remote .remote-error { color: @danger; }
 window.remote .remote-pin { padding: 14px 16px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
 window.remote .remote-pin-digits { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: 0.3em; color: @accent; }
+/* Connect (inua-connect): the settings look, its index holding This
+   computer and the devices; the key both screens show while pairing. */
+window.connect .connect-index { padding: 0 14px; }
+window.connect .connect-kicker { margin: 14px 8px 6px; }
+window.connect .connect-none { margin: 2px 8px 6px; }
+window.connect button.index-item { min-height: 44px; padding: 4px 10px; }
+window.connect .connect-away { opacity: 0.45; }
+window.connect button.connect-find { min-height: 24px; min-width: 24px; padding: 0; margin-top: 8px; color: @t2; }
+window.connect button.connect-find:hover { color: @t0; }
+window.connect .connect-command { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; }
+window.connect .connect-error, window.connect-reply .connect-error { color: @danger; }
+window.connect .connect-key { padding: 14px 16px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
+window.connect .connect-key-digits { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: 0.3em; color: @accent; }
+window.connect-reply .page { padding: 18px; }
 window.remote-stream { background: #000; }
 window.remote-stream .remote-note {
   margin-top: 14px;

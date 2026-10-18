@@ -43,6 +43,10 @@ builds:
     main: ./cmd/inua-remote
     binary: inua-remote
   - <<: *build
+    id: inua-connect
+    main: ./cmd/inua-connect
+    binary: inua-connect
+  - <<: *build
     id: inua-games
     main: ./cmd/inua-games
     binary: inua-games
