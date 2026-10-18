@@ -64,6 +64,10 @@ func Open() (*Input, error) {
 		return nil, fmt.Errorf("vinput: connect Wayland: %w", err)
 	}
 	in := &Input{conn: conn, start: time.Now(), next: 4, index: map[string]int{}}
+	for _, k := range common() {
+		in.index[k] = len(in.keysyms)
+		in.keysyms = append(in.keysyms, k)
+	}
 	if err := in.init(); err != nil {
 		conn.Close()
 		return nil, err
@@ -301,7 +305,25 @@ func Keysym(r rune) string {
 	return fmt.Sprintf("U%04X", r)
 }
 
-// maxKeys bounds the keymap; past it, it starts again.
+// common are the keys the keymap holds from the start: the special keys
+// and every printable ASCII character. A key outside them changes the
+// keymap, which the focused window takes a moment to follow, and which
+// closes a menu that is open: most typing never does.
+func common() []string {
+	keys := []string{"Return", "Tab", "BackSpace", "Escape", "Delete", "Insert", "space",
+		"Left", "Up", "Right", "Down", "Home", "End", "Page_Up", "Page_Down", "Menu", "Linefeed",
+		"Control_L", "Alt_L", "Shift_L", "Super_L", "Sys_Req", "Scroll_Lock", "Print"}
+	for i := 1; i <= 12; i++ {
+		keys = append(keys, fmt.Sprintf("F%d", i))
+	}
+	for r := rune('!'); r <= '~'; r++ {
+		keys = append(keys, Keysym(r))
+	}
+	return keys
+}
+
+// maxKeys bounds the keymap; past it, it starts again from the common
+// keys.
 const maxKeys = 240
 
 // code is the key that types keysym, the keymap given anew when the key
@@ -312,6 +334,10 @@ func (in *Input) code(keysym string) (uint32, error) {
 	}
 	if len(in.keysyms) >= maxKeys {
 		in.keysyms, in.index = nil, map[string]int{}
+		for _, k := range common() {
+			in.index[k] = len(in.keysyms)
+			in.keysyms = append(in.keysyms, k)
+		}
 	}
 	in.index[keysym] = len(in.keysyms)
 	in.keysyms = append(in.keysyms, keysym)
