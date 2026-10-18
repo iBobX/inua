@@ -33,6 +33,18 @@ Text the user reads is translatable: in Go through `internal/i18n` (`i18n.T`, `i
 
 Icons: when an icon is needed, use the SVG from Phosphor Icons (https://phosphoricons.com, MIT, the regular weight) by default. The shell's own icons are listed in `scripts/phosphor-icons.sh`, which copies them into `ui/icons/` under the freedesktop name the shell asks for (`NAME-symbolic.svg`); add a line to its list, run it, and commit the SVG. Use another source only when Phosphor has nothing fitting, and say so.
 
+## Start-up Time
+
+A light app's window should be up with its content about a second after launch. `docs/performance.md` has where the time goes, what was done and how to measure it; for a new app or view:
+
+- Run through `appui.Run` (or `appui.Register`): it binds GTK lazily, sets the icon theme before the application starts, parses the style while GTK reads the desktop's icon theme, and turns accessibility off when nothing uses it. Do not set `gtk-icon-theme-name` or load style sheets again yourself.
+- Before the first frame, only build the window: files, D-Bus calls, processes and network go on goroutines, their results back through `gtkx.Post`. Work that can begin while GTK starts (reading a large icon theme) goes in `Prepare` (`appui.Preparer`).
+- Show real content in the first frame or soon after it, never placeholder numbers (System Monitor's first sample came from readings microseconds apart).
+- Long lists use `GtkListView`/`GtkGridView` with a factory; fill an empty view a screenful first and the rest in parts (`filesui` `refill`), and change a model with one `Splice` per change, not item by item.
+- Desktop-theme icons (files, other apps) come from a `GtkIconTheme` of the desktop's alone, as Files does; everything else from the Phosphor set.
+- Do not write files at every start when their content has not changed (`shell.IconTheme` keeps a sum).
+- Check a start-up change by measuring it: temporary marks at the first frame and when the content shows, the old and the new build in turns in a nested session, medians of several launches; keep the marks out of commits.
+
 ## Testing
 
 Use the Go standard library's `testing`; name test functions `TestXxx`. Add behaviour regression tests for logic changes, using temporary directories, fake services and the private D-Bus of `internal/dbustest`; tests that need `dbus-daemon` are skipped without it. There is no coverage threshold.

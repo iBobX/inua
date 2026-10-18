@@ -67,28 +67,113 @@ the rest come 48 a frame, and the selection once all are in. Every row is
 in at about the same time as before, but the first are drawn a second
 sooner, and no frame is longer than ~300 ms.
 
+## A second round
+
+Measured the same way, seven launches each, against the first round:
+
+| | First round | Second round |
+| --- | ---: | ---: |
+| System Monitor: first frame | 1444 | 1340 |
+| Calculator: first frame | 1304 | 1184 |
+| Mobile Link: first frame, with the devices | 1446 | 1329 |
+| Files: first frame | 1621 | 1466 |
+| Files: the folder's first rows drawn | 2052 | 1872 |
+| Files: every row in | 3054 | 2657 |
+
+**GTK reads the desktop's icon theme at start anyway.** `gtk_init`
+begins reading the desktop's theme on a thread of its own, and setting
+the apps' theme waits until that read is done (~200 ms with Numix-Circle,
+which is then thrown away; ~5 ms once it is done). No setting stops that
+read; its time is used instead: Files' preparation begins and the style
+is parsed while it runs, and the apps' theme is set after.
+
+**The icons, written at every start.** Each app deleted and wrote again
+its 218 Phosphor icons (~33 ms). They are now written only when the set,
+the user's overlay or the theme's details change (`shell.IconTheme`,
+a sum of them kept beside the theme), and a new set goes into place whole,
+so another app starting meanwhile never reads it half written.
+
+**Accessibility kept current for no one, up to ~200 ms a frame in
+Files.** GTK keeps every widget's accessible state current whether or not
+an assistive program listens, and each change to a list costs in
+proportion to the list's length: filling a folder of 457 items took
+~1.4 s with it and ~0.6 s without. The apps now turn it off
+(`GTK_A11Y=none`) when the session's AT-SPI bus says nothing uses it (no
+screen reader, no other assistive program: `org.a11y.Status`), as
+browsers decide; a `GTK_A11Y` set by the user is kept. An app started
+before a screen reader is turned on stays without it until started again.
+
+**Tried and left out.** Reading Files' folder before its window exists,
+so the first frame has rows: the read takes 10 ms, and the rows made the
+first frame ~340 ms later for rows ~80 ms sooner. The software renderer
+(`GSK_RENDERER=cairo`): ~280 ms sooner first frame, but drawing on the
+CPU is slower for long lists and video.
+
 ## What is left
 
-From launch to the first frame, about 1.3 s for a light app:
+From launch to the first frame, about 1.2 s for a light app:
 
 - loading GTK and its libraries, ~100 ms, and the bindings' stubs;
-- GTK's start: the display, the settings portal, the application's name
-  on the bus;
-- the style: `ui/style.css` (119 KB, the shell's and the apps' rules
-  together) with the theme, ~110 ms to parse in each app. Splitting out
-  the rules only the shell uses would save part of it;
-- the first frame, ~250 ms: the GPU renderer's start (Vulkan; limiting
-  the Vulkan drivers looked at to the machine's own,
-  `VK_DRIVER_FILES`, saves ~80 ms, but that is the system's setting),
-  and fontconfig's list of the fonts (~60 ms with 759 fonts);
-- in Files, each row: ~1.1 ms to make and ~0.35 ms to bind, plus the
-  icons it is the first to show. Lighter rows would make every row-filling
-  frame shorter.
+- GTK's start, ~65 ms, and its read of the desktop's icon theme, which
+  the style's parsing (~110 ms; `ui/style.css` holds the shell's and the
+  apps' rules together) only partly covers;
+- the application's name on the bus, ~60 ms;
+- `Present`, ~300 ms, nearly all the GPU renderer's start (Vulkan;
+  limiting the Vulkan drivers looked at to the machine's own,
+  `VK_DRIVER_FILES`, saves ~80 ms, but that is the system's setting);
+- the first frame, ~150–250 ms, with fontconfig's list of the fonts
+  (~60 ms with 759 fonts);
+- in Files, the first rows of a folder with many kinds of files: ~260 ms
+  for each of the first two parts, mostly the icons each kind is the
+  first to show.
 
 Going further would take a process kept running that starts each app with
 GTK, the style and the icon themes already loaded (a "zygote", as
 Android's), which has its own costs: memory held all the time, and an app's
 crash or leak reaching the next.
+
+## Next: apps kept ready (planned)
+
+A window in an app already running takes ~220 ms; a second Files window
+took ~490 ms, ~270 ms of it the new `inua-files` process loading GTK only
+to hand the request on. An app kept after its window closes, and asked
+for a window over D-Bus by the shell, opens in a quarter of a second. With
+its window up, an app holds 30–55 MB of its own (PSS 58–90 MB):
+Calculator 29 MB, Mobile Link 33 MB, System Monitor 38 MB, Files 55 MB.
+
+Which apps are kept is the user's choice, on the Default Apps page:
+
+```
+[KEPT READY]
+Apps that stay loaded after their window closes, so they open at once.
+Each one holds memory while it is kept.
+
+Files                                   [ From login            ▾ ]
+  Opens in about 0.3 s instead of 1.5 s · about 55 MB
+Calculator                              [ Never                 ▾ ]
+  about 30 MB
+System Monitor                          [ Never                 ▾ ]
+  Stops sampling while hidden · about 40 MB
+
+Kept now: Files (54 MB)                                    [ Quit them ]
+```
+
+- Each app: Never, 30 minutes after use, until logging out, or from
+  login; the same in `config.toml`. Files is kept from login by default,
+  the others never.
+- Pass and GPG are never kept (they hold secrets); Music and Video run
+  while used, and are heavy.
+- Closing a kept app's window (its button, Ctrl+W, Super+Q) hides it and
+  keeps the app; with no window it is not in the dock.
+- The dock's "Quit" ends the app (its `quit` action over D-Bus, else its
+  process), and "Quit them" ends every kept app; Files still finishes the
+  copies and moves under way first. The next start is a cold one, and the
+  app is kept again as its setting says.
+- The shell starts an app kept, or asks the running one for a window, over
+  D-Bus (`org.freedesktop.Application`, `FileManager1` for Files), without
+  a process of its own.
+- A kept app quits when a screen reader is turned on, so that its next
+  start has accessibility (see above).
 
 ## Lessons for the next time
 
@@ -119,5 +204,12 @@ crash or leak reaching the next.
 - **Tell the toolkit's cost from ours.** The same window in a few lines of
   Python and GTK 4 showed the icon theme's cost was GTK's, and
   `GODEBUG=inittrace=1` showed the bindings' share of the start.
+- **Look at what the toolkit does for others.** Accessibility kept current
+  with nothing listening cost Files more than all its own code; turning
+  one thing off at a time (`GTK_A11Y=none`) found it when profiling could
+  not be had.
+- **A cost removed must be one on the critical path.** Reading Files'
+  folder early saved 10 ms of reading and cost the window a third of a
+  second.
 - **Write down what is left and why.** Costs not worth fixing yet stay in
   the list above, so they are not measured again from nothing.
