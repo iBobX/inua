@@ -1,0 +1,461 @@
+// Package remotedesk is the Remote Desktop app's logic, without GTK:
+// sharing this desktop through Sunshine (its configuration, its unit, its
+// pairing API), and the machines the viewer connects to (found on the
+// network, on the tailnet, or saved). The streams themselves are
+// internal/gamestream.
+package remotedesk
+
+import (
+	"bytes"
+	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/hex"
+	"encoding/json"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"io"
+	"math/big"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"slices"
+	"strings"
+	"time"
+
+	"golang.org/x/sys/unix"
+)
+
+// Unit is the systemd user unit Sunshine runs in while the desktop is
+// shared.
+const Unit = "inua-sharing.service"
+
+// APIPort is Sunshine's web API, on this computer only: its HTTP port + 1.
+const APIPort = 47990
+
+// Sharing shares this desktop: Sunshine, run with a configuration inua
+// writes in Dir, driven through its web API with credentials inua made.
+type Sharing struct {
+	Dir      string
+	LookPath func(string) (string, error)
+	Run      func(ctx context.Context, name string, args ...string) ([]byte, error)
+	Getenv   func(string) string
+	Access   func(path string) error // whether the user can write path
+	API      string                  // https://127.0.0.1:47990
+	Hostname func() (string, error)
+}
+
+// NewSharing is the sharing of the user's session.
+func NewSharing() *Sharing {
+	return &Sharing{
+		Dir: filepath.Join(configHome(), "inua", "sharing"), LookPath: exec.LookPath, Run: run, Getenv: os.Getenv,
+		Access: func(p string) error { return unix.Access(p, unix.W_OK) },
+		API:    fmt.Sprintf("https://127.0.0.1:%d", APIPort), Hostname: os.Hostname,
+	}
+}
+
+func configHome() string {
+	if d := os.Getenv("XDG_CONFIG_HOME"); d != "" {
+		return d
+	}
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".config")
+}
+
+func run(ctx context.Context, name string, args ...string) ([]byte, error) {
+	out, err := exec.CommandContext(ctx, name, args...).CombinedOutput()
+	if err != nil {
+		return out, fmt.Errorf("%s: %w: %s", filepath.Base(name), err, bytes.TrimSpace(out))
+	}
+	return out, nil
+}
+
+// Need is something sharing needs that is not there.
+type Need int
+
+const (
+	NeedNothing  Need = iota
+	NeedSunshine      // Sunshine is not installed
+	NeedInput         // /dev/uinput is not the user's: the remote side's keys and mouse cannot reach this desktop
+	NeedDisplay       // not in a graphical session
+)
+
+// Status is what sharing stands at.
+type Status struct {
+	Need    Need
+	Version string // Sunshine's
+	Running bool
+}
+
+// Uinput is the device Sunshine makes its keyboard and mouse with.
+const Uinput = "/dev/uinput"
+
+// UinputRule is the udev rule Sunshine's packages install: the device is
+// the logged-in user's.
+const UinputRule = `KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"`
+
+// Status checks what sharing needs, and whether it runs.
+func (s *Sharing) Status(ctx context.Context) Status {
+	var st Status
+	bin, err := s.LookPath("sunshine")
+	if err != nil {
+		st.Need = NeedSunshine
+		return st
+	}
+	if out, err := s.Run(ctx, bin, "--version"); err == nil {
+		st.Version = version(string(out))
+	}
+	if s.Access(Uinput) != nil {
+		st.Need = NeedInput
+	} else if s.Getenv("WAYLAND_DISPLAY") == "" && s.Getenv("DISPLAY") == "" {
+		st.Need = NeedDisplay
+	}
+	out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit)
+	st.Running = strings.TrimSpace(string(out)) == "active"
+	return st
+}
+
+// version finds the version in what `sunshine --version` prints: the
+// word after "version:" in its log line.
+func version(out string) string {
+	fields := strings.Fields(out)
+	for i, f := range fields {
+		if strings.EqualFold(f, "version:") && i+1 < len(fields) {
+			return strings.TrimPrefix(fields[i+1], "v")
+		}
+	}
+	return ""
+}
+
+// The files inua keeps Sunshine's state in.
+func (s *Sharing) file(name string) string { return filepath.Join(s.Dir, name) }
+
+// credentials are the API's user and password, inua's alone.
+type credentials struct {
+	User     string `json:"user"`
+	Password string `json:"password"`
+}
+
+// prepare writes Sunshine's configuration, its apps (the desktop only),
+// the API's credentials as Sunshine reads them, and a certificate for its
+// API that inua pins. What is there already is kept: paired devices live
+// in Sunshine's state file.
+func (s *Sharing) prepare() error {
+	if err := os.MkdirAll(s.Dir, 0700); err != nil {
+		return err
+	}
+	name, err := s.Hostname()
+	if err != nil || name == "" {
+		name = "inua"
+	}
+	conf := strings.Join([]string{
+		"sunshine_name = " + name,
+		"origin_web_ui_allowed = pc", // the API answers this computer only
+		"file_apps = " + s.file("apps.json"),
+		"file_state = " + s.file("state.json"),
+		"credentials_file = " + s.file("credentials.json"),
+		"pkey = " + s.file("key.pem"),
+		"cert = " + s.file("cert.pem"),
+		"log_path = " + s.file("sunshine.log"),
+		"lan_encryption_mode = 0", // the viewer encrypts input, not video, on the local network
+		"wan_encryption_mode = 1",
+		"",
+	}, "\n")
+	if err := os.WriteFile(s.file("sunshine.conf"), []byte(conf), 0600); err != nil {
+		return err
+	}
+	apps := `{"env": {}, "apps": [{"name": "Desktop", "image-path": "desktop.png"}]}` + "\n"
+	if err := os.WriteFile(s.file("apps.json"), []byte(apps), 0600); err != nil {
+		return err
+	}
+	if _, err := os.Stat(s.file("cert.pem")); err != nil {
+		if err := writeCert(s.file("cert.pem"), s.file("key.pem")); err != nil {
+			return err
+		}
+	}
+	if _, err := s.creds(); err != nil {
+		return s.newCreds()
+	}
+	return nil
+}
+
+func (s *Sharing) creds() (credentials, error) {
+	var c credentials
+	data, err := os.ReadFile(s.file("api.json"))
+	if err != nil {
+		return c, err
+	}
+	if err := json.Unmarshal(data, &c); err != nil || c.User == "" || c.Password == "" {
+		return c, errors.New("sharing: no API credentials")
+	}
+	return c, nil
+}
+
+// newCreds makes the API's credentials: inua's copy, and Sunshine's
+// (its user, a salt, and the hash of the password and salt, written as
+// Sunshine writes it: hex, upper case, the hash's bytes last to first).
+// Writing them here keeps the password off any command line.
+func (s *Sharing) newCreds() error {
+	c := credentials{User: "inua", Password: randomString(24)}
+	salt := randomString(16)
+	sum := sha256.Sum256([]byte(c.Password + salt))
+	slices.Reverse(sum[:])
+	sunshine, _ := json.Marshal(map[string]string{
+		"username": c.User, "salt": salt, "password": strings.ToUpper(hex.EncodeToString(sum[:])),
+	})
+	mine, _ := json.Marshal(c)
+	if err := os.WriteFile(s.file("credentials.json"), sunshine, 0600); err != nil {
+		return err
+	}
+	return os.WriteFile(s.file("api.json"), mine, 0600)
+}
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+func randomString(n int) string {
+	b := make([]byte, n)
+	rand.Read(b)
+	for i := range b {
+		b[i] = alphabet[int(b[i])%len(alphabet)]
+	}
+	return string(b)
+}
+
+// writeCert makes the certificate Sunshine serves its API and GameStream
+// with.
+func writeCert(certPath, keyPath string) error {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return err
+	}
+	serial, _ := rand.Int(rand.Reader, big.NewInt(1<<62))
+	tmpl := &x509.Certificate{
+		SerialNumber: serial, Subject: pkix.Name{CommonName: "Sunshine Gamestream Host"},
+		NotBefore: time.Now().Add(-time.Hour), NotAfter: time.Now().AddDate(20, 0, 0),
+		SignatureAlgorithm: x509.SHA256WithRSA,
+	}
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &key.PublicKey, key)
+	if err != nil {
+		return err
+	}
+	keyDER, _ := x509.MarshalPKCS8PrivateKey(key)
+	if err := os.WriteFile(keyPath, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: keyDER}), 0600); err != nil {
+		return err
+	}
+	return os.WriteFile(certPath, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}), 0600)
+}
+
+// Start shares the desktop: Sunshine runs as a user unit with this
+// session's display, and Start returns once its API answers.
+func (s *Sharing) Start(ctx context.Context) error {
+	bin, err := s.LookPath("sunshine")
+	if err != nil {
+		return err
+	}
+	if err := s.prepare(); err != nil {
+		return err
+	}
+	s.Run(ctx, "systemctl", "--user", "reset-failed", Unit)
+	args := []string{"--user", "--unit=" + Unit, "--description=inua desktop sharing (Sunshine)", "--collect", "--quiet",
+		"--property=Restart=on-failure", "--property=RestartSec=3"}
+	// The unit starts in the user manager's environment; Sunshine needs the
+	// session's display, and its bus for the screen and the sound.
+	for _, k := range []string{"WAYLAND_DISPLAY", "DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_CURRENT_DESKTOP",
+		"HYPRLAND_INSTANCE_SIGNATURE", "DBUS_SESSION_BUS_ADDRESS", "PULSE_SERVER", "PATH"} {
+		if v := s.Getenv(k); v != "" {
+			args = append(args, "--setenv="+k+"="+v)
+		}
+	}
+	args = append(args, "--", bin, s.file("sunshine.conf"))
+	if _, err := s.Run(ctx, "systemd-run", args...); err != nil {
+		return err
+	}
+	for {
+		if _, err := s.Clients(ctx); err == nil {
+			return nil
+		}
+		if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) == "failed" {
+			return fmt.Errorf("sharing: Sunshine stopped: %s", s.LastLog())
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(300 * time.Millisecond):
+		}
+	}
+}
+
+// Stop ends the sharing: Sunshine stops, and what is connected with it.
+func (s *Sharing) Stop(ctx context.Context) error {
+	out, err := s.Run(ctx, "systemctl", "--user", "stop", Unit)
+	if err != nil && !strings.Contains(string(out), "not loaded") {
+		return err
+	}
+	return nil
+}
+
+// LastLog is the last line of Sunshine's log that says something went
+// wrong, or its last line.
+func (s *Sharing) LastLog() string {
+	data, _ := os.ReadFile(s.file("sunshine.log"))
+	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+	for i := len(lines) - 1; i >= 0 && i >= len(lines)-40; i-- {
+		if strings.Contains(lines[i], "Error:") || strings.Contains(lines[i], "Fatal:") {
+			return strings.TrimSpace(lines[i])
+		}
+	}
+	return strings.TrimSpace(lines[len(lines)-1])
+}
+
+// api asks Sunshine's API, trusting only the certificate inua made for it.
+func (s *Sharing) api(ctx context.Context, method, path string, body any, out any) error {
+	c, err := s.creds()
+	if err != nil {
+		return err
+	}
+	certPEM, err := os.ReadFile(s.file("cert.pem"))
+	if err != nil {
+		return err
+	}
+	b, _ := pem.Decode(certPEM)
+	if b == nil {
+		return errors.New("sharing: the API's certificate is not PEM")
+	}
+	pinned := b.Bytes
+	var payload io.Reader
+	if body != nil {
+		data, _ := json.Marshal(body)
+		payload = bytes.NewReader(data)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, s.API+path, payload)
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(c.User, c.Password)
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	client := &http.Client{Timeout: 5 * time.Second, Transport: &http.Transport{TLSClientConfig: &tls.Config{
+		InsecureSkipVerify: true, // a self-signed certificate, checked below against inua's
+		VerifyPeerCertificate: func(raw [][]byte, _ [][]*x509.Certificate) error {
+			if len(raw) == 0 || !bytes.Equal(raw[0], pinned) {
+				return errors.New("sharing: the API's certificate is not the one inua made")
+			}
+			return nil
+		},
+	}}}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	data, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	if resp.StatusCode == http.StatusUnauthorized {
+		return errors.New("sharing: Sunshine refused inua's credentials")
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("sharing: %s %s: %d %s", method, path, resp.StatusCode, bytes.TrimSpace(data))
+	}
+	if out != nil {
+		return json.Unmarshal(data, out)
+	}
+	return nil
+}
+
+// Pairing is a device waiting to pair: its user typed this computer's
+// address, and their screen shows a PIN to type here.
+type Pairing struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}
+
+// Pending are the devices waiting to pair.
+func (s *Sharing) Pending(ctx context.Context) ([]Pairing, error) {
+	var r struct {
+		Pairings []Pairing `json:"pairings"`
+	}
+	err := s.api(ctx, http.MethodGet, "/api/pin", nil, &r)
+	return r.Pairings, err
+}
+
+// ErrPIN is a PIN the pairing device did not show.
+var ErrPIN = errors.New("sharing: that is not the PIN the device shows")
+
+// Pair gives a waiting device the PIN its screen shows, and the name it
+// is to be known by here.
+func (s *Sharing) Pair(ctx context.Context, p Pairing, pin, name string) error {
+	var r struct {
+		Status bool `json:"status"`
+	}
+	if err := s.api(ctx, http.MethodPost, "/api/pin", map[string]string{"pairing_id": p.ID, "pin": pin, "name": name}, &r); err != nil {
+		return err
+	}
+	if !r.Status {
+		return ErrPIN
+	}
+	return nil
+}
+
+// Client is a paired device.
+type Client struct {
+	Name    string `json:"name"`
+	UUID    string `json:"uuid"`
+	Enabled bool   `json:"enabled"`
+}
+
+// Clients are the paired devices.
+func (s *Sharing) Clients(ctx context.Context) ([]Client, error) {
+	var r struct {
+		Clients []Client `json:"named_certs"`
+	}
+	err := s.api(ctx, http.MethodGet, "/api/clients/list", nil, &r)
+	return r.Clients, err
+}
+
+// Unpair forgets a paired device: it must pair again to connect.
+func (s *Sharing) Unpair(ctx context.Context, uuid string) error {
+	return s.api(ctx, http.MethodPost, "/api/unpair", map[string]string{"uuid": uuid}, nil)
+}
+
+// On says whether sharing is on: it starts again at login.
+func (s *Sharing) On() bool {
+	data, err := os.ReadFile(s.file("on"))
+	return err == nil && strings.TrimSpace(string(data)) == "1"
+}
+
+// SetOn turns sharing on or off, now and at the next login.
+func (s *Sharing) SetOn(ctx context.Context, on bool) error {
+	if err := os.MkdirAll(s.Dir, 0700); err != nil {
+		return err
+	}
+	flag := "0"
+	if on {
+		flag = "1"
+	}
+	if err := os.WriteFile(s.file("on"), []byte(flag+"\n"), 0600); err != nil {
+		return err
+	}
+	if on {
+		return s.Start(ctx)
+	}
+	return s.Stop(ctx)
+}
+
+// AtLogin starts sharing when it is on and not running: the shell calls
+// it once the session's display is there.
+func (s *Sharing) AtLogin(ctx context.Context) error {
+	if !s.On() {
+		return nil
+	}
+	if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) == "active" {
+		return nil
+	}
+	return s.Start(ctx)
+}
