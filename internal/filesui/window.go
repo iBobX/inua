@@ -361,6 +361,7 @@ func (w *window) setSidebar(on bool) {
 // details when they show that pane.
 func (w *window) selectionChanged(p *pane) {
 	p.updateStatus()
+	p.syncPreview()
 	if p == w.cur() && w.detailsReveal.GetRevealChild() {
 		w.detGen++
 		gen := w.detGen
@@ -475,6 +476,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 			p.setView(files.ListView)
 		case '2':
 			p.setView(files.GridView)
+		case '3':
+			p.setView(files.ColumnView)
 		case 'c':
 			w.do("copy")
 		case 'x':
@@ -570,6 +573,16 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 		}
 		w.setActive(w.p[1-w.active])
 		w.cur().focus()
+	case uint32(gdk.KEY_Left), uint32(gdk.KEY_Right):
+		// In the columns: the column before, or into the folder selected.
+		if !p.columnsShown() || !w.focusIn(&p.col.Widget) {
+			return false
+		}
+		if keyval == uint32(gdk.KEY_Left) {
+			p.goUp()
+		} else {
+			p.enterSelected()
+		}
 	case uint32(gdk.KEY_BackSpace):
 		if p.filter != "" {
 			r := []rune(p.filter)

@@ -200,6 +200,28 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </property>
               </object>
             </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">columns</property>
+                <property name="title" translatable="yes">Columns (Ctrl+3)</property>
+                <property name="icon-name">view-columns-symbolic</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow" id="columns_scroll">
+                    <property name="vscrollbar-policy">2</property>
+                    <child>
+                      <object class="GtkBox" id="column_box">
+                        <style>
+                          <class name="files-columns-view"/>
+                        </style>
+                        <child>
+                          <object class="GtkBox" id="trail_box"></object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
           </object>
         </property>
         <child type="overlay">

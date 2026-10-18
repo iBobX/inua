@@ -2392,6 +2392,15 @@ window.files .files-cell .files-name { font-size: 13px; }
 
 window.files .files-empty { margin: 48px; font-size: 14px; color: @t2; }
 
+/* The columns, a hairline apart. The path's folder marked in the columns
+   before and after the folder's own is quiet: the accent is for its
+   selection. */
+window.files .files-column { border-right: 1px solid alpha(@line, 0.4); }
+window.files .files-column listview { padding: 4px 4px 12px; }
+window.files .files-column-arrow { color: @t2; }
+window.files scrolledwindow.files-column listview > row:selected { background: alpha(@t1, 0.09); border-color: alpha(@line, 0.9); }
+window.files .files-column-empty { margin: 16px; font-size: 13px; color: @t2; }
+
 /* The zoom's steps (files-zoom-0 … 5, 80% to 150%): the rows' height and
    text; the icons' size is set with them in Go. */
 window.files .files-zoom-0 listview > row { min-height: 22px; }

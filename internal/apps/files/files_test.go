@@ -51,6 +51,22 @@ func names(es []Entry) []string {
 	return out
 }
 
+func TestTrail(t *testing.T) {
+	for _, c := range []struct {
+		dir  string
+		want []string
+	}{
+		{"/home/lyric/path_a/path_b", []string{"/home", "/home/lyric", "/home/lyric/path_a", "/home/lyric/path_a/path_b"}},
+		{"/home/lyric/path_a/", []string{"/home", "/home/lyric", "/home/lyric/path_a"}},
+		{"/etc", []string{"/etc"}},
+		{"/", []string{"/"}},
+	} {
+		if got := Trail(c.dir); !slices.Equal(got, c.want) {
+			t.Errorf("Trail(%q) = %q, want %q", c.dir, got, c.want)
+		}
+	}
+}
+
 func TestNatural(t *testing.T) {
 	in := []string{"img10.png", "img2.png", "img1.png", "a.png", "img02b.png", "b.png", "img003.png"}
 	slices.SortFunc(in, Natural)

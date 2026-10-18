@@ -65,15 +65,16 @@ opens a folder in it: `open .`, `open ~/Downloads`.
 
 ### Views
 
-A segmented control in the head (as GPG's Text | Files), with a list and
-a grid icon, chooses the view:
+A segmented control in the head (as GPG's Text | Files), with a list, a
+grid and a columns icon, chooses the view:
 
 | View | What | Key |
 | --- | --- | --- |
 | List | Rows: icon and name, then the columns chosen: size (a folder's item count), modified, created, opened, kind, permissions, owner, group (size, modified and kind at first). A column head sorts by it, again reverses it; a right click on the heads, or the button at their end, turns columns on and off, for every folder. The heads and the rows share fixed widths, so they line up. | Ctrl+1 |
 | Grid | Icons, thumbnails for images, names below. | Ctrl+2 |
+| Columns | As Finder's: a column for each folder of the path, from the first below the root (`/home/me/a/b`: `/home`, `/home/me`, `a` and `b`), the folder itself last; in the columns before it the next folder of the path is marked, and after it the folder selected shows its contents. The last column is the folder's own view, so selecting, keys and menus are as in the list; a click in another column goes to its folder with that item selected (a middle click opens a folder there in a new tab), → goes into the folder selected, ← to the one above. Browsing keeps the columns and their order from folder to folder; a search shows its results in the list. The columns before and after are read each time they show and do not follow changes. | Ctrl+3 |
 
-Both are GTK's recycling `ListView` and `GridView`: only the rows on
+All are GTK's recycling `ListView` and `GridView`: only the rows on
 screen have widgets, so the size of a folder does not matter. Each folder
 remembers its view and order (kept in `~/.local/share/inua/files.json`,
 the last 500 folders); a new folder takes the last one used. The zoom
@@ -97,7 +98,7 @@ Moving and opening
 
 | Key | Does |
 | --- | --- |
-| ↑ ↓ ← → / Home End / PgUp PgDn | Move (the arrows step through the grid's cells) |
+| ↑ ↓ ← → / Home End / PgUp PgDn | Move (the arrows step through the grid's cells; in the columns ← and → go to the folder above and into the folder selected) |
 | Enter | Open: a folder in this pane, a file with its app; several selected, all of them |
 | Shift+Enter | Open with… (choose the app) |
 | Middle click | A folder in a new tab, behind this one |
@@ -135,7 +136,7 @@ Window
 | Ctrl+T / Ctrl+W | New tab (here) / close the tab; the last one closes the window |
 | Ctrl+Tab / Ctrl+Shift+Tab, Ctrl+PgDn / Ctrl+PgUp | Next / previous tab |
 | Ctrl+N / Ctrl+Q | New window / close it |
-| Ctrl+1 / Ctrl+2 | List / grid |
+| Ctrl+1 / Ctrl+2 / Ctrl+3 | List / grid / columns |
 | Ctrl+H | Hidden files |
 | F3 / Tab | Two panes / the other pane |
 | F9 / Space, Ctrl+I | Sidebar / details |
@@ -436,7 +437,7 @@ As the other light apps: the logic without GTK, tested; the view thin.
 | `internal/apps/files/disks` | UDisks2: volumes and their drives, mounting, unmounting, unlocking, locking, ejecting and powering off, followed by its signals |
 | `internal/apps/files/remote` | Remote disks: addresses, rclone's config for each kind, connecting (a listing first, then `rclone mount` as a systemd user unit) and disconnecting, why rclone failed, the secrets in the Secret Service |
 | `internal/apps/files/fm1` | `org.freedesktop.FileManager1`: serving it, and handing paths to a running instance |
-| `internal/filesui` | The windows: sidebar, panes and their tabs, list (its columns) and grid, details, path bar, cards (Open With among them), menus, drag and drop, the clipboard, operations' progress, zoom, GIO for apps by type, remote disks' cards |
+| `internal/filesui` | The windows: sidebar, panes and their tabs, list (its columns), grid and columns (`trail.go`), details, path bar, cards (Open With among them), menus, drag and drop, the clipboard, operations' progress, zoom, GIO for apps by type, remote disks' cards |
 | `cmd/inua-files` | Arguments, handing over to a running instance, `-default` |
 | `ui/files.blp`, `ui/filespane.blp`, `ui/style.css` | The window, a pane, and their look (`window.files`) |
 
@@ -497,6 +498,6 @@ In order: thumbnails of videos
 and PDFs through the system's thumbnailers; reordering, renaming and
 dropping on the sidebar's bookmarks (removing them is in their menu); asking a share's password in the
 app's own card rather than GTK's dialog; redo; finding servers on the network (`network:///`, mDNS) rather than
-typing an address; a Miller-columns view. Recent and starred files are
+typing an address. Recent and starred files are
 left out on purpose: the jump list covers folders, and the launcher finds
 files.

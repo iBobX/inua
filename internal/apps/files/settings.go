@@ -1,7 +1,9 @@
 package files
 
 import (
+	"path/filepath"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/lyricat/inua/internal/apps/files/remote"
@@ -12,9 +14,27 @@ import (
 type View string
 
 const (
-	ListView View = "list"
-	GridView View = "grid"
+	ListView   View = "list"
+	GridView   View = "grid"
+	ColumnView View = "columns" // a column for each folder of the path
 )
+
+// Trail is the folders the column view shows for dir, one column each:
+// from the first below the root down to dir itself (/home/a/b: /home,
+// /home/a and /home/a/b), or the root alone.
+func Trail(dir string) []string {
+	dir = filepath.Clean(dir)
+	if dir == "/" || !filepath.IsAbs(dir) {
+		return []string{dir}
+	}
+	var out []string
+	at := "/"
+	for _, part := range strings.Split(dir[1:], "/") {
+		at = filepath.Join(at, part)
+		out = append(out, at)
+	}
+	return out
+}
 
 // FolderView is what a folder remembers: its view and order.
 type FolderView struct {

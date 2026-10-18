@@ -1,6 +1,6 @@
 // One pane of Files: its tabs (shown with two or more), where it is (back,
 // forward, up, the path as buttons or an entry, its path copied, a
-// terminal there), the list or the grid (a segmented control), the column heads
+// terminal there), the list, the grid or the columns (a segmented control), the column heads
 // that sort (made in Go), the folder itself (internal/filesui/pane.go),
 // and a status line with the zoom. Loaded once for each pane.
 using Gtk 4.0;
@@ -145,6 +145,24 @@ Box pane {
 
         child: ScrolledWindow grid_scroll {
           hscrollbar-policy: never;
+        };
+      }
+
+      // A column for each folder of the path, the folder itself last, and
+      // after it the folder selected in it (made in Go).
+      StackPage {
+        name: "columns";
+        title: _("Columns (Ctrl+3)");
+        icon-name: "view-columns-symbolic";
+
+        child: ScrolledWindow columns_scroll {
+          vscrollbar-policy: never;
+
+          Box column_box {
+            styles ["files-columns-view"]
+
+            Box trail_box {}
+          }
         };
       }
     };

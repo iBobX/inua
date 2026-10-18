@@ -123,7 +123,7 @@ func (c *counts) text(path string, p *pane) string {
 				delete(c.pending, path)
 				c.n[path] = n
 				p.w.app.updateRows(path, func(r *row) {
-					if !r.grid {
+					if !r.grid && !r.compact {
 						r.cols[sizeCol].SetText(countText(n))
 					}
 				})

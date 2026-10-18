@@ -260,6 +260,7 @@ fortune-water                         drop
 fortune-dice                          dice-five
 # Files
 view-more                             dots-three
+view-columns                          kanban
 # Remote Desktop
 remote-sharing                        screencast
 remote-machine                        desktop

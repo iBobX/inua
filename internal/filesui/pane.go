@@ -51,13 +51,19 @@ type pane struct {
 	colHeads                                        [len(columns)]*gtk.Button
 	colLabels                                       [len(columns)]*gtk.Label
 	views                                           gtk.Stack
-	listScroll, gridScroll                          gtk.ScrolledWindow
+	listScroll, gridScroll, columnsScroll           gtk.ScrolledWindow
+	columnBox, trailBox                             gtk.Box
+	colMain                                         gtk.Overlay
 	emptyLabel, filterLabel, statusLabel, freeLabel gtk.Label
+	colEmpty                                        gtk.Label
 
 	model    *gtk.StringList
 	sel      *gtk.MultiSelection
 	list     *gtk.ListView
 	grid     *gtk.GridView
+	col      *gtk.ListView    // the folder's own column of the column view
+	trail    []*trailColumn   // the columns of the folders above it
+	preview  *trailColumn     // the column of the folder selected in it
 	rows     map[uintptr]*row // by list item
 	rowOf    map[uintptr]*row // by the row's own widget, for picking
 	names    []string         // what the model holds
@@ -84,19 +90,22 @@ type pane struct {
 	free   string
 	query  string // the search's
 
-	boundInfo map[string]entryInfo // the details last put in the model, by name
-	flashing  bool                 // the status line says something for a moment
+	boundInfo   map[string]entryInfo // the details last put in the model, by name
+	flashing    bool                 // the status line says something for a moment
+	selectFirst bool                 // once the folder is read, its first item, if nothing else
 }
 
-// row is the widgets of a list row or a grid cell.
+// row is the widgets of a list row, a grid cell or a column's row.
 type row struct {
-	box  gtk.Box
-	icon gtk.Image
-	name gtk.Label
-	cols [len(columns)]*gtk.Label // the list's columns, in columns' order
-	grid bool
-	pos  uint32
-	path string // bound to, for thumbnails arriving later
+	box     gtk.Box
+	icon    gtk.Image
+	name    gtk.Label
+	cols    [len(columns)]*gtk.Label // the list's columns, in columns' order
+	arrow   gtk.Image                // a column's: shown for a folder
+	grid    bool
+	compact bool // a column's row: the icon, the name and the arrow
+	pos     uint32
+	path    string // bound to, for thumbnails arriving later
 }
 
 // sizeCol is the size's column in columns.
@@ -122,6 +131,9 @@ func newPane(w *window, n int) *pane {
 	ui.Get("views", &p.views)
 	ui.Get("list_scroll", &p.listScroll)
 	ui.Get("grid_scroll", &p.gridScroll)
+	ui.Get("columns_scroll", &p.columnsScroll)
+	ui.Get("column_box", &p.columnBox)
+	ui.Get("trail_box", &p.trailBox)
 	ui.Get("empty_label", &p.emptyLabel)
 	ui.Get("filter_label", &p.filterLabel)
 	ui.Get("status_label", &p.statusLabel)
@@ -144,9 +156,9 @@ func newPane(w *window, n int) *pane {
 	w.click(buttons["zoom_in"], func() { w.zoom(1) })
 	w.click(buttons["zoom_out"], func() { w.zoom(-1) })
 	w.click(&p.zoomLevel, func() { w.zoom(0) })
-	// The list or the grid, chosen by the view's text tabs.
+	// The list, the grid or the columns, chosen by the view's text tabs.
 	w.notify(&p.views, "visible-child-name", func() {
-		if v := files.View(p.views.GetVisibleChildName()); v == files.ListView || v == files.GridView {
+		if v := files.View(p.views.GetVisibleChildName()); v != p.shownView() && (v == files.ListView || v == files.GridView || v == files.ColumnView) {
 			p.setView(v)
 		}
 	})
@@ -196,7 +208,9 @@ func newPane(w *window, n int) *pane {
 	p.grid.ConnectActivate(&w.app.h.onGridAct)
 	p.gridScroll.SetChild(&p.grid.Widget)
 
-	for _, v := range []*gtk.Widget{&p.list.Widget, &p.grid.Widget} {
+	p.buildColumnView()
+
+	for _, v := range []*gtk.Widget{&p.list.Widget, &p.grid.Widget, &p.col.Widget} {
 		w.press(v, false, func(button uint32, _ int32, x, y float64) {
 			switch button {
 			case 3:
@@ -311,7 +325,10 @@ func (p *pane) bindRow(item uintptr) {
 	r.path = p.path(i)
 	r.name.SetText(e.Name)
 	zoom := p.w.app.settings.Zoom
-	if r.grid {
+	if r.compact {
+		p.kindIcon(k, e, r, listIcon(zoom))
+		r.arrow.SetVisible(e.Dir && p.mode != inTrash)
+	} else if r.grid {
 		if tex := p.w.app.thumbs.get(r.path, e, p); tex != nil {
 			r.icon.SetPixelSize(gridIcon(zoom))
 			r.icon.SetFromPaintable(tex)
@@ -361,6 +378,10 @@ func (p *pane) rebind() {
 	sel := p.selectedNames()
 	p.names = nil
 	p.refill(sel, false)
+	for _, c := range p.trail {
+		c.rebind()
+	}
+	p.preview.rebind()
 }
 
 // updateRows changes the rows on screen that show path, without
@@ -398,8 +419,13 @@ func (p *pane) goTo(dir string, record bool, sel ...string) {
 		p.hist.Visit(p.locationKey())
 	}
 	p.leaveSearch()
+	// The columns go on wherever they go, in their order: the folders'
+	// own views would change them at each step.
+	if p.fv.View != files.ColumnView {
+		p.fv = p.w.app.settings.FolderView(dir)
+	}
 	p.mode, p.dir, p.filter = inFolder, dir, ""
-	p.fv = p.w.app.settings.FolderView(dir)
+	p.selectFirst = false
 	p.w.app.settings.Visited(dir)
 	p.load(sel)
 }
@@ -458,6 +484,7 @@ func (p *pane) load(sel []string) {
 	dir, order := p.dir, p.fv.Order
 	p.showCrumbs()
 	p.syncView()
+	p.syncTrail()
 	p.updateNav()
 	go func() {
 		es, err := files.ReadDir(dir)
@@ -528,6 +555,12 @@ func (p *pane) loaded(es []files.Entry, err error, sel []string) {
 	p.all, p.dirs, p.trash = es, nil, nil
 	p.w.app.counts.forget(p.dir)
 	p.refill(sel, true)
+	if p.selectFirst {
+		p.selectFirst = false
+		if len(sel) == 0 && len(p.shown) > 0 {
+			p.sel.SelectItem(0, true)
+		}
+	}
 }
 
 // refill computes what is shown (hidden files, the filter) and puts it in
@@ -560,10 +593,7 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 		names[k] = p.all[i].Name
 	}
 	p.fills++
-	view := &p.list.Widget
-	if p.fv.View == files.GridView {
-		view = &p.grid.Widget
-	}
+	view := p.view()
 	n := p.model.GetNItems()
 	parts := n == 0 && len(names) > 2*fillPart && view.GetMapped()
 	switch {
@@ -668,11 +698,36 @@ func diffNames(old, cur []string, changed func(int) bool) (at, removed int, adde
 
 func (p *pane) setView(v files.View) {
 	if p.fv.View == v {
+		p.syncView() // the columns chosen in a search: its list stays
 		return
 	}
 	p.fv.View = v
 	p.saveView()
 	p.syncView()
+	p.syncTrail()
+	p.focus()
+}
+
+// view is the widget of the view shown: the list, the grid, or the
+// folder's own column.
+func (p *pane) view() *gtk.Widget {
+	switch p.shownView() {
+	case files.GridView:
+		return &p.grid.Widget
+	case files.ColumnView:
+		return &p.col.Widget
+	}
+	return &p.list.Widget
+}
+
+// shownView is the view shown: the pane's, but a search's results in the
+// list, as they come from many folders.
+func (p *pane) shownView() files.View {
+	switch v := p.fv.View; {
+	case v == files.GridView, v == files.ColumnView && p.mode == inFolder:
+		return v
+	}
+	return files.ListView
 }
 
 func (p *pane) saveView() {
@@ -681,25 +736,42 @@ func (p *pane) saveView() {
 	}
 }
 
-// syncView shows the list, the grid, or why there is nothing, and gives
-// the model to the view shown only.
+// syncView shows the list, the grid, the columns, or why there is
+// nothing, and gives the model to the view shown only.
 func (p *pane) syncView() {
-	grid := p.fv.View == files.GridView
-	p.columns.SetVisible(!grid)
-	if grid {
+	v := p.shownView()
+	p.columns.SetVisible(v == files.ListView)
+	if v != files.ListView {
 		p.list.SetModel(noModel)
-		p.grid.SetModel(p.sel)
-	} else {
+	}
+	if v != files.GridView {
 		p.grid.SetModel(noModel)
+	}
+	if v != files.ColumnView {
+		p.col.SetModel(noModel)
+	}
+	switch v {
+	case files.GridView:
+		p.grid.SetModel(p.sel)
+	case files.ColumnView:
+		p.col.SetModel(p.sel)
+	default:
 		p.list.SetModel(p.sel)
 	}
 	p.emptyTrash.SetVisible(p.mode == inTrash && len(p.all) > 0)
-	p.emptyLabel.SetVisible(len(p.shown) == 0)
-	p.emptyLabel.SetText(p.emptyText())
-	p.views.SetVisibleChildName(string(p.fv.View))
-	if p.fv.View != files.GridView {
-		p.views.SetVisibleChildName(string(files.ListView))
+	empty := p.emptyText()
+	// In the columns, why the folder shows nothing is said in its column.
+	p.emptyLabel.SetVisible(len(p.shown) == 0 && v != files.ColumnView)
+	p.emptyLabel.SetText(empty)
+	p.colEmpty.SetVisible(len(p.shown) == 0 && v == files.ColumnView)
+	p.colEmpty.SetText(empty)
+	if !p.columnsShown() {
+		for _, c := range p.trail {
+			c.hide()
+		}
+		p.preview.hide()
 	}
+	p.views.SetVisibleChildName(string(v))
 	p.syncColumns()
 }
 
@@ -739,32 +811,38 @@ func (p *pane) sortBy(by files.SortBy) {
 	files.Sort(p.all, p.fv.Order)
 	p.names = nil
 	p.refill(sel, false)
+	if p.columnsShown() {
+		p.syncTrail() // the columns before and after in the same order
+	}
 }
 
 func (p *pane) toggleHidden() {
 	p.fv.Order.ShowsHidden = !p.fv.Order.ShowsHidden
 	p.saveView()
 	p.refill(p.selectedNames(), true)
+	if p.columnsShown() {
+		p.syncTrail()
+	}
 }
 
 func (p *pane) scrollTo(pos uint32) {
-	if p.fv.View == files.GridView {
+	switch p.shownView() {
+	case files.GridView:
 		p.grid.ScrollTo(pos, gtk.ListScrollFocusValue, nil)
-	} else {
+	case files.ColumnView:
+		p.col.ScrollTo(pos, gtk.ListScrollFocusValue, nil)
+	default:
 		p.list.ScrollTo(pos, gtk.ListScrollFocusValue, nil)
 	}
 }
 
 // focus gives the keyboard to the pane's view.
 func (p *pane) focus() {
-	switch {
-	case len(p.shown) == 0:
+	if len(p.shown) == 0 {
 		p.box.GrabFocus()
-	case p.fv.View == files.GridView:
-		p.grid.GrabFocus()
-	default:
-		p.list.GrabFocus()
+		return
 	}
+	p.view().GrabFocus()
 }
 
 // --- selection ---
@@ -1231,9 +1309,14 @@ func (p *pane) showTrash(record bool) {
 
 // pick finds the row under x, y of view v, if any.
 func (p *pane) pick(v *gtk.Widget, x, y float64) (*row, bool) {
+	return pickRow(p.rowOf, v, x, y)
+}
+
+// pickRow finds the row under x, y of view v among rowOf's.
+func pickRow(rowOf map[uintptr]*row, v *gtk.Widget, x, y float64) (*row, bool) {
 	w := v.Pick(x, y, gtk.PickDefaultValue)
 	for w != nil {
-		if r, ok := p.rowOf[w.GoPointer()]; ok {
+		if r, ok := rowOf[w.GoPointer()]; ok {
 			w.Unref()
 			return r, true
 		}
@@ -1370,6 +1453,7 @@ func (p *pane) syncZoom() {
 	}
 	p.zoomLevel.SetLabel(fmt.Sprintf("%d%%", zoomPercent[z]))
 	p.syncColumns()
+	p.syncColumnWidths()
 }
 
 // --- small helpers ---
