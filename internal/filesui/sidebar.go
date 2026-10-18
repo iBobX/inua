@@ -108,18 +108,10 @@ func (w *window) sideHead(text string) {
 }
 
 // sideEntry adds an entry: a button that opens it and, for a drive or a
-// remote disk, a button that ejects or disconnects it.
-//
-// sideEditEntry is sideEntry with a button that changes the entry's
-// setup (a remote disk's), shown while the pointer is on the row.
-//
-// A right click shows its menu: opening it in a new tab or window, and
-// what more there is to do with it (extra).
+// remote disk, a button that ejects or disconnects it. A right click
+// shows its menu: opening it in a new tab or window, and what more there
+// is to do with it (extra).
 func (w *window) sideEntry(name, sub, icon, path string, open, eject func(), extra ...menuItem) {
-	w.sideEditEntry(name, sub, icon, path, open, eject, nil, extra...)
-}
-
-func (w *window) sideEditEntry(name, sub, icon, path string, open, eject, edit func(), extra ...menuItem) {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	row.AddCssClass("files-side-row")
 	b := gtk.NewButton()
@@ -175,16 +167,6 @@ func (w *window) sideEditEntry(name, sub, icon, path string, open, eject, edit f
 	}
 	w.side = append(w.side, sideItem{path: path, button: b, open: open})
 	gtkx.Append(row, &b.Widget)
-	if edit != nil {
-		e := gtk.NewButtonFromIconName("document-edit-symbolic")
-		e.AddCssClass("plain")
-		e.AddCssClass("files-side-edit")
-		e.SetValign(gtk.AlignCenterValue)
-		e.SetTooltipText(i18n.T("Edit…"))
-		w.app.h.click(e, edit)
-		w.sidePtr = append(w.sidePtr, e.GoPointer())
-		gtkx.Append(row, &e.Widget)
-	}
 	if eject != nil {
 		e := gtk.NewButtonFromIconName("media-eject-symbolic")
 		e.AddCssClass("plain")

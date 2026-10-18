@@ -271,7 +271,7 @@ func (w *window) remoteSide() {
 		change := func() { w.setupRemote(&d) }
 		extra = append(extra, menuItem{label: i18n.T("Edit…"), run: change})
 		extra = append(extra, menuItem{label: i18n.T("Forget"), run: func() { w.confirmForget(d) }})
-		w.sideEditEntry(d.Name, sub, "folder-remote", path, func() { w.openRemote(w.cur(), d) }, eject, change, extra...)
+		w.sideEntry(d.Name, sub, "folder-remote", path, func() { w.openRemote(w.cur(), d) }, eject, extra...)
 	}
 	w.sideEntry(i18n.T("Remote disk…"), "", "network-workgroup", "", func() { w.setupRemote(nil) }, nil)
 }

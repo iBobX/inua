@@ -185,8 +185,8 @@ The sidebar is the shell's index column, as Pass and Tailscale have:
   whether it connects and, if not, why; Connect connects it and keeps it.
   While either works, its button says so and the form waits; a refused
   password, an unknown host key or a missing bucket is said on the form,
-  to be put right there. A disk's pencil (on its row, under the pointer)
-  or *Edit…* in its menu opens its setup again: a password left empty
+  to be put right there. *Edit…* in a disk's menu (a right click on its
+  row) opens its setup again: a password left empty
   keeps the one in the keyring, and a disk changed while connected is
   disconnected first. The path bar and `inua-files` take
   the same disks as addresses:

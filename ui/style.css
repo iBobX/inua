@@ -2475,9 +2475,6 @@ window.files box.files-kinds > button:hover { background: alpha(@t0, 0.06); colo
 window.files box.files-kinds > button:checked { background: alpha(@accent, 0.16); color: @accent; }
 /* A remote disk's edit button: there while the pointer is on its row, or
    the keys are on the button. */
-window.files button.files-side-edit { opacity: 0; color: @t2; }
-window.files button.files-side-edit:hover { color: @t0; }
-window.files .files-side-row:hover button.files-side-edit, window.files button.files-side-edit:focus-visible { opacity: 1; }
 window.files .files-rename-preview { border: 1px solid alpha(@line, 0.7); background: @app; }
 window.files .files-rename-row { padding: 4px 10px; font-size: 12.5px; }
 window.files .files-rename-row:nth-child(even) { background: alpha(@t0, 0.03); }
