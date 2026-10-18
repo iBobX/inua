@@ -12,8 +12,9 @@ Music and Video take files given to a second start (Music adds them,
 Video plays the file). The Assistant is a program of its own,
 `inua-assistant`, and so are the file manager, `inua-files`
 ([files.md](files.md)), Viewer, `inua-viewer`, which opens a
-window for each file opened, and the Windows guest's manager, `inua-vm`
-([the Windows VM](#windows-vm)).
+window for each file opened, the Windows guest's manager, `inua-vm`
+([the Windows VM](#windows-vm)), and Remote Desktop, `inua-remote`
+([remote-desktop.md](remote-desktop.md)).
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -441,6 +442,17 @@ password, so a later install reuses that Windows; **Delete disk** is a
 separate, confirmed action. Only Windows runs today: Linux, FreeBSD, Android
 and custom systems, and seamless windows, are the later steps of
 [inua-vm.md](inua-vm.md).
+
+## Remote Desktop
+
+`inua-remote` shares this desktop with your other devices through
+Sunshine, and shows another machine's desktop here with this keyboard and
+mouse sent to it, over GameStream (Moonlight's protocol): **This computer**
+turns sharing on and takes the PIN a device shows when it pairs; the
+machines found on the local network or the tailnet, or added by address,
+are paired with once and connected to in a window of their own (H.264,
+HEVC or AV1, decoded by the graphics card). Any Moonlight app can connect
+to a desktop inua shares. See [remote-desktop.md](remote-desktop.md).
 
 ## Files
 

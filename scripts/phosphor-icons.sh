@@ -260,5 +260,9 @@ fortune-water                         drop
 fortune-dice                          dice-five
 # Files
 view-more                             dots-three
+# Remote Desktop
+remote-sharing                        screencast
+remote-machine                        desktop
+view-refresh                          arrow-clockwise
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"

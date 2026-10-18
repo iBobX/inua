@@ -264,6 +264,7 @@ var LightAppGroups = []struct {
 	}},
 	{i18n.M("NETWORK"), []string{
 		"io.github.lyricat.Inua.Tailscale",
+		"io.github.lyricat.Inua.Remote",
 	}},
 	{i18n.M("PLAY"), []string{
 		"io.github.lyricat.Inua.Minesweeper",

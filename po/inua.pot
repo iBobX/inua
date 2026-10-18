@@ -348,6 +348,7 @@ msgid "in %d d"
 msgstr ""
 
 #: internal/apps/tailscale/status.go:265
+#: internal/remoteui/window.go:261
 msgid "Connected"
 msgstr ""
 
@@ -1474,6 +1475,7 @@ msgstr ""
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
 #: ui/pass.ui:818
+#: ui/remote.ui:905
 msgid "Add"
 msgstr ""
 
@@ -1630,7 +1632,7 @@ msgstr ""
 #: internal/appui/sysmon.go:1031
 #: internal/filesui/sidebar.go:98
 #: internal/shell/dock.go:265
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "NETWORK"
 msgstr ""
 
@@ -1759,6 +1761,7 @@ msgid "Private"
 msgstr ""
 
 #: internal/appui/sysmon.go:782
+#: internal/remoteui/window.go:429
 msgid "Shared"
 msgstr ""
 
@@ -2430,6 +2433,7 @@ msgid "Cannot play it: %s"
 msgstr ""
 
 #: internal/appui/video.go:529
+#: internal/remoteui/window.go:435
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
 #: internal/shell/status.go:88
@@ -2556,6 +2560,7 @@ msgstr ""
 #: internal/filesui/cards.go:610
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
+#: internal/remoteui/window.go:660
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3570,6 +3575,7 @@ msgid "smb://server/share, sftp://user@host/folder, ftp://, dav://, nfs://"
 msgstr ""
 
 #: internal/filesui/cards.go:503
+#: ui/remote.ui:523
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
 msgid "Connect"
@@ -3580,6 +3586,7 @@ msgid "Used before"
 msgstr ""
 
 #: internal/filesui/cards.go:524
+#: internal/remoteui/stream.go:134
 msgid "Connecting to %s…"
 msgstr ""
 
@@ -3644,6 +3651,7 @@ msgid "Not allowed."
 msgstr ""
 
 #: internal/filesui/cards.go:686
+#: internal/remoteui/stream.go:468
 msgid "%s: %v"
 msgstr ""
 
@@ -7192,7 +7200,7 @@ msgid "SPACE PINBALL"
 msgstr ""
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr ""
@@ -7225,7 +7233,7 @@ msgstr ""
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -7378,6 +7386,175 @@ msgstr ""
 msgid "AM"
 msgstr ""
 
+#: internal/remoteui/app.go:20
+#: ui/remote.ui:14
+#: ui/remote.ui:32
+#: config/apps/io.github.lyricat.Inua.Remote.desktop:3
+msgid "Remote Desktop"
+msgstr ""
+
+#: internal/remoteui/stream.go:126
+msgid "%s — Remote Desktop"
+msgstr ""
+
+#: internal/remoteui/stream.go:229
+msgid "Ctrl+Alt+Shift+Q disconnects · F: full screen · Z: this desktop's shortcuts"
+msgstr ""
+
+#: internal/remoteui/stream.go:466
+msgid "%s ended the session."
+msgstr ""
+
+#: internal/remoteui/window.go:119
+msgid "This computer has no identity to pair with: %v"
+msgstr ""
+
+#: internal/remoteui/window.go:256
+msgid "Not paired"
+msgstr ""
+
+#: internal/remoteui/window.go:258
+msgid "Paired"
+msgstr ""
+
+#: internal/remoteui/window.go:269
+msgid "Found on this network"
+msgstr ""
+
+#: internal/remoteui/window.go:271
+msgid "Found on the tailnet"
+msgstr ""
+
+#: internal/remoteui/window.go:386
+msgid "Sharing did not start: %v"
+msgstr ""
+
+#: internal/remoteui/window.go:430
+msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
+msgstr ""
+
+#: internal/remoteui/window.go:432
+msgid "Starting…"
+msgstr ""
+
+#: internal/remoteui/window.go:433
+msgid "Sunshine is starting."
+msgstr ""
+
+#: internal/remoteui/window.go:436
+msgid "Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."
+msgstr ""
+
+#: internal/remoteui/window.go:446
+msgid "Sharing needs Sunshine, which is not installed."
+msgstr ""
+
+#: internal/remoteui/window.go:447
+msgid "Install the package for your system from github.com/LizardByte/Sunshine/releases (Ubuntu: sudo apt install ./sunshine_…_amd64.deb)."
+msgstr ""
+
+#: internal/remoteui/window.go:449
+msgid "The other device's keyboard and mouse cannot reach this desktop: /dev/uinput is not yours."
+msgstr ""
+
+#: internal/remoteui/window.go:452
+msgid "Sharing needs a graphical session to show."
+msgstr ""
+
+#: internal/remoteui/window.go:477
+msgid "A device"
+msgstr ""
+
+#: internal/remoteui/window.go:481
+msgid "at %s: type the PIN it shows"
+msgstr ""
+
+#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:662
+#: ui/remote.ui:513
+msgid "Pair"
+msgstr ""
+
+#: internal/remoteui/window.go:508
+msgid "No device is paired yet."
+msgstr ""
+
+#: internal/remoteui/window.go:513
+msgid "The paired devices show while sharing is on."
+msgstr ""
+
+#: internal/remoteui/window.go:525
+msgid "Unpair"
+msgstr ""
+
+#: internal/remoteui/window.go:546
+msgid "A PIN is four digits."
+msgstr ""
+
+#: internal/remoteui/window.go:556
+msgid "That is not the PIN %s shows."
+msgstr ""
+
+#: internal/remoteui/window.go:635
+msgid "Asking…"
+msgstr ""
+
+#: internal/remoteui/window.go:638
+msgid "Connected: its desktop is in a window of its own."
+msgstr ""
+
+#: internal/remoteui/window.go:641
+msgid "It does not answer: it is off, or not sharing its desktop."
+msgstr ""
+
+#: internal/remoteui/window.go:643
+msgid "It shares with Nvidia's GameStream, which Remote Desktop does not speak."
+msgstr ""
+
+#: internal/remoteui/window.go:645
+msgid "It has forgotten this computer: pair again."
+msgstr ""
+
+#: internal/remoteui/window.go:647
+msgid "Not paired: pair once, with a PIN typed on it."
+msgstr ""
+
+#: internal/remoteui/window.go:649
+msgid "Paired. Its desktop is being streamed; connecting joins in."
+msgstr ""
+
+#: internal/remoteui/window.go:651
+msgid "Paired, and ready."
+msgstr ""
+
+#: internal/remoteui/window.go:684
+msgid "On %s, open Remote Desktop → Sharing (or Sunshine's PIN page) and type:"
+msgstr ""
+
+#: internal/remoteui/window.go:708
+msgid "The PIN typed there was not this one. Pair again."
+msgstr ""
+
+#: internal/remoteui/window.go:711
+msgid "Pairing failed: %v"
+msgstr ""
+
+#: internal/remoteui/window.go:767
+msgid "Nothing shares a desktop at %s: %v"
+msgstr ""
+
+#: internal/remoteui/window.go:834
+msgid "This computer cannot decode it: choose another."
+msgstr ""
+
+#: internal/remoteui/window.go:836
+msgid "Decoded by the processor here: slower than the graphics card."
+msgstr ""
+
+#: internal/remoteui/window.go:838
+msgid "Decoded by the graphics card here. HEVC and AV1 look better than H.264 at the same bitrate."
+msgstr ""
+
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
 msgstr ""
@@ -7438,7 +7615,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr ""
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:286
+#: internal/shell/dock.go:287
 msgid "inua's settings"
 msgstr ""
 
@@ -7585,56 +7762,56 @@ msgid "Web search"
 msgstr ""
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "EVERYDAY"
 msgstr ""
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:296
+#: internal/shell/dock.go:297
 msgid "TOOLS"
 msgstr ""
 
-#: internal/shell/dock.go:268
+#: internal/shell/dock.go:269
 msgid "PLAY"
 msgstr ""
 
-#: internal/shell/dock.go:273
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:274
+#: internal/shell/dock.go:299
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr ""
 
-#: internal/shell/dock.go:287
+#: internal/shell/dock.go:288
 msgid "Find apps, windows and answers"
 msgstr ""
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr ""
 
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "Capture an area, a window or a screen"
 msgstr ""
 
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "DEVELOPMENT"
 msgstr ""
 
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "MEDIA"
 msgstr ""
 
-#: internal/shell/dock.go:297
+#: internal/shell/dock.go:298
 msgid "GAMES"
 msgstr ""
 
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "OTHER"
 msgstr ""
 
-#: internal/shell/dock.go:323
+#: internal/shell/dock.go:324
 msgid "WORKSHOP"
 msgstr ""
 
@@ -8696,6 +8873,7 @@ msgid "Abilities"
 msgstr ""
 
 #: internal/ui/settings_ai.go:497
+#: ui/remote.ui:492
 msgid "Forget"
 msgstr ""
 
@@ -10380,6 +10558,99 @@ msgstr ""
 msgid "Authenticate"
 msgstr ""
 
+#: ui/remote.ui:54
+msgid "THIS COMPUTER"
+msgstr ""
+
+#: ui/remote.ui:84
+msgid "Sharing"
+msgstr ""
+
+#: ui/remote.ui:112
+msgid "MACHINES"
+msgstr ""
+
+#: ui/remote.ui:125
+msgid "Look for machines sharing their desktop"
+msgstr ""
+
+#: ui/remote.ui:159
+msgid "Add a machine…"
+msgstr ""
+
+#: ui/remote.ui:226
+msgid "[SHARING]"
+msgstr ""
+
+#: ui/remote.ui:256
+msgid "Share this desktop"
+msgstr ""
+
+#: ui/remote.ui:339
+msgid "[WAITING TO PAIR]"
+msgstr ""
+
+#: ui/remote.ui:381
+msgid "[PAIRED DEVICES]"
+msgstr ""
+
+#: ui/remote.ui:502
+msgid "End its session"
+msgstr ""
+
+#: ui/remote.ui:503
+msgid "Ends what is streaming there, for every device"
+msgstr ""
+
+#: ui/remote.ui:587
+msgid "[STREAM]"
+msgstr ""
+
+#: ui/remote.ui:597
+msgid "for every machine"
+msgstr ""
+
+#: ui/remote.ui:625
+msgid "Resolution"
+msgstr ""
+
+#: ui/remote.ui:634
+msgid "The machine shows its desktop at this size."
+msgstr ""
+
+#: ui/remote.ui:647
+#: ui/settings.ui:1211
+msgid "This monitor's"
+msgstr ""
+
+#: ui/remote.ui:670
+msgid "Frames a second"
+msgstr ""
+
+#: ui/remote.ui:709
+msgid "Bitrate"
+msgstr ""
+
+#: ui/remote.ui:718
+msgid "Megabits a second: more is sharper, and needs a faster network."
+msgstr ""
+
+#: ui/remote.ui:758
+msgid "Codec"
+msgstr ""
+
+#: ui/remote.ui:800
+msgid "Play the sound on the machine too"
+msgstr ""
+
+#: ui/remote.ui:860
+msgid "[ADD A MACHINE]"
+msgstr ""
+
+#: ui/remote.ui:885
+msgid "Its address on the network: a name, an IP address, or either with :port."
+msgstr ""
+
 #: ui/screenshot.ui:126
 msgid "Drag to take an area (Space switches to windows)"
 msgstr ""
@@ -10637,10 +10908,6 @@ msgstr ""
 
 #: ui/settings.ui:1197
 msgid "Which workspaces each bar shows"
-msgstr ""
-
-#: ui/settings.ui:1211
-msgid "This monitor's"
 msgstr ""
 
 #: ui/settings.ui:1212
@@ -11850,6 +12117,14 @@ msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.Pass.desktop:20
 msgid "password;pass;gpg;otp;totp;2fa;secret;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Remote.desktop:10
+msgid "Share this desktop, or see and control another one"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.Remote.desktop:20
+msgid "remote;desktop;moonlight;sunshine;stream;share;vnc;rdp;"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.SmallFortune.desktop:10
