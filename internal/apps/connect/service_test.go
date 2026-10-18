@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -306,9 +307,12 @@ func TestCommands(t *testing.T) {
 	if err := Call(ctx, "SetCommands", `[{"name":"Lock","command":"true"}]`).Err; err != nil {
 		t.Fatal(err)
 	}
-	pk := p.next(t, typeCommand)
+	// The list sent when the phone came may still be on its way: the one
+	// wanted names the command.
 	var b struct{ CommandList string }
-	pk.Decode(&b)
+	for i := 0; i < 3 && !strings.Contains(b.CommandList, `"name":"Lock"`); i++ {
+		p.next(t, typeCommand).Decode(&b)
+	}
 	cmds := s.runner.list()
 	if len(cmds) != 1 || cmds[0].Key == "" || !bytes.Contains([]byte(b.CommandList), []byte(`"name":"Lock"`)) {
 		t.Fatalf("the commands: %+v, sent %s", cmds, b.CommandList)
