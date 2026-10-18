@@ -55,7 +55,8 @@ type App struct {
 	clip []string // what this app last put on the clipboard
 	cut  bool
 
-	archiveExt string // the archive format chosen last (".zip")
+	archiveExt string           // the archive format chosen last (".zip")
+	renameRule files.RenameRule // renaming many: the way used last
 	undos      []files.Undo
 }
 

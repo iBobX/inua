@@ -39,6 +39,7 @@ type hub struct {
 
 	onClicked   func(gtk.Button)
 	onToggled   func(gtk.ToggleButton)
+	onChecked   func(gtk.CheckButton)
 	onKey       func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onListAct   func(gtk.ListView, uint32)
 	onGridAct   func(gtk.GridView, uint32)
@@ -80,6 +81,11 @@ func newHub() *hub {
 		}
 	}
 	h.onToggled = func(b gtk.ToggleButton) {
+		if f := h.toggled[b.GoPointer()]; f != nil {
+			f(b.GetActive())
+		}
+	}
+	h.onChecked = func(b gtk.CheckButton) {
 		if f := h.toggled[b.GoPointer()]; f != nil {
 			f(b.GetActive())
 		}
@@ -196,6 +202,12 @@ func (h *hub) click(b *gtk.Button, f func()) {
 func (h *hub) toggle(b *gtk.ToggleButton, f func(bool)) {
 	h.toggled[b.GoPointer()] = f
 	b.ConnectToggled(&h.onToggled)
+}
+
+// check is toggle for a check button.
+func (h *hub) check(b *gtk.CheckButton, f func(bool)) {
+	h.toggled[b.GoPointer()] = f
+	b.ConnectToggled(&h.onChecked)
 }
 
 // key adds a key controller to w, in the capture phase when capture.

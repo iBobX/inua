@@ -1223,7 +1223,7 @@ msgstr "解密出的副本會移到垃圾桶，可從那裡復原；加密檔案
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:739
+#: internal/filesui/window.go:741
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2033,6 +2033,7 @@ msgstr "模型"
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
 #: internal/filesui/remotesetup.go:226
+#: internal/filesui/renamemany.go:168
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/connect.ui:290
@@ -2704,6 +2705,7 @@ msgstr "未知的元件 %q"
 #: internal/filesui/remote.go:159
 #: internal/filesui/remote.go:219
 #: internal/filesui/remotesetup.go:152
+#: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:660
@@ -3616,7 +3618,7 @@ msgstr "文字編輯器"
 msgid "Opens plain text"
 msgstr "開啟純文字"
 
-#: internal/filesui/app.go:73
+#: internal/filesui/app.go:74
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3628,15 +3630,15 @@ msgstr "開啟純文字"
 msgid "Files"
 msgstr "檔案"
 
-#: internal/filesui/app.go:231
+#: internal/filesui/app.go:232
 msgid "%s is plugged in."
 msgstr "%s 已插入。"
 
-#: internal/filesui/app.go:309
+#: internal/filesui/app.go:310
 msgid "There are no files on the clipboard."
 msgstr "剪貼簿上沒有檔案。"
 
-#: internal/filesui/app.go:363
+#: internal/filesui/app.go:364
 msgid "Nothing to undo."
 msgstr "沒有可復原的操作。"
 
@@ -3680,6 +3682,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:343
 #: internal/filesui/cards.go:363
 #: internal/filesui/cards.go:686
+#: internal/filesui/renamemany.go:38
 msgid "Rename"
 msgstr "重新命名"
 
@@ -3922,7 +3925,7 @@ msgid "Open with…"
 msgstr "開啟方式……"
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:753
+#: internal/filesui/window.go:755
 msgid "Bookmark"
 msgstr "加入書籤"
 
@@ -3972,7 +3975,7 @@ msgid "Sidebar"
 msgstr "側邊欄"
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:745
+#: internal/filesui/window.go:747
 msgid "Details"
 msgstr "詳細資訊"
 
@@ -4145,7 +4148,7 @@ msgstr[0] "%d 個壓縮檔"
 msgid "%d s"
 msgstr "%d秒"
 
-#: internal/filesui/jobs.go:199
+#: internal/filesui/jobs.go:202
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "已將 %d 項移至垃圾箱（Ctrl+Z 可還原）。"
@@ -4583,6 +4586,135 @@ msgstr "其資料夾可以讀取。"
 msgid "Another remote disk is called “%s”."
 msgstr "已有另一個遠端磁碟叫「%s」。"
 
+#: internal/filesui/renamemany.go:41
+msgid "Rename %d item"
+msgid_plural "Rename %d items"
+msgstr[0] "重新命名 %d 個項目"
+
+#: internal/filesui/renamemany.go:60
+msgid "Replace text"
+msgstr "取代文字"
+
+#: internal/filesui/renamemany.go:61
+msgid "Add text"
+msgstr "加入文字"
+
+#: internal/filesui/renamemany.go:62
+msgid "Number"
+msgstr "編號"
+
+#: internal/filesui/renamemany.go:63
+msgid "Change case"
+msgstr "變更大小寫"
+
+#: internal/filesui/renamemany.go:148
+msgid "Find"
+msgstr "尋找"
+
+#: internal/filesui/renamemany.go:151
+msgid "Replace with"
+msgstr "取代為"
+
+#: internal/filesui/renamemany.go:152
+msgid "empty: removed"
+msgstr "留空：刪除"
+
+#: internal/filesui/renamemany.go:154
+msgid "Match case"
+msgstr "區分大小寫"
+
+#: internal/filesui/renamemany.go:156
+msgid "A regular expression ($1 in the replacement)"
+msgstr "正規表示式（取代中可用 $1）"
+
+#: internal/filesui/renamemany.go:158
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "文字"
+
+#: internal/filesui/renamemany.go:161
+msgid "Where"
+msgstr "位置"
+
+#: internal/filesui/renamemany.go:166
+msgid "Before the name"
+msgstr "名稱之前"
+
+#: internal/filesui/renamemany.go:166
+msgid "After the name"
+msgstr "名稱之後"
+
+#: internal/filesui/renamemany.go:169
+msgid "empty: the number alone"
+msgstr "留空：僅編號"
+
+#: internal/filesui/renamemany.go:171
+msgid "Start at"
+msgstr "起始編號"
+
+#: internal/filesui/renamemany.go:187
+msgid "Case"
+msgstr "大小寫"
+
+#: internal/filesui/renamemany.go:188
+msgid "lowercase"
+msgstr "小寫"
+
+#: internal/filesui/renamemany.go:188
+msgid "UPPERCASE"
+msgstr "大寫"
+
+#: internal/filesui/renamemany.go:188
+msgid "Title Case"
+msgstr "首字母大寫"
+
+#: internal/filesui/renamemany.go:220
+msgid "The regular expression is not one."
+msgstr "正規表示式無效。"
+
+#: internal/filesui/renamemany.go:261
+msgid "%d name changes."
+msgid_plural "%d names change."
+msgstr[0] "%d 個名稱將變更。"
+
+#: internal/filesui/renamemany.go:263
+msgid "%d name cannot be given."
+msgid_plural "%d names cannot be given."
+msgstr[0] "有 %d 個名稱無法使用。"
+
+#: internal/filesui/renamemany.go:266
+msgid "The first %d are shown."
+msgstr "僅顯示前 %d 個。"
+
+#: internal/filesui/renamemany.go:277
+msgid "taken by another file"
+msgstr "已被其他檔案使用"
+
+#: internal/filesui/renamemany.go:279
+msgid "given to two items"
+msgstr "與另一項目重複"
+
+#: internal/filesui/renamemany.go:281
+msgid "empty"
+msgstr "為空"
+
+#: internal/filesui/renamemany.go:283
+msgid "holds “/”"
+msgstr "包含「/」"
+
+#: internal/filesui/renamemany.go:285
+msgid "not a name"
+msgstr "不是名稱"
+
+#: internal/filesui/renamemany.go:287
+msgid "too long"
+msgstr "太長"
+
+#: internal/filesui/renamemany.go:306
+msgid "Some names cannot be given: they are marked."
+msgstr "有些名稱無法使用：已標出。"
+
 #: internal/filesui/sidebar.go:36
 msgid "PLACES"
 msgstr "位置"
@@ -4649,7 +4781,7 @@ msgid "Restore"
 msgstr "還原"
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:742
 msgid "Delete for good…"
 msgstr "永久刪除……"
 
@@ -4714,38 +4846,43 @@ msgstr "移動到另一窗格"
 msgid "Rename…"
 msgstr "重新命名……"
 
-#: internal/filesui/window.go:751
+#: internal/filesui/window.go:738
+msgid "Rename %d item…"
+msgid_plural "Rename %d items…"
+msgstr[0] "重新命名 %d 個項目……"
+
+#: internal/filesui/window.go:753
 msgid "Remove the bookmark"
 msgstr "移除書籤"
 
-#: internal/filesui/window.go:806
+#: internal/filesui/window.go:808
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "已剪下 %d 項：貼上即可移動。"
 
-#: internal/filesui/window.go:808
+#: internal/filesui/window.go:810
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "已複製 %d 項。"
 
-#: internal/filesui/window.go:816
+#: internal/filesui/window.go:818
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "已複製 %d 個路徑。"
 
-#: internal/filesui/window.go:894
+#: internal/filesui/window.go:900
 msgid "Bookmarked %s."
 msgstr "已為 %s 加入書籤。"
 
-#: internal/filesui/window.go:896
+#: internal/filesui/window.go:902
 msgid "Removed the bookmark of %s."
 msgstr "已移除 %s 的書籤。"
 
-#: internal/filesui/window.go:921
+#: internal/filesui/window.go:927
 msgid "Copied %s."
 msgstr "已複製 %s。"
 
-#: internal/filesui/window.go:950
+#: internal/filesui/window.go:956
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "找不到終端機：請安裝 xdg-terminal-exec 或設定 $TERMINAL。"
 
@@ -10797,11 +10934,6 @@ msgstr "建立你的金鑰"
 #: ui/gpg.ui:750
 msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>訊息<span alpha='55%'>]</span>"
-
-#: ui/gpg.ui:419
-#: ui/gpg.ui:783
-msgid "Text"
-msgstr "文字"
 
 #: ui/gpg.ui:469
 #: ui/gpg.ui:834

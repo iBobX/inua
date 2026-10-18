@@ -182,6 +182,9 @@ func (w *window) jobDone(q queued, undo files.Undo, err error) {
 	for _, m := range undo.Moves {
 		made = append(made, m[1])
 	}
+	for _, m := range undo.Renames {
+		made = append(made, m[1])
+	}
 	if len(made) > 0 {
 		for _, p := range w.panes() {
 			var names []string

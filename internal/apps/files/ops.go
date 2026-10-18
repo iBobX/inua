@@ -31,6 +31,7 @@ const (
 	Untrash                 // the trashed items Trashed back where they were
 	Compress                // Sources into the archive Dest (archive.go)
 	Extract                 // each archive of Sources taken apart in the folder Dest
+	RenameMany              // each of Sources to the path at its place in Dests (rename.go)
 )
 
 // Job is an operation on files.
@@ -38,6 +39,7 @@ type Job struct {
 	Kind    Kind
 	Sources []string
 	Dest    string
+	Dests   []string  // for RenameMany
 	Trashed []Trashed // for Untrash
 }
 
@@ -73,12 +75,15 @@ type Asker func(Conflict) (a Answer, all bool)
 // Undo is what puts a finished job back.
 type Undo struct {
 	Moves   [][2]string // from, to: moved back
+	Renames [][2]string // from, to: renamed back, all at once
 	Trashed []Trashed   // restored
 	Created []string    // trashed
 }
 
 // Empty says whether there is nothing to undo.
-func (u Undo) Empty() bool { return len(u.Moves) == 0 && len(u.Trashed) == 0 && len(u.Created) == 0 }
+func (u Undo) Empty() bool {
+	return len(u.Moves) == 0 && len(u.Renames) == 0 && len(u.Trashed) == 0 && len(u.Created) == 0
+}
 
 // Job is the job that undoes u. A move is moved back by name, so a
 // conflict there (something took the name since) is asked about as usual.
@@ -87,6 +92,14 @@ func (u Undo) Job() []Job {
 	for i := len(u.Moves) - 1; i >= 0; i-- {
 		m := u.Moves[i]
 		out = append(out, Job{Kind: Rename, Sources: []string{m[1]}, Dest: m[0]})
+	}
+	if len(u.Renames) > 0 {
+		back := Job{Kind: RenameMany}
+		for _, rn := range u.Renames {
+			back.Sources = append(back.Sources, rn[1])
+			back.Dests = append(back.Dests, rn[0])
+		}
+		out = append(out, back)
 	}
 	if len(u.Trashed) > 0 {
 		out = append(out, Job{Kind: Untrash, Trashed: u.Trashed})
@@ -241,6 +254,10 @@ func (r *Runner) run(job Job) error {
 		}
 		r.undo.Moves = append(r.undo.Moves, [2]string{src, job.Dest})
 		r.step(0)
+	case RenameMany:
+		if err := r.renameMany(job.Sources, job.Dests); err != nil {
+			return err
+		}
 	case Mkdir:
 		r.p.Current = job.Dest
 		if err := os.Mkdir(job.Dest, 0o755); err != nil {

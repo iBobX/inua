@@ -1223,7 +1223,7 @@ msgstr "復号したコピーはゴミ箱に移り、そこから戻せます。
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:739
+#: internal/filesui/window.go:741
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2033,6 +2033,7 @@ msgstr "モデル"
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
 #: internal/filesui/remotesetup.go:226
+#: internal/filesui/renamemany.go:168
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/connect.ui:290
@@ -2704,6 +2705,7 @@ msgstr "不明な部品 %q"
 #: internal/filesui/remote.go:159
 #: internal/filesui/remote.go:219
 #: internal/filesui/remotesetup.go:152
+#: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:660
@@ -3616,7 +3618,7 @@ msgstr "テキストエディター"
 msgid "Opens plain text"
 msgstr "プレーンテキストを開く"
 
-#: internal/filesui/app.go:73
+#: internal/filesui/app.go:74
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3628,15 +3630,15 @@ msgstr "プレーンテキストを開く"
 msgid "Files"
 msgstr "ファイル"
 
-#: internal/filesui/app.go:231
+#: internal/filesui/app.go:232
 msgid "%s is plugged in."
 msgstr "%s が接続されました。"
 
-#: internal/filesui/app.go:309
+#: internal/filesui/app.go:310
 msgid "There are no files on the clipboard."
 msgstr "クリップボードにファイルがありません。"
 
-#: internal/filesui/app.go:363
+#: internal/filesui/app.go:364
 msgid "Nothing to undo."
 msgstr "元に戻す操作はありません。"
 
@@ -3680,6 +3682,7 @@ msgstr[0] "%d 項目"
 #: internal/filesui/cards.go:343
 #: internal/filesui/cards.go:363
 #: internal/filesui/cards.go:686
+#: internal/filesui/renamemany.go:38
 msgid "Rename"
 msgstr "名前を変更"
 
@@ -3922,7 +3925,7 @@ msgid "Open with…"
 msgstr "アプリケーションで開く…"
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:753
+#: internal/filesui/window.go:755
 msgid "Bookmark"
 msgstr "ブックマーク"
 
@@ -3972,7 +3975,7 @@ msgid "Sidebar"
 msgstr "サイドバー"
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:745
+#: internal/filesui/window.go:747
 msgid "Details"
 msgstr "詳細"
 
@@ -4145,7 +4148,7 @@ msgstr[0] "%d 個のアーカイブ"
 msgid "%d s"
 msgstr "%d秒"
 
-#: internal/filesui/jobs.go:199
+#: internal/filesui/jobs.go:202
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "%d 項目をゴミ箱に移動しました（Ctrl+Z で元に戻せます）。"
@@ -4583,6 +4586,135 @@ msgstr "フォルダーを読めます。"
 msgid "Another remote disk is called “%s”."
 msgstr "「%s」という名前のリモートディスクがすでにあります。"
 
+#: internal/filesui/renamemany.go:41
+msgid "Rename %d item"
+msgid_plural "Rename %d items"
+msgstr[0] "%d 項目の名前を変更"
+
+#: internal/filesui/renamemany.go:60
+msgid "Replace text"
+msgstr "テキストを置換"
+
+#: internal/filesui/renamemany.go:61
+msgid "Add text"
+msgstr "テキストを追加"
+
+#: internal/filesui/renamemany.go:62
+msgid "Number"
+msgstr "番号"
+
+#: internal/filesui/renamemany.go:63
+msgid "Change case"
+msgstr "大文字・小文字"
+
+#: internal/filesui/renamemany.go:148
+msgid "Find"
+msgstr "検索"
+
+#: internal/filesui/renamemany.go:151
+msgid "Replace with"
+msgstr "置換後"
+
+#: internal/filesui/renamemany.go:152
+msgid "empty: removed"
+msgstr "空欄: 削除"
+
+#: internal/filesui/renamemany.go:154
+msgid "Match case"
+msgstr "大文字と小文字を区別"
+
+#: internal/filesui/renamemany.go:156
+msgid "A regular expression ($1 in the replacement)"
+msgstr "正規表現 (置換後に $1 を使える)"
+
+#: internal/filesui/renamemany.go:158
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "テキスト"
+
+#: internal/filesui/renamemany.go:161
+msgid "Where"
+msgstr "位置"
+
+#: internal/filesui/renamemany.go:166
+msgid "Before the name"
+msgstr "名前の前"
+
+#: internal/filesui/renamemany.go:166
+msgid "After the name"
+msgstr "名前の後"
+
+#: internal/filesui/renamemany.go:169
+msgid "empty: the number alone"
+msgstr "空欄: 番号のみ"
+
+#: internal/filesui/renamemany.go:171
+msgid "Start at"
+msgstr "開始番号"
+
+#: internal/filesui/renamemany.go:187
+msgid "Case"
+msgstr "大文字・小文字"
+
+#: internal/filesui/renamemany.go:188
+msgid "lowercase"
+msgstr "小文字"
+
+#: internal/filesui/renamemany.go:188
+msgid "UPPERCASE"
+msgstr "大文字"
+
+#: internal/filesui/renamemany.go:188
+msgid "Title Case"
+msgstr "先頭を大文字"
+
+#: internal/filesui/renamemany.go:220
+msgid "The regular expression is not one."
+msgstr "正規表現が正しくありません。"
+
+#: internal/filesui/renamemany.go:261
+msgid "%d name changes."
+msgid_plural "%d names change."
+msgstr[0] "%d 個の名前が変わります。"
+
+#: internal/filesui/renamemany.go:263
+msgid "%d name cannot be given."
+msgid_plural "%d names cannot be given."
+msgstr[0] "%d 個の名前は付けられません。"
+
+#: internal/filesui/renamemany.go:266
+msgid "The first %d are shown."
+msgstr "最初の %d 件を表示しています。"
+
+#: internal/filesui/renamemany.go:277
+msgid "taken by another file"
+msgstr "別のファイルが使用中"
+
+#: internal/filesui/renamemany.go:279
+msgid "given to two items"
+msgstr "2 つの項目に重複"
+
+#: internal/filesui/renamemany.go:281
+msgid "empty"
+msgstr "空"
+
+#: internal/filesui/renamemany.go:283
+msgid "holds “/”"
+msgstr "「/」を含む"
+
+#: internal/filesui/renamemany.go:285
+msgid "not a name"
+msgstr "名前ではない"
+
+#: internal/filesui/renamemany.go:287
+msgid "too long"
+msgstr "長すぎる"
+
+#: internal/filesui/renamemany.go:306
+msgid "Some names cannot be given: they are marked."
+msgstr "付けられない名前があります。印が付いています。"
+
 #: internal/filesui/sidebar.go:36
 msgid "PLACES"
 msgstr "場所"
@@ -4649,7 +4781,7 @@ msgid "Restore"
 msgstr "復元"
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:742
 msgid "Delete for good…"
 msgstr "完全に削除…"
 
@@ -4714,38 +4846,43 @@ msgstr "もう一方のペインへ移動"
 msgid "Rename…"
 msgstr "名前を変更…"
 
-#: internal/filesui/window.go:751
+#: internal/filesui/window.go:738
+msgid "Rename %d item…"
+msgid_plural "Rename %d items…"
+msgstr[0] "%d 項目の名前を変更…"
+
+#: internal/filesui/window.go:753
 msgid "Remove the bookmark"
 msgstr "ブックマークを削除"
 
-#: internal/filesui/window.go:806
+#: internal/filesui/window.go:808
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "%d 項目を切り取りました。貼り付けると移動します。"
 
-#: internal/filesui/window.go:808
+#: internal/filesui/window.go:810
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "%d 項目をコピーしました。"
 
-#: internal/filesui/window.go:816
+#: internal/filesui/window.go:818
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "%d 個のパスをコピーしました。"
 
-#: internal/filesui/window.go:894
+#: internal/filesui/window.go:900
 msgid "Bookmarked %s."
 msgstr "%s をブックマークしました。"
 
-#: internal/filesui/window.go:896
+#: internal/filesui/window.go:902
 msgid "Removed the bookmark of %s."
 msgstr "%s のブックマークを削除しました。"
 
-#: internal/filesui/window.go:921
+#: internal/filesui/window.go:927
 msgid "Copied %s."
 msgstr "%s をコピーしました。"
 
-#: internal/filesui/window.go:950
+#: internal/filesui/window.go:956
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "端末が見つかりません。xdg-terminal-exec をインストールするか $TERMINAL を設定してください。"
 
@@ -10797,11 +10934,6 @@ msgstr "鍵を作成"
 #: ui/gpg.ui:750
 msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>メッセージ<span alpha='55%'>]</span>"
-
-#: ui/gpg.ui:419
-#: ui/gpg.ui:783
-msgid "Text"
-msgstr "テキスト"
 
 #: ui/gpg.ui:469
 #: ui/gpg.ui:834

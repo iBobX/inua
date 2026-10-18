@@ -734,6 +734,8 @@ func (w *window) menuItems(p *pane) []menuItem {
 	items = append(items, sep)
 	if one {
 		items = append(items, w.item("rename", i18n.T("Rename…"), "F2"))
+	} else {
+		items = append(items, w.item("rename", i18n.Nf("Rename %d item…", "Rename %d items…", len(sel), len(sel)), "F2"))
 	}
 	items = append(items,
 		w.item("trash", i18n.T("Move to Trash"), "Del"),
@@ -841,8 +843,12 @@ func (w *window) do(id string) {
 			w.extract(sel)
 		}
 	case "rename":
-		if len(sel) == 1 && p.mode != inTrash {
+		switch {
+		case p.mode == inTrash:
+		case len(sel) == 1:
 			w.askRename(p, sel[0])
+		case len(sel) > 1:
+			w.askRenameMany(p, sel)
 		}
 	case "trash":
 		if len(sel) > 0 && p.mode != inTrash {

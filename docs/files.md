@@ -306,6 +306,29 @@ archive made, stops the extraction; links are made last, after every
 file, so none is written through. Set-user-ID bits are dropped, and
 folders stay the user's to open.
 
+## Renaming many
+
+F2 (or **Rename N items…** in the menu) with more than one item selected
+renames them together, on a card that shows every new name before it is
+given. Four ways, the one used last offered first:
+
+- **Replace text**: what is found in each name becomes the replacement
+  (empty removes it); in any case unless *Match case*, and as a regular
+  expression when asked, `$1` in the replacement being its first group.
+- **Add text**: before or after each name.
+- **Number**: a name and a number, in the order the pane shows them,
+  from the number chosen: `Beach 1` … `Beach 5`, with as many digits as
+  the last needs (`Beach 01` … `Beach 12`); alone, just the number.
+- **Change case**: lowercase, UPPERCASE or Title Case.
+
+A file keeps its extension (`.tar.gz` counts as one); a folder's whole
+name is renamed. A new name that another file outside the selection has,
+that two items would get, or that is no name (empty, with `/`) is marked
+in the preview, and nothing is renamed until none is. Names the items
+trade among themselves (`a` to `b`, `b` to `a`) are fine: all move to
+hidden names first, then each to its own. It is one operation, undone in
+one step.
+
 ## Opening files
 
 A file opens with the app chosen for its type: its MIME type, guessed
@@ -431,10 +454,12 @@ sorting, scoring and filtering, reading folders (links, broken links,
 `.hidden`, the parallel path), history and the jump list, places and
 bookmarks, `mountinfo`, the trash (trashing, the info
 file, restoring, emptying), every operation with its conflicts, undo,
-cancelling, the clipboard's formats, watching, searching, thumbnails, and archives
+cancelling, the clipboard's formats, watching, searching, thumbnails, archives
 (each format made and taken apart again, many items into a folder, one
 file compressed, names that would go outside or through a link, a
-cancelled extraction, 7z when it is installed).
+cancelled extraction, 7z when it is installed), and renaming many (each
+way's names, the plan's problems, names traded among the items, a name
+taken meanwhile, undo in one step).
 `disks` runs against a fake UDisks2 and `fm1` against a second process
 on a private bus (`internal/dbustest`). `remote` runs against stand-ins
 for rclone, systemd and FUSE that record what they were given (the
@@ -447,7 +472,7 @@ keys.
 
 ## Not yet
 
-In order: renaming many files with a pattern; thumbnails of videos
+In order: thumbnails of videos
 and PDFs through the system's thumbnailers; reordering, renaming and
 dropping on the sidebar's bookmarks (removing them is in their menu); asking a share's password in the
 app's own card rather than GTK's dialog; redo; finding servers on the network (`network:///`, mDNS) rather than

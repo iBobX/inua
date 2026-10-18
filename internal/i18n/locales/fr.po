@@ -1229,7 +1229,7 @@ msgstr "La copie déchiffrée va à la corbeille, d’où elle peut être restau
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:739
+#: internal/filesui/window.go:741
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2047,6 +2047,7 @@ msgstr "Modèle"
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
 #: internal/filesui/remotesetup.go:226
+#: internal/filesui/renamemany.go:168
 #: internal/ui/settings_ai.go:453
 #: internal/viewerui/app.go:791
 #: ui/connect.ui:290
@@ -2720,6 +2721,7 @@ msgstr "Bloc inconnu %q"
 #: internal/filesui/remote.go:159
 #: internal/filesui/remote.go:219
 #: internal/filesui/remotesetup.go:152
+#: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:660
@@ -3632,7 +3634,7 @@ msgstr "Éditeur de texte"
 msgid "Opens plain text"
 msgstr "Ouvre le texte brut"
 
-#: internal/filesui/app.go:73
+#: internal/filesui/app.go:74
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3644,15 +3646,15 @@ msgstr "Ouvre le texte brut"
 msgid "Files"
 msgstr "Fichiers"
 
-#: internal/filesui/app.go:231
+#: internal/filesui/app.go:232
 msgid "%s is plugged in."
 msgstr "%s est branché."
 
-#: internal/filesui/app.go:309
+#: internal/filesui/app.go:310
 msgid "There are no files on the clipboard."
 msgstr "Il n’y a pas de fichiers dans le presse-papiers."
 
-#: internal/filesui/app.go:363
+#: internal/filesui/app.go:364
 msgid "Nothing to undo."
 msgstr "Rien à annuler."
 
@@ -3698,6 +3700,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:343
 #: internal/filesui/cards.go:363
 #: internal/filesui/cards.go:686
+#: internal/filesui/renamemany.go:38
 msgid "Rename"
 msgstr "Renommer"
 
@@ -3942,7 +3945,7 @@ msgid "Open with…"
 msgstr "Ouvrir avec…"
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:753
+#: internal/filesui/window.go:755
 msgid "Bookmark"
 msgstr "Ajouter un signet"
 
@@ -3992,7 +3995,7 @@ msgid "Sidebar"
 msgstr "Panneau latéral"
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:745
+#: internal/filesui/window.go:747
 msgid "Details"
 msgstr "Détails"
 
@@ -4167,7 +4170,7 @@ msgstr[1] "%d archives"
 msgid "%d s"
 msgstr "%d s"
 
-#: internal/filesui/jobs.go:199
+#: internal/filesui/jobs.go:202
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "%d élément déplacé vers la corbeille (Ctrl+Z le remet)."
@@ -4611,6 +4614,138 @@ msgstr "Son dossier peut être lu."
 msgid "Another remote disk is called “%s”."
 msgstr "Un autre disque distant s'appelle « %s »."
 
+#: internal/filesui/renamemany.go:41
+msgid "Rename %d item"
+msgid_plural "Rename %d items"
+msgstr[0] "Renommer %d élément"
+msgstr[1] "Renommer %d éléments"
+
+#: internal/filesui/renamemany.go:60
+msgid "Replace text"
+msgstr "Remplacer du texte"
+
+#: internal/filesui/renamemany.go:61
+msgid "Add text"
+msgstr "Ajouter du texte"
+
+#: internal/filesui/renamemany.go:62
+msgid "Number"
+msgstr "Numéroter"
+
+#: internal/filesui/renamemany.go:63
+msgid "Change case"
+msgstr "Changer la casse"
+
+#: internal/filesui/renamemany.go:148
+msgid "Find"
+msgstr "Rechercher"
+
+#: internal/filesui/renamemany.go:151
+msgid "Replace with"
+msgstr "Remplacer par"
+
+#: internal/filesui/renamemany.go:152
+msgid "empty: removed"
+msgstr "vide : supprimé"
+
+#: internal/filesui/renamemany.go:154
+msgid "Match case"
+msgstr "Respecter la casse"
+
+#: internal/filesui/renamemany.go:156
+msgid "A regular expression ($1 in the replacement)"
+msgstr "Une expression régulière ($1 dans le remplacement)"
+
+#: internal/filesui/renamemany.go:158
+#: ui/gpg.ui:419
+#: ui/gpg.ui:783
+msgid "Text"
+msgstr "Texte"
+
+#: internal/filesui/renamemany.go:161
+msgid "Where"
+msgstr "Où"
+
+#: internal/filesui/renamemany.go:166
+msgid "Before the name"
+msgstr "Avant le nom"
+
+#: internal/filesui/renamemany.go:166
+msgid "After the name"
+msgstr "Après le nom"
+
+#: internal/filesui/renamemany.go:169
+msgid "empty: the number alone"
+msgstr "vide : le numéro seul"
+
+#: internal/filesui/renamemany.go:171
+msgid "Start at"
+msgstr "Commencer à"
+
+#: internal/filesui/renamemany.go:187
+msgid "Case"
+msgstr "Casse"
+
+#: internal/filesui/renamemany.go:188
+msgid "lowercase"
+msgstr "minuscules"
+
+#: internal/filesui/renamemany.go:188
+msgid "UPPERCASE"
+msgstr "MAJUSCULES"
+
+#: internal/filesui/renamemany.go:188
+msgid "Title Case"
+msgstr "Majuscule Initiale"
+
+#: internal/filesui/renamemany.go:220
+msgid "The regular expression is not one."
+msgstr "L'expression régulière n'est pas valide."
+
+#: internal/filesui/renamemany.go:261
+msgid "%d name changes."
+msgid_plural "%d names change."
+msgstr[0] "%d nom change."
+msgstr[1] "%d noms changent."
+
+#: internal/filesui/renamemany.go:263
+msgid "%d name cannot be given."
+msgid_plural "%d names cannot be given."
+msgstr[0] "%d nom ne peut pas être donné."
+msgstr[1] "%d noms ne peuvent pas être donnés."
+
+#: internal/filesui/renamemany.go:266
+msgid "The first %d are shown."
+msgstr "Les %d premiers sont affichés."
+
+#: internal/filesui/renamemany.go:277
+msgid "taken by another file"
+msgstr "déjà pris par un autre fichier"
+
+#: internal/filesui/renamemany.go:279
+msgid "given to two items"
+msgstr "donné à deux éléments"
+
+#: internal/filesui/renamemany.go:281
+msgid "empty"
+msgstr "vide"
+
+#: internal/filesui/renamemany.go:283
+msgid "holds “/”"
+msgstr "contient « / »"
+
+#: internal/filesui/renamemany.go:285
+msgid "not a name"
+msgstr "pas un nom"
+
+#: internal/filesui/renamemany.go:287
+msgid "too long"
+msgstr "trop long"
+
+#: internal/filesui/renamemany.go:306
+msgid "Some names cannot be given: they are marked."
+msgstr "Certains noms ne peuvent pas être donnés : ils sont signalés."
+
 #: internal/filesui/sidebar.go:36
 msgid "PLACES"
 msgstr "EMPLACEMENTS"
@@ -4677,7 +4812,7 @@ msgid "Restore"
 msgstr "Restaurer"
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:742
 msgid "Delete for good…"
 msgstr "Supprimer définitivement…"
 
@@ -4742,41 +4877,47 @@ msgstr "Déplacer vers l’autre volet"
 msgid "Rename…"
 msgstr "Renommer…"
 
-#: internal/filesui/window.go:751
+#: internal/filesui/window.go:738
+msgid "Rename %d item…"
+msgid_plural "Rename %d items…"
+msgstr[0] "Renommer %d élément…"
+msgstr[1] "Renommer %d éléments…"
+
+#: internal/filesui/window.go:753
 msgid "Remove the bookmark"
 msgstr "Retirer le signet"
 
-#: internal/filesui/window.go:806
+#: internal/filesui/window.go:808
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "%d élément coupé : collez-le pour le déplacer."
 msgstr[1] "%d éléments coupés : collez-les pour les déplacer."
 
-#: internal/filesui/window.go:808
+#: internal/filesui/window.go:810
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "%d élément copié."
 msgstr[1] "%d éléments copiés."
 
-#: internal/filesui/window.go:816
+#: internal/filesui/window.go:818
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "%d chemin copié."
 msgstr[1] "%d chemins copiés."
 
-#: internal/filesui/window.go:894
+#: internal/filesui/window.go:900
 msgid "Bookmarked %s."
 msgstr "Signet ajouté pour %s."
 
-#: internal/filesui/window.go:896
+#: internal/filesui/window.go:902
 msgid "Removed the bookmark of %s."
 msgstr "Signet de %s retiré."
 
-#: internal/filesui/window.go:921
+#: internal/filesui/window.go:927
 msgid "Copied %s."
 msgstr "%s copié."
 
-#: internal/filesui/window.go:950
+#: internal/filesui/window.go:956
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "Aucun terminal trouvé : installez xdg-terminal-exec ou définissez $TERMINAL."
 
@@ -10846,11 +10987,6 @@ msgstr "Créer votre clé"
 #: ui/gpg.ui:750
 msgid "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>MESSAGE<span alpha='55%'>]</span>"
-
-#: ui/gpg.ui:419
-#: ui/gpg.ui:783
-msgid "Text"
-msgstr "Texte"
 
 #: ui/gpg.ui:469
 #: ui/gpg.ui:834
