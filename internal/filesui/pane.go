@@ -78,6 +78,7 @@ type pane struct {
 	fv     files.FolderView
 	hist   files.History
 	gen    uint64
+	fills  uint64             // refills, so a fill coming in parts stops at the next
 	stop   context.CancelFunc // the folder's watch, or the search
 	err    error              // why the folder could not be read
 	free   string
@@ -558,20 +559,35 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 	for k, i := range p.shown {
 		names[k] = p.all[i].Name
 	}
-	if n := p.model.GetNItems(); !keepPlace || n != uint32(len(p.names)) {
+	p.fills++
+	view := &p.list.Widget
+	if p.fv.View == files.GridView {
+		view = &p.grid.Widget
+	}
+	n := p.model.GetNItems()
+	parts := n == 0 && len(names) > 2*fillPart && view.GetMapped()
+	switch {
+	case parts:
+		p.model.Splice(0, 0, names[:fillPart])
+	case !keepPlace || n != uint32(len(p.names)):
 		p.model.Splice(0, n, names)
-	} else {
+	default:
 		at, removed, added := diffNames(p.names, names, p.changedSince(names))
 		p.model.Splice(uint32(at), uint32(removed), added)
 	}
 	p.names = names
 
-	switch {
-	case p.filter != "" && best >= 0:
-		p.sel.SelectItem(uint32(best), true)
-		p.scrollTo(uint32(best))
-	case len(sel) > 0:
-		p.selectNames(sel)
+	selectThem := func() {
+		switch {
+		case p.filter != "" && best >= 0:
+			p.sel.SelectItem(uint32(best), true)
+			p.scrollTo(uint32(best))
+		case len(sel) > 0:
+			p.selectNames(sel)
+		}
+	}
+	if !parts {
+		selectThem()
 	}
 	p.syncView()
 	p.updateStatus()
@@ -579,7 +595,36 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 	if p == p.w.cur() && p.w.card == nil && p.pathStack.GetVisibleChildName() == "crumbs" {
 		p.focus()
 	}
+	if !parts {
+		return
+	}
+	// An empty view makes a row for each item it may show, up to 200, at
+	// over a millisecond each, all before the frame that shows them: the
+	// first screenful is drawn, then the rest come a part a frame, and the
+	// selection once all are in.
+	fill, at, drawn := p.fills, fillPart, false
+	p.w.app.h.eachFrame(view, func() bool {
+		if fill != p.fills {
+			return false // filled again since
+		}
+		if !drawn { // this frame draws the first part
+			drawn = true
+			return true
+		}
+		end := min(at+fillPart, len(names))
+		p.model.Splice(uint32(at), 0, names[at:end])
+		if at = end; at < len(names) {
+			return true
+		}
+		selectThem()
+		p.w.selectionChanged(p)
+		return false
+	})
 }
+
+// fillPart is how many items an empty view gets a frame: about a
+// screenful of rows.
+const fillPart = 48
 
 // changedSince marks which of the new names are entries whose details
 // changed, so their rows are bound again even when their names did not

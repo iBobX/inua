@@ -35,6 +35,7 @@ type hub struct {
 	scrolled  map[uintptr]func(dy float64)
 	async     map[uintptr]func(result uintptr)
 	timers    map[uintptr]func()
+	frames    map[uintptr]func() bool
 	next      uintptr
 
 	onClicked   func(gtk.Button)
@@ -57,6 +58,8 @@ type hub struct {
 	onScroll    func(gtk.EventControllerScroll, float64, float64) bool
 	onAsync     gio.AsyncReadyCallback
 	onTimer     glib.SourceFunc
+	onFrame     gtk.TickCallback
+	onFrameDone glib.DestroyNotify
 }
 
 func newHub() *hub {
@@ -74,6 +77,7 @@ func newHub() *hub {
 		notified:  map[uintptr]func(){},
 		scrolled:  map[uintptr]func(float64){},
 		async:     map[uintptr]func(uintptr){}, timers: map[uintptr]func(){},
+		frames: map[uintptr]func() bool{},
 	}
 	h.onClicked = func(b gtk.Button) {
 		if f := h.clicked[b.GoPointer()]; f != nil {
@@ -188,6 +192,11 @@ func newHub() *hub {
 		}
 		return false
 	}
+	h.onFrame = func(_, _, id uintptr) bool {
+		f := h.frames[id]
+		return f != nil && f()
+	}
+	h.onFrameDone = func(id uintptr) { delete(h.frames, id) }
 	return h
 }
 
@@ -304,6 +313,14 @@ func (h *hub) later(ms uint32, f func()) {
 	h.next++
 	h.timers[h.next] = f
 	glib.TimeoutAdd(ms, &h.onTimer, h.next)
+}
+
+// eachFrame runs f at each frame w draws, before its layout, until f
+// returns false or w goes.
+func (h *hub) eachFrame(w *gtk.Widget, f func() bool) {
+	h.next++
+	h.frames[h.next] = f
+	w.AddTickCallback(&h.onFrame, h.next, &h.onFrameDone)
 }
 
 // callback registers f for one async result and returns its user data.
