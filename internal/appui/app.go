@@ -165,7 +165,7 @@ type Ctx struct {
 	open      func(gio.Application, uintptr, int32, string)
 	activate  func(gio.Application)
 	iconTheme string // the apps' icon theme in use, "" before loadIcons
-	gtkIcons  string // GTK's icon theme before loadIcons set the apps'
+	gtkIcons  string // GTK's icon theme, the desktop's, before loadIcons set the apps'
 	desktop   string // DesktopIcons, once asked
 }
 
@@ -204,13 +204,21 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	// The apps' icon theme is in place before the application starts:
 	// GtkApplication's start looks its icon up, which reads the whole
 	// chain of the icon theme set then, and a change after reads the new
-	// chain again.
+	// chain again. GTK's start already reads the desktop's theme on a
+	// thread of its own, and setting the apps' waits for it to finish: the
+	// view's preparation begins and the style is parsed meanwhile.
 	gtk.Init()
 	c := &Ctx{UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
-	c.loadIcons()
+	var icons gobject.Value
+	icons.Init(gobject.TypeStringVal)
+	gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &icons)
+	c.gtkIcons = icons.GetString()
+	icons.Unset()
 	if p, ok := v.(interface{ prepare(*Ctx) }); ok {
 		p.prepare(c)
 	}
+	c.loadStyle()
+	c.loadIcons()
 	app := gtk.NewApplication(appID, flags)
 	c.App = app
 	opened := false // the files of the first start went to open already
@@ -220,7 +228,6 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 			c.win.Present()
 			return
 		}
-		c.loadStyle()
 		c.win = c.v.build(c)
 		c.win.SetApplication(app)
 		c.win.SetTitle(i18n.T(title))
@@ -350,13 +357,6 @@ func (c *Ctx) followConfig() {
 // DesktopIcons.
 func (c *Ctx) loadIcons() {
 	cfg := c.config()
-	if c.iconTheme == "" {
-		var v gobject.Value
-		v.Init(gobject.TypeStringVal)
-		gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &v)
-		c.gtkIcons = v.GetString()
-		v.Unset()
-	}
 	overlay := cfg.IconSetDir()
 	name := appIconTheme
 	if overlay != "" {
