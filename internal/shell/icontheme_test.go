@@ -68,3 +68,59 @@ func TestIconThemeOverlay(t *testing.T) {
 	}
 	check(map[string]string{"a-symbolic.svg": "builtin-a-symbolic.svg", "b-symbolic.svg": "builtin-b-symbolic.svg"})
 }
+
+func TestIconThemeWrittenOnlyWhenChanged(t *testing.T) {
+	dir, overlay := t.TempDir(), t.TempDir()
+	svg := filepath.Join(overlay, "a-symbolic.svg")
+	if err := os.WriteFile(svg, []byte("mine"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	theme := IconTheme{
+		Name:     "inua-test",
+		Inherits: "Adwaita",
+		Builtin:  []string{"a-symbolic.svg", "b-symbolic.svg"},
+		Read:     func(name string) string { return "builtin-" + name },
+		Overlay:  overlay,
+	}
+	if err := theme.Write(dir); err != nil {
+		t.Fatal(err)
+	}
+	icons := filepath.Join(dir, "inua-test", "symbolic")
+	// A file of its own in the folder tells whether the next write
+	// replaced it.
+	marker := filepath.Join(icons, "marker")
+	if err := os.WriteFile(marker, nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := theme.Write(dir); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(marker); err != nil {
+		t.Errorf("the same theme was written again: %v", err)
+	}
+
+	// A changed icon is written, and the folder holds only the set.
+	if err := os.WriteFile(svg, []byte("mine, changed"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := theme.Write(dir); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Errorf("the changed theme was not written again: %v", err)
+	}
+	if b, err := os.ReadFile(filepath.Join(icons, "a-symbolic.svg")); err != nil || string(b) != "mine, changed" {
+		t.Errorf("a-symbolic.svg = %q, %v", b, err)
+	}
+	entries, err := os.ReadDir(filepath.Join(dir, "inua-test"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var names []string
+	for _, e := range entries {
+		names = append(names, e.Name())
+	}
+	if strings.Join(names, " ") != ".written index.theme symbolic" {
+		t.Errorf("the theme's folder holds %v", names)
+	}
+}
