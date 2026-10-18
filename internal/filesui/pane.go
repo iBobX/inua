@@ -149,12 +149,22 @@ func newPane(w *window, n int) *pane {
 			p.setView(v)
 		}
 	})
-	// A click beside the path's buttons edits it.
-	w.press(&p.crumbScroll.Widget, false, func(button uint32, _ int32, _, _ float64) {
-		if button == 1 {
-			w.setActive(p)
-			p.editLocation()
+	// A click beside the path's buttons edits it; one on a button goes
+	// there (the button's own click), so it is left alone here.
+	w.press(&p.crumbScroll.Widget, false, func(button uint32, _ int32, x, y float64) {
+		if button != 1 {
+			return
 		}
+		for at := p.crumbScroll.Pick(x, y, gtk.PickDefaultValue); at != nil; at = at.GetParent() {
+			if at.HasCssClass("files-crumb") {
+				return
+			}
+			if at.GoPointer() == p.crumbScroll.GoPointer() {
+				break
+			}
+		}
+		w.setActive(p)
+		p.editLocation()
 	})
 	w.enter(&p.location, func() { p.typedLocation() })
 	w.edit(&p.search, func() { p.searchChanged() })
