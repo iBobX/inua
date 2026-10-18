@@ -281,30 +281,47 @@ until then.
 ## Archives
 
 **Compress…**, in the selection's menu, makes one archive of the items
-selected, beside them: its name (the item's own for one, *Archive* for
-more, numbered when taken) and its format, Zip, tar.gz, tar.xz or tar.zst,
-on a card; the format chosen last is offered first. Folders go in whole,
-with their modes, times and links.
+selected, beside them, on a card: its name (the item's own for one,
+*Archive* for more, numbered when taken) and its format, Zip, 7z,
+tar.gz, tar.xz or tar.zst. Folders go in whole, with their modes, times
+and links. Under **Advanced**:
+
+- **Compression**: *Fast*, *Normal* or *Smallest* (deflate 1, 6 or 9 for
+  Zip and gzip; xz's dictionary of 1, 8 or 64 MB; zstd's fastest,
+  default or best; 7z's `-mx` 1, 5 or 9).
+- **Password**, typed twice: a Zip or 7z locked with AES-256. A locked Zip
+  opens in 7-Zip and today's file managers, not in old unzip programs.
+  tar archives have no password.
+- **Lock the file names too** (7z): without the password not even the list
+  of files shows.
+- **Leave out hidden files**: the names starting with a dot inside the
+  folders (`.git`, `.cache`); an item chosen itself goes in.
+
+The format and the options chosen last are offered first; a password
+never is, and is never kept.
 
 **Extract here**, in the menu of archives selected, takes each apart beside
 itself. An archive whose items all sit in one folder, or that is one file,
 gives that folder or file; any other gives a folder named as the archive.
-A name taken is numbered (`photos (2)`), never merged into or replaced.
+A name taken is numbered (`photos (2)`), never merged into or replaced. A
+locked archive asks for its password on a card, and asks again when it is
+not the one.
 
-Files reads Zip, tar, tar compressed with gzip, bzip2, xz or zstd
-(`.tar.gz`, `.tgz` and the like), and one file compressed alone (`.gz`,
-`.bz2`, `.xz`, `.zst`) itself; 7z and rar archives go to the `7z`
-program (7zip) when it is installed. An archive locked with a password
-is not opened.
+Files makes and reads Zip and tar (with gzip, bzip2, xz or zstd:
+`.tar.gz`, `.tgz` and the like) itself, and one file compressed alone
+(`.gz`, `.bz2`, `.xz`, `.zst`). The `7z` program (7zip) makes 7z and
+locked Zip archives, and reads 7z, rar and locked Zip; without it those
+say so. A password goes to 7z on its input, never on its command line,
+where any program on the computer could read it.
 
 Both run as operations: progress, cancelling, and undo, which trashes
 the archive made or what was extracted. Extracting works in a hidden
 folder beside the result and moves it into place at the end, so a
-cancelled or failed one leaves nothing. An item named to land outside
-the folder (an absolute name, `..`), or written through a link the
-archive made, stops the extraction; links are made last, after every
-file, so none is written through. Set-user-ID bits are dropped, and
-folders stay the user's to open.
+cancelled or failed one (a wrong password too) leaves nothing. An item
+named to land outside the folder (an absolute name, `..`), or written
+through a link the archive made, stops the extraction; links are made
+last, after every file, so none is written through. Set-user-ID bits are
+dropped, and folders stay the user's to open.
 
 ## Renaming many
 
@@ -457,7 +474,9 @@ file, restoring, emptying), every operation with its conflicts, undo,
 cancelling, the clipboard's formats, watching, searching, thumbnails, archives
 (each format made and taken apart again, many items into a folder, one
 file compressed, names that would go outside or through a link, a
-cancelled extraction, 7z when it is installed), and renaming many (each
+cancelled extraction, 7z when it is installed, a password none, wrong and
+right for Zip and 7z, the password never on 7z's command line, each
+level, hidden files left out), and renaming many (each
 way's names, the plan's problems, names traded among the items, a name
 taken meanwhile, undo in one step).
 `disks` runs against a fake UDisks2 and `fm1` against a second process

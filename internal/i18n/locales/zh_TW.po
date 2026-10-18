@@ -429,13 +429,13 @@ msgid "%d d %d h"
 msgstr "%[1]dd %[2]dh"
 
 #: internal/apps/sysmon/sysmon.go:402
-#: internal/filesui/jobs.go:167
+#: internal/filesui/jobs.go:170
 msgid "%d h %d min"
 msgstr "%[1]d h %[2]d 最小值"
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
-#: internal/filesui/jobs.go:165
+#: internal/filesui/jobs.go:168
 msgid "%d min"
 msgstr "%d分鐘"
 
@@ -2032,6 +2032,7 @@ msgstr "模型"
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
+#: internal/filesui/archive.go:76
 #: internal/filesui/remotesetup.go:226
 #: internal/filesui/renamemany.go:168
 #: internal/ui/settings_ai.go:453
@@ -2696,7 +2697,8 @@ msgstr "未知的元件 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
-#: internal/filesui/archive.go:39
+#: internal/filesui/archive.go:49
+#: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:342
 #: internal/filesui/cards.go:391
 #: internal/filesui/cards.go:429
@@ -3619,7 +3621,7 @@ msgstr "文字編輯器"
 msgid "Opens plain text"
 msgstr "開啟純文字"
 
-#: internal/filesui/app.go:74
+#: internal/filesui/app.go:75
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3631,50 +3633,159 @@ msgstr "開啟純文字"
 msgid "Files"
 msgstr "檔案"
 
-#: internal/filesui/app.go:232
+#: internal/filesui/app.go:233
 msgid "%s is plugged in."
 msgstr "%s 已插入。"
 
-#: internal/filesui/app.go:310
+#: internal/filesui/app.go:311
 msgid "There are no files on the clipboard."
 msgstr "剪貼簿上沒有檔案。"
 
-#: internal/filesui/app.go:364
+#: internal/filesui/app.go:365
 msgid "Nothing to undo."
 msgstr "沒有可復原的操作。"
 
-#: internal/filesui/archive.go:34
-msgid "Archive"
-msgstr "壓縮檔"
-
-#: internal/filesui/archive.go:40
+#: internal/filesui/archive.go:50
 msgid "Compress"
 msgstr "壓縮"
 
-#: internal/filesui/archive.go:51
+#: internal/filesui/archive.go:54
+msgid "Compress %d item"
+msgid_plural "Compress %d items"
+msgstr[0] "壓縮 %d 個項目"
+
+#: internal/filesui/archive.go:56
+msgid "Compress “%s”"
+msgstr "壓縮「%s」"
+
+#: internal/filesui/archive.go:58
+msgid "The archive is made in “%s”."
+msgstr "壓縮檔將建立在「%s」中。"
+
+#: internal/filesui/archive.go:79
+msgid "Archive"
+msgstr "壓縮檔"
+
+#: internal/filesui/archive.go:86
+msgid "Format"
+msgstr "格式"
+
+#: internal/filesui/archive.go:104
+msgid "Needs the 7z program (7zip)"
+msgstr "需要 7z 程式（7zip）"
+
+#: internal/filesui/archive.go:123
+msgid "Compression"
+msgstr "壓縮率"
+
+#: internal/filesui/archive.go:131
+msgid "Fast"
+msgstr "快速"
+
+#: internal/filesui/archive.go:131
+msgid "Normal"
+msgstr "標準"
+
+#: internal/filesui/archive.go:131
+msgid "Smallest"
+msgstr "最小"
+
+#: internal/filesui/archive.go:163
+#: internal/filesui/archive.go:320
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:46
+#: internal/filesui/remotesetup.go:55
+#: internal/filesui/remotesetup.go:61
+#: internal/filesui/remotesetup.go:67
+#: ui/lock.ui:76
+#: ui/polkit.ui:690
+msgid "Password"
+msgstr "密碼"
+
+#: internal/filesui/archive.go:164
+msgid "none"
+msgstr "無"
+
+#: internal/filesui/archive.go:165
+msgid "Repeat it"
+msgstr "再輸入一次"
+
+#: internal/filesui/archive.go:166
+msgid "Lock the file names too"
+msgstr "同時加密檔名"
+
+#: internal/filesui/archive.go:168
+msgid "Without the password, not even the list of files shows (7z)"
+msgstr "沒有密碼時連檔案清單也看不到（7z）"
+
+#: internal/filesui/archive.go:180
+msgid "Leave out hidden files"
+msgstr "排除隱藏檔案"
+
+#: internal/filesui/archive.go:182
+msgid "Names starting with a dot, inside the folders: .git, .cache …"
+msgstr "資料夾中以點開頭的名稱：.git、.cache……"
+
+#: internal/filesui/archive.go:187
+msgid "Advanced"
+msgstr "進階"
+
+#: internal/filesui/archive.go:214
+msgid "%s archives cannot have a password: choose Zip or 7z for one."
+msgstr "%s 壓縮檔無法設定密碼：如需密碼，請選擇 Zip 或 7z。"
+
+#: internal/filesui/archive.go:216
+#: internal/filesui/archive.go:254
+msgid "A password needs the 7z program (7zip)."
+msgstr "設定密碼需要 7z 程式（7zip）。"
+
+#: internal/filesui/archive.go:218
+msgid "Locked with AES-256: older unzip programs cannot open it; 7-Zip and the file managers of today can."
+msgstr "使用 AES-256 加密：舊版 unzip 程式無法開啟，7-Zip 和現今的檔案管理器可以。"
+
+#: internal/filesui/archive.go:248
+msgid "7z archives need the 7z program (7zip)."
+msgstr "7z 壓縮檔需要 7z 程式（7zip）。"
+
+#: internal/filesui/archive.go:251
+msgid "%s archives cannot have a password."
+msgstr "%s 壓縮檔無法設定密碼。"
+
+#: internal/filesui/archive.go:257
+msgid "The two passwords differ."
+msgstr "兩次輸入的密碼不一致。"
+
+#: internal/filesui/archive.go:263
 #: internal/filesui/cards.go:355
 #: internal/filesui/cards.go:400
 msgid "“%s” is taken here."
 msgstr "這裡已有「%s」。"
 
-#: internal/filesui/archive.go:92
-msgid "Compress %d item"
-msgid_plural "Compress %d items"
-msgstr[0] "壓縮 %d 個項目"
+#: internal/filesui/archive.go:303
+msgid "Type its password to extract it."
+msgstr "輸入密碼以解壓縮。"
 
-#: internal/filesui/archive.go:94
-msgid "Compress “%s”"
-msgstr "壓縮「%s」"
+#: internal/filesui/archive.go:305
+msgid "That is not its password. Try again."
+msgstr "密碼不對，請重試。"
+
+#: internal/filesui/archive.go:310
+msgid "Extract"
+msgstr "解壓縮"
+
+#: internal/filesui/archive.go:319
+msgid "“%s” is locked"
+msgstr "「%s」已加密"
 
 #: internal/filesui/caches.go:140
 #: internal/filesui/details.go:49
 #: internal/filesui/details.go:282
-#: internal/filesui/jobs.go:141
-#: internal/filesui/jobs.go:143
-#: internal/filesui/jobs.go:145
-#: internal/filesui/jobs.go:147
-#: internal/filesui/jobs.go:149
-#: internal/filesui/jobs.go:151
+#: internal/filesui/jobs.go:144
+#: internal/filesui/jobs.go:146
+#: internal/filesui/jobs.go:148
+#: internal/filesui/jobs.go:150
+#: internal/filesui/jobs.go:152
+#: internal/filesui/jobs.go:154
 #: internal/filesui/pane.go:970
 msgid "%d item"
 msgid_plural "%d items"
@@ -4104,52 +4215,52 @@ msgstr "2006年1月2日 15:04"
 msgid "more than %s"
 msgstr "超過 %s"
 
-#: internal/filesui/jobs.go:121
+#: internal/filesui/jobs.go:124
 msgid "%s left"
 msgstr "剩餘 %s"
 
-#: internal/filesui/jobs.go:141
+#: internal/filesui/jobs.go:144
 msgid "Copying %s to %s"
 msgstr "正在將 %s 複製到 %s"
 
-#: internal/filesui/jobs.go:143
+#: internal/filesui/jobs.go:146
 msgid "Moving %s to %s"
 msgstr "正在將 %s 移動到 %s"
 
-#: internal/filesui/jobs.go:145
+#: internal/filesui/jobs.go:148
 msgid "Moving %s to the trash"
 msgstr "正在將 %s 移至垃圾箱"
 
-#: internal/filesui/jobs.go:147
+#: internal/filesui/jobs.go:150
 msgid "Deleting %s"
 msgstr "正在刪除 %s"
 
-#: internal/filesui/jobs.go:149
+#: internal/filesui/jobs.go:152
 msgid "Restoring %s"
 msgstr "正在還原 %s"
 
-#: internal/filesui/jobs.go:151
+#: internal/filesui/jobs.go:154
 msgid "Linking %s"
 msgstr "正在連結 %s"
 
-#: internal/filesui/jobs.go:153
+#: internal/filesui/jobs.go:156
 msgid "Compressing into %s"
 msgstr "正在壓縮為 %s"
 
-#: internal/filesui/jobs.go:155
+#: internal/filesui/jobs.go:158
 msgid "Extracting %s"
 msgstr "正在解壓縮 %s"
 
-#: internal/filesui/jobs.go:155
+#: internal/filesui/jobs.go:158
 msgid "%d archive"
 msgid_plural "%d archives"
 msgstr[0] "%d 個壓縮檔"
 
-#: internal/filesui/jobs.go:163
+#: internal/filesui/jobs.go:166
 msgid "%d s"
 msgstr "%d秒"
 
-#: internal/filesui/jobs.go:202
+#: internal/filesui/jobs.go:205
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "已將 %d 項移至垃圾箱（Ctrl+Z 可還原）。"
@@ -4283,16 +4394,6 @@ msgstr "需要金鑰 ID 和金鑰本身。"
 #: internal/filesui/remote.go:176
 msgid "Sign in to %s"
 msgstr "登入 %s"
-
-#: internal/filesui/remote.go:178
-#: internal/filesui/remotesetup.go:46
-#: internal/filesui/remotesetup.go:55
-#: internal/filesui/remotesetup.go:61
-#: internal/filesui/remotesetup.go:67
-#: ui/lock.ui:76
-#: ui/polkit.ui:690
-msgid "Password"
-msgstr "密碼"
 
 #: internal/filesui/remote.go:181
 msgid "Keys for %s"

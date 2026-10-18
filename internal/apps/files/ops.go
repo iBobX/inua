@@ -41,6 +41,7 @@ type Job struct {
 	Dest    string
 	Dests   []string  // for RenameMany
 	Trashed []Trashed // for Untrash
+	Archive ArchiveOptions
 }
 
 // Progress is how far a job has gone.
@@ -266,7 +267,7 @@ func (r *Runner) run(job Job) error {
 		r.undo.Created = append(r.undo.Created, job.Dest)
 		r.step(0)
 	case Compress:
-		if err := r.compress(job.Sources, job.Dest); err != nil {
+		if err := r.compress(job.Sources, job.Dest, job.Archive); err != nil {
 			return err
 		}
 	case Extract:
@@ -274,7 +275,7 @@ func (r *Runner) run(job Job) error {
 			if err := r.cancelled(); err != nil {
 				return err
 			}
-			if err := r.extract(src, job.Dest); err != nil {
+			if err := r.extract(src, job.Dest, job.Archive.Password); err != nil {
 				if errors.Is(err, ErrCancelled) {
 					return err
 				}

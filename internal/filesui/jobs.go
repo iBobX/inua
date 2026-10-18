@@ -24,6 +24,9 @@ type jobs struct {
 type queued struct {
 	job   files.Job
 	quiet bool // an undo: not recorded to be undone again
+	// done, when there is one, sees the job's error first: true when it
+	// took care of it (an archive's password asked for).
+	done func(err error) bool
 }
 
 // run queues an operation in w.
@@ -202,6 +205,9 @@ func (w *window) jobDone(q queued, undo files.Undo, err error) {
 		w.flash(i18n.Nf("Moved %d item to the trash (Ctrl+Z puts it back).", "Moved %d items to the trash (Ctrl+Z puts them back).", len(undo.Trashed), len(undo.Trashed)))
 	}
 	if err == nil || errors.Is(err, files.ErrCancelled) && !strings.Contains(err.Error(), "\n") {
+		return
+	}
+	if q.done != nil && q.done(err) {
 		return
 	}
 	w.showErrors(j, err)

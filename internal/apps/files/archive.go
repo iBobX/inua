@@ -4,7 +4,9 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"bufio"
+	"bytes"
 	"compress/bzip2"
+	"compress/flate"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -14,7 +16,9 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,36 +27,70 @@ import (
 )
 
 // Archives: Compress puts Sources in one archive at Dest, of the format its
-// name ends with; Extract takes the archive Sources[0] apart in the folder
-// Dest. Both work at a hidden name beside the result and rename it into
-// place at the end, so a failed or cancelled one leaves nothing half
-// made, and undo trashes what they made.
+// name ends with, as Archive says (its compression, a password); Extract
+// takes each archive of Sources apart in the folder Dest, opening one
+// locked with Archive.Password. Both work at a hidden name beside the
+// result and rename it into place at the end, so a failed or cancelled one
+// leaves nothing half made, and undo trashes what they made. Go makes and
+// reads Zip and tar; the 7z program makes 7z, and Zip with a password
+// (AES-256), and reads 7z, rar and locked Zip. A password goes to it on
+// its input, never on its command line, where any program could read it.
 
 // Format is a kind of archive, by the ending of its name.
 type Format struct {
-	Ext   string // ".tar.gz"
-	Name  string // as the user picks it
-	Write bool   // Files makes it too, not only takes it apart
+	Ext      string // ".tar.gz"
+	Name     string // as the user picks it
+	Write    bool   // Files makes it too, not only takes it apart
+	Needs7z  bool   // made by the 7z program
+	Password bool   // can be locked with a password (made by 7z then)
 }
 
 // Formats are the archives Files knows, the ones it makes first.
 var Formats = []Format{
-	{".zip", "Zip", true},
-	{".tar.gz", "tar.gz", true},
-	{".tar.xz", "tar.xz", true},
-	{".tar.zst", "tar.zst", true},
-	{".tar", "tar", false},
-	{".tgz", "tgz", false},
-	{".tar.bz2", "tar.bz2", false},
-	{".tbz2", "tbz2", false},
-	{".txz", "txz", false},
-	{".tzst", "tzst", false},
-	{".7z", "7z", false},
-	{".rar", "rar", false},
-	{".gz", "gz", false},
-	{".bz2", "bz2", false},
-	{".xz", "xz", false},
-	{".zst", "zst", false},
+	{Ext: ".zip", Name: "Zip", Write: true, Password: true},
+	{Ext: ".7z", Name: "7z", Write: true, Needs7z: true, Password: true},
+	{Ext: ".tar.gz", Name: "tar.gz", Write: true},
+	{Ext: ".tar.xz", Name: "tar.xz", Write: true},
+	{Ext: ".tar.zst", Name: "tar.zst", Write: true},
+	{Ext: ".tar", Name: "tar"},
+	{Ext: ".tgz", Name: "tgz"},
+	{Ext: ".tar.bz2", Name: "tar.bz2"},
+	{Ext: ".tbz2", Name: "tbz2"},
+	{Ext: ".txz", Name: "txz"},
+	{Ext: ".tzst", Name: "tzst"},
+	{Ext: ".rar", Name: "rar"},
+	{Ext: ".gz", Name: "gz"},
+	{Ext: ".bz2", Name: "bz2"},
+	{Ext: ".xz", Name: "xz"},
+	{Ext: ".zst", Name: "zst"},
+}
+
+// Compression levels.
+const (
+	LevelNormal = iota
+	LevelFast
+	LevelBest
+)
+
+// ArchiveOptions are how an archive is made, or opened.
+type ArchiveOptions struct {
+	Level        int
+	Password     string // locks a Zip or 7z made; opens one locked
+	EncryptNames bool   // 7z: the names locked too, not only the contents
+	NoHidden     bool   // hidden files (".name") inside folders left out
+}
+
+// Has7z says whether the 7z program is there, which 7z and locked
+// archives need.
+func Has7z() bool { return find7z() != "" }
+
+func find7z() string {
+	for _, name := range []string{"7z", "7zz", "7za"} {
+		if p, err := exec.LookPath(name); err == nil {
+			return p
+		}
+	}
+	return ""
 }
 
 // ArchiveFormat is the format name is of, if it is an archive.
@@ -94,21 +132,29 @@ func ArchiveName(paths []string, f Format, archive string) string {
 	return stem + f.Ext
 }
 
-// ErrNeeds7z is a 7z or rar archive without the 7z program to take it
-// apart.
-var ErrNeeds7z = errors.New("7z or rar archives need the 7z program (7zip)")
+// ErrNeeds7z is an archive that needs the 7z program, which is not there.
+var ErrNeeds7z = errors.New("this needs the 7z program (7zip)")
 
-// ErrEncrypted is an archive locked with a password.
+// ErrEncrypted is an archive locked with a password, none given.
 var ErrEncrypted = errors.New("the archive is locked with a password")
 
+// ErrWrongPassword is a password that does not open the archive.
+var ErrWrongPassword = errors.New("that is not the archive's password")
+
 // compress makes the archive dst of srcs.
-func (r *Runner) compress(srcs []string, dst string) error {
+func (r *Runner) compress(srcs []string, dst string, o ArchiveOptions) error {
 	f, ok := ArchiveFormat(dst)
 	if !ok || !f.Write {
 		return fmt.Errorf("%s: Files does not make archives of this kind", filepath.Base(dst))
 	}
+	if o.Password != "" && !f.Password {
+		return fmt.Errorf("%s archives cannot have a password", f.Name)
+	}
 	r.count(srcs)
 	err := r.place(dst, false, func(tmp string) error {
+		if f.Needs7z || o.Password != "" {
+			return r.compress7z(srcs, tmp, f, o)
+		}
 		out, err := os.OpenFile(tmp, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 		if err != nil {
 			return err
@@ -116,9 +162,9 @@ func (r *Runner) compress(srcs []string, dst string) error {
 		bw := bufio.NewWriterSize(out, 1<<20)
 		var werr error
 		if f.Ext == ".zip" {
-			werr = r.writeZip(bw, srcs)
+			werr = r.writeZip(bw, srcs, o)
 		} else {
-			werr = r.writeTar(bw, srcs, f.Ext)
+			werr = r.writeTar(bw, srcs, f.Ext, o)
 		}
 		if werr == nil {
 			werr = bw.Flush()
@@ -136,8 +182,9 @@ func (r *Runner) compress(srcs []string, dst string) error {
 }
 
 // walkSources calls f with each item below srcs, named as in the archive:
-// each source by its own name, at the archive's top.
-func (r *Runner) walkSources(srcs []string, f func(p, name string, fi fs.FileInfo) error) error {
+// each source by its own name, at the archive's top. Without hidden, the
+// hidden items inside them are left out.
+func (r *Runner) walkSources(srcs []string, hidden bool, f func(p, name string, fi fs.FileInfo) error) error {
 	for _, src := range srcs {
 		src = filepath.Clean(src)
 		base := filepath.Dir(src)
@@ -147,6 +194,12 @@ func (r *Runner) walkSources(srcs []string, f func(p, name string, fi fs.FileInf
 			}
 			if err := r.cancelled(); err != nil {
 				return err
+			}
+			if !hidden && p != src && strings.HasPrefix(fi.Name(), ".") {
+				if fi.IsDir() {
+					return filepath.SkipDir
+				}
+				return nil
 			}
 			rel, err := filepath.Rel(base, p)
 			if err != nil {
@@ -186,9 +239,15 @@ func (r *Runner) copyIn(w io.Writer, p string) error {
 	}
 }
 
-func (r *Runner) writeZip(w io.Writer, srcs []string) error {
+// levels are each level's deflate (and gzip) level.
+var levels = map[int]int{LevelNormal: flate.DefaultCompression, LevelFast: flate.BestSpeed, LevelBest: flate.BestCompression}
+
+func (r *Runner) writeZip(w io.Writer, srcs []string, o ArchiveOptions) error {
 	zw := zip.NewWriter(w)
-	err := r.walkSources(srcs, func(p, name string, fi fs.FileInfo) error {
+	zw.RegisterCompressor(zip.Deflate, func(out io.Writer) (io.WriteCloser, error) {
+		return flate.NewWriter(out, levels[o.Level])
+	})
+	err := r.walkSources(srcs, !o.NoHidden, func(p, name string, fi fs.FileInfo) error {
 		h, err := zip.FileInfoHeader(fi)
 		if err != nil {
 			return err
@@ -225,16 +284,19 @@ func (r *Runner) writeZip(w io.Writer, srcs []string) error {
 	return zw.Close()
 }
 
-func (r *Runner) writeTar(w io.Writer, srcs []string, ext string) error {
+func (r *Runner) writeTar(w io.Writer, srcs []string, ext string, o ArchiveOptions) error {
 	var cw io.WriteCloser
 	var err error
 	switch ext {
 	case ".tar.gz":
-		cw, err = gzip.NewWriterLevel(w, gzip.DefaultCompression)
+		cw, err = gzip.NewWriterLevel(w, levels[o.Level])
 	case ".tar.xz":
-		cw, err = xz.NewWriter(w)
+		// The dictionary is xz's level: larger finds more, with more memory.
+		dict := map[int]int{LevelNormal: 8 << 20, LevelFast: 1 << 20, LevelBest: 64 << 20}[o.Level]
+		cw, err = xz.WriterConfig{DictCap: dict}.NewWriter(w)
 	case ".tar.zst":
-		cw, err = zstd.NewWriter(w)
+		lvl := map[int]zstd.EncoderLevel{LevelNormal: zstd.SpeedDefault, LevelFast: zstd.SpeedFastest, LevelBest: zstd.SpeedBestCompression}[o.Level]
+		cw, err = zstd.NewWriter(w, zstd.WithEncoderLevel(lvl))
 	default:
 		return fmt.Errorf("Files does not make %s archives", ext)
 	}
@@ -242,7 +304,7 @@ func (r *Runner) writeTar(w io.Writer, srcs []string, ext string) error {
 		return err
 	}
 	tw := tar.NewWriter(cw)
-	err = r.walkSources(srcs, func(p, name string, fi fs.FileInfo) error {
+	err = r.walkSources(srcs, !o.NoHidden, func(p, name string, fi fs.FileInfo) error {
 		link := ""
 		if fi.Mode()&fs.ModeSymlink != 0 {
 			var err error
@@ -296,7 +358,7 @@ type entry struct {
 // extract takes the archive src apart in the folder dir. An archive whose
 // items all sit in one folder (or are one file) gives that item; any
 // other gives a folder named as the archive.
-func (r *Runner) extract(src, dir string) error {
+func (r *Runner) extract(src, dir, password string) error {
 	f, ok := ArchiveFormat(src)
 	if !ok {
 		return fmt.Errorf("%s is not an archive Files knows", filepath.Base(src))
@@ -314,9 +376,21 @@ func (r *Runner) extract(src, dir string) error {
 	defer os.RemoveAll(tmp)
 	switch f.Ext {
 	case ".7z", ".rar":
-		err = r.extract7z(src, tmp)
+		err = r.extract7z(src, tmp, password, fi.Size())
 	default:
 		err = r.extractGo(src, f.Ext, tmp)
+		if errors.Is(err, ErrEncrypted) && f.Ext == ".zip" {
+			// A locked Zip: 7z opens it, with its password.
+			switch {
+			case !Has7z():
+				err = ErrNeeds7z
+			case password != "":
+				if err = emptyDir(tmp); err == nil {
+					r.p.Bytes = base
+					err = r.extract7z(src, tmp, password, fi.Size())
+				}
+			}
+		}
 	}
 	if err != nil {
 		return err
@@ -596,34 +670,139 @@ func throughLink(tmp, dir string) bool {
 	return false
 }
 
-// extract7z takes a 7z or rar archive apart with 7z.
-func (r *Runner) extract7z(src, tmp string) error {
-	bin := ""
-	for _, name := range []string{"7z", "7zz", "7za"} {
-		if p, err := exec.LookPath(name); err == nil {
-			bin = p
-			break
+// emptyDir removes what is in dir, keeping dir.
+func emptyDir(dir string) error {
+	es, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+	for _, e := range es {
+		if err := os.RemoveAll(filepath.Join(dir, e.Name())); err != nil {
+			return err
 		}
 	}
+	return nil
+}
+
+// extract7z takes an archive apart with 7z, its password (if any) given
+// on 7z's input. size is the archive's, for the progress.
+func (r *Runner) extract7z(src, tmp, password string, size int64) error {
+	err := r.run7z("", password, size, "x", "-y", "-o"+tmp, "--", src)
+	switch {
+	case errors.Is(err, ErrWrongPassword) && password == "":
+		return ErrEncrypted
+	case err != nil:
+		return err
+	}
+	return nil
+}
+
+// compress7z makes the archive tmp of srcs with 7z: a 7z, or a Zip locked
+// with a password (AES-256). The items are named from the folder they
+// share.
+func (r *Runner) compress7z(srcs []string, tmp string, f Format, o ArchiveOptions) error {
+	dir := commonDir(srcs)
+	args := []string{"a", "-snl", "-mx=" + map[int]string{LevelNormal: "5", LevelFast: "1", LevelBest: "9"}[o.Level]}
+	if f.Ext == ".zip" {
+		args = append(args, "-tzip")
+		if o.Password != "" {
+			args = append(args, "-p", "-mem=AES256")
+		}
+	} else {
+		args = append(args, "-t7z")
+		if o.Password != "" {
+			args = append(args, "-p")
+			if o.EncryptNames {
+				args = append(args, "-mhe=on")
+			}
+		}
+	}
+	if o.NoHidden {
+		args = append(args, "-xr!.*")
+	}
+	args = append(args, "--", tmp)
+	for _, s := range srcs {
+		rel, err := filepath.Rel(dir, filepath.Clean(s))
+		if err != nil {
+			return err
+		}
+		args = append(args, rel)
+	}
+	return r.run7z(dir, o.Password, r.p.TotalBytes, args...)
+}
+
+// commonDir is the folder that holds every path.
+func commonDir(paths []string) string {
+	dir := filepath.Dir(filepath.Clean(paths[0]))
+	for _, p := range paths[1:] {
+		for d := filepath.Dir(filepath.Clean(p)); !strings.HasPrefix(d+"/", dir+"/") && dir != "/"; {
+			dir = filepath.Dir(dir)
+		}
+	}
+	return dir
+}
+
+// percent is 7z's progress, a percentage, as -bsp1 writes it.
+var percent = regexp.MustCompile(`(\d+)%`)
+
+// run7z runs 7z with args in dir: its password, if any, on its input (it
+// asks there when an archive is locked), its progress read for the job's,
+// of total bytes.
+func (r *Runner) run7z(dir, password string, total int64, args ...string) error {
+	bin := find7z()
 	if bin == "" {
 		return ErrNeeds7z
 	}
-	// -p with nothing: a locked archive fails instead of asking on a
-	// terminal there is none of.
-	cmd := exec.CommandContext(r.ctx, bin, "x", "-y", "-p", "-bd", "-bso0", "-o"+tmp, "--", src)
-	out, err := cmd.CombinedOutput()
+	cmd := exec.CommandContext(r.ctx, bin, append([]string{"-bso0", "-bsp1", "-bse2"}, args...)...)
+	cmd.Dir = dir
+	if password != "" {
+		cmd.Stdin = strings.NewReader(password + "\n")
+	} // else no input: a locked archive fails at once, asking
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	base := r.p.Bytes
+	buf := make([]byte, 4096)
+	var seen []byte
+	for {
+		n, rerr := out.Read(buf)
+		seen = append(seen, buf[:n]...)
+		if m := percent.FindAllSubmatch(seen, -1); len(m) > 0 {
+			if pc, err := strconv.Atoi(string(m[len(m)-1][1])); err == nil && total > 0 {
+				r.p.Bytes = base + total*int64(min(pc, 100))/100
+				r.report(false)
+			}
+			seen = seen[len(seen)-min(len(seen), 16):] // enough for a number cut in two
+		}
+		if rerr != nil {
+			break
+		}
+	}
+	err = cmd.Wait()
 	if r.ctx.Err() != nil {
 		return ErrCancelled
 	}
-	if err != nil {
-		msg := strings.TrimSpace(string(out))
-		if strings.Contains(msg, "Wrong password") || strings.Contains(msg, "password") {
-			return ErrEncrypted
-		}
-		if i := strings.LastIndex(msg, "\n"); i >= 0 {
-			msg = msg[i+1:]
-		}
-		return fmt.Errorf("7z: %s", msg)
+	if err == nil {
+		return nil
 	}
-	return nil
+	msg := stderr.String() + string(seen)
+	switch {
+	case strings.Contains(msg, "Wrong password"), strings.Contains(msg, "Cannot open encrypted archive"),
+		strings.Contains(msg, "Enter password"),
+		password == "" && strings.Contains(msg, "Break signaled"): // asked, and its input was empty
+		return ErrWrongPassword
+	}
+	lines := strings.Split(strings.TrimSpace(stderr.String()), "\n")
+	for i := len(lines) - 1; i >= 0; i-- {
+		if l := strings.TrimSpace(lines[i]); l != "" && !strings.HasPrefix(l, "ERRORS") {
+			return fmt.Errorf("7z: %s", l)
+		}
+	}
+	return fmt.Errorf("7z: %w", err)
 }

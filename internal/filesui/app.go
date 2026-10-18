@@ -55,9 +55,10 @@ type App struct {
 	clip []string // what this app last put on the clipboard
 	cut  bool
 
-	archiveExt string           // the archive format chosen last (".zip")
-	renameRule files.RenameRule // renaming many: the way used last
-	undos      []files.Undo
+	archiveExt  string               // the archive format chosen last (".zip")
+	archiveOpts files.ArchiveOptions // and its options, never a password
+	renameRule  files.RenameRule     // renaming many: the way used last
+	undos       []files.Undo
 }
 
 // New makes the app; Register gives it to appui once it holds its name.

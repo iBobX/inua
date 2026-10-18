@@ -430,13 +430,13 @@ msgid "%d d %d h"
 msgstr "%[1]d d %[2]d h"
 
 #: internal/apps/sysmon/sysmon.go:402
-#: internal/filesui/jobs.go:167
+#: internal/filesui/jobs.go:170
 msgid "%d h %d min"
 msgstr "%[1]d h %[2]d mín."
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
-#: internal/filesui/jobs.go:165
+#: internal/filesui/jobs.go:168
 msgid "%d min"
 msgstr "%d mín."
 
@@ -2046,6 +2046,7 @@ msgstr "Modelo"
 #: internal/appui/sysmon.go:960
 #: internal/appui/tailscale.go:630
 #: internal/connectui/window.go:547
+#: internal/filesui/archive.go:76
 #: internal/filesui/remotesetup.go:226
 #: internal/filesui/renamemany.go:168
 #: internal/ui/settings_ai.go:453
@@ -2712,7 +2713,8 @@ msgstr "Bloque desconocido %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
-#: internal/filesui/archive.go:39
+#: internal/filesui/archive.go:49
+#: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:342
 #: internal/filesui/cards.go:391
 #: internal/filesui/cards.go:429
@@ -3635,7 +3637,7 @@ msgstr "Editor de texto"
 msgid "Opens plain text"
 msgstr "Abre texto plano"
 
-#: internal/filesui/app.go:74
+#: internal/filesui/app.go:75
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3647,51 +3649,160 @@ msgstr "Abre texto plano"
 msgid "Files"
 msgstr "Archivos"
 
-#: internal/filesui/app.go:232
+#: internal/filesui/app.go:233
 msgid "%s is plugged in."
 msgstr "%s está conectado."
 
-#: internal/filesui/app.go:310
+#: internal/filesui/app.go:311
 msgid "There are no files on the clipboard."
 msgstr "No hay archivos en el portapapeles."
 
-#: internal/filesui/app.go:364
+#: internal/filesui/app.go:365
 msgid "Nothing to undo."
 msgstr "No hay nada que deshacer."
 
-#: internal/filesui/archive.go:34
-msgid "Archive"
-msgstr "Archivo"
-
-#: internal/filesui/archive.go:40
+#: internal/filesui/archive.go:50
 msgid "Compress"
 msgstr "Comprimir"
 
-#: internal/filesui/archive.go:51
-#: internal/filesui/cards.go:355
-#: internal/filesui/cards.go:400
-msgid "“%s” is taken here."
-msgstr "Aquí ya existe “%s”."
-
-#: internal/filesui/archive.go:92
+#: internal/filesui/archive.go:54
 msgid "Compress %d item"
 msgid_plural "Compress %d items"
 msgstr[0] "Comprimir %d elemento"
 msgstr[1] "Comprimir %d elementos"
 
-#: internal/filesui/archive.go:94
+#: internal/filesui/archive.go:56
 msgid "Compress “%s”"
 msgstr "Comprimir «%s»"
+
+#: internal/filesui/archive.go:58
+msgid "The archive is made in “%s”."
+msgstr "El archivo comprimido se crea en «%s»."
+
+#: internal/filesui/archive.go:79
+msgid "Archive"
+msgstr "Archivo"
+
+#: internal/filesui/archive.go:86
+msgid "Format"
+msgstr "Formato"
+
+#: internal/filesui/archive.go:104
+msgid "Needs the 7z program (7zip)"
+msgstr "Necesita el programa 7z (7zip)"
+
+#: internal/filesui/archive.go:123
+msgid "Compression"
+msgstr "Compresión"
+
+#: internal/filesui/archive.go:131
+msgid "Fast"
+msgstr "Rápida"
+
+#: internal/filesui/archive.go:131
+msgid "Normal"
+msgstr "Normal"
+
+#: internal/filesui/archive.go:131
+msgid "Smallest"
+msgstr "Más pequeña"
+
+#: internal/filesui/archive.go:163
+#: internal/filesui/archive.go:320
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:46
+#: internal/filesui/remotesetup.go:55
+#: internal/filesui/remotesetup.go:61
+#: internal/filesui/remotesetup.go:67
+#: ui/lock.ui:76
+#: ui/polkit.ui:690
+msgid "Password"
+msgstr "Contraseña"
+
+#: internal/filesui/archive.go:164
+msgid "none"
+msgstr "ninguna"
+
+#: internal/filesui/archive.go:165
+msgid "Repeat it"
+msgstr "Repítela"
+
+#: internal/filesui/archive.go:166
+msgid "Lock the file names too"
+msgstr "Cifrar también los nombres de archivo"
+
+#: internal/filesui/archive.go:168
+msgid "Without the password, not even the list of files shows (7z)"
+msgstr "Sin la contraseña, ni siquiera se ve la lista de archivos (7z)"
+
+#: internal/filesui/archive.go:180
+msgid "Leave out hidden files"
+msgstr "Omitir los archivos ocultos"
+
+#: internal/filesui/archive.go:182
+msgid "Names starting with a dot, inside the folders: .git, .cache …"
+msgstr "Nombres que empiezan por un punto, dentro de las carpetas: .git, .cache…"
+
+#: internal/filesui/archive.go:187
+msgid "Advanced"
+msgstr "Avanzado"
+
+#: internal/filesui/archive.go:214
+msgid "%s archives cannot have a password: choose Zip or 7z for one."
+msgstr "Los archivos %s no pueden tener contraseña: elige Zip o 7z para ello."
+
+#: internal/filesui/archive.go:216
+#: internal/filesui/archive.go:254
+msgid "A password needs the 7z program (7zip)."
+msgstr "Una contraseña necesita el programa 7z (7zip)."
+
+#: internal/filesui/archive.go:218
+msgid "Locked with AES-256: older unzip programs cannot open it; 7-Zip and the file managers of today can."
+msgstr "Cifrado con AES-256: los programas unzip antiguos no pueden abrirlo; 7-Zip y los gestores de archivos actuales sí."
+
+#: internal/filesui/archive.go:248
+msgid "7z archives need the 7z program (7zip)."
+msgstr "Los archivos 7z necesitan el programa 7z (7zip)."
+
+#: internal/filesui/archive.go:251
+msgid "%s archives cannot have a password."
+msgstr "Los archivos %s no pueden tener contraseña."
+
+#: internal/filesui/archive.go:257
+msgid "The two passwords differ."
+msgstr "Las dos contraseñas no coinciden."
+
+#: internal/filesui/archive.go:263
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
+msgid "“%s” is taken here."
+msgstr "Aquí ya existe “%s”."
+
+#: internal/filesui/archive.go:303
+msgid "Type its password to extract it."
+msgstr "Escribe su contraseña para extraerlo."
+
+#: internal/filesui/archive.go:305
+msgid "That is not its password. Try again."
+msgstr "Esa no es su contraseña. Inténtalo de nuevo."
+
+#: internal/filesui/archive.go:310
+msgid "Extract"
+msgstr "Extraer"
+
+#: internal/filesui/archive.go:319
+msgid "“%s” is locked"
+msgstr "«%s» está protegido"
 
 #: internal/filesui/caches.go:140
 #: internal/filesui/details.go:49
 #: internal/filesui/details.go:282
-#: internal/filesui/jobs.go:141
-#: internal/filesui/jobs.go:143
-#: internal/filesui/jobs.go:145
-#: internal/filesui/jobs.go:147
-#: internal/filesui/jobs.go:149
-#: internal/filesui/jobs.go:151
+#: internal/filesui/jobs.go:144
+#: internal/filesui/jobs.go:146
+#: internal/filesui/jobs.go:148
+#: internal/filesui/jobs.go:150
+#: internal/filesui/jobs.go:152
+#: internal/filesui/jobs.go:154
 #: internal/filesui/pane.go:970
 msgid "%d item"
 msgid_plural "%d items"
@@ -4125,53 +4236,53 @@ msgstr "2 Jan 2006 15:04"
 msgid "more than %s"
 msgstr "más de %s"
 
-#: internal/filesui/jobs.go:121
+#: internal/filesui/jobs.go:124
 msgid "%s left"
 msgstr "quedan %s"
 
-#: internal/filesui/jobs.go:141
+#: internal/filesui/jobs.go:144
 msgid "Copying %s to %s"
 msgstr "Copiando %s a %s"
 
-#: internal/filesui/jobs.go:143
+#: internal/filesui/jobs.go:146
 msgid "Moving %s to %s"
 msgstr "Moviendo %s a %s"
 
-#: internal/filesui/jobs.go:145
+#: internal/filesui/jobs.go:148
 msgid "Moving %s to the trash"
 msgstr "Moviendo %s a la Papelera"
 
-#: internal/filesui/jobs.go:147
+#: internal/filesui/jobs.go:150
 msgid "Deleting %s"
 msgstr "Eliminando %s"
 
-#: internal/filesui/jobs.go:149
+#: internal/filesui/jobs.go:152
 msgid "Restoring %s"
 msgstr "Restaurando %s"
 
-#: internal/filesui/jobs.go:151
+#: internal/filesui/jobs.go:154
 msgid "Linking %s"
 msgstr "Enlazando %s"
 
-#: internal/filesui/jobs.go:153
+#: internal/filesui/jobs.go:156
 msgid "Compressing into %s"
 msgstr "Comprimiendo en %s"
 
-#: internal/filesui/jobs.go:155
+#: internal/filesui/jobs.go:158
 msgid "Extracting %s"
 msgstr "Extrayendo %s"
 
-#: internal/filesui/jobs.go:155
+#: internal/filesui/jobs.go:158
 msgid "%d archive"
 msgid_plural "%d archives"
 msgstr[0] "%d archivo comprimido"
 msgstr[1] "%d archivos comprimidos"
 
-#: internal/filesui/jobs.go:163
+#: internal/filesui/jobs.go:166
 msgid "%d s"
 msgstr "%d s"
 
-#: internal/filesui/jobs.go:202
+#: internal/filesui/jobs.go:205
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "Se movió %d elemento a la Papelera (Ctrl+Z lo devuelve)."
@@ -4311,16 +4422,6 @@ msgstr "Hacen falta el ID de la clave y su secreto."
 #: internal/filesui/remote.go:176
 msgid "Sign in to %s"
 msgstr "Iniciar sesión en %s"
-
-#: internal/filesui/remote.go:178
-#: internal/filesui/remotesetup.go:46
-#: internal/filesui/remotesetup.go:55
-#: internal/filesui/remotesetup.go:61
-#: internal/filesui/remotesetup.go:67
-#: ui/lock.ui:76
-#: ui/polkit.ui:690
-msgid "Password"
-msgstr "Contraseña"
 
 #: internal/filesui/remote.go:181
 msgid "Keys for %s"
