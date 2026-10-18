@@ -278,6 +278,34 @@ until then.
   clipboard is spent, as in other file managers. Files another app put on
   the clipboard are read with `wl-paste`.
 
+## Archives
+
+**Compress…**, in the selection's menu, makes one archive of the items
+selected, beside them: its name (the item's own for one, *Archive* for
+more, numbered when taken) and its format, Zip, tar.gz, tar.xz or tar.zst,
+on a card; the format chosen last is offered first. Folders go in whole,
+with their modes, times and links.
+
+**Extract here**, in the menu of archives selected, takes each apart beside
+itself. An archive whose items all sit in one folder, or that is one file,
+gives that folder or file; any other gives a folder named as the archive.
+A name taken is numbered (`photos (2)`), never merged into or replaced.
+
+Files reads Zip, tar, tar compressed with gzip, bzip2, xz or zstd
+(`.tar.gz`, `.tgz` and the like), and one file compressed alone (`.gz`,
+`.bz2`, `.xz`, `.zst`) itself; 7z and rar archives go to the `7z`
+program (7zip) when it is installed. An archive locked with a password
+is not opened.
+
+Both run as operations: progress, cancelling, and undo, which trashes
+the archive made or what was extracted. Extracting works in a hidden
+folder beside the result and moves it into place at the end, so a
+cancelled or failed one leaves nothing. An item named to land outside
+the folder (an absolute name, `..`), or written through a link the
+archive made, stops the extraction; links are made last, after every
+file, so none is written through. Set-user-ID bits are dropped, and
+folders stay the user's to open.
+
 ## Opening files
 
 A file opens with the app chosen for its type: its MIME type, guessed
@@ -403,7 +431,10 @@ sorting, scoring and filtering, reading folders (links, broken links,
 `.hidden`, the parallel path), history and the jump list, places and
 bookmarks, `mountinfo`, the trash (trashing, the info
 file, restoring, emptying), every operation with its conflicts, undo,
-cancelling, the clipboard's formats, watching, searching, thumbnails.
+cancelling, the clipboard's formats, watching, searching, thumbnails, and archives
+(each format made and taken apart again, many items into a folder, one
+file compressed, names that would go outside or through a link, a
+cancelled extraction, 7z when it is installed).
 `disks` runs against a fake UDisks2 and `fm1` against a second process
 on a private bus (`internal/dbustest`). `remote` runs against stand-ins
 for rclone, systemd and FUSE that record what they were given (the
@@ -419,8 +450,7 @@ keys.
 In order: renaming many files with a pattern; thumbnails of videos
 and PDFs through the system's thumbnailers; reordering, renaming and
 dropping on the sidebar's bookmarks (removing them is in their menu); asking a share's password in the
-app's own card rather than GTK's dialog; redo; archives (compress,
-extract); finding servers on the network (`network:///`, mDNS) rather than
+app's own card rather than GTK's dialog; redo; finding servers on the network (`network:///`, mDNS) rather than
 typing an address; a Miller-columns view. Recent and starred files are
 left out on purpose: the jump list covers folders, and the launcher finds
 files.

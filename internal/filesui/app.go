@@ -52,9 +52,11 @@ type App struct {
 	users, groups map[uint32]string // owners' names, looked up once
 	folders       map[string]string // folders' icons, by path
 
-	clip  []string // what this app last put on the clipboard
-	cut   bool
-	undos []files.Undo
+	clip []string // what this app last put on the clipboard
+	cut  bool
+
+	archiveExt string // the archive format chosen last (".zip")
+	undos      []files.Undo
 }
 
 // New makes the app; Register gives it to appui once it holds its name.

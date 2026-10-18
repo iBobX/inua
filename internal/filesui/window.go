@@ -720,6 +720,11 @@ func (w *window) menuItems(p *pane) []menuItem {
 		items = append(items, w.item("paste-into", i18n.T("Paste into the folder"), ""),
 			w.item("tidy-sel", i18n.T("Tidy with AI…"), ""))
 	}
+	items = append(items, sep)
+	if allArchives(p.selectedPaths()) {
+		items = append(items, w.item("extract", i18n.T("Extract here"), ""))
+	}
+	items = append(items, w.item("compress", i18n.T("Compress…"), ""))
 	if w.dual {
 		items = append(items, sep,
 			w.item("copy-other", i18n.T("Copy to the other pane"), "F5"),
@@ -827,6 +832,14 @@ func (w *window) do(id string) {
 			kind = files.Move
 		}
 		w.app.run(w, files.Job{Kind: kind, Sources: sel, Dest: o.dir})
+	case "compress":
+		if len(sel) > 0 && p.mode != inTrash {
+			w.askCompress(p, sel)
+		}
+	case "extract":
+		if p.mode != inTrash && allArchives(sel) {
+			w.extract(sel)
+		}
 	case "rename":
 		if len(sel) == 1 && p.mode != inTrash {
 			w.askRename(p, sel[0])

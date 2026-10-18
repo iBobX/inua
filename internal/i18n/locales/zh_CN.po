@@ -429,13 +429,13 @@ msgid "%d d %d h"
 msgstr "%d 天 %d 小时"
 
 #: internal/apps/sysmon/sysmon.go:402
-#: internal/filesui/jobs.go:163
+#: internal/filesui/jobs.go:167
 msgid "%d h %d min"
 msgstr "%d 小时 %d 分钟"
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
-#: internal/filesui/jobs.go:161
+#: internal/filesui/jobs.go:165
 msgid "%d min"
 msgstr "%d 分钟"
 
@@ -1223,7 +1223,7 @@ msgstr "解密出的副本会移到回收站，可从那里恢复；加密文件
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:734
+#: internal/filesui/window.go:739
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2694,6 +2694,7 @@ msgstr "未知的组件 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/filesui/archive.go:39
 #: internal/filesui/cards.go:342
 #: internal/filesui/cards.go:391
 #: internal/filesui/cards.go:429
@@ -3615,7 +3616,7 @@ msgstr "文本编辑器"
 msgid "Opens plain text"
 msgstr "打开纯文本"
 
-#: internal/filesui/app.go:71
+#: internal/filesui/app.go:73
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3627,17 +3628,40 @@ msgstr "打开纯文本"
 msgid "Files"
 msgstr "文件"
 
-#: internal/filesui/app.go:229
+#: internal/filesui/app.go:231
 msgid "%s is plugged in."
 msgstr "%s 已插入。"
 
-#: internal/filesui/app.go:307
+#: internal/filesui/app.go:309
 msgid "There are no files on the clipboard."
 msgstr "剪贴板上没有文件。"
 
-#: internal/filesui/app.go:361
+#: internal/filesui/app.go:363
 msgid "Nothing to undo."
 msgstr "没有可撤销的操作。"
+
+#: internal/filesui/archive.go:34
+msgid "Archive"
+msgstr "压缩包"
+
+#: internal/filesui/archive.go:40
+msgid "Compress"
+msgstr "压缩"
+
+#: internal/filesui/archive.go:51
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
+msgid "“%s” is taken here."
+msgstr "这里已有“%s”。"
+
+#: internal/filesui/archive.go:92
+msgid "Compress %d item"
+msgid_plural "Compress %d items"
+msgstr[0] "压缩 %d 个项目"
+
+#: internal/filesui/archive.go:94
+msgid "Compress “%s”"
+msgstr "压缩“%s”"
 
 #: internal/filesui/caches.go:140
 #: internal/filesui/details.go:49
@@ -3658,11 +3682,6 @@ msgstr[0] "%d 项"
 #: internal/filesui/cards.go:686
 msgid "Rename"
 msgstr "重命名"
-
-#: internal/filesui/cards.go:355
-#: internal/filesui/cards.go:400
-msgid "“%s” is taken here."
-msgstr "这里已有“%s”。"
 
 #: internal/filesui/cards.go:370
 msgid "A name cannot be empty."
@@ -3903,7 +3922,7 @@ msgid "Open with…"
 msgstr "打开方式……"
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:748
+#: internal/filesui/window.go:753
 msgid "Bookmark"
 msgstr "添加书签"
 
@@ -3953,7 +3972,7 @@ msgid "Sidebar"
 msgstr "侧边栏"
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:745
 msgid "Details"
 msgstr "详细信息"
 
@@ -4109,11 +4128,24 @@ msgstr "正在恢复 %s"
 msgid "Linking %s"
 msgstr "正在链接 %s"
 
-#: internal/filesui/jobs.go:159
+#: internal/filesui/jobs.go:153
+msgid "Compressing into %s"
+msgstr "正在压缩为 %s"
+
+#: internal/filesui/jobs.go:155
+msgid "Extracting %s"
+msgstr "正在解压 %s"
+
+#: internal/filesui/jobs.go:155
+msgid "%d archive"
+msgid_plural "%d archives"
+msgstr[0] "%d 个压缩包"
+
+#: internal/filesui/jobs.go:163
 msgid "%d s"
 msgstr "%d 秒"
 
-#: internal/filesui/jobs.go:195
+#: internal/filesui/jobs.go:199
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "已将 %d 项移至垃圾箱（Ctrl+Z 可恢复）。"
@@ -4617,7 +4649,7 @@ msgid "Restore"
 msgstr "恢复"
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:735
+#: internal/filesui/window.go:740
 msgid "Delete for good…"
 msgstr "永久删除……"
 
@@ -4663,49 +4695,57 @@ msgid "Paste into the folder"
 msgstr "粘贴到该文件夹"
 
 #: internal/filesui/window.go:725
+msgid "Extract here"
+msgstr "解压到此处"
+
+#: internal/filesui/window.go:727
+msgid "Compress…"
+msgstr "压缩……"
+
+#: internal/filesui/window.go:730
 msgid "Copy to the other pane"
 msgstr "复制到另一窗格"
 
-#: internal/filesui/window.go:726
+#: internal/filesui/window.go:731
 msgid "Move to the other pane"
 msgstr "移动到另一窗格"
 
-#: internal/filesui/window.go:731
+#: internal/filesui/window.go:736
 msgid "Rename…"
 msgstr "重命名……"
 
-#: internal/filesui/window.go:746
+#: internal/filesui/window.go:751
 msgid "Remove the bookmark"
 msgstr "移除书签"
 
-#: internal/filesui/window.go:801
+#: internal/filesui/window.go:806
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "已剪切 %d 项：粘贴即可移动。"
 
-#: internal/filesui/window.go:803
+#: internal/filesui/window.go:808
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "已复制 %d 项。"
 
-#: internal/filesui/window.go:811
+#: internal/filesui/window.go:816
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "已复制 %d 个路径。"
 
-#: internal/filesui/window.go:881
+#: internal/filesui/window.go:894
 msgid "Bookmarked %s."
 msgstr "已为 %s 添加书签。"
 
-#: internal/filesui/window.go:883
+#: internal/filesui/window.go:896
 msgid "Removed the bookmark of %s."
 msgstr "已移除 %s 的书签。"
 
-#: internal/filesui/window.go:908
+#: internal/filesui/window.go:921
 msgid "Copied %s."
 msgstr "已复制 %s。"
 
-#: internal/filesui/window.go:937
+#: internal/filesui/window.go:950
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "未找到终端：请安装 xdg-terminal-exec 或设置 $TERMINAL。"
 

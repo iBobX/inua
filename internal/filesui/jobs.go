@@ -149,6 +149,10 @@ func describe(j files.Job, pr files.Progress) string {
 		return i18n.Tf("Restoring %s", cmp.Or(what, i18n.Nf("%d item", "%d items", n, n))) + count
 	case files.Link:
 		return i18n.Tf("Linking %s", cmp.Or(what, i18n.Nf("%d item", "%d items", n, n)))
+	case files.Compress:
+		return i18n.Tf("Compressing into %s", dest)
+	case files.Extract:
+		return i18n.Tf("Extracting %s", cmp.Or(what, i18n.Nf("%d archive", "%d archives", n, n))) + count
 	}
 	return what
 }

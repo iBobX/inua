@@ -29,6 +29,8 @@ const (
 	Mkdir                   // a folder at Dest
 	Create                  // an empty file at Dest
 	Untrash                 // the trashed items Trashed back where they were
+	Compress                // Sources into the archive Dest (archive.go)
+	Extract                 // each archive of Sources taken apart in the folder Dest
 )
 
 // Job is an operation on files.
@@ -132,6 +134,15 @@ func (r *Runner) Run(ctx context.Context, job Job) (Undo, error) {
 	switch job.Kind {
 	case Copy, Move:
 		r.count(job.Sources)
+	case Compress:
+		// compress counts, as it starts
+	case Extract:
+		for _, s := range job.Sources {
+			if fi, err := os.Stat(s); err == nil {
+				r.p.TotalBytes += fi.Size()
+			}
+		}
+		r.p.TotalItems = len(job.Sources)
 	default:
 		r.p.TotalItems = max(len(job.Sources), len(job.Trashed), 1)
 	}
@@ -237,6 +248,22 @@ func (r *Runner) run(job Job) error {
 		}
 		r.undo.Created = append(r.undo.Created, job.Dest)
 		r.step(0)
+	case Compress:
+		if err := r.compress(job.Sources, job.Dest); err != nil {
+			return err
+		}
+	case Extract:
+		for _, src := range job.Sources {
+			if err := r.cancelled(); err != nil {
+				return err
+			}
+			if err := r.extract(src, job.Dest); err != nil {
+				if errors.Is(err, ErrCancelled) {
+					return err
+				}
+				r.fail(fmt.Errorf("%s: %w", filepath.Base(src), err))
+			}
+		}
 	case Create:
 		r.p.Current = job.Dest
 		f, err := os.OpenFile(job.Dest, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)

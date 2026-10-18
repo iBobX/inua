@@ -430,13 +430,13 @@ msgid "%d d %d h"
 msgstr "%[1]d d %[2]d h"
 
 #: internal/apps/sysmon/sysmon.go:402
-#: internal/filesui/jobs.go:163
+#: internal/filesui/jobs.go:167
 msgid "%d h %d min"
 msgstr "%[1]d h %[2]d mín."
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
-#: internal/filesui/jobs.go:161
+#: internal/filesui/jobs.go:165
 msgid "%d min"
 msgstr "%d mín."
 
@@ -1229,7 +1229,7 @@ msgstr "La copia descifrada va a la papelera, desde donde se puede restaurar; el
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:734
+#: internal/filesui/window.go:739
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2710,6 +2710,7 @@ msgstr "Bloque desconocido %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/filesui/archive.go:39
 #: internal/filesui/cards.go:342
 #: internal/filesui/cards.go:391
 #: internal/filesui/cards.go:429
@@ -3631,7 +3632,7 @@ msgstr "Editor de texto"
 msgid "Opens plain text"
 msgstr "Abre texto plano"
 
-#: internal/filesui/app.go:71
+#: internal/filesui/app.go:73
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3643,17 +3644,41 @@ msgstr "Abre texto plano"
 msgid "Files"
 msgstr "Archivos"
 
-#: internal/filesui/app.go:229
+#: internal/filesui/app.go:231
 msgid "%s is plugged in."
 msgstr "%s está conectado."
 
-#: internal/filesui/app.go:307
+#: internal/filesui/app.go:309
 msgid "There are no files on the clipboard."
 msgstr "No hay archivos en el portapapeles."
 
-#: internal/filesui/app.go:361
+#: internal/filesui/app.go:363
 msgid "Nothing to undo."
 msgstr "No hay nada que deshacer."
+
+#: internal/filesui/archive.go:34
+msgid "Archive"
+msgstr "Archivo"
+
+#: internal/filesui/archive.go:40
+msgid "Compress"
+msgstr "Comprimir"
+
+#: internal/filesui/archive.go:51
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
+msgid "“%s” is taken here."
+msgstr "Aquí ya existe “%s”."
+
+#: internal/filesui/archive.go:92
+msgid "Compress %d item"
+msgid_plural "Compress %d items"
+msgstr[0] "Comprimir %d elemento"
+msgstr[1] "Comprimir %d elementos"
+
+#: internal/filesui/archive.go:94
+msgid "Compress “%s”"
+msgstr "Comprimir «%s»"
 
 #: internal/filesui/caches.go:140
 #: internal/filesui/details.go:49
@@ -3675,11 +3700,6 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:686
 msgid "Rename"
 msgstr "Renombrar"
-
-#: internal/filesui/cards.go:355
-#: internal/filesui/cards.go:400
-msgid "“%s” is taken here."
-msgstr "Aquí ya existe “%s”."
 
 #: internal/filesui/cards.go:370
 msgid "A name cannot be empty."
@@ -3922,7 +3942,7 @@ msgid "Open with…"
 msgstr "Abrir con…"
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:748
+#: internal/filesui/window.go:753
 msgid "Bookmark"
 msgstr "Añadir marcador"
 
@@ -3972,7 +3992,7 @@ msgid "Sidebar"
 msgstr "Barra lateral"
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:745
 msgid "Details"
 msgstr "Detalles"
 
@@ -4129,11 +4149,25 @@ msgstr "Restaurando %s"
 msgid "Linking %s"
 msgstr "Enlazando %s"
 
-#: internal/filesui/jobs.go:159
+#: internal/filesui/jobs.go:153
+msgid "Compressing into %s"
+msgstr "Comprimiendo en %s"
+
+#: internal/filesui/jobs.go:155
+msgid "Extracting %s"
+msgstr "Extrayendo %s"
+
+#: internal/filesui/jobs.go:155
+msgid "%d archive"
+msgid_plural "%d archives"
+msgstr[0] "%d archivo comprimido"
+msgstr[1] "%d archivos comprimidos"
+
+#: internal/filesui/jobs.go:163
 msgid "%d s"
 msgstr "%d s"
 
-#: internal/filesui/jobs.go:195
+#: internal/filesui/jobs.go:199
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] "Se movió %d elemento a la Papelera (Ctrl+Z lo devuelve)."
@@ -4643,7 +4677,7 @@ msgid "Restore"
 msgstr "Restaurar"
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:735
+#: internal/filesui/window.go:740
 msgid "Delete for good…"
 msgstr "Eliminar para siempre…"
 
@@ -4689,52 +4723,60 @@ msgid "Paste into the folder"
 msgstr "Pegar en la carpeta"
 
 #: internal/filesui/window.go:725
+msgid "Extract here"
+msgstr "Extraer aquí"
+
+#: internal/filesui/window.go:727
+msgid "Compress…"
+msgstr "Comprimir…"
+
+#: internal/filesui/window.go:730
 msgid "Copy to the other pane"
 msgstr "Copiar al otro panel"
 
-#: internal/filesui/window.go:726
+#: internal/filesui/window.go:731
 msgid "Move to the other pane"
 msgstr "Mover al otro panel"
 
-#: internal/filesui/window.go:731
+#: internal/filesui/window.go:736
 msgid "Rename…"
 msgstr "Renombrar…"
 
-#: internal/filesui/window.go:746
+#: internal/filesui/window.go:751
 msgid "Remove the bookmark"
 msgstr "Quitar el marcador"
 
-#: internal/filesui/window.go:801
+#: internal/filesui/window.go:806
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "Se cortó %d elemento: péguelo para moverlo."
 msgstr[1] "Se cortaron %d elementos: péguelos para moverlos."
 
-#: internal/filesui/window.go:803
+#: internal/filesui/window.go:808
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "Se copió %d elemento."
 msgstr[1] "Se copiaron %d elementos."
 
-#: internal/filesui/window.go:811
+#: internal/filesui/window.go:816
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "Se copió %d ruta."
 msgstr[1] "Se copiaron %d rutas."
 
-#: internal/filesui/window.go:881
+#: internal/filesui/window.go:894
 msgid "Bookmarked %s."
 msgstr "Se añadió %s a los marcadores."
 
-#: internal/filesui/window.go:883
+#: internal/filesui/window.go:896
 msgid "Removed the bookmark of %s."
 msgstr "Se quitó el marcador de %s."
 
-#: internal/filesui/window.go:908
+#: internal/filesui/window.go:921
 msgid "Copied %s."
 msgstr "Se copió %s."
 
-#: internal/filesui/window.go:937
+#: internal/filesui/window.go:950
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "No se encontró ningún terminal: instale xdg-terminal-exec o defina $TERMINAL."
 

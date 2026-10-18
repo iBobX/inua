@@ -428,13 +428,13 @@ msgid "%d d %d h"
 msgstr ""
 
 #: internal/apps/sysmon/sysmon.go:402
-#: internal/filesui/jobs.go:163
+#: internal/filesui/jobs.go:167
 msgid "%d h %d min"
 msgstr ""
 
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
-#: internal/filesui/jobs.go:161
+#: internal/filesui/jobs.go:165
 msgid "%d min"
 msgstr ""
 
@@ -1227,7 +1227,7 @@ msgstr ""
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:687
-#: internal/filesui/window.go:734
+#: internal/filesui/window.go:739
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2708,6 +2708,7 @@ msgstr ""
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/filesui/archive.go:39
 #: internal/filesui/cards.go:342
 #: internal/filesui/cards.go:391
 #: internal/filesui/cards.go:429
@@ -3629,7 +3630,7 @@ msgstr ""
 msgid "Opens plain text"
 msgstr ""
 
-#: internal/filesui/app.go:71
+#: internal/filesui/app.go:73
 #: internal/filesui/cards.go:683
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
@@ -3641,16 +3642,40 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
-#: internal/filesui/app.go:229
+#: internal/filesui/app.go:231
 msgid "%s is plugged in."
 msgstr ""
 
-#: internal/filesui/app.go:307
+#: internal/filesui/app.go:309
 msgid "There are no files on the clipboard."
 msgstr ""
 
-#: internal/filesui/app.go:361
+#: internal/filesui/app.go:363
 msgid "Nothing to undo."
+msgstr ""
+
+#: internal/filesui/archive.go:34
+msgid "Archive"
+msgstr ""
+
+#: internal/filesui/archive.go:40
+msgid "Compress"
+msgstr ""
+
+#: internal/filesui/archive.go:51
+#: internal/filesui/cards.go:355
+#: internal/filesui/cards.go:400
+msgid "“%s” is taken here."
+msgstr ""
+
+#: internal/filesui/archive.go:92
+msgid "Compress %d item"
+msgid_plural "Compress %d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/filesui/archive.go:94
+msgid "Compress “%s”"
 msgstr ""
 
 #: internal/filesui/caches.go:140
@@ -3672,11 +3697,6 @@ msgstr[1] ""
 #: internal/filesui/cards.go:363
 #: internal/filesui/cards.go:686
 msgid "Rename"
-msgstr ""
-
-#: internal/filesui/cards.go:355
-#: internal/filesui/cards.go:400
-msgid "“%s” is taken here."
 msgstr ""
 
 #: internal/filesui/cards.go:370
@@ -3920,7 +3940,7 @@ msgid "Open with…"
 msgstr ""
 
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:748
+#: internal/filesui/window.go:753
 msgid "Bookmark"
 msgstr ""
 
@@ -3970,7 +3990,7 @@ msgid "Sidebar"
 msgstr ""
 
 #: internal/filesui/cards.go:704
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:745
 msgid "Details"
 msgstr ""
 
@@ -4127,11 +4147,25 @@ msgstr ""
 msgid "Linking %s"
 msgstr ""
 
-#: internal/filesui/jobs.go:159
+#: internal/filesui/jobs.go:153
+msgid "Compressing into %s"
+msgstr ""
+
+#: internal/filesui/jobs.go:155
+msgid "Extracting %s"
+msgstr ""
+
+#: internal/filesui/jobs.go:155
+msgid "%d archive"
+msgid_plural "%d archives"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/filesui/jobs.go:163
 msgid "%d s"
 msgstr ""
 
-#: internal/filesui/jobs.go:195
+#: internal/filesui/jobs.go:199
 msgid "Moved %d item to the trash (Ctrl+Z puts it back)."
 msgid_plural "Moved %d items to the trash (Ctrl+Z puts them back)."
 msgstr[0] ""
@@ -4641,7 +4675,7 @@ msgid "Restore"
 msgstr ""
 
 #: internal/filesui/window.go:677
-#: internal/filesui/window.go:735
+#: internal/filesui/window.go:740
 msgid "Delete for good…"
 msgstr ""
 
@@ -4687,52 +4721,60 @@ msgid "Paste into the folder"
 msgstr ""
 
 #: internal/filesui/window.go:725
+msgid "Extract here"
+msgstr ""
+
+#: internal/filesui/window.go:727
+msgid "Compress…"
+msgstr ""
+
+#: internal/filesui/window.go:730
 msgid "Copy to the other pane"
 msgstr ""
 
-#: internal/filesui/window.go:726
+#: internal/filesui/window.go:731
 msgid "Move to the other pane"
 msgstr ""
 
-#: internal/filesui/window.go:731
+#: internal/filesui/window.go:736
 msgid "Rename…"
 msgstr ""
 
-#: internal/filesui/window.go:746
+#: internal/filesui/window.go:751
 msgid "Remove the bookmark"
 msgstr ""
 
-#: internal/filesui/window.go:801
+#: internal/filesui/window.go:806
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:803
+#: internal/filesui/window.go:808
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:811
+#: internal/filesui/window.go:816
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/window.go:881
+#: internal/filesui/window.go:894
 msgid "Bookmarked %s."
 msgstr ""
 
-#: internal/filesui/window.go:883
+#: internal/filesui/window.go:896
 msgid "Removed the bookmark of %s."
 msgstr ""
 
-#: internal/filesui/window.go:908
+#: internal/filesui/window.go:921
 msgid "Copied %s."
 msgstr ""
 
-#: internal/filesui/window.go:937
+#: internal/filesui/window.go:950
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr ""
 
