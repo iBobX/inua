@@ -10,6 +10,11 @@
 # (bold, fill, light, thin, duotone) makes a sample icon set of the user's
 # own, config/inua/icons/phosphor-WEIGHT, which `inua init` installs.
 # npm i @phosphor-icons/core
+#
+# inua-term's agent marks come from LobeHub's icons (MIT; the marks are
+# their owners' trademarks), as agent-NAME-symbolic.svg, when LOBEHUB_ICONS
+# names the package (npm i @lobehub/icons-static-svg); without it, the
+# agent marks already in ui/icons stay.
 set -eu
 src=${1:?usage: $0 PHOSPHOR_CORE_DIR (node_modules/@phosphor-icons/core) [WEIGHT]}
 weight=${2:-regular}
@@ -21,7 +26,7 @@ else
 fi
 [ -d "$src/assets/$weight" ] || { echo "$0: no weight $weight in $src/assets" >&2; exit 1; }
 mkdir -p "$dest"
-rm -f "$dest"/*.svg
+find "$dest" -maxdepth 1 -name '*.svg' ! -name 'agent-*' -delete
 cp "$src/LICENSE" "$dest/LICENSE"
 
 # freedesktop name (without -symbolic)   Phosphor name
@@ -265,6 +270,8 @@ view-columns                          kanban
 remote-sharing                        screencast
 remote-machine                        desktop
 view-refresh                          arrow-clockwise
+# inua-term: a shell or a program that is no agent
+agent-shell                           terminal
 # Mobile Link
 connect-this                          devices
 connect-phone                         device-mobile
@@ -276,4 +283,24 @@ battery-low                           battery-low
 folder-download                       download-simple
 dialog-error                          warning-circle
 LIST
+if [ "$weight" = regular ] && [ -n "${LOBEHUB_ICONS:-}" ]; then
+	# agent name (inua-term's)   LobeHub's monochrome icon
+	while read -r name icon; do
+		case "$name" in '' | '#'*) continue ;; esac
+		# Sized for GTK: the 1em of the web is no size to it.
+		sed 's/height="1em"/height="24"/; s/width="1em"/width="24"/' \
+			"$LOBEHUB_ICONS/icons/$icon.svg" > "$dest/agent-$name-symbolic.svg"
+	done <<'AGENTS'
+claude        claudecode
+codex         codex
+gemini        geminicli
+opencode      opencode
+amp           amp
+cursor        cursor
+copilot       githubcopilot
+goose         goose
+qwen          qwen
+AGENTS
+	printf '%s\n' "agent-*-symbolic.svg: LobeHub's icons (@lobehub/icons-static-svg $(sed -n 's/.*"version": "\(.*\)".*/\1/p' "$LOBEHUB_ICONS/package.json")), MIT. The marks remain their owners' trademarks." > "$dest/LICENSE-lobehub"
+fi
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"
