@@ -1,3 +1,5 @@
+// Package vm contains toolkit-free machine configuration, host checks,
+// resource recommendations and the backends that run a guest.
 package vm
 
 import (
@@ -16,6 +18,8 @@ import (
 
 const (
 	dockerComposeFile = "compose.yaml"
+	dockerGuestEnv    = ".guest.env"
+	dockerPortsFile   = "ports"
 	// dockerImage is pinned to a version and to that version's manifest
 	// digest. The container gets /dev/kvm, /dev/net/tun and NET_ADMIN, so an
 	// image that changed under its tag would run with those rights without
@@ -30,10 +34,31 @@ const (
 type CommandRunner interface {
 	Run(context.Context, string, ...string) (string, error)
 }
+
+// GuestSecretStore keeps a guest's password where the rest of the user's
+// secrets are kept, never in the machine's folder. It is keyed by the machine,
+// so the label the user sees in their keyring is the machine's own name
+// (GuestSecretLabel) and a machine renamed or adopted keeps one secret.
 type GuestSecretStore interface {
-	Store(context.Context, string, []byte) error
-	Load(context.Context, string) ([]byte, error)
-	Delete(context.Context, string) error
+	Store(ctx context.Context, m Machine, value []byte) error
+	Load(ctx context.Context, m Machine) ([]byte, error)
+	Delete(ctx context.Context, m Machine) error
+}
+
+// GuestSecretLabel is the name a machine's password is kept under in the
+// Secret Service: what the user sees in their keyring.
+func GuestSecretLabel(m Machine) string { return "inua-vm · " + m.Name }
+
+// GuestSecretAttrs is how a machine's password is found again.
+func GuestSecretAttrs(m Machine) map[string]string {
+	return map[string]string{"application": "inua", "kind": "vm", "machine": m.Name}
+}
+
+// LegacyGuestSecretAttrs is where step 1 kept the Windows guest's password.
+// A machine installed then must keep the password its Windows was installed
+// with, so that one is read once and moved to the machine's own label.
+func LegacyGuestSecretAttrs(m Machine) map[string]string {
+	return map[string]string{"application": "inua", "kind": "windows-vm", "id": "inua/windows/" + m.Name}
 }
 
 type execCommandRunner struct{}
@@ -56,102 +81,95 @@ func (execCommandRunner) Run(ctx context.Context, name string, args ...string) (
 	return stdout.String(), err
 }
 
-// DockerBackend manages one Dockur Windows container using Docker Compose v2.
+// DockerBackend runs Windows machines with Docker (Dockur). It holds no
+// state of its own: everything it needs is in the machine and in the store,
+// so the same backend serves every machine, and two callers never fight over
+// one.
 type DockerBackend struct {
+	Store   Store
 	Runner  CommandRunner
 	Secrets GuestSecretStore
-	Config  Config
-	// Answers reports whether Remote Desktop answers at an address; it is
-	// rdpAnswers unless a test puts another in.
-	Answers     func(ctx context.Context, addr string) bool
-	composePath string
-	secretID    string
+	// Answers reports whether a Remote Desktop server answers at an address.
+	// A test puts its own in; rdpAnswers is the real one.
+	Answers func(ctx context.Context, addr string) bool
 }
 
-func NewDockerBackend(runner CommandRunner) *DockerBackend {
+func NewDockerBackend(store Store, runner CommandRunner) *DockerBackend {
 	if runner == nil {
 		runner = execCommandRunner{}
 	}
-	return &DockerBackend{Runner: runner}
+	return &DockerBackend{Store: store, Runner: runner}
 }
 
-// SecretID is the Secret Service id of the guest password, empty until a
-// project has been written or restored.
-func (b *DockerBackend) SecretID() string { return b.secretID }
-
-// Install writes the Compose project for cfg, replacing one that is already
-// there: the project is generated from the configuration, so writing it
-// again is how a changed memory, CPU count or disk size takes effect - and
-// how the window's Apply does anything at all.
+// Install writes the machine's Compose project and env file, and reserves the
+// ports it publishes. Writing it again is how a changed memory, CPU count or
+// disk size takes effect - and how the window's Apply does anything at all.
 //
 // The guest password is made only the first time and kept afterwards, since
 // the installed Windows already has it. The disk is never touched.
-func (b *DockerBackend) Install(ctx context.Context, cfg Config) error {
-	if err := cfg.Validate(); err != nil {
+func (b *DockerBackend) Install(ctx context.Context, m Machine) error {
+	if err := b.check(m); err != nil {
 		return err
 	}
-	if err := safeOwnedDir(cfg.DataDir); err != nil {
+	dir := b.Store.Dir(m.Name)
+	if err := safeOwnedDir(dir); err != nil {
 		return vmError("install", ErrorInvalidConfig, err)
 	}
-	if err := markDataDir(cfg.DataDir); err != nil {
-		return vmError("install", ErrorBackend, err)
-	}
-	composeDir := filepath.Join(configBase(), "inua", "vm", cfg.Name)
-	if err := safeOwnedDir(composeDir); err != nil {
-		return vmError("install", ErrorInvalidConfig, err)
-	}
-	composePath := filepath.Join(composeDir, dockerComposeFile)
+	composePath := b.composePath(m)
 	if err := rejectPathSymlinks(composePath); err != nil {
 		return vmError("install", ErrorInvalidConfig, err)
 	}
 	if b.Secrets == nil {
 		return vmError("install", ErrorUnavailable, errors.New("secure guest password storage is unavailable"))
 	}
-	secretID := "inua/windows/" + cfg.Name
-
 	// The guest's password: keep the one it was installed with, and make one
 	// only when there is none yet.
-	password, err := b.Secrets.Load(ctx, secretID)
+	password, err := b.Secrets.Load(ctx, m)
 	if err != nil {
 		password, err = newGuestPassword()
 		if err != nil {
 			return vmError("install", ErrorBackend, err)
 		}
-		if err := b.Secrets.Store(ctx, secretID, password); err != nil {
+		if err := b.Secrets.Store(ctx, m, password); err != nil {
 			clear(password)
 			return vmError("install", ErrorUnavailable, err)
 		}
 	}
 	defer clear(password)
 
-	if cfg.ISOPath != "" && !ISOPresent(cfg.ISOPath) {
-		return vmError("install", ErrorInvalidConfig, fmt.Errorf("the installer ISO %s cannot be read", cfg.ISOPath))
+	rdpPort, consolePort, err := b.reservePorts(m)
+	if err != nil {
+		return vmError("install", ErrorConflict, err)
 	}
-
-	envPath := filepath.Join(composeDir, ".guest.env")
+	envPath := filepath.Join(dir, dockerGuestEnv)
 	if err := writeAtomic(envPath, []byte("PASSWORD="+string(password)+"\n"), 0600); err != nil {
 		return vmError("install", ErrorBackend, err)
 	}
-	if err := writeCompose(composePath, cfg); err != nil {
+	// The machine's own installer ISO, when it names one, has to be there:
+	// Dockur installs from it instead of downloading Windows.
+	if m.Boot.ISO != "" && !ISOPresent(m.Boot.ISO) {
+		return vmError("install", ErrorInvalidConfig, fmt.Errorf("the installer ISO %s cannot be read", m.Boot.ISO))
+	}
+	if err := writeCompose(composePath, envPath, dir, m, rdpPort, consolePort); err != nil {
 		return vmError("install", ErrorBackend, err)
 	}
-	b.Config, b.composePath, b.secretID = cfg, composePath, secretID
 	return nil
 }
 
-// writeCompose writes the Compose project for cfg at path.
+// writeCompose writes the Compose project for m at path.
 //
-// An installer ISO of the user's is bound read-only to /boot.iso, where
+// An installer ISO of the machine's is bound read-only to /boot.iso, where
 // Dockur installs from it instead of downloading Windows, and which it never
-// writes. The bind is left out while the file is not there: once Windows is
+// writes. The bind is left out while the file is not there: once the guest is
 // installed it boots from its disk, and a bind of a missing file would stop
 // the container from starting at all.
-func writeCompose(path string, cfg Config) error {
-	volumes := "      - " + yamlQuote(cfg.DataDir+":/storage") + "\n"
-	if cfg.ISOPath != "" && ISOPresent(cfg.ISOPath) {
-		volumes += "      - type: bind\n        source: " + yamlQuote(cfg.ISOPath) + "\n        target: /boot.iso\n        read_only: true\n"
+func writeCompose(path, envPath, storageDir string, m Machine, rdpPort, consolePort int) error {
+	volumes := "      - " + yamlQuote(storageDir+":/storage") + "\n"
+	if m.Boot.ISO != "" && ISOPresent(m.Boot.ISO) {
+		volumes += "      - type: bind\n        source: " + yamlQuote(m.Boot.ISO) + "\n        target: /boot.iso\n        read_only: true\n"
 	}
-	content := fmt.Sprintf("services:\n  windows:\n    image: %s\n    container_name: inua-%s\n    environment:\n      VERSION: \"11\"\n      USERNAME: \"%s\"\n      RAM_SIZE: \"%dG\"\n      CPU_CORES: \"%d\"\n      DISK_SIZE: \"%dG\"\n    env_file:\n      - %s\n    devices:\n      - /dev/kvm\n      - /dev/net/tun\n    cap_add:\n      - NET_ADMIN\n    ports:\n      - \"127.0.0.1:%d:3389/tcp\"\n      - \"127.0.0.1:%d:3389/udp\"\n      - \"127.0.0.1:8006:8006\"\n    volumes:\n%s    restart: unless-stopped\n    stop_grace_period: 2m\n", dockerImage, cfg.Name, GuestUser, cfg.MemoryMiB/1024, cfg.CPUs, cfg.DiskGiB, yamlQuote(filepath.Join(filepath.Dir(path), ".guest.env")), cfg.RDPPort, cfg.RDPPort, volumes)
+	content := fmt.Sprintf("services:\n  windows:\n    image: %s\n    container_name: inua-%s\n    environment:\n      VERSION: \"11\"\n      USERNAME: \"%s\"\n      RAM_SIZE: \"%dG\"\n      CPU_CORES: \"%d\"\n      DISK_SIZE: \"%dG\"\n    env_file:\n      - %s\n    devices:\n      - /dev/kvm\n      - /dev/net/tun\n    cap_add:\n      - NET_ADMIN\n    ports:\n      - \"127.0.0.1:%d:3389/tcp\"\n      - \"127.0.0.1:%d:3389/udp\"\n      - \"127.0.0.1:%d:8006\"\n    volumes:\n%s    restart: unless-stopped\n    stop_grace_period: 2m\n",
+		dockerImage, m.Name, GuestUser, m.MemoryMiB/1024, m.CPUs, m.DiskGiB, yamlQuote(envPath), rdpPort, rdpPort, consolePort, volumes)
 	return writeAtomic(path, []byte(content), 0600)
 }
 
@@ -170,27 +188,38 @@ func ISOPresent(path string) bool {
 // install that is tens of minutes of downloading and setup, and the caller
 // needs to show progress and offer Stop meanwhile. Readiness is State's to
 // report - it is what the running container's RDP port answers to.
-func (b *DockerBackend) Start(ctx context.Context) error {
-	if err := b.ensureInstalled(); err != nil {
+func (b *DockerBackend) Start(ctx context.Context, m Machine) error {
+	if err := b.check(m); err != nil {
+		return err
+	}
+	if err := b.installed(m); err != nil {
 		return vmError("start", ErrorConflict, err)
 	}
-	if b.Secrets == nil || b.secretID == "" {
+	if b.Secrets == nil {
 		return vmError("start", ErrorUnavailable, errors.New("secure guest password storage is unavailable"))
 	}
-	password, err := b.Secrets.Load(ctx, b.secretID)
+	password, err := b.Secrets.Load(ctx, m)
 	if err != nil {
 		return vmError("start", ErrorUnavailable, err)
 	}
 	defer clear(password)
-	envPath := filepath.Join(filepath.Dir(b.composePath), ".guest.env")
+	dir := b.Store.Dir(m.Name)
+	envPath := filepath.Join(dir, dockerGuestEnv)
 	if err := writeAtomic(envPath, []byte("PASSWORD="+string(password)+"\n"), 0600); err != nil {
 		return vmError("start", ErrorBackend, err)
 	}
+	// The ISO is bound only while it is there: once Windows is installed it
+	// boots from its disk, and a bind of a file that is gone would stop the
+	// container from starting at all.
+	rdpPort, consolePort, err := b.reservePorts(m)
+	if err != nil {
+		return vmError("start", ErrorConflict, err)
+	}
 	// Written afresh, so the installer ISO is bound only while it is there.
-	if err := writeCompose(b.composePath, b.Config); err != nil {
+	if err := writeCompose(b.composePath(m), envPath, dir, m, rdpPort, consolePort); err != nil {
 		return vmError("start", ErrorBackend, err)
 	}
-	if _, err := b.compose(ctx, "up", "-d"); err != nil {
+	if _, err := b.compose(ctx, m, "up", "-d"); err != nil {
 		return vmError("start", ErrorBackend, err)
 	}
 	return nil
@@ -199,48 +228,269 @@ func (b *DockerBackend) Start(ctx context.Context) error {
 // State reports what the guest is doing.
 //
 // Running means Windows itself is up, which is not the same as the container
-// being up: a running container whose guest is still installing or booting
-// is StateStarting. The distinction is what tells the window whether to
-// offer Connect or to keep showing the installation.
-//
-// Windows is up once its Remote Desktop answers. Dockur's log says "started
-// successfully" as soon as the firmware boots from the disk or from the
-// installation DVD, so on a first install it says so at the very start of
-// Windows' setup; and a restarted container still carries the line of the
-// boot before.
-func (b *DockerBackend) State(ctx context.Context) (State, error) {
-	if err := b.ensureInstalled(); err != nil {
+// being up: the container's RDP port answers long before Windows has
+// installed, so a container that is running but whose guest is still
+// installing is StateStarting. The distinction is what tells the window
+// whether to offer Connect or to keep showing the installation.
+func (b *DockerBackend) State(ctx context.Context, m Machine) (State, error) {
+	if err := b.installed(m); err != nil {
 		return StateUnknown, vmError("state", ErrorConflict, err)
 	}
-	out, err := b.compose(ctx, "ps", "--status", "running", "--services")
+	out, err := b.compose(ctx, m, "ps", "--status", "running", "--services")
 	if err != nil {
 		return StateUnknown, vmError("state", ErrorBackend, err)
 	}
 	if !strings.Contains(out, "windows") {
 		return StateStopped, nil
 	}
+	// The container's RDP port is open as soon as it starts, so it says
+	// nothing about the guest: Windows is up only once Remote Desktop
+	// answers a connection request, which is also what Connect needs.
+	rdp, _, err := b.reservePorts(m)
+	if err != nil {
+		// No port to ask on: Windows is still coming up, which is what the
+		// window is watching.
+		return StateStarting, nil
+	}
 	answers := b.Answers
 	if answers == nil {
 		answers = rdpAnswers
 	}
-	if answers(ctx, net.JoinHostPort("127.0.0.1", strconv.Itoa(b.Config.RDPPort))) {
+	if answers(ctx, net.JoinHostPort("127.0.0.1", strconv.Itoa(rdp))) {
 		return StateRunning, nil
 	}
 	return StateStarting, nil
 }
 
+// Stop shuts the container down, keeping the disk and the project.
+func (b *DockerBackend) Stop(ctx context.Context, m Machine) error {
+	if err := b.check(m); err != nil {
+		return err
+	}
+	if err := b.installed(m); err != nil {
+		return vmError("stop", ErrorConflict, err)
+	}
+	if _, err := b.compose(ctx, m, "stop", "-t", "120"); err != nil {
+		return vmError("stop", ErrorBackend, err)
+	}
+	return nil
+}
+
+// Display is how this machine is seen: over RDP once Windows is up, and in
+// the container's web console before that - which is the only view there is
+// while it installs.
+func (b *DockerBackend) Display(ctx context.Context, m Machine) (Display, error) {
+	rdpPort, consolePort, err := b.reservePorts(m)
+	if err != nil {
+		return Display{}, vmError("display", ErrorConflict, err)
+	}
+	d := Display{
+		Kind:    DisplayWeb,
+		Address: fmt.Sprintf("127.0.0.1:%d", rdpPort),
+		Console: fmt.Sprintf("http://127.0.0.1:%d/", consolePort),
+	}
+	state, err := b.State(ctx, m)
+	if err == nil && state == StateRunning {
+		d.Kind = DisplayRDP
+	}
+	return d, nil
+}
+
 // RecentOutput is the last useful line of the container's logs, for the
 // window to show while Windows is installing.
-func (b *DockerBackend) RecentOutput(ctx context.Context) string {
-	logs, err := b.containerLogs(ctx, "12")
+func (b *DockerBackend) RecentOutput(ctx context.Context, m Machine) string {
+	logs, err := b.containerLogs(ctx, m, "12")
 	if err != nil {
 		return ""
 	}
 	return lastLogLine(logs)
 }
 
-func (b *DockerBackend) containerLogs(ctx context.Context, tail string) (string, error) {
-	started, err := b.compose(ctx, "ps", "-q", "windows")
+// Remove takes the container and the project apart. With keepDisk the guest's
+// disk and its password stay, and a later install reuses that Windows;
+// without it the machine's own files go, and its definition stays so it can be
+// installed again. That one is the caller's second, confirmed step.
+func (b *DockerBackend) Remove(ctx context.Context, m Machine, keepDisk bool) error {
+	if err := b.check(m); err != nil {
+		return err
+	}
+	dir := b.Store.Dir(m.Name)
+	if err := validateOwnedDataDir(dir); err != nil {
+		return vmError("remove", ErrorInvalidConfig, err)
+	}
+	if err := rejectPathSymlinks(dir); err != nil {
+		return vmError("remove", ErrorInvalidConfig, err)
+	}
+	if err := b.installed(m); err == nil {
+		if _, err := b.compose(ctx, m, "down"); err != nil {
+			return vmError("remove", ErrorBackend, err)
+		}
+	}
+	for _, name := range []string{dockerComposeFile, dockerGuestEnv, dockerPortsFile} {
+		if err := os.Remove(filepath.Join(dir, name)); err != nil && !errors.Is(err, os.ErrNotExist) {
+			return vmError("remove", ErrorBackend, err)
+		}
+	}
+	if keepDisk {
+		// The guest password stays too: this Windows still uses it.
+		return nil
+	}
+	// The guest's files go, the machine's definition stays: the disk, the
+	// install media it was made from and what Dockur keeps beside them.
+	err := os.RemoveAll(dir)
+	if err != nil && errors.Is(err, os.ErrPermission) {
+		// Dockur runs as root in its container, so what it leaves in folders
+		// of its own (an unfinished download) is root's, which this user
+		// cannot delete. A container of the same image, which is here once
+		// one has run, has the rights: it empties the folder, and the folder
+		// itself is ours.
+		if b.Runner == nil {
+			b.Runner = execCommandRunner{}
+		}
+		if _, err := b.Runner.Run(ctx, "docker", "run", "--rm", "--pull", "never", "--network", "none",
+			"-v", dir+":/storage", "--entrypoint", "find", dockerImage, "/storage", "-mindepth", "1", "-delete"); err != nil {
+			return vmError("remove", ErrorBackend, err)
+		}
+		err = os.RemoveAll(dir)
+	}
+	if err != nil {
+		return vmError("remove", ErrorBackend, err)
+	}
+	if err := b.Store.Save(m); err != nil {
+		return vmError("remove", ErrorBackend, err)
+	}
+	return nil
+}
+
+// reservePorts returns the loopback ports this machine publishes: RDP for
+// Windows itself, and the container's web console. They are reserved when the
+// machine is installed and recorded in its runtime directory, so a second
+// machine - or a second Inua - cannot publish the same port by accident.
+func (b *DockerBackend) reservePorts(m Machine) (rdp, console int, err error) {
+	runtimeDir, err := b.Store.EnsureRuntime(m.Name)
+	if err != nil {
+		return 0, 0, err
+	}
+	taken := b.reservedByOthers(m.Name)
+	path := filepath.Join(runtimeDir, dockerPortsFile)
+	if data, err := os.ReadFile(path); err == nil {
+		var haveRDP, haveConsole int
+		if n, err := fmt.Sscanf(strings.TrimSpace(string(data)), "%d %d", &haveRDP, &haveConsole); n == 2 && err == nil &&
+			portFree(haveRDP) && portFree(haveConsole) && !taken[haveRDP] && !taken[haveConsole] {
+			return haveRDP, haveConsole, nil
+		}
+	}
+	rdp, err = freePortFrom(3389, taken)
+	if err != nil {
+		return 0, 0, err
+	}
+	console, err = freePortFrom(8006, taken)
+	if err != nil {
+		return 0, 0, err
+	}
+	if err := writeAtomic(path, []byte(strconv.Itoa(rdp)+" "+strconv.Itoa(console)+"\n"), 0600); err != nil {
+		return 0, 0, err
+	}
+	return rdp, console, nil
+}
+
+// reservedByOthers is every port another machine has recorded, so the machine
+// being installed picks one no one else uses even before that one runs.
+func (b *DockerBackend) reservedByOthers(name string) map[int]bool {
+	out := map[int]bool{}
+	entries, err := os.ReadDir(b.Store.Runtime)
+	if err != nil {
+		return out
+	}
+	for _, e := range entries {
+		if !e.IsDir() || e.Name() == name {
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(b.Store.RuntimeDir(e.Name()), dockerPortsFile))
+		if err != nil {
+			continue
+		}
+		var rdp, console int
+		if n, err := fmt.Sscanf(strings.TrimSpace(string(data)), "%d %d", &rdp, &console); n == 2 && err == nil {
+			out[rdp], out[console] = true, true
+		}
+	}
+	return out
+}
+
+// freePortFrom is the first port at or above from that is free here and that
+// no other machine has reserved.
+func freePortFrom(from int, taken map[int]bool) (int, error) {
+	for port := from; port < from+200 && port <= 65535; port++ {
+		if taken[port] {
+			continue
+		}
+		if portFree(port) {
+			return port, nil
+		}
+	}
+	return 0, fmt.Errorf("no free port at or above %d", from)
+}
+
+// Prepared reports whether this machine has been made: its Compose project is
+// written. A machine without one has nothing to start yet.
+func (b *DockerBackend) Prepared(m Machine) bool {
+	return b.installed(m) == nil
+}
+
+// check says whether this backend runs this machine at all.
+func (b *DockerBackend) check(m Machine) error {
+	if m.Backend != BackendDockur {
+		return vmError("backend", ErrorUnsupported, fmt.Errorf("%s: %w", m.Backend, ErrNotThisBackend))
+	}
+	if err := m.Validate(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// installed reports whether the machine's Compose project is actually there:
+// a machine whose project was removed is not an installed guest.
+func (b *DockerBackend) installed(m Machine) error {
+	path := b.composePath(m)
+	if err := rejectPathSymlinks(path); err != nil {
+		return err
+	}
+	fi, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if !fi.Mode().IsRegular() {
+		return errors.New("the machine's Compose file is not a regular file")
+	}
+	return nil
+}
+
+func (b *DockerBackend) composePath(m Machine) string {
+	return filepath.Join(b.Store.Dir(m.Name), dockerComposeFile)
+}
+
+func (b *DockerBackend) compose(ctx context.Context, m Machine, args ...string) (string, error) {
+	if b.Runner == nil {
+		b.Runner = execCommandRunner{}
+	}
+	// Pin the project name: Docker Compose otherwise derives it from the
+	// directory the file sits in, so any other Compose project whose folder
+	// and service are both named like this machine would be treated as this
+	// one - and `up -d` would tear its container down.
+	argv := []string{"compose", "-p", composeProject(m.Name), "-f", b.composePath(m)}
+	argv = append(argv, args...)
+	return b.Runner.Run(ctx, "docker", argv...)
+}
+
+// composeProject is the Compose project name for a machine, namespaced so it
+// can never collide with a user's own Compose files.
+func composeProject(name string) string {
+	return "inua-vm-" + name
+}
+
+func (b *DockerBackend) containerLogs(ctx context.Context, m Machine, tail string) (string, error) {
+	started, err := b.compose(ctx, m, "ps", "-q", "windows")
 	if err != nil {
 		return "", err
 	}
@@ -279,7 +529,7 @@ func stripANSI(s string) string {
 	return b.String()
 }
 
-// ParsePercent reads a 0–100 figure out of a log line, when it has one.
+// ParsePercent reads a 0-100 figure out of a log line, when it has one.
 func ParsePercent(line string) float64 {
 	best := -1.0
 	for i := 0; i < len(line); i++ {
@@ -303,132 +553,18 @@ func ParsePercent(line string) float64 {
 	return best
 }
 
-func (b *DockerBackend) Stop(ctx context.Context) error {
-	if err := b.ensureInstalled(); err != nil {
-		return vmError("stop", ErrorConflict, err)
+// portFree says whether this host can publish a port on the loopback
+// interface, which is the only interface a machine uses.
+func portFree(port int) bool {
+	if port <= 0 || port > 65535 {
+		return false
 	}
-	if _, err := b.compose(ctx, "stop", "-t", "120"); err != nil {
-		return vmError("stop", ErrorBackend, err)
-	}
-	return nil
+	free, err := FreePort(port)
+	return err == nil && free == port
 }
 
-func (b *DockerBackend) Connect(ctx context.Context) (Connection, error) {
-	state, err := b.State(ctx)
-	if err != nil {
-		return Connection{}, err
-	}
-	if state != StateRunning {
-		return Connection{}, vmError("connect", ErrorUnavailable, errors.New("Windows guest is not RDP-ready"))
-	}
-	return Connection{Address: "127.0.0.1", Port: b.Config.RDPPort}, nil
-}
-
-// ConsoleURL is the container's web console, on the loopback interface only.
-func (b *DockerBackend) ConsoleURL() (string, error) {
-	if err := b.ensureInstalled(); err != nil {
-		return "", vmError("console", ErrorConflict, err)
-	}
-	return "http://127.0.0.1:8006/", nil
-}
-
-// Console returns the container's web console address, published on the
-// loopback interface by the Compose project.
-func (b *DockerBackend) Console(context.Context) (string, error) {
-	return b.ConsoleURL()
-}
-
-// Remove tears down the managed container and project. The guest disk and
-// its password stay: deleting the user's Windows install is a separate,
-// explicitly confirmed act (RemoveData), and that Windows still uses this
-// password.
-func (b *DockerBackend) Remove(ctx context.Context) error {
-	if err := b.ensureInstalled(); err != nil {
-		return vmError("remove", ErrorConflict, err)
-	}
-	if _, err := b.compose(ctx, "down"); err != nil {
-		return vmError("remove", ErrorBackend, err)
-	}
-	if err := os.Remove(b.composePath); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return vmError("remove", ErrorBackend, err)
-	}
-	if err := os.Remove(filepath.Join(filepath.Dir(b.composePath), ".guest.env")); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return vmError("remove", ErrorBackend, err)
-	}
-	// The guest password stays: Remove keeps the disk, and that Windows
-	// still uses this password. A later install reuses it.
-	return nil
-}
-
-// Down stops the container and removes it, leaving the project files and
-// the disk. RemoveData needs the disk unmounted first.
-func (b *DockerBackend) Down(ctx context.Context) error {
-	if err := b.ensureInstalled(); err != nil {
-		return nil
-	}
-	if _, err := b.compose(ctx, "down"); err != nil {
-		return vmError("down", ErrorBackend, err)
-	}
-	return nil
-}
-
-// dataDirMarker is the file Install leaves in a VM data directory, so that
-// RemoveData can tell a folder inua made from one a configuration names.
-const dataDirMarker = ".inua-vm"
-
-// markDataDir leaves dataDirMarker in dir, once.
-func markDataDir(dir string) error {
-	path := filepath.Join(dir, dataDirMarker)
-	if _, err := os.Lstat(path); err == nil {
-		return nil
-	}
-	return writeAtomic(path, []byte("This folder holds a Windows guest of inua-vm; deleting its disk deletes the folder.\n"), 0600)
-}
-
-// RemoveData deletes the guest disk directory. It only ever removes the
-// configured VM data directory itself, after checking that it is the kind of
-// path Inua owns: absolute, not a filesystem root, not a symlink, and either
-// the default place or a folder Install marked - a configuration naming a
-// folder of the user's must not turn Delete disk into deleting that folder.
-func (b *DockerBackend) RemoveData(ctx context.Context) error {
-	if err := b.Down(ctx); err != nil {
-		return err
-	}
-	dir := b.Config.DataDir
-	if err := validateOwnedDataDir(dir); err != nil {
-		return vmError("remove-data", ErrorInvalidConfig, err)
-	}
-	if err := rejectPathSymlinks(dir); err != nil {
-		return vmError("remove-data", ErrorInvalidConfig, err)
-	}
-	if _, err := os.Lstat(dir); errors.Is(err, os.ErrNotExist) {
-		return nil
-	} else if err != nil {
-		return vmError("remove-data", ErrorBackend, err)
-	}
-	if _, err := os.Lstat(filepath.Join(dir, dataDirMarker)); err != nil && dir != DefaultDataDir() {
-		return vmError("remove-data", ErrorInvalidConfig, fmt.Errorf("%s is not a folder inua made for the guest", dir))
-	}
-	err := os.RemoveAll(dir)
-	if err == nil || !errors.Is(err, os.ErrPermission) {
-		return err
-	}
-	// Dockur runs as root in its container, so what it leaves in folders of
-	// its own (an unfinished download) is root's, which this user cannot
-	// delete. A container of the same image, which is here once one has run,
-	// has the rights: it empties the folder, and the folder itself is ours.
-	if b.Runner == nil {
-		b.Runner = execCommandRunner{}
-	}
-	if _, err := b.Runner.Run(ctx, "docker", "run", "--rm", "--pull", "never", "--network", "none",
-		"-v", dir+":/storage", "--entrypoint", "find", dockerImage, "/storage", "-mindepth", "1", "-delete"); err != nil {
-		return vmError("remove-data", ErrorBackend, err)
-	}
-	return os.RemoveAll(dir)
-}
-
-// validateOwnedDataDir rejects anything that is not a plainly-owned VM data
-// directory, so a misconfigured path cannot turn RemoveData into a wide rm.
+// validateOwnedDataDir rejects anything that is not a plainly-owned machine
+// folder, so a misconfigured path cannot turn a removal into a wide rm.
 func validateOwnedDataDir(dir string) error {
 	clean := filepath.Clean(dir)
 	switch {
@@ -440,57 +576,6 @@ func validateOwnedDataDir(dir string) error {
 		return errors.New("refusing to remove the home directory")
 	case dir != clean:
 		return errors.New("VM data directory must be a clean path")
-	}
-	return nil
-}
-
-func (b *DockerBackend) compose(ctx context.Context, args ...string) (string, error) {
-	if b.Runner == nil {
-		b.Runner = execCommandRunner{}
-	}
-	// Pin the project name: Docker Compose otherwise derives it from the
-	// directory the file sits in, so any other Compose project whose folder
-	// is named "windows" and whose service is "windows" would be treated as
-	// this one - and `up -d` would tear its container down.
-	argv := []string{"compose", "-p", composeProject(b.Config.Name), "-f", b.composePath}
-	argv = append(argv, args...)
-	return b.Runner.Run(ctx, "docker", argv...)
-}
-
-// composeProject is the Compose project name for a VM, namespaced so it can
-// never collide with a user's own Compose files.
-func composeProject(name string) string {
-	return "inua-vm-" + name
-}
-
-// SetInstalled points the backend at cfg's Compose project, and reports
-// whether that project is actually there: a configuration on file whose
-// project was removed (or never written) is not an installed guest.
-func (b *DockerBackend) SetInstalled(cfg Config) error {
-	b.Config = cfg
-	if cfg.Name == "" {
-		b.composePath = ""
-		b.secretID = ""
-		return errors.New("no VM configured")
-	}
-	dir := filepath.Join(configBase(), "inua", "vm", cfg.Name)
-	b.composePath = filepath.Join(dir, dockerComposeFile)
-	b.secretID = "inua/windows/" + cfg.Name
-	return b.ensureInstalled()
-}
-func (b *DockerBackend) ensureInstalled() error {
-	if b.composePath == "" || b.Config.Name == "" {
-		return errors.New("VM is not installed by this backend instance")
-	}
-	if err := rejectPathSymlinks(b.composePath); err != nil {
-		return err
-	}
-	fi, err := os.Stat(b.composePath)
-	if err != nil {
-		return err
-	}
-	if !fi.Mode().IsRegular() {
-		return errors.New("compose path is not a regular file")
 	}
 	return nil
 }
@@ -559,14 +644,6 @@ func writeAtomic(path string, data []byte, mode os.FileMode) error {
 
 func yamlQuote(s string) string {
 	return "\"" + strings.NewReplacer("\\", "\\\\", "\"", "\\\"", "\n", "\\n").Replace(s) + "\""
-}
-
-func configBase() string {
-	if p := os.Getenv("XDG_CONFIG_HOME"); p != "" {
-		return p
-	}
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".config")
 }
 
 func vmError(op string, kind ErrorKind, err error) error {

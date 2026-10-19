@@ -562,6 +562,7 @@ msgstr ""
 
 #: internal/apps/weather/weather.go:214
 #: internal/appui/sysmon.go:1082
+#: internal/vmui/window.go:2166
 msgid "Unknown"
 msgstr ""
 
@@ -648,11 +649,17 @@ msgstr ""
 #: internal/appui/pass.go:801
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
-#: internal/vmui/window.go:299
+#: internal/vmui/window.go:1837
+#: internal/vmui/window.go:1842
+#: internal/vmui/window.go:1847
+#: internal/vmui/window.go:1885
+#: internal/vmui/window.go:1886
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
 #: ui/pass.ui:249
-#: ui/vm.ui:1464
+#: ui/vm.ui:1627
+#: ui/vm.ui:1924
+#: ui/vm.ui:2523
 msgid "Delete"
 msgstr ""
 
@@ -755,7 +762,7 @@ msgstr ""
 
 #: internal/appui/clock.go:402
 #: ui/pass.ui:238
-#: ui/vm.ui:260
+#: ui/vm.ui:1072
 msgid "Edit"
 msgstr ""
 
@@ -764,8 +771,9 @@ msgstr ""
 #: internal/gamesui/fortune_menu.go:174
 #: ui/clock.ui:339
 #: ui/clock.ui:406
-#: ui/vm.ui:1313
-#: ui/vm.ui:1334
+#: ui/vm.ui:690
+#: ui/vm.ui:2372
+#: ui/vm.ui:2393
 msgid "Start"
 msgstr ""
 
@@ -777,11 +785,12 @@ msgstr ""
 #: internal/appui/clock.go:496
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
-#: ui/vm.ui:821
-#: ui/vm.ui:1006
-#: ui/vm.ui:1027
-#: ui/vm.ui:1634
-#: ui/vm.ui:1655
+#: ui/vm.ui:700
+#: ui/vm.ui:1836
+#: ui/vm.ui:2065
+#: ui/vm.ui:2086
+#: ui/vm.ui:2693
+#: ui/vm.ui:2714
 msgid "Stop"
 msgstr ""
 
@@ -811,6 +820,7 @@ msgstr ""
 #: internal/appui/clock.go:581
 #: internal/appui/sysmon.go:870
 #: internal/appui/sysmon.go:870
+#: internal/vmui/window.go:2288
 msgid "Resume"
 msgstr ""
 
@@ -1411,6 +1421,7 @@ msgstr ""
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
+#: ui/vm.ui:644
 msgid "Copy"
 msgstr ""
 
@@ -1531,6 +1542,7 @@ msgstr ""
 #: internal/ui/settings_keyring.go:469
 #: internal/ui/settings_keyring.go:477
 #: internal/ui/settings_keyring.go:629
+#: internal/vmui/window.go:1457
 msgid "%s · %s"
 msgstr ""
 
@@ -1540,11 +1552,13 @@ msgstr ""
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
-#: internal/vmui/window.go:287
-#: internal/vmui/window.go:288
+#: internal/vmui/window.go:1809
+#: internal/vmui/window.go:1810
+#: internal/vmui/window.go:1877
+#: internal/vmui/window.go:1878
 #: ui/stocks.ui:292
-#: ui/vm.ui:865
-#: ui/vm.ui:1420
+#: ui/vm.ui:1880
+#: ui/vm.ui:2479
 msgid "Remove"
 msgstr ""
 
@@ -2743,6 +2757,7 @@ msgstr ""
 #: ui/pass.ui:578
 #: ui/pass.ui:809
 #: ui/polkit.ui:733
+#: ui/vm.ui:1371
 msgid "Cancel"
 msgstr ""
 
@@ -2845,6 +2860,8 @@ msgid "Replace the installed %s?"
 msgstr ""
 
 #: internal/appui/workshop_manager.go:154
+#: internal/vmui/window.go:1168
+#: ui/vm.ui:1271
 msgid "Install"
 msgstr ""
 
@@ -2926,11 +2943,12 @@ msgid "Ask"
 msgstr ""
 
 #: internal/assistantui/assistantui.go:453
+#: internal/vmui/window.go:2011
 msgid "Stopped."
 msgstr ""
 
 #: internal/assistantui/assistantui.go:456
-#: internal/vmui/window.go:763
+#: internal/vmui/window.go:2104
 msgid "Something went wrong: %s"
 msgstr ""
 
@@ -4414,8 +4432,8 @@ msgstr ""
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
 #: ui/remote.ui:603
-#: ui/vm.ui:1548
-#: ui/vm.ui:1569
+#: ui/vm.ui:2607
+#: ui/vm.ui:2628
 msgid "Connect"
 msgstr ""
 
@@ -7608,6 +7626,7 @@ msgstr ""
 
 #: internal/gamesui/fortune_ai.go:80
 #: internal/ui/settings_bench.go:217
+#: internal/vmui/assistant.go:107
 msgid "inua-assistant is not installed"
 msgstr ""
 
@@ -7740,6 +7759,7 @@ msgstr ""
 #: internal/gamesui/fortune_menu.go:109
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
+#: ui/vm.ui:536
 msgid "Back"
 msgstr ""
 
@@ -8727,6 +8747,7 @@ msgid "%s · Enter copies"
 msgstr ""
 
 #: internal/shell/launcher.go:379
+#: ui/vm.ui:877
 msgid "Ask the assistant"
 msgstr ""
 
@@ -10626,227 +10647,559 @@ msgstr ""
 msgid "Could not open the link"
 msgstr ""
 
-#: internal/vmui/app.go:21
-#: internal/vmui/window.go:791
+#: internal/vmui/app.go:22
+#: internal/vmui/window.go:706
+#: internal/vmui/window.go:2132
 #: ui/vm.ui:14
-#: ui/vm.ui:37
+#: ui/vm.ui:38
+#: ui/vm.ui:126
 #: config/apps/io.github.lyricat.Inua.VM.desktop:3
-msgid "Windows VM"
+msgid "Virtual machines"
 msgstr ""
 
-#: internal/vmui/service.go:322
-msgid "Windows installs from %s, which is not there any more."
+#: internal/vmui/assistant.go:31
+msgid "A machine in inua's virtual machine manager cannot be installed yet: this host is missing something it needs. Check what is wrong below read-only first, then say what you would change and carry it out, reporting item by item."
 msgstr ""
 
-#: internal/vmui/window.go:281
-msgid "Confirm remove"
+#: internal/vmui/assistant.go:34
+msgid "The machine: %s, %s, %d MiB of memory, %d CPUs, %d GiB of disk, run by the %s backend."
 msgstr ""
 
-#: internal/vmui/window.go:293
-msgid "Confirm delete"
+#: internal/vmui/assistant.go:37
+msgid "What it boots: firmware %s, architecture %s, machine type %s, acceleration %s, install media %s."
 msgstr ""
 
-#: internal/vmui/window.go:300
-#: ui/vm.ui:612
-msgid "Delete disk"
+#: internal/vmui/assistant.go:40
+msgid "How it is seen: %s, %s."
 msgstr ""
 
-#: internal/vmui/window.go:327
-msgid "The fix did not work: %v"
+#: internal/vmui/assistant.go:42
+msgid "This host: %s, distribution %s."
 msgstr ""
 
-#: internal/vmui/window.go:332
-msgid "Done. Log out and back in for it to take effect."
+#: internal/vmui/assistant.go:46
+msgid "%d checks failed:"
 msgstr ""
 
-#: internal/vmui/window.go:335
-msgid "Done."
+#: internal/vmui/assistant.go:50
+msgid "no package of ours covers it"
 msgstr ""
 
-#: internal/vmui/window.go:378
-msgid "Log out to finish"
+#: internal/vmui/assistant.go:53
+msgid "%d. %s — %s (%s). %s"
 msgstr ""
 
-#: internal/vmui/window.go:379
-msgid "The change takes effect the next time you log in."
+#: internal/vmui/assistant.go:59
+msgid "First check each one read-only - which, --version, ls, systemctl status - and tell me what you actually see. Do not change anything yet."
 msgstr ""
 
-#: internal/vmui/window.go:470
+#: internal/vmui/assistant.go:61
+msgid "Then give me the exact commands for each item and what they would change, and run them with pkexec - for example pkexec apt-get install -y PACKAGE - never with sudo: inua's own polkit agent asks me for the password, and nothing is installed until I answer. Do it one batch at a time: say what each batch installs and why before running it, and give me the command that verifies it afterwards."
+msgstr ""
+
+#: internal/vmui/assistant.go:64
+msgid "This host is NixOS: tell me what to add to the system configuration (environment.systemPackages, virtualisation, and so on) rather than changing or rebuilding the system yourself."
+msgstr ""
+
+#: internal/vmui/assistant.go:67
+msgid "Finally tell me how to confirm each fix - which command, and what to look for. I will press Check again in inua and continue the installation once the checks pass."
+msgstr ""
+
+#: internal/vmui/assistant.go:69
+msgid "No keys, tokens or passwords are needed for this, and none are in this message."
+msgstr ""
+
+#: internal/vmui/assistant.go:82
+msgid "not chosen yet"
+msgstr ""
+
+#: internal/vmui/assistant.go:110
+msgid "The assistant could not be started: %v"
+msgstr ""
+
+#: internal/vmui/window.go:699
+msgid "New machine"
+msgstr ""
+
+#: internal/vmui/window.go:700
+msgid "Pick what the new machine runs."
+msgstr ""
+
+#: internal/vmui/window.go:707
+msgid "Machines keep running with this window closed."
+msgstr ""
+
+#: internal/vmui/window.go:713
+msgid "Machine folder needs recovery"
+msgstr ""
+
+#: internal/vmui/window.go:726
+#: ui/vm.ui:478
+msgid "No backend for this machine"
+msgstr ""
+
+#: internal/vmui/window.go:727
+msgid "This machine needs the %s backend, which this build does not have."
+msgstr ""
+
+#: internal/vmui/window.go:794
+msgid "Turn the debugger on to hold the guest for gdb."
+msgstr ""
+
+#: internal/vmui/window.go:834
+#: ui/vm.ui:1748
+#: ui/vm.ui:2043
+#: ui/vm.ui:2671
+msgid "Open web console"
+msgstr ""
+
+#: internal/vmui/window.go:837
+msgid "Serial console"
+msgstr ""
+
+#: internal/vmui/window.go:838
+msgid "What this system prints, on its own serial console."
+msgstr ""
+
+#: internal/vmui/window.go:882
+msgid "The command is on your clipboard."
+msgstr ""
+
+#: internal/vmui/window.go:904
+msgid "Accelerated"
+msgstr ""
+
+#: internal/vmui/window.go:908
+msgid "Emulated (slow): this machine asks for emulation"
+msgstr ""
+
+#: internal/vmui/window.go:910
+msgid "Emulated (slow): the guest is built for another architecture"
+msgstr ""
+
+#: internal/vmui/window.go:912
+msgid "Emulated (slow): this host has no /dev/kvm"
+msgstr ""
+
+#: internal/vmui/window.go:914
+msgid "Emulated (slow): your user may not open /dev/kvm"
+msgstr ""
+
+#: internal/vmui/window.go:916
+msgid "Emulated (slow)"
+msgstr ""
+
+#: internal/vmui/window.go:927
+msgid "2D: Windows has no accelerated driver here"
+msgstr ""
+
+#: internal/vmui/window.go:931
+msgid "3D (OpenGL, through the host's GPU)"
+msgstr ""
+
+#: internal/vmui/window.go:933
+msgid "3D (Vulkan, through the host's GPU)"
+msgstr ""
+
+#: internal/vmui/window.go:935
+msgid "2D"
+msgstr ""
+
+#: internal/vmui/window.go:1025
+msgid "That name cannot be used: %v"
+msgstr ""
+
+#: internal/vmui/window.go:1077
 msgid "Fix"
 msgstr ""
 
-#: internal/vmui/window.go:472
+#: internal/vmui/window.go:1079
 msgid "Add me to %s"
 msgstr ""
 
-#: internal/vmui/window.go:507
+#: internal/vmui/window.go:1117
 msgid "Start inua-keyring, or install a Secret Service."
 msgstr ""
 
-#: internal/vmui/window.go:511
-msgid "Turn on virtualization (Intel VT-x or AMD-V) in the firmware settings."
+#: internal/vmui/window.go:1120
+msgid "This manager needs NixOS, Ubuntu or Debian."
 msgstr ""
 
-#: internal/vmui/window.go:516
+#: internal/vmui/window.go:1164
 msgid "Add %s to your NixOS configuration."
 msgstr ""
 
-#: internal/vmui/window.go:532
+#: internal/vmui/window.go:1176
 msgid "Operating system"
 msgstr ""
 
-#: internal/vmui/window.go:534
+#: internal/vmui/window.go:1178
 msgid "Hardware virtualization (KVM)"
 msgstr ""
 
-#: internal/vmui/window.go:536
+#: internal/vmui/window.go:1180
 msgid "Docker"
 msgstr ""
 
-#: internal/vmui/window.go:538
+#: internal/vmui/window.go:1182
 msgid "Docker Compose v2"
 msgstr ""
 
-#: internal/vmui/window.go:540
+#: internal/vmui/window.go:1184
 msgid "FreeRDP"
 msgstr ""
 
-#: internal/vmui/window.go:542
+#: internal/vmui/window.go:1186
 msgid "Browser opener"
 msgstr ""
 
-#: internal/vmui/window.go:544
+#: internal/vmui/window.go:1188
 msgid "Disk space"
 msgstr ""
 
-#: internal/vmui/window.go:546
+#: internal/vmui/window.go:1190
 msgid "Network device (TUN)"
 msgstr ""
 
-#: internal/vmui/window.go:548
+#: internal/vmui/window.go:1192
 #: ui/settings.ui:3819
 msgid "Secret Service"
 msgstr ""
 
-#: internal/vmui/window.go:562
+#: internal/vmui/window.go:1196
+msgid "UEFI firmware"
+msgstr ""
+
+#: internal/vmui/window.go:1200
+msgid "Binder (the kernel's Android support)"
+msgstr ""
+
+#: internal/vmui/window.go:1214
 msgid "Your user may not use Docker's socket. Joining the docker group would let anything running as you control this machine as root, so Inua will not do it for you: run `sudo gpasswd -a $USER docker` yourself if you accept that, or use rootless Docker or Podman instead."
 msgstr ""
 
-#: internal/vmui/window.go:566
+#: internal/vmui/window.go:1218
 msgid "Not installed on this system."
 msgstr ""
 
-#: internal/vmui/window.go:568
+#: internal/vmui/window.go:1220
 msgid "Installed, but your user may not use it."
 msgstr ""
 
-#: internal/vmui/window.go:570
+#: internal/vmui/window.go:1222
 msgid "Installed, but not running."
 msgstr ""
 
-#: internal/vmui/window.go:572
-msgid "Windows VM needs Linux."
+#: internal/vmui/window.go:1224
+msgid "This Linux distribution is not supported."
 msgstr ""
 
-#: internal/vmui/window.go:574
+#: internal/vmui/window.go:1226
 msgid "Could not be checked."
 msgstr ""
 
-#: internal/vmui/window.go:593
+#: internal/vmui/window.go:1250
 msgid "A balanced profile leaves memory and CPU for your system."
 msgstr ""
 
-#: internal/vmui/window.go:611
-msgid "Windows 11, downloaded from Microsoft."
+#: internal/vmui/window.go:1252
+msgid "Choose or download an install image before installing this machine."
 msgstr ""
 
-#: internal/vmui/window.go:612
-#: ui/vm.ui:471
-msgid "Choose ISO…"
-msgstr ""
-
-#: internal/vmui/window.go:615
-#: internal/vmui/window.go:618
-msgid "Change…"
-msgstr ""
-
-#: internal/vmui/window.go:617
-msgid "%s is not there any more."
-msgstr ""
-
-#: internal/vmui/window.go:622
+#: internal/vmui/window.go:1254
 msgid "Files from a previous attempt are still here. Install reuses them; delete them to start over."
 msgstr ""
 
-#: internal/vmui/window.go:624
-msgid "Installs Windows from the ISO, which stays as it is; takes 20+ minutes."
+#: internal/vmui/window.go:1293
+msgid "%s of %s downloaded"
 msgstr ""
 
-#: internal/vmui/window.go:626
-#: ui/vm.ui:502
-msgid "Downloads about 8 GB and installs Windows; takes 30+ minutes."
+#: internal/vmui/window.go:1298
+msgid "%s downloaded"
 msgstr ""
 
-#: internal/vmui/window.go:636
-msgid "Choose a Windows ISO"
+#: internal/vmui/window.go:1321
+msgid "Every architecture"
 msgstr ""
 
-#: internal/vmui/window.go:638
-msgid "Disc images (ISO)"
+#: internal/vmui/window.go:1370
+msgid "Every platform"
 msgstr ""
 
-#: internal/vmui/window.go:695
-msgid "Windows is installing; this takes a while."
+#: internal/vmui/window.go:1372
+msgid "Linux"
 msgstr ""
 
-#: internal/vmui/window.go:697
-#: internal/vmui/window.go:740
+#: internal/vmui/window.go:1374
+msgid "BSD"
+msgstr ""
+
+#: internal/vmui/window.go:1376
+#: ui/settings.ui:1910
+msgid "Windows"
+msgstr ""
+
+#: internal/vmui/window.go:1378
+msgid "Other"
+msgstr ""
+
+#: internal/vmui/window.go:1429
+#: internal/vmui/window.go:2256
+msgid "Live image"
+msgstr ""
+
+#: internal/vmui/window.go:1431
+#: internal/vmui/window.go:2258
+msgid "Installer"
+msgstr ""
+
+#: internal/vmui/window.go:1440
+msgid "%d installer"
+msgid_plural "%d installers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/vmui/window.go:1443
+msgid "%d live image"
+msgid_plural "%d live images"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/vmui/window.go:1446
+msgid "newest %s"
+msgstr ""
+
+#: internal/vmui/window.go:1449
+#: internal/vmui/window.go:1458
+msgid "%d install image"
+msgid_plural "%d install images"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/vmui/window.go:1457
+msgid "%d system"
+msgid_plural "%d systems"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/vmui/window.go:1684
+msgid "The system is installing; this takes a while."
+msgstr ""
+
+#: internal/vmui/window.go:1686
+#: internal/vmui/window.go:1727
 msgid "Stopping…"
 msgstr ""
 
-#: internal/vmui/window.go:699
+#: internal/vmui/window.go:1688
 msgid "The installation is paused. Continue to resume."
 msgstr ""
 
-#: internal/vmui/window.go:742
-msgid "Windows is starting; ready in a minute or two."
+#: internal/vmui/window.go:1729
+msgid "The system is starting; ready in a minute or two."
 msgstr ""
 
-#: internal/vmui/window.go:767
-msgid "This system is missing something Windows needs"
+#: internal/vmui/window.go:1803
+msgid "Confirm remove"
 msgstr ""
 
-#: internal/vmui/window.go:770
+#: internal/vmui/window.go:1815
+#: internal/vmui/window.go:1824
+#: internal/vmui/window.go:1833
+#: internal/vmui/window.go:1843
+#: internal/vmui/window.go:1852
+msgid "Confirm delete"
+msgstr ""
+
+#: internal/vmui/window.go:1819
+#: internal/vmui/window.go:1828
+#: internal/vmui/window.go:1881
+#: internal/vmui/window.go:1882
+#: ui/vm.ui:1583
+msgid "Delete disk"
+msgstr ""
+
+#: internal/vmui/window.go:1856
+#: internal/vmui/window.go:1887
+#: ui/vm.ui:183
+msgid "Delete folder"
+msgstr ""
+
+#: internal/vmui/window.go:1910
+msgid "Request sent to the assistant window."
+msgstr ""
+
+#: internal/vmui/window.go:1948
+msgid "The fix did not work: %v"
+msgstr ""
+
+#: internal/vmui/window.go:1953
+msgid "Done. Log out and back in for it to take effect."
+msgstr ""
+
+#: internal/vmui/window.go:1956
+msgid "Done."
+msgstr ""
+
+#: internal/vmui/window.go:1978
+#: internal/vmui/window.go:2013
+msgid "That did not work: %v"
+msgstr ""
+
+#: internal/vmui/window.go:2066
+msgid "Log out to finish"
+msgstr ""
+
+#: internal/vmui/window.go:2067
+msgid "The change takes effect the next time you log in."
+msgstr ""
+
+#: internal/vmui/window.go:2108
+msgid "This system is missing something the guest needs"
+msgstr ""
+
+#: internal/vmui/window.go:2111
 msgid "Files from a previous attempt are still here"
 msgstr ""
 
-#: internal/vmui/window.go:772
+#: internal/vmui/window.go:2113
 msgid "Not installed yet"
 msgstr ""
 
-#: internal/vmui/window.go:775
-#: internal/vmui/window.go:783
+#: internal/vmui/window.go:2116
+#: internal/vmui/window.go:2124
+#: internal/vmui/window.go:2156
 msgid "Stopping"
 msgstr ""
 
-#: internal/vmui/window.go:778
-msgid "Installing Windows"
+#: internal/vmui/window.go:2119
+#: internal/vmui/window.go:2158
+msgid "Installing"
 msgstr ""
 
-#: internal/vmui/window.go:780
+#: internal/vmui/window.go:2121
 msgid "Installation paused"
 msgstr ""
 
-#: internal/vmui/window.go:785
-msgid "Windows is starting"
+#: internal/vmui/window.go:2126
+#: internal/vmui/window.go:2160
+msgid "Starting"
 msgstr ""
 
-#: internal/vmui/window.go:787
-msgid "Windows is running"
+#: internal/vmui/window.go:2128
+#: internal/vmui/window.go:2162
+msgid "Running"
 msgstr ""
 
-#: internal/vmui/window.go:789
+#: internal/vmui/window.go:2130
+#: internal/vmui/window.go:2164
 msgid "Stopped"
+msgstr ""
+
+#: internal/vmui/window.go:2138
+msgid "%s · no backend in this build"
+msgstr ""
+
+#: internal/vmui/window.go:2147
+msgid "Working"
+msgstr ""
+
+#: internal/vmui/window.go:2151
+msgid "Needs the host"
+msgstr ""
+
+#: internal/vmui/window.go:2153
+msgid "Not installed"
+msgstr ""
+
+#: internal/vmui/window.go:2183
+#: internal/vmui/window.go:2337
+msgid "Custom system"
+msgstr ""
+
+#: internal/vmui/window.go:2212
+msgid "Downloads about 8 GB and installs Windows; takes 30+ minutes. Windows needs a licence."
+msgstr ""
+
+#: internal/vmui/window.go:2214
+msgid "The guest installs from its own media, as it would on a real machine."
+msgstr ""
+
+#: internal/vmui/window.go:2223
+msgid "inua's own list"
+msgstr ""
+
+#: internal/vmui/window.go:2232
+msgid "Installs from %s."
+msgstr ""
+
+#: internal/vmui/window.go:2235
+msgid "osinfo-db is not installed, so this is inua's short built-in list."
+msgstr ""
+
+#: internal/vmui/window.go:2237
+msgid "Choose an install image to download; the machine boots it as a disc."
+msgstr ""
+
+#: internal/vmui/window.go:2270
+#: internal/vmui/window.go:2304
+msgid "Already in the cache"
+msgstr ""
+
+#: internal/vmui/window.go:2274
+msgid "Unfinished download"
+msgstr ""
+
+#: internal/vmui/window.go:2284
+msgid "Retry"
+msgstr ""
+
+#: internal/vmui/window.go:2286
+msgid "Use this image"
+msgstr ""
+
+#: internal/vmui/window.go:2290
+msgid "Download"
+msgstr ""
+
+#: internal/vmui/window.go:2300
+msgid "Checksum verified"
+msgstr ""
+
+#: internal/vmui/window.go:2302
+msgid "No published checksum"
+msgstr ""
+
+#: internal/vmui/window.go:2346
+msgid "Windows 11, installed for you in a container."
+msgstr ""
+
+#: internal/vmui/window.go:2348
+msgid "Windows 11 from your own ISO, with the virtio drivers."
+msgstr ""
+
+#: internal/vmui/window.go:2350
+msgid "Ubuntu, booted with QEMU from its ISO."
+msgstr ""
+
+#: internal/vmui/window.go:2352
+msgid "Fedora, booted with QEMU from its ISO."
+msgstr ""
+
+#: internal/vmui/window.go:2354
+msgid "Arch Linux, booted with QEMU from its ISO."
+msgstr ""
+
+#: internal/vmui/window.go:2356
+msgid "FreeBSD, booted with QEMU from its ISO."
+msgstr ""
+
+#: internal/vmui/window.go:2358
+msgid "Android in Waydroid, with the host's display and GPU."
+msgstr ""
+
+#: internal/vmui/window.go:2360
+msgid "Your own system: an ISO, a disk or a kernel, on any architecture."
 msgstr ""
 
 #: internal/workshop/session.go:141
@@ -11363,6 +11716,8 @@ msgid "Or in a terminal:"
 msgstr ""
 
 #: ui/gpg.ui:1488
+#: ui/vm.ui:415
+#: ui/vm.ui:437
 msgid "Create"
 msgstr ""
 
@@ -12085,10 +12440,6 @@ msgstr ""
 
 #: ui/settings.ui:1895
 msgid "What Super+Space shows first; Tab switches"
-msgstr ""
-
-#: ui/settings.ui:1910
-msgid "Windows"
 msgstr ""
 
 #: ui/settings.ui:1943
@@ -12877,187 +13228,310 @@ msgstr ""
 msgid "Open a File…"
 msgstr ""
 
-#: ui/vm.ui:93
-msgid "[HOST]"
+#: ui/vm.ui:49
+msgid "New"
 msgstr ""
 
-#: ui/vm.ui:159
-#: ui/vm.ui:1075
-#: ui/vm.ui:1511
-msgid "[GUEST]"
+#: ui/vm.ui:50
+msgid "Add a machine from a template"
 msgstr ""
 
-#: ui/vm.ui:196
-msgid "Recommended profile"
+#: ui/vm.ui:75
+msgid "Needs recovery"
 msgstr ""
 
-#: ui/vm.ui:217
-msgid "Use it"
+#: ui/vm.ui:172
+msgid "This machine folder cannot be loaded. Deleting it permanently removes all files inside."
 msgstr ""
 
-#: ui/vm.ui:239
-msgid "Advanced configuration"
+#: ui/vm.ui:216
+msgid "No machines yet"
 msgstr ""
 
-#: ui/vm.ui:248
-msgid "Set memory, CPU cores and disk size yourself."
+#: ui/vm.ui:224
+msgid "New picks an operating system; the machine's fields follow."
 msgstr ""
 
-#: ui/vm.ui:284
-#: ui/vm.ui:1106
-msgid "Memory (MiB)"
+#: ui/vm.ui:267
+msgid "[TEMPLATE]"
 msgstr ""
 
-#: ui/vm.ui:318
-#: ui/vm.ui:1155
-msgid "CPU cores"
+#: ui/vm.ui:326
+msgid "[NAME]"
 msgstr ""
 
-#: ui/vm.ui:352
-#: ui/vm.ui:1204
-msgid "Disk size (GiB)"
+#: ui/vm.ui:355
+msgid "Machine name"
 msgstr ""
 
-#: ui/vm.ui:409
-msgid "[INSTALL]"
+#: ui/vm.ui:366
+msgid "The folder and the container are named after it."
 msgstr ""
 
-#: ui/vm.ui:439
-msgid "Installer"
+#: ui/vm.ui:376
+msgid "windows"
 msgstr ""
 
-#: ui/vm.ui:460
-msgid "Download instead"
+#: ui/vm.ui:426
+msgid "Writes the machine's definition. Nothing is installed or started yet."
 msgstr ""
 
-#: ui/vm.ui:493
 #: ui/vm.ui:525
-msgid "Install Windows"
+msgid "[CONSOLE]"
 msgstr ""
 
-#: ui/vm.ui:512
-msgid "Windows needs a licence of its own."
-msgstr ""
-
-#: ui/vm.ui:561
-msgid "[DISK]"
+#: ui/vm.ui:581
+msgid "Wait for a debugger"
 msgstr ""
 
 #: ui/vm.ui:590
-msgid "Previous files"
+msgid "Holds the guest at its first instruction, for gdb on 127.0.0.1:1234."
 msgstr ""
 
-#: ui/vm.ui:599
-msgid "Permanently deletes leftover install files. Cannot be undone."
+#: ui/vm.ui:621
+msgid "Debugger"
 msgstr ""
 
-#: ui/vm.ui:659
-#: ui/vm.ui:910
-msgid "[PROGRESS]"
+#: ui/vm.ui:679
+msgid "[SERIAL]"
 msgstr ""
 
-#: ui/vm.ui:711
-msgid "Watch the installation"
+#: ui/vm.ui:775
+msgid "[HOST]"
 msgstr ""
 
-#: ui/vm.ui:720
-msgid "The installer screen is in your browser. The web console on 127.0.0.1:8006 has no login of its own."
+#: ui/vm.ui:826
+msgid "[ASSISTANT]"
 msgstr ""
 
-#: ui/vm.ui:733
-#: ui/vm.ui:984
-#: ui/vm.ui:1612
-msgid "Open web console"
+#: ui/vm.ui:855
+msgid "Ask the assistant to fix this"
 msgstr ""
 
-#: ui/vm.ui:755
-msgid "Continue installation"
+#: ui/vm.ui:866
+msgid "It checks what is missing, says what it would change, and runs it with its own approval."
 msgstr ""
 
-#: ui/vm.ui:764
-msgid "Starts the container; Windows installs itself inside it."
+#: ui/vm.ui:899
+#: ui/vm.ui:921
+msgid "Check again"
 msgstr ""
 
-#: ui/vm.ui:777
-msgid "Continue"
-msgstr ""
-
-#: ui/vm.ui:799
-msgid "Stop waiting"
-msgstr ""
-
-#: ui/vm.ui:808
-msgid "Stops the container; the disk is kept. Reopen to resume."
-msgstr ""
-
-#: ui/vm.ui:843
-msgid "Abandon installation"
-msgstr ""
-
-#: ui/vm.ui:852
-msgid "Removes the project so you can start over. Downloaded files stay."
-msgstr ""
-
-#: ui/vm.ui:962
-#: ui/vm.ui:1591
-msgid "Web console"
+#: ui/vm.ui:908
+msgid "Reads the host again, after the assistant has changed something."
 msgstr ""
 
 #: ui/vm.ui:971
+#: ui/vm.ui:2134
+#: ui/vm.ui:2570
+msgid "[GUEST]"
+msgstr ""
+
+#: ui/vm.ui:1008
+msgid "Recommended profile"
+msgstr ""
+
+#: ui/vm.ui:1029
+msgid "Use it"
+msgstr ""
+
+#: ui/vm.ui:1051
+msgid "Advanced configuration"
+msgstr ""
+
+#: ui/vm.ui:1060
+msgid "Set memory, CPU cores and disk size yourself."
+msgstr ""
+
+#: ui/vm.ui:1096
+#: ui/vm.ui:2165
+msgid "Memory (MiB)"
+msgstr ""
+
+#: ui/vm.ui:1130
+#: ui/vm.ui:2214
+msgid "CPU cores"
+msgstr ""
+
+#: ui/vm.ui:1164
+#: ui/vm.ui:2263
+msgid "Disk size (GiB)"
+msgstr ""
+
+#: ui/vm.ui:1221
+msgid "[INSTALL]"
+msgstr ""
+
+#: ui/vm.ui:1250
+msgid "Install the system"
+msgstr ""
+
+#: ui/vm.ui:1307
+msgid "[IMAGE]"
+msgstr ""
+
+#: ui/vm.ui:1390
+msgid "Search systems and images"
+msgstr ""
+
+#: ui/vm.ui:1399
+msgid "Which platform to show"
+msgstr ""
+
+#: ui/vm.ui:1408
+msgid "Which architecture to show"
+msgstr ""
+
+#: ui/vm.ui:1422
+msgid "Prerelease"
+msgstr ""
+
+#: ui/vm.ui:1428
+msgid "Also show prerelease and development systems"
+msgstr ""
+
+#: ui/vm.ui:1444
+msgid "Ended"
+msgstr ""
+
+#: ui/vm.ui:1450
+msgid "Also show systems past their support date"
+msgstr ""
+
+#: ui/vm.ui:1472
+msgid "Recommended"
+msgstr ""
+
+#: ui/vm.ui:1490
+msgid "All systems"
+msgstr ""
+
+#: ui/vm.ui:1532
+msgid "[DISK]"
+msgstr ""
+
+#: ui/vm.ui:1561
+msgid "Previous files"
+msgstr ""
+
+#: ui/vm.ui:1570
+msgid "Permanently deletes leftover install files. Cannot be undone."
+msgstr ""
+
+#: ui/vm.ui:1605
+#: ui/vm.ui:1902
+msgid "Delete machine"
+msgstr ""
+
+#: ui/vm.ui:1614
+msgid "Removes the machine and its files. Cannot be undone."
+msgstr ""
+
+#: ui/vm.ui:1674
+#: ui/vm.ui:1969
+msgid "[PROGRESS]"
+msgstr ""
+
+#: ui/vm.ui:1726
+msgid "Watch the installation"
+msgstr ""
+
+#: ui/vm.ui:1735
+msgid "The installer screen is in your browser. The web console on 127.0.0.1:8006 has no login of its own."
+msgstr ""
+
+#: ui/vm.ui:1770
+msgid "Continue installation"
+msgstr ""
+
+#: ui/vm.ui:1779
+msgid "Starts the container; Windows installs itself inside it."
+msgstr ""
+
+#: ui/vm.ui:1792
+msgid "Continue"
+msgstr ""
+
+#: ui/vm.ui:1814
+msgid "Stop waiting"
+msgstr ""
+
+#: ui/vm.ui:1823
+msgid "Stops the container; the disk is kept. Reopen to resume."
+msgstr ""
+
+#: ui/vm.ui:1858
+msgid "Abandon installation"
+msgstr ""
+
+#: ui/vm.ui:1867
+msgid "Removes the project so you can start over. Downloaded files stay."
+msgstr ""
+
+#: ui/vm.ui:1911
+msgid "Permanently deletes the machine and all its files."
+msgstr ""
+
+#: ui/vm.ui:2021
+#: ui/vm.ui:2650
+msgid "Web console"
+msgstr ""
+
+#: ui/vm.ui:2030
 msgid "The guest screen is in your browser until RDP is ready."
 msgstr ""
 
-#: ui/vm.ui:1015
-#: ui/vm.ui:1643
+#: ui/vm.ui:2074
+#: ui/vm.ui:2702
 msgid "Stops the guest; the disk is kept."
 msgstr ""
 
-#: ui/vm.ui:1137
-#: ui/vm.ui:1186
+#: ui/vm.ui:2196
+#: ui/vm.ui:2245
 msgid "Takes effect on next start."
 msgstr ""
 
-#: ui/vm.ui:1228
+#: ui/vm.ui:2287
 msgid "Enlarging needs a manual partition resize inside Windows."
 msgstr ""
 
-#: ui/vm.ui:1249
+#: ui/vm.ui:2308
 msgid "Apply"
 msgstr ""
 
-#: ui/vm.ui:1284
+#: ui/vm.ui:2343
 msgid "[ACTIONS]"
 msgstr ""
 
-#: ui/vm.ui:1322
+#: ui/vm.ui:2381
 msgid "Starts the guest; ready in a minute or two."
 msgstr ""
 
-#: ui/vm.ui:1369
+#: ui/vm.ui:2428
 msgid "[REMOVE]"
 msgstr ""
 
-#: ui/vm.ui:1398
+#: ui/vm.ui:2457
 msgid "Remove VM"
 msgstr ""
 
-#: ui/vm.ui:1407
+#: ui/vm.ui:2466
 msgid "Deletes the container and project. The disk and its password stay."
 msgstr ""
 
-#: ui/vm.ui:1442
+#: ui/vm.ui:2501
 msgid "Delete disk data"
 msgstr ""
 
-#: ui/vm.ui:1451
+#: ui/vm.ui:2510
 msgid "Permanently deletes the Windows disk. Cannot be undone."
 msgstr ""
 
-#: ui/vm.ui:1557
+#: ui/vm.ui:2616
 msgid "Opens FreeRDP."
 msgstr ""
 
-#: ui/vm.ui:1600
+#: ui/vm.ui:2659
 msgid "The guest screen in the browser."
 msgstr ""
 
@@ -13228,11 +13702,11 @@ msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.VM.desktop:10
-msgid "Run a Windows virtual machine"
+msgid "Run other systems as machines: Windows, Linux, FreeBSD, Android, or your own"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.VM.desktop:20
-msgid "virtual machine;windows;docker;kvm;rdp;guest;"
+msgid "virtual machine;windows;linux;freebsd;android;qemu;docker;kvm;rdp;guest;"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.Video.desktop:10

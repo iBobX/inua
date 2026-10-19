@@ -397,52 +397,71 @@ the policy, takes effect at the next call.
 Every tool, its arguments, results and risk: [mcp.md](mcp.md).
 
 
-## Windows VM
+## Virtual machines
 
-A program of its own: `inua-vm` runs one Windows guest with Docker (Dockur)
-and KVM, and reaches it over RDP; it is in the launcher and in the drawer's
-SYSTEM group. Its window shows one page at a time: the host checks with
-their fixes, the recommended profile and **Install Windows**, the progress
-of the first installation with the web console, and then **Start**,
-**Connect** and **Stop**; memory and CPU for the next start, and removal,
-sit in their own section. A fix that adds you to a group needs a fresh
-login, since a running program cannot change its own groups: the window
-says so and sends a notification.
+A program of its own: `inua-vm` manages machines — guests of their own —
+each one a folder under `~/.local/share/inua/vm/NAME/` with a `machine.toml`
+in it and the guest's own files beside it. Its window lists the machines on
+the left and shows the chosen machine's page on the right, one page at a
+time: the host checks with their fixes, the recommended profile and
+**Install Windows**, the progress of the first installation with the web
+console, and then **Start**, **Connect** and **Stop**; memory and CPU for the
+next start, and removal, sit in their own section. **New** makes a machine
+from one of eight templates: Windows 11 in a container (Docker, Dockur),
+Windows 11 from your own ISO with QEMU, Ubuntu, Fedora, Arch, FreeBSD,
+Android in Waydroid, and a custom system whose boot section is open field by
+field.
 
-```
-inua-vm --doctor            what this host provides, and what is missing
-inua-vm --status [--json]   the same, for scripts
-inua-vm --start             start the guest
-inua-vm --stop              stop the guest, keeping its disk
-```
+A machine's `machine.toml` is read and written by `internal/vm`
+(`machine.go`, `store.go`, `templates.go`): its name, its `os` (windows,
+linux, freebsd, android or custom), its `backend` (qemu, dockur or
+waydroid), its memory, CPUs and disk, and its `[boot]`, `[display]` and
+`[seamless]` sections. A folder whose file does not hold is left out of the
+window's list and named by `inua-vm --doctor`, which also lists the folders
+that are not machines. A machine's runtime files (its sockets, a pid, the
+serial console) live in `$XDG_RUNTIME_DIR/inua-vm/NAME/`; its password stays
+in the Secret Service, labelled `inua-vm · NAME`. A machine installed by the
+previous version is adopted automatically, keeping its disk and its password.
+Each machine reserves its own loopback ports for RDP and the web console, so
+several machines' ports never collide.
 
-`inua vm doctor|status` prints the same diagnostics.
+QEMU runs Linux, FreeBSD and custom systems from an ISO, a disk or a kernel
+file, on this architecture or another, with BIOS or UEFI firmware. For Linux
+and FreeBSD, choose or download an install image before Install; Inua disables
+Install until media, a kernel or an existing guest disk is available. Its
+serial console streams guest output while the console page is open, and can
+hold the guest at its first instruction for gdb. Docker (Dockur) runs Windows.
+The Waydroid backend (Android) and seamless windows are the following steps
+([inua-vm.md](inua-vm.md)): an Android machine is stored, listed and described,
+and its page says this build has no backend for it yet.
+
+`inua-vm --list` names the machines, one per line; `inua-vm --doctor
+[--json]` and `inua-vm --status [--json]` print what this host provides and
+what each machine is doing, read-only, for scripts; `inua-vm --start NAME`
+and `--stop NAME` run a machine without a window, and
+`inua vm list|doctor|status` prints the same diagnostics from the shell.
 
 It needs Docker Engine with Compose v2, KVM (`/dev/kvm`), FreeRDP,
 `xdg-open` and `/dev/net/tun`; the window names whichever is missing and the
 packages that provide it. The baseline is 4 GiB of memory, 2 CPUs and 64 GiB
-of disk, adjusted to the host's resources. There is no ISO to prepare: the
-container fetches Windows' own installation media and installs it
-unattended, which is why the first installation takes tens of minutes.
-**Choose ISO…** on the setup page installs from an ISO of yours instead (a
-Windows 10 one, say): the container takes it read-only, and Windows boots
-from its disk afterwards, so the ISO may go once Windows is installed. The
+of disk, adjusted to the host's resources. For Windows there is no ISO to
+prepare: the container fetches Windows' own installation media and installs
+it unattended, which is why the first installation takes tens of minutes. The
 image is pinned to a version and digest, every port binds to 127.0.0.1, and
 the guest password is generated once and kept in the Secret Service — never
-in the Compose project or in your configuration; the environment file that
-hands it to the container is written 0600. Two things the window says
-outright: the web console on 127.0.0.1:8006 has no login of its own, and
+in the Compose project or in your configuration. The host checks include the
+Secret Service, since a machine's password lives there. Two things the window
+says outright: the web console on 127.0.0.1:8006 has no login of its own, and
 Windows needs a licence.
 
 Docker socket access is as good as root on this machine, so inua explains it
 and never offers to add you to the `docker` group: it shows the command, for
 whoever decides they want it, and points at rootless Docker or Podman
-instead. The `kvm` group fix, which grants one device, stays. Removing the
-guest deletes the container and the project but keeps its disk and its
-password, so a later install reuses that Windows; **Delete disk** is a
-separate, confirmed action. Only Windows runs today: Linux, FreeBSD, Android
-and custom systems, and seamless windows, are the later steps of
-[inua-vm.md](inua-vm.md).
+instead. The `kvm` group fix, which grants one device, stays. **Remove** stops
+the backend while keeping the guest's disk; **Delete disk** removes guest
+files while keeping the machine, and confirmed **Delete** removes the machine
+and its files. A stopped incomplete installation can be deleted too. Unreadable
+machine folders appear under **Needs recovery** with a confirmed folder delete.
 
 ## Remote Desktop
 

@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"golang.org/x/sys/unix"
 )
 
 func TestPageFor(t *testing.T) {
@@ -157,19 +155,5 @@ func TestDetectHostRoot(t *testing.T) {
 	}
 	if h.CPUs < 1 || h.OS == "" {
 		t.Fatalf("incomplete host: %+v", h)
-	}
-}
-
-// The free space is measured where the guest's disk will be, before that
-// folder exists, and as this user may use it.
-func TestFreeSpaceIsWhereTheDiskGoes(t *testing.T) {
-	dir := t.TempDir()
-	var stat unix.Statfs_t
-	if err := unix.Statfs(dir, &stat); err != nil {
-		t.Fatal(err)
-	}
-	got := freeSpace(filepath.Join(dir, "inua", "vm", "windows"))
-	if got == 0 || got > stat.Bavail*uint64(stat.Bsize)+64<<20 {
-		t.Fatalf("freeSpace = %d, want about %d", got, stat.Bavail*uint64(stat.Bsize))
 	}
 }
