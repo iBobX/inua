@@ -282,6 +282,11 @@ connect-tv                            television
 battery-low                           battery-low
 folder-download                       download-simple
 dialog-error                          warning-circle
+# Disk Usage
+disk-drive                            hard-drive
+disk-dev                              code
+disk-agent                            robot
+disk-cache                            broom
 LIST
 if [ "$weight" = regular ] && [ -n "${LOBEHUB_ICONS:-}" ]; then
 	# agent name (inua-term's)   LobeHub's monochrome icon

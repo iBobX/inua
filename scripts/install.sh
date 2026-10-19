@@ -139,8 +139,8 @@ src=$tmp/$name
 # --- the programs and launchers --------------------------------------------
 
 heading "Installing the programs"
-for bin in inua-shell inua inua-apps inua-files inua-viewer inua-vm inua-remote inua-connect inua-games inua-pinentry inua-assistant inua-keyring inua-term; do
-    [ -f "$src/$bin" ] || continue # inua-files, inua-viewer, inua-vm, inua-remote, inua-connect, inua-games, inua-assistant, inua-keyring and inua-term came after v0.0.2
+for bin in inua-shell inua inua-apps inua-files inua-viewer inua-vm inua-remote inua-connect inua-disk-usage inua-games inua-pinentry inua-assistant inua-keyring inua-term; do
+    [ -f "$src/$bin" ] || continue # inua-files, inua-viewer, inua-vm, inua-remote, inua-connect, inua-disk-usage, inua-games, inua-assistant, inua-keyring and inua-term came after v0.0.2
     install -Dm755 "$src/$bin" "$prefix/bin/$bin"
 done
 # inua-term's engine, beside the programs (PREFIX/lib/inua)

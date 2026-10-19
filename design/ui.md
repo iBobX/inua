@@ -43,6 +43,11 @@ colour of its own. A user's theme overrides only the tokens it names.
 | `field` | The wallpaper's texture |
 | `sb`, `sbaccent` | The bar |
 
+The few places that tell kinds apart by colour use the three hues the
+themes have besides the text: Disk Usage's map draws the developer's
+folders in `accent`, the agents' and AI's in `warn` and caches in `ok`,
+the rest in `t2`, with a legend of squares under it.
+
 Themes: `yoru` (the default, dark), `washi` and `aojashin` (light),
 `suimen`, `rinko`, `bunko` and `denko` (dark).
 
@@ -191,6 +196,18 @@ still say their errors in a status line at the foot of the index
   empty.", "No device is paired yet.", not a blank page.
 - **Waiting**: say what is being waited for ("Asking…", "Starting…") in
   the place the result will show.
+- **Before content**: a page that has nothing to show yet shows what it
+  knows already, not a blank: Disk Usage's map is the disk's used and free
+  room before a scan.
+- **Working**: a long job shows its result arriving, in the place it will
+  stay, with counters in mono: Disk Usage's map fills ring by ring as
+  folders are measured, while a sweep of square-ended cells, stepped in
+  opacity (no gradient), turns through the rings outside.
+- **Asking first**: what cannot be undone (deleting for good, a command
+  that deletes) is asked in a dialog over the window: the question as its
+  title, the thing in mono, a line on what follows, Cancel with the focus
+  and the action beside it (filled with `danger` for what is lost for
+  good). What can be undone (to the trash) is done at once.
 - **What a failure needs**: when something is missing (a program, a
   permission), say what and give the command that fixes it, selectable.
 
@@ -234,7 +251,7 @@ cannot see services on the session bus (Mobile Link shows "starting").
 - The VM manager's section marks are `Label`s, so they draw as bars; its
   layout is to take `Box`es.
 - `suggested-action` is styled per window (GPG, Pass, Files, Workshop,
-  Remote Desktop, Mobile Link, the VM manager) with the same rule; one
+  Remote Desktop, Mobile Link, Disk Usage, the VM manager) with the same rule; one
   shared `.settings button.suggested-action` would replace them.
 - Two fills for a main action exist: the accent (`suggested-action`) and
   `primary` (some light apps and games). New windows use the accent.

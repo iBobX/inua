@@ -5,6 +5,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
+#: internal/diskui/details.go:221
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr ""
 
@@ -21,7 +22,24 @@ msgid "No API key for %s: type one and Save first."
 msgstr ""
 
 #: cmd/inua-assistant/mcp.go:57
+#: internal/apps/disk/rules.go:175
 msgid "inua's assistant"
+msgstr ""
+
+#: cmd/inua-disk-usage/main.go:104
+msgid "%d files, %.1f s"
+msgstr ""
+
+#: cmd/inua-disk-usage/main.go:121
+msgid "%s safe to delete"
+msgstr ""
+
+#: cmd/inua-disk-usage/main.go:158
+msgid "No rule settles it: ask the assistant in the window."
+msgstr ""
+
+#: cmd/inua-disk-usage/main.go:163
+msgid "The proper way:"
 msgstr ""
 
 #: cmd/inua-keyring/main.go:117
@@ -312,6 +330,860 @@ msgid "Sent %d file to %s"
 msgid_plural "Sent %d files to %s"
 msgstr[0] ""
 msgstr[1] ""
+
+#: internal/apps/disk/command.go:47
+msgid "Fill in the name it asks for, and run it in a terminal."
+msgstr ""
+
+#: internal/apps/disk/command.go:52
+msgid "It asks before it deletes: run it in a terminal."
+msgstr ""
+
+#: internal/apps/disk/command.go:61
+#: internal/filesui/remote.go:353
+msgid "%s is not there."
+msgstr ""
+
+#: internal/apps/disk/command.go:64
+msgid "%s is not installed."
+msgstr ""
+
+#: internal/apps/disk/command.go:67
+msgid "It needs root, and pkexec is not installed: run it in a terminal with sudo."
+msgstr ""
+
+#: internal/apps/disk/decide.go:68
+#: internal/apps/disk/decide.go:71
+msgid "Part of the system, or one of your main folders?"
+msgstr ""
+
+#: internal/apps/disk/decide.go:71
+msgid "No."
+msgstr ""
+
+#: internal/apps/disk/decide.go:80
+msgid "No: the folder it is in is not yours, so only root can delete it."
+msgstr ""
+
+#: internal/apps/disk/decide.go:82
+msgid "Clean it with the command below instead."
+msgstr ""
+
+#: internal/apps/disk/decide.go:84
+#: internal/apps/disk/decide.go:87
+msgid "Yours to delete?"
+msgstr ""
+
+#: internal/apps/disk/decide.go:87
+msgid "Yes."
+msgstr ""
+
+#: internal/apps/disk/decide.go:91
+#: internal/apps/disk/decide.go:99
+#: internal/apps/disk/decide.go:103
+#: internal/apps/disk/decide.go:108
+#: internal/apps/disk/decide.go:110
+#: internal/apps/disk/decide.go:113
+msgid "Kept by git?"
+msgstr ""
+
+#: internal/apps/disk/decide.go:91
+msgid "It is a project's git history: what is not pushed exists only here."
+msgstr ""
+
+#: internal/apps/disk/decide.go:103
+msgid "Its files are part of the project in %s: delete them with git, so the project knows."
+msgstr ""
+
+#: internal/apps/disk/decide.go:108
+msgid "No: the project in %s ignores it, which is usual for what is built or downloaded."
+msgstr ""
+
+#: internal/apps/disk/decide.go:110
+msgid "Not yet: it is new in the project in %s, not committed."
+msgstr ""
+
+#: internal/apps/disk/decide.go:113
+msgid "No: it is in no git project."
+msgstr ""
+
+#: internal/apps/disk/decide.go:118
+#: internal/apps/disk/decide.go:121
+msgid "A kind inua knows?"
+msgstr ""
+
+#: internal/apps/disk/decide.go:121
+msgid "No rule knows it."
+msgstr ""
+
+#: internal/apps/disk/decide.go:145
+msgid "It is a git project; git could not say what is not committed."
+msgstr ""
+
+#: internal/apps/disk/decide.go:164
+msgid "%d change not committed"
+msgid_plural "%d changes not committed"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/apps/disk/decide.go:167
+msgid "%d commit not pushed"
+msgid_plural "%d commits not pushed"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/apps/disk/decide.go:171
+msgid "It is a git project with %s: they exist only here."
+msgstr ""
+
+#: internal/apps/disk/decide.go:171
+msgid " and "
+msgstr ""
+
+#: internal/apps/disk/decide.go:173
+msgid "It is a git project with no remote: its history exists only here."
+msgstr ""
+
+#: internal/apps/disk/decide.go:175
+msgid "It is a git project, all committed and pushed: it can be cloned again."
+msgstr ""
+
+#: internal/apps/disk/decide.go:184
+#: internal/apps/disk/decide.go:188
+msgid "It is part of the system."
+msgstr ""
+
+#: internal/apps/disk/decide.go:193
+msgid "It is part of the system: programs keep their state there."
+msgstr ""
+
+#: internal/apps/disk/decide.go:199
+msgid "It is your home folder."
+msgstr ""
+
+#: internal/apps/disk/decide.go:208
+msgid "Your settings, keys or programs' data are kept there."
+msgstr ""
+
+#: internal/apps/disk/decide.go:212
+msgid "Your keys and passwords are kept there."
+msgstr ""
+
+#: internal/apps/disk/decide.go:218
+msgid "It is one of your main folders: look inside it instead."
+msgstr ""
+
+#: internal/apps/disk/rules.go:28
+msgid "Developer"
+msgstr ""
+
+#: internal/apps/disk/rules.go:30
+msgid "Agents and AI"
+msgstr ""
+
+#: internal/apps/disk/rules.go:32
+msgid "Caches"
+msgstr ""
+
+#: internal/apps/disk/rules.go:41
+msgid "DEV"
+msgstr ""
+
+#: internal/apps/disk/rules.go:43
+#: internal/gamesui/fortune.go:416
+#: internal/gamesui/fortune_ai.go:199
+#: ui/settings.ui:2081
+msgid "AI"
+msgstr ""
+
+#: internal/apps/disk/rules.go:45
+msgid "CACHE"
+msgstr ""
+
+#: internal/apps/disk/rules.go:77
+msgid "Safe to delete"
+msgstr ""
+
+#: internal/apps/disk/rules.go:79
+msgid "Look before deleting"
+msgstr ""
+
+#: internal/apps/disk/rules.go:81
+msgid "Keep it"
+msgstr ""
+
+#: internal/apps/disk/rules.go:83
+msgid "Not decided"
+msgstr ""
+
+#: internal/apps/disk/rules.go:90
+msgid "SAFE"
+msgstr ""
+
+#: internal/apps/disk/rules.go:92
+msgid "REVIEW"
+msgstr ""
+
+#: internal/apps/disk/rules.go:94
+msgid "KEEP"
+msgstr ""
+
+#: internal/apps/disk/rules.go:129
+msgid "Claude Code conversations"
+msgstr ""
+
+#: internal/apps/disk/rules.go:130
+msgid "Each conversation of Claude Code, by project; deleting them loses what claude --resume continues."
+msgstr ""
+
+#: internal/apps/disk/rules.go:131
+msgid "Claude Code shell snapshots"
+msgstr ""
+
+#: internal/apps/disk/rules.go:132
+msgid "Claude Code takes them again when it starts a shell."
+msgstr ""
+
+#: internal/apps/disk/rules.go:133
+msgid "Claude Code task lists"
+msgstr ""
+
+#: internal/apps/disk/rules.go:134
+msgid "The task lists of conversations that ended."
+msgstr ""
+
+#: internal/apps/disk/rules.go:135
+msgid "Claude Code file history"
+msgstr ""
+
+#: internal/apps/disk/rules.go:136
+msgid "Copies of files before Claude Code changed them, for going back."
+msgstr ""
+
+#: internal/apps/disk/rules.go:137
+msgid "Claude Code logs"
+msgstr ""
+
+#: internal/apps/disk/rules.go:138
+#: internal/apps/disk/rules.go:156
+msgid "Logs for finding faults; nothing reads them back."
+msgstr ""
+
+#: internal/apps/disk/rules.go:139
+msgid "Claude Code plugins"
+msgstr ""
+
+#: internal/apps/disk/rules.go:140
+msgid "Plugins installed in Claude Code; they are downloaded again when installed again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:141
+msgid "Claude Code"
+msgstr ""
+
+#: internal/apps/disk/rules.go:142
+msgid "Claude Code's settings, memory and conversations."
+msgstr ""
+
+#: internal/apps/disk/rules.go:143
+msgid "Claude Code versions"
+msgstr ""
+
+#: internal/apps/disk/rules.go:144
+#: internal/apps/disk/rules.go:149
+msgid "Each version its updates installed; only the newest is used, so the older ones can go."
+msgstr ""
+
+#: internal/apps/disk/rules.go:145
+#: internal/apps/disk/rules.go:150
+msgid "Agent worktrees"
+msgstr ""
+
+#: internal/apps/disk/rules.go:146
+#: internal/apps/disk/rules.go:151
+msgid "Git worktrees an agent works in; their changes may not be committed yet."
+msgstr ""
+
+#: internal/apps/disk/rules.go:148
+msgid "Codex versions"
+msgstr ""
+
+#: internal/apps/disk/rules.go:153
+msgid "Codex conversations"
+msgstr ""
+
+#: internal/apps/disk/rules.go:154
+msgid "Codex's conversations; deleting them loses what codex resume continues."
+msgstr ""
+
+#: internal/apps/disk/rules.go:155
+msgid "Codex logs"
+msgstr ""
+
+#: internal/apps/disk/rules.go:157
+msgid "Codex"
+msgstr ""
+
+#: internal/apps/disk/rules.go:158
+msgid "Codex's settings and conversations."
+msgstr ""
+
+#: internal/apps/disk/rules.go:159
+msgid "Gemini CLI temporary files"
+msgstr ""
+
+#: internal/apps/disk/rules.go:160
+msgid "Files the Gemini CLI keeps while it works."
+msgstr ""
+
+#: internal/apps/disk/rules.go:161
+msgid "Gemini CLI"
+msgstr ""
+
+#: internal/apps/disk/rules.go:162
+msgid "The Gemini CLI's settings and history."
+msgstr ""
+
+#: internal/apps/disk/rules.go:163
+msgid "Cursor extensions"
+msgstr ""
+
+#: internal/apps/disk/rules.go:164
+msgid "Cursor downloads its extensions again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:165
+#: internal/apps/disk/rules.go:167
+msgid "Cursor"
+msgstr ""
+
+#: internal/apps/disk/rules.go:166
+msgid "Cursor's settings and extensions."
+msgstr ""
+
+#: internal/apps/disk/rules.go:168
+msgid "Cursor's settings, history and caches."
+msgstr ""
+
+#: internal/apps/disk/rules.go:169
+msgid "Aider"
+msgstr ""
+
+#: internal/apps/disk/rules.go:170
+msgid "Aider's settings and caches."
+msgstr ""
+
+#: internal/apps/disk/rules.go:171
+#: ui/vm.ui:777
+msgid "Continue"
+msgstr ""
+
+#: internal/apps/disk/rules.go:172
+msgid "Continue's settings, indexes and sessions."
+msgstr ""
+
+#: internal/apps/disk/rules.go:173
+msgid "Windsurf and Codeium"
+msgstr ""
+
+#: internal/apps/disk/rules.go:174
+msgid "Windsurf's and Codeium's settings and language servers."
+msgstr ""
+
+#: internal/apps/disk/rules.go:176
+msgid "The assistant's memory and tasks."
+msgstr ""
+
+#: internal/apps/disk/rules.go:177
+msgid "npx packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:178
+msgid "Packages npx downloaded to run, such as agents' MCP servers; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:181
+#: internal/apps/disk/rules.go:184
+msgid "Ollama models"
+msgstr ""
+
+#: internal/apps/disk/rules.go:182
+#: internal/apps/disk/rules.go:185
+msgid "Models Ollama downloaded; delete the ones not used, and pull them again when needed."
+msgstr ""
+
+#: internal/apps/disk/rules.go:187
+msgid "Hugging Face models and datasets"
+msgstr ""
+
+#: internal/apps/disk/rules.go:188
+#: internal/apps/disk/rules.go:191
+msgid "Downloaded again by the program that asks for them."
+msgstr ""
+
+#: internal/apps/disk/rules.go:190
+msgid "PyTorch models"
+msgstr ""
+
+#: internal/apps/disk/rules.go:192
+#: internal/apps/disk/rules.go:194
+msgid "LM Studio models"
+msgstr ""
+
+#: internal/apps/disk/rules.go:193
+#: internal/apps/disk/rules.go:195
+msgid "Models LM Studio downloaded; it downloads them again when chosen."
+msgstr ""
+
+#: internal/apps/disk/rules.go:196
+msgid "Playwright browsers"
+msgstr ""
+
+#: internal/apps/disk/rules.go:197
+msgid "Browsers Playwright downloaded for agents and tests; it installs them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:198
+msgid "Puppeteer browsers"
+msgstr ""
+
+#: internal/apps/disk/rules.go:199
+msgid "Browsers Puppeteer downloaded; it installs them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:202
+msgid "npm packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:203
+#: internal/apps/disk/rules.go:264
+#: internal/apps/disk/rules.go:266
+#: internal/apps/disk/rules.go:276
+msgid "The project's packages; installing them again brings them back."
+msgstr ""
+
+#: internal/apps/disk/rules.go:204
+msgid "npm cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:205
+msgid "Packages npm downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:206
+#: internal/apps/disk/rules.go:208
+msgid "Yarn cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:207
+#: internal/apps/disk/rules.go:209
+msgid "Packages Yarn downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:210
+#: internal/apps/disk/rules.go:212
+msgid "pnpm store"
+msgstr ""
+
+#: internal/apps/disk/rules.go:211
+#: internal/apps/disk/rules.go:213
+msgid "Packages pnpm downloaded; projects link to them, and it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:214
+msgid "Bun cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:215
+msgid "Packages Bun downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:216
+msgid "Deno cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:217
+msgid "Modules Deno downloaded and compiled; it makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:218
+msgid "Next.js build"
+msgstr ""
+
+#: internal/apps/disk/rules.go:219
+#: internal/apps/disk/rules.go:221
+#: internal/apps/disk/rules.go:223
+#: internal/apps/disk/rules.go:294
+msgid "Built from the project's sources; the next build makes it again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:220
+msgid "Nuxt build"
+msgstr ""
+
+#: internal/apps/disk/rules.go:222
+msgid "SvelteKit build"
+msgstr ""
+
+#: internal/apps/disk/rules.go:224
+msgid "Turborepo cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:225
+#: internal/apps/disk/rules.go:227
+#: internal/apps/disk/rules.go:302
+#: internal/apps/disk/rules.go:304
+#: internal/apps/disk/rules.go:310
+msgid "Build results kept to skip work; the next build makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:226
+msgid "Parcel cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:230
+msgid "Go build cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:231
+msgid "Compiled packages kept to build faster; go build makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:232
+msgid "Go modules"
+msgstr ""
+
+#: internal/apps/disk/rules.go:233
+msgid "Modules Go downloaded; it downloads them again. Go makes them read-only: clean them with go."
+msgstr ""
+
+#: internal/apps/disk/rules.go:235
+msgid "golangci-lint cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:236
+#: internal/apps/disk/rules.go:270
+#: internal/apps/disk/rules.go:272
+#: internal/apps/disk/rules.go:274
+msgid "Results kept to check faster; the next run makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:239
+#: internal/apps/disk/rules.go:259
+#: internal/apps/disk/rules.go:356
+msgid "Rust build"
+msgstr ""
+
+#: internal/apps/disk/rules.go:240
+#: internal/apps/disk/rules.go:357
+msgid "Built from the project's sources; cargo build makes it again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:241
+#: internal/apps/disk/rules.go:243
+msgid "Cargo packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:242
+#: internal/apps/disk/rules.go:244
+msgid "Crates Cargo downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:245
+msgid "Programs installed with Cargo"
+msgstr ""
+
+#: internal/apps/disk/rules.go:246
+msgid "Programs cargo install built, and rustup's own commands; deleting them uninstalls them."
+msgstr ""
+
+#: internal/apps/disk/rules.go:248
+msgid "Rust toolchains"
+msgstr ""
+
+#: internal/apps/disk/rules.go:249
+msgid "The Rust versions installed; remove the ones not used with rustup."
+msgstr ""
+
+#: internal/apps/disk/rules.go:251
+#: internal/apps/disk/rules.go:253
+msgid "rustup downloads"
+msgstr ""
+
+#: internal/apps/disk/rules.go:252
+#: internal/apps/disk/rules.go:254
+msgid "Downloads rustup keeps while it installs; nothing needs them after."
+msgstr ""
+
+#: internal/apps/disk/rules.go:255
+msgid "sccache cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:256
+#: internal/apps/disk/rules.go:308
+msgid "Compiled files kept to build faster; the next build makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:257
+msgid "rust-analyzer cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:258
+msgid "Indexes rust-analyzer makes again when it opens a project."
+msgstr ""
+
+#: internal/apps/disk/rules.go:260
+msgid "Built from the projects' sources; cargo build makes it again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:263
+#: internal/apps/disk/rules.go:265
+msgid "Python environment"
+msgstr ""
+
+#: internal/apps/disk/rules.go:267
+msgid "Python bytecode"
+msgstr ""
+
+#: internal/apps/disk/rules.go:268
+msgid "Python compiles it again when it runs the code."
+msgstr ""
+
+#: internal/apps/disk/rules.go:269
+msgid "pytest cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:271
+msgid "mypy cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:273
+msgid "Ruff cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:275
+msgid "tox environments"
+msgstr ""
+
+#: internal/apps/disk/rules.go:277
+msgid "pip cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:278
+msgid "Packages pip downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:279
+msgid "uv cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:280
+msgid "Packages uv downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:281
+msgid "Poetry cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:282
+msgid "Packages Poetry downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:283
+msgid "Conda packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:284
+msgid "Packages Conda downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:287
+#: internal/apps/disk/rules.go:305
+msgid "Gradle cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:288
+#: internal/apps/disk/rules.go:306
+msgid "Packages and build results Gradle keeps; it makes them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:289
+msgid "Gradle versions"
+msgstr ""
+
+#: internal/apps/disk/rules.go:290
+msgid "Gradle versions projects asked for; they are downloaded again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:291
+msgid "Maven packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:292
+msgid "Packages Maven downloaded; it downloads them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:293
+msgid "Gradle build"
+msgstr ""
+
+#: internal/apps/disk/rules.go:295
+msgid "Android emulators"
+msgstr ""
+
+#: internal/apps/disk/rules.go:296
+msgid "The emulators' phones, with what was installed on them."
+msgstr ""
+
+#: internal/apps/disk/rules.go:297
+msgid "Android SDK"
+msgstr ""
+
+#: internal/apps/disk/rules.go:298
+msgid "Android's tools and system images; the SDK manager installs them again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:301
+#: internal/apps/disk/rules.go:303
+msgid "Zig cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:307
+msgid "ccache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:309
+msgid "Bazel cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:311
+msgid "JetBrains caches"
+msgstr ""
+
+#: internal/apps/disk/rules.go:312
+msgid "Indexes the IDEs make again when they open a project."
+msgstr ""
+
+#: internal/apps/disk/rules.go:313
+msgid "VS Code extensions"
+msgstr ""
+
+#: internal/apps/disk/rules.go:314
+msgid "Extensions installed in VS Code; they are downloaded again when installed again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:315
+msgid "VS Code server"
+msgstr ""
+
+#: internal/apps/disk/rules.go:316
+msgid "VS Code installs it again when it connects to this computer."
+msgstr ""
+
+#: internal/apps/disk/rules.go:317
+#: internal/apps/disk/rules.go:319
+msgid "VS Code cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:318
+#: internal/apps/disk/rules.go:320
+msgid "VS Code makes it again."
+msgstr ""
+
+#: internal/apps/disk/rules.go:321
+msgid "Podman images and containers"
+msgstr ""
+
+#: internal/apps/disk/rules.go:322
+msgid "Podman's images and containers; deleting the folder breaks Podman. Remove them with podman."
+msgstr ""
+
+#: internal/apps/disk/rules.go:324
+msgid "Docker images and containers"
+msgstr ""
+
+#: internal/apps/disk/rules.go:325
+msgid "Docker's images, containers and volumes; deleting the folder breaks Docker. Remove them with docker."
+msgstr ""
+
+#: internal/apps/disk/rules.go:327
+msgid "Git history"
+msgstr ""
+
+#: internal/apps/disk/rules.go:328
+msgid "The project's history, branches and stashes; what is not pushed exists only here."
+msgstr ""
+
+#: internal/apps/disk/rules.go:331
+#: internal/filesui/details.go:55
+#: internal/filesui/pane.go:1030
+#: internal/filesui/sidebar.go:54
+#: internal/filesui/tabs.go:94
+#: internal/filesui/window.go:274
+msgid "Trash"
+msgstr ""
+
+#: internal/apps/disk/rules.go:332
+msgid "What was moved to the trash; it takes room until the trash is emptied."
+msgstr ""
+
+#: internal/apps/disk/rules.go:333
+msgid "pacman packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:334
+msgid "Packages pacman downloaded; old versions are needed only to go back to them."
+msgstr ""
+
+#: internal/apps/disk/rules.go:335
+msgid "APT packages"
+msgstr ""
+
+#: internal/apps/disk/rules.go:336
+msgid "Packages APT downloaded and installed already."
+msgstr ""
+
+#: internal/apps/disk/rules.go:337
+msgid "DNF cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:338
+msgid "Packages and lists DNF downloaded."
+msgstr ""
+
+#: internal/apps/disk/rules.go:339
+#: internal/apps/disk/rules.go:342
+msgid "Flatpak apps"
+msgstr ""
+
+#: internal/apps/disk/rules.go:340
+#: internal/apps/disk/rules.go:343
+msgid "Installed Flatpak apps and runtimes; remove the ones not used with flatpak."
+msgstr ""
+
+#: internal/apps/disk/rules.go:345
+msgid "System logs"
+msgstr ""
+
+#: internal/apps/disk/rules.go:346
+msgid "The system's journal; shrink it with journalctl rather than deleting files."
+msgstr ""
+
+#: internal/apps/disk/rules.go:348
+msgid "A program's cache"
+msgstr ""
+
+#: internal/apps/disk/rules.go:349
+msgid "Programs keep caches to work faster and make them again when they are gone."
+msgstr ""
+
+#: internal/apps/disk/rules.go:358
+msgid "A cache its program marked"
+msgstr ""
+
+#: internal/apps/disk/rules.go:359
+msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
+msgstr ""
 
 #: internal/apps/music/music.go:393
 msgid "Flat"
@@ -654,6 +1526,7 @@ msgstr ""
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
+#: internal/diskui/details.go:497
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
@@ -785,6 +1658,7 @@ msgstr ""
 #: internal/appui/clock.go:496
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
+#: ui/disk.ui:179
 #: ui/vm.ui:821
 #: ui/vm.ui:1006
 #: ui/vm.ui:1027
@@ -1045,11 +1919,13 @@ msgid "Extend 2 years"
 msgstr ""
 
 #: internal/appui/gpg.go:823
+#: ui/disk.ui:860
 msgid "Delete…"
 msgstr ""
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
+#: internal/diskui/details.go:547
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -1237,6 +2113,7 @@ msgstr ""
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
+#: ui/disk.ui:850
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -1415,9 +2292,11 @@ msgstr ""
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
+#: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:84
 #: internal/ui/askpass.go:203
+#: ui/disk.ui:698
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -1782,8 +2661,8 @@ msgstr ""
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:265
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:266
+#: internal/shell/dock.go:299
 msgid "NETWORK"
 msgstr ""
 
@@ -2070,6 +2949,7 @@ msgstr ""
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
+#: internal/diskui/window.go:323
 msgid "System"
 msgstr ""
 
@@ -2725,6 +3605,7 @@ msgstr ""
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/diskui/dialog.go:92
 #: internal/filesui/archive.go:49
 #: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:347
@@ -3659,6 +4540,324 @@ msgstr ""
 msgid "Opens plain text"
 msgstr ""
 
+#: internal/diskui/app.go:18
+#: ui/disk.ui:14
+#: ui/disk.ui:32
+#: config/apps/io.github.lyricat.Inua.DiskUsage.desktop:3
+msgid "Disk Usage"
+msgstr ""
+
+#: internal/diskui/details.go:49
+msgid "%s file"
+msgid_plural "%s files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/diskui/details.go:52
+msgid "changed %s"
+msgstr ""
+
+#: internal/diskui/details.go:52
+msgid "2006-01-02"
+msgstr ""
+
+#: internal/diskui/details.go:55
+msgid "some of it could not be read"
+msgstr ""
+
+#: internal/diskui/details.go:75
+#: internal/ui/lock.go:272
+#: internal/ui/polkit.go:294
+#: internal/ui/settings_about.go:153
+msgid "Checking…"
+msgstr ""
+
+#: internal/diskui/details.go:104
+msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
+msgstr ""
+
+#: internal/diskui/details.go:108
+msgid "They are not one item to delete."
+msgstr ""
+
+#: internal/diskui/details.go:146
+msgid "No check settles it."
+msgstr ""
+
+#: internal/diskui/details.go:156
+#: internal/diskui/details.go:324
+#: internal/diskui/details.go:373
+#: internal/remoteui/window.go:721
+msgid "Asking…"
+msgstr ""
+
+#: internal/diskui/details.go:158
+#: internal/shell/launcher.go:379
+#: ui/disk.ui:770
+msgid "Ask the assistant"
+msgstr ""
+
+#: internal/diskui/details.go:161
+msgid "The assistant: %s"
+msgstr ""
+
+#: internal/diskui/details.go:174
+msgid "It is the place scanned: choose what is in it."
+msgstr ""
+
+#: internal/diskui/details.go:176
+msgid "Kept: the checks above say why."
+msgstr ""
+
+#: internal/diskui/details.go:178
+msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
+msgstr ""
+
+#: internal/diskui/details.go:180
+msgid "Look inside before deleting: it may hold your work, settings or history."
+msgstr ""
+
+#: internal/diskui/details.go:182
+msgid "No check settled it: look inside first, or ask the assistant."
+msgstr ""
+
+#: internal/diskui/details.go:292
+msgid "it answered %q"
+msgstr ""
+
+#: internal/diskui/details.go:302
+msgid "The assistant could not decide: %v"
+msgstr ""
+
+#: internal/diskui/details.go:353
+msgid "The assistant could not answer: %v"
+msgstr ""
+
+#: internal/diskui/details.go:358
+#: internal/diskui/details.go:386
+#: ui/disk.ui:926
+msgid "Explain"
+msgstr ""
+
+#: internal/diskui/details.go:384
+msgid "Explain again"
+msgstr ""
+
+#: internal/diskui/details.go:412
+msgid "Cannot open it in Files: %v"
+msgstr ""
+
+#: internal/diskui/details.go:427
+msgid "Deleting…"
+msgstr ""
+
+#: internal/diskui/details.go:429
+msgid "Moving to the trash…"
+msgstr ""
+
+#: internal/diskui/details.go:441
+msgid "Cannot delete %s: %v"
+msgstr ""
+
+#: internal/diskui/details.go:446
+msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
+msgstr ""
+
+#: internal/diskui/details.go:448
+msgid "Deleted %s: %s freed."
+msgstr ""
+
+#: internal/diskui/details.go:492
+msgid "%s in %s file. It does not go to the trash; this cannot be undone."
+msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/diskui/details.go:495
+msgid "%s. It does not go to the trash; this cannot be undone."
+msgstr ""
+
+#: internal/diskui/details.go:497
+msgid "Delete %s for good?"
+msgstr ""
+
+#: internal/diskui/details.go:521
+#: internal/ui/settings_bench.go:187
+#: internal/ui/settings_bench.go:332
+msgid "Running…"
+msgstr ""
+
+#: internal/diskui/details.go:523
+#: internal/diskui/details.go:570
+#: ui/disk.ui:707
+msgid "Run"
+msgstr ""
+
+#: internal/diskui/details.go:529
+#: internal/diskui/details.go:568
+msgid "It runs as root: inua asks for your password first."
+msgstr ""
+
+#: internal/diskui/details.go:531
+msgid "It runs in %s."
+msgstr ""
+
+#: internal/diskui/details.go:565
+msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
+msgstr ""
+
+#: internal/diskui/details.go:570
+msgid "Run the clean command?"
+msgstr ""
+
+#: internal/diskui/details.go:593
+msgid "%s ended with an error: %v"
+msgstr ""
+
+#: internal/diskui/details.go:596
+msgid "Cannot measure it again: %v"
+msgstr ""
+
+#: internal/diskui/details.go:608
+msgid "Done: %s freed."
+msgstr ""
+
+#: internal/diskui/details.go:610
+msgid "Done: it freed no room here."
+msgstr ""
+
+#: internal/diskui/details.go:613
+msgid "%s removed %s: %s freed."
+msgstr ""
+
+#: internal/diskui/window.go:321
+#: internal/filesui/cards.go:682
+#: internal/filesui/sidebar.go:41
+#: internal/filesui/tabs.go:96
+#: internal/filesui/window.go:278
+msgid "Home"
+msgstr ""
+
+#: internal/diskui/window.go:351
+#: internal/diskui/window.go:548
+msgid "Scanning…"
+msgstr ""
+
+#: internal/diskui/window.go:355
+#: internal/filesui/remote.go:266
+#: internal/filesui/sidebar.go:68
+msgid "%s free of %s"
+msgstr ""
+
+#: internal/diskui/window.go:367
+msgid "Scan a place first"
+msgstr ""
+
+#: internal/diskui/window.go:370
+msgid "%s · %s safe"
+msgstr ""
+
+#: internal/diskui/window.go:440
+msgid "Choose a folder to scan"
+msgstr ""
+
+#: internal/diskui/window.go:513
+msgid "Scan again"
+msgstr ""
+
+#: internal/diskui/window.go:517
+#: ui/disk.ui:190
+msgid "Scan"
+msgstr ""
+
+#: internal/diskui/window.go:524
+msgid "your home"
+msgstr ""
+
+#: internal/diskui/window.go:526
+msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
+msgstr ""
+
+#: internal/diskui/window.go:543
+msgid "%s used of %s"
+msgstr ""
+
+#: internal/diskui/window.go:551
+msgid "%s in %s files · %s"
+msgstr ""
+
+#: internal/diskui/window.go:551
+#: internal/filesui/pane.go:1500
+msgid "15:04"
+msgstr ""
+
+#: internal/diskui/window.go:569
+msgid "%s files · %s · %.0f s"
+msgstr ""
+
+#: internal/diskui/window.go:615
+msgid "Cannot scan %s: %v"
+msgstr ""
+
+#: internal/diskui/window.go:737
+msgid "%d smaller file"
+msgid_plural "%d smaller files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/diskui/window.go:772
+msgid "counted"
+msgstr ""
+
+#: internal/diskui/window.go:797
+msgid "free"
+msgstr ""
+
+#: internal/diskui/window.go:799
+msgid "Not scanned"
+msgstr ""
+
+#: internal/diskui/window.go:816
+msgid "Other"
+msgstr ""
+
+#: internal/diskui/window.go:879
+msgid "%d more item"
+msgid_plural "%d more items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/diskui/window.go:890
+#: internal/filesui/pane.go:797
+msgid "This folder is empty."
+msgstr ""
+
+#: internal/diskui/window.go:946
+msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
+msgstr ""
+
+#: internal/diskui/window.go:947
+msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
+msgstr ""
+
+#: internal/diskui/window.go:948
+msgid "Programs' caches, packages downloaded and the trash."
+msgstr ""
+
+#: internal/diskui/window.go:966
+msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
+msgstr ""
+
+#: internal/diskui/window.go:968
+msgid "Nothing of this kind in the places scanned."
+msgstr ""
+
+#: internal/diskui/window.go:971
+msgid "%s in %d folder · %s safe to delete"
+msgid_plural "%s in %d folders · %s safe to delete"
+msgstr[0] ""
+msgstr[1] ""
+
 #: internal/filesui/app.go:75
 #: internal/filesui/cards.go:689
 #: internal/filesui/remote.go:371
@@ -4024,13 +5223,6 @@ msgstr ""
 msgid "In the columns: the folder above, the folder selected"
 msgstr ""
 
-#: internal/filesui/cards.go:682
-#: internal/filesui/sidebar.go:41
-#: internal/filesui/tabs.go:96
-#: internal/filesui/window.go:278
-msgid "Home"
-msgstr ""
-
 #: internal/filesui/cards.go:683
 msgid "The sidebar's places"
 msgstr ""
@@ -4225,14 +5417,6 @@ msgid "SIZE OF THE FILES"
 msgstr ""
 
 #: internal/filesui/details.go:55
-#: internal/filesui/pane.go:1030
-#: internal/filesui/sidebar.go:54
-#: internal/filesui/tabs.go:94
-#: internal/filesui/window.go:274
-msgid "Trash"
-msgstr ""
-
-#: internal/filesui/details.go:55
 msgid "Search"
 msgstr ""
 
@@ -4388,10 +5572,6 @@ msgid_plural "Only hidden files: %d of them (Ctrl+H shows them)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/filesui/pane.go:797
-msgid "This folder is empty."
-msgstr ""
-
 #: internal/filesui/pane.go:963
 msgid "%s does not exist."
 msgstr ""
@@ -4420,10 +5600,6 @@ msgstr[1] ""
 
 #: internal/filesui/pane.go:1246
 msgid "done"
-msgstr ""
-
-#: internal/filesui/pane.go:1500
-msgid "15:04"
 msgstr ""
 
 #: internal/filesui/pane.go:1504
@@ -4499,11 +5675,6 @@ msgstr ""
 
 #: internal/filesui/remote.go:255
 msgid "REMOTE DISKS"
-msgstr ""
-
-#: internal/filesui/remote.go:266
-#: internal/filesui/sidebar.go:68
-msgid "%s free of %s"
 msgstr ""
 
 #: internal/filesui/remote.go:269
@@ -4586,10 +5757,6 @@ msgstr ""
 
 #: internal/filesui/remote.go:351
 msgid "%s does not answer."
-msgstr ""
-
-#: internal/filesui/remote.go:353
-msgid "%s is not there."
 msgstr ""
 
 #: internal/filesui/remote.go:355
@@ -4879,6 +6046,7 @@ msgid "Some names cannot be given: they are marked."
 msgstr ""
 
 #: internal/filesui/sidebar.go:36
+#: ui/disk.ui:54
 msgid "PLACES"
 msgstr ""
 
@@ -7559,12 +8727,6 @@ msgid "Hot seat"
 msgstr ""
 
 #: internal/gamesui/fortune.go:416
-#: internal/gamesui/fortune_ai.go:199
-#: ui/settings.ui:2081
-msgid "AI"
-msgstr ""
-
-#: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune.go:653
 msgid "Open seat"
 msgstr ""
@@ -8049,7 +9211,7 @@ msgid "SPACE PINBALL"
 msgstr ""
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr ""
@@ -8082,7 +9244,7 @@ msgstr ""
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 #: internal/term/settings/settings.go:91
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -8355,10 +9517,6 @@ msgstr ""
 msgid "%s was not unpaired: %v"
 msgstr ""
 
-#: internal/remoteui/window.go:721
-msgid "Asking…"
-msgstr ""
-
 #: internal/remoteui/window.go:724
 msgid "Connected: its desktop is in a window of its own."
 msgstr ""
@@ -8499,7 +9657,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr ""
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:288
+#: internal/shell/dock.go:289
 msgid "inua's settings"
 msgstr ""
 
@@ -8646,56 +9804,56 @@ msgid "Web search"
 msgstr ""
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "EVERYDAY"
 msgstr ""
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:298
+#: internal/shell/dock.go:299
 msgid "TOOLS"
 msgstr ""
 
-#: internal/shell/dock.go:270
+#: internal/shell/dock.go:271
 msgid "PLAY"
 msgstr ""
 
-#: internal/shell/dock.go:275
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:276
+#: internal/shell/dock.go:301
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr ""
 
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "Find apps, windows and answers"
 msgstr ""
 
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr ""
 
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "Capture an area, a window or a screen"
 msgstr ""
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "DEVELOPMENT"
 msgstr ""
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "MEDIA"
 msgstr ""
 
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "GAMES"
 msgstr ""
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "OTHER"
 msgstr ""
 
-#: internal/shell/dock.go:325
+#: internal/shell/dock.go:326
 msgid "WORKSHOP"
 msgstr ""
 
@@ -8753,10 +9911,6 @@ msgstr ""
 
 #: internal/shell/launcher.go:352
 msgid "%s · Enter copies"
-msgstr ""
-
-#: internal/shell/launcher.go:379
-msgid "Ask the assistant"
 msgstr ""
 
 #: internal/shell/launcher.go:416
@@ -9687,12 +10841,6 @@ msgstr ""
 msgid "Wrong password"
 msgstr ""
 
-#: internal/ui/lock.go:272
-#: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:153
-msgid "Checking…"
-msgstr ""
-
 #: internal/ui/lock.go:303
 msgid "The password could not be checked"
 msgstr ""
@@ -10347,11 +11495,6 @@ msgstr ""
 #: internal/ui/settings_bench.go:137
 #: internal/ui/settings_bench.go:204
 msgid "Run again"
-msgstr ""
-
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
-msgid "Running…"
 msgstr ""
 
 #: internal/ui/settings_bench.go:296
@@ -11556,6 +12699,50 @@ msgstr ""
 
 #: ui/control.ui:682
 msgid "Now playing"
+msgstr ""
+
+#: ui/disk.ui:86
+msgid "Choose a folder…"
+msgstr ""
+
+#: ui/disk.ui:100
+msgid "FOUND"
+msgstr ""
+
+#: ui/disk.ui:465
+msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
+msgstr ""
+
+#: ui/disk.ui:499
+msgid "[ITEM]"
+msgstr ""
+
+#: ui/disk.ui:587
+msgid "Show on the map"
+msgstr ""
+
+#: ui/disk.ui:596
+msgid "Show in Files"
+msgstr ""
+
+#: ui/disk.ui:630
+msgid "[CAN IT GO]"
+msgstr ""
+
+#: ui/disk.ui:670
+msgid "The proper way to clean it:"
+msgstr ""
+
+#: ui/disk.ui:827
+msgid "[DELETE]"
+msgstr ""
+
+#: ui/disk.ui:915
+msgid "[WHAT IS IT]"
+msgstr ""
+
+#: ui/disk.ui:968
+msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
 msgstr ""
 
 #: ui/files.ui:57
@@ -13390,10 +14577,6 @@ msgstr ""
 msgid "Starts the container; Windows installs itself inside it."
 msgstr ""
 
-#: ui/vm.ui:777
-msgid "Continue"
-msgstr ""
-
 #: ui/vm.ui:799
 msgid "Stop waiting"
 msgstr ""
@@ -13547,6 +14730,14 @@ msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:20
 msgid "colour;color;hex;rgb;eyedropper;"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.DiskUsage.desktop:10
+msgid "See what takes the room on a disk, and whether it can go"
+msgstr ""
+
+#: config/apps/io.github.lyricat.Inua.DiskUsage.desktop:20
+msgid "disk;usage;space;storage;cleanup;cache;du;daisydisk;"
 msgstr ""
 
 #: config/apps/io.github.lyricat.Inua.Files.desktop:10

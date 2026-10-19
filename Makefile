@@ -52,6 +52,7 @@ build:
 	go build -o bin/inua-vm ./cmd/inua-vm
 	go build -o bin/inua-remote ./cmd/inua-remote
 	go build -o bin/inua-connect ./cmd/inua-connect
+	go build -o bin/inua-disk-usage ./cmd/inua-disk-usage
 	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant
@@ -98,7 +99,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-disk-usage bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
 	# inua-term's engine, when built (make term-engine)
 	if [ -f bin/libinua-vt.so ]; then install -Dm644 -t "$(PREFIX)/lib/inua" bin/libinua-vt.so; fi
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop

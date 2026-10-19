@@ -14,8 +14,9 @@ Video plays the file). The Assistant is a program of its own,
 ([files.md](files.md)), Viewer, `inua-viewer`, which opens a
 window for each file opened, the Windows guest's manager, `inua-vm`
 ([the Windows VM](#windows-vm)), Remote Desktop, `inua-remote`
-([remote-desktop.md](remote-desktop.md)), and Mobile Link, `inua-connect`
-([mobile-link.md](mobile-link.md)).
+([remote-desktop.md](remote-desktop.md)), Mobile Link, `inua-connect`
+([mobile-link.md](mobile-link.md)), and Disk Usage, `inua-disk-usage`
+([disk-usage.md](disk-usage.md)).
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -465,6 +466,18 @@ notifications there, this computer's players driven from the phone, the
 phone as a touchpad and keyboard, and commands run from it. The window is a
 view of a service of its own, `inua-connect --service`, which the shell
 starts at login while it is on. See [mobile-link.md](mobile-link.md).
+
+## Disk Usage
+
+`inua-disk-usage` maps what takes the room on a disk: the home, each disk, or a
+folder chosen, scanned to the file and drawn as rings of folders, and a list
+of what is in the folder in view. It knows the folders developers and
+agents leave behind (`node_modules`, Rust's `target`, Go's caches, Python
+environments, agents' conversations, worktrees and old versions, AI
+models) and gathers them in Developer, Agents and AI, and Caches. For the
+item chosen it says whether it can go, check by check, asks the assistant
+when no check settles it, explains what it is, and moves it to the trash
+or deletes it. See [disk-usage.md](disk-usage.md).
 
 ## Files
 

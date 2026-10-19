@@ -47,6 +47,10 @@ builds:
     main: ./cmd/inua-connect
     binary: inua-connect
   - <<: *build
+    id: inua-disk-usage
+    main: ./cmd/inua-disk-usage
+    binary: inua-disk-usage
+  - <<: *build
     id: inua-games
     main: ./cmd/inua-games
     binary: inua-games

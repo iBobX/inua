@@ -2754,9 +2754,9 @@ window.connect .connect-error, window.connect-reply .connect-error { color: @dan
 window.connect .connect-key { padding: 14px 16px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
 window.connect .connect-key-digits { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: 0.3em; color: @accent; }
 window.connect-reply .page { padding: 18px; }
-/* Their one action at a time (Connect, Pair, Save, Add): the outlined
+/* Their one action at a time (Connect, Pair, Save, Add, Scan): the outlined
    buttons' shape, filled with the accent, as GPG's and Pass's are. */
-window.remote button.suggested-action, window.connect button.suggested-action {
+window.remote button.suggested-action, window.connect button.suggested-action, window.disk button.suggested-action {
   min-height: 34px;
   padding: 0 14px;
   border: 1px solid @accent;
@@ -2767,11 +2767,13 @@ window.remote button.suggested-action, window.connect button.suggested-action {
   box-shadow: none;
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
-window.remote button.suggested-action:hover, window.connect button.suggested-action:hover {
+window.remote button.suggested-action:hover, window.connect button.suggested-action:hover,
+window.disk button.suggested-action:hover {
   border-color: mix(@accent, @t0, 0.14);
   background: mix(@accent, @t0, 0.14);
 }
-window.remote button.suggested-action:disabled, window.connect button.suggested-action:disabled { opacity: 0.45; }
+window.remote button.suggested-action:disabled, window.connect button.suggested-action:disabled,
+window.disk button.suggested-action:disabled { opacity: 0.45; }
 window.remote-stream { background: #000; }
 window.remote-stream .remote-note {
   margin-top: 14px;
@@ -2965,3 +2967,100 @@ window.term .term-sheet button.destructive-action {
   box-shadow: none;
 }
 window.term .term-sheet button.destructive-action:hover { background: mix(@danger, @t0, 0.14); border-color: mix(@danger, @t0, 0.14); }
+
+/* Disk Usage (inua-disk-usage): the settings look, its index holding the places
+   and the kinds found; the map and the list of the folder in view; the
+   item chosen in a panel on the right. The map's slices take the kinds'
+   colours: the developer's the accent, the agents' and AI's warn, the
+   caches ok, the rest t2. */
+window.disk .disk-index { padding: 0 14px; }
+window.disk .disk-kicker { margin: 14px 8px 6px; }
+window.disk button.index-item { min-height: 44px; padding: 4px 10px; }
+window.disk .disk-meta { color: @t2; margin: 0 6px; }
+window.disk .disk-error { color: @danger; }
+window.disk .disk-path { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11.5px; }
+window.disk .disk-crumbs { margin-top: 10px; }
+window.disk button.disk-crumb {
+  min-height: 0;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: @t1;
+}
+window.disk button.disk-crumb:hover { background: alpha(@accent, 0.09); color: @t0; }
+window.disk button.disk-crumb.current { color: @t0; font-weight: 600; }
+window.disk .disk-crumb-sep { color: @t2; font-size: 11px; }
+window.disk .disk-middle-name { font-size: 13px; font-weight: 600; color: @t0; }
+window.disk .disk-swatch { min-width: 7px; min-height: 7px; border-radius: 1px; }
+window.disk .disk-swatch.dev { background: @accent; }
+window.disk .disk-swatch.agent { background: @warn; }
+window.disk .disk-swatch.cache { background: @ok; }
+window.disk .disk-swatch.plain { background: alpha(@t2, 0.6); }
+window.disk .disk-swatch.rest { opacity: 0.45; }
+window.disk .disk-legend { padding: 4px 0 0; }
+window.disk .disk-hint { margin: 2px 0 6px; }
+window.disk label.disk-hint { padding: 0; }
+window.disk .rows > button.disk-row { min-height: 34px; padding: 4px 6px; }
+window.disk .disk-more { padding: 10px 0; }
+window.disk .disk-details { background: @panel; border-left: 1px solid alpha(@line, 0.7); }
+window.disk .disk-details-body { padding: 18px 22px 24px; }
+window.disk .disk-name { padding-top: 10px; font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 17px; color: @t0; }
+window.disk .disk-actions { padding: 10px 0 2px; }
+window.disk .disk-verdict { padding-top: 10px; font-size: 14px; font-weight: 600; }
+window.disk .disk-verdict.safe { color: @ok; }
+window.disk .disk-verdict.review { color: @warn; }
+window.disk .disk-verdict.keep { color: @danger; }
+window.disk .disk-verdict.unknown { color: @t1; }
+window.disk .disk-verdict-tag {
+  padding: 1px 6px;
+  border: 1px solid alpha(@t2, 0.5);
+  border-radius: 2px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: @t2;
+}
+window.disk .disk-verdict-tag.safe { border-color: alpha(@ok, 0.5); color: @ok; }
+window.disk .disk-verdict-tag.review { border-color: alpha(@warn, 0.5); color: @warn; }
+window.disk .disk-verdict-tag.keep { border-color: alpha(@danger, 0.5); color: @danger; }
+window.disk .disk-step .mark { margin-top: 5px; }
+window.disk .disk-step .mark.on { background: @accent; border-color: @accent; }
+window.disk .disk-step-check { font-size: 12.5px; color: @t1; }
+window.disk .disk-command {
+  padding: 6px 8px;
+  border: 1px solid @line;
+  border-radius: 2px;
+  background: @surface;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  color: @t0;
+}
+window.disk .disk-explain { padding-top: 6px; color: @t0; }
+window.disk .disk-command-head { padding-top: 4px; }
+window.disk .disk-output {
+  padding: 6px 8px;
+  border-left: 2px solid @line;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t1;
+}
+window.disk .disk-done { color: @ok; }
+/* The question before deleting or running: the settings dialog's look, as
+   GPG's and Pass's. */
+window.disk-dialog { background: @app; }
+window.disk-dialog .page { padding: 22px 24px 20px; }
+window.disk-dialog .disk-dialog-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 18px; color: @t0; }
+window.disk button.destructive-action {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid @danger;
+  border-radius: 2px;
+  background: @danger;
+  background-image: none;
+  box-shadow: none;
+  color: @app;
+}
+window.disk button.destructive-action:hover { background: mix(@danger, @t0, 0.14); }

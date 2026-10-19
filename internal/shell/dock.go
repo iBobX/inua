@@ -259,6 +259,7 @@ var LightAppGroups = []struct {
 		"inua:screenshot",
 		"io.github.lyricat.Inua.Viewer",
 		"io.github.lyricat.Inua.SystemMonitor",
+		"io.github.lyricat.Inua.DiskUsage",
 		"io.github.lyricat.Inua.Pass",
 		"io.github.lyricat.Inua.GPG",
 	}},
