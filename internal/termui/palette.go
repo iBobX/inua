@@ -16,8 +16,10 @@ import (
 
 // fixedKeys are the keys the settings do not change.
 var fixedKeys = []struct{ keys, label string }{
-	{"Ctrl Shift ←↑→↓", i18n.M("Focus the pane in that direction")},
-	{"Ctrl Shift Alt ←↑→↓", i18n.M("Resize the focused pane")},
+	{"Ctrl Alt ←↑→↓", i18n.M("Focus the pane in that direction")},
+	{"Ctrl Shift Super ←↑→↓", i18n.M("Resize the focused pane")},
+	{"Alt 1…8 / Alt 9", i18n.M("Session 1…8 / the last session")},
+	{"Ctrl PgUp / PgDn", i18n.M("Previous / next session")},
 	{"Ctrl Shift 1…9", i18n.M("Workspace 1…9")},
 	{"Shift Insert", i18n.M("Paste the primary selection")},
 	{"Shift PgUp / PgDn", i18n.M("Scroll a page")},
@@ -34,6 +36,7 @@ func keycaps(chord string) string {
 		"ctrl": "Ctrl", "shift": "Shift", "alt": "Alt", "super": "Super",
 		"equal": "=", "minus": "-", "bracketleft": "[", "bracketright": "]", "slash": "/",
 		"comma": ",", "space": "Space", "backslash": "\\", "period": ".",
+		"return": "Enter", "page_up": "PgUp", "page_down": "PgDn",
 	}
 	parts := strings.Split(chord, "+")
 	for i, p := range parts {
@@ -206,7 +209,10 @@ func (a *App) showKeys() {
 	for _, f := range fixedKeys {
 		box.Append(&actionRow(i18n.T(f.label), f.keys).Widget)
 	}
-	note := gtk.NewLabel(i18n.T("Change them in the settings (Ctrl+Shift+,)."))
+	note := gtk.NewLabel(i18n.T("Change them in the settings."))
+	if k := a.set.Keys["settings"]; k != "" {
+		note.SetText(i18n.Tf("Change them in the settings (%s).", keycaps(k)))
+	}
 	note.AddCssClass("term-sheet-why")
 	note.SetXalign(0)
 	box.Append(&note.Widget)

@@ -1,12 +1,17 @@
 package termui
 
-import "strconv"
+import (
+	"strconv"
 
-// The terminal's 16 colours follow inua's theme (section 6): red, green,
-// yellow and blue are the theme's danger, ok, warn and accent; magenta
-// and cyan mixes of them; black and white its surfaces and text, the
-// right way round for a dark theme or a light one. The bright eight are
-// each a step toward the text colour.
+	"github.com/lyricat/inua/internal/term/scheme"
+)
+
+// Without a scheme of its own (term.toml look.scheme), the terminal's 16
+// colours follow the window's theme: red, green, yellow and blue are the
+// theme's danger, ok, warn and accent; magenta and cyan mixes of them;
+// black and white its surfaces and text, the right way round for a dark
+// theme or a light one. The bright eight are each a step toward the text
+// colour.
 
 type rgb struct{ r, g, b float64 }
 
@@ -52,4 +57,15 @@ func themePalette(t map[string]string) [16]uint32 {
 	}
 	p[8], p[15] = brightBlack.value(), brightWhite.value()
 	return p
+}
+
+// themeScheme is a theme as the terminals' colours: its text on its
+// ground, the accent for the cursor, and themePalette.
+func themeScheme(t map[string]string) scheme.Scheme {
+	app := parseHex(t["app"])
+	return scheme.Scheme{
+		Dark: app.luma() < 0.5,
+		FG:   parseHex(t["t0"]).value(), BG: app.value(), Cursor: parseHex(t["accent"]).value(),
+		Palette: themePalette(t),
+	}
 }

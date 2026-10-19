@@ -179,6 +179,16 @@ func (c *Client) SetColors(colors Colors) error {
 	return err
 }
 
+// SetShell tells the host the shell new panes start; "" is $SHELL.
+func (c *Client) SetShell(program string) error {
+	m := Message{Type: MsgShell}
+	if program != "" {
+		m.Argv = []string{program}
+	}
+	_, err := c.call(m)
+	return err
+}
+
 // ClosePane ends a pane's program and forgets the pane.
 func (c *Client) ClosePane(pane int) error {
 	_, err := c.call(Message{Type: MsgClose, Pane: pane})

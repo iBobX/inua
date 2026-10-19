@@ -48,6 +48,37 @@ func TestStart(t *testing.T) {
 	p.Close()
 }
 
+// The terminal controls its program and what it runs, not a process that
+// left it (setsid) nor one outside.
+func TestControls(t *testing.T) {
+	p, err := Start([]string{"sh", "-c", "sleep 5 & setsid sleep 5 & echo $! ready; read x"}, t.TempDir(), nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer p.Close()
+	buf := make([]byte, 256)
+	var out string
+	for !strings.Contains(out, "ready") {
+		n, err := p.Read(buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		out += string(buf[:n])
+	}
+	detached, _ := strconv.Atoi(strings.Fields(out)[0])
+	time.Sleep(100 * time.Millisecond) // setsid has run
+	if !p.Controls(p.Pid()) {
+		t.Error("not its program's terminal")
+	}
+	if p.Controls(detached) {
+		t.Error("the terminal of a process that left it")
+	}
+	if p.Controls(os.Getpid()) {
+		t.Error("the terminal of a process outside")
+	}
+	syscall.Kill(detached, syscall.SIGKILL)
+}
+
 // The program sees the new size (and gets SIGWINCH).
 func TestResize(t *testing.T) {
 	p, err := Start([]string{"sh", "-c", "trap 'stty size; exit' WINCH; echo ready; while :; do sleep 0.05; done"}, "", nil, 80, 24)

@@ -14,6 +14,7 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/term/host"
+	"github.com/lyricat/inua/internal/term/scheme"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -120,13 +121,13 @@ type termPane struct {
 	onDragBegin, onDragUpdate, onDragEnd func(gtk.GestureDrag, float64, float64)
 }
 
-func newTermPane(be backend, cols, rows int, colors map[string]string, look paneLook) (*termPane, error) {
+func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look paneLook) (*termPane, error) {
 	p := &termPane{
 		look:   look,
-		fg:     rgba(colors["t0"]),
-		bg:     rgba(colors["app"]),
-		cursor: rgba(colors["accent"]),
-		warn:   rgba(colors["warn"]),
+		fg:     rgbaOf(sc.FG),
+		bg:     rgbaOf(sc.BG),
+		cursor: rgbaOf(sc.Cursor),
+		warn:   rgba(warn),
 		be:     be,
 		cols:   cols,
 		rows:   rows,
@@ -137,7 +138,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string, look pane
 		return nil, err
 	}
 	p.term.SetDefaults(look.Scrollback, look.Cursor, look.Blink)
-	p.term.SetPalette(themePalette(colors))
+	p.term.SetPalette(sc.Palette)
 	p.widget = newPaneWidget(p)
 	p.widget.SetCursorFromName("text")
 	p.widget.SetFocusable(true)
@@ -638,11 +639,12 @@ func (p *termPane) setFont(spec string) {
 // busy says a sheet or the find bar has the keys.
 func (p *termPane) busy() bool { return p.sheet != nil || p.find != nil }
 
-// setTheme takes the theme's colours.
-func (p *termPane) setTheme(colors map[string]string) {
-	p.fg, p.bg, p.cursor = rgba(colors["t0"]), rgba(colors["app"]), rgba(colors["accent"])
-	p.warn = rgba(colors["warn"])
-	p.term.SetPalette(themePalette(colors))
+// setScheme takes the terminals' colours, and the theme's warn (the
+// search's matches).
+func (p *termPane) setScheme(sc scheme.Scheme, warn string) {
+	p.fg, p.bg, p.cursor = rgbaOf(sc.FG), rgbaOf(sc.BG), rgbaOf(sc.Cursor)
+	p.warn = rgba(warn)
+	p.term.SetPalette(sc.Palette)
 	p.update(true)
 }
 

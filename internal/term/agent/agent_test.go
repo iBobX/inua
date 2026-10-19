@@ -83,6 +83,13 @@ any = ["approve?"]
 	if _, errs := Load(dir); len(errs) != 1 {
 		t.Errorf("errors %v", errs)
 	}
+	os.WriteFile(filepath.Join(dir, "bad.toml"), []byte("type = \"x\"\ncolor = \"orange\"\n"), 0o600)
+	if _, errs := Load(dir); len(errs) != 1 {
+		t.Errorf("a colour not #rrggbb: %v", errs)
+	}
+	if m := load(t, "").ByType("claude"); m == nil || m.Color != "#d97757" {
+		t.Errorf("claude's colour %+v", m)
+	}
 }
 
 func TestTitle(t *testing.T) {

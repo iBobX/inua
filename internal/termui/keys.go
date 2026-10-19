@@ -13,14 +13,17 @@ import (
 	"github.com/lyricat/inua/internal/term/layout"
 )
 
-// inua-term's own keys are Ctrl+Shift chords (section 7); everything else
+// inua-term's own keys are Ghostty's (docs/terminal.md): a workspace is
+// Ghostty's window, a session its tab, a pane its split; everything else
 // goes to the program. A chord is matched by its key without Shift (base),
 // so Ctrl+Shift+1 is "1" whatever Shift makes of it on the layout.
 
 // chord does the window's action for a chord of the settings' keys
-// (term.toml [keys]), or the fixed ones: Ctrl+Shift with an arrow moves
-// the focus, with Alt too resizes, and an arrow after the swap key swaps.
-// false leaves the key to the pane.
+// (term.toml [keys]), or the fixed ones: Ctrl+Alt with an arrow moves the
+// focus, Ctrl+Shift+Super with one resizes, an arrow after the swap key
+// swaps; Alt+1…9 shows a session, Ctrl+Shift+1…9 a workspace, and
+// Ctrl+PgUp and PgDn step through the sessions. false leaves the key to
+// the pane.
 func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bool {
 	held := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
 	if a.swapping {
@@ -30,17 +33,26 @@ func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bo
 			return true
 		}
 	}
-	cs := gdk.ControlMaskValue | gdk.ShiftMaskValue
 	if d, ok := arrow(keyval); ok {
 		switch held {
-		case cs:
+		case gdk.ControlMaskValue | gdk.AltMaskValue:
 			a.layoutOp(host.OpFocus, host.Message{Direction: int(d)})
 			return true
-		case cs | gdk.AltMaskValue:
+		case gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.SuperMaskValue:
 			a.layoutOp(host.OpResize, host.Message{Direction: int(d), Step: 0.05})
 			return true
 		}
 		return false
+	}
+	if held == gdk.ControlMaskValue {
+		switch int32(keyval) {
+		case gdk.KEY_Page_Up, gdk.KEY_KP_Page_Up:
+			a.stepSession(-1)
+			return true
+		case gdk.KEY_Page_Down, gdk.KEY_KP_Page_Down:
+			a.stepSession(1)
+			return true
+		}
 	}
 	if a.nthChord(base, held) {
 		return true
@@ -152,13 +164,21 @@ func (a *App) do(action string, p *termPane) bool {
 	return true
 }
 
-// nth workspaces: Ctrl+Shift+1…9, fixed.
+// nthChord shows the nth session (Alt+1…9, Ghostty's tabs) or workspace
+// (Ctrl+Shift+1…9); fixed.
 func (a *App) nthChord(base uint32, held gdk.ModifierType) bool {
 	k := rune(gdk.KeyvalToUnicode(base))
-	if held != gdk.ControlMaskValue|gdk.ShiftMaskValue || k < '1' || k > '9' {
+	if k < '1' || k > '9' {
 		return false
 	}
-	a.nthWorkspace(int(k - '1'))
+	switch held {
+	case gdk.AltMaskValue:
+		a.nthSession(int(k - '1'))
+	case gdk.ControlMaskValue | gdk.ShiftMaskValue:
+		a.nthWorkspace(int(k - '1'))
+	default:
+		return false
+	}
 	return true
 }
 
@@ -281,6 +301,22 @@ func (a *App) nthWorkspace(i int) {
 		return
 	}
 	a.showWorkspace(a.state.Model.Workspaces[i].ID)
+}
+
+// nthSession shows the shown workspace's session at place i; Alt+9 is
+// the last, as Ghostty's last tab.
+func (a *App) nthSession(i int) {
+	w := a.shownWorkspace()
+	if w == nil || len(w.Sessions) == 0 {
+		return
+	}
+	if i == 8 {
+		i = len(w.Sessions) - 1
+	}
+	if i >= len(w.Sessions) {
+		return
+	}
+	a.showSession(w.ID, w.Sessions[i].ID)
 }
 
 // stepSession shows the previous (-1) or next session of the workspace.

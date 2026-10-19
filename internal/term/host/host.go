@@ -52,6 +52,8 @@ type Host struct {
 	// ShellDir holds the shell integration's scripts (shellint); "" for
 	// none.
 	ShellDir string
+	// shellProg is the shell new panes start, "" for $SHELL (SetShell).
+	shellProg string
 	// Agents are the manifests panes' agents are known by; nil follows
 	// none. Notify posts notifications for agents that need the user.
 	Agents *agent.Set
@@ -59,21 +61,21 @@ type Host struct {
 	// Raise brings a window up after a notification's Show; nil runs
 	// inua-term again, which raises the one open or opens one.
 	Raise func()
-	// Hooks adds inua-term's hooks to an agent's settings the first time
-	// one is seen, through Hook (the type); nil adds none.
-	Hook   func(agentType string)
-	hooked map[string]bool
-	notes  notifier
+	notes notifier
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string
 	forget       []string
 	keepCommands bool
 	saveTimer    *time.Timer
-	next         int
-	clients      map[*client]bool
-	closed       bool
-	done         chan struct{}
+	// waiting are the kept sessions whose folders are not there yet;
+	// waitIDs numbers their panes, below zero.
+	waiting []waitingSession
+	waitIDs int
+	next    int
+	clients map[*client]bool
+	closed  bool
+	done    chan struct{}
 }
 
 // pane is a program on a PTY, with the host's own engine for its state.
@@ -331,6 +333,12 @@ func (h *Host) handle(c *client, m Message) {
 			return
 		}
 		h.setColors(*m.Colors)
+	case MsgShell:
+		program := ""
+		if len(m.Argv) > 0 {
+			program = m.Argv[0]
+		}
+		h.SetShell(program)
 	case MsgCreate:
 		id, err := h.create(m)
 		if err != nil {
@@ -394,7 +402,7 @@ func (h *Host) list() []PaneInfo {
 		})
 		if m := p.agent.m; m != nil {
 			i := &infos[len(infos)-1]
-			i.AgentName, i.Icon, i.Since = m.Name, m.Icon, p.agent.t.Since.UnixMilli()
+			i.AgentName, i.Icon, i.Color, i.Since = m.Name, m.Icon, m.Color, p.agent.t.Since.UnixMilli()
 			if p.agent.title != "" {
 				i.Title = p.agent.title
 			}

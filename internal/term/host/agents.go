@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/godbus/dbus/v5"
+	"golang.org/x/sys/unix"
 
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
@@ -110,7 +112,6 @@ func (h *Host) checkProcess(p *pane) bool {
 		a.m, a.title = m, ""
 		a.t = agent.Tracker{Type: m.Type, State: agent.Idle, Since: time.Now()}
 		h.readScreenLater(p)
-		go h.hook(m.Type)
 		return true
 	}
 	return true
@@ -227,11 +228,18 @@ func (h *Host) programNotes(p *pane, ns []vt.Notification) {
 }
 
 // report is an agent saying what it does, through its hooks or
-// `inua-term report`: its screen is not read for state after that.
-func (h *Host) report(m Message) error {
+// `inua-term report`: its screen is not read for state after that. Only
+// a process running in the pane (from, the reporter, whose controlling
+// terminal is the pane's) may: Codex runs its notify from a daemon that
+// left the pane it started in and keeps that pane's INUA_TERM_PANE, so
+// the turns of every Codex anywhere came to that pane.
+func (h *Host) report(m Message, from int) error {
 	p := h.pane(m.Pane)
 	if p == nil {
 		return fmt.Errorf("no pane %d", m.Pane)
+	}
+	if from <= 0 || !p.pty.Controls(from) {
+		return fmt.Errorf("pane %d: the reporter does not run in it", m.Pane)
 	}
 	s := agent.State(m.AgentState)
 	switch s {
@@ -308,25 +316,6 @@ func (h *Host) looking(id int) bool {
 	s, _ := h.m.Session(h.m.Shown.Session)
 	return active && s != nil && s.Focus == id
 }
-
-// hook has an agent's hooks added once a host's life.
-func (h *Host) hook(t string) {
-	h.mu.Lock()
-	if h.Hook == nil || h.hooked[t] {
-		h.mu.Unlock()
-		return
-	}
-	if h.hooked == nil {
-		h.hooked = map[string]bool{}
-	}
-	h.hooked[t] = true
-	f := h.Hook
-	h.mu.Unlock()
-	f(t)
-}
-
-// Announce posts a notification of the host's own (hooks it added).
-func (h *Host) Announce(summary, body string) { h.notify(note{summary: summary, body: body}) }
 
 // procArgs is a process's argument list.
 func procArgs(pid int) []string {
@@ -440,4 +429,24 @@ func (h *Host) showPane(id int) {
 			go cmd.Wait()
 		}
 	}
+}
+
+// peerPid is the process at the other end of a Unix socket, 0 when it
+// cannot be told.
+func peerPid(conn net.Conn) int {
+	uc, ok := conn.(*net.UnixConn)
+	if !ok {
+		return 0
+	}
+	raw, err := uc.SyscallConn()
+	if err != nil {
+		return 0
+	}
+	pid := 0
+	raw.Control(func(fd uintptr) {
+		if cred, err := unix.GetsockoptUcred(int(fd), unix.SOL_SOCKET, unix.SO_PEERCRED); err == nil {
+			pid = int(cred.Pid)
+		}
+	})
+	return pid
 }

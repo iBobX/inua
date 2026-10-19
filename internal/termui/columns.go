@@ -24,6 +24,10 @@ type columns struct {
 	list       *gtk.ListBox
 	sessions   *gtk.Box
 	find       *gtk.SearchEntry
+	// The heads: the new workspace and new session buttons, and the
+	// shown workspace's name over its sessions.
+	newWorkspace, newSession *gtk.Button
+	title                    *gtk.Label
 	// rowIDs is the workspace of each row of the list, in order.
 	rowIDs []int
 	// filling is set while the list is made, so selecting a row then
@@ -63,9 +67,14 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 	ui.Get("workspaces", c.list)
 	ui.Get("sessions", c.sessions)
 	ui.Get("find", c.find)
-	var newWorkspace, newSession gtk.Button
-	ui.Get("new_workspace", &newWorkspace)
-	ui.Get("new_session", &newSession)
+	c.newWorkspace, c.newSession, c.title = &gtk.Button{}, &gtk.Button{}, &gtk.Label{}
+	ui.Get("new_workspace", c.newWorkspace)
+	ui.Get("new_session", c.newSession)
+	ui.Get("sessions_title", c.title)
+	a.nerd.who, a.nerd.sys = &gtk.Label{}, &gtk.Label{}
+	ui.Get("nerd_who", a.nerd.who)
+	ui.Get("nerd_sys", a.nerd.sys)
+	c.tips(a)
 	c.onRow = func(_ gtk.ListBox, row uintptr) {
 		i := int(gtk.ListBoxRowNewFromInternalPtr(row).GetIndex())
 		if c.filling || i < 0 || i >= len(c.rowIDs) {
@@ -77,9 +86,21 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 	c.onFind = func(uintptr, uintptr) { c.update(a) }
 	gtkx.ConnectChanged(c.find, &c.onFind)
 	c.onNewWorkspace = func(gtk.Button) { a.newWorkspace() }
-	newWorkspace.ConnectClicked(&c.onNewWorkspace)
+	c.newWorkspace.ConnectClicked(&c.onNewWorkspace)
 	c.onNewSession = func(gtk.Button) { a.newSession() }
-	newSession.ConnectClicked(&c.onNewSession)
+	c.newSession.ConnectClicked(&c.onNewSession)
+}
+
+// tips name the head buttons' actions, with their keys as set.
+func (c *columns) tips(a *App) {
+	tip := func(b *gtk.Button, label, action string) {
+		if k := a.set.Keys[action]; k != "" {
+			label += " (" + keycaps(k) + ")"
+		}
+		b.SetTooltipText(label)
+	}
+	tip(c.newWorkspace, i18n.T("New workspace"), "new_workspace")
+	tip(c.newSession, i18n.T("New session"), "new_session")
 }
 
 // update makes both columns from the State.
@@ -157,9 +178,12 @@ func (c *columns) fillSessions(a *App) {
 	c.clicks = c.clicks[:0]
 	c.times = c.times[:0]
 	w := a.shownWorkspace()
+	c.newSession.SetSensitive(w != nil)
 	if w == nil {
+		c.title.SetText("")
 		return
 	}
+	c.title.SetText(w.Name)
 	click := func(b *gtk.Button, do func()) {
 		f := func(gtk.Button) { do() }
 		c.clicks = append(c.clicks, &f)
@@ -221,6 +245,7 @@ func (c *columns) paneRow(a *App, ws int, s *model.Session, id int, click func(*
 	kind.AddCssClass("term-kind-box")
 	icon := gtk.NewImageFromIconName(iconOf(info))
 	icon.SetPixelSize(15)
+	a.brand(icon, info)
 	icon.SetHexpand(true)
 	icon.SetHalign(gtk.AlignCenterValue)
 	kind.Append(&icon.Widget)

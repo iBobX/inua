@@ -64,6 +64,15 @@ windowrule {
     match:class = ^(io\.github\.lyricat\.Inua\.Term)$
     tile = yes
 }
+
+# Their dialogs (inua-term's first-start guide) float over them.
+windowrule {
+    name = inua-dialogs
+    match:class = ^(io\.github\.lyricat\.Inua\..+)$
+    match:modal = true
+    float = yes
+    center = yes
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -185,6 +194,14 @@ hl.window_rule({
     name = "inua-term",
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Term)$" },
     tile = true,
+})
+
+-- Their dialogs (inua-term's first-start guide) float over them.
+hl.window_rule({
+    name = "inua-dialogs",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\..+)$", modal = true },
+    float = true,
+    center = true,
 })
 `
 

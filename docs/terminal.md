@@ -12,12 +12,31 @@ inua-term -e COMMAND [ARGS…]     run a command in a session of its own ("Comma
 inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
-                                 take inua-term's hooks out of an agent's settings
+                                 take out the hooks an earlier inua-term added
 ```
 
-It can be the desktop's terminal: Settings → Default Apps writes
-`xdg-terminals.list`, and its desktop entry takes `-e` as
-xdg-terminal-exec expects.
+It is in the app drawer, under Tools. It can be the desktop's terminal:
+Settings → Default Apps writes `xdg-terminals.list`, and its desktop
+entry takes `-e` as xdg-terminal-exec expects.
+
+## The first start
+
+With no `term.toml` yet, a guide comes first, before the first pane
+starts. Three steps, each a list beside a preview:
+
+- **Your shell**: the login shell (`$SHELL`), or another of those
+  installed (`/etc/shells`, one path each, nologin left out). The
+  preview shows its prompt.
+- **Terminal colours**: the window theme's, or a scheme of its own
+  (Tokyo Night, Catppuccin Mocha and Latte, Dracula, Gruvbox Dark and
+  Light, Nord, One Dark, Rosé Pine, Solarized Dark and Light), each with
+  a line on its look; the preview is a few commands in it and its 16
+  colours.
+- **Window theme**: inua's, or one of inua's others for this window
+  alone, whatever inua's is. The window takes it at once.
+
+Skip, Escape or closing the guide keeps what was chosen so far; every
+choice is in the settings after.
 
 ## How it works
 
@@ -42,14 +61,21 @@ from it, or at `$INUA_VT_LIB`.
 
 ## The window
 
-- **Workspaces** (column 1): a name, its folder, and what its agents
-  add up to: a square filled in warn while one waits for you, in the
-  accent while one works, hollow when quiet, and a badge counting those
-  that wait. The search finds workspaces by name, folder or pane title.
-- **Sessions** (column 2): the shown workspace's, each a section of its
-  panes. A pane's row shows its agent's mark and title, its state and how
-  long it has been in it; an agent waiting for you shows what it asks.
-  A shell shows the command running in it.
+- **Workspaces** (column 1): at its top, where this is (`user@host`,
+  then the system, the kernel, the shell new panes start and the
+  uptime), then the search with the new workspace button. Each
+  workspace is a name, its
+  folder, and what its agents add up to: a square filled in warn while
+  one waits for you, in the accent while one works, hollow when quiet,
+  and a badge counting those that wait. The search finds workspaces by
+  name, folder or pane title.
+- **Sessions** (column 2): at its top, the shown workspace's name and
+  the new session button; then its sessions, each a section of its
+  panes. A pane's row shows its agent's mark and title, its state and
+  how long it has been in it; an agent waiting for you shows what it
+  asks. A shell shows the command running in it. An agent's mark takes
+  its own colour (Claude Code's orange, Gemini's blue…) while it works
+  or waits for you, and goes quiet after.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
   head (state, mark, title, folder). Drag a gap to resize, drag a head
   onto another pane to swap them.
@@ -71,6 +97,7 @@ the built-in ones:
 type = "claude"
 name = "Claude Code"
 icon = "agent-claude"            # ui/icons/agent-claude-symbolic.svg
+color = "#d97757"                # the mark's while it works or asks; none for the accent
 process = ["claude"]
 resume = "claude --continue"     # what a restored pane puts back
 
@@ -87,15 +114,17 @@ any = ["esc to interrupt"]
 
 A wrapper can name its agent with `INUA_TERM_AGENT=<type>`.
 
-**Hooks.** The first time it sees Claude Code or Codex, inua-term adds
-its hooks to their settings, so they report their state themselves:
-`UserPromptSubmit`, `Notification` and `Stop` in `~/.claude/settings.json`,
-`notify` in `~/.codex/config.toml`. Your own hooks stay, a `notify` Codex
-already has is left alone, the file before is kept as `.bak`, and a
-notification says what changed. `inua-term integration remove claude`
-takes them out; `hooks = false` in `term.toml` stops it adding them.
-Anything can report through `inua-term report`, which does nothing
-outside an inua-term pane:
+**Nothing added to the agents.** inua-term writes no hooks, skills or
+settings of the agents': it knows them by their process and their
+screen alone. An earlier inua-term added hooks to Claude Code's
+`~/.claude/settings.json` and Codex's `~/.codex/config.toml`;
+`inua-term integration remove all` takes them out (the file before is
+kept as `.bak`). A program of your own may still report through
+`inua-term report`, which does nothing outside an inua-term pane. The
+host takes a report only from a process running in the pane, its
+terminal the pane's: Codex runs its `notify` from a daemon that left the
+pane it started in, and those reports once landed on that pane whatever
+it ran.
 
 ```
 inua-term report --agent mybot --state working --title "Rename the flag"
@@ -117,7 +146,11 @@ was typed at the prompt and not run, else the command running, else the
 one run last. The next host starts a shell in each pane's folder, in the
 same layout, and puts the command back at the prompt **not run**; the
 pane says RESTORED until you type. An agent with a resume command comes
-back as it (`claude --continue`). Commands matching the `forget`
+back as it (`claude --continue`). A pane whose folder is gone starts in
+its workspace's; a session with neither there yet (a network share or a
+disk mounted later) waits for it, still kept, and comes back within a
+few seconds of the folder appearing. A session that fails to start is
+left out whole, its panes started closed again. Commands matching the `forget`
 patterns (`*password*`, `*token=*`, `*secret*`) are never kept, nor is
 anything typed at a program's own prompt (a password for sudo or ssh).
 The file is `~/.local/state/inua/term.json` (mode 0600).
@@ -129,21 +162,25 @@ scripts that send them for bash (`--rcfile`, which then loads your
 
 ## Keys
 
-Every key of inua-term's is a Ctrl+Shift chord; everything else goes to
-the program, Alt included. Ctrl+Shift+/ shows them all, Ctrl+Shift+P
-finds any action by name, and the settings change them.
+The keys are Ghostty's on Linux, a workspace standing for Ghostty's
+window, a session for its tab and a pane for its split; inua-term's own
+actions are Ctrl+Shift chords. Everything else goes to the program.
+Ctrl+Shift+/ shows them all, Ctrl+Shift+P finds any action by name, and
+the settings change them. A `term.toml` of the first version has the keys
+it kept at that version's defaults moved to these.
 
 | Keys | Action |
 |---|---|
 | Ctrl+Shift+T / Ctrl+Shift+N | New session / new workspace |
-| Ctrl+Shift+D / Ctrl+Shift+E | Split right / down |
+| Ctrl+Shift+O / Ctrl+Shift+E | Split right / down |
 | Ctrl+Shift+W | Close the pane (asks if its agent is working) |
-| Ctrl+Shift+←↑→↓ | Focus the pane in that direction |
-| Ctrl+Shift+Alt+←↑→↓ | Resize the focused pane |
+| Ctrl+Alt+←↑→↓ | Focus the pane in that direction |
+| Ctrl+Shift+Super+←↑→↓ | Resize the focused pane |
 | Ctrl+Shift+X, then an arrow | Swap with the pane in that direction |
-| Ctrl+Shift+Z / Ctrl+Shift+= / Ctrl+Shift+L | Zoom / equalize / next layout |
+| Ctrl+Shift+Enter / Ctrl+Shift+Super+= / Ctrl+Shift+L | Zoom / equalize / next layout |
+| Ctrl+Tab / Ctrl+Shift+Tab, Ctrl+PgDn / Ctrl+PgUp | Next / previous session |
+| Alt+1…8 / Alt+9 | Session 1…8 / the last session |
 | Ctrl+Shift+1…9 | Workspace 1…9 |
-| Ctrl+Shift+[ / ] | Previous / next session |
 | Ctrl+Shift+J / Ctrl+Shift+A | Next agent that needs you / every agent |
 | Ctrl+Shift+B / Ctrl+Shift+S | Fold the workspaces / the sessions |
 | Ctrl+Shift+C / Ctrl+Shift+V | Copy / paste |
@@ -153,7 +190,7 @@ finds any action by name, and the settings change them.
 | Shift+PgUp / Shift+PgDn, Shift+Home / Shift+End | Scroll |
 | Ctrl+Shift+PgUp / Ctrl+Shift+PgDn | Previous / next prompt |
 | Ctrl+Shift+R | Rename the session |
-| Ctrl+Shift+, | Settings |
+| Ctrl+, | Settings |
 | Ctrl+= / Ctrl+- / Ctrl+0 | Font larger / smaller / as set |
 
 ## Copy and paste
@@ -172,13 +209,15 @@ offered. Ctrl+click opens a link, an OSC 8 one or a URL in the text.
 
 ## Settings
 
-`~/.config/inua/term.toml`, written by the settings (Ctrl+Shift+,) with
-what each setting means: the font and its size, the cursor, copy on
-select, scrollback, the host's replay size, shell integration, agents'
-notifications and hooks, remembering commands and what never to keep, and
-the keys by action (`""` frees one for the program). The look (theme,
-icons, text size) follows inua's `config.toml`; the terminal's 16 colours
-come from the theme.
+`~/.config/inua/term.toml`, written by the guide and the settings
+(Ctrl+,) with what each setting means: the window's theme (`look.theme`,
+`""` for inua's) and the terminals' colours (`look.scheme`, `""` for the
+theme's), the font and its size, the cursor, copy on select, scrollback,
+the host's replay size, the shell new panes start (`shell.program`, `""`
+for `$SHELL`) and its integration, agents' notifications, remembering
+commands and what never to keep, and the keys by action (`""` frees one
+for the program). The theme, the colours and the shell take hold at
+once; the icons and the text size follow inua's `config.toml`.
 
 ## Not yet
 

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"syscall"
@@ -17,7 +16,6 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
-	"github.com/lyricat/inua/internal/term/hooks"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/settings"
 	"github.com/lyricat/inua/internal/term/shellint"
@@ -105,9 +103,7 @@ func serveHost() int {
 			h.ShellDir = shellint.Dir()
 		}
 	}
-	if set.Agents.Hooks {
-		h.Hook = func(t string) { addHooks(h, t) }
-	}
+	h.SetShell(set.Shell.Program)
 	known, errs := agent.Load(agent.Dir())
 	for _, err := range errs {
 		log.Printf("inua-term: agents: %v", err)
@@ -153,48 +149,4 @@ func show(command []string, workspace string) error {
 		_, err = c.Run(command, dir)
 	}
 	return err
-}
-
-// addHooks adds inua-term's hooks to an agent's settings, the first time
-// the host sees it, and says so.
-func addHooks(h *host.Host, t string) {
-	exe := "inua-term"
-	if p, err := exec.LookPath("inua-term"); err != nil || !sameFile(p) {
-		if self, err := os.Executable(); err == nil {
-			exe = self
-		}
-	}
-	var path string
-	var changed bool
-	var err error
-	switch t {
-	case "claude":
-		path = hooks.ClaudePath()
-		changed, err = hooks.InstallClaude(path, exe)
-	case "codex":
-		path = hooks.CodexPath()
-		changed, err = hooks.InstallCodex(path, exe)
-	default:
-		return
-	}
-	if err != nil {
-		log.Printf("inua-term: hooks: %v", err)
-		return
-	}
-	if changed {
-		log.Printf("inua-term: added its hooks to %s", path)
-		h.Announce(i18n.T("inua-term added its hooks"),
-			i18n.Tf("%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out.", path, path, t))
-	}
-}
-
-// sameFile says the inua-term on the PATH is this one.
-func sameFile(p string) bool {
-	self, err := os.Executable()
-	if err != nil {
-		return false
-	}
-	a, err1 := os.Stat(p)
-	b, err2 := os.Stat(self)
-	return err1 == nil && err2 == nil && os.SameFile(a, b)
 }

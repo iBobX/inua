@@ -62,14 +62,6 @@ msgstr "%s leyó un secreto"
 msgid "“%s” · %s"
 msgstr "«%s» · %s"
 
-#: cmd/inua-term/main.go:186
-msgid "inua-term added its hooks"
-msgstr "inua-term añadió sus hooks"
-
-#: cmd/inua-term/main.go:187
-msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
-msgstr "%s ahora informa de su estado a inua-term. El archivo anterior es %s.bak; `inua-term integration remove %s` los quita."
-
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:308
@@ -1651,6 +1643,7 @@ msgstr "Editar"
 #: internal/appui/clock.go:491
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
+#: internal/termui/guide.go:161
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:1313
@@ -2289,7 +2282,7 @@ msgid "NOTES"
 msgstr "NOTAS"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:407
+#: internal/term/host/agents.go:396
 msgid "Show"
 msgstr "Mostrar"
 
@@ -2302,7 +2295,7 @@ msgstr "Ocultar"
 #: internal/appui/pass.go:626
 #: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:84
+#: internal/term/settings/settings.go:103
 #: internal/ui/askpass.go:203
 #: ui/disk.ui:698
 #: ui/gpg.ui:661
@@ -2349,6 +2342,7 @@ msgid "Its path: the first part is its category. Its content comes next."
 msgstr "Su ruta: la primera parte es su categoría. Después, su contenido."
 
 #: internal/appui/pass.go:797
+#: internal/termui/guide.go:163
 msgid "Next"
 msgstr "Siguiente"
 
@@ -2669,8 +2663,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:266
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:267
+#: internal/shell/dock.go:300
 msgid "NETWORK"
 msgstr "RED"
 
@@ -3351,7 +3345,7 @@ msgid "IN USE"
 msgstr "EN USO"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:265
+#: internal/termui/prefs.go:280
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3630,8 +3624,8 @@ msgstr "Bloque desconocido %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:226
-#: internal/termui/keys.go:324
+#: internal/termui/keys.go:246
+#: internal/termui/keys.go:360
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -4510,13 +4504,12 @@ msgid "Opens folders"
 msgstr "Abre carpetas"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:84
-#: internal/termui/app.go:98
-#: internal/termui/app.go:264
-#: internal/termui/app.go:266
-#: internal/termui/tiles.go:352
+#: internal/termui/app.go:95
+#: internal/termui/app.go:127
+#: internal/termui/app.go:299
+#: internal/termui/app.go:301
+#: internal/termui/tiles.go:353
 #: ui/settings.ui:1933
-#: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "Terminal"
@@ -5048,7 +5041,7 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:326
+#: internal/termui/keys.go:362
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -5124,6 +5117,7 @@ msgid "There: %s, %s. This one: %s, %s."
 msgstr "Allí: %s, %s. Este: %s, %s."
 
 #: internal/filesui/cards.go:490
+#: internal/termui/guide.go:106
 msgid "Skip"
 msgstr "Omitir"
 
@@ -5156,7 +5150,7 @@ msgstr[1] "… y %d más"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:228
+#: internal/termui/keys.go:248
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -5359,7 +5353,7 @@ msgid "Reload"
 msgstr "Recargar"
 
 #: internal/filesui/cards.go:717
-#: internal/termui/palette.go:195
+#: internal/termui/palette.go:198
 msgid "Keys"
 msgstr "Teclas"
 
@@ -6141,7 +6135,7 @@ msgid "New file…"
 msgstr "Nuevo archivo…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:85
+#: internal/term/settings/settings.go:104
 #: internal/termui/paste.go:284
 msgid "Paste"
 msgstr "Pegar"
@@ -8944,6 +8938,7 @@ msgid "Quit to menu"
 msgstr "Salir al menú"
 
 #: internal/gamesui/fortune_menu.go:109
+#: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9227,7 +9222,7 @@ msgid "SPACE PINBALL"
 msgstr "PINBALL ESPACIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "Lanzador"
@@ -9260,8 +9255,8 @@ msgstr "Enfoque activado o desactivado"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
-#: internal/term/settings/settings.go:91
+#: internal/shell/dock.go:290
+#: internal/term/settings/settings.go:110
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -9730,7 +9725,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Pulsa Enter otra vez para vaciar la papelera"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "inua's settings"
 msgstr "configuración de inua"
 
@@ -9885,56 +9880,56 @@ msgid "Web search"
 msgstr "Búsqueda web"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "EVERYDAY"
 msgstr "TODOS LOS DÍAS"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "TOOLS"
 msgstr "HERRAMIENTAS"
 
-#: internal/shell/dock.go:271
+#: internal/shell/dock.go:272
 msgid "PLAY"
 msgstr "JUGAR"
 
-#: internal/shell/dock.go:276
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:277
+#: internal/shell/dock.go:302
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SISTEMA"
 
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "Find apps, windows and answers"
 msgstr "Encuentra aplicaciones, ventanas y respuestas"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 msgid "Capture an area, a window or a screen"
 msgstr "Capturar un área, una ventana o una pantalla"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "DEVELOPMENT"
 msgstr "DESARROLLO"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "MEDIA"
 msgstr "MULTIMEDIA"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "GAMES"
 msgstr "JUEGOS"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "OTHER"
 msgstr "OTRAS"
 
-#: internal/shell/dock.go:326
+#: internal/shell/dock.go:327
 msgid "WORKSHOP"
 msgstr "TALLER"
 
@@ -10063,150 +10058,222 @@ msgstr "Completamente cargado"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Cargando"
 
-#: internal/term/host/agents.go:166
+#: internal/term/host/agents.go:167
 msgid "%s needs you"
 msgstr "%s te necesita"
 
-#: internal/term/host/agents.go:168
+#: internal/term/host/agents.go:169
 msgid "%s is done"
 msgstr "%s ha terminado"
 
-#: internal/term/host/sessions.go:265
+#: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
 msgid "Commands"
 msgstr "Comandos"
 
-#: internal/term/settings/settings.go:69
+#: internal/term/scheme/scheme.go:26
+msgid "Cool blues and violets on a deep navy"
+msgstr "Azules y violetas fríos sobre un azul marino profundo"
+
+#: internal/term/scheme/scheme.go:29
+msgid "Soft pastels on a warm dark ground"
+msgstr "Pasteles suaves sobre un fondo oscuro y cálido"
+
+#: internal/term/scheme/scheme.go:32
+msgid "Vivid pinks, greens and purples, high contrast"
+msgstr "Rosas, verdes y morados vivos, alto contraste"
+
+#: internal/term/scheme/scheme.go:35
+msgid "Earthy, retro, easy on the eyes"
+msgstr "Terroso, retro, descansado para la vista"
+
+#: internal/term/scheme/scheme.go:38
+msgid "Calm arctic greys and frost blues"
+msgstr "Grises árticos serenos y azules escarcha"
+
+#: internal/term/scheme/scheme.go:41
+msgid "Atom's balanced dark, muted and clear"
+msgstr "El oscuro equilibrado de Atom, apagado y claro"
+
+#: internal/term/scheme/scheme.go:44
+msgid "Muted roses and pines at dusk"
+msgstr "Rosas y pinos apagados al anochecer"
+
+#: internal/term/scheme/scheme.go:47
+msgid "The classic: low contrast on blue-green"
+msgstr "El clásico: bajo contraste sobre azul verdoso"
+
+#: internal/term/scheme/scheme.go:48
+msgid "Pastels on a light, milky ground"
+msgstr "Pasteles sobre un fondo claro y lechoso"
+
+#: internal/term/scheme/scheme.go:51
+msgid "Earthy tones on warm paper"
+msgstr "Tonos terrosos sobre papel cálido"
+
+#: internal/term/scheme/scheme.go:54
+msgid "The classic, on cream"
+msgstr "El clásico, sobre crema"
+
+#: internal/term/settings/settings.go:88
 msgid "New session in this workspace"
 msgstr "Nueva sesión en este espacio"
 
-#: internal/term/settings/settings.go:70
-#: ui/term.ui:68
+#: internal/term/settings/settings.go:89
+#: internal/termui/columns.go:102
 msgid "New workspace"
 msgstr "Nuevo espacio de trabajo"
 
-#: internal/term/settings/settings.go:71
+#: internal/term/settings/settings.go:90
 msgid "Split right"
 msgstr "Dividir a la derecha"
 
-#: internal/term/settings/settings.go:72
+#: internal/term/settings/settings.go:91
 msgid "Split down"
 msgstr "Dividir hacia abajo"
 
-#: internal/term/settings/settings.go:73
+#: internal/term/settings/settings.go:92
 msgid "Close pane"
 msgstr "Cerrar el panel"
 
-#: internal/term/settings/settings.go:74
+#: internal/term/settings/settings.go:93
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "Intercambiar con el panel de una dirección (luego una flecha)"
 
-#: internal/term/settings/settings.go:75
+#: internal/term/settings/settings.go:94
 msgid "Zoom pane / back"
 msgstr "Ampliar el panel / volver"
 
-#: internal/term/settings/settings.go:76
+#: internal/term/settings/settings.go:95
 msgid "Equalize"
 msgstr "Igualar"
 
-#: internal/term/settings/settings.go:77
+#: internal/term/settings/settings.go:96
 msgid "Next layout"
 msgstr "Siguiente disposición"
 
-#: internal/term/settings/settings.go:78
+#: internal/term/settings/settings.go:97
 msgid "Previous session"
 msgstr "Sesión anterior"
 
-#: internal/term/settings/settings.go:79
+#: internal/term/settings/settings.go:98
 msgid "Next session"
 msgstr "Sesión siguiente"
 
-#: internal/term/settings/settings.go:80
+#: internal/term/settings/settings.go:99
 msgid "Next agent that needs you"
 msgstr "Siguiente agente que te necesita"
 
-#: internal/term/settings/settings.go:81
+#: internal/term/settings/settings.go:100
 msgid "Every agent"
 msgstr "Todos los agentes"
 
-#: internal/term/settings/settings.go:82
+#: internal/term/settings/settings.go:101
 msgid "Fold the workspaces"
 msgstr "Plegar los espacios de trabajo"
 
-#: internal/term/settings/settings.go:83
+#: internal/term/settings/settings.go:102
 msgid "Fold the sessions"
 msgstr "Plegar las sesiones"
 
-#: internal/term/settings/settings.go:86
+#: internal/term/settings/settings.go:105
 msgid "Search the scrollback"
 msgstr "Buscar en el historial"
 
-#: internal/term/settings/settings.go:87
+#: internal/term/settings/settings.go:106
 msgid "Copy mode"
 msgstr "Modo de copia"
 
-#: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:315
+#: internal/term/settings/settings.go:107
+#: internal/termui/keys.go:351
 msgid "Rename the session"
 msgstr "Renombrar la sesión"
 
-#: internal/term/settings/settings.go:89
+#: internal/term/settings/settings.go:108
 msgid "Every action by name"
 msgstr "Todas las acciones por nombre"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:109
 msgid "Show the keys"
 msgstr "Mostrar las teclas"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:111
 msgid "Font larger"
 msgstr "Letra más grande"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:112
 msgid "Font smaller"
 msgstr "Letra más pequeña"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:113
 msgid "Font size as set"
 msgstr "Tamaño de letra configurado"
 
-#: internal/termui/agents.go:33
+#: internal/termui/agents.go:36
 msgid "EXITED %d"
 msgstr "SALIÓ %d"
 
-#: internal/termui/agents.go:35
+#: internal/termui/agents.go:38
 msgid "RESTORED"
 msgstr "RESTAURADO"
 
-#: internal/termui/agents.go:39
+#: internal/termui/agents.go:42
 msgid "WORKING"
 msgstr "TRABAJANDO"
 
-#: internal/termui/agents.go:41
+#: internal/termui/agents.go:44
 msgid "NEEDS YOU"
 msgstr "TE NECESITA"
 
-#: internal/termui/agents.go:43
+#: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "TERMINADO"
 
-#: internal/termui/agents.go:45
+#: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "INACTIVO"
 
-#: internal/termui/agents.go:131
+#: internal/termui/agents.go:188
 msgid "Agents that need you"
 msgstr "Agentes que te necesitan"
 
-#: internal/termui/agents.go:209
+#: internal/termui/agents.go:267
 msgid "Agents"
 msgstr "Agentes"
 
-#: internal/termui/agents.go:216
+#: internal/termui/agents.go:274
 msgid "No agent runs in any workspace."
 msgstr "No hay ningún agente en ningún espacio de trabajo."
 
-#: internal/termui/columns.go:193
+#: internal/termui/choices.go:32
+msgid "As inua (%s)"
+msgstr "Como inua (%s)"
+
+#: internal/termui/choices.go:32
+msgid "The window changes with inua's theme"
+msgstr "La ventana cambia con el tema de inua"
+
+#: internal/termui/choices.go:34
+msgid "A theme of your own"
+msgstr "Un tema propio"
+
+#: internal/termui/choices.go:59
+msgid "The window's theme"
+msgstr "El tema de la ventana"
+
+#: internal/termui/choices.go:59
+msgid "The terminals take the window's colours"
+msgstr "Los terminales toman los colores de la ventana"
+
+#: internal/termui/choices.go:71
+msgid "Your login shell (%s)"
+msgstr "Tu shell de inicio de sesión (%s)"
+
+#: internal/termui/columns.go:103
+msgid "New session"
+msgstr "Nueva sesión"
+
+#: internal/termui/columns.go:217
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d panel"
@@ -10216,19 +10283,57 @@ msgstr[1] "%d paneles"
 msgid "COPY"
 msgstr "COPIAR"
 
-#: internal/termui/keys.go:215
+#: internal/termui/guide.go:50
+msgid "Welcome to the Terminal"
+msgstr "Te damos la bienvenida al Terminal"
+
+#: internal/termui/guide.go:62
+msgid "Set up the terminal"
+msgstr "Configura el terminal"
+
+#: internal/termui/guide.go:78
+msgid "Your shell"
+msgstr "Tu shell"
+
+#: internal/termui/guide.go:79
+msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
+msgstr "El shell que inicia cada panel nuevo. inua-term marca los prompts de bash, zsh y fish, así que la última orden de un panel vuelve tras un reinicio; los demás shells funcionan tal cual."
+
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "Colores del terminal"
+
+#: internal/termui/guide.go:87
+msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
+msgstr "Los colores con los que dibujan los programas: los del tema de la ventana, para que el terminal combine con el resto de inua, o un esquema clásico propio."
+
+#: internal/termui/guide.go:95
+#: internal/termui/prefs.go:68
+msgid "Window theme"
+msgstr "Tema de la ventana"
+
+#: internal/termui/guide.go:96
+msgid "The look of the window around the terminals. It follows inua's theme, or keeps one of its own whatever inua's is."
+msgstr "El aspecto de la ventana alrededor de los terminales. Sigue el tema de inua, o conserva uno propio sea cual sea el de inua."
+
+#: internal/termui/guide.go:108
+msgid "Keep these choices; the settings change them later"
+msgstr "Conservar estas opciones; los ajustes las cambian después"
+
+#: internal/termui/keys.go:235
 msgid "Close %s?"
 msgstr "¿Cerrar %s?"
 
-#: internal/termui/keys.go:216
+#: internal/termui/keys.go:236
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "Está trabajando en «%s»; cerrar el panel lo termina."
 
-#: internal/termui/keys.go:218
+#: internal/termui/keys.go:238
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "Te está esperando: %s. Cerrar el panel lo termina."
 
-#: internal/termui/keys.go:259
+#: internal/termui/keys.go:279
 msgid "Choose the workspace's folder"
 msgstr "Elige la carpeta del espacio de trabajo"
 
@@ -10241,36 +10346,48 @@ msgid "Resize the focused pane"
 msgstr "Redimensionar el panel enfocado"
 
 #: internal/termui/palette.go:21
+msgid "Session 1…8 / the last session"
+msgstr "Sesión 1…8 / la última sesión"
+
+#: internal/termui/palette.go:22
+msgid "Previous / next session"
+msgstr "Sesión anterior / siguiente"
+
+#: internal/termui/palette.go:23
 msgid "Workspace 1…9"
 msgstr "Espacio de trabajo 1…9"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:24
 msgid "Paste the primary selection"
 msgstr "Pegar la selección primaria"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:25
 msgid "Scroll a page"
 msgstr "Desplazar una página"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:26
 msgid "Scroll to the top / the bottom"
 msgstr "Ir al principio / al final"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "Ir al aviso anterior / siguiente"
 
-#: internal/termui/palette.go:95
+#: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "Acciones"
 
-#: internal/termui/palette.go:97
+#: internal/termui/palette.go:100
 msgid "Find an action"
 msgstr "Buscar una acción"
 
-#: internal/termui/palette.go:209
-msgid "Change them in the settings (Ctrl+Shift+,)."
-msgstr "Se cambian en los ajustes (Ctrl+Mayús+,)."
+#: internal/termui/palette.go:212
+msgid "Change them in the settings."
+msgstr "Cámbialas en los ajustes."
+
+#: internal/termui/palette.go:214
+msgid "Change them in the settings (%s)."
+msgstr "Cámbialas en los ajustes (%s)."
 
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
@@ -10301,159 +10418,171 @@ msgid "Terminal Settings"
 msgstr "Ajustes del terminal"
 
 #: internal/termui/prefs.go:63
+msgid "LOOK"
+msgstr "ASPECTO"
+
+#: internal/termui/prefs.go:68
+msgid "inua's theme, or one of its others for this window alone"
+msgstr "El tema de inua, u otro de los suyos solo para esta ventana"
+
+#: internal/termui/prefs.go:73
+msgid "The colours programs draw with: the window theme's, or a scheme"
+msgstr "Los colores con los que dibujan los programas: los del tema de la ventana, o un esquema"
+
+#: internal/termui/prefs.go:75
 #: internal/viewerui/app.go:817
 msgid "TEXT"
 msgstr "TEXTO"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "Letra"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "Una familia monoespaciada; Pango completa el CJK"
 
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
 #: internal/viewerui/app.go:828
 msgid "Size"
 msgstr "Tamaño"
 
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
 msgstr "En puntos; Ctrl+= y Ctrl+- la cambian en la ventana"
 
-#: internal/termui/prefs.go:79
+#: internal/termui/prefs.go:91
 msgid "CURSOR"
 msgstr "CURSOR"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Block"
 msgstr "Bloque"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Bar"
 msgstr "Barra"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Underline"
 msgstr "Subrayado"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "Shape"
 msgstr "Forma"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "What a program resetting the cursor gets"
 msgstr "La que recibe un programa que reinicia el cursor"
 
-#: internal/termui/prefs.go:89
+#: internal/termui/prefs.go:101
 msgid "Blink"
 msgstr "Parpadeo"
 
-#: internal/termui/prefs.go:91
+#: internal/termui/prefs.go:103
 msgid "TERMINAL"
 msgstr "TERMINAL"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Copy on select"
 msgstr "Copiar al seleccionar"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Selecting copies to the clipboard; the primary selection follows it either way"
 msgstr "Seleccionar copia al portapapeles; la selección primaria la sigue siempre"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Scrollback"
 msgstr "Historial"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Lines kept per pane"
 msgstr "Líneas guardadas por panel"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "Replay"
 msgstr "Repetición"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "MiB of a pane's recent output kept for a window opened later"
 msgstr "MiB de la salida reciente de un panel guardados para una ventana abierta después"
 
-#: internal/termui/prefs.go:103
+#: internal/termui/prefs.go:115
 msgid "SHELL AND AGENTS"
 msgstr "SHELL Y AGENTES"
 
-#: internal/termui/prefs.go:103
-msgid "Used when the terminal host starts again"
-msgstr "Se usa cuando el anfitrión del terminal vuelve a iniciarse"
+#: internal/termui/prefs.go:115
+msgid "Below the shell: used when the terminal host starts again"
+msgstr "Bajo el shell: se aplica cuando el anfitrión del terminal vuelve a iniciarse"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "Shell"
+
+#: internal/termui/prefs.go:120
+msgid "What new panes start; the panes open already keep theirs"
+msgstr "Lo que inician los paneles nuevos; los ya abiertos conservan el suyo"
+
+#: internal/termui/prefs.go:121
 msgid "Shell integration"
 msgstr "Integración con el shell"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:121
 msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "bash, zsh y fish marcan sus avisos para recordar las órdenes"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
 #: ui/settings.ui:3064
 msgid "Notifications"
 msgstr "Notificaciones"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 msgid "When an agent needs you or is done in a pane you are not looking at"
 msgstr "Cuando un agente te necesita o termina en un panel que no estás mirando"
 
-#: internal/termui/prefs.go:108
-msgid "Agents' hooks"
-msgstr "Hooks de los agentes"
-
-#: internal/termui/prefs.go:108
-msgid "Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"
-msgstr "Añadir los hooks de inua-term a Claude Code y Codex la primera vez que se ejecutan, para que informen de su estado"
-
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Remember commands"
 msgstr "Recordar órdenes"
 
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Put each pane's last command back at its prompt, not run"
 msgstr "Volver a poner la última orden de cada panel en su aviso, sin ejecutarla"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Never keep"
 msgstr "No guardar nunca"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "Órdenes que coincidan con estos patrones, separados por comas"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "CLAVES"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "Pulsa una tecla y luego la nueva; Retroceso la libera"
 
-#: internal/termui/prefs.go:277
+#: internal/termui/prefs.go:292
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "Pulsar las teclas…"
 
-#: internal/termui/prefs.go:278
+#: internal/termui/prefs.go:293
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape cancela; Retroceso libera las teclas de la acción."
 
-#: internal/termui/prefs.go:300
+#: internal/termui/prefs.go:315
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "Una tecla necesita Ctrl, Alt o Súper: las demás son de los programas."
 
-#: internal/termui/prefs.go:311
+#: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s era de %s; esa acción ya no tiene teclas."
 
@@ -14532,13 +14661,9 @@ msgstr "Filtrar por nombre, dirección, sistema operativo o etiqueta"
 msgid "EXIT NODE"
 msgstr "NODO DE SALIDA"
 
-#: ui/term.ui:38
+#: ui/term.ui:64
 msgid "Find a workspace or agent"
 msgstr "Busca un espacio o un agente"
-
-#: ui/term.ui:128
-msgid "New session"
-msgstr "Nueva sesión"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

@@ -3,12 +3,14 @@
 package pty
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"golang.org/x/sys/unix"
@@ -19,6 +21,7 @@ import (
 type PTY struct {
 	master *os.File
 	cmd    *exec.Cmd
+	dev    uint64 // the terminal's device (the slave's)
 }
 
 // Start runs argv in dir on a new terminal of cols × rows, as the leader
@@ -34,6 +37,11 @@ func Start(argv []string, dir string, env []string, cols, rows int) (*PTY, error
 		return nil, err
 	}
 	defer slave.Close() // the child has its own copies
+	var st unix.Stat_t
+	if err := unix.Fstat(int(slave.Fd()), &st); err != nil {
+		master.Close()
+		return nil, fmt.Errorf("pty: %w", err)
+	}
 	if err := setSize(master, cols, rows); err != nil {
 		master.Close()
 		return nil, err
@@ -47,7 +55,7 @@ func Start(argv []string, dir string, env []string, cols, rows int) (*PTY, error
 		master.Close()
 		return nil, fmt.Errorf("pty: %s: %w", argv[0], err)
 	}
-	return &PTY{master: master, cmd: cmd}, nil
+	return &PTY{master: master, cmd: cmd, dev: st.Rdev}, nil
 }
 
 // open makes a master and its slave.
@@ -105,6 +113,33 @@ func (p *PTY) Write(b []byte) (int, error) { return p.master.Write(b) }
 
 // Resize changes the terminal's size; the program gets SIGWINCH.
 func (p *PTY) Resize(cols, rows int) error { return setSize(p.master, cols, rows) }
+
+// Controls says the terminal is process pid's controlling terminal: pid
+// runs in the terminal, not merely started from it (a daemon that left
+// it has none).
+func (p *PTY) Controls(pid int) bool {
+	b, err := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/stat")
+	if err != nil {
+		return false
+	}
+	// pid (comm) state ppid pgrp session tty_nr …; comm may hold spaces.
+	i := bytes.LastIndexByte(b, ')')
+	if i < 0 {
+		return false
+	}
+	f := strings.Fields(string(b[i+1:]))
+	if len(f) < 5 {
+		return false
+	}
+	tty, err := strconv.ParseUint(f[4], 10, 32)
+	if err != nil || tty == 0 {
+		return false
+	}
+	// tty_nr is the kernel's encoding: minor's low byte, the major, then
+	// the rest of the minor.
+	major, minor := uint32(tty>>8&0xfff), uint32(tty&0xff|tty>>12&0xfff00)
+	return major == unix.Major(p.dev) && minor == unix.Minor(p.dev)
+}
 
 // Pid is the program's process.
 func (p *PTY) Pid() int { return p.cmd.Process.Pid }

@@ -3,6 +3,7 @@ package termui
 import (
 	"fmt"
 
+	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/settings"
 	"github.com/lyricat/inua/internal/term/vt"
 )
@@ -14,14 +15,29 @@ import (
 // fontSteps is how far Ctrl+= and Ctrl+- go each time, in points.
 const fontStep = 1
 
-// useSettings takes term.toml: the keys now, the look for every pane.
+// useSettings takes term.toml: the keys now, the look for every pane,
+// the window's theme, the terminals' colours, and the shell for new
+// panes.
 func (a *App) useSettings(s settings.Settings) {
 	a.set, a.keymap = s, keymapOf(s.Keys)
+	a.cols.tips(a)
+	a.updateNerd()
 	l := a.look()
 	for _, t := range a.tiles {
 		t.pane.look = l
 		t.pane.setFont(l.Font)
 		t.pane.term.SetDefaults(l.Scrollback, l.Cursor, l.Blink)
+	}
+	switch {
+	case s.Look.Theme != a.used.Theme:
+		a.c.ReloadStyle() // the colours follow, through ThemeChanged
+	case s.Look.Scheme != a.used.Scheme:
+		a.schemeChanged()
+	}
+	a.used = s.Look
+	if prog := s.Shell.Program; prog != a.usedShell {
+		a.usedShell = prog
+		a.ask("shell", func(c *host.Client) error { return c.SetShell(prog) })
 	}
 }
 

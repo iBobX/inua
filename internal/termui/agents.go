@@ -2,6 +2,9 @@ package termui
 
 import (
 	"fmt"
+	"maps"
+	"slices"
+	"strings"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -70,6 +73,60 @@ func iconOf(info host.PaneInfo) string {
 		return info.Icon + "-symbolic"
 	}
 	return "agent-shell-symbolic"
+}
+
+// brands colour the agents' marks while they work or ask: each its
+// manifest's colour (a class of its own, term-brand-TYPE), the accent for
+// one without (term-brand).
+type brands struct {
+	css   *gtk.CssProvider
+	known map[string]string // colour by agent type
+}
+
+// brand gives a pane's mark its agent's colour while the agent works or
+// asks, and takes it away after.
+func (a *App) brand(icon *gtk.Image, info host.PaneInfo) {
+	classes := slices.DeleteFunc(icon.GetCssClasses(), func(c string) bool { return strings.HasPrefix(c, "term-brand") })
+	st := agent.State(info.State)
+	if info.Agent != "" && !info.Exited && (st == agent.Working || st == agent.Blocked) {
+		classes = append(classes, "term-brand")
+		if name := cssName(info.Agent); name != "" && info.Color != "" {
+			a.brands.add(name, info.Color)
+			classes = append(classes, "term-brand-"+name)
+		}
+	}
+	icon.SetCssClasses(classes)
+}
+
+// add has the style colour an agent type's marks, once.
+func (b *brands) add(name, color string) {
+	if b.known[name] == color {
+		return
+	}
+	if b.css == nil {
+		b.css, b.known = gtk.NewCssProvider(), map[string]string{}
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), b.css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
+	}
+	b.known[name] = color
+	var css strings.Builder
+	for _, n := range slices.Sorted(maps.Keys(b.known)) {
+		fmt.Fprintf(&css, "window.term image.term-brand.term-brand-%s { color: %s; }\n", n, b.known[n])
+	}
+	b.css.LoadFromString(css.String())
+}
+
+// cssName is an agent type as a class name may have it: letters, digits
+// and dashes; "" for none left.
+func cssName(t string) string {
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '-':
+			return r
+		case r >= 'A' && r <= 'Z':
+			return r + 'a' - 'A'
+		}
+		return -1
+	}, t)
 }
 
 // since is how long a pane has been in its state: "42s", "2m 14s",
@@ -184,6 +241,7 @@ func (a *App) nextWaiting() {
 // shows any.
 func (a *App) startTicks() {
 	a.onTick = func(uintptr) bool {
+		a.updateNerd()
 		if a.state == nil {
 			return true
 		}
@@ -224,6 +282,7 @@ func (a *App) overview() {
 		row.AddCssClass("term-overview-row")
 		icon := gtk.NewImageFromIconName(iconOf(info))
 		icon.SetPixelSize(15)
+		a.brand(icon, info)
 		row.Append(&icon.Widget)
 		text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		text.SetHexpand(true)

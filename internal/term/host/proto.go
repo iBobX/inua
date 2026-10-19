@@ -122,11 +122,12 @@ type PaneInfo struct {
 	Restored bool `json:"restored,omitempty"`
 	// Command is what runs in the pane's shell now, "" while it waits.
 	Command string `json:"command,omitempty"`
-	// The agent in the pane, when one runs: its type, name and mark, its
+	// The agent in the pane, when one runs: its type, name, mark and colour, its
 	// state since when (Unix milliseconds), and what it asks.
 	Agent     string `json:"agent,omitempty"`
 	AgentName string `json:"agent_name,omitempty"`
 	Icon      string `json:"icon,omitempty"`
+	Color     string `json:"color,omitempty"` // the mark's while it works or asks
 	State     string `json:"state,omitempty"`
 	Since     int64  `json:"since,omitempty"`
 	Ask       string `json:"ask,omitempty"`
@@ -144,6 +145,7 @@ const (
 	MsgDetach  = "detach"  // client: no more of the pane's output
 	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
+	MsgShell   = "shell"   // client: the shell new panes start, Argv[0]; none for $SHELL
 	MsgClose   = "close"   // client: end the pane's program and forget it
 	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
 	// The workspaces and sessions; each change sends every client a

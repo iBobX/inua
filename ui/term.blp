@@ -1,5 +1,5 @@
-// inua-term's window (docs/feat/inua-term.md, section 3): the workspaces,
-// the shown workspace's sessions and their panes, and the shown session's
+// inua-term's window (docs/terminal.md): the workspaces, the shown
+// workspace's sessions and their panes, and the shown session's
 // terminals, tiled. Rows, sections and tiles are made in Go.
 using Gtk 4.0;
 
@@ -8,22 +8,47 @@ ApplicationWindow term {
   default-height: 800;
 
   Box {
-    // Column 1: the workspaces.
+    // Column 1: the workspaces, under who and where this is.
     Box workspaces_col {
       styles ["index", "term-col1"]
       orientation: vertical;
       hexpand: false;
       width-request: 232;
 
-      Label {
-        styles ["index-title"]
-        label: _("Terminal");
-        xalign: 0;
+      Box {
+        styles ["term-col-head"]
+        orientation: vertical;
+        valign: center;
+        spacing: 2;
+
+        Label nerd_who {
+          styles ["term-nerd-who"]
+          xalign: 0;
+          ellipsize: end;
+        }
+
+        Label nerd_sys {
+          styles ["term-nerd-sys"]
+          xalign: 0;
+          ellipsize: end;
+        }
       }
 
-      SearchEntry find {
-        styles ["index-search", "term-find-entry"]
-        placeholder-text: _("Find a workspace or agent");
+      Box {
+        styles ["term-find-row"]
+        spacing: 6;
+
+        SearchEntry find {
+          styles ["index-search", "term-find-entry"]
+          hexpand: true;
+          placeholder-text: _("Find a workspace or agent");
+        }
+
+        Button new_workspace {
+          styles ["plain", "term-head-button"]
+          icon-name: "list-add-symbolic";
+          valign: center;
+        }
       }
 
       ScrolledWindow {
@@ -32,28 +57,6 @@ ApplicationWindow term {
 
         ListBox workspaces {
           selection-mode: single;
-        }
-      }
-
-      Box {
-        styles ["term-foot"]
-
-        Button new_workspace {
-          styles ["outlined", "term-foot-button"]
-          hexpand: true;
-
-          Box {
-            Label {
-              label: _("New workspace");
-              hexpand: true;
-              xalign: 0;
-            }
-
-            Label {
-              styles ["term-keys"]
-              label: "Ctrl Shift N";
-            }
-          }
         }
       }
     }
@@ -66,6 +69,24 @@ ApplicationWindow term {
       hexpand: false;
       width-request: 312;
 
+      Box {
+        styles ["term-col-head"]
+        spacing: 8;
+
+        Label sessions_title {
+          styles ["term-col-title"]
+          hexpand: true;
+          xalign: 0;
+          ellipsize: end;
+        }
+
+        Button new_session {
+          styles ["plain", "term-head-button"]
+          icon-name: "list-add-symbolic";
+          valign: center;
+        }
+      }
+
       ScrolledWindow {
         vexpand: true;
         hscrollbar-policy: never;
@@ -73,28 +94,6 @@ ApplicationWindow term {
         Box sessions {
           styles ["term-sessions"]
           orientation: vertical;
-        }
-      }
-
-      Box {
-        styles ["term-foot"]
-
-        Button new_session {
-          styles ["outlined", "term-foot-button"]
-          hexpand: true;
-
-          Box {
-            Label {
-              label: _("New session");
-              hexpand: true;
-              xalign: 0;
-            }
-
-            Label {
-              styles ["term-keys"]
-              label: "Ctrl Shift T";
-            }
-          }
         }
       }
     }

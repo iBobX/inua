@@ -200,7 +200,7 @@ func (a *App) syncTiles() {
 		}
 	}
 	for id, t := range a.tiles {
-		t.update(a.info[id])
+		t.update(a, a.info[id])
 		if id == s.Focus {
 			t.box.AddCssClass("focused")
 		} else {
@@ -218,7 +218,7 @@ func (a *App) syncTiles() {
 // addTile makes a pane's tile and attaches it: its replay comes first.
 func (a *App) addTile(id int) error {
 	info := a.info[id]
-	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.c.Colors, a.look())
+	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.scheme(), a.c.Colors["warn"], a.look())
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func (a *App) addTile(id int) error {
 	a.mu.Lock()
 	a.live[id] = p
 	a.mu.Unlock()
-	t.update(info)
+	t.update(a, info)
 	a.ask("attach", func(c *host.Client) error { return c.Attach(id) })
 	return nil
 }
@@ -302,10 +302,11 @@ func (a *App) dropTile(id int) {
 }
 
 // update writes a pane's head.
-func (t *tile) update(info host.PaneInfo) {
+func (t *tile) update(a *App, info host.PaneInfo) {
 	t.title.SetText(paneTitle(info))
 	t.dir.SetText(shortDir(info.Dir))
 	t.icon.SetFromIconName(iconOf(info))
+	a.brand(t.icon, info)
 	paint(t.mark, t.state, lookOf(info))
 }
 

@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -35,6 +36,7 @@ type Manifest struct {
 	Type    string   `toml:"type"`
 	Name    string   `toml:"name"`
 	Icon    string   `toml:"icon"`    // ui/icons/ICON-symbolic.svg; "" for the terminal's
+	Color   string   `toml:"color"`   // its mark's colour while it works or asks, "#rrggbb"; "" for the accent
 	Process []string `toml:"process"` // its program's names
 	Resume  string   `toml:"resume"`  // the command that continues where it was
 	States  []Rule   `toml:"state"`
@@ -113,6 +115,9 @@ func (s *Set) add(name string, b []byte) error {
 		if m.Name == "" {
 			m.Name = m.Type
 		}
+		if m.Color != "" && !colorRe.MatchString(m.Color) {
+			return fmt.Errorf("%s: %s: color %q: want #rrggbb", name, m.Type, m.Color)
+		}
 		if i := slices.IndexFunc(s.list, func(o Manifest) bool { return o.Type == m.Type }); i >= 0 {
 			s.list[i] = m
 		} else {
@@ -121,6 +126,8 @@ func (s *Set) add(name string, b []byte) error {
 	}
 	return nil
 }
+
+var colorRe = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
 
 // ByType is the manifest of a type, nil for none.
 func (s *Set) ByType(t string) *Manifest {

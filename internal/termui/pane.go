@@ -140,6 +140,12 @@ func rgba(hex string) gdk.RGBA {
 	return c
 }
 
+// rgbaOf is a colour 0xRRGGBB.
+func rgbaOf(v uint32) gdk.RGBA {
+	b := func(s uint) float32 { return float32(v>>s&0xff) / 255 }
+	return gdk.RGBA{Red: b(16), Green: b(8), Blue: b(0), Alpha: 1}
+}
+
 // cellSize is a monospace font's cell in pixels.
 func cellSize(w *gtk.Widget, font *pango.FontDescription) (cw, ch int) {
 	l := w.CreatePangoLayout("M")

@@ -62,14 +62,6 @@ msgstr "%s がシークレットを読み取りました"
 msgid "“%s” · %s"
 msgstr "「%s」 · %s"
 
-#: cmd/inua-term/main.go:186
-msgid "inua-term added its hooks"
-msgstr "inua-term がフックを追加しました"
-
-#: cmd/inua-term/main.go:187
-msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
-msgstr "%s は状態を inua-term に知らせるようになりました。以前のファイルは %s.bak です。`inua-term integration remove %s` で取り除けます。"
-
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:308
@@ -1648,6 +1640,7 @@ msgstr "編集"
 #: internal/appui/clock.go:491
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
+#: internal/termui/guide.go:161
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:1313
@@ -2279,7 +2272,7 @@ msgid "NOTES"
 msgstr "メモ"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:407
+#: internal/term/host/agents.go:396
 msgid "Show"
 msgstr "表示"
 
@@ -2292,7 +2285,7 @@ msgstr "ヒデ"
 #: internal/appui/pass.go:626
 #: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:84
+#: internal/term/settings/settings.go:103
 #: internal/ui/askpass.go:203
 #: ui/disk.ui:698
 #: ui/gpg.ui:661
@@ -2338,6 +2331,7 @@ msgid "Its path: the first part is its category. Its content comes next."
 msgstr "パス：最初の部分がカテゴリーです。内容はその次に。"
 
 #: internal/appui/pass.go:797
+#: internal/termui/guide.go:163
 msgid "Next"
 msgstr "次へ"
 
@@ -2655,8 +2649,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:266
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:267
+#: internal/shell/dock.go:300
 msgid "NETWORK"
 msgstr "ネットワーク"
 
@@ -3333,7 +3327,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:265
+#: internal/termui/prefs.go:280
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3612,8 +3606,8 @@ msgstr "不明な部品 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:226
-#: internal/termui/keys.go:324
+#: internal/termui/keys.go:246
+#: internal/termui/keys.go:360
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -4492,13 +4486,12 @@ msgid "Opens folders"
 msgstr "フォルダーを開く"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:84
-#: internal/termui/app.go:98
-#: internal/termui/app.go:264
-#: internal/termui/app.go:266
-#: internal/termui/tiles.go:352
+#: internal/termui/app.go:95
+#: internal/termui/app.go:127
+#: internal/termui/app.go:299
+#: internal/termui/app.go:301
+#: internal/termui/tiles.go:353
 #: ui/settings.ui:1933
-#: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "ターミナル"
@@ -5023,7 +5016,7 @@ msgstr[0] "%d 項目"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:326
+#: internal/termui/keys.go:362
 msgid "Rename"
 msgstr "名前を変更"
 
@@ -5098,6 +5091,7 @@ msgid "There: %s, %s. This one: %s, %s."
 msgstr "既存：%s、%s。こちら：%s、%s。"
 
 #: internal/filesui/cards.go:490
+#: internal/termui/guide.go:106
 msgid "Skip"
 msgstr "スキップ"
 
@@ -5129,7 +5123,7 @@ msgstr[0] "…ほか %d 件"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:228
+#: internal/termui/keys.go:248
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -5332,7 +5326,7 @@ msgid "Reload"
 msgstr "再読み込み"
 
 #: internal/filesui/cards.go:717
-#: internal/termui/palette.go:195
+#: internal/termui/palette.go:198
 msgid "Keys"
 msgstr "キー"
 
@@ -6103,7 +6097,7 @@ msgid "New file…"
 msgstr "新規ファイル…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:85
+#: internal/term/settings/settings.go:104
 #: internal/termui/paste.go:284
 msgid "Paste"
 msgstr "貼り付け"
@@ -8897,6 +8891,7 @@ msgid "Quit to menu"
 msgstr "メニューに戻る"
 
 #: internal/gamesui/fortune_menu.go:109
+#: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9179,7 +9174,7 @@ msgid "SPACE PINBALL"
 msgstr "スペースピンボール"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "ランチャー"
@@ -9212,8 +9207,8 @@ msgstr "フォーカスのオンまたはオフ"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
-#: internal/term/settings/settings.go:91
+#: internal/shell/dock.go:290
+#: internal/term/settings/settings.go:110
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -9682,7 +9677,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "もう一度 Enter を押すとゴミ箱を空にします"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "inua's settings"
 msgstr "inuaの設定"
 
@@ -9837,56 +9832,56 @@ msgid "Web search"
 msgstr "ウェブ検索"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "EVERYDAY"
 msgstr "毎日"
 
 #: internal/shell/dock.go:255
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "TOOLS"
 msgstr "ツール"
 
-#: internal/shell/dock.go:271
+#: internal/shell/dock.go:272
 msgid "PLAY"
 msgstr "遊び"
 
-#: internal/shell/dock.go:276
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:277
+#: internal/shell/dock.go:302
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "システム"
 
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "スクリーンショット"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 msgid "Capture an area, a window or a screen"
 msgstr "領域、ウィンドウ、または画面をキャプチャする"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "DEVELOPMENT"
 msgstr "開発"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "MEDIA"
 msgstr "メディア"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "GAMES"
 msgstr "ゲーム"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "OTHER"
 msgstr "その他"
 
-#: internal/shell/dock.go:326
+#: internal/shell/dock.go:327
 msgid "WORKSHOP"
 msgstr "ワークショップ"
 
@@ -10015,150 +10010,222 @@ msgstr "フル充電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 充電中"
 
-#: internal/term/host/agents.go:166
+#: internal/term/host/agents.go:167
 msgid "%s needs you"
 msgstr "%s が応答を待っています"
 
-#: internal/term/host/agents.go:168
+#: internal/term/host/agents.go:169
 msgid "%s is done"
 msgstr "%s が完了しました"
 
-#: internal/term/host/sessions.go:265
+#: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
 msgid "Commands"
 msgstr "コマンド"
 
-#: internal/term/settings/settings.go:69
+#: internal/term/scheme/scheme.go:26
+msgid "Cool blues and violets on a deep navy"
+msgstr "深い紺に涼しげな青と紫"
+
+#: internal/term/scheme/scheme.go:29
+msgid "Soft pastels on a warm dark ground"
+msgstr "温かみのある暗い地にやわらかなパステル"
+
+#: internal/term/scheme/scheme.go:32
+msgid "Vivid pinks, greens and purples, high contrast"
+msgstr "鮮やかなピンク・緑・紫、高コントラスト"
+
+#: internal/term/scheme/scheme.go:35
+msgid "Earthy, retro, easy on the eyes"
+msgstr "土の色合いでレトロ、目にやさしい"
+
+#: internal/term/scheme/scheme.go:38
+msgid "Calm arctic greys and frost blues"
+msgstr "落ち着いた北極の灰色と霜の青"
+
+#: internal/term/scheme/scheme.go:41
+msgid "Atom's balanced dark, muted and clear"
+msgstr "Atom の均整の取れたダーク、控えめで明瞭"
+
+#: internal/term/scheme/scheme.go:44
+msgid "Muted roses and pines at dusk"
+msgstr "夕暮れのくすんだバラと松"
+
+#: internal/term/scheme/scheme.go:47
+msgid "The classic: low contrast on blue-green"
+msgstr "定番：青緑の地に低コントラスト"
+
+#: internal/term/scheme/scheme.go:48
+msgid "Pastels on a light, milky ground"
+msgstr "ミルクのような明るい地にパステル"
+
+#: internal/term/scheme/scheme.go:51
+msgid "Earthy tones on warm paper"
+msgstr "温かみのある紙に土の色合い"
+
+#: internal/term/scheme/scheme.go:54
+msgid "The classic, on cream"
+msgstr "定番、クリーム色の地で"
+
+#: internal/term/settings/settings.go:88
 msgid "New session in this workspace"
 msgstr "このワークスペースに新しいセッション"
 
-#: internal/term/settings/settings.go:70
-#: ui/term.ui:68
+#: internal/term/settings/settings.go:89
+#: internal/termui/columns.go:102
 msgid "New workspace"
 msgstr "新しいワークスペース"
 
-#: internal/term/settings/settings.go:71
+#: internal/term/settings/settings.go:90
 msgid "Split right"
 msgstr "右に分割"
 
-#: internal/term/settings/settings.go:72
+#: internal/term/settings/settings.go:91
 msgid "Split down"
 msgstr "下に分割"
 
-#: internal/term/settings/settings.go:73
+#: internal/term/settings/settings.go:92
 msgid "Close pane"
 msgstr "ペインを閉じる"
 
-#: internal/term/settings/settings.go:74
+#: internal/term/settings/settings.go:93
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "その方向のペインと入れ替える（続けて矢印）"
 
-#: internal/term/settings/settings.go:75
+#: internal/term/settings/settings.go:94
 msgid "Zoom pane / back"
 msgstr "ペインを最大化 / 戻す"
 
-#: internal/term/settings/settings.go:76
+#: internal/term/settings/settings.go:95
 msgid "Equalize"
 msgstr "均等にする"
 
-#: internal/term/settings/settings.go:77
+#: internal/term/settings/settings.go:96
 msgid "Next layout"
 msgstr "次のレイアウト"
 
-#: internal/term/settings/settings.go:78
+#: internal/term/settings/settings.go:97
 msgid "Previous session"
 msgstr "前のセッション"
 
-#: internal/term/settings/settings.go:79
+#: internal/term/settings/settings.go:98
 msgid "Next session"
 msgstr "次のセッション"
 
-#: internal/term/settings/settings.go:80
+#: internal/term/settings/settings.go:99
 msgid "Next agent that needs you"
 msgstr "応答を待つ次のエージェント"
 
-#: internal/term/settings/settings.go:81
+#: internal/term/settings/settings.go:100
 msgid "Every agent"
 msgstr "すべてのエージェント"
 
-#: internal/term/settings/settings.go:82
+#: internal/term/settings/settings.go:101
 msgid "Fold the workspaces"
 msgstr "ワークスペースを折りたたむ"
 
-#: internal/term/settings/settings.go:83
+#: internal/term/settings/settings.go:102
 msgid "Fold the sessions"
 msgstr "セッションを折りたたむ"
 
-#: internal/term/settings/settings.go:86
+#: internal/term/settings/settings.go:105
 msgid "Search the scrollback"
 msgstr "スクロールバックを検索"
 
-#: internal/term/settings/settings.go:87
+#: internal/term/settings/settings.go:106
 msgid "Copy mode"
 msgstr "コピーモード"
 
-#: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:315
+#: internal/term/settings/settings.go:107
+#: internal/termui/keys.go:351
 msgid "Rename the session"
 msgstr "セッション名を変更"
 
-#: internal/term/settings/settings.go:89
+#: internal/term/settings/settings.go:108
 msgid "Every action by name"
 msgstr "すべての操作を名前で"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:109
 msgid "Show the keys"
 msgstr "キー一覧を表示"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:111
 msgid "Font larger"
 msgstr "文字を大きく"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:112
 msgid "Font smaller"
 msgstr "文字を小さく"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:113
 msgid "Font size as set"
 msgstr "設定どおりの文字サイズ"
 
-#: internal/termui/agents.go:33
+#: internal/termui/agents.go:36
 msgid "EXITED %d"
 msgstr "終了 %d"
 
-#: internal/termui/agents.go:35
+#: internal/termui/agents.go:38
 msgid "RESTORED"
 msgstr "復元"
 
-#: internal/termui/agents.go:39
+#: internal/termui/agents.go:42
 msgid "WORKING"
 msgstr "作業中"
 
-#: internal/termui/agents.go:41
+#: internal/termui/agents.go:44
 msgid "NEEDS YOU"
 msgstr "応答待ち"
 
-#: internal/termui/agents.go:43
+#: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "完了"
 
-#: internal/termui/agents.go:45
+#: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "待機"
 
-#: internal/termui/agents.go:131
+#: internal/termui/agents.go:188
 msgid "Agents that need you"
 msgstr "応答を待つエージェント"
 
-#: internal/termui/agents.go:209
+#: internal/termui/agents.go:267
 msgid "Agents"
 msgstr "エージェント"
 
-#: internal/termui/agents.go:216
+#: internal/termui/agents.go:274
 msgid "No agent runs in any workspace."
 msgstr "どのワークスペースでもエージェントは動いていません。"
 
-#: internal/termui/columns.go:193
+#: internal/termui/choices.go:32
+msgid "As inua (%s)"
+msgstr "inua と同じ（%s）"
+
+#: internal/termui/choices.go:32
+msgid "The window changes with inua's theme"
+msgstr "ウィンドウは inua のテーマに合わせて変わります"
+
+#: internal/termui/choices.go:34
+msgid "A theme of your own"
+msgstr "あなた自身のテーマ"
+
+#: internal/termui/choices.go:59
+msgid "The window's theme"
+msgstr "ウィンドウのテーマ"
+
+#: internal/termui/choices.go:59
+msgid "The terminals take the window's colours"
+msgstr "ターミナルはウィンドウの色を使います"
+
+#: internal/termui/choices.go:71
+msgid "Your login shell (%s)"
+msgstr "ログインシェル（%s）"
+
+#: internal/termui/columns.go:103
+msgid "New session"
+msgstr "新しいセッション"
+
+#: internal/termui/columns.go:217
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d ペイン"
@@ -10167,19 +10234,57 @@ msgstr[0] "%d ペイン"
 msgid "COPY"
 msgstr "コピー"
 
-#: internal/termui/keys.go:215
+#: internal/termui/guide.go:50
+msgid "Welcome to the Terminal"
+msgstr "ターミナルへようこそ"
+
+#: internal/termui/guide.go:62
+msgid "Set up the terminal"
+msgstr "ターミナルの準備"
+
+#: internal/termui/guide.go:78
+msgid "Your shell"
+msgstr "シェル"
+
+#: internal/termui/guide.go:79
+msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
+msgstr "新しいペインごとに起動するシェルです。inua-term は bash・zsh・fish のプロンプトに印を付け、再起動後もペインの最後のコマンドを戻せます。ほかのシェルはそのまま動きます。"
+
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "ターミナルの色"
+
+#: internal/termui/guide.go:87
+msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
+msgstr "プログラムが描く色です。ウィンドウのテーマの色なら inua のほかの部分と揃い、定番の配色を選ぶこともできます。"
+
+#: internal/termui/guide.go:95
+#: internal/termui/prefs.go:68
+msgid "Window theme"
+msgstr "ウィンドウのテーマ"
+
+#: internal/termui/guide.go:96
+msgid "The look of the window around the terminals. It follows inua's theme, or keeps one of its own whatever inua's is."
+msgstr "ターミナルを囲むウィンドウの見た目です。inua のテーマに従うか、inua のテーマに関係なく独自のものを保ちます。"
+
+#: internal/termui/guide.go:108
+msgid "Keep these choices; the settings change them later"
+msgstr "この選択のままにします。あとで設定から変えられます"
+
+#: internal/termui/keys.go:235
 msgid "Close %s?"
 msgstr "%s を閉じますか？"
 
-#: internal/termui/keys.go:216
+#: internal/termui/keys.go:236
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "「%s」の作業中です。ペインを閉じると終了します。"
 
-#: internal/termui/keys.go:218
+#: internal/termui/keys.go:238
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "応答を待っています: %s。ペインを閉じると終了します。"
 
-#: internal/termui/keys.go:259
+#: internal/termui/keys.go:279
 msgid "Choose the workspace's folder"
 msgstr "ワークスペースのフォルダを選ぶ"
 
@@ -10192,36 +10297,48 @@ msgid "Resize the focused pane"
 msgstr "選択中のペインの大きさを変える"
 
 #: internal/termui/palette.go:21
+msgid "Session 1…8 / the last session"
+msgstr "セッション 1…8 / 最後のセッション"
+
+#: internal/termui/palette.go:22
+msgid "Previous / next session"
+msgstr "前 / 次のセッション"
+
+#: internal/termui/palette.go:23
 msgid "Workspace 1…9"
 msgstr "ワークスペース 1…9"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:24
 msgid "Paste the primary selection"
 msgstr "プライマリ選択を貼り付け"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:25
 msgid "Scroll a page"
 msgstr "1 ページ移動"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:26
 msgid "Scroll to the top / the bottom"
 msgstr "先頭 / 末尾へ"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "前 / 次のプロンプトへ"
 
-#: internal/termui/palette.go:95
+#: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "操作"
 
-#: internal/termui/palette.go:97
+#: internal/termui/palette.go:100
 msgid "Find an action"
 msgstr "操作を探す"
 
-#: internal/termui/palette.go:209
-msgid "Change them in the settings (Ctrl+Shift+,)."
-msgstr "設定 (Ctrl+Shift+,) で変更できます。"
+#: internal/termui/palette.go:212
+msgid "Change them in the settings."
+msgstr "設定で変更できます。"
+
+#: internal/termui/palette.go:214
+msgid "Change them in the settings (%s)."
+msgstr "設定で変更できます（%s）。"
 
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
@@ -10250,159 +10367,171 @@ msgid "Terminal Settings"
 msgstr "ターミナルの設定"
 
 #: internal/termui/prefs.go:63
+msgid "LOOK"
+msgstr "外観"
+
+#: internal/termui/prefs.go:68
+msgid "inua's theme, or one of its others for this window alone"
+msgstr "inua のテーマ、またはこのウィンドウだけのほかのテーマ"
+
+#: internal/termui/prefs.go:73
+msgid "The colours programs draw with: the window theme's, or a scheme"
+msgstr "プログラムが描く色：ウィンドウのテーマの色、または配色"
+
+#: internal/termui/prefs.go:75
 #: internal/viewerui/app.go:817
 msgid "TEXT"
 msgstr "テキスト"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "フォント"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "等幅フォント。CJK は Pango が補います"
 
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
 #: internal/viewerui/app.go:828
 msgid "Size"
 msgstr "サイズ"
 
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
 msgstr "ポイント単位。ウィンドウでは Ctrl+= と Ctrl+- で変更"
 
-#: internal/termui/prefs.go:79
+#: internal/termui/prefs.go:91
 msgid "CURSOR"
 msgstr "カーソル"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Block"
 msgstr "ブロック"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Bar"
 msgstr "バー"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Underline"
 msgstr "下線"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "Shape"
 msgstr "形"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "What a program resetting the cursor gets"
 msgstr "プログラムがカーソルを戻したときの形"
 
-#: internal/termui/prefs.go:89
+#: internal/termui/prefs.go:101
 msgid "Blink"
 msgstr "点滅"
 
-#: internal/termui/prefs.go:91
+#: internal/termui/prefs.go:103
 msgid "TERMINAL"
 msgstr "ターミナル"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Copy on select"
 msgstr "選択でコピー"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Selecting copies to the clipboard; the primary selection follows it either way"
 msgstr "選択するとクリップボードにコピー。プライマリ選択は常に追従します"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Scrollback"
 msgstr "スクロールバック"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Lines kept per pane"
 msgstr "ペインごとに保つ行数"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "Replay"
 msgstr "リプレイ"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "MiB of a pane's recent output kept for a window opened later"
 msgstr "あとで開くウィンドウのために保つ、ペインの最近の出力 (MiB)"
 
-#: internal/termui/prefs.go:103
+#: internal/termui/prefs.go:115
 msgid "SHELL AND AGENTS"
 msgstr "シェルとエージェント"
 
-#: internal/termui/prefs.go:103
-msgid "Used when the terminal host starts again"
-msgstr "ターミナルホストの次回起動から有効"
+#: internal/termui/prefs.go:115
+msgid "Below the shell: used when the terminal host starts again"
+msgstr "シェルより下の項目：ターミナルホストの再起動時に反映"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "シェル"
+
+#: internal/termui/prefs.go:120
+msgid "What new panes start; the panes open already keep theirs"
+msgstr "新しいペインで起動するもの。開いているペインはそのまま"
+
+#: internal/termui/prefs.go:121
 msgid "Shell integration"
 msgstr "シェル統合"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:121
 msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "bash、zsh、fish がプロンプトに印を付け、コマンドを記憶できるようにします"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
 #: ui/settings.ui:3064
 msgid "Notifications"
 msgstr "通知"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 msgid "When an agent needs you or is done in a pane you are not looking at"
 msgstr "見ていないペインでエージェントが応答を待つか完了したとき"
 
-#: internal/termui/prefs.go:108
-msgid "Agents' hooks"
-msgstr "エージェントのフック"
-
-#: internal/termui/prefs.go:108
-msgid "Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"
-msgstr "Claude Code と Codex の初回起動時に inua-term のフックを追加し、状態を知らせるようにします"
-
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Remember commands"
 msgstr "コマンドを記憶"
 
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Put each pane's last command back at its prompt, not run"
 msgstr "各ペインの最後のコマンドを、実行せずにプロンプトに戻します"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Never keep"
 msgstr "記憶しない"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "これらのパターンに一致するコマンド（カンマ区切り）"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "鍵"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "キーをクリックして新しいキーを押す。Backspace で解除"
 
-#: internal/termui/prefs.go:277
+#: internal/termui/prefs.go:292
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "キーを押してください…"
 
-#: internal/termui/prefs.go:278
+#: internal/termui/prefs.go:293
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape で取り消し。Backspace でこの操作のキーを解除します。"
 
-#: internal/termui/prefs.go:300
+#: internal/termui/prefs.go:315
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "キーには Ctrl、Alt、Super のいずれかが必要です。それ以外はプログラムのものです。"
 
-#: internal/termui/prefs.go:311
+#: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s は %s のキーでした。そちらはキーなしになりました。"
 
@@ -14469,13 +14598,9 @@ msgstr "名前、アドレス、OS、またはタグによるフィルタリン�
 msgid "EXIT NODE"
 msgstr "出口ノード"
 
-#: ui/term.ui:38
+#: ui/term.ui:64
 msgid "Find a workspace or agent"
 msgstr "ワークスペースやエージェントを探す"
-
-#: ui/term.ui:128
-msgid "New session"
-msgstr "新しいセッション"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

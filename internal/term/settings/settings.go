@@ -1,8 +1,8 @@
 // Package settings is inua-term's own settings, ~/.config/inua/term.toml
-// (docs/feat/inua-term.md, section 10): the font, the cursor, copying,
-// scrollback, the host's replay, shell integration, agents' hooks and
-// notifications, remembering commands, and the keys. inua's look (theme,
-// icons, text size) still follows ~/.config/inua/config.toml.
+// (docs/terminal.md): the window's theme and the terminals' colours, the
+// font, the cursor, copying, scrollback, the host's replay, the shell and
+// its integration, agents' notifications, remembering commands, and the
+// keys. inua's icons and text size follow ~/.config/inua/config.toml.
 package settings
 
 import (
@@ -18,10 +18,17 @@ import (
 	"github.com/BurntSushi/toml"
 
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/scheme"
 )
+
+// Version is the settings' version: a file of an older one is brought up
+// to it as it loads.
+const Version = 2
 
 // Settings is the file's content.
 type Settings struct {
+	Version  int      `toml:"version"`
+	Look     Look     `toml:"look"`
 	Font     Font     `toml:"font"`
 	Cursor   Cursor   `toml:"cursor"`
 	Terminal Terminal `toml:"terminal"`
@@ -31,6 +38,14 @@ type Settings struct {
 	// Keys are inua-term's chords by action ("ctrl+shift+t"); "" turns
 	// one off.
 	Keys map[string]string `toml:"keys"`
+}
+
+type Look struct {
+	// Theme is the window's theme, one of inua's; "" follows inua's.
+	Theme string `toml:"theme"`
+	// Scheme is the terminals' colours (internal/term/scheme); "" takes
+	// them from the window's theme.
+	Scheme string `toml:"scheme"`
 }
 
 type Font struct {
@@ -50,12 +65,13 @@ type Terminal struct {
 }
 
 type Shell struct {
-	Integration bool `toml:"integration"`
+	// Program is the shell new panes start; "" is $SHELL.
+	Program     string `toml:"program"`
+	Integration bool   `toml:"integration"`
 }
 
 type Agents struct {
 	Notifications bool `toml:"notifications"`
-	Hooks         bool `toml:"hooks"`
 }
 
 type Remember struct {
@@ -64,19 +80,22 @@ type Remember struct {
 }
 
 // Actions are the keys' actions, in the order the settings show them,
-// with their chords by default.
+// with their chords by default: Ghostty's where Ghostty has the action (a
+// window of Ghostty's is a workspace here, a tab a session, a split a
+// pane), Ctrl+Shift chords for the rest. A chord names its modifiers in
+// the order ctrl, shift, alt, super.
 var Actions = []struct{ Name, Keys, Label string }{
 	{"new_session", "ctrl+shift+t", i18n.M("New session in this workspace")},
 	{"new_workspace", "ctrl+shift+n", i18n.M("New workspace")},
-	{"split_right", "ctrl+shift+d", i18n.M("Split right")},
+	{"split_right", "ctrl+shift+o", i18n.M("Split right")},
 	{"split_down", "ctrl+shift+e", i18n.M("Split down")},
 	{"close_pane", "ctrl+shift+w", i18n.M("Close pane")},
 	{"swap", "ctrl+shift+x", i18n.M("Swap with the pane in a direction (then an arrow)")},
-	{"zoom", "ctrl+shift+z", i18n.M("Zoom pane / back")},
-	{"equalize", "ctrl+shift+equal", i18n.M("Equalize")},
+	{"zoom", "ctrl+shift+return", i18n.M("Zoom pane / back")},
+	{"equalize", "ctrl+shift+super+equal", i18n.M("Equalize")},
 	{"next_layout", "ctrl+shift+l", i18n.M("Next layout")},
-	{"previous_session", "ctrl+shift+bracketleft", i18n.M("Previous session")},
-	{"next_session", "ctrl+shift+bracketright", i18n.M("Next session")},
+	{"previous_session", "ctrl+shift+tab", i18n.M("Previous session")},
+	{"next_session", "ctrl+tab", i18n.M("Next session")},
 	{"next_waiting", "ctrl+shift+j", i18n.M("Next agent that needs you")},
 	{"agents", "ctrl+shift+a", i18n.M("Every agent")},
 	{"fold_workspaces", "ctrl+shift+b", i18n.M("Fold the workspaces")},
@@ -88,10 +107,18 @@ var Actions = []struct{ Name, Keys, Label string }{
 	{"rename", "ctrl+shift+r", i18n.M("Rename the session")},
 	{"palette", "ctrl+shift+p", i18n.M("Every action by name")},
 	{"keys", "ctrl+shift+slash", i18n.M("Show the keys")},
-	{"settings", "ctrl+shift+comma", i18n.M("Settings")},
+	{"settings", "ctrl+comma", i18n.M("Settings")},
 	{"font_larger", "ctrl+equal", i18n.M("Font larger")},
 	{"font_smaller", "ctrl+minus", i18n.M("Font smaller")},
 	{"font_reset", "ctrl+0", i18n.M("Font size as set")},
+}
+
+// firstKeys are the first version's default chords that are not the
+// defaults now.
+var firstKeys = map[string]string{
+	"split_right": "ctrl+shift+d", "zoom": "ctrl+shift+z", "equalize": "ctrl+shift+equal",
+	"previous_session": "ctrl+shift+bracketleft", "next_session": "ctrl+shift+bracketright",
+	"settings": "ctrl+shift+comma",
 }
 
 // Default is the settings without a file.
@@ -101,11 +128,12 @@ func Default() Settings {
 		keys[a.Name] = a.Keys
 	}
 	return Settings{
+		Version:  Version,
 		Font:     Font{Family: "Geist Mono", Size: 11},
 		Cursor:   Cursor{Style: "block"},
 		Terminal: Terminal{CopyOnSelect: true, Scrollback: 10000, Replay: 4},
 		Shell:    Shell{Integration: true},
-		Agents:   Agents{Notifications: true, Hooks: true},
+		Agents:   Agents{Notifications: true},
 		Remember: Remember{Commands: true, Forget: []string{"*password*", "*token=*", "*secret*"}},
 		Keys:     keys,
 	}
@@ -118,6 +146,12 @@ func Path() string {
 		dir = filepath.Join(os.Getenv("HOME"), ".config")
 	}
 	return filepath.Join(dir, "inua", "term.toml")
+}
+
+// Exists says there is a settings file at path: inua-term ran before.
+func Exists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, fs.ErrNotExist)
 }
 
 // Load reads path over the defaults; a missing file is the defaults. The
@@ -133,12 +167,26 @@ func Load(path string) (Settings, []string, error) {
 	if err != nil {
 		return s, nil, err
 	}
+	s.Version = 0 // a file without one is of the first
 	md, err := toml.Decode(string(b), &s)
 	if err != nil {
 		return Default(), nil, fmt.Errorf("%s: %w", path, err)
 	}
+	if s.Version < 2 {
+		// The keys the file kept at the first version's defaults take
+		// the new ones, Ghostty's.
+		d := Default()
+		for name, old := range firstKeys {
+			if s.Keys[name] == old {
+				s.Keys[name] = d.Keys[name]
+			}
+		}
+	}
+	s.Version = Version
 	var w []string
-	unknown := md.Undecoded()
+	unknown := slices.DeleteFunc(md.Undecoded(), func(k toml.Key) bool {
+		return k.String() == "agents.hooks" // the first version's, which added agents' hooks
+	})
 	for _, k := range unknown {
 		// An unknown table once, not each key in it.
 		if slices.ContainsFunc(unknown, func(o toml.Key) bool { return strings.HasPrefix(k.String(), o.String()+".") }) {
@@ -157,6 +205,12 @@ func ValidKeys(s string) bool { return s == "" || chordRe.MatchString(s) }
 func (s *Settings) validate() []string {
 	d := Default()
 	var w []string
+	if s.Look.Scheme != "" {
+		if _, ok := scheme.Find(s.Look.Scheme); !ok {
+			w = append(w, fmt.Sprintf("look.scheme = %q: no such scheme; using the theme's colours", s.Look.Scheme))
+			s.Look.Scheme = ""
+		}
+	}
 	if strings.TrimSpace(s.Font.Family) == "" {
 		w = append(w, fmt.Sprintf("font.family is empty; using %q", d.Font.Family))
 		s.Font.Family = d.Font.Family
@@ -199,9 +253,14 @@ func (s *Settings) validate() []string {
 // Format is the settings as the file writes them, with what each means.
 func Format(s Settings) string {
 	var b strings.Builder
-	b.WriteString(`# inua-term's settings. inua's look (theme, icons, text size) follows
+	b.WriteString(`# inua-term's settings. inua's icons and text size follow
 # ~/.config/inua/config.toml; this file is inua-term's own, written by its
-# settings (Ctrl+Shift+,) and read when it starts.
+# settings (Ctrl+,) and read when it starts.
+version = ` + fmt.Sprint(s.Version) + `
+
+[look]
+theme = ` + q(s.Look.Theme) + ` # the window's theme, one of inua's; "" follows inua's
+scheme = ` + q(s.Look.Scheme) + ` # the terminals' colours: ` + schemeNames() + `; "" takes the theme's
 
 [font]
 family = ` + q(s.Font.Family) + ` # a monospace family; Pango falls back for CJK
@@ -217,11 +276,11 @@ scrollback = ` + fmt.Sprint(s.Terminal.Scrollback) + ` # lines kept per pane
 replay = ` + fmt.Sprint(s.Terminal.Replay) + ` # MiB of a pane's recent output the host keeps for a window opened later
 
 [shell]
+program = ` + q(s.Shell.Program) + ` # the shell new panes start; "" is $SHELL
 integration = ` + fmt.Sprint(s.Shell.Integration) + ` # the prompt marks for bash, zsh and fish, for remembering commands
 
 [agents]
 notifications = ` + fmt.Sprint(s.Agents.Notifications) + ` # when an agent needs you or is done in a pane you are not looking at
-hooks = ` + fmt.Sprint(s.Agents.Hooks) + ` # add inua-term's hooks to Claude Code's and Codex's settings when they first run
 
 [remember]
 commands = ` + fmt.Sprint(s.Remember.Commands) + ` # put each pane's last command back at its prompt, not run
@@ -234,6 +293,14 @@ forget = ` + list(s.Remember.Forget) + ` # commands never kept
 		fmt.Fprintf(&b, "%s = %s # %s\n", a.Name, q(s.Keys[a.Name]), a.Label)
 	}
 	return b.String()
+}
+
+func schemeNames() string {
+	names := make([]string, len(scheme.All))
+	for i, sc := range scheme.All {
+		names[i] = sc.Name
+	}
+	return strings.Join(names, ", ")
 }
 
 func q(s string) string { return fmt.Sprintf("%q", s) }
@@ -257,4 +324,39 @@ func Save(path string, s Settings) error {
 		return err
 	}
 	return os.Rename(tmp, path)
+}
+
+// Shells are the login shells installed, as /etc/shells (its content
+// etc) lists them: those present and runnable, one path each (/bin/bash
+// and /usr/bin/bash are one where /bin is /usr/bin), nologin and false
+// left out. $SHELL comes first when it is one of them.
+func Shells(etc string) []string {
+	var out []string
+	seen := map[string]bool{}
+	add := func(p string) {
+		// The folder resolved, not the program: sh may be bash, and is
+		// sh all the same.
+		dir, err := filepath.EvalSymlinks(filepath.Dir(p))
+		key := filepath.Join(dir, filepath.Base(p))
+		if err != nil || seen[key] {
+			return
+		}
+		if base := filepath.Base(p); base == "nologin" || base == "false" || base == "true" {
+			return
+		}
+		if fi, err := os.Stat(p); err != nil || fi.IsDir() || fi.Mode()&0o111 == 0 {
+			return
+		}
+		seen[key] = true
+		out = append(out, p)
+	}
+	if sh := os.Getenv("SHELL"); filepath.IsAbs(sh) {
+		add(sh)
+	}
+	for line := range strings.SplitSeq(etc, "\n") {
+		if line = strings.TrimSpace(line); strings.HasPrefix(line, "/") {
+			add(line)
+		}
+	}
+	return out
 }
