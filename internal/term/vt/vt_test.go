@@ -702,3 +702,29 @@ func TestDefaults(t *testing.T) {
 		t.Errorf("after the reset %+v", f.Cursor)
 	}
 }
+
+func TestLinks(t *testing.T) {
+	term := newTerm(t, 60, 4)
+	term.Write([]byte("see https://example.com/a_(b)c?x=1. now\r\n"))
+	term.Write([]byte("(at https://go.dev/doc) and \x1b]8;;https://inua.dev/\x1b\\the site\x1b]8;;\x1b\\ here\r\n"))
+	for _, c := range []struct {
+		x, y   int
+		uri    string
+		x0, x1 int
+	}{
+		{10, 0, "https://example.com/a_(b)c?x=1", 4, 33},
+		{4, 0, "https://example.com/a_(b)c?x=1", 4, 33},
+		{6, 1, "https://go.dev/doc", 4, 21},
+		{30, 1, "https://inua.dev/", 28, 35},
+	} {
+		l, ok := term.LinkAt(c.x, c.y)
+		if !ok || l.URI != c.uri || l.X0 != c.x0 || l.X1 != c.x1 {
+			t.Errorf("at %d,%d: %+v %v, want %q %d–%d", c.x, c.y, l, ok, c.uri, c.x0, c.x1)
+		}
+	}
+	for _, c := range [][2]int{{1, 0}, {34, 0}, {38, 1}, {22, 1}} {
+		if l, ok := term.LinkAt(c[0], c[1]); ok {
+			t.Errorf("at %v: %+v", c, l)
+		}
+	}
+}

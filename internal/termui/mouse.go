@@ -18,8 +18,9 @@ import (
 // raw buttons go to the program before the selection gestures see them.
 func (p *termPane) trackMouse() {
 	motion := gtk.NewEventControllerMotion()
-	p.onMotion = func(_ gtk.EventControllerMotion, x, y float64) {
+	p.onMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		p.pointerX, p.pointerY = x, y
+		p.hoverLink(c.GetCurrentEventState()&gdk.ControlMaskValue != 0)
 		if p.reporting(0) {
 			p.report(vt.MouseMotion, p.held(), 0)
 		}
@@ -36,6 +37,14 @@ func (p *termPane) trackMouse() {
 			return false
 		}
 		state := e.GetModifierState()
+		// Ctrl+click opens a link, before selecting or the program.
+		if kind == gdk.ButtonPressValue && state&gdk.ControlMaskValue != 0 && gdk.ButtonEventNewFromInternalPtr(ev).GetButton() == 1 {
+			p.hoverLink(true)
+			if p.hover != nil {
+				p.openLink(p.hover.URI)
+				return true
+			}
+		}
 		if !p.reporting(state) {
 			return false
 		}
@@ -56,6 +65,47 @@ func (p *termPane) trackMouse() {
 	}
 	raw.ConnectEvent(&p.onRaw)
 	p.widget.AddController(&raw.EventController)
+}
+
+// hoverLink underlines the link under the pointer while Ctrl is held,
+// with the hand for a cursor.
+func (p *termPane) hoverLink(ctrl bool) {
+	var hover *link
+	if ctrl && p.cw > 0 && p.ch > 0 {
+		x, y := int(p.pointerX-pad)/p.cw, int(p.pointerY-pad)/p.ch
+		if x >= 0 && y >= 0 && x < p.cols && y < p.rows {
+			if l, ok := p.term.LinkAt(x, y); ok {
+				hover = &link{Link: l, Y: y}
+			}
+		}
+	}
+	if (hover == nil) == (p.hover == nil) && (hover == nil || *hover == *p.hover) {
+		return
+	}
+	p.hover = hover
+	if hover != nil {
+		p.widget.SetCursorFromName("pointer")
+	} else {
+		p.widget.SetCursorFromName("text")
+	}
+	p.widget.QueueDraw()
+}
+
+// link is a link under the pointer, on row Y.
+type link struct {
+	vt.Link
+	Y int
+}
+
+// openLink opens a URI with the program the desktop has for it.
+func (p *termPane) openLink(uri string) {
+	l := gtk.NewUriLauncher(uri)
+	var win *gtk.Window
+	if root := p.widget.GetRoot(); root != nil {
+		win = &gtk.Window{}
+		win.Ptr = root.GoPointer()
+	}
+	l.Launch(win, nil, nil, 0)
 }
 
 // reporting says the pointer is the program's now: it tracks the mouse,

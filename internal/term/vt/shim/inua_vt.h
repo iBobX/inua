@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 15
+#define INUA_VT_ABI 16
 
 typedef struct inua_vt inua_vt;
 
@@ -135,6 +135,13 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
  * cursor a program resetting it gets (0 bar, 1 block, 2 underline;
  * blinking or not). */
 void inua_vt_defaults(inua_vt *t, uint32_t scrollback, uint32_t cursor_style, uint32_t blink);
+
+/* The link at a cell of the viewport: an OSC 8 hyperlink, else a URL in
+ * the row's text (http, https, file, ftp, mailto…). Returns 1 with the
+ * URI in *out (freed with inua_vt_free_bytes) and the cells it spans,
+ * x0 to x1, or 0 for none. */
+int inua_vt_link_at(inua_vt *t, uint16_t x, uint16_t y, uint8_t **out, size_t *len,
+                    uint16_t *x0, uint16_t *x1);
 
 /* Moves the viewport through the scrollback: kind 0 to the top, 1 to the
  * bottom (where the program writes), 2 by n rows (up is negative), 3 by n

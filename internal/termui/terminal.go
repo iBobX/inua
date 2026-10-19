@@ -89,6 +89,8 @@ type termPane struct {
 	look    paneLook
 	// blinkOff hides a blinking cursor for its off half.
 	blinkOff bool
+	// hover is the link under the pointer while Ctrl is held.
+	hover *link
 
 	sheet                             *gtk.Box // the paste sheet, while it asks
 	find                              *gtk.Box // the find bar, while open
@@ -133,6 +135,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string, look pane
 	}
 	p.term.SetDefaults(look.Scrollback, look.Cursor, look.Blink)
 	p.widget = newPaneWidget(p)
+	p.widget.SetCursorFromName("text")
 	p.widget.SetFocusable(true)
 	p.widget.SetHexpand(true)
 	p.widget.SetVexpand(true)
@@ -529,6 +532,10 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 			s.Restore()
 			l.Unref()
 		}
+	}
+	if h := p.hover; h != nil {
+		c := p.cursor
+		s.AppendColor(&c, rect(float32(h.X0)*cw, float32(h.Y+1)*ch-1, float32(h.X1-h.X0+1)*cw, 1))
 	}
 	if p.preedit != "" {
 		// What the input method is composing, over the cells at the cursor.

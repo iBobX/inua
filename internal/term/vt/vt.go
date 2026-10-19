@@ -23,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 15
+const abi = 16
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -56,7 +56,8 @@ var lib struct {
 	input       func(t uintptr, out **byte, n *uintptr) int32
 	tail        func(t uintptr, n uint16, out **byte, outN *uintptr) int32
 	notes       func(t uintptr, p **byte, n *uintptr)
-	defaults    func(t uintptr, scrollback, cursor, blink uint32)
+	defaults func(t uintptr, scrollback, cursor, blink uint32)
+	linkAt   func(t uintptr, x, y uint16, out **byte, n *uintptr, x0, x1 *uint16) int32
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -132,6 +133,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.tail, h, "inua_vt_tail")
 		purego.RegisterLibFunc(&lib.notes, h, "inua_vt_notifications")
 		purego.RegisterLibFunc(&lib.defaults, h, "inua_vt_defaults")
+		purego.RegisterLibFunc(&lib.linkAt, h, "inua_vt_link_at")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -308,6 +310,27 @@ func (t *Terminal) Input() string {
 	s := string(unsafe.Slice(p, n))
 	lib.freeBytes(p, n)
 	return s
+}
+
+// Link is a link on the screen: its URI and the cells it spans on its
+// row of the viewport, X0 to X1.
+type Link struct {
+	URI    string
+	X0, X1 int
+}
+
+// LinkAt is the link at a cell of the viewport: an OSC 8 hyperlink, else
+// a URL in the text; ok is false for none.
+func (t *Terminal) LinkAt(x, y int) (Link, bool) {
+	var p *byte
+	var n uintptr
+	var x0, x1 uint16
+	if lib.linkAt(t.h, uint16(x), uint16(y), &p, &n, &x0, &x1) != 1 || p == nil {
+		return Link{}, false
+	}
+	l := Link{URI: string(unsafe.Slice(p, n)), X0: int(x0), X1: int(x1)}
+	lib.freeBytes(p, n)
+	return l, true
 }
 
 // SetDefaults sets the scrollback's length in lines and the cursor a

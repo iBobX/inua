@@ -35,6 +35,8 @@ static void buf_free(buf *b) {
   if (b->p) ghostty_free(NULL, b->p, b->cap);
 }
 
+static size_t utf8(uint32_t c, uint8_t *o);
+
 /* A search match in viewport cells, start and end inclusive. */
 typedef struct {
   uint16_t sx, ex;
@@ -144,6 +146,114 @@ void inua_vt_defaults(inua_vt *t, uint32_t scrollback, uint32_t cursor_style, ui
   /* The cursor now, as a program would have it after resetting it. */
   const uint8_t reset[] = "\x1b[0 q";
   ghostty_terminal_vt_write(t->term, reset, sizeof(reset) - 1);
+}
+
+/* hyperlink is the OSC 8 URI of a viewport cell into b; false for none. */
+static bool hyperlink(inua_vt *t, uint16_t x, uint16_t y, buf *b) {
+  GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+  GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_VIEWPORT, .value = {.coordinate = {.x = x, .y = y}}};
+  if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) return false;
+  uint8_t tmp[2048];
+  size_t n = 0;
+  if (ghostty_grid_ref_hyperlink_uri(&ref, tmp, sizeof(tmp), &n) != GHOSTTY_SUCCESS || n == 0) return false;
+  b->len = 0;
+  buf_put(b, tmp, n);
+  return !b->failed;
+}
+
+/* A URL's characters, as most terminals take them. */
+static bool url_char(uint32_t c) {
+  if (c <= ' ' || c == 0x7f) return false;
+  return c >= 0x80 || strchr("<>\"`{}|\\^", (int)c) == NULL;
+}
+
+static bool scheme_at(const uint32_t *row, int n, int i, int *after) {
+  static const char *schemes[] = {"https://", "http://", "file://", "ftp://", "ssh://", "mailto:", "git://"};
+  for (size_t s = 0; s < sizeof(schemes) / sizeof(schemes[0]); s++) {
+    const char *p = schemes[s];
+    int k = 0;
+    while (p[k] && i + k < n && row[i + k] == (uint32_t)p[k]) k++;
+    if (!p[k]) {
+      *after = i + k;
+      return true;
+    }
+  }
+  return false;
+}
+
+int inua_vt_link_at(inua_vt *t, uint16_t x, uint16_t y, uint8_t **out, size_t *len, uint16_t *x0, uint16_t *x1) {
+  *out = NULL;
+  *len = 0;
+  uint16_t cols = 0;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_COLS, &cols);
+  if (x >= cols) return 0;
+  buf uri = {0};
+  int a = x, z = x;
+  if (hyperlink(t, x, y, &uri)) {
+    /* The cells around with the same link. */
+    buf other = {0};
+    while (a > 0 && hyperlink(t, (uint16_t)(a - 1), y, &other) && other.len == uri.len && memcmp(other.p, uri.p, uri.len) == 0) a--;
+    while (z + 1 < cols && hyperlink(t, (uint16_t)(z + 1), y, &other) && other.len == uri.len && memcmp(other.p, uri.p, uri.len) == 0) z++;
+    buf_free(&other);
+  } else {
+    /* The row's text a cell each (a wide character's tail is 0). */
+    uint32_t row[1024];
+    int n = cols < 1024 ? cols : 1024;
+    for (int i = 0; i < n; i++) {
+      row[i] = ' ';
+      GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+      GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_VIEWPORT, .value = {.coordinate = {.x = (uint16_t)i, .y = y}}};
+      if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) continue;
+      GhosttyCell cell = 0;
+      GhosttyCellWide wide = GHOSTTY_CELL_WIDE_NARROW;
+      if (ghostty_grid_ref_cell(&ref, &cell) == GHOSTTY_SUCCESS) ghostty_cell_get(cell, GHOSTTY_CELL_DATA_WIDE, &wide);
+      if (wide == GHOSTTY_CELL_WIDE_SPACER_TAIL) { row[i] = 0; continue; }
+      uint32_t cps[4];
+      size_t k = 0;
+      if (ghostty_grid_ref_graphemes(&ref, cps, 4, &k) == GHOSTTY_SUCCESS && k > 0) row[i] = cps[0];
+    }
+    if (x >= n || !url_char(row[x])) return 0;
+    int s = x, e = x;
+    while (s > 0 && (url_char(row[s - 1]) || row[s - 1] == 0)) s--;
+    while (e + 1 < n && (url_char(row[e + 1]) || row[e + 1] == 0)) e++;
+    /* The URL starts at a scheme within the word, before the cell. */
+    int start = -1, after = 0;
+    for (int i = s; i <= x && start < 0; i++)
+      if (scheme_at(row, e + 1, i, &after)) start = i;
+    if (start < 0 || after > e) return 0;
+    /* What ends a sentence is not the URL's, nor a closing bracket it
+     * did not open. */
+    int opens = 0;
+    for (int i = start; i <= e; i++) opens += row[i] == '(' ? 1 : row[i] == ')' ? -1 : 0;
+    while (e > after && (strchr(".,;:!?'\"", (int)row[e]) || (row[e] == ')' && opens < 0))) {
+      if (row[e] == ')') opens++;
+      e--;
+    }
+    if (x > e) return 0;
+    a = start;
+    z = e;
+    for (int i = a; i <= z; i++) {
+      if (row[i] == 0) continue;
+      uint8_t o[4];
+      buf_put(&uri, o, utf8(row[i], o));
+    }
+  }
+  if (uri.failed || uri.len == 0) {
+    buf_free(&uri);
+    return 0;
+  }
+  uint8_t *p = ghostty_alloc(NULL, uri.len);
+  if (p == NULL) {
+    buf_free(&uri);
+    return 0;
+  }
+  memcpy(p, uri.p, uri.len);
+  *out = p;
+  *len = uri.len;
+  *x0 = (uint16_t)a;
+  *x1 = (uint16_t)z;
+  buf_free(&uri);
+  return 1;
 }
 
 void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n) {
