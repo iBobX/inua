@@ -164,6 +164,10 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 		h.mu.Lock()
 		err = h.m.Move(m.Workspace, m.To)
 		h.mu.Unlock()
+	case MsgReport:
+		err = h.report(m)
+		c.message(Message{Type: MsgReply, ID: m.ID, Error: errText(err)})
+		return true
 	case MsgActive:
 		h.mu.Lock()
 		c.active = m.Active
@@ -419,4 +423,11 @@ func (h *Host) forgetPane(id int) {
 	h.mu.Lock()
 	h.m.RemovePane(id)
 	h.mu.Unlock()
+}
+
+func errText(err error) string {
+	if err == nil {
+		return ""
+	}
+	return err.Error()
 }

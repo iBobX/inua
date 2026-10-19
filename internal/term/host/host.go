@@ -56,7 +56,11 @@ type Host struct {
 	// Raise brings a window up after a notification's Show; nil runs
 	// inua-term again, which raises the one open or opens one.
 	Raise func()
-	notes notifier
+	// Hooks adds inua-term's hooks to an agent's settings the first time
+	// one is seen, through Hook (the type); nil adds none.
+	Hook   func(agentType string)
+	hooked map[string]bool
+	notes  notifier
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string
@@ -388,6 +392,9 @@ func (h *Host) list() []PaneInfo {
 		if m := p.agent.m; m != nil {
 			i := &infos[len(infos)-1]
 			i.AgentName, i.Icon, i.Since = m.Name, m.Icon, p.agent.t.Since.UnixMilli()
+			if p.agent.title != "" {
+				i.Title = p.agent.title
+			}
 		}
 		p.mu.Unlock()
 	}
@@ -609,4 +616,12 @@ func (h *Host) closePane(p *pane) bool {
 	}
 	p.mu.Unlock()
 	return empty
+}
+
+// SetReplayLimit is how much of each pane's recent output the host keeps
+// for a client attaching later.
+func (h *Host) SetReplayLimit(n int) {
+	if n > 0 {
+		h.replayLimit = n
+	}
 }

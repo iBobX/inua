@@ -1,6 +1,8 @@
 package host
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -29,6 +31,7 @@ const screenDelay = 300 * time.Millisecond
 
 // paneAgent is a pane's agent and what the host knows of its program.
 type paneAgent struct {
+	title   string // the title the agent reported
 	fg      int    // the foreground process group last seen
 	command string // the command running, "" while the shell waits
 	m       *agent.Manifest
@@ -97,14 +100,17 @@ func (h *Host) checkProcess(p *pane) bool {
 	switch {
 	case m == nil && a.m == nil:
 		return true // the command running changed
+	case m == nil && a.t.Reported && fg != p.pty.Pid():
+		return true // one that reports itself, run by something not known
 	case m == nil:
 		// The agent ended: the pane is a shell again.
-		a.m, a.t = nil, agent.Tracker{}
+		a.m, a.t, a.title = nil, agent.Tracker{}, ""
 		return true
 	case a.m == nil || a.m.Type != m.Type:
-		a.m = m
+		a.m, a.title = m, ""
 		a.t = agent.Tracker{Type: m.Type, State: agent.Idle, Since: time.Now()}
 		h.readScreenLater(p)
+		go h.hook(m.Type)
 		return true
 	}
 	return true
@@ -220,6 +226,63 @@ func (h *Host) programNotes(p *pane, ns []vt.Notification) {
 	}
 }
 
+// report is an agent saying what it does, through its hooks or
+// `inua-term report`: its screen is not read for state after that.
+func (h *Host) report(m Message) error {
+	p := h.pane(m.Pane)
+	if p == nil {
+		return fmt.Errorf("no pane %d", m.Pane)
+	}
+	s := agent.State(m.AgentState)
+	switch s {
+	case agent.Working, agent.Blocked, agent.Done, agent.Idle, "":
+	default:
+		return fmt.Errorf("state %q: want working, blocked, done or idle", s)
+	}
+	p.mu.Lock()
+	a := &p.agent
+	if m.Agent != "" && (a.m == nil || a.m.Type != m.Agent) {
+		mf := &agent.Manifest{Type: m.Agent, Name: m.Agent}
+		if h.Agents != nil {
+			if known := h.Agents.ByType(m.Agent); known != nil {
+				mf = known
+			}
+		}
+		a.m, a.t = mf, agent.Tracker{Type: mf.Type, State: agent.Idle, Since: time.Now()}
+	}
+	if a.m == nil {
+		p.mu.Unlock()
+		return errors.New("no agent in the pane: name it with --agent")
+	}
+	a.t.Reported = true
+	if m.Title != "" {
+		a.title = m.Title
+	}
+	var n *note
+	if s != "" {
+		before := a.t.State
+		if s == agent.Done {
+			a.t.Set(agent.Working, "", time.Now()) // done is the end of a turn
+		}
+		a.t.Set(s, m.Summary, time.Now())
+		if a.t.State != before && (a.t.State == agent.Blocked || a.t.State == agent.Done) && !h.looking(p.id) {
+			n = agentNote(p.id, a.m.Name, a.t.State, p.title, m.Summary)
+			if a.title != "" {
+				n.body = a.title
+				if a.t.State == agent.Blocked && m.Summary != "" {
+					n.body = m.Summary
+				}
+			}
+		}
+	}
+	p.mu.Unlock()
+	h.publish()
+	if n != nil {
+		h.notify(*n)
+	}
+	return nil
+}
+
 // seen is the user looking at a pane: a done agent there is idle again.
 func (h *Host) seen(id int) {
 	p := h.pane(id)
@@ -245,6 +308,25 @@ func (h *Host) looking(id int) bool {
 	s, _ := h.m.Session(h.m.Shown.Session)
 	return active && s != nil && s.Focus == id
 }
+
+// hook has an agent's hooks added once a host's life.
+func (h *Host) hook(t string) {
+	h.mu.Lock()
+	if h.Hook == nil || h.hooked[t] {
+		h.mu.Unlock()
+		return
+	}
+	if h.hooked == nil {
+		h.hooked = map[string]bool{}
+	}
+	h.hooked[t] = true
+	f := h.Hook
+	h.mu.Unlock()
+	f(t)
+}
+
+// Announce posts a notification of the host's own (hooks it added).
+func (h *Host) Announce(summary, body string) { h.notify(note{summary: summary, body: body}) }
 
 // procArgs is a process's argument list.
 func procArgs(pid int) []string {

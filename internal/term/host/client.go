@@ -270,3 +270,11 @@ func (c *Client) MoveWorkspace(workspace, to int) error {
 	_, err := c.call(Message{Type: MsgMove, Workspace: workspace, To: to})
 	return err
 }
+
+// Report tells the host what the agent in a pane does: its type, its
+// state (working, blocked, done, idle; "" to keep it), its title and what
+// it asks or did.
+func (c *Client) Report(pane int, agentType, state, title, summary string) error {
+	_, err := c.call(Message{Type: MsgReport, Pane: pane, Agent: agentType, AgentState: state, Title: title, Summary: summary})
+	return err
+}

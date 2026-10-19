@@ -662,3 +662,63 @@ func TestNotify(t *testing.T) {
 		t.Errorf("shown %+v, want session %d", st.Model.Shown, first.ID)
 	}
 }
+
+// An agent reporting itself: its state and title are what it says, and
+// its screen is not read for them.
+func TestReport(t *testing.T) {
+	t.Setenv("SHELL", "/bin/sh")
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	h.Agents, _ = agent.Load("")
+	hooked := make(chan string, 2)
+	h.Hook = func(t string) { hooked <- t }
+	c := dial(t, path, newWatcher())
+	c.Open(t.TempDir(), "")
+	st, _ := c.State()
+	id := st.Model.Workspaces[0].Sessions[0].Focus
+	// The agent, as far as the process check sees: a program not known.
+	c.Input(id, []byte("sleep 2\n"))
+	time.Sleep(1200 * time.Millisecond)
+	if err := c.Report(id, "", "working", "", ""); err == nil {
+		t.Error("a report without an agent")
+	}
+	if err := c.Report(id, "claude", "working", "Fix the flaky test", ""); err != nil {
+		t.Fatal(err)
+	}
+	pane := func() PaneInfo {
+		st, _ := c.State()
+		for _, p := range st.Panes {
+			if p.ID == id {
+				return p
+			}
+		}
+		return PaneInfo{}
+	}
+	if p := pane(); p.Agent != "claude" || p.State != "working" || p.Title != "Fix the flaky test" || p.AgentName != "Claude Code" {
+		t.Errorf("working %+v", p)
+	}
+	c.Report(id, "claude", "blocked", "", "Claude needs your permission to use Bash")
+	if p := pane(); p.State != "blocked" || p.Ask != "Claude needs your permission to use Bash" {
+		t.Errorf("blocked %+v", p)
+	}
+	c.Report(id, "claude", "done", "", "")
+	if p := pane(); p.State != "done" {
+		t.Errorf("done %+v", p)
+	}
+	if err := c.Report(id, "claude", "sleeping", "", ""); err == nil {
+		t.Error("an unknown state")
+	}
+	// The process check keeps a reporting agent while it runs, and
+	// forgets it once the shell is back.
+	time.Sleep(300 * time.Millisecond)
+	if p := pane(); p.Agent != "claude" {
+		t.Errorf("forgotten %+v", p)
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for pane().Agent != "" {
+		if time.Now().After(deadline) {
+			t.Fatal("not forgotten after it ended")
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+}
