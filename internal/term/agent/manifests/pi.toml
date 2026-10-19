@@ -1,0 +1,18 @@
+type = "pi"
+name = "pi"
+icon = "agent-pi"
+process = ["pi"]
+resume = "pi --continue"
+
+# pi asks nothing of its own; an extension's question, trusting a folder
+# and the first setup are a list to choose from.
+[[state]]
+state = "blocked"
+lines = 10
+any = ["↑↓ navigate"]
+
+# Its spinner and Working, above the editor or in its border.
+[[state]]
+state = "working"
+lines = 10
+any = ["⠋ Working", "⠙ Working", "⠹ Working", "⠸ Working", "⠼ Working", "⠴ Working", "⠦ Working", "⠧ Working", "⠇ Working", "⠏ Working"]

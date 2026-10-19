@@ -283,6 +283,9 @@ remote-machine                        desktop
 view-refresh                          arrow-clockwise
 # inua-term: a shell or a program that is no agent
 agent-shell                           terminal
+# inua-term: agents LobeHub has no mark of
+agent-pi                              pi
+agent-mistermorph                     butterfly
 # Mobile Link
 connect-this                          devices
 connect-phone                         device-mobile

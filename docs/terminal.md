@@ -87,13 +87,13 @@ column 1 as well; Ctrl+Shift+S and Ctrl+Shift+B show them anyway.
 
 ## Agents
 
-inua-term knows Claude Code, Codex, Gemini CLI, opencode, Aider, Amp,
-Cursor Agent, Copilot CLI, Goose and Qwen Code by their process, and what
-they are doing (working, waiting for you, done, idle) from what they
-report, from what they show at the bottom of their screen, and from the
-notifications they send through the terminal. A manifest of each says
-how; yours in `~/.config/inua/term/agents/*.toml` add agents or replace
-the built-in ones:
+inua-term knows Claude Code, Codex, Gemini CLI, opencode, pi, Mister
+Morph, Aider, Amp, Cursor Agent, Copilot CLI, Goose and Qwen Code by
+their process, and what they are doing (working, waiting for you, done,
+idle) from what they report, from what they show at the bottom of their
+screen, and from the notifications they send through the terminal. A
+manifest of each says how; yours in `~/.config/inua/term/agents/*.toml`
+add agents or replace the built-in ones:
 
 ```toml
 type = "claude"
