@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 9
+#define INUA_VT_ABI 10
 
 typedef struct inua_vt inua_vt;
 
@@ -132,6 +132,18 @@ void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n);
 int inua_vt_key(inua_vt *t, uint32_t keysym, uint32_t xkb, uint32_t mods, uint32_t action,
                 const char *utf8, size_t utf8_len, uint32_t unshifted,
                 uint32_t consumed, uint8_t *out, size_t cap, size_t *len);
+
+/* Encodes a mouse event for a program that tracks the mouse, in the mode
+ * and format it asked for: action 0 press, 1 release, 2 motion; button 0
+ * none, 1 left, 2 right, 3 middle, 4 and 5 the wheel up and down; mods as
+ * for keys; x, y the pointer in pixels from the widget's corner, which is
+ * width x height with pad pixels around the cells of cell_w x cell_h;
+ * pressed whether a button is held. *len 0: nothing to send (the mode
+ * does not report it, or the pointer stayed in its cell). */
+int inua_vt_mouse(inua_vt *t, uint32_t action, uint32_t button, uint32_t mods,
+                  double x, double y, uint32_t width, uint32_t height,
+                  uint32_t cell_w, uint32_t cell_h, uint32_t pad, uint32_t pressed,
+                  uint8_t *out, size_t cap, size_t *len);
 
 /* Selecting with the pointer, through Ghostty's gesture: kind 0 press, 1
  * release, 2 drag; x, y the cell in the viewport; px, py the pointer in

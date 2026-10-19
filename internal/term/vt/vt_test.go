@@ -514,3 +514,39 @@ func TestScroll(t *testing.T) {
 		t.Error("alternate screen not reported")
 	}
 }
+
+func TestMouse(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	at := func(a MouseAction, b, cx, cy int) string {
+		t.Helper()
+		out, err := term.Mouse(MouseEvent{Action: a, Button: b, X: float64(8 + cx*10 + 5), Y: float64(8 + cy*20 + 10),
+			Width: 816, Height: 496, CellW: 10, CellH: 20, Pad: 8, Pressed: a == MousePress})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(out)
+	}
+	if got := at(MousePress, ButtonLeft, 2, 3); got != "" {
+		t.Errorf("reported without tracking: %q", got)
+	}
+	term.Write([]byte("\x1b[?1000h\x1b[?1006h")) // normal tracking, SGR
+	if got := at(MousePress, ButtonLeft, 2, 3); got != "\x1b[<0;3;4M" {
+		t.Errorf("press: %q", got)
+	}
+	if got := at(MouseRelease, ButtonLeft, 2, 3); got != "\x1b[<0;3;4m" {
+		t.Errorf("release: %q", got)
+	}
+	if got := at(MousePress, WheelDown, 0, 0); got != "\x1b[<65;1;1M" {
+		t.Errorf("wheel: %q", got)
+	}
+	if got := at(MouseMotion, ButtonNone, 5, 5); got != "" {
+		t.Errorf("motion in normal mode: %q", got)
+	}
+	term.Write([]byte("\x1b[?1003h")) // any motion
+	if got := at(MouseMotion, ButtonNone, 5, 5); got != "\x1b[<35;6;6M" {
+		t.Errorf("motion: %q", got)
+	}
+	if got := at(MouseMotion, ButtonNone, 5, 5); got != "" {
+		t.Errorf("motion in the same cell: %q", got)
+	}
+}

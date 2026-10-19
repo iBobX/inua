@@ -31,6 +31,21 @@ func (p *termPane) wheel(c *gtk.EventControllerScroll, dy float64) bool {
 	if n == 0 {
 		return true
 	}
+	if p.reporting(c.GetCurrentEventState()) {
+		// A notch is one wheel button for the program, as other
+		// terminals send it.
+		p.wheelNotches += float64(n) / wheelRows
+		k := int(p.wheelNotches)
+		p.wheelNotches -= float64(k)
+		button := vt.WheelDown
+		if k < 0 {
+			button, k = vt.WheelUp, -k
+		}
+		for range k {
+			p.report(vt.MousePress, button, c.GetCurrentEventState())
+		}
+		return true
+	}
 	if p.alt {
 		if p.exited {
 			return true

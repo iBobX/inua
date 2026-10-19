@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 9
+const abi = 10
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -52,6 +52,7 @@ var lib struct {
 	cellSize  func(t uintptr, w, h uint32)
 	clipboard func(t uintptr, p **byte, n *uintptr) int32
 	scroll    func(t uintptr, kind uint32, n int32)
+	mouse     func(t uintptr, action, button, mods uint32, x, y float64, w, h, cw, ch, pad, pressed uint32, out *byte, cap uintptr, n *uintptr) int32
 	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
@@ -118,6 +119,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.cellSize, h, "inua_vt_cell_size")
 		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
+		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 	})
 	return lib.err
 }
@@ -482,6 +484,55 @@ func (t *Terminal) Key(k KeyEvent) ([]byte, error) {
 	}
 	r := lib.key(t.h, k.Keyval, k.Keycode, k.Mods, uint32(k.Action), text, uintptr(len(k.Text)), uint32(k.Unshifted), k.Consumed, &out[0], uintptr(len(out)), &n)
 	if err := result("key", r); err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		return nil, nil
+	}
+	return append([]byte(nil), out[:n]...), nil
+}
+
+// MouseAction is what the mouse did, for a program tracking it.
+type MouseAction uint32
+
+const (
+	MousePress MouseAction = iota
+	MouseRelease
+	MouseMotion
+)
+
+// Mouse buttons; 4 and 5 are the wheel up and down.
+const (
+	ButtonNone   = 0
+	ButtonLeft   = 1
+	ButtonRight  = 2
+	ButtonMiddle = 3
+	WheelUp      = 4
+	WheelDown    = 5
+)
+
+// MouseEvent is the pointer for a program tracking the mouse: X, Y in
+// pixels from the widget's corner, the widget Width × Height with Pad
+// around its cells of CellW × CellH, Pressed while a button is held.
+type MouseEvent struct {
+	Action        MouseAction
+	Button        int
+	Mods          uint32
+	X, Y          float64
+	Width, Height int
+	CellW, CellH  int
+	Pad           int
+	Pressed       bool
+}
+
+// Mouse is what to send a program tracking the mouse, in its mode and
+// format; nil for nothing.
+func (t *Terminal) Mouse(m MouseEvent) ([]byte, error) {
+	var out [64]byte
+	var n uintptr
+	r := lib.mouse(t.h, uint32(m.Action), uint32(m.Button), m.Mods, m.X, m.Y, uint32(m.Width), uint32(m.Height),
+		uint32(m.CellW), uint32(m.CellH), uint32(m.Pad), flag(m.Pressed), &out[0], uintptr(len(out)), &n)
+	if err := result("mouse", r); err != nil {
 		return nil, err
 	}
 	if n == 0 {

@@ -54,9 +54,14 @@ type termPane struct {
 	alt    bool // the alternate screen shows
 	scroll vt.Scrollbar
 	// wheelRows is the part of a row a touchpad has scrolled so far.
-	wheelRows float64
+	wheelRows, wheelNotches float64
+	// pointerX, pointerY is the pointer in the widget; buttons the ones
+	// held down for a program tracking the mouse, a bit per button.
+	pointerX, pointerY float64
+	buttons            int
 	// selecting is set while a drag selects; dragX, dragY is where it began.
 	selecting    bool
+	selected     bool // there is a selection, even of blank cells
 	dragX, dragY float64
 
 	mu        sync.Mutex
@@ -73,6 +78,8 @@ type termPane struct {
 	onMiddle        func(gtk.GestureClick, int32, float64, float64)
 	onDrop          func(gtk.DropTarget, uintptr, float64, float64) bool
 	onScroll        func(gtk.EventControllerScroll, float64, float64) bool
+	onMotion        func(gtk.EventControllerMotion, float64, float64)
+	onRaw           func(gtk.EventControllerLegacy, uintptr) bool
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
@@ -191,6 +198,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	}
 	middle.ConnectPressed(&p.onMiddle)
 	p.widget.AddController(&middle.EventController)
+	p.trackMouse()
 	wheel := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue)
 	p.onScroll = func(c gtk.EventControllerScroll, _, dy float64) bool { return p.wheel(&c, dy) }
 	wheel.ConnectScroll(&p.onScroll)
@@ -231,6 +239,7 @@ func (p *termPane) pointer(c *gtk.EventController, kind vt.PointerKind, x, y flo
 	if err != nil {
 		log.Printf("term: select: %v", err)
 	}
+	p.selected = ok
 	p.update(false)
 	return ok
 }
@@ -324,8 +333,9 @@ func (p *termPane) input(b []byte) {
 	if p.exited || len(b) == 0 {
 		return
 	}
-	if text, _ := p.term.SelectionText(); text != "" {
+	if p.selected {
 		p.term.ClearSelection()
+		p.selected = false
 		p.update(false)
 	}
 	// Typing shows where it goes.

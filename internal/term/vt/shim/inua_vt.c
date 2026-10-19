@@ -42,6 +42,9 @@ struct inua_vt {
   GhosttyRenderStateRowCells cells;
   GhosttyKeyEncoder keys;
   GhosttyKeyEvent key;
+  GhosttyMouseEncoder mouse;
+  GhosttyMouseEvent mouse_ev;
+  int32_t mouse_x, mouse_y; /* the cell of the last motion sent; -1 for none */
   GhosttySelectionGesture gesture;
   GhosttySelectionGestureEvent press, release, drag;
   /* What the terminal writes back to the program: answers to its
@@ -64,12 +67,15 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
   if (p == NULL) return NULL;
   inua_vt *t = (inua_vt *)p;
   memset(t, 0, sizeof(*t));
+  t->mouse_x = t->mouse_y = -1;
   if (ghostty_terminal_new(NULL, &t->term, cols, rows) != GHOSTTY_SUCCESS ||
       ghostty_render_state_new(NULL, &t->render) != GHOSTTY_SUCCESS ||
       ghostty_render_state_row_iterator_new(NULL, &t->rows) != GHOSTTY_SUCCESS ||
       ghostty_render_state_row_cells_new(NULL, &t->cells) != GHOSTTY_SUCCESS ||
       ghostty_key_encoder_new(NULL, &t->keys) != GHOSTTY_SUCCESS ||
       ghostty_key_event_new(NULL, &t->key) != GHOSTTY_SUCCESS ||
+      ghostty_mouse_encoder_new(NULL, &t->mouse) != GHOSTTY_SUCCESS ||
+      ghostty_mouse_event_new(NULL, &t->mouse_ev) != GHOSTTY_SUCCESS ||
       ghostty_selection_gesture_new(NULL, &t->gesture) != GHOSTTY_SUCCESS ||
       ghostty_selection_gesture_event_new(NULL, &t->press, GHOSTTY_SELECTION_GESTURE_EVENT_TYPE_PRESS) != GHOSTTY_SUCCESS ||
       ghostty_selection_gesture_event_new(NULL, &t->release, GHOSTTY_SELECTION_GESTURE_EVENT_TYPE_RELEASE) != GHOSTTY_SUCCESS ||
@@ -88,6 +94,8 @@ void inua_vt_free(inua_vt *t) {
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
   if (t->gesture) ghostty_selection_gesture_free(t->gesture, t->term);
+  if (t->mouse_ev) ghostty_mouse_event_free(t->mouse_ev);
+  if (t->mouse) ghostty_mouse_encoder_free(t->mouse);
   ghostty_key_event_free(t->key);
   ghostty_key_encoder_free(t->keys);
   ghostty_render_state_row_cells_free(t->cells);
@@ -564,6 +572,48 @@ int inua_vt_key(inua_vt *t, uint32_t keysym, uint32_t xkb, uint32_t mods, uint32
   ghostty_key_event_set_composing(t->key, false);
   *len = 0;
   return ghostty_key_encoder_encode(t->keys, t->key, (char *)out, cap, len);
+}
+
+/* --- mouse --- */
+
+int inua_vt_mouse(inua_vt *t, uint32_t action, uint32_t button, uint32_t mods,
+                  double x, double y, uint32_t width, uint32_t height,
+                  uint32_t cell_w, uint32_t cell_h, uint32_t pad, uint32_t pressed,
+                  uint8_t *out, size_t cap, size_t *len) {
+  *len = 0;
+  if (cell_w == 0 || cell_h == 0) return GHOSTTY_INVALID_VALUE;
+  ghostty_mouse_encoder_setopt_from_terminal(t->mouse, t->term);
+  GhosttyMouseEncoderSize size = {
+      .size = sizeof(size),
+      .screen_width = width,
+      .screen_height = height,
+      .cell_width = cell_w,
+      .cell_height = cell_h,
+      .padding_top = pad,
+      .padding_bottom = pad,
+      .padding_right = pad,
+      .padding_left = pad,
+  };
+  ghostty_mouse_encoder_setopt(t->mouse, GHOSTTY_MOUSE_ENCODER_OPT_SIZE, &size);
+  bool any = pressed != 0;
+  ghostty_mouse_encoder_setopt(t->mouse, GHOSTTY_MOUSE_ENCODER_OPT_ANY_BUTTON_PRESSED, &any);
+  /* Motion is sent once a cell. */
+  int32_t cx = x < pad ? 0 : (int32_t)((x - pad) / cell_w);
+  int32_t cy = y < pad ? 0 : (int32_t)((y - pad) / cell_h);
+  if (action == GHOSTTY_MOUSE_ACTION_MOTION) {
+    if (cx == t->mouse_x && cy == t->mouse_y) return GHOSTTY_SUCCESS;
+  }
+  ghostty_mouse_event_set_action(t->mouse_ev, (GhosttyMouseAction)action);
+  if (button) ghostty_mouse_event_set_button(t->mouse_ev, (GhosttyMouseButton)button);
+  else ghostty_mouse_event_clear_button(t->mouse_ev);
+  ghostty_mouse_event_set_mods(t->mouse_ev, (GhosttyMods)mods);
+  ghostty_mouse_event_set_position(t->mouse_ev, (GhosttyMousePosition){.x = (float)x, .y = (float)y});
+  GhosttyResult r = ghostty_mouse_encoder_encode(t->mouse, t->mouse_ev, (char *)out, cap, len);
+  if (r == GHOSTTY_SUCCESS && *len > 0 && action == GHOSTTY_MOUSE_ACTION_MOTION) {
+    t->mouse_x = cx;
+    t->mouse_y = cy;
+  }
+  return r;
 }
 
 /* --- selection --- */
