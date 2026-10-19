@@ -134,15 +134,15 @@ func (c *columns) update(a *App) {
 
 // wsRow is a workspace's row in column 1.
 type wsRow struct {
-	name, dir, badge *gtk.Label
-	mark             *gtk.Box
+	name, dir *gtk.Label
+	mark      *gtk.Box
 }
 
 // sessionHead is a session's head in column 2.
 type sessionHead struct {
-	button              *gtk.Button
-	mark                *gtk.Box
-	label, count, badge *gtk.Label
+	button       *gtk.Button
+	mark         *gtk.Box
+	label, badge *gtk.Label
 }
 
 // paneRowWidgets is a pane's row in column 2.
@@ -177,8 +177,7 @@ func (c *columns) fillWorkspaces(a *App) {
 		r := &c.wsRows[i]
 		r.name.SetText(w.Name)
 		r.dir.SetText(shortDir(w.Dir))
-		blocked, l := a.rollup(workspacePanes(w))
-		setBadge(r.badge, blocked)
+		_, l := a.rollup(workspacePanes(w))
 		paint(r.mark, nil, l)
 		if w.ID == m.Shown.Workspace {
 			if row := c.list.GetRowAtIndex(int32(i)); row != nil && !row.IsSelected() {
@@ -205,8 +204,6 @@ func (r *wsRow) make() *gtk.Box {
 	text.Append(&r.name.Widget)
 	text.Append(&r.dir.Widget)
 	row.Append(&text.Widget)
-	r.badge = newBadge()
-	row.Append(&r.badge.Widget)
 	r.mark = gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	r.mark.AddCssClass("mark")
 	r.mark.SetValign(gtk.AlignCenterValue)
@@ -267,8 +264,6 @@ func (c *columns) fillSessions(a *App) {
 		blocked, l := a.rollup(s.Tree.Panes())
 		paint(h.mark, nil, l)
 		h.label.SetMarkup("<span alpha='55%'>[</span>" + escape(strings.ToUpper(s.Name)) + "<span alpha='55%'>]</span>")
-		n := len(s.Tree.Panes())
-		h.count.SetText(i18n.Nf("%d pane", "%d panes", n, n))
 		setBadge(h.badge, blocked)
 		for _, id := range s.Tree.Panes() {
 			c.setPaneRow(a, c.paneRows[id], id, s.ID == shown && s.Focus == id)
@@ -310,9 +305,6 @@ func (c *columns) makeSessions(a *App, w *model.Workspace) {
 		h.label.SetXalign(0)
 		h.label.SetHexpand(true)
 		hb.Append(&h.label.Widget)
-		h.count = gtk.NewLabel("")
-		h.count.AddCssClass("term-session-count")
-		hb.Append(&h.count.Widget)
 		h.badge = newBadge()
 		hb.Append(&h.badge.Widget)
 		h.button.SetChild(&hb.Widget)

@@ -1,61 +1,98 @@
 package termui
 
 import (
-	"bufio"
 	"cmp"
 	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/apps/sysmon"
 	"github.com/lyricat/inua/internal/gtkx"
 )
 
 // The top of column 1 says where this is, as a prompt would: user@host,
-// then the system, the kernel, the shell new panes start and the uptime.
+// then the shell new panes start, how busy the CPU is, the memory in use
+// and the uptime.
 
 type nerdInfo struct {
 	who, sys *gtk.Label
-	// system and kernel are read once; boot is when the machine started.
-	system, kernel string
-	boot           time.Time
+	// boot is when the machine started; cpu and mem are the shares busy
+	// and in use, below 0 until read.
+	boot     time.Time
+	cpu, mem float64
 }
 
-// startNerd reads who and where off the main thread, and shows them.
+// nerdEvery is how often the CPU and the memory are read again.
+const nerdEvery = 2 * time.Second
+
+// startNerd reads who and where, then the CPU and the memory every
+// nerdEvery, off the main thread, and shows them.
 func (a *App) startNerd() {
+	a.nerd.cpu, a.nerd.mem = -1, -1
 	go func() {
 		name := os.Getenv("USER")
 		if u, err := user.Current(); name == "" && err == nil {
 			name = u.Username
 		}
 		host, _ := os.Hostname()
-		system, kernel, boot := osID(), kernelRelease(), bootTime()
+		var boot time.Time
+		if up := sysmon.Uptime(); up > 0 {
+			boot = time.Now().Add(-up)
+		}
+		mem := memUsed()
 		gtkx.Post(func() {
 			n := &a.nerd
 			n.who.SetText(cmp.Or(name, "?") + "@" + cmp.Or(host, "localhost"))
-			n.system, n.kernel, n.boot = system, kernel, boot
+			n.boot, n.mem = boot, mem
 			a.updateNerd()
 		})
+		// The CPU's share busy is between two readings: none shows
+		// until the second.
+		prev, _ := sysmon.ParseCPU(sysmon.ReadFile("proc/stat"))
+		for range time.Tick(nerdEvery) {
+			cur, _ := sysmon.ParseCPU(sysmon.ReadFile("proc/stat"))
+			cpu := -1.0
+			if cur.Total > prev.Total {
+				cpu = sysmon.Usage(prev, cur)
+			}
+			prev = cur
+			mem := memUsed()
+			gtkx.Post(func() {
+				a.nerd.cpu, a.nerd.mem = cpu, mem
+				a.updateNerd()
+			})
+		}
 	}()
 }
 
+// memUsed is the share of the memory in use, 0 to 100; -1 when unknown.
+func memUsed() float64 {
+	m := sysmon.ParseMemory(sysmon.ReadFile("proc/meminfo"))
+	if m.Total == 0 {
+		return -1
+	}
+	return 100 * float64(m.Used()) / float64(m.Total)
+}
+
 // updateNerd writes the system line again: the shell may have changed,
-// the uptime has.
+// the readings and the uptime have.
 func (a *App) updateNerd() {
 	n := &a.nerd
-	if n.system == "" {
+	if n.who.GetText() == "" {
 		return
 	}
-	parts := []string{n.system}
-	if n.kernel != "" {
-		parts = append(parts, n.kernel)
+	parts := []string{filepath.Base(cmp.Or(a.set.Shell.Program, os.Getenv("SHELL"), "sh"))}
+	if n.cpu >= 0 {
+		parts = append(parts, fmt.Sprintf("cpu %.0f%%", n.cpu))
 	}
-	parts = append(parts, filepath.Base(cmp.Or(a.set.Shell.Program, os.Getenv("SHELL"), "sh")))
+	if n.mem >= 0 {
+		parts = append(parts, fmt.Sprintf("mem %.0f%%", n.mem))
+	}
 	if !n.boot.IsZero() {
 		parts = append(parts, "up "+uptime(time.Since(n.boot)))
 	}
@@ -75,46 +112,4 @@ func uptime(d time.Duration) string {
 		return fmt.Sprintf("%dh %dm", m/60, m%60)
 	}
 	return fmt.Sprintf("%dm", m)
-}
-
-// osID is the system's ID in /etc/os-release ("arch", "debian"), else
-// "linux".
-func osID() string {
-	f, err := os.Open("/etc/os-release")
-	if err != nil {
-		return "linux"
-	}
-	defer f.Close()
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		if v, ok := strings.CutPrefix(sc.Text(), "ID="); ok {
-			return cmp.Or(strings.Trim(v, `"'`), "linux")
-		}
-	}
-	return "linux"
-}
-
-// kernelRelease is the kernel's version without its build: "6.8.0".
-func kernelRelease() string {
-	b, err := os.ReadFile("/proc/sys/kernel/osrelease")
-	if err != nil {
-		return ""
-	}
-	v, _, _ := strings.Cut(strings.TrimSpace(string(b)), "-")
-	return v
-}
-
-// bootTime is when the machine started, from /proc/uptime; zero when it
-// cannot say.
-func bootTime() time.Time {
-	b, err := os.ReadFile("/proc/uptime")
-	if err != nil {
-		return time.Time{}
-	}
-	f, _, _ := strings.Cut(string(b), " ")
-	secs, err := strconv.ParseFloat(f, 64)
-	if err != nil {
-		return time.Time{}
-	}
-	return time.Now().Add(-time.Duration(secs * float64(time.Second)))
 }

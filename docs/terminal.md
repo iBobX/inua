@@ -62,16 +62,16 @@ from it, or at `$INUA_VT_LIB`.
 ## The window
 
 - **Workspaces** (column 1): at its top, where this is (`user@host`,
-  then the system, the kernel, the shell new panes start and the
-  uptime), then the search with the new workspace button. Each
-  workspace is a name, its
-  folder, and what its agents add up to: a square filled in warn while
-  one waits for you, in the accent while one works, hollow when quiet,
-  and a badge counting those that wait. The search finds workspaces by
-  name, folder or pane title.
+  then the shell new panes start, how busy the CPU is, the memory in
+  use and the uptime), then the search with the new workspace button. Each
+  workspace is a name, its folder, and what its agents add up to: a
+  square filled in warn while one waits for you, in the accent while one
+  works, hollow when quiet. The search finds workspaces by name, folder
+  or pane title.
 - **Sessions** (column 2): at its top, the shown workspace's name and
   the new session button; then its sessions, each a section of its
-  panes. A pane's row shows its agent's mark and title, its state and
+  panes under a head with the same square and a badge counting the
+  agents that wait. A pane's row shows its agent's mark and title, its state and
   how long it has been in it; an agent waiting for you shows what it
   asks. A shell shows the command running in it. An agent's mark takes
   its own colour (Claude Code's orange, Gemini's blue…) while it runs.
