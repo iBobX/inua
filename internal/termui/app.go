@@ -1,6 +1,7 @@
 package termui
 
 import (
+	"errors"
 	"log"
 	"os"
 	"sync"
@@ -256,6 +257,15 @@ func (a *App) event(m host.Message) {
 		st := m.State
 		gtkx.Post(func() { a.apply(st) })
 	case m.Type == host.MsgEvent:
+		if m.Cols > 0 && m.Rows > 0 {
+			// In the output's order, as the host took it.
+			if p := a.paneFor(m.Pane); p != nil {
+				p.feedSize(m.Cols, m.Rows)
+			}
+			if m.Title == "" && m.Dir == "" && m.Code == nil && m.Clipboard == nil {
+				return
+			}
+		}
 		gtkx.Post(func() { a.paneEvent(m) })
 	}
 }
@@ -406,7 +416,21 @@ func (b paneBackend) Input(p []byte) error {
 	return b.app.client.Input(b.id, p)
 }
 
+// Resize asks the host for a size; the pane's engine takes it when the
+// host says it did (feedSize), or now, from a host that does not say.
 func (b paneBackend) Resize(cols, rows, cellW, cellH int) error {
+	c := b.app.client
+	if c == nil {
+		return errNoHost
+	}
 	b.app.ask("resize", func(c *host.Client) error { return c.Resize(b.id, cols, rows, cellW, cellH) })
+	if !c.TellsSizes() {
+		return errNoSizes
+	}
 	return nil
 }
+
+var (
+	errNoHost  = errors.New("no host")
+	errNoSizes = errors.New("the host does not tell sizes")
+)

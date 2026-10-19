@@ -128,6 +128,65 @@ func TestPane(t *testing.T) {
 	}
 }
 
+// A client hears each size a pane takes in the output's order: on
+// attaching, before the replay; on a resize, between the output before
+// and the output after.
+func TestSizesInOrder(t *testing.T) {
+	_, path := startHost(t)
+	var mu sync.Mutex
+	var log []string
+	add := func(s string) {
+		mu.Lock()
+		log = append(log, s)
+		mu.Unlock()
+	}
+	c, err := Dial(path, func(_ int, b []byte) { add("out " + string(b)) }, func(m Message) {
+		if m.Cols > 0 {
+			add(fmt.Sprintf("size %dx%d", m.Cols, m.Rows))
+		}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+	if !c.TellsSizes() {
+		t.Fatal("the host does not tell sizes")
+	}
+	id, err := c.Create([]string{"sh", "-c", "echo one; read x; echo two; read y"}, t.TempDir(), nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The output starts before the attach: it comes as the replay.
+	time.Sleep(200 * time.Millisecond)
+	if err := c.Attach(id); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Resize(id, 100, 30, 0, 0); err != nil {
+		t.Fatal(err)
+	}
+	c.Input(id, []byte("\n"))
+	at := func(s string) int {
+		mu.Lock()
+		defer mu.Unlock()
+		for i, l := range log {
+			if strings.Contains(l, s) {
+				return i
+			}
+		}
+		return -1
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for at("two") < 0 {
+		if time.Now().After(deadline) {
+			t.Fatalf("no output after the resize: %q", log)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if !(at("size 80x24") < at("one") && at("one") < at("size 100x30") && at("size 100x30") < at("two")) {
+		t.Errorf("out of order: %q", log)
+	}
+}
+
 // The shell the window sets is what new panes start, and their SHELL.
 func TestSetShell(t *testing.T) {
 	t.Setenv("SHELL", "/bin/sh")

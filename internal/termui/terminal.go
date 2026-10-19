@@ -87,7 +87,7 @@ type termPane struct {
 	dragX, dragY float64
 
 	mu        sync.Mutex
-	pending   []byte // read from the PTY, not yet fed to the engine
+	pending   []feedOp // from the host, not yet fed to the engine
 	scheduled bool
 
 	im      *gtk.IMMulticontext
@@ -439,7 +439,25 @@ func mods(state gdk.ModifierType) uint32 {
 // to the main thread, a burst at a time.
 func (p *termPane) feed(b []byte) {
 	p.mu.Lock()
-	p.pending = append(p.pending, b...)
+	if n := len(p.pending); n > 0 && p.pending[n-1].cols == 0 {
+		p.pending[n-1].b = append(p.pending[n-1].b, b...)
+	} else {
+		p.pending = append(p.pending, feedOp{b: append([]byte(nil), b...)})
+	}
+	p.schedule()
+}
+
+// feedSize gives the engine a size the host took, after the output that
+// came before it: the engine stays as the host's, which a size taken at
+// once, ahead of the output on its way, would not.
+func (p *termPane) feedSize(cols, rows int) {
+	p.mu.Lock()
+	p.pending = append(p.pending, feedOp{cols: cols, rows: rows})
+	p.schedule()
+}
+
+// schedule drains on the main thread; p.mu is held, and let go.
+func (p *termPane) schedule() {
 	post := !p.scheduled
 	p.scheduled = true
 	p.mu.Unlock()
@@ -448,14 +466,30 @@ func (p *termPane) feed(b []byte) {
 	}
 }
 
-// drain feeds what was read to the engine and redraws once.
+// feedOp is output, or a size (cols > 0).
+type feedOp struct {
+	b          []byte
+	cols, rows int
+}
+
+// drain feeds what came to the engine, in order, and redraws once.
 func (p *termPane) drain() {
 	p.mu.Lock()
-	b := p.pending
+	ops := p.pending
 	p.pending, p.scheduled = nil, false
 	p.mu.Unlock()
-	p.term.Write(b)
-	p.update(false)
+	all := false
+	for _, op := range ops {
+		if op.cols == 0 {
+			p.term.Write(op.b)
+			continue
+		}
+		if err := p.term.Resize(op.cols, op.rows); err != nil {
+			log.Printf("term: %v", err)
+		}
+		all = true
+	}
+	p.update(all)
 }
 
 // update takes the rows that changed from the engine and redraws.
@@ -502,15 +536,14 @@ func (p *termPane) allocate(w *gtk.Widget, width, height int) {
 		return
 	}
 	p.cols, p.rows = cols, rows
-	if err := p.term.Resize(cols, rows); err != nil {
-		log.Printf("term: %v", err)
-	}
-	if !p.exited {
-		if err := p.be.Resize(cols, rows, p.cw, p.ch); err != nil {
-			log.Printf("term: resize: %v", err)
+	// The engine takes the size when the host has (feedSize); without a
+	// host that tells it, now.
+	if err := p.be.Resize(cols, rows, p.cw, p.ch); err != nil {
+		if err := p.term.Resize(cols, rows); err != nil {
+			log.Printf("term: %v", err)
 		}
+		p.update(true)
 	}
-	p.update(true)
 }
 
 func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {

@@ -211,7 +211,7 @@ func (h *Host) serveConn(conn net.Conn) {
 		writeMessage(conn, Message{Type: MsgReply, Error: fmt.Sprintf("protocol %d, the host speaks %d", hello.Version, Version)})
 		return
 	}
-	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version}); err != nil {
+	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version, Sizes: true}); err != nil {
 		return
 	}
 	h.mu.Lock()
@@ -622,6 +622,10 @@ func (p *pane) folder() string {
 func (p *pane) attach(c *client) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	// Its size first: the client's engine takes it before the replay.
+	if p.cols > 0 && p.rows > 0 {
+		c.message(Message{Type: MsgEvent, Pane: p.id, Cols: p.cols, Rows: p.rows})
+	}
 	if len(p.replay) > 0 {
 		c.send(frameOutput, paneBytes(p.id, append([]byte(nil), p.replay...))...)
 	}
@@ -646,6 +650,10 @@ func (p *pane) resize(cols, rows, cellW, cellH int) error {
 			p.term.SetCellSize(cellW, cellH)
 		}
 	}
+	// The clients' engines take the size here, between the output before
+	// and the output after, as this one did: the program's output on its
+	// way, meant for the old size, reaches them at the old size.
+	p.broadcast(Message{Type: MsgEvent, Pane: p.id, Cols: cols, Rows: rows})
 	if p.exited {
 		return nil
 	}

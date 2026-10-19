@@ -40,13 +40,16 @@ type Message struct {
 
 	Version int    `json:"version,omitempty"` // hello, welcome
 	Error   string `json:"error,omitempty"`   // a reply that failed
+	// Sizes, in a welcome: the host tells its clients each size a pane
+	// takes, in the output's order (an older host does not).
+	Sizes bool `json:"sizes,omitempty"`
 
 	Pane  int      `json:"pane,omitempty"`
 	Argv  []string `json:"argv,omitempty"`   // create
 	Dir   string   `json:"dir,omitempty"`    // create; event "pwd"
 	Env   []string `json:"env,omitempty"`    // create
-	Cols  int      `json:"cols,omitempty"`   // create, resize
-	Rows  int      `json:"rows,omitempty"`   // create, resize
+	Cols  int      `json:"cols,omitempty"`   // create, resize; event: the size taken
+	Rows  int      `json:"rows,omitempty"`   // create, resize; event: the size taken
 	CellW int      `json:"cell_w,omitempty"` // create, resize: a cell in pixels, for size reports
 	CellH int      `json:"cell_h,omitempty"`
 	Title string   `json:"title,omitempty"`
