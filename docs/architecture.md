@@ -76,6 +76,7 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/kdeconnect`, `internal/vinput`, `internal/apps/connect`, `internal/connectui`, `cmd/inua-connect`, `ui/connect.blp` | Mobile Link (docs/mobile-link.md): KDE Connect's protocol 8 written from its behaviour (UDP discovery with unicast to the tailnet, links over TLS with certificates pinned once paired, pairing with the verification key, payloads on connections of their own); the service run as a user unit and served on the session bus (battery, ping and ring, the clipboard both ways, sharing, notifications both ways, MPRIS control, remote input through the compositor's virtual pointer and keyboard, commands); the window and the reply window | Done, tested (two cores paired on loopback: packets, a 3 MB payload, a pinned certificate, a request's clock; the service on a private bus with a fake notification server and a fake phone: pairing from the note, ping, the clipboard and its setting, a file with a hostile name, notifications with their buttons and closing, commands) |
 | `internal/vm`, `internal/vmui`, `cmd/inua-vm`, `ui/vm.blp` | The Windows guest (docs/inua-vm.md): the toolkit-free configuration, the Linux platform checks with their remedies, the resource profile, the lifecycle states and the Docker (Dockur) backend; the manager window as an app of its own, one page per stage, and its command line (`--doctor`, `--status [--json]`, `--start`, `--stop`) | Done, tested (an injected runner and secret store; a fake platform root) |
 | `ui/` | Blueprint layouts, generated `.ui`, `style.css`, colour themes, Phosphor icons; embedded as `ui.FS` | Done |
+| `design/` | `ui.md`: the look and the interaction rules the layouts and `style.css` follow | Record |
 | `internal/upgrade` | `inua upgrade`: the newest release's tag (from where `releases/latest` redirects), its archive checked against `checksums.txt`, the programs, launchers and icons staged next to their targets and then renamed into place | Done, tested |
 | `cmd/inua-shell` | The shell | Done |
 | `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init`, `upgrade` | Done |
@@ -313,6 +314,9 @@ windows to PNG files for checking layouts without a screenshot tool.
   does not know are not kept.
 
 ## 13. Look
+
+The whole of the look and the interaction rules, with the controls and
+how errors are shown, is in [design/ui.md](../design/ui.md); in short:
 
 - Restraint and space: few colours, one accent per surface, used only for
   current, selected and on states; hairline borders; 2–4 px corners; no
