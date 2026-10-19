@@ -407,7 +407,8 @@ func TestSessions(t *testing.T) {
 		t.Fatal(err)
 	}
 	st, _ = c.State()
-	if w := st.Model.Workspaces; len(w) != 1 || len(w[0].Sessions) != 0 || len(st.Panes) != 0 {
+	// Its last session gone, the workspace goes.
+	if w := st.Model.Workspaces; len(w) != 0 || len(st.Panes) != 0 {
 		t.Errorf("after closing: %+v, %d panes", w, len(st.Panes))
 	}
 }
