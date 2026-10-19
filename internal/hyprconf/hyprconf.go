@@ -64,6 +64,13 @@ windowrule {
     match:class = ^(io\.github\.lyricat\.Inua\.Term)$
     tile = yes
 }
+
+# And Mail, inua-mail.
+windowrule {
+    name = inua-mail
+    match:class = ^(io\.github\.lyricat\.Inua\.Mail)$
+    tile = yes
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -184,6 +191,13 @@ hl.window_rule({
 hl.window_rule({
     name = "inua-term",
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Term)$" },
+    tile = true,
+})
+
+-- And Mail, inua-mail.
+hl.window_rule({
+    name = "inua-mail",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Mail)$" },
     tile = true,
 })
 `
