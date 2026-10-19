@@ -722,3 +722,31 @@ func TestReport(t *testing.T) {
 		time.Sleep(50 * time.Millisecond)
 	}
 }
+
+// A pane dropped on another swaps with it; a restored agent comes back
+// as its resume command.
+func TestSwapDroppedAndResume(t *testing.T) {
+	t.Setenv("SHELL", "/bin/sh")
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	h.Agents, _ = agent.Load("")
+	c := dial(t, path, newWatcher())
+	c.Open(t.TempDir(), "")
+	st, _ := c.State()
+	s := st.Model.Workspaces[0].Sessions[0]
+	first := s.Focus
+	second, _ := c.Split(s.ID, "right")
+	third, _ := c.Split(s.ID, "down")
+	if err := c.Layout(s.ID, OpSwap, Message{From: first, Pane: third}); err != nil {
+		t.Fatal(err)
+	}
+	st, _ = c.State()
+	if got := st.Model.Workspaces[0].Sessions[0].Tree.Panes(); !slices.Equal(got, []int{third, second, first}) {
+		t.Errorf("after the drop %v", got)
+	}
+	for in, want := range map[string]string{"claude": "claude --continue", "codex --full-auto": "codex resume --last", "vim notes": "vim notes", "": ""} {
+		if got := h.resume(in); got != want {
+			t.Errorf("resume(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

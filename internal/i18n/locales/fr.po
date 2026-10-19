@@ -2742,7 +2742,8 @@ msgstr "Bloc inconnu %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:291
+#: internal/termui/keys.go:226
+#: internal/termui/keys.go:324
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3617,11 +3618,11 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:82
-#: internal/termui/app.go:96
-#: internal/termui/app.go:262
+#: internal/termui/app.go:84
+#: internal/termui/app.go:98
 #: internal/termui/app.go:264
-#: internal/termui/tiles.go:324
+#: internal/termui/app.go:266
+#: internal/termui/tiles.go:352
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
@@ -3837,7 +3838,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:293
+#: internal/termui/keys.go:326
 msgid "Rename"
 msgstr "Renommer"
 
@@ -3945,6 +3946,7 @@ msgstr[1] "… et %d de plus"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
+#: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -8915,7 +8917,7 @@ msgid "Copy mode"
 msgstr "Mode copie"
 
 #: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:282
+#: internal/termui/keys.go:315
 msgid "Rename the session"
 msgstr "Renommer la session"
 
@@ -8985,7 +8987,19 @@ msgstr[1] "%d panneaux"
 msgid "COPY"
 msgstr "COPIE"
 
-#: internal/termui/keys.go:226
+#: internal/termui/keys.go:215
+msgid "Close %s?"
+msgstr "Fermer %s ?"
+
+#: internal/termui/keys.go:216
+msgid "It is working on “%s”; closing the pane ends it."
+msgstr "Il travaille sur « %s » ; fermer le panneau l’arrête."
+
+#: internal/termui/keys.go:218
+msgid "It is waiting for you: %s. Closing the pane ends it."
+msgstr "Il vous attend : %s. Fermer le panneau l’arrête."
+
+#: internal/termui/keys.go:259
 msgid "Choose the workspace's folder"
 msgstr "Choisir le dossier de l’espace de travail"
 
@@ -13631,7 +13645,7 @@ msgstr "vpn;tailnet;réseau;nœud de sortie;taildrop;"
 msgid "Workspaces of terminals, and the agents working in them"
 msgstr "Des espaces de travail de terminaux, et les agents qui y travaillent"
 
-#: config/apps/io.github.lyricat.Inua.Term.desktop:15
+#: config/apps/io.github.lyricat.Inua.Term.desktop:21
 msgid "shell;prompt;command;commandline;cli;agent;claude;codex;"
 msgstr "shell;invite;commande;ligne de commande;cli;agent;claude;codex;"
 

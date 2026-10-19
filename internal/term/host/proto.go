@@ -67,6 +67,7 @@ type Message struct {
 	Path      string  `json:"path,omitempty"`      // layout "ratio": the split
 	Ratio     float64 `json:"ratio,omitempty"`     // layout "ratio"
 	To        int     `json:"to,omitempty"`        // move: the new place
+	From      int     `json:"from,omitempty"`      // layout "swap": the pane dragged
 	Active    bool    `json:"active,omitempty"`    // active
 	// report: the agent's type, its state, what it asks or did.
 	Agent      string    `json:"agent,omitempty"`
@@ -99,7 +100,7 @@ type State struct {
 // Layout ops (Message.Op of a "layout").
 const (
 	OpFocus    = "focus"    // Pane, or the neighbour in Direction
-	OpSwap     = "swap"     // with the neighbour in Direction
+	OpSwap     = "swap"     // the focused pane (or From) with the neighbour in Direction, or with Pane
 	OpResize   = "resize"   // the focused pane's edge in Direction, by Step
 	OpEqualize = "equalize" //
 	OpZoom     = "zoom"     // the focused pane to the whole session, and back

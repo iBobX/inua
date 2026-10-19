@@ -60,6 +60,8 @@ type App struct {
 
 	prefs *prefs // the settings window, while open
 
+	onCloseOK, onCloseCancel func(gtk.Button)
+
 	onSheetEsc    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onPaletteFind func(uintptr, uintptr)
 	onPaletteRun  func(gtk.SearchEntry)

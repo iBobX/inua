@@ -243,7 +243,7 @@ func (h *Host) restore(s Saved) {
 				ids[old] = id
 				if p := h.pane(id); p != nil {
 					p.mu.Lock()
-					p.title, p.pending, p.restored = sp.Title, sp.Command, true
+					p.title, p.pending, p.restored = sp.Title, h.resume(sp.Command), true
 					p.mu.Unlock()
 				}
 			}
@@ -264,6 +264,19 @@ func (h *Host) restore(s Saved) {
 	h.m.Next = max(h.m.Next, next)
 	h.mu.Unlock()
 	h.publish()
+}
+
+// resume is the command to put back for one that ran: an agent that can
+// continue where it was comes back as its resume command (claude
+// --continue), the rest as they were.
+func (h *Host) resume(cmd string) string {
+	if h.Agents == nil || cmd == "" {
+		return cmd
+	}
+	if m := h.Agents.Detect(strings.Fields(cmd), ""); m != nil && m.Resume != "" {
+		return m.Resume
+	}
+	return cmd
 }
 
 // renumber is a tree with its panes' new IDs.

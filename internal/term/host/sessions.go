@@ -334,8 +334,14 @@ func (h *Host) layout(m Message) error {
 			}
 		}
 	case OpSwap:
-		if n := layout.Neighbor(s.Tree, s.Focus, d); n != 0 {
-			s.Tree = layout.Swap(s.Tree, s.Focus, n)
+		// The focused pane, or the one dragged (From), with the neighbour
+		// in Direction, or the pane it was dropped on (Pane).
+		from, to := cmp.Or(m.From, s.Focus), m.Pane
+		if to == 0 {
+			to = layout.Neighbor(s.Tree, from, d)
+		}
+		if to != 0 && to != from && s.Tree.Has(from) && s.Tree.Has(to) {
+			s.Tree = layout.Swap(s.Tree, from, to)
 		}
 	case OpResize:
 		s.Tree = layout.Resize(s.Tree, s.Focus, d, cmp.Or(m.Step, 0.05))

@@ -2726,7 +2726,8 @@ msgstr "알 수 없는 블록 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:291
+#: internal/termui/keys.go:226
+#: internal/termui/keys.go:324
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3601,11 +3602,11 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:82
-#: internal/termui/app.go:96
-#: internal/termui/app.go:262
+#: internal/termui/app.go:84
+#: internal/termui/app.go:98
 #: internal/termui/app.go:264
-#: internal/termui/tiles.go:324
+#: internal/termui/app.go:266
+#: internal/termui/tiles.go:352
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
@@ -3819,7 +3820,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:293
+#: internal/termui/keys.go:326
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -3925,6 +3926,7 @@ msgstr[0] "… 그 외 %d개"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
+#: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -8874,7 +8876,7 @@ msgid "Copy mode"
 msgstr "복사 모드"
 
 #: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:282
+#: internal/termui/keys.go:315
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
 
@@ -8943,7 +8945,19 @@ msgstr[0] "창 %d개"
 msgid "COPY"
 msgstr "복사"
 
-#: internal/termui/keys.go:226
+#: internal/termui/keys.go:215
+msgid "Close %s?"
+msgstr "%s을(를) 닫을까요?"
+
+#: internal/termui/keys.go:216
+msgid "It is working on “%s”; closing the pane ends it."
+msgstr "“%s” 작업 중입니다. 창을 닫으면 끝납니다."
+
+#: internal/termui/keys.go:218
+msgid "It is waiting for you: %s. Closing the pane ends it."
+msgstr "응답을 기다리고 있습니다: %s. 창을 닫으면 끝납니다."
+
+#: internal/termui/keys.go:259
 msgid "Choose the workspace's folder"
 msgstr "작업 공간의 폴더 선택"
 
@@ -13575,7 +13589,7 @@ msgstr "vpn;tailnet;네트워크;출구 노드;taildrop;"
 msgid "Workspaces of terminals, and the agents working in them"
 msgstr "터미널 작업 공간과 그 안에서 일하는 에이전트"
 
-#: config/apps/io.github.lyricat.Inua.Term.desktop:15
+#: config/apps/io.github.lyricat.Inua.Term.desktop:21
 msgid "shell;prompt;command;commandline;cli;agent;claude;codex;"
 msgstr "셸;프롬프트;명령;명령줄;cli;에이전트;claude;codex;"
 

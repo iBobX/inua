@@ -33,6 +33,8 @@ type tile struct {
 	dir   *gtk.Label
 	state *gtk.Label
 	pane  *termPane
+
+	onHeadDragEnd func(gtk.GestureDrag, float64, float64)
 }
 
 // tiling is column 3's layout: the tree laid out (a copy while a gap is
@@ -43,6 +45,8 @@ type tiling struct {
 	zoom     int
 	dragging *layout.Divider
 	dragFrom float64
+	// rects is where each tile was put last.
+	rects map[int]layout.Rect
 
 	onMeasure                            gtk.CustomMeasureFunc
 	onAllocate                           gtk.CustomAllocateFunc
@@ -151,6 +155,10 @@ func (a *App) allocateTiles(w, h int) {
 	t := &a.tiling
 	r := layout.Rect{X: gap, Y: gap, W: max(float64(w)-2*gap, 1), H: max(float64(h)-2*gap, 1)}
 	rects := layout.Rects(t.tree, r, gap)
+	if t.zoom != 0 {
+		rects = map[int]layout.Rect{t.zoom: r}
+	}
+	t.rects = rects
 	for id, tl := range a.tiles {
 		rr, ok := rects[id]
 		if t.zoom != 0 {
@@ -246,6 +254,26 @@ func (a *App) addTile(id int) error {
 	head.Append(&t.state.Widget)
 	t.box.Append(&head.Widget)
 	t.box.Append(&p.root.Widget)
+	// The head is the handle: dropped on another pane, the two swap.
+	drag := gtk.NewGestureDrag()
+	t.onHeadDragEnd = func(g gtk.GestureDrag, dx, dy float64) {
+		var x, y float64
+		g.GetStartPoint(&x, &y)
+		r, ok := a.tiling.rects[id]
+		if !ok {
+			return
+		}
+		px, py := r.X+x+dx, r.Y+y+dy
+		for other, o := range a.tiling.rects {
+			if other != id && px >= o.X && px < o.X+o.W && py >= o.Y && py < o.Y+o.H {
+				a.layoutOp(host.OpSwap, host.Message{From: id, Pane: other})
+				return
+			}
+		}
+	}
+	drag.ConnectDragEnd(&t.onHeadDragEnd)
+	head.AddController(&drag.EventController)
+	head.SetCursorFromName("grab")
 	t.box.SetParent(&a.tilesW.Widget)
 	a.tiles[id] = t
 	a.mu.Lock()

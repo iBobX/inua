@@ -8,6 +8,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/layout"
 )
@@ -197,14 +198,46 @@ func (a *App) split(sp layout.Split) {
 	})
 }
 
-// closeFocused ends the focused pane's program and closes it.
+// closeFocused ends the focused pane's program and closes it; an agent
+// working or waiting for you is asked about first.
 func (a *App) closeFocused() {
 	s := a.shown()
 	if s == nil {
 		return
 	}
 	pane := s.Focus
-	a.ask("close", func(c *host.Client) error { return c.ClosePane(pane) })
+	close := func() { a.ask("close", func(c *host.Client) error { return c.ClosePane(pane) }) }
+	info := a.info[pane]
+	if st := agent.State(info.State); info.Agent == "" || (st != agent.Working && st != agent.Blocked) || a.sheet != nil {
+		close()
+		return
+	}
+	sheet, done := a.sheetFrame(i18n.Tf("Close %s?", info.AgentName), 420)
+	why := gtk.NewLabel(i18n.Tf("It is working on “%s”; closing the pane ends it.", paneTitle(info)))
+	if agent.State(info.State) == agent.Blocked {
+		why.SetText(i18n.Tf("It is waiting for you: %s. Closing the pane ends it.", info.Ask))
+	}
+	why.AddCssClass("term-sheet-why")
+	why.SetXalign(0)
+	why.SetWrap(true)
+	sheet.Append(&why.Widget)
+	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	buttons.SetHalign(gtk.AlignEndValue)
+	cancel := gtk.NewButtonWithLabel(i18n.T("Cancel"))
+	cancel.AddCssClass("outlined")
+	ok := gtk.NewButtonWithLabel(i18n.T("Close"))
+	ok.AddCssClass("destructive-action")
+	buttons.Append(&cancel.Widget)
+	buttons.Append(&ok.Widget)
+	sheet.Append(&buttons.Widget)
+	a.onCloseCancel = func(gtk.Button) { done() }
+	a.onCloseOK = func(gtk.Button) {
+		done()
+		close()
+	}
+	cancel.ConnectClicked(&a.onCloseCancel)
+	ok.ConnectClicked(&a.onCloseOK)
+	cancel.GrabFocus()
 }
 
 // newSession adds a session to the shown workspace.

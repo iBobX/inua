@@ -2956,3 +2956,12 @@ window.term .term-copy-badge {
   font-size: 10.5px;
   letter-spacing: 0.08em;
 }
+window.term .term-sheet button.destructive-action {
+  border: 1px solid @danger;
+  border-radius: 2px;
+  background: @danger;
+  background-image: none;
+  color: @app;
+  box-shadow: none;
+}
+window.term .term-sheet button.destructive-action:hover { background: mix(@danger, @t0, 0.14); border-color: mix(@danger, @t0, 0.14); }

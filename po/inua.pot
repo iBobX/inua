@@ -2740,7 +2740,8 @@ msgstr ""
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:291
+#: internal/termui/keys.go:226
+#: internal/termui/keys.go:324
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3615,11 +3616,11 @@ msgid "Opens folders"
 msgstr ""
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:82
-#: internal/termui/app.go:96
-#: internal/termui/app.go:262
+#: internal/termui/app.go:84
+#: internal/termui/app.go:98
 #: internal/termui/app.go:264
-#: internal/termui/tiles.go:324
+#: internal/termui/app.go:266
+#: internal/termui/tiles.go:352
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
@@ -3835,7 +3836,7 @@ msgstr[1] ""
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:293
+#: internal/termui/keys.go:326
 msgid "Rename"
 msgstr ""
 
@@ -3943,6 +3944,7 @@ msgstr[1] ""
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
+#: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -8913,7 +8915,7 @@ msgid "Copy mode"
 msgstr ""
 
 #: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:282
+#: internal/termui/keys.go:315
 msgid "Rename the session"
 msgstr ""
 
@@ -8983,7 +8985,19 @@ msgstr[1] ""
 msgid "COPY"
 msgstr ""
 
-#: internal/termui/keys.go:226
+#: internal/termui/keys.go:215
+msgid "Close %s?"
+msgstr ""
+
+#: internal/termui/keys.go:216
+msgid "It is working on “%s”; closing the pane ends it."
+msgstr ""
+
+#: internal/termui/keys.go:218
+msgid "It is waiting for you: %s. Closing the pane ends it."
+msgstr ""
+
+#: internal/termui/keys.go:259
 msgid "Choose the workspace's folder"
 msgstr ""
 
@@ -13629,7 +13643,7 @@ msgstr ""
 msgid "Workspaces of terminals, and the agents working in them"
 msgstr ""
 
-#: config/apps/io.github.lyricat.Inua.Term.desktop:15
+#: config/apps/io.github.lyricat.Inua.Term.desktop:21
 msgid "shell;prompt;command;commandline;cli;agent;claude;codex;"
 msgstr ""
 
