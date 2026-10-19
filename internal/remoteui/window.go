@@ -3,7 +3,6 @@ package remoteui
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -29,8 +28,10 @@ type window struct {
 	win *gtk.ApplicationWindow
 
 	sideSharing, sideFind, sideAdd                          gtk.Button
-	sideSharingSub, status                                  gtk.Label
+	sideSharingSub                                          gtk.Label
 	sideMachines                                            gtk.Box
+	sharingError, pendingError, clientsError                gtk.Label // each error where it happened
+	machineError, streamError                               gtk.Label
 	pages                                                   gtk.Stack
 	sharingDesc, sharingNeedText, sharingNeedFix            gtk.Label
 	sharingSwitch                                           gtk.Switch
@@ -53,10 +54,12 @@ type window struct {
 	sharing  *remotedesk.Sharing
 	finder   *remotedesk.Finder
 	id       *gamestream.Identity
+	idErr    string // why there is no identity: every machine's page says it
 
 	found    []remotedesk.Candidate
 	selected string // "sharing", "add", or a machine's address
 	info     map[string]machineInfo
+	errs     map[string]string  // what went wrong with each machine, by address
 	pairing  context.CancelFunc // while pairing with the machine selected
 	streams  map[string]*stream
 	closed   bool
@@ -93,7 +96,7 @@ type machineInfo struct {
 func openWindow(c *appui.Ctx) *window {
 	w := &window{
 		c: c, win: &gtk.ApplicationWindow{}, settings: remotedesk.LoadSettings(), sharing: remotedesk.NewSharing(),
-		info: map[string]machineInfo{}, streams: map[string]*stream{}, selected: "sharing",
+		info: map[string]machineInfo{}, errs: map[string]string{}, streams: map[string]*stream{}, selected: "sharing",
 		machineRows: map[uintptr]string{}, pendingRows: map[uintptr]pendingRow{}, clientRows: map[uintptr]remotedesk.Client{},
 		sideButtons: map[string]*gtk.Button{},
 	}
@@ -101,7 +104,9 @@ func openWindow(c *appui.Ctx) *window {
 	b.Get("remote", w.win)
 	for name, ptr := range map[string]gobject.Ptr{
 		"side_sharing": &w.sideSharing, "side_find": &w.sideFind, "side_add": &w.sideAdd,
-		"side_sharing_sub": &w.sideSharingSub, "status": &w.status, "side_machines": &w.sideMachines, "pages": &w.pages,
+		"side_sharing_sub": &w.sideSharingSub, "side_machines": &w.sideMachines, "pages": &w.pages,
+		"sharing_error": &w.sharingError, "pending_error": &w.pendingError, "clients_error": &w.clientsError,
+		"machine_error": &w.machineError, "stream_error": &w.streamError,
 		"sharing_desc": &w.sharingDesc, "sharing_need_text": &w.sharingNeedText, "sharing_need_fix": &w.sharingNeedFix,
 		"sharing_switch": &w.sharingSwitch, "sharing_need": &w.sharingNeed, "sharing_pending_section": &w.sharingPendingSection,
 		"sharing_pending": &w.sharingPending, "sharing_clients": &w.sharingClients, "sharing_virtual": &w.sharingVirtual,
@@ -119,7 +124,7 @@ func openWindow(c *appui.Ctx) *window {
 	id, err := gamestream.LoadIdentity(remotedesk.IdentityDir())
 	if err != nil {
 		log.Printf("remote: identity: %v", err)
-		w.fail(i18n.Tf("This computer has no identity to pair with: %v", err))
+		w.idErr = i18n.Tf("This computer has no identity to pair with: %v", err)
 	}
 	w.id = id
 	if id != nil {
@@ -169,10 +174,24 @@ func openWindow(c *appui.Ctx) *window {
 	return w
 }
 
-// fail says what went wrong at the foot of the index; "" clears it.
-func (w *window) fail(msg string) {
-	w.status.SetText(msg)
-	setClass(&w.status.Widget, "error", msg != "")
+// say shows what went wrong in the error line l, beside what it is about;
+// "" hides it.
+func say(l *gtk.Label, msg string) {
+	l.SetText(msg)
+	l.SetVisible(msg != "")
+}
+
+// machineFail keeps what went wrong with the machine at addr, shown on
+// its page; "" clears it.
+func (w *window) machineFail(addr, msg string) {
+	if msg == "" {
+		delete(w.errs, addr)
+	} else {
+		w.errs[addr] = msg
+	}
+	if w.selected == addr {
+		w.showMachine()
+	}
 }
 
 func setClass(wd *gtk.Widget, class string, on bool) {
@@ -318,7 +337,7 @@ func (w *window) choose(page string) {
 	switch page {
 	case "sharing":
 		w.pages.SetVisibleChildName("sharing")
-		w.showSharing(remotedesk.Status{}, nil, nil, false)
+		w.showSharing(remotedesk.Status{}, nil, nil, nil, false)
 		go w.refreshSharing(context.Background())
 	case "add":
 		w.pages.SetVisibleChildName("add")
@@ -334,7 +353,6 @@ func (w *window) choose(page string) {
 }
 
 func (w *window) clicked(b gtk.Button) {
-	w.fail("")
 	switch b.GetName() {
 	case "side_sharing":
 		w.choose("sharing")
@@ -372,7 +390,7 @@ func (w *window) switched(s gtk.Switch, on bool) bool {
 	case "stream_host_audio":
 		if !w.loading {
 			w.settings.Stream.HostAudio = on
-			w.save()
+			w.saveStream()
 		}
 		return false
 	}
@@ -380,6 +398,7 @@ func (w *window) switched(s gtk.Switch, on bool) bool {
 	if w.loading {
 		return false
 	}
+	say(&w.sharingError, "")
 	w.sharingSwitch.SetSensitive(false)
 	w.background(func() error {
 		ctx, cancel := context.WithTimeout(context.Background(), remotedesk.StartTimeout)
@@ -388,7 +407,7 @@ func (w *window) switched(s gtk.Switch, on bool) bool {
 	}, func(err error) {
 		w.sharingSwitch.SetSensitive(true)
 		if err != nil {
-			w.fail(i18n.Tf("Sharing did not start: %v", err))
+			say(&w.sharingError, i18n.Tf("Sharing did not start: %v", err))
 			w.loading = true
 			w.sharingSwitch.SetActive(false)
 			w.sharingSwitch.SetState(false)
@@ -411,8 +430,9 @@ func (w *window) virtualChanged() {
 	if i := int(w.sharingVirtual.GetSelected()); i > 0 && i <= len(remotedesk.VirtualModes) {
 		mode = remotedesk.VirtualModes[i-1]
 	}
+	say(&w.sharingError, "")
 	if err := w.sharing.SetVirtual(mode); err != nil {
-		w.fail(err.Error())
+		say(&w.sharingError, err.Error())
 		return
 	}
 	w.sharingVirtual.SetSensitive(false)
@@ -423,15 +443,18 @@ func (w *window) virtualChanged() {
 	}, func(err error) {
 		w.sharingVirtual.SetSensitive(true)
 		if err != nil {
-			w.fail(i18n.Tf("The virtual screen did not change: %v", err))
+			say(&w.sharingError, i18n.Tf("The virtual screen did not change: %v", err))
 		}
 		go w.refreshSharing(context.Background())
 	})
 }
 
-func (w *window) save() {
+// saveStream keeps the stream's settings, saying under them when it cannot.
+func (w *window) saveStream() {
 	if err := w.settings.Save(); err != nil {
-		w.fail(err.Error())
+		say(&w.streamError, i18n.Tf("The settings were not saved: %v", err))
+	} else {
+		say(&w.streamError, "")
 	}
 }
 
@@ -443,18 +466,22 @@ func (w *window) refreshSharing(ctx context.Context) {
 	st := w.sharing.Status(ctx)
 	var pending []remotedesk.Pairing
 	var clients []remotedesk.Client
+	var twice []string
 	if st.Running {
 		pending, _ = w.sharing.Pending(ctx)
 		clients, _ = w.sharing.Clients(ctx)
+		twice = w.sharing.Twice()
 	}
 	gtkx.Post(func() {
 		if !w.closed {
-			w.showSharing(st, pending, clients, true)
+			w.showSharing(st, pending, clients, twice, true)
 		}
 	})
 }
 
-func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing, clients []remotedesk.Client, known bool) {
+// showSharing shows the sharing page; twice are the devices paired twice,
+// which Sunshine refuses.
+func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing, clients []remotedesk.Client, twice []string, known bool) {
 	on := w.sharing.On()
 	name, _ := os.Hostname()
 	switch {
@@ -534,7 +561,7 @@ func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing,
 			gtkx.Append(&w.sharingPending, &row.Widget)
 		}
 	}
-	w.sharingPendingSection.SetVisible(len(pending) > 0)
+	w.sharingPendingSection.SetVisible(len(pending) > 0 || w.pendingError.GetVisible())
 
 	gtkx.Clear(&w.sharingClients)
 	w.clientRows = map[uintptr]remotedesk.Client{}
@@ -551,11 +578,22 @@ func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing,
 	for _, c := range clients {
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		row.AddCssClass("row")
+		text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+		text.SetHexpand(true)
+		text.SetValign(gtk.AlignCenterValue)
 		l := gtk.NewLabel(c.Name)
 		l.AddCssClass("label")
 		l.SetXalign(0)
-		l.SetHexpand(true)
-		gtkx.Append(row, &l.Widget)
+		gtkx.Append(text, &l.Widget)
+		if slices.Contains(twice, c.Name) {
+			s := gtk.NewLabel(i18n.T("Paired twice, so it cannot connect: unpair each, then pair it again."))
+			s.AddCssClass("sub")
+			s.AddCssClass("remote-error")
+			s.SetXalign(0)
+			s.SetWrap(true)
+			gtkx.Append(text, &s.Widget)
+		}
+		gtkx.Append(row, &text.Widget)
 		btn := gtk.NewButtonWithLabel(i18n.T("Unpair"))
 		btn.AddCssClass("outlined")
 		btn.SetName("client_unpair")
@@ -575,34 +613,48 @@ func cmpOr(a, b string) string {
 }
 
 func (w *window) pairDevice(r pendingRow) {
+	name := cmpOr(r.p.Name, r.p.Address)
 	pin := strings.TrimSpace(r.entry.GetText())
 	if len(pin) != 4 || strings.Trim(pin, "0123456789") != "" {
-		w.fail(i18n.T("A PIN is four digits."))
+		w.pairingFail(i18n.T("A PIN is four digits."))
 		return
 	}
+	w.pairingFail("")
 	w.background(func() error {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-		return w.sharing.Pair(ctx, r.p, pin, cmpOr(r.p.Name, r.p.Address))
+		return w.sharing.Pair(ctx, r.p, pin, name)
 	}, func(err error) {
+		var before *remotedesk.PairedBeforeError
 		switch {
 		case errors.Is(err, remotedesk.ErrPIN):
-			w.fail(i18n.Tf("That is not the PIN %s shows.", cmpOr(r.p.Name, r.p.Address)))
+			w.pairingFail(i18n.Tf("That is not the PIN %s shows.", name))
+		case errors.As(err, &before):
+			w.pairingFail(i18n.Tf("%s was paired here before, as %s, and a device paired twice is refused. Its old pairing is removed: pair again from %s.",
+				name, strings.Join(before.Before, ", "), name))
 		case err != nil:
-			w.fail(err.Error())
+			w.pairingFail(i18n.Tf("%s was not paired: %v", name, err))
 		}
 		go w.refreshSharing(context.Background())
 	})
 }
 
+// pairingFail says why a device was not paired, in the section of the
+// devices waiting, which stays while it says so.
+func (w *window) pairingFail(msg string) {
+	say(&w.pendingError, msg)
+	w.sharingPendingSection.SetVisible(msg != "" || len(w.pendingRows) > 0)
+}
+
 func (w *window) unpairDevice(c remotedesk.Client) {
+	say(&w.clientsError, "")
 	w.background(func() error {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		return w.sharing.Unpair(ctx, c.UUID)
 	}, func(err error) {
 		if err != nil {
-			w.fail(err.Error())
+			say(&w.clientsError, i18n.Tf("%s was not unpaired: %v", c.Name, err))
 		}
 		go w.refreshSharing(context.Background())
 	})
@@ -697,6 +749,7 @@ func (w *window) showMachine() {
 	}
 	w.machineQuit.SetVisible(paired && reachable && mi.info.Busy())
 	w.machineForget.SetVisible(saved)
+	say(&w.machineError, cmpOr(w.idErr, w.errs[m.Addr]))
 }
 
 // pair pairs with the machine selected: it shows a PIN to type there,
@@ -710,6 +763,10 @@ func (w *window) pair() {
 		return
 	}
 	m, _ := w.machine()
+	if w.id == nil {
+		return
+	}
+	delete(w.errs, m.Addr)
 	h := w.host(m)
 	h.Cert = nil
 	pin := gamestream.NewPIN()
@@ -729,6 +786,7 @@ func (w *window) pair() {
 		}
 		w.pairing = nil
 		w.machinePinBox.SetVisible(false)
+		label := remotedesk.Label(m)
 		switch {
 		case err == nil:
 			info, _ := w.info[m.Addr]
@@ -736,13 +794,17 @@ func (w *window) pair() {
 			m.Name = cmpOr(info.info.Hostname, m.Name)
 			m.ID = cmpOr(info.info.UniqueID, m.ID)
 			w.settings.Keep(m)
-			w.save()
+			if err := w.settings.Save(); err != nil {
+				w.machineFail(m.Addr, i18n.Tf("Paired, but not saved, so not kept after this window: %v", err))
+			}
 			w.fillSide()
 		case errors.Is(err, gamestream.ErrWrongPIN):
-			w.fail(i18n.T("The PIN typed there was not this one. Pair again."))
+			w.machineFail(m.Addr, i18n.T("The PIN typed there was not this one. Pair again."))
+		case errors.Is(err, gamestream.ErrRefused):
+			w.machineFail(m.Addr, i18n.Tf("%s took the PIN, then refused this computer: it had this computer paired already, perhaps under another name, and refuses a computer paired twice. If it shares with inua, it has removed the old pairing: pair again. Otherwise unpair this computer there first.", label))
 		case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
 		default:
-			w.fail(i18n.Tf("Pairing failed: %v", err))
+			w.machineFail(m.Addr, i18n.Tf("Pairing failed: %v", err))
 		}
 		go w.ask(context.Background(), m.Addr)
 	})
@@ -750,13 +812,14 @@ func (w *window) pair() {
 
 func (w *window) quit() {
 	m, _ := w.machine()
+	w.machineFail(m.Addr, "")
 	w.background(func() error {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		return w.host(m).Quit(ctx)
 	}, func(err error) {
 		if err != nil {
-			w.fail(err.Error())
+			w.machineFail(m.Addr, i18n.Tf("Its session did not end: %v", err))
 		}
 		go w.ask(context.Background(), m.Addr)
 	})
@@ -768,7 +831,11 @@ func (w *window) forget() {
 		s.close()
 	}
 	w.settings.Forget(m.Addr)
-	w.save()
+	if err := w.settings.Save(); err != nil {
+		w.machineFail(m.Addr, i18n.Tf("Not forgotten: the list of machines was not saved: %v", err))
+		return
+	}
+	delete(w.errs, m.Addr)
 	go func() { // the machine may forget this computer too
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
@@ -781,6 +848,9 @@ func (w *window) forget() {
 // add adds a machine by its address, once it answers there.
 func (w *window) add() {
 	addr := strings.TrimSpace(w.addAddr.GetText())
+	if w.id == nil {
+		w.addError.SetText(w.idErr)
+	}
 	if addr == "" || w.id == nil {
 		return
 	}
@@ -802,7 +872,10 @@ func (w *window) add() {
 			return
 		}
 		w.settings.Keep(remotedesk.Machine{Name: info.Hostname, Addr: addr, ID: info.UniqueID})
-		w.save()
+		if err := w.settings.Save(); err != nil {
+			w.addError.SetText(i18n.Tf("Added, but not saved, so not kept after this window: %v", err))
+			return
+		}
 		w.addAddr.SetText("")
 		w.fillSide()
 		w.choose(addr)
@@ -856,7 +929,7 @@ func (w *window) streamChanged() {
 	}
 	st.Bitrate = int(w.streamBitrate.GetValue()) * 1000
 	w.codecNote()
-	w.save()
+	w.saveStream()
 }
 
 // codecNote says whether this computer decodes the codec with its GPU.
@@ -880,6 +953,7 @@ func (w *window) connect() {
 		s.win.Present()
 		return
 	}
+	delete(w.errs, m.Addr)
 	s := openStream(w, m)
 	if s == nil {
 		return
@@ -895,7 +969,7 @@ func (w *window) ended(s *stream, err error) {
 		delete(w.streams, s.m.Addr)
 	}
 	if err != nil {
-		w.fail(fmt.Sprint(err))
+		w.errs[s.m.Addr] = i18n.Tf("The connection ended: %v", err)
 	}
 	if !w.closed {
 		w.fillSide()

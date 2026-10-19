@@ -123,13 +123,6 @@ ApplicationWindow remote {
           }
         }
       }
-
-      Label status {
-        styles ["status"]
-        xalign: 0;
-        wrap: true;
-        max-width-chars: 28;
-      }
     }
 
     // ── the pages ──────────────────────────────────────────────────────
@@ -264,6 +257,15 @@ ApplicationWindow remote {
                     selectable: true;
                   }
                 }
+
+                // Why sharing or the virtual screen did not change.
+                Label sharing_error {
+                  styles ["row", "sub", "remote-error"]
+                  xalign: 0;
+                  wrap: true;
+                  selectable: true;
+                  visible: false;
+                }
               }
             }
 
@@ -294,6 +296,15 @@ ApplicationWindow remote {
                 styles ["section-body"]
                 orientation: vertical;
               }
+
+              // Why a pairing failed: it stays once the device stops waiting.
+              Label pending_error {
+                styles ["row", "sub", "remote-error"]
+                xalign: 0;
+                wrap: true;
+                selectable: true;
+                visible: false;
+              }
             }
 
             Box {
@@ -320,6 +331,14 @@ ApplicationWindow remote {
               Box sharing_clients {
                 styles ["section-body"]
                 orientation: vertical;
+              }
+
+              Label clients_error {
+                styles ["row", "sub", "remote-error"]
+                xalign: 0;
+                wrap: true;
+                selectable: true;
+                visible: false;
               }
             }
           }
@@ -432,6 +451,16 @@ ApplicationWindow remote {
                     xalign: 0;
                     selectable: true;
                   }
+                }
+
+                // What went wrong with this machine: pairing, connecting,
+                // ending its session.
+                Label machine_error {
+                  styles ["row", "sub", "remote-error"]
+                  xalign: 0;
+                  wrap: true;
+                  selectable: true;
+                  visible: false;
                 }
               }
             }
@@ -618,6 +647,14 @@ ApplicationWindow remote {
                     name: "stream_host_audio";
                     valign: center;
                   }
+                }
+
+                Label stream_error {
+                  styles ["row", "sub", "remote-error"]
+                  xalign: 0;
+                  wrap: true;
+                  selectable: true;
+                  visible: false;
                 }
               }
             }

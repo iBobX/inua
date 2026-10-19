@@ -15,6 +15,7 @@ inua-remote --virtual-screen on|off|2560x1440@60
                                a screen to share while no monitor is connected
 inua-remote --pair PIN         pair the device waiting, with the PIN it shows
             [--device NAME|ADDRESS] [--name NAME] [--wait 1m]
+inua-remote --unpair NAME|all  forget a paired device, or every one
 inua-remote --status           whether it is shared, what sharing needs, the
                                devices waiting to pair and those paired
 ```
@@ -39,6 +40,12 @@ announce themselves, mDNS `_nvstream._tcp`) or on the tailnet (each online
 peer is asked; ↻ looks again). *Add a machine…* takes an address: a name,
 an IP address, either with `:port`.
 
+What goes wrong is said where it happened, in red under it: sharing and
+the virtual screen in *Sharing*, a PIN in *Waiting to pair* (the section
+stays while it says so, though the device has stopped waiting), unpairing
+under the paired devices, pairing, connecting and ending a session on that
+machine's page (each machine keeps its own), and saving under *Stream*.
+
 ## Sharing this desktop
 
 The switch runs [Sunshine](https://github.com/LizardByte/Sunshine), the
@@ -52,16 +59,36 @@ starts it again at login while sharing is on. Run from outside the session
 (`inua-remote --share on` over SSH), it takes the display of the Hyprland
 running for you, found by its `$XDG_RUNTIME_DIR/hypr/*/hyprland.lock`; with
 none running, it refuses rather than start a Sunshine with nothing to
-capture.
+capture. A Sunshine already running, or still starting, is waited for
+rather than started again.
+
+On Hyprland the configuration sets `capture = wlr`: Sunshine takes the
+screen through Hyprland's screencopy. Left to choose, it asks the desktop
+portal, whose picker waits for a click; on a computer nobody is at,
+Sunshine then waits 25 seconds at every start, or for good.
 
 A device pairs once: its user picks this computer, their screen shows a
 PIN, and the device appears here under *Waiting to pair*, where the PIN is
-typed. Paired devices are listed, each with *Unpair*.
+typed. Paired devices are listed, each with *Unpair*, which takes effect at
+once.
 
 Without the window (over SSH, say): `inua-remote --pair 1234` pairs the
 device waiting, waiting up to a minute for it to ask if it has not yet;
 when several wait, `--device` names the one (by its name or address), and
 `--name` is what it is called here (its own name if not given).
+`inua-remote --unpair NAME` forgets the devices of that name, and
+`--unpair all` every one.
+
+**A device paired twice.** Sunshine (2026.914 at least) refuses a
+certificate it holds twice, logging "Client certificate identity is not
+enabled": a device that pairs again, under the same name or another,
+takes the PIN and is then refused, and so is its first pairing. Sunshine
+keeps the devices' certificates in its state file, not in its API, so inua
+reads `state.json` after a PIN: when the device's certificate was paired
+already, every copy is unpaired and the PIN's page (or `--pair`) says so;
+the device pairs again, once, and is in. The viewer says the same when the
+other machine refuses it after the PIN, and `--status` and the paired list
+name devices paired twice.
 
 What sharing needs, and the page says so when it is missing:
 
@@ -135,7 +162,10 @@ stream's settings, for every machine: the resolution (this monitor's, or
 codec (H.264, HEVC or AV1; the page says whether this computer decodes it
 with its graphics card), and whether the sound also plays on the machine.
 If the machine is already streaming, connecting joins that session; *End
-its session* ends it for every device.
+its session* ends it for every device. Otherwise it starts the machine's
+Desktop app (else its first), asked for by the app's own ID: Sunshine
+takes an ID it does not have, starts nothing, and ends the session the
+moment the viewer joins.
 
 In the stream's window every key goes to the machine, the compositor's
 shortcuts (Super and the rest) too, by their place on the keyboard: the
@@ -170,16 +200,18 @@ requires them is refused with that said.
 ## Tests
 
 `internal/gamestream` runs against fakes of each of the host's parts: its
-HTTP and HTTPS (pairing with the right and a wrong PIN, a certificate not
-the one paired), its RTSP (the requests in order, every attribute Sunshine
+HTTP and HTTPS (pairing with the right and a wrong PIN, a host refusing the
+client after the PIN, a certificate not the one paired), its RTSP (the requests in order, every attribute Sunshine
 requires in the description), an ENet host that drops and reorders, and a
 whole session (video, audio, input, and the host ending it); the control
 messages are checked against the host's own way of reading them, and the
 input packets byte for byte. `internal/gst` decodes an H.264 stream it
 encodes itself, and plays Opus into a fake sink. `internal/apps/remotedesk`
-runs against a fake Sunshine API served with the certificate inua made,
+runs against a fake Sunshine API served with the certificate inua made
+(its paths as the real one's, the paired devices in its state file),
 fake programs for systemd, and a fake Hyprland socket for the virtual
-screen; `internal/hypr` finds the running instance among leftover
+screen: a device paired again under another name, unpairing by name, a
+start while Sunshine starts, `capture = wlr` on Hyprland; `internal/hypr` finds the running instance among leftover
 directories. The window was checked rendered offscreen
 (Broadway).
 
@@ -194,3 +226,10 @@ input: two absolute pointer moves, a relative one and left Shift pressed
 and let go, each read by Sunshine as sent and the real session's pointer
 moved by them (Sunshine's virtual devices reach the session it runs in,
 whatever screen it captures).
+
+Against a real Sunshine (2026.914) with an inua viewer's identity: a
+second pairing of the same certificate is refused at its last step, and
+then so is the first; unpairing takes effect without a restart; inua's
+sharing, given the PIN of the device paired as "nest" and pairing again as
+"lyric-osx", unpaired both copies and said so, the viewer saw the refusal
+as such, and the next pairing was accepted.

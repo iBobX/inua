@@ -207,9 +207,9 @@ msgstr "N'appairez que si %s affiche la clé %s."
 #: internal/apps/connect/service.go:250
 #: internal/connectui/window.go:425
 #: internal/connectui/window.go:434
-#: internal/remoteui/window.go:527
-#: internal/remoteui/window.go:696
-#: ui/remote.ui:564
+#: internal/remoteui/window.go:554
+#: internal/remoteui/window.go:748
+#: ui/remote.ui:593
 msgid "Pair"
 msgstr "Appairer"
 
@@ -232,7 +232,7 @@ msgstr "Appairage…"
 
 #: internal/apps/connect/service.go:509
 #: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:266
+#: internal/remoteui/window.go:285
 msgid "Connected"
 msgstr "Connecté"
 
@@ -241,7 +241,7 @@ msgid "Away"
 msgstr "Absent"
 
 #: internal/apps/connect/service.go:513
-#: internal/remoteui/window.go:261
+#: internal/remoteui/window.go:280
 msgid "Not paired"
 msgstr "Non appairée"
 
@@ -1619,7 +1619,7 @@ msgstr "Remplacer"
 #: internal/appui/workshop_manager.go:88
 #: ui/connect.ui:966
 #: ui/pass.ui:818
-#: ui/remote.ui:956
+#: ui/remote.ui:1011
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1909,7 +1909,7 @@ msgid "Private"
 msgstr "Privé"
 
 #: internal/appui/sysmon.go:789
-#: internal/remoteui/window.go:462
+#: internal/remoteui/window.go:489
 msgid "Shared"
 msgstr "Partagé"
 
@@ -2593,7 +2593,7 @@ msgstr "Lecture impossible : %s"
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/remoteui/window.go:468
+#: internal/remoteui/window.go:495
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
 #: internal/shell/status.go:88
@@ -2601,7 +2601,7 @@ msgstr "Lecture impossible : %s"
 #: internal/shell/status.go:122
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
-#: ui/remote.ui:318
+#: ui/remote.ui:308
 #: ui/settings.ui:5165
 msgid "Off"
 msgstr "Désactivé"
@@ -2730,7 +2730,7 @@ msgstr "Bloc inconnu %q"
 #: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
-#: internal/remoteui/window.go:694
+#: internal/remoteui/window.go:746
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3012,7 +3012,7 @@ msgid "Devices running KDE Connect, GSConnect or Valent find this computer on th
 msgstr "Les appareils avec KDE Connect, GSConnect ou Valent trouvent cet ordinateur sur ce réseau et le tailnet, et s'appairent avec lui."
 
 #: internal/connectui/window.go:384
-#: internal/remoteui/window.go:465
+#: internal/remoteui/window.go:492
 msgid "Starting…"
 msgstr "Démarrage…"
 
@@ -3041,7 +3041,7 @@ msgid "Accept on %s if it shows this key:"
 msgstr "Acceptez sur %s s'il affiche cette clé :"
 
 #: internal/connectui/window.go:432
-#: internal/remoteui/window.go:559
+#: internal/remoteui/window.go:597
 msgid "Unpair"
 msgstr "Désappairer"
 
@@ -4415,7 +4415,7 @@ msgstr "Connexion à %s…"
 
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
-#: ui/remote.ui:574
+#: ui/remote.ui:603
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
 msgid "Connect"
@@ -4462,7 +4462,7 @@ msgstr "%s est déconnecté."
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
-#: ui/remote.ui:543
+#: ui/remote.ui:572
 msgid "Forget"
 msgstr "Supprimer la clé"
 
@@ -8232,141 +8232,185 @@ msgstr "%s a mis fin à la session."
 msgid "%s cannot show its screen: no monitor is connected, or its desktop session is not running. A computer without a monitor can share a virtual screen (Remote Desktop, Sharing)."
 msgstr "%s ne peut pas afficher son écran : aucun moniteur n'est branché, ou sa session de bureau n'est pas lancée. Un ordinateur sans moniteur peut partager un écran virtuel (Bureau à distance, Partage)."
 
-#: internal/remoteui/window.go:122
+#: internal/remoteui/window.go:127
 msgid "This computer has no identity to pair with: %v"
 msgstr "Cet ordinateur n'a pas d'identité pour s'appairer : %v"
 
-#: internal/remoteui/window.go:263
+#: internal/remoteui/window.go:282
 msgid "Paired"
 msgstr "Appairée"
 
-#: internal/remoteui/window.go:274
+#: internal/remoteui/window.go:293
 msgid "Found on this network"
 msgstr "Trouvée sur ce réseau"
 
-#: internal/remoteui/window.go:276
+#: internal/remoteui/window.go:295
 msgid "Found on the tailnet"
 msgstr "Trouvée sur le tailnet"
 
-#: internal/remoteui/window.go:391
+#: internal/remoteui/window.go:410
 msgid "Sharing did not start: %v"
 msgstr "Le partage n'a pas démarré : %v"
 
-#: internal/remoteui/window.go:426
+#: internal/remoteui/window.go:446
 msgid "The virtual screen did not change: %v"
 msgstr "L'écran virtuel n'a pas changé : %v"
 
-#: internal/remoteui/window.go:463
+#: internal/remoteui/window.go:455
+msgid "The settings were not saved: %v"
+msgstr "Les réglages n’ont pas été enregistrés : %v"
+
+#: internal/remoteui/window.go:490
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "Les autres appareils voient cet ordinateur sous le nom %s, sur ce réseau et le tailnet. Un appareil s'appaire une fois, avec un PIN tapé ici."
 
-#: internal/remoteui/window.go:466
+#: internal/remoteui/window.go:493
 msgid "Sunshine is starting."
 msgstr "Sunshine démarre."
 
-#: internal/remoteui/window.go:469
+#: internal/remoteui/window.go:496
 msgid "Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."
 msgstr "Permet à vos autres appareils de voir et contrôler ce bureau, avec Moonlight ou Bureau à distance."
 
-#: internal/remoteui/window.go:480
+#: internal/remoteui/window.go:507
 msgid "Sharing needs Sunshine, which is not installed."
 msgstr "Le partage a besoin de Sunshine, qui n'est pas installé."
 
-#: internal/remoteui/window.go:481
+#: internal/remoteui/window.go:508
 msgid "Install the package for your system from github.com/LizardByte/Sunshine/releases (Ubuntu: sudo apt install ./sunshine_…_amd64.deb)."
 msgstr "Installez le paquet de votre système depuis github.com/LizardByte/Sunshine/releases (Ubuntu : sudo apt install ./sunshine_…_amd64.deb)."
 
-#: internal/remoteui/window.go:483
+#: internal/remoteui/window.go:510
 msgid "The other device's keyboard and mouse cannot reach this desktop: /dev/uinput is not yours."
 msgstr "Le clavier et la souris de l'autre appareil ne peuvent pas atteindre ce bureau : /dev/uinput n'est pas à vous."
 
-#: internal/remoteui/window.go:486
+#: internal/remoteui/window.go:513
 msgid "Sharing needs a graphical session to show."
 msgstr "Le partage a besoin d'une session graphique à montrer."
 
-#: internal/remoteui/window.go:511
+#: internal/remoteui/window.go:538
 msgid "A device"
 msgstr "Un appareil"
 
-#: internal/remoteui/window.go:515
+#: internal/remoteui/window.go:542
 msgid "at %s: type the PIN it shows"
 msgstr "à %s : tapez le PIN qu'il affiche"
 
-#: internal/remoteui/window.go:542
+#: internal/remoteui/window.go:569
 msgid "No device is paired yet."
 msgstr "Aucun appareil n'est encore appairé."
 
-#: internal/remoteui/window.go:547
+#: internal/remoteui/window.go:574
 msgid "The paired devices show while sharing is on."
 msgstr "Les appareils appairés s'affichent quand le partage est actif."
 
-#: internal/remoteui/window.go:580
+#: internal/remoteui/window.go:589
+msgid "Paired twice, so it cannot connect: unpair each, then pair it again."
+msgstr "Appairé deux fois, il ne peut donc pas se connecter : désappairez chaque entrée, puis appairez-le de nouveau."
+
+#: internal/remoteui/window.go:619
 msgid "A PIN is four digits."
 msgstr "Un PIN fait quatre chiffres."
 
-#: internal/remoteui/window.go:590
+#: internal/remoteui/window.go:631
 msgid "That is not the PIN %s shows."
 msgstr "Ce n'est pas le PIN qu'affiche %s."
 
-#: internal/remoteui/window.go:669
+#: internal/remoteui/window.go:633
+msgid "%s was paired here before, as %s, and a device paired twice is refused. Its old pairing is removed: pair again from %s."
+msgstr "%s était déjà appairé ici, sous le nom %s, et un appareil appairé deux fois est refusé. L’ancien appairage est supprimé : appairez de nouveau depuis %s."
+
+#: internal/remoteui/window.go:636
+msgid "%s was not paired: %v"
+msgstr "%s n’a pas été appairé : %v"
+
+#: internal/remoteui/window.go:657
+msgid "%s was not unpaired: %v"
+msgstr "%s n’a pas été désappairé : %v"
+
+#: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "Interrogation…"
 
-#: internal/remoteui/window.go:672
+#: internal/remoteui/window.go:724
 msgid "Connected: its desktop is in a window of its own."
 msgstr "Connectée : son bureau est dans une fenêtre à part."
 
-#: internal/remoteui/window.go:675
+#: internal/remoteui/window.go:727
 msgid "It does not answer: it is off, or not sharing its desktop."
 msgstr "Elle ne répond pas : éteinte, ou ne partage pas son bureau."
 
-#: internal/remoteui/window.go:677
+#: internal/remoteui/window.go:729
 msgid "It shares with Nvidia's GameStream, which Remote Desktop does not speak."
 msgstr "Elle partage avec GameStream de Nvidia, que Bureau à distance ne parle pas."
 
-#: internal/remoteui/window.go:679
+#: internal/remoteui/window.go:731
 msgid "It has forgotten this computer: pair again."
 msgstr "Elle a oublié cet ordinateur : appairez à nouveau."
 
-#: internal/remoteui/window.go:681
+#: internal/remoteui/window.go:733
 msgid "Not paired: pair once, with a PIN typed on it."
 msgstr "Non appairée : appairez une fois, avec un PIN tapé sur elle."
 
-#: internal/remoteui/window.go:683
+#: internal/remoteui/window.go:735
 msgid "Paired. Its desktop is being streamed; connecting joins in."
 msgstr "Appairée. Son bureau est diffusé ; se connecter s'y joint."
 
-#: internal/remoteui/window.go:685
+#: internal/remoteui/window.go:737
 msgid "Paired, and ready."
 msgstr "Appairée, et prête."
 
-#: internal/remoteui/window.go:718
+#: internal/remoteui/window.go:775
 msgid "On %s, open Remote Desktop → Sharing (or Sunshine's PIN page) and type:"
 msgstr "Sur %s, ouvrez Bureau à distance → Partage (ou la page PIN de Sunshine) et tapez :"
 
-#: internal/remoteui/window.go:742
+#: internal/remoteui/window.go:798
+msgid "Paired, but not saved, so not kept after this window: %v"
+msgstr "Appairé, mais non enregistré : il ne sera pas conservé après cette fenêtre : %v"
+
+#: internal/remoteui/window.go:802
 msgid "The PIN typed there was not this one. Pair again."
 msgstr "Le PIN tapé là-bas n'était pas celui-ci. Appairez à nouveau."
 
-#: internal/remoteui/window.go:745
+#: internal/remoteui/window.go:804
+msgid "%s took the PIN, then refused this computer: it had this computer paired already, perhaps under another name, and refuses a computer paired twice. If it shares with inua, it has removed the old pairing: pair again. Otherwise unpair this computer there first."
+msgstr "%s a accepté le PIN, puis a refusé cet ordinateur : il l’avait déjà appairé, peut-être sous un autre nom, et refuse un ordinateur appairé deux fois. S’il partage avec inua, il a supprimé l’ancien appairage : appairez de nouveau. Sinon, désappairez d’abord cet ordinateur là-bas."
+
+#: internal/remoteui/window.go:807
 msgid "Pairing failed: %v"
 msgstr "L'appairage a échoué : %v"
 
-#: internal/remoteui/window.go:801
+#: internal/remoteui/window.go:822
+msgid "Its session did not end: %v"
+msgstr "Sa session ne s’est pas terminée : %v"
+
+#: internal/remoteui/window.go:835
+msgid "Not forgotten: the list of machines was not saved: %v"
+msgstr "Non oubliée : la liste des machines n’a pas été enregistrée : %v"
+
+#: internal/remoteui/window.go:871
 msgid "Nothing shares a desktop at %s: %v"
 msgstr "Rien ne partage de bureau à %s : %v"
 
-#: internal/remoteui/window.go:868
+#: internal/remoteui/window.go:876
+msgid "Added, but not saved, so not kept after this window: %v"
+msgstr "Ajoutée, mais non enregistrée : elle ne sera pas conservée après cette fenêtre : %v"
+
+#: internal/remoteui/window.go:941
 msgid "This computer cannot decode it: choose another."
 msgstr "Cet ordinateur ne peut pas le décoder : choisissez-en un autre."
 
-#: internal/remoteui/window.go:870
+#: internal/remoteui/window.go:943
 msgid "Decoded by the processor here: slower than the graphics card."
 msgstr "Décodé ici par le processeur : plus lent que la carte graphique."
 
-#: internal/remoteui/window.go:872
+#: internal/remoteui/window.go:945
 msgid "Decoded by the graphics card here. HEVC and AV1 look better than H.264 at the same bitrate."
 msgstr "Décodé ici par la carte graphique. HEVC et AV1 rendent mieux que H.264 au même débit."
+
+#: internal/remoteui/window.go:972
+msgid "The connection ended: %v"
+msgstr "La connexion s’est terminée : %v"
 
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
@@ -9972,7 +10016,7 @@ msgid "Preferred"
 msgstr "Préférée"
 
 #: internal/ui/settings_displays.go:245
-#: ui/remote.ui:676
+#: ui/remote.ui:718
 msgid "Resolution"
 msgstr "Résolution"
 
@@ -11581,80 +11625,80 @@ msgstr "Chercher les machines qui partagent leur bureau"
 msgid "Add a machine…"
 msgstr "Ajouter une machine…"
 
-#: ui/remote.ui:226
+#: ui/remote.ui:216
 msgid "[SHARING]"
 msgstr "[PARTAGE]"
 
-#: ui/remote.ui:256
+#: ui/remote.ui:246
 msgid "Share this desktop"
 msgstr "Partager ce bureau"
 
-#: ui/remote.ui:296
+#: ui/remote.ui:286
 msgid "Virtual screen"
 msgstr "Écran virtuel"
 
-#: ui/remote.ui:305
+#: ui/remote.ui:295
 msgid "While no monitor is connected, this computer shows a screen of this size, to share."
 msgstr "Tant qu'aucun moniteur n'est branché, cet ordinateur affiche un écran de cette taille, à partager."
 
-#: ui/remote.ui:390
+#: ui/remote.ui:393
 msgid "[WAITING TO PAIR]"
 msgstr "[EN ATTENTE D'APPAIRAGE]"
 
-#: ui/remote.ui:432
+#: ui/remote.ui:448
 msgid "[PAIRED DEVICES]"
 msgstr "[APPAREILS APPAIRÉS]"
 
-#: ui/remote.ui:553
+#: ui/remote.ui:582
 msgid "End its session"
 msgstr "Mettre fin à sa session"
 
-#: ui/remote.ui:554
+#: ui/remote.ui:583
 msgid "Ends what is streaming there, for every device"
 msgstr "Arrête ce qui y est diffusé, pour tous les appareils"
 
-#: ui/remote.ui:638
+#: ui/remote.ui:680
 msgid "[STREAM]"
 msgstr "[FLUX]"
 
-#: ui/remote.ui:648
+#: ui/remote.ui:690
 msgid "for every machine"
 msgstr "pour toutes les machines"
 
-#: ui/remote.ui:685
+#: ui/remote.ui:727
 msgid "The machine shows its desktop at this size."
 msgstr "La machine affiche son bureau à cette taille."
 
-#: ui/remote.ui:698
+#: ui/remote.ui:740
 #: ui/settings.ui:1211
 msgid "This monitor's"
 msgstr "Ce moniteur"
 
-#: ui/remote.ui:721
+#: ui/remote.ui:763
 msgid "Frames a second"
 msgstr "Images par seconde"
 
-#: ui/remote.ui:760
+#: ui/remote.ui:802
 msgid "Bitrate"
 msgstr "Débit"
 
-#: ui/remote.ui:769
+#: ui/remote.ui:811
 msgid "Megabits a second: more is sharper, and needs a faster network."
 msgstr "Mégabits par seconde : plus, c'est plus net, et il faut un réseau plus rapide."
 
-#: ui/remote.ui:809
+#: ui/remote.ui:851
 msgid "Codec"
 msgstr "Codec"
 
-#: ui/remote.ui:851
+#: ui/remote.ui:893
 msgid "Play the sound on the machine too"
 msgstr "Jouer aussi le son sur la machine"
 
-#: ui/remote.ui:911
+#: ui/remote.ui:966
 msgid "[ADD A MACHINE]"
 msgstr "[AJOUTER UNE MACHINE]"
 
-#: ui/remote.ui:936
+#: ui/remote.ui:991
 msgid "Its address on the network: a name, an IP address, or either with :port."
 msgstr "Son adresse sur le réseau : un nom, une adresse IP, ou l'un des deux avec :port."
 

@@ -168,16 +168,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 </child>
               </object>
             </child>
-            <child>
-              <object class="GtkLabel" id="status">
-                <style>
-                  <class name="status"/>
-                </style>
-                <property name="xalign">0</property>
-                <property name="wrap">true</property>
-                <property name="max-width-chars">28</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
@@ -357,6 +347,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                     </child>
                                   </object>
                                 </child>
+                                <child>
+                                  <object class="GtkLabel" id="sharing_error">
+                                    <style>
+                                      <class name="row"/>
+                                      <class name="sub"/>
+                                      <class name="remote-error"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="selectable">true</property>
+                                    <property name="visible">false</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -402,6 +405,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                 <property name="orientation">1</property>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkLabel" id="pending_error">
+                                <style>
+                                  <class name="row"/>
+                                  <class name="sub"/>
+                                  <class name="remote-error"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="wrap">true</property>
+                                <property name="selectable">true</property>
+                                <property name="visible">false</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
@@ -442,6 +458,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                   <class name="section-body"/>
                                 </style>
                                 <property name="orientation">1</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="clients_error">
+                                <style>
+                                  <class name="row"/>
+                                  <class name="sub"/>
+                                  <class name="remote-error"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="wrap">true</property>
+                                <property name="selectable">true</property>
+                                <property name="visible">false</property>
                               </object>
                             </child>
                           </object>
@@ -604,6 +633,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <property name="selectable">true</property>
                                       </object>
                                     </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="machine_error">
+                                    <style>
+                                      <class name="row"/>
+                                      <class name="sub"/>
+                                      <class name="remote-error"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="selectable">true</property>
+                                    <property name="visible">false</property>
                                   </object>
                                 </child>
                               </object>
@@ -859,6 +901,19 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <property name="valign">3</property>
                                       </object>
                                     </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="stream_error">
+                                    <style>
+                                      <class name="row"/>
+                                      <class name="sub"/>
+                                      <class name="remote-error"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="selectable">true</property>
+                                    <property name="visible">false</property>
                                   </object>
                                 </child>
                               </object>
