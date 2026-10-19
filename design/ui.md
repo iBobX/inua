@@ -251,7 +251,7 @@ cannot see services on the session bus (Mobile Link shows "starting").
 - The VM manager's section marks are `Label`s, so they draw as bars; its
   layout is to take `Box`es.
 - `suggested-action` is styled per window (GPG, Pass, Files, Workshop,
-  Remote Desktop, Mobile Link, Disk Usage, the VM manager) with the same rule; one
+  Remote Desktop, Mobile Link, Disk Usage, Mail, the VM manager) with the same rule; one
   shared `.settings button.suggested-action` would replace them.
 - Two fills for a main action exist: the accent (`suggested-action`) and
   `primary` (some light apps and games). New windows use the accent.

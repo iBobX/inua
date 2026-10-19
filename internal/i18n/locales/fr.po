@@ -8,6 +8,7 @@ msgstr ""
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
 #: internal/diskui/details.go:221
+#: internal/mailui/assist.go:43
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "L'assistant est éteint. Activez-le dans Paramètres → AI."
 
@@ -111,6 +112,7 @@ msgstr "dim."
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
+#: internal/mailui/window.go:929
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -208,6 +210,7 @@ msgstr "Trouvé"
 
 #: internal/apps/connect/notifications.go:94
 #: internal/connectui/app.go:38
+#: internal/mailui/reader.go:189
 #: ui/connectreply.ui:14
 msgid "Reply"
 msgstr "Répondre"
@@ -313,6 +316,7 @@ msgstr "Un fichier de %s"
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
 #: internal/filesui/window.go:713
+#: internal/mailui/actions.go:381
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
 msgid "Open"
@@ -382,6 +386,7 @@ msgid "Yours to delete?"
 msgstr "Pouvez-vous le supprimer ?"
 
 #: internal/apps/disk/decide.go:87
+#: internal/apps/mail/check.go:127
 msgid "Yes."
 msgstr "Oui."
 
@@ -1127,6 +1132,7 @@ msgstr "L'historique, les branches et les stashes du projet ; ce qui n'est pas p
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
+#: internal/mailui/window.go:526
 msgid "Trash"
 msgstr "Corbeille"
 
@@ -1191,6 +1197,224 @@ msgstr "Un cache marqué par son programme"
 #: internal/apps/disk/rules.go:359
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "Son programme l'a marqué comme cache (CACHEDIR.TAG) : il le refait quand il manque."
+
+#: internal/apps/mail/account.go:227
+msgid "IMAP"
+msgstr "IMAP"
+
+#: internal/apps/mail/check.go:38
+msgid "Be careful"
+msgstr "Prudence"
+
+#: internal/apps/mail/check.go:40
+msgid "Suspicious"
+msgstr "Suspect"
+
+#: internal/apps/mail/check.go:42
+msgid "Looks fine"
+msgstr "Semble correct"
+
+#: internal/apps/mail/check.go:77
+msgid "Did the sender's server vouch for it?"
+msgstr "Le serveur de l'expéditeur s'en est-il porté garant ?"
+
+#: internal/apps/mail/check.go:79
+msgid "No report from your provider."
+msgstr "Aucun rapport de votre fournisseur."
+
+#: internal/apps/mail/check.go:85
+msgid "the sender's domain says it did not send this."
+msgstr "le domaine de l'expéditeur dit ne pas l'avoir envoyé."
+
+#: internal/apps/mail/check.go:87
+msgid "it came from a server the domain does not use."
+msgstr "il vient d'un serveur que le domaine n'utilise pas."
+
+#: internal/apps/mail/check.go:98
+msgid "Is it who it says it is?"
+msgstr "Est-ce bien qui il prétend être ?"
+
+#: internal/apps/mail/check.go:102
+msgid "It has no sender."
+msgstr "Il n'a pas d'expéditeur."
+
+#: internal/apps/mail/check.go:104
+msgid "Its name shows %s, but it comes from %s."
+msgstr "Son nom affiche %s, mais il vient de %s."
+
+#: internal/apps/mail/check.go:106
+msgid "%s looks like %s."
+msgstr "%s ressemble à %s."
+
+#: internal/apps/mail/check.go:108
+msgid "It names %s, but comes from %s."
+msgstr "Il cite %s, mais vient de %s."
+
+#: internal/apps/mail/check.go:110
+msgid "%s mixes alphabets."
+msgstr "%s mélange des alphabets."
+
+#: internal/apps/mail/check.go:112
+msgid "From %s."
+msgstr "De %s."
+
+#: internal/apps/mail/check.go:116
+msgid "Do replies go to the sender?"
+msgstr "Les réponses vont-elles à l'expéditeur ?"
+
+#: internal/apps/mail/check.go:125
+msgid "Replies go to %s, another domain."
+msgstr "Les réponses vont à %s, un autre domaine."
+
+#: internal/apps/mail/check.go:131
+msgid "Do its links go where they say?"
+msgstr "Ses liens mènent-ils où ils le disent ?"
+
+#: internal/apps/mail/check.go:143
+msgid "a link goes to %s, an address with no name"
+msgstr "un lien mène à %s, une adresse sans nom"
+
+#: internal/apps/mail/check.go:150
+msgid "“%s” goes to %s"
+msgstr "« %s » mène à %s"
+
+#: internal/apps/mail/check.go:156
+msgid "%d link does not: %s."
+msgid_plural "%d links do not: %s."
+msgstr[0] "%d lien ne le fait pas : %s."
+msgstr[1] "%d liens ne le font pas : %s."
+
+#: internal/apps/mail/check.go:158
+msgid "Its %d link does."
+msgid_plural "Its %d links do."
+msgstr[0] "Son %d lien le fait."
+msgstr[1] "Ses %d liens le font."
+
+#: internal/apps/mail/check.go:160
+msgid "It has no links."
+msgstr "Il n'a aucun lien."
+
+#: internal/apps/mail/check.go:164
+msgid "Have you written to them?"
+msgstr "Leur avez-vous déjà écrit ?"
+
+#: internal/apps/mail/check.go:166
+msgid "Yes: a good sign, not proof."
+msgstr "Oui : bon signe, pas une preuve."
+
+#: internal/apps/mail/check.go:168
+msgid "Not from this computer."
+msgstr "Pas depuis cet ordinateur."
+
+#: internal/apps/mail/compose.go:67
+msgid "%q is not an address"
+msgstr "%q n'est pas une adresse"
+
+#: internal/apps/mail/compose.go:290
+msgid "On %s, %s wrote:"
+msgstr "Le %s, %s a écrit :"
+
+#: internal/apps/mail/compose.go:308
+msgid "Forwarded message"
+msgstr "Message transféré"
+
+#: internal/apps/mail/compose.go:309
+msgid "From:"
+msgstr "De :"
+
+#: internal/apps/mail/compose.go:310
+msgid "Date:"
+msgstr "Date :"
+
+#: internal/apps/mail/compose.go:311
+msgid "Subject:"
+msgstr "Objet :"
+
+#: internal/apps/mail/compose.go:313
+msgid "To:"
+msgstr "À :"
+
+#: internal/apps/mail/oauth.go:51
+msgid "Google sign-in needs a client ID in mail.toml ([oauth.google]); see docs/mail.md, or add the account as IMAP with an app password."
+msgstr "La connexion Google demande un identifiant client dans mail.toml ([oauth.google]) ; voir docs/mail.md, ou ajoutez le compte en IMAP avec un mot de passe d'application."
+
+#: internal/apps/mail/oauth.go:66
+msgid "Microsoft sign-in needs a client ID in mail.toml ([oauth.microsoft]); see docs/mail.md."
+msgstr "La connexion Microsoft demande un identifiant client dans mail.toml ([oauth.microsoft]) ; voir docs/mail.md."
+
+#: internal/apps/mail/oauth.go:149
+msgid "the sign-in page answered for another request"
+msgstr "la page de connexion a répondu à une autre demande"
+
+#: internal/apps/mail/oauth.go:153
+msgid "the sign-in page gave no code"
+msgstr "la page de connexion n'a donné aucun code"
+
+#: internal/apps/mail/oauth.go:170
+msgid "Signed in"
+msgstr "Connecté"
+
+#: internal/apps/mail/oauth.go:170
+msgid "You can close this tab and go back to Mail."
+msgstr "Vous pouvez fermer cet onglet et revenir à Courrier."
+
+#: internal/apps/mail/oauth.go:172
+msgid "Not signed in"
+msgstr "Non connecté"
+
+#: internal/apps/mail/sort.go:31
+#: internal/mailui/window.go:174
+msgid "REPLY"
+msgstr "RÉPONDRE"
+
+#: internal/apps/mail/sort.go:33
+msgid "WAITING"
+msgstr "EN ATTENTE"
+
+#: internal/apps/mail/sort.go:35
+msgid "FYI"
+msgstr "INFO"
+
+#: internal/apps/mail/sort.go:37
+msgid "NEWS"
+msgstr "NEWS"
+
+#: internal/apps/mail/sort.go:39
+msgid "RECEIPT"
+msgstr "REÇU"
+
+#: internal/apps/mail/sort.go:41
+msgid "NOTICE"
+msgstr "AVIS"
+
+#: internal/apps/mail/sort.go:50
+msgid "Needs a reply"
+msgstr "Demande une réponse"
+
+#: internal/apps/mail/sort.go:52
+msgid "Waiting for an answer"
+msgstr "En attente d'une réponse"
+
+#: internal/apps/mail/sort.go:54
+msgid "For your information"
+msgstr "Pour information"
+
+#: internal/apps/mail/sort.go:56
+msgid "Newsletter"
+msgstr "Lettre d'information"
+
+#: internal/apps/mail/sort.go:58
+msgid "Receipt or booking"
+msgstr "Reçu ou réservation"
+
+#: internal/apps/mail/sort.go:60
+#: internal/ui/notify.go:446
+msgid "Notification"
+msgstr "Notification"
+
+#: internal/apps/mail/sort.go:62
+msgid "Not sorted"
+msgstr "Non trié"
 
 #: internal/apps/music/music.go:393
 msgid "Flat"
@@ -1394,6 +1618,7 @@ msgstr "En attente d'approbation"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
+#: internal/mailui/window.go:446
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
@@ -1536,6 +1761,7 @@ msgstr "Vidéo"
 #: internal/appui/pass.go:801
 #: internal/diskui/details.go:497
 #: internal/filesui/cards.go:435
+#: internal/mailui/actions.go:122
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
@@ -1934,6 +2160,7 @@ msgstr "Supprimer…"
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:547
+#: internal/mailui/accounts.go:165
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2362,6 +2589,9 @@ msgstr "pass supprime son fichier ; un magasin git le garde dans son historique.
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
+#: internal/mailui/reader.go:416
+#: internal/mailui/reader.go:554
+#: internal/mailui/window.go:812
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "DOSSIER"
@@ -2434,6 +2664,8 @@ msgstr "%s · %s"
 #: internal/appui/pass.go:1051
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
+#: internal/mailui/actions.go:304
+#: internal/mailui/compose.go:355
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -2512,6 +2744,8 @@ msgstr "Remplacer"
 
 #: internal/appui/pass_otp.go:192
 #: internal/appui/workshop_manager.go:88
+#: internal/mailui/accounts.go:227
+#: internal/mailui/accounts.go:401
 #: ui/connect.ui:966
 #: ui/pass.ui:818
 #: ui/remote.ui:1011
@@ -2669,8 +2903,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:266
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:267
+#: internal/shell/dock.go:300
 msgid "NETWORK"
 msgstr "RÉSEAU"
 
@@ -2818,6 +3052,7 @@ msgstr "Pic"
 
 #: internal/appui/sysmon.go:792
 #: internal/filesui/details.go:51
+#: internal/mailui/window.go:174
 msgid "FILES"
 msgstr "FICHIERS"
 
@@ -3629,6 +3864,10 @@ msgstr "Bloc inconnu %q"
 #: internal/filesui/renamemany.go:37
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
+#: internal/mailui/accounts.go:144
+#: internal/mailui/accounts.go:177
+#: internal/mailui/accounts.go:226
+#: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:746
 #: internal/termui/keys.go:226
 #: internal/termui/keys.go:324
@@ -3898,6 +4137,7 @@ msgid "Answer %s"
 msgstr "Répondre à %s"
 
 #: internal/connectui/reply.go:68
+#: internal/mailui/compose.go:450
 msgid "Not sent: %v"
 msgstr "Non envoyé : %v"
 
@@ -4605,6 +4845,7 @@ msgid "Asking…"
 msgstr "Interrogation…"
 
 #: internal/diskui/details.go:158
+#: internal/mailui/reader.go:259
 #: internal/shell/launcher.go:379
 #: ui/disk.ui:770
 msgid "Ask the assistant"
@@ -4914,6 +5155,7 @@ msgid "The archive is made in “%s”."
 msgstr "L'archive est créée dans « %s »."
 
 #: internal/filesui/archive.go:79
+#: internal/mailui/window.go:522
 msgid "Archive"
 msgstr "Archive"
 
@@ -4948,6 +5190,7 @@ msgstr "La plus petite"
 #: internal/filesui/remotesetup.go:55
 #: internal/filesui/remotesetup.go:61
 #: internal/filesui/remotesetup.go:67
+#: internal/mailui/accounts.go:206
 #: ui/lock.ui:76
 #: ui/polkit.ui:690
 msgid "Password"
@@ -5216,6 +5459,7 @@ msgid "Not allowed."
 msgstr "Non autorisé."
 
 #: internal/filesui/cards.go:666
+#: internal/mailui/assist.go:105
 #: internal/remoteui/stream.go:472
 msgid "%s: %v"
 msgstr "%s : %v"
@@ -5278,6 +5522,8 @@ msgid "New folder / new file"
 msgstr "Nouveau dossier / nouveau fichier"
 
 #: internal/filesui/cards.go:696
+#: internal/mailui/compose.go:406
+#: ui/mail-compose.ui:234
 msgid "Undo"
 msgstr "Annuler l’action"
 
@@ -7979,6 +8225,7 @@ msgid "Small Fortune"
 msgstr "Petite fortune"
 
 #: internal/games/fortunenet/texts.go:18
+#: internal/mailui/accounts.go:204
 msgid "Your name"
 msgstr "Votre nom"
 
@@ -9227,7 +9474,7 @@ msgid "SPACE PINBALL"
 msgstr "FLIPPER SPATIAL"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "Lanceur"
@@ -9260,7 +9507,7 @@ msgstr "Mise au point activée ou désactivée"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 #: internal/term/settings/settings.go:91
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -9413,6 +9660,618 @@ msgstr "samedi"
 #: internal/i18n/time.go:22
 msgid "AM"
 msgstr "AM"
+
+#: internal/mailui/accounts.go:66
+#: ui/mail.ui:83
+msgid "Add account"
+msgstr "Ajouter un compte"
+
+#: internal/mailui/accounts.go:134
+msgid "Add an account"
+msgstr "Ajouter un compte"
+
+#: internal/mailui/accounts.go:134
+msgid "Gmail and Outlook sign in on their own page, in your browser: Mail never sees your password. Other accounts sign in to their IMAP server with a password; for Gmail, iCloud or Yahoo with two-step sign-in, an app password."
+msgstr "Gmail et Outlook se connectent sur leur propre page, dans votre navigateur : Courrier ne voit jamais votre mot de passe. Les autres comptes se connectent à leur serveur IMAP avec un mot de passe ; pour Gmail, iCloud ou Yahoo avec la validation en deux étapes, un mot de passe d'application."
+
+#: internal/mailui/accounts.go:137
+#: ui/mail.ui:260
+msgid "Google"
+msgstr "Google"
+
+#: internal/mailui/accounts.go:138
+#: ui/mail.ui:268
+msgid "Microsoft"
+msgstr "Microsoft"
+
+#: internal/mailui/accounts.go:139
+#: ui/mail.ui:276
+msgid "Other (IMAP)"
+msgstr "Autre (IMAP)"
+
+#: internal/mailui/accounts.go:150
+msgid "Your browser opens the sign-in page. Sign in there, allow Mail to read and send your mail, then come back here."
+msgstr "Votre navigateur ouvre la page de connexion. Connectez-vous, autorisez Courrier à lire et envoyer vos messages, puis revenez ici."
+
+#: internal/mailui/accounts.go:162
+msgid "Copy the link"
+msgstr "Copier le lien"
+
+#: internal/mailui/accounts.go:168
+msgid "Open it again"
+msgstr "Le rouvrir"
+
+#: internal/mailui/accounts.go:194
+msgid "Other account"
+msgstr "Autre compte"
+
+#: internal/mailui/accounts.go:194
+msgid "The password is kept in your keyring, not in mail.toml."
+msgstr "Le mot de passe est gardé dans votre trousseau, pas dans mail.toml."
+
+#: internal/mailui/accounts.go:199
+msgid "The name on what you send"
+msgstr "Le nom sur ce que vous envoyez"
+
+#: internal/mailui/accounts.go:201
+msgid "The address, when left empty"
+msgstr "L'adresse, si laissé vide"
+
+#: internal/mailui/accounts.go:205
+msgid "Address"
+msgstr "Adresse"
+
+#: internal/mailui/accounts.go:209
+msgid "IMAP server"
+msgstr "Serveur IMAP"
+
+#: internal/mailui/accounts.go:210
+msgid "SMTP server"
+msgstr "Serveur SMTP"
+
+#: internal/mailui/accounts.go:212
+msgid "User name"
+msgstr "Nom d'utilisateur"
+
+#: internal/mailui/accounts.go:213
+msgid "Port 993 and 465 use TLS; others start TLS after connecting."
+msgstr "Les ports 993 et 465 utilisent TLS ; les autres démarrent TLS après la connexion."
+
+#: internal/mailui/accounts.go:266
+msgid "Sign in with %s"
+msgstr "Se connecter avec %s"
+
+#: internal/mailui/accounts.go:272
+msgid "No browser opened (%v): copy the link into one."
+msgstr "Aucun navigateur ne s'est ouvert (%v) : copiez le lien dans un navigateur."
+
+#: internal/mailui/accounts.go:290
+msgid "The sign-in took too long. Close this and try again."
+msgstr "La connexion a pris trop de temps. Fermez ceci et réessayez."
+
+#: internal/mailui/accounts.go:293
+#: internal/mailui/accounts.go:403
+msgid "Not signed in: %v"
+msgstr "Non connecté : %v"
+
+#: internal/mailui/accounts.go:296
+msgid "Signed in, but the provider did not say the address."
+msgstr "Connecté, mais le fournisseur n'a pas donné l'adresse."
+
+#: internal/mailui/accounts.go:299
+msgid "Signed in, but the provider gave no lasting sign-in. Remove Mail's access in your account's settings and try again."
+msgstr "Connecté, mais le fournisseur n'a pas donné d'accès durable. Retirez l'accès de Courrier dans les réglages de votre compte et réessayez."
+
+#: internal/mailui/accounts.go:315
+msgid "Could not keep the sign-in in the keyring: %v"
+msgstr "Impossible de garder la connexion dans le trousseau : %v"
+
+#: internal/mailui/accounts.go:380
+msgid "Type the address."
+msgstr "Saisissez l'adresse."
+
+#: internal/mailui/accounts.go:383
+msgid "Type the password."
+msgstr "Saisissez le mot de passe."
+
+#: internal/mailui/accounts.go:386
+msgid "Type both servers."
+msgstr "Saisissez les deux serveurs."
+
+#: internal/mailui/accounts.go:391
+msgid "Signing in…"
+msgstr "Connexion…"
+
+#: internal/mailui/actions.go:69
+msgid "The server did not move it: %v"
+msgstr "Le serveur ne l'a pas déplacé : %v"
+
+#: internal/mailui/actions.go:100
+msgid "This account has no Archive folder."
+msgstr "Ce compte n'a pas de dossier Archives."
+
+#: internal/mailui/actions.go:104
+msgid "This account has no Spam folder."
+msgstr "Ce compte n'a pas de dossier Spam."
+
+#: internal/mailui/actions.go:120
+msgid "Delete for good?"
+msgstr "Supprimer définitivement ?"
+
+#: internal/mailui/actions.go:121
+msgid "Its %d message is deleted from the server. This cannot be undone."
+msgid_plural "Its %d messages are deleted from the server. This cannot be undone."
+msgstr[0] "Son %d message est supprimé du serveur. C'est définitif."
+msgstr[1] "Ses %d messages sont supprimés du serveur. C'est définitif."
+
+#: internal/mailui/actions.go:136
+msgid "The server did not delete it: %v"
+msgstr "Le serveur ne l'a pas supprimé : %v"
+
+#: internal/mailui/actions.go:189
+msgid "The server did not take it: %v"
+msgstr "Le serveur ne l'a pas accepté : %v"
+
+#: internal/mailui/actions.go:232
+msgid "Could not forward it: %v"
+msgstr "Impossible de le transférer : %v"
+
+#: internal/mailui/actions.go:261
+msgid "The message is still loading."
+msgstr "Le message est encore en cours de chargement."
+
+#: internal/mailui/actions.go:302
+msgid "Remove this account?"
+msgstr "Retirer ce compte ?"
+
+#: internal/mailui/actions.go:303
+msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The mail on the server stays."
+msgstr "Courrier l'oublie sur cet ordinateur : sa connexion et le courrier gardé. Le courrier sur le serveur reste."
+
+#: internal/mailui/actions.go:347
+#: internal/mailui/window.go:408
+msgid "Unsent"
+msgstr "Non envoyés"
+
+#: internal/mailui/actions.go:363
+#: internal/mailui/reader.go:160
+#: internal/mailui/window.go:861
+msgid "(no subject)"
+msgstr "(sans objet)"
+
+#: internal/mailui/actions.go:372
+msgid "no recipient yet"
+msgstr "pas encore de destinataire"
+
+#: internal/mailui/actions.go:374
+msgid "to %s · %s"
+msgstr "à %s · %s"
+
+#: internal/mailui/actions.go:374
+#: internal/mailui/reader.go:420
+msgid "Mon Jan 2, 15:04"
+msgstr "Mon 2 Jan, 15:04"
+
+#: internal/mailui/actions.go:385
+msgid "Discard"
+msgstr "Abandonner"
+
+#: internal/mailui/actions.go:396
+msgid "Nothing unsent."
+msgstr "Rien à envoyer."
+
+#: internal/mailui/actions.go:424
+msgid "%s and %d more message"
+msgid_plural "%s and %d more messages"
+msgstr[0] "%s et %d autre message"
+msgstr[1] "%s et %d autres messages"
+
+#: internal/mailui/app.go:23
+#: ui/mail.ui:14
+#: ui/mail.ui:38
+#: config/apps/io.github.lyricat.Inua.Mail.desktop:3
+msgid "Mail"
+msgstr "Courrier"
+
+#: internal/mailui/assist.go:130
+msgid "The messages are still loading."
+msgstr "Les messages sont encore en cours de chargement."
+
+#: internal/mailui/assist.go:153
+msgid "The assistant could not sum it up"
+msgstr "L'assistant n'a pas pu le résumer"
+
+#: internal/mailui/assist.go:188
+msgid "The assistant could not suggest replies"
+msgstr "L'assistant n'a pas pu suggérer de réponses"
+
+#: internal/mailui/assist.go:192
+msgid "The assistant gave no replies."
+msgstr "L'assistant n'a donné aucune réponse."
+
+#: internal/mailui/assist.go:217
+msgid "The assistant could not judge it"
+msgstr "L'assistant n'a pas pu en juger"
+
+#: internal/mailui/assist.go:224
+msgid "The assistant answered %q"
+msgstr "L'assistant a répondu %q"
+
+#: internal/mailui/assist.go:234
+msgid "Asking the assistant what to search for…"
+msgstr "L'assistant cherche quoi rechercher…"
+
+#: internal/mailui/assist.go:243
+msgid "The assistant could not search"
+msgstr "L'assistant n'a pas pu chercher"
+
+#: internal/mailui/assist.go:248
+msgid "The assistant gave no search."
+msgstr "L'assistant n'a donné aucune recherche."
+
+#: internal/mailui/assist.go:256
+#: internal/mailui/window.go:1047
+msgid "Searched for %s"
+msgstr "Recherché : %s"
+
+#: internal/mailui/compose.go:174
+#: ui/mail-compose.ui:15
+msgid "New message"
+msgstr "Nouveau message"
+
+#: internal/mailui/compose.go:227
+msgid "Could not keep the draft: %v"
+msgstr "Impossible de garder le brouillon : %v"
+
+#: internal/mailui/compose.go:230
+msgid "Draft kept at %s"
+msgstr "Brouillon gardé à %s"
+
+#: internal/mailui/compose.go:294
+msgid "Attach files"
+msgstr "Joindre des fichiers"
+
+#: internal/mailui/compose.go:331
+msgid "Not attached (a folder, or not readable): %s"
+msgstr "Non joint (un dossier, ou illisible) : %s"
+
+#: internal/mailui/compose.go:367
+msgid "The files come to %s; many servers refuse more than 20 MB."
+msgstr "Les fichiers font %s ; beaucoup de serveurs refusent plus de 20 Mo."
+
+#: internal/mailui/compose.go:385
+msgid "Choose the account it is sent from."
+msgstr "Choisissez le compte d'envoi."
+
+#: internal/mailui/compose.go:390
+msgid "Add who it goes to."
+msgstr "Ajoutez à qui il va."
+
+#: internal/mailui/compose.go:398
+msgid "The message is empty."
+msgstr "Le message est vide."
+
+#: internal/mailui/compose.go:416
+msgid "Not sent. The draft is kept."
+msgstr "Non envoyé. Le brouillon est gardé."
+
+#: internal/mailui/compose.go:420
+msgid "Sending in %d second…"
+msgid_plural "Sending in %d seconds…"
+msgstr[0] "Envoi dans %d seconde…"
+msgstr[1] "Envoi dans %d secondes…"
+
+#: internal/mailui/compose.go:425
+msgid "Sending…"
+msgstr "Envoi…"
+
+#: internal/mailui/compose.go:438
+#: ui/connect.ui:663
+#: ui/connectreply.ui:58
+#: ui/mail-compose.ui:282
+msgid "Send"
+msgstr "Envoyer"
+
+#: internal/mailui/compose.go:461
+msgid "Sent, but not saved in Sent: %v"
+msgstr "Envoyé, mais pas enregistré dans Envoyés : %v"
+
+#: internal/mailui/compose.go:489
+msgid "Shorter"
+msgstr "Plus court"
+
+#: internal/mailui/compose.go:490
+msgid "Friendlier"
+msgstr "Plus chaleureux"
+
+#: internal/mailui/compose.go:491
+msgid "More formal"
+msgstr "Plus formel"
+
+#: internal/mailui/compose.go:492
+msgid "Fix spelling and grammar"
+msgstr "Corriger l'orthographe et la grammaire"
+
+#: internal/mailui/compose.go:503
+msgid "Translate into %s"
+msgstr "Traduire : %s"
+
+#: internal/mailui/compose.go:520
+msgid "Write a line of what to say, then Draft."
+msgstr "Écrivez une ligne de ce qu'il faut dire, puis Rédiger."
+
+#: internal/mailui/compose.go:539
+msgid "Write something first, or Draft it."
+msgstr "Écrivez d'abord quelque chose, ou faites-le rédiger."
+
+#: internal/mailui/compose.go:556
+msgid "The assistant is writing…"
+msgstr "L'assistant écrit…"
+
+#: internal/mailui/compose.go:578
+msgid "The assistant could not write it"
+msgstr "L'assistant n'a pas pu l'écrire"
+
+#: internal/mailui/compose.go:586
+msgid "Written by the assistant: read it before you send."
+msgstr "Écrit par l'assistant : relisez-le avant d'envoyer."
+
+#: internal/mailui/reader.go:57
+msgid "Could not read this message: %v"
+msgstr "Impossible de lire ce message : %v"
+
+#: internal/mailui/reader.go:113
+msgid "Could not mark it read: %v"
+msgstr "Impossible de le marquer comme lu : %v"
+
+#: internal/mailui/reader.go:190
+msgid "Reply all"
+msgstr "Répondre à tous"
+
+#: internal/mailui/reader.go:191
+msgid "Forward"
+msgstr "Transférer"
+
+#: internal/mailui/reader.go:203
+msgid "E archive · # delete · S star · U unread"
+msgstr "E archiver · # supprimer · S suivre · U non lu"
+
+#: internal/mailui/reader.go:250
+msgid "%d check ▸"
+msgid_plural "%d checks ▸"
+msgstr[0] "%d vérification ▸"
+msgstr[1] "%d vérifications ▸"
+
+#: internal/mailui/reader.go:252
+msgid "Hide the checks"
+msgstr "Masquer les vérifications"
+
+#: internal/mailui/reader.go:256
+msgid "Move to Spam"
+msgstr "Déplacer vers Spam"
+
+#: internal/mailui/reader.go:282
+msgid "THE ASSISTANT"
+msgstr "L'ASSISTANT"
+
+#: internal/mailui/reader.go:301
+msgid "SUMMARY · ASSISTANT"
+msgstr "RÉSUMÉ · ASSISTANT"
+
+#: internal/mailui/reader.go:313
+msgid "Summarize"
+msgstr "Résumer"
+
+#: internal/mailui/reader.go:316
+msgid "Reply ideas"
+msgstr "Idées de réponse"
+
+#: internal/mailui/reader.go:318
+msgid "Thinking of replies…"
+msgstr "Réflexion sur les réponses…"
+
+#: internal/mailui/reader.go:360
+msgid "Thinking…"
+msgstr "Réflexion…"
+
+#: internal/mailui/reader.go:436
+#: internal/mailui/window.go:758
+msgid "Loading…"
+msgstr "Chargement…"
+
+#: internal/mailui/reader.go:456
+#: internal/mailui/window.go:855
+msgid "me"
+msgstr "moi"
+
+#: internal/mailui/reader.go:468
+msgid "to %s"
+msgstr "à %s"
+
+#: internal/mailui/reader.go:491
+msgid "Show quoted text"
+msgstr "Afficher le texte cité"
+
+#: internal/mailui/reader.go:493
+msgid "Hide quoted text"
+msgstr "Masquer le texte cité"
+
+#: internal/mailui/reader.go:498
+msgid "Open in browser"
+msgstr "Ouvrir dans le navigateur"
+
+#: internal/mailui/reader.go:500
+msgid "Shown here as text. The browser shows it as sent, and may load its remote images, which tell the sender you opened it."
+msgstr "Affiché ici en texte. Le navigateur l'affiche tel qu'envoyé, et peut charger ses images distantes, qui signalent à l'expéditeur que vous l'avez ouvert."
+
+#: internal/mailui/reader.go:538
+#: internal/shell/commands.go:162
+#: internal/shell/commands.go:164
+msgid "Open %s"
+msgstr "Ouvrir %s"
+
+#: internal/mailui/reader.go:575
+#: ui/gpg.ui:652
+#: ui/gpg.ui:896
+msgid "Save…"
+msgstr "Enregistrer…"
+
+#: internal/mailui/reader.go:586
+msgid "%d bytes"
+msgstr "%d octets"
+
+#: internal/mailui/reader.go:625
+msgid "Could not open %s: %v"
+msgstr "Impossible d'ouvrir %s : %v"
+
+#: internal/mailui/reader.go:653
+msgid "Could not open it in the browser: %v"
+msgstr "Impossible de l'ouvrir dans le navigateur : %v"
+
+#: internal/mailui/reader.go:661
+msgid "Save the attachment"
+msgstr "Enregistrer la pièce jointe"
+
+#: internal/mailui/reader.go:680
+msgid "Could not save %s: %v"
+msgstr "Impossible d'enregistrer %s : %v"
+
+#: internal/mailui/window.go:174
+msgid "ALL"
+msgstr "TOUS"
+
+#: internal/mailui/window.go:174
+msgid "UNREAD"
+msgstr "NON LUS"
+
+#: internal/mailui/window.go:178
+msgid "Every conversation"
+msgstr "Toutes les conversations"
+
+#: internal/mailui/window.go:178
+msgid "With messages not read"
+msgstr "Avec des messages non lus"
+
+#: internal/mailui/window.go:179
+msgid "With files attached"
+msgstr "Avec des fichiers joints"
+
+#: internal/mailui/window.go:179
+msgid "Waiting for your reply"
+msgstr "En attente de votre réponse"
+
+#: internal/mailui/window.go:335
+msgid "Signed out"
+msgstr "Déconnecté"
+
+#: internal/mailui/window.go:339
+msgid "Offline: %v"
+msgstr "Hors ligne : %v"
+
+#: internal/mailui/window.go:393
+msgid "No account yet"
+msgstr "Pas encore de compte"
+
+#: internal/mailui/window.go:404
+msgid "All inboxes"
+msgstr "Toutes les boîtes"
+
+#: internal/mailui/window.go:405
+msgid "Needs reply"
+msgstr "Demande une réponse"
+
+#: internal/mailui/window.go:406
+msgid "Starred"
+msgstr "Suivis"
+
+#: internal/mailui/window.go:426
+msgid "Show or hide the other folders"
+msgstr "Afficher ou masquer les autres dossiers"
+
+#: internal/mailui/window.go:439
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: internal/mailui/window.go:470
+msgid "Remove account…"
+msgstr "Retirer le compte…"
+
+#: internal/mailui/window.go:474
+msgid "%d more folder"
+msgid_plural "%d more folders"
+msgstr[0] "%d autre dossier"
+msgstr[1] "%d autres dossiers"
+
+#: internal/mailui/window.go:516
+msgid "Inbox"
+msgstr "Boîte de réception"
+
+#: internal/mailui/window.go:518
+msgid "Drafts"
+msgstr "Brouillons"
+
+#: internal/mailui/window.go:520
+msgid "Sent"
+msgstr "Envoyés"
+
+#: internal/mailui/window.go:524
+msgid "Spam"
+msgstr "Spam"
+
+#: internal/mailui/window.go:703
+msgid "Nothing found"
+msgstr "Rien trouvé"
+
+#: internal/mailui/window.go:705
+msgid "Fetching your mail…"
+msgstr "Récupération de votre courrier…"
+
+#: internal/mailui/window.go:707
+msgid "Nothing waits for your reply"
+msgstr "Rien n'attend votre réponse"
+
+#: internal/mailui/window.go:709
+msgid "No starred conversation"
+msgstr "Aucune conversation suivie"
+
+#: internal/mailui/window.go:711
+msgid "All read"
+msgstr "Tout est lu"
+
+#: internal/mailui/window.go:713
+msgid "No mail here"
+msgstr "Aucun courrier ici"
+
+#: internal/mailui/window.go:763
+#: ui/mail.ui:174
+msgid "Load older"
+msgstr "Charger les plus anciens"
+
+#: internal/mailui/window.go:765
+msgid "Could not load older mail: %v"
+msgstr "Impossible de charger le courrier plus ancien : %v"
+
+#: internal/mailui/window.go:883
+#: internal/mailui/window.go:886
+msgid "SUSPICIOUS"
+msgstr "SUSPECT"
+
+#: internal/mailui/window.go:931
+#: internal/shell/notify.go:30
+msgid "Jan 2"
+msgstr "2 Jan"
+
+#: internal/mailui/window.go:985
+msgid "Press Enter to ask the assistant to search for this."
+msgstr "Appuyez sur Entrée pour demander à l'assistant de le rechercher."
+
+#: internal/mailui/window.go:1026
+msgid "Searching the server…"
+msgstr "Recherche sur le serveur…"
+
+#: internal/mailui/window.go:1050
+msgid "The server's search failed: %s"
+msgstr "La recherche du serveur a échoué : %s"
 
 #: internal/remoteui/app.go:20
 #: ui/remote.ui:14
@@ -9730,7 +10589,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Appuyez à nouveau sur Entrée pour vider la corbeille"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:289
+#: internal/shell/dock.go:290
 msgid "inua's settings"
 msgstr "Paramètres d'Inua"
 
@@ -9872,11 +10731,6 @@ msgstr "Tapez %s et les mots à rechercher"
 
 #: internal/shell/commands.go:162
 #: internal/shell/commands.go:164
-msgid "Open %s"
-msgstr "Ouvrir %s"
-
-#: internal/shell/commands.go:162
-#: internal/shell/commands.go:164
 msgid "Web address"
 msgstr "Adresse Internet"
 
@@ -9885,56 +10739,56 @@ msgid "Web search"
 msgstr "Recherche sur le Web"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:300
 msgid "EVERYDAY"
 msgstr "TOUS LES JOURS"
 
-#: internal/shell/dock.go:255
-#: internal/shell/dock.go:299
+#: internal/shell/dock.go:256
+#: internal/shell/dock.go:300
 msgid "TOOLS"
 msgstr "OUTILS"
 
-#: internal/shell/dock.go:271
+#: internal/shell/dock.go:272
 msgid "PLAY"
 msgstr "JOUER"
 
-#: internal/shell/dock.go:276
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:277
+#: internal/shell/dock.go:302
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "SYSTÈME"
 
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "Find apps, windows and answers"
 msgstr "Rechercher des applications, des fenêtres et des réponses"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "Capture d’écran"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 msgid "Capture an area, a window or a screen"
 msgstr "Capturer une zone, une fenêtre ou un écran"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "DEVELOPMENT"
 msgstr "DÉVELOPPEMENT"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "MEDIA"
 msgstr "MÉDIAS"
 
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "GAMES"
 msgstr "JEUX"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "OTHER"
 msgstr "AUTRES"
 
-#: internal/shell/dock.go:326
+#: internal/shell/dock.go:327
 msgid "WORKSHOP"
 msgstr "ATELIER"
 
@@ -10009,10 +10863,6 @@ msgstr "%dm"
 #: internal/shell/notify.go:20
 msgid "%dh"
 msgstr "%dh"
-
-#: internal/shell/notify.go:30
-msgid "Jan 2"
-msgstr "2 Jan"
 
 #: internal/shell/notify.go:40
 msgid "Needs notifications"
@@ -10934,10 +11784,6 @@ msgstr "Notifications (Ne pas déranger activé)"
 #: ui/group.ui:52
 msgid "Clear"
 msgstr "Effacer"
-
-#: internal/ui/notify.go:446
-msgid "Notification"
-msgstr "Notification"
 
 #: internal/ui/notify.go:636
 #: internal/ui/notify.go:826
@@ -12210,6 +13056,7 @@ msgid "Author"
 msgstr "Auteur"
 
 #: internal/viewerui/app.go:805
+#: ui/mail-compose.ui:143
 msgid "Subject"
 msgstr "Sujet"
 
@@ -12743,11 +13590,6 @@ msgstr "Envoyer des fichiers…"
 msgid "Text, or a link it opens"
 msgstr "Du texte, ou un lien qu'il ouvre"
 
-#: ui/connect.ui:663
-#: ui/connectreply.ui:58
-msgid "Send"
-msgstr "Envoyer"
-
 #: ui/connect.ui:697
 msgid "[SHARED WITH IT]"
 msgstr "[PARTAGÉ AVEC LUI]"
@@ -13006,11 +13848,6 @@ msgstr "Chiffrer"
 msgid "<span alpha='55%'>[</span>ENCRYPTED<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHIFFRÉ<span alpha='55%'>]</span>"
 
-#: ui/gpg.ui:652
-#: ui/gpg.ui:896
-msgid "Save…"
-msgstr "Enregistrer…"
-
 #: ui/gpg.ui:677
 msgid "DECRYPT"
 msgstr "DÉCHIFFRER"
@@ -13110,6 +13947,74 @@ msgstr "↵ ouvert"
 #: ui/launcher.ui:134
 msgid "Esc  close"
 msgstr "Echap fermer"
+
+#: ui/mail-compose.ui:37
+msgid "From"
+msgstr "De"
+
+#: ui/mail-compose.ui:61
+msgid "To"
+msgstr "À"
+
+#: ui/mail-compose.ui:78
+msgid "Cc, Bcc"
+msgstr "Cc, Cci"
+
+#: ui/mail-compose.ui:94
+msgid "Cc"
+msgstr "Cc"
+
+#: ui/mail-compose.ui:119
+msgid "Bcc"
+msgstr "Cci"
+
+#: ui/mail-compose.ui:200
+msgid "ASSISTANT"
+msgstr "ASSISTANT"
+
+#: ui/mail-compose.ui:209
+msgid "What to say: the assistant drafts it"
+msgstr "Quoi dire : l'assistant le rédige"
+
+#: ui/mail-compose.ui:217
+msgid "Draft"
+msgstr "Rédiger"
+
+#: ui/mail-compose.ui:225
+msgid "Polish"
+msgstr "Peaufiner"
+
+#: ui/mail-compose.ui:273
+msgid "Attach…"
+msgstr "Joindre…"
+
+#: ui/mail-compose.ui:283
+msgid "Ctrl+Enter"
+msgstr "Ctrl+Entrée"
+
+#: ui/mail.ui:49
+msgid "Compose"
+msgstr "Écrire"
+
+#: ui/mail.ui:50
+msgid "Write a message (C)"
+msgstr "Écrire un message (C)"
+
+#: ui/mail.ui:104
+msgid "Search, or ask in a sentence"
+msgstr "Rechercher, ou demander par une phrase"
+
+#: ui/mail.ui:192
+msgid "No conversation chosen"
+msgstr "Aucune conversation choisie"
+
+#: ui/mail.ui:235
+msgid "Your mail, in three columns"
+msgstr "Votre courrier, en trois colonnes"
+
+#: ui/mail.ui:245
+msgid "Add an account to begin. Gmail and Outlook sign in on their own page in your browser; any other account signs in with its IMAP server and a password. Mail keeps a copy of what it reads, so it opens with your inbox even before it connects."
+msgstr "Ajoutez un compte pour commencer. Gmail et Outlook se connectent sur leur propre page dans votre navigateur ; tout autre compte se connecte avec son serveur IMAP et un mot de passe. Courrier garde une copie de ce qu'il lit, et s'ouvre donc sur votre boîte de réception avant même de se connecter."
 
 #: ui/music.ui:55
 #: ui/video.ui:153
@@ -14900,6 +15805,14 @@ msgstr "Chiffrez et déchiffrez messages et fichiers avec GnuPG, et voyez qui le
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:20
 msgid "gpg;gnupg;pgp;openpgp;encrypt;decrypt;sign;signature;key;"
 msgstr "gpg;gnupg;pgp;openpgp;chiffrer;déchiffrer;signer;signature;clé;"
+
+#: config/apps/io.github.lyricat.Inua.Mail.desktop:4
+msgid "Read and write mail from all your accounts"
+msgstr "Lire et écrire le courrier de tous vos comptes"
+
+#: config/apps/io.github.lyricat.Inua.Mail.desktop:9
+msgid "mail;email;inbox;gmail;outlook;imap;"
+msgstr "courrier;email;courriel;boîte;gmail;outlook;imap;"
 
 #: config/apps/io.github.lyricat.Inua.Minesweeper.desktop:10
 msgid "Reveal safe squares and flag hidden mines"

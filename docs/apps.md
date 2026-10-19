@@ -15,8 +15,8 @@ Video plays the file). The Assistant is a program of its own,
 window for each file opened, the Windows guest's manager, `inua-vm`
 ([the Windows VM](#windows-vm)), Remote Desktop, `inua-remote`
 ([remote-desktop.md](remote-desktop.md)), Mobile Link, `inua-connect`
-([mobile-link.md](mobile-link.md)), and Disk Usage, `inua-disk-usage`
-([disk-usage.md](disk-usage.md)).
+([mobile-link.md](mobile-link.md)), Disk Usage, `inua-disk-usage`
+([disk-usage.md](disk-usage.md)), and Mail, `inua-mail` ([mail.md](mail.md)).
 
 Their data is kept in `~/.local/share/inua`.
 
@@ -478,6 +478,18 @@ models) and gathers them in Developer, Agents and AI, and Caches. For the
 item chosen it says whether it can go, check by check, asks the assistant
 when no check settles it, explains what it is, and moves it to the trash
 or deletes it. See [disk-usage.md](disk-usage.md).
+
+## Mail
+
+`inua-mail` reads and writes mail from several accounts in three columns:
+the mailboxes, the conversations of the one chosen, and the conversation.
+Gmail and Outlook sign in on their own page in the browser (OAuth); other
+accounts with their IMAP server and a password. It opens with the mail
+kept from last time, gets new mail at once over IDLE, shows HTML as text
+without remote images, checks each message for signs of phishing, and
+asks the assistant only when asked: a conversation's summary, reply
+ideas, drafting and polishing, and a search from a sentence. See
+[mail.md](mail.md).
 
 ## Files
 

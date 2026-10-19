@@ -262,6 +262,8 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 				f := gio.FileBase{Ptr: ptr}
 				if p := f.GetPath(); p != "" {
 					paths = append(paths, p)
+				} else if u := f.GetUri(); strings.HasPrefix(strings.ToLower(u), "mailto:") {
+					paths = append(paths, u) // Mail's links
 				}
 			}
 			first := c.win == nil

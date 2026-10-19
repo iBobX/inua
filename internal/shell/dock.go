@@ -246,6 +246,7 @@ var LightAppGroups = []struct {
 	{i18n.M("EVERYDAY"), []string{
 		"io.github.lyricat.Inua.Clock",
 		"io.github.lyricat.Inua.Calendar",
+		"io.github.lyricat.Inua.Mail",
 		"io.github.lyricat.Inua.Weather",
 		"io.github.lyricat.Inua.Stocks",
 		"io.github.lyricat.Inua.Music",
