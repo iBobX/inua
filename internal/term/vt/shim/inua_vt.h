@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 5
+#define INUA_VT_ABI 6
 
 typedef struct inua_vt inua_vt;
 
@@ -115,5 +115,16 @@ int inua_vt_select(inua_vt *t, uint32_t kind, uint16_t x, uint16_t y,
 int inua_vt_selection_text(inua_vt *t, uint8_t **out, size_t *len);
 
 void inua_vt_select_clear(inua_vt *t);
+
+/* Pasting text the user chose (a keybind, a middle click): what to send
+ * the program, in the modes it set: wrapped in bracketed paste (mode
+ * 2004) when it asked, control bytes made spaces. Returns 0 with *out
+ * (freed with inua_vt_free_bytes; *len 0 for nothing to paste), or -7
+ * (rejected) when the text could run commands, that is a line break
+ * outside a bracketed paste or the bracket's end inside one, and
+ * allow_unsafe is 0: nothing to send until the user confirms. primary
+ * says it came from the primary selection. */
+int inua_vt_paste(inua_vt *t, const uint8_t *data, size_t len, uint32_t primary,
+                  uint32_t allow_unsafe, uint8_t **out, size_t *out_len);
 
 #endif

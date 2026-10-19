@@ -2715,6 +2715,7 @@ msgstr "不明な部品 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/paste.go:139
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3588,6 +3589,8 @@ msgid "Opens folders"
 msgstr "フォルダーを開く"
 
 #: internal/desktop/defaults.go:39
+#: internal/termui/app.go:39
+#: internal/termui/app.go:45
 #: ui/settings.ui:1933
 msgid "Terminal"
 msgstr "ターミナル"
@@ -4902,6 +4905,7 @@ msgid "New file…"
 msgstr "新規ファイル…"
 
 #: internal/filesui/window.go:699
+#: internal/termui/paste.go:144
 msgid "Paste"
 msgstr "貼り付け"
 
@@ -8763,6 +8767,28 @@ msgstr "フル充電"
 #: internal/shell/status.go:188
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 充電中"
+
+#: internal/termui/paste.go:98
+msgid "Paste %d line?"
+msgid_plural "Paste %d lines?"
+msgstr[0] "%d 行を貼り付けますか？"
+
+#: internal/termui/paste.go:102
+msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
+msgstr "このプログラムは改行を Enter として受け取るため、貼り付けた時点で各行が実行されます。"
+
+#: internal/termui/paste.go:104
+msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
+msgstr "テキストに貼り付けの終わりを示す印が含まれているため、その後ろは入力されたものとして実行されます。"
+
+#: internal/termui/paste.go:121
+msgid "and %d more line"
+msgid_plural "and %d more lines"
+msgstr[0] "ほか %d 行"
+
+#: internal/termui/paste.go:140
+msgid "Paste as one line"
+msgstr "1 行にして貼り付け"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

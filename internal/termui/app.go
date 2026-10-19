@@ -118,7 +118,7 @@ func (a *App) show(id, cols, rows int) error {
 	a.mu.Lock()
 	a.shown = p
 	a.mu.Unlock()
-	a.win.SetChild(p.widget)
+	a.win.SetChild(&p.root.Widget)
 	p.widget.GrabFocus()
 	return nil
 }

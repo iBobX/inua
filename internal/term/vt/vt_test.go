@@ -350,3 +350,46 @@ func TestKeysym(t *testing.T) {
 		t.Errorf("F2 by keysym alone: %q", got)
 	}
 }
+
+func TestPaste(t *testing.T) {
+	term := newTerm(t, 40, 5)
+	paste := func(text string, force bool) (string, error) {
+		t.Helper()
+		b, err := term.Paste(text, false, force)
+		return string(b), err
+	}
+	if got, err := paste("ls -l", false); err != nil || got != "ls -l" {
+		t.Errorf("plain: %q, %v", got, err)
+	}
+	// A line break would be Enter: refused, then sent as Enter once agreed.
+	if _, err := paste("rm -rf build\n", false); !errors.Is(err, ErrUnsafe) {
+		t.Errorf("newline unbracketed: %v, want ErrUnsafe", err)
+	}
+	if got, err := paste("a\nb", true); err != nil || got != "a\rb" {
+		t.Errorf("forced: %q, %v", got, err)
+	}
+	// Control bytes become spaces.
+	if got, err := paste("a\x1b[31mb", false); err != nil || got != "a [31mb" {
+		t.Errorf("escape: %q, %v", got, err)
+	}
+	if got, err := paste("", false); err != nil || got != "" {
+		t.Errorf("empty: %q, %v", got, err)
+	}
+
+	// Bracketed paste: lines are safe, the bracket's end is not.
+	term.Write([]byte("\x1b[?2004h"))
+	if got, err := paste("a\nb", false); err != nil || got != "\x1b[200~a\nb\x1b[201~" {
+		t.Errorf("bracketed: %q, %v", got, err)
+	}
+	if _, err := paste("a\x1b[201~b\n", false); !errors.Is(err, ErrUnsafe) {
+		t.Errorf("bracket end: %v, want ErrUnsafe", err)
+	}
+	// Agreed, the bracket's end loses its escape and cannot end the paste.
+	if got, err := paste("a\x1b[201~b", true); err != nil || got != "\x1b[200~a [201~b\x1b[201~" {
+		t.Errorf("bracket end, forced: %q, %v", got, err)
+	}
+	term.Write([]byte("\x1b[?2004l"))
+	if _, err := paste("a\nb", false); !errors.Is(err, ErrUnsafe) {
+		t.Errorf("after 2004l: %v, want ErrUnsafe", err)
+	}
+}

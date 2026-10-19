@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -31,7 +32,8 @@ type backend interface {
 // program on the host, drawn by its widget. The engine is touched on the
 // main thread only.
 type termPane struct {
-	id     int // the host's
+	id     int          // the host's
+	root   *gtk.Overlay // the widget, and the paste sheet over it
 	widget *gtk.Widget
 	term   *vt.Terminal
 	be     backend
@@ -43,6 +45,7 @@ type termPane struct {
 	cols   int
 	rows   int
 	exited bool
+	closed bool
 	lines  [][]vt.Run // the screen's rows as the engine last said
 	cur    vt.Cursor
 	mouse  bool // the program tracks the mouse
@@ -56,6 +59,12 @@ type termPane struct {
 
 	im      *gtk.IMMulticontext
 	preedit string // what the input method is composing, drawn at the cursor
+
+	sheet                     *gtk.Box // the paste sheet, while it asks
+	sheetCbs                  []*func(gtk.Button)
+	onSheetKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onClipText, onPrimaryText gio.AsyncReadyCallback
+	onMiddle                  func(gtk.GestureClick, int32, float64, float64)
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
@@ -94,6 +103,10 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	p.widget.SetFocusable(true)
 	p.widget.SetHexpand(true)
 	p.widget.SetVexpand(true)
+	p.root = gtk.NewOverlay()
+	p.root.SetChild(p.widget)
+	p.onClipText = func(_, result, _ uintptr) { p.clipRead(false, result) }
+	p.onPrimaryText = func(_, result, _ uintptr) { p.clipRead(true, result) }
 	p.im = gtk.NewIMMulticontext()
 	p.im.SetClientWidget(p.widget)
 	keys := gtk.NewEventControllerKey()
@@ -131,6 +144,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	drag.SetButton(1)
 	p.onDragBegin = func(g gtk.GestureDrag, x, y float64) {
 		p.widget.GrabFocus()
+		p.hideSheet()
 		// A program tracking the mouse gets it; Shift selects anyway.
 		if p.mouse && g.GetCurrentEventState()&gdk.ShiftMaskValue == 0 {
 			return
@@ -156,6 +170,17 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	drag.ConnectDragUpdate(&p.onDragUpdate)
 	drag.ConnectDragEnd(&p.onDragEnd)
 	p.widget.AddController(&drag.EventController)
+	middle := gtk.NewGestureClick()
+	middle.SetButton(2)
+	p.onMiddle = func(g gtk.GestureClick, _ int32, _, _ float64) {
+		if p.mouse && g.GetCurrentEventState()&gdk.ShiftMaskValue == 0 {
+			return
+		}
+		p.widget.GrabFocus()
+		p.pasteFrom(true)
+	}
+	middle.ConnectPressed(&p.onMiddle)
+	p.widget.AddController(&middle.EventController)
 	return p, nil
 }
 
@@ -207,9 +232,12 @@ func (p *termPane) copySelection(toClipboard bool) {
 	if err != nil || text == "" {
 		return
 	}
-	p.widget.GetPrimaryClipboard().SetText(text)
-	if toClipboard {
-		p.widget.GetClipboard().SetText(text)
+	for _, primary := range []bool{true, false} {
+		if primary || toClipboard {
+			clip := p.clipboard(primary)
+			clip.SetText(text)
+			clip.Unref()
+		}
 	}
 }
 
@@ -219,10 +247,17 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	if p.exited {
 		return false
 	}
-	if action == vt.Press && state&(gdk.ControlMaskValue|gdk.ShiftMaskValue) == gdk.ControlMaskValue|gdk.ShiftMaskValue {
-		switch int32(gdk.KeyvalToLower(keyval)) {
-		case gdk.KEY_c:
+	if action == vt.Press {
+		chord := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
+		switch {
+		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_c:
 			p.copySelection(true)
+			return true
+		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_v:
+			p.pasteFrom(false)
+			return true
+		case chord == gdk.ShiftMaskValue && (int32(keyval) == gdk.KEY_Insert || int32(keyval) == gdk.KEY_KP_Insert):
+			p.pasteFrom(true)
 			return true
 		}
 	}
@@ -449,6 +484,7 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 }
 
 func (p *termPane) close() {
+	p.closed = true
 	p.im.SetClientWidget(nil)
 	p.term.Close()
 	forgetPaneWidget(p.widget)

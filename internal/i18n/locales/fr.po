@@ -2731,6 +2731,7 @@ msgstr "Bloc inconnu %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/paste.go:139
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3604,6 +3605,8 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
+#: internal/termui/app.go:39
+#: internal/termui/app.go:45
 #: ui/settings.ui:1933
 msgid "Terminal"
 msgstr "Terminal"
@@ -4933,6 +4936,7 @@ msgid "New file…"
 msgstr "Nouveau fichier…"
 
 #: internal/filesui/window.go:699
+#: internal/termui/paste.go:144
 msgid "Paste"
 msgstr "Coller"
 
@@ -8804,6 +8808,30 @@ msgstr "Complètement chargé"
 #: internal/shell/status.go:188
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Chargement"
+
+#: internal/termui/paste.go:98
+msgid "Paste %d line?"
+msgid_plural "Paste %d lines?"
+msgstr[0] "Coller %d ligne ?"
+msgstr[1] "Coller %d lignes ?"
+
+#: internal/termui/paste.go:102
+msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
+msgstr "Ce programme prend un saut de ligne pour Entrée : chaque ligne s’exécuterait dès qu’elle est collée."
+
+#: internal/termui/paste.go:104
+msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
+msgstr "Le texte contient la marque qui termine un collage : ce qui la suit s’exécuterait comme s’il était tapé."
+
+#: internal/termui/paste.go:121
+msgid "and %d more line"
+msgid_plural "and %d more lines"
+msgstr[0] "et %d ligne de plus"
+msgstr[1] "et %d lignes de plus"
+
+#: internal/termui/paste.go:140
+msgid "Paste as one line"
+msgstr "Coller sur une ligne"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

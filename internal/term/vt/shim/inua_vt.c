@@ -14,6 +14,7 @@ struct inua_vt {
   GhosttyKeyEvent key;
   GhosttySelectionGesture gesture;
   GhosttySelectionGestureEvent press, release, drag;
+  struct paste_out *paste; /* while inua_vt_paste runs */
 };
 
 int inua_vt_abi(void) { return INUA_VT_ABI; }
@@ -447,4 +448,87 @@ int inua_vt_selection_text(inua_vt *t, uint8_t **out, size_t *len) {
 void inua_vt_select_clear(inua_vt *t) {
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SELECTION, NULL);
   ghostty_selection_gesture_reset(t->gesture, t->term);
+}
+
+/* --- paste --- */
+
+/* What the terminal writes to the pty while a paste runs, gathered. */
+struct paste_out {
+  uint8_t *p;
+  size_t len, cap;
+  bool failed;
+};
+
+static void paste_write(GhosttyTerminal term, void *userdata, const uint8_t *data, size_t len) {
+  (void)term;
+  struct paste_out *o = ((inua_vt *)userdata)->paste;
+  if (o == NULL || o->failed) return;
+  if (o->len + len > o->cap) {
+    size_t cap = o->cap ? o->cap * 2 : 256;
+    while (cap < o->len + len) cap *= 2;
+    uint8_t *p = ghostty_alloc(NULL, cap);
+    if (p == NULL) {
+      o->failed = true;
+      return;
+    }
+    if (o->len) memcpy(p, o->p, o->len);
+    if (o->p) ghostty_free(NULL, o->p, o->cap);
+    o->p = p;
+    o->cap = cap;
+  }
+  memcpy(o->p + o->len, data, len);
+  o->len += len;
+}
+
+typedef struct {
+  const uint8_t *p;
+  size_t len;
+} paste_text;
+
+static bool paste_read(void *userdata, GhosttyString mime, GhosttyWriter w) {
+  (void)mime;
+  paste_text *s = userdata;
+  return s->len == 0 || w.write(w.userdata, s->p, s->len);
+}
+
+int inua_vt_paste(inua_vt *t, const uint8_t *data, size_t len, uint32_t primary,
+                  uint32_t allow_unsafe, uint8_t **out, size_t *out_len) {
+  *out = NULL;
+  *out_len = 0;
+  paste_text text = {data, len};
+  GhosttyString mimes[] = {{(const uint8_t *)"text/plain", 10}};
+  GhosttyPaste paste = {
+      .size = sizeof(paste),
+      .location = primary ? GHOSTTY_CLIPBOARD_LOCATION_PRIMARY : GHOSTTY_CLIPBOARD_LOCATION_STANDARD,
+      .source = GHOSTTY_PASTE_SOURCE_CLIPBOARD,
+      .mimes = mimes,
+      .mimes_len = 1,
+      .reader = {.read = paste_read, .userdata = &text},
+      .allow_unsafe = allow_unsafe != 0,
+  };
+  /* The pty writer is installed for the paste alone, so nothing else the
+   * terminal would write goes with it. */
+  struct paste_out o = {0};
+  t->paste = &o;
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_USERDATA, t);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, (const void *)paste_write);
+  GhosttyResult r = ghostty_terminal_paste(t->term, &paste, NULL);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, NULL);
+  t->paste = NULL;
+  if (r == GHOSTTY_SUCCESS && o.failed) r = GHOSTTY_OUT_OF_MEMORY;
+  if (r != GHOSTTY_SUCCESS || o.len == 0) {
+    if (o.p) ghostty_free(NULL, o.p, o.cap);
+    return r;
+  }
+  /* Freed by length: hand over an exact copy. */
+  uint8_t *p = ghostty_alloc(NULL, o.len);
+  if (p == NULL) {
+    ghostty_free(NULL, o.p, o.cap);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  memcpy(p, o.p, o.len);
+  ghostty_free(NULL, o.p, o.cap);
+  *out = p;
+  *out_len = o.len;
+  return GHOSTTY_SUCCESS;
 }

@@ -2715,6 +2715,7 @@ msgstr "未知的组件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/paste.go:139
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -3588,6 +3589,8 @@ msgid "Opens folders"
 msgstr "打开文件夹"
 
 #: internal/desktop/defaults.go:39
+#: internal/termui/app.go:39
+#: internal/termui/app.go:45
 #: ui/settings.ui:1933
 msgid "Terminal"
 msgstr "终端"
@@ -4902,6 +4905,7 @@ msgid "New file…"
 msgstr "新建文件……"
 
 #: internal/filesui/window.go:699
+#: internal/termui/paste.go:144
 msgid "Paste"
 msgstr "粘贴"
 
@@ -8763,6 +8767,28 @@ msgstr "充满电"
 #: internal/shell/status.go:188
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充电中"
+
+#: internal/termui/paste.go:98
+msgid "Paste %d line?"
+msgid_plural "Paste %d lines?"
+msgstr[0] "粘贴 %d 行？"
+
+#: internal/termui/paste.go:102
+msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
+msgstr "此程序将换行视为回车，因此每一行粘贴后会立即运行。"
+
+#: internal/termui/paste.go:104
+msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
+msgstr "文本中含有结束粘贴的标记，其后的内容会像键入的一样运行。"
+
+#: internal/termui/paste.go:121
+msgid "and %d more line"
+msgid_plural "and %d more lines"
+msgstr[0] "还有 %d 行"
+
+#: internal/termui/paste.go:140
+msgid "Paste as one line"
+msgstr "粘贴为一行"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 5
+const abi = 6
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -46,6 +46,7 @@ var lib struct {
 	sel       func(t uintptr, kind uint32, x, y uint16, px, py float64, timeNs, repeatNs uint64, repeatPx float64, rect, cellW, height uint32) int32
 	selText   func(t uintptr, out **byte, n *uintptr) int32
 	selClear  func(t uintptr)
+	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
 // ErrMissing is returned when libinua-vt.so is not found.
@@ -104,6 +105,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.sel, h, "inua_vt_select")
 		purego.RegisterLibFunc(&lib.selText, h, "inua_vt_selection_text")
 		purego.RegisterLibFunc(&lib.selClear, h, "inua_vt_select_clear")
+		purego.RegisterLibFunc(&lib.paste, h, "inua_vt_paste")
 	})
 	return lib.err
 }
@@ -465,3 +467,43 @@ func (t *Terminal) SelectionText() (string, error) {
 
 // ClearSelection removes the selection.
 func (t *Terminal) ClearSelection() { lib.selClear(t.h) }
+
+// ErrUnsafe is Paste's answer for text that could run commands: a line
+// break the program would take as Enter, or the end of a bracketed paste
+// inside one. Paste it with force set once the user agreed.
+var ErrUnsafe = errors.New("vt: the text could run commands")
+
+// Paste is what to send the program for text the user pastes, in the
+// modes it set: inside bracketed paste when it asked for it, control
+// bytes made spaces; nil for nothing. primary says it came from the
+// primary selection. Without force, text that could run commands is
+// refused with ErrUnsafe.
+func (t *Terminal) Paste(text string, primary, force bool) ([]byte, error) {
+	if text == "" {
+		return nil, nil
+	}
+	b := []byte(text)
+	var p *byte
+	var n uintptr
+	r := lib.paste(t.h, &b[0], uintptr(len(b)), flag(primary), flag(force), &p, &n)
+	runtime.KeepAlive(b)
+	if r == -7 {
+		return nil, ErrUnsafe
+	}
+	if err := result("paste", r); err != nil {
+		return nil, err
+	}
+	if p == nil {
+		return nil, nil
+	}
+	out := append([]byte(nil), unsafe.Slice(p, n)...)
+	lib.freeBytes(p, n)
+	return out, nil
+}
+
+func flag(b bool) uint32 {
+	if b {
+		return 1
+	}
+	return 0
+}
