@@ -23,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 14
+const abi = 15
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -56,6 +56,7 @@ var lib struct {
 	input       func(t uintptr, out **byte, n *uintptr) int32
 	tail        func(t uintptr, n uint16, out **byte, outN *uintptr) int32
 	notes       func(t uintptr, p **byte, n *uintptr)
+	defaults    func(t uintptr, scrollback, cursor, blink uint32)
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -130,6 +131,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.input, h, "inua_vt_input")
 		purego.RegisterLibFunc(&lib.tail, h, "inua_vt_tail")
 		purego.RegisterLibFunc(&lib.notes, h, "inua_vt_notifications")
+		purego.RegisterLibFunc(&lib.defaults, h, "inua_vt_defaults")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -308,6 +310,13 @@ func (t *Terminal) Input() string {
 	return s
 }
 
+// SetDefaults sets the scrollback's length in lines and the cursor a
+// program gets when it resets it (CursorBar, CursorBlock or
+// CursorUnderline), blinking or not.
+func (t *Terminal) SetDefaults(scrollback int, cursor CursorStyle, blink bool) {
+	lib.defaults(t.h, uint32(max(scrollback, 0)), uint32(cursor), flag(blink))
+}
+
 // Notification is a desktop notification a program sent (OSC 9, 777).
 type Notification struct{ Title, Body string }
 
@@ -431,6 +440,7 @@ type frameInfo struct {
 	password, fg, bg, nrows         uint32
 	mouse, alt                      uint32
 	sbTotal, sbOffset, sbLen        uint32
+	cursorBlink                     uint32
 }
 
 // Dirty says how much of the screen changed since the last frame.
@@ -501,6 +511,7 @@ type Cursor struct {
 	Visible bool
 	Style   CursorStyle
 	Wide    bool // on the second cell of a wide character
+	Blink   bool // it should blink
 }
 
 // Line is one row of the viewport, as runs of text in one style.
@@ -549,7 +560,7 @@ func decodeFrame(info *frameInfo, b []byte) (Frame, error) {
 		Cols: int(info.cols), Rows: int(info.rows), Dirty: Dirty(info.dirty),
 		Cursor: Cursor{
 			X: int(info.cursorX), Y: int(info.cursorY), Visible: info.cursorVisible != 0,
-			Style: CursorStyle(info.cursorStyle), Wide: info.cursorWide != 0,
+			Style: CursorStyle(info.cursorStyle), Wide: info.cursorWide != 0, Blink: info.cursorBlink != 0,
 		},
 		Password: info.password != 0, FG: info.fg, BG: info.bg, Mouse: info.mouse != 0, Alt: info.alt != 0,
 		Scroll: Scrollbar{Total: int(info.sbTotal), Offset: int(info.sbOffset), Len: int(info.sbLen)},

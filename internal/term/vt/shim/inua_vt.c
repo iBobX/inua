@@ -134,6 +134,18 @@ void inua_vt_write(inua_vt *t, const uint8_t *data, size_t len) {
   ghostty_terminal_vt_write(t->term, data, len);
 }
 
+void inua_vt_defaults(inua_vt *t, uint32_t scrollback, uint32_t cursor_style, uint32_t blink) {
+  size_t lines = scrollback;
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SCROLLBACK_MAX_LINES, &lines);
+  GhosttyTerminalCursorStyle style = (GhosttyTerminalCursorStyle)cursor_style;
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_DEFAULT_CURSOR_STYLE, &style);
+  bool b = blink != 0;
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_DEFAULT_CURSOR_BLINK, &b);
+  /* The cursor now, as a program would have it after resetting it. */
+  const uint8_t reset[] = "\x1b[0 q";
+  ghostty_terminal_vt_write(t->term, reset, sizeof(reset) - 1);
+}
+
 void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n) {
   GhosttyTerminalScrollViewport s = {0};
   switch (kind) {
@@ -734,6 +746,7 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
     info->cursor_style = (uint32_t)cur.visual_style;
     info->cursor_wide = cur.wide_tail;
     info->password = cur.password_input;
+    info->cursor_blink = cur.blinking;
   }
   GhosttyRenderStateColors colors = GHOSTTY_INIT_SIZED(GhosttyRenderStateColors);
   if (ghostty_render_state_get(t->render, GHOSTTY_RENDER_STATE_DATA_COLORS, &colors) == GHOSTTY_SUCCESS) {

@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 14
+#define INUA_VT_ABI 15
 
 typedef struct inua_vt inua_vt;
 
@@ -101,6 +101,7 @@ typedef struct {
   /* The scrollable area in rows: all of it, where the viewport starts,
    * and the viewport's length. */
   uint32_t sb_total, sb_offset, sb_len;
+  uint32_t cursor_blink; /* the cursor should blink */
 } inua_vt_frame_info;
 
 /* Run attribute bits. */
@@ -129,6 +130,11 @@ typedef struct {
  * nothing marked clean. */
 int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
                   inua_vt_frame_info *info);
+
+/* The terminal's defaults: the scrollback's length in lines, and the
+ * cursor a program resetting it gets (0 bar, 1 block, 2 underline;
+ * blinking or not). */
+void inua_vt_defaults(inua_vt *t, uint32_t scrollback, uint32_t cursor_style, uint32_t blink);
 
 /* Moves the viewport through the scrollback: kind 0 to the top, 1 to the
  * bottom (where the program writes), 2 by n rows (up is negative), 3 by n

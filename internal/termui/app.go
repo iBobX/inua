@@ -19,6 +19,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/model"
+	"github.com/lyricat/inua/internal/term/settings"
 )
 
 // App is inua-term's window, a client of the host: the workspaces in
@@ -51,6 +52,15 @@ type App struct {
 	// size and folds were applied.
 	fold, peek [2]bool
 	uiDone     bool
+	// set is term.toml; keymap its keys by chord; fontStep the font's
+	// size away from the settings' (Ctrl+= and Ctrl+-).
+	set      settings.Settings
+	keymap   map[string]string
+	fontStep float64
+	// extra does the actions other files of the window add (the palette,
+	// the settings); false for none of theirs.
+	extra   func(action string, p *termPane) bool
+	onBlink glib.SourceFunc
 
 	onClose                    func(gtk.Window) bool
 	onFolder                   gio.AsyncReadyCallback
@@ -87,6 +97,8 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
 	a.startTicks()
+	a.set, a.keymap = settings.Default(), keymapOf(settings.Default().Keys)
+	a.startBlink()
 	// An agent in the pane shown is looked at while the window is active.
 	a.onActive = func(uintptr, uintptr, uintptr) {
 		active := a.win.IsActive()
@@ -110,6 +122,14 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 // connect reaches the host, starting it if none runs, and opens the home
 // folder's workspace when there is none.
 func (a *App) connect() (*host.State, error) {
+	set, warnings, err := settings.Load(settings.Path())
+	if err != nil {
+		log.Printf("term: %v", err)
+	}
+	for _, w := range warnings {
+		log.Printf("term: %s: %s", settings.Path(), w)
+	}
+	gtkx.Post(func() { a.useSettings(set) })
 	path := host.SocketPath()
 	client, err := host.Dial(path, a.output, a.event)
 	if err != nil {

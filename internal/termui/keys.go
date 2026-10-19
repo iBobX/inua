@@ -1,6 +1,8 @@
 package termui
 
 import (
+	"strings"
+
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -14,9 +16,11 @@ import (
 // goes to the program. A chord is matched by its key without Shift (base),
 // so Ctrl+Shift+1 is "1" whatever Shift makes of it on the layout.
 
-// chord does the window's action for a Ctrl+Shift chord; false leaves the
-// key to the pane.
-func (a *App) chord(base, keyval uint32, state gdk.ModifierType) bool {
+// chord does the window's action for a chord of the settings' keys
+// (term.toml [keys]), or the fixed ones: Ctrl+Shift with an arrow moves
+// the focus, with Alt too resizes, and an arrow after the swap key swaps.
+// false leaves the key to the pane.
+func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bool {
 	held := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
 	if a.swapping {
 		a.swapping = false
@@ -26,59 +30,123 @@ func (a *App) chord(base, keyval uint32, state gdk.ModifierType) bool {
 		}
 	}
 	cs := gdk.ControlMaskValue | gdk.ShiftMaskValue
-	if held == cs|gdk.AltMaskValue {
-		if d, ok := arrow(keyval); ok {
+	if d, ok := arrow(keyval); ok {
+		switch held {
+		case cs:
+			a.layoutOp(host.OpFocus, host.Message{Direction: int(d)})
+			return true
+		case cs | gdk.AltMaskValue:
 			a.layoutOp(host.OpResize, host.Message{Direction: int(d), Step: 0.05})
 			return true
 		}
 		return false
 	}
-	if held != cs {
-		return false
-	}
-	if d, ok := arrow(keyval); ok {
-		a.layoutOp(host.OpFocus, host.Message{Direction: int(d)})
+	if a.nthChord(base, held) {
 		return true
 	}
-	k := rune(gdk.KeyvalToUnicode(gdk.KeyvalToLower(base)))
-	switch {
-	case k == 't':
-		a.newSession()
-	case k == 'n':
-		a.newWorkspace()
-	case k == 'd':
-		a.split(layout.Right)
-	case k == 'e':
-		a.split(layout.Down)
-	case k == 'w':
-		a.closeFocused()
-	case k == 'x':
-		a.swapping = true
-	case k == 'z':
-		a.layoutOp(host.OpZoom, host.Message{})
-	case k == '=':
-		a.layoutOp(host.OpEqualize, host.Message{})
-	case k == 'l':
-		a.layoutOp(host.OpPreset, host.Message{})
-	case k >= '1' && k <= '9':
-		a.nthWorkspace(int(k - '1'))
-	case k == '[':
-		a.stepSession(-1)
-	case k == ']':
-		a.stepSession(1)
-	case k == 'b':
-		a.toggleColumn(0)
-	case k == 's':
-		a.toggleColumn(1)
-	case k == 'r':
-		a.renameSession()
-	case k == 'j':
-		a.nextWaiting()
-	case k == 'a':
-		a.overview()
-	default:
+	action, ok := a.keymap[chordName(base, held)]
+	if !ok {
 		return false
 	}
+	return a.do(action, p)
+}
+
+// chordName is a key as term.toml writes it: "ctrl+shift+t".
+func chordName(base uint32, held gdk.ModifierType) string {
+	var b strings.Builder
+	for _, m := range []struct {
+		mask gdk.ModifierType
+		name string
+	}{{gdk.ControlMaskValue, "ctrl"}, {gdk.ShiftMaskValue, "shift"}, {gdk.AltMaskValue, "alt"}, {gdk.SuperMaskValue, "super"}} {
+		if held&m.mask != 0 {
+			b.WriteString(m.name + "+")
+		}
+	}
+	b.WriteString(strings.ToLower(gdk.KeyvalName(gdk.KeyvalToLower(base))))
+	return b.String()
+}
+
+// keymapOf is the settings' keys by chord.
+func keymapOf(keys map[string]string) map[string]string {
+	m := map[string]string{}
+	for action, k := range keys {
+		if k != "" {
+			m[k] = action
+		}
+	}
+	return m
+}
+
+// do is an action of the window's, by its name in term.toml; p is the
+// pane the key came from, for the pane's own.
+func (a *App) do(action string, p *termPane) bool {
+	switch action {
+	case "new_session":
+		a.newSession()
+	case "new_workspace":
+		a.newWorkspace()
+	case "split_right":
+		a.split(layout.Right)
+	case "split_down":
+		a.split(layout.Down)
+	case "close_pane":
+		a.closeFocused()
+	case "swap":
+		a.swapping = true
+	case "zoom":
+		a.layoutOp(host.OpZoom, host.Message{})
+	case "equalize":
+		a.layoutOp(host.OpEqualize, host.Message{})
+	case "next_layout":
+		a.layoutOp(host.OpPreset, host.Message{})
+	case "previous_session":
+		a.stepSession(-1)
+	case "next_session":
+		a.stepSession(1)
+	case "next_waiting":
+		a.nextWaiting()
+	case "agents":
+		a.overview()
+	case "fold_workspaces":
+		a.toggleColumn(0)
+	case "fold_sessions":
+		a.toggleColumn(1)
+	case "rename":
+		a.renameSession()
+	case "font_larger":
+		a.zoomFont(1)
+	case "font_smaller":
+		a.zoomFont(-1)
+	case "font_reset":
+		a.zoomFont(0)
+	case "copy", "paste", "find":
+		if p == nil {
+			return false
+		}
+		switch action {
+		case "copy":
+			p.copySelection(true)
+		case "paste":
+			p.pasteFrom(false)
+		case "find":
+			p.openFind()
+		}
+	default:
+		if a.extra != nil && a.extra(action, p) {
+			return true
+		}
+		return false
+	}
+	return true
+}
+
+// nth workspaces: Ctrl+Shift+1…9, fixed.
+func (a *App) nthChord(base uint32, held gdk.ModifierType) bool {
+	k := rune(gdk.KeyvalToUnicode(base))
+	if held != gdk.ControlMaskValue|gdk.ShiftMaskValue || k < '1' || k > '9' {
+		return false
+	}
+	a.nthWorkspace(int(k - '1'))
 	return true
 }
 

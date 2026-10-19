@@ -210,7 +210,7 @@ func (a *App) syncTiles() {
 // addTile makes a pane's tile and attaches it: its replay comes first.
 func (a *App) addTile(id int) error {
 	info := a.info[id]
-	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.c.Colors)
+	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.c.Colors, a.look())
 	if err != nil {
 		return err
 	}

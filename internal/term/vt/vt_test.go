@@ -682,3 +682,23 @@ func TestNotifications(t *testing.T) {
 		t.Error("taken twice")
 	}
 }
+
+func TestDefaults(t *testing.T) {
+	term := newTerm(t, 20, 4)
+	term.SetDefaults(100, CursorBar, true)
+	for i := 0; i < 20000; i++ {
+		term.Write([]byte("line\r\n"))
+	}
+	f, _ := term.Frame(true)
+	if f.Cursor.Style != CursorBar || !f.Cursor.Blink {
+		t.Errorf("cursor %+v", f.Cursor)
+	}
+	// Scrollback is cut a page at a time: well under the 20000 lines.
+	if f.Scroll.Total >= 5000 {
+		t.Errorf("scrollback %d rows", f.Scroll.Total)
+	}
+	term.Write([]byte("\x1b[2 q\x1b[0 q")) // a program's block, then its reset
+	if f, _ := term.Frame(false); f.Cursor.Style != CursorBar {
+		t.Errorf("after the reset %+v", f.Cursor)
+	}
+}

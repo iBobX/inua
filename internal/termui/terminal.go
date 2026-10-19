@@ -20,8 +20,18 @@ import (
 // pad is the space around a pane's cells, in pixels.
 const pad = 8
 
-// fontName is the terminal's font, as the shell's labels have it.
-const fontName = "Geist Mono, IBM Plex Mono, monospace 11"
+// paneLook is what the settings make of a pane: its font (a Pango
+// description), its cursor, whether selecting copies, its scrollback.
+type paneLook struct {
+	Font         string
+	Cursor       vt.CursorStyle
+	Blink        bool
+	CopyOnSelect bool
+	Scrollback   int
+}
+
+// defaultLook is the look before the settings are read.
+var defaultLook = paneLook{Font: "Geist Mono, IBM Plex Mono, monospace 11", Cursor: vt.CursorBlock, CopyOnSelect: true, Scrollback: 10000}
 
 // backend is where a pane's program is: the host, through a client.
 type backend interface {
@@ -74,8 +84,11 @@ type termPane struct {
 
 	// chord is the window's handler for its Ctrl+Shift chords; focused
 	// tells it this pane took the focus.
-	chord   func(base, keyval uint32, state gdk.ModifierType) bool
+	chord   func(p *termPane, base, keyval uint32, state gdk.ModifierType) bool
 	focused func()
+	look    paneLook
+	// blinkOff hides a blinking cursor for its off half.
+	blinkOff bool
 
 	sheet                             *gtk.Box // the paste sheet, while it asks
 	find                              *gtk.Box // the find bar, while open
@@ -102,9 +115,9 @@ type termPane struct {
 	onDragBegin, onDragUpdate, onDragEnd func(gtk.GestureDrag, float64, float64)
 }
 
-func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPane, error) {
+func newTermPane(be backend, cols, rows int, colors map[string]string, look paneLook) (*termPane, error) {
 	p := &termPane{
-		font:   pango.FontDescriptionFromString(fontName),
+		look:   look,
 		fg:     rgba(colors["t0"]),
 		bg:     rgba(colors["app"]),
 		cursor: rgba(colors["accent"]),
@@ -113,20 +126,12 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 		cols:   cols,
 		rows:   rows,
 	}
-	for i := range p.fonts {
-		f := pango.FontDescriptionFromString(fontName)
-		if i&1 != 0 {
-			f.SetWeight(pango.WeightBoldValue)
-		}
-		if i&2 != 0 {
-			f.SetStyle(pango.StyleItalicValue)
-		}
-		p.fonts[i] = f
-	}
+	p.loadFont(look.Font)
 	var err error
 	if p.term, err = vt.New(p.cols, p.rows); err != nil {
 		return nil, err
 	}
+	p.term.SetDefaults(look.Scrollback, look.Cursor, look.Blink)
 	p.widget = newPaneWidget(p)
 	p.widget.SetFocusable(true)
 	p.widget.SetHexpand(true)
@@ -198,7 +203,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 		}
 		p.selecting = false
 		if p.pointer(&g.EventController, vt.PointerRelease, p.dragX+dx, p.dragY+dy) {
-			p.copySelection(true)
+			p.copySelection(p.look.CopyOnSelect)
 		}
 	}
 	drag.ConnectDragBegin(&p.onDragBegin)
@@ -312,26 +317,18 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	if !p.widget.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
 		base = keyval
 	}
-	if action == vt.Press && p.chord != nil && p.chord(base, keyval, state) {
+	if action == vt.Press && p.chord != nil && p.chord(p, base, keyval, state) {
 		return true
 	}
+	p.blinkOff = false // typing shows the cursor
 	if p.exited {
 		return false
 	}
 	if action == vt.Press {
 		chord := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
 		switch {
-		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_c:
-			p.copySelection(true)
-			return true
-		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_v:
-			p.pasteFrom(false)
-			return true
 		case chord == gdk.ShiftMaskValue && (int32(keyval) == gdk.KEY_Insert || int32(keyval) == gdk.KEY_KP_Insert):
 			p.pasteFrom(true)
-			return true
-		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_f:
-			p.openFind()
 			return true
 		case p.scrollKey(keyval, chord):
 			return true
@@ -548,7 +545,7 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 		s.Restore()
 		l.Unref()
 	}
-	if !p.exited && p.cur.Visible && p.preedit == "" {
+	if !p.exited && p.cur.Visible && p.preedit == "" && !(p.cur.Blink && p.blinkOff) {
 		c := p.cursor
 		x, y := float32(p.cur.X)*cw, float32(p.cur.Y)*ch
 		switch p.cur.Style {
@@ -580,6 +577,31 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 		return def
 	}
 	return gdk.RGBA{Red: float32(v>>16&0xff) / 255, Green: float32(v>>8&0xff) / 255, Blue: float32(v&0xff) / 255, Alpha: 1}
+}
+
+// loadFont takes a Pango font description (family, then size) and its
+// bold and italic faces; the cells are measured again at the next layout.
+func (p *termPane) loadFont(spec string) {
+	p.font = pango.FontDescriptionFromString(spec)
+	for i := range p.fonts {
+		f := pango.FontDescriptionFromString(spec)
+		if i&1 != 0 {
+			f.SetWeight(pango.WeightBoldValue)
+		}
+		if i&2 != 0 {
+			f.SetStyle(pango.StyleItalicValue)
+		}
+		p.fonts[i] = f
+	}
+}
+
+// setFont changes the font of a pane shown: its cells and size follow.
+func (p *termPane) setFont(spec string) {
+	p.look.Font = spec
+	p.loadFont(spec)
+	p.cols, p.rows = 0, 0 // the next layout sizes the terminal anew
+	p.widget.QueueAllocate()
+	p.widget.QueueDraw()
 }
 
 // busy says a sheet or the find bar has the keys.

@@ -87,6 +87,9 @@ var Actions = []struct{ Name, Keys, Label string }{
 	{"palette", "ctrl+shift+p", "Every action by name"},
 	{"keys", "ctrl+shift+slash", "Show the keys"},
 	{"settings", "ctrl+shift+comma", "Settings"},
+	{"font_larger", "ctrl+equal", "Font larger"},
+	{"font_smaller", "ctrl+minus", "Font smaller"},
+	{"font_reset", "ctrl+0", "Font size as set"},
 }
 
 // Default is the settings without a file.
