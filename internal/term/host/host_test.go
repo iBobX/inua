@@ -12,6 +12,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/godbus/dbus/v5"
+
+	"github.com/lyricat/inua/internal/dbustest"
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/layout"
 	"github.com/lyricat/inua/internal/term/shellint"
 	"github.com/lyricat/inua/internal/term/vt"
@@ -516,5 +520,145 @@ func TestForget(t *testing.T) {
 		if got := forgotten(c.cmd, DefaultForget); got != c.want {
 			t.Errorf("forgotten(%q) = %v", c.cmd, got)
 		}
+	}
+}
+
+// An agent in a pane: known by its process, its state read from its
+// screen; when it ends, the pane is a shell again.
+func TestAgents(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	bin := t.TempDir()
+	os.WriteFile(filepath.Join(bin, "claude"), []byte(`#!/bin/sh
+printf '\033[2J\033[H'
+printf '* Writing the test (3s - esc to interrupt)\n'
+read go
+printf '\033[2J\033[H'
+printf 'Bash command\n  rm -rf build\nDo you want to proceed?\n> 1. Yes\n'
+read answer
+`), 0o755)
+	t.Setenv("PATH", bin+":"+os.Getenv("PATH"))
+	t.Setenv("SHELL", "/bin/sh")
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	h.Agents, _ = agent.Load("")
+	c := dial(t, path, newWatcher())
+	if _, err := c.Open(t.TempDir(), ""); err != nil {
+		t.Fatal(err)
+	}
+	st, _ := c.State()
+	id := st.Model.Workspaces[0].Sessions[0].Focus
+	pane := func() PaneInfo {
+		st, _ := c.State()
+		for _, p := range st.Panes {
+			if p.ID == id {
+				return p
+			}
+		}
+		return PaneInfo{}
+	}
+	wait := func(what string, ok func(PaneInfo) bool) PaneInfo {
+		t.Helper()
+		deadline := time.Now().Add(6 * time.Second)
+		for {
+			p := pane()
+			if ok(p) {
+				return p
+			}
+			if time.Now().After(deadline) {
+				t.Fatalf("waiting for %s: %+v", what, p)
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+	c.Input(id, []byte("claude\n"))
+	p := wait("working", func(p PaneInfo) bool { return p.State == "working" })
+	if p.Agent != "claude" || p.AgentName != "Claude Code" || p.Icon != "agent-claude" || p.Since == 0 {
+		t.Errorf("agent %+v", p)
+	}
+	c.Input(id, []byte("\n"))
+	p = wait("blocked", func(p PaneInfo) bool { return p.State == "blocked" })
+	if p.Ask != "Do you want to proceed?" {
+		t.Errorf("asks %q", p.Ask)
+	}
+	c.Input(id, []byte("1\n"))
+	wait("the shell again", func(p PaneInfo) bool { return p.Agent == "" })
+}
+
+// fakeNotes is a notification server on a private bus.
+type fakeNotes struct {
+	mu    sync.Mutex
+	calls [][]any
+}
+
+func (f *fakeNotes) Notify(app string, replaces uint32, icon, summary, body string, actions []string, hints map[string]dbus.Variant, timeout int32) (uint32, *dbus.Error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.calls = append(f.calls, []any{summary, body, actions})
+	return uint32(len(f.calls)), nil
+}
+
+// A blocked agent in a pane nobody looks at posts a notification; its
+// Show brings the pane up.
+func TestNotify(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	addr := dbustest.Start(t)
+	t.Setenv("DBUS_SESSION_BUS_ADDRESS", addr)
+	server := dbustest.Conn(t, addr)
+	notes := &fakeNotes{}
+	server.Export(notes, "/org/freedesktop/Notifications", "org.freedesktop.Notifications")
+	if r, err := server.RequestName("org.freedesktop.Notifications", dbus.NameFlagDoNotQueue); err != nil || r != dbus.RequestNameReplyPrimaryOwner {
+		t.Fatalf("name: %v %v", r, err)
+	}
+	bin := t.TempDir()
+	os.WriteFile(filepath.Join(bin, "codex"), []byte("#!/bin/sh\nprintf 'Allow command?\\n  $ rm -rf x\\n'\nread x\n"), 0o755)
+	t.Setenv("PATH", bin+":"+os.Getenv("PATH"))
+	t.Setenv("SHELL", "/bin/sh")
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	h.Agents, _ = agent.Load("")
+	h.Notify = true
+	raised := make(chan struct{}, 1)
+	h.Raise = func() { raised <- struct{}{} }
+	c := dial(t, path, newWatcher())
+	ws, _ := c.Open(t.TempDir(), "")
+	st, _ := c.State()
+	first := st.Model.Workspaces[0].Sessions[0]
+	id := first.Focus
+	other, _ := c.NewSession(ws, "") // the window shows another session
+	_ = other
+	c.Input(id, []byte("codex\n"))
+	deadline := time.Now().Add(6 * time.Second)
+	for {
+		notes.mu.Lock()
+		n := len(notes.calls)
+		notes.mu.Unlock()
+		if n > 0 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("no notification")
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	notes.mu.Lock()
+	got := notes.calls[0]
+	notes.mu.Unlock()
+	if got[0] != "Codex needs you" || got[1] != "Allow command?" {
+		t.Errorf("notification %q", got)
+	}
+	// Show: the pane's session comes up, and a window.
+	server.Emit("/org/freedesktop/Notifications", "org.freedesktop.Notifications.ActionInvoked", uint32(1), "default")
+	select {
+	case <-raised:
+	case <-time.After(5 * time.Second):
+		t.Fatal("no window raised")
+	}
+	st, _ = c.State()
+	if st.Model.Shown.Session != first.ID {
+		t.Errorf("shown %+v, want session %d", st.Model.Shown, first.ID)
 	}
 }

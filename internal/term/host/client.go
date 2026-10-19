@@ -252,6 +252,13 @@ func (c *Client) RemoveWorkspace(workspace int) error {
 	return err
 }
 
+// SetActive tells the host whether this client's window is the active
+// one: an agent in the pane it shows is looked at.
+func (c *Client) SetActive(active bool) error {
+	_, err := c.call(Message{Type: MsgActive, Active: active})
+	return err
+}
+
 // SetUI tells the host how the window is, to be kept.
 func (c *Client) SetUI(ui model.UI) error {
 	_, err := c.call(Message{Type: MsgUI, UI: &ui})

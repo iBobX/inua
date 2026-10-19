@@ -67,6 +67,7 @@ type Message struct {
 	Path      string    `json:"path,omitempty"`      // layout "ratio": the split
 	Ratio     float64   `json:"ratio,omitempty"`     // layout "ratio"
 	To        int       `json:"to,omitempty"`        // move: the new place
+	Active    bool      `json:"active,omitempty"`    // active
 	State     *State    `json:"state,omitempty"`     // reply to state; event "state"
 	UI        *model.UI `json:"ui,omitempty"`        // ui
 
@@ -112,7 +113,17 @@ type PaneInfo struct {
 	// Restored is set for a pane the host brought back, until it is typed
 	// in.
 	Restored bool `json:"restored,omitempty"`
-	Code     int  `json:"code"`
+	// Command is what runs in the pane's shell now, "" while it waits.
+	Command string `json:"command,omitempty"`
+	// The agent in the pane, when one runs: its type, name and mark, its
+	// state since when (Unix milliseconds), and what it asks.
+	Agent     string `json:"agent,omitempty"`
+	AgentName string `json:"agent_name,omitempty"`
+	Icon      string `json:"icon,omitempty"`
+	State     string `json:"state,omitempty"`
+	Since     int64  `json:"since,omitempty"`
+	Ask       string `json:"ask,omitempty"`
+	Code      int    `json:"code"`
 }
 
 // Message types.
@@ -141,6 +152,7 @@ const (
 	MsgRemove       = "remove"        // client: forget Workspace, ending its panes
 	MsgMove         = "move"          // client: Workspace to place To
 	MsgUI           = "ui"            // client: UI, how the window is
+	MsgActive       = "active"        // client: its window is the active one (Active) or not
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.

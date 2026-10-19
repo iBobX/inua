@@ -1,0 +1,14 @@
+type = "gemini"
+name = "Gemini CLI"
+icon = "agent-gemini"
+process = ["gemini"]
+
+[[state]]
+state = "blocked"
+lines = 14
+any = ["Allow execution", "Apply this change?", "Waiting for user confirmation"]
+
+[[state]]
+state = "working"
+lines = 6
+any = ["esc to cancel"]

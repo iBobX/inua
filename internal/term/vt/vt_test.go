@@ -657,3 +657,15 @@ func TestInputAfterRedraw(t *testing.T) {
 		t.Errorf("typed %q", got)
 	}
 }
+
+func TestTail(t *testing.T) {
+	term := newTerm(t, 20, 4)
+	term.Write([]byte("one\r\ntwo  \r\n\x1b[1mthree\x1b[0m"))
+	got := term.Tail(2)
+	if len(got) != 2 || got[0] != "three" || got[1] != "" {
+		t.Errorf("tail %q", got)
+	}
+	if got := term.Tail(9); len(got) != 4 || got[1] != "two" {
+		t.Errorf("all %q", got)
+	}
+}

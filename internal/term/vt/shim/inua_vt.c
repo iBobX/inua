@@ -289,6 +289,56 @@ static void input_text(inua_vt *t, buf *b, bool at_prompt) {
   if (!any) b->len = 0;
 }
 
+int inua_vt_tail(inua_vt *t, uint16_t n, uint8_t **out, size_t *len) {
+  *out = NULL;
+  *len = 0;
+  uint16_t cols = 0, rows = 0;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_COLS, &cols);
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_ROWS, &rows);
+  buf b = {0};
+  for (int y = rows > n ? rows - n : 0; y < rows; y++) {
+    size_t line = b.len;
+    for (uint16_t x = 0; x < cols; x++) {
+      GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+      GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value = {.coordinate = {.x = x, .y = (uint32_t)y}}};
+      if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) continue;
+      GhosttyCell cell = 0;
+      if (ghostty_grid_ref_cell(&ref, &cell) != GHOSTTY_SUCCESS) continue;
+      GhosttyCellWide wide = GHOSTTY_CELL_WIDE_NARROW;
+      ghostty_cell_get(cell, GHOSTTY_CELL_DATA_WIDE, &wide);
+      if (wide == GHOSTTY_CELL_WIDE_SPACER_TAIL) continue;
+      uint32_t cps[16];
+      size_t k = 0;
+      if (ghostty_grid_ref_graphemes(&ref, cps, 16, &k) != GHOSTTY_SUCCESS || k == 0) {
+        cps[0] = ' ';
+        k = 1;
+      }
+      for (size_t i = 0; i < k; i++) {
+        uint8_t o[4];
+        buf_put(&b, o, utf8(cps[i], o));
+      }
+    }
+    while (b.len > line && b.p[b.len - 1] == ' ') b.len--;
+    if (y < rows - 1) buf_put(&b, (const uint8_t *)"\n", 1);
+  }
+  if (b.failed) {
+    buf_free(&b);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  if (b.len > 0) {
+    uint8_t *p = ghostty_alloc(NULL, b.len);
+    if (p == NULL) {
+      buf_free(&b);
+      return GHOSTTY_OUT_OF_MEMORY;
+    }
+    memcpy(p, b.p, b.len);
+    *out = p;
+    *len = b.len;
+  }
+  buf_free(&b);
+  return GHOSTTY_SUCCESS;
+}
+
 int inua_vt_input(inua_vt *t, uint8_t **out, size_t *len) {
   *out = NULL;
   *len = 0;

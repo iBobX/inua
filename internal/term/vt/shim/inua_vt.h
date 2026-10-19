@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 12
+#define INUA_VT_ABI 13
 
 typedef struct inua_vt inua_vt;
 
@@ -46,6 +46,11 @@ void inua_vt_prompts(inua_vt *t, const uint8_t **ptr, size_t *len);
  * command over several. *len 0 when the cursor is not at a prompt; *out
  * freed with inua_vt_free_bytes. */
 int inua_vt_input(inua_vt *t, uint8_t **out, size_t *len);
+
+/* The last n rows of the active screen as text, a line each, trailing
+ * blanks trimmed: what a program shows at its bottom. *out freed with
+ * inua_vt_free_bytes. */
+int inua_vt_tail(inua_vt *t, uint16_t n, uint8_t **out, size_t *len);
 
 /* The text the program last put on a clipboard (OSC 52, OSC 1337, OSC
  * 5522) since the last call, for a terminal that answers: returns 0 for

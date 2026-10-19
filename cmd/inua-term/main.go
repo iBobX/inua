@@ -12,6 +12,7 @@ import (
 	"syscall"
 
 	"github.com/lyricat/inua/internal/appui"
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/shellint"
 	"github.com/lyricat/inua/internal/termui"
@@ -53,6 +54,11 @@ func serveHost() int {
 	} else {
 		h.ShellDir = shellint.Dir()
 	}
+	agents, errs := agent.Load(agent.Dir())
+	for _, err := range errs {
+		log.Printf("inua-term: agents: %v", err)
+	}
+	h.Agents, h.Notify = agents, true
 	if err := h.Remember(host.StatePath(), nil, true); err != nil {
 		log.Printf("inua-term: remembering: %v", err)
 	}

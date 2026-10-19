@@ -1,0 +1,15 @@
+type = "codex"
+name = "Codex"
+icon = "agent-codex"
+process = ["codex"]
+resume = "codex resume --last"
+
+[[state]]
+state = "blocked"
+lines = 14
+any = ["Allow command?", "Would you like to run the following command?", "Would you like to make the following edits?", "Yes, proceed"]
+
+[[state]]
+state = "working"
+lines = 6
+any = ["esc to interrupt", "Esc to interrupt"]

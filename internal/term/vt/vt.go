@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 	"unsafe"
@@ -22,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 12
+const abi = 13
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -53,6 +54,7 @@ var lib struct {
 	clipboard   func(t uintptr, p **byte, n *uintptr) int32
 	prompts     func(t uintptr, p **byte, n *uintptr)
 	input       func(t uintptr, out **byte, n *uintptr) int32
+	tail        func(t uintptr, n uint16, out **byte, outN *uintptr) int32
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -125,6 +127,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
 		purego.RegisterLibFunc(&lib.prompts, h, "inua_vt_prompts")
 		purego.RegisterLibFunc(&lib.input, h, "inua_vt_input")
+		purego.RegisterLibFunc(&lib.tail, h, "inua_vt_tail")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -301,6 +304,19 @@ func (t *Terminal) Input() string {
 	s := string(unsafe.Slice(p, n))
 	lib.freeBytes(p, n)
 	return s
+}
+
+// Tail is the last n rows of the screen, a line each: what a program
+// shows at its bottom.
+func (t *Terminal) Tail(n int) []string {
+	var p *byte
+	var l uintptr
+	if lib.tail(t.h, uint16(n), &p, &l) != 0 || p == nil {
+		return nil
+	}
+	s := string(unsafe.Slice(p, l))
+	lib.freeBytes(p, l)
+	return strings.Split(s, "\n")
 }
 
 // SetColors sets the default colours (0xRRGGBB) programs are told when

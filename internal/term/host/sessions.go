@@ -87,6 +87,19 @@ func (h *Host) used(pane int) {
 		h.publish()
 	}
 	h.changed() // what is typed at the prompt is kept too
+	h.seen(pane)
+}
+
+// seenFocus marks a session's focused pane seen.
+func (h *Host) seenFocus(session int) {
+	h.mu.Lock()
+	s, _ := h.m.Session(session)
+	focus := 0
+	if s != nil {
+		focus = s.Focus
+	}
+	h.mu.Unlock()
+	h.seen(focus)
 }
 
 // startIn starts the user's shell in dir, sized as the pane it sits
@@ -134,6 +147,9 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 		reply.Pane, err = h.split(m.Session, layout.Split(m.Split))
 	case MsgLayout:
 		err = h.layout(m)
+		if err == nil && m.Op == OpFocus {
+			defer h.seenFocus(m.Session)
+		}
 	case MsgShow:
 		h.mu.Lock()
 		err = h.m.Show(m.Workspace, m.Session)
@@ -148,6 +164,20 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 		h.mu.Lock()
 		err = h.m.Move(m.Workspace, m.To)
 		h.mu.Unlock()
+	case MsgActive:
+		h.mu.Lock()
+		c.active = m.Active
+		s, _ := h.m.Session(h.m.Shown.Session)
+		focus := 0
+		if s != nil {
+			focus = s.Focus
+		}
+		h.mu.Unlock()
+		c.message(reply)
+		if m.Active && focus != 0 {
+			h.seen(focus) // the window came back to it
+		}
+		return true
 	case MsgUI:
 		if m.UI == nil {
 			err = errors.New("no ui")

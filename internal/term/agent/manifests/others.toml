@@ -1,0 +1,47 @@
+# Agents known by their process: their state comes from what they report,
+# their title and the bell until a manifest of their own says more.
+[[agent]]
+type = "opencode"
+name = "opencode"
+icon = "agent-opencode"
+process = ["opencode"]
+
+[[agent]]
+type = "aider"
+name = "Aider"
+process = ["aider"]
+
+[[agent.state]]
+state = "blocked"
+lines = 4
+any = ["(Y)es/(N)o"]
+
+[[agent]]
+type = "amp"
+name = "Amp"
+icon = "agent-amp"
+process = ["amp"]
+
+[[agent]]
+type = "cursor"
+name = "Cursor Agent"
+icon = "agent-cursor"
+process = ["cursor-agent"]
+
+[[agent]]
+type = "copilot"
+name = "Copilot CLI"
+icon = "agent-copilot"
+process = ["copilot"]
+
+[[agent]]
+type = "goose"
+name = "Goose"
+icon = "agent-goose"
+process = ["goose"]
+
+[[agent]]
+type = "qwen"
+name = "Qwen Code"
+icon = "agent-qwen"
+process = ["qwen"]

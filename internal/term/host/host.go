@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/model"
 	"github.com/lyricat/inua/internal/term/pty"
 	"github.com/lyricat/inua/internal/term/vt"
@@ -48,6 +49,14 @@ type Host struct {
 	// ShellDir holds the shell integration's scripts (shellint); "" for
 	// none.
 	ShellDir string
+	// Agents are the manifests panes' agents are known by; nil follows
+	// none. Notify posts notifications for agents that need the user.
+	Agents *agent.Set
+	Notify bool
+	// Raise brings a window up after a notification's Show; nil runs
+	// inua-term again, which raises the one open or opens one.
+	Raise func()
+	notes notifier
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string
@@ -87,13 +96,15 @@ type pane struct {
 	lastRun  string
 	pending  string
 	restored bool
+	agent    paneAgent
 }
 
 // client is a connection to the host.
 type client struct {
-	conn net.Conn
-	out  chan [][]byte // frames: kind byte first, then payload parts
-	once sync.Once
+	conn   net.Conn
+	active bool          // its window is the active one
+	out    chan [][]byte // frames: kind byte first, then payload parts
+	once   sync.Once
 }
 
 // Listen makes a host on the socket at path: its folder is made private
@@ -128,6 +139,7 @@ func (h *Host) Serve() error {
 		<-h.done
 		h.ln.Close()
 	}()
+	go h.follow()
 	for {
 		c, err := h.ln.Accept()
 		if err != nil {
@@ -370,8 +382,13 @@ func (h *Host) list() []PaneInfo {
 		infos = append(infos, PaneInfo{
 			ID: p.id, Argv: p.argv, Title: p.title, Dir: p.folder(),
 			Cols: p.cols, Rows: p.rows, Exited: p.exited, Code: p.code,
-			Restored: p.restored,
+			Restored: p.restored, Command: p.agent.command,
+			Agent: p.agent.t.Type, State: string(p.agent.t.State), Ask: p.agent.t.Ask,
 		})
+		if m := p.agent.m; m != nil {
+			i := &infos[len(infos)-1]
+			i.AgentName, i.Icon, i.Since = m.Name, m.Icon, p.agent.t.Since.UnixMilli()
+		}
 		p.mu.Unlock()
 	}
 	return infos
@@ -500,6 +517,7 @@ func (p *pane) output(b []byte, limit int) {
 	if marks := p.term.Prompts(); marks != nil {
 		p.prompts(marks)
 	}
+	p.host.readScreenLater(p)
 	if a := p.term.Answers(); a != nil && !p.exited {
 		select {
 		case p.answers <- a:
