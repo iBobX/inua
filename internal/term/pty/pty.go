@@ -71,6 +71,13 @@ func open() (master, slave *os.File, err error) {
 		unix.Close(fd)
 		return nil, nil, fmt.Errorf("pty: %s: %w", name, err)
 	}
+	// Non-blocking, the master goes through Go's poller: Close then ends
+	// a Read waiting on it, and the program gets its SIGHUP at once.
+	if err := unix.SetNonblock(fd, true); err != nil {
+		unix.Close(fd)
+		unix.Close(sfd)
+		return nil, nil, fmt.Errorf("pty: %w", err)
+	}
 	return os.NewFile(uintptr(fd), "/dev/ptmx"), os.NewFile(uintptr(sfd), name), nil
 }
 

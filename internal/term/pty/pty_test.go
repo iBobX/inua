@@ -152,3 +152,30 @@ func TestInterruptHelper(t *testing.T) {
 		t.Fatal("Ctrl+C did not stop the program")
 	}
 }
+
+// Close hangs the program up even while a Read waits for its output.
+func TestCloseWhileReading(t *testing.T) {
+	p, err := Start([]string{"sleep", "30"}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := make(chan error, 1)
+	go func() {
+		_, err := p.Read(make([]byte, 64))
+		read <- err
+	}()
+	time.Sleep(100 * time.Millisecond)
+	p.Close()
+	select {
+	case <-read:
+	case <-time.After(3 * time.Second):
+		t.Fatal("Read did not end")
+	}
+	done := make(chan struct{})
+	go func() { p.Wait(); close(done) }()
+	select {
+	case <-done:
+	case <-time.After(3 * time.Second):
+		t.Fatal("the program did not get SIGHUP")
+	}
+}
