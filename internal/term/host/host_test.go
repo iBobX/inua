@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/term/layout"
+	"github.com/lyricat/inua/internal/term/shellint"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -382,5 +384,137 @@ func TestSessions(t *testing.T) {
 	st, _ = c.State()
 	if w := st.Model.Workspaces; len(w) != 1 || len(w[0].Sessions) != 0 || len(st.Panes) != 0 {
 		t.Errorf("after closing: %+v, %d panes", w, len(st.Panes))
+	}
+}
+
+// Remembering: a host keeps the session used and its panes' last
+// commands; the next one starts them again in their folders with the
+// commands at the prompt, not run.
+func TestRemember(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	bash, err := exec.LookPath("bash")
+	if err != nil {
+		t.Skip("no bash")
+	}
+	home := t.TempDir()
+	os.WriteFile(filepath.Join(home, ".bashrc"), []byte("PS1='$ '\n"), 0o600)
+	t.Setenv("HOME", home)
+	t.Setenv("SHELL", bash)
+	shellDir := t.TempDir()
+	if err := shellint.Install(shellDir); err != nil {
+		t.Fatal(err)
+	}
+	file := filepath.Join(t.TempDir(), "term.json")
+	work := t.TempDir()
+
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	h.ShellDir = shellDir
+	if err := h.Remember(file, nil, true); err != nil {
+		t.Fatal(err)
+	}
+	w := newWatcher()
+	c := dial(t, path, w)
+	if _, err := c.Open(work, ""); err != nil {
+		t.Fatal(err)
+	}
+	st, _ := c.State()
+	s := st.Model.Workspaces[0].Sessions[0]
+	first := s.Focus
+	second, _ := c.Split(s.ID, "right")
+	for _, id := range []int{first, second} {
+		c.Attach(id)
+	}
+	w.waitFor(t, "prompts", func() bool { return strings.Contains(w.text(first), "$ ") && strings.Contains(w.text(second), "$ ") })
+	c.Input(first, []byte("git rebase -i origin/ma"))
+	c.Input(second, []byte("echo ran\r"))
+	w.waitFor(t, "the typing", func() bool {
+		return strings.Contains(w.text(first), "origin/ma") && strings.Count(w.text(second), "ran") >= 2
+	})
+	h.Close()
+	b, _ := os.ReadFile(file)
+	var saved Saved
+	if err := json.Unmarshal(b, &saved); err != nil {
+		t.Fatalf("saved %s: %v", b, err)
+	}
+	if got := saved.Panes[first].Command; got != "git rebase -i origin/ma" {
+		t.Errorf("typed, not run: %q", got)
+	}
+	if got := saved.Panes[second].Command; got != "echo ran" {
+		t.Errorf("run last: %q", got)
+	}
+
+	// The next host.
+	h2, path2 := startHost(t)
+	h2.ExitWhenEmpty = false
+	h2.ShellDir = shellDir
+	if err := h2.Remember(file, nil, true); err != nil {
+		t.Fatal(err)
+	}
+	w2 := newWatcher()
+	c2 := dial(t, path2, w2)
+	st, err = c2.State()
+	if err != nil || len(st.Model.Workspaces) != 1 || len(st.Model.Workspaces[0].Sessions) != 1 {
+		t.Fatalf("restored %+v, %v", st, err)
+	}
+	panes := st.Model.Workspaces[0].Sessions[0].Tree.Panes()
+	if len(panes) != 2 {
+		t.Fatalf("panes %v", panes)
+	}
+	for _, p := range st.Panes {
+		if !p.Restored || p.Dir != work {
+			t.Errorf("pane %+v", p)
+		}
+	}
+	for _, id := range panes {
+		c2.Attach(id)
+	}
+	t.Cleanup(func() {
+		if t.Failed() {
+			t.Logf("restored panes show %q and %q", w2.text(panes[0]), w2.text(panes[1]))
+		}
+	})
+	w2.waitFor(t, "the commands at the prompt", func() bool {
+		// bash shows a paste inverted: the command, after the input mark.
+		return strings.Contains(w2.text(panes[0]), "git rebase -i origin/ma") && strings.Contains(w2.text(panes[1]), "echo ran")
+	})
+	time.Sleep(300 * time.Millisecond)
+	if strings.Count(w2.text(panes[1]), "ran") != 1 {
+		t.Errorf("the restored command ran: %q", w2.text(panes[1]))
+	}
+	// Typing makes it the user's.
+	c2.Input(panes[0], []byte(" "))
+	deadline := time.Now().Add(3 * time.Second)
+	for {
+		st, _ = c2.State()
+		restored := false
+		for _, p := range st.Panes {
+			restored = restored || p.ID == panes[0] && p.Restored
+		}
+		if !restored {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("still restored after typing")
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+}
+
+func TestForget(t *testing.T) {
+	for _, c := range []struct {
+		cmd  string
+		want bool
+	}{
+		{"mysql --password=x", true},
+		{"curl 'x?token=abc'", true},
+		{"export SECRET_KEY=1", true},
+		{"git push", false},
+	} {
+		if got := forgotten(c.cmd, DefaultForget); got != c.want {
+			t.Errorf("forgotten(%q) = %v", c.cmd, got)
+		}
 	}
 }

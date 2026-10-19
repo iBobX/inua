@@ -645,3 +645,15 @@ func TestPrompts(t *testing.T) {
 		t.Errorf("cmdline_url %+v", ps)
 	}
 }
+
+// A shell that draws its prompt again (after a resize) sends no marks:
+// what is typed still starts where the input mark was.
+func TestInputAfterRedraw(t *testing.T) {
+	term := newTerm(t, 40, 6)
+	term.Answer()
+	term.Write([]byte("\x1b]133;A\a[me@host ~]$ \x1b]133;B\anpm run de"))
+	term.Write([]byte("\r[me@host ~]$ npm run de")) // readline's redraw
+	if got := term.Input(); got != "npm run de" {
+		t.Errorf("typed %q", got)
+	}
+}

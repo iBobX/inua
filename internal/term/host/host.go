@@ -13,6 +13,7 @@ import (
 	"slices"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/lyricat/inua/internal/term/model"
 	"github.com/lyricat/inua/internal/term/pty"
@@ -40,14 +41,23 @@ type Host struct {
 	// ExitWhenEmpty ends Serve once the last pane has been closed.
 	ExitWhenEmpty bool
 
-	mu      sync.Mutex
-	panes   map[int]*pane
-	colors  *Colors // the window's, for new panes
-	m       model.Model
-	next    int
-	clients map[*client]bool
-	closed  bool
-	done    chan struct{}
+	mu     sync.Mutex
+	panes  map[int]*pane
+	colors *Colors // the window's, for new panes
+	m      model.Model
+	// ShellDir holds the shell integration's scripts (shellint); "" for
+	// none.
+	ShellDir string
+	// Remembering: the file, the forget patterns, whether commands are
+	// kept, and the save waiting.
+	saveFile     string
+	forget       []string
+	keepCommands bool
+	saveTimer    *time.Timer
+	next         int
+	clients      map[*client]bool
+	closed       bool
+	done         chan struct{}
 }
 
 // pane is a program on a PTY, with the host's own engine for its state.
@@ -71,6 +81,12 @@ type pane struct {
 	exited   bool
 	code     int
 	attached map[*client]bool
+	// lastRun is the command that ran last; pending a restored command
+	// put back at the prompt once the shell takes input; restored is set
+	// until the user types.
+	lastRun  string
+	pending  string
+	restored bool
 }
 
 // client is a connection to the host.
@@ -133,7 +149,18 @@ func (h *Host) Close() {
 		h.mu.Unlock()
 		return
 	}
+	h.mu.Unlock()
+	h.Save() // the sessions as they are, before their programs end
+	h.mu.Lock()
+	if h.closed {
+		h.mu.Unlock()
+		return
+	}
 	h.closed = true
+	if h.saveTimer != nil {
+		h.saveTimer.Stop()
+		h.saveTimer = nil
+	}
 	panes := h.panes
 	h.panes = map[int]*pane{}
 	clients := make([]*client, 0, len(h.clients))
@@ -343,6 +370,7 @@ func (h *Host) list() []PaneInfo {
 		infos = append(infos, PaneInfo{
 			ID: p.id, Argv: p.argv, Title: p.title, Dir: p.folder(),
 			Cols: p.cols, Rows: p.rows, Exited: p.exited, Code: p.code,
+			Restored: p.restored,
 		})
 		p.mu.Unlock()
 	}
@@ -469,6 +497,9 @@ func (p *pane) output(b []byte, limit int) {
 		return
 	}
 	p.term.Write(b)
+	if marks := p.term.Prompts(); marks != nil {
+		p.prompts(marks)
+	}
 	if a := p.term.Answers(); a != nil && !p.exited {
 		select {
 		case p.answers <- a:

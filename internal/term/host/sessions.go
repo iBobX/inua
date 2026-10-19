@@ -11,6 +11,7 @@ import (
 
 	"github.com/lyricat/inua/internal/term/layout"
 	"github.com/lyricat/inua/internal/term/model"
+	"github.com/lyricat/inua/internal/term/shellint"
 )
 
 // The host keeps the workspaces and sessions (internal/term/model) under
@@ -59,10 +60,14 @@ func (h *Host) state() *State {
 	return s
 }
 
-// publish sends every client the State.
-func (h *Host) publish() { h.tell(Message{Type: MsgState, State: h.state()}) }
+// publish sends every client the State, and has it kept.
+func (h *Host) publish() {
+	h.tell(Message{Type: MsgState, State: h.state()})
+	h.changed()
+}
 
-// used marks the session of a pane typed in as used, the first time.
+// used marks the session of a pane typed in as used, the first time,
+// and a restored pane as the user's again.
 func (h *Host) used(pane int) {
 	h.mu.Lock()
 	s, _ := h.m.PaneSession(pane)
@@ -71,9 +76,17 @@ func (h *Host) used(pane int) {
 		s.Used = true
 	}
 	h.mu.Unlock()
+	if p := h.pane(pane); p != nil {
+		p.mu.Lock()
+		if p.restored {
+			p.restored, changed = false, true
+		}
+		p.mu.Unlock()
+	}
 	if changed {
 		h.publish()
 	}
+	h.changed() // what is typed at the prompt is kept too
 }
 
 // startIn starts the user's shell in dir, sized as the pane it sits
@@ -85,7 +98,11 @@ func (h *Host) startIn(dir string, size int) (int, error) {
 		cols, rows = p.cols, p.rows
 		p.mu.Unlock()
 	}
-	return h.start(shell(), dir, shellEnv(), cols, rows, 0, 0)
+	argv, env := shell(), shellEnv()
+	if h.ShellDir != "" {
+		argv, env = shellint.Wrap(argv, env, h.ShellDir)
+	}
+	return h.start(argv, dir, env, cols, rows, 0, 0)
 }
 
 // folderOf is where a pane's shell is, or "" for no pane.

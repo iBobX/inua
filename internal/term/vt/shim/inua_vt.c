@@ -69,6 +69,11 @@ struct inua_vt {
   span current;
   bool has_current;
   buf prompts; /* inua_vt_prompts' records */
+  /* Where the last input began, moved with the text: a shell redrawing
+   * its prompt after a resize sends no marks again, and the prompt it
+   * draws then would read as typed. */
+  GhosttyTrackedGridRef input_at;
+  bool primary; /* the last prompt drawn is a primary one, not a command's next line */
   bool answering;
   uint32_t cell_w, cell_h;
   bool dark; /* the background's scheme, once colours are set */
@@ -106,6 +111,7 @@ void inua_vt_free(inua_vt *t) {
   buf_free(&t->out);
   buf_free(&t->clip);
   buf_free(&t->prompts);
+  ghostty_tracked_grid_ref_free(t->input_at);
   if (t->drag) ghostty_selection_gesture_event_free(t->drag);
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
@@ -225,6 +231,15 @@ static void input_text(inua_vt *t, buf *b, bool at_prompt) {
       start = y;
   }
   if (start < 0) return;
+  /* Typing starts where the input mark was, when it is on these rows. */
+  int from_x = 0, from_y = start;
+  GhosttyPointCoordinate mark;
+  if (t->input_at && ghostty_tracked_grid_ref_point(t->input_at, GHOSTTY_POINT_TAG_ACTIVE, &mark) == GHOSTTY_SUCCESS &&
+      (int)mark.y >= start && (int)mark.y < rows) {
+    from_x = mark.x;
+    from_y = (int)mark.y;
+  }
+  start = from_y;
   size_t line_start = b->len;
   bool any = false;
   for (int y = start; y < rows; y++) {
@@ -233,6 +248,13 @@ static void input_text(inua_vt *t, buf *b, bool at_prompt) {
       GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
       GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value = {.coordinate = {.x = x, .y = (uint32_t)y}}};
       if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) continue;
+      if (y == from_y && x < from_x) {
+        if (x == 0) {
+          GhosttyRow row = 0;
+          if (ghostty_grid_ref_row(&ref, &row) == GHOSTTY_SUCCESS) ghostty_row_get(row, GHOSTTY_ROW_DATA_WRAP, &wrapped);
+        }
+        continue;
+      }
       if (x == 0) {
         GhosttyRow row = 0;
         if (ghostty_grid_ref_row(&ref, &row) == GHOSTTY_SUCCESS) ghostty_row_get(row, GHOSTTY_ROW_DATA_WRAP, &wrapped);
@@ -302,6 +324,15 @@ static void semantic_prompt(GhosttyTerminal term, void *userdata, const GhosttyT
   head[0] = (uint8_t)e->kind;
   head[1] = e->has_exit_code;
   memcpy(head + 2, &code, 4);
+  if (e->kind == GHOSTTY_SEMANTIC_PROMPT_PROMPT_START) t->primary = e->prompt_kind == GHOSTTY_SEMANTIC_PROMPT_PROMPT_PRIMARY;
+  if (e->kind == GHOSTTY_SEMANTIC_PROMPT_INPUT_START && t->primary) {
+    uint16_t cx = 0, cy = 0;
+    ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_CURSOR_X, &cx);
+    ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_CURSOR_Y, &cy);
+    GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value = {.coordinate = {.x = cx, .y = cy}}};
+    if (t->input_at == NULL) ghostty_terminal_grid_ref_track(t->term, pt, &t->input_at);
+    else ghostty_tracked_grid_ref_set(t->input_at, t->term, pt);
+  }
   buf cmd = {0};
   if (e->kind == GHOSTTY_SEMANTIC_PROMPT_OUTPUT_START) {
     if (e->command.len > 0) buf_put(&cmd, e->command.ptr, e->command.len);

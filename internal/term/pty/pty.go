@@ -90,11 +90,12 @@ func setSize(f *os.File, cols, rows int) error {
 }
 
 // Read reads the program's output. When the program and everything it
-// started have closed the terminal, it returns io.EOF (Linux reports EIO).
+// started have closed the terminal (Linux reports EIO), or Close was
+// called, it returns io.EOF.
 func (p *PTY) Read(b []byte) (int, error) {
 	n, err := p.master.Read(b)
-	if errors.Is(err, syscall.EIO) {
-		err = io.EOF
+	if errors.Is(err, syscall.EIO) || errors.Is(err, os.ErrClosed) {
+		err = io.EOF // or Close ended it
 	}
 	return n, err
 }

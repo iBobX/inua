@@ -314,6 +314,9 @@ func paneState(info host.PaneInfo) (string, bool) {
 	if info.Exited {
 		return i18n.Tf("EXITED %d", info.Code), false
 	}
+	if info.Restored {
+		return i18n.T("RESTORED"), false
+	}
 	return i18n.T("IDLE"), false
 }
 

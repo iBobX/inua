@@ -7,10 +7,13 @@ import (
 	"flag"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/term/host"
+	"github.com/lyricat/inua/internal/term/shellint"
 	"github.com/lyricat/inua/internal/termui"
 )
 
@@ -45,6 +48,21 @@ func serveHost() int {
 		return 1
 	}
 	h.ExitWhenEmpty = true
+	if err := shellint.Install(shellint.Dir()); err != nil {
+		log.Printf("inua-term: no shell integration: %v", err)
+	} else {
+		h.ShellDir = shellint.Dir()
+	}
+	if err := h.Remember(host.StatePath(), nil, true); err != nil {
+		log.Printf("inua-term: remembering: %v", err)
+	}
+	// Ending the session (a logout, a shutdown) keeps the sessions first.
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT)
+	go func() {
+		<-sig
+		h.Close()
+	}()
 	log.Printf("inua-term: host on %s", host.SocketPath())
 	if err := h.Serve(); err != nil {
 		log.Printf("inua-term: %v", err)

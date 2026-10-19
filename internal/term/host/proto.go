@@ -108,7 +108,10 @@ type PaneInfo struct {
 	Cols   int      `json:"cols"`
 	Rows   int      `json:"rows"`
 	Exited bool     `json:"exited"`
-	Code   int      `json:"code"`
+	// Restored is set for a pane the host brought back, until it is typed
+	// in.
+	Restored bool `json:"restored,omitempty"`
+	Code     int  `json:"code"`
 }
 
 // Message types.
