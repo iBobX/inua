@@ -517,6 +517,9 @@ func (p *pane) output(b []byte, limit int) {
 	if marks := p.term.Prompts(); marks != nil {
 		p.prompts(marks)
 	}
+	if ns := p.term.Notifications(); ns != nil {
+		p.host.programNotes(p, ns)
+	}
 	p.host.readScreenLater(p)
 	if a := p.term.Answers(); a != nil && !p.exited {
 		select {

@@ -669,3 +669,16 @@ func TestTail(t *testing.T) {
 		t.Errorf("all %q", got)
 	}
 }
+
+func TestNotifications(t *testing.T) {
+	term := newTerm(t, 40, 4)
+	term.Answer()
+	term.Write([]byte("\x1b]9;Claude needs your permission to use Bash\a\x1b]777;notify;Build;done\x1b\\"))
+	got := term.Notifications()
+	if len(got) != 2 || got[0].Body != "Claude needs your permission to use Bash" || got[1].Title != "Build" || got[1].Body != "done" {
+		t.Errorf("notifications %+v", got)
+	}
+	if len(term.Notifications()) != 0 {
+		t.Error("taken twice")
+	}
+}

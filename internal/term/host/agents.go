@@ -13,6 +13,7 @@ import (
 
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
+	"github.com/lyricat/inua/internal/term/vt"
 )
 
 // The host follows each pane's agent (section 9): which one runs, from
@@ -149,9 +150,74 @@ func (h *Host) readScreen(p *pane) (bool, *note) {
 		return false, nil
 	}
 	if (a.t.State == agent.Blocked || a.t.State == agent.Done) && before != a.t.State && !h.looking(p.id) {
-		return true, &note{pane: p.id, agent: a.m.Name, state: a.t.State, title: p.title, ask: ask}
+		return true, agentNote(p.id, a.m.Name, a.t.State, p.title, ask)
 	}
 	return true, nil
+}
+
+// agentNote is the notification for an agent that needs you or is done.
+func agentNote(pane int, name string, s agent.State, title, ask string) *note {
+	n := &note{pane: pane, summary: i18n.Tf("%s needs you", name), body: ask}
+	if s == agent.Done {
+		n.summary, n.body = i18n.Tf("%s is done", name), ""
+	}
+	if n.body == "" {
+		n.body, _ = agent.Title(title)
+	}
+	return n
+}
+
+// programNotes takes the notifications a pane's program sent (OSC 9,
+// 777): they go on to the desktop when nobody looks at the pane, and an
+// agent's may say its state (Claude Code's "needs your permission", "is
+// waiting for your input"). p.mu is held.
+func (h *Host) programNotes(p *pane, ns []vt.Notification) {
+	a := &p.agent
+	changed := false
+	for _, n := range ns {
+		low := strings.ToLower(n.Title + " " + n.Body)
+		if a.m != nil && !a.t.Reported {
+			// A state the agent's own notification will tell of.
+			var s agent.State
+			switch {
+			case strings.Contains(low, "permission") || strings.Contains(low, "needs your"):
+				s = agent.Blocked
+			case strings.Contains(low, "waiting for your input"):
+				s = agent.Idle
+			}
+			if s != "" {
+				before := a.t.State
+				if a.t.Set(s, n.Body, time.Now()) {
+					changed = true
+					if a.t.State != before && (a.t.State == agent.Blocked || a.t.State == agent.Done) {
+						nn, id := agentNote(p.id, a.m.Name, a.t.State, p.title, a.t.Ask), p.id
+						go func() {
+							if !h.looking(id) {
+								h.notify(*nn)
+							}
+						}()
+					}
+				}
+				continue
+			}
+		}
+		summary := n.Title
+		if summary == "" {
+			summary = p.title
+			if a.m != nil {
+				summary = a.m.Name
+			}
+		}
+		id := p.id
+		go func() {
+			if !h.looking(id) {
+				h.notify(note{pane: id, summary: summary, body: n.Body})
+			}
+		}()
+	}
+	if changed {
+		go h.publish()
+	}
 }
 
 // seen is the user looking at a pane: a done agent there is idle again.
@@ -203,13 +269,10 @@ func procEnv(pid int, key string) string {
 	return ""
 }
 
-// note is a notification about an agent.
+// note is a notification about a pane.
 type note struct {
-	pane  int
-	agent string
-	state agent.State
-	title string
-	ask   string
+	pane          int
+	summary, body string
 }
 
 // notifier posts notifications through any notification server; Show
@@ -254,14 +317,7 @@ func (h *Host) notify(n note) {
 	if nf.conn == nil {
 		return
 	}
-	summary := i18n.Tf("%s needs you", n.agent)
-	body := n.ask
-	if n.state == agent.Done {
-		summary, body = i18n.Tf("%s is done", n.agent), ""
-	}
-	if t, _ := agent.Title(n.title); body == "" {
-		body = t
-	}
+	summary, body := n.summary, n.body
 	var id uint32
 	err := nf.conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications").Call(
 		"org.freedesktop.Notifications.Notify", 0,

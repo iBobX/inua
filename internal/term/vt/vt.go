@@ -23,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 13
+const abi = 14
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -55,6 +55,7 @@ var lib struct {
 	prompts     func(t uintptr, p **byte, n *uintptr)
 	input       func(t uintptr, out **byte, n *uintptr) int32
 	tail        func(t uintptr, n uint16, out **byte, outN *uintptr) int32
+	notes       func(t uintptr, p **byte, n *uintptr)
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -128,6 +129,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.prompts, h, "inua_vt_prompts")
 		purego.RegisterLibFunc(&lib.input, h, "inua_vt_input")
 		purego.RegisterLibFunc(&lib.tail, h, "inua_vt_tail")
+		purego.RegisterLibFunc(&lib.notes, h, "inua_vt_notifications")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -304,6 +306,43 @@ func (t *Terminal) Input() string {
 	s := string(unsafe.Slice(p, n))
 	lib.freeBytes(p, n)
 	return s
+}
+
+// Notification is a desktop notification a program sent (OSC 9, 777).
+type Notification struct{ Title, Body string }
+
+// Notifications are the notifications the program sent since the last
+// call, for a terminal that answers.
+func (t *Terminal) Notifications() []Notification {
+	var p *byte
+	var n uintptr
+	lib.notes(t.h, &p, &n)
+	if p == nil || n == 0 {
+		return nil
+	}
+	b := unsafe.Slice(p, n)
+	var out []Notification
+	str := func() (string, bool) {
+		if len(b) < 2 {
+			return "", false
+		}
+		l := int(binary.LittleEndian.Uint16(b))
+		if len(b) < 2+l {
+			return "", false
+		}
+		s := string(b[2 : 2+l])
+		b = b[2+l:]
+		return s, true
+	}
+	for len(b) > 0 {
+		title, ok1 := str()
+		body, ok2 := str()
+		if !ok1 || !ok2 {
+			break
+		}
+		out = append(out, Notification{title, body})
+	}
+	return out
 }
 
 // Tail is the last n rows of the screen, a line each: what a program

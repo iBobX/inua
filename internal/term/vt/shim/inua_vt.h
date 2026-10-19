@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 13
+#define INUA_VT_ABI 14
 
 typedef struct inua_vt inua_vt;
 
@@ -51,6 +51,11 @@ int inua_vt_input(inua_vt *t, uint8_t **out, size_t *len);
  * blanks trimmed: what a program shows at its bottom. *out freed with
  * inua_vt_free_bytes. */
 int inua_vt_tail(inua_vt *t, uint16_t n, uint8_t **out, size_t *len);
+
+/* The desktop notifications the program sent (OSC 9, OSC 777) since the
+ * last call, for a terminal that answers, borrowed until the next
+ * inua_vt_write: u16 title length, the title, u16 body length, the body. */
+void inua_vt_notifications(inua_vt *t, const uint8_t **ptr, size_t *len);
 
 /* The text the program last put on a clipboard (OSC 52, OSC 1337, OSC
  * 5522) since the last call, for a terminal that answers: returns 0 for

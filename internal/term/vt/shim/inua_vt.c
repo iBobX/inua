@@ -69,6 +69,7 @@ struct inua_vt {
   span current;
   bool has_current;
   buf prompts; /* inua_vt_prompts' records */
+  buf notes;   /* inua_vt_notifications' records */
   /* Where the last input began, moved with the text: a shell redrawing
    * its prompt after a resize sends no marks again, and the prompt it
    * draws then would read as typed. */
@@ -111,6 +112,7 @@ void inua_vt_free(inua_vt *t) {
   buf_free(&t->out);
   buf_free(&t->clip);
   buf_free(&t->prompts);
+  buf_free(&t->notes);
   ghostty_tracked_grid_ref_free(t->input_at);
   if (t->drag) ghostty_selection_gesture_event_free(t->drag);
   if (t->release) ghostty_selection_gesture_event_free(t->release);
@@ -395,6 +397,24 @@ static void semantic_prompt(GhosttyTerminal term, void *userdata, const GhosttyT
   buf_free(&cmd);
 }
 
+static void desktop_notification(GhosttyTerminal term, void *userdata, const GhosttyTerminalDesktopNotification *n) {
+  (void)term;
+  inua_vt *t = userdata;
+  uint16_t tl = (uint16_t)(n->title.len > 4096 ? 4096 : n->title.len);
+  uint16_t bl = (uint16_t)(n->body.len > 4096 ? 4096 : n->body.len);
+  buf_put(&t->notes, (const uint8_t *)&tl, 2);
+  if (tl) buf_put(&t->notes, n->title.ptr, tl);
+  buf_put(&t->notes, (const uint8_t *)&bl, 2);
+  if (bl) buf_put(&t->notes, n->body.ptr, bl);
+}
+
+void inua_vt_notifications(inua_vt *t, const uint8_t **ptr, size_t *len) {
+  *ptr = t->notes.p;
+  *len = t->notes.failed ? 0 : t->notes.len;
+  t->notes.len = 0;
+  t->notes.failed = false;
+}
+
 void inua_vt_prompts(inua_vt *t, const uint8_t **ptr, size_t *len) {
   *ptr = t->prompts.p;
   *len = t->prompts.failed ? 0 : t->prompts.len;
@@ -458,6 +478,7 @@ void inua_vt_answer(inua_vt *t) {
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_SCHEME, (const void *)answer_scheme);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_CLIPBOARD_WRITE, (const void *)clipboard_write);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SEMANTIC_PROMPT, (const void *)semantic_prompt);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_DESKTOP_NOTIFICATION, (const void *)desktop_notification);
 }
 
 void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len) {
