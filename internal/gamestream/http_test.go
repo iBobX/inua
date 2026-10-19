@@ -38,6 +38,7 @@ type fakeHost struct {
 	sSecret  []byte
 	cHash    []byte
 	paired   []byte // the paired client's certificate, DER
+	twice    bool   // it holds the client's certificate twice: Sunshine then refuses it
 	launched url.Values
 	session  string // the RTSP URL a launch gives
 }
@@ -76,6 +77,11 @@ func (f *fakeHost) serve(w http.ResponseWriter, r *http.Request) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	paired := peer != nil && bytes.Equal(peer, f.paired)
+	if secure && f.twice {
+		// Sunshine's "Client certificate identity is not enabled".
+		f.reply(w, 401, "")
+		return
+	}
 	switch r.URL.Path {
 	case "/serverinfo":
 		status := 0
@@ -227,6 +233,21 @@ func TestPairWithTheWrongPIN(t *testing.T) {
 	}
 	if h.Cert != nil {
 		t.Error("a certificate kept from a failed pairing")
+	}
+}
+
+// A host that holds this client's certificate twice takes the PIN, then
+// refuses the client at the last step: that is not a wrong PIN, nor a
+// host that is not paired.
+func TestPairWithAHostThatRefusesAfterThePIN(t *testing.T) {
+	f := newFakeHost(t, "4821")
+	f.twice = true
+	h := newClient(t, f.addr())
+	if err := h.Pair(t.Context(), "4821", "laptop"); !errors.Is(err, ErrRefused) {
+		t.Fatalf("err = %v", err)
+	}
+	if h.Cert != nil {
+		t.Error("a certificate kept from a refused pairing")
 	}
 }
 

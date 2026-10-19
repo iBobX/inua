@@ -7,6 +7,7 @@
 //	inua-remote --share on           share this desktop, now and at login (off to stop)
 //	inua-remote --virtual-screen on  a screen to share while no monitor is connected (off, or a size)
 //	inua-remote --pair PIN           pair the device waiting, with the PIN it shows
+//	inua-remote --unpair NAME|all    forget a paired device, or every one
 //	inua-remote --status             whether it is shared, what sharing needs, the devices
 //	inua-remote --await-session      for inua-session: the virtual screen in the Hyprland it starts
 package main
@@ -32,6 +33,7 @@ func main() {
 	device := flag.String("device", "", "with --pair: the `device` to pair, by its name or address, when several wait")
 	name := flag.String("name", "", "with --pair: the `name` to know the device by here (its own, if not given)")
 	wait := flag.Duration("wait", time.Minute, "with --pair: how long to wait for the device to ask")
+	unpair := flag.String("unpair", "", "forget the paired devices called `NAME`, or every one with all; they pair again to connect")
 	virtual := flag.String("virtual-screen", "", "on: a screen of "+remotedesk.DefaultVirtualMode+" to share while no monitor is connected, or a `size` like 2560x1440@60; off: none")
 	status := flag.Bool("status", false, "whether this desktop is shared, what sharing needs, and the devices waiting and paired")
 	await := flag.Bool("await-session", false, "for inua-session, which starts it before Hyprland: make the virtual screen, when it is on, once Hyprland answers")
@@ -40,6 +42,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "       inua-remote --share on|off")
 		fmt.Fprintln(os.Stderr, "       inua-remote --virtual-screen on|off|WIDTHxHEIGHT@HZ")
 		fmt.Fprintln(os.Stderr, "       inua-remote --pair PIN [--device NAME|ADDRESS] [--name NAME] [--wait 1m]")
+		fmt.Fprintln(os.Stderr, "       inua-remote --unpair NAME|all")
 		fmt.Fprintln(os.Stderr, "       inua-remote --status")
 		fmt.Fprintln(os.Stderr, "       inua-remote --await-session")
 		flag.PrintDefaults()
@@ -65,6 +68,8 @@ func main() {
 		setVirtual(s, *virtual)
 	case *pair != "":
 		pairDevice(s, *pair, *device, *name, *wait)
+	case *unpair != "":
+		unpairDevices(s, *unpair)
 	case *status:
 		printStatus(s)
 	case *await:
@@ -143,12 +148,32 @@ func pairDevice(s *remotedesk.Sharing, pin, which, name string, wait time.Durati
 	if name == "" {
 		name = p.Address
 	}
-	if err := s.Pair(ctx, p, pin, name); errors.Is(err, remotedesk.ErrPIN) {
+	err = s.Pair(ctx, p, pin, name)
+	var before *remotedesk.PairedBeforeError
+	switch {
+	case errors.Is(err, remotedesk.ErrPIN):
 		fail(fmt.Errorf("that is not the PIN %s shows", name))
-	} else if err != nil {
+	case errors.As(err, &before):
+		fail(fmt.Errorf("%s was paired here before, as %s, and Sunshine refuses a device paired twice: its old pairing is removed; pair again from %s",
+			name, strings.Join(before.Before, ", "), name))
+	case err != nil:
 		fail(err)
 	}
 	fmt.Printf("Paired %s (%s).\n", name, p.Address)
+}
+
+// unpairDevices forgets the paired devices called name, or every one.
+func unpairDevices(s *remotedesk.Sharing, name string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	n, err := s.UnpairNamed(ctx, name)
+	switch {
+	case err != nil:
+		fail(fmt.Errorf("%w (is this desktop shared? inua-remote --status)", err))
+	case n == 0:
+		fail(fmt.Errorf("no paired device is called %s (inua-remote --status lists them)", name))
+	}
+	fmt.Printf("Unpaired %d.\n", n)
 }
 
 func printStatus(s *remotedesk.Sharing) {
@@ -185,6 +210,9 @@ func printStatus(s *remotedesk.Sharing) {
 		for _, c := range clients {
 			fmt.Printf("paired: %s\n", c.Name)
 		}
+	}
+	if twice := s.Twice(); len(twice) > 0 {
+		fmt.Printf("paired twice, so refused: %s; unpair each (--unpair NAME), then pair the device again\n", strings.Join(twice, ", "))
 	}
 }
 

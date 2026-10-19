@@ -1,6 +1,7 @@
 package remotedesk
 
 import (
+	"cmp"
 	"context"
 	"crypto/sha256"
 	"crypto/tls"
@@ -8,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -22,13 +24,39 @@ import (
 )
 
 // fakeSunshine is Sunshine's API, as it answers: it checks the basic
-// credentials against its credentials file as Sunshine does.
+// credentials against its credentials file as Sunshine does, and keeps
+// the paired devices, with their certificates, in its state file.
 type fakeSunshine struct {
 	t       *testing.T
 	dir     string
 	mu      sync.Mutex
 	pinned  map[string]string // pairing ID → the PIN typed
-	clients []Client
+	devices []device
+	cert    string // the certificate of the device pairing next
+	unit    string // the unit's state, when not active or inactive
+	paired  int    // devices paired so far, for their IDs
+}
+
+// save writes the state file as Sunshine does.
+func (f *fakeSunshine) save() {
+	var st struct {
+		Root struct {
+			Devices []device `json:"named_devices"`
+		} `json:"root"`
+	}
+	st.Root.Devices = f.devices
+	data, _ := json.Marshal(st)
+	os.WriteFile(filepath.Join(f.dir, "state.json"), data, 0600)
+}
+
+// clientCert is a device's certificate, as Sunshine keeps it.
+func clientCert(t *testing.T) string {
+	dir := t.TempDir()
+	if err := writeCert(filepath.Join(dir, "c.pem"), filepath.Join(dir, "k.pem")); err != nil {
+		t.Fatal(err)
+	}
+	data, _ := os.ReadFile(filepath.Join(dir, "c.pem"))
+	return string(data)
 }
 
 func (f *fakeSunshine) authorized(r *http.Request) bool {
@@ -61,18 +89,34 @@ func (f *fakeSunshine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&in)
 		f.pinned[in["pairing_id"]] = in["pin"]
 		ok := in["pin"] == "4821"
-		if ok {
-			f.clients = append(f.clients, Client{Name: in["name"], UUID: "u1", Enabled: true})
-		}
 		json.NewEncoder(w).Encode(map[string]bool{"status": ok})
+		if ok {
+			// The device is recorded once it has answered its challenges.
+			cert := cmp.Or(f.cert, clientCert(f.t))
+			name := in["name"]
+			go func() {
+				time.Sleep(30 * time.Millisecond)
+				f.mu.Lock()
+				defer f.mu.Unlock()
+				f.paired++
+				f.devices = append(f.devices, device{Name: name, UUID: fmt.Sprintf("u%d", f.paired), Cert: cert})
+				f.save()
+			}()
+		}
 	case "GET /api/clients/list":
-		json.NewEncoder(w).Encode(map[string]any{"named_certs": f.clients, "status": true})
-	case "POST /api/unpair":
+		clients := []Client{}
+		for _, d := range f.devices {
+			clients = append(clients, Client{Name: d.Name, UUID: d.UUID, Enabled: true})
+		}
+		json.NewEncoder(w).Encode(map[string]any{"named_certs": clients, "status": true})
+	case "POST /api/clients/unpair":
 		var in map[string]string
 		json.NewDecoder(r.Body).Decode(&in)
-		f.clients = slices.DeleteFunc(f.clients, func(c Client) bool { return c.UUID == in["uuid"] })
-		json.NewEncoder(w).Encode(map[string]bool{"status": true})
-	default:
+		n := len(f.devices)
+		f.devices = slices.DeleteFunc(f.devices, func(d device) bool { return d.UUID == in["uuid"] })
+		f.save()
+		json.NewEncoder(w).Encode(map[string]bool{"status": len(f.devices) < n})
+	default: // POST /api/unpair among them: Sunshine has no such path
 		w.WriteHeader(http.StatusNotFound)
 	}
 }
@@ -115,6 +159,9 @@ func newSharing(t *testing.T) (*Sharing, *fakeSunshine, *[]string) {
 			s.API = srv.URL
 			active = true
 		case name == "systemctl" && args[1] == "is-active":
+			if f.unit != "" {
+				return []byte(f.unit + "\n"), nil
+			}
 			if active {
 				return []byte("active\n"), nil
 			}
@@ -197,6 +244,129 @@ func TestPairingADeviceByItsPIN(t *testing.T) {
 		t.Errorf("unpaired, still %+v", clients)
 	}
 	_ = f
+}
+
+// Sunshine refuses a certificate it holds twice: a device paired again,
+// even under another name, could never connect. Every copy goes, and the
+// device pairs again.
+func TestPairingAgainRemovesEveryCopy(t *testing.T) {
+	s, f, _ := newSharing(t)
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	p := Pairing{ID: "0123456789abcdef0123456789abcdef", Name: "lyric-osx"}
+	f.cert = clientCert(t)
+	if err := s.Pair(t.Context(), p, "4821", "nest"); err != nil {
+		t.Fatal(err)
+	}
+	if twice := s.Twice(); len(twice) != 0 {
+		t.Errorf("one pairing, yet twice: %q", twice)
+	}
+	err := s.Pair(t.Context(), p, "4821", "lyric-osx")
+	var before *PairedBeforeError
+	if !errors.As(err, &before) || before.Name != "lyric-osx" || !slices.Equal(before.Before, []string{"nest"}) {
+		t.Fatalf("paired again: %v", err)
+	}
+	if clients, _ := s.Clients(t.Context()); len(clients) != 0 {
+		t.Errorf("copies left: %+v", clients)
+	}
+	if err := s.Pair(t.Context(), p, "4821", "lyric-osx"); err != nil {
+		t.Fatalf("pairing once more: %v", err)
+	}
+	if clients, _ := s.Clients(t.Context()); len(clients) != 1 || clients[0].Name != "lyric-osx" {
+		t.Errorf("after pairing once more: %+v", clients)
+	}
+
+	// Another device is left alone.
+	f.cert = clientCert(t)
+	if err := s.Pair(t.Context(), p, "4821", "phone"); err != nil {
+		t.Fatal(err)
+	}
+	if clients, _ := s.Clients(t.Context()); len(clients) != 2 {
+		t.Errorf("two devices: %+v", clients)
+	}
+}
+
+func TestTwiceFindsADevicePairedTwice(t *testing.T) {
+	s, f, _ := newSharing(t)
+	cert, other := clientCert(t), clientCert(t)
+	f.devices = []device{{Name: "nest", UUID: "a", Cert: cert}, {Name: "phone", UUID: "b", Cert: other}, {Name: "lyric-osx", UUID: "c", Cert: cert}}
+	f.save()
+	if twice := s.Twice(); !slices.Equal(twice, []string{"nest", "lyric-osx"}) {
+		t.Errorf("twice = %q", twice)
+	}
+}
+
+func TestUnpairByName(t *testing.T) {
+	s, f, _ := newSharing(t)
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	f.devices = []device{{Name: "laptop", UUID: "a"}, {Name: "Laptop", UUID: "b"}, {Name: "phone", UUID: "c"}}
+	if n, err := s.UnpairNamed(t.Context(), "LAPTOP"); err != nil || n != 2 {
+		t.Errorf("unpair laptop: %d, %v", n, err)
+	}
+	if n, err := s.UnpairNamed(t.Context(), "tv"); err != nil || n != 0 {
+		t.Errorf("unpair a name none has: %d, %v", n, err)
+	}
+	if n, err := s.UnpairNamed(t.Context(), "all"); err != nil || n != 1 {
+		t.Errorf("unpair all: %d, %v", n, err)
+	}
+	if err := s.Unpair(t.Context(), "gone"); err == nil {
+		t.Error("unpairing a device not paired said nothing")
+	}
+}
+
+// A Sunshine already running, or still trying its encoders, is waited for:
+// starting it again would make a second unit of the same name.
+func TestStartingWhileSunshineStartsWaitsForIt(t *testing.T) {
+	s, f, calls := newSharing(t)
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	for _, state := range []string{"active", "activating"} {
+		f.unit = state
+		if err := s.SetOn(t.Context(), true); err != nil {
+			t.Errorf("%s: %v", state, err)
+		}
+		if err := s.AtLogin(t.Context()); err != nil {
+			t.Errorf("at login, %s: %v", state, err)
+		}
+	}
+	n := 0
+	for _, c := range *calls {
+		if strings.HasPrefix(c, "systemd-run") {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("Sunshine started %d times", n)
+	}
+}
+
+// On Hyprland, Sunshine captures the screen through screencopy: the
+// desktop portal's picker would wait for a click on a computer nobody is
+// at.
+func TestSunshineCapturesHyprlandWithoutThePortal(t *testing.T) {
+	s, _, _ := newSharing(t)
+	s.Getenv = func(k string) string {
+		return map[string]string{"WAYLAND_DISPLAY": "wayland-1", "HYPRLAND_INSTANCE_SIGNATURE": "abc"}[k]
+	}
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	conf, _ := os.ReadFile(filepath.Join(s.Dir, "sunshine.conf"))
+	if !strings.Contains(string(conf), "\ncapture = wlr\n") {
+		t.Errorf("Hyprland, no capture = wlr:\n%s", conf)
+	}
+
+	s, _, _ = newSharing(t) // another desktop: Sunshine chooses
+	if err := s.Start(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if conf, _ := os.ReadFile(filepath.Join(s.Dir, "sunshine.conf")); strings.Contains(string(conf), "capture") {
+		t.Errorf("not Hyprland, yet a capture:\n%s", conf)
+	}
 }
 
 func TestTheAPIIsTrustedByInuasCertificateOnly(t *testing.T) {

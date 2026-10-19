@@ -23,6 +23,10 @@ var (
 	ErrPairing        = errors.New("gamestream: the host is pairing with another device")
 	ErrPairingRefused = errors.New("gamestream: the host refused to pair")
 	ErrImpostor       = errors.New("gamestream: the host's answer was not signed by its certificate")
+	// ErrRefused is a host that took the PIN and then refused this
+	// client's certificate: Sunshine does so when it has the certificate
+	// paired already, perhaps under another name.
+	ErrRefused = errors.New("gamestream: the host took the PIN but refuses this client")
 )
 
 // NewPIN is a PIN for the host's user to type: four digits.
@@ -149,7 +153,9 @@ func (h *Host) Pair(ctx context.Context, pin, deviceName string) (err error) {
 	}
 
 	// 5. Over HTTPS, with this client's certificate: the host now knows it.
-	if _, err := ask(url.Values{"phrase": {"pairchallenge"}}, true, requestTimeout); err != nil {
+	if _, err := ask(url.Values{"phrase": {"pairchallenge"}}, true, requestTimeout); errors.Is(err, ErrNotPaired) {
+		return ErrRefused
+	} else if err != nil {
 		return err
 	}
 	h.Cert = certPEM

@@ -123,8 +123,7 @@ func (s *Sharing) Status(ctx context.Context) Status {
 	} else if _, err := s.session(); err != nil {
 		st.Need = NeedDisplay
 	}
-	out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit)
-	st.Running = strings.TrimSpace(string(out)) == "active"
+	st.Running = s.unitState(ctx) == "active"
 	return st
 }
 
@@ -149,11 +148,11 @@ type credentials struct {
 	Password string `json:"password"`
 }
 
-// prepare writes Sunshine's configuration, its apps (the desktop only),
-// the API's credentials as Sunshine reads them, and a certificate for its
-// API that inua pins. What is there already is kept: paired devices live
-// in Sunshine's state file.
-func (s *Sharing) prepare() error {
+// prepare writes Sunshine's configuration for the session env, its apps
+// (the desktop only), the API's credentials as Sunshine reads them, and a
+// certificate for its API that inua pins. What is there already is kept:
+// paired devices live in Sunshine's state file.
+func (s *Sharing) prepare(env map[string]string) error {
 	if err := os.MkdirAll(s.Dir, 0700); err != nil {
 		return err
 	}
@@ -161,7 +160,14 @@ func (s *Sharing) prepare() error {
 	if err != nil || name == "" {
 		name = "inua"
 	}
-	conf := strings.Join([]string{
+	var capture []string
+	if env["HYPRLAND_INSTANCE_SIGNATURE"] != "" {
+		// Hyprland's screencopy needs no one to answer. Left to choose,
+		// Sunshine asks the desktop portal, whose picker waits for a click
+		// that a computer without its user never gets.
+		capture = []string{"capture = wlr"}
+	}
+	conf := strings.Join(slices.Concat([]string{
 		"sunshine_name = " + name,
 		"origin_web_ui_allowed = pc", // the API answers this computer only
 		"file_apps = " + s.file("apps.json"),
@@ -172,8 +178,7 @@ func (s *Sharing) prepare() error {
 		"log_path = " + s.file("sunshine.log"),
 		"lan_encryption_mode = 0", // the viewer encrypts input, not video, on the local network
 		"wan_encryption_mode = 1",
-		"",
-	}, "\n")
+	}, capture, []string{""}), "\n")
 	if err := os.WriteFile(s.file("sunshine.conf"), []byte(conf), 0600); err != nil {
 		return err
 	}
@@ -300,8 +305,22 @@ func (s *Sharing) session() (map[string]string, error) {
 // computer.
 const StartTimeout = 120 * time.Second
 
+// unitState is the unit's state as systemctl names it: active,
+// activating, failed, inactive…
+func (s *Sharing) unitState(ctx context.Context) string {
+	out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit)
+	return strings.TrimSpace(string(out))
+}
+
+// running says whether Sunshine runs or is starting: it tries the
+// encoders first, which can take most of a minute.
+func running(state string) bool {
+	return state == "active" || state == "activating" || state == "reloading"
+}
+
 // Start shares the desktop: Sunshine runs as a user unit with the
-// session's display, and Start returns once its API answers.
+// session's display, and Start returns once its API answers. A Sunshine
+// already running or starting is waited for.
 func (s *Sharing) Start(ctx context.Context) error {
 	bin, err := s.LookPath("sunshine")
 	if err != nil {
@@ -311,27 +330,29 @@ func (s *Sharing) Start(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := s.prepare(); err != nil {
-		return err
-	}
-	s.Run(ctx, "systemctl", "--user", "reset-failed", Unit)
-	args := []string{"--user", "--unit=" + Unit, "--description=inua desktop sharing (Sunshine)", "--collect", "--quiet",
-		"--property=Restart=on-failure", "--property=RestartSec=3"}
-	// The unit starts in the user manager's environment, not the session's.
-	for _, k := range sessionEnv {
-		if v := env[k]; v != "" {
-			args = append(args, "--setenv="+k+"="+v)
+	if !running(s.unitState(ctx)) {
+		if err := s.prepare(env); err != nil {
+			return err
 		}
-	}
-	args = append(args, "--", bin, s.file("sunshine.conf"))
-	if _, err := s.Run(ctx, "systemd-run", args...); err != nil {
-		return err
+		s.Run(ctx, "systemctl", "--user", "reset-failed", Unit)
+		args := []string{"--user", "--unit=" + Unit, "--description=inua desktop sharing (Sunshine)", "--collect", "--quiet",
+			"--property=Restart=on-failure", "--property=RestartSec=3"}
+		// The unit starts in the user manager's environment, not the session's.
+		for _, k := range sessionEnv {
+			if v := env[k]; v != "" {
+				args = append(args, "--setenv="+k+"="+v)
+			}
+		}
+		args = append(args, "--", bin, s.file("sunshine.conf"))
+		if _, err := s.Run(ctx, "systemd-run", args...); err != nil {
+			return err
+		}
 	}
 	for {
 		if _, err := s.Clients(ctx); err == nil {
 			return nil
 		}
-		if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) == "failed" {
+		if s.unitState(ctx) == "failed" {
 			return fmt.Errorf("sharing: Sunshine stopped: %s", s.LastLog())
 		}
 		select {
@@ -439,9 +460,32 @@ func (s *Sharing) Pending(ctx context.Context) ([]Pairing, error) {
 // ErrPIN is a PIN the pairing device did not show.
 var ErrPIN = errors.New("sharing: that is not the PIN the device shows")
 
+// PairedBeforeError is a device that was paired here already, under the
+// names Before. Sunshine refuses a certificate it holds twice, so the
+// pairing failed on the device; every copy is unpaired, and the device
+// pairs again.
+type PairedBeforeError struct {
+	Name   string
+	Before []string
+}
+
+func (e *PairedBeforeError) Error() string {
+	return fmt.Sprintf("sharing: %s was paired here before, as %s; that pairing is removed: pair again from %s",
+		e.Name, strings.Join(e.Before, ", "), e.Name)
+}
+
+// recordWait is how long Sunshine may take to record a device after its
+// PIN: the device answers its challenges first, in milliseconds.
+var recordWait = 5 * time.Second
+
 // Pair gives a waiting device the PIN its screen shows, and the name it
-// is to be known by here.
+// is to be known by here. A device paired here before is a
+// *PairedBeforeError.
 func (s *Sharing) Pair(ctx context.Context, p Pairing, pin, name string) error {
+	known := map[string]bool{}
+	for _, d := range s.devices() {
+		known[d.UUID] = true
+	}
 	var r struct {
 		Status bool `json:"status"`
 	}
@@ -450,6 +494,38 @@ func (s *Sharing) Pair(ctx context.Context, p Pairing, pin, name string) error {
 	}
 	if !r.Status {
 		return ErrPIN
+	}
+	// The device is recorded once it has answered; then its certificate
+	// tells whether it was here before.
+	deadline := time.Now().Add(recordWait)
+	for time.Now().Before(deadline) {
+		ds := s.devices()
+		i := slices.IndexFunc(ds, func(d device) bool { return !known[d.UUID] })
+		if i < 0 {
+			select {
+			case <-ctx.Done():
+				return nil
+			case <-time.After(100 * time.Millisecond):
+			}
+			continue
+		}
+		added := ds[i]
+		var before []string
+		for _, d := range ds {
+			if d.UUID != added.UUID && sameCert(d.Cert, added.Cert) {
+				before = append(before, d.Name)
+				if err := s.Unpair(ctx, d.UUID); err != nil {
+					return err
+				}
+			}
+		}
+		if len(before) == 0 {
+			return nil
+		}
+		if err := s.Unpair(ctx, added.UUID); err != nil {
+			return err
+		}
+		return &PairedBeforeError{Name: name, Before: before}
 	}
 	return nil
 }
@@ -470,9 +546,87 @@ func (s *Sharing) Clients(ctx context.Context) ([]Client, error) {
 	return r.Clients, err
 }
 
-// Unpair forgets a paired device: it must pair again to connect.
+// Unpair forgets a paired device: it must pair again to connect. It
+// takes effect at once.
 func (s *Sharing) Unpair(ctx context.Context, uuid string) error {
-	return s.api(ctx, http.MethodPost, "/api/unpair", map[string]string{"uuid": uuid}, nil)
+	var r struct {
+		Status bool `json:"status"`
+	}
+	if err := s.api(ctx, http.MethodPost, "/api/clients/unpair", map[string]string{"uuid": uuid}, &r); err != nil {
+		return err
+	}
+	if !r.Status {
+		return fmt.Errorf("sharing: Sunshine did not unpair %s", uuid)
+	}
+	return nil
+}
+
+// UnpairNamed forgets the paired devices called name (in any case), or
+// every one for "all", and says how many went.
+func (s *Sharing) UnpairNamed(ctx context.Context, name string) (int, error) {
+	clients, err := s.Clients(ctx)
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, c := range clients {
+		if name != "all" && !strings.EqualFold(c.Name, name) {
+			continue
+		}
+		if err := s.Unpair(ctx, c.UUID); err != nil {
+			return n, err
+		}
+		n++
+	}
+	return n, nil
+}
+
+// device is a paired device as Sunshine keeps it in its state file, with
+// its certificate.
+type device struct {
+	Name string `json:"name"`
+	UUID string `json:"uuid"`
+	Cert string `json:"cert"`
+}
+
+// devices are the paired devices in Sunshine's state file. Its API does
+// not give their certificates.
+func (s *Sharing) devices() []device {
+	var st struct {
+		Root struct {
+			Devices []device `json:"named_devices"`
+		} `json:"root"`
+	}
+	data, err := os.ReadFile(s.file("state.json"))
+	if err != nil || json.Unmarshal(data, &st) != nil {
+		return nil
+	}
+	return st.Root.Devices
+}
+
+// sameCert says whether two PEM certificates are the same one.
+func sameCert(a, b string) bool {
+	da, _ := pem.Decode([]byte(a))
+	db, _ := pem.Decode([]byte(b))
+	return da != nil && db != nil && bytes.Equal(da.Bytes, db.Bytes)
+}
+
+// Twice are the names of the devices paired more than once with the same
+// certificate (perhaps under other names). Sunshine refuses a certificate
+// it holds twice, so they cannot connect until every copy is unpaired and
+// the device pairs again.
+func (s *Sharing) Twice() []string {
+	ds := s.devices()
+	var out []string
+	for i, d := range ds {
+		for j, e := range ds {
+			if i != j && sameCert(d.Cert, e.Cert) {
+				out = append(out, d.Name)
+				break
+			}
+		}
+	}
+	return out
 }
 
 // On says whether sharing is on: it starts again at login.
@@ -502,10 +656,7 @@ func (s *Sharing) SetOn(ctx context.Context, on bool) error {
 // AtLogin starts sharing when it is on and not running: the shell calls
 // it once the session's display is there.
 func (s *Sharing) AtLogin(ctx context.Context) error {
-	if !s.On() {
-		return nil
-	}
-	if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) == "active" {
+	if !s.On() || running(s.unitState(ctx)) {
 		return nil
 	}
 	return s.Start(ctx)
@@ -569,7 +720,7 @@ func (s *Sharing) SyncVirtual(ctx context.Context) error {
 	if err != nil || !changed {
 		return err
 	}
-	if out, _ := s.Run(ctx, "systemctl", "--user", "is-active", Unit); strings.TrimSpace(string(out)) != "active" {
+	if !running(s.unitState(ctx)) {
 		return nil
 	}
 	if err := s.Stop(ctx); err != nil {
