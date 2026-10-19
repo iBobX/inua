@@ -275,5 +275,10 @@ connect-tv                            television
 battery-low                           battery-low
 folder-download                       download-simple
 dialog-error                          warning-circle
+# Disk Usage
+disk-drive                            hard-drive
+disk-dev                              code
+disk-agent                            robot
+disk-cache                            broom
 LIST
 echo "$(ls "$dest"/*.svg | wc -l) icons in $dest"
