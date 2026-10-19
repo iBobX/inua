@@ -5,36 +5,26 @@ package termui
 
 import (
 	"sync"
-	"unsafe"
 
 	"codeberg.org/puregotk/purego"
 	"codeberg.org/puregotk/puregotk/v4/gdk"
-	"codeberg.org/puregotk/puregotk/v4/gobject"
-	"codeberg.org/puregotk/puregotk/v4/gobject/types"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
+
+	"github.com/lyricat/inua/internal/gtkx"
 )
 
-// GObject's and GTK's own calls that puregotk does not bind in a form
-// purego can make: g_type_query, g_object_new without varargs, and the
-// controller's current event.
+// GTK's own call that puregotk does not bind in a form purego can make:
+// the controller's current event (puregotk's wrapper refs a GdkEvent as a
+// GObject).
 var gobj struct {
-	once      sync.Once
-	typeQuery func(t types.GType, q *gobject.TypeQuery)
-	newObject func(t types.GType, n uint32, names, values uintptr) uintptr
-	// GTK's own, since puregotk's wrapper refs a GdkEvent as a GObject.
+	once         sync.Once
 	currentEvent func(controller uintptr) uintptr
 }
 
 func loadGObject() {
 	gobj.once.Do(func() {
-		h, err := purego.Dlopen("libgobject-2.0.so.0", purego.RTLD_NOW|purego.RTLD_GLOBAL)
-		if err != nil {
-			panic("termui: " + err.Error())
-		}
-		purego.RegisterLibFunc(&gobj.typeQuery, h, "g_type_query")
-		purego.RegisterLibFunc(&gobj.newObject, h, "g_object_new_with_properties")
 		g, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
 		if err != nil {
 			panic("termui: " + err.Error())
@@ -43,72 +33,13 @@ func loadGObject() {
 	})
 }
 
-// paneDrawer is what draws a pane and hears its size: a Go value, found
-// by the widget's pointer.
-type paneDrawer interface {
-	snapshot(w *gtk.Widget, s *gtk.Snapshot)
-	allocate(w *gtk.Widget, width, height int)
+// newPaneWidget makes a pane's widget, drawn by it.
+func newPaneWidget(p *termPane) *gtk.Widget {
+	loadGObject()
+	return gtkx.NewCanvas(&gtkx.Canvas{Snapshot: p.snapshot, Allocate: p.allocate})
 }
 
-var panes struct {
-	once sync.Once
-	t    types.GType
-	mu   sync.Mutex
-	by   map[uintptr]paneDrawer
-	// The class's callbacks live as long as the type.
-	classInit gobject.ClassInitFunc
-	instInit  gobject.InstanceInitFunc
-}
-
-// paneType registers InuaTermPane, a GtkWidget whose snapshot and
-// size_allocate are its drawer's.
-func paneType() types.GType {
-	panes.once.Do(func() {
-		loadGObject()
-		panes.by = map[uintptr]paneDrawer{}
-		parent := gtk.WidgetGLibType()
-		var q gobject.TypeQuery
-		gobj.typeQuery(parent, &q)
-		panes.classInit = func(c *gobject.TypeClass, _ uintptr) {
-			wc := (*gtk.WidgetClass)(unsafe.Pointer(c))
-			wc.OverrideSnapshot(func(w *gtk.Widget, s *gtk.Snapshot) {
-				if d := drawerOf(w); d != nil {
-					d.snapshot(w, s)
-				}
-			})
-			wc.OverrideSizeAllocate(func(w *gtk.Widget, width, height, _ int32) {
-				if d := drawerOf(w); d != nil {
-					d.allocate(w, int(width), int(height))
-				}
-			})
-		}
-		panes.instInit = func(*gobject.TypeInstance, *gobject.TypeClass) {}
-		panes.t = gobject.TypeRegisterStaticSimple(parent, "InuaTermPane", q.ClassSize, &panes.classInit, q.InstanceSize, &panes.instInit, 0)
-	})
-	return panes.t
-}
-
-func drawerOf(w *gtk.Widget) paneDrawer {
-	panes.mu.Lock()
-	defer panes.mu.Unlock()
-	return panes.by[w.GoPointer()]
-}
-
-// newPaneWidget makes an InuaTermPane drawn by d; the caller owns its
-// floating reference, as with any new widget.
-func newPaneWidget(d paneDrawer) *gtk.Widget {
-	ptr := gobj.newObject(paneType(), 0, 0, 0)
-	panes.mu.Lock()
-	panes.by[ptr] = d
-	panes.mu.Unlock()
-	return gtk.WidgetNewFromInternalPtr(ptr)
-}
-
-func forgetPaneWidget(w *gtk.Widget) {
-	panes.mu.Lock()
-	delete(panes.by, w.GoPointer())
-	panes.mu.Unlock()
-}
+func forgetPaneWidget(w *gtk.Widget) { gtkx.ForgetCanvas(w) }
 
 // Drawing helpers: GSK takes these by pointer.
 func rect(x, y, w, h float32) *graphene.Rect {
