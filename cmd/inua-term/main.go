@@ -5,6 +5,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -13,6 +14,7 @@ import (
 	"syscall"
 
 	"github.com/lyricat/inua/internal/appui"
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/hooks"
@@ -33,11 +35,33 @@ func main() {
 			os.Exit(integration(os.Args[2:]))
 		}
 	}
+	// -e runs the rest as a command, as terminals do (xdg-terminal-exec).
+	var command []string
+	for i, a := range os.Args[1:] {
+		if a == "-e" || a == "--" {
+			command = os.Args[i+2:]
+			os.Args = os.Args[:i+1]
+			break
+		}
+	}
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory instead of the embedded copy")
 	runHost := flag.Bool("host", false, "run the terminal host (the window starts it when needed)")
+	workspace := flag.String("workspace", "", "open or show the workspace for this folder")
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, "usage: inua-term [--workspace DIR] [-e COMMAND ARGS…]")
+		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration …")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
 	if *runHost {
 		os.Exit(serveHost())
+	}
+	if len(command) > 0 || *workspace != "" {
+		// The host shows it; the window, opened or raised, follows.
+		if err := show(command, *workspace); err != nil {
+			fmt.Fprintf(os.Stderr, "inua-term: %v\n", err)
+			os.Exit(1)
+		}
 	}
 	termui.Register()
 	os.Exit(appui.Run("term", flag.Args(), *uiDir))
@@ -63,6 +87,9 @@ func serveHost() int {
 		return 1
 	}
 	h.ExitWhenEmpty = true
+	if cfg, _, err := config.Load(config.DefaultPath()); err == nil {
+		i18n.Init(cfg.Language) // the notifications', the Commands workspace's
+	}
 	set, warnings, err := settings.Load(settings.Path())
 	if err != nil {
 		log.Printf("inua-term: %v", err)
@@ -102,6 +129,30 @@ func serveHost() int {
 		return 1
 	}
 	return 0
+}
+
+// show has the host show a command run in a session of its own, or the
+// workspace for a folder.
+func show(command []string, workspace string) error {
+	c, err := host.Connect(nil, nil)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	if workspace != "" {
+		dir, err := filepath.Abs(workspace)
+		if err != nil {
+			return err
+		}
+		if _, err := c.Open(dir, ""); err != nil {
+			return err
+		}
+	}
+	if len(command) > 0 {
+		dir, _ := os.Getwd()
+		_, err = c.Run(command, dir)
+	}
+	return err
 }
 
 // addHooks adds inua-term's hooks to an agent's settings, the first time

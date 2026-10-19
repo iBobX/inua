@@ -44,11 +44,11 @@ msgstr "%s이(가) 비밀을 읽었습니다"
 msgid "“%s” · %s"
 msgstr "“%s” · %s"
 
-#: cmd/inua-term/main.go:135
+#: cmd/inua-term/main.go:186
 msgid "inua-term added its hooks"
 msgstr "inua-term이 훅을 추가했습니다"
 
-#: cmd/inua-term/main.go:136
+#: cmd/inua-term/main.go:187
 msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
 msgstr "이제 %s이(가) 상태를 inua-term에 알립니다. 이전 파일은 %s.bak이며, `inua-term integration remove %s`로 제거할 수 있습니다."
 
@@ -3601,13 +3601,14 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:86
-#: internal/termui/app.go:100
-#: internal/termui/app.go:277
-#: internal/termui/app.go:279
+#: internal/termui/app.go:82
+#: internal/termui/app.go:96
+#: internal/termui/app.go:262
+#: internal/termui/app.go:264
 #: internal/termui/tiles.go:324
 #: ui/settings.ui:1933
 #: ui/term.ui:28
+#: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "터미널"
 
@@ -8798,6 +8799,11 @@ msgstr "%s이(가) 응답을 기다립니다"
 msgid "%s is done"
 msgstr "%s 작업 완료"
 
+#: internal/term/host/sessions.go:265
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr "명령"
+
 #: internal/term/settings/settings.go:69
 msgid "New session in this workspace"
 msgstr "이 작업 공간에 새 세션"
@@ -11432,10 +11438,6 @@ msgstr "포인터와 키보드"
 msgid "The device works as a touchpad and keyboard here."
 msgstr "기기를 여기서 터치패드와 키보드로 사용합니다."
 
-#: ui/connect.ui:850
-msgid "Commands"
-msgstr "명령"
-
 #: ui/connect.ui:859
 msgid "It runs the commands set up on This computer."
 msgstr "'이 컴퓨터'에서 설정한 명령을 실행합니다."
@@ -13568,6 +13570,14 @@ msgstr "Tailnet의 장치, 종료 노드 및 이 장치의 Tailscale 설정"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;네트워크;출구 노드;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Term.desktop:10
+msgid "Workspaces of terminals, and the agents working in them"
+msgstr "터미널 작업 공간과 그 안에서 일하는 에이전트"
+
+#: config/apps/io.github.lyricat.Inua.Term.desktop:15
+msgid "shell;prompt;command;commandline;cli;agent;claude;codex;"
+msgstr "셸;프롬프트;명령;명령줄;cli;에이전트;claude;codex;"
 
 #: config/apps/io.github.lyricat.Inua.VM.desktop:10
 msgid "Run a Windows virtual machine"

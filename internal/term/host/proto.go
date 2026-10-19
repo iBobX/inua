@@ -158,6 +158,7 @@ const (
 	MsgUI           = "ui"            // client: UI, how the window is
 	MsgActive       = "active"        // client: its window is the active one (Active) or not
 	MsgReport       = "report"        // client: an agent's state for Pane: Agent, AgentState, Title, Summary
+	MsgRun          = "run"           // client: a session running Argv in Dir, in the Commands workspace; shown
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.

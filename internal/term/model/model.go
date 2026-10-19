@@ -49,6 +49,9 @@ type Workspace struct {
 	Added bool `json:"added,omitempty"`
 	// Last is the session last shown in it.
 	Last int `json:"last,omitempty"`
+	// Commands is set for the workspace of the commands others start
+	// (`inua-term -e`).
+	Commands bool `json:"commands,omitempty"`
 }
 
 // Session is a named layout of panes.

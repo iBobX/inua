@@ -1,13 +1,9 @@
 package termui
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"sync"
-	"syscall"
-	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
@@ -138,20 +134,9 @@ func (a *App) connect() (*host.State, error) {
 		log.Printf("term: %s: %s", settings.Path(), w)
 	}
 	gtkx.Post(func() { a.useSettings(set) })
-	path := host.SocketPath()
-	client, err := host.Dial(path, a.output, a.event)
+	client, err := host.Connect(a.output, a.event)
 	if err != nil {
-		if err := startHost(); err != nil {
-			return nil, err
-		}
-		for deadline := time.Now().Add(3 * time.Second); ; time.Sleep(20 * time.Millisecond) {
-			if client, err = host.Dial(path, a.output, a.event); err == nil || time.Now().After(deadline) {
-				break
-			}
-		}
-		if err != nil {
-			return nil, fmt.Errorf("the terminal host did not start: %w", err)
-		}
+		return nil, err
 	}
 	ready := make(chan host.Colors, 1)
 	gtkx.Post(func() {
@@ -357,27 +342,5 @@ func (b paneBackend) Input(p []byte) error {
 
 func (b paneBackend) Resize(cols, rows, cellW, cellH int) error {
 	b.app.ask("resize", func(c *host.Client) error { return c.Resize(b.id, cols, rows, cellW, cellH) })
-	return nil
-}
-
-// startHost runs `inua-term --host` in a session of its own, so it
-// outlives this window.
-func startHost() error {
-	exe, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	null, err := os.OpenFile(os.DevNull, os.O_RDWR, 0)
-	if err != nil {
-		return err
-	}
-	defer null.Close()
-	cmd := exec.Command(exe, "--host")
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = null, null, null
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	go cmd.Wait() // reaped if it ends while the window runs
 	return nil
 }

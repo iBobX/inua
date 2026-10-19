@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
+	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/layout"
 	"github.com/lyricat/inua/internal/term/model"
 	"github.com/lyricat/inua/internal/term/shellint"
@@ -164,6 +166,8 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 		h.mu.Lock()
 		err = h.m.Move(m.Workspace, m.To)
 		h.mu.Unlock()
+	case MsgRun:
+		reply.Session, err = h.run(m.Argv, m.Dir)
 	case MsgReport:
 		err = h.report(m)
 		c.message(Message{Type: MsgReply, ID: m.ID, Error: errText(err)})
@@ -233,6 +237,36 @@ func (h *Host) open(dir, name string) (int, error) {
 	w = h.m.AddWorkspace(dir, name, true)
 	s := h.m.AddSession(w, "", pane)
 	return w.ID, h.m.Show(w.ID, s.ID)
+}
+
+// run starts a command in a session of its own, in the workspace for
+// commands others start (`inua-term -e`), and shows it.
+func (h *Host) run(argv []string, dir string) (int, error) {
+	if len(argv) == 0 {
+		return 0, errors.New("no command")
+	}
+	home, _ := os.UserHomeDir()
+	if dir == "" {
+		dir = home
+	}
+	pane, err := h.start(argv, dir, shellEnv(), 80, 24, 0, 0)
+	if err != nil {
+		return 0, err
+	}
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	var w *model.Workspace
+	for _, ws := range h.m.Workspaces {
+		if ws.Commands {
+			w = ws
+		}
+	}
+	if w == nil {
+		w = h.m.AddWorkspace(home, i18n.T("Commands"), false)
+		w.Commands = true
+	}
+	s := h.m.AddSession(w, filepath.Base(argv[0]), pane)
+	return s.ID, h.m.Show(w.ID, s.ID)
 }
 
 // newSession adds a session to a workspace, its shell in the workspace's

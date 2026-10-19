@@ -202,6 +202,13 @@ func (c *Client) State() (*State, error) {
 	return r.State, err
 }
 
+// Run starts argv in dir in a session of its own, in the Commands
+// workspace, and shows it.
+func (c *Client) Run(argv []string, dir string) (int, error) {
+	r, err := c.call(Message{Type: MsgRun, Argv: argv, Dir: dir})
+	return r.Session, err
+}
+
 // Open shows the workspace for dir, made with a session if new.
 func (c *Client) Open(dir, name string) (int, error) {
 	r, err := c.call(Message{Type: MsgOpen, Dir: dir, Name: name})
