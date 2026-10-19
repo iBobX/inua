@@ -5,6 +5,9 @@
 #
 #   scripts/libghostty.sh [OUT_DIR]        (default: bin/)
 #
+# ZIG_TARGET builds it for another machine (aarch64-linux-gnu,
+# x86_64-linux-gnu), as the releases do.
+#
 # Needs git and Zig 0.16 ($ZIG, else zig-0.16, else zig). The Ghostty
 # checkout is kept in $GHOSTTY_SRC (default: $XDG_CACHE_HOME/inua/ghostty)
 # and moved to the pinned commit. Updating the pin: change GHOSTTY_COMMIT,
@@ -39,7 +42,8 @@ if [ "$(git -C "$src" rev-parse HEAD)" != "$GHOSTTY_COMMIT" ]; then
 	git -C "$src" -c advice.detachedHead=false checkout --quiet "$GHOSTTY_COMMIT"
 fi
 
-(cd "$src" && "$zig" build -Demit-lib-vt -Doptimize=ReleaseFast)
+target=${ZIG_TARGET:-}
+(cd "$src" && "$zig" build -Demit-lib-vt -Doptimize=ReleaseFast ${target:+-Dtarget=$target})
 
 shim=$root/internal/term/vt/shim
 tmp=$(mktemp -d)
@@ -74,7 +78,7 @@ END {
 }' "$src/include/ghostty/vt/key/event.h" "$src/src/input/keycodes.zig" > "$tmp/inua_keymap.inc"
 [ -s "$tmp/inua_keymap.inc" ] || { echo "libghostty.sh: no keycodes found in Ghostty's table" >&2; exit 1; }
 mkdir -p "$out"
-"$zig" cc -shared -fPIC -O2 -std=c11 -Wall -Werror \
+"$zig" cc ${target:+-target $target} -shared -fPIC -O2 -std=c11 -Wall -Werror \
 	-I "$src/zig-out/include" -I "$shim" -I "$tmp" \
 	-o "$tmp/libinua-vt.so" "$shim/inua_vt.c" "$src/zig-out/lib/libghostty-vt.a" \
 	-Wl,--version-script="$tmp/exports.map" -Wl,-s -Wl,-soname,libinua-vt.so

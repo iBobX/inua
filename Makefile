@@ -5,7 +5,11 @@
 #                  manager), bin/inua-viewer (images, PDFs, Markdown and
 #                  text), bin/inua-games (light games),
 #                  bin/inua-pinentry (gpg's prompt), bin/inua-assistant (the
-#                  assistant) and bin/inua-keyring (the Secret Service kept in pass)
+#                  assistant), bin/inua-keyring (the Secret Service kept in
+#                  pass) and bin/inua-term (the terminal)
+#   make term-engine
+#                  build bin/libinua-vt.so, inua-term's engine (libghostty-vt
+#                  at its pinned commit; needs git and Zig 0.16)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -35,7 +39,7 @@ PREFIX ?= $(HOME)/.local
 CONFIG_HOME ?= $(or $(XDG_CONFIG_HOME),$(HOME)/.config)
 DM ?= greetd
 
-.PHONY: all build deps deps-desktop deps-dm generate i18n test nested run install install-config install-fcitx install-session clean
+.PHONY: all build term-engine deps deps-desktop deps-dm generate i18n test nested run install install-config install-fcitx install-session clean
 
 all: build
 
@@ -52,6 +56,10 @@ build:
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant
 	go build -o bin/inua-keyring ./cmd/inua-keyring
+	go build -o bin/inua-term ./cmd/inua-term
+
+term-engine:
+	scripts/libghostty.sh
 
 deps:
 	sudo apt install -y hyprland libgtk-4-1 libgtk4-layer-shell0 \
@@ -90,7 +98,9 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
+	# inua-term's engine, when built (make term-engine)
+	if [ -f bin/libinua-vt.so ]; then install -Dm644 -t "$(PREFIX)/lib/inua" bin/libinua-vt.so; fi
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop
 	install -Dm644 -t "$(DATA_HOME)/icons/hicolor/scalable/apps" config/apps/*.svg
 

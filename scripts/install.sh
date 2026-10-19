@@ -139,10 +139,14 @@ src=$tmp/$name
 # --- the programs and launchers --------------------------------------------
 
 heading "Installing the programs"
-for bin in inua-shell inua inua-apps inua-files inua-viewer inua-vm inua-remote inua-connect inua-games inua-pinentry inua-assistant inua-keyring; do
-    [ -f "$src/$bin" ] || continue # inua-files, inua-viewer, inua-vm, inua-remote, inua-connect, inua-games, inua-assistant and inua-keyring came after v0.0.2
+for bin in inua-shell inua inua-apps inua-files inua-viewer inua-vm inua-remote inua-connect inua-games inua-pinentry inua-assistant inua-keyring inua-term; do
+    [ -f "$src/$bin" ] || continue # inua-files, inua-viewer, inua-vm, inua-remote, inua-connect, inua-games, inua-assistant, inua-keyring and inua-term came after v0.0.2
     install -Dm755 "$src/$bin" "$prefix/bin/$bin"
 done
+# inua-term's engine, beside the programs (PREFIX/lib/inua)
+if [ -f "$src/lib/inua/libinua-vt.so" ]; then
+    install -Dm644 "$src/lib/inua/libinua-vt.so" "$prefix/lib/inua/libinua-vt.so"
+fi
 install -Dm644 -t "$data/applications" "$src"/config/apps/*.desktop
 install -Dm644 -t "$data/icons/hicolor/scalable/apps" "$src"/config/apps/*.svg
 have update-desktop-database && update-desktop-database -q "$data/applications" 2>/dev/null || true

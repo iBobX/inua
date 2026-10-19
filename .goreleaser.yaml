@@ -62,6 +62,10 @@ builds:
     id: inua-keyring
     main: ./cmd/inua-keyring
     binary: inua-keyring
+  - <<: *build
+    id: inua-term
+    main: ./cmd/inua-term
+    binary: inua-term
 
 archives:
   - formats: [tar.gz]
@@ -76,6 +80,10 @@ archives:
       - config/session/*
       - scripts/inua-session
       - scripts/install-session.sh
+      # inua-term's engine, built for each machine by release.yml
+      - src: "lib/{{ .Arch }}/libinua-vt.so"
+        dst: lib/inua
+        strip_parent: true
 
 checksum:
   name_template: checksums.txt
