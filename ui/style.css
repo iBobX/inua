@@ -3010,13 +3010,24 @@ window.disk .disk-swatch.rest { opacity: 0.45; }
 window.disk .disk-legend { padding: 4px 0 0; }
 window.disk .disk-hint { margin: 2px 0 6px; }
 window.disk label.disk-hint { padding: 0; }
+/* Nothing to show: a faint mark, at most a line under it. */
+window.disk .disk-quiet { font-size: 13px; color: @t2; }
+window.disk .disk-empty { margin: 48px 0; }
+window.disk .disk-empty image, window.disk image.disk-empty { color: alpha(@t2, 0.45); }
+window.disk image.disk-empty { margin: 0; }
 window.disk .rows > button.disk-row { min-height: 34px; padding: 4px 6px; }
 window.disk .disk-more { padding: 10px 0; }
 window.disk .disk-details { background: @panel; border-left: 1px solid alpha(@line, 0.7); }
 window.disk .disk-details-body { padding: 18px 22px 24px; }
-window.disk .disk-name { padding-top: 10px; font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 17px; color: @t0; }
+window.disk .disk-item { padding: 4px 0 26px; }
+window.disk .disk-item button.image-button { min-width: 30px; min-height: 30px; padding: 0; }
+window.disk .disk-item > .tag { margin-bottom: 6px; }
+window.disk .disk-facts { margin: 14px 0 2px; padding: 10px 0; border-top: 1px solid alpha(@line, 0.55); border-bottom: 1px solid alpha(@line, 0.55); }
+window.disk .disk-fact { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 13px; color: @t0; }
+window.disk .disk-fact-name { font-size: 11px; color: @t2; }
+window.disk .disk-name { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 17px; color: @t0; }
 window.disk .disk-actions { padding: 10px 0 2px; }
-window.disk .disk-verdict { padding-top: 10px; font-size: 14px; font-weight: 600; }
+window.disk .disk-verdict { padding-top: 6px; font-size: 14px; font-weight: 600; }
 window.disk .disk-verdict.safe { color: @ok; }
 window.disk .disk-verdict.review { color: @warn; }
 window.disk .disk-verdict.keep { color: @danger; }
@@ -3033,9 +3044,22 @@ window.disk .disk-verdict-tag {
 window.disk .disk-verdict-tag.safe { border-color: alpha(@ok, 0.5); color: @ok; }
 window.disk .disk-verdict-tag.review { border-color: alpha(@warn, 0.5); color: @warn; }
 window.disk .disk-verdict-tag.keep { border-color: alpha(@danger, 0.5); color: @danger; }
-window.disk .disk-step .mark { margin-top: 5px; }
-window.disk .disk-step .mark.on { background: @accent; border-color: @accent; }
+/* The route to the verdict: a mark each, a line down to the next. */
+window.disk .disk-route { padding-top: 6px; }
+window.disk .disk-rail { min-width: 7px; }
+window.disk .disk-node .mark { margin-top: 6px; min-width: 5px; min-height: 5px; }
+window.disk .disk-node .mark.on { background: @accent; border-color: @accent; }
+window.disk .disk-node .mark.safe { background: @ok; border-color: @ok; }
+window.disk .disk-node .mark.review { background: @warn; border-color: @warn; }
+window.disk .disk-node .mark.keep { background: @danger; border-color: @danger; }
+window.disk .disk-node .mark.ai { border-color: @accent; border-radius: 50%; }
+window.disk .disk-line { min-width: 1px; margin: 4px 0 0; background: alpha(@line, 0.9); }
+window.disk .disk-node-body { padding-bottom: 11px; }
+window.disk .disk-node:last-child .disk-node-body { padding-bottom: 0; }
+window.disk .disk-node .disk-verdict { padding-top: 1px; }
 window.disk .disk-step-check { font-size: 12.5px; color: @t1; }
+window.disk .disk-ai-text { font-size: 12.5px; color: @t1; }
+window.disk button.disk-ask-quiet { min-height: 26px; padding: 0 10px; font-size: 12px; }
 window.disk .disk-command {
   padding: 6px 8px;
   border: 1px solid @line;
@@ -3044,7 +3068,6 @@ window.disk .disk-command {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   color: @t0;
 }
-window.disk .disk-explain { padding-top: 6px; color: @t0; }
 window.disk .disk-command-head { padding-top: 4px; }
 window.disk .disk-output {
   padding: 6px 8px;

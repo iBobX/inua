@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:221
+#: internal/diskui/details.go:332
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "アシスタントはオフにされる。 「設定」→「AI」でオンにします。"
 
@@ -1531,7 +1531,7 @@ msgstr "ビデオ"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
@@ -1921,13 +1921,13 @@ msgid "Extend 2 years"
 msgstr "2年延長"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:860
+#: ui/disk.ui:781
 msgid "Delete…"
 msgstr "削除…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:547
+#: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2113,7 +2113,7 @@ msgstr "復号したコピーはゴミ箱に移り、そこから戻せます。
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:850
+#: ui/disk.ui:771
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2290,11 +2290,11 @@ msgstr "ヒデ"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/diskui/details.go:550
+#: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:84
 #: internal/ui/askpass.go:203
-#: ui/disk.ui:698
+#: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2941,7 +2941,7 @@ msgstr "名前"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:323
+#: internal/diskui/window.go:329
 msgid "System"
 msgstr "システム"
 
@@ -4542,188 +4542,179 @@ msgstr "プレーンテキストを開く"
 msgid "Disk Usage"
 msgstr "ディスク使用量"
 
+#: internal/diskui/details.go:47
+#: internal/termui/prefs.go:77
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "サイズ"
+
 #: internal/diskui/details.go:49
-msgid "%s file"
-msgid_plural "%s files"
-msgstr[0] "%s 個のファイル"
+msgid "File"
+msgid_plural "Files"
+msgstr[0] "ファイル"
 
-#: internal/diskui/details.go:52
-msgid "changed %s"
-msgstr "%s に変更"
-
-#: internal/diskui/details.go:52
+#: internal/diskui/details.go:53
 msgid "2006-01-02"
 msgstr "2006年1月2日"
 
-#: internal/diskui/details.go:55
-msgid "some of it could not be read"
-msgstr "一部を読み取れませんでした"
+#: internal/diskui/details.go:53
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "変更"
 
-#: internal/diskui/details.go:75
+#: internal/diskui/details.go:56
+msgid "Some of it could not be read."
+msgstr "一部を読めませんでした。"
+
+#: internal/diskui/details.go:76
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "チェック中…"
 
-#: internal/diskui/details.go:104
-msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
-msgstr "1 MB 未満のさまざまなファイルです。ファイルでフォルダを開いて確かめてください。"
+#: internal/diskui/details.go:118
+msgid "AI · %s"
+msgstr "AI · %s"
 
-#: internal/diskui/details.go:108
-msgid "They are not one item to delete."
-msgstr "一つの項目として削除するものではありません。"
+#: internal/diskui/details.go:169
+msgid "Small files, each under 1 MB."
+msgstr "どれも 1 MB 未満の小さなファイル。"
 
-#: internal/diskui/details.go:146
-msgid "No check settles it."
-msgstr "どのチェックでも決まりません。"
+#: internal/diskui/details.go:172
+msgid "Not one item to delete."
+msgstr "まとめて削除するものではありません。"
 
-#: internal/diskui/details.go:156
-#: internal/diskui/details.go:324
-#: internal/diskui/details.go:373
+#: internal/diskui/details.go:221
+msgid "Look inside first."
+msgstr "まず中を確かめてください。"
+
+#: internal/diskui/details.go:223
+msgid "Look inside first, or ask the AI."
+msgstr "まず中を確かめるか、AI に聞いてください。"
+
+#: internal/diskui/details.go:239
+msgid "Can it go"
+msgstr "削除できるか"
+
+#: internal/diskui/details.go:242
+msgid "What it is"
+msgstr "これは何か"
+
+#: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "問い合わせ中…"
 
-#: internal/diskui/details.go:158
-#: internal/shell/launcher.go:379
-#: ui/disk.ui:770
-msgid "Ask the assistant"
-msgstr "アシスタントに尋ねる"
+#: internal/diskui/details.go:257
+msgid "Ask AI"
+msgstr "AI に聞く"
 
-#: internal/diskui/details.go:161
-msgid "The assistant: %s"
-msgstr "アシスタント:%s"
+#: internal/diskui/details.go:259
+msgid "Ask again"
+msgstr "もう一度聞く"
 
-#: internal/diskui/details.go:174
-msgid "It is the place scanned: choose what is in it."
-msgstr "スキャンした場所そのものです。中の項目を選んでください。"
+#: internal/diskui/details.go:267
+msgid "Sends the path, the size and the largest names, never the files' contents."
+msgstr "パス、サイズ、大きいものの名前を送ります。ファイルの中身は送りません。"
 
-#: internal/diskui/details.go:176
-msgid "Kept: the checks above say why."
-msgstr "残します。理由は上のチェックの通りです。"
+#: internal/diskui/details.go:411
+msgid "The AI could not answer: %v"
+msgstr "AI が答えられませんでした: %v"
 
-#: internal/diskui/details.go:178
-msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
-msgstr "必要なときに戻ってきます。ゴミ箱は空にするまで保持し、「削除」ならすぐに容量が空きます。"
+#: internal/diskui/details.go:413
+msgid "The AI answered %q"
+msgstr "AI の答え: %q"
 
-#: internal/diskui/details.go:180
-msgid "Look inside before deleting: it may hold your work, settings or history."
-msgstr "削除する前に中を確認してください。作業、設定、履歴が入っているかもしれません。"
-
-#: internal/diskui/details.go:182
-msgid "No check settled it: look inside first, or ask the assistant."
-msgstr "どのチェックでも決まりませんでした。先に中を確認するか、アシスタントに尋ねてください。"
-
-#: internal/diskui/details.go:292
-msgid "it answered %q"
-msgstr "%q と答えました"
-
-#: internal/diskui/details.go:302
-msgid "The assistant could not decide: %v"
-msgstr "アシスタントは判定できませんでした:%v"
-
-#: internal/diskui/details.go:353
-msgid "The assistant could not answer: %v"
-msgstr "アシスタントは答えられませんでした:%v"
-
-#: internal/diskui/details.go:358
-#: internal/diskui/details.go:386
-#: ui/disk.ui:926
-msgid "Explain"
-msgstr "説明"
-
-#: internal/diskui/details.go:384
-msgid "Explain again"
-msgstr "もう一度説明"
-
-#: internal/diskui/details.go:412
+#: internal/diskui/details.go:443
 msgid "Cannot open it in Files: %v"
 msgstr "ファイルで開けません:%v"
 
-#: internal/diskui/details.go:427
+#: internal/diskui/details.go:458
 msgid "Deleting…"
 msgstr "削除中…"
 
-#: internal/diskui/details.go:429
+#: internal/diskui/details.go:460
 msgid "Moving to the trash…"
 msgstr "ゴミ箱に移動中…"
 
-#: internal/diskui/details.go:441
+#: internal/diskui/details.go:472
 msgid "Cannot delete %s: %v"
 msgstr "%s を削除できません:%v"
 
-#: internal/diskui/details.go:446
-msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
-msgstr "%s をゴミ箱に移しました。%s はゴミ箱を空にすると空きます。"
+#: internal/diskui/details.go:477
+msgid "Moved %s to the trash."
+msgstr "%s をゴミ箱に移しました。"
 
-#: internal/diskui/details.go:448
+#: internal/diskui/details.go:479
 msgid "Deleted %s: %s freed."
 msgstr "%s を削除しました:%s 空きました。"
 
-#: internal/diskui/details.go:492
-msgid "%s in %s file. It does not go to the trash; this cannot be undone."
-msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
-msgstr[0] "%s、%s 個のファイル。ゴミ箱には入らず、元に戻せません。"
+#: internal/diskui/details.go:523
+msgid "%s in %s file. This cannot be undone."
+msgid_plural "%s in %s files. This cannot be undone."
+msgstr[0] "%s、%s 個のファイル。元に戻せません。"
 
-#: internal/diskui/details.go:495
-msgid "%s. It does not go to the trash; this cannot be undone."
-msgstr "%s。ゴミ箱には入らず、元に戻せません。"
+#: internal/diskui/details.go:526
+msgid "%s. This cannot be undone."
+msgstr "%s。元に戻せません。"
 
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 msgid "Delete %s for good?"
 msgstr "%s を完全に削除しますか?"
 
-#: internal/diskui/details.go:521
+#: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:187
 #: internal/ui/settings_bench.go:332
 msgid "Running…"
 msgstr "実行中…"
 
-#: internal/diskui/details.go:523
-#: internal/diskui/details.go:570
-#: ui/disk.ui:707
+#: internal/diskui/details.go:554
+#: internal/diskui/details.go:600
+#: ui/disk.ui:706
 msgid "Run"
 msgstr "実行"
 
-#: internal/diskui/details.go:529
-#: internal/diskui/details.go:568
-msgid "It runs as root: inua asks for your password first."
-msgstr "root として実行します。先に inua がパスワードを尋ねます。"
+#: internal/diskui/details.go:560
+#: internal/diskui/details.go:598
+msgid "Runs as root, after your password."
+msgstr "パスワードを入れたあと root で実行します。"
 
-#: internal/diskui/details.go:531
-msgid "It runs in %s."
+#: internal/diskui/details.go:562
+msgid "Runs in %s."
 msgstr "%s で実行します。"
 
-#: internal/diskui/details.go:565
-msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
-msgstr "%s で実行し、%s(現在 %s)を片付けます。終わったら inua が測り直します。"
+#: internal/diskui/details.go:596
+msgid "Cleans %s, %s now."
+msgstr "%s を片付けます。今は %s。"
 
-#: internal/diskui/details.go:570
+#: internal/diskui/details.go:600
 msgid "Run the clean command?"
 msgstr "片付けのコマンドを実行しますか?"
 
-#: internal/diskui/details.go:593
+#: internal/diskui/details.go:623
 msgid "%s ended with an error: %v"
 msgstr "%s がエラーで終了しました:%v"
 
-#: internal/diskui/details.go:596
+#: internal/diskui/details.go:626
 msgid "Cannot measure it again: %v"
 msgstr "測り直せません:%v"
 
-#: internal/diskui/details.go:608
+#: internal/diskui/details.go:638
 msgid "Done: %s freed."
 msgstr "完了:%s 空きました。"
 
-#: internal/diskui/details.go:610
+#: internal/diskui/details.go:640
 msgid "Done: it freed no room here."
 msgstr "完了:ここでは空きは増えませんでした。"
 
-#: internal/diskui/details.go:613
+#: internal/diskui/details.go:643
 msgid "%s removed %s: %s freed."
 msgstr "%s が %s を削除しました:%s 空きました。"
 
-#: internal/diskui/window.go:321
+#: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4731,119 +4722,115 @@ msgstr "%s が %s を削除しました:%s 空きました。"
 msgid "Home"
 msgstr "ホーム"
 
-#: internal/diskui/window.go:351
-#: internal/diskui/window.go:548
+#: internal/diskui/window.go:357
+#: internal/diskui/window.go:553
 msgid "Scanning…"
 msgstr "スキャン中…"
 
-#: internal/diskui/window.go:355
+#: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 空き（全 %s）"
 
-#: internal/diskui/window.go:367
-msgid "Scan a place first"
-msgstr "まず場所をスキャン"
-
-#: internal/diskui/window.go:370
+#: internal/diskui/window.go:375
 msgid "%s · %s safe"
 msgstr "%s · 安全 %s"
 
-#: internal/diskui/window.go:440
+#: internal/diskui/window.go:445
 msgid "Choose a folder to scan"
 msgstr "スキャンするフォルダを選択"
 
-#: internal/diskui/window.go:513
+#: internal/diskui/window.go:518
 msgid "Scan again"
 msgstr "再スキャン"
 
-#: internal/diskui/window.go:517
+#: internal/diskui/window.go:522
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "スキャン"
 
-#: internal/diskui/window.go:524
+#: internal/diskui/window.go:529
 msgid "your home"
 msgstr "ホーム"
 
-#: internal/diskui/window.go:526
-msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
-msgstr "まだスキャンしていません。スキャンすると、このディスク上の %s のすべてのフォルダを測り、開発、エージェント、プログラムのフォルダを見つけます。"
+#: internal/diskui/window.go:531
+msgid "Scan to see what fills %s."
+msgstr "スキャンして、%s を何が占めているか見る。"
 
-#: internal/diskui/window.go:543
+#: internal/diskui/window.go:548
 msgid "%s used of %s"
 msgstr "%[2]s 中 %[1]s 使用"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 msgid "%s in %s files · %s"
 msgstr "%s · %s 個のファイル · %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:569
+#: internal/diskui/window.go:575
 msgid "%s files · %s · %.0f s"
 msgstr "%s 個のファイル · %s · %.0f 秒"
 
-#: internal/diskui/window.go:615
+#: internal/diskui/window.go:609
 msgid "Cannot scan %s: %v"
 msgstr "%s をスキャンできません:%v"
 
-#: internal/diskui/window.go:737
+#: internal/diskui/window.go:724
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "小さなファイル %d 個"
 
-#: internal/diskui/window.go:772
+#: internal/diskui/window.go:757
 msgid "counted"
 msgstr "集計済み"
 
-#: internal/diskui/window.go:797
+#: internal/diskui/window.go:782
 msgid "free"
 msgstr "空き"
 
-#: internal/diskui/window.go:799
+#: internal/diskui/window.go:784
 msgid "Not scanned"
 msgstr "未スキャン"
 
-#: internal/diskui/window.go:816
+#: internal/diskui/window.go:797
 msgid "Other"
 msgstr "その他"
 
-#: internal/diskui/window.go:879
+#: internal/diskui/window.go:860
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "ほか %d 項目"
 
-#: internal/diskui/window.go:890
+#: internal/diskui/window.go:871
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "このフォルダーは空です。"
 
-#: internal/diskui/window.go:946
-msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
-msgstr "依存関係、ビルド出力、ツールチェーン、パッケージキャッシュ。ほとんどはコマンド一つで戻ります。"
+#: internal/diskui/window.go:927
+msgid "Dependencies, builds and toolchains."
+msgstr "依存関係、ビルド、ツールチェーン。"
 
-#: internal/diskui/window.go:947
-msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
-msgstr "コーディングエージェントの会話、ワークツリー、キャッシュと、ダウンロードした AI モデル。"
+#: internal/diskui/window.go:928
+msgid "Agents' sessions, worktrees and AI models."
+msgstr "エージェントのセッション、ワークツリー、AI モデル。"
 
-#: internal/diskui/window.go:948
-msgid "Programs' caches, packages downloaded and the trash."
-msgstr "プログラムのキャッシュ、ダウンロードしたパッケージ、ゴミ箱。"
+#: internal/diskui/window.go:929
+msgid "Caches, downloaded packages and the trash."
+msgstr "キャッシュ、ダウンロードしたパッケージ、ゴミ箱。"
 
-#: internal/diskui/window.go:966
-msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
-msgstr "まだ何もスキャンしていません。場所をスキャンすると、この種類のものがここに表示されます。"
+#: internal/diskui/window.go:953
+msgid "Scan a place first."
+msgstr "まず場所をスキャンしてください。"
 
-#: internal/diskui/window.go:968
-msgid "Nothing of this kind in the places scanned."
-msgstr "スキャンした場所にこの種類のものはありません。"
+#: internal/diskui/window.go:955
+msgid "Nothing found."
+msgstr "見つかりませんでした。"
 
-#: internal/diskui/window.go:971
+#: internal/diskui/window.go:957
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s · %d 個のフォルダ · 安全に削除可能 %s"
@@ -9946,6 +9933,10 @@ msgstr "または ? で始まる"
 msgid "%s · Enter copies"
 msgstr "%s · Enter でコピー"
 
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "アシスタントに尋ねる"
+
 #: internal/shell/launcher.go:416
 msgid "%s · workspace %s"
 msgstr "%[1]s · ワークスペース %[2]s"
@@ -10261,13 +10252,6 @@ msgstr "フォント"
 #: internal/termui/prefs.go:73
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "等幅フォント。CJK は Pango が補います"
-
-#: internal/termui/prefs.go:77
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "サイズ"
 
 #: internal/termui/prefs.go:77
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
@@ -12162,10 +12146,6 @@ msgstr "ページサイズ"
 msgid "Created"
 msgstr "作成"
 
-#: internal/viewerui/app.go:809
-msgid "Changed"
-msgstr "変更"
-
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "作成ソフト"
@@ -12771,19 +12751,11 @@ msgstr "フォルダを選択…"
 msgid "FOUND"
 msgstr "検出"
 
-#: ui/disk.ui:465
-msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
-msgstr "マップか一覧で項目を選ぶと、それが何か、削除してよいかがここに表示されます。"
-
-#: ui/disk.ui:499
-msgid "[ITEM]"
-msgstr "[項目]"
-
-#: ui/disk.ui:587
+#: ui/disk.ui:543
 msgid "Show on the map"
 msgstr "マップで表示"
 
-#: ui/disk.ui:596
+#: ui/disk.ui:554
 msgid "Show in Files"
 msgstr "ファイルで表示"
 
@@ -12791,21 +12763,9 @@ msgstr "ファイルで表示"
 msgid "[CAN IT GO]"
 msgstr "[削除できる?]"
 
-#: ui/disk.ui:670
-msgid "The proper way to clean it:"
-msgstr "正しい片付け方:"
-
-#: ui/disk.ui:827
-msgid "[DELETE]"
-msgstr "[削除]"
-
-#: ui/disk.ui:915
-msgid "[WHAT IS IT]"
-msgstr "[これは何?]"
-
-#: ui/disk.ui:968
-msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
-msgstr "アシスタントに送るのはパス、サイズ、中の大きな項目の名前だけで、ファイルの内容は送りません。"
+#: ui/disk.ui:672
+msgid "Clean it with:"
+msgstr "片付けるコマンド:"
 
 #: ui/files.ui:57
 msgid "Hidden files (Ctrl+H)"

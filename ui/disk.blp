@@ -174,7 +174,8 @@ ApplicationWindow disk {
                     orientation: vertical;
                     spacing: 18;
 
-                    Overlay {
+                    // The map is drawn in Go (internal/diskui/map.go).
+                    Overlay map_overlay {
                       halign: center;
 
                       [overlay]
@@ -189,7 +190,7 @@ ApplicationWindow disk {
                           styles ["disk-middle-name"]
                           justify: center;
                           ellipsize: middle;
-                          max-width-chars: 14;
+                          max-width-chars: 10;
                         }
 
                         Label map_size {
@@ -198,20 +199,14 @@ ApplicationWindow disk {
                         }
                       }
 
-                      Picture map {
-                        styles ["disk-map"]
-                        width-request: 300;
-                        height-request: 300;
-                        can-shrink: false;
-                      }
                     }
 
-                    // Before a scan: what one does.
+                    // Before a scan: one line.
                     Label place_empty {
-                      styles ["empty", "disk-hint"]
+                      styles ["disk-hint", "disk-quiet"]
                       justify: center;
                       wrap: true;
-                      max-width-chars: 56;
+                      max-width-chars: 48;
                     }
 
                     // While scanning: how far it has come, and where.
@@ -297,10 +292,24 @@ ApplicationWindow disk {
                   wrap: true;
                 }
 
-                Label kind_empty {
-                  styles ["row", "empty"]
-                  xalign: 0;
-                  wrap: true;
+                // Nothing to list: the kind's mark and why, in one line.
+                Box kind_empty {
+                  styles ["disk-empty"]
+                  orientation: vertical;
+                  spacing: 12;
+                  halign: center;
+                  visible: false;
+
+                  Image kind_empty_icon {
+                    pixel-size: 40;
+                  }
+
+                  Label kind_empty_text {
+                    styles ["disk-quiet"]
+                    justify: center;
+                    wrap: true;
+                    max-width-chars: 40;
+                  }
                 }
 
                 // The folders of the kind, largest first; Go fills it.
@@ -331,102 +340,108 @@ ApplicationWindow disk {
           styles ["disk-details-body"]
           orientation: vertical;
 
-          Label details_empty {
-            styles ["empty"]
-            label: _("Choose an item on the map or in a list: what it is, and whether it can go, show here.");
-            xalign: 0;
-            wrap: true;
+          // Nothing chosen: a mark, no words.
+          Image details_empty {
+            styles ["disk-empty"]
+            icon-name: "disk-choose-symbolic";
+            pixel-size: 48;
+            vexpand: true;
+            valign: center;
+            halign: center;
           }
 
           Box details {
             orientation: vertical;
             visible: false;
 
+            // The item: its kind's tag, its name and where it is, with the
+            // ways to look at it on the right; then its size, files and when
+            // it changed, side by side.
             Box {
-              styles ["section"]
+              styles ["disk-item"]
               orientation: vertical;
+              spacing: 2;
 
               Box {
-                styles ["section-head"]
-                spacing: 10;
+                spacing: 8;
 
                 Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[ITEM]");
+                  orientation: vertical;
+                  spacing: 2;
                   hexpand: true;
-                  xalign: 0;
-                }
 
-                Label sel_tag {
-                  styles ["tag"]
-                  valign: center;
-                }
-              }
+                  Label sel_tag {
+                    styles ["tag"]
+                    xalign: 0;
+                    halign: start;
+                    visible: false;
+                  }
 
-              Box {
-                styles ["section-body"]
-                orientation: vertical;
-                spacing: 4;
+                  Label sel_name {
+                    styles ["disk-name"]
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: word_char;
+                  }
 
-                Label sel_name {
-                  styles ["disk-name"]
-                  xalign: 0;
-                  wrap: true;
-                  wrap-mode: word_char;
-                }
-
-                Label sel_path {
-                  styles ["sub", "disk-path"]
-                  xalign: 0;
-                  wrap: true;
-                  wrap-mode: char;
-                  selectable: true;
-                }
-
-                Label sel_meta {
-                  styles ["readout"]
-                  xalign: 0;
-                  wrap: true;
-                }
-
-                // What was just done here: deleted, cleaned, and the room
-                // it freed.
-                Label sel_done {
-                  styles ["sub", "disk-done"]
-                  xalign: 0;
-                  wrap: true;
-                  visible: false;
-                }
-
-                Label sel_item_error {
-                  styles ["sub", "disk-error"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
+                  Label sel_path {
+                    styles ["sub", "disk-path"]
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: char;
+                    selectable: true;
+                  }
                 }
 
                 Box {
-                  styles ["disk-actions"]
-                  spacing: 6;
+                  spacing: 4;
+                  valign: start;
 
                   Button sel_map {
-                    styles ["outlined"]
+                    styles ["outlined", "image-button"]
                     name: "sel_map";
-                    label: _("Show on the map");
+                    icon-name: "disk-locate-symbolic";
+                    tooltip-text: _("Show on the map");
                   }
 
                   Button sel_open {
-                    styles ["outlined"]
+                    styles ["outlined", "image-button"]
                     name: "sel_open";
-                    label: _("Show in Files");
+                    icon-name: "folder-open-symbolic";
+                    tooltip-text: _("Show in Files");
                   }
                 }
+              }
+
+              // Go fills it: a figure and its name, each.
+              Box sel_facts {
+                styles ["disk-facts"]
+                homogeneous: true;
+              }
+
+              // Some of it could not be read.
+              Label sel_meta {
+                styles ["sub", "warn-text"]
+                xalign: 0;
+                wrap: true;
+                visible: false;
+              }
+
+              // What was just done here: deleted, cleaned, and the room
+              // it freed.
+              Label sel_done {
+                styles ["sub", "disk-done"]
+                xalign: 0;
+                wrap: true;
+                visible: false;
+              }
+
+              Label sel_item_error {
+                styles ["sub", "disk-error"]
+                xalign: 0;
+                wrap: true;
+                selectable: true;
+                visible: false;
               }
             }
 
@@ -449,23 +464,25 @@ ApplicationWindow disk {
                   hexpand: true;
                   xalign: 0;
                 }
+
+                // The verdict, the checks' or the AI's.
+                Label sel_verdict {
+                  styles ["disk-verdict-tag"]
+                  valign: center;
+                  visible: false;
+                }
               }
 
               Box {
                 styles ["section-body"]
                 orientation: vertical;
-                spacing: 8;
+                spacing: 14;
 
-                Label sel_verdict {
-                  styles ["disk-verdict"]
-                  xalign: 0;
-                  wrap: true;
-                }
-
-                // The checks on the way to it; Go fills it.
+                // The route: each check, the one that settled it, and its
+                // end: the verdict, or asking the AI. Go fills it.
                 Box sel_steps {
+                  styles ["disk-route"]
                   orientation: vertical;
-                  spacing: 6;
                 }
 
                 Box sel_clean_box {
@@ -475,7 +492,7 @@ ApplicationWindow disk {
 
                   Label {
                     styles ["sub", "disk-command-head"]
-                    label: _("The proper way to clean it:");
+                    label: _("Clean it with:");
                     xalign: 0;
                   }
 
@@ -488,7 +505,6 @@ ApplicationWindow disk {
                   }
 
                   Box {
-                    styles ["disk-actions"]
                     spacing: 6;
 
                     Button sel_copy {
@@ -537,149 +553,39 @@ ApplicationWindow disk {
                   }
                 }
 
-                // When no rule settles it: the assistant's decision.
-                Box sel_ask_box {
+                Box {
                   orientation: vertical;
                   spacing: 6;
-                  visible: false;
 
-                  Button sel_ask {
-                    styles ["outlined"]
-                    name: "sel_ask";
-                    label: _("Ask the assistant");
-                    halign: start;
+                  Box {
+                    spacing: 6;
+
+                    Button sel_trash {
+                      styles ["outlined"]
+                      name: "sel_trash";
+                      label: _("Move to Trash");
+                    }
+
+                    Button sel_delete {
+                      styles ["outlined", "danger"]
+                      name: "sel_delete";
+                      label: _("Delete…");
+                    }
                   }
 
-                  Label sel_ai {
-                    styles ["disk-verdict"]
+                  Label sel_delete_note {
+                    styles ["sub"]
                     xalign: 0;
                     wrap: true;
-                    visible: false;
                   }
 
-                  Label sel_ask_error {
+                  Label sel_delete_error {
                     styles ["sub", "disk-error"]
                     xalign: 0;
                     wrap: true;
                     selectable: true;
                     visible: false;
                   }
-                }
-              }
-            }
-
-            Box {
-              styles ["section"]
-              orientation: vertical;
-
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[DELETE]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-              }
-
-              Box {
-                styles ["section-body"]
-                orientation: vertical;
-                spacing: 8;
-
-                Box {
-                  spacing: 6;
-
-                  Button sel_trash {
-                    styles ["outlined"]
-                    name: "sel_trash";
-                    label: _("Move to Trash");
-                  }
-
-                  Button sel_delete {
-                    styles ["outlined", "danger"]
-                    name: "sel_delete";
-                    label: _("Delete…");
-                  }
-                }
-
-                Label sel_delete_note {
-                  styles ["sub"]
-                  xalign: 0;
-                  wrap: true;
-                }
-
-                Label sel_delete_error {
-                  styles ["sub", "disk-error"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
-                }
-              }
-            }
-
-            Box {
-              styles ["section"]
-              orientation: vertical;
-
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[WHAT IS IT]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-
-                Button sel_explain {
-                  styles ["outlined"]
-                  name: "sel_explain";
-                  label: _("Explain");
-                  valign: center;
-                }
-              }
-
-              Box {
-                styles ["section-body"]
-                orientation: vertical;
-                spacing: 6;
-
-                Label sel_explain_text {
-                  styles ["label", "disk-explain"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
-                }
-
-                Label sel_explain_error {
-                  styles ["sub", "disk-error"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
-                }
-
-                Label {
-                  styles ["sub"]
-                  label: _("The assistant is sent the path, the size and the names of the largest items in it, never what the files hold.");
-                  xalign: 0;
-                  wrap: true;
                 }
               }
             }

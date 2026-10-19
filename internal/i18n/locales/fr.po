@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:221
+#: internal/diskui/details.go:332
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "L'assistant est éteint. Activez-le dans Paramètres → AI."
 
@@ -1534,7 +1534,7 @@ msgstr "Vidéo"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
@@ -1927,13 +1927,13 @@ msgid "Extend 2 years"
 msgstr "Prolonger de 2 ans"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:860
+#: ui/disk.ui:781
 msgid "Delete…"
 msgstr "Supprimer…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:547
+#: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2121,7 +2121,7 @@ msgstr "La copie déchiffrée va à la corbeille, d’où elle peut être restau
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:850
+#: ui/disk.ui:771
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2300,11 +2300,11 @@ msgstr "Masquer"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/diskui/details.go:550
+#: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:84
 #: internal/ui/askpass.go:203
-#: ui/disk.ui:698
+#: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2957,7 +2957,7 @@ msgstr "Nom"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:323
+#: internal/diskui/window.go:329
 msgid "System"
 msgstr "Système"
 
@@ -4560,190 +4560,181 @@ msgstr "Ouvre le texte brut"
 msgid "Disk Usage"
 msgstr "Utilisation du disque"
 
+#: internal/diskui/details.go:47
+#: internal/termui/prefs.go:77
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "Taille"
+
 #: internal/diskui/details.go:49
-msgid "%s file"
-msgid_plural "%s files"
-msgstr[0] "%s fichier"
-msgstr[1] "%s fichiers"
+msgid "File"
+msgid_plural "Files"
+msgstr[0] "Fichier"
+msgstr[1] "Fichiers"
 
-#: internal/diskui/details.go:52
-msgid "changed %s"
-msgstr "modifié le %s"
-
-#: internal/diskui/details.go:52
+#: internal/diskui/details.go:53
 msgid "2006-01-02"
 msgstr "02/01/2006"
 
-#: internal/diskui/details.go:55
-msgid "some of it could not be read"
-msgstr "une partie n'a pas pu être lue"
+#: internal/diskui/details.go:53
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "Modifié"
 
-#: internal/diskui/details.go:75
+#: internal/diskui/details.go:56
+msgid "Some of it could not be read."
+msgstr "Une partie n’a pas pu être lue."
+
+#: internal/diskui/details.go:76
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "Vérification…"
 
-#: internal/diskui/details.go:104
-msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
-msgstr "Des fichiers de toutes sortes, chacun de moins de 1 Mo : ouvrez le dossier dans Fichiers pour les voir."
+#: internal/diskui/details.go:118
+msgid "AI · %s"
+msgstr "IA · %s"
 
-#: internal/diskui/details.go:108
-msgid "They are not one item to delete."
-msgstr "Ce n'est pas un seul élément à supprimer."
+#: internal/diskui/details.go:169
+msgid "Small files, each under 1 MB."
+msgstr "Petits fichiers, de moins de 1 Mo chacun."
 
-#: internal/diskui/details.go:146
-msgid "No check settles it."
-msgstr "Aucune vérification ne tranche."
+#: internal/diskui/details.go:172
+msgid "Not one item to delete."
+msgstr "Pas un seul élément à supprimer."
 
-#: internal/diskui/details.go:156
-#: internal/diskui/details.go:324
-#: internal/diskui/details.go:373
+#: internal/diskui/details.go:221
+msgid "Look inside first."
+msgstr "Regardez d’abord dedans."
+
+#: internal/diskui/details.go:223
+msgid "Look inside first, or ask the AI."
+msgstr "Regardez d’abord dedans, ou demandez à l’IA."
+
+#: internal/diskui/details.go:239
+msgid "Can it go"
+msgstr "Peut-il partir ?"
+
+#: internal/diskui/details.go:242
+msgid "What it is"
+msgstr "Ce que c’est"
+
+#: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "Interrogation…"
 
-#: internal/diskui/details.go:158
-#: internal/shell/launcher.go:379
-#: ui/disk.ui:770
-msgid "Ask the assistant"
-msgstr "Demandez à l'assistant"
+#: internal/diskui/details.go:257
+msgid "Ask AI"
+msgstr "Demander à l’IA"
 
-#: internal/diskui/details.go:161
-msgid "The assistant: %s"
-msgstr "L'assistant : %s"
+#: internal/diskui/details.go:259
+msgid "Ask again"
+msgstr "Redemander"
 
-#: internal/diskui/details.go:174
-msgid "It is the place scanned: choose what is in it."
-msgstr "C'est l'emplacement analysé : choisissez ce qu'il contient."
+#: internal/diskui/details.go:267
+msgid "Sends the path, the size and the largest names, never the files' contents."
+msgstr "Envoie le chemin, la taille et les plus gros noms, jamais le contenu des fichiers."
 
-#: internal/diskui/details.go:176
-msgid "Kept: the checks above say why."
-msgstr "À garder : les vérifications ci-dessus disent pourquoi."
+#: internal/diskui/details.go:411
+msgid "The AI could not answer: %v"
+msgstr "L’IA n’a pas pu répondre : %v"
 
-#: internal/diskui/details.go:178
-msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
-msgstr "Il revient au besoin. La corbeille le garde jusqu'à ce qu'elle soit vidée ; Supprimer libère la place tout de suite."
+#: internal/diskui/details.go:413
+msgid "The AI answered %q"
+msgstr "L’IA a répondu %q"
 
-#: internal/diskui/details.go:180
-msgid "Look inside before deleting: it may hold your work, settings or history."
-msgstr "Regardez dedans avant de supprimer : il peut contenir votre travail, vos paramètres ou votre historique."
-
-#: internal/diskui/details.go:182
-msgid "No check settled it: look inside first, or ask the assistant."
-msgstr "Aucune vérification n'a tranché : regardez dedans d'abord, ou demandez à l'assistant."
-
-#: internal/diskui/details.go:292
-msgid "it answered %q"
-msgstr "il a répondu %q"
-
-#: internal/diskui/details.go:302
-msgid "The assistant could not decide: %v"
-msgstr "L'assistant n'a pas pu trancher : %v"
-
-#: internal/diskui/details.go:353
-msgid "The assistant could not answer: %v"
-msgstr "L'assistant n'a pas pu répondre : %v"
-
-#: internal/diskui/details.go:358
-#: internal/diskui/details.go:386
-#: ui/disk.ui:926
-msgid "Explain"
-msgstr "Expliquer"
-
-#: internal/diskui/details.go:384
-msgid "Explain again"
-msgstr "Expliquer à nouveau"
-
-#: internal/diskui/details.go:412
+#: internal/diskui/details.go:443
 msgid "Cannot open it in Files: %v"
 msgstr "Impossible de l'ouvrir dans Fichiers : %v"
 
-#: internal/diskui/details.go:427
+#: internal/diskui/details.go:458
 msgid "Deleting…"
 msgstr "Suppression…"
 
-#: internal/diskui/details.go:429
+#: internal/diskui/details.go:460
 msgid "Moving to the trash…"
 msgstr "Mise à la corbeille…"
 
-#: internal/diskui/details.go:441
+#: internal/diskui/details.go:472
 msgid "Cannot delete %s: %v"
 msgstr "Impossible de supprimer %s : %v"
 
-#: internal/diskui/details.go:446
-msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
-msgstr "%s mis à la corbeille : ses %s sont libérés quand elle est vidée."
+#: internal/diskui/details.go:477
+msgid "Moved %s to the trash."
+msgstr "%s mis à la corbeille."
 
-#: internal/diskui/details.go:448
+#: internal/diskui/details.go:479
 msgid "Deleted %s: %s freed."
 msgstr "%s supprimé : %s libérés."
 
-#: internal/diskui/details.go:492
-msgid "%s in %s file. It does not go to the trash; this cannot be undone."
-msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
-msgstr[0] "%s dans %s fichier. Il ne va pas à la corbeille ; c'est définitif."
-msgstr[1] "%s dans %s fichiers. Ils ne vont pas à la corbeille ; c'est définitif."
+#: internal/diskui/details.go:523
+msgid "%s in %s file. This cannot be undone."
+msgid_plural "%s in %s files. This cannot be undone."
+msgstr[0] "%s dans %s fichier. C’est irréversible."
+msgstr[1] "%s dans %s fichiers. C’est irréversible."
 
-#: internal/diskui/details.go:495
-msgid "%s. It does not go to the trash; this cannot be undone."
-msgstr "%s. Il ne va pas à la corbeille ; c'est définitif."
+#: internal/diskui/details.go:526
+msgid "%s. This cannot be undone."
+msgstr "%s. C’est irréversible."
 
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 msgid "Delete %s for good?"
 msgstr "Supprimer %s définitivement ?"
 
-#: internal/diskui/details.go:521
+#: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:187
 #: internal/ui/settings_bench.go:332
 msgid "Running…"
 msgstr "En cours…"
 
-#: internal/diskui/details.go:523
-#: internal/diskui/details.go:570
-#: ui/disk.ui:707
+#: internal/diskui/details.go:554
+#: internal/diskui/details.go:600
+#: ui/disk.ui:706
 msgid "Run"
 msgstr "Lancer"
 
-#: internal/diskui/details.go:529
-#: internal/diskui/details.go:568
-msgid "It runs as root: inua asks for your password first."
-msgstr "Il s'exécute en root : inua demande d'abord votre mot de passe."
+#: internal/diskui/details.go:560
+#: internal/diskui/details.go:598
+msgid "Runs as root, after your password."
+msgstr "S’exécute en root, après votre mot de passe."
 
-#: internal/diskui/details.go:531
-msgid "It runs in %s."
-msgstr "Il s'exécute dans %s."
+#: internal/diskui/details.go:562
+msgid "Runs in %s."
+msgstr "S’exécute dans %s."
 
-#: internal/diskui/details.go:565
-msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
-msgstr "Il s'exécute dans %s et nettoie %s, %s actuellement ; inua le mesure à nouveau à la fin."
+#: internal/diskui/details.go:596
+msgid "Cleans %s, %s now."
+msgstr "Nettoie %s, %s pour l’instant."
 
-#: internal/diskui/details.go:570
+#: internal/diskui/details.go:600
 msgid "Run the clean command?"
 msgstr "Lancer la commande de nettoyage ?"
 
-#: internal/diskui/details.go:593
+#: internal/diskui/details.go:623
 msgid "%s ended with an error: %v"
 msgstr "%s s'est terminé par une erreur : %v"
 
-#: internal/diskui/details.go:596
+#: internal/diskui/details.go:626
 msgid "Cannot measure it again: %v"
 msgstr "Impossible de le mesurer à nouveau : %v"
 
-#: internal/diskui/details.go:608
+#: internal/diskui/details.go:638
 msgid "Done: %s freed."
 msgstr "Terminé : %s libérés."
 
-#: internal/diskui/details.go:610
+#: internal/diskui/details.go:640
 msgid "Done: it freed no room here."
 msgstr "Terminé : aucune place libérée ici."
 
-#: internal/diskui/details.go:613
+#: internal/diskui/details.go:643
 msgid "%s removed %s: %s freed."
 msgstr "%s a retiré %s : %s libérés."
 
-#: internal/diskui/window.go:321
+#: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4751,121 +4742,117 @@ msgstr "%s a retiré %s : %s libérés."
 msgid "Home"
 msgstr "Dossier personnel"
 
-#: internal/diskui/window.go:351
-#: internal/diskui/window.go:548
+#: internal/diskui/window.go:357
+#: internal/diskui/window.go:553
 msgid "Scanning…"
 msgstr "Analyse…"
 
-#: internal/diskui/window.go:355
+#: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s libres sur %s"
 
-#: internal/diskui/window.go:367
-msgid "Scan a place first"
-msgstr "Analysez d'abord un emplacement"
-
-#: internal/diskui/window.go:370
+#: internal/diskui/window.go:375
 msgid "%s · %s safe"
 msgstr "%s · %s sans risque"
 
-#: internal/diskui/window.go:440
+#: internal/diskui/window.go:445
 msgid "Choose a folder to scan"
 msgstr "Choisir un dossier à analyser"
 
-#: internal/diskui/window.go:513
+#: internal/diskui/window.go:518
 msgid "Scan again"
 msgstr "Analyser à nouveau"
 
-#: internal/diskui/window.go:517
+#: internal/diskui/window.go:522
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "Analyser"
 
-#: internal/diskui/window.go:524
+#: internal/diskui/window.go:529
 msgid "your home"
 msgstr "votre dossier personnel"
 
-#: internal/diskui/window.go:526
-msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
-msgstr "Pas encore analysé. L'analyse mesure chaque dossier de %s sur ce disque, et y trouve les dossiers du développement, des agents et des programmes."
+#: internal/diskui/window.go:531
+msgid "Scan to see what fills %s."
+msgstr "Analysez pour voir ce qui remplit %s."
 
-#: internal/diskui/window.go:543
+#: internal/diskui/window.go:548
 msgid "%s used of %s"
 msgstr "%s utilisés sur %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 msgid "%s in %s files · %s"
 msgstr "%s dans %s fichiers · %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:569
+#: internal/diskui/window.go:575
 msgid "%s files · %s · %.0f s"
 msgstr "%s fichiers · %s · %.0f s"
 
-#: internal/diskui/window.go:615
+#: internal/diskui/window.go:609
 msgid "Cannot scan %s: %v"
 msgstr "Impossible d'analyser %s : %v"
 
-#: internal/diskui/window.go:737
+#: internal/diskui/window.go:724
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "%d fichier plus petit"
 msgstr[1] "%d fichiers plus petits"
 
-#: internal/diskui/window.go:772
+#: internal/diskui/window.go:757
 msgid "counted"
 msgstr "comptés"
 
-#: internal/diskui/window.go:797
+#: internal/diskui/window.go:782
 msgid "free"
 msgstr "libres"
 
-#: internal/diskui/window.go:799
+#: internal/diskui/window.go:784
 msgid "Not scanned"
 msgstr "Non analysé"
 
-#: internal/diskui/window.go:816
+#: internal/diskui/window.go:797
 msgid "Other"
 msgstr "Autre"
 
-#: internal/diskui/window.go:879
+#: internal/diskui/window.go:860
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "%d élément de plus"
 msgstr[1] "%d éléments de plus"
 
-#: internal/diskui/window.go:890
+#: internal/diskui/window.go:871
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "Ce dossier est vide."
 
-#: internal/diskui/window.go:946
-msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
-msgstr "Dépendances, résultats de build, chaînes d'outils et caches de paquets : la plupart reviennent en une commande."
+#: internal/diskui/window.go:927
+msgid "Dependencies, builds and toolchains."
+msgstr "Dépendances, builds et chaînes d’outils."
 
-#: internal/diskui/window.go:947
-msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
-msgstr "Les conversations, worktrees et caches des agents de code, et les modèles d'IA téléchargés."
+#: internal/diskui/window.go:928
+msgid "Agents' sessions, worktrees and AI models."
+msgstr "Sessions des agents, worktrees et modèles d’IA."
 
-#: internal/diskui/window.go:948
-msgid "Programs' caches, packages downloaded and the trash."
-msgstr "Les caches des programmes, les paquets téléchargés et la corbeille."
+#: internal/diskui/window.go:929
+msgid "Caches, downloaded packages and the trash."
+msgstr "Caches, paquets téléchargés et la corbeille."
 
-#: internal/diskui/window.go:966
-msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
-msgstr "Rien n'est encore analysé : analysez un emplacement, et ce qu'il contient de ce type apparaîtra ici."
+#: internal/diskui/window.go:953
+msgid "Scan a place first."
+msgstr "Analysez d’abord un emplacement."
 
-#: internal/diskui/window.go:968
-msgid "Nothing of this kind in the places scanned."
-msgstr "Rien de ce type dans les emplacements analysés."
+#: internal/diskui/window.go:955
+msgid "Nothing found."
+msgstr "Rien trouvé."
 
-#: internal/diskui/window.go:971
+#: internal/diskui/window.go:957
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s dans %d dossier · %s supprimables sans risque"
@@ -9994,6 +9981,10 @@ msgstr "ou commencer par ?"
 msgid "%s · Enter copies"
 msgstr "%s · Entrée pour copier"
 
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "Demandez à l'assistant"
+
 #: internal/shell/launcher.go:416
 msgid "%s · workspace %s"
 msgstr "%[1]s · espace de travail %[2]s"
@@ -10312,13 +10303,6 @@ msgstr "Police"
 #: internal/termui/prefs.go:73
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "Une famille à chasse fixe ; Pango complète le CJK"
-
-#: internal/termui/prefs.go:77
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "Taille"
 
 #: internal/termui/prefs.go:77
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
@@ -12225,10 +12209,6 @@ msgstr "Format de page"
 msgid "Created"
 msgstr "Créé"
 
-#: internal/viewerui/app.go:809
-msgid "Changed"
-msgstr "Modifié"
-
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "Créé avec"
@@ -12834,19 +12814,11 @@ msgstr "Choisir un dossier…"
 msgid "FOUND"
 msgstr "TROUVÉ"
 
-#: ui/disk.ui:465
-msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
-msgstr "Choisissez un élément sur la carte ou dans une liste : ce qu'il est, et s'il peut partir, s'affichent ici."
-
-#: ui/disk.ui:499
-msgid "[ITEM]"
-msgstr "[ÉLÉMENT]"
-
-#: ui/disk.ui:587
+#: ui/disk.ui:543
 msgid "Show on the map"
 msgstr "Afficher sur la carte"
 
-#: ui/disk.ui:596
+#: ui/disk.ui:554
 msgid "Show in Files"
 msgstr "Afficher dans Fichiers"
 
@@ -12854,21 +12826,9 @@ msgstr "Afficher dans Fichiers"
 msgid "[CAN IT GO]"
 msgstr "[PEUT-IL PARTIR]"
 
-#: ui/disk.ui:670
-msgid "The proper way to clean it:"
-msgstr "La bonne façon de le nettoyer :"
-
-#: ui/disk.ui:827
-msgid "[DELETE]"
-msgstr "[SUPPRIMER]"
-
-#: ui/disk.ui:915
-msgid "[WHAT IS IT]"
-msgstr "[QU'EST-CE]"
-
-#: ui/disk.ui:968
-msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
-msgstr "L'assistant reçoit le chemin, la taille et les noms des plus gros éléments, jamais le contenu des fichiers."
+#: ui/disk.ui:672
+msgid "Clean it with:"
+msgstr "Nettoyer avec :"
 
 #: ui/files.ui:57
 msgid "Hidden files (Ctrl+H)"

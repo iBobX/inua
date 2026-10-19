@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"image/color"
-	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -40,27 +39,34 @@ type window struct {
 	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
-	sidePlaces, sideKinds                     gtk.Box
-	sideChoose                                gtk.Button
-	pages                                     gtk.Stack
-	placeLabel, placeMeta, placeEmpty         gtk.Label
-	placeError, progressText, progressAt      gtk.Label
-	placeScan, placeStop                      gtk.Button
-	placeProgress, placeMap, crumbs           gtk.Box
-	mapList, legend, mapMiddle                gtk.Box
-	mapPicture                                gtk.Picture
+	sidePlaces, sideKinds                gtk.Box
+	sideChoose                           gtk.Button
+	pages                                gtk.Stack
+	placeLabel, placeMeta, placeEmpty    gtk.Label
+	placeError, progressText, progressAt gtk.Label
+	placeScan, placeStop                 gtk.Button
+	placeProgress, placeMap, crumbs      gtk.Box
+	mapList, legend, mapMiddle           gtk.Box
+	mapOverlay                           gtk.Overlay
+	mapCanvas                            *gtk.Widget
+	// drawn is the arcs the map draws now, paint their colours; ticking
+	// is set while the frame clock turns the scanning sweep.
+	drawn                                     []disk.Arc
+	paint                                     disk.Paint
+	ticking                                   bool
+	onTick                                    gtk.TickCallback
+	onTickDone                                glib.DestroyNotify
 	mapName, mapSize                          gtk.Label
-	kindLabel, kindMeta, kindDesc, kindEmpty  gtk.Label
-	kindRows                                  gtk.Box
-	detailsEmpty                              gtk.Label
-	details, selSteps, selCleanBox, selAskBox gtk.Box
+	kindLabel, kindMeta, kindDesc, kindNone   gtk.Label
+	kindRows, kindEmpty                       gtk.Box
+	kindEmptyIcon, detailsEmpty               gtk.Image
+	details, selSteps, selCleanBox, selFacts  gtk.Box
 	selTag, selName, selPath, selMeta         gtk.Label
-	selVerdict, selClean, selAI, selAskError  gtk.Label
-	selExplainText, selExplainError           gtk.Label
+	selVerdict, selClean                      gtk.Label
 	selDeleteNote, selDeleteErr, selItemError gtk.Label
 	selRunNote, selRunOut, selRunDone         gtk.Label
 	selRunError, selDone                      gtk.Label
-	selMap, selOpen, selAsk, selExplain       gtk.Button
+	selMap, selOpen                           gtk.Button
 	selTrash, selDelete, selCopy, selRun      gtk.Button
 
 	home   string
@@ -72,13 +78,10 @@ type window struct {
 
 	sel      *disk.Node
 	routes   map[*disk.Node]*disk.Route
-	asked    map[*disk.Node]disk.Verdict // the assistant's decisions
-	reasons  map[*disk.Node]string       // and why, when it said
-	explains map[*disk.Node]string
-	failed   map[*disk.Node]string // why explaining failed
-	asking   map[*disk.Node]bool   // a decision asked, not answered yet
-	telling  *disk.Node            // the item being explained
-	running  *disk.Node            // the item whose clean command runs
+	answers  map[*disk.Node]*aiAnswer // what the AI said, by item
+	askingAI *disk.Node               // the item the AI is asked about
+	onAsk    func(gtk.Button)
+	running  *disk.Node // the item whose clean command runs
 	runs     map[*disk.Node]runResult
 	question *dialog // the question asked, while it is open
 	done     struct {
@@ -117,8 +120,7 @@ type scanState struct {
 	err      string
 	started  time.Time
 	done     time.Time
-	phase    float64         // the sweep's angle while it runs
-	onFrame  glib.SourceFunc // draws its next frame
+	phase    float64 // the sweep's angle while it runs
 }
 
 func (s *scanState) running() bool { return s != nil && s.cancel != nil }
@@ -126,8 +128,7 @@ func (s *scanState) running() bool { return s != nil && s.cancel != nil }
 func openWindow(c *appui.Ctx) *window {
 	w := &window{
 		c: c, win: &gtk.ApplicationWindow{}, scans: map[string]*scanState{}, page: "place",
-		routes: map[*disk.Node]*disk.Route{}, asked: map[*disk.Node]disk.Verdict{}, explains: map[*disk.Node]string{}, reasons: map[*disk.Node]string{},
-		failed: map[*disk.Node]string{}, asking: map[*disk.Node]bool{}, runs: map[*disk.Node]runResult{},
+		routes: map[*disk.Node]*disk.Route{}, answers: map[*disk.Node]*aiAnswer{}, runs: map[*disk.Node]runResult{},
 		sideRows: map[uintptr]string{}, kindBtns: map[uintptr]disk.Kind{}, nodeRows: map[uintptr]*disk.Node{},
 		sideBtns: map[string]*gtk.Button{}, rowHover: map[uintptr]*disk.Node{},
 	}
@@ -140,26 +141,29 @@ func openWindow(c *appui.Ctx) *window {
 		"place_error": &w.placeError, "progress_text": &w.progressText, "progress_at": &w.progressAt,
 		"place_scan": &w.placeScan, "place_stop": &w.placeStop, "place_progress": &w.placeProgress,
 		"place_map": &w.placeMap, "crumbs": &w.crumbs, "map_list": &w.mapList, "legend": &w.legend,
-		"map_middle": &w.mapMiddle, "map": &w.mapPicture, "map_name": &w.mapName, "map_size": &w.mapSize,
+		"map_middle": &w.mapMiddle, "map_overlay": &w.mapOverlay, "map_name": &w.mapName, "map_size": &w.mapSize,
 		"kind_label": &w.kindLabel, "kind_meta": &w.kindMeta, "kind_desc": &w.kindDesc, "kind_empty": &w.kindEmpty,
-		"kind_rows": &w.kindRows, "details_empty": &w.detailsEmpty, "details": &w.details, "sel_steps": &w.selSteps,
-		"sel_clean_box": &w.selCleanBox, "sel_ask_box": &w.selAskBox,
+		"kind_empty_icon": &w.kindEmptyIcon, "kind_empty_text": &w.kindNone, "kind_rows": &w.kindRows, "details_empty": &w.detailsEmpty, "details": &w.details, "sel_steps": &w.selSteps,
+		"sel_clean_box": &w.selCleanBox, "sel_facts": &w.selFacts,
 		"sel_tag": &w.selTag, "sel_name": &w.selName, "sel_path": &w.selPath, "sel_meta": &w.selMeta,
-		"sel_verdict": &w.selVerdict, "sel_clean": &w.selClean, "sel_ai": &w.selAI, "sel_ask_error": &w.selAskError,
-		"sel_explain_text": &w.selExplainText, "sel_explain_error": &w.selExplainError,
+		"sel_verdict": &w.selVerdict, "sel_clean": &w.selClean,
 		"sel_delete_note": &w.selDeleteNote, "sel_delete_error": &w.selDeleteErr,
 		"sel_copy": &w.selCopy, "sel_run": &w.selRun, "sel_run_note": &w.selRunNote, "sel_run_out": &w.selRunOut,
 		"sel_run_done": &w.selRunDone, "sel_run_error": &w.selRunError, "sel_done": &w.selDone,
-		"sel_item_error": &w.selItemError, "sel_map": &w.selMap, "sel_open": &w.selOpen, "sel_ask": &w.selAsk,
-		"sel_explain": &w.selExplain, "sel_trash": &w.selTrash, "sel_delete": &w.selDelete,
+		"sel_item_error": &w.selItemError, "sel_map": &w.selMap, "sel_open": &w.selOpen,
+		"sel_trash": &w.selTrash, "sel_delete": &w.selDelete,
 	} {
 		b.Get(name, ptr)
 	}
 	b.Close()
+	w.mapCanvas = w.buildMap()
+	w.mapOverlay.SetChild(w.mapCanvas)
+	w.onTickDone = func(uintptr) {}
 
 	w.onClick = func(b gtk.Button) { w.clicked(b) }
-	for _, btn := range []*gtk.Button{&w.sideChoose, &w.placeScan, &w.placeStop, &w.selMap, &w.selOpen, &w.selAsk,
-		&w.selExplain, &w.selTrash, &w.selDelete, &w.selCopy, &w.selRun} {
+	w.onAsk = func(gtk.Button) { w.askAI() }
+	for _, btn := range []*gtk.Button{&w.sideChoose, &w.placeScan, &w.placeStop, &w.selMap, &w.selOpen,
+		&w.selTrash, &w.selDelete, &w.selCopy, &w.selRun} {
 		btn.ConnectClicked(&w.onClick)
 	}
 	w.onChosen = func(_, result, _ uintptr) { w.folderChosen(result) }
@@ -168,14 +172,14 @@ func openWindow(c *appui.Ctx) *window {
 	click.SetButton(1)
 	w.onPress = func(_ gtk.GestureClick, n int32, x, y float64) { w.mapClicked(x, y) }
 	click.ConnectReleased(&w.onPress)
-	w.mapPicture.AddController(&click.EventController)
+	w.mapCanvas.AddController(&click.EventController)
 	motion := gtk.NewEventControllerMotion()
 	w.onMotion = func(_ gtk.EventControllerMotion, x, y float64) { w.mapHovered(x, y) }
 	w.onLeave = func(gtk.EventControllerMotion) { w.setHover(nil) }
 	motion.ConnectMotion(&w.onMotion)
 	motion.ConnectLeave(&w.onLeave)
-	w.mapPicture.AddController(&motion.EventController)
-	w.mapPicture.SetCursorFromName("pointer")
+	w.mapCanvas.AddController(&motion.EventController)
+	w.mapCanvas.SetCursorFromName("pointer")
 	w.onRowMove = func(m gtk.EventControllerMotion, _, _ float64) {
 		if n := w.rowHover[m.GoPointer()]; n != nil && n != w.hover {
 			w.setHover(n)
@@ -273,10 +277,6 @@ func (w *window) clicked(b gtk.Button) {
 		w.showOnMap(w.sel)
 	case w.selOpen.GoPointer():
 		w.openInFiles()
-	case w.selAsk.GoPointer():
-		w.askDecision()
-	case w.selExplain.GoPointer():
-		w.explain()
 	case w.selTrash.GoPointer():
 		w.remove(w.sel, false)
 	case w.selDelete.GoPointer():
@@ -305,6 +305,12 @@ func indexItem(icon, title, sub string) *gtk.Button {
 	t.SetXalign(0)
 	t.SetEllipsize(3) // end
 	gtkx.Append(text, &t.Widget)
+	text.SetValign(gtk.AlignCenterValue)
+	if sub == "" {
+		gtkx.Append(box, &text.Widget)
+		b.SetChild(&box.Widget)
+		return b
+	}
 	s := gtk.NewLabel(sub)
 	s.AddCssClass("sub")
 	s.SetXalign(0)
@@ -362,14 +368,13 @@ func (w *window) fillSide() {
 		w.sideBtns["place:"+p.Path] = b
 		gtkx.Append(&w.sidePlaces, &b.Widget)
 	}
-	icons := map[disk.Kind]string{disk.KindDev: "disk-dev-symbolic", disk.KindAgent: "disk-agent-symbolic", disk.KindCache: "disk-cache-symbolic"}
 	for _, k := range disk.Kinds {
-		sub := i18n.T("Scan a place first")
+		sub := ""
 		if w.scanned() {
 			all, safe := disk.Total(w.found(k))
 			sub = i18n.Tf("%s · %s safe", disk.Size(all), disk.Size(safe))
 		}
-		b := indexItem(icons[k], k.Name(), sub)
+		b := indexItem(kindIcons[k], k.Name(), sub)
 		b.ConnectClicked(&w.onClick)
 		w.kindBtns[b.GoPointer()] = k
 		w.sideBtns["kind:"+k.ID()] = b
@@ -523,7 +528,7 @@ func (w *window) showScan() {
 	if w.place == w.home {
 		where = i18n.T("your home")
 	}
-	w.placeEmpty.SetText(i18n.Tf("Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it.", where))
+	w.placeEmpty.SetText(i18n.Tf("Scan to see what fills %s.", where))
 	w.placeProgress.SetVisible(running)
 	w.crumbs.SetVisible(done && !running)
 	w.mapList.SetVisible(done && !running)
@@ -547,6 +552,7 @@ func (w *window) showScan() {
 	case running:
 		meta = i18n.T("Scanning…")
 		w.showProgress(s)
+		w.sweep(s, w.place)
 	case done:
 		meta = i18n.Tf("%s in %s files · %s", disk.Size(s.root.Size), count(s.root.Files), i18n.Time(s.done, "15:04"))
 	}
@@ -587,19 +593,7 @@ func (w *window) scan(path string) {
 		w.showScan()
 	}
 	w.fillSide()
-	// The scanning map: a frame every 50 ms while the place is in view.
-	s.onFrame = func(uintptr) bool {
-		if w.closed || w.scans[path] != s || !s.running() {
-			return false
-		}
-		if w.page == "place" && w.place == path {
-			s.phase += 2 * math.Pi / 48 // a turn in 2.4 s
-			w.drawMap()
-			w.showProgress(s)
-		}
-		return true
-	}
-	glib.TimeoutAdd(50, &s.onFrame, 0)
+	w.sweep(s, path)
 	var root *disk.Node
 	var err error
 	w.background(func() {
@@ -636,21 +630,14 @@ func (w *window) forget(root *disk.Node) {
 	if root == nil {
 		return
 	}
-	for _, m := range []map[*disk.Node]bool{w.asking} {
-		for n := range m {
-			if n.Root() == root {
-				delete(m, n)
-			}
-		}
-	}
 	for n := range w.routes {
 		if n.Root() == root {
 			delete(w.routes, n)
 		}
 	}
-	for n := range w.explains {
+	for n := range w.answers {
 		if n.Root() == root {
-			delete(w.explains, n)
+			delete(w.answers, n)
 		}
 	}
 	if w.sel != nil && w.sel.Root() == root {
@@ -691,7 +678,7 @@ func (w *window) mapClicked(x, y float64) {
 	if s == nil || s.focus == nil {
 		return
 	}
-	g := disk.Measure(float64(w.mapPicture.GetWidth()), float64(w.mapPicture.GetHeight()))
+	g := disk.Measure(float64(w.mapCanvas.GetWidth()), float64(w.mapCanvas.GetHeight()))
 	i, middle := disk.Hit(w.arcs, g, x, y)
 	switch {
 	case middle && s.focus.Parent != nil:
@@ -704,7 +691,7 @@ func (w *window) mapClicked(x, y float64) {
 }
 
 func (w *window) mapHovered(x, y float64) {
-	g := disk.Measure(float64(w.mapPicture.GetWidth()), float64(w.mapPicture.GetHeight()))
+	g := disk.Measure(float64(w.mapCanvas.GetWidth()), float64(w.mapCanvas.GetHeight()))
 	i, _ := disk.Hit(w.arcs, g, x, y)
 	if i < 0 {
 		w.setHover(nil)
@@ -752,8 +739,6 @@ func hexColor(s string) color.NRGBA {
 // disk's used room.
 func (w *window) drawMap() {
 	s := w.scans[w.place]
-	scale := max(int(w.win.GetScaleFactor()), 1)
-	size := mapSize * scale
 	col := func(name string) color.NRGBA { return hexColor(w.c.Colors[name]) }
 	alpha := func(c color.NRGBA, a float64) color.NRGBA {
 		c.A = uint8(float64(c.A) * a)
@@ -800,12 +785,8 @@ func (w *window) drawMap() {
 			w.mapSize.SetText("")
 		}
 	}
-	img := disk.Render(arcs, size, size, float64(scale), p)
-	b := glib.NewBytes(img.Pix, uint(len(img.Pix)))
-	tex := gdk.NewMemoryTexture(int32(size), int32(size), gdk.MemoryR8g8b8a8Value, b, uint(img.Stride))
-	b.Unref()
-	w.mapPicture.SetPaintable(tex)
-	tex.Unref()
+	w.drawn, w.paint = arcs, p
+	w.mapCanvas.QueueDraw()
 }
 
 // fillLegend says what the map's colours are.
@@ -943,9 +924,13 @@ func (w *window) nodeRow(n *disk.Node, whole int64) *gtk.Button {
 // --- a kind ---
 
 var kindText = map[disk.Kind]string{
-	disk.KindDev:   i18n.M("Dependencies, build output, toolchains and package caches: most come back with one command."),
-	disk.KindAgent: i18n.M("Coding agents' conversations, worktrees and caches, and the AI models downloaded."),
-	disk.KindCache: i18n.M("Programs' caches, packages downloaded and the trash."),
+	disk.KindDev:   i18n.M("Dependencies, builds and toolchains."),
+	disk.KindAgent: i18n.M("Agents' sessions, worktrees and AI models."),
+	disk.KindCache: i18n.M("Caches, downloaded packages and the trash."),
+}
+
+var kindIcons = map[disk.Kind]string{
+	disk.KindDev: "disk-dev-symbolic", disk.KindAgent: "disk-agent-symbolic", disk.KindCache: "disk-cache-symbolic",
 }
 
 func (w *window) showKind(k disk.Kind) {
@@ -961,13 +946,14 @@ func (w *window) showKind(k disk.Kind) {
 	list := w.found(k)
 	all, safe := disk.Total(list)
 	w.kindMeta.SetText("")
+	w.kindEmptyIcon.SetFromIconName(kindIcons[k])
+	w.kindEmpty.SetVisible(len(list) == 0)
 	switch {
 	case !w.scanned():
-		say(&w.kindEmpty, i18n.T("Nothing is scanned yet: scan a place, and what it holds of this kind shows here."))
+		w.kindNone.SetText(i18n.T("Scan a place first."))
 	case len(list) == 0:
-		say(&w.kindEmpty, i18n.T("Nothing of this kind in the places scanned."))
+		w.kindNone.SetText(i18n.T("Nothing found."))
 	default:
-		say(&w.kindEmpty, "")
 		w.kindMeta.SetText(i18n.Nf("%s in %d folder · %s safe to delete", "%s in %d folders · %s safe to delete", len(list),
 			disk.Size(all), len(list), disk.Size(safe)))
 	}
