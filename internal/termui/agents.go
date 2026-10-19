@@ -75,25 +75,21 @@ func iconOf(info host.PaneInfo) string {
 	return "agent-shell-symbolic"
 }
 
-// brands colour the agents' marks while they work or ask: each its
-// manifest's colour (a class of its own, term-brand-TYPE), the accent for
-// one without (term-brand).
+// brands colour the agents' marks, each its manifest's colour (a class of
+// its own, term-brand-TYPE).
 type brands struct {
 	css   *gtk.CssProvider
 	known map[string]string // colour by agent type
 }
 
-// brand gives a pane's mark its agent's colour while the agent works or
-// asks, and takes it away after.
+// brand gives a pane's mark its agent's colour while the agent runs,
+// whatever it does; a shell's, or an agent's without a colour, keeps the
+// mark's own.
 func (a *App) brand(icon *gtk.Image, info host.PaneInfo) {
 	classes := slices.DeleteFunc(icon.GetCssClasses(), func(c string) bool { return strings.HasPrefix(c, "term-brand") })
-	st := agent.State(info.State)
-	if info.Agent != "" && !info.Exited && (st == agent.Working || st == agent.Blocked) {
-		classes = append(classes, "term-brand")
-		if name := cssName(info.Agent); name != "" && info.Color != "" {
-			a.brands.add(name, info.Color)
-			classes = append(classes, "term-brand-"+name)
-		}
+	if name := cssName(info.Agent); name != "" && info.Color != "" && !info.Exited {
+		a.brands.add(name, info.Color)
+		classes = append(classes, "term-brand", "term-brand-"+name)
 	}
 	icon.SetCssClasses(classes)
 }

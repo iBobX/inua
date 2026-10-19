@@ -189,6 +189,13 @@ func (c *Client) SetShell(program string) error {
 	return err
 }
 
+// Quit ends the host as a logout does: it keeps the sessions for the next
+// host, then ends every pane's program.
+func (c *Client) Quit() error {
+	_, err := c.call(Message{Type: MsgQuit})
+	return err
+}
+
 // ClosePane ends a pane's program and forgets the pane.
 func (c *Client) ClosePane(pane int) error {
 	_, err := c.call(Message{Type: MsgClose, Pane: pane})

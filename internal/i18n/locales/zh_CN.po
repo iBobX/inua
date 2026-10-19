@@ -3606,9 +3606,10 @@ msgstr "未知的组件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:246
-#: internal/termui/keys.go:360
+#: internal/termui/keys.go:248
+#: internal/termui/keys.go:365
 #: internal/termui/paste.go:279
+#: internal/termui/restart.go:41
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4486,10 +4487,10 @@ msgid "Opens folders"
 msgstr "打开文件夹"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:95
-#: internal/termui/app.go:127
-#: internal/termui/app.go:299
-#: internal/termui/app.go:301
+#: internal/termui/app.go:99
+#: internal/termui/app.go:131
+#: internal/termui/app.go:307
+#: internal/termui/app.go:309
 #: internal/termui/tiles.go:353
 #: ui/settings.ui:1933
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
@@ -5003,7 +5004,7 @@ msgstr[0] "%d 项"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:362
+#: internal/termui/keys.go:367
 msgid "Rename"
 msgstr "重命名"
 
@@ -5110,7 +5111,7 @@ msgstr[0] "……还有 %d 项"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:248
+#: internal/termui/keys.go:250
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -9622,6 +9623,7 @@ msgid "Suspend, locking first"
 msgstr "暂停，先锁定"
 
 #: internal/shell/commands.go:29
+#: internal/termui/restart.go:43
 #: internal/ui/control.go:488
 #: ui/control.ui:172
 msgid "Restart"
@@ -10063,7 +10065,7 @@ msgid "New session in this workspace"
 msgstr "在此工作区新建会话"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:102
+#: internal/termui/columns.go:106
 msgid "New workspace"
 msgstr "新建工作区"
 
@@ -10128,7 +10130,7 @@ msgid "Copy mode"
 msgstr "复制模式"
 
 #: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:351
+#: internal/termui/keys.go:356
 msgid "Rename the session"
 msgstr "重命名会话"
 
@@ -10141,14 +10143,18 @@ msgid "Show the keys"
 msgstr "显示按键"
 
 #: internal/term/settings/settings.go:111
+msgid "Restart the terminal host"
+msgstr "重启终端主机"
+
+#: internal/term/settings/settings.go:112
 msgid "Font larger"
 msgstr "字体放大"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:113
 msgid "Font smaller"
 msgstr "字体缩小"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:114
 msgid "Font size as set"
 msgstr "恢复设定的字号"
 
@@ -10176,15 +10182,15 @@ msgstr "已完成"
 msgid "IDLE"
 msgstr "空闲"
 
-#: internal/termui/agents.go:188
+#: internal/termui/agents.go:184
 msgid "Agents that need you"
 msgstr "需要你的智能体"
 
-#: internal/termui/agents.go:267
+#: internal/termui/agents.go:263
 msgid "Agents"
 msgstr "智能体"
 
-#: internal/termui/agents.go:274
+#: internal/termui/agents.go:270
 msgid "No agent runs in any workspace."
 msgstr "没有工作区在运行智能体。"
 
@@ -10212,11 +10218,11 @@ msgstr "终端使用窗口的颜色"
 msgid "Your login shell (%s)"
 msgstr "你的登录 shell（%s）"
 
-#: internal/termui/columns.go:103
+#: internal/termui/columns.go:107
 msgid "New session"
 msgstr "新建会话"
 
-#: internal/termui/columns.go:217
+#: internal/termui/columns.go:221
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d 个窗格"
@@ -10263,19 +10269,19 @@ msgstr "终端周围窗口的外观。它跟随 inua 的主题，或者无论 in
 msgid "Keep these choices; the settings change them later"
 msgstr "保留这些选择；之后可在设置中更改"
 
-#: internal/termui/keys.go:235
+#: internal/termui/keys.go:237
 msgid "Close %s?"
 msgstr "关闭 %s？"
 
-#: internal/termui/keys.go:236
+#: internal/termui/keys.go:238
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "它正在处理“%s”；关闭窗格会终止它。"
 
-#: internal/termui/keys.go:238
+#: internal/termui/keys.go:240
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "它在等你：%s。关闭窗格会终止它。"
 
-#: internal/termui/keys.go:279
+#: internal/termui/keys.go:281
 msgid "Choose the workspace's folder"
 msgstr "选择工作区的文件夹"
 
@@ -10518,6 +10524,19 @@ msgstr "按键需要搭配 Ctrl、Alt 或 Super：其余按键属于程序。"
 #: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s 原属于 %s；该操作现在没有按键。"
+
+#: internal/termui/restart.go:30
+msgid "Restart the terminal host?"
+msgstr "重启终端主机？"
+
+#: internal/termui/restart.go:31
+msgid "Every program in the panes ends. The sessions come back, each pane's last command at its prompt, not run; agents come back as their resume command."
+msgstr "窗格中的所有程序都会结束。会话会回来，每个窗格的最后一条命令放回提示符处，不会运行；智能体以其恢复命令回来。"
+
+#: internal/termui/restart.go:33
+msgid "%d agent is working or waiting for you."
+msgid_plural "%d agents are working or waiting for you."
+msgstr[0] "%d 个智能体正在工作或等待你。"
 
 #: internal/termui/search.go:54
 msgid "Previous match (Enter)"
@@ -14558,7 +14577,7 @@ msgstr "按名称、地址、操作系统或标签过滤"
 msgid "EXIT NODE"
 msgstr "出口节点"
 
-#: ui/term.ui:64
+#: ui/term.ui:69
 msgid "Find a workspace or agent"
 msgstr "查找工作区或智能体"
 

@@ -3622,9 +3622,10 @@ msgstr ""
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:246
-#: internal/termui/keys.go:360
+#: internal/termui/keys.go:248
+#: internal/termui/keys.go:365
 #: internal/termui/paste.go:279
+#: internal/termui/restart.go:41
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4502,10 +4503,10 @@ msgid "Opens folders"
 msgstr ""
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:95
-#: internal/termui/app.go:127
-#: internal/termui/app.go:299
-#: internal/termui/app.go:301
+#: internal/termui/app.go:99
+#: internal/termui/app.go:131
+#: internal/termui/app.go:307
+#: internal/termui/app.go:309
 #: internal/termui/tiles.go:353
 #: ui/settings.ui:1933
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
@@ -5026,7 +5027,7 @@ msgstr[1] ""
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:362
+#: internal/termui/keys.go:367
 msgid "Rename"
 msgstr ""
 
@@ -5135,7 +5136,7 @@ msgstr[1] ""
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:248
+#: internal/termui/keys.go:250
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -9668,6 +9669,7 @@ msgid "Suspend, locking first"
 msgstr ""
 
 #: internal/shell/commands.go:29
+#: internal/termui/restart.go:43
 #: internal/ui/control.go:488
 #: ui/control.ui:172
 msgid "Restart"
@@ -10109,7 +10111,7 @@ msgid "New session in this workspace"
 msgstr ""
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:102
+#: internal/termui/columns.go:106
 msgid "New workspace"
 msgstr ""
 
@@ -10174,7 +10176,7 @@ msgid "Copy mode"
 msgstr ""
 
 #: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:351
+#: internal/termui/keys.go:356
 msgid "Rename the session"
 msgstr ""
 
@@ -10187,14 +10189,18 @@ msgid "Show the keys"
 msgstr ""
 
 #: internal/term/settings/settings.go:111
-msgid "Font larger"
+msgid "Restart the terminal host"
 msgstr ""
 
 #: internal/term/settings/settings.go:112
-msgid "Font smaller"
+msgid "Font larger"
 msgstr ""
 
 #: internal/term/settings/settings.go:113
+msgid "Font smaller"
+msgstr ""
+
+#: internal/term/settings/settings.go:114
 msgid "Font size as set"
 msgstr ""
 
@@ -10222,15 +10228,15 @@ msgstr ""
 msgid "IDLE"
 msgstr ""
 
-#: internal/termui/agents.go:188
+#: internal/termui/agents.go:184
 msgid "Agents that need you"
 msgstr ""
 
-#: internal/termui/agents.go:267
+#: internal/termui/agents.go:263
 msgid "Agents"
 msgstr ""
 
-#: internal/termui/agents.go:274
+#: internal/termui/agents.go:270
 msgid "No agent runs in any workspace."
 msgstr ""
 
@@ -10258,11 +10264,11 @@ msgstr ""
 msgid "Your login shell (%s)"
 msgstr ""
 
-#: internal/termui/columns.go:103
+#: internal/termui/columns.go:107
 msgid "New session"
 msgstr ""
 
-#: internal/termui/columns.go:217
+#: internal/termui/columns.go:221
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] ""
@@ -10310,19 +10316,19 @@ msgstr ""
 msgid "Keep these choices; the settings change them later"
 msgstr ""
 
-#: internal/termui/keys.go:235
+#: internal/termui/keys.go:237
 msgid "Close %s?"
 msgstr ""
 
-#: internal/termui/keys.go:236
+#: internal/termui/keys.go:238
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr ""
 
-#: internal/termui/keys.go:238
+#: internal/termui/keys.go:240
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr ""
 
-#: internal/termui/keys.go:279
+#: internal/termui/keys.go:281
 msgid "Choose the workspace's folder"
 msgstr ""
 
@@ -10567,6 +10573,20 @@ msgstr ""
 #: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr ""
+
+#: internal/termui/restart.go:30
+msgid "Restart the terminal host?"
+msgstr ""
+
+#: internal/termui/restart.go:31
+msgid "Every program in the panes ends. The sessions come back, each pane's last command at its prompt, not run; agents come back as their resume command."
+msgstr ""
+
+#: internal/termui/restart.go:33
+msgid "%d agent is working or waiting for you."
+msgid_plural "%d agents are working or waiting for you."
+msgstr[0] ""
+msgstr[1] ""
 
 #: internal/termui/search.go:54
 msgid "Previous match (Enter)"
@@ -14619,7 +14639,7 @@ msgstr ""
 msgid "EXIT NODE"
 msgstr ""
 
-#: ui/term.ui:64
+#: ui/term.ui:69
 msgid "Find a workspace or agent"
 msgstr ""
 

@@ -36,7 +36,7 @@ type Manifest struct {
 	Type    string   `toml:"type"`
 	Name    string   `toml:"name"`
 	Icon    string   `toml:"icon"`    // ui/icons/ICON-symbolic.svg; "" for the terminal's
-	Color   string   `toml:"color"`   // its mark's colour while it works or asks, "#rrggbb"; "" for the accent
+	Color   string   `toml:"color"`   // its mark's colour, "#rrggbb"; "" for the theme's
 	Process []string `toml:"process"` // its program's names
 	Resume  string   `toml:"resume"`  // the command that continues where it was
 	States  []Rule   `toml:"state"`

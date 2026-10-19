@@ -41,6 +41,10 @@ type columns struct {
 	// clicks are the session heads' and pane rows' callbacks, kept for
 	// as long as their buttons.
 	clicks []*func(gtk.Button)
+	// lastHead is the session head clicked last, and when: a second
+	// click on it soon after renames it (headClicked).
+	lastHead   int
+	lastHeadAt time.Time
 	// times are the labels of the time in state, by pane.
 	times []timed
 }
@@ -222,7 +226,7 @@ func (c *columns) fillSessions(a *App) {
 		}
 		head.SetChild(&hb.Widget)
 		ws, sid := w.ID, s.ID
-		click(head, func() { a.showSession(ws, sid) })
+		click(head, func() { c.headClicked(a, ws, sid) })
 		section.Append(&head.Widget)
 		for _, id := range s.Tree.Panes() {
 			section.Append(&c.paneRow(a, ws, s, id, click).Widget)
@@ -337,4 +341,19 @@ func baseName(p string) string { return filepath.Base(p) }
 // escape is text for Pango markup.
 func escape(s string) string {
 	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", "'", "&apos;", `"`, "&quot;").Replace(s)
+}
+
+// headClicked shows a session; a second click on its head within the
+// double-click time renames it. The clicks are timed here: showing the
+// session makes column 2 anew, so the second click falls on a new head,
+// which GTK counts as a first.
+func (c *columns) headClicked(a *App, ws, session int) {
+	within, _ := doubleClick()
+	if c.lastHead == session && time.Since(c.lastHeadAt) < within {
+		c.lastHead = 0
+		a.renameSession(session)
+		return
+	}
+	c.lastHead, c.lastHeadAt = session, time.Now()
+	a.showSession(ws, session)
 }

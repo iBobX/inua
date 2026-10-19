@@ -127,7 +127,7 @@ type PaneInfo struct {
 	Agent     string `json:"agent,omitempty"`
 	AgentName string `json:"agent_name,omitempty"`
 	Icon      string `json:"icon,omitempty"`
-	Color     string `json:"color,omitempty"` // the mark's while it works or asks
+	Color     string `json:"color,omitempty"` // the mark's, "#rrggbb"
 	State     string `json:"state,omitempty"`
 	Since     int64  `json:"since,omitempty"`
 	Ask       string `json:"ask,omitempty"`
@@ -146,6 +146,7 @@ const (
 	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
 	MsgShell   = "shell"   // client: the shell new panes start, Argv[0]; none for $SHELL
+	MsgQuit    = "quit"    // client: end the host, its sessions kept for the next
 	MsgClose   = "close"   // client: end the pane's program and forget it
 	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
 	// The workspaces and sessions; each change sends every client a

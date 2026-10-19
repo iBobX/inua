@@ -17,20 +17,24 @@ ApplicationWindow term {
 
       Box {
         styles ["term-col-head"]
-        orientation: vertical;
-        valign: center;
-        spacing: 2;
 
-        Label nerd_who {
-          styles ["term-nerd-who"]
-          xalign: 0;
-          ellipsize: end;
-        }
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+          spacing: 2;
 
-        Label nerd_sys {
-          styles ["term-nerd-sys"]
-          xalign: 0;
-          ellipsize: end;
+          Label nerd_who {
+            styles ["term-nerd-who"]
+            xalign: 0;
+            ellipsize: end;
+          }
+
+          Label nerd_sys {
+            styles ["term-nerd-sys"]
+            xalign: 0;
+            ellipsize: end;
+          }
         }
       }
 

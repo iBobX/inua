@@ -60,13 +60,20 @@ type termPane struct {
 	rows   int
 	exited bool
 	closed bool
-	lines  [][]vt.Run // the screen's rows as the engine last said
+	lines  [][]vt.Run            // the screen's rows as the engine last said
+	drawn  map[string]*drawnLine // the lines drawn, by what they draw (lineNode)
 	cur    vt.Cursor
 	mouse  bool // the program tracks the mouse
 	alt    bool // the alternate screen shows
 	scroll vt.Scrollbar
 	// wheelRows is the part of a row a touchpad has scrolled so far.
 	wheelRows, wheelNotches float64
+	// The scroll going on after the fingers left the touchpad (glide):
+	// its speed in rows a second, its frame callback, its last frame.
+	glideVel  float64
+	glideTick uint32
+	glideLast time.Time
+	onGlide   gtk.TickCallback
 	// pointerX, pointerY is the pointer in the widget; buttons the ones
 	// held down for a program tracking the mouse, a bit per button.
 	pointerX, pointerY float64
@@ -109,6 +116,7 @@ type termPane struct {
 	onMiddle                          func(gtk.GestureClick, int32, float64, float64)
 	onDrop                            func(gtk.DropTarget, uintptr, float64, float64) bool
 	onScroll                          func(gtk.EventControllerScroll, float64, float64) bool
+	onDecelerate                      func(gtk.EventControllerScroll, float64, float64)
 	onMotion                          func(gtk.EventControllerMotion, float64, float64)
 	onRaw                             func(gtk.EventControllerLegacy, uintptr) bool
 
@@ -241,9 +249,11 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 	middle.ConnectPressed(&p.onMiddle)
 	p.widget.AddController(&middle.EventController)
 	p.trackMouse()
-	wheel := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue)
+	wheel := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollKineticValue)
 	p.onScroll = func(c gtk.EventControllerScroll, _, dy float64) bool { return p.wheel(&c, dy) }
+	p.onDecelerate = func(c gtk.EventControllerScroll, _, vy float64) { p.glide(&c, vy) }
 	wheel.ConnectScroll(&p.onScroll)
+	wheel.ConnectDecelerate(&p.onDecelerate)
 	p.widget.AddController(&wheel.EventController)
 	// Files dropped on the pane are pasted as their paths.
 	drop := gtk.NewDropTarget(gdk.FileListGLibType(), gdk.ActionCopyValue|gdk.ActionMoveValue)
@@ -266,6 +276,9 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 // engine's selection, and redraws; it reports whether there is a
 // selection.
 func (p *termPane) pointer(c *gtk.EventController, kind vt.PointerKind, x, y float64) bool {
+	if kind == vt.PointerPress {
+		p.stopGlide()
+	}
 	if p.cw == 0 || p.ch == 0 {
 		return false
 	}
@@ -323,6 +336,9 @@ func (p *termPane) copySelection(toClipboard bool) {
 // key sends a key the input method left, encoded by the engine in the
 // modes the program set.
 func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType, action vt.KeyAction) bool {
+	if action == vt.Press {
+		p.stopGlide()
+	}
 	var layout uint32
 	var consumed gdk.ModifierType
 	if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
@@ -502,51 +518,24 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 	cw, ch := float32(p.cw), float32(p.ch)
 	s.Save()
 	s.Translate(&graphene.Point{X: pad, Y: pad})
+	for _, l := range p.drawn {
+		l.used = false
+	}
 	for y, runs := range p.lines {
-		for _, r := range runs {
-			fg, bg := p.color(r.FG, p.fg), p.color(r.BG, p.bg)
-			if r.Attrs&vt.Inverse != 0 {
-				fg, bg = bg, fg
-			}
-			switch {
-			case r.Attrs&vt.MatchCurrent != 0:
-				bg, fg = p.warn, p.bg
-			case r.Attrs&vt.Selected != 0:
-				bg = p.cursor
-				bg.Alpha = 0.3
-			case r.Attrs&vt.Match != 0:
-				bg = p.warn
-				bg.Alpha = 0.3
-			}
-			if r.BG != vt.DefaultColor || r.Attrs&(vt.Inverse|vt.Selected|vt.Match) != 0 {
-				s.AppendColor(&bg, rect(float32(r.X)*cw, float32(y)*ch, float32(r.Cells)*cw, ch))
-			}
-			if r.Attrs&vt.Invisible != 0 || r.Text == "" {
-				continue
-			}
-			if r.Attrs&vt.Faint != 0 {
-				fg.Alpha = 0.6
-			}
-			font := 0
-			if r.Attrs&vt.Bold != 0 {
-				font |= 1
-			}
-			if r.Attrs&vt.Italic != 0 {
-				font |= 2
-			}
-			l := w.CreatePangoLayout(r.Text)
-			l.SetFontDescription(p.fonts[font])
+		if len(runs) == 0 {
+			continue
+		}
+		if n := p.lineNode(w, runs, cw, ch); n != nil {
 			s.Save()
-			s.Translate(&graphene.Point{X: float32(r.X) * cw, Y: float32(y) * ch})
-			s.AppendLayout(l, &fg)
-			if r.Attrs&vt.Underline != 0 {
-				s.AppendColor(&fg, rect(0, ch-2, float32(r.Cells)*cw, 1))
-			}
-			if r.Attrs&vt.Strike != 0 {
-				s.AppendColor(&fg, rect(0, ch/2, float32(r.Cells)*cw, 1))
-			}
+			s.Translate(&graphene.Point{Y: float32(y) * ch})
+			s.AppendNode(n)
 			s.Restore()
-			l.Unref()
+		}
+	}
+	for key, l := range p.drawn {
+		if !l.used {
+			l.free()
+			delete(p.drawn, key)
 		}
 	}
 	if h := p.hover; h != nil {
@@ -614,6 +603,7 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 // loadFont takes a Pango font description (family, then size) and its
 // bold and italic faces; the cells are measured again at the next layout.
 func (p *termPane) loadFont(spec string) {
+	p.dropLines()
 	p.font = pango.FontDescriptionFromString(spec)
 	for i := range p.fonts {
 		f := pango.FontDescriptionFromString(spec)
@@ -644,14 +634,17 @@ func (p *termPane) busy() bool { return p.sheet != nil || p.find != nil }
 func (p *termPane) setScheme(sc scheme.Scheme, warn string) {
 	p.fg, p.bg, p.cursor = rgbaOf(sc.FG), rgbaOf(sc.BG), rgbaOf(sc.Cursor)
 	p.warn = rgba(warn)
+	p.dropLines()
 	p.term.SetPalette(sc.Palette)
 	p.update(true)
 }
 
 func (p *termPane) close() {
+	p.stopGlide()
 	p.closed = true
 	p.im.SetClientWidget(nil)
 	p.term.Close()
+	p.dropLines()
 	forgetPaneWidget(p.widget)
 }
 

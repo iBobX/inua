@@ -74,8 +74,7 @@ from it, or at `$INUA_VT_LIB`.
   panes. A pane's row shows its agent's mark and title, its state and
   how long it has been in it; an agent waiting for you shows what it
   asks. A shell shows the command running in it. An agent's mark takes
-  its own colour (Claude Code's orange, Gemini's blue…) while it works
-  or waits for you, and goes quiet after.
+  its own colour (Claude Code's orange, Gemini's blue…) while it runs.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
   head (state, mark, title, folder). Drag a gap to resize, drag a head
   onto another pane to swap them. A pane closes when its program ends
@@ -100,7 +99,7 @@ the built-in ones:
 type = "claude"
 name = "Claude Code"
 icon = "agent-claude"            # ui/icons/agent-claude-symbolic.svg
-color = "#d97757"                # the mark's while it works or asks; none for the accent
+color = "#d97757"                # its mark's colour; none for the theme's
 process = ["claude"]
 resume = "claude --continue"     # what a restored pane puts back
 
@@ -143,7 +142,9 @@ Ctrl+Shift+A lists every agent.
 ## What it remembers
 
 While the host runs nothing needs remembering. When it ends (a reboot, a
-logout), it keeps the sessions you used (typed in, or ran something in),
+logout, or "Restart the terminal host" in Ctrl+Shift+P, which asks first
+and opens the new host in the same window, as for a new build), it
+keeps the sessions you used (typed in, or ran something in),
 their layouts, and each pane's folder, title and **last command**: what
 was typed at the prompt and not run, else the command running, else the
 one run last. The next host starts a shell in each pane's folder, in the
@@ -192,7 +193,7 @@ it kept at that version's defaults moved to these.
 | Ctrl+Shift+Space | Copy mode: h j k l w b 0 $ g G, v and V to select, y to copy |
 | Shift+PgUp / Shift+PgDn, Shift+Home / Shift+End | Scroll |
 | Ctrl+Shift+PgUp / Ctrl+Shift+PgDn | Previous / next prompt |
-| Ctrl+Shift+R | Rename the session |
+| Ctrl+Shift+R | Rename the session (or double-click its head) |
 | Ctrl+, | Settings |
 | Ctrl+= / Ctrl+- / Ctrl+0 | Font larger / smaller / as set |
 

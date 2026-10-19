@@ -106,6 +106,48 @@ func TestExitedPaneCloses(t *testing.T) {
 	}
 }
 
+// A client may end the host (restarting it): the sessions are kept for
+// the next.
+func TestQuit(t *testing.T) {
+	t.Setenv("SHELL", "/bin/sh")
+	file := filepath.Join(t.TempDir(), "term.json")
+	h, path := startHost(t)
+	if err := h.Remember(file, nil, true); err != nil {
+		t.Fatal(err)
+	}
+	c := dial(t, path, newWatcher())
+	work := t.TempDir()
+	c.Open(work, "")
+	st, _ := c.State()
+	id := st.Model.Workspaces[0].Sessions[0].Focus
+	c.Input(id, []byte("echo used\n")) // only sessions used are kept
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		st, _ = c.State()
+		if st.Model.Workspaces[0].Sessions[0].Used {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("the session not used")
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	if err := c.Quit(); err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case <-h.done:
+	case <-time.After(3 * time.Second):
+		t.Fatal("the host stays")
+	}
+	b, _ := os.ReadFile(file)
+	var kept Saved
+	json.Unmarshal(b, &kept)
+	if len(kept.Model.Workspaces) != 1 || kept.Model.Workspaces[0].Dir != work || len(kept.Model.Workspaces[0].Sessions) != 1 {
+		t.Errorf("kept %s", b)
+	}
+}
+
 // A session one of whose panes cannot start is dropped whole: the panes
 // already started for it are closed, not left running unseen.
 func TestRestoreFailsWhole(t *testing.T) {

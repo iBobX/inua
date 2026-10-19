@@ -125,7 +125,7 @@ func (a *App) do(action string, p *termPane) bool {
 	case "fold_sessions":
 		a.toggleColumn(1)
 	case "rename":
-		a.renameSession()
+		a.renameSession(0)
 	case "font_larger":
 		a.zoomFont(1)
 	case "font_smaller":
@@ -138,6 +138,8 @@ func (a *App) do(action string, p *termPane) bool {
 		a.showKeys()
 	case "settings":
 		a.openSettings()
+	case "restart_host":
+		a.restartHost()
 	case "copy_mode":
 		if p == nil {
 			return false
@@ -335,10 +337,13 @@ func (a *App) stepSession(dir int) {
 	a.showSession(w.ID, w.Sessions[i].ID)
 }
 
-// renameSession asks for the shown session's new name, in a sheet over
-// column 3.
-func (a *App) renameSession() {
+// renameSession asks for a session's new name (0: the shown one's), in a
+// sheet over column 3.
+func (a *App) renameSession(id int) {
 	s := a.shown()
+	if id != 0 && a.state != nil {
+		s, _ = a.state.Model.Session(id)
+	}
 	if s == nil || a.sheet != nil {
 		return
 	}
@@ -368,8 +373,10 @@ func (a *App) renameSession() {
 		name := entry.GetText()
 		a.stage.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
-		if t := a.tiles[s.Focus]; t != nil {
-			t.pane.widget.GrabFocus()
+		if shown := a.shown(); shown != nil {
+			if t := a.tiles[shown.Focus]; t != nil {
+				t.pane.widget.GrabFocus()
+			}
 		}
 		if rename && name != "" {
 			a.ask("rename", func(c *host.Client) error { return c.Rename(0, session, name) })

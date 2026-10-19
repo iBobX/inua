@@ -339,6 +339,11 @@ func (h *Host) handle(c *client, m Message) {
 			program = m.Argv[0]
 		}
 		h.SetShell(program)
+	case MsgQuit:
+		// The reply goes out, then the host keeps its sessions and ends.
+		c.message(reply)
+		go h.Close()
+		return
 	case MsgCreate:
 		id, err := h.create(m)
 		if err != nil {

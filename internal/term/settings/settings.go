@@ -108,6 +108,7 @@ var Actions = []struct{ Name, Keys, Label string }{
 	{"palette", "ctrl+shift+p", i18n.M("Every action by name")},
 	{"keys", "ctrl+shift+slash", i18n.M("Show the keys")},
 	{"settings", "ctrl+comma", i18n.M("Settings")},
+	{"restart_host", "", i18n.M("Restart the terminal host")},
 	{"font_larger", "ctrl+equal", i18n.M("Font larger")},
 	{"font_smaller", "ctrl+minus", i18n.M("Font smaller")},
 	{"font_reset", "ctrl+0", i18n.M("Font size as set")},

@@ -67,9 +67,13 @@ type App struct {
 	// firstRun is set when there was no term.toml: the guide asks for
 	// the shell and the look before the host starts.
 	firstRun bool
-	guide    *guide
-	nerd     nerdInfo
-	brands   brands
+	// restarting is set while the host restarts (restartHost); restartWait
+	// starts the new one.
+	restarting  bool
+	restartWait glib.SourceFunc
+	guide       *guide
+	nerd        nerdInfo
+	brands      brands
 
 	onCloseOK, onCloseCancel func(gtk.Button)
 
@@ -186,7 +190,11 @@ func (a *App) connect(shell string) (*host.State, error) {
 	go func() {
 		<-client.Done()
 		gtkx.Post(func() {
-			if a.client == client {
+			switch {
+			case a.client != client:
+			case a.restarting:
+				a.hostEnded()
+			default:
 				a.win.Close() // the host ended: its last pane closed
 			}
 		})
