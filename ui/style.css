@@ -850,6 +850,38 @@ window.settings { background: @app; font-size: 14px; }
 }
 .settings button.outlined:disabled, .settings menubutton.outlined > button:disabled { color: @t2; background: transparent; border-color: alpha(@line, 0.6); }
 .settings dropdown > button { min-width: 150px; }
+/* A number: an entry's box with the digits in mono, and − and + as flat
+   cells behind hairlines, the height of the buttons beside it. */
+.settings spinbutton {
+  min-height: 34px;
+  background: @surface;
+  color: @t0;
+  border: 1px solid @line;
+  border-radius: 2px;
+  box-shadow: none;
+  outline: none;
+}
+.settings spinbutton:focus-within { border-color: @accent; box-shadow: 0 0 0 3px alpha(@accent, 0.14); }
+.settings spinbutton > text {
+  min-width: 48px;
+  padding: 0 10px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+  caret-color: @accent;
+}
+.settings spinbutton > button {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: none;
+  border-left: 1px solid alpha(@line, 0.8);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: @t1;
+}
+.settings spinbutton > button:hover { background: mix(@surface, @accent, 0.06); color: @t0; }
+.settings spinbutton > button:disabled { color: @t2; background: transparent; }
 /* Drop-down lists: the rows straight on the theme's card, with none of
    GTK's padding around them (its listview has an 8px margin), and the
    selection style on hover. */
@@ -2722,6 +2754,24 @@ window.connect .connect-error, window.connect-reply .connect-error { color: @dan
 window.connect .connect-key { padding: 14px 16px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }
 window.connect .connect-key-digits { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 34px; font-weight: 600; letter-spacing: 0.3em; color: @accent; }
 window.connect-reply .page { padding: 18px; }
+/* Their one action at a time (Connect, Pair, Save, Add): the outlined
+   buttons' shape, filled with the accent, as GPG's and Pass's are. */
+window.remote button.suggested-action, window.connect button.suggested-action {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid @accent;
+  border-radius: 2px;
+  background: @accent;
+  background-image: none;
+  color: @app;
+  box-shadow: none;
+  transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+window.remote button.suggested-action:hover, window.connect button.suggested-action:hover {
+  border-color: mix(@accent, @t0, 0.14);
+  background: mix(@accent, @t0, 0.14);
+}
+window.remote button.suggested-action:disabled, window.connect button.suggested-action:disabled { opacity: 0.45; }
 window.remote-stream { background: #000; }
 window.remote-stream .remote-note {
   margin-top: 14px;
