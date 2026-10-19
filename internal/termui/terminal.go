@@ -1,7 +1,6 @@
 package termui
 
 import (
-	"io"
 	"log"
 	"sync"
 
@@ -11,7 +10,6 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
 	"github.com/lyricat/inua/internal/gtkx"
-	"github.com/lyricat/inua/internal/term/pty"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -21,12 +19,20 @@ const pad = 8
 // fontName is the terminal's font, as the shell's labels have it.
 const fontName = "Geist Mono, IBM Plex Mono, monospace 11"
 
-// termPane is one terminal: the engine and the program on its PTY, drawn
-// by its widget. The engine is touched on the main thread only.
+// backend is where a pane's program is: the host, through a client.
+type backend interface {
+	Input(b []byte) error
+	Resize(cols, rows int) error
+}
+
+// termPane is one terminal: the window's own engine for drawing, and the
+// program on the host, drawn by its widget. The engine is touched on the
+// main thread only.
 type termPane struct {
+	id     int // the host's
 	widget *gtk.Widget
 	term   *vt.Terminal
-	pty    *pty.PTY
+	be     backend
 	font   *pango.FontDescription
 	fonts  [4]*pango.FontDescription // by bold and italic
 	fg, bg gdk.RGBA
@@ -45,14 +51,15 @@ type termPane struct {
 	onKey func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 }
 
-func newTermPane(argv []string, dir string, env []string, colors map[string]string) (*termPane, error) {
+func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPane, error) {
 	p := &termPane{
 		font:   pango.FontDescriptionFromString(fontName),
 		fg:     rgba(colors["t0"]),
 		bg:     rgba(colors["app"]),
 		cursor: rgba(colors["accent"]),
-		cols:   80,
-		rows:   24,
+		be:     be,
+		cols:   cols,
+		rows:   rows,
 	}
 	for i := range p.fonts {
 		f := pango.FontDescriptionFromString(fontName)
@@ -68,10 +75,6 @@ func newTermPane(argv []string, dir string, env []string, colors map[string]stri
 	if p.term, err = vt.New(p.cols, p.rows); err != nil {
 		return nil, err
 	}
-	if p.pty, err = pty.Start(argv, dir, env, p.cols, p.rows); err != nil {
-		p.term.Close()
-		return nil, err
-	}
 	p.widget = newPaneWidget(p)
 	p.widget.SetFocusable(true)
 	p.widget.SetHexpand(true)
@@ -79,40 +82,28 @@ func newTermPane(argv []string, dir string, env []string, colors map[string]stri
 	keys := gtk.NewEventControllerKey()
 	p.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
 		if b := keyBytes(keyval, state); b != nil && !p.exited {
-			p.pty.Write(b)
+			if err := p.be.Input(b); err != nil {
+				log.Printf("term: input: %v", err)
+			}
 			return true
 		}
 		return false
 	}
 	keys.ConnectKeyPressed(&p.onKey)
 	p.widget.AddController(&keys.EventController)
-	go p.read()
 	return p, nil
 }
 
-// read feeds the program's output to the main thread, a burst at a time.
-func (p *termPane) read() {
-	buf := make([]byte, 64*1024)
-	for {
-		n, err := p.pty.Read(buf)
-		if n > 0 {
-			p.mu.Lock()
-			p.pending = append(p.pending, buf[:n]...)
-			post := !p.scheduled
-			p.scheduled = true
-			p.mu.Unlock()
-			if post {
-				gtkx.Post(p.drain)
-			}
-		}
-		if err != nil {
-			if err != io.EOF {
-				log.Printf("term: read: %v", err)
-			}
-			code, _ := p.pty.Wait()
-			gtkx.Post(func() { p.exit(code) })
-			return
-		}
+// feed takes the program's output on the client's goroutine and hands it
+// to the main thread, a burst at a time.
+func (p *termPane) feed(b []byte) {
+	p.mu.Lock()
+	p.pending = append(p.pending, b...)
+	post := !p.scheduled
+	p.scheduled = true
+	p.mu.Unlock()
+	if post {
+		gtkx.Post(p.drain)
 	}
 }
 
@@ -146,6 +137,9 @@ func (p *termPane) update(all bool) {
 }
 
 func (p *termPane) exit(code int) {
+	if p.exited {
+		return
+	}
 	p.drain()
 	p.exited = true
 	p.term.Write([]byte("\r\n\x1b[2m[exited " + itoa(code) + "]\x1b[0m"))
@@ -163,7 +157,9 @@ func (p *termPane) allocate(w *gtk.Widget, width, height int) {
 		log.Printf("term: %v", err)
 	}
 	if !p.exited {
-		p.pty.Resize(cols, rows)
+		if err := p.be.Resize(cols, rows); err != nil {
+			log.Printf("term: resize: %v", err)
+		}
 	}
 	p.update(true)
 }
@@ -238,7 +234,6 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 }
 
 func (p *termPane) close() {
-	p.pty.Close()
 	p.term.Close()
 	forgetPaneWidget(p.widget)
 }

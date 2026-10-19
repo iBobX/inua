@@ -1,0 +1,143 @@
+// Package host is inua-term's host: the process that owns the terminals
+// (their PTYs, their engines, their recent output) so that they outlive
+// the window, and the protocol its clients speak over a Unix socket
+// (docs/feat/inua-term.md, section 5). The window is one client; scripts,
+// hooks and, later, a browser are others.
+package host
+
+import (
+	"encoding/binary"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+)
+
+// Version is the protocol's; a client speaking another is turned away.
+const Version = 1
+
+// Frames on the socket: a u32 length (of what follows), a u8 kind, then
+// the payload. Little-endian.
+const (
+	frameControl byte = 0 // a JSON message
+	frameOutput  byte = 1 // host to client: u32 pane, then the program's bytes
+	frameInput   byte = 2 // client to host: u32 pane, then the bytes typed
+)
+
+// maxFrame bounds a frame, so a broken peer cannot make the other side
+// allocate without end.
+const maxFrame = 16 << 20
+
+// Message is a control message, both ways. Requests carry an ID that
+// their reply repeats; events have none.
+type Message struct {
+	Type string `json:"type"`
+	ID   int    `json:"id,omitempty"`
+
+	Version int    `json:"version,omitempty"` // hello, welcome
+	Error   string `json:"error,omitempty"`   // a reply that failed
+
+	Pane  int      `json:"pane,omitempty"`
+	Argv  []string `json:"argv,omitempty"` // create
+	Dir   string   `json:"dir,omitempty"`  // create; event "pwd"
+	Env   []string `json:"env,omitempty"`  // create
+	Cols  int      `json:"cols,omitempty"` // create, resize
+	Rows  int      `json:"rows,omitempty"` // create, resize
+	Title string   `json:"title,omitempty"`
+	Code  *int     `json:"code,omitempty"` // event "exit"
+
+	Panes []PaneInfo `json:"panes,omitempty"` // reply to list
+}
+
+// PaneInfo is what the host knows of a pane.
+type PaneInfo struct {
+	ID     int      `json:"id"`
+	Argv   []string `json:"argv"`
+	Title  string   `json:"title"`
+	Dir    string   `json:"dir"` // the folder the shell reports (OSC 7), else where it started
+	Cols   int      `json:"cols"`
+	Rows   int      `json:"rows"`
+	Exited bool     `json:"exited"`
+	Code   int      `json:"code"`
+}
+
+// Message types.
+const (
+	MsgHello   = "hello"   // client: the first message; Version
+	MsgWelcome = "welcome" // host: accepted; Version
+	MsgReply   = "reply"   // host: to request ID; Error, or what it asked
+	MsgList    = "list"    // client: the panes
+	MsgCreate  = "create"  // client: a pane running Argv in Dir; reply Pane
+	MsgAttach  = "attach"  // client: the pane's replay, then its output
+	MsgDetach  = "detach"  // client: no more of the pane's output
+	MsgResize  = "resize"  // client: Cols × Rows
+	MsgClose   = "close"   // client: end the pane's program and forget it
+	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane
+)
+
+// SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.
+func SocketPath() string {
+	dir := os.Getenv("XDG_RUNTIME_DIR")
+	if dir == "" {
+		dir = os.TempDir()
+	}
+	return filepath.Join(dir, "inua", "term.sock")
+}
+
+func writeFrame(w io.Writer, kind byte, payload ...[]byte) error {
+	n := 1
+	for _, p := range payload {
+		n += len(p)
+	}
+	if n > maxFrame {
+		return fmt.Errorf("host: frame of %d bytes", n)
+	}
+	head := make([]byte, 5, 5+n)
+	binary.LittleEndian.PutUint32(head, uint32(n))
+	head[4] = kind
+	buf := head
+	for _, p := range payload {
+		buf = append(buf, p...)
+	}
+	_, err := w.Write(buf)
+	return err
+}
+
+func readFrame(r io.Reader) (kind byte, payload []byte, err error) {
+	var head [5]byte
+	if _, err := io.ReadFull(r, head[:]); err != nil {
+		return 0, nil, err
+	}
+	n := binary.LittleEndian.Uint32(head[:4])
+	if n < 1 || n > maxFrame {
+		return 0, nil, fmt.Errorf("host: frame of %d bytes", n)
+	}
+	payload = make([]byte, n-1)
+	if _, err := io.ReadFull(r, payload); err != nil {
+		return 0, nil, err
+	}
+	return head[4], payload, nil
+}
+
+func writeMessage(w io.Writer, m Message) error {
+	b, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	return writeFrame(w, frameControl, b)
+}
+
+func paneBytes(pane int, b []byte) [][]byte {
+	var id [4]byte
+	binary.LittleEndian.PutUint32(id[:], uint32(pane))
+	return [][]byte{id[:], b}
+}
+
+func splitPane(payload []byte) (int, []byte, error) {
+	if len(payload) < 4 {
+		return 0, nil, errors.New("host: short pane frame")
+	}
+	return int(binary.LittleEndian.Uint32(payload)), payload[4:], nil
+}
