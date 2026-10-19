@@ -45,9 +45,37 @@ shim=$root/internal/term/vt/shim
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 printf '{ global: inua_vt_*; local: *; };\n' > "$tmp/exports.map"
+# The keyboard's keycodes (XKB, as GDK reports them) to libghostty's keys,
+# from Ghostty's own table: its W3C code names to its key tags, kept to
+# the names its C header has.
+awk '
+FILENAME == ARGV[1] {
+	if (match($0, /GHOSTTY_KEY_[A-Z0-9_]+/)) names[substr($0, RSTART, RLENGTH)] = 1
+	next
+}
+/\.\{ "[A-Za-z0-9]+", \.[a-z0-9_]+ \}/ {
+	match($0, /"[A-Za-z0-9]+"/); code = substr($0, RSTART + 1, RLENGTH - 2)
+	match($0, /\.[a-z0-9_]+ \}/); tags[code] = substr($0, RSTART + 1, RLENGTH - 3)
+	next
+}
+/^ *\.\{ 0x[0-9a-f]+, 0x[0-9a-f]+, 0x[0-9a-f]+,/ {
+	split($0, f, ","); xkb = f[3]; gsub(/ /, "", xkb)
+	if (xkb != "0x0000" && match($0, /"[A-Za-z0-9]+"/)) pairs[++n] = xkb SUBSEP substr($0, RSTART + 1, RLENGTH - 2)
+}
+END {
+	for (i = 1; i <= n; i++) {
+		split(pairs[i], p, SUBSEP)
+		if (!(p[2] in tags)) continue
+		name = toupper(tags[p[2]])
+		if (name ~ /^KEY_[A-Z]$/) name = substr(name, 5)
+		name = "GHOSTTY_KEY_" name
+		if (name in names) printf "  {%s, %s},\n", p[1], name
+	}
+}' "$src/include/ghostty/vt/key/event.h" "$src/src/input/keycodes.zig" > "$tmp/inua_keymap.inc"
+[ -s "$tmp/inua_keymap.inc" ] || { echo "libghostty.sh: no keycodes found in Ghostty's table" >&2; exit 1; }
 mkdir -p "$out"
 "$zig" cc -shared -fPIC -O2 -std=c11 -Wall -Werror \
-	-I "$src/zig-out/include" -I "$shim" \
+	-I "$src/zig-out/include" -I "$shim" -I "$tmp" \
 	-o "$tmp/libinua-vt.so" "$shim/inua_vt.c" "$src/zig-out/lib/libghostty-vt.a" \
 	-Wl,--version-script="$tmp/exports.map" -Wl,-s -Wl,-soname,libinua-vt.so
 mv "$tmp/libinua-vt.so" "$out/libinua-vt.so"

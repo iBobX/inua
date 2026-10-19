@@ -16,12 +16,15 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/pango"
 )
 
-// GObject's own calls that puregotk does not bind in a form purego can
-// make: g_type_query, and g_object_new without varargs.
+// GObject's and GTK's own calls that puregotk does not bind in a form
+// purego can make: g_type_query, g_object_new without varargs, and the
+// controller's current event.
 var gobj struct {
 	once      sync.Once
 	typeQuery func(t types.GType, q *gobject.TypeQuery)
 	newObject func(t types.GType, n uint32, names, values uintptr) uintptr
+	// GTK's own, since puregotk's wrapper refs a GdkEvent as a GObject.
+	currentEvent func(controller uintptr) uintptr
 }
 
 func loadGObject() {
@@ -32,6 +35,11 @@ func loadGObject() {
 		}
 		purego.RegisterLibFunc(&gobj.typeQuery, h, "g_type_query")
 		purego.RegisterLibFunc(&gobj.newObject, h, "g_object_new_with_properties")
+		g, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		if err != nil {
+			panic("termui: " + err.Error())
+		}
+		purego.RegisterLibFunc(&gobj.currentEvent, g, "gtk_event_controller_get_current_event")
 	})
 }
 

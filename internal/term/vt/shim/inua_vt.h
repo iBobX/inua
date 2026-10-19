@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 2
+#define INUA_VT_ABI 3
 
 typedef struct inua_vt inua_vt;
 
@@ -74,5 +74,24 @@ typedef struct {
  * nothing marked clean. */
 int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
                   inua_vt_frame_info *info);
+
+/* Modifier bits for inua_vt_key, as libghostty's. */
+#define INUA_VT_MOD_SHIFT 1u
+#define INUA_VT_MOD_CTRL 2u
+#define INUA_VT_MOD_ALT 4u
+#define INUA_VT_MOD_SUPER 8u
+#define INUA_VT_MOD_CAPS 16u
+#define INUA_VT_MOD_NUM 32u
+
+/* Encodes a key as the program wants it, in the modes it set (cursor
+ * keys, the kitty keyboard protocol…): xkb is the keycode GDK reports,
+ * action 0 release, 1 press, 2 repeat; utf8 the text the key makes;
+ * unshifted the key's character without modifiers (0 for none); consumed
+ * the modifiers the layout used up making the text. *len 0: nothing to
+ * send; a release is sent only to a program that asked for releases
+ * (the kitty protocol's report-events flag). */
+int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
+                const char *utf8, size_t utf8_len, uint32_t unshifted,
+                uint32_t consumed, uint8_t *out, size_t cap, size_t *len);
 
 #endif

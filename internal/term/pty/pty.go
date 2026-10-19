@@ -28,6 +28,7 @@ func Start(argv []string, dir string, env []string, cols, rows int) (*PTY, error
 	if len(argv) == 0 {
 		return nil, errors.New("pty: no command")
 	}
+	defaultSignals()
 	master, slave, err := open()
 	if err != nil {
 		return nil, err

@@ -10,6 +10,8 @@ struct inua_vt {
   GhosttyRenderState render;
   GhosttyRenderStateRowIterator rows;
   GhosttyRenderStateRowCells cells;
+  GhosttyKeyEncoder keys;
+  GhosttyKeyEvent key;
 };
 
 int inua_vt_abi(void) { return INUA_VT_ABI; }
@@ -22,7 +24,9 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
   if (ghostty_terminal_new(NULL, &t->term, cols, rows) != GHOSTTY_SUCCESS ||
       ghostty_render_state_new(NULL, &t->render) != GHOSTTY_SUCCESS ||
       ghostty_render_state_row_iterator_new(NULL, &t->rows) != GHOSTTY_SUCCESS ||
-      ghostty_render_state_row_cells_new(NULL, &t->cells) != GHOSTTY_SUCCESS) {
+      ghostty_render_state_row_cells_new(NULL, &t->cells) != GHOSTTY_SUCCESS ||
+      ghostty_key_encoder_new(NULL, &t->keys) != GHOSTTY_SUCCESS ||
+      ghostty_key_event_new(NULL, &t->key) != GHOSTTY_SUCCESS) {
     inua_vt_free(t);
     return NULL;
   }
@@ -31,6 +35,8 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
 
 void inua_vt_free(inua_vt *t) {
   if (t == NULL) return;
+  ghostty_key_event_free(t->key);
+  ghostty_key_encoder_free(t->keys);
   ghostty_render_state_row_cells_free(t->cells);
   ghostty_render_state_row_iterator_free(t->rows);
   ghostty_render_state_free(t->render);
@@ -265,4 +271,41 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
   GhosttyRenderStateDirty none = GHOSTTY_RENDER_STATE_DIRTY_FALSE;
   ghostty_render_state_set(t->render, GHOSTTY_RENDER_STATE_OPTION_DIRTY, &none);
   return GHOSTTY_SUCCESS;
+}
+
+/* --- keys --- */
+
+static const struct {
+  uint32_t xkb;
+  GhosttyKey key;
+} keymap[] = {
+#include "inua_keymap.inc"
+};
+
+static GhosttyKey key_for_xkb(uint32_t xkb) {
+  for (size_t i = 0; i < sizeof(keymap) / sizeof(keymap[0]); i++)
+    if (keymap[i].xkb == xkb) return keymap[i].key;
+  return GHOSTTY_KEY_UNIDENTIFIED;
+}
+
+int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
+                const char *utf8, size_t utf8_len, uint32_t unshifted,
+                uint32_t consumed, uint8_t *out, size_t cap, size_t *len) {
+  *len = 0;
+  /* A release means something only to a program that asked for them. */
+  if (action == GHOSTTY_KEY_ACTION_RELEASE) {
+    uint8_t flags = 0;
+    ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_KITTY_KEYBOARD_FLAGS, &flags);
+    if ((flags & GHOSTTY_KITTY_KEY_REPORT_EVENTS) == 0) return GHOSTTY_SUCCESS;
+  }
+  ghostty_key_encoder_setopt_from_terminal(t->keys, t->term);
+  ghostty_key_event_set_action(t->key, (GhosttyKeyAction)action);
+  ghostty_key_event_set_key(t->key, key_for_xkb(xkb));
+  ghostty_key_event_set_mods(t->key, (GhosttyMods)mods);
+  ghostty_key_event_set_consumed_mods(t->key, (GhosttyMods)consumed);
+  ghostty_key_event_set_utf8(t->key, utf8_len ? utf8 : NULL, utf8_len);
+  ghostty_key_event_set_unshifted_codepoint(t->key, unshifted);
+  ghostty_key_event_set_composing(t->key, false);
+  *len = 0;
+  return ghostty_key_encoder_encode(t->keys, t->key, (char *)out, cap, len);
 }

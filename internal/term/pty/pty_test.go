@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
+	"sync"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -98,4 +101,30 @@ func TestForegroundAndEcho(t *testing.T) {
 	}
 	p.Write([]byte("secret\n"))
 	p.Wait()
+}
+
+// Ctrl+C stops the program even when this process started with SIGINT
+// ignored, as a background job of a non-interactive shell does.
+func TestInterruptWhenIgnored(t *testing.T) {
+	signal.Ignore(syscall.SIGINT)
+	defer signal.Reset(syscall.SIGINT)
+	defaultOnce = sync.Once{}
+	p, err := Start([]string{"sh", "-c", "echo ready; sleep 30; echo not interrupted"}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer p.Close()
+	buf := make([]byte, 64)
+	p.Read(buf)
+	p.Write([]byte{0x03}) // Ctrl+C
+	done := make(chan int)
+	go func() { code, _ := p.Wait(); done <- code }()
+	select {
+	case code := <-done:
+		if code == 0 {
+			t.Errorf("exit %d after Ctrl+C", code)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Ctrl+C did not stop the program")
+	}
 }

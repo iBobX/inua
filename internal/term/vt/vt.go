@@ -21,7 +21,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 2
+const abi = 3
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -41,6 +41,7 @@ var lib struct {
 	pwd       func(t uintptr, p **byte, n *uintptr) int32
 	cursor    func(t uintptr, x, y *uint16) int32
 	frame     func(t uintptr, all int32, buf *byte, cap uintptr, n *uintptr, info *frameInfo) int32
+	key       func(t uintptr, xkb, mods, action uint32, utf8 *byte, n uintptr, unshifted, consumed uint32, out *byte, cap uintptr, outN *uintptr) int32
 }
 
 // ErrMissing is returned when libinua-vt.so is not found.
@@ -95,6 +96,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.pwd, h, "inua_vt_pwd")
 		purego.RegisterLibFunc(&lib.cursor, h, "inua_vt_cursor")
 		purego.RegisterLibFunc(&lib.frame, h, "inua_vt_frame")
+		purego.RegisterLibFunc(&lib.key, h, "inua_vt_key")
 	})
 	return lib.err
 }
@@ -339,4 +341,56 @@ func decodeFrame(info *frameInfo, b []byte) (Frame, error) {
 		f.Lines = append(f.Lines, line)
 	}
 	return f, nil
+}
+
+// Modifiers of a key, as libghostty has them.
+const (
+	ModShift = 1 << iota
+	ModCtrl
+	ModAlt
+	ModSuper
+	ModCaps
+	ModNum
+)
+
+// KeyAction is what a key did.
+type KeyAction uint32
+
+const (
+	Release KeyAction = iota
+	Press
+	Repeat
+)
+
+// KeyEvent is a key as the window saw it: the XKB keycode GDK reports,
+// the modifiers held, the text it made, its character without modifiers
+// (0 for none) and the modifiers the layout used up making the text.
+type KeyEvent struct {
+	Keycode   uint32
+	Mods      uint32
+	Action    KeyAction
+	Text      string
+	Unshifted rune
+	Consumed  uint32
+}
+
+// Key is what to send the program for a key, in the modes it set (cursor
+// keys, keypad, the kitty keyboard protocol); nil for nothing.
+func (t *Terminal) Key(k KeyEvent) ([]byte, error) {
+	var out [128]byte
+	var n uintptr
+	var text *byte
+	if k.Text != "" {
+		b := []byte(k.Text)
+		text = &b[0]
+		defer runtime.KeepAlive(b)
+	}
+	r := lib.key(t.h, k.Keycode, k.Mods, uint32(k.Action), text, uintptr(len(k.Text)), uint32(k.Unshifted), k.Consumed, &out[0], uintptr(len(out)), &n)
+	if err := result("key", r); err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		return nil, nil
+	}
+	return append([]byte(nil), out[:n]...), nil
 }

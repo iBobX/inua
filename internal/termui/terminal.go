@@ -48,7 +48,15 @@ type termPane struct {
 	pending   []byte // read from the PTY, not yet fed to the engine
 	scheduled bool
 
-	onKey func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	im      *gtk.IMMulticontext
+	preedit string // what the input method is composing, drawn at the cursor
+
+	onKey      func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onKeyUp    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
+	onCommit   func(gtk.IMContext, string)
+	onPreedit  func(gtk.IMContext)
+	onFocusIn  func(gtk.EventControllerFocus)
+	onFocusOut func(gtk.EventControllerFocus)
 }
 
 func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPane, error) {
@@ -79,19 +87,99 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	p.widget.SetFocusable(true)
 	p.widget.SetHexpand(true)
 	p.widget.SetVexpand(true)
+	p.im = gtk.NewIMMulticontext()
+	p.im.SetClientWidget(p.widget)
 	keys := gtk.NewEventControllerKey()
-	p.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
-		if b := keyBytes(keyval, state); b != nil && !p.exited {
-			if err := p.be.Input(b); err != nil {
-				log.Printf("term: input: %v", err)
-			}
-			return true
-		}
-		return false
+	keys.SetImContext(&p.im.IMContext) // the input method sees keys first
+	p.onKey = func(c gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType) bool {
+		return p.key(&c, keyval, keycode, state, vt.Press)
+	}
+	p.onKeyUp = func(c gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType) {
+		p.key(&c, keyval, keycode, state, vt.Release)
 	}
 	keys.ConnectKeyPressed(&p.onKey)
+	keys.ConnectKeyReleased(&p.onKeyUp)
 	p.widget.AddController(&keys.EventController)
+	p.onCommit = func(_ gtk.IMContext, text string) {
+		p.preedit = ""
+		p.input([]byte(text))
+		p.widget.QueueDraw()
+	}
+	p.onPreedit = func(im gtk.IMContext) {
+		var text string
+		var cursor int32
+		im.GetPreeditString(&text, nil, &cursor)
+		p.preedit = text
+		p.widget.QueueDraw()
+	}
+	p.im.ConnectCommit(&p.onCommit)
+	p.im.ConnectPreeditChanged(&p.onPreedit)
+	focus := gtk.NewEventControllerFocus()
+	p.onFocusIn = func(gtk.EventControllerFocus) { p.im.FocusIn() }
+	p.onFocusOut = func(gtk.EventControllerFocus) { p.im.FocusOut() }
+	focus.ConnectEnter(&p.onFocusIn)
+	focus.ConnectLeave(&p.onFocusOut)
+	p.widget.AddController(&focus.EventController)
 	return p, nil
+}
+
+// key sends a key the input method left, encoded by the engine in the
+// modes the program set.
+func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType, action vt.KeyAction) bool {
+	if p.exited {
+		return false
+	}
+	k := vt.KeyEvent{Keycode: keycode, Mods: mods(state), Action: action}
+	if r := gdk.KeyvalToUnicode(keyval); r >= 0x20 && r != 0x7f {
+		k.Text = string(rune(r))
+	}
+	var layout uint32
+	if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
+		ke := gdk.KeyEventNewFromInternalPtr(ev)
+		k.Consumed = mods(ke.GetConsumedModifiers())
+		layout = ke.GetLayout()
+	}
+	// The key's character without modifiers, for the kitty protocol.
+	var base uint32
+	if p.widget.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
+		k.Unshifted = rune(gdk.KeyvalToUnicode(base))
+	}
+	b, err := p.term.Key(k)
+	if err != nil {
+		log.Printf("term: key: %v", err)
+		return false
+	}
+	if len(b) == 0 {
+		return false
+	}
+	p.input(b)
+	return true
+}
+
+func (p *termPane) input(b []byte) {
+	if p.exited || len(b) == 0 {
+		return
+	}
+	if err := p.be.Input(b); err != nil {
+		log.Printf("term: input: %v", err)
+	}
+}
+
+// mods is GDK's modifiers as the engine's.
+func mods(state gdk.ModifierType) uint32 {
+	var m uint32
+	for _, b := range []struct {
+		gdk gdk.ModifierType
+		vt  uint32
+	}{
+		{gdk.ShiftMaskValue, vt.ModShift}, {gdk.ControlMaskValue, vt.ModCtrl}, {gdk.AltMaskValue, vt.ModAlt},
+		{gdk.SuperMaskValue, vt.ModSuper}, {gdk.LockMaskValue, vt.ModCaps},
+	} {
+		if state&b.gdk != 0 {
+			m |= b.vt
+		}
+	}
+	return m
 }
 
 // feed takes the program's output on the client's goroutine and hands it
@@ -133,6 +221,10 @@ func (p *termPane) update(all bool) {
 		}
 	}
 	p.cur = f.Cursor
+	if p.cw > 0 {
+		// The input method's candidates open at the cursor.
+		p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + p.cur.X*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
+	}
 	p.widget.QueueDraw()
 }
 
@@ -209,7 +301,22 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 			l.Unref()
 		}
 	}
-	if !p.exited && p.cur.Visible {
+	if p.preedit != "" {
+		// What the input method is composing, over the cells at the cursor.
+		l := w.CreatePangoLayout(p.preedit)
+		l.SetFontDescription(p.font)
+		var lw, lh int32
+		l.GetPixelSize(&lw, &lh)
+		x, y := float32(p.cur.X)*cw, float32(p.cur.Y)*ch
+		s.AppendColor(&p.bg, rect(x, y, float32(lw), ch))
+		s.Save()
+		s.Translate(&graphene.Point{X: x, Y: y})
+		s.AppendLayout(l, &p.fg)
+		s.AppendColor(&p.cursor, rect(0, ch-2, float32(lw), 1))
+		s.Restore()
+		l.Unref()
+	}
+	if !p.exited && p.cur.Visible && p.preedit == "" {
 		c := p.cursor
 		x, y := float32(p.cur.X)*cw, float32(p.cur.Y)*ch
 		switch p.cur.Style {
@@ -234,59 +341,9 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 }
 
 func (p *termPane) close() {
+	p.im.SetClientWidget(nil)
 	p.term.Close()
 	forgetPaneWidget(p.widget)
-}
-
-// keyBytes is a key press as the bytes a program reads, for the spike:
-// text, Ctrl+letter, and the keys a shell needs. The real encoding is the
-// engine's key encoder (kitty keyboard protocol), next.
-func keyBytes(keyval uint32, state gdk.ModifierType) []byte {
-	switch int32(keyval) {
-	case gdk.KEY_Return, gdk.KEY_KP_Enter:
-		return []byte{'\r'}
-	case gdk.KEY_BackSpace:
-		return []byte{0x7f}
-	case gdk.KEY_Tab:
-		return []byte{'\t'}
-	case gdk.KEY_Escape:
-		return []byte{0x1b}
-	case gdk.KEY_Up:
-		return []byte("\x1b[A")
-	case gdk.KEY_Down:
-		return []byte("\x1b[B")
-	case gdk.KEY_Right:
-		return []byte("\x1b[C")
-	case gdk.KEY_Left:
-		return []byte("\x1b[D")
-	case gdk.KEY_Home:
-		return []byte("\x1b[H")
-	case gdk.KEY_End:
-		return []byte("\x1b[F")
-	case gdk.KEY_Delete:
-		return []byte("\x1b[3~")
-	case gdk.KEY_Page_Up:
-		return []byte("\x1b[5~")
-	case gdk.KEY_Page_Down:
-		return []byte("\x1b[6~")
-	}
-	r := rune(gdk.KeyvalToUnicode(keyval))
-	if r == 0 {
-		return nil
-	}
-	if state&gdk.ControlMaskValue != 0 && state&gdk.ShiftMaskValue == 0 {
-		switch {
-		case r >= 'a' && r <= 'z':
-			return []byte{byte(r - 'a' + 1)}
-		case r >= '@' && r <= '_':
-			return []byte{byte(r - '@')}
-		}
-	}
-	b := []byte(string(r))
-	if state&gdk.AltMaskValue != 0 {
-		b = append([]byte{0x1b}, b...)
-	}
-	return b
 }
 
 func itoa(n int) string {

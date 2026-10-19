@@ -172,3 +172,77 @@ func TestFramePassword(t *testing.T) {
 		t.Error("password input at start")
 	}
 }
+
+// XKB keycodes, as GDK reports them on a US keyboard.
+const (
+	xkbA     = 38
+	xkbC     = 54
+	xkbX     = 53
+	xkbEnter = 36
+	xkbUp    = 111
+)
+
+// press is k pressed.
+func press(k KeyEvent) KeyEvent {
+	k.Action = Press
+	return k
+}
+
+func key(t *testing.T, term *Terminal, k KeyEvent) string {
+	t.Helper()
+	b, err := term.Key(k)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(b)
+}
+
+func TestKeys(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	for _, tc := range []struct {
+		name string
+		k    KeyEvent
+		want string
+	}{
+		{"a", press(KeyEvent{Keycode: xkbA, Text: "a", Unshifted: 'a'}), "a"},
+		{"Ctrl+C", press(KeyEvent{Keycode: xkbC, Mods: ModCtrl, Text: "c", Unshifted: 'c'}), "\x03"},
+		{"Alt+x", press(KeyEvent{Keycode: xkbX, Mods: ModAlt, Text: "x", Unshifted: 'x'}), "\x1bx"},
+		{"Enter", press(KeyEvent{Keycode: xkbEnter}), "\r"},
+		{"Up", press(KeyEvent{Keycode: xkbUp}), "\x1b[A"},
+		{"a released", KeyEvent{Keycode: xkbA, Action: Release, Text: "a", Unshifted: 'a'}, ""},
+	} {
+		if got := key(t, term, tc.k); got != tc.want {
+			t.Errorf("%s: %q, want %q", tc.name, got, tc.want)
+		}
+	}
+}
+
+// The keys follow the modes the program sets.
+func TestKeyModes(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	term.Write([]byte("\x1b[?1h")) // application cursor keys (vim, less)
+	if got := key(t, term, press(KeyEvent{Keycode: xkbUp})); got != "\x1bOA" {
+		t.Errorf("Up in application mode: %q", got)
+	}
+	// Without the kitty protocol, Shift+Enter is xterm's sequence, as
+	// Ghostty sends it.
+	if got := key(t, term, press(KeyEvent{Keycode: xkbEnter, Mods: ModShift})); got != "\x1b[27;2;13~" {
+		t.Errorf("Shift+Enter, legacy: %q", got)
+	}
+	term.Write([]byte("\x1b[>1u")) // the kitty keyboard protocol, as agents ask
+	if got := key(t, term, press(KeyEvent{Keycode: xkbEnter, Mods: ModShift})); got != "\x1b[13;2u" {
+		t.Errorf("Shift+Enter, kitty: %q", got)
+	}
+	// Releases only for a program that asks for them.
+	if got := key(t, term, KeyEvent{Keycode: xkbA, Action: Release, Text: "a", Unshifted: 'a'}); got != "" {
+		t.Errorf("a released, without report events: %q", got)
+	}
+	term.Write([]byte("\x1b[>3u")) // disambiguate and report events
+	if got := key(t, term, KeyEvent{Keycode: xkbA, Action: Release, Text: "a", Unshifted: 'a'}); got != "\x1b[97;1:3u" {
+		t.Errorf("a released, with report events: %q", got)
+	}
+	term.Write([]byte("\x1b[<u\x1b[<u")) // and back, both pushes popped
+	if got := key(t, term, press(KeyEvent{Keycode: xkbEnter, Mods: ModShift})); got != "\x1b[27;2;13~" {
+		t.Errorf("Shift+Enter after the program left the protocol: %q", got)
+	}
+}
