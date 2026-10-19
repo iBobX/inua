@@ -247,7 +247,7 @@ func TestAnswers(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The answers come as input; od shows them as text.
-	script := `stty raw -echo; printf '\033[c'; head -c 9 | od -An -c; printf '\033]11;?\033\\'; head -c 24 | od -An -c; stty sane`
+	script := `stty raw -echo; printf '\033[c'; head -c 12 | od -An -c; printf '\033]11;?\033\\'; head -c 24 | od -An -c; stty sane`
 	id, err := c.Create([]string{"sh", "-c", script}, "", nil, 80, 24)
 	if err != nil {
 		t.Fatal(err)
@@ -255,7 +255,41 @@ func TestAnswers(t *testing.T) {
 	c.Attach(id)
 	clean := func() string { return strings.Join(strings.Fields(w.text(id)), "") }
 	w.waitFor(t, "the answers", func() bool { return strings.Contains(clean(), "rgb:0b0b/1010/1212") })
-	if got := clean(); !strings.Contains(got, `033[?62;22c`) {
+	if got := clean(); !strings.Contains(got, `033[?62;22;52c`) {
 		t.Errorf("device attributes not answered: %q", got)
+	}
+}
+
+// A program's clipboard write (OSC 52) reaches the attached clients.
+func TestClipboardEvent(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	_, path := startHost(t)
+	got := make(chan Message, 4)
+	c, err := Dial(path, func(int, []byte) {}, func(m Message) {
+		if m.Clipboard != nil {
+			got <- m
+		}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { c.Close() })
+	id, err := c.Create([]string{"sh", "-c", `read x; printf '\033]52;c;aGVsbG8=\a'; read y`}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Attach(id); err != nil {
+		t.Fatal(err)
+	}
+	c.Input(id, []byte("\n")) // attached: now the write
+	select {
+	case m := <-got:
+		if *m.Clipboard != "hello" || m.Primary || m.Pane != id {
+			t.Errorf("event %+v (%q)", m, *m.Clipboard)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("no clipboard event")
 	}
 }

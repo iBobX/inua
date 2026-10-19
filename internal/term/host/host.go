@@ -446,6 +446,9 @@ func (p *pane) output(b []byte, limit int) {
 			log.Printf("host: pane %d does not read its input: an answer dropped", p.id)
 		}
 	}
+	if text, primary, ok := p.term.Clipboard(); ok {
+		p.broadcast(Message{Type: MsgEvent, Pane: p.id, Clipboard: &text, Primary: primary})
+	}
 	if t := p.term.Title(); t != p.title {
 		p.title = t
 		p.broadcast(Message{Type: MsgEvent, Pane: p.id, Title: t})

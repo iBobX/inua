@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 7
+const abi = 8
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -50,6 +50,7 @@ var lib struct {
 	answers   func(t uintptr, p **byte, n *uintptr)
 	colors    func(t uintptr, fg, bg, cursor uint32)
 	cellSize  func(t uintptr, w, h uint32)
+	clipboard func(t uintptr, p **byte, n *uintptr) int32
 	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
@@ -114,6 +115,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.answers, h, "inua_vt_answers")
 		purego.RegisterLibFunc(&lib.colors, h, "inua_vt_colors")
 		purego.RegisterLibFunc(&lib.cellSize, h, "inua_vt_cell_size")
+		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
 	})
 	return lib.err
 }
@@ -171,6 +173,23 @@ func (t *Terminal) Answers() []byte {
 		return nil
 	}
 	return append([]byte(nil), unsafe.Slice(p, n)...)
+}
+
+// Clipboard is the text the program last put on a clipboard (OSC 52 and
+// the like) in what was written since the last call, for a terminal that
+// answers; ok is false for none, primary says it was the primary
+// selection.
+func (t *Terminal) Clipboard() (text string, primary, ok bool) {
+	var p *byte
+	var n uintptr
+	at := lib.clipboard(t.h, &p, &n)
+	if at == 0 {
+		return "", false, false
+	}
+	if p != nil && n > 0 {
+		text = string(unsafe.Slice(p, n))
+	}
+	return text, at == 2, true
 }
 
 // SetColors sets the default colours (0xRRGGBB) programs are told when

@@ -406,7 +406,7 @@ func TestAnswers(t *testing.T) {
 	}
 	term.Answer()
 	for _, c := range []struct{ q, want string }{
-		{"\x1b[c", "\x1b[?62;22c"},
+		{"\x1b[c", "\x1b[?62;22;52c"},
 		{"\x1b[>c", "\x1b[>1;10;0c"},
 		{"\x1b[5n", "\x1b[0n"},
 		{"ab\x1b[6n", "\x1b[1;3R"},
@@ -434,7 +434,7 @@ func TestAnswers(t *testing.T) {
 		t.Errorf("cell size: %q", got)
 	}
 	// Two queries in one write: both answers, in order.
-	if got := ask("\x1b[5n\x1b[c"); got != "\x1b[0n\x1b[?62;22c" {
+	if got := ask("\x1b[5n\x1b[c"); got != "\x1b[0n\x1b[?62;22;52c" {
 		t.Errorf("two: %q", got)
 	}
 	// A paste in between keeps the answers apart.
@@ -444,5 +444,30 @@ func TestAnswers(t *testing.T) {
 	}
 	if got := string(term.Answers()); got != "\x1b[0n" {
 		t.Errorf("answers after paste: %q", got)
+	}
+}
+
+func TestClipboardWrite(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	term.Answer()
+	if _, _, ok := term.Clipboard(); ok {
+		t.Fatal("a write before any")
+	}
+	// OSC 52: base64 of "copied from ssh".
+	term.Write([]byte("\x1b]52;c;Y29waWVkIGZyb20gc3No\x1b\\"))
+	if text, primary, ok := term.Clipboard(); !ok || primary || text != "copied from ssh" {
+		t.Errorf("clipboard: %q %v %v", text, primary, ok)
+	}
+	if _, _, ok := term.Clipboard(); ok {
+		t.Error("taken twice")
+	}
+	term.Write([]byte("\x1b]52;p;cHJpbWFyeQ==\x07"))
+	if text, primary, ok := term.Clipboard(); !ok || !primary || text != "primary" {
+		t.Errorf("primary: %q %v %v", text, primary, ok)
+	}
+	// Reading is not offered: no answer.
+	term.Write([]byte("\x1b]52;c;?\x1b\\"))
+	if a := term.Answers(); len(a) != 0 {
+		t.Errorf("a read answered: %q", a)
 	}
 }

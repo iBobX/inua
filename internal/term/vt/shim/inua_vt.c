@@ -5,6 +5,36 @@
 #include <stdbool.h>
 #include <string.h>
 
+/* A growing byte buffer, allocated through libghostty. */
+typedef struct {
+  uint8_t *p;
+  size_t len, cap;
+  bool failed;
+} buf;
+
+static void buf_put(buf *b, const uint8_t *data, size_t len) {
+  if (b->failed) return;
+  if (b->len + len > b->cap) {
+    size_t cap = b->cap ? b->cap * 2 : 256;
+    while (cap < b->len + len) cap *= 2;
+    uint8_t *p = ghostty_alloc(NULL, cap);
+    if (p == NULL) {
+      b->failed = true;
+      return;
+    }
+    if (b->len) memcpy(p, b->p, b->len);
+    if (b->p) ghostty_free(NULL, b->p, b->cap);
+    b->p = p;
+    b->cap = cap;
+  }
+  memcpy(b->p + b->len, data, len);
+  b->len += len;
+}
+
+static void buf_free(buf *b) {
+  if (b->p) ghostty_free(NULL, b->p, b->cap);
+}
+
 struct inua_vt {
   GhosttyTerminal term;
   GhosttyRenderState render;
@@ -16,11 +46,11 @@ struct inua_vt {
   GhosttySelectionGestureEvent press, release, drag;
   /* What the terminal writes back to the program: answers to its
    * queries, or a paste's encoding. */
-  struct {
-    uint8_t *p;
-    size_t len, cap;
-    bool failed;
-  } out;
+  buf out;
+  /* The text a program last put on a clipboard; clip_at 0 for none, 1 the
+   * clipboard, 2 the primary selection. */
+  buf clip;
+  int clip_at;
   bool answering;
   uint32_t cell_w, cell_h;
   bool dark; /* the background's scheme, once colours are set */
@@ -52,7 +82,8 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
 
 void inua_vt_free(inua_vt *t) {
   if (t == NULL) return;
-  if (t->out.p) ghostty_free(NULL, t->out.p, t->out.cap);
+  buf_free(&t->out);
+  buf_free(&t->clip);
   if (t->drag) ghostty_selection_gesture_event_free(t->drag);
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
@@ -74,32 +105,46 @@ void inua_vt_write(inua_vt *t, const uint8_t *data, size_t len) {
 
 static void out_write(GhosttyTerminal term, void *userdata, const uint8_t *data, size_t len) {
   (void)term;
-  inua_vt *t = userdata;
-  if (t->out.failed) return;
-  if (t->out.len + len > t->out.cap) {
-    size_t cap = t->out.cap ? t->out.cap * 2 : 256;
-    while (cap < t->out.len + len) cap *= 2;
-    uint8_t *p = ghostty_alloc(NULL, cap);
-    if (p == NULL) {
-      t->out.failed = true;
-      return;
-    }
-    if (t->out.len) memcpy(p, t->out.p, t->out.len);
-    if (t->out.p) ghostty_free(NULL, t->out.p, t->out.cap);
-    t->out.p = p;
-    t->out.cap = cap;
-  }
-  memcpy(t->out.p + t->out.len, data, len);
-  t->out.len += len;
+  buf_put(&((inua_vt *)userdata)->out, data, len);
 }
 
-/* As Ghostty answers: a VT220 with colour text. */
+/* Keeps the text of a program's clipboard write: its first text
+ * representation. Other kinds (images through OSC 5522) are refused. */
+static void clipboard_write(GhosttyTerminal term, void *userdata, const GhosttyClipboardWrite *w) {
+  (void)term;
+  inua_vt *t = userdata;
+  GhosttyClipboardWriteReply reply = {.size = sizeof(reply), .result = GHOSTTY_CLIPBOARD_WRITE_RESULT_UNSUPPORTED};
+  for (size_t i = 0; i < w->contents_len; i++) {
+    GhosttyString m = w->contents[i].mime;
+    if (m.len >= 5 && memcmp(m.ptr, "text/", 5) == 0) {
+      t->clip.len = 0;
+      t->clip.failed = false;
+      buf_put(&t->clip, w->contents[i].data.ptr, w->contents[i].data.len);
+      t->clip_at = w->location == GHOSTTY_CLIPBOARD_LOCATION_STANDARD ? 1 : 2;
+      reply.result = t->clip.failed ? GHOSTTY_CLIPBOARD_WRITE_RESULT_IO_ERROR : GHOSTTY_CLIPBOARD_WRITE_RESULT_SUCCESS;
+      if (t->clip.failed) t->clip_at = 0;
+      break;
+    }
+  }
+  w->reply(w, &reply);
+}
+
+int inua_vt_clipboard(inua_vt *t, const uint8_t **ptr, size_t *len) {
+  int at = t->clip_at;
+  *ptr = t->clip.p;
+  *len = at ? t->clip.len : 0;
+  t->clip_at = 0;
+  return at;
+}
+
+/* As Ghostty answers: a VT220 with colour text and clipboard writes. */
 static bool answer_attributes(GhosttyTerminal term, void *userdata, GhosttyDeviceAttributes *out) {
   (void)term;
   (void)userdata;
   out->primary.conformance_level = 62;
   out->primary.features[0] = 22;
-  out->primary.num_features = 1;
+  out->primary.features[1] = 52;
+  out->primary.num_features = 2;
   out->secondary.device_type = 1;
   out->secondary.firmware_version = 10;
   out->secondary.rom_cartridge = 0;
@@ -138,6 +183,7 @@ void inua_vt_answer(inua_vt *t) {
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_XTVERSION, (const void *)answer_version);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SIZE, (const void *)answer_size);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_SCHEME, (const void *)answer_scheme);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_CLIPBOARD_WRITE, (const void *)clipboard_write);
 }
 
 void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len) {

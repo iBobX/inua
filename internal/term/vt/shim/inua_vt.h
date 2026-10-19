@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 7
+#define INUA_VT_ABI 8
 
 typedef struct inua_vt inua_vt;
 
@@ -33,6 +33,13 @@ void inua_vt_answer(inua_vt *t);
 /* The answers gathered since the last call; borrowed until the next
  * inua_vt_write. */
 void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len);
+
+/* The text the program last put on a clipboard (OSC 52, OSC 1337, OSC
+ * 5522) since the last call, for a terminal that answers: returns 0 for
+ * none, 1 for the clipboard, 2 for the primary selection, with the text
+ * borrowed until the next inua_vt_write. Reading the clipboard is not
+ * offered to programs. */
+int inua_vt_clipboard(inua_vt *t, const uint8_t **ptr, size_t *len);
 
 /* The default colours, 0x00RRGGBB, reported to programs that ask (OSC
  * 10, 11, 12; the colour scheme from the background). */

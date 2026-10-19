@@ -34,6 +34,17 @@ func (p *termPane) clipboard(primary bool) *gdk.Clipboard {
 	return p.widget.GetClipboard()
 }
 
+// setClipboard puts on the clipboard (or the primary selection) what the
+// program asked to (OSC 52): agents copy that way, over SSH too.
+func (p *termPane) setClipboard(text string, primary bool) {
+	if p.closed {
+		return
+	}
+	clip := p.clipboard(primary)
+	clip.SetText(text)
+	clip.Unref()
+}
+
 // pasteFrom pastes what the clipboard (or the primary selection) holds:
 // files as their paths, an image alone as a file of its own, else text.
 func (p *termPane) pasteFrom(primary bool) {

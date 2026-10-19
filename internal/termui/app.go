@@ -151,11 +151,17 @@ func (a *App) output(id int, b []byte) {
 
 func (a *App) event(m host.Message) {
 	p := a.paneFor(m.Pane)
-	if p == nil || m.Code == nil {
+	if p == nil {
 		return
 	}
-	code := *m.Code
-	gtkx.Post(func() { p.exit(code) })
+	if m.Clipboard != nil {
+		text, primary := *m.Clipboard, m.Primary
+		gtkx.Post(func() { p.setClipboard(text, primary) })
+	}
+	if m.Code != nil {
+		code := *m.Code
+		gtkx.Post(func() { p.exit(code) })
+	}
 }
 
 func (a *App) fail(err error) {

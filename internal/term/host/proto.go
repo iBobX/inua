@@ -49,6 +49,10 @@ type Message struct {
 	CellH int      `json:"cell_h,omitempty"`
 	Title string   `json:"title,omitempty"`
 	Code  *int     `json:"code,omitempty"` // event "exit"
+	// Clipboard is text the program put on the clipboard (OSC 52), or on
+	// the primary selection when Primary; for the attached windows to set.
+	Clipboard *string `json:"clipboard,omitempty"`
+	Primary   bool    `json:"primary,omitempty"`
 
 	Panes  []PaneInfo `json:"panes,omitempty"`  // reply to list
 	Colors *Colors    `json:"colors,omitempty"` // colors
@@ -86,7 +90,7 @@ const (
 	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
 	MsgClose   = "close"   // client: end the pane's program and forget it
-	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane
+	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.
