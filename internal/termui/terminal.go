@@ -62,11 +62,12 @@ type termPane struct {
 	im      *gtk.IMMulticontext
 	preedit string // what the input method is composing, drawn at the cursor
 
-	sheet                     *gtk.Box // the paste sheet, while it asks
-	sheetCbs                  []*func(gtk.Button)
-	onSheetKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
-	onClipText, onPrimaryText gio.AsyncReadyCallback
-	onMiddle                  func(gtk.GestureClick, int32, float64, float64)
+	sheet           *gtk.Box // the paste sheet, while it asks
+	sheetCbs        []*func(gtk.Button)
+	onSheetKey      func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onText, onFiles [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
+	onMiddle        func(gtk.GestureClick, int32, float64, float64)
+	onDrop          func(gtk.DropTarget, uintptr, float64, float64) bool
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
@@ -107,8 +108,10 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	p.widget.SetVexpand(true)
 	p.root = gtk.NewOverlay()
 	p.root.SetChild(p.widget)
-	p.onClipText = func(_, result, _ uintptr) { p.clipRead(false, result) }
-	p.onPrimaryText = func(_, result, _ uintptr) { p.clipRead(true, result) }
+	for i, primary := range []bool{false, true} {
+		p.onText[i] = func(_, result, _ uintptr) { p.clipRead(primary, result) }
+		p.onFiles[i] = func(_, result, _ uintptr) { p.filesRead(primary, result) }
+	}
 	p.im = gtk.NewIMMulticontext()
 	p.im.SetClientWidget(p.widget)
 	keys := gtk.NewEventControllerKey()
@@ -183,6 +186,20 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	}
 	middle.ConnectPressed(&p.onMiddle)
 	p.widget.AddController(&middle.EventController)
+	// Files dropped on the pane are pasted as their paths.
+	drop := gtk.NewDropTarget(gdk.FileListGLibType(), gdk.ActionCopyValue|gdk.ActionMoveValue)
+	p.onDrop = func(dt gtk.DropTarget, _ uintptr, _, _ float64) bool {
+		if v := dt.GetValue(); v != nil && !p.exited {
+			if paths := filePaths(v); len(paths) > 0 {
+				p.widget.GrabFocus()
+				p.paste(quotePaths(paths), false, false)
+				return true
+			}
+		}
+		return false
+	}
+	drop.ConnectDrop(&p.onDrop)
+	p.widget.AddController(&drop.EventController)
 	return p, nil
 }
 

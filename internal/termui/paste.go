@@ -2,14 +2,22 @@ package termui
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
+	"time"
+	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
+	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
+	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/vt"
 )
@@ -26,19 +34,140 @@ func (p *termPane) clipboard(primary bool) *gdk.Clipboard {
 	return p.widget.GetClipboard()
 }
 
-// pasteFrom reads the clipboard (or the primary selection) and pastes
-// what text it holds.
+// pasteFrom pastes what the clipboard (or the primary selection) holds:
+// files as their paths, an image alone as a file of its own, else text.
 func (p *termPane) pasteFrom(primary bool) {
 	if p.exited {
 		return
 	}
-	cb := &p.onClipText
+	which := 0
 	if primary {
-		cb = &p.onPrimaryText
+		which = 1
 	}
 	clip := p.clipboard(primary)
-	clip.ReadTextAsync(nil, cb, 0)
+	defer clip.Unref()
+	formats := clip.GetFormats()
+	switch {
+	case formats.ContainMimeType("text/uri-list") || formats.ContainGtype(gdk.FileListGLibType()):
+		clip.ReadValueAsync(gdk.FileListGLibType(), 0, nil, &p.onFiles[which], 0)
+	case imageMime(formats) != "" && !primary:
+		p.pasteImage(imageMime(formats))
+	default:
+		clip.ReadTextAsync(nil, &p.onText[which], 0)
+	}
+}
+
+// imageMime is the image type the clipboard offers, PNG first, when it
+// offers no text (a browser's image comes with its HTML, which is not
+// what a terminal wants either); "" for none.
+func imageMime(f *gdk.ContentFormats) string {
+	var n uint
+	mimes := f.GetMimeTypes(&n)
+	image := ""
+	for _, m := range mimes {
+		switch {
+		case strings.HasPrefix(m, "text/plain"):
+			return ""
+		case m == "image/png":
+			image = m
+		case strings.HasPrefix(m, "image/") && image == "":
+			image = m
+		}
+	}
+	return image
+}
+
+// pasteImage saves the clipboard's image to a file and pastes its path:
+// for programs that take images as files. (An agent that reads the
+// clipboard itself, as Claude Code on Ctrl+V, gets that key as typed.)
+// The bytes are wl-paste's, as the Files app reads the clipboard, off
+// the main thread.
+func (p *termPane) pasteImage(mime string) {
+	go func() {
+		path, err := saveImage(mime)
+		gtkx.Post(func() {
+			if err != nil {
+				log.Printf("term: paste image: %v", err)
+				return
+			}
+			if !p.closed && !p.exited {
+				p.paste(quotePaths([]string{path}), false, false)
+			}
+		})
+	}()
+}
+
+// saveImage writes the clipboard's image of type mime to
+// $XDG_RUNTIME_DIR/inua/term-paste/, which goes with the session.
+func saveImage(mime string) (string, error) {
+	out, err := exec.Command("wl-paste", "--no-newline", "--type", mime).Output()
+	if err != nil {
+		return "", fmt.Errorf("wl-paste: %w", err)
+	}
+	dir := filepath.Join(os.Getenv("XDG_RUNTIME_DIR"), "inua", "term-paste")
+	if os.Getenv("XDG_RUNTIME_DIR") == "" {
+		dir = filepath.Join(os.TempDir(), "inua-term-paste")
+	}
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return "", err
+	}
+	ext := strings.TrimPrefix(mime, "image/")
+	if ext == "jpeg" {
+		ext = "jpg"
+	}
+	path := filepath.Join(dir, time.Now().Format("2006-01-02-150405.000")+"."+ext)
+	return path, os.WriteFile(path, out, 0o600)
+}
+
+// filesRead is a file list's read end: the paths, quoted for the shell.
+func (p *termPane) filesRead(primary bool, result uintptr) {
+	clip := p.clipboard(primary)
+	v, err := clip.ReadValueFinish(&gio.AsyncResultBase{Ptr: result})
 	clip.Unref()
+	if p.closed || p.exited || err != nil || v == nil {
+		return
+	}
+	if paths := filePaths(v); len(paths) > 0 {
+		p.paste(quotePaths(paths), primary, false)
+	}
+}
+
+// filePaths are the local files in a GdkFileList value. (The GSList of
+// its files is ours, a few bytes not freed, as tailscale.go has it.)
+func filePaths(v *gobject.Value) []string {
+	boxed := v.GetBoxed()
+	if boxed == 0 {
+		return nil
+	}
+	var paths []string
+	files := (*gdk.FileList)(unsafe.Add(unsafe.Pointer(nil), boxed))
+	for l := files.GetFiles(); l != nil; l = l.Next {
+		if path := (&gio.FileBase{Ptr: l.Data}).GetPath(); path != "" {
+			paths = append(paths, path)
+		}
+	}
+	return paths
+}
+
+// quotePaths is paths for a shell's command line: space-separated, each
+// in single quotes when it has more than letters, digits and ./_-+:@%,=.
+func quotePaths(paths []string) string {
+	quoted := make([]string, len(paths))
+	for i, path := range paths {
+		plain := path != ""
+		for _, r := range path {
+			if !(r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || strings.ContainsRune("./_-+:@%,=", r)) {
+				plain = false
+				break
+			}
+		}
+		if plain {
+			quoted[i] = path
+		} else {
+			quoted[i] = "'" + strings.ReplaceAll(path, "'", `'\''`) + "'"
+		}
+	}
+	return strings.Join(quoted, " ")
 }
 
 // clipRead is a clipboard read's end.

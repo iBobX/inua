@@ -24,3 +24,20 @@ func TestLines(t *testing.T) {
 		}
 	}
 }
+
+func TestQuotePaths(t *testing.T) {
+	for _, c := range []struct {
+		in   []string
+		want string
+	}{
+		{[]string{"/home/me/notes.txt"}, "/home/me/notes.txt"},
+		{[]string{"/a b/c.png", "/x"}, "'/a b/c.png' /x"},
+		{[]string{"/it's"}, `'/it'\''s'`},
+		{[]string{"/$HOME;rm"}, "'/$HOME;rm'"},
+		{[]string{"/写真/猫.jpg"}, "'/写真/猫.jpg'"},
+	} {
+		if got := quotePaths(c.in); got != c.want {
+			t.Errorf("quotePaths(%q) = %s, want %s", c.in, got, c.want)
+		}
+	}
+}
