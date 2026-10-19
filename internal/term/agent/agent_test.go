@@ -59,6 +59,11 @@ func TestScreenState(t *testing.T) {
 	if st, _ := m.State([]string{"> ", ""}); st != "" {
 		t.Errorf("prompt: %q", st)
 	}
+	// A question of AskUserQuestion's: the question shows, not the keys.
+	picker := []string{"☐ Layout  ☐ Keys  ✔ Submit", "", "Which layout should the guide use?", "", "› 1. Steps", "     One step at a time", "  2. One page", "  3. Type something.", "", "Enter to select · ↑/↓ to navigate · Esc to cancel", "", "  ? for shortcuts"}
+	if st, ask := m.State(picker); st != Blocked || ask != "Which layout should the guide use?" {
+		t.Errorf("question: %q %q", st, ask)
+	}
 }
 
 // The screens below are as opencode, pi and Mister Morph draw them.
@@ -76,7 +81,7 @@ func TestScreenStateOthers(t *testing.T) {
 		{"opencode", []string{"┃ ", "", " Build  claude-sonnet   ~/src/app"}, "", ""},
 		{"pi", []string{"Reading main.go", "", "⠼ Working", "", "─────────", "> ", "─────────", "~/src/app", "↑12k ↓3k $0.04"}, Working, ""},
 		{"pi", []string{"──── ⠋ Working ────", "> ", "─────────", "~/src/app"}, Working, ""},
-		{"pi", []string{"─────────", "", " Trust this folder?", "", "→ Yes", "  No", "", " ↑↓ navigate  enter select  esc cancel", "", "─────────"}, Blocked, "↑↓ navigate  enter select  esc cancel"},
+		{"pi", []string{"─────────", "", " Trust this folder?", "", "→ Yes", "  No", "", " ↑↓ navigate  enter select  esc cancel", "", "─────────"}, Blocked, "Trust this folder?"},
 		{"pi", []string{"Working tree clean.", "─────────", "> ", "─────────", "~/src/app"}, "", ""},
 		{"mistermorph", []string{"", "⠙ Running · waiting for model · 4s", "", "> ", "", "  Enter steer · Ctrl+J newline · Esc/Ctrl+C stop"}, Working, ""},
 		{"mistermorph", []string{"", "! Approval · bash", "  $ rm -rf build", "", "  y approve · n deny · Esc stop"}, Blocked, "! Approval · bash"},

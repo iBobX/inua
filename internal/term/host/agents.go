@@ -121,7 +121,7 @@ func (h *Host) checkProcess(p *pane) bool {
 // from now, once for any output until then. p.mu is held.
 func (h *Host) readScreenLater(p *pane) {
 	a := &p.agent
-	if a.m == nil || a.timer != nil || a.t.Reported {
+	if a.m == nil || a.timer != nil || (a.t.Reported && len(a.m.States) == 0) {
 		return
 	}
 	a.timer = time.AfterFunc(screenDelay, func() {
@@ -146,6 +146,15 @@ func (h *Host) readScreen(p *pane) (bool, *note) {
 		return false, nil
 	}
 	state, ask := a.m.State(p.term.Tail(p.rows))
+	if a.t.Reported && state == "" {
+		// An agent that reports says what it does; its screen adds what
+		// its reports leave out (Claude Code's hooks say nothing of a
+		// question it asks), and a question gone was answered.
+		if a.t.State != agent.Blocked {
+			return false, nil
+		}
+		state = agent.Working
+	}
 	if state == "" {
 		state = agent.Idle
 		if _, spinning := agent.Title(p.title); spinning && strings.ContainsFunc(p.title, func(r rune) bool { return r >= 0x2800 && r <= 0x28ff }) {

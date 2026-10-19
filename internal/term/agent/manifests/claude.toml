@@ -5,11 +5,12 @@ color = "#d97757"
 process = ["claude"]
 resume = "claude --continue"
 
-# Asking: a permission, a question, a choice.
+# Asking: a permission, a question, a choice (its picker: "Enter to
+# select · ↑/↓ to navigate", then "Review your answers" for several).
 [[state]]
 state = "blocked"
 lines = 12
-any = ["Do you want to proceed?", "Do you want to make this edit", "Do you want to create", "❯ 1. Yes", "Would you like to proceed?"]
+any = ["Do you want to proceed?", "Do you want to make this edit", "Do you want to create", "❯ 1. Yes", "Would you like to proceed?", "Enter to select", "Review your answers"]
 
 [[state]]
 state = "working"
