@@ -5,11 +5,13 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/lyricat/inua/internal/term/layout"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -291,5 +293,94 @@ func TestClipboardEvent(t *testing.T) {
 		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("no clipboard event")
+	}
+}
+
+// Workspaces and sessions: opening a folder makes one with a shell,
+// splits start beside the focused pane, every client hears of changes,
+// and closing the panes takes them away.
+func TestSessions(t *testing.T) {
+	h, path := startHost(t)
+	h.ExitWhenEmpty = false
+	states := make(chan *State, 32)
+	c, err := Dial(path, nil, func(m Message) {
+		if m.Type == MsgState {
+			states <- m.State
+		}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { c.Close() })
+	t.Setenv("SHELL", "/bin/sh")
+	dir := t.TempDir()
+	ws, err := c.Open(dir, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	st, err := c.State()
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := st.Model
+	if len(m.Workspaces) != 1 || m.Workspaces[0].ID != ws || len(m.Workspaces[0].Sessions) != 1 || m.Shown.Workspace != ws {
+		t.Fatalf("after open: %+v", m)
+	}
+	sess := m.Workspaces[0].Sessions[0]
+	first := sess.Focus
+	if again, _ := c.Open(dir, ""); again != ws {
+		t.Errorf("opening the folder again: %d, want %d", again, ws)
+	}
+	second, err := c.Split(sess.ID, "right")
+	if err != nil {
+		t.Fatal(err)
+	}
+	third, err := c.Split(sess.ID, "down")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Layout(sess.ID, OpFocus, Message{Direction: int(layout.Left)}); err != nil {
+		t.Fatal(err)
+	}
+	st, _ = c.State()
+	s := st.Model.Workspaces[0].Sessions[0]
+	if got := s.Tree.Panes(); !slices.Equal(got, []int{first, second, third}) || s.Focus != first {
+		t.Errorf("panes %v, focus %d", got, s.Focus)
+	}
+	if len(st.Panes) != 3 {
+		t.Errorf("%d panes listed", len(st.Panes))
+	}
+	if err := c.Layout(sess.ID, OpPreset, Message{Name: "rows"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Layout(sess.ID, OpZoom, Message{}); err != nil {
+		t.Fatal(err)
+	}
+	c.Rename(0, sess.ID, "review")
+	select {
+	case <-states:
+	case <-time.After(5 * time.Second):
+		t.Fatal("no state event")
+	}
+	st, _ = c.State()
+	s = st.Model.Workspaces[0].Sessions[0]
+	if s.Zoom != first || s.Name != "review" || s.Tree.Split != layout.Down {
+		t.Errorf("zoom %d, name %q, split %q", s.Zoom, s.Name, s.Tree.Split)
+	}
+	// Typing marks the session used.
+	c.Input(second, []byte("\n"))
+	deadline := time.Now().Add(5 * time.Second)
+	for st, _ = c.State(); !st.Model.Workspaces[0].Sessions[0].Used; st, _ = c.State() {
+		if time.Now().After(deadline) {
+			t.Fatal("not marked used")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if err := c.CloseSession(sess.ID); err != nil {
+		t.Fatal(err)
+	}
+	st, _ = c.State()
+	if w := st.Model.Workspaces; len(w) != 1 || len(w[0].Sessions) != 0 || len(st.Panes) != 0 {
+		t.Errorf("after closing: %+v, %d panes", w, len(st.Panes))
 	}
 }

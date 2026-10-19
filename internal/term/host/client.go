@@ -189,3 +189,69 @@ func (c *Client) Input(pane int, b []byte) error {
 	defer c.wmu.Unlock()
 	return writeFrame(c.conn, frameInput, paneBytes(pane, b)...)
 }
+
+// State is the workspaces, sessions and panes now; afterwards each
+// change comes as an event of type MsgState.
+func (c *Client) State() (*State, error) {
+	r, err := c.call(Message{Type: MsgState})
+	if err == nil && r.State == nil {
+		err = errors.New("host: no state")
+	}
+	return r.State, err
+}
+
+// Open shows the workspace for dir, made with a session if new.
+func (c *Client) Open(dir, name string) (int, error) {
+	r, err := c.call(Message{Type: MsgOpen, Dir: dir, Name: name})
+	return r.Workspace, err
+}
+
+// NewSession adds a session to a workspace and shows it.
+func (c *Client) NewSession(workspace int, name string) (int, error) {
+	r, err := c.call(Message{Type: MsgNewSession, Workspace: workspace, Name: name})
+	return r.Session, err
+}
+
+// Split starts a shell beside the session's focused pane: split is
+// "right" or "down".
+func (c *Client) Split(session int, split string) (int, error) {
+	r, err := c.call(Message{Type: MsgSplit, Session: session, Split: split})
+	return r.Pane, err
+}
+
+// Layout does op (OpFocus…) on a session; m carries what the op needs.
+func (c *Client) Layout(session int, op string, m Message) error {
+	m.Type, m.Session, m.Op = MsgLayout, session, op
+	_, err := c.call(m)
+	return err
+}
+
+// Show shows a workspace's session (0: the last it showed).
+func (c *Client) Show(workspace, session int) error {
+	_, err := c.call(Message{Type: MsgShow, Workspace: workspace, Session: session})
+	return err
+}
+
+// Rename names a session, or a workspace when session is 0.
+func (c *Client) Rename(workspace, session int, name string) error {
+	_, err := c.call(Message{Type: MsgRename, Workspace: workspace, Session: session, Name: name})
+	return err
+}
+
+// CloseSession ends a session's panes and forgets it.
+func (c *Client) CloseSession(session int) error {
+	_, err := c.call(Message{Type: MsgCloseSession, Session: session})
+	return err
+}
+
+// RemoveWorkspace forgets a workspace, ending its panes.
+func (c *Client) RemoveWorkspace(workspace int) error {
+	_, err := c.call(Message{Type: MsgRemove, Workspace: workspace})
+	return err
+}
+
+// MoveWorkspace puts a workspace at place to in the list.
+func (c *Client) MoveWorkspace(workspace, to int) error {
+	_, err := c.call(Message{Type: MsgMove, Workspace: workspace, To: to})
+	return err
+}

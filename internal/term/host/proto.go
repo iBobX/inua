@@ -13,6 +13,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/lyricat/inua/internal/term/model"
 )
 
 // Version is the protocol's; a client speaking another is turned away.
@@ -54,6 +56,19 @@ type Message struct {
 	Clipboard *string `json:"clipboard,omitempty"`
 	Primary   bool    `json:"primary,omitempty"`
 
+	// Workspaces and sessions: what a request is about, and their names.
+	Workspace int     `json:"workspace,omitempty"`
+	Session   int     `json:"session,omitempty"`
+	Name      string  `json:"name,omitempty"`
+	Split     string  `json:"split,omitempty"`     // split: "right" or "down"
+	Op        string  `json:"op,omitempty"`        // layout: what to do
+	Direction int     `json:"direction,omitempty"` // layout: a layout.Dir
+	Step      float64 `json:"step,omitempty"`      // layout "resize"
+	Path      string  `json:"path,omitempty"`      // layout "ratio": the split
+	Ratio     float64 `json:"ratio,omitempty"`     // layout "ratio"
+	To        int     `json:"to,omitempty"`        // move: the new place
+	State     *State  `json:"state,omitempty"`     // reply to state; event "state"
+
 	Panes  []PaneInfo `json:"panes,omitempty"`  // reply to list
 	Colors *Colors    `json:"colors,omitempty"` // colors
 }
@@ -65,6 +80,24 @@ type Colors struct {
 	BG     uint32 `json:"bg"`
 	Cursor uint32 `json:"cursor"`
 }
+
+// State is everything the columns show: the workspaces, their sessions
+// and layouts, and every pane.
+type State struct {
+	Model model.Model `json:"model"`
+	Panes []PaneInfo  `json:"panes"`
+}
+
+// Layout ops (Message.Op of a "layout").
+const (
+	OpFocus    = "focus"    // Pane, or the neighbour in Direction
+	OpSwap     = "swap"     // with the neighbour in Direction
+	OpResize   = "resize"   // the focused pane's edge in Direction, by Step
+	OpEqualize = "equalize" //
+	OpZoom     = "zoom"     // the focused pane to the whole session, and back
+	OpPreset   = "preset"   // the next preset, or Name's
+	OpRatio    = "ratio"    // the split at Path to Ratio
+)
 
 // PaneInfo is what the host knows of a pane.
 type PaneInfo struct {
@@ -91,6 +124,18 @@ const (
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
 	MsgClose   = "close"   // client: end the pane's program and forget it
 	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
+	// The workspaces and sessions; each change sends every client a
+	// "state" event.
+	MsgState        = "state"         // client: the State; host: the State changed
+	MsgOpen         = "open"          // client: the workspace for Dir, made (with a session) if new, shown; reply Workspace
+	MsgNewSession   = "new_session"   // client: a session in Workspace, shown; reply Session
+	MsgSplit        = "split"         // client: a pane beside Session's focused one; reply Pane
+	MsgLayout       = "layout"        // client: Op on Session
+	MsgShow         = "show"          // client: show Workspace, and Session (0: its last)
+	MsgRename       = "rename"        // client: Name for Session, else Workspace
+	MsgCloseSession = "close_session" // client: end Session's panes and forget it
+	MsgRemove       = "remove"        // client: forget Workspace, ending its panes
+	MsgMove         = "move"          // client: Workspace to place To
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.

@@ -10,8 +10,11 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
+	"strconv"
 	"sync"
 
+	"github.com/lyricat/inua/internal/term/model"
 	"github.com/lyricat/inua/internal/term/pty"
 	"github.com/lyricat/inua/internal/term/vt"
 )
@@ -32,6 +35,7 @@ const queueLen = 1024
 // Host owns the panes and serves clients on a socket.
 type Host struct {
 	ln          net.Listener
+	path        string // the socket's
 	replayLimit int
 	// ExitWhenEmpty ends Serve once the last pane has been closed.
 	ExitWhenEmpty bool
@@ -39,6 +43,7 @@ type Host struct {
 	mu      sync.Mutex
 	panes   map[int]*pane
 	colors  *Colors // the window's, for new panes
+	m       model.Model
 	next    int
 	clients map[*client]bool
 	closed  bool
@@ -48,6 +53,7 @@ type Host struct {
 // pane is a program on a PTY, with the host's own engine for its state.
 type pane struct {
 	id   int
+	host *Host
 	argv []string
 	dir  string
 
@@ -94,7 +100,7 @@ func Listen(path string) (*Host, error) {
 		return nil, err
 	}
 	return &Host{
-		ln: ln, replayLimit: ReplayLimit,
+		ln: ln, path: path, replayLimit: ReplayLimit,
 		panes: map[int]*pane{}, clients: map[*client]bool{}, done: make(chan struct{}),
 	}, nil
 }
@@ -187,6 +193,7 @@ func (h *Host) serveConn(conn net.Conn) {
 			}
 			if p := h.pane(id); p != nil {
 				p.pty.Write(b)
+				h.used(id)
 			}
 		default:
 			return
@@ -261,6 +268,9 @@ func (h *Host) pane(id int) *pane {
 }
 
 func (h *Host) handle(c *client, m Message) {
+	if h.handleSessions(c, m) {
+		return
+	}
 	reply := Message{Type: MsgReply, ID: m.ID}
 	fail := func(err error) {
 		reply.Error = err.Error()
@@ -301,13 +311,16 @@ func (h *Host) handle(c *client, m Message) {
 				return
 			}
 		case MsgClose:
-			if h.closePane(p) && h.ExitWhenEmpty {
+			last := h.closePane(p)
+			h.forgetPane(p.id)
+			if last && h.ExitWhenEmpty {
 				// The last pane: the reply goes out, then the host ends.
 				reply.Pane = m.Pane
 				c.message(reply)
 				go h.Close()
 				return
 			}
+			defer h.publish()
 		}
 		reply.Pane = m.Pane
 	default:
@@ -337,36 +350,53 @@ func (h *Host) list() []PaneInfo {
 }
 
 func (h *Host) create(m Message) (int, error) {
-	if len(m.Argv) == 0 {
+	return h.start(m.Argv, m.Dir, m.Env, m.Cols, m.Rows, m.CellW, m.CellH)
+}
+
+// start runs argv in dir on a new pane of cols × rows. Its environment
+// is env (nil: the host's) with INUA_TERM_PANE and INUA_TERM_SOCK, which
+// `inua-term report` uses.
+func (h *Host) start(argv []string, dir string, env []string, cols, rows, cellW, cellH int) (int, error) {
+	if len(argv) == 0 {
 		return 0, errors.New("no command")
 	}
-	cols, rows := m.Cols, m.Rows
 	if cols <= 0 || rows <= 0 {
 		cols, rows = 80, 24
 	}
-	pt, err := pty.Start(m.Argv, m.Dir, m.Env, cols, rows)
+	h.mu.Lock()
+	if h.closed {
+		h.mu.Unlock()
+		return 0, errors.New("the host is closing")
+	}
+	h.next++
+	id := h.next
+	colors := h.colors
+	h.mu.Unlock()
+	if env == nil {
+		env = os.Environ()
+	}
+	env = append(slices.Clip(env), "INUA_TERM_PANE="+strconv.Itoa(id), "INUA_TERM_SOCK="+h.path)
+	pt, err := pty.Start(argv, dir, env, cols, rows)
 	if err != nil {
 		return 0, err
 	}
-	p := &pane{argv: m.Argv, dir: m.Dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
+	p := &pane{id: id, host: h, argv: argv, dir: dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
 	if t, err := vt.New(cols, rows); err == nil {
 		p.term = t
 		t.Answer()
-		t.SetCellSize(m.CellW, m.CellH)
+		t.SetCellSize(cellW, cellH)
+		if colors != nil {
+			t.SetColors(colors.FG, colors.BG, colors.Cursor)
+		}
 	} else {
 		log.Printf("host: pane state off: %v", err)
 	}
 	h.mu.Lock()
-	if h.colors != nil && p.term != nil {
-		p.term.SetColors(h.colors.FG, h.colors.BG, h.colors.Cursor)
-	}
 	if h.closed {
 		h.mu.Unlock()
 		pt.Close()
 		return 0, errors.New("the host is closing")
 	}
-	h.next++
-	p.id = h.next
 	h.panes[p.id] = p
 	h.mu.Unlock()
 	go h.read(p)
@@ -419,8 +449,8 @@ func (h *Host) read(p *pane) {
 	code, _ := p.pty.Wait()
 	p.mu.Lock()
 	p.exited, p.code = true, code
-	p.broadcast(Message{Type: MsgEvent, Pane: p.id, Code: &code})
 	p.mu.Unlock()
+	h.tell(Message{Type: MsgEvent, Pane: p.id, Code: &code})
 }
 
 // output keeps, feeds and sends what the program wrote, and tells the
@@ -451,11 +481,11 @@ func (p *pane) output(b []byte, limit int) {
 	}
 	if t := p.term.Title(); t != p.title {
 		p.title = t
-		p.broadcast(Message{Type: MsgEvent, Pane: p.id, Title: t})
+		p.host.tell(Message{Type: MsgEvent, Pane: p.id, Title: t})
 	}
 	if d := p.term.Pwd(); d != p.pwd {
 		p.pwd = d
-		p.broadcast(Message{Type: MsgEvent, Pane: p.id, Dir: p.folder()})
+		p.host.tell(Message{Type: MsgEvent, Pane: p.id, Dir: p.folder()})
 	}
 }
 
