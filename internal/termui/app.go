@@ -39,9 +39,10 @@ type App struct {
 
 	cols   columns
 	stage  *gtk.Overlay
+	sheets *gtk.Overlay // the whole window, for the sheets
 	tilesW *gtk.Box
 	tiling tiling
-	sheet  *gtk.Box // the rename sheet, while it asks
+	sheet  *gtk.Box // the sheet up, while it asks
 	// swapping is set after Ctrl+Shift+X, until the arrow.
 	swapping bool
 	// fold is the columns the user folded; peek those shown anyway while
@@ -92,6 +93,7 @@ type App struct {
 	onOverviewRow              func(gtk.ListBox, uintptr)
 	onOverviewKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onActive                   func(uintptr, uintptr, uintptr)
+	onWindowKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 }
 
 // Register makes inua-term an appui app, "term".
@@ -124,8 +126,9 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui := c.Load("term.ui")
 	ui.Get("term", a.win)
 	a.buildColumns(ui)
-	a.stage, a.tilesW = &gtk.Overlay{}, &gtk.Box{}
+	a.stage, a.sheets, a.tilesW = &gtk.Overlay{}, &gtk.Overlay{}, &gtk.Box{}
 	ui.Get("stage", a.stage)
+	ui.Get("sheets", a.sheets)
 	ui.Get("tiles", a.tilesW)
 	ui.Close()
 	a.win.SetTitle(i18n.T("Terminal"))
@@ -135,6 +138,7 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		return false
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
+	a.windowKeys()
 	a.startTicks()
 	a.startBlink()
 	// An agent in the pane shown is looked at while the window is active.

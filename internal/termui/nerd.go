@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -16,15 +15,16 @@ import (
 )
 
 // The top of column 1 says where this is, as a prompt would: user@host,
-// then the shell new panes start, how busy the CPU is, the memory in use
-// and the uptime.
+// then the shell new panes start, and beside small marks how busy the
+// CPU is, the memory in use and the uptime.
 
 type nerdInfo struct {
-	who, sys *gtk.Label
-	// boot is when the machine started; cpu and mem are the shares busy
-	// and in use, below 0 until read.
-	boot     time.Time
-	cpu, mem float64
+	who, shell, cpu, mem, up *gtk.Label
+	cpuBox, memBox, upBox    *gtk.Box
+	// boot is when the machine started; cpuRead and memRead are the
+	// shares busy and in use, below 0 until read.
+	boot             time.Time
+	cpuRead, memRead float64
 }
 
 // nerdEvery is how often the CPU and the memory are read again.
@@ -33,7 +33,7 @@ const nerdEvery = 2 * time.Second
 // startNerd reads who and where, then the CPU and the memory every
 // nerdEvery, off the main thread, and shows them.
 func (a *App) startNerd() {
-	a.nerd.cpu, a.nerd.mem = -1, -1
+	a.nerd.cpuRead, a.nerd.memRead = -1, -1
 	go func() {
 		name := os.Getenv("USER")
 		if u, err := user.Current(); name == "" && err == nil {
@@ -48,7 +48,7 @@ func (a *App) startNerd() {
 		gtkx.Post(func() {
 			n := &a.nerd
 			n.who.SetText(cmp.Or(name, "?") + "@" + cmp.Or(host, "localhost"))
-			n.boot, n.mem = boot, mem
+			n.boot, n.memRead = boot, mem
 			a.updateNerd()
 		})
 		// The CPU's share busy is between two readings: none shows
@@ -63,7 +63,7 @@ func (a *App) startNerd() {
 			prev = cur
 			mem := memUsed()
 			gtkx.Post(func() {
-				a.nerd.cpu, a.nerd.mem = cpu, mem
+				a.nerd.cpuRead, a.nerd.memRead = cpu, mem
 				a.updateNerd()
 			})
 		}
@@ -80,25 +80,24 @@ func memUsed() float64 {
 }
 
 // updateNerd writes the system line again: the shell may have changed,
-// the readings and the uptime have.
+// the readings and the uptime have. A reading shows once it is read.
 func (a *App) updateNerd() {
 	n := &a.nerd
 	if n.who.GetText() == "" {
 		return
 	}
-	parts := []string{filepath.Base(cmp.Or(a.set.Shell.Program, os.Getenv("SHELL"), "sh"))}
-	if n.cpu >= 0 {
-		parts = append(parts, fmt.Sprintf("cpu %.0f%%", n.cpu))
+	set := func(l *gtk.Label, s string) {
+		if l.GetText() != s {
+			l.SetText(s)
+		}
 	}
-	if n.mem >= 0 {
-		parts = append(parts, fmt.Sprintf("mem %.0f%%", n.mem))
-	}
-	if !n.boot.IsZero() {
-		parts = append(parts, "up "+uptime(time.Since(n.boot)))
-	}
-	if s := strings.Join(parts, " · "); n.sys.GetText() != s {
-		n.sys.SetText(s)
-	}
+	set(n.shell, filepath.Base(cmp.Or(a.set.Shell.Program, os.Getenv("SHELL"), "sh")))
+	n.cpuBox.SetVisible(n.cpuRead >= 0)
+	set(n.cpu, fmt.Sprintf("%.0f%%", n.cpuRead))
+	n.memBox.SetVisible(n.memRead >= 0)
+	set(n.mem, fmt.Sprintf("%.0f%%", n.memRead))
+	n.upBox.SetVisible(!n.boot.IsZero())
+	set(n.up, uptime(time.Since(n.boot)))
 }
 
 // uptime is a time up as uptime(1) would say it short: "3d 2h", "5h 12m",

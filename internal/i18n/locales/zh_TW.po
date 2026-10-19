@@ -2272,7 +2272,7 @@ msgid "NOTES"
 msgstr "備註"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:405
+#: internal/term/host/agents.go:408
 msgid "Show"
 msgstr "顯示"
 
@@ -3606,10 +3606,11 @@ msgstr "未知的元件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:248
-#: internal/termui/keys.go:365
+#: internal/termui/keys.go:271
+#: internal/termui/keys.go:399
 #: internal/termui/paste.go:279
 #: internal/termui/restart.go:42
+#: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4487,11 +4488,11 @@ msgid "Opens folders"
 msgstr "開啟資料夾"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:99
-#: internal/termui/app.go:131
-#: internal/termui/app.go:308
-#: internal/termui/app.go:310
-#: internal/termui/tiles.go:353
+#: internal/termui/app.go:101
+#: internal/termui/app.go:134
+#: internal/termui/app.go:312
+#: internal/termui/app.go:314
+#: internal/termui/tiles.go:467
 #: ui/settings.ui:1933
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
@@ -5004,7 +5005,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:367
+#: internal/termui/keys.go:401
 msgid "Rename"
 msgstr "重新命名"
 
@@ -5111,7 +5112,8 @@ msgstr[0] "……還有 %d 項"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:250
+#: internal/termui/keys.go:273
+#: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -6136,6 +6138,7 @@ msgid "Move to the other pane"
 msgstr "移動到另一窗格"
 
 #: internal/filesui/window.go:749
+#: internal/termui/wsmenu.go:80
 msgid "Rename…"
 msgstr "重新命名……"
 
@@ -10003,11 +10006,11 @@ msgstr "充滿電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充電中"
 
-#: internal/term/host/agents.go:176
+#: internal/term/host/agents.go:179
 msgid "%s needs you"
 msgstr "%s 需要你"
 
-#: internal/term/host/agents.go:178
+#: internal/term/host/agents.go:181
 msgid "%s is done"
 msgstr "%s 已完成"
 
@@ -10065,7 +10068,7 @@ msgid "New session in this workspace"
 msgstr "在此工作區新增工作階段"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:116
+#: internal/termui/columns.go:141
 msgid "New workspace"
 msgstr "新增工作區"
 
@@ -10130,7 +10133,7 @@ msgid "Copy mode"
 msgstr "複製模式"
 
 #: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:356
+#: internal/termui/keys.go:373
 msgid "Rename the session"
 msgstr "重新命名工作階段"
 
@@ -10218,7 +10221,12 @@ msgstr "終端機使用視窗的顏色"
 msgid "Your login shell (%s)"
 msgstr "你的登入 shell（%s）"
 
-#: internal/termui/columns.go:117
+#: internal/termui/columns.go:140
+#: internal/termui/palette.go:98
+msgid "Actions"
+msgstr "動作"
+
+#: internal/termui/columns.go:142
 msgid "New session"
 msgstr "新增工作階段"
 
@@ -10264,19 +10272,20 @@ msgstr "終端機周圍視窗的外觀。它跟隨 inua 的主題，或者無論
 msgid "Keep these choices; the settings change them later"
 msgstr "保留這些選擇；之後可在設定中變更"
 
-#: internal/termui/keys.go:237
+#: internal/termui/keys.go:260
+#: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "關閉 %s？"
 
-#: internal/termui/keys.go:238
+#: internal/termui/keys.go:261
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "它正在處理「%s」；關閉窗格會結束它。"
 
-#: internal/termui/keys.go:240
+#: internal/termui/keys.go:263
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "它在等你：%s。關閉窗格會結束它。"
 
-#: internal/termui/keys.go:281
+#: internal/termui/keys.go:304
 msgid "Choose the workspace's folder"
 msgstr "選擇工作區的資料夾"
 
@@ -10315,10 +10324,6 @@ msgstr "捲到頂端 / 底端"
 #: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "跳到上一個 / 下一個提示字元"
-
-#: internal/termui/palette.go:98
-msgid "Actions"
-msgstr "動作"
 
 #: internal/termui/palette.go:100
 msgid "Find an action"
@@ -10529,6 +10534,7 @@ msgid "Every program in the panes ends. The sessions come back, each pane's last
 msgstr "窗格中的所有程式都會結束。工作階段會回來，每個窗格的最後一條命令放回提示字元處，不會執行；代理以其恢復命令回來。"
 
 #: internal/termui/restart.go:34
+#: internal/termui/wsmenu.go:140
 msgid "%d agent is working or waiting for you."
 msgid_plural "%d agents are working or waiting for you."
 msgstr[0] "%d 個代理正在工作或等待你。"
@@ -10546,6 +10552,28 @@ msgstr "下一個符合 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "關閉（逃脫）"
+
+#: internal/termui/wsmenu.go:81
+msgid "Close…"
+msgstr "關閉…"
+
+#: internal/termui/wsmenu.go:113
+msgid "Rename the workspace"
+msgstr "重新命名工作區"
+
+#: internal/termui/wsmenu.go:136
+msgid "Its %s and %s end, and every program running in them quits."
+msgstr "其中的 %s和 %s都會結束，在其中執行的所有程式都會結束。"
+
+#: internal/termui/wsmenu.go:137
+msgid "%d session"
+msgid_plural "%d sessions"
+msgstr[0] "%d 個工作階段"
+
+#: internal/termui/wsmenu.go:138
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d 個窗格"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -14572,7 +14600,19 @@ msgstr "依名稱、位址、作業系統或標籤過濾"
 msgid "EXIT NODE"
 msgstr "出口節點"
 
-#: ui/term.ui:69
+#: ui/term.ui:62
+msgid "CPU in use"
+msgstr "CPU 使用率"
+
+#: ui/term.ui:81
+msgid "Memory in use"
+msgstr "記憶體使用率"
+
+#: ui/term.ui:100
+msgid "Up since the computer started"
+msgstr "自電腦啟動以來的時間"
+
+#: ui/term.ui:146
 msgid "Find a workspace or agent"
 msgstr "尋找工作區或代理"
 

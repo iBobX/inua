@@ -10,43 +10,161 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <property name="default-width">1280</property>
     <property name="default-height">800</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkOverlay" id="sheets">
         <child>
-          <object class="GtkBox" id="workspaces_col">
-            <style>
-              <class name="index"/>
-              <class name="term-col1"/>
-            </style>
-            <property name="orientation">1</property>
-            <property name="hexpand">false</property>
-            <property name="width-request">232</property>
+          <object class="GtkBox">
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="workspaces_col">
                 <style>
-                  <class name="term-col-head"/>
+                  <class name="index"/>
+                  <class name="term-col1"/>
                 </style>
+                <property name="orientation">1</property>
+                <property name="hexpand">false</property>
+                <property name="width-request">232</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="orientation">1</property>
-                    <property name="hexpand">true</property>
-                    <property name="valign">3</property>
-                    <property name="spacing">2</property>
+                    <style>
+                      <class name="term-col-head"/>
+                    </style>
+                    <property name="spacing">8</property>
                     <child>
-                      <object class="GtkLabel" id="nerd_who">
-                        <style>
-                          <class name="term-nerd-who"/>
-                        </style>
-                        <property name="xalign">0</property>
-                        <property name="ellipsize">3</property>
+                      <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="hexpand">true</property>
+                        <property name="valign">3</property>
+                        <property name="spacing">2</property>
+                        <child>
+                          <object class="GtkLabel" id="nerd_who">
+                            <style>
+                              <class name="term-nerd-who"/>
+                            </style>
+                            <property name="xalign">0</property>
+                            <property name="ellipsize">3</property>
+                            <property name="max-width-chars">1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="term-nerd-sys"/>
+                            </style>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="nerd_shell">
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="nerd_cpu_box">
+                                <property name="spacing">3</property>
+                                <property name="visible">false</property>
+                                <property name="tooltip-text" translatable="yes">CPU in use</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">term-cpu-symbolic</property>
+                                    <property name="pixel-size">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="nerd_cpu">
+                                    <property name="xalign">0</property>
+                                    <property name="width-chars">4</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="nerd_mem_box">
+                                <property name="spacing">3</property>
+                                <property name="visible">false</property>
+                                <property name="tooltip-text" translatable="yes">Memory in use</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">term-memory-symbolic</property>
+                                    <property name="pixel-size">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="nerd_mem">
+                                    <property name="xalign">0</property>
+                                    <property name="width-chars">4</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="nerd_up_box">
+                                <property name="spacing">3</property>
+                                <property name="visible">false</property>
+                                <property name="tooltip-text" translatable="yes">Up since the computer started</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">term-uptime-symbolic</property>
+                                    <property name="pixel-size">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="nerd_up">
+                                    <property name="xalign">0</property>
+                                    <property name="hexpand">true</property>
+                                    <property name="ellipsize">3</property>
+                                    <property name="max-width-chars">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="nerd_sys">
+                      <object class="GtkButton" id="menu">
                         <style>
-                          <class name="term-nerd-sys"/>
+                          <class name="plain"/>
+                          <class name="term-head-button"/>
                         </style>
-                        <property name="xalign">0</property>
-                        <property name="ellipsize">3</property>
+                        <property name="icon-name">open-menu-symbolic</property>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="term-find-row"/>
+                    </style>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkSearchEntry" id="find">
+                        <style>
+                          <class name="index-search"/>
+                          <class name="term-find-entry"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                        <property name="placeholder-text" translatable="yes">Find a workspace or agent</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="new_workspace">
+                        <style>
+                          <class name="plain"/>
+                          <class name="term-head-button"/>
+                        </style>
+                        <property name="icon-name">list-add-symbolic</property>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="vexpand">true</property>
+                    <property name="hscrollbar-policy">2</property>
+                    <child>
+                      <object class="GtkListBox" id="workspaces">
+                        <property name="selection-mode">1</property>
                       </object>
                     </child>
                   </object>
@@ -54,110 +172,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="sessions_col">
                 <style>
-                  <class name="term-find-row"/>
+                  <class name="index"/>
+                  <class name="term-col2"/>
                 </style>
-                <property name="spacing">6</property>
+                <property name="orientation">1</property>
+                <property name="hexpand">false</property>
+                <property name="width-request">312</property>
                 <child>
-                  <object class="GtkSearchEntry" id="find">
+                  <object class="GtkBox">
                     <style>
-                      <class name="index-search"/>
-                      <class name="term-find-entry"/>
+                      <class name="term-col-head"/>
                     </style>
-                    <property name="hexpand">true</property>
-                    <property name="placeholder-text" translatable="yes">Find a workspace or agent</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkLabel" id="sessions_title">
+                        <style>
+                          <class name="term-col-title"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                        <property name="xalign">0</property>
+                        <property name="ellipsize">3</property>
+                        <property name="max-width-chars">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="new_session">
+                        <style>
+                          <class name="plain"/>
+                          <class name="term-head-button"/>
+                        </style>
+                        <property name="icon-name">list-add-symbolic</property>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="new_workspace">
-                    <style>
-                      <class name="plain"/>
-                      <class name="term-head-button"/>
-                    </style>
-                    <property name="icon-name">list-add-symbolic</property>
-                    <property name="valign">3</property>
+                  <object class="GtkScrolledWindow">
+                    <property name="vexpand">true</property>
+                    <property name="hscrollbar-policy">2</property>
+                    <child>
+                      <object class="GtkBox" id="sessions">
+                        <style>
+                          <class name="term-sessions"/>
+                        </style>
+                        <property name="orientation">1</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="GtkScrolledWindow">
-                <property name="vexpand">true</property>
-                <property name="hscrollbar-policy">2</property>
-                <child>
-                  <object class="GtkListBox" id="workspaces">
-                    <property name="selection-mode">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="sessions_col">
-            <style>
-              <class name="index"/>
-              <class name="term-col2"/>
-            </style>
-            <property name="orientation">1</property>
-            <property name="hexpand">false</property>
-            <property name="width-request">312</property>
-            <child>
-              <object class="GtkBox">
-                <style>
-                  <class name="term-col-head"/>
-                </style>
-                <property name="spacing">8</property>
-                <child>
-                  <object class="GtkLabel" id="sessions_title">
-                    <style>
-                      <class name="term-col-title"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                    <property name="xalign">0</property>
-                    <property name="ellipsize">3</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="new_session">
-                    <style>
-                      <class name="plain"/>
-                      <class name="term-head-button"/>
-                    </style>
-                    <property name="icon-name">list-add-symbolic</property>
-                    <property name="valign">3</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow">
-                <property name="vexpand">true</property>
-                <property name="hscrollbar-policy">2</property>
-                <child>
-                  <object class="GtkBox" id="sessions">
-                    <style>
-                      <class name="term-sessions"/>
-                    </style>
-                    <property name="orientation">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkOverlay" id="stage">
-            <property name="hexpand">true</property>
-            <property name="vexpand">true</property>
-            <child>
-              <object class="GtkBox" id="tiles">
-                <style>
-                  <class name="term-tiles"/>
-                </style>
+              <object class="GtkOverlay" id="stage">
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkBox" id="tiles">
+                    <style>
+                      <class name="term-tiles"/>
+                    </style>
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

@@ -64,6 +64,29 @@ func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bo
 	return a.do(action, p)
 }
 
+// windowKeys takes the window's chords where no pane has the keys: a
+// workspace without panes, the columns. A pane's keys reach it first.
+func (a *App) windowKeys() {
+	loadGObject()
+	keys := gtk.NewEventControllerKey()
+	a.onWindowKey = func(c gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType) bool {
+		if a.sheet != nil {
+			return false
+		}
+		var layout uint32
+		if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
+			layout = gdk.KeyEventNewFromInternalPtr(ev).GetLayout()
+		}
+		var base uint32
+		if !a.win.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
+			base = keyval
+		}
+		return a.chord(nil, base, keyval, state)
+	}
+	keys.ConnectKeyPressed(&a.onWindowKey)
+	a.win.AddController(&keys.EventController)
+}
+
 // chordName is a key as term.toml writes it: "ctrl+shift+t".
 func chordName(base uint32, held gdk.ModifierType) string {
 	var b strings.Builder
@@ -337,28 +360,39 @@ func (a *App) stepSession(dir int) {
 	a.showSession(w.ID, w.Sessions[i].ID)
 }
 
-// renameSession asks for a session's new name (0: the shown one's), in a
-// sheet over column 3.
+// renameSession asks for a session's new name (0: the shown one's).
 func (a *App) renameSession(id int) {
 	s := a.shown()
 	if id != 0 && a.state != nil {
 		s, _ = a.state.Model.Session(id)
 	}
-	if s == nil || a.sheet != nil {
+	if s == nil {
 		return
 	}
 	session := s.ID
+	a.renameSheet(i18n.T("Rename the session"), s.Name, func(c *host.Client, name string) error {
+		return c.Rename(0, session, name)
+	})
+}
+
+// renameSheet asks for a new name over the window, name in it to start
+// with; Enter or Rename gives it to rename, Escape or Cancel keeps the
+// old one.
+func (a *App) renameSheet(title, name string, rename func(c *host.Client, name string) error) {
+	if a.sheet != nil {
+		return
+	}
 	sheet := gtk.NewBox(gtk.OrientationVerticalValue, 10)
 	sheet.AddCssClass("term-sheet")
 	sheet.SetHalign(gtk.AlignCenterValue)
 	sheet.SetValign(gtk.AlignCenterValue)
 	sheet.SetSizeRequest(360, -1)
-	title := gtk.NewLabel(i18n.T("Rename the session"))
-	title.AddCssClass("term-sheet-title")
-	title.SetXalign(0)
-	sheet.Append(&title.Widget)
+	t := gtk.NewLabel(title)
+	t.AddCssClass("term-sheet-title")
+	t.SetXalign(0)
+	sheet.Append(&t.Widget)
 	entry := gtk.NewEntry()
-	entry.SetText(s.Name)
+	entry.SetText(name)
 	sheet.Append(&entry.Widget)
 	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	buttons.SetHalign(gtk.AlignEndValue)
@@ -369,17 +403,17 @@ func (a *App) renameSession(id int) {
 	buttons.Append(&cancel.Widget)
 	buttons.Append(&ok.Widget)
 	sheet.Append(&buttons.Widget)
-	done := func(rename bool) {
+	done := func(ok bool) {
 		name := entry.GetText()
-		a.stage.RemoveOverlay(&sheet.Widget)
+		a.sheets.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
 		if shown := a.shown(); shown != nil {
 			if t := a.tiles[shown.Focus]; t != nil {
 				t.pane.widget.GrabFocus()
 			}
 		}
-		if rename && name != "" {
-			a.ask("rename", func(c *host.Client) error { return c.Rename(0, session, name) })
+		if ok && name != "" {
+			a.ask("rename", func(c *host.Client) error { return rename(c, name) })
 		}
 	}
 	a.onRenameOK = func(gtk.Button) { done(true) }
@@ -399,7 +433,7 @@ func (a *App) renameSession(id int) {
 	keys.ConnectKeyPressed(&a.onRenameKey)
 	sheet.AddController(&keys.EventController)
 	a.sheet = sheet
-	a.stage.AddOverlay(&sheet.Widget)
+	a.sheets.AddOverlay(&sheet.Widget)
 	entry.GrabFocus()
 	entry.SelectRegion(0, -1)
 }

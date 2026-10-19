@@ -49,7 +49,7 @@ func keycaps(chord string) string {
 	return strings.Join(parts, " ")
 }
 
-// sheetFrame is an empty sheet over column 3, Escape closing it; close
+// sheetFrame is an empty sheet over the window, Escape closing it; close
 // takes it away and gives the focused pane the keys again.
 func (a *App) sheetFrame(title string, width int32) (sheet *gtk.Box, close func()) {
 	sheet = gtk.NewBox(gtk.OrientationVerticalValue, 10)
@@ -66,7 +66,7 @@ func (a *App) sheetFrame(title string, width int32) (sheet *gtk.Box, close func(
 		if a.sheet != sheet {
 			return
 		}
-		a.stage.RemoveOverlay(&sheet.Widget)
+		a.sheets.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
 		if s := a.shown(); s != nil {
 			if t := a.tiles[s.Focus]; t != nil {
@@ -86,7 +86,7 @@ func (a *App) sheetFrame(title string, width int32) (sheet *gtk.Box, close func(
 	keys.ConnectKeyPressed(&a.onSheetEsc)
 	sheet.AddController(&keys.EventController)
 	a.sheet = sheet
-	a.stage.AddOverlay(&sheet.Widget)
+	a.sheets.AddOverlay(&sheet.Widget)
 	return sheet, close
 }
 

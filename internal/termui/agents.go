@@ -307,7 +307,7 @@ func (a *App) overview() {
 	}
 	sheet.Append(&list.Widget)
 	done := func() {
-		a.stage.RemoveOverlay(&sheet.Widget)
+		a.sheets.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
 		if s := a.shown(); s != nil {
 			if t := a.tiles[s.Focus]; t != nil {
@@ -334,7 +334,7 @@ func (a *App) overview() {
 	keys.ConnectKeyPressed(&a.onOverviewKey)
 	sheet.AddController(&keys.EventController)
 	a.sheet = sheet
-	a.stage.AddOverlay(&sheet.Widget)
+	a.sheets.AddOverlay(&sheet.Widget)
 	if r := list.GetRowAtIndex(0); r != nil {
 		r.GrabFocus()
 	} else {

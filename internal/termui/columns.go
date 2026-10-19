@@ -25,10 +25,10 @@ type columns struct {
 	list       *gtk.ListBox
 	sessions   *gtk.Box
 	find       *gtk.SearchEntry
-	// The heads: the new workspace and new session buttons, and the
-	// shown workspace's name over its sessions.
-	newWorkspace, newSession *gtk.Button
-	title                    *gtk.Label
+	// The heads: the menu, the new workspace and new session buttons,
+	// and the shown workspace's name over its sessions.
+	menu, newWorkspace, newSession *gtk.Button
+	title                          *gtk.Label
 	// rowIDs is the workspace of each row of the list, in order, and
 	// wsRows their widgets.
 	rowIDs []int
@@ -41,9 +41,14 @@ type columns struct {
 	// filling is set while the list is made, so selecting a row then
 	// does not show it.
 	filling bool
+	// drag is a workspace's row being dragged to its new place, rowMenu
+	// the rows' menu.
+	drag    wsDrag
+	rowMenu wsMenu
 
 	onRow          func(gtk.ListBox, uintptr)
 	onFind         func(uintptr, uintptr)
+	onMenu         func(gtk.Button)
 	onNewWorkspace func(gtk.Button)
 	onNewSession   func(gtk.Button)
 	// clicks are the session heads' and pane rows' callbacks, kept for
@@ -81,13 +86,22 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 	ui.Get("workspaces", c.list)
 	ui.Get("sessions", c.sessions)
 	ui.Get("find", c.find)
-	c.newWorkspace, c.newSession, c.title = &gtk.Button{}, &gtk.Button{}, &gtk.Label{}
+	c.menu, c.newWorkspace, c.newSession, c.title = &gtk.Button{}, &gtk.Button{}, &gtk.Button{}, &gtk.Label{}
+	ui.Get("menu", c.menu)
 	ui.Get("new_workspace", c.newWorkspace)
 	ui.Get("new_session", c.newSession)
 	ui.Get("sessions_title", c.title)
-	a.nerd.who, a.nerd.sys = &gtk.Label{}, &gtk.Label{}
-	ui.Get("nerd_who", a.nerd.who)
-	ui.Get("nerd_sys", a.nerd.sys)
+	n := &a.nerd
+	n.who, n.shell, n.cpu, n.mem, n.up = &gtk.Label{}, &gtk.Label{}, &gtk.Label{}, &gtk.Label{}, &gtk.Label{}
+	n.cpuBox, n.memBox, n.upBox = &gtk.Box{}, &gtk.Box{}, &gtk.Box{}
+	ui.Get("nerd_who", n.who)
+	ui.Get("nerd_shell", n.shell)
+	ui.Get("nerd_cpu", n.cpu)
+	ui.Get("nerd_mem", n.mem)
+	ui.Get("nerd_up", n.up)
+	ui.Get("nerd_cpu_box", n.cpuBox)
+	ui.Get("nerd_mem_box", n.memBox)
+	ui.Get("nerd_up_box", n.upBox)
 	c.tips(a)
 	c.onRow = func(_ gtk.ListBox, row uintptr) {
 		i := int(gtk.ListBoxRowNewFromInternalPtr(row).GetIndex())
@@ -97,8 +111,18 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 		a.showWorkspace(c.rowIDs[i])
 	}
 	c.list.ConnectRowActivated(&c.onRow)
+	c.startDrag(a)
+	c.startMenu(a)
 	c.onFind = func(uintptr, uintptr) { c.update(a) }
 	gtkx.ConnectChanged(c.find, &c.onFind)
+	c.onMenu = func(gtk.Button) {
+		var p *termPane
+		if s := a.shown(); s != nil {
+			p = a.paneFor(s.Focus)
+		}
+		a.palette(p)
+	}
+	c.menu.ConnectClicked(&c.onMenu)
 	c.onNewWorkspace = func(gtk.Button) { a.newWorkspace() }
 	c.newWorkspace.ConnectClicked(&c.onNewWorkspace)
 	c.onNewSession = func(gtk.Button) { a.newSession() }
@@ -113,6 +137,7 @@ func (c *columns) tips(a *App) {
 		}
 		b.SetTooltipText(label)
 	}
+	tip(c.menu, i18n.T("Actions"), "palette")
 	tip(c.newWorkspace, i18n.T("New workspace"), "new_workspace")
 	tip(c.newSession, i18n.T("New session"), "new_session")
 }
@@ -171,6 +196,20 @@ func (c *columns) fillWorkspaces(a *App) {
 		c.rowIDs, c.wsRows = shape, make([]wsRow, len(ws))
 		for i := range ws {
 			c.list.Append(&c.wsRows[i].make().Widget)
+		}
+		c.dragRows(query != "")
+		for i := range c.rowIDs {
+			if row := c.list.GetRowAtIndex(int32(i)); row != nil {
+				c.menuRow(row)
+			}
+		}
+		// Made anew mid-drag (a workspace came or went): the row dragged
+		// is away still.
+		if d := &c.drag; d.id != 0 {
+			d.from = slices.Index(c.rowIDs, d.id)
+			if row := c.list.GetRowAtIndex(int32(d.from)); row != nil {
+				row.SetVisible(false)
+			}
 		}
 	}
 	for i, w := range ws {

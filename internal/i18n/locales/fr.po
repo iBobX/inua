@@ -2282,7 +2282,7 @@ msgid "NOTES"
 msgstr "NOTES"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:405
+#: internal/term/host/agents.go:408
 msgid "Show"
 msgstr "Afficher"
 
@@ -3624,10 +3624,11 @@ msgstr "Bloc inconnu %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:248
-#: internal/termui/keys.go:365
+#: internal/termui/keys.go:271
+#: internal/termui/keys.go:399
 #: internal/termui/paste.go:279
 #: internal/termui/restart.go:42
+#: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4505,11 +4506,11 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:99
-#: internal/termui/app.go:131
-#: internal/termui/app.go:308
-#: internal/termui/app.go:310
-#: internal/termui/tiles.go:353
+#: internal/termui/app.go:101
+#: internal/termui/app.go:134
+#: internal/termui/app.go:312
+#: internal/termui/app.go:314
+#: internal/termui/tiles.go:467
 #: ui/settings.ui:1933
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
@@ -5029,7 +5030,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:367
+#: internal/termui/keys.go:401
 msgid "Rename"
 msgstr "Renommer"
 
@@ -5138,7 +5139,8 @@ msgstr[1] "… et %d de plus"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:250
+#: internal/termui/keys.go:273
+#: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -6174,6 +6176,7 @@ msgid "Move to the other pane"
 msgstr "Déplacer vers l’autre volet"
 
 #: internal/filesui/window.go:749
+#: internal/termui/wsmenu.go:80
 msgid "Rename…"
 msgstr "Renommer…"
 
@@ -10051,11 +10054,11 @@ msgstr "Complètement chargé"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Chargement"
 
-#: internal/term/host/agents.go:176
+#: internal/term/host/agents.go:179
 msgid "%s needs you"
 msgstr "%s a besoin de vous"
 
-#: internal/term/host/agents.go:178
+#: internal/term/host/agents.go:181
 msgid "%s is done"
 msgstr "%s a terminé"
 
@@ -10113,7 +10116,7 @@ msgid "New session in this workspace"
 msgstr "Nouvelle session dans cet espace"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:116
+#: internal/termui/columns.go:141
 msgid "New workspace"
 msgstr "Nouvel espace de travail"
 
@@ -10178,7 +10181,7 @@ msgid "Copy mode"
 msgstr "Mode copie"
 
 #: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:356
+#: internal/termui/keys.go:373
 msgid "Rename the session"
 msgstr "Renommer la session"
 
@@ -10266,7 +10269,12 @@ msgstr "Les terminaux prennent les couleurs de la fenêtre"
 msgid "Your login shell (%s)"
 msgstr "Votre shell de connexion (%s)"
 
-#: internal/termui/columns.go:117
+#: internal/termui/columns.go:140
+#: internal/termui/palette.go:98
+msgid "Actions"
+msgstr "Actions"
+
+#: internal/termui/columns.go:142
 msgid "New session"
 msgstr "Nouvelle session"
 
@@ -10312,19 +10320,20 @@ msgstr "L'apparence de la fenêtre autour des terminaux. Elle suit le thème d'i
 msgid "Keep these choices; the settings change them later"
 msgstr "Garder ces choix ; les réglages les changent ensuite"
 
-#: internal/termui/keys.go:237
+#: internal/termui/keys.go:260
+#: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "Fermer %s ?"
 
-#: internal/termui/keys.go:238
+#: internal/termui/keys.go:261
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "Il travaille sur « %s » ; fermer le panneau l’arrête."
 
-#: internal/termui/keys.go:240
+#: internal/termui/keys.go:263
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "Il vous attend : %s. Fermer le panneau l’arrête."
 
-#: internal/termui/keys.go:281
+#: internal/termui/keys.go:304
 msgid "Choose the workspace's folder"
 msgstr "Choisir le dossier de l’espace de travail"
 
@@ -10363,10 +10372,6 @@ msgstr "Aller en haut / en bas"
 #: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "Aller à l’invite précédente / suivante"
-
-#: internal/termui/palette.go:98
-msgid "Actions"
-msgstr "Actions"
 
 #: internal/termui/palette.go:100
 msgid "Find an action"
@@ -10579,6 +10584,7 @@ msgid "Every program in the panes ends. The sessions come back, each pane's last
 msgstr "Tous les programmes des panneaux se terminent. Les sessions reviennent, la dernière commande de chaque panneau à son invite, non lancée ; les agents reviennent en leur commande de reprise."
 
 #: internal/termui/restart.go:34
+#: internal/termui/wsmenu.go:140
 msgid "%d agent is working or waiting for you."
 msgid_plural "%d agents are working or waiting for you."
 msgstr[0] "%d agent travaille ou vous attend."
@@ -10597,6 +10603,30 @@ msgstr "Occurrence suivante (Maj+Entrée)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "Fermer (Échapper)"
+
+#: internal/termui/wsmenu.go:81
+msgid "Close…"
+msgstr "Fermer…"
+
+#: internal/termui/wsmenu.go:113
+msgid "Rename the workspace"
+msgstr "Renommer l’espace de travail"
+
+#: internal/termui/wsmenu.go:136
+msgid "Its %s and %s end, and every program running in them quits."
+msgstr "Ses %s et ses %s se terminent, et tous les programmes qui s’y exécutent quittent."
+
+#: internal/termui/wsmenu.go:137
+msgid "%d session"
+msgid_plural "%d sessions"
+msgstr[0] "%d session"
+msgstr[1] "%d sessions"
+
+#: internal/termui/wsmenu.go:138
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d panneau"
+msgstr[1] "%d panneaux"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -14635,7 +14665,19 @@ msgstr "Filtrer par nom, adresse, OS ou tag"
 msgid "EXIT NODE"
 msgstr "NŒUD DE SORTIE"
 
-#: ui/term.ui:69
+#: ui/term.ui:62
+msgid "CPU in use"
+msgstr "Processeur utilisé"
+
+#: ui/term.ui:81
+msgid "Memory in use"
+msgstr "Mémoire utilisée"
+
+#: ui/term.ui:100
+msgid "Up since the computer started"
+msgstr "Allumé depuis le démarrage de l’ordinateur"
+
+#: ui/term.ui:146
 msgid "Find a workspace or agent"
 msgstr "Chercher un espace ou un agent"
 

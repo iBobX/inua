@@ -283,6 +283,11 @@ remote-machine                        desktop
 view-refresh                          arrow-clockwise
 # inua-term: a shell or a program that is no agent
 agent-shell                           terminal
+# inua-term: the actions, from column 1's head, and its readings
+open-menu                             list
+term-cpu                              cpu
+term-memory                           memory
+term-uptime                           clock
 # inua-term: agents LobeHub has no mark of
 agent-pi                              pi
 agent-mistermorph                     butterfly

@@ -63,11 +63,14 @@ from it, or at `$INUA_VT_LIB`.
 
 - **Workspaces** (column 1): at its top, where this is (`user@host`,
   then the shell new panes start, how busy the CPU is, the memory in
-  use and the uptime), then the search with the new workspace button. Each
+  use and the uptime) beside the menu button, which opens the actions
+  as Ctrl+Shift+P does, then the search with the new workspace button. Each
   workspace is a name, its folder, and what its agents add up to: a
   square filled in warn while one waits for you, in the accent while one
-  works, hollow when quiet. The search finds workspaces by name, folder
-  or pane title.
+  works, hollow when quiet. Drag a workspace to put it in another place;
+  its menu (a right click, or the Menu key) renames it or closes it,
+  after asking, since every program in it quits.
+  The search finds workspaces by name, folder or pane title.
 - **Sessions** (column 2): at its top, the shown workspace's name and
   the new session button; then its sessions, each a section of its
   panes under a head with the same square and a badge counting the
@@ -79,8 +82,8 @@ from it, or at `$INUA_VT_LIB`.
   head (state, mark, title, folder). Drag a gap to resize, drag a head
   onto another pane to swap them. A pane closes when its program ends
   (`exit`, or the command of `inua-term -e` done), the others taking its
-  room; a session closes with its last pane, and the window with the
-  last of all.
+  room; a session closes with its last pane, a workspace with its last
+  session, and the window with the last of all.
 
 A window narrower than 1040 px folds column 2, narrower than 720 px
 column 1 as well; Ctrl+Shift+S and Ctrl+Shift+B show them anyway.
@@ -170,7 +173,7 @@ The keys are Ghostty's on Linux, a workspace standing for Ghostty's
 window, a session for its tab and a pane for its split; inua-term's own
 actions are Ctrl+Shift chords. Everything else goes to the program.
 Ctrl+Shift+/ shows them all, Ctrl+Shift+P finds any action by name, and
-the settings change them. A `term.toml` of the first version has the keys
+the settings change them. They work in a workspace without panes too. A `term.toml` of the first version has the keys
 it kept at that version's defaults moved to these.
 
 | Keys | Action |
