@@ -1,0 +1,16 @@
+type = "claude"
+name = "Claude Code"
+icon = "agent-claude"
+process = ["claude"]
+resume = "claude --continue"
+
+# Asking: a permission, a question, a choice.
+[[state]]
+state = "blocked"
+lines = 12
+any = ["Do you want to proceed?", "Do you want to make this edit", "Do you want to create", "❯ 1. Yes", "Would you like to proceed?"]
+
+[[state]]
+state = "working"
+lines = 6
+any = ["esc to interrupt"]

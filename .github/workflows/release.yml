@@ -30,6 +30,15 @@ jobs:
           sudo apt-get install -y --no-install-recommends pkg-config libgtk-4-dev
       - name: Tests
         run: go test ./...
+      # inua-term's engine: libghostty-vt at its pinned commit, with inua's
+      # shim, for each machine (scripts/libghostty.sh).
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+      - name: inua-term's engine
+        run: |
+          ZIG_TARGET=x86_64-linux-gnu scripts/libghostty.sh lib/amd64
+          ZIG_TARGET=aarch64-linux-gnu scripts/libghostty.sh lib/arm64
       - uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser

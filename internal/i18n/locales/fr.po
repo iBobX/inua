@@ -62,6 +62,14 @@ msgstr "%s a lu un secret"
 msgid "“%s” · %s"
 msgstr "« %s » · %s"
 
+#: cmd/inua-term/main.go:186
+msgid "inua-term added its hooks"
+msgstr "inua-term a ajouté ses hooks"
+
+#: cmd/inua-term/main.go:187
+msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
+msgstr "%s signale désormais son état à inua-term. Le fichier d’avant est %s.bak ; `inua-term integration remove %s` les retire."
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:308
@@ -2275,6 +2283,7 @@ msgid "NOTES"
 msgstr "NOTES"
 
 #: internal/appui/pass.go:595
+#: internal/term/host/agents.go:407
 msgid "Show"
 msgstr "Afficher"
 
@@ -2287,6 +2296,7 @@ msgstr "Masquer"
 #: internal/appui/pass.go:626
 #: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
+#: internal/term/settings/settings.go:84
 #: internal/ui/askpass.go:203
 #: ui/disk.ui:698
 #: ui/gpg.ui:661
@@ -3335,6 +3345,7 @@ msgid "IN USE"
 msgstr "EN UTILISATION"
 
 #: internal/appui/tailscale.go:601
+#: internal/termui/prefs.go:265
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3612,6 +3623,9 @@ msgstr "Bloc inconnu %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/keys.go:226
+#: internal/termui/keys.go:324
+#: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4485,7 +4499,14 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
+#: internal/termui/app.go:84
+#: internal/termui/app.go:98
+#: internal/termui/app.go:264
+#: internal/termui/app.go:266
+#: internal/termui/tiles.go:352
 #: ui/settings.ui:1933
+#: ui/term.ui:28
+#: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "Terminal"
 
@@ -4922,6 +4943,7 @@ msgid "Password"
 msgstr "Mot de passe"
 
 #: internal/filesui/archive.go:164
+#: internal/termui/search.go:109
 msgid "none"
 msgstr "aucun"
 
@@ -5015,6 +5037,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/termui/keys.go:326
 msgid "Rename"
 msgstr "Renommer"
 
@@ -5122,6 +5145,7 @@ msgstr[1] "… et %d de plus"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
+#: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -5324,6 +5348,7 @@ msgid "Reload"
 msgstr "Recharger"
 
 #: internal/filesui/cards.go:717
+#: internal/termui/palette.go:195
 msgid "Keys"
 msgstr "Raccourcis"
 
@@ -5912,6 +5937,7 @@ msgid "Change case"
 msgstr "Changer la casse"
 
 #: internal/filesui/renamemany.go:148
+#: internal/termui/search.go:32
 msgid "Find"
 msgstr "Rechercher"
 
@@ -6101,6 +6127,8 @@ msgid "New file…"
 msgstr "Nouveau fichier…"
 
 #: internal/filesui/window.go:699
+#: internal/term/settings/settings.go:85
+#: internal/termui/paste.go:284
 msgid "Paste"
 msgstr "Coller"
 
@@ -9219,6 +9247,7 @@ msgstr "Mise au point activée ou désactivée"
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:289
+#: internal/term/settings/settings.go:91
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -9959,6 +9988,414 @@ msgstr "Complètement chargé"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Chargement"
 
+#: internal/term/host/agents.go:166
+msgid "%s needs you"
+msgstr "%s a besoin de vous"
+
+#: internal/term/host/agents.go:168
+msgid "%s is done"
+msgstr "%s a terminé"
+
+#: internal/term/host/sessions.go:265
+#: ui/connect.ui:850
+msgid "Commands"
+msgstr "Commandes"
+
+#: internal/term/settings/settings.go:69
+msgid "New session in this workspace"
+msgstr "Nouvelle session dans cet espace"
+
+#: internal/term/settings/settings.go:70
+#: ui/term.ui:68
+msgid "New workspace"
+msgstr "Nouvel espace de travail"
+
+#: internal/term/settings/settings.go:71
+msgid "Split right"
+msgstr "Diviser à droite"
+
+#: internal/term/settings/settings.go:72
+msgid "Split down"
+msgstr "Diviser vers le bas"
+
+#: internal/term/settings/settings.go:73
+msgid "Close pane"
+msgstr "Fermer le panneau"
+
+#: internal/term/settings/settings.go:74
+msgid "Swap with the pane in a direction (then an arrow)"
+msgstr "Échanger avec le panneau d’une direction (puis une flèche)"
+
+#: internal/term/settings/settings.go:75
+msgid "Zoom pane / back"
+msgstr "Agrandir le panneau / revenir"
+
+#: internal/term/settings/settings.go:76
+msgid "Equalize"
+msgstr "Égaliser"
+
+#: internal/term/settings/settings.go:77
+msgid "Next layout"
+msgstr "Disposition suivante"
+
+#: internal/term/settings/settings.go:78
+msgid "Previous session"
+msgstr "Session précédente"
+
+#: internal/term/settings/settings.go:79
+msgid "Next session"
+msgstr "Session suivante"
+
+#: internal/term/settings/settings.go:80
+msgid "Next agent that needs you"
+msgstr "Agent suivant qui a besoin de vous"
+
+#: internal/term/settings/settings.go:81
+msgid "Every agent"
+msgstr "Tous les agents"
+
+#: internal/term/settings/settings.go:82
+msgid "Fold the workspaces"
+msgstr "Replier les espaces de travail"
+
+#: internal/term/settings/settings.go:83
+msgid "Fold the sessions"
+msgstr "Replier les sessions"
+
+#: internal/term/settings/settings.go:86
+msgid "Search the scrollback"
+msgstr "Chercher dans l’historique"
+
+#: internal/term/settings/settings.go:87
+msgid "Copy mode"
+msgstr "Mode copie"
+
+#: internal/term/settings/settings.go:88
+#: internal/termui/keys.go:315
+msgid "Rename the session"
+msgstr "Renommer la session"
+
+#: internal/term/settings/settings.go:89
+msgid "Every action by name"
+msgstr "Toutes les actions par nom"
+
+#: internal/term/settings/settings.go:90
+msgid "Show the keys"
+msgstr "Afficher les touches"
+
+#: internal/term/settings/settings.go:92
+msgid "Font larger"
+msgstr "Police plus grande"
+
+#: internal/term/settings/settings.go:93
+msgid "Font smaller"
+msgstr "Police plus petite"
+
+#: internal/term/settings/settings.go:94
+msgid "Font size as set"
+msgstr "Taille de police réglée"
+
+#: internal/termui/agents.go:33
+msgid "EXITED %d"
+msgstr "TERMINÉ %d"
+
+#: internal/termui/agents.go:35
+msgid "RESTORED"
+msgstr "RESTAURÉ"
+
+#: internal/termui/agents.go:39
+msgid "WORKING"
+msgstr "AU TRAVAIL"
+
+#: internal/termui/agents.go:41
+msgid "NEEDS YOU"
+msgstr "VOUS ATTEND"
+
+#: internal/termui/agents.go:43
+msgid "DONE"
+msgstr "TERMINÉ"
+
+#: internal/termui/agents.go:45
+msgid "IDLE"
+msgstr "INACTIF"
+
+#: internal/termui/agents.go:131
+msgid "Agents that need you"
+msgstr "Agents qui ont besoin de vous"
+
+#: internal/termui/agents.go:209
+msgid "Agents"
+msgstr "Agents"
+
+#: internal/termui/agents.go:216
+msgid "No agent runs in any workspace."
+msgstr "Aucun agent ne tourne dans aucun espace de travail."
+
+#: internal/termui/columns.go:193
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d panneau"
+msgstr[1] "%d panneaux"
+
+#: internal/termui/copymode.go:35
+msgid "COPY"
+msgstr "COPIE"
+
+#: internal/termui/keys.go:215
+msgid "Close %s?"
+msgstr "Fermer %s ?"
+
+#: internal/termui/keys.go:216
+msgid "It is working on “%s”; closing the pane ends it."
+msgstr "Il travaille sur « %s » ; fermer le panneau l’arrête."
+
+#: internal/termui/keys.go:218
+msgid "It is waiting for you: %s. Closing the pane ends it."
+msgstr "Il vous attend : %s. Fermer le panneau l’arrête."
+
+#: internal/termui/keys.go:259
+msgid "Choose the workspace's folder"
+msgstr "Choisir le dossier de l’espace de travail"
+
+#: internal/termui/palette.go:19
+msgid "Focus the pane in that direction"
+msgstr "Activer le panneau dans cette direction"
+
+#: internal/termui/palette.go:20
+msgid "Resize the focused pane"
+msgstr "Redimensionner le panneau actif"
+
+#: internal/termui/palette.go:21
+msgid "Workspace 1…9"
+msgstr "Espace de travail 1…9"
+
+#: internal/termui/palette.go:22
+msgid "Paste the primary selection"
+msgstr "Coller la sélection primaire"
+
+#: internal/termui/palette.go:23
+msgid "Scroll a page"
+msgstr "Défiler d’une page"
+
+#: internal/termui/palette.go:24
+msgid "Scroll to the top / the bottom"
+msgstr "Aller en haut / en bas"
+
+#: internal/termui/palette.go:25
+msgid "Scroll to the previous / next prompt"
+msgstr "Aller à l’invite précédente / suivante"
+
+#: internal/termui/palette.go:95
+msgid "Actions"
+msgstr "Actions"
+
+#: internal/termui/palette.go:97
+msgid "Find an action"
+msgstr "Chercher une action"
+
+#: internal/termui/palette.go:209
+msgid "Change them in the settings (Ctrl+Shift+,)."
+msgstr "Elles se changent dans les réglages (Ctrl+Maj+,)."
+
+#: internal/termui/paste.go:238
+msgid "Paste %d line?"
+msgid_plural "Paste %d lines?"
+msgstr[0] "Coller %d ligne ?"
+msgstr[1] "Coller %d lignes ?"
+
+#: internal/termui/paste.go:242
+msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
+msgstr "Ce programme prend un saut de ligne pour Entrée : chaque ligne s’exécuterait dès qu’elle est collée."
+
+#: internal/termui/paste.go:244
+msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
+msgstr "Le texte contient la marque qui termine un collage : ce qui la suit s’exécuterait comme s’il était tapé."
+
+#: internal/termui/paste.go:261
+msgid "and %d more line"
+msgid_plural "and %d more lines"
+msgstr[0] "et %d ligne de plus"
+msgstr[1] "et %d lignes de plus"
+
+#: internal/termui/paste.go:280
+msgid "Paste as one line"
+msgstr "Coller sur une ligne"
+
+#: internal/termui/prefs.go:41
+msgid "Terminal Settings"
+msgstr "Réglages du terminal"
+
+#: internal/termui/prefs.go:63
+#: internal/viewerui/app.go:817
+msgid "TEXT"
+msgstr "TEXTE"
+
+#: internal/termui/prefs.go:73
+msgid "Font"
+msgstr "Police"
+
+#: internal/termui/prefs.go:73
+msgid "A monospace family; Pango falls back for CJK"
+msgstr "Une famille à chasse fixe ; Pango complète le CJK"
+
+#: internal/termui/prefs.go:77
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "Taille"
+
+#: internal/termui/prefs.go:77
+msgid "In points; Ctrl+= and Ctrl+- change it in the window"
+msgstr "En points ; Ctrl+= et Ctrl+- la changent dans la fenêtre"
+
+#: internal/termui/prefs.go:79
+msgid "CURSOR"
+msgstr "CURSEUR"
+
+#: internal/termui/prefs.go:81
+msgid "Block"
+msgstr "Bloc"
+
+#: internal/termui/prefs.go:81
+msgid "Bar"
+msgstr "Barre"
+
+#: internal/termui/prefs.go:81
+msgid "Underline"
+msgstr "Souligné"
+
+#: internal/termui/prefs.go:88
+msgid "Shape"
+msgstr "Forme"
+
+#: internal/termui/prefs.go:88
+msgid "What a program resetting the cursor gets"
+msgstr "Celle qu’obtient un programme qui réinitialise le curseur"
+
+#: internal/termui/prefs.go:89
+msgid "Blink"
+msgstr "Clignotement"
+
+#: internal/termui/prefs.go:91
+msgid "TERMINAL"
+msgstr "TERMINAL"
+
+#: internal/termui/prefs.go:92
+msgid "Copy on select"
+msgstr "Copier à la sélection"
+
+#: internal/termui/prefs.go:92
+msgid "Selecting copies to the clipboard; the primary selection follows it either way"
+msgstr "Sélectionner copie dans le presse-papiers ; la sélection primaire suit toujours"
+
+#: internal/termui/prefs.go:97
+msgid "Scrollback"
+msgstr "Historique"
+
+#: internal/termui/prefs.go:97
+msgid "Lines kept per pane"
+msgstr "Lignes gardées par panneau"
+
+#: internal/termui/prefs.go:101
+msgid "Replay"
+msgstr "Rejeu"
+
+#: internal/termui/prefs.go:101
+msgid "MiB of a pane's recent output kept for a window opened later"
+msgstr "Mio de la sortie récente d’un panneau gardés pour une fenêtre ouverte plus tard"
+
+#: internal/termui/prefs.go:103
+msgid "SHELL AND AGENTS"
+msgstr "SHELL ET AGENTS"
+
+#: internal/termui/prefs.go:103
+msgid "Used when the terminal host starts again"
+msgstr "Pris en compte quand l’hôte du terminal redémarre"
+
+#: internal/termui/prefs.go:104
+msgid "Shell integration"
+msgstr "Intégration au shell"
+
+#: internal/termui/prefs.go:104
+msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
+msgstr "bash, zsh et fish marquent leurs invites, pour retenir les commandes"
+
+#: internal/termui/prefs.go:106
+#: internal/ui/notify.go:316
+#: ui/bar.ui:122
+#: ui/settings.ui:3064
+msgid "Notifications"
+msgstr "Notifications"
+
+#: internal/termui/prefs.go:106
+msgid "When an agent needs you or is done in a pane you are not looking at"
+msgstr "Quand un agent a besoin de vous ou a fini dans un panneau que vous ne regardez pas"
+
+#: internal/termui/prefs.go:108
+msgid "Agents' hooks"
+msgstr "Hooks des agents"
+
+#: internal/termui/prefs.go:108
+msgid "Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"
+msgstr "Ajouter les hooks d’inua-term à Claude Code et Codex à leur premier lancement, pour qu’ils signalent leur état"
+
+#: internal/termui/prefs.go:110
+msgid "Remember commands"
+msgstr "Retenir les commandes"
+
+#: internal/termui/prefs.go:110
+msgid "Put each pane's last command back at its prompt, not run"
+msgstr "Remettre la dernière commande de chaque panneau à son invite, sans l’exécuter"
+
+#: internal/termui/prefs.go:125
+msgid "Never keep"
+msgstr "Ne jamais garder"
+
+#: internal/termui/prefs.go:125
+msgid "Commands matching these patterns, comma-separated"
+msgstr "Les commandes qui correspondent à ces motifs, séparés par des virgules"
+
+#: internal/termui/prefs.go:127
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "CLÉS"
+
+#: internal/termui/prefs.go:127
+msgid "Click a key, then press the new one; Backspace frees it"
+msgstr "Cliquez une touche, puis pressez la nouvelle ; Retour arrière la libère"
+
+#: internal/termui/prefs.go:277
+#: internal/ui/shortcuts.go:197
+msgid "Press keys…"
+msgstr "Appuyez sur les touches…"
+
+#: internal/termui/prefs.go:278
+msgid "Escape cancels; Backspace frees the action's keys."
+msgstr "Échap annule ; Retour arrière libère les touches de l’action."
+
+#: internal/termui/prefs.go:300
+msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
+msgstr "Une touche demande Ctrl, Alt ou Super : les autres sont aux programmes."
+
+#: internal/termui/prefs.go:311
+msgid "%s was %s's; that one has no keys now."
+msgstr "%s était à %s ; cette action n’a plus de touches."
+
+#: internal/termui/search.go:54
+msgid "Previous match (Enter)"
+msgstr "Occurrence précédente (Entrée)"
+
+#: internal/termui/search.go:55
+msgid "Next match (Shift+Enter)"
+msgstr "Occurrence suivante (Maj+Entrée)"
+
+#: internal/termui/search.go:56
+#: ui/sysmon.ui:220
+#: ui/tailscale.ui:240
+msgid "Close (Escape)"
+msgstr "Fermer (Échapper)"
+
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
 msgstr "Calendrier Inua"
@@ -10409,12 +10846,6 @@ msgstr "Mot de passe erroné"
 #: internal/ui/lock.go:303
 msgid "The password could not be checked"
 msgstr "Le mot de passe n'a pas pu être vérifié"
-
-#: internal/ui/notify.go:316
-#: ui/bar.ui:122
-#: ui/settings.ui:3064
-msgid "Notifications"
-msgstr "Notifications"
 
 #: internal/ui/notify.go:318
 msgid "Notifications (Focus is on)"
@@ -11475,10 +11906,6 @@ msgstr "Fonction Lua"
 msgid "Click, then press the new shortcut"
 msgstr "Cliquez, puis appuyez sur le nouveau raccourci"
 
-#: internal/ui/shortcuts.go:197
-msgid "Press keys…"
-msgstr "Appuyez sur les touches…"
-
 #: internal/ui/shortcuts.go:201
 msgid "Not set"
 msgstr "Non réglé"
@@ -11637,12 +12064,6 @@ msgstr[1] "%d lignes"
 msgid "Jan 2, 2006  15:04"
 msgstr "2 Jan 2006, 15:04"
 
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "Taille"
-
 #: internal/viewerui/app.go:796
 #: internal/viewerui/app.go:814
 #: internal/viewerui/app.go:838
@@ -11690,10 +12111,6 @@ msgstr "Modifié"
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "Créé avec"
-
-#: internal/viewerui/app.go:817
-msgid "TEXT"
-msgstr "TEXTE"
 
 #: internal/viewerui/app.go:818
 msgid "Lines"
@@ -12234,10 +12651,6 @@ msgstr "Pointeur et clavier"
 msgid "The device works as a touchpad and keyboard here."
 msgstr "L'appareil sert ici de pavé tactile et de clavier."
 
-#: ui/connect.ui:850
-msgid "Commands"
-msgstr "Commandes"
-
 #: ui/connect.ui:859
 msgid "It runs the commands set up on This computer."
 msgstr "Il lance les commandes définies dans Cet ordinateur."
@@ -12498,10 +12911,6 @@ msgstr "<span alpha='55%'>[</span>DÉCHIFFRÉ<span alpha='55%'>]</span>"
 #: ui/gpg.ui:1030
 msgid "Decrypt"
 msgstr "Déchiffrer"
-
-#: ui/gpg.ui:1042
-msgid "KEYS"
-msgstr "CLÉS"
 
 #: ui/gpg.ui:1080
 msgid "You have no key of your own yet"
@@ -13968,11 +14377,6 @@ msgstr "Mémoire"
 msgid "Filter by name, PID or user"
 msgstr "Filtrer par nom, PID ou utilisateur"
 
-#: ui/sysmon.ui:220
-#: ui/tailscale.ui:240
-msgid "Close (Escape)"
-msgstr "Fermer (Échapper)"
-
 #: ui/tailscale.ui:56
 msgid "Connect this device to the tailnet"
 msgstr "Connectez cet appareil au tailnet"
@@ -13984,6 +14388,14 @@ msgstr "Filtrer par nom, adresse, OS ou tag"
 #: ui/tailscale.ui:151
 msgid "EXIT NODE"
 msgstr "NŒUD DE SORTIE"
+
+#: ui/term.ui:38
+msgid "Find a workspace or agent"
+msgstr "Chercher un espace ou un agent"
+
+#: ui/term.ui:128
+msgid "New session"
+msgstr "Nouvelle session"
 
 #: ui/video.ui:45
 msgid "Drop a video here"
@@ -14419,6 +14831,14 @@ msgstr "Les appareils de votre tailnet, les nœuds de sortie et les paramètres 
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;réseau;nœud de sortie;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Term.desktop:10
+msgid "Workspaces of terminals, and the agents working in them"
+msgstr "Des espaces de travail de terminaux, et les agents qui y travaillent"
+
+#: config/apps/io.github.lyricat.Inua.Term.desktop:21
+msgid "shell;prompt;command;commandline;cli;agent;claude;codex;"
+msgstr "shell;invite;commande;ligne de commande;cli;agent;claude;codex;"
 
 #: config/apps/io.github.lyricat.Inua.VM.desktop:10
 msgid "Run a Windows virtual machine"

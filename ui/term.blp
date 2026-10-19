@@ -1,0 +1,114 @@
+// inua-term's window (docs/feat/inua-term.md, section 3): the workspaces,
+// the shown workspace's sessions and their panes, and the shown session's
+// terminals, tiled. Rows, sections and tiles are made in Go.
+using Gtk 4.0;
+
+ApplicationWindow term {
+  default-width: 1280;
+  default-height: 800;
+
+  Box {
+    // Column 1: the workspaces.
+    Box workspaces_col {
+      styles ["index", "term-col1"]
+      orientation: vertical;
+      hexpand: false;
+      width-request: 232;
+
+      Label {
+        styles ["index-title"]
+        label: _("Terminal");
+        xalign: 0;
+      }
+
+      SearchEntry find {
+        styles ["index-search", "term-find-entry"]
+        placeholder-text: _("Find a workspace or agent");
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        ListBox workspaces {
+          selection-mode: single;
+        }
+      }
+
+      Box {
+        styles ["term-foot"]
+
+        Button new_workspace {
+          styles ["outlined", "term-foot-button"]
+          hexpand: true;
+
+          Box {
+            Label {
+              label: _("New workspace");
+              hexpand: true;
+              xalign: 0;
+            }
+
+            Label {
+              styles ["term-keys"]
+              label: "Ctrl Shift N";
+            }
+          }
+        }
+      }
+    }
+
+    // Column 2: the shown workspace's sessions, each a section of its
+    // panes.
+    Box sessions_col {
+      styles ["index", "term-col2"]
+      orientation: vertical;
+      hexpand: false;
+      width-request: 312;
+
+      ScrolledWindow {
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        Box sessions {
+          styles ["term-sessions"]
+          orientation: vertical;
+        }
+      }
+
+      Box {
+        styles ["term-foot"]
+
+        Button new_session {
+          styles ["outlined", "term-foot-button"]
+          hexpand: true;
+
+          Box {
+            Label {
+              label: _("New session");
+              hexpand: true;
+              xalign: 0;
+            }
+
+            Label {
+              styles ["term-keys"]
+              label: "Ctrl Shift T";
+            }
+          }
+        }
+      }
+    }
+
+    // Column 3: the shown session's panes, tiled, and nothing else.
+    Overlay stage {
+      hexpand: true;
+      vexpand: true;
+
+      Box tiles {
+        styles ["term-tiles"]
+        hexpand: true;
+        vexpand: true;
+      }
+    }
+  }
+}

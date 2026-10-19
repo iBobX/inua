@@ -57,6 +57,13 @@ windowrule {
     match:class = ^(io\.github\.lyricat\.Inua\.Files)$
     tile = yes
 }
+
+# So is the terminal, inua-term.
+windowrule {
+    name = inua-term
+    match:class = ^(io\.github\.lyricat\.Inua\.Term)$
+    tile = yes
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -170,6 +177,13 @@ hl.window_rule({
 hl.window_rule({
     name = "inua-files",
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Files)$" },
+    tile = true,
+})
+
+-- So is the terminal, inua-term.
+hl.window_rule({
+    name = "inua-term",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Term)$" },
     tile = true,
 })
 `
