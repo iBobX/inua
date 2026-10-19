@@ -56,16 +56,19 @@ type termPane struct {
 	cursor gdk.RGBA
 	warn   gdk.RGBA // search matches
 	cw, ch int
-	cols   int
-	rows   int
-	exited bool
-	closed bool
-	lines  [][]vt.Run            // the screen's rows as the engine last said
-	drawn  map[string]*drawnLine // the lines drawn, by what they draw (lineNode)
-	cur    vt.Cursor
-	mouse  bool // the program tracks the mouse
-	alt    bool // the alternate screen shows
-	scroll vt.Scrollbar
+	// sizeHeld keeps the grid's size while the tile moves (a zoom's
+	// animation): the program is resized once, where the tile ends.
+	sizeHeld bool
+	cols     int
+	rows     int
+	exited   bool
+	closed   bool
+	lines    [][]vt.Run            // the screen's rows as the engine last said
+	drawn    map[string]*drawnLine // the lines drawn, by what they draw (lineNode)
+	cur      vt.Cursor
+	mouse    bool // the program tracks the mouse
+	alt      bool // the alternate screen shows
+	scroll   vt.Scrollbar
 	// wheelRows is the part of a row a touchpad has scrolled so far.
 	wheelRows, wheelNotches float64
 	// The scroll going on after the fingers left the touchpad (glide):
@@ -495,7 +498,7 @@ func (p *termPane) exit(code int) {
 func (p *termPane) allocate(w *gtk.Widget, width, height int) {
 	p.cw, p.ch = cellSize(w, p.font)
 	cols, rows := max((width-2*pad)/p.cw, 2), max((height-2*pad)/p.ch, 1)
-	if cols == p.cols && rows == p.rows {
+	if p.sizeHeld || cols == p.cols && rows == p.rows {
 		return
 	}
 	p.cols, p.rows = cols, rows
