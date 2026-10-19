@@ -30,6 +30,20 @@ func (c *Client) BringHere(ctx context.Context, pid int) error {
 	return nil
 }
 
+// Focus focuses the window sel matches ("class:…", "address:…") where it
+// is, its workspace shown: in the classic form, else in Hyprland 0.55's
+// Lua. It fails when no window matches.
+func (c *Client) Focus(ctx context.Context, sel string) error {
+	err := c.Dispatch(ctx, "focuswindow "+sel)
+	if err == nil {
+		return nil
+	}
+	if lerr := c.LuaDispatch(ctx, fmt.Sprintf(`hl.dsp.focus({window=%q})`, sel)); lerr != nil {
+		return err
+	}
+	return nil
+}
+
 // bringHere is the dispatches BringHere sends, from Hyprland's replies.
 func bringHere(activeJSON, clientsJSON []byte, pid int) ([]string, error) {
 	var active struct {

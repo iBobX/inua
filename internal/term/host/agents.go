@@ -1,12 +1,14 @@
 package host
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -15,6 +17,7 @@ import (
 	"github.com/godbus/dbus/v5"
 	"golang.org/x/sys/unix"
 
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/vt"
@@ -402,7 +405,7 @@ func (h *Host) notify(n note) {
 	err := nf.conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications").Call(
 		"org.freedesktop.Notifications.Notify", 0,
 		"inua-term", uint32(0), "utilities-terminal", summary, body,
-		[]string{"default", i18n.T("Show")}, map[string]dbus.Variant{"desktop-entry": dbus.MakeVariant("io.github.lyricat.Inua.Term")}, int32(-1),
+		[]string{"default", i18n.T("Show")}, map[string]dbus.Variant{"desktop-entry": dbus.MakeVariant(appID)}, int32(-1),
 	).Store(&id)
 	if err != nil {
 		log.Printf("host: notify: %v", err)
@@ -413,8 +416,12 @@ func (h *Host) notify(n note) {
 	nf.mu.Unlock()
 }
 
+// appID is the window's: its desktop entry and its Hyprland class.
+const appID = "io.github.lyricat.Inua.Term"
+
 // showPane shows a pane's session with the pane focused, and brings a
-// window up: inua-term again, which raises the one open or opens one.
+// window up: the one open, focused on its own workspace, else a new one
+// (inua-term again).
 func (h *Host) showPane(id int) {
 	h.mu.Lock()
 	s, w := h.m.PaneSession(id)
@@ -431,6 +438,16 @@ func (h *Host) showPane(id int) {
 	if h.Raise != nil {
 		h.Raise()
 		return
+	}
+	// Started again, the window would come to the workspace shown, as
+	// it does from the dock; from a notification it is gone to instead.
+	if paths, err := hypr.PathsFromEnv(); err == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		err = hypr.NewClient(paths).Focus(ctx, "class:^("+regexp.QuoteMeta(appID)+")$")
+		cancel()
+		if err == nil {
+			return
+		}
 	}
 	if exe, err := os.Executable(); err == nil {
 		cmd := exec.Command(exe)
