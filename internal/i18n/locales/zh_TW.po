@@ -2715,6 +2715,7 @@ msgstr "未知的元件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/keys.go:208
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3589,9 +3590,13 @@ msgid "Opens folders"
 msgstr "開啟資料夾"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:39
-#: internal/termui/app.go:45
+#: internal/termui/app.go:58
+#: internal/termui/app.go:72
+#: internal/termui/app.go:223
+#: internal/termui/app.go:225
+#: internal/termui/tiles.go:309
 #: ui/settings.ui:1933
+#: ui/term.ui:28
 msgid "Terminal"
 msgstr "終端"
 
@@ -3802,6 +3807,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/termui/keys.go:210
 msgid "Rename"
 msgstr "重新命名"
 
@@ -8770,6 +8776,19 @@ msgstr "充滿電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充電中"
 
+#: internal/termui/columns.go:168
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d 個窗格"
+
+#: internal/termui/keys.go:143
+msgid "Choose the workspace's folder"
+msgstr "選擇工作區的資料夾"
+
+#: internal/termui/keys.go:199
+msgid "Rename the session"
+msgstr "重新命名工作階段"
+
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
@@ -8805,6 +8824,14 @@ msgstr "下一個符合 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "關閉（逃脫）"
+
+#: internal/termui/tiles.go:315
+msgid "EXITED %d"
+msgstr "已結束 %d"
+
+#: internal/termui/tiles.go:317
+msgid "IDLE"
+msgstr "閒置"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -12781,6 +12808,18 @@ msgstr "依名稱、位址、作業系統或標籤過濾"
 #: ui/tailscale.ui:151
 msgid "EXIT NODE"
 msgstr "出口節點"
+
+#: ui/term.ui:38
+msgid "Find a workspace or agent"
+msgstr "尋找工作區或代理"
+
+#: ui/term.ui:68
+msgid "New workspace"
+msgstr "新增工作區"
+
+#: ui/term.ui:128
+msgid "New session"
+msgstr "新增工作階段"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

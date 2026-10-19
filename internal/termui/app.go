@@ -1,7 +1,6 @@
 package termui
 
 import (
-	"cmp"
 	"fmt"
 	"log"
 	"os"
@@ -10,28 +9,48 @@ import (
 	"syscall"
 	"time"
 
+	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
+	"github.com/lyricat/inua/internal/term/model"
 )
 
-// App is inua-term's window, a client of the host. For now: one pane, the
-// first the host has, else a new one running the user's shell.
+// App is inua-term's window, a client of the host: the workspaces in
+// column 1, the shown workspace's sessions in column 2, and the shown
+// session's panes tiled in column 3. What it shows is the host's State;
+// it asks the host for every change and draws the State that comes back.
 type App struct {
 	c      *appui.Ctx
 	win    *gtk.ApplicationWindow
 	client *host.Client
-	id     int // the pane shown
-	pane   *termPane
 
-	// shown is the pane for the client's goroutine, which delivers output.
-	mu    sync.Mutex
-	shown *termPane
+	state *host.State
+	info  map[int]host.PaneInfo
+	tiles map[int]*tile // the shown session's panes
 
-	onClose func(gtk.Window) bool
+	// live is the panes with a widget, for the client's goroutine, which
+	// delivers their output.
+	mu   sync.Mutex
+	live map[int]*termPane
+
+	cols   columns
+	stage  *gtk.Overlay
+	tilesW *gtk.Box
+	tiling tiling
+	sheet  *gtk.Box // the rename sheet, while it asks
+	// swapping is set after Ctrl+Shift+X, until the arrow.
+	swapping bool
+
+	onClose                    func(gtk.Window) bool
+	onFolder                   gio.AsyncReadyCallback
+	onRenameOK, onRenameCancel func(gtk.Button)
+	onRenameActivate           func(gtk.Entry)
+	onRenameKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 }
 
 // Register makes inua-term an appui app, "term".
@@ -41,33 +60,44 @@ func Register() {
 
 func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
-	a.win = gtk.NewApplicationWindow(c.App)
+	a.info, a.tiles, a.live = map[int]host.PaneInfo{}, map[int]*tile{}, map[int]*termPane{}
+	a.win = &gtk.ApplicationWindow{}
+	ui := c.Load("term.ui")
+	ui.Get("term", a.win)
+	a.buildColumns(ui)
+	a.stage, a.tilesW = &gtk.Overlay{}, &gtk.Box{}
+	ui.Get("stage", a.stage)
+	ui.Get("tiles", a.tilesW)
+	ui.Close()
 	a.win.SetTitle(i18n.T("Terminal"))
-	a.win.SetDefaultSize(960, 620)
+	a.buildTiling()
 	a.onClose = func(gtk.Window) bool {
 		a.closeWindow()
 		return false
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
-	// The host may need starting: off the main thread, the pane after.
+	// The host may need starting: off the main thread, the state after.
 	go func() {
-		err := a.connect()
+		st, err := a.connect()
 		gtkx.Post(func() {
 			if err != nil {
 				a.fail(err)
+				return
 			}
+			a.apply(st)
 		})
 	}()
 	return a.win
 }
 
-// connect reaches the host, starting it if none runs, and shows a pane.
-func (a *App) connect() error {
+// connect reaches the host, starting it if none runs, and opens the home
+// folder's workspace when there is none.
+func (a *App) connect() (*host.State, error) {
 	path := host.SocketPath()
 	client, err := host.Dial(path, a.output, a.event)
 	if err != nil {
 		if err := startHost(); err != nil {
-			return err
+			return nil, err
 		}
 		for deadline := time.Now().Add(3 * time.Second); ; time.Sleep(20 * time.Millisecond) {
 			if client, err = host.Dial(path, a.output, a.event); err == nil || time.Now().After(deadline) {
@@ -75,72 +105,62 @@ func (a *App) connect() error {
 			}
 		}
 		if err != nil {
-			return fmt.Errorf("the terminal host did not start: %w", err)
+			return nil, fmt.Errorf("the terminal host did not start: %w", err)
 		}
 	}
-	a.client = client
-	panes, err := client.List()
-	if err != nil {
-		return err
-	}
-	cols, rows := 80, 24
-	id := 0
-	for _, p := range panes {
-		if !p.Exited {
-			id, cols, rows = p.ID, p.Cols, p.Rows
-			break
-		}
-	}
-	if id == 0 {
-		home, _ := os.UserHomeDir()
-		shell := cmp.Or(os.Getenv("SHELL"), "/bin/sh")
-		env := append(os.Environ(), "TERM=xterm-256color", "COLORTERM=truecolor", "TERM_PROGRAM=inua-term")
-		if id, err = client.Create([]string{shell}, home, env, cols, rows); err != nil {
-			return err
-		}
-	}
-	ready := make(chan error, 1)
-	var colors host.Colors
+	ready := make(chan host.Colors, 1)
 	gtkx.Post(func() {
-		err := a.show(id, cols, rows)
-		if err == nil {
-			colors = a.pane.colors()
-		}
-		ready <- err
+		a.client = client
+		ready <- a.colors()
 	})
-	if err := <-ready; err != nil {
-		return err
-	}
-	if err := client.SetColors(colors); err != nil {
+	if err := client.SetColors(<-ready); err != nil {
 		log.Printf("term: colors: %v", err)
 	}
-	return client.Attach(id) // the replay arrives through output first
-}
-
-// show makes the pane's widget.
-func (a *App) show(id, cols, rows int) error {
-	p, err := newTermPane(paneBackend{a.client, id}, cols, rows, a.c.Colors)
+	go func() {
+		<-client.Done()
+		gtkx.Post(func() {
+			if a.client == client {
+				a.win.Close() // the host ended: its last pane closed
+			}
+		})
+	}()
+	st, err := client.State()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	p.id = id
-	a.id, a.pane = id, p
-	a.mu.Lock()
-	a.shown = p
-	a.mu.Unlock()
-	a.win.SetChild(&p.root.Widget)
-	p.widget.GrabFocus()
-	return nil
+	if len(st.Model.Workspaces) == 0 {
+		home, _ := os.UserHomeDir()
+		if _, err := client.Open(home, ""); err != nil {
+			return nil, err
+		}
+		return client.State()
+	}
+	if st.Model.Shown.Workspace == 0 {
+		client.Show(st.Model.Workspaces[0].ID, 0)
+		return client.State()
+	}
+	return st, nil
 }
 
-// paneFor is the pane shown, if it is the host's pane id.
+// ask sends the host a request off the main thread; a failure shows in
+// the log.
+func (a *App) ask(what string, f func(*host.Client) error) {
+	client := a.client
+	if client == nil {
+		return
+	}
+	go func() {
+		if err := f(client); err != nil {
+			log.Printf("term: %s: %v", what, err)
+		}
+	}()
+}
+
+// paneFor is a pane with a widget, for the client's goroutine.
 func (a *App) paneFor(id int) *termPane {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	if a.shown != nil && a.shown.id == id {
-		return a.shown
-	}
-	return nil
+	return a.live[id]
 }
 
 func (a *App) output(id int, b []byte) {
@@ -149,72 +169,134 @@ func (a *App) output(id int, b []byte) {
 	}
 }
 
+// event is a message from the host, on the client's goroutine.
 func (a *App) event(m host.Message) {
-	p := a.paneFor(m.Pane)
-	if p == nil {
+	switch {
+	case m.Type == host.MsgState && m.State != nil:
+		st := m.State
+		gtkx.Post(func() { a.apply(st) })
+	case m.Type == host.MsgEvent:
+		gtkx.Post(func() { a.paneEvent(m) })
+	}
+}
+
+// paneEvent is a pane's title, folder, exit or clipboard write.
+func (a *App) paneEvent(m host.Message) {
+	info, ok := a.info[m.Pane]
+	if !ok {
 		return
 	}
-	if m.Clipboard != nil {
-		text, primary := *m.Clipboard, m.Primary
-		gtkx.Post(func() { p.setClipboard(text, primary) })
+	if m.Title != "" {
+		info.Title = m.Title
+	}
+	if m.Dir != "" {
+		info.Dir = m.Dir
 	}
 	if m.Code != nil {
-		code := *m.Code
-		gtkx.Post(func() { p.exit(code) })
+		info.Exited, info.Code = true, *m.Code
 	}
+	a.info[m.Pane] = info
+	if t := a.tiles[m.Pane]; t != nil {
+		if m.Code != nil {
+			t.pane.exit(*m.Code)
+		}
+		if m.Clipboard != nil {
+			t.pane.setClipboard(*m.Clipboard, m.Primary)
+		}
+		t.update(info)
+	}
+	if m.Title != "" || m.Dir != "" || m.Code != nil {
+		a.cols.update(a)
+	}
+}
+
+// apply shows a State: the columns, and the shown session's tiles.
+func (a *App) apply(st *host.State) {
+	a.state = st
+	a.info = map[int]host.PaneInfo{}
+	for _, p := range st.Panes {
+		a.info[p.ID] = p
+	}
+	a.cols.update(a)
+	a.syncTiles()
+	if s := a.shown(); s != nil {
+		a.win.SetTitle(s.Name + " — " + i18n.T("Terminal"))
+	} else {
+		a.win.SetTitle(i18n.T("Terminal"))
+	}
+}
+
+// shown is the session on screen, nil for none.
+func (a *App) shown() *model.Session {
+	if a.state == nil {
+		return nil
+	}
+	s, _ := a.state.Model.Session(a.state.Model.Shown.Session)
+	return s
+}
+
+// shownWorkspace is the workspace on screen, nil for none.
+func (a *App) shownWorkspace() *model.Workspace {
+	if a.state == nil {
+		return nil
+	}
+	return a.state.Model.Workspace(a.state.Model.Shown.Workspace)
 }
 
 func (a *App) fail(err error) {
 	log.Printf("term: %v", err)
 	label := gtk.NewLabel(err.Error())
 	label.SetWrap(true)
-	a.win.SetChild(&label.Widget)
+	label.AddCssClass("term-error")
+	a.stage.SetChild(&label.Widget)
 }
 
-// closeWindow leaves the pane running on the host, unless its program
-// has ended.
+// closeWindow leaves the panes running on the host.
 func (a *App) closeWindow() {
-	if a.pane != nil {
-		if a.pane.exited && a.client != nil {
-			a.client.ClosePane(a.id)
-		}
-		a.pane.close()
-		a.pane = nil
-		a.mu.Lock()
-		a.shown = nil
-		a.mu.Unlock()
+	for id := range a.tiles {
+		a.dropTile(id)
 	}
 	if a.client != nil {
-		a.client.Close()
+		client := a.client
+		a.client = nil
+		client.Close()
 	}
 }
 
 func (a *App) ThemeChanged() {
-	if a.pane == nil {
-		return
+	for _, t := range a.tiles {
+		t.pane.setTheme(a.c.Colors)
 	}
-	a.pane.fg, a.pane.bg, a.pane.cursor = rgba(a.c.Colors["t0"]), rgba(a.c.Colors["app"]), rgba(a.c.Colors["accent"])
-	a.pane.warn = rgba(a.c.Colors["warn"])
-	a.pane.widget.QueueDraw()
-	if a.client != nil {
-		client, colors := a.client, a.pane.colors()
-		go func() {
-			if err := client.SetColors(colors); err != nil {
-				log.Printf("term: colors: %v", err)
-			}
-		}()
+	colors := a.colors()
+	a.ask("colors", func(c *host.Client) error { return c.SetColors(colors) })
+}
+
+// colors are the theme's, for programs that ask.
+func (a *App) colors() host.Colors {
+	v := func(name string) uint32 {
+		c := rgba(a.c.Colors[name])
+		b := func(f float32) uint32 { return uint32(f*255+0.5) & 0xff }
+		return b(c.Red)<<16 | b(c.Green)<<8 | b(c.Blue)
 	}
+	return host.Colors{FG: v("t0"), BG: v("app"), Cursor: v("accent")}
 }
 
 // paneBackend is a pane on the host.
 type paneBackend struct {
-	client *host.Client
-	id     int
+	app *App
+	id  int
 }
 
-func (b paneBackend) Input(p []byte) error { return b.client.Input(b.id, p) }
+func (b paneBackend) Input(p []byte) error {
+	if b.app.client == nil {
+		return nil
+	}
+	return b.app.client.Input(b.id, p)
+}
+
 func (b paneBackend) Resize(cols, rows, cellW, cellH int) error {
-	return b.client.Resize(b.id, cols, rows, cellW, cellH)
+	b.app.ask("resize", func(c *host.Client) error { return c.Resize(b.id, cols, rows, cellW, cellH) })
+	return nil
 }
 
 // startHost runs `inua-term --host` in a session of its own, so it

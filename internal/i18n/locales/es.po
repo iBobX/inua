@@ -2731,6 +2731,7 @@ msgstr "Bloque desconocido %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
+#: internal/termui/keys.go:208
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3605,9 +3606,13 @@ msgid "Opens folders"
 msgstr "Abre carpetas"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:39
-#: internal/termui/app.go:45
+#: internal/termui/app.go:58
+#: internal/termui/app.go:72
+#: internal/termui/app.go:223
+#: internal/termui/app.go:225
+#: internal/termui/tiles.go:309
 #: ui/settings.ui:1933
+#: ui/term.ui:28
 msgid "Terminal"
 msgstr "Terminal"
 
@@ -3820,6 +3825,7 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/termui/keys.go:210
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -8811,6 +8817,20 @@ msgstr "Completamente cargado"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Cargando"
 
+#: internal/termui/columns.go:168
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d panel"
+msgstr[1] "%d paneles"
+
+#: internal/termui/keys.go:143
+msgid "Choose the workspace's folder"
+msgstr "Elige la carpeta del espacio de trabajo"
+
+#: internal/termui/keys.go:199
+msgid "Rename the session"
+msgstr "Renombrar la sesión"
+
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
@@ -8848,6 +8868,14 @@ msgstr "Coincidencia siguiente (Mayús+Intro)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "Cerrar (Escape)"
+
+#: internal/termui/tiles.go:315
+msgid "EXITED %d"
+msgstr "SALIÓ %d"
+
+#: internal/termui/tiles.go:317
+msgid "IDLE"
+msgstr "INACTIVO"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -12836,6 +12864,18 @@ msgstr "Filtrar por nombre, dirección, sistema operativo o etiqueta"
 #: ui/tailscale.ui:151
 msgid "EXIT NODE"
 msgstr "NODO DE SALIDA"
+
+#: ui/term.ui:38
+msgid "Find a workspace or agent"
+msgstr "Busca un espacio o un agente"
+
+#: ui/term.ui:68
+msgid "New workspace"
+msgstr "Nuevo espacio de trabajo"
+
+#: ui/term.ui:128
+msgid "New session"
+msgstr "Nueva sesión"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

@@ -72,6 +72,11 @@ type termPane struct {
 	im      *gtk.IMMulticontext
 	preedit string // what the input method is composing, drawn at the cursor
 
+	// chord is the window's handler for its Ctrl+Shift chords; focused
+	// tells it this pane took the focus.
+	chord   func(base, keyval uint32, state gdk.ModifierType) bool
+	focused func()
+
 	sheet                             *gtk.Box // the paste sheet, while it asks
 	find                              *gtk.Box // the find bar, while open
 	findEntry                         *gtk.Entry
@@ -160,7 +165,12 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	p.im.ConnectCommit(&p.onCommit)
 	p.im.ConnectPreeditChanged(&p.onPreedit)
 	focus := gtk.NewEventControllerFocus()
-	p.onFocusIn = func(gtk.EventControllerFocus) { p.im.FocusIn() }
+	p.onFocusIn = func(gtk.EventControllerFocus) {
+		p.im.FocusIn()
+		if p.focused != nil {
+			p.focused()
+		}
+	}
 	p.onFocusOut = func(gtk.EventControllerFocus) { p.im.FocusOut() }
 	focus.ConnectEnter(&p.onFocusIn)
 	focus.ConnectLeave(&p.onFocusOut)
@@ -289,6 +299,22 @@ func (p *termPane) copySelection(toClipboard bool) {
 // key sends a key the input method left, encoded by the engine in the
 // modes the program set.
 func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType, action vt.KeyAction) bool {
+	var layout uint32
+	var consumed gdk.ModifierType
+	if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
+		ke := gdk.KeyEventNewFromInternalPtr(ev)
+		consumed = ke.GetConsumedModifiers()
+		layout = ke.GetLayout()
+	}
+	// The key without modifiers: the window's chords match it, and the
+	// kitty protocol sends its character.
+	var base uint32
+	if !p.widget.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
+		base = keyval
+	}
+	if action == vt.Press && p.chord != nil && p.chord(base, keyval, state) {
+		return true
+	}
 	if p.exited {
 		return false
 	}
@@ -315,17 +341,8 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	if r := gdk.KeyvalToUnicode(keyval); r >= 0x20 && r != 0x7f {
 		k.Text = string(rune(r))
 	}
-	var layout uint32
-	if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
-		ke := gdk.KeyEventNewFromInternalPtr(ev)
-		k.Consumed = mods(ke.GetConsumedModifiers())
-		layout = ke.GetLayout()
-	}
-	// The key's character without modifiers, for the kitty protocol.
-	var base uint32
-	if p.widget.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
-		k.Unshifted = rune(gdk.KeyvalToUnicode(base))
-	}
+	k.Consumed = mods(consumed)
+	k.Unshifted = rune(gdk.KeyvalToUnicode(base))
 	b, err := p.term.Key(k)
 	if err != nil {
 		log.Printf("term: key: %v", err)
@@ -563,6 +580,16 @@ func (p *termPane) color(v uint32, def gdk.RGBA) gdk.RGBA {
 		return def
 	}
 	return gdk.RGBA{Red: float32(v>>16&0xff) / 255, Green: float32(v>>8&0xff) / 255, Blue: float32(v&0xff) / 255, Alpha: 1}
+}
+
+// busy says a sheet or the find bar has the keys.
+func (p *termPane) busy() bool { return p.sheet != nil || p.find != nil }
+
+// setTheme takes the theme's colours.
+func (p *termPane) setTheme(colors map[string]string) {
+	p.fg, p.bg, p.cursor = rgba(colors["t0"]), rgba(colors["app"]), rgba(colors["accent"])
+	p.warn = rgba(colors["warn"])
+	p.widget.QueueDraw()
 }
 
 func (p *termPane) close() {
