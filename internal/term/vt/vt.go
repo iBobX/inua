@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 8
+const abi = 9
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -51,6 +51,7 @@ var lib struct {
 	colors    func(t uintptr, fg, bg, cursor uint32)
 	cellSize  func(t uintptr, w, h uint32)
 	clipboard func(t uintptr, p **byte, n *uintptr) int32
+	scroll    func(t uintptr, kind uint32, n int32)
 	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
@@ -116,6 +117,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.colors, h, "inua_vt_colors")
 		purego.RegisterLibFunc(&lib.cellSize, h, "inua_vt_cell_size")
 		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
+		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 	})
 	return lib.err
 }
@@ -157,6 +159,20 @@ func (t *Terminal) Write(p []byte) (int, error) {
 	}
 	return len(p), nil
 }
+
+// ScrollKind is where Scroll moves the viewport.
+type ScrollKind uint32
+
+const (
+	ScrollTop     ScrollKind = iota // the scrollback's first row
+	ScrollBottom                    // where the program writes
+	ScrollRows                      // by n rows, up negative
+	ScrollPrompts                   // by n of the shell's prompts (OSC 133)
+)
+
+// Scroll moves the viewport through the scrollback; the next frame shows
+// the rows there. Output keeps it in place unless it is at the bottom.
+func (t *Terminal) Scroll(kind ScrollKind, n int) { lib.scroll(t.h, uint32(kind), int32(n)) }
 
 // Answer makes the terminal answer the program's queries (device
 // attributes, cursor position, modes, colours, sizes); Answers takes what
@@ -263,7 +279,8 @@ type frameInfo struct {
 	cursorVisible, cursorX, cursorY uint32
 	cursorStyle, cursorWide         uint32
 	password, fg, bg, nrows         uint32
-	mouse                           uint32
+	mouse, alt                      uint32
+	sbTotal, sbOffset, sbLen        uint32
 }
 
 // Dirty says how much of the screen changed since the last frame.
@@ -312,8 +329,19 @@ type Frame struct {
 	FG, BG   uint32 // 0xRRGGBB
 	// Mouse is set while the program tracks the mouse (vim, htop).
 	Mouse bool
-	Lines []Line
+	// Alt is set while the alternate screen shows (vim, less, htop).
+	Alt bool
+	// Scroll is where the viewport is in the scrollback.
+	Scroll Scrollbar
+	Lines  []Line
 }
+
+// Scrollbar is the scrollable area in rows: Total of them, the viewport
+// Len long from Offset. At the bottom, Offset+Len == Total.
+type Scrollbar struct{ Total, Offset, Len int }
+
+// AtBottom says the viewport shows where the program writes.
+func (s Scrollbar) AtBottom() bool { return s.Offset+s.Len >= s.Total }
 
 // Cursor is where the cursor is, in the viewport.
 type Cursor struct {
@@ -371,8 +399,9 @@ func decodeFrame(info *frameInfo, b []byte) (Frame, error) {
 			X: int(info.cursorX), Y: int(info.cursorY), Visible: info.cursorVisible != 0,
 			Style: CursorStyle(info.cursorStyle), Wide: info.cursorWide != 0,
 		},
-		Password: info.password != 0, FG: info.fg, BG: info.bg, Mouse: info.mouse != 0,
-		Lines: make([]Line, 0, info.nrows),
+		Password: info.password != 0, FG: info.fg, BG: info.bg, Mouse: info.mouse != 0, Alt: info.alt != 0,
+		Scroll: Scrollbar{Total: int(info.sbTotal), Offset: int(info.sbOffset), Len: int(info.sbLen)},
+		Lines:  make([]Line, 0, info.nrows),
 	}
 	le := binary.LittleEndian
 	short := errors.New("vt: frame: short buffer")

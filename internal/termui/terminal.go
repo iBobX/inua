@@ -51,6 +51,10 @@ type termPane struct {
 	lines  [][]vt.Run // the screen's rows as the engine last said
 	cur    vt.Cursor
 	mouse  bool // the program tracks the mouse
+	alt    bool // the alternate screen shows
+	scroll vt.Scrollbar
+	// wheelRows is the part of a row a touchpad has scrolled so far.
+	wheelRows float64
 	// selecting is set while a drag selects; dragX, dragY is where it began.
 	selecting    bool
 	dragX, dragY float64
@@ -68,6 +72,7 @@ type termPane struct {
 	onText, onFiles [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
 	onMiddle        func(gtk.GestureClick, int32, float64, float64)
 	onDrop          func(gtk.DropTarget, uintptr, float64, float64) bool
+	onScroll        func(gtk.EventControllerScroll, float64, float64) bool
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
@@ -186,6 +191,10 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	}
 	middle.ConnectPressed(&p.onMiddle)
 	p.widget.AddController(&middle.EventController)
+	wheel := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue)
+	p.onScroll = func(c gtk.EventControllerScroll, _, dy float64) bool { return p.wheel(&c, dy) }
+	wheel.ConnectScroll(&p.onScroll)
+	p.widget.AddController(&wheel.EventController)
 	// Files dropped on the pane are pasted as their paths.
 	drop := gtk.NewDropTarget(gdk.FileListGLibType(), gdk.ActionCopyValue|gdk.ActionMoveValue)
 	p.onDrop = func(dt gtk.DropTarget, _ uintptr, _, _ float64) bool {
@@ -278,6 +287,8 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 		case chord == gdk.ShiftMaskValue && (int32(keyval) == gdk.KEY_Insert || int32(keyval) == gdk.KEY_KP_Insert):
 			p.pasteFrom(true)
 			return true
+		case p.scrollKey(keyval, chord):
+			return true
 		}
 	}
 	k := vt.KeyEvent{Keyval: keyval, Keycode: keycode, Mods: mods(state), Action: action}
@@ -316,6 +327,18 @@ func (p *termPane) input(b []byte) {
 	if text, _ := p.term.SelectionText(); text != "" {
 		p.term.ClearSelection()
 		p.update(false)
+	}
+	// Typing shows where it goes.
+	if !p.scroll.AtBottom() {
+		p.scrollBy(vt.ScrollBottom, 0)
+	}
+	p.send(b)
+}
+
+// send gives the program bytes, as they are.
+func (p *termPane) send(b []byte) {
+	if p.exited || len(b) == 0 {
+		return
 	}
 	if err := p.be.Input(b); err != nil {
 		log.Printf("term: input: %v", err)
@@ -379,6 +402,8 @@ func (p *termPane) update(all bool) {
 	}
 	p.cur = f.Cursor
 	p.mouse = f.Mouse
+	p.alt = f.Alt
+	p.scroll = f.Scroll
 	if p.cw > 0 {
 		// The input method's candidates open at the cursor.
 		p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + p.cur.X*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
@@ -492,6 +517,7 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 		}
 	}
 	s.Restore()
+	p.drawScrollbar(w, s)
 }
 
 // colors are the pane's default colours, for programs that ask.

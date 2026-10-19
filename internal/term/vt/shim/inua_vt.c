@@ -101,6 +101,17 @@ void inua_vt_write(inua_vt *t, const uint8_t *data, size_t len) {
   ghostty_terminal_vt_write(t->term, data, len);
 }
 
+void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n) {
+  GhosttyTerminalScrollViewport s = {0};
+  switch (kind) {
+  case 0: s.tag = GHOSTTY_SCROLL_VIEWPORT_TOP; break;
+  case 1: s.tag = GHOSTTY_SCROLL_VIEWPORT_BOTTOM; break;
+  case 2: s.tag = GHOSTTY_SCROLL_VIEWPORT_DELTA; s.value.delta = n; break;
+  default: s.tag = GHOSTTY_SCROLL_VIEWPORT_DELTA_PROMPT; s.value.delta_prompt = n; break;
+  }
+  ghostty_terminal_scroll_viewport(t->term, s);
+}
+
 /* --- writing back to the program --- */
 
 static void out_write(GhosttyTerminal term, void *userdata, const uint8_t *data, size_t len) {
@@ -400,6 +411,15 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
   bool mouse = false;
   ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_MOUSE_TRACKING, &mouse);
   info->mouse = mouse;
+  GhosttyTerminalScreen screen = GHOSTTY_TERMINAL_SCREEN_PRIMARY;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_ACTIVE_SCREEN, &screen);
+  info->alt = screen == GHOSTTY_TERMINAL_SCREEN_ALTERNATE;
+  GhosttyTerminalScrollbar sb = {0};
+  if (ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_SCROLLBAR, &sb) == GHOSTTY_SUCCESS) {
+    info->sb_total = (uint32_t)sb.total;
+    info->sb_offset = (uint32_t)sb.offset;
+    info->sb_len = (uint32_t)sb.len;
+  }
   bool every = all || dirty == GHOSTTY_RENDER_STATE_DIRTY_FULL;
   out_buf o = {.buf = buf, .cap = cap};
   if (ghostty_render_state_get(t->render, GHOSTTY_RENDER_STATE_DATA_ROW_ITERATOR, &t->rows) != GHOSTTY_SUCCESS)

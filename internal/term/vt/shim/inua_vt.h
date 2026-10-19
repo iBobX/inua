@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 8
+#define INUA_VT_ABI 9
 
 typedef struct inua_vt inua_vt;
 
@@ -74,6 +74,10 @@ typedef struct {
   uint32_t fg, bg;         /* the default colours */
   uint32_t nrows;          /* row records in the buffer */
   uint32_t mouse;          /* the program tracks the mouse */
+  uint32_t alt;            /* the alternate screen is shown (vim, less) */
+  /* The scrollable area in rows: all of it, where the viewport starts,
+   * and the viewport's length. */
+  uint32_t sb_total, sb_offset, sb_len;
 } inua_vt_frame_info;
 
 /* Run attribute bits. */
@@ -100,6 +104,12 @@ typedef struct {
  * nothing marked clean. */
 int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
                   inua_vt_frame_info *info);
+
+/* Moves the viewport through the scrollback: kind 0 to the top, 1 to the
+ * bottom (where the program writes), 2 by n rows (up is negative), 3 by n
+ * prompts (the shell's OSC 133 marks). Frames then show the rows there;
+ * new output keeps the viewport where it is unless it is at the bottom. */
+void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n);
 
 /* Modifier bits for inua_vt_key, as libghostty's. */
 #define INUA_VT_MOD_SHIFT 1u

@@ -471,3 +471,46 @@ func TestClipboardWrite(t *testing.T) {
 		t.Errorf("a read answered: %q", a)
 	}
 }
+
+func TestScroll(t *testing.T) {
+	term := newTerm(t, 20, 4)
+	for i := 1; i <= 10; i++ {
+		term.Write([]byte("line " + strconv.Itoa(i) + "\r\n"))
+	}
+	f, err := term.Frame(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s := f.Scroll; s.Total != 11 || s.Len != 4 || !s.AtBottom() {
+		t.Fatalf("at the bottom: %+v", s)
+	}
+	term.Scroll(ScrollRows, -3)
+	f, _ = term.Frame(false)
+	if got := text(f)[0]; got != "line 5" || f.Scroll.Offset != 4 || f.Scroll.AtBottom() {
+		t.Errorf("3 up: first row %q, %+v", got, f.Scroll)
+	}
+	if f.Cursor.Visible {
+		t.Error("the cursor shows while scrolled away from it")
+	}
+	// Output keeps a scrolled viewport where it is.
+	term.Write([]byte("line 11\r\n"))
+	f, _ = term.Frame(true)
+	if got := text(f)[0]; got != "line 5" {
+		t.Errorf("after output: first row %q", got)
+	}
+	term.Scroll(ScrollTop, 0)
+	f, _ = term.Frame(false)
+	if got := text(f)[0]; got != "line 1" || f.Scroll.Offset != 0 {
+		t.Errorf("top: %q %+v", got, f.Scroll)
+	}
+	term.Scroll(ScrollBottom, 0)
+	f, _ = term.Frame(false)
+	if !f.Scroll.AtBottom() || !f.Cursor.Visible {
+		t.Errorf("bottom: %+v, cursor %v", f.Scroll, f.Cursor.Visible)
+	}
+	term.Write([]byte("\x1b[?1049h"))
+	f, _ = term.Frame(false)
+	if !f.Alt {
+		t.Error("alternate screen not reported")
+	}
+}
