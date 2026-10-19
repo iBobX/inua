@@ -16,6 +16,8 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // Settings is the file's content.
@@ -64,32 +66,32 @@ type Remember struct {
 // Actions are the keys' actions, in the order the settings show them,
 // with their chords by default.
 var Actions = []struct{ Name, Keys, Label string }{
-	{"new_session", "ctrl+shift+t", "New session in this workspace"},
-	{"new_workspace", "ctrl+shift+n", "New workspace"},
-	{"split_right", "ctrl+shift+d", "Split right"},
-	{"split_down", "ctrl+shift+e", "Split down"},
-	{"close_pane", "ctrl+shift+w", "Close pane"},
-	{"swap", "ctrl+shift+x", "Swap with the pane in a direction (then an arrow)"},
-	{"zoom", "ctrl+shift+z", "Zoom pane / back"},
-	{"equalize", "ctrl+shift+equal", "Equalize"},
-	{"next_layout", "ctrl+shift+l", "Next layout"},
-	{"previous_session", "ctrl+shift+bracketleft", "Previous session"},
-	{"next_session", "ctrl+shift+bracketright", "Next session"},
-	{"next_waiting", "ctrl+shift+j", "Next agent that needs you"},
-	{"agents", "ctrl+shift+a", "Every agent"},
-	{"fold_workspaces", "ctrl+shift+b", "Fold the workspaces"},
-	{"fold_sessions", "ctrl+shift+s", "Fold the sessions"},
-	{"copy", "ctrl+shift+c", "Copy"},
-	{"paste", "ctrl+shift+v", "Paste"},
-	{"find", "ctrl+shift+f", "Search the scrollback"},
-	{"copy_mode", "ctrl+shift+space", "Copy mode"},
-	{"rename", "ctrl+shift+r", "Rename the session"},
-	{"palette", "ctrl+shift+p", "Every action by name"},
-	{"keys", "ctrl+shift+slash", "Show the keys"},
-	{"settings", "ctrl+shift+comma", "Settings"},
-	{"font_larger", "ctrl+equal", "Font larger"},
-	{"font_smaller", "ctrl+minus", "Font smaller"},
-	{"font_reset", "ctrl+0", "Font size as set"},
+	{"new_session", "ctrl+shift+t", i18n.M("New session in this workspace")},
+	{"new_workspace", "ctrl+shift+n", i18n.M("New workspace")},
+	{"split_right", "ctrl+shift+d", i18n.M("Split right")},
+	{"split_down", "ctrl+shift+e", i18n.M("Split down")},
+	{"close_pane", "ctrl+shift+w", i18n.M("Close pane")},
+	{"swap", "ctrl+shift+x", i18n.M("Swap with the pane in a direction (then an arrow)")},
+	{"zoom", "ctrl+shift+z", i18n.M("Zoom pane / back")},
+	{"equalize", "ctrl+shift+equal", i18n.M("Equalize")},
+	{"next_layout", "ctrl+shift+l", i18n.M("Next layout")},
+	{"previous_session", "ctrl+shift+bracketleft", i18n.M("Previous session")},
+	{"next_session", "ctrl+shift+bracketright", i18n.M("Next session")},
+	{"next_waiting", "ctrl+shift+j", i18n.M("Next agent that needs you")},
+	{"agents", "ctrl+shift+a", i18n.M("Every agent")},
+	{"fold_workspaces", "ctrl+shift+b", i18n.M("Fold the workspaces")},
+	{"fold_sessions", "ctrl+shift+s", i18n.M("Fold the sessions")},
+	{"copy", "ctrl+shift+c", i18n.M("Copy")},
+	{"paste", "ctrl+shift+v", i18n.M("Paste")},
+	{"find", "ctrl+shift+f", i18n.M("Search the scrollback")},
+	{"copy_mode", "ctrl+shift+space", i18n.M("Copy mode")},
+	{"rename", "ctrl+shift+r", i18n.M("Rename the session")},
+	{"palette", "ctrl+shift+p", i18n.M("Every action by name")},
+	{"keys", "ctrl+shift+slash", i18n.M("Show the keys")},
+	{"settings", "ctrl+shift+comma", i18n.M("Settings")},
+	{"font_larger", "ctrl+equal", i18n.M("Font larger")},
+	{"font_smaller", "ctrl+minus", i18n.M("Font smaller")},
+	{"font_reset", "ctrl+0", i18n.M("Font size as set")},
 }
 
 // Default is the settings without a file.

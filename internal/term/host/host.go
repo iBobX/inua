@@ -25,6 +25,9 @@ import (
 // client attaching later.
 const ReplayLimit = 4 << 20
 
+// hostScrollback is the scrollback of the host's own engines, in lines.
+const hostScrollback = 1000
+
 // answersLen is how many answers to a pane's queries wait for the program
 // to read its input; more are dropped, so a program that asks without
 // reading cannot stop the host reading its output.
@@ -435,6 +438,9 @@ func (h *Host) start(argv []string, dir string, env []string, cols, rows, cellW,
 	p := &pane{id: id, host: h, argv: argv, dir: dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
 	if t, err := vt.New(cols, rows); err == nil {
 		p.term = t
+		// The host reads a screen's last rows; the windows keep the long
+		// scrollback.
+		t.SetDefaults(hostScrollback, vt.CursorBlock, false)
 		t.Answer()
 		t.SetCellSize(cellW, cellH)
 		if colors != nil {

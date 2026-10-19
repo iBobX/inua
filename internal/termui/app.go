@@ -62,6 +62,14 @@ type App struct {
 	extra   func(action string, p *termPane) bool
 	onBlink glib.SourceFunc
 
+	prefs *prefs // the settings window, while open
+
+	onSheetEsc    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onPaletteFind func(uintptr, uintptr)
+	onPaletteRun  func(gtk.SearchEntry)
+	onPaletteRow  func(gtk.ListBox, uintptr)
+	onPaletteKey  func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+
 	onClose                    func(gtk.Window) bool
 	onFolder                   gio.AsyncReadyCallback
 	onRenameOK, onRenameCancel func(gtk.Button)

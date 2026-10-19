@@ -119,6 +119,12 @@ func (a *App) do(action string, p *termPane) bool {
 		a.zoomFont(-1)
 	case "font_reset":
 		a.zoomFont(0)
+	case "palette":
+		a.palette(p)
+	case "keys":
+		a.showKeys()
+	case "settings":
+		a.openSettings()
 	case "copy", "paste", "find":
 		if p == nil {
 			return false
