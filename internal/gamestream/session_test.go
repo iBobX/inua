@@ -142,11 +142,19 @@ func TestASessionStreamsAndTakesInput(t *testing.T) {
 	_, rport, _ := net.SplitHostPort(r.ln.Addr().String())
 	f.session = "rtsp://127.0.0.1:" + rport
 
-	s, err := Connect(t.Context(), h, 881448767, Config{Width: 1280, Height: 720, FPS: 60, BitrateKbps: 10000, Codec: HEVC})
+	// No app named: the host's Desktop, by its own ID. Sunshine ends a
+	// session of an app it does not have as soon as the viewer joins.
+	s, err := Connect(t.Context(), h, 0, Config{Width: 1280, Height: 720, FPS: 60, BitrateKbps: 10000, Codec: HEVC})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer s.Close()
+	f.mu.Lock()
+	launched := f.launched.Get("appid")
+	f.mu.Unlock()
+	if launched != "881448767" {
+		t.Errorf("launched app %q, not the Desktop's ID", launched)
+	}
 	if s.Config.Codec != HEVC || s.Config.PacketSize != 1392 {
 		t.Errorf("config = %+v", s.Config)
 	}

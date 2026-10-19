@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -47,7 +48,8 @@ type Session struct {
 }
 
 // Connect starts app on the host (or joins the session running there) and
-// starts its streams. The host must be paired.
+// starts its streams; app 0 is the host's Desktop, else its first app.
+// The host must be paired.
 func Connect(ctx context.Context, h *Host, appID int, cfg Config) (*Session, error) {
 	info, err := h.Info(ctx)
 	if err != nil {
@@ -79,8 +81,15 @@ func Connect(ctx context.Context, h *Host, appID int, cfg Config) (*Session, err
 	rand.Read(id[:])
 	l.KeyID = binary.BigEndian.Uint32(id[:])
 	l.AppID, l.Width, l.Height, l.FPS = appID, cfg.Width, cfg.Height, cfg.FPS
-	if info.CurrentGame != 0 {
+	switch {
+	case info.CurrentGame != 0:
 		l.AppID, l.Resume = info.CurrentGame, true
+	case appID == 0:
+		// Sunshine takes an app it does not have, starts nothing, and ends
+		// the session as the viewer joins: the app's own ID it is.
+		if l.AppID, err = desktop(ctx, h); err != nil {
+			return nil, err
+		}
 	}
 	sessionURL, err := h.Start(ctx, l)
 	if err != nil {
@@ -148,6 +157,23 @@ func Connect(ctx context.Context, h *Host, appID int, cfg Config) (*Session, err
 		s.end(ctl.err)
 	}()
 	return s, nil
+}
+
+// desktop is the ID of the host's Desktop app, else of its first app.
+func desktop(ctx context.Context, h *Host) (int, error) {
+	apps, err := h.Apps(ctx)
+	if err != nil {
+		return 0, err
+	}
+	if len(apps) == 0 {
+		return 0, errors.New("gamestream: the host offers no app to stream")
+	}
+	for _, a := range apps {
+		if strings.EqualFold(a.Title, "Desktop") {
+			return a.ID, nil
+		}
+	}
+	return apps[0].ID, nil
 }
 
 // Done is closed when the session ends; Err says why.
