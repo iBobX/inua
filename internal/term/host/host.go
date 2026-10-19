@@ -113,7 +113,9 @@ type client struct {
 	conn   net.Conn
 	active bool          // its window is the active one
 	out    chan [][]byte // frames: kind byte first, then payload parts
-	once   sync.Once
+	// mu guards out's closing: a frame is not sent to a closed queue.
+	mu     sync.Mutex
+	closed bool
 }
 
 // Listen makes a host on the socket at path: its folder is made private
@@ -261,14 +263,19 @@ func (c *client) write() {
 	}
 }
 
-// send queues a frame; a client too far behind is let go.
+// send queues a frame; a client too far behind is let go, and one gone
+// gets nothing.
 func (c *client) send(kind byte, payload ...[]byte) {
 	f := append([][]byte{{kind}}, payload...)
-	defer func() { recover() }() // the queue closed under us: the client is gone
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.closed {
+		return
+	}
 	select {
 	case c.out <- f:
 	default:
-		c.close()
+		c.closeLocked(true)
 	}
 }
 
@@ -281,15 +288,29 @@ func (c *client) message(m Message) {
 
 // close drops the client now.
 func (c *client) close() {
-	c.once.Do(func() {
-		c.conn.Close()
-		close(c.out)
-	})
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.closeLocked(true)
 }
 
 // finish lets the client's writer send what is queued, then close.
 func (c *client) finish() {
-	c.once.Do(func() { close(c.out) })
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.closeLocked(false)
+}
+
+// closeLocked closes the queue once, and the connection now with conn;
+// c.mu is held.
+func (c *client) closeLocked(conn bool) {
+	if c.closed {
+		return
+	}
+	c.closed = true
+	if conn {
+		c.conn.Close()
+	}
+	close(c.out)
 }
 
 // drop forgets a client that went away.
