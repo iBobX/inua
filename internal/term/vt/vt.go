@@ -56,8 +56,8 @@ var lib struct {
 	input       func(t uintptr, out **byte, n *uintptr) int32
 	tail        func(t uintptr, n uint16, out **byte, outN *uintptr) int32
 	notes       func(t uintptr, p **byte, n *uintptr)
-	defaults func(t uintptr, scrollback, cursor, blink uint32)
-	linkAt   func(t uintptr, x, y uint16, out **byte, n *uintptr, x0, x1 *uint16) int32
+	defaults    func(t uintptr, scrollback, cursor, blink uint32)
+	linkAt      func(t uintptr, x, y uint16, out **byte, n *uintptr, x0, x1 *uint16) int32
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
