@@ -2946,3 +2946,13 @@ window.term .term-overview list row:selected, window.term .term-overview list ro
 }
 window.term .term-overview-row label { color: @t0; }
 window.term .term-overview-row .term-pane-dir { color: @t2; }
+window.term .term-copy-badge {
+  padding: 2px 6px;
+  border: 1px solid alpha(@accent, 0.5);
+  border-radius: 2px;
+  background: @app;
+  color: @accent;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+}

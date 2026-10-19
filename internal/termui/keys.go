@@ -125,6 +125,11 @@ func (a *App) do(action string, p *termPane) bool {
 		a.showKeys()
 	case "settings":
 		a.openSettings()
+	case "copy_mode":
+		if p == nil {
+			return false
+		}
+		p.startCopyMode()
 	case "copy", "paste", "find":
 		if p == nil {
 			return false

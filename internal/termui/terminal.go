@@ -91,6 +91,9 @@ type termPane struct {
 	blinkOff bool
 	// hover is the link under the pointer while Ctrl is held.
 	hover *link
+	// copy is copy mode, while on.
+	copy      *copyMode
+	onCopyKey func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 
 	sheet                             *gtk.Box // the paste sheet, while it asks
 	find                              *gtk.Box // the find bar, while open
@@ -158,6 +161,17 @@ func newTermPane(be backend, cols, rows int, colors map[string]string, look pane
 	keys.ConnectKeyPressed(&p.onKey)
 	keys.ConnectKeyReleased(&p.onKeyUp)
 	p.widget.AddController(&keys.EventController)
+	// Copy mode's keys, before the input method takes the letters.
+	copyKeys := gtk.NewEventControllerKey()
+	copyKeys.SetPropagationPhase(gtk.PhaseCaptureValue)
+	p.onCopyKey = func(_ gtk.EventControllerKey, keyval, _ uint32, state gdk.ModifierType) bool {
+		if p.copy == nil {
+			return false
+		}
+		return p.copyKey(keyval, state)
+	}
+	copyKeys.ConnectKeyPressed(&p.onCopyKey)
+	p.widget.AddController(&copyKeys.EventController)
 	p.onCommit = func(_ gtk.IMContext, text string) {
 		p.preedit = ""
 		p.input([]byte(text))
@@ -552,7 +566,16 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 		s.Restore()
 		l.Unref()
 	}
-	if !p.exited && p.cur.Visible && p.preedit == "" && !(p.cur.Blink && p.blinkOff) {
+	if c := p.copy; c != nil {
+		// The copy cursor: a hollow block in the accent.
+		x, y := float32(c.x)*cw, float32(c.y)*ch
+		col := p.cursor
+		s.AppendColor(&col, rect(x, y, cw, 1))
+		s.AppendColor(&col, rect(x, y+ch-1, cw, 1))
+		s.AppendColor(&col, rect(x, y, 1, ch))
+		s.AppendColor(&col, rect(x+cw-1, y, 1, ch))
+	}
+	if !p.exited && p.cur.Visible && p.preedit == "" && !(p.cur.Blink && p.blinkOff) && p.copy == nil {
 		c := p.cursor
 		x, y := float32(p.cur.X)*cw, float32(p.cur.Y)*ch
 		switch p.cur.Style {
