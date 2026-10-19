@@ -57,6 +57,9 @@ type shell struct {
 	p    *pty.PTY
 	term *vt.Terminal
 	out  chan []byte
+	// marks are those read and not yet waited for: several can come in
+	// one read.
+	marks []vt.Prompt
 }
 
 func start(t *testing.T, name string) *shell {
@@ -120,18 +123,22 @@ func (s *shell) until(kind vt.PromptKind) []vt.Prompt {
 	var seen []vt.Prompt
 	deadline := time.After(10 * time.Second)
 	for {
+		for i, p := range s.marks {
+			if p.Kind == kind {
+				seen = append(seen, s.marks[:i+1]...)
+				s.marks = s.marks[i+1:]
+				return seen
+			}
+		}
+		seen = append(seen, s.marks...)
+		s.marks = nil
 		select {
 		case b, ok := <-s.out:
 			if !ok {
 				s.t.Fatalf("the shell ended; marks %+v", seen)
 			}
 			s.term.Write(b)
-			for _, p := range s.term.Prompts() {
-				seen = append(seen, p)
-				if p.Kind == kind {
-					return seen
-				}
-			}
+			s.marks = append(s.marks, s.term.Prompts()...)
 		case <-deadline:
 			s.t.Fatalf("no mark %d; marks %+v", kind, seen)
 		}
