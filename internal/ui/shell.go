@@ -149,6 +149,9 @@ type shellUI struct {
 	onDisplayDrop          func(uintptr, uintptr, uintptr)
 	onDisplaySwitch        func(gtk.Switch, bool) bool
 	onDisplayButton        func(gtk.Button)
+	onBluetoothSwitch      func(gtk.Switch, bool) bool
+	onBluetoothButton      func(gtk.Button)
+	onBluetoothEntry       func(gtk.Entry)
 	onSettingsIndex        func(gtk.ListBox, uintptr)
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)

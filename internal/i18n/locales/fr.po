@@ -235,6 +235,9 @@ msgstr "N'appairez que si %s affiche la clé %s."
 #: internal/connectui/window.go:434
 #: internal/remoteui/window.go:554
 #: internal/remoteui/window.go:748
+#: internal/ui/settings_bluetooth.go:329
+#: internal/ui/settings_bluetooth.go:397
+#: internal/ui/settings_bluetooth.go:403
 #: ui/remote.ui:593
 msgid "Pair"
 msgstr "Appairer"
@@ -253,12 +256,14 @@ msgid "Wants to pair"
 msgstr "Veut s'appairer"
 
 #: internal/apps/connect/service.go:507
+#: internal/shell/bluetooth.go:42
 msgid "Pairing…"
 msgstr "Appairage…"
 
 #: internal/apps/connect/service.go:509
 #: internal/apps/tailscale/status.go:265
 #: internal/remoteui/window.go:285
+#: internal/shell/bluetooth.go:52
 msgid "Connected"
 msgstr "Connecté"
 
@@ -276,13 +281,13 @@ msgid "%d%%, charging"
 msgstr "%d %%, en charge"
 
 #: internal/apps/connect/service.go:519
-#: internal/ui/settings.go:277
-#: internal/ui/settings.go:285
-#: internal/ui/settings.go:288
-#: internal/ui/settings.go:630
-#: internal/ui/settings.go:632
-#: internal/ui/settings.go:682
-#: internal/ui/settings.go:699
+#: internal/ui/settings.go:278
+#: internal/ui/settings.go:286
+#: internal/ui/settings.go:289
+#: internal/ui/settings.go:641
+#: internal/ui/settings.go:643
+#: internal/ui/settings.go:694
+#: internal/ui/settings.go:711
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d %%"
@@ -1389,6 +1394,7 @@ msgstr "En attente d'approbation"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
+#: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
 msgstr "Connexion…"
@@ -1766,7 +1772,7 @@ msgstr "créée le %s"
 #: internal/ui/askpass.go:448
 #: internal/ui/askpass.go:452
 #: internal/ui/askpass.go:454
-#: internal/ui/settings_about.go:196
+#: internal/ui/settings_about.go:197
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "Jan 2, 2006"
@@ -2241,8 +2247,8 @@ msgid "Top level"
 msgstr "Niveau supérieur"
 
 #: internal/appui/pass.go:360
-#: internal/ui/settings.go:709
-#: internal/ui/settings.go:736
+#: internal/ui/settings.go:721
+#: internal/ui/settings.go:748
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d entrée"
@@ -2535,7 +2541,7 @@ msgstr "Une image avec un code QR"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:846
+#: internal/ui/settings.go:858
 msgid "Images"
 msgstr "Images"
 
@@ -3490,10 +3496,11 @@ msgstr "Lecture impossible : %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/ui/settings_bluetooth.go:207
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
 #: ui/remote.ui:308
-#: ui/settings.ui:5165
+#: ui/settings.ui:5394
 msgid "Off"
 msgstr "Désactivé"
 
@@ -3629,6 +3636,9 @@ msgstr "Bloc inconnu %q"
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
+#: internal/ui/settings_bluetooth.go:395
+#: internal/ui/settings_bluetooth.go:398
+#: internal/ui/settings_bluetooth.go:404
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
@@ -3841,6 +3851,7 @@ msgstr "Refuser"
 
 #: internal/assistantui/assistantui.go:489
 #: internal/ui/askpass.go:407
+#: internal/ui/settings_bluetooth.go:400
 #: internal/workshop/session.go:406
 msgid "Allow"
 msgstr "Autoriser"
@@ -4570,7 +4581,7 @@ msgstr "une partie n'a pas pu être lue"
 #: internal/diskui/details.go:75
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:153
+#: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "Vérification…"
 
@@ -5616,6 +5627,7 @@ msgstr "Connexion à %s…"
 
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
+#: internal/ui/settings_bluetooth.go:333
 #: ui/remote.ui:603
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
@@ -5663,6 +5675,7 @@ msgstr "%s est déconnecté."
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
+#: internal/ui/settings_bluetooth.go:339
 #: ui/remote.ui:572
 msgid "Forget"
 msgstr "Supprimer la clé"
@@ -5680,6 +5693,7 @@ msgid "REMOTE DISKS"
 msgstr "DISQUES DISTANTS"
 
 #: internal/filesui/remote.go:269
+#: internal/ui/settings_bluetooth.go:331
 msgid "Disconnect"
 msgstr "Déconnecter"
 
@@ -9599,6 +9613,63 @@ msgstr "Décodé ici par la carte graphique. HEVC et AV1 rendent mieux que H.264
 msgid "The connection ended: %v"
 msgstr "La connexion s’est terminée : %v"
 
+#: internal/shell/bluetooth.go:40
+msgid "Disconnecting…"
+msgstr "Déconnexion…"
+
+#: internal/shell/bluetooth.go:44
+msgid "Forgetting…"
+msgstr "Oubli en cours…"
+
+#: internal/shell/bluetooth.go:50
+msgid "Connected, battery %d%%"
+msgstr "Connecté, batterie %d %%"
+
+#: internal/shell/bluetooth.go:54
+#: internal/shell/status.go:79
+msgid "Not connected"
+msgstr "Non connecté"
+
+#: internal/shell/bluetooth.go:82
+msgid "Type %s on %s"
+msgstr "Tapez %s sur %s"
+
+#: internal/shell/bluetooth.go:82
+msgid "Then press Enter on it."
+msgstr "Puis appuyez sur Entrée dessus."
+
+#: internal/shell/bluetooth.go:84
+msgid "Does %s show %s?"
+msgstr "%s affiche-t-il %s ?"
+
+#: internal/shell/bluetooth.go:84
+msgid "Pair only if the numbers match."
+msgstr "N’associez que si les nombres sont les mêmes."
+
+#: internal/shell/bluetooth.go:86
+msgid "PIN for %s"
+msgstr "Code PIN de %s"
+
+#: internal/shell/bluetooth.go:86
+msgid "Often 0000 or 1234; see its manual."
+msgstr "Souvent 0000 ou 1234 ; voir son manuel."
+
+#: internal/shell/bluetooth.go:88
+msgid "The number %s shows"
+msgstr "Le nombre affiché par %s"
+
+#: internal/shell/bluetooth.go:88
+msgid "Type the six digits it shows."
+msgstr "Tapez les six chiffres qu’il affiche."
+
+#: internal/shell/bluetooth.go:90
+msgid "Let %s connect?"
+msgstr "Laisser %s se connecter ?"
+
+#: internal/shell/bluetooth.go:90
+msgid "It asks to pair or to use this computer without a code."
+msgstr "Il demande à s’associer ou à utiliser cet ordinateur sans code."
+
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
 msgstr "Verrouiller l’écran"
@@ -9743,65 +9814,73 @@ msgid "Turn Bluetooth on or off"
 msgstr "Activer ou désactiver Bluetooth"
 
 #: internal/shell/commands.go:43
+msgid "Bluetooth Settings"
+msgstr "Réglages Bluetooth"
+
+#: internal/shell/commands.go:43
+msgid "Pair and connect devices"
+msgstr "Associer et connecter des appareils"
+
+#: internal/shell/commands.go:44
 msgid "Restart inua"
 msgstr "Redémarrer Inua"
 
-#: internal/shell/commands.go:43
+#: internal/shell/commands.go:44
 msgid "Start the shell again"
 msgstr "Redémarrez le shell"
 
-#: internal/shell/commands.go:44
+#: internal/shell/commands.go:45
 msgid "Close Window"
 msgstr "Fermer la fenêtre"
 
-#: internal/shell/commands.go:45
+#: internal/shell/commands.go:46
 msgid "Toggle Floating"
 msgstr "Basculer le flottement"
 
-#: internal/shell/commands.go:46
+#: internal/shell/commands.go:47
 msgid "Toggle Fullscreen"
 msgstr "Basculer vers le plein écran"
 
-#: internal/shell/commands.go:47
+#: internal/shell/commands.go:48
 msgid "Center Window"
 msgstr "Centrer la fenêtre"
 
-#: internal/shell/commands.go:72
+#: internal/shell/commands.go:73
 msgid "Go to Workspace %s"
 msgstr "Accédez à l’espace de travail %s"
 
-#: internal/shell/commands.go:72
+#: internal/shell/commands.go:73
 msgid "Workspace"
 msgstr "Espace de travail"
 
-#: internal/shell/commands.go:74
+#: internal/shell/commands.go:75
 msgid "Move Window to Workspace %s"
 msgstr "Déplacer la fenêtre vers l'espace de travail %s"
 
-#: internal/shell/commands.go:131
+#: internal/shell/commands.go:132
 msgid "the web"
 msgstr "le web"
 
-#: internal/shell/commands.go:153
-#: internal/shell/commands.go:167
+#: internal/shell/commands.go:154
+#: internal/shell/commands.go:168
 msgid "Search %s for “%s”"
 msgstr "Recherchez dans %[1]s « %[2]s »"
 
-#: internal/shell/commands.go:155
+#: internal/shell/commands.go:156
 msgid "Type %s and words to search"
 msgstr "Tapez %s et les mots à rechercher"
 
-#: internal/shell/commands.go:161
-#: internal/shell/commands.go:163
+#: internal/shell/commands.go:162
+#: internal/shell/commands.go:164
 msgid "Open %s"
 msgstr "Ouvrir %s"
 
-#: internal/shell/commands.go:161
-#: internal/shell/commands.go:163
+#: internal/shell/commands.go:162
+#: internal/shell/commands.go:164
 msgid "Web address"
 msgstr "Adresse Internet"
 
-#: internal/shell/commands.go:167
+#: internal/shell/commands.go:168
 msgid "Web search"
 msgstr "Recherche sur le Web"
 
@@ -9950,10 +10029,6 @@ msgstr "Hors ligne"
 #: internal/shell/status.go:71
 msgid "No Wi-Fi device"
 msgstr "Pas de périphérique Wi-Fi"
-
-#: internal/shell/status.go:79
-msgid "Not connected"
-msgstr "Non connecté"
 
 #: internal/shell/status.go:92
 msgid "%d devices"
@@ -10533,6 +10608,7 @@ msgid "%s · as %s"
 msgstr "%s · en tant que %s"
 
 #: internal/ui/askpass.go:401
+#: internal/ui/settings_bluetooth.go:401
 msgid "Deny"
 msgstr "Refuser"
 
@@ -10822,7 +10898,7 @@ msgstr "hyprland.lua redéfinit ces réglages après avoir chargé inua.lua, ce 
 msgid "hyprland.conf sets these again after loading inua.conf, which wins over inua: %s. Move the source line below them."
 msgstr "hyprland.conf les définit à nouveau après le chargement d'inua.conf, qui l'emporte sur inua : %s. Déplacez la ligne source en dessous d’eux."
 
-#: internal/ui/launcher.go:302
+#: internal/ui/launcher.go:305
 msgid "inua launcher"
 msgstr "lanceur inua"
 
@@ -11051,135 +11127,135 @@ msgstr "Capture d'écran copiée"
 msgid "Screenshot taken"
 msgstr "Capture d'écran prise"
 
-#: internal/ui/settings.go:259
+#: internal/ui/settings.go:260
 msgid "Not restarted: %s"
 msgstr "Non redémarré : %s"
 
-#: internal/ui/settings.go:662
+#: internal/ui/settings.go:674
 #: ui/settings.ui:384
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:662
+#: internal/ui/settings.go:674
 #: ui/settings.ui:385
 msgid "System theme"
 msgstr "Thème système"
 
-#: internal/ui/settings.go:735
+#: internal/ui/settings.go:747
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:737
+#: internal/ui/settings.go:749
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d texte"
 msgstr[1] "%d textes"
 
-#: internal/ui/settings.go:738
+#: internal/ui/settings.go:750
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d image"
 msgstr[1] "%d images"
 
-#: internal/ui/settings.go:739
+#: internal/ui/settings.go:751
 msgid "%.1f KB"
 msgstr "%.1f Ko"
 
-#: internal/ui/settings.go:818
+#: internal/ui/settings.go:830
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "Non sauvegardé : %s"
 
-#: internal/ui/settings.go:844
+#: internal/ui/settings.go:856
 msgid "Choose a wallpaper"
 msgstr "Choisir un fond d'écran"
 
-#: internal/ui/settings.go:886
+#: internal/ui/settings.go:898
 msgid "Off: another notification daemon can show them"
 msgstr "Désactivé : un autre démon de notification peut les afficher"
 
-#: internal/ui/settings.go:888
+#: internal/ui/settings.go:900
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "Bannières puis centre de notifications (cloche de la barre ou Super+N)"
 
-#: internal/ui/settings.go:890
+#: internal/ui/settings.go:902
 msgid "Waiting: another notification daemon is running"
 msgstr "En attente : un autre démon de notification est en cours d'exécution"
 
-#: internal/ui/settings.go:908
+#: internal/ui/settings.go:920
 msgid "Nothing pinned"
 msgstr "Aucune application épinglée"
 
-#: internal/ui/settings.go:924
+#: internal/ui/settings.go:936
 msgid "%s (not installed)"
 msgstr "%s (non installé)"
 
-#: internal/ui/settings.go:937
+#: internal/ui/settings.go:949
 msgid "Move earlier"
 msgstr "Déplacer avant"
 
-#: internal/ui/settings.go:938
+#: internal/ui/settings.go:950
 msgid "Move later"
 msgstr "Déplacer après"
 
-#: internal/ui/settings.go:939
+#: internal/ui/settings.go:951
 msgid "Remove from the dock"
 msgstr "Retirer du dock"
 
-#: internal/ui/settings_about.go:141
+#: internal/ui/settings_about.go:142
 msgid "inua %s, built from source"
 msgstr "inua %s, construit à partir des sources"
 
-#: internal/ui/settings_about.go:148
+#: internal/ui/settings_about.go:149
 msgid "Upgrade to %s"
 msgstr "Mise à niveau vers %s"
 
-#: internal/ui/settings_about.go:151
+#: internal/ui/settings_about.go:152
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "Mise à jour… le shell redémarre sur la nouvelle version"
 
-#: internal/ui/settings_about.go:157
+#: internal/ui/settings_about.go:158
 msgid "Could not reach GitHub: %s"
 msgstr "Impossible d'accéder à GitHub : %s"
 
-#: internal/ui/settings_about.go:159
+#: internal/ui/settings_about.go:160
 msgid "Not checked yet"
 msgstr "Pas encore vérifié"
 
-#: internal/ui/settings_about.go:161
+#: internal/ui/settings_about.go:162
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "La dernière version est %s ; cette version ne peut pas être comparée à elle"
 
-#: internal/ui/settings_about.go:163
+#: internal/ui/settings_about.go:164
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s est disponible ; la mise à jour remplacera cette compilation depuis les sources"
 
-#: internal/ui/settings_about.go:165
+#: internal/ui/settings_about.go:166
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s est disponible"
 
-#: internal/ui/settings_about.go:167
+#: internal/ui/settings_about.go:168
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "À jour : %[1]s est la dernière version (vérifié %[2]s)"
 
-#: internal/ui/settings_about.go:169
+#: internal/ui/settings_about.go:170
 msgid "Newer than the latest release, %s"
 msgstr "Plus récent que la dernière version, %s"
 
-#: internal/ui/settings_about.go:179
+#: internal/ui/settings_about.go:180
 msgid "Shown once the releases are read"
 msgstr "Affiché une fois les communiqués lus"
 
-#: internal/ui/settings_about.go:181
+#: internal/ui/settings_about.go:182
 msgid "Reading the releases…"
 msgstr "Lecture des versions…"
 
-#: internal/ui/settings_about.go:202
+#: internal/ui/settings_about.go:203
 msgid "installed"
 msgstr "installé"
 
-#: internal/ui/settings_about.go:206
+#: internal/ui/settings_about.go:207
 msgid "On GitHub"
 msgstr "Sur GitHub"
 
@@ -11515,6 +11591,51 @@ msgstr "Échoué"
 msgid "No answer"
 msgstr "Pas de réponse"
 
+#: internal/ui/settings_bluetooth.go:163
+msgid "Not connected: %s"
+msgstr "Non connecté : %s"
+
+#: internal/ui/settings_bluetooth.go:167
+msgid "Not disconnected: %s"
+msgstr "Non déconnecté : %s"
+
+#: internal/ui/settings_bluetooth.go:171
+msgid "Not paired: %s"
+msgstr "Non associé : %s"
+
+#: internal/ui/settings_bluetooth.go:175
+msgid "Not forgotten: %s"
+msgstr "Non oublié : %s"
+
+#: internal/ui/settings_bluetooth.go:205
+msgid "No Bluetooth adapter, or BlueZ is not running"
+msgstr "Pas d’adaptateur Bluetooth, ou BlueZ ne tourne pas"
+
+#: internal/ui/settings_bluetooth.go:209
+msgid "Shown to devices nearby as “%s” while this page is open"
+msgstr "Visible des appareils proches sous le nom « %s » tant que cette page est ouverte"
+
+#: internal/ui/settings_bluetooth.go:217
+#: ui/settings.ui:5107
+msgid "Searching…"
+msgstr "Recherche…"
+
+#: internal/ui/settings_bluetooth.go:219
+msgid "Devices that can pair"
+msgstr "Appareils prêts à s’associer"
+
+#: internal/ui/settings_bluetooth.go:243
+msgid "No devices paired yet"
+msgstr "Aucun appareil associé pour l’instant"
+
+#: internal/ui/settings_bluetooth.go:244
+msgid "Nothing found yet. Make the device ready to pair: often by holding its Bluetooth button."
+msgstr "Rien pour l’instant. Mettez l’appareil en mode d’association : souvent en maintenant son bouton Bluetooth."
+
+#: internal/ui/settings_bluetooth.go:337
+msgid "Forget it?"
+msgstr "L’oublier ?"
+
 #: internal/ui/settings_custom.go:74
 msgid "Not moved to the trash: %s"
 msgstr "Non mis à la corbeille : %s"
@@ -11625,8 +11746,8 @@ msgid "Mirror"
 msgstr "Recopie"
 
 #: internal/ui/settings_displays.go:313
-#: ui/settings.ui:5316
-#: ui/settings.ui:5583
+#: ui/settings.ui:5545
+#: ui/settings.ui:5812
 msgid "Use hyprland.conf"
 msgstr "Utilisez hyprland.conf"
 
@@ -11944,7 +12065,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "Mise à niveau %s avec : mise à niveau inua"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:5754
+#: ui/settings.ui:5983
 msgid "Upgrade"
 msgstr "Mise à niveau"
 
@@ -12676,6 +12797,8 @@ msgid "Suspend, hibernate, restart, shut down, log out"
 msgstr "Mettre en veille, veille prolongée, redémarrer, arrêter, se déconnecter"
 
 #: ui/control.ui:325
+#: ui/settings.ui:4918
+#: ui/settings.ui:4994
 msgid "Bluetooth"
 msgstr "Bluetooth"
 
@@ -14134,7 +14257,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "Appuyez sur le nouveau raccourci. Esc annule ; Retour arrière le désactive."
 
 #: ui/settings.ui:4656
-#: ui/settings.ui:5653
+#: ui/settings.ui:5882
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -14174,146 +14297,166 @@ msgstr "<span alpha='55%'>[</span>HYPRLAND<span alpha='55%'>]</span>"
 msgid "Other shortcuts, from hyprland.conf"
 msgstr "Autres raccourcis, depuis hyprland.conf"
 
-#: ui/settings.ui:4918
+#: ui/settings.ui:4956
+msgid "<span alpha='55%'>[</span>BLUETOOTH<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>BLUETOOTH<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:4964
+msgid "This computer"
+msgstr "Cet ordinateur"
+
+#: ui/settings.ui:5047
+msgid "<span alpha='55%'>[</span>MY DEVICES<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>MES APPAREILS<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:5055
+msgid "Paired with this computer"
+msgstr "Associés à cet ordinateur"
+
+#: ui/settings.ui:5099
+msgid "<span alpha='55%'>[</span>NEARBY<span alpha='55%'>]</span>"
+msgstr "<span alpha='55%'>[</span>À PROXIMITÉ<span alpha='55%'>]</span>"
+
+#: ui/settings.ui:5147
 msgid "Displays"
 msgstr "Écrans"
 
-#: ui/settings.ui:4967
+#: ui/settings.ui:5196
 msgid "<span alpha='55%'>[</span>LID<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CAPOT<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:4975
+#: ui/settings.ui:5204
 msgid "With another display connected"
 msgstr "Avec un autre écran branché"
 
-#: ui/settings.ui:5005
+#: ui/settings.ui:5234
 msgid "Closing the lid turns off the built-in display"
 msgstr "Rabattre l’écran éteint l’écran intégré"
 
-#: ui/settings.ui:5015
+#: ui/settings.ui:5244
 msgid "Its windows move to the other display. Open the lid to use both."
 msgstr "Ses fenêtres passent sur l’autre écran. Relevez-le pour utiliser les deux."
 
-#: ui/settings.ui:5056
+#: ui/settings.ui:5285
 msgid "Keyboard"
 msgstr "Clavier"
 
-#: ui/settings.ui:5104
+#: ui/settings.ui:5333
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5112
+#: ui/settings.ui:5341
 msgid "Every keyboard"
 msgstr "Chaque clavier"
 
-#: ui/settings.ui:5142
+#: ui/settings.ui:5371
 msgid "Swap Ctrl and Alt"
 msgstr "Permuter Ctrl et Alt"
 
-#: ui/settings.ui:5151
+#: ui/settings.ui:5380
 msgid "Alt acts as Ctrl, and Ctrl as Alt"
 msgstr "Alt agit comme Ctrl et Ctrl comme Alt"
 
-#: ui/settings.ui:5166
+#: ui/settings.ui:5395
 msgid "Left side"
 msgstr "Côté gauche"
 
-#: ui/settings.ui:5167
+#: ui/settings.ui:5396
 msgid "Both sides"
 msgstr "Les deux côtés"
 
-#: ui/settings.ui:5194
-#: ui/settings.ui:5217
+#: ui/settings.ui:5423
+#: ui/settings.ui:5446
 msgid "Caps Lock"
 msgstr "Verrouillage des majuscules"
 
-#: ui/settings.ui:5203
+#: ui/settings.ui:5432
 msgid "What the Caps Lock key does"
 msgstr "Ce que fait la touche Caps Lock"
 
-#: ui/settings.ui:5218
+#: ui/settings.ui:5447
 msgid "Escape"
 msgstr "Esc"
 
-#: ui/settings.ui:5219
+#: ui/settings.ui:5448
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#: ui/settings.ui:5257
-#: ui/settings.ui:5539
+#: ui/settings.ui:5486
+#: ui/settings.ui:5768
 msgid "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>SOURCE<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5265
-#: ui/settings.ui:5547
+#: ui/settings.ui:5494
+#: ui/settings.ui:5776
 msgid "inua writes these to Hyprland's inua.conf"
 msgstr "inua les écrit dans le fichier inua.conf d'Hyprland"
 
-#: ui/settings.ui:5317
+#: ui/settings.ui:5546
 msgid "Stop setting keyboard options in inua"
 msgstr "Arrêtez de définir les options du clavier dans Inua"
 
-#: ui/settings.ui:5348
+#: ui/settings.ui:5577
 msgid "Mouse & Touch"
 msgstr "Souris et pavé tactile"
 
-#: ui/settings.ui:5396
+#: ui/settings.ui:5625
 msgid "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>POINTER<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5404
+#: ui/settings.ui:5633
 msgid "Every touchpad"
 msgstr "Chaque pavé tactile"
 
-#: ui/settings.ui:5434
+#: ui/settings.ui:5663
 msgid "Pointer speed"
 msgstr "Vitesse du pointeur"
 
-#: ui/settings.ui:5485
+#: ui/settings.ui:5714
 msgid "Acceleration"
 msgstr "Accélération"
 
-#: ui/settings.ui:5494
+#: ui/settings.ui:5723
 msgid "Faster swipes move the pointer further"
 msgstr "Des balayages plus rapides déplacent le pointeur plus loin"
 
-#: ui/settings.ui:5584
+#: ui/settings.ui:5813
 msgid "Stop setting the touchpad in inua"
 msgstr "Arrêtez de configurer le pavé tactile dans Inua"
 
-#: ui/settings.ui:5615
+#: ui/settings.ui:5844
 msgid "About"
 msgstr "À propos"
 
-#: ui/settings.ui:5661
+#: ui/settings.ui:5890
 msgid "The version, and new releases"
 msgstr "La version, et les nouveautés"
 
-#: ui/settings.ui:5691
+#: ui/settings.ui:5920
 msgid "Version"
 msgstr "Version"
 
-#: ui/settings.ui:5727
+#: ui/settings.ui:5956
 msgid "Updates"
 msgstr "Mises à jour"
 
-#: ui/settings.ui:5763
+#: ui/settings.ui:5992
 msgid "Check for updates"
 msgstr "Vérifier les mises à jour"
 
-#: ui/settings.ui:5789
+#: ui/settings.ui:6018
 msgid "Check every day"
 msgstr "Vérifier tous les jours"
 
-#: ui/settings.ui:5798
+#: ui/settings.ui:6027
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "Une notification indique la sortie d'une nouvelle version, avec un bouton pour mettre à niveau"
 
-#: ui/settings.ui:5843
+#: ui/settings.ui:6072
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:5851
+#: ui/settings.ui:6080
 msgid "What the latest release changed"
 msgstr "Ce que la dernière version a changé"
 

@@ -64,7 +64,7 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/pinentry` | gpg-agent's pinentry protocol (Assuan) for `inua-pinentry`: the requests, the answers and gpg's error codes | Done, tested |
 | `internal/polkit` | The session's polkit authentication agent: registering with polkitd for the shell's login session, `BeginAuthentication`/`CancelAuthentication`, and the conversation with polkit's helper (its socket, else the setuid program) that checks the password through PAM | Done, tested (private dbus-daemon, fake helper) |
 | `internal/notify` | Notifications: the `org.freedesktop.Notifications` server (queues behind another daemon), markup cleaning, the notification center model (banner decisions, grouping by app, Focus, unread, saved to `$XDG_STATE_HOME/inua/notifications.json`) | Done, tested (private dbus-daemon) |
-| `internal/system` | The control center's system state and actions: network, Bluetooth, battery, power profile, media, volume, brightness, mako's Do Not Disturb | Done, tested (fake services on a private dbus-daemon) |
+| `internal/system` | The control center's system state and actions: network, Bluetooth (devices, searching, pairing, and BlueZ's pairing agent, `org.bluez.Agent1`, asking through the settings window), battery, power profile, media, volume, brightness, mako's Do Not Disturb | Done, tested (fake services on a private dbus-daemon) |
 | `internal/dbustest` | A private dbus-daemon for tests | Done |
 | `internal/layershell` | purego binding of gtk4-layer-shell and the `LD_PRELOAD` re-exec | Done |
 | `internal/gtkx` | Wrappers for puregotk's ownership, callbacks, main thread and `.ui` loading | Done |

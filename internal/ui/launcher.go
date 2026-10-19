@@ -190,6 +190,9 @@ func (s *shellUI) runCommand(id, arg, window string) {
 		s.controlAction("wifi")
 	case "bluetooth":
 		s.controlAction("bt")
+	case "bluetooth-settings":
+		s.openSettings()
+		s.showSettingsPage("bluetooth")
 	case "restart-shell":
 		if err := s.scheduleRestart(); err != nil {
 			log.Printf("restart: %v", err)

@@ -43,6 +43,7 @@ func (s *shellUI) startSystem() {
 	}
 
 	go v.net.Run(ctx, func(st system.NetworkState) { s.update(func(x *shell.System) { x.Net = st }) })
+	v.bt.SetAsker(s.askBluetooth)
 	go v.bt.Run(ctx, func(st system.BluetoothState) { s.update(func(x *shell.System) { x.BT = st }) })
 	go v.prof.Run(ctx, func(st system.PowerProfileState) { s.update(func(x *shell.System) { x.Prof = st }) })
 	go v.media.Run(ctx, func(st system.MediaState) { s.update(func(x *shell.System) { x.Media = st }) })
@@ -59,6 +60,7 @@ func (s *shellUI) update(f func(*shell.System)) {
 		if s.control.open {
 			s.applyControl()
 		}
+		s.showBluetooth()
 	})
 }
 

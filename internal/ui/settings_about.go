@@ -56,6 +56,7 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 		if page != "keyring" && s.settings.keyring.open >= 0 {
 			s.openKeyringRead(-1)
 		}
+		s.syncBluetoothSearch() // only while its page is shown
 		switch {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()

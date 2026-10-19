@@ -24,7 +24,7 @@ Enter copies the answer.
 Commands rank with the apps: Lock Screen, Sleep, Restart, Shut Down, Log
 Out and Empty Trash (the last four ask for Enter again), Settings,
 screenshots and recording, Pick a Colour, Clear Notifications, Focus, Wi-Fi
-and Bluetooth, Restart inua; and for the window you came from, Close,
+and Bluetooth, Bluetooth Settings, Restart inua; and for the window you came from, Close,
 Toggle Floating, Toggle Fullscreen and Center. `workspace 3` goes there,
 `move to workspace 3` takes the window along.
 
@@ -97,7 +97,7 @@ its window to the current workspace.
 
 A two-column settings window for everything: appearance and wallpaper, bar
 and dock, launcher, default apps, AI (the assistant's models),
-notifications, shortcuts, displays, keyboard, mouse and touchpad. Changes apply as
+notifications, shortcuts, Bluetooth, displays, keyboard, mouse and touchpad. Changes apply as
 you make them.
 
 Default Apps chooses what opens links (the web browser), mailto: links,
@@ -280,6 +280,23 @@ inua. A puzzle button beside the dock's drawer, there once an app is
 installed, opens the workshop drawer: the apps by the category their
 manifest gives, and the Workshop app to open, install and remove them.
 See [workshop.md](workshop.md).
+
+## Bluetooth
+
+Settings → Bluetooth (or Bluetooth Settings in the launcher) turns
+Bluetooth on or off and lists the paired devices, each connected or not
+with its battery when it reports one: connect, disconnect, or forget it
+(Forget asks again). While the page is shown, the computer searches for
+devices nearby and is visible to them under its name; Pair pairs one,
+trusts it so it connects again by itself, and connects it. The search
+and the visibility end when you leave the page.
+
+The shell is BlueZ's pairing agent, so pairing needs no other program:
+a code to type on a keyboard is shown digit by digit, lighting as you
+type; a phone's number is confirmed; an older device's PIN is asked for.
+A device that starts pairing from its side opens the page with its
+request. Without inua-shell running, pairing falls back to whatever
+agent is there (`bluetoothctl`).
 
 ## Displays
 

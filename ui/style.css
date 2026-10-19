@@ -1215,6 +1215,12 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
 .settings button.primary label { color: @app; }
 .settings button.outlined.danger { color: @danger; }
 .settings button.outlined.danger:hover { border-color: alpha(@danger, 0.5); background: alpha(@danger, 0.06); }
+/* Bluetooth: a device's icon; a pairing request under its device, the
+   passkey a keycap a digit, those typed on the device lit. */
+.settings .bt-icon { color: @t1; }
+.settings .bt-prompt { padding: 2px 0 16px 28px; }
+.settings .bt-code .keycap { min-width: 22px; font-size: 15px; }
+.settings .bt-code .keycap.typed { color: @accent; border-color: @accent; }
 
 /* Toggle buttons joined in a row: °C/°F, chart ranges. */
 .settings .segmented > button {

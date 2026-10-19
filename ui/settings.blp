@@ -3512,6 +3512,165 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "bluetooth";
+        title:  _("Bluetooth");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_bluetooth {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [BLUETOOTH]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>BLUETOOTH<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("This computer");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Bluetooth");
+                        xalign: 0;
+                      }
+
+                      // How others see this computer, or why it is off.
+                      Label bt_state {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch bt_power {
+                      name: "bt_power";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [MY DEVICES]: the paired devices, laid out by showBluetooth.
+              Box bt_mine_section {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>MY DEVICES<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("Paired with this computer");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box bt_mine {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+
+              // [NEARBY]: devices found while the page is shown.
+              Box bt_nearby_section {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>NEARBY<span alpha='55%'>]</span>");
+                  }
+
+                  Label bt_nearby_meta {
+                    styles ["section-meta"]
+                    label:  _("Searching…");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box bt_nearby {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_bluetooth {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "displays";
         title:  _("Displays");
 

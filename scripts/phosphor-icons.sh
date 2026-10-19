@@ -164,6 +164,17 @@ applications-science                  sparkle
 preferences-desktop-keyboard-shortcuts command
 input-keyboard                        keyboard
 input-mouse                           mouse-simple
+# settings: Bluetooth devices, by BlueZ's icon names
+audio-card                            speaker-hifi
+audio-headphones                      headphones
+audio-headset                         headset
+camera-photo                          camera
+camera-video                          video-camera
+computer                              desktop
+input-gaming                          game-controller
+input-tablet                          device-tablet
+phone                                 device-mobile
+printer                               printer
 help-about                            info
 # Pass: edit, and rename or move
 document-edit                         pencil-simple

@@ -59,6 +59,8 @@ type source struct {
 	// for sources that follow many names (MPRIS).
 	name    string
 	matches [][]dbus.MatchOption
+	// ignore tells signals that change nothing read; nil for none.
+	ignore func(*dbus.Signal) bool
 
 	mu   sync.Mutex
 	conn *dbus.Conn
@@ -127,6 +129,9 @@ func (s *source) serve(ctx context.Context, conn *dbus.Conn, read func(context.C
 				return
 			}
 			if sig.Name == "org.freedesktop.DBus.NameAcquired" || sig.Name == "org.freedesktop.DBus.NameLost" {
+				continue
+			}
+			if s.ignore != nil && s.ignore(sig) {
 				continue
 			}
 			if timer == nil {

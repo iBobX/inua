@@ -74,12 +74,13 @@ type settings struct {
 	// controls start from what is in effect.
 	hyprKb string
 
-	sc       shortcutState    // the Shortcuts page
-	ai       aiSettings       // the AI page
-	about    aboutSettings    // the About page
-	keyring  keyringSettings  // the Keyring page
-	apps     appsSettings     // the Default Apps page
-	displays displaysSettings // the Displays page
+	sc       shortcutState     // the Shortcuts page
+	ai       aiSettings        // the AI page
+	about    aboutSettings     // the About page
+	keyring  keyringSettings   // the Keyring page
+	apps     appsSettings      // the Default Apps page
+	displays displaysSettings  // the Displays page
+	bt       bluetoothSettings // the Bluetooth page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -454,6 +455,7 @@ func (s *shellUI) openSettings() {
 	s.getKeyringSettings(ui)
 	s.getAppsSettings(ui)
 	s.getDisplaySettings(ui)
+	s.getBluetoothSettings(ui)
 	s.buildSettingsIndex()
 	ui.Close()
 
@@ -493,7 +495,7 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "displays", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "bluetooth", "displays", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -530,6 +532,15 @@ func (s *shellUI) closeSettings() {
 	st.win.Destroy()
 	st.refs.Release()
 	st.win, st.swatches, st.entries, st.drops, st.sticky, st.overlay = nil, nil, nil, nil, nil, nil
+	// Closed with a pairing request on it: the request is turned down.
+	if pr := st.bt.prompt; pr != nil {
+		select {
+		case pr.reply <- system.BluetoothAnswer{}:
+		default:
+		}
+	}
+	st.bt.code = nil
+	s.syncBluetoothSearch()
 }
 
 // buildSwatches adds one button per theme: its ground with its accent and
@@ -636,6 +647,7 @@ func (s *shellUI) showSettings() {
 	// The shell chose its language when it started.
 	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
 	s.showInput()
+	s.showBluetooth()
 	s.showDisplays()
 	s.showNotifySettings()
 	s.showDockSettings()
