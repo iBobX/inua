@@ -2813,3 +2813,20 @@ window.term .term-sheet button.suggested-action {
 }
 window.term .term-sheet button.suggested-action:hover { border-color: mix(@accent, @t0, 0.14); background: mix(@accent, @t0, 0.14); }
 window.term .term-sheet button.suggested-action:disabled { opacity: 0.45; }
+/* inua-term's find bar, over the pane's top right. */
+window.term .term-find {
+  padding: 4px 4px 4px 6px;
+  background: @app;
+  border: 1px solid @line;
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+window.term .term-find entry { min-height: 28px; }
+window.term .term-find-count {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+  color: @t2;
+  margin: 0 4px;
+}
+window.term .term-find button.plain { min-height: 28px; min-width: 28px; padding: 0; color: @t1; background: transparent; border: none; }
+window.term .term-find button.plain:hover { background: alpha(@accent, 0.09); }

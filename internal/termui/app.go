@@ -194,6 +194,7 @@ func (a *App) ThemeChanged() {
 		return
 	}
 	a.pane.fg, a.pane.bg, a.pane.cursor = rgba(a.c.Colors["t0"]), rgba(a.c.Colors["app"]), rgba(a.c.Colors["accent"])
+	a.pane.warn = rgba(a.c.Colors["warn"])
 	a.pane.widget.QueueDraw()
 	if a.client != nil {
 		client, colors := a.client, a.pane.colors()

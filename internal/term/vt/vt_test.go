@@ -550,3 +550,59 @@ func TestMouse(t *testing.T) {
 		t.Errorf("motion in the same cell: %q", got)
 	}
 }
+
+// marked is the text of the runs with attribute a on each row.
+func marked(f Frame, a uint16) map[int]string {
+	m := map[int]string{}
+	for _, l := range f.Lines {
+		for _, r := range l.Runs {
+			if r.Attrs&a != 0 {
+				m[l.Y] += r.Text
+			}
+		}
+	}
+	return m
+}
+
+func TestSearch(t *testing.T) {
+	term := newTerm(t, 30, 4)
+	for i := 1; i <= 12; i++ {
+		word := "plain"
+		if i%4 == 0 {
+			word = "Needle"
+		}
+		term.Write([]byte("row " + strconv.Itoa(i) + " " + word + "\r\n"))
+	}
+	if err := term.Search("needle"); err != nil {
+		t.Fatal(err)
+	}
+	f, _ := term.Frame(false)
+	if total, cur := term.SearchCount(); total != 3 || cur != 0 {
+		t.Errorf("count %d, %d", total, cur)
+	}
+	// Row 12 is on screen: rows 10–12 and the prompt line.
+	if got := marked(f, Match); got[2] != "Needle" {
+		t.Errorf("matches in view: %v", got)
+	}
+	if !term.SearchMove(1) {
+		t.Fatal("no match selected")
+	}
+	f, _ = term.Frame(false)
+	if got := marked(f, MatchCurrent); got[2] != "Needle" {
+		t.Errorf("current: %v", got)
+	}
+	// The next, older one scrolls into view.
+	term.SearchMove(1)
+	f, _ = term.Frame(false)
+	if _, cur := term.SearchCount(); cur != 2 || f.Scroll.AtBottom() {
+		t.Errorf("second: current %d, %+v", cur, f.Scroll)
+	}
+	if got := marked(f, MatchCurrent); len(got) != 1 {
+		t.Errorf("current after scrolling: %v", got)
+	}
+	term.Search("")
+	f, _ = term.Frame(false)
+	if got := marked(f, Match); len(got) != 0 || len(f.Lines) == 0 {
+		t.Errorf("after the search: %v, %d rows", got, len(f.Lines))
+	}
+}

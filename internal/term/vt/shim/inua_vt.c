@@ -35,6 +35,14 @@ static void buf_free(buf *b) {
   if (b->p) ghostty_free(NULL, b->p, b->cap);
 }
 
+/* A search match in viewport cells, start and end inclusive. */
+typedef struct {
+  uint16_t sx, ex;
+  uint32_t sy, ey;
+} span;
+
+#define MAX_SPANS 512
+
 struct inua_vt {
   GhosttyTerminal term;
   GhosttyRenderState render;
@@ -54,6 +62,12 @@ struct inua_vt {
    * clipboard, 2 the primary selection. */
   buf clip;
   int clip_at;
+  GhosttySearch search;     /* NULL until a search */
+  bool searching, search_changed;
+  span spans[MAX_SPANS];    /* the matches in view, for this frame */
+  size_t nspans;
+  span current;
+  bool has_current;
   bool answering;
   uint32_t cell_w, cell_h;
   bool dark; /* the background's scheme, once colours are set */
@@ -94,6 +108,7 @@ void inua_vt_free(inua_vt *t) {
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
   if (t->gesture) ghostty_selection_gesture_free(t->gesture, t->term);
+  if (t->search) ghostty_search_free(t->search);
   if (t->mouse_ev) ghostty_mouse_event_free(t->mouse_ev);
   if (t->mouse) ghostty_mouse_encoder_free(t->mouse);
   ghostty_key_event_free(t->key);
@@ -118,6 +133,35 @@ void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n) {
   default: s.tag = GHOSTTY_SCROLL_VIEWPORT_DELTA_PROMPT; s.value.delta_prompt = n; break;
   }
   ghostty_terminal_scroll_viewport(t->term, s);
+}
+
+/* --- search --- */
+
+int inua_vt_search(inua_vt *t, const uint8_t *needle, size_t len) {
+  if (t->search == NULL) {
+    GhosttyResult r = ghostty_search_new(NULL, &t->search, t->term);
+    if (r != GHOSTTY_SUCCESS) return r;
+  }
+  GhosttyString s = {needle, len};
+  GhosttyResult r = ghostty_search_set(t->search, GHOSTTY_SEARCH_OPT_NEEDLE, len ? &s : NULL);
+  t->searching = r == GHOSTTY_SUCCESS && len > 0;
+  t->search_changed = true;
+  return r;
+}
+
+int inua_vt_search_move(inua_vt *t, int32_t dir) {
+  if (!t->searching) return 0;
+  GhosttyResult r = ghostty_search_set(t->search, dir >= 0 ? GHOSTTY_SEARCH_OPT_SELECT_NEXT : GHOSTTY_SEARCH_OPT_SELECT_PREV, NULL);
+  return r == GHOSTTY_SUCCESS;
+}
+
+void inua_vt_search_count(inua_vt *t, uint32_t *total, uint32_t *current) {
+  *total = *current = 0;
+  if (!t->searching) return;
+  ghostty_search_run(t->search);
+  size_t n = 0, i = 0;
+  if (ghostty_search_get(t->search, GHOSTTY_SEARCH_DATA_TOTAL_MATCHES, &n) == GHOSTTY_SUCCESS) *total = (uint32_t)n;
+  if (ghostty_search_get(t->search, GHOSTTY_SEARCH_DATA_SELECTED_INDEX, &i) == GHOSTTY_SUCCESS) *current = (uint32_t)i + 1;
 }
 
 /* --- writing back to the program --- */
@@ -316,7 +360,54 @@ static void put_run(out_buf *o, const run *r) {
 /* One row's runs; returns how many were written. The row's last run
  * loses its trailing spaces when they draw nothing (default colours, no
  * attributes), and is left out when nothing else is in it. */
-static uint16_t put_row(inua_vt *t, out_buf *o) {
+/* in says cell x, y is inside s. */
+static bool in(const span *s, uint16_t x, uint32_t y) {
+  if (y < s->sy || y > s->ey) return false;
+  if (y == s->sy && x < s->sx) return false;
+  if (y == s->ey && x > s->ex) return false;
+  return true;
+}
+
+/* to_span is a match in viewport cells; false when it is not in view. */
+static bool to_span(inua_vt *t, const GhosttySelection *sel, span *out) {
+  GhosttyPointCoordinate a, b;
+  if (ghostty_terminal_point_from_grid_ref(t->term, &sel->start, GHOSTTY_POINT_TAG_VIEWPORT, &a) != GHOSTTY_SUCCESS) return false;
+  if (ghostty_terminal_point_from_grid_ref(t->term, &sel->end, GHOSTTY_POINT_TAG_VIEWPORT, &b) != GHOSTTY_SUCCESS) return false;
+  if (b.y < a.y || (b.y == a.y && b.x < a.x)) {
+    GhosttyPointCoordinate s = a;
+    a = b;
+    b = s;
+  }
+  *out = (span){.sx = a.x, .sy = a.y, .ex = b.x, .ey = b.y};
+  return true;
+}
+
+/* find_spans catches the search up and reads the matches in view. */
+static void find_spans(inua_vt *t) {
+  t->nspans = 0;
+  t->has_current = false;
+  if (!t->searching) return;
+  ghostty_search_run(t->search);
+  GhosttySelection sels[MAX_SPANS];
+  GhosttySelectionBuffer b = {.ptr = sels, .cap = MAX_SPANS};
+  for (size_t i = 0; i < MAX_SPANS; i++) sels[i] = (GhosttySelection)GHOSTTY_INIT_SIZED(GhosttySelection);
+  GhosttyResult r = ghostty_search_get(t->search, GHOSTTY_SEARCH_DATA_VIEWPORT_MATCHES, &b);
+  size_t n = r == GHOSTTY_SUCCESS ? b.len : 0;
+  for (size_t i = 0; i < n; i++)
+    if (to_span(t, &sels[i], &t->spans[t->nspans])) t->nspans++;
+  GhosttySelection cur = GHOSTTY_INIT_SIZED(GhosttySelection);
+  if (ghostty_search_get(t->search, GHOSTTY_SEARCH_DATA_SELECTED_MATCH, &cur) == GHOSTTY_SUCCESS)
+    t->has_current = to_span(t, &cur, &t->current);
+}
+
+static uint16_t match_attrs(inua_vt *t, uint16_t x, uint16_t y) {
+  if (t->has_current && in(&t->current, x, y)) return INUA_VT_MATCH | INUA_VT_MATCH_CURRENT;
+  for (size_t i = 0; i < t->nspans; i++)
+    if (in(&t->spans[i], x, y)) return INUA_VT_MATCH;
+  return 0;
+}
+
+static uint16_t put_row(inua_vt *t, out_buf *o, uint16_t y) {
   run cur = {0};
   bool open = false;
   uint16_t nruns = 0, x = 0;
@@ -354,6 +445,7 @@ static uint16_t put_row(inua_vt *t, out_buf *o) {
       attrs |= st.overline ? INUA_VT_OVERLINE : 0;
     }
     if (has_sel && x >= sel.start_x && x <= sel.end_x) attrs |= INUA_VT_SELECTED;
+    if (t->searching) attrs |= match_attrs(t, x, y);
     uint8_t text[64];
     GhosttyBuffer gb = {.ptr = text, .cap = sizeof(text), .len = 0};
     if (ghostty_render_state_row_cells_get(t->cells, GHOSTTY_RENDER_STATE_ROW_CELLS_DATA_GRAPHEMES_UTF8, &gb) != GHOSTTY_SUCCESS || gb.len == 0) {
@@ -428,7 +520,11 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
     info->sb_offset = (uint32_t)sb.offset;
     info->sb_len = (uint32_t)sb.len;
   }
-  bool every = all || dirty == GHOSTTY_RENDER_STATE_DIRTY_FULL;
+  /* While searching every row is drawn: matches move with output and
+   * scrolling; once more when the search ends, to take them away. */
+  find_spans(t);
+  bool every = all || dirty == GHOSTTY_RENDER_STATE_DIRTY_FULL || t->searching || t->search_changed;
+  t->search_changed = false;
   out_buf o = {.buf = buf, .cap = cap};
   if (ghostty_render_state_get(t->render, GHOSTTY_RENDER_STATE_DATA_ROW_ITERATOR, &t->rows) != GHOSTTY_SUCCESS)
     return GHOSTTY_INVALID_VALUE;
@@ -447,7 +543,7 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
     size_t head = o.len;
     put16(&o, y);
     put16(&o, 0);
-    uint16_t n = put_row(t, &o);
+    uint16_t n = put_row(t, &o, y);
     if (!o.full) memcpy(o.buf + head + 2, &n, 2);
     info->nrows++;
     if (o.full) break;

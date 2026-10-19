@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 10
+#define INUA_VT_ABI 11
 
 typedef struct inua_vt inua_vt;
 
@@ -90,6 +90,8 @@ typedef struct {
 #define INUA_VT_INVISIBLE 64u
 #define INUA_VT_OVERLINE 128u
 #define INUA_VT_SELECTED 256u
+#define INUA_VT_MATCH 512u          /* a search match */
+#define INUA_VT_MATCH_CURRENT 1024u /* the search match selected */
 /* fg or bg is the default colour, not the value given. */
 #define INUA_VT_DEFAULT_COLOR 0x01000000u
 
@@ -110,6 +112,19 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
  * prompts (the shell's OSC 133 marks). Frames then show the rows there;
  * new output keeps the viewport where it is unless it is at the bottom. */
 void inua_vt_scroll(inua_vt *t, uint32_t kind, int32_t n);
+
+/* Searching the screen and the scrollback for needle (ASCII letters in
+ * any case); len 0 ends the search. Frames then mark the matches in view.
+ * Returns 0, <0 on error. */
+int inua_vt_search(inua_vt *t, const uint8_t *needle, size_t len);
+
+/* Selects the next match (dir 1, toward older lines) or the previous
+ * (-1), scrolling to it. Returns 1 when one is selected, 0 for none. */
+int inua_vt_search_move(inua_vt *t, int32_t dir);
+
+/* How many matches the search has, and which is selected, from 1 (0 for
+ * none); as of the last frame or move. */
+void inua_vt_search_count(inua_vt *t, uint32_t *total, uint32_t *current);
 
 /* Modifier bits for inua_vt_key, as libghostty's. */
 #define INUA_VT_MOD_SHIFT 1u

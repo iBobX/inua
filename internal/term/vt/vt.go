@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 10
+const abi = 11
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -31,29 +31,32 @@ var lib struct {
 	once sync.Once
 	err  error
 
-	abi       func() int32
-	new       func(cols, rows uint16) uintptr
-	free      func(t uintptr)
-	write     func(t uintptr, data *byte, n uintptr)
-	resize    func(t uintptr, cols, rows uint16) int32
-	text      func(t uintptr, unwrap int32, out **byte, n *uintptr) int32
-	freeBytes func(p *byte, n uintptr)
-	title     func(t uintptr, p **byte, n *uintptr) int32
-	pwd       func(t uintptr, p **byte, n *uintptr) int32
-	cursor    func(t uintptr, x, y *uint16) int32
-	frame     func(t uintptr, all int32, buf *byte, cap uintptr, n *uintptr, info *frameInfo) int32
-	key       func(t uintptr, keysym, xkb, mods, action uint32, utf8 *byte, n uintptr, unshifted, consumed uint32, out *byte, cap uintptr, outN *uintptr) int32
-	sel       func(t uintptr, kind uint32, x, y uint16, px, py float64, timeNs, repeatNs uint64, repeatPx float64, rect, cellW, height uint32) int32
-	selText   func(t uintptr, out **byte, n *uintptr) int32
-	selClear  func(t uintptr)
-	answer    func(t uintptr)
-	answers   func(t uintptr, p **byte, n *uintptr)
-	colors    func(t uintptr, fg, bg, cursor uint32)
-	cellSize  func(t uintptr, w, h uint32)
-	clipboard func(t uintptr, p **byte, n *uintptr) int32
-	scroll    func(t uintptr, kind uint32, n int32)
-	mouse     func(t uintptr, action, button, mods uint32, x, y float64, w, h, cw, ch, pad, pressed uint32, out *byte, cap uintptr, n *uintptr) int32
-	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
+	abi         func() int32
+	new         func(cols, rows uint16) uintptr
+	free        func(t uintptr)
+	write       func(t uintptr, data *byte, n uintptr)
+	resize      func(t uintptr, cols, rows uint16) int32
+	text        func(t uintptr, unwrap int32, out **byte, n *uintptr) int32
+	freeBytes   func(p *byte, n uintptr)
+	title       func(t uintptr, p **byte, n *uintptr) int32
+	pwd         func(t uintptr, p **byte, n *uintptr) int32
+	cursor      func(t uintptr, x, y *uint16) int32
+	frame       func(t uintptr, all int32, buf *byte, cap uintptr, n *uintptr, info *frameInfo) int32
+	key         func(t uintptr, keysym, xkb, mods, action uint32, utf8 *byte, n uintptr, unshifted, consumed uint32, out *byte, cap uintptr, outN *uintptr) int32
+	sel         func(t uintptr, kind uint32, x, y uint16, px, py float64, timeNs, repeatNs uint64, repeatPx float64, rect, cellW, height uint32) int32
+	selText     func(t uintptr, out **byte, n *uintptr) int32
+	selClear    func(t uintptr)
+	answer      func(t uintptr)
+	answers     func(t uintptr, p **byte, n *uintptr)
+	colors      func(t uintptr, fg, bg, cursor uint32)
+	cellSize    func(t uintptr, w, h uint32)
+	clipboard   func(t uintptr, p **byte, n *uintptr) int32
+	scroll      func(t uintptr, kind uint32, n int32)
+	search      func(t uintptr, needle *byte, n uintptr) int32
+	searchMove  func(t uintptr, dir int32) int32
+	searchCount func(t uintptr, total, current *uint32)
+	mouse       func(t uintptr, action, button, mods uint32, x, y float64, w, h, cw, ch, pad, pressed uint32, out *byte, cap uintptr, n *uintptr) int32
+	paste       func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
 // ErrMissing is returned when libinua-vt.so is not found.
@@ -120,6 +123,9 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
+		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
+		purego.RegisterLibFunc(&lib.searchMove, h, "inua_vt_search_move")
+		purego.RegisterLibFunc(&lib.searchCount, h, "inua_vt_search_count")
 	})
 	return lib.err
 }
@@ -160,6 +166,31 @@ func (t *Terminal) Write(p []byte) (int, error) {
 		runtime.KeepAlive(p)
 	}
 	return len(p), nil
+}
+
+// Search looks for needle in the screen and the scrollback (ASCII
+// letters in any case); "" ends the search. Frames mark the matches in
+// view (Match, and MatchCurrent for the one selected).
+func (t *Terminal) Search(needle string) error {
+	var p *byte
+	if needle != "" {
+		b := []byte(needle)
+		p = &b[0]
+		defer runtime.KeepAlive(b)
+	}
+	return result("search", lib.search(t.h, p, uintptr(len(needle))))
+}
+
+// SearchMove selects the next match, toward older lines (dir 1), or the
+// previous (-1), and scrolls to it; false when there is none.
+func (t *Terminal) SearchMove(dir int) bool { return lib.searchMove(t.h, int32(dir)) == 1 }
+
+// SearchCount is how many matches there are, and which one is selected,
+// from 1 (0 for none).
+func (t *Terminal) SearchCount() (total, current int) {
+	var n, i uint32
+	lib.searchCount(t.h, &n, &i)
+	return int(n), int(i)
 }
 
 // ScrollKind is where Scroll moves the viewport.
@@ -315,6 +346,8 @@ const (
 	Invisible
 	Overline
 	Selected
+	Match        // a search match
+	MatchCurrent // the search match selected
 )
 
 // DefaultColor in a run's FG or BG means the terminal's own colour.

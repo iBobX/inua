@@ -43,6 +43,7 @@ type termPane struct {
 	fonts  [4]*pango.FontDescription // by bold and italic
 	fg, bg gdk.RGBA
 	cursor gdk.RGBA
+	warn   gdk.RGBA // search matches
 	cw, ch int
 	cols   int
 	rows   int
@@ -71,15 +72,21 @@ type termPane struct {
 	im      *gtk.IMMulticontext
 	preedit string // what the input method is composing, drawn at the cursor
 
-	sheet           *gtk.Box // the paste sheet, while it asks
-	sheetCbs        []*func(gtk.Button)
-	onSheetKey      func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
-	onText, onFiles [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
-	onMiddle        func(gtk.GestureClick, int32, float64, float64)
-	onDrop          func(gtk.DropTarget, uintptr, float64, float64) bool
-	onScroll        func(gtk.EventControllerScroll, float64, float64) bool
-	onMotion        func(gtk.EventControllerMotion, float64, float64)
-	onRaw           func(gtk.EventControllerLegacy, uintptr) bool
+	sheet                             *gtk.Box // the paste sheet, while it asks
+	find                              *gtk.Box // the find bar, while open
+	findEntry                         *gtk.Entry
+	findCount                         *gtk.Label
+	onFindChanged                     func(uintptr, uintptr)
+	onFindKey                         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onFindUp, onFindDown, onFindClose func(gtk.Button)
+	sheetCbs                          []*func(gtk.Button)
+	onSheetKey                        func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onText, onFiles                   [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
+	onMiddle                          func(gtk.GestureClick, int32, float64, float64)
+	onDrop                            func(gtk.DropTarget, uintptr, float64, float64) bool
+	onScroll                          func(gtk.EventControllerScroll, float64, float64) bool
+	onMotion                          func(gtk.EventControllerMotion, float64, float64)
+	onRaw                             func(gtk.EventControllerLegacy, uintptr) bool
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
@@ -96,6 +103,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 		fg:     rgba(colors["t0"]),
 		bg:     rgba(colors["app"]),
 		cursor: rgba(colors["accent"]),
+		warn:   rgba(colors["warn"]),
 		be:     be,
 		cols:   cols,
 		rows:   rows,
@@ -296,6 +304,9 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 		case chord == gdk.ShiftMaskValue && (int32(keyval) == gdk.KEY_Insert || int32(keyval) == gdk.KEY_KP_Insert):
 			p.pasteFrom(true)
 			return true
+		case chord == gdk.ControlMaskValue|gdk.ShiftMaskValue && int32(gdk.KeyvalToLower(keyval)) == gdk.KEY_f:
+			p.openFind()
+			return true
 		case p.scrollKey(keyval, chord):
 			return true
 		}
@@ -418,6 +429,7 @@ func (p *termPane) update(all bool) {
 		// The input method's candidates open at the cursor.
 		p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + p.cur.X*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
 	}
+	p.showCount()
 	p.widget.QueueDraw()
 }
 
@@ -463,11 +475,17 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 			if r.Attrs&vt.Inverse != 0 {
 				fg, bg = bg, fg
 			}
-			if r.Attrs&vt.Selected != 0 {
+			switch {
+			case r.Attrs&vt.MatchCurrent != 0:
+				bg, fg = p.warn, p.bg
+			case r.Attrs&vt.Selected != 0:
 				bg = p.cursor
 				bg.Alpha = 0.3
+			case r.Attrs&vt.Match != 0:
+				bg = p.warn
+				bg.Alpha = 0.3
 			}
-			if r.BG != vt.DefaultColor || r.Attrs&(vt.Inverse|vt.Selected) != 0 {
+			if r.BG != vt.DefaultColor || r.Attrs&(vt.Inverse|vt.Selected|vt.Match) != 0 {
 				s.AppendColor(&bg, rect(float32(r.X)*cw, float32(y)*ch, float32(r.Cells)*cw, ch))
 			}
 			if r.Attrs&vt.Invisible != 0 || r.Text == "" {
