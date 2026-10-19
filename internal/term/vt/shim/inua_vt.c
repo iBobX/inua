@@ -12,6 +12,8 @@ struct inua_vt {
   GhosttyRenderStateRowCells cells;
   GhosttyKeyEncoder keys;
   GhosttyKeyEvent key;
+  GhosttySelectionGesture gesture;
+  GhosttySelectionGestureEvent press, release, drag;
 };
 
 int inua_vt_abi(void) { return INUA_VT_ABI; }
@@ -26,7 +28,11 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
       ghostty_render_state_row_iterator_new(NULL, &t->rows) != GHOSTTY_SUCCESS ||
       ghostty_render_state_row_cells_new(NULL, &t->cells) != GHOSTTY_SUCCESS ||
       ghostty_key_encoder_new(NULL, &t->keys) != GHOSTTY_SUCCESS ||
-      ghostty_key_event_new(NULL, &t->key) != GHOSTTY_SUCCESS) {
+      ghostty_key_event_new(NULL, &t->key) != GHOSTTY_SUCCESS ||
+      ghostty_selection_gesture_new(NULL, &t->gesture) != GHOSTTY_SUCCESS ||
+      ghostty_selection_gesture_event_new(NULL, &t->press, GHOSTTY_SELECTION_GESTURE_EVENT_TYPE_PRESS) != GHOSTTY_SUCCESS ||
+      ghostty_selection_gesture_event_new(NULL, &t->release, GHOSTTY_SELECTION_GESTURE_EVENT_TYPE_RELEASE) != GHOSTTY_SUCCESS ||
+      ghostty_selection_gesture_event_new(NULL, &t->drag, GHOSTTY_SELECTION_GESTURE_EVENT_TYPE_DRAG) != GHOSTTY_SUCCESS) {
     inua_vt_free(t);
     return NULL;
   }
@@ -35,6 +41,10 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
 
 void inua_vt_free(inua_vt *t) {
   if (t == NULL) return;
+  if (t->drag) ghostty_selection_gesture_event_free(t->drag);
+  if (t->release) ghostty_selection_gesture_event_free(t->release);
+  if (t->press) ghostty_selection_gesture_event_free(t->press);
+  if (t->gesture) ghostty_selection_gesture_free(t->gesture, t->term);
   ghostty_key_event_free(t->key);
   ghostty_key_encoder_free(t->keys);
   ghostty_render_state_row_cells_free(t->cells);
@@ -233,6 +243,9 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len, in
     info->fg = rgb(colors.foreground);
     info->bg = rgb(colors.background);
   }
+  bool mouse = false;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_MOUSE_TRACKING, &mouse);
+  info->mouse = mouse;
   bool every = all || dirty == GHOSTTY_RENDER_STATE_DIRTY_FULL;
   out_buf o = {.buf = buf, .cap = cap};
   if (ghostty_render_state_get(t->render, GHOSTTY_RENDER_STATE_DATA_ROW_ITERATOR, &t->rows) != GHOSTTY_SUCCESS)
@@ -288,7 +301,74 @@ static GhosttyKey key_for_xkb(uint32_t xkb) {
   return GHOSTTY_KEY_UNIDENTIFIED;
 }
 
-int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
+/* The named keys by keysym (X11's keysymdef.h values). */
+static GhosttyKey key_for_keysym(uint32_t sym) {
+  static const GhosttyKey f[] = {GHOSTTY_KEY_F1, GHOSTTY_KEY_F2, GHOSTTY_KEY_F3, GHOSTTY_KEY_F4, GHOSTTY_KEY_F5, GHOSTTY_KEY_F6, GHOSTTY_KEY_F7, GHOSTTY_KEY_F8, GHOSTTY_KEY_F9, GHOSTTY_KEY_F10, GHOSTTY_KEY_F11, GHOSTTY_KEY_F12, GHOSTTY_KEY_F13, GHOSTTY_KEY_F14, GHOSTTY_KEY_F15, GHOSTTY_KEY_F16, GHOSTTY_KEY_F17, GHOSTTY_KEY_F18, GHOSTTY_KEY_F19, GHOSTTY_KEY_F20, GHOSTTY_KEY_F21, GHOSTTY_KEY_F22, GHOSTTY_KEY_F23, GHOSTTY_KEY_F24, GHOSTTY_KEY_F25};
+  if (sym >= 0xffbe && sym <= 0xffd6) return f[sym - 0xffbe]; /* F1…F25 */
+  switch (sym) {
+  case 0xff09: case 0xfe20: return GHOSTTY_KEY_TAB; /* Tab, ISO_Left_Tab (Shift+Tab) */
+  case 0xffeb: case 0xffe7: return GHOSTTY_KEY_META_LEFT;  /* Super_L, Meta_L */
+  case 0xffec: case 0xffe8: return GHOSTTY_KEY_META_RIGHT; /* Super_R, Meta_R */
+  case 0xff0d: return GHOSTTY_KEY_ENTER;
+  case 0xff08: return GHOSTTY_KEY_BACKSPACE;
+  case 0xff1b: return GHOSTTY_KEY_ESCAPE;
+  case 0xffff: return GHOSTTY_KEY_DELETE;
+  case 0xff63: return GHOSTTY_KEY_INSERT;
+  case 0xff50: return GHOSTTY_KEY_HOME;
+  case 0xff57: return GHOSTTY_KEY_END;
+  case 0xff55: return GHOSTTY_KEY_PAGE_UP;
+  case 0xff56: return GHOSTTY_KEY_PAGE_DOWN;
+  case 0xff51: return GHOSTTY_KEY_ARROW_LEFT;
+  case 0xff52: return GHOSTTY_KEY_ARROW_UP;
+  case 0xff53: return GHOSTTY_KEY_ARROW_RIGHT;
+  case 0xff54: return GHOSTTY_KEY_ARROW_DOWN;
+  case 0xff61: return GHOSTTY_KEY_PRINT_SCREEN;
+  case 0xff67: return GHOSTTY_KEY_CONTEXT_MENU;
+  case 0xff13: return GHOSTTY_KEY_PAUSE;
+  case 0xff14: return GHOSTTY_KEY_SCROLL_LOCK;
+  case 0xff7f: return GHOSTTY_KEY_NUM_LOCK;
+  case 0xffe5: return GHOSTTY_KEY_CAPS_LOCK;
+  case 0xffe1: return GHOSTTY_KEY_SHIFT_LEFT;
+  case 0xffe2: return GHOSTTY_KEY_SHIFT_RIGHT;
+  case 0xffe3: return GHOSTTY_KEY_CONTROL_LEFT;
+  case 0xffe4: return GHOSTTY_KEY_CONTROL_RIGHT;
+  case 0xffe9: return GHOSTTY_KEY_ALT_LEFT;
+  case 0xffea: return GHOSTTY_KEY_ALT_RIGHT;
+  case 0x0020: return GHOSTTY_KEY_SPACE;
+  case 0xff8d: return GHOSTTY_KEY_NUMPAD_ENTER;
+  case 0xff95: return GHOSTTY_KEY_NUMPAD_HOME;
+  case 0xff96: return GHOSTTY_KEY_NUMPAD_LEFT;
+  case 0xff97: return GHOSTTY_KEY_NUMPAD_UP;
+  case 0xff98: return GHOSTTY_KEY_NUMPAD_RIGHT;
+  case 0xff99: return GHOSTTY_KEY_NUMPAD_DOWN;
+  case 0xff9a: return GHOSTTY_KEY_NUMPAD_PAGE_UP;
+  case 0xff9b: return GHOSTTY_KEY_NUMPAD_PAGE_DOWN;
+  case 0xff9c: return GHOSTTY_KEY_NUMPAD_END;
+  case 0xff9d: return GHOSTTY_KEY_NUMPAD_BEGIN;
+  case 0xff9e: return GHOSTTY_KEY_NUMPAD_INSERT;
+  case 0xff9f: return GHOSTTY_KEY_NUMPAD_DELETE;
+  case 0xffbd: return GHOSTTY_KEY_NUMPAD_EQUAL;
+  case 0xffaa: return GHOSTTY_KEY_NUMPAD_MULTIPLY;
+  case 0xffab: return GHOSTTY_KEY_NUMPAD_ADD;
+  case 0xffac: return GHOSTTY_KEY_NUMPAD_SEPARATOR;
+  case 0xffad: return GHOSTTY_KEY_NUMPAD_SUBTRACT;
+  case 0xffae: return GHOSTTY_KEY_NUMPAD_DECIMAL;
+  case 0xffaf: return GHOSTTY_KEY_NUMPAD_DIVIDE;
+  case 0xffb0: return GHOSTTY_KEY_NUMPAD_0;
+  case 0xffb1: return GHOSTTY_KEY_NUMPAD_1;
+  case 0xffb2: return GHOSTTY_KEY_NUMPAD_2;
+  case 0xffb3: return GHOSTTY_KEY_NUMPAD_3;
+  case 0xffb4: return GHOSTTY_KEY_NUMPAD_4;
+  case 0xffb5: return GHOSTTY_KEY_NUMPAD_5;
+  case 0xffb6: return GHOSTTY_KEY_NUMPAD_6;
+  case 0xffb7: return GHOSTTY_KEY_NUMPAD_7;
+  case 0xffb8: return GHOSTTY_KEY_NUMPAD_8;
+  case 0xffb9: return GHOSTTY_KEY_NUMPAD_9;
+  }
+  return GHOSTTY_KEY_UNIDENTIFIED;
+}
+
+int inua_vt_key(inua_vt *t, uint32_t keysym, uint32_t xkb, uint32_t mods, uint32_t action,
                 const char *utf8, size_t utf8_len, uint32_t unshifted,
                 uint32_t consumed, uint8_t *out, size_t cap, size_t *len) {
   *len = 0;
@@ -300,7 +380,9 @@ int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
   }
   ghostty_key_encoder_setopt_from_terminal(t->keys, t->term);
   ghostty_key_event_set_action(t->key, (GhosttyKeyAction)action);
-  ghostty_key_event_set_key(t->key, key_for_xkb(xkb));
+  GhosttyKey k = key_for_keysym(keysym);
+  if (k == GHOSTTY_KEY_UNIDENTIFIED) k = key_for_xkb(xkb);
+  ghostty_key_event_set_key(t->key, k);
   ghostty_key_event_set_mods(t->key, (GhosttyMods)mods);
   ghostty_key_event_set_consumed_mods(t->key, (GhosttyMods)consumed);
   ghostty_key_event_set_utf8(t->key, utf8_len ? utf8 : NULL, utf8_len);
@@ -308,4 +390,61 @@ int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
   ghostty_key_event_set_composing(t->key, false);
   *len = 0;
   return ghostty_key_encoder_encode(t->keys, t->key, (char *)out, cap, len);
+}
+
+/* --- selection --- */
+
+int inua_vt_select(inua_vt *t, uint32_t kind, uint16_t x, uint16_t y,
+                   double px, double py, uint64_t time_ns, uint64_t repeat_ns,
+                   double repeat_px, uint32_t rectangle, uint32_t cell_w,
+                   uint32_t height) {
+  GhosttySelectionGestureEvent ev = kind == 0 ? t->press : kind == 1 ? t->release : t->drag;
+  GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+  GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_VIEWPORT, .value = {.coordinate = {.x = x, .y = y}}};
+  GhosttyResult r = ghostty_terminal_grid_ref(t->term, pt, &ref);
+  if (r != GHOSTTY_SUCCESS) return r;
+  ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_REF, &ref);
+  GhosttySurfacePosition pos = {.x = px, .y = py};
+  ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_POSITION, &pos);
+  bool rect = rectangle != 0;
+  ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_RECTANGLE, &rect);
+  if (kind == 0) {
+    ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_TIME_NS, &time_ns);
+    ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_REPEAT_INTERVAL_NS, &repeat_ns);
+    ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_REPEAT_DISTANCE, &repeat_px);
+  }
+  uint16_t cols = 0;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_COLS, &cols);
+  GhosttySelectionGestureGeometry geo = {.columns = cols, .cell_width = cell_w, .padding_left = 0, .screen_height = height};
+  if (kind == 2) ghostty_selection_gesture_event_set(ev, GHOSTTY_SELECTION_GESTURE_EVENT_OPT_GEOMETRY, &geo);
+  GhosttySelection sel = GHOSTTY_INIT_SIZED(GhosttySelection);
+  r = ghostty_selection_gesture_event(t->gesture, t->term, ev, kind == 1 ? NULL : &sel);
+  if (r == GHOSTTY_SUCCESS && kind != 1) {
+    ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SELECTION, &sel);
+    return 1;
+  }
+  if (r == GHOSTTY_NO_VALUE) {
+    if (kind == 0) ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SELECTION, NULL);
+    GhosttySelection cur = GHOSTTY_INIT_SIZED(GhosttySelection);
+    return ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_SELECTION, &cur) == GHOSTTY_SUCCESS;
+  }
+  return r;
+}
+
+int inua_vt_selection_text(inua_vt *t, uint8_t **out, size_t *len) {
+  *out = NULL;
+  *len = 0;
+  GhosttySelection sel = GHOSTTY_INIT_SIZED(GhosttySelection);
+  if (ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_SELECTION, &sel) != GHOSTTY_SUCCESS) return GHOSTTY_SUCCESS;
+  GhosttyTerminalSelectionFormatOptions opts = GHOSTTY_INIT_SIZED(GhosttyTerminalSelectionFormatOptions);
+  opts.emit = GHOSTTY_FORMATTER_FORMAT_PLAIN;
+  opts.unwrap = true;
+  opts.trim = true;
+  opts.selection = &sel;
+  return ghostty_terminal_selection_format_alloc(t->term, NULL, opts, out, len);
+}
+
+void inua_vt_select_clear(inua_vt *t) {
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SELECTION, NULL);
+  ghostty_selection_gesture_reset(t->gesture, t->term);
 }

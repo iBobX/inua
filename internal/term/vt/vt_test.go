@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 // newTerm is a terminal from the library scripts/libghostty.sh built into
@@ -244,5 +245,108 @@ func TestKeyModes(t *testing.T) {
 	term.Write([]byte("\x1b[<u\x1b[<u")) // and back, both pushes popped
 	if got := key(t, term, press(KeyEvent{Keycode: xkbEnter, Mods: ModShift})); got != "\x1b[27;2;13~" {
 		t.Errorf("Shift+Enter after the program left the protocol: %q", got)
+	}
+}
+
+// A pointer event at cell x, y of a 10 by 20 pixel cell grid: a drag
+// in the cell's right half, which Ghostty counts as reaching the cell.
+func ptr(kind PointerKind, x, y int, at time.Duration) Pointer {
+	px := x*10 + 5
+	if kind == PointerDrag {
+		px = x*10 + 8
+	}
+	return Pointer{Kind: kind, X: x, Y: y, PX: float64(px), PY: float64(y*20 + 10),
+		Time: at, Repeat: 400 * time.Millisecond, RepeatPx: 5, CellW: 10, Height: 4 * 20}
+}
+
+func selected(t *testing.T, term *Terminal) string {
+	t.Helper()
+	s, err := term.SelectionText()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
+}
+
+func TestSelect(t *testing.T) {
+	term := newTerm(t, 20, 4)
+	term.Write([]byte("hello world\r\nsecond line"))
+	term.Select(ptr(PointerPress, 0, 0, time.Second))
+	if ok, _ := term.Select(ptr(PointerDrag, 4, 0, time.Second)); !ok {
+		t.Fatal("dragging made no selection")
+	}
+	term.Select(ptr(PointerRelease, 4, 0, time.Second))
+	if got := selected(t, term); got != "hello" {
+		t.Errorf("dragged %q", got)
+	}
+	// The frame marks the cells.
+	f, _ := term.Frame(true)
+	if r := f.Lines[0].Runs[0]; r.Attrs&Selected == 0 || r.Text != "hello" {
+		t.Errorf("first run %+v", r)
+	}
+	// A plain click clears it.
+	term.Select(ptr(PointerPress, 8, 1, 3*time.Second))
+	term.Select(ptr(PointerRelease, 8, 1, 3*time.Second))
+	if got := selected(t, term); got != "" {
+		t.Errorf("after a click: %q", got)
+	}
+}
+
+func TestSelectClicks(t *testing.T) {
+	term := newTerm(t, 20, 4)
+	term.Write([]byte("hello world\r\nsecond line"))
+	at := 10 * time.Second
+	click := func(x, y int) {
+		term.Select(ptr(PointerPress, x, y, at))
+		term.Select(ptr(PointerRelease, x, y, at))
+		at += 100 * time.Millisecond
+	}
+	click(7, 0)
+	click(7, 0)
+	if got := selected(t, term); got != "world" {
+		t.Errorf("double click: %q", got)
+	}
+	click(7, 0)
+	if got := selected(t, term); got != "hello world" {
+		t.Errorf("triple click: %q", got)
+	}
+	// Clicks too far apart in time are single.
+	at += time.Second
+	click(2, 1)
+	at += time.Second
+	click(2, 1)
+	if got := selected(t, term); got != "" {
+		t.Errorf("slow clicks selected %q", got)
+	}
+}
+
+// A line the terminal wrapped is copied as one.
+func TestSelectWrapped(t *testing.T) {
+	term := newTerm(t, 10, 4)
+	term.Write([]byte("0123456789abcdef"))
+	term.Select(ptr(PointerPress, 0, 0, time.Second))
+	term.Select(ptr(PointerDrag, 5, 1, time.Second))
+	if got := selected(t, term); got != "0123456789abcdef" {
+		t.Errorf("wrapped selection %q", got)
+	}
+	term.ClearSelection()
+	if got := selected(t, term); got != "" {
+		t.Errorf("after clear %q", got)
+	}
+}
+
+// Named keys go by their keysym, so a remapped key sends what it now is:
+// with caps:escape, Caps Lock's keycode makes Escape.
+func TestKeysym(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	const xkbCaps, xkbEscape = 66, 9
+	if got := key(t, term, press(KeyEvent{Keyval: 0xff1b, Keycode: xkbCaps})); got != "\x1b" {
+		t.Errorf("Escape on the Caps Lock key: %q", got)
+	}
+	if got := key(t, term, press(KeyEvent{Keyval: 0xff0d, Keycode: xkbEscape})); got != "\r" {
+		t.Errorf("Return on the Escape key's code: %q", got)
+	}
+	if got := key(t, term, press(KeyEvent{Keyval: 0xffbf})); got != "\x1bOQ" {
+		t.Errorf("F2 by keysym alone: %q", got)
 	}
 }

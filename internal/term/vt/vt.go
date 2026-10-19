@@ -15,13 +15,14 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+	"time"
 	"unsafe"
 
 	"codeberg.org/puregotk/purego"
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 3
+const abi = 5
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -41,7 +42,10 @@ var lib struct {
 	pwd       func(t uintptr, p **byte, n *uintptr) int32
 	cursor    func(t uintptr, x, y *uint16) int32
 	frame     func(t uintptr, all int32, buf *byte, cap uintptr, n *uintptr, info *frameInfo) int32
-	key       func(t uintptr, xkb, mods, action uint32, utf8 *byte, n uintptr, unshifted, consumed uint32, out *byte, cap uintptr, outN *uintptr) int32
+	key       func(t uintptr, keysym, xkb, mods, action uint32, utf8 *byte, n uintptr, unshifted, consumed uint32, out *byte, cap uintptr, outN *uintptr) int32
+	sel       func(t uintptr, kind uint32, x, y uint16, px, py float64, timeNs, repeatNs uint64, repeatPx float64, rect, cellW, height uint32) int32
+	selText   func(t uintptr, out **byte, n *uintptr) int32
+	selClear  func(t uintptr)
 }
 
 // ErrMissing is returned when libinua-vt.so is not found.
@@ -97,6 +101,9 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.cursor, h, "inua_vt_cursor")
 		purego.RegisterLibFunc(&lib.frame, h, "inua_vt_frame")
 		purego.RegisterLibFunc(&lib.key, h, "inua_vt_key")
+		purego.RegisterLibFunc(&lib.sel, h, "inua_vt_select")
+		purego.RegisterLibFunc(&lib.selText, h, "inua_vt_selection_text")
+		purego.RegisterLibFunc(&lib.selClear, h, "inua_vt_select_clear")
 	})
 	return lib.err
 }
@@ -203,6 +210,7 @@ type frameInfo struct {
 	cursorVisible, cursorX, cursorY uint32
 	cursorStyle, cursorWide         uint32
 	password, fg, bg, nrows         uint32
+	mouse                           uint32
 }
 
 // Dirty says how much of the screen changed since the last frame.
@@ -249,7 +257,9 @@ type Frame struct {
 	// Password is set while the program reads a password.
 	Password bool
 	FG, BG   uint32 // 0xRRGGBB
-	Lines    []Line
+	// Mouse is set while the program tracks the mouse (vim, htop).
+	Mouse bool
+	Lines []Line
 }
 
 // Cursor is where the cursor is, in the viewport.
@@ -308,7 +318,7 @@ func decodeFrame(info *frameInfo, b []byte) (Frame, error) {
 			X: int(info.cursorX), Y: int(info.cursorY), Visible: info.cursorVisible != 0,
 			Style: CursorStyle(info.cursorStyle), Wide: info.cursorWide != 0,
 		},
-		Password: info.password != 0, FG: info.fg, BG: info.bg,
+		Password: info.password != 0, FG: info.fg, BG: info.bg, Mouse: info.mouse != 0,
 		Lines: make([]Line, 0, info.nrows),
 	}
 	le := binary.LittleEndian
@@ -362,10 +372,13 @@ const (
 	Repeat
 )
 
-// KeyEvent is a key as the window saw it: the XKB keycode GDK reports,
-// the modifiers held, the text it made, its character without modifiers
+// KeyEvent is a key as the window saw it: its keysym after the layout
+// (which names Enter, Escape, the arrows, the function and keypad keys,
+// whatever key makes them), the XKB keycode GDK reports (for the other
+// keys), the modifiers held, the text it made, its character without modifiers
 // (0 for none) and the modifiers the layout used up making the text.
 type KeyEvent struct {
+	Keyval    uint32
 	Keycode   uint32
 	Mods      uint32
 	Action    KeyAction
@@ -385,7 +398,7 @@ func (t *Terminal) Key(k KeyEvent) ([]byte, error) {
 		text = &b[0]
 		defer runtime.KeepAlive(b)
 	}
-	r := lib.key(t.h, k.Keycode, k.Mods, uint32(k.Action), text, uintptr(len(k.Text)), uint32(k.Unshifted), k.Consumed, &out[0], uintptr(len(out)), &n)
+	r := lib.key(t.h, k.Keyval, k.Keycode, k.Mods, uint32(k.Action), text, uintptr(len(k.Text)), uint32(k.Unshifted), k.Consumed, &out[0], uintptr(len(out)), &n)
 	if err := result("key", r); err != nil {
 		return nil, err
 	}
@@ -394,3 +407,61 @@ func (t *Terminal) Key(k KeyEvent) ([]byte, error) {
 	}
 	return append([]byte(nil), out[:n]...), nil
 }
+
+// PointerKind is what the pointer did, for selecting.
+type PointerKind uint32
+
+const (
+	PointerPress PointerKind = iota
+	PointerRelease
+	PointerDrag
+)
+
+// Pointer is a pointer event for selecting: the cell in the viewport, the
+// position in pixels from the cells' corner, when (for telling double
+// and triple clicks: no more than Repeat apart, RepeatPx away), whether
+// the selection is a block, and the cells' width and the viewport's
+// height in pixels.
+type Pointer struct {
+	Kind          PointerKind
+	X, Y          int
+	PX, PY        float64
+	Time, Repeat  time.Duration
+	RepeatPx      float64
+	Rectangle     bool
+	CellW, Height int
+}
+
+// Select applies a pointer event through Ghostty's gesture (drag for a
+// range, double click a word, triple a line); the selection becomes the
+// terminal's, marked in frames. It reports whether there is one.
+func (t *Terminal) Select(p Pointer) (bool, error) {
+	rect := uint32(0)
+	if p.Rectangle {
+		rect = 1
+	}
+	r := lib.sel(t.h, uint32(p.Kind), uint16(p.X), uint16(p.Y), p.PX, p.PY, uint64(p.Time), uint64(p.Repeat), p.RepeatPx, rect, uint32(p.CellW), uint32(p.Height))
+	if r < 0 {
+		return false, result("select", r)
+	}
+	return r == 1, nil
+}
+
+// SelectionText is the selected text, wrapped lines joined and trailing
+// blanks trimmed; "" without a selection.
+func (t *Terminal) SelectionText() (string, error) {
+	var p *byte
+	var n uintptr
+	if err := result("selection", lib.selText(t.h, &p, &n)); err != nil {
+		return "", err
+	}
+	if p == nil {
+		return "", nil
+	}
+	s := string(unsafe.Slice(p, n))
+	lib.freeBytes(p, n)
+	return s, nil
+}
+
+// ClearSelection removes the selection.
+func (t *Terminal) ClearSelection() { lib.selClear(t.h) }

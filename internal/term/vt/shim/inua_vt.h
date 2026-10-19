@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 3
+#define INUA_VT_ABI 5
 
 typedef struct inua_vt inua_vt;
 
@@ -48,6 +48,7 @@ typedef struct {
   uint32_t password;       /* the program reads a password */
   uint32_t fg, bg;         /* the default colours */
   uint32_t nrows;          /* row records in the buffer */
+  uint32_t mouse;          /* the program tracks the mouse */
 } inua_vt_frame_info;
 
 /* Run attribute bits. */
@@ -84,14 +85,35 @@ int inua_vt_frame(inua_vt *t, int all, uint8_t *buf, size_t cap, size_t *len,
 #define INUA_VT_MOD_NUM 32u
 
 /* Encodes a key as the program wants it, in the modes it set (cursor
- * keys, the kitty keyboard protocol…): xkb is the keycode GDK reports,
+ * keys, the kitty keyboard protocol…): keysym is the key GDK reports
+ * after the layout and its options (caps:escape makes Caps Lock Escape),
+ * naming Enter, Escape, the arrows, the function and keypad keys; xkb is
+ * the keycode, for the other keys;
  * action 0 release, 1 press, 2 repeat; utf8 the text the key makes;
  * unshifted the key's character without modifiers (0 for none); consumed
  * the modifiers the layout used up making the text. *len 0: nothing to
  * send; a release is sent only to a program that asked for releases
  * (the kitty protocol's report-events flag). */
-int inua_vt_key(inua_vt *t, uint32_t xkb, uint32_t mods, uint32_t action,
+int inua_vt_key(inua_vt *t, uint32_t keysym, uint32_t xkb, uint32_t mods, uint32_t action,
                 const char *utf8, size_t utf8_len, uint32_t unshifted,
                 uint32_t consumed, uint8_t *out, size_t cap, size_t *len);
+
+/* Selecting with the pointer, through Ghostty's gesture: kind 0 press, 1
+ * release, 2 drag; x, y the cell in the viewport; px, py the pointer in
+ * pixels from the cells' corner; time_ns for telling double and triple
+ * clicks (repeat_ns and repeat_px apart at most); cell_w and height the
+ * cells' width and the viewport's height in pixels. A selection made
+ * becomes the terminal's, drawn in frames; a plain press clears it.
+ * Returns 1 when there is a selection, 0 when not, <0 on error. */
+int inua_vt_select(inua_vt *t, uint32_t kind, uint16_t x, uint16_t y,
+                   double px, double py, uint64_t time_ns, uint64_t repeat_ns,
+                   double repeat_px, uint32_t rectangle, uint32_t cell_w,
+                   uint32_t height);
+
+/* The selection's text: wrapped lines joined, trailing blanks trimmed.
+ * *len 0 without a selection; *out freed with inua_vt_free_bytes. */
+int inua_vt_selection_text(inua_vt *t, uint8_t **out, size_t *len);
+
+void inua_vt_select_clear(inua_vt *t);
 
 #endif

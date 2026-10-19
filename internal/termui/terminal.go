@@ -3,8 +3,10 @@ package termui
 import (
 	"log"
 	"sync"
+	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
@@ -43,6 +45,10 @@ type termPane struct {
 	exited bool
 	lines  [][]vt.Run // the screen's rows as the engine last said
 	cur    vt.Cursor
+	mouse  bool // the program tracks the mouse
+	// selecting is set while a drag selects; dragX, dragY is where it began.
+	selecting    bool
+	dragX, dragY float64
 
 	mu        sync.Mutex
 	pending   []byte // read from the PTY, not yet fed to the engine
@@ -51,12 +57,13 @@ type termPane struct {
 	im      *gtk.IMMulticontext
 	preedit string // what the input method is composing, drawn at the cursor
 
-	onKey      func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
-	onKeyUp    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
-	onCommit   func(gtk.IMContext, string)
-	onPreedit  func(gtk.IMContext)
-	onFocusIn  func(gtk.EventControllerFocus)
-	onFocusOut func(gtk.EventControllerFocus)
+	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onKeyUp                              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType)
+	onCommit                             func(gtk.IMContext, string)
+	onPreedit                            func(gtk.IMContext)
+	onFocusIn                            func(gtk.EventControllerFocus)
+	onFocusOut                           func(gtk.EventControllerFocus)
+	onDragBegin, onDragUpdate, onDragEnd func(gtk.GestureDrag, float64, float64)
 }
 
 func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPane, error) {
@@ -120,7 +127,90 @@ func newTermPane(be backend, cols, rows int, colors map[string]string) (*termPan
 	focus.ConnectEnter(&p.onFocusIn)
 	focus.ConnectLeave(&p.onFocusOut)
 	p.widget.AddController(&focus.EventController)
+	drag := gtk.NewGestureDrag()
+	drag.SetButton(1)
+	p.onDragBegin = func(g gtk.GestureDrag, x, y float64) {
+		p.widget.GrabFocus()
+		// A program tracking the mouse gets it; Shift selects anyway.
+		if p.mouse && g.GetCurrentEventState()&gdk.ShiftMaskValue == 0 {
+			return
+		}
+		p.selecting, p.dragX, p.dragY = true, x, y
+		p.pointer(&g.EventController, vt.PointerPress, x, y)
+	}
+	p.onDragUpdate = func(g gtk.GestureDrag, dx, dy float64) {
+		if p.selecting {
+			p.pointer(&g.EventController, vt.PointerDrag, p.dragX+dx, p.dragY+dy)
+		}
+	}
+	p.onDragEnd = func(g gtk.GestureDrag, dx, dy float64) {
+		if !p.selecting {
+			return
+		}
+		p.selecting = false
+		if p.pointer(&g.EventController, vt.PointerRelease, p.dragX+dx, p.dragY+dy) {
+			p.copySelection(true)
+		}
+	}
+	drag.ConnectDragBegin(&p.onDragBegin)
+	drag.ConnectDragUpdate(&p.onDragUpdate)
+	drag.ConnectDragEnd(&p.onDragEnd)
+	p.widget.AddController(&drag.EventController)
 	return p, nil
+}
+
+// pointer passes a pointer event at x, y (the widget's pixels) to the
+// engine's selection, and redraws; it reports whether there is a
+// selection.
+func (p *termPane) pointer(c *gtk.EventController, kind vt.PointerKind, x, y float64) bool {
+	if p.cw == 0 || p.ch == 0 {
+		return false
+	}
+	px, py := x-pad, y-pad
+	cx := min(max(int(px)/p.cw, 0), p.cols-1)
+	cy := min(max(int(py)/p.ch, 0), p.rows-1)
+	ms, px2 := doubleClick()
+	ok, err := p.term.Select(vt.Pointer{
+		Kind: kind, X: cx, Y: cy, PX: max(px, 0), PY: max(py, 0),
+		Time: time.Duration(c.GetCurrentEventTime()) * time.Millisecond, Repeat: ms, RepeatPx: px2,
+		CellW: p.cw, Height: p.rows * p.ch,
+	})
+	if err != nil {
+		log.Printf("term: select: %v", err)
+	}
+	p.update(false)
+	return ok
+}
+
+// doubleClick is GTK's: how long and how far apart two clicks are one.
+// Read as ints: puregotk's getters for these read them as longs.
+func doubleClick() (time.Duration, float64) {
+	s := gtk.SettingsGetDefault()
+	if s == nil {
+		return 400 * time.Millisecond, 5
+	}
+	get := func(name string) int32 {
+		var v gobject.Value
+		v.Init(gobject.TypeIntVal)
+		s.GetProperty(name, &v)
+		n := v.GetInt()
+		v.Unset()
+		return n
+	}
+	return time.Duration(get("gtk-double-click-time")) * time.Millisecond, float64(get("gtk-double-click-distance"))
+}
+
+// copySelection puts the selection on the primary selection, and on the
+// clipboard when toClipboard (selecting copies; Ctrl+Shift+C does too).
+func (p *termPane) copySelection(toClipboard bool) {
+	text, err := p.term.SelectionText()
+	if err != nil || text == "" {
+		return
+	}
+	p.widget.GetPrimaryClipboard().SetText(text)
+	if toClipboard {
+		p.widget.GetClipboard().SetText(text)
+	}
 }
 
 // key sends a key the input method left, encoded by the engine in the
@@ -129,7 +219,14 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	if p.exited {
 		return false
 	}
-	k := vt.KeyEvent{Keycode: keycode, Mods: mods(state), Action: action}
+	if action == vt.Press && state&(gdk.ControlMaskValue|gdk.ShiftMaskValue) == gdk.ControlMaskValue|gdk.ShiftMaskValue {
+		switch int32(gdk.KeyvalToLower(keyval)) {
+		case gdk.KEY_c:
+			p.copySelection(true)
+			return true
+		}
+	}
+	k := vt.KeyEvent{Keyval: keyval, Keycode: keycode, Mods: mods(state), Action: action}
 	if r := gdk.KeyvalToUnicode(keyval); r >= 0x20 && r != 0x7f {
 		k.Text = string(rune(r))
 	}
@@ -156,9 +253,15 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	return true
 }
 
+// input sends what was typed (keys, the input method's text); typing
+// ends the selection, as in Ghostty.
 func (p *termPane) input(b []byte) {
 	if p.exited || len(b) == 0 {
 		return
+	}
+	if text, _ := p.term.SelectionText(); text != "" {
+		p.term.ClearSelection()
+		p.update(false)
 	}
 	if err := p.be.Input(b); err != nil {
 		log.Printf("term: input: %v", err)
@@ -221,6 +324,7 @@ func (p *termPane) update(all bool) {
 		}
 	}
 	p.cur = f.Cursor
+	p.mouse = f.Mouse
 	if p.cw > 0 {
 		// The input method's candidates open at the cursor.
 		p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + p.cur.X*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
@@ -270,7 +374,11 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 			if r.Attrs&vt.Inverse != 0 {
 				fg, bg = bg, fg
 			}
-			if r.BG != vt.DefaultColor || r.Attrs&vt.Inverse != 0 {
+			if r.Attrs&vt.Selected != 0 {
+				bg = p.cursor
+				bg.Alpha = 0.3
+			}
+			if r.BG != vt.DefaultColor || r.Attrs&(vt.Inverse|vt.Selected) != 0 {
 				s.AppendColor(&bg, rect(float32(r.X)*cw, float32(y)*ch, float32(r.Cells)*cw, ch))
 			}
 			if r.Attrs&vt.Invisible != 0 || r.Text == "" {
