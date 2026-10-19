@@ -195,7 +195,8 @@ func (a *App) connect(shell string) (*host.State, error) {
 			case a.restarting:
 				a.hostEnded()
 			default:
-				a.win.Close() // the host ended: its last pane closed
+				log.Printf("term: the host ended; the window closes")
+				a.win.Close() // its last pane closed
 			}
 		})
 	}()
@@ -338,6 +339,7 @@ func (a *App) fail(err error) {
 // closeWindow leaves the panes running on the host, and has it keep how
 // the window is.
 func (a *App) closeWindow() {
+	log.Printf("term: the window closes")
 	if a.client != nil && a.uiDone {
 		a.client.SetUI(model.UI{
 			Width: int(a.win.GetWidth()), Height: int(a.win.GetHeight()),

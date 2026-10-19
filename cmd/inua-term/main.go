@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"golang.org/x/sys/unix"
+
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
@@ -61,24 +63,19 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	if _, err := unix.IoctlGetTermios(2, unix.TCGETS); err != nil {
+		logTo("term.log") // no terminal to tell: the dock's, the drawer's
+	}
 	termui.Register()
-	os.Exit(appui.Run("term", flag.Args(), *uiDir))
+	code := appui.Run("term", flag.Args(), *uiDir)
+	log.Printf("inua-term %d: ended (%d)", os.Getpid(), code)
+	os.Exit(code)
 }
 
 // serveHost runs the host until its last pane is closed, logging to
 // $XDG_STATE_HOME/inua/term-host.log.
 func serveHost() int {
-	state, err := os.UserHomeDir()
-	if dir := os.Getenv("XDG_STATE_HOME"); dir != "" {
-		state = dir
-	} else if err == nil {
-		state = filepath.Join(state, ".local", "state")
-	}
-	if err := os.MkdirAll(filepath.Join(state, "inua"), 0o700); err == nil {
-		if f, err := os.OpenFile(filepath.Join(state, "inua", "term-host.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600); err == nil {
-			log.SetOutput(f)
-		}
-	}
+	logTo("term-host.log")
 	h, err := host.Listen(host.SocketPath())
 	if err != nil {
 		log.Printf("inua-term: %v", err)
@@ -149,4 +146,38 @@ func show(command []string, workspace string) error {
 		_, err = c.Run(command, dir)
 	}
 	return err
+}
+
+// maxLog is how large a log grows before it is kept as NAME.1 and begun
+// again.
+const maxLog = 1 << 20
+
+// logTo has the log, and everything written to the standard error (a Go
+// panic, GTK's warnings), go to $XDG_STATE_HOME/inua/NAME: started from
+// the dock or by the window, the host and the window have no terminal
+// for them.
+func logTo(name string) {
+	state, err := os.UserHomeDir()
+	if dir := os.Getenv("XDG_STATE_HOME"); dir != "" {
+		state = dir
+	} else if err == nil {
+		state = filepath.Join(state, ".local", "state")
+	}
+	dir := filepath.Join(state, "inua")
+	if os.MkdirAll(dir, 0o700) != nil {
+		return
+	}
+	path := filepath.Join(dir, name)
+	if fi, err := os.Stat(path); err == nil && fi.Size() > maxLog {
+		os.Rename(path, path+".1")
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
+	if err != nil {
+		return
+	}
+	log.SetOutput(f)
+	if err := syscall.Dup3(int(f.Fd()), 2, 0); err != nil {
+		log.Printf("inua-term: the standard error stays: %v", err)
+	}
+	log.Printf("inua-term %d: started", os.Getpid())
 }
