@@ -110,7 +110,7 @@ func TestPane(t *testing.T) {
 	if err != nil || len(panes) != 1 || panes[0].ID != id || panes[0].Dir != dir || panes[0].Cols != 90 || panes[0].Exited {
 		t.Fatalf("list %+v, %v", panes, err)
 	}
-	if err := c.Resize(id, 100, 30); err != nil {
+	if err := c.Resize(id, 100, 30, 0, 0); err != nil {
 		t.Fatal(err)
 	}
 	if panes, _ := c.List(); panes[0].Cols != 100 || panes[0].Rows != 30 {
@@ -231,5 +231,31 @@ func TestListen(t *testing.T) {
 	h.Close()
 	if fi, err := os.Stat(filepath.Dir(path)); err != nil || fi.Mode().Perm() != 0o700 {
 		t.Errorf("socket folder %v %v", fi.Mode(), err)
+	}
+}
+
+// The host answers a program's queries, with no window attached: device
+// attributes, and the window's colours once it said them.
+func TestAnswers(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	_, path := startHost(t)
+	w := newWatcher()
+	c := dial(t, path, w)
+	if err := c.SetColors(Colors{FG: 0xe0e0e0, BG: 0x0b1012, Cursor: 0x7fb4ca}); err != nil {
+		t.Fatal(err)
+	}
+	// The answers come as input; od shows them as text.
+	script := `stty raw -echo; printf '\033[c'; head -c 9 | od -An -c; printf '\033]11;?\033\\'; head -c 24 | od -An -c; stty sane`
+	id, err := c.Create([]string{"sh", "-c", script}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.Attach(id)
+	clean := func() string { return strings.Join(strings.Fields(w.text(id)), "") }
+	w.waitFor(t, "the answers", func() bool { return strings.Contains(clean(), "rgb:0b0b/1010/1212") })
+	if got := clean(); !strings.Contains(got, `033[?62;22c`) {
+		t.Errorf("device attributes not answered: %q", got)
 	}
 }

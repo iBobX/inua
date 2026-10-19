@@ -393,3 +393,56 @@ func TestPaste(t *testing.T) {
 		t.Errorf("after 2004l: %v, want ErrUnsafe", err)
 	}
 }
+
+func TestAnswers(t *testing.T) {
+	term := newTerm(t, 80, 24)
+	ask := func(q string) string {
+		t.Helper()
+		term.Write([]byte(q))
+		return string(term.Answers())
+	}
+	if got := ask("\x1b[c"); got != "" {
+		t.Errorf("answered before Answer: %q", got)
+	}
+	term.Answer()
+	for _, c := range []struct{ q, want string }{
+		{"\x1b[c", "\x1b[?62;22c"},
+		{"\x1b[>c", "\x1b[>1;10;0c"},
+		{"\x1b[5n", "\x1b[0n"},
+		{"ab\x1b[6n", "\x1b[1;3R"},
+		{"\x1b[?2004$p", "\x1b[?2004;2$y"},
+		{"\x1b[18t", "\x1b[8;24;80t"},
+		{"\x1b[?996n", ""}, // no colours yet
+		{"plain text", ""},
+	} {
+		if got := ask(c.q); got != c.want {
+			t.Errorf("%q: answered %q, want %q", c.q, got, c.want)
+		}
+	}
+	if got := ask("\x1b[>q"); !strings.Contains(got, "inua-term") {
+		t.Errorf("XTVERSION: %q", got)
+	}
+	term.SetColors(0xe0e0e0, 0x0b1012, 0x7fb4ca)
+	if got := ask("\x1b[?996n"); got != "\x1b[?997;1n" {
+		t.Errorf("scheme: %q, want dark", got)
+	}
+	if got := ask("\x1b]11;?\x1b\\"); !strings.Contains(got, "rgb:0b0b/1010/1212") {
+		t.Errorf("OSC 11: %q", got)
+	}
+	term.SetCellSize(11, 24)
+	if got := ask("\x1b[16t"); got != "\x1b[6;24;11t" {
+		t.Errorf("cell size: %q", got)
+	}
+	// Two queries in one write: both answers, in order.
+	if got := ask("\x1b[5n\x1b[c"); got != "\x1b[0n\x1b[?62;22c" {
+		t.Errorf("two: %q", got)
+	}
+	// A paste in between keeps the answers apart.
+	term.Write([]byte("\x1b[5n"))
+	if b, err := term.Paste("x", false, false); err != nil || string(b) != "x" {
+		t.Errorf("paste while answering: %q, %v", b, err)
+	}
+	if got := string(term.Answers()); got != "\x1b[0n" {
+		t.Errorf("answers after paste: %q", got)
+	}
+}

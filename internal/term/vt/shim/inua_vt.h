@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 6
+#define INUA_VT_ABI 7
 
 typedef struct inua_vt inua_vt;
 
@@ -22,6 +22,24 @@ void inua_vt_free(inua_vt *t);
 
 /* Bytes from the program, as they come. */
 void inua_vt_write(inua_vt *t, const uint8_t *data, size_t len);
+
+/* Makes the terminal answer the program's queries (device attributes,
+ * cursor position, modes, colours, sizes, XTVERSION): the answers gather
+ * as the program's bytes are written and are taken with
+ * inua_vt_answers. Only one engine per program should answer: the one
+ * that sees its output first. */
+void inua_vt_answer(inua_vt *t);
+
+/* The answers gathered since the last call; borrowed until the next
+ * inua_vt_write. */
+void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len);
+
+/* The default colours, 0x00RRGGBB, reported to programs that ask (OSC
+ * 10, 11, 12; the colour scheme from the background). */
+void inua_vt_colors(inua_vt *t, uint32_t fg, uint32_t bg, uint32_t cursor);
+
+/* A cell's size in pixels, for size reports; 0 when not known. */
+void inua_vt_cell_size(inua_vt *t, uint32_t width, uint32_t height);
 int inua_vt_resize(inua_vt *t, uint16_t cols, uint16_t rows);
 
 /* The screen as plain text, trailing blanks trimmed, soft-wrapped lines

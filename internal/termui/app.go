@@ -100,9 +100,19 @@ func (a *App) connect() error {
 		}
 	}
 	ready := make(chan error, 1)
-	gtkx.Post(func() { ready <- a.show(id, cols, rows) })
+	var colors host.Colors
+	gtkx.Post(func() {
+		err := a.show(id, cols, rows)
+		if err == nil {
+			colors = a.pane.colors()
+		}
+		ready <- err
+	})
 	if err := <-ready; err != nil {
 		return err
+	}
+	if err := client.SetColors(colors); err != nil {
+		log.Printf("term: colors: %v", err)
 	}
 	return client.Attach(id) // the replay arrives through output first
 }
@@ -179,6 +189,14 @@ func (a *App) ThemeChanged() {
 	}
 	a.pane.fg, a.pane.bg, a.pane.cursor = rgba(a.c.Colors["t0"]), rgba(a.c.Colors["app"]), rgba(a.c.Colors["accent"])
 	a.pane.widget.QueueDraw()
+	if a.client != nil {
+		client, colors := a.client, a.pane.colors()
+		go func() {
+			if err := client.SetColors(colors); err != nil {
+				log.Printf("term: colors: %v", err)
+			}
+		}()
+	}
 }
 
 // paneBackend is a pane on the host.
@@ -187,8 +205,10 @@ type paneBackend struct {
 	id     int
 }
 
-func (b paneBackend) Input(p []byte) error        { return b.client.Input(b.id, p) }
-func (b paneBackend) Resize(cols, rows int) error { return b.client.Resize(b.id, cols, rows) }
+func (b paneBackend) Input(p []byte) error { return b.client.Input(b.id, p) }
+func (b paneBackend) Resize(cols, rows, cellW, cellH int) error {
+	return b.client.Resize(b.id, cols, rows, cellW, cellH)
+}
 
 // startHost runs `inua-term --host` in a session of its own, so it
 // outlives this window.

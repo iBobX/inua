@@ -40,15 +40,26 @@ type Message struct {
 	Error   string `json:"error,omitempty"`   // a reply that failed
 
 	Pane  int      `json:"pane,omitempty"`
-	Argv  []string `json:"argv,omitempty"` // create
-	Dir   string   `json:"dir,omitempty"`  // create; event "pwd"
-	Env   []string `json:"env,omitempty"`  // create
-	Cols  int      `json:"cols,omitempty"` // create, resize
-	Rows  int      `json:"rows,omitempty"` // create, resize
+	Argv  []string `json:"argv,omitempty"`   // create
+	Dir   string   `json:"dir,omitempty"`    // create; event "pwd"
+	Env   []string `json:"env,omitempty"`    // create
+	Cols  int      `json:"cols,omitempty"`   // create, resize
+	Rows  int      `json:"rows,omitempty"`   // create, resize
+	CellW int      `json:"cell_w,omitempty"` // create, resize: a cell in pixels, for size reports
+	CellH int      `json:"cell_h,omitempty"`
 	Title string   `json:"title,omitempty"`
 	Code  *int     `json:"code,omitempty"` // event "exit"
 
-	Panes []PaneInfo `json:"panes,omitempty"` // reply to list
+	Panes  []PaneInfo `json:"panes,omitempty"`  // reply to list
+	Colors *Colors    `json:"colors,omitempty"` // colors
+}
+
+// Colors are the window's default colours, 0xRRGGBB: what programs are
+// told when they ask (OSC 10, 11, 12, and dark or light).
+type Colors struct {
+	FG     uint32 `json:"fg"`
+	BG     uint32 `json:"bg"`
+	Cursor uint32 `json:"cursor"`
 }
 
 // PaneInfo is what the host knows of a pane.
@@ -72,7 +83,8 @@ const (
 	MsgCreate  = "create"  // client: a pane running Argv in Dir; reply Pane
 	MsgAttach  = "attach"  // client: the pane's replay, then its output
 	MsgDetach  = "detach"  // client: no more of the pane's output
-	MsgResize  = "resize"  // client: Cols × Rows
+	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
+	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
 	MsgClose   = "close"   // client: end the pane's program and forget it
 	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane
 )

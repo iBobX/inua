@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 6
+const abi = 7
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -46,6 +46,10 @@ var lib struct {
 	sel       func(t uintptr, kind uint32, x, y uint16, px, py float64, timeNs, repeatNs uint64, repeatPx float64, rect, cellW, height uint32) int32
 	selText   func(t uintptr, out **byte, n *uintptr) int32
 	selClear  func(t uintptr)
+	answer    func(t uintptr)
+	answers   func(t uintptr, p **byte, n *uintptr)
+	colors    func(t uintptr, fg, bg, cursor uint32)
+	cellSize  func(t uintptr, w, h uint32)
 	paste     func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
@@ -106,6 +110,10 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.selText, h, "inua_vt_selection_text")
 		purego.RegisterLibFunc(&lib.selClear, h, "inua_vt_select_clear")
 		purego.RegisterLibFunc(&lib.paste, h, "inua_vt_paste")
+		purego.RegisterLibFunc(&lib.answer, h, "inua_vt_answer")
+		purego.RegisterLibFunc(&lib.answers, h, "inua_vt_answers")
+		purego.RegisterLibFunc(&lib.colors, h, "inua_vt_colors")
+		purego.RegisterLibFunc(&lib.cellSize, h, "inua_vt_cell_size")
 	})
 	return lib.err
 }
@@ -147,6 +155,30 @@ func (t *Terminal) Write(p []byte) (int, error) {
 	}
 	return len(p), nil
 }
+
+// Answer makes the terminal answer the program's queries (device
+// attributes, cursor position, modes, colours, sizes); Answers takes what
+// it would send back. One engine per program answers: the host's.
+func (t *Terminal) Answer() { lib.answer(t.h) }
+
+// Answers is what the terminal answered to the queries in what was
+// written since the last call, for the program; nil for nothing.
+func (t *Terminal) Answers() []byte {
+	var p *byte
+	var n uintptr
+	lib.answers(t.h, &p, &n)
+	if p == nil || n == 0 {
+		return nil
+	}
+	return append([]byte(nil), unsafe.Slice(p, n)...)
+}
+
+// SetColors sets the default colours (0xRRGGBB) programs are told when
+// they ask, and the scheme (dark or light) the background makes.
+func (t *Terminal) SetColors(fg, bg, cursor uint32) { lib.colors(t.h, fg, bg, cursor) }
+
+// SetCellSize sets a cell's size in pixels, for size reports.
+func (t *Terminal) SetCellSize(w, h int) { lib.cellSize(t.h, uint32(w), uint32(h)) }
 
 // Resize changes the size in cells.
 func (t *Terminal) Resize(cols, rows int) error {

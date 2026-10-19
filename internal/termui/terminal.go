@@ -13,6 +13,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -25,7 +26,8 @@ const fontName = "Geist Mono, IBM Plex Mono, monospace 11"
 // backend is where a pane's program is: the host, through a client.
 type backend interface {
 	Input(b []byte) error
-	Resize(cols, rows int) error
+	// Resize gives the size in cells, and a cell's in pixels.
+	Resize(cols, rows, cellW, cellH int) error
 }
 
 // termPane is one terminal: the window's own engine for drawing, and the
@@ -388,7 +390,7 @@ func (p *termPane) allocate(w *gtk.Widget, width, height int) {
 		log.Printf("term: %v", err)
 	}
 	if !p.exited {
-		if err := p.be.Resize(cols, rows); err != nil {
+		if err := p.be.Resize(cols, rows, p.cw, p.ch); err != nil {
 			log.Printf("term: resize: %v", err)
 		}
 	}
@@ -473,6 +475,15 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 		}
 	}
 	s.Restore()
+}
+
+// colors are the pane's default colours, for programs that ask.
+func (p *termPane) colors() host.Colors {
+	v := func(c gdk.RGBA) uint32 {
+		b := func(f float32) uint32 { return uint32(f*255+0.5) & 0xff }
+		return b(c.Red)<<16 | b(c.Green)<<8 | b(c.Blue)
+	}
+	return host.Colors{FG: v(p.fg), BG: v(p.bg), Cursor: v(p.cursor)}
 }
 
 // color is a run's colour, or the pane's for the terminal's default.

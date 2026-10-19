@@ -166,8 +166,14 @@ func (c *Client) Detach(pane int) error {
 }
 
 // Resize sets a pane's size; this client is the one typing in it.
-func (c *Client) Resize(pane, cols, rows int) error {
-	_, err := c.call(Message{Type: MsgResize, Pane: pane, Cols: cols, Rows: rows})
+func (c *Client) Resize(pane, cols, rows, cellW, cellH int) error {
+	_, err := c.call(Message{Type: MsgResize, Pane: pane, Cols: cols, Rows: rows, CellW: cellW, CellH: cellH})
+	return err
+}
+
+// SetColors tells the host the colours programs are told when they ask.
+func (c *Client) SetColors(colors Colors) error {
+	_, err := c.call(Message{Type: MsgColors, Colors: &colors})
 	return err
 }
 

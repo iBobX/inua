@@ -14,7 +14,17 @@ struct inua_vt {
   GhosttyKeyEvent key;
   GhosttySelectionGesture gesture;
   GhosttySelectionGestureEvent press, release, drag;
-  struct paste_out *paste; /* while inua_vt_paste runs */
+  /* What the terminal writes back to the program: answers to its
+   * queries, or a paste's encoding. */
+  struct {
+    uint8_t *p;
+    size_t len, cap;
+    bool failed;
+  } out;
+  bool answering;
+  uint32_t cell_w, cell_h;
+  bool dark; /* the background's scheme, once colours are set */
+  bool colored;
 };
 
 int inua_vt_abi(void) { return INUA_VT_ABI; }
@@ -42,6 +52,7 @@ inua_vt *inua_vt_new(uint16_t cols, uint16_t rows) {
 
 void inua_vt_free(inua_vt *t) {
   if (t == NULL) return;
+  if (t->out.p) ghostty_free(NULL, t->out.p, t->out.cap);
   if (t->drag) ghostty_selection_gesture_event_free(t->drag);
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
@@ -57,6 +68,102 @@ void inua_vt_free(inua_vt *t) {
 
 void inua_vt_write(inua_vt *t, const uint8_t *data, size_t len) {
   ghostty_terminal_vt_write(t->term, data, len);
+}
+
+/* --- writing back to the program --- */
+
+static void out_write(GhosttyTerminal term, void *userdata, const uint8_t *data, size_t len) {
+  (void)term;
+  inua_vt *t = userdata;
+  if (t->out.failed) return;
+  if (t->out.len + len > t->out.cap) {
+    size_t cap = t->out.cap ? t->out.cap * 2 : 256;
+    while (cap < t->out.len + len) cap *= 2;
+    uint8_t *p = ghostty_alloc(NULL, cap);
+    if (p == NULL) {
+      t->out.failed = true;
+      return;
+    }
+    if (t->out.len) memcpy(p, t->out.p, t->out.len);
+    if (t->out.p) ghostty_free(NULL, t->out.p, t->out.cap);
+    t->out.p = p;
+    t->out.cap = cap;
+  }
+  memcpy(t->out.p + t->out.len, data, len);
+  t->out.len += len;
+}
+
+/* As Ghostty answers: a VT220 with colour text. */
+static bool answer_attributes(GhosttyTerminal term, void *userdata, GhosttyDeviceAttributes *out) {
+  (void)term;
+  (void)userdata;
+  out->primary.conformance_level = 62;
+  out->primary.features[0] = 22;
+  out->primary.num_features = 1;
+  out->secondary.device_type = 1;
+  out->secondary.firmware_version = 10;
+  out->secondary.rom_cartridge = 0;
+  out->tertiary.unit_id = 0;
+  return true;
+}
+
+static GhosttyString answer_version(GhosttyTerminal term, void *userdata) {
+  (void)term;
+  (void)userdata;
+  return (GhosttyString){(const uint8_t *)"inua-term", 9};
+}
+
+static bool answer_size(GhosttyTerminal term, void *userdata, GhosttySizeReportSize *out) {
+  inua_vt *t = userdata;
+  ghostty_terminal_get(term, GHOSTTY_TERMINAL_DATA_COLS, &out->columns);
+  ghostty_terminal_get(term, GHOSTTY_TERMINAL_DATA_ROWS, &out->rows);
+  out->cell_width = t->cell_w;
+  out->cell_height = t->cell_h;
+  return true;
+}
+
+static bool answer_scheme(GhosttyTerminal term, void *userdata, GhosttyColorScheme *out) {
+  (void)term;
+  inua_vt *t = userdata;
+  if (!t->colored) return false;
+  *out = t->dark ? GHOSTTY_COLOR_SCHEME_DARK : GHOSTTY_COLOR_SCHEME_LIGHT;
+  return true;
+}
+
+void inua_vt_answer(inua_vt *t) {
+  t->answering = true;
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_USERDATA, t);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, (const void *)out_write);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_DEVICE_ATTRIBUTES, (const void *)answer_attributes);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_XTVERSION, (const void *)answer_version);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SIZE, (const void *)answer_size);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_SCHEME, (const void *)answer_scheme);
+}
+
+void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len) {
+  *ptr = t->out.p;
+  *len = t->out.failed ? 0 : t->out.len;
+  t->out.len = 0;
+  t->out.failed = false;
+}
+
+static GhosttyColorRgb color(uint32_t v) {
+  return (GhosttyColorRgb){.r = v >> 16 & 0xff, .g = v >> 8 & 0xff, .b = v & 0xff};
+}
+
+void inua_vt_colors(inua_vt *t, uint32_t fg, uint32_t bg, uint32_t cursor) {
+  GhosttyColorRgb f = color(fg), b = color(bg), c = color(cursor);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_FOREGROUND, &f);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_BACKGROUND, &b);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_CURSOR, &c);
+  /* Rec. 709 luma, as programs judge a background dark. */
+  t->dark = 2126 * b.r + 7152 * b.g + 722 * b.b < 10000 * 128;
+  t->colored = true;
+}
+
+void inua_vt_cell_size(inua_vt *t, uint32_t width, uint32_t height) {
+  t->cell_w = width;
+  t->cell_h = height;
 }
 
 int inua_vt_resize(inua_vt *t, uint16_t cols, uint16_t rows) {
@@ -452,34 +559,6 @@ void inua_vt_select_clear(inua_vt *t) {
 
 /* --- paste --- */
 
-/* What the terminal writes to the pty while a paste runs, gathered. */
-struct paste_out {
-  uint8_t *p;
-  size_t len, cap;
-  bool failed;
-};
-
-static void paste_write(GhosttyTerminal term, void *userdata, const uint8_t *data, size_t len) {
-  (void)term;
-  struct paste_out *o = ((inua_vt *)userdata)->paste;
-  if (o == NULL || o->failed) return;
-  if (o->len + len > o->cap) {
-    size_t cap = o->cap ? o->cap * 2 : 256;
-    while (cap < o->len + len) cap *= 2;
-    uint8_t *p = ghostty_alloc(NULL, cap);
-    if (p == NULL) {
-      o->failed = true;
-      return;
-    }
-    if (o->len) memcpy(p, o->p, o->len);
-    if (o->p) ghostty_free(NULL, o->p, o->cap);
-    o->p = p;
-    o->cap = cap;
-  }
-  memcpy(o->p + o->len, data, len);
-  o->len += len;
-}
-
 typedef struct {
   const uint8_t *p;
   size_t len;
@@ -506,29 +585,25 @@ int inua_vt_paste(inua_vt *t, const uint8_t *data, size_t len, uint32_t primary,
       .reader = {.read = paste_read, .userdata = &text},
       .allow_unsafe = allow_unsafe != 0,
   };
-  /* The pty writer is installed for the paste alone, so nothing else the
-   * terminal would write goes with it. */
-  struct paste_out o = {0};
-  t->paste = &o;
-  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_USERDATA, t);
-  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, (const void *)paste_write);
+  /* The paste is written after any answers not yet taken, and cut off
+   * them again. A terminal that does not answer has the writer for the
+   * paste alone. */
+  size_t from = t->out.len;
+  if (!t->answering) {
+    ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_USERDATA, t);
+    ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, (const void *)out_write);
+  }
   GhosttyResult r = ghostty_terminal_paste(t->term, &paste, NULL);
-  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, NULL);
-  t->paste = NULL;
-  if (r == GHOSTTY_SUCCESS && o.failed) r = GHOSTTY_OUT_OF_MEMORY;
-  if (r != GHOSTTY_SUCCESS || o.len == 0) {
-    if (o.p) ghostty_free(NULL, o.p, o.cap);
-    return r;
-  }
-  /* Freed by length: hand over an exact copy. */
-  uint8_t *p = ghostty_alloc(NULL, o.len);
-  if (p == NULL) {
-    ghostty_free(NULL, o.p, o.cap);
-    return GHOSTTY_OUT_OF_MEMORY;
-  }
-  memcpy(p, o.p, o.len);
-  ghostty_free(NULL, o.p, o.cap);
+  if (!t->answering) ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_WRITE_PTY, NULL);
+  size_t n = t->out.len - from;
+  t->out.len = from;
+  if (r == GHOSTTY_SUCCESS && t->out.failed) r = GHOSTTY_OUT_OF_MEMORY;
+  if (!t->answering) t->out.failed = false;
+  if (r != GHOSTTY_SUCCESS || n == 0) return r;
+  uint8_t *p = ghostty_alloc(NULL, n);
+  if (p == NULL) return GHOSTTY_OUT_OF_MEMORY;
+  memcpy(p, t->out.p + from, n);
   *out = p;
-  *out_len = o.len;
+  *out_len = n;
   return GHOSTTY_SUCCESS;
 }

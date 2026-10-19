@@ -20,6 +20,11 @@ import (
 // client attaching later.
 const ReplayLimit = 4 << 20
 
+// answersLen is how many answers to a pane's queries wait for the program
+// to read its input; more are dropped, so a program that asks without
+// reading cannot stop the host reading its output.
+const answersLen = 64
+
 // queueLen is how many frames wait for a slow client before the host
 // gives up on it; it can attach again and get the replay.
 const queueLen = 1024
@@ -33,6 +38,7 @@ type Host struct {
 
 	mu      sync.Mutex
 	panes   map[int]*pane
+	colors  *Colors // the window's, for new panes
 	next    int
 	clients map[*client]bool
 	closed  bool
@@ -46,7 +52,9 @@ type pane struct {
 	dir  string
 
 	pty  *pty.PTY
-	term *vt.Terminal // nil without libinua-vt: no title or folder then
+	term *vt.Terminal // nil without libinua-vt: no title, folder or answers then
+	// answers go to the program in order, from their own goroutine.
+	answers chan []byte
 
 	mu       sync.Mutex
 	replay   []byte
@@ -261,6 +269,12 @@ func (h *Host) handle(c *client, m Message) {
 	switch m.Type {
 	case MsgList:
 		reply.Panes = h.list()
+	case MsgColors:
+		if m.Colors == nil {
+			fail(errors.New("no colors"))
+			return
+		}
+		h.setColors(*m.Colors)
 	case MsgCreate:
 		id, err := h.create(m)
 		if err != nil {
@@ -282,7 +296,7 @@ func (h *Host) handle(c *client, m Message) {
 			delete(p.attached, c)
 			p.mu.Unlock()
 		case MsgResize:
-			if err := p.resize(m.Cols, m.Rows); err != nil {
+			if err := p.resize(m.Cols, m.Rows, m.CellW, m.CellH); err != nil {
 				fail(err)
 				return
 			}
@@ -334,13 +348,18 @@ func (h *Host) create(m Message) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	p := &pane{argv: m.Argv, dir: m.Dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}}
+	p := &pane{argv: m.Argv, dir: m.Dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
 	if t, err := vt.New(cols, rows); err == nil {
 		p.term = t
+		t.Answer()
+		t.SetCellSize(m.CellW, m.CellH)
 	} else {
 		log.Printf("host: pane state off: %v", err)
 	}
 	h.mu.Lock()
+	if h.colors != nil && p.term != nil {
+		p.term.SetColors(h.colors.FG, h.colors.BG, h.colors.Cursor)
+	}
 	if h.closed {
 		h.mu.Unlock()
 		pt.Close()
@@ -351,7 +370,33 @@ func (h *Host) create(m Message) (int, error) {
 	h.panes[p.id] = p
 	h.mu.Unlock()
 	go h.read(p)
+	go p.answer()
 	return p.id, nil
+}
+
+// answer writes the engine's answers to the program until it ends.
+func (p *pane) answer() {
+	for b := range p.answers {
+		p.pty.Write(b)
+	}
+}
+
+// setColors applies the window's colours to every pane, and to new ones.
+func (h *Host) setColors(c Colors) {
+	h.mu.Lock()
+	h.colors = &c
+	panes := make([]*pane, 0, len(h.panes))
+	for _, p := range h.panes {
+		panes = append(panes, p)
+	}
+	h.mu.Unlock()
+	for _, p := range panes {
+		p.mu.Lock()
+		if p.term != nil {
+			p.term.SetColors(c.FG, c.BG, c.Cursor)
+		}
+		p.mu.Unlock()
+	}
 }
 
 // read follows a pane's program until it ends.
@@ -370,6 +415,7 @@ func (h *Host) read(p *pane) {
 			break
 		}
 	}
+	close(p.answers)
 	code, _ := p.pty.Wait()
 	p.mu.Lock()
 	p.exited, p.code = true, code
@@ -393,6 +439,13 @@ func (p *pane) output(b []byte, limit int) {
 		return
 	}
 	p.term.Write(b)
+	if a := p.term.Answers(); a != nil && !p.exited {
+		select {
+		case p.answers <- a:
+		default:
+			log.Printf("host: pane %d does not read its input: an answer dropped", p.id)
+		}
+	}
 	if t := p.term.Title(); t != p.title {
 		p.title = t
 		p.broadcast(Message{Type: MsgEvent, Pane: p.id, Title: t})
@@ -437,7 +490,7 @@ func (p *pane) attach(c *client) {
 	}
 }
 
-func (p *pane) resize(cols, rows int) error {
+func (p *pane) resize(cols, rows, cellW, cellH int) error {
 	if cols <= 0 || rows <= 0 {
 		return fmt.Errorf("size %dx%d", cols, rows)
 	}
@@ -446,6 +499,9 @@ func (p *pane) resize(cols, rows int) error {
 	p.cols, p.rows = cols, rows
 	if p.term != nil {
 		p.term.Resize(cols, rows)
+		if cellW > 0 && cellH > 0 {
+			p.term.SetCellSize(cellW, cellH)
+		}
 	}
 	if p.exited {
 		return nil
