@@ -683,7 +683,7 @@ msgid "Aider's settings and caches."
 msgstr "Aider 的设置和缓存。"
 
 #: internal/apps/disk/rules.go:171
-#: internal/mailui/welcome.go:362
+#: internal/mailui/welcome.go:369
 #: ui/vm.ui:777
 msgid "Continue"
 msgstr "继续"
@@ -1330,31 +1330,31 @@ msgstr "主题："
 msgid "To:"
 msgstr "收件人："
 
-#: internal/apps/mail/oauth.go:42
-msgid "Google sign-in needs a client ID in mail.toml ([oauth.google]); see docs/mail.md, or add the account as IMAP with an app password."
-msgstr "用 Google 登录需要在 mail.toml 中填写客户端 ID（[oauth.google]）；见 docs/mail.md，或用应用专用密码将账户添加为 IMAP。"
+#: internal/apps/mail/oauth.go:43
+msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
+msgstr "用 Google 登录需要客户端 ID 及其密钥：此版本没有。请在“你自己的 OAuth 客户端”中添加（docs/mail.md），或用应用专用密码将账户添加为 IMAP。"
 
-#: internal/apps/mail/oauth.go:57
-msgid "Microsoft sign-in needs a client ID in mail.toml ([oauth.microsoft]); see docs/mail.md."
-msgstr "用 Microsoft 登录需要在 mail.toml 中填写客户端 ID（[oauth.microsoft]）；见 docs/mail.md。"
+#: internal/apps/mail/oauth.go:58
+msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
+msgstr "用 Microsoft 登录需要客户端 ID：此版本没有。请在“你自己的 OAuth 客户端”中添加（docs/mail.md）。"
 
-#: internal/apps/mail/oauth.go:140
+#: internal/apps/mail/oauth.go:141
 msgid "the sign-in page answered for another request"
 msgstr "登录页面回应了另一个请求"
 
-#: internal/apps/mail/oauth.go:144
+#: internal/apps/mail/oauth.go:145
 msgid "the sign-in page gave no code"
 msgstr "登录页面没有给出代码"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "Signed in"
 msgstr "已登录"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "You can close this tab and go back to Mail."
 msgstr "可以关闭这个标签页，回到邮件。"
 
-#: internal/apps/mail/oauth.go:163
+#: internal/apps/mail/oauth.go:164
 msgid "Not signed in"
 msgstr "未登录"
 
@@ -2153,7 +2153,7 @@ msgstr "删除…"
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:547
-#: internal/mailui/welcome.go:472
+#: internal/mailui/welcome.go:479
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -3874,6 +3874,7 @@ msgid "OK"
 msgstr "好的"
 
 #: internal/appui/workshop_blocks.go:438
+#: internal/mailui/welcome.go:815
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -5160,7 +5161,7 @@ msgstr "最小"
 #: internal/filesui/remotesetup.go:55
 #: internal/filesui/remotesetup.go:61
 #: internal/filesui/remotesetup.go:67
-#: internal/mailui/welcome.go:563
+#: internal/mailui/welcome.go:570
 #: ui/lock.ui:76
 #: ui/polkit.ui:690
 msgid "Password"
@@ -5366,7 +5367,7 @@ msgstr[0] "……还有 %d 项"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/mailui/welcome.go:152
+#: internal/mailui/welcome.go:155
 #: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
@@ -5846,7 +5847,7 @@ msgid "Both the key's ID and its secret are needed."
 msgstr "需要密钥 ID 和密钥本身。"
 
 #: internal/filesui/remote.go:176
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "Sign in to %s"
 msgstr "登录 %s"
 
@@ -8179,7 +8180,7 @@ msgid "Small Fortune"
 msgstr "小小富翁"
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/welcome.go:564
+#: internal/mailui/welcome.go:571
 msgid "Your name"
 msgstr "你的名字"
 
@@ -9140,8 +9141,8 @@ msgid "Quit to menu"
 msgstr "返回菜单"
 
 #: internal/gamesui/fortune_menu.go:109
-#: internal/mailui/welcome.go:486
-#: internal/mailui/welcome.go:590
+#: internal/mailui/welcome.go:493
+#: internal/mailui/welcome.go:597
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9960,227 +9961,259 @@ msgstr "保存附件"
 msgid "Could not save %s: %v"
 msgstr "无法保存 %s：%v"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "ADDRESS"
 msgstr "地址"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "SIGN IN"
 msgstr "登录"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "FIRST SYNC"
 msgstr "首次同步"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Which address?"
 msgstr "哪个地址？"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Mail works out how to sign in from it, and never sees a Google or Microsoft password."
 msgstr "邮件根据地址判断如何登录，从不经手 Google 或 Microsoft 的密码。"
 
-#: internal/mailui/welcome.go:324
+#: internal/mailui/welcome.go:327
 msgid "Gmail and Google Workspace"
 msgstr "Gmail 和 Google Workspace"
 
-#: internal/mailui/welcome.go:324
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:327
+#: internal/mailui/welcome.go:328
 msgid "in the browser"
 msgstr "在浏览器中"
 
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:328
 msgid "Outlook, Hotmail and Microsoft 365"
 msgstr "Outlook、Hotmail 和 Microsoft 365"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "Fastmail, iCloud, Yahoo, your own server"
 msgstr "Fastmail、iCloud、Yahoo、你自己的服务器"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "a password"
 msgstr "一个密码"
 
-#: internal/mailui/welcome.go:349
+#: internal/mailui/welcome.go:352
 msgid "no client ID"
 msgstr "没有客户端 ID"
 
-#: internal/mailui/welcome.go:350
-msgid "This build has no client ID for it: see docs/mail.md."
-msgstr "此版本没有对应的客户端 ID：见 docs/mail.md。"
+#: internal/mailui/welcome.go:353
+msgid "This build has no client ID for it: add your own under Your own OAuth client."
+msgstr "此版本没有对应的客户端 ID：请在“你自己的 OAuth 客户端”中添加。"
 
-#: internal/mailui/welcome.go:361
+#: internal/mailui/welcome.go:355
+msgid "your client"
+msgstr "你的客户端"
+
+#: internal/mailui/welcome.go:368
 msgid "Enter continues · a click picks another way · Esc goes back"
 msgstr "Enter 继续 · 点击选择其他方式 · Esc 返回"
 
-#: internal/mailui/welcome.go:387
+#: internal/mailui/welcome.go:394
 msgid "Type your address, or pick a way below."
 msgstr "输入你的地址，或在下面选择一种方式。"
 
-#: internal/mailui/welcome.go:397
+#: internal/mailui/welcome.go:404
 msgid "Type your address first: the IMAP servers come from it."
 msgstr "请先输入地址：IMAP 服务器由它而来。"
 
-#: internal/mailui/welcome.go:433
+#: internal/mailui/welcome.go:440
 msgid "listening on %s for the answer"
 msgstr "正在 %s 等待回应"
 
-#: internal/mailui/welcome.go:439
+#: internal/mailui/welcome.go:446
 msgid "no browser opened (%v): copy the link into one"
 msgstr "没有打开浏览器（%v）：请把链接复制到浏览器中"
 
-#: internal/mailui/welcome.go:441
+#: internal/mailui/welcome.go:448
 msgid "opened %s in your browser"
 msgstr "已在浏览器中打开 %s"
 
-#: internal/mailui/welcome.go:459
+#: internal/mailui/welcome.go:466
 msgid "Sign in with %s"
 msgstr "用 %s 登录"
 
-#: internal/mailui/welcome.go:460
+#: internal/mailui/welcome.go:467
 msgid "Your browser has the sign-in page. Allow Mail to read and send your mail there; this page goes on by itself."
 msgstr "浏览器中有登录页面。在那里允许邮件读取和发送你的邮件；这个页面会自己继续。"
 
-#: internal/mailui/welcome.go:470
+#: internal/mailui/welcome.go:477
 msgid "Copy the link"
 msgstr "复制链接"
 
-#: internal/mailui/welcome.go:474
+#: internal/mailui/welcome.go:481
 msgid "Open it again"
 msgstr "再次打开"
 
-#: internal/mailui/welcome.go:477
+#: internal/mailui/welcome.go:484
 msgid "Use a password instead"
 msgstr "改用密码"
 
-#: internal/mailui/welcome.go:484
+#: internal/mailui/welcome.go:491
 msgid "Esc goes back"
 msgstr "Esc 返回"
 
-#: internal/mailui/welcome.go:496
+#: internal/mailui/welcome.go:503
 msgid "waiting for %s · %d s"
 msgstr "正在等待 %s · %d 秒"
 
-#: internal/mailui/welcome.go:507
+#: internal/mailui/welcome.go:514
 msgid "the sign-in took too long; go back and try again"
 msgstr "登录时间太久；返回后重试"
 
-#: internal/mailui/welcome.go:510
-#: internal/mailui/welcome.go:632
+#: internal/mailui/welcome.go:517
+#: internal/mailui/welcome.go:639
 msgid "not signed in: %v"
 msgstr "未登录：%v"
 
-#: internal/mailui/welcome.go:513
+#: internal/mailui/welcome.go:520
 msgid "signed in, but the provider did not say the address"
 msgstr "已登录，但服务商没有给出地址"
 
-#: internal/mailui/welcome.go:516
+#: internal/mailui/welcome.go:523
 msgid "signed in, but the provider gave no lasting sign-in: remove Mail's access in your account's settings and try again"
 msgstr "已登录，但没有获得持久登录：请在账户设置中移除邮件的访问权限后重试"
 
-#: internal/mailui/welcome.go:519
+#: internal/mailui/welcome.go:526
 msgid "signed in as %s"
 msgstr "已登录为 %s"
 
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "The password is kept in your keyring. For Gmail, iCloud or Yahoo with two-step sign-in, use an app password."
 msgstr "密码保存在你的钥匙环中。开启两步验证的 Gmail、iCloud 或 Yahoo 请使用应用专用密码。"
 
-#: internal/mailui/welcome.go:558
+#: internal/mailui/welcome.go:565
 msgid "Your name, on what you send"
 msgstr "发出邮件上显示的名字"
 
-#: internal/mailui/welcome.go:568
+#: internal/mailui/welcome.go:575
 msgid "IMAP server"
 msgstr "IMAP 服务器"
 
-#: internal/mailui/welcome.go:569
+#: internal/mailui/welcome.go:576
 msgid "SMTP server"
 msgstr "SMTP 服务器"
 
-#: internal/mailui/welcome.go:571
+#: internal/mailui/welcome.go:578
 msgid "User name"
 msgstr "用户名"
 
-#: internal/mailui/welcome.go:581
+#: internal/mailui/welcome.go:588
 msgid "Change"
 msgstr "更改"
 
-#: internal/mailui/welcome.go:588
+#: internal/mailui/welcome.go:595
 msgid "Enter signs in · Esc goes back"
 msgstr "Enter 登录 · Esc 返回"
 
-#: internal/mailui/welcome.go:592
+#: internal/mailui/welcome.go:599
 #: internal/mailui/window.go:458
 msgid "Sign in"
 msgstr "登录"
 
-#: internal/mailui/welcome.go:609
+#: internal/mailui/welcome.go:616
 msgid "Type the password."
 msgstr "请输入密码。"
 
-#: internal/mailui/welcome.go:613
+#: internal/mailui/welcome.go:620
 msgid "Type both servers."
 msgstr "请输入两个服务器。"
 
-#: internal/mailui/welcome.go:620
+#: internal/mailui/welcome.go:627
 msgid "signing in to %s and %s…"
 msgstr "正在登录 %s 和 %s…"
 
-#: internal/mailui/welcome.go:636
+#: internal/mailui/welcome.go:643
 msgid "signed in to %s and %s"
 msgstr "已登录 %s 和 %s"
 
-#: internal/mailui/welcome.go:653
+#: internal/mailui/welcome.go:660
 msgid "could not keep the sign-in in the keyring: %v"
 msgstr "无法把登录信息保存到钥匙环：%v"
 
-#: internal/mailui/welcome.go:661
+#: internal/mailui/welcome.go:668
 msgid "listing the mailboxes…"
 msgstr "正在列出邮箱…"
 
-#: internal/mailui/welcome.go:679
+#: internal/mailui/welcome.go:686
 msgid "%d mailbox"
 msgid_plural "%d mailboxes"
 msgstr[0] "%d 个邮箱"
 
-#: internal/mailui/welcome.go:680
+#: internal/mailui/welcome.go:687
 msgid "Inbox: fetching the newest %d…"
 msgstr "收件箱：正在获取最新的 %d 封…"
 
-#: internal/mailui/welcome.go:688
+#: internal/mailui/welcome.go:695
 msgid "Inbox: %v"
 msgstr "收件箱：%v"
 
-#: internal/mailui/welcome.go:690
+#: internal/mailui/welcome.go:697
 msgid "Inbox: %d message, in %s"
 msgid_plural "Inbox: %d messages, in %s"
 msgstr[0] "收件箱：%d 封，用时 %s"
 
-#: internal/mailui/welcome.go:696
+#: internal/mailui/welcome.go:703
 msgid "Sent: fetching…"
 msgstr "已发送：正在获取…"
 
-#: internal/mailui/welcome.go:701
+#: internal/mailui/welcome.go:708
 msgid "Sent: %v"
 msgstr "已发送：%v"
 
-#: internal/mailui/welcome.go:703
+#: internal/mailui/welcome.go:710
 msgid "Sent: %d message"
 msgid_plural "Sent: %d messages"
 msgstr[0] "已发送：%d 封"
 
-#: internal/mailui/welcome.go:712
+#: internal/mailui/welcome.go:719
 msgid "Fetching your mail"
 msgstr "正在获取你的邮件"
 
-#: internal/mailui/welcome.go:714
+#: internal/mailui/welcome.go:721
 msgid "Ready"
 msgstr "就绪"
 
-#: internal/mailui/welcome.go:720
+#: internal/mailui/welcome.go:727
 msgid "Open the inbox"
 msgstr "打开收件箱"
+
+#: internal/mailui/welcome.go:775
+msgid "Your own OAuth client…"
+msgstr "你自己的 OAuth 客户端…"
+
+#: internal/mailui/welcome.go:777
+msgid "Hide your own OAuth client"
+msgstr "隐藏你自己的 OAuth 客户端"
+
+#: internal/mailui/welcome.go:787
+msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."
+msgstr "用于你自己的 Google Cloud 项目或 Azure 应用。留空则用 inua 的。更换客户端后，已用该服务商登录的账户需要重新登录。"
+
+#: internal/mailui/welcome.go:812
+msgid "Google client ID"
+msgstr "Google 客户端 ID"
+
+#: internal/mailui/welcome.go:812
+msgid "Google client secret"
+msgstr "Google 客户端密钥"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft client ID"
+msgstr "Microsoft 客户端 ID"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft tenant"
+msgstr "Microsoft 租户"
 
 #: internal/mailui/window.go:176
 msgid "ALL"

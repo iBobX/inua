@@ -686,7 +686,7 @@ msgid "Aider's settings and caches."
 msgstr "Ajustes y cachés de Aider."
 
 #: internal/apps/disk/rules.go:171
-#: internal/mailui/welcome.go:362
+#: internal/mailui/welcome.go:369
 #: ui/vm.ui:777
 msgid "Continue"
 msgstr "Continuar"
@@ -1335,31 +1335,31 @@ msgstr "Asunto:"
 msgid "To:"
 msgstr "Para:"
 
-#: internal/apps/mail/oauth.go:42
-msgid "Google sign-in needs a client ID in mail.toml ([oauth.google]); see docs/mail.md, or add the account as IMAP with an app password."
-msgstr "Iniciar sesión con Google necesita un ID de cliente en mail.toml ([oauth.google]); consulta docs/mail.md, o añade la cuenta como IMAP con una contraseña de aplicación."
+#: internal/apps/mail/oauth.go:43
+msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
+msgstr "Iniciar sesión con Google necesita un ID de cliente y su secreto: esta compilación no los tiene. Añade los tuyos en Tu propio cliente OAuth (docs/mail.md), o añade la cuenta como IMAP con una contraseña de aplicación."
 
-#: internal/apps/mail/oauth.go:57
-msgid "Microsoft sign-in needs a client ID in mail.toml ([oauth.microsoft]); see docs/mail.md."
-msgstr "Iniciar sesión con Microsoft necesita un ID de cliente en mail.toml ([oauth.microsoft]); consulta docs/mail.md."
+#: internal/apps/mail/oauth.go:58
+msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
+msgstr "Iniciar sesión con Microsoft necesita un ID de cliente: esta compilación no lo tiene. Añade el tuyo en Tu propio cliente OAuth (docs/mail.md)."
 
-#: internal/apps/mail/oauth.go:140
+#: internal/apps/mail/oauth.go:141
 msgid "the sign-in page answered for another request"
 msgstr "la página de inicio de sesión respondió a otra solicitud"
 
-#: internal/apps/mail/oauth.go:144
+#: internal/apps/mail/oauth.go:145
 msgid "the sign-in page gave no code"
 msgstr "la página de inicio de sesión no dio ningún código"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "Signed in"
 msgstr "Sesión iniciada"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "You can close this tab and go back to Mail."
 msgstr "Puedes cerrar esta pestaña y volver a Correo."
 
-#: internal/apps/mail/oauth.go:163
+#: internal/apps/mail/oauth.go:164
 msgid "Not signed in"
 msgstr "Sesión no iniciada"
 
@@ -2161,7 +2161,7 @@ msgstr "Eliminar…"
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:547
-#: internal/mailui/welcome.go:472
+#: internal/mailui/welcome.go:479
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -3894,6 +3894,7 @@ msgid "OK"
 msgstr "OK"
 
 #: internal/appui/workshop_blocks.go:438
+#: internal/mailui/welcome.go:815
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -5186,7 +5187,7 @@ msgstr "Más pequeña"
 #: internal/filesui/remotesetup.go:55
 #: internal/filesui/remotesetup.go:61
 #: internal/filesui/remotesetup.go:67
-#: internal/mailui/welcome.go:563
+#: internal/mailui/welcome.go:570
 #: ui/lock.ui:76
 #: ui/polkit.ui:690
 msgid "Password"
@@ -5395,7 +5396,7 @@ msgstr[1] "… y %d más"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/mailui/welcome.go:152
+#: internal/mailui/welcome.go:155
 #: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
@@ -5883,7 +5884,7 @@ msgid "Both the key's ID and its secret are needed."
 msgstr "Hacen falta el ID de la clave y su secreto."
 
 #: internal/filesui/remote.go:176
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "Sign in to %s"
 msgstr "Iniciar sesión en %s"
 
@@ -8223,7 +8224,7 @@ msgid "Small Fortune"
 msgstr "Pequeña fortuna"
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/welcome.go:564
+#: internal/mailui/welcome.go:571
 msgid "Your name"
 msgstr "Tu nombre"
 
@@ -9189,8 +9190,8 @@ msgid "Quit to menu"
 msgstr "Salir al menú"
 
 #: internal/gamesui/fortune_menu.go:109
-#: internal/mailui/welcome.go:486
-#: internal/mailui/welcome.go:590
+#: internal/mailui/welcome.go:493
+#: internal/mailui/welcome.go:597
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -10014,230 +10015,262 @@ msgstr "Guardar el adjunto"
 msgid "Could not save %s: %v"
 msgstr "No se pudo guardar %s: %v"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "ADDRESS"
 msgstr "DIRECCIÓN"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "SIGN IN"
 msgstr "INICIO DE SESIÓN"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "FIRST SYNC"
 msgstr "PRIMERA SINCRONIZACIÓN"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Which address?"
 msgstr "¿Qué dirección?"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Mail works out how to sign in from it, and never sees a Google or Microsoft password."
 msgstr "Correo deduce de ella cómo iniciar sesión, y nunca ve una contraseña de Google o Microsoft."
 
-#: internal/mailui/welcome.go:324
+#: internal/mailui/welcome.go:327
 msgid "Gmail and Google Workspace"
 msgstr "Gmail y Google Workspace"
 
-#: internal/mailui/welcome.go:324
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:327
+#: internal/mailui/welcome.go:328
 msgid "in the browser"
 msgstr "en el navegador"
 
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:328
 msgid "Outlook, Hotmail and Microsoft 365"
 msgstr "Outlook, Hotmail y Microsoft 365"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "Fastmail, iCloud, Yahoo, your own server"
 msgstr "Fastmail, iCloud, Yahoo, tu propio servidor"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "a password"
 msgstr "una contraseña"
 
-#: internal/mailui/welcome.go:349
+#: internal/mailui/welcome.go:352
 msgid "no client ID"
 msgstr "sin ID de cliente"
 
-#: internal/mailui/welcome.go:350
-msgid "This build has no client ID for it: see docs/mail.md."
-msgstr "Esta compilación no tiene ID de cliente para ello: consulta docs/mail.md."
+#: internal/mailui/welcome.go:353
+msgid "This build has no client ID for it: add your own under Your own OAuth client."
+msgstr "Esta compilación no tiene ID de cliente para ello: añade el tuyo en Tu propio cliente OAuth."
 
-#: internal/mailui/welcome.go:361
+#: internal/mailui/welcome.go:355
+msgid "your client"
+msgstr "tu cliente"
+
+#: internal/mailui/welcome.go:368
 msgid "Enter continues · a click picks another way · Esc goes back"
 msgstr "Intro continúa · un clic elige otra forma · Esc vuelve"
 
-#: internal/mailui/welcome.go:387
+#: internal/mailui/welcome.go:394
 msgid "Type your address, or pick a way below."
 msgstr "Escribe tu dirección, o elige una forma abajo."
 
-#: internal/mailui/welcome.go:397
+#: internal/mailui/welcome.go:404
 msgid "Type your address first: the IMAP servers come from it."
 msgstr "Escribe primero tu dirección: los servidores IMAP salen de ella."
 
-#: internal/mailui/welcome.go:433
+#: internal/mailui/welcome.go:440
 msgid "listening on %s for the answer"
 msgstr "escuchando la respuesta en %s"
 
-#: internal/mailui/welcome.go:439
+#: internal/mailui/welcome.go:446
 msgid "no browser opened (%v): copy the link into one"
 msgstr "no se abrió ningún navegador (%v): copia el enlace en uno"
 
-#: internal/mailui/welcome.go:441
+#: internal/mailui/welcome.go:448
 msgid "opened %s in your browser"
 msgstr "%s abierto en tu navegador"
 
-#: internal/mailui/welcome.go:459
+#: internal/mailui/welcome.go:466
 msgid "Sign in with %s"
 msgstr "Iniciar sesión con %s"
 
-#: internal/mailui/welcome.go:460
+#: internal/mailui/welcome.go:467
 msgid "Your browser has the sign-in page. Allow Mail to read and send your mail there; this page goes on by itself."
 msgstr "Tu navegador tiene la página de inicio de sesión. Permite allí que Correo lea y envíe tu correo; esta página sigue sola."
 
-#: internal/mailui/welcome.go:470
+#: internal/mailui/welcome.go:477
 msgid "Copy the link"
 msgstr "Copiar el enlace"
 
-#: internal/mailui/welcome.go:474
+#: internal/mailui/welcome.go:481
 msgid "Open it again"
 msgstr "Abrirlo de nuevo"
 
-#: internal/mailui/welcome.go:477
+#: internal/mailui/welcome.go:484
 msgid "Use a password instead"
 msgstr "Usar una contraseña"
 
-#: internal/mailui/welcome.go:484
+#: internal/mailui/welcome.go:491
 msgid "Esc goes back"
 msgstr "Esc vuelve"
 
-#: internal/mailui/welcome.go:496
+#: internal/mailui/welcome.go:503
 msgid "waiting for %s · %d s"
 msgstr "esperando a %s · %d s"
 
-#: internal/mailui/welcome.go:507
+#: internal/mailui/welcome.go:514
 msgid "the sign-in took too long; go back and try again"
 msgstr "el inicio de sesión tardó demasiado; vuelve e inténtalo de nuevo"
 
-#: internal/mailui/welcome.go:510
-#: internal/mailui/welcome.go:632
+#: internal/mailui/welcome.go:517
+#: internal/mailui/welcome.go:639
 msgid "not signed in: %v"
 msgstr "sesión no iniciada: %v"
 
-#: internal/mailui/welcome.go:513
+#: internal/mailui/welcome.go:520
 msgid "signed in, but the provider did not say the address"
 msgstr "sesión iniciada, pero el proveedor no dio la dirección"
 
-#: internal/mailui/welcome.go:516
+#: internal/mailui/welcome.go:523
 msgid "signed in, but the provider gave no lasting sign-in: remove Mail's access in your account's settings and try again"
 msgstr "sesión iniciada, pero el proveedor no dio un acceso duradero: quita el acceso de Correo en los ajustes de tu cuenta e inténtalo de nuevo"
 
-#: internal/mailui/welcome.go:519
+#: internal/mailui/welcome.go:526
 msgid "signed in as %s"
 msgstr "sesión iniciada como %s"
 
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "The password is kept in your keyring. For Gmail, iCloud or Yahoo with two-step sign-in, use an app password."
 msgstr "La contraseña se guarda en tu llavero. Para Gmail, iCloud o Yahoo con verificación en dos pasos, usa una contraseña de aplicación."
 
-#: internal/mailui/welcome.go:558
+#: internal/mailui/welcome.go:565
 msgid "Your name, on what you send"
 msgstr "Tu nombre, en lo que envías"
 
-#: internal/mailui/welcome.go:568
+#: internal/mailui/welcome.go:575
 msgid "IMAP server"
 msgstr "Servidor IMAP"
 
-#: internal/mailui/welcome.go:569
+#: internal/mailui/welcome.go:576
 msgid "SMTP server"
 msgstr "Servidor SMTP"
 
-#: internal/mailui/welcome.go:571
+#: internal/mailui/welcome.go:578
 msgid "User name"
 msgstr "Nombre de usuario"
 
-#: internal/mailui/welcome.go:581
+#: internal/mailui/welcome.go:588
 msgid "Change"
 msgstr "Cambiar"
 
-#: internal/mailui/welcome.go:588
+#: internal/mailui/welcome.go:595
 msgid "Enter signs in · Esc goes back"
 msgstr "Intro inicia sesión · Esc vuelve"
 
-#: internal/mailui/welcome.go:592
+#: internal/mailui/welcome.go:599
 #: internal/mailui/window.go:458
 msgid "Sign in"
 msgstr "Iniciar sesión"
 
-#: internal/mailui/welcome.go:609
+#: internal/mailui/welcome.go:616
 msgid "Type the password."
 msgstr "Escribe la contraseña."
 
-#: internal/mailui/welcome.go:613
+#: internal/mailui/welcome.go:620
 msgid "Type both servers."
 msgstr "Escribe los dos servidores."
 
-#: internal/mailui/welcome.go:620
+#: internal/mailui/welcome.go:627
 msgid "signing in to %s and %s…"
 msgstr "iniciando sesión en %s y %s…"
 
-#: internal/mailui/welcome.go:636
+#: internal/mailui/welcome.go:643
 msgid "signed in to %s and %s"
 msgstr "sesión iniciada en %s y %s"
 
-#: internal/mailui/welcome.go:653
+#: internal/mailui/welcome.go:660
 msgid "could not keep the sign-in in the keyring: %v"
 msgstr "no se pudo guardar el inicio de sesión en el llavero: %v"
 
-#: internal/mailui/welcome.go:661
+#: internal/mailui/welcome.go:668
 msgid "listing the mailboxes…"
 msgstr "listando los buzones…"
 
-#: internal/mailui/welcome.go:679
+#: internal/mailui/welcome.go:686
 msgid "%d mailbox"
 msgid_plural "%d mailboxes"
 msgstr[0] "%d buzón"
 msgstr[1] "%d buzones"
 
-#: internal/mailui/welcome.go:680
+#: internal/mailui/welcome.go:687
 msgid "Inbox: fetching the newest %d…"
 msgstr "Bandeja de entrada: obteniendo los %d más recientes…"
 
-#: internal/mailui/welcome.go:688
+#: internal/mailui/welcome.go:695
 msgid "Inbox: %v"
 msgstr "Bandeja de entrada: %v"
 
-#: internal/mailui/welcome.go:690
+#: internal/mailui/welcome.go:697
 msgid "Inbox: %d message, in %s"
 msgid_plural "Inbox: %d messages, in %s"
 msgstr[0] "Bandeja de entrada: %d mensaje, en %s"
 msgstr[1] "Bandeja de entrada: %d mensajes, en %s"
 
-#: internal/mailui/welcome.go:696
+#: internal/mailui/welcome.go:703
 msgid "Sent: fetching…"
 msgstr "Enviados: obteniendo…"
 
-#: internal/mailui/welcome.go:701
+#: internal/mailui/welcome.go:708
 msgid "Sent: %v"
 msgstr "Enviados: %v"
 
-#: internal/mailui/welcome.go:703
+#: internal/mailui/welcome.go:710
 msgid "Sent: %d message"
 msgid_plural "Sent: %d messages"
 msgstr[0] "Enviados: %d mensaje"
 msgstr[1] "Enviados: %d mensajes"
 
-#: internal/mailui/welcome.go:712
+#: internal/mailui/welcome.go:719
 msgid "Fetching your mail"
 msgstr "Obteniendo tu correo"
 
-#: internal/mailui/welcome.go:714
+#: internal/mailui/welcome.go:721
 msgid "Ready"
 msgstr "Listo"
 
-#: internal/mailui/welcome.go:720
+#: internal/mailui/welcome.go:727
 msgid "Open the inbox"
 msgstr "Abrir la bandeja de entrada"
+
+#: internal/mailui/welcome.go:775
+msgid "Your own OAuth client…"
+msgstr "Tu propio cliente OAuth…"
+
+#: internal/mailui/welcome.go:777
+msgid "Hide your own OAuth client"
+msgstr "Ocultar tu propio cliente OAuth"
+
+#: internal/mailui/welcome.go:787
+msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."
+msgstr "Para un proyecto de Google Cloud o una app de Azure tuyos. Los campos vacíos usan los de inua. Las cuentas ya conectadas con un proveedor vuelven a iniciar sesión cuando cambia su cliente."
+
+#: internal/mailui/welcome.go:812
+msgid "Google client ID"
+msgstr "ID de cliente de Google"
+
+#: internal/mailui/welcome.go:812
+msgid "Google client secret"
+msgstr "Secreto de cliente de Google"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft client ID"
+msgstr "ID de cliente de Microsoft"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft tenant"
+msgstr "Inquilino de Microsoft"
 
 #: internal/mailui/window.go:176
 msgid "ALL"

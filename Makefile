@@ -11,6 +11,8 @@
 #   make term-engine
 #                  build bin/libinua-vt.so, inua-term's engine (libghostty-vt
 #                  at its pinned commit; needs git and Zig 0.16)
+#                  (INUA_GOOGLE_CLIENT_SECRET=… make sets inua-mail's
+#                  Google client secret; releases take it from CI)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -54,7 +56,7 @@ build:
 	go build -o bin/inua-remote ./cmd/inua-remote
 	go build -o bin/inua-connect ./cmd/inua-connect
 	go build -o bin/inua-disk-usage ./cmd/inua-disk-usage
-	go build -o bin/inua-mail ./cmd/inua-mail
+	go build -ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientSecret=$(INUA_GOOGLE_CLIENT_SECRET)" -o bin/inua-mail ./cmd/inua-mail
 	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant

@@ -105,12 +105,25 @@ sort = false                    # sort new mail with the assistant
 ### OAuth client IDs
 
 Google and Microsoft give an app a client ID when its developer
-registers it. inua's own are in `internal/apps/mail/clients.go`: an
-installed app's client is public (it ships in every copy; PKCE, not a
-secret, protects the sign-in). A build can set others
-(`-ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientID=…"`,
-also `GoogleClientSecret` and `MicrosoftClientID`). To use your own,
-register one and put it in `mail.toml`:
+registers it. inua's own IDs are in `internal/apps/mail/clients.go`: an
+installed app's client is public (it ships in every copy; PKCE protects
+the sign-in). Google's desktop client also has a secret, which its token
+page asks for; it is not in the source, as GitHub reports a `GOCSPX-`
+secret found in a public repository to Google. A release takes it from
+the repository secret `INUA_GOOGLE_CLIENT_SECRET` (the release workflow
+passes it to GoReleaser), and `make build` from the same environment
+variable:
+
+```
+INUA_GOOGLE_CLIENT_SECRET=GOCSPX-… make build
+```
+
+A build without it marks Google *no client ID*.
+
+To use a client of your own, open *Your own OAuth client…* under the
+ways to sign in in the welcome (Add account), or put it in `mail.toml`;
+empty fields use inua's. An account signed in with one client signs in
+again after the client changes.
 
 ```toml
 [oauth.google]

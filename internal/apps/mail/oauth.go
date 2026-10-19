@@ -38,8 +38,9 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 		if c.ClientID == "" {
 			c = OAuthClient{ClientID: GoogleClientID, ClientSecret: GoogleClientSecret}
 		}
-		if c.ClientID == "" {
-			return Endpoint{}, fmt.Errorf("%w: %s", ErrNoClient, i18n.T("Google sign-in needs a client ID in mail.toml ([oauth.google]); see docs/mail.md, or add the account as IMAP with an app password."))
+		// Google's token page refuses a desktop client without its secret.
+		if c.ClientID == "" || c.ClientSecret == "" {
+			return Endpoint{}, fmt.Errorf("%w: %s", ErrNoClient, i18n.T("Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."))
 		}
 		return Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
@@ -54,7 +55,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 			c = OAuthClient{ClientID: MicrosoftClientID, Tenant: c.Tenant}
 		}
 		if c.ClientID == "" {
-			return Endpoint{}, fmt.Errorf("%w: %s", ErrNoClient, i18n.T("Microsoft sign-in needs a client ID in mail.toml ([oauth.microsoft]); see docs/mail.md."))
+			return Endpoint{}, fmt.Errorf("%w: %s", ErrNoClient, i18n.T("Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."))
 		}
 		tenant := c.Tenant
 		if tenant == "" {

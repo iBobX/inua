@@ -683,7 +683,7 @@ msgid "Aider's settings and caches."
 msgstr "Aider의 설정과 캐시입니다."
 
 #: internal/apps/disk/rules.go:171
-#: internal/mailui/welcome.go:362
+#: internal/mailui/welcome.go:369
 #: ui/vm.ui:777
 msgid "Continue"
 msgstr "계속"
@@ -1330,31 +1330,31 @@ msgstr "제목:"
 msgid "To:"
 msgstr "받는 사람:"
 
-#: internal/apps/mail/oauth.go:42
-msgid "Google sign-in needs a client ID in mail.toml ([oauth.google]); see docs/mail.md, or add the account as IMAP with an app password."
-msgstr "Google 로그인에는 mail.toml에 클라이언트 ID([oauth.google])가 필요합니다. docs/mail.md를 보거나 앱 비밀번호로 IMAP 계정을 추가하세요."
+#: internal/apps/mail/oauth.go:43
+msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
+msgstr "Google 로그인에는 클라이언트 ID와 시크릿이 필요하지만 이 빌드에는 없습니다. '내 OAuth 클라이언트'에서 추가하거나(docs/mail.md) 앱 비밀번호로 IMAP 계정을 추가하세요."
 
-#: internal/apps/mail/oauth.go:57
-msgid "Microsoft sign-in needs a client ID in mail.toml ([oauth.microsoft]); see docs/mail.md."
-msgstr "Microsoft 로그인에는 mail.toml에 클라이언트 ID([oauth.microsoft])가 필요합니다. docs/mail.md를 보세요."
+#: internal/apps/mail/oauth.go:58
+msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
+msgstr "Microsoft 로그인에는 클라이언트 ID가 필요하지만 이 빌드에는 없습니다. '내 OAuth 클라이언트'에서 추가하세요(docs/mail.md)."
 
-#: internal/apps/mail/oauth.go:140
+#: internal/apps/mail/oauth.go:141
 msgid "the sign-in page answered for another request"
 msgstr "로그인 페이지가 다른 요청에 응답했습니다"
 
-#: internal/apps/mail/oauth.go:144
+#: internal/apps/mail/oauth.go:145
 msgid "the sign-in page gave no code"
 msgstr "로그인 페이지가 코드를 주지 않았습니다"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "Signed in"
 msgstr "로그인됨"
 
-#: internal/apps/mail/oauth.go:161
+#: internal/apps/mail/oauth.go:162
 msgid "You can close this tab and go back to Mail."
 msgstr "이 탭을 닫고 메일로 돌아가세요."
 
-#: internal/apps/mail/oauth.go:163
+#: internal/apps/mail/oauth.go:164
 msgid "Not signed in"
 msgstr "로그인되지 않음"
 
@@ -2153,7 +2153,7 @@ msgstr "삭제…"
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:547
-#: internal/mailui/welcome.go:472
+#: internal/mailui/welcome.go:479
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -3874,6 +3874,7 @@ msgid "OK"
 msgstr "OK"
 
 #: internal/appui/workshop_blocks.go:438
+#: internal/mailui/welcome.go:815
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -5160,7 +5161,7 @@ msgstr "가장 작게"
 #: internal/filesui/remotesetup.go:55
 #: internal/filesui/remotesetup.go:61
 #: internal/filesui/remotesetup.go:67
-#: internal/mailui/welcome.go:563
+#: internal/mailui/welcome.go:570
 #: ui/lock.ui:76
 #: ui/polkit.ui:690
 msgid "Password"
@@ -5366,7 +5367,7 @@ msgstr[0] "… 그 외 %d개"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/mailui/welcome.go:152
+#: internal/mailui/welcome.go:155
 #: internal/termui/keys.go:228
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
@@ -5846,7 +5847,7 @@ msgid "Both the key's ID and its secret are needed."
 msgstr "키 ID와 비밀 키가 모두 필요합니다."
 
 #: internal/filesui/remote.go:176
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "Sign in to %s"
 msgstr "%s에 로그인"
 
@@ -8179,7 +8180,7 @@ msgid "Small Fortune"
 msgstr "작은 부자"
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/welcome.go:564
+#: internal/mailui/welcome.go:571
 msgid "Your name"
 msgstr "이름"
 
@@ -9140,8 +9141,8 @@ msgid "Quit to menu"
 msgstr "메뉴로 나가기"
 
 #: internal/gamesui/fortune_menu.go:109
-#: internal/mailui/welcome.go:486
-#: internal/mailui/welcome.go:590
+#: internal/mailui/welcome.go:493
+#: internal/mailui/welcome.go:597
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9960,227 +9961,259 @@ msgstr "첨부 파일 저장"
 msgid "Could not save %s: %v"
 msgstr "%s을(를) 저장할 수 없습니다: %v"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "ADDRESS"
 msgstr "주소"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "SIGN IN"
 msgstr "로그인"
 
-#: internal/mailui/welcome.go:175
+#: internal/mailui/welcome.go:178
 msgid "FIRST SYNC"
 msgstr "첫 동기화"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Which address?"
 msgstr "어떤 주소인가요?"
 
-#: internal/mailui/welcome.go:301
+#: internal/mailui/welcome.go:304
 msgid "Mail works out how to sign in from it, and never sees a Google or Microsoft password."
 msgstr "주소로 로그인 방법을 정하며, Google이나 Microsoft 비밀번호를 보지 않습니다."
 
-#: internal/mailui/welcome.go:324
+#: internal/mailui/welcome.go:327
 msgid "Gmail and Google Workspace"
 msgstr "Gmail과 Google Workspace"
 
-#: internal/mailui/welcome.go:324
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:327
+#: internal/mailui/welcome.go:328
 msgid "in the browser"
 msgstr "브라우저에서"
 
-#: internal/mailui/welcome.go:325
+#: internal/mailui/welcome.go:328
 msgid "Outlook, Hotmail and Microsoft 365"
 msgstr "Outlook, Hotmail, Microsoft 365"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "Fastmail, iCloud, Yahoo, your own server"
 msgstr "Fastmail, iCloud, Yahoo, 자체 서버"
 
-#: internal/mailui/welcome.go:326
+#: internal/mailui/welcome.go:329
 msgid "a password"
 msgstr "비밀번호"
 
-#: internal/mailui/welcome.go:349
+#: internal/mailui/welcome.go:352
 msgid "no client ID"
 msgstr "클라이언트 ID 없음"
 
-#: internal/mailui/welcome.go:350
-msgid "This build has no client ID for it: see docs/mail.md."
-msgstr "이 빌드에는 클라이언트 ID가 없습니다: docs/mail.md를 보세요."
+#: internal/mailui/welcome.go:353
+msgid "This build has no client ID for it: add your own under Your own OAuth client."
+msgstr "이 빌드에는 클라이언트 ID가 없습니다: '내 OAuth 클라이언트'에서 추가하세요."
 
-#: internal/mailui/welcome.go:361
+#: internal/mailui/welcome.go:355
+msgid "your client"
+msgstr "내 클라이언트"
+
+#: internal/mailui/welcome.go:368
 msgid "Enter continues · a click picks another way · Esc goes back"
 msgstr "Enter로 계속 · 클릭으로 다른 방법 · Esc로 뒤로"
 
-#: internal/mailui/welcome.go:387
+#: internal/mailui/welcome.go:394
 msgid "Type your address, or pick a way below."
 msgstr "주소를 입력하거나 아래에서 방법을 고르세요."
 
-#: internal/mailui/welcome.go:397
+#: internal/mailui/welcome.go:404
 msgid "Type your address first: the IMAP servers come from it."
 msgstr "먼저 주소를 입력하세요: IMAP 서버는 주소에서 정해집니다."
 
-#: internal/mailui/welcome.go:433
+#: internal/mailui/welcome.go:440
 msgid "listening on %s for the answer"
 msgstr "%s에서 응답을 기다리는 중"
 
-#: internal/mailui/welcome.go:439
+#: internal/mailui/welcome.go:446
 msgid "no browser opened (%v): copy the link into one"
 msgstr "브라우저가 열리지 않았습니다(%v): 링크를 브라우저에 복사하세요"
 
-#: internal/mailui/welcome.go:441
+#: internal/mailui/welcome.go:448
 msgid "opened %s in your browser"
 msgstr "브라우저에서 %s을(를) 열었습니다"
 
-#: internal/mailui/welcome.go:459
+#: internal/mailui/welcome.go:466
 msgid "Sign in with %s"
 msgstr "%s(으)로 로그인"
 
-#: internal/mailui/welcome.go:460
+#: internal/mailui/welcome.go:467
 msgid "Your browser has the sign-in page. Allow Mail to read and send your mail there; this page goes on by itself."
 msgstr "브라우저에 로그인 페이지가 있습니다. 그곳에서 메일이 메일을 읽고 보내도록 허용하세요. 이 페이지는 저절로 넘어갑니다."
 
-#: internal/mailui/welcome.go:470
+#: internal/mailui/welcome.go:477
 msgid "Copy the link"
 msgstr "링크 복사"
 
-#: internal/mailui/welcome.go:474
+#: internal/mailui/welcome.go:481
 msgid "Open it again"
 msgstr "다시 열기"
 
-#: internal/mailui/welcome.go:477
+#: internal/mailui/welcome.go:484
 msgid "Use a password instead"
 msgstr "비밀번호 사용"
 
-#: internal/mailui/welcome.go:484
+#: internal/mailui/welcome.go:491
 msgid "Esc goes back"
 msgstr "Esc로 뒤로"
 
-#: internal/mailui/welcome.go:496
+#: internal/mailui/welcome.go:503
 msgid "waiting for %s · %d s"
 msgstr "%s 기다리는 중 · %d초"
 
-#: internal/mailui/welcome.go:507
+#: internal/mailui/welcome.go:514
 msgid "the sign-in took too long; go back and try again"
 msgstr "로그인이 너무 오래 걸렸습니다. 뒤로 가서 다시 시도하세요"
 
-#: internal/mailui/welcome.go:510
-#: internal/mailui/welcome.go:632
+#: internal/mailui/welcome.go:517
+#: internal/mailui/welcome.go:639
 msgid "not signed in: %v"
 msgstr "로그인되지 않음: %v"
 
-#: internal/mailui/welcome.go:513
+#: internal/mailui/welcome.go:520
 msgid "signed in, but the provider did not say the address"
 msgstr "로그인했지만 제공업체가 주소를 알려 주지 않았습니다"
 
-#: internal/mailui/welcome.go:516
+#: internal/mailui/welcome.go:523
 msgid "signed in, but the provider gave no lasting sign-in: remove Mail's access in your account's settings and try again"
 msgstr "로그인했지만 지속적인 로그인을 받지 못했습니다: 계정 설정에서 메일의 접근을 지우고 다시 시도하세요"
 
-#: internal/mailui/welcome.go:519
+#: internal/mailui/welcome.go:526
 msgid "signed in as %s"
 msgstr "%s(으)로 로그인함"
 
-#: internal/mailui/welcome.go:527
+#: internal/mailui/welcome.go:534
 msgid "The password is kept in your keyring. For Gmail, iCloud or Yahoo with two-step sign-in, use an app password."
 msgstr "비밀번호는 키링에 보관됩니다. 2단계 인증을 쓰는 Gmail, iCloud, Yahoo는 앱 비밀번호를 쓰세요."
 
-#: internal/mailui/welcome.go:558
+#: internal/mailui/welcome.go:565
 msgid "Your name, on what you send"
 msgstr "보내는 메일에 표시할 이름"
 
-#: internal/mailui/welcome.go:568
+#: internal/mailui/welcome.go:575
 msgid "IMAP server"
 msgstr "IMAP 서버"
 
-#: internal/mailui/welcome.go:569
+#: internal/mailui/welcome.go:576
 msgid "SMTP server"
 msgstr "SMTP 서버"
 
-#: internal/mailui/welcome.go:571
+#: internal/mailui/welcome.go:578
 msgid "User name"
 msgstr "사용자 이름"
 
-#: internal/mailui/welcome.go:581
+#: internal/mailui/welcome.go:588
 msgid "Change"
 msgstr "변경"
 
-#: internal/mailui/welcome.go:588
+#: internal/mailui/welcome.go:595
 msgid "Enter signs in · Esc goes back"
 msgstr "Enter로 로그인 · Esc로 뒤로"
 
-#: internal/mailui/welcome.go:592
+#: internal/mailui/welcome.go:599
 #: internal/mailui/window.go:458
 msgid "Sign in"
 msgstr "로그인"
 
-#: internal/mailui/welcome.go:609
+#: internal/mailui/welcome.go:616
 msgid "Type the password."
 msgstr "비밀번호를 입력하세요."
 
-#: internal/mailui/welcome.go:613
+#: internal/mailui/welcome.go:620
 msgid "Type both servers."
 msgstr "두 서버를 모두 입력하세요."
 
-#: internal/mailui/welcome.go:620
+#: internal/mailui/welcome.go:627
 msgid "signing in to %s and %s…"
 msgstr "%s와(과) %s에 로그인하는 중…"
 
-#: internal/mailui/welcome.go:636
+#: internal/mailui/welcome.go:643
 msgid "signed in to %s and %s"
 msgstr "%s와(과) %s에 로그인함"
 
-#: internal/mailui/welcome.go:653
+#: internal/mailui/welcome.go:660
 msgid "could not keep the sign-in in the keyring: %v"
 msgstr "로그인 정보를 키링에 보관할 수 없습니다: %v"
 
-#: internal/mailui/welcome.go:661
+#: internal/mailui/welcome.go:668
 msgid "listing the mailboxes…"
 msgstr "메일함 목록을 가져오는 중…"
 
-#: internal/mailui/welcome.go:679
+#: internal/mailui/welcome.go:686
 msgid "%d mailbox"
 msgid_plural "%d mailboxes"
 msgstr[0] "메일함 %d개"
 
-#: internal/mailui/welcome.go:680
+#: internal/mailui/welcome.go:687
 msgid "Inbox: fetching the newest %d…"
 msgstr "받은편지함: 최신 %d개를 가져오는 중…"
 
-#: internal/mailui/welcome.go:688
+#: internal/mailui/welcome.go:695
 msgid "Inbox: %v"
 msgstr "받은편지함: %v"
 
-#: internal/mailui/welcome.go:690
+#: internal/mailui/welcome.go:697
 msgid "Inbox: %d message, in %s"
 msgid_plural "Inbox: %d messages, in %s"
 msgstr[0] "받은편지함: %d개, %s"
 
-#: internal/mailui/welcome.go:696
+#: internal/mailui/welcome.go:703
 msgid "Sent: fetching…"
 msgstr "보낸 편지함: 가져오는 중…"
 
-#: internal/mailui/welcome.go:701
+#: internal/mailui/welcome.go:708
 msgid "Sent: %v"
 msgstr "보낸 편지함: %v"
 
-#: internal/mailui/welcome.go:703
+#: internal/mailui/welcome.go:710
 msgid "Sent: %d message"
 msgid_plural "Sent: %d messages"
 msgstr[0] "보낸 편지함: %d개"
 
-#: internal/mailui/welcome.go:712
+#: internal/mailui/welcome.go:719
 msgid "Fetching your mail"
 msgstr "메일을 가져오는 중"
 
-#: internal/mailui/welcome.go:714
+#: internal/mailui/welcome.go:721
 msgid "Ready"
 msgstr "준비됨"
 
-#: internal/mailui/welcome.go:720
+#: internal/mailui/welcome.go:727
 msgid "Open the inbox"
 msgstr "받은편지함 열기"
+
+#: internal/mailui/welcome.go:775
+msgid "Your own OAuth client…"
+msgstr "내 OAuth 클라이언트…"
+
+#: internal/mailui/welcome.go:777
+msgid "Hide your own OAuth client"
+msgstr "내 OAuth 클라이언트 숨기기"
+
+#: internal/mailui/welcome.go:787
+msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."
+msgstr "직접 만든 Google Cloud 프로젝트나 Azure 앱용입니다. 비워 두면 inua의 것을 씁니다. 클라이언트를 바꾸면 그 제공업체로 로그인한 계정은 다시 로그인합니다."
+
+#: internal/mailui/welcome.go:812
+msgid "Google client ID"
+msgstr "Google 클라이언트 ID"
+
+#: internal/mailui/welcome.go:812
+msgid "Google client secret"
+msgstr "Google 클라이언트 시크릿"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft client ID"
+msgstr "Microsoft 클라이언트 ID"
+
+#: internal/mailui/welcome.go:813
+msgid "Microsoft tenant"
+msgstr "Microsoft 테넌트"
 
 #: internal/mailui/window.go:176
 msgid "ALL"

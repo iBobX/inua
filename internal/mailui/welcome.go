@@ -30,6 +30,9 @@ type welcome struct {
 	address *gtk.Entry
 	rows    map[mail.Provider]*gtk.Button
 
+	custom                     bool // the own-client fields shown
+	gID, gSecret, mID, mTenant *gtk.Entry
+
 	name, user, imapAddr, smtpAddr *gtk.Entry
 	password                       *gtk.PasswordEntry
 	servers                        bool // their fields shown
@@ -345,9 +348,12 @@ func (wl *welcome) drawAddress(box *gtk.Box) {
 		gtkx.Append(row, &what.Widget)
 		how := gtk.NewLabel(way.how)
 		how.AddCssClass("mail-way-how")
-		if _, err := wl.w.settings.Endpoint(way.p); way.p != mail.Password && err != nil {
+		if ep, err := wl.w.settings.Endpoint(way.p); way.p != mail.Password && err != nil {
 			how.SetText(i18n.T("no client ID"))
-			b.SetTooltipText(i18n.T("This build has no client ID for it: see docs/mail.md."))
+			b.SetTooltipText(i18n.T("This build has no client ID for it: add your own under Your own OAuth client."))
+		} else if way.p != mail.Password && ownClient(wl.w.settings, way.p) {
+			how.SetText(i18n.T("your client"))
+			b.SetTooltipText(ep.Client.ClientID)
 		}
 		gtkx.Append(row, &how.Widget)
 		b.SetChild(&row.Widget)
@@ -357,6 +363,7 @@ func (wl *welcome) drawAddress(box *gtk.Box) {
 		gtkx.Append(list, &b.Widget)
 	}
 	gtkx.Append(box, &list.Widget)
+	wl.drawCustom(box)
 	wl.errLine(box)
 	row := wl.foot(box, i18n.T("Enter continues · a click picks another way · Esc goes back"))
 	wl.primary(row, i18n.T("Continue"), wl.next)
@@ -744,4 +751,86 @@ func field(box *gtk.Box, label string, e *gtk.Widget) {
 	gtkx.Append(f, &l.Widget)
 	gtkx.Append(f, e)
 	gtkx.Append(box, &f.Widget)
+}
+
+// --- your own OAuth client ---
+
+// ownClient says whether mail.toml names the user's own client for p.
+func ownClient(s mail.Settings, p mail.Provider) bool {
+	switch p {
+	case mail.Google:
+		return s.OAuth.Google.ClientID != ""
+	case mail.Microsoft:
+		return s.OAuth.Microsoft.ClientID != ""
+	}
+	return false
+}
+
+// drawCustom shows, under the ways, the link to the user's own OAuth
+// clients, and their fields when it is open: for a Google Cloud project
+// or an Azure app of one's own (docs/mail.md, "OAuth client IDs").
+func (wl *welcome) drawCustom(box *gtk.Box) {
+	links := gtk.NewBox(gtk.OrientationHorizontalValue, 18)
+	links.AddCssClass("mail-links")
+	label := i18n.T("Your own OAuth client…")
+	if wl.custom {
+		label = i18n.T("Hide your own OAuth client")
+	}
+	wl.link(links, label, func() { wl.custom = !wl.custom; wl.draw() })
+	gtkx.Append(box, &links.Widget)
+	if !wl.custom {
+		return
+	}
+	o := wl.w.settings.OAuth
+	sec := gtk.NewBox(gtk.OrientationVerticalValue, 10)
+	sec.AddCssClass("mail-custom")
+	note := gtk.NewLabel(i18n.T("For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."))
+	note.AddCssClass("mail-welcome-text")
+	note.SetXalign(0)
+	note.SetWrap(true)
+	note.SetMaxWidthChars(64)
+	gtkx.Append(sec, &note.Widget)
+	entry := func(value, placeholder string) *gtk.Entry {
+		e := gtk.NewEntry()
+		e.AddCssClass("mono-entry")
+		e.SetText(value)
+		e.SetPlaceholderText(placeholder)
+		return e
+	}
+	wl.gID = entry(o.Google.ClientID, "…apps.googleusercontent.com")
+	wl.gSecret = entry(o.Google.ClientSecret, "GOCSPX-…")
+	wl.gSecret.SetVisibility(false)
+	wl.mID = entry(o.Microsoft.ClientID, "00000000-0000-0000-0000-000000000000")
+	wl.mTenant = entry(o.Microsoft.Tenant, "common")
+	two := func(a, b *gtk.Widget, la, lb string) {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		row.SetHomogeneous(true)
+		field(row, la, a)
+		field(row, lb, b)
+		gtkx.Append(sec, &row.Widget)
+	}
+	two(&wl.gID.Widget, &wl.gSecret.Widget, i18n.T("Google client ID"), i18n.T("Google client secret"))
+	two(&wl.mID.Widget, &wl.mTenant.Widget, i18n.T("Microsoft client ID"), i18n.T("Microsoft tenant"))
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	b := gtk.NewButtonWithLabel(i18n.T("Save"))
+	b.AddCssClass("outlined")
+	wl.ptrs = append(wl.ptrs, wl.w.h.click(b, wl.saveCustom))
+	gtkx.Append(row, &b.Widget)
+	gtkx.Append(sec, &row.Widget)
+	gtkx.Append(box, &sec.Widget)
+}
+
+// saveCustom keeps the user's own clients in mail.toml.
+func (wl *welcome) saveCustom() {
+	s := &wl.w.settings
+	s.OAuth.Google.ClientID = strings.TrimSpace(wl.gID.GetText())
+	s.OAuth.Google.ClientSecret = strings.TrimSpace(wl.gSecret.GetText())
+	s.OAuth.Microsoft.ClientID = strings.TrimSpace(wl.mID.GetText())
+	s.OAuth.Microsoft.Tenant = strings.TrimSpace(wl.mTenant.GetText())
+	if err := s.Save(mail.SettingsPath()); err != nil {
+		wl.err = err.Error()
+	} else {
+		wl.err, wl.custom = "", false
+	}
+	wl.draw()
 }

@@ -54,6 +54,12 @@ builds:
     id: inua-mail
     main: ./cmd/inua-mail
     binary: inua-mail
+    # The Google client's secret comes from the release workflow's
+    # INUA_GOOGLE_CLIENT_SECRET (a repository secret), not the source:
+    # GitHub reports a GOCSPX secret found in a public repository to Google.
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+      - -X github.com/lyricat/inua/internal/apps/mail.GoogleClientSecret={{ index .Env "INUA_GOOGLE_CLIENT_SECRET" }}
   - <<: *build
     id: inua-games
     main: ./cmd/inua-games

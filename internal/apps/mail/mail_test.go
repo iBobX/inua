@@ -620,8 +620,19 @@ func TestSettingsAndSecrets(t *testing.T) {
 	if i, sm := got.Accounts[2].Servers(); i != "imap.fastmail.com:993" || sm != "smtp.fastmail.com:587" {
 		t.Fatalf("servers %s %s", i, sm)
 	}
+	oldID, oldSecret := GoogleClientID, GoogleClientSecret
+	defer func() { GoogleClientID, GoogleClientSecret = oldID, oldSecret }()
+	GoogleClientID, GoogleClientSecret = "gid", ""
 	if _, err := got.Endpoint(Google); !errors.Is(err, ErrNoClient) {
-		t.Fatalf("no client: %v", err)
+		t.Fatalf("a Google client without its secret: %v", err)
+	}
+	GoogleClientSecret = "gsecret"
+	if ep, err := got.Endpoint(Google); err != nil || ep.Client.ClientID != "gid" {
+		t.Fatalf("inua's Google client: %+v %v", ep, err)
+	}
+	got.OAuth.Google = OAuthClient{ClientID: "mine", ClientSecret: "s"}
+	if ep, _ := got.Endpoint(Google); ep.Client.ClientID != "mine" {
+		t.Fatalf("the user's own client: %+v", ep)
 	}
 	got.OAuth.Microsoft.ClientID = "mid"
 	if ep, err := got.Endpoint(Microsoft); err != nil || !strings.Contains(ep.AuthURL, "/common/") {
