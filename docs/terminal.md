@@ -78,7 +78,10 @@ from it, or at `$INUA_VT_LIB`.
   or waits for you, and goes quiet after.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
   head (state, mark, title, folder). Drag a gap to resize, drag a head
-  onto another pane to swap them.
+  onto another pane to swap them. A pane closes when its program ends
+  (`exit`, or the command of `inua-term -e` done), the others taking its
+  room; a session closes with its last pane, and the window with the
+  last of all.
 
 A window narrower than 1040 px folds column 2, narrower than 720 px
 column 1 as well; Ctrl+Shift+S and Ctrl+Shift+B show them anyway.

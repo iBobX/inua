@@ -71,6 +71,41 @@ func TestRestoreWaits(t *testing.T) {
 	}
 }
 
+// A pane closes with its program: the layout closes up, a session
+// without panes goes, and the host ends with its last pane.
+func TestExitedPaneCloses(t *testing.T) {
+	t.Setenv("SHELL", "/bin/sh")
+	h, path := startHost(t)
+	h.ExitWhenEmpty = true
+	c := dial(t, path, newWatcher())
+	c.Open(t.TempDir(), "")
+	st, _ := c.State()
+	s := st.Model.Workspaces[0].Sessions[0]
+	first := s.Focus
+	second, _ := c.Split(s.ID, "right")
+	c.Input(second, []byte("exit\n"))
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		st, _ = c.State()
+		if len(st.Model.Workspaces) == 1 && len(st.Panes) == 1 {
+			if got := st.Model.Workspaces[0].Sessions[0]; len(got.Tree.Panes()) != 1 || got.Focus != first {
+				t.Errorf("the session after %+v", got)
+			}
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("the exited pane stays: %+v", st.Panes)
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	c.Input(first, []byte("exit\n"))
+	select {
+	case <-h.done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("the host stays after its last pane exited")
+	}
+}
+
 // A session one of whose panes cannot start is dropped whole: the panes
 // already started for it are closed, not left running unseen.
 func TestRestoreFailsWhole(t *testing.T) {

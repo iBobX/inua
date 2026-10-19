@@ -523,6 +523,32 @@ func (h *Host) read(p *pane) {
 	p.exited, p.code = true, code
 	p.mu.Unlock()
 	h.tell(Message{Type: MsgEvent, Pane: p.id, Code: &code})
+	h.closeExited(p, code)
+}
+
+// exitGrace is how long a pane its program left by a signal waits before
+// it closes: a logout hangs the shells up as it ends the host, and the
+// host keeps their sessions first.
+var exitGrace = time.Second
+
+// closeExited closes a session's pane once its program ended, as a
+// terminal's split closes; the layout closes up, a session without panes
+// goes, and the host ends with its last pane when it should. A pane
+// outside the sessions (Create) stays, exited, for its client.
+func (h *Host) closeExited(p *pane, code int) {
+	if code < 0 {
+		time.Sleep(exitGrace)
+	}
+	h.mu.Lock()
+	s, _ := h.m.PaneSession(p.id)
+	if h.closed || s == nil {
+		h.mu.Unlock()
+		return
+	}
+	h.m.RemovePane(p.id)
+	h.mu.Unlock()
+	h.publish()
+	h.endPanes([]int{p.id})
 }
 
 // output keeps, feeds and sends what the program wrote, and tells the
