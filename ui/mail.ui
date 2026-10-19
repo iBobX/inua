@@ -15,273 +15,265 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <property name="default-width">1320</property>
     <property name="default-height">840</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkStack" id="top">
+        <property name="transition-type">1</property>
+        <property name="transition-duration">120</property>
         <child>
-          <object class="GtkBox">
-            <style>
-              <class name="index"/>
-              <class name="mail-index"/>
-            </style>
-            <property name="orientation">1</property>
-            <property name="width-request">236</property>
-            <property name="hexpand">false</property>
-            <child>
+          <object class="GtkStackPage">
+            <property name="name">main</property>
+            <property name="child">
               <object class="GtkBox">
-                <style>
-                  <class name="mail-index-head"/>
-                </style>
                 <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="index-title"/>
-                    </style>
-                    <property name="label" translatable="yes">Mail</property>
-                    <property name="xalign">0</property>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="compose">
-                    <style>
-                      <class name="outlined"/>
-                      <class name="mail-compose-button"/>
-                    </style>
-                    <property name="label" translatable="yes">Compose</property>
-                    <property name="tooltip-text" translatable="yes">Write a message (C)</property>
-                    <property name="valign">3</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow">
-                <property name="hscrollbar-policy">2</property>
-                <property name="propagate-natural-width">false</property>
-                <property name="vexpand">true</property>
-                <child>
-                  <object class="GtkBox" id="side">
-                    <style>
-                      <class name="mail-side"/>
-                    </style>
-                    <property name="orientation">1</property>
-                    <property name="spacing">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="add_account">
-                <style>
-                  <class name="index-item"/>
-                  <class name="mail-add"/>
-                </style>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="title"/>
-                    </style>
-                    <property name="label" translatable="yes">Add account</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <style>
-              <class name="mail-list"/>
-            </style>
-            <property name="orientation">1</property>
-            <property name="width-request">380</property>
-            <property name="hexpand">false</property>
-            <child>
-              <object class="GtkSearchEntry" id="search">
-                <style>
-                  <class name="mail-search"/>
-                </style>
-                <property name="placeholder-text" translatable="yes">Search, or ask in a sentence</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="search_note">
-                <style>
-                  <class name="sub"/>
-                  <class name="mail-search-note"/>
-                </style>
-                <property name="xalign">0</property>
-                <property name="wrap">true</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="filters">
-                <style>
-                  <class name="mail-filters"/>
-                </style>
-                <property name="spacing">16</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStack" id="list_stack">
-                <property name="vexpand">true</property>
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="name">list</property>
-                    <property name="child">
-                      <object class="GtkScrolledWindow" id="list_scroll">
-                        <property name="hscrollbar-policy">2</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="name">empty</property>
-                    <property name="child">
-                      <object class="GtkLabel" id="list_empty">
-                        <style>
-                          <class name="sub"/>
-                          <class name="mail-list-empty"/>
-                        </style>
-                        <property name="valign">3</property>
-                        <property name="wrap">true</property>
-                        <property name="justify">2</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="list_error">
-                <style>
-                  <class name="sub"/>
-                  <class name="error"/>
-                  <class name="mail-list-error"/>
-                </style>
-                <property name="xalign">0</property>
-                <property name="wrap">true</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="older">
-                <style>
-                  <class name="mail-older"/>
-                </style>
-                <property name="label" translatable="yes">Load older</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkStack" id="reader_stack">
-            <property name="hexpand">true</property>
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">empty</property>
-                <property name="child">
-                  <object class="GtkLabel" id="reader_empty">
-                    <style>
-                      <class name="sub"/>
-                      <class name="mail-reader-empty"/>
-                    </style>
-                    <property name="label" translatable="yes">No conversation chosen</property>
-                    <property name="valign">3</property>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">read</property>
-                <property name="child">
-                  <object class="GtkScrolledWindow" id="reader_scroll">
-                    <property name="hscrollbar-policy">2</property>
-                    <child>
-                      <object class="GtkBox" id="reader">
-                        <style>
-                          <class name="mail-reader"/>
-                        </style>
-                        <property name="orientation">1</property>
-                        <property name="spacing">16</property>
-                        <property name="halign">1</property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">start</property>
-                <property name="child">
                   <object class="GtkBox">
                     <style>
-                      <class name="mail-start"/>
+                      <class name="index"/>
+                      <class name="mail-index"/>
                     </style>
                     <property name="orientation">1</property>
-                    <property name="spacing">14</property>
-                    <property name="valign">3</property>
-                    <property name="halign">3</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <style>
-                          <class name="mail-start-title"/>
-                        </style>
-                        <property name="label" translatable="yes">Your mail, in three columns</property>
-                        <property name="xalign">0</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <style>
-                          <class name="label"/>
-                          <class name="mail-start-text"/>
-                        </style>
-                        <property name="label" translatable="yes">Add an account to begin. Gmail and Outlook sign in on their own page in your browser; any other account signs in with its IMAP server and a password. Mail keeps a copy of what it reads, so it opens with your inbox even before it connects.</property>
-                        <property name="xalign">0</property>
-                        <property name="wrap">true</property>
-                        <property name="max-width-chars">58</property>
-                      </object>
-                    </child>
+                    <property name="width-request">236</property>
+                    <property name="hexpand">false</property>
                     <child>
                       <object class="GtkBox">
-                        <property name="spacing">8</property>
-                        <property name="margin-top">6</property>
+                        <style>
+                          <class name="mail-index-head"/>
+                        </style>
                         <child>
-                          <object class="GtkButton" id="start_google">
-                            <style>
-                              <class name="outlined"/>
-                            </style>
-                            <property name="label" translatable="yes">Google</property>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
+                            <property name="hexpand">true</property>
+                            <property name="valign">3</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">7</property>
+                                <child>
+                                  <object class="GtkBox" id="status_mark">
+                                    <style>
+                                      <class name="mark"/>
+                                      <class name="mail-status-mark"/>
+                                    </style>
+                                    <property name="valign">3</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="status_state">
+                                    <style>
+                                      <class name="mail-status"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="status_counts">
+                                <style>
+                                  <class name="mail-status-counts"/>
+                                </style>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="start_microsoft">
+                          <object class="GtkButton" id="compose">
                             <style>
                               <class name="outlined"/>
+                              <class name="mail-compose-button"/>
                             </style>
-                            <property name="label" translatable="yes">Microsoft</property>
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Write a message (C)</property>
+                            <property name="valign">3</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">2</property>
+                        <property name="propagate-natural-width">false</property>
+                        <property name="vexpand">true</property>
                         <child>
-                          <object class="GtkButton" id="start_other">
+                          <object class="GtkBox" id="side">
                             <style>
-                              <class name="outlined"/>
+                              <class name="mail-side"/>
                             </style>
-                            <property name="label" translatable="yes">Other (IMAP)</property>
+                            <property name="orientation">1</property>
+                            <property name="spacing">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="add_account">
+                        <style>
+                          <class name="index-item"/>
+                          <class name="mail-add"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel">
+                            <style>
+                              <class name="title"/>
+                            </style>
+                            <property name="label" translatable="yes">Add account</property>
+                            <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                     </child>
                   </object>
-                </property>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="mail-list"/>
+                    </style>
+                    <property name="orientation">1</property>
+                    <property name="width-request">380</property>
+                    <property name="hexpand">false</property>
+                    <child>
+                      <object class="GtkSearchEntry" id="search">
+                        <style>
+                          <class name="mail-search"/>
+                        </style>
+                        <property name="placeholder-text" translatable="yes">Search, or ask in a sentence</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="search_note">
+                        <style>
+                          <class name="sub"/>
+                          <class name="mail-search-note"/>
+                        </style>
+                        <property name="xalign">0</property>
+                        <property name="wrap">true</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="filters">
+                        <style>
+                          <class name="mail-filters"/>
+                        </style>
+                        <property name="spacing">16</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStack" id="list_stack">
+                        <property name="vexpand">true</property>
+                        <child>
+                          <object class="GtkStackPage">
+                            <property name="name">list</property>
+                            <property name="child">
+                              <object class="GtkScrolledWindow" id="list_scroll">
+                                <property name="hscrollbar-policy">2</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkStackPage">
+                            <property name="name">empty</property>
+                            <property name="child">
+                              <object class="GtkLabel" id="list_empty">
+                                <style>
+                                  <class name="sub"/>
+                                  <class name="mail-list-empty"/>
+                                </style>
+                                <property name="valign">3</property>
+                                <property name="wrap">true</property>
+                                <property name="justify">2</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="list_error">
+                        <style>
+                          <class name="sub"/>
+                          <class name="error"/>
+                          <class name="mail-list-error"/>
+                        </style>
+                        <property name="xalign">0</property>
+                        <property name="wrap">true</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="older">
+                        <style>
+                          <class name="mail-older"/>
+                        </style>
+                        <property name="label" translatable="yes">Load older</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStack" id="reader_stack">
+                    <property name="hexpand">true</property>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">empty</property>
+                        <property name="child">
+                          <object class="GtkLabel" id="reader_empty">
+                            <style>
+                              <class name="sub"/>
+                              <class name="mail-reader-empty"/>
+                            </style>
+                            <property name="label" translatable="yes">No conversation chosen</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkStackPage">
+                        <property name="name">read</property>
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="reader_scroll">
+                            <property name="hscrollbar-policy">2</property>
+                            <child>
+                              <object class="GtkBox" id="reader">
+                                <style>
+                                  <class name="mail-reader"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <property name="spacing">16</property>
+                                <property name="halign">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">welcome</property>
+            <property name="child">
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">2</property>
+                <child>
+                  <object class="GtkBox" id="welcome">
+                    <style>
+                      <class name="mail-welcome"/>
+                    </style>
+                    <property name="orientation">1</property>
+                    <property name="halign">3</property>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+              </object>
+            </property>
           </object>
         </child>
       </object>

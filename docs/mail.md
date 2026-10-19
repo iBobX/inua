@@ -18,8 +18,9 @@ inua-mail --check FILE.eml    the phishing checks on a message
 
 ```
 ┌──────────────────┬──────────────────────────┬───────────────────────────────┐
-│ Mail   [Compose] │ ⌕ Search, or ask…        │ The Q3 report                 │
-│ All inboxes   3  │ ALL UNREAD FILES REPLY   │ SUMMARY · ASSISTANT           │
+│ ■ IDLE · 20:41:07 [✎]│ ⌕ Search, or ask…    │ The Q3 report                 │
+│ 1,204 MSG · 3 UNREAD │ ALL UNREAD FILES REPLY │ SUMMARY · ASSISTANT         │
+│ All inboxes   3  │                          │                               │
 │ Needs reply   1  │ ■ Ana Souza       18:06  │ Ana needs the numbers by Fri… │
 │ Starred          │   The Q3 report       3  │ Summarize · Reply ideas       │
 │ STUDIO  ana@st…  │   Thanks! Can you send…  │ ───────────────────────────── │
@@ -32,6 +33,9 @@ inua-mail --check FILE.eml    the phishing checks on a message
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
 
+- **The readout** at the top: whether Mail is waiting for new mail
+  (IDLE), syncing or offline, when it last synced, and the messages kept
+  from the inboxes with how many are unread. ✎ writes a message.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours); *Starred*; *Unsent* when
   drafts are kept; then each account under its name, its mailboxes in
@@ -57,17 +61,24 @@ the Trash: deletes it, after asking), `s` stars, `u` marks it unread,
 
 ## Accounts
 
-*Add account* offers Google, Microsoft and Other (IMAP).
+With no account, and on *Add account*, Mail shows the welcome in its
+window: three steps, ADDRESS, SIGN IN and FIRST SYNC. Type your address;
+the way to sign in is worked out from it (Gmail → Google, Outlook,
+Hotmail and Live → Microsoft, the rest → IMAP), or click another way (a
+Google Workspace or Microsoft 365 address on your own domain). The
+sign-in and the first sync show as a log; *Open the inbox* ends it. Esc
+goes back a step.
 
 **Google and Microsoft** open the provider's sign-in page in your
-browser (the link is in the dialog too, with Copy). Sign in there and
+browser (the link is on the page too, with Copy). Sign in there and
 allow Mail to read and send your mail; Mail learns your address from the
 answer and never sees your password. It keeps a refresh token in your
 keyring and signs in to IMAP and SMTP with `XOAUTH2`.
 
-**Other (IMAP)** takes your name, address, password and the two servers
-(filled in for Fastmail, iCloud, Yahoo, Proton Mail Bridge, Zoho, GMX,
-AOL, QQ and 163). Port 993 and 465 use TLS; any other port starts TLS
+**IMAP** takes your password and name; the two servers are filled in
+for Fastmail, iCloud, Yahoo, Proton Mail Bridge, Zoho, GMX, AOL, QQ and
+163, and guessed (`imap.DOMAIN:993`, `smtp.DOMAIN:465`) for the rest,
+shown to check. Port 993 and 465 use TLS; any other port starts TLS
 after connecting, and a server without TLS is refused. Mail signs in to
 both servers before it keeps the account. For Gmail, iCloud or Yahoo with
 two-step sign-in, use an app password.
@@ -94,10 +105,12 @@ sort = false                    # sort new mail with the assistant
 ### OAuth client IDs
 
 Google and Microsoft give an app a client ID when its developer
-registers it. A release of inua can carry inua's own, set when it is
-built (`-ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientID=…"`,
-also `GoogleClientSecret` and `MicrosoftClientID`). Without them, or to
-use your own, register one and put it in `mail.toml`:
+registers it. inua's own are in `internal/apps/mail/clients.go`: an
+installed app's client is public (it ships in every copy; PKCE, not a
+secret, protects the sign-in). A build can set others
+(`-ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientID=…"`,
+also `GoogleClientSecret` and `MicrosoftClientID`). To use your own,
+register one and put it in `mail.toml`:
 
 ```toml
 [oauth.google]
@@ -122,9 +135,9 @@ tenant = "common"               # or your organization's
   `IMAP.AccessAsUser.All` and `SMTP.Send` of Office 365 Exchange Online,
   `offline_access`, `openid`, `email`.
 
-Without a client ID the Google and Microsoft buttons say what is
-missing; the account can still be added as Other (IMAP) with an app
-password where the provider allows one.
+Without a client ID the welcome marks Google and Microsoft *no client
+ID*; the account can still be added as IMAP with an app password where
+the provider allows one.
 
 ## Keeping in step
 
@@ -215,7 +228,7 @@ suspicious message.
 | Where | What |
 | --- | --- |
 | `internal/apps/mail` | No GTK: accounts and `mail.toml`, secrets, OAuth and XOAUTH2, the IMAP session (sync, actions, IDLE, search), SMTP, parsing and building messages, HTML to text, conversations, search, sorting, the phishing checks, the prompts |
-| `internal/mailui`, `ui/mail.blp`, `ui/mail-compose.blp` | The window, the composer, the account dialog |
+| `internal/mailui`, `ui/mail.blp`, `ui/mail-compose.blp` | The window, the welcome, the composer |
 | `cmd/inua-mail` | The program |
 
 It uses emersion's go-imap v2, go-message, go-smtp and go-sasl (MIT).

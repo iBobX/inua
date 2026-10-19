@@ -227,6 +227,21 @@ func (p Provider) Name() string {
 	return i18n.T("IMAP")
 }
 
+// Detect says how an address signs in: Google and Microsoft for their
+// mail domains, IMAP for the rest (a company's Google Workspace or
+// Microsoft 365 domain cannot be told from its name; the user picks it).
+func Detect(address string) Provider {
+	_, domain, _ := strings.Cut(strings.ToLower(strings.TrimSpace(address)), "@")
+	switch {
+	case domain == "gmail.com" || domain == "googlemail.com":
+		return Google
+	case domain == "outlook.com" || domain == "msn.com" || domain == "passport.com" ||
+		strings.HasPrefix(domain, "hotmail.") || strings.HasPrefix(domain, "live.") || strings.HasPrefix(domain, "outlook."):
+		return Microsoft
+	}
+	return Password
+}
+
 // Guess fills in the servers of a password account from its address,
 // for the providers inua knows; false when it does not know them.
 func Guess(address string) (imapAddr, smtpAddr string, ok bool) {

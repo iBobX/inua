@@ -46,14 +46,16 @@ const (
 
 // acct is an account's session and how it is doing.
 type acct struct {
-	s      *mail.Session
-	boxes  []mail.Mailbox
-	state  string // what is wrong, in words; "" when fine
-	signIn bool   // the state is that it must sign in again
-	busy   bool   // connecting or syncing the first time
-	more   bool   // its other folders are shown
-	synced map[string]bool
-	stop   context.CancelFunc // its IDLE
+	s       *mail.Session
+	boxes   []mail.Mailbox
+	state   string    // what is wrong, in words; "" when fine
+	signIn  bool      // the state is that it must sign in again
+	busy    bool      // connecting or syncing the first time
+	syncing int       // syncs running
+	last    time.Time // the last sync that ended well
+	more    bool      // its other folders are shown
+	synced  map[string]bool
+	stop    context.CancelFunc // its IDLE
 }
 
 // window is Mail's window.
@@ -62,14 +64,16 @@ type window struct {
 	h   *hub
 	win *gtk.ApplicationWindow
 
-	side, filters, reader                gtk.Box
-	compose, addAccount, older           gtk.Button
-	startGoogle, startMicrosoft, startIM gtk.Button
-	search                               gtk.SearchEntry
-	searchNote, listEmpty, listError     gtk.Label
-	readerEmpty                          gtk.Label
-	listStack, readerStack               gtk.Stack
-	listScroll, readerScroll             gtk.ScrolledWindow
+	top                               gtk.Stack
+	side, filters, reader, welcomeBox gtk.Box
+	statusMark                        gtk.Box
+	statusState, statusCounts         gtk.Label
+	compose, addAccount, older        gtk.Button
+	search                            gtk.SearchEntry
+	searchNote, listEmpty, listError  gtk.Label
+	readerEmpty                       gtk.Label
+	listStack, readerStack            gtk.Stack
+	listScroll, readerScroll          gtk.ScrolledWindow
 
 	model *gtk.StringList
 	sel   *gtk.SingleSelection
@@ -105,7 +109,7 @@ type window struct {
 	readerBtns []uintptr // the conversation's buttons, likewise
 	filterBtns map[filter]*gtk.Button
 	question   *dialog
-	accounts   *accountDialog
+	welcome    *welcome
 	composers  []*composer
 	ai         aiState
 	sorting    bool
@@ -137,7 +141,8 @@ func openWindow(c *appui.Ctx) *window {
 	for name, ptr := range map[string]gobject.Ptr{
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "add_account": &w.addAccount, "older": &w.older,
-		"start_google": &w.startGoogle, "start_microsoft": &w.startMicrosoft, "start_other": &w.startIM,
+		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
+		"status_state": &w.statusState, "status_counts": &w.statusCounts,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
 		"reader_empty": &w.readerEmpty, "list_stack": &w.listStack, "reader_stack": &w.readerStack,
 		"list_scroll": &w.listScroll, "reader_scroll": &w.readerScroll,
@@ -158,10 +163,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.listScroll.SetChild(&w.list.Widget)
 
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
-	w.h.click(&w.addAccount, func() { w.showAccounts("", nil) })
-	w.h.click(&w.startGoogle, func() { w.showAccounts(mail.Google, nil) })
-	w.h.click(&w.startMicrosoft, func() { w.showAccounts(mail.Microsoft, nil) })
-	w.h.click(&w.startIM, func() { w.showAccounts(mail.Password, nil) })
+	w.h.click(&w.addAccount, func() { w.showWelcome("", nil) })
 	w.h.click(&w.older, w.loadOlder)
 	w.h.searched(&w.search, w.searchChanged)
 	w.h.enter(&w.search, w.searchEntered)
@@ -202,6 +204,7 @@ func (w *window) loadSettings() {
 	}
 	w.drawSide()
 	w.refresh()
+	w.h.later(1000, w.statusTick)
 }
 
 // addSession starts an account: its cache shown at once, then the server.
@@ -234,10 +237,11 @@ func (w *window) acct(id string) *acct {
 // connect lists an account's mailboxes, syncs its inbox and Sent, then
 // waits for new mail in IDLE.
 func (w *window) connect(x *acct) {
+	x.syncing++
 	go func() {
 		boxes, err := x.s.Mailboxes(w.ctx)
 		if err != nil {
-			gtkx.Post(func() { w.failed(x, err) })
+			gtkx.Post(func() { x.syncing--; w.failed(x, err) })
 			return
 		}
 		gtkx.Post(func() {
@@ -245,17 +249,19 @@ func (w *window) connect(x *acct) {
 			w.drawSide()
 		})
 		inbox := x.s.Role(mail.RoleInbox)
-		res, err := x.s.Sync(w.ctx, inbox)
+		_, err = x.s.Sync(w.ctx, inbox)
 		gtkx.Post(func() {
 			x.busy = false
+			x.syncing--
 			if err != nil {
 				w.failed(x, err)
 				return
 			}
+			x.last = time.Now()
 			x.synced[inbox] = true
 			w.counted(x, inbox)
 			w.refresh()
-			w.sortNew(x, res.New)
+			w.sortNew(x, nil) // all not sorted yet: the cache may hold some from before
 		})
 		if sent := x.s.Role(mail.RoleSent); sent != "" {
 			if _, err := x.s.Sync(w.ctx, sent); err == nil {
@@ -281,11 +287,14 @@ func (w *window) viewNow() view {
 // say so when the window is not in front.
 func (w *window) newMail(x *acct) {
 	inbox := x.s.Role(mail.RoleInbox)
+	gtkx.Post(func() { x.syncing++; w.drawStatus() })
 	res, err := x.s.Sync(w.ctx, inbox)
+	gtkx.Post(func() { x.syncing--; w.drawStatus() })
 	if err != nil {
 		return
 	}
 	gtkx.Post(func() {
+		x.last = time.Now()
 		w.counted(x, inbox)
 		w.refresh()
 		w.sortNew(x, res.New)
@@ -298,9 +307,16 @@ func (w *window) newMail(x *acct) {
 // syncBox syncs a mailbox on its account's goroutine; the list shows the
 // cache meanwhile.
 func (w *window) syncBox(x *acct, mailbox string) {
+	x.syncing++
+	w.drawStatus()
 	go func() {
 		_, err := x.s.Sync(w.ctx, mailbox)
 		gtkx.Post(func() {
+			x.syncing--
+			if err == nil {
+				x.last = time.Now()
+			}
+			w.drawStatus()
 			if err != nil {
 				w.failed(x, err)
 				return
@@ -387,10 +403,13 @@ func (w *window) drawSide() {
 	w.h.forget(w.sideBtns)
 	w.sideBtns = nil
 	gtkx.Clear(&w.side)
+	w.drawStatus()
 	if len(w.accts) == 0 {
-		w.readerStack.SetVisibleChildName("start")
 		w.listStack.SetVisibleChildName("empty")
 		w.listEmpty.SetText(i18n.T("No account yet"))
+		if w.welcome == nil {
+			w.showWelcome("", nil)
+		}
 		return
 	}
 	unread := 0
@@ -438,7 +457,7 @@ func (w *window) drawSide() {
 			if x.signIn {
 				b := gtk.NewButtonWithLabel(i18n.T("Sign in"))
 				b.AddCssClass("mail-plain")
-				w.sideBtns = append(w.sideBtns, w.h.click(b, func() { w.showAccounts(xx.s.Acc.Provider, &xx.s.Acc) }))
+				w.sideBtns = append(w.sideBtns, w.h.click(b, func() { acc := xx.s.Acc; w.showWelcome(acc.Provider, &acc) }))
 				gtkx.Append(st, &b.Widget)
 			}
 			gtkx.Append(&w.side, &st.Widget)
@@ -687,8 +706,6 @@ func (w *window) refresh() {
 	}
 	if w.open != nil {
 		w.drawReader()
-	} else if w.readerStack.GetVisibleChildName() == "start" {
-		w.readerStack.SetVisibleChildName("empty")
 	}
 	w.older.SetVisible(w.canLoadOlder())
 }
@@ -1058,6 +1075,9 @@ func (w *window) searchServer() {
 // --- keys ---
 
 func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
+	if w.welcome != nil && w.top.GetVisibleChildName() == "welcome" {
+		return w.welcome.key(keyval, state)
+	}
 	ctrl := state&gdk.ControlMaskValue != 0
 	if focus := w.win.GetFocus(); focus != nil && editing(focus) {
 		if keyval == uint32(gdk.KEY_Escape) && focus.GoPointer() == w.search.GoPointer() {
@@ -1129,4 +1149,68 @@ func (w *window) move(d int) {
 	i = max(0, min(len(w.convs)-1, i+d))
 	w.sel.SetSelected(uint32(i))
 	w.list.ScrollTo(uint32(i), gtk.ListScrollFocusValue, nil)
+}
+
+// --- the readout ---
+
+// drawStatus fills the readout at the top of the index: the sync's state
+// and the time it last ended well, then the messages kept from the
+// inboxes and the unread.
+func (w *window) drawStatus() {
+	syncing, down := 0, 0
+	var last time.Time
+	msgs, unread := 0, 0
+	for _, x := range w.accts {
+		syncing += x.syncing
+		if x.state != "" {
+			down++
+		}
+		if x.last.After(last) {
+			last = x.last
+		}
+		for _, it := range x.s.Items(x.s.Role(mail.RoleInbox)) {
+			msgs++
+			if !it.Has(mail.Seen) {
+				unread++
+			}
+		}
+	}
+	state, class := i18n.T("IDLE"), "on"
+	switch {
+	case len(w.accts) == 0:
+		state, class = i18n.T("NO ACCOUNT"), "off"
+	case syncing > 0:
+		state, class = i18n.T("SYNCING"), "busy"
+	case down == len(w.accts):
+		state, class = i18n.T("OFFLINE"), "off"
+	case down > 0:
+		state, class = i18n.Tf("%d OFFLINE", down), "warn"
+	}
+	if !last.IsZero() {
+		state += " · " + last.Format("15:04:05")
+	}
+	w.statusState.SetText(state)
+	for _, c := range []string{"on", "off", "busy", "warn"} {
+		setClass(&w.statusMark.Widget, c, c == class)
+	}
+	w.statusCounts.SetText(i18n.Tf("%s MSG · %d UNREAD", thousands(msgs), unread))
+	w.statusCounts.SetTooltipText(i18n.T("Messages kept from the inboxes, and how many are unread"))
+}
+
+// statusTick redraws the readout every few seconds.
+func (w *window) statusTick() {
+	if w.closed {
+		return
+	}
+	w.drawStatus()
+	w.h.later(5000, w.statusTick)
+}
+
+// thousands writes n with a comma every three digits.
+func thousands(n int) string {
+	s := fmt.Sprint(n)
+	for i := len(s) - 3; i > 0; i -= 3 {
+		s = s[:i] + "," + s[i:]
+	}
+	return s
 }

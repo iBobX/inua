@@ -55,7 +55,7 @@ type composer struct {
 // answers, for the assistant's drafting.
 func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	if len(w.accts) == 0 {
-		w.showAccounts("", nil)
+		w.showWelcome("", nil)
 		return nil
 	}
 	// A draft open already comes forward.

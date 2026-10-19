@@ -441,10 +441,11 @@ func (w *window) notifyNew(x *acct, inbox string, uids []uint32) {
 
 // --- sorting ---
 
-// sortNew tags the inbox's new messages: by the rules at once, by the
-// assistant (when mail.toml turns it on) for those the rules leave.
+// sortNew tags the inbox's new messages (uids; nil: every one not
+// sorted yet): by the rules at once, by the assistant (when mail.toml
+// turns it on) for those the rules leave.
 func (w *window) sortNew(x *acct, uids []uint32) {
-	if len(uids) == 0 {
+	if uids != nil && len(uids) == 0 {
 		return
 	}
 	inbox := x.s.Role(mail.RoleInbox)
@@ -453,7 +454,7 @@ func (w *window) sortNew(x *acct, uids []uint32) {
 		if it.Tag != "" || time.Since(it.Date) > 30*24*time.Hour {
 			continue
 		}
-		fresh := false
+		fresh := uids == nil
 		for _, u := range uids {
 			fresh = fresh || u == it.UID
 		}

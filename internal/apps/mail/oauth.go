@@ -19,15 +19,6 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 )
 
-// inua's own registered clients, set when a release is built
-// (-ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientID=…");
-// mail.toml's [oauth.*] overrides them.
-var (
-	GoogleClientID     string
-	GoogleClientSecret string // a desktop client's; Google does not treat it as secret
-	MicrosoftClientID  string
-)
-
 // Endpoint is a provider's OAuth pages and what inua asks it for.
 type Endpoint struct {
 	AuthURL, TokenURL string
@@ -196,6 +187,9 @@ func (s *SignIn) Wait(ctx context.Context) (Token, error) {
 		"code_verifier": {s.verifier},
 	})
 }
+
+// Redirect is the address the provider sends the browser back to.
+func (s *SignIn) Redirect() string { return s.redirect }
 
 // Close stops listening.
 func (s *SignIn) Close() {

@@ -651,6 +651,17 @@ func env(id, from, subject string, at int, refs ...string) Item {
 	return Item{Account: "a", Mailbox: "INBOX", Envelope: e}
 }
 
+func TestDetect(t *testing.T) {
+	for addr, want := range map[string]Provider{
+		"ana@gmail.com": Google, "Ana@GoogleMail.com": Google, "ana@outlook.com": Microsoft, "ana@hotmail.co.uk": Microsoft,
+		"ana@live.jp": Microsoft, "ana@fastmail.com": Password, "ana@studio.dev": Password, "nobody": Password,
+	} {
+		if got := Detect(addr); got != want {
+			t.Errorf("%s: %s, want %s", addr, got, want)
+		}
+	}
+}
+
 func TestGroup(t *testing.T) {
 	inbox := []Item{
 		env("1", "ana@x", "Plan", 1),
