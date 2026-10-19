@@ -208,8 +208,16 @@ func awaitDevice(t *testing.T, p *phone, ok func(kdeconnect.Device) bool) {
 
 func TestPairPingAndClipboard(t *testing.T) {
 	s, p, notes, _, copied := setup(t)
-	if _, ok := s.core.Store().Get(p.ID()); !ok {
-		t.Fatal("the service did not keep the phone as paired")
+	// The phone hears it is paired before the service has kept it.
+	kept := time.Now().Add(5 * time.Second)
+	for {
+		if _, ok := s.core.Store().Get(p.ID()); ok {
+			break
+		}
+		if time.Now().After(kept) {
+			t.Fatal("the service did not keep the phone as paired")
+		}
+		time.Sleep(20 * time.Millisecond)
 	}
 	// Coming, the phone is asked for its notifications.
 	p.next(t, typeNoteRequest)
