@@ -260,6 +260,10 @@ func (a *App) endZoom() {
 	}
 	if tl := a.tiles[t.anim.id]; tl != nil {
 		tl.pane.sizeHeld = false
+		// The last frame put the tile where it ends already, or a pixel
+		// off: allocated the same size again, GTK would leave its
+		// widgets be, and the grid would keep the size it was held at.
+		tl.pane.widget.QueueAllocate()
 	}
 	for _, tl := range a.tiles {
 		tl.box.SetOpacity(1)
