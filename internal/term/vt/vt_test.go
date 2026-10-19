@@ -606,3 +606,42 @@ func TestSearch(t *testing.T) {
 		t.Errorf("after the search: %v, %d rows", got, len(f.Lines))
 	}
 }
+
+func TestPrompts(t *testing.T) {
+	term := newTerm(t, 40, 6)
+	term.Answer()
+	prompt := "\x1b]133;A\a$ \x1b]133;B\a"
+	term.Write([]byte(prompt + "git rebase -i origin/ma"))
+	ps := term.Prompts()
+	if len(ps) != 2 || ps[0].Kind != PromptStart || ps[1].Kind != InputStart {
+		t.Fatalf("marks %+v", ps)
+	}
+	if got := term.Input(); got != "git rebase -i origin/ma" {
+		t.Errorf("typed %q", got)
+	}
+	// Run: the command's line is what was typed; then it ends, failing.
+	term.Write([]byte("\r\n\x1b]133;C\aoutput\r\n\x1b]133;D;3\a"))
+	ps = term.Prompts()
+	if len(ps) != 2 || ps[0].Kind != CommandStart || ps[0].Command != "git rebase -i origin/ma" ||
+		ps[1].Kind != CommandEnd || !ps[1].HasExit || ps[1].Exit != 3 {
+		t.Errorf("run %+v", ps)
+	}
+	if got := term.Input(); got != "" {
+		t.Errorf("typed while running %q", got)
+	}
+	// The shell's own command line (cmdline_url) wins; long input wraps
+	// and joins; a second line of a command stays a line.
+	term.Write([]byte(prompt + strings.Repeat("x", 50)))
+	if got := term.Input(); got != strings.Repeat("x", 50) {
+		t.Errorf("wrapped %q", got)
+	}
+	term.Write([]byte("\r\n\x1b]133;A;k=s\a> \x1b]133;B\ayz"))
+	if got := term.Input(); got != strings.Repeat("x", 50)+"\nyz" {
+		t.Errorf("two lines %q", got)
+	}
+	term.Prompts()
+	term.Write([]byte("\r\n\x1b]133;C;cmdline_url=echo%20hi\a"))
+	if ps = term.Prompts(); len(ps) != 1 || ps[0].Command != "echo hi" {
+		t.Errorf("cmdline_url %+v", ps)
+	}
+}

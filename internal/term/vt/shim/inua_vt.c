@@ -68,6 +68,7 @@ struct inua_vt {
   size_t nspans;
   span current;
   bool has_current;
+  buf prompts; /* inua_vt_prompts' records */
   bool answering;
   uint32_t cell_w, cell_h;
   bool dark; /* the background's scheme, once colours are set */
@@ -104,6 +105,7 @@ void inua_vt_free(inua_vt *t) {
   if (t == NULL) return;
   buf_free(&t->out);
   buf_free(&t->clip);
+  buf_free(&t->prompts);
   if (t->drag) ghostty_selection_gesture_event_free(t->drag);
   if (t->release) ghostty_selection_gesture_event_free(t->release);
   if (t->press) ghostty_selection_gesture_event_free(t->press);
@@ -192,6 +194,133 @@ static void clipboard_write(GhosttyTerminal term, void *userdata, const GhosttyC
   w->reply(w, &reply);
 }
 
+/* utf8 puts a code point as UTF-8; the bytes written. */
+static size_t utf8(uint32_t c, uint8_t *o) {
+  if (c < 0x80) { o[0] = (uint8_t)c; return 1; }
+  if (c < 0x800) { o[0] = 0xc0 | c >> 6; o[1] = 0x80 | (c & 0x3f); return 2; }
+  if (c < 0x10000) { o[0] = 0xe0 | c >> 12; o[1] = 0x80 | (c >> 6 & 0x3f); o[2] = 0x80 | (c & 0x3f); return 3; }
+  o[0] = 0xf0 | c >> 18; o[1] = 0x80 | (c >> 12 & 0x3f); o[2] = 0x80 | (c >> 6 & 0x3f); o[3] = 0x80 | (c & 0x3f);
+  return 4;
+}
+
+/* input_text writes the input cells after the last prompt into b; with
+ * at_prompt, only while the cursor is at it (when a command starts, the
+ * shell has moved it to the next line already). */
+static void input_text(inua_vt *t, buf *b, bool at_prompt) {
+  bool at = false;
+  if (at_prompt && (ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_CURSOR_AT_PROMPT, &at) != GHOSTTY_SUCCESS || !at)) return;
+  uint16_t cols = 0, rows = 0;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_COLS, &cols);
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_ROWS, &rows);
+  /* The last primary prompt in the active area. */
+  int start = -1;
+  for (int y = rows - 1; y >= 0 && start < 0; y--) {
+    GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+    GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value = {.coordinate = {.x = 0, .y = (uint32_t)y}}};
+    if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) continue;
+    GhosttyRow row = 0;
+    GhosttyRowSemanticPrompt sp = GHOSTTY_ROW_SEMANTIC_NONE;
+    if (ghostty_grid_ref_row(&ref, &row) == GHOSTTY_SUCCESS &&
+        ghostty_row_get(row, GHOSTTY_ROW_DATA_SEMANTIC_PROMPT, &sp) == GHOSTTY_SUCCESS && sp == GHOSTTY_ROW_SEMANTIC_PROMPT)
+      start = y;
+  }
+  if (start < 0) return;
+  size_t line_start = b->len;
+  bool any = false;
+  for (int y = start; y < rows; y++) {
+    bool wrapped = false;
+    for (uint16_t x = 0; x < cols; x++) {
+      GhosttyGridRef ref = GHOSTTY_INIT_SIZED(GhosttyGridRef);
+      GhosttyPoint pt = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value = {.coordinate = {.x = x, .y = (uint32_t)y}}};
+      if (ghostty_terminal_grid_ref(t->term, pt, &ref) != GHOSTTY_SUCCESS) continue;
+      if (x == 0) {
+        GhosttyRow row = 0;
+        if (ghostty_grid_ref_row(&ref, &row) == GHOSTTY_SUCCESS) ghostty_row_get(row, GHOSTTY_ROW_DATA_WRAP, &wrapped);
+      }
+      GhosttyCell cell = 0;
+      if (ghostty_grid_ref_cell(&ref, &cell) != GHOSTTY_SUCCESS) continue;
+      GhosttyCellSemanticContent sc = GHOSTTY_CELL_SEMANTIC_OUTPUT;
+      ghostty_cell_get(cell, GHOSTTY_CELL_DATA_SEMANTIC_CONTENT, &sc);
+      GhosttyCellWide wide = GHOSTTY_CELL_WIDE_NARROW;
+      ghostty_cell_get(cell, GHOSTTY_CELL_DATA_WIDE, &wide);
+      if (sc != GHOSTTY_CELL_SEMANTIC_INPUT || wide == GHOSTTY_CELL_WIDE_SPACER_TAIL) continue;
+      uint32_t cps[16];
+      size_t n = 0;
+      if (ghostty_grid_ref_graphemes(&ref, cps, 16, &n) != GHOSTTY_SUCCESS || n == 0) {
+        cps[0] = ' ';
+        n = 1;
+      }
+      for (size_t i = 0; i < n; i++) {
+        uint8_t o[4];
+        buf_put(b, o, utf8(cps[i], o));
+      }
+      any = true;
+    }
+    if (!wrapped) {
+      /* A line of the command: its trailing blanks go. */
+      while (b->len > line_start && b->p[b->len - 1] == ' ') b->len--;
+      if (y < rows - 1) buf_put(b, (const uint8_t *)"\n", 1);
+      line_start = b->len;
+    }
+  }
+  while (b->len > 0 && (b->p[b->len - 1] == '\n' || b->p[b->len - 1] == ' ')) b->len--;
+  if (!any) b->len = 0;
+}
+
+int inua_vt_input(inua_vt *t, uint8_t **out, size_t *len) {
+  *out = NULL;
+  *len = 0;
+  buf b = {0};
+  input_text(t, &b, true);
+  if (b.failed) {
+    buf_free(&b);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  if (b.len == 0) {
+    buf_free(&b);
+    return GHOSTTY_SUCCESS;
+  }
+  uint8_t *p = ghostty_alloc(NULL, b.len);
+  if (p == NULL) {
+    buf_free(&b);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  memcpy(p, b.p, b.len);
+  *out = p;
+  *len = b.len;
+  buf_free(&b);
+  return GHOSTTY_SUCCESS;
+}
+
+/* Keeps a prompt mark; a command's start takes what was typed when the
+ * shell sent no command line. */
+static void semantic_prompt(GhosttyTerminal term, void *userdata, const GhosttyTerminalSemanticPrompt *e) {
+  (void)term;
+  inua_vt *t = userdata;
+  uint8_t head[8];
+  int32_t code = e->has_exit_code ? e->exit_code : 0;
+  head[0] = (uint8_t)e->kind;
+  head[1] = e->has_exit_code;
+  memcpy(head + 2, &code, 4);
+  buf cmd = {0};
+  if (e->kind == GHOSTTY_SEMANTIC_PROMPT_OUTPUT_START) {
+    if (e->command.len > 0) buf_put(&cmd, e->command.ptr, e->command.len);
+    else input_text(t, &cmd, false);
+  }
+  uint16_t n = cmd.failed ? 0 : (uint16_t)(cmd.len > 65535 ? 65535 : cmd.len);
+  memcpy(head + 6, &n, 2);
+  buf_put(&t->prompts, head, 8);
+  if (n) buf_put(&t->prompts, cmd.p, n);
+  buf_free(&cmd);
+}
+
+void inua_vt_prompts(inua_vt *t, const uint8_t **ptr, size_t *len) {
+  *ptr = t->prompts.p;
+  *len = t->prompts.failed ? 0 : t->prompts.len;
+  t->prompts.len = 0;
+  t->prompts.failed = false;
+}
+
 int inua_vt_clipboard(inua_vt *t, const uint8_t **ptr, size_t *len) {
   int at = t->clip_at;
   *ptr = t->clip.p;
@@ -247,6 +376,7 @@ void inua_vt_answer(inua_vt *t) {
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SIZE, (const void *)answer_size);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_SCHEME, (const void *)answer_scheme);
   ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_CLIPBOARD_WRITE, (const void *)clipboard_write);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_SEMANTIC_PROMPT, (const void *)semantic_prompt);
 }
 
 void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len) {

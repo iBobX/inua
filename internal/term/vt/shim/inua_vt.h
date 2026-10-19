@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 11
+#define INUA_VT_ABI 12
 
 typedef struct inua_vt inua_vt;
 
@@ -33,6 +33,19 @@ void inua_vt_answer(inua_vt *t);
 /* The answers gathered since the last call; borrowed until the next
  * inua_vt_write. */
 void inua_vt_answers(inua_vt *t, const uint8_t **ptr, size_t *len);
+
+/* The shell's prompt marks (OSC 133) since the last call, for a terminal
+ * that answers, borrowed until the next inua_vt_write, as records:
+ *   u8 kind (1 prompt start, 2 input start, 3 command start, 4 command
+ *   end), u8 has_exit, i32 exit, u16 len, len bytes: the command line,
+ *   for a command start: the one the shell sent, else what was typed. */
+void inua_vt_prompts(inua_vt *t, const uint8_t **ptr, size_t *len);
+
+/* What is typed at the shell's prompt and not yet run: the cells marked
+ * input after the last prompt, wrapped lines joined, a line each for a
+ * command over several. *len 0 when the cursor is not at a prompt; *out
+ * freed with inua_vt_free_bytes. */
+int inua_vt_input(inua_vt *t, uint8_t **out, size_t *len);
 
 /* The text the program last put on a clipboard (OSC 52, OSC 1337, OSC
  * 5522) since the last call, for a terminal that answers: returns 0 for

@@ -22,7 +22,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 11
+const abi = 12
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -51,6 +51,8 @@ var lib struct {
 	colors      func(t uintptr, fg, bg, cursor uint32)
 	cellSize    func(t uintptr, w, h uint32)
 	clipboard   func(t uintptr, p **byte, n *uintptr) int32
+	prompts     func(t uintptr, p **byte, n *uintptr)
+	input       func(t uintptr, out **byte, n *uintptr) int32
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -121,6 +123,8 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.colors, h, "inua_vt_colors")
 		purego.RegisterLibFunc(&lib.cellSize, h, "inua_vt_cell_size")
 		purego.RegisterLibFunc(&lib.clipboard, h, "inua_vt_clipboard")
+		purego.RegisterLibFunc(&lib.prompts, h, "inua_vt_prompts")
+		purego.RegisterLibFunc(&lib.input, h, "inua_vt_input")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -239,6 +243,64 @@ func (t *Terminal) Clipboard() (text string, primary, ok bool) {
 		text = string(unsafe.Slice(p, n))
 	}
 	return text, at == 2, true
+}
+
+// PromptKind is a step of a command the shell reports (OSC 133).
+type PromptKind int
+
+const (
+	PromptStart  PromptKind = 1 // the shell draws its prompt
+	InputStart   PromptKind = 2 // the user can type
+	CommandStart PromptKind = 3 // a command runs
+	CommandEnd   PromptKind = 4 // and ended
+)
+
+// Prompt is a prompt mark: for a CommandStart its command line, for a
+// CommandEnd its exit code when the shell sent one.
+type Prompt struct {
+	Kind    PromptKind
+	Command string
+	Exit    int
+	HasExit bool
+}
+
+// Prompts are the shell's prompt marks in what was written since the
+// last call, for a terminal that answers.
+func (t *Terminal) Prompts() []Prompt {
+	var p *byte
+	var n uintptr
+	lib.prompts(t.h, &p, &n)
+	if p == nil || n == 0 {
+		return nil
+	}
+	b := unsafe.Slice(p, n)
+	var out []Prompt
+	for len(b) >= 8 {
+		l := int(binary.LittleEndian.Uint16(b[6:]))
+		if len(b) < 8+l {
+			break
+		}
+		out = append(out, Prompt{
+			Kind: PromptKind(b[0]), HasExit: b[1] != 0,
+			Exit:    int(int32(binary.LittleEndian.Uint32(b[2:]))),
+			Command: string(b[8 : 8+l]),
+		})
+		b = b[8+l:]
+	}
+	return out
+}
+
+// Input is what is typed at the shell's prompt and not yet run, "" when
+// the cursor is not at a prompt (OSC 133 marks it).
+func (t *Terminal) Input() string {
+	var p *byte
+	var n uintptr
+	if lib.input(t.h, &p, &n) != 0 || p == nil {
+		return ""
+	}
+	s := string(unsafe.Slice(p, n))
+	lib.freeBytes(p, n)
+	return s
 }
 
 // SetColors sets the default colours (0xRRGGBB) programs are told when
