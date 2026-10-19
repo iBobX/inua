@@ -8,6 +8,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/layout"
@@ -142,6 +143,9 @@ func (a *App) dividerAt(x, y float64) *layout.Divider {
 // allocateTiles places each tile where the tree puts it: the zoomed one
 // over all of them.
 func (a *App) allocateTiles(w, h int) {
+	if a.wantFolds() != a.folds() {
+		gtkx.Post(a.applyFolds) // not during the layout
+	}
 	t := &a.tiling
 	r := layout.Rect{X: gap, Y: gap, W: max(float64(w)-2*gap, 1), H: max(float64(h)-2*gap, 1)}
 	rects := layout.Rects(t.tree, r, gap)

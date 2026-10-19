@@ -148,6 +148,18 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 		h.mu.Lock()
 		err = h.m.Move(m.Workspace, m.To)
 		h.mu.Unlock()
+	case MsgUI:
+		if m.UI == nil {
+			err = errors.New("no ui")
+			break
+		}
+		h.mu.Lock()
+		h.m.UI = *m.UI
+		h.mu.Unlock()
+		// Kept, but nothing to show: no state goes out for it.
+		c.message(reply)
+		h.changed()
+		return true
 	default:
 		return false
 	}

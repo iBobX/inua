@@ -21,6 +21,16 @@ type Model struct {
 	Shown Shown `json:"shown"`
 	// Next is the next workspace or session ID.
 	Next int `json:"next"`
+	// UI is the window's: its size and the columns the user folded.
+	UI UI `json:"ui"`
+}
+
+// UI is how the window was left.
+type UI struct {
+	Width  int  `json:"width,omitempty"`
+	Height int  `json:"height,omitempty"`
+	Fold1  bool `json:"fold1,omitempty"` // column 1, the workspaces
+	Fold2  bool `json:"fold2,omitempty"` // column 2, the sessions
 }
 
 // Shown is a workspace and its session on screen; 0 for none.

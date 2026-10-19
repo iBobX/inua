@@ -67,9 +67,9 @@ func (a *App) chord(base, keyval uint32, state gdk.ModifierType) bool {
 	case k == ']':
 		a.stepSession(1)
 	case k == 'b':
-		a.cols.col1.SetVisible(!a.cols.col1.GetVisible())
+		a.toggleColumn(0)
 	case k == 's':
-		a.cols.col2.SetVisible(!a.cols.col2.GetVisible())
+		a.toggleColumn(1)
 	case k == 'r':
 		a.renameSession()
 	default:

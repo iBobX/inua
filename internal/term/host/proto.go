@@ -57,17 +57,18 @@ type Message struct {
 	Primary   bool    `json:"primary,omitempty"`
 
 	// Workspaces and sessions: what a request is about, and their names.
-	Workspace int     `json:"workspace,omitempty"`
-	Session   int     `json:"session,omitempty"`
-	Name      string  `json:"name,omitempty"`
-	Split     string  `json:"split,omitempty"`     // split: "right" or "down"
-	Op        string  `json:"op,omitempty"`        // layout: what to do
-	Direction int     `json:"direction,omitempty"` // layout: a layout.Dir
-	Step      float64 `json:"step,omitempty"`      // layout "resize"
-	Path      string  `json:"path,omitempty"`      // layout "ratio": the split
-	Ratio     float64 `json:"ratio,omitempty"`     // layout "ratio"
-	To        int     `json:"to,omitempty"`        // move: the new place
-	State     *State  `json:"state,omitempty"`     // reply to state; event "state"
+	Workspace int       `json:"workspace,omitempty"`
+	Session   int       `json:"session,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Split     string    `json:"split,omitempty"`     // split: "right" or "down"
+	Op        string    `json:"op,omitempty"`        // layout: what to do
+	Direction int       `json:"direction,omitempty"` // layout: a layout.Dir
+	Step      float64   `json:"step,omitempty"`      // layout "resize"
+	Path      string    `json:"path,omitempty"`      // layout "ratio": the split
+	Ratio     float64   `json:"ratio,omitempty"`     // layout "ratio"
+	To        int       `json:"to,omitempty"`        // move: the new place
+	State     *State    `json:"state,omitempty"`     // reply to state; event "state"
+	UI        *model.UI `json:"ui,omitempty"`        // ui
 
 	Panes  []PaneInfo `json:"panes,omitempty"`  // reply to list
 	Colors *Colors    `json:"colors,omitempty"` // colors
@@ -139,6 +140,7 @@ const (
 	MsgCloseSession = "close_session" // client: end Session's panes and forget it
 	MsgRemove       = "remove"        // client: forget Workspace, ending its panes
 	MsgMove         = "move"          // client: Workspace to place To
+	MsgUI           = "ui"            // client: UI, how the window is
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.

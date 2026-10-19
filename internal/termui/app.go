@@ -45,6 +45,11 @@ type App struct {
 	sheet  *gtk.Box // the rename sheet, while it asks
 	// swapping is set after Ctrl+Shift+X, until the arrow.
 	swapping bool
+	// fold is the columns the user folded; peek those shown anyway while
+	// the window is too narrow for them; uiDone is set once the kept
+	// size and folds were applied.
+	fold, peek [2]bool
+	uiDone     bool
 
 	onClose                    func(gtk.Window) bool
 	onFolder                   gio.AsyncReadyCallback
@@ -213,6 +218,15 @@ func (a *App) paneEvent(m host.Message) {
 // apply shows a State: the columns, and the shown session's tiles.
 func (a *App) apply(st *host.State) {
 	a.state = st
+	if !a.uiDone {
+		a.uiDone = true
+		ui := st.Model.UI
+		if ui.Width > 0 && ui.Height > 0 {
+			a.win.SetDefaultSize(int32(ui.Width), int32(ui.Height))
+		}
+		a.fold = [2]bool{ui.Fold1, ui.Fold2}
+		a.applyFolds()
+	}
 	a.info = map[int]host.PaneInfo{}
 	for _, p := range st.Panes {
 		a.info[p.ID] = p
@@ -251,8 +265,15 @@ func (a *App) fail(err error) {
 	a.stage.SetChild(&label.Widget)
 }
 
-// closeWindow leaves the panes running on the host.
+// closeWindow leaves the panes running on the host, and has it keep how
+// the window is.
 func (a *App) closeWindow() {
+	if a.client != nil && a.uiDone {
+		a.client.SetUI(model.UI{
+			Width: int(a.win.GetWidth()), Height: int(a.win.GetHeight()),
+			Fold1: a.fold[0], Fold2: a.fold[1],
+		})
+	}
 	for id := range a.tiles {
 		a.dropTile(id)
 	}

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net"
 	"sync"
+
+	"github.com/lyricat/inua/internal/term/model"
 )
 
 // Client is a connection to the host. Output and events arrive on the
@@ -247,6 +249,12 @@ func (c *Client) CloseSession(session int) error {
 // RemoveWorkspace forgets a workspace, ending its panes.
 func (c *Client) RemoveWorkspace(workspace int) error {
 	_, err := c.call(Message{Type: MsgRemove, Workspace: workspace})
+	return err
+}
+
+// SetUI tells the host how the window is, to be kept.
+func (c *Client) SetUI(ui model.UI) error {
+	_, err := c.call(Message{Type: MsgUI, UI: &ui})
 	return err
 }
 
