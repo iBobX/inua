@@ -85,6 +85,8 @@ type Colors struct {
 	FG     uint32 `json:"fg"`
 	BG     uint32 `json:"bg"`
 	Cursor uint32 `json:"cursor"`
+	// Palette is the 16 colours (OSC 4), when the window has them.
+	Palette *[16]uint32 `json:"palette,omitempty"`
 }
 
 // State is everything the columns show: the workspaces, their sessions

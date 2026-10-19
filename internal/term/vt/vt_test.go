@@ -728,3 +728,20 @@ func TestLinks(t *testing.T) {
 		}
 	}
 }
+
+func TestPalette(t *testing.T) {
+	term := newTerm(t, 20, 2)
+	var p [16]uint32
+	for i := range p {
+		p[i] = uint32(i) * 0x111111
+	}
+	term.SetPalette(p)
+	term.Write([]byte("\x1b[31mred\x1b[0m \x1b[91mbright\x1b[0m"))
+	f, _ := term.Frame(true)
+	if r := f.Lines[0].Runs[0]; r.FG != 0x111111 {
+		t.Errorf("red is %06x", r.FG)
+	}
+	if r := f.Lines[0].Runs[2]; r.FG != 9*0x111111 {
+		t.Errorf("bright red is %06x (%+v)", r.FG, f.Lines[0].Runs)
+	}
+}

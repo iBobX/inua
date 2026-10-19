@@ -624,6 +624,13 @@ void inua_vt_colors(inua_vt *t, uint32_t fg, uint32_t bg, uint32_t cursor) {
   t->colored = true;
 }
 
+void inua_vt_palette(inua_vt *t, const uint32_t *colors16) {
+  GhosttyColorRgb pal[256];
+  if (ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_COLOR_PALETTE_DEFAULT, pal) != GHOSTTY_SUCCESS) return;
+  for (int i = 0; i < 16; i++) pal[i] = color(colors16[i]);
+  ghostty_terminal_set(t->term, GHOSTTY_TERMINAL_OPT_COLOR_PALETTE, pal);
+}
+
 void inua_vt_cell_size(inua_vt *t, uint32_t width, uint32_t height) {
   t->cell_w = width;
   t->cell_h = height;

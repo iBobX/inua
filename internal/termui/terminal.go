@@ -137,6 +137,7 @@ func newTermPane(be backend, cols, rows int, colors map[string]string, look pane
 		return nil, err
 	}
 	p.term.SetDefaults(look.Scrollback, look.Cursor, look.Blink)
+	p.term.SetPalette(themePalette(colors))
 	p.widget = newPaneWidget(p)
 	p.widget.SetCursorFromName("text")
 	p.widget.SetFocusable(true)
@@ -641,7 +642,8 @@ func (p *termPane) busy() bool { return p.sheet != nil || p.find != nil }
 func (p *termPane) setTheme(colors map[string]string) {
 	p.fg, p.bg, p.cursor = rgba(colors["t0"]), rgba(colors["app"]), rgba(colors["accent"])
 	p.warn = rgba(colors["warn"])
-	p.widget.QueueDraw()
+	p.term.SetPalette(themePalette(colors))
+	p.update(true)
 }
 
 func (p *termPane) close() {

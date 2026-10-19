@@ -324,7 +324,8 @@ func (a *App) colors() host.Colors {
 		b := func(f float32) uint32 { return uint32(f*255+0.5) & 0xff }
 		return b(c.Red)<<16 | b(c.Green)<<8 | b(c.Blue)
 	}
-	return host.Colors{FG: v("t0"), BG: v("app"), Cursor: v("accent")}
+	pal := themePalette(a.c.Colors)
+	return host.Colors{FG: v("t0"), BG: v("app"), Cursor: v("accent"), Palette: &pal}
 }
 
 // paneBackend is a pane on the host.

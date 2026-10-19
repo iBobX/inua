@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 16
+#define INUA_VT_ABI 17
 
 typedef struct inua_vt inua_vt;
 
@@ -67,6 +67,10 @@ int inua_vt_clipboard(inua_vt *t, const uint8_t **ptr, size_t *len);
 /* The default colours, 0x00RRGGBB, reported to programs that ask (OSC
  * 10, 11, 12; the colour scheme from the background). */
 void inua_vt_colors(inua_vt *t, uint32_t fg, uint32_t bg, uint32_t cursor);
+
+/* The 16 colours of the palette (0x00RRGGBB), the rest as xterm has
+ * them; what programs draw with and are told (OSC 4). */
+void inua_vt_palette(inua_vt *t, const uint32_t *colors16);
 
 /* A cell's size in pixels, for size reports; 0 when not known. */
 void inua_vt_cell_size(inua_vt *t, uint32_t width, uint32_t height);

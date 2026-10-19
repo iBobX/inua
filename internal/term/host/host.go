@@ -445,6 +445,9 @@ func (h *Host) start(argv []string, dir string, env []string, cols, rows, cellW,
 		t.SetCellSize(cellW, cellH)
 		if colors != nil {
 			t.SetColors(colors.FG, colors.BG, colors.Cursor)
+			if colors.Palette != nil {
+				t.SetPalette(*colors.Palette)
+			}
 		}
 	} else {
 		log.Printf("host: pane state off: %v", err)
@@ -482,6 +485,9 @@ func (h *Host) setColors(c Colors) {
 		p.mu.Lock()
 		if p.term != nil {
 			p.term.SetColors(c.FG, c.BG, c.Cursor)
+			if c.Palette != nil {
+				p.term.SetPalette(*c.Palette)
+			}
 		}
 		p.mu.Unlock()
 	}

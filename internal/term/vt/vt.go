@@ -23,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 16
+const abi = 17
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -58,6 +58,7 @@ var lib struct {
 	notes       func(t uintptr, p **byte, n *uintptr)
 	defaults    func(t uintptr, scrollback, cursor, blink uint32)
 	linkAt      func(t uintptr, x, y uint16, out **byte, n *uintptr, x0, x1 *uint16) int32
+	palette     func(t uintptr, colors *uint32)
 	scroll      func(t uintptr, kind uint32, n int32)
 	search      func(t uintptr, needle *byte, n uintptr) int32
 	searchMove  func(t uintptr, dir int32) int32
@@ -134,6 +135,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.notes, h, "inua_vt_notifications")
 		purego.RegisterLibFunc(&lib.defaults, h, "inua_vt_defaults")
 		purego.RegisterLibFunc(&lib.linkAt, h, "inua_vt_link_at")
+		purego.RegisterLibFunc(&lib.palette, h, "inua_vt_palette")
 		purego.RegisterLibFunc(&lib.scroll, h, "inua_vt_scroll")
 		purego.RegisterLibFunc(&lib.mouse, h, "inua_vt_mouse")
 		purego.RegisterLibFunc(&lib.search, h, "inua_vt_search")
@@ -393,6 +395,13 @@ func (t *Terminal) Tail(n int) []string {
 // SetColors sets the default colours (0xRRGGBB) programs are told when
 // they ask, and the scheme (dark or light) the background makes.
 func (t *Terminal) SetColors(fg, bg, cursor uint32) { lib.colors(t.h, fg, bg, cursor) }
+
+// SetPalette sets the palette's 16 colours (0xRRGGBB); the 240 others
+// stay xterm's.
+func (t *Terminal) SetPalette(colors [16]uint32) {
+	lib.palette(t.h, &colors[0])
+	runtime.KeepAlive(&colors)
+}
 
 // SetCellSize sets a cell's size in pixels, for size reports.
 func (t *Terminal) SetCellSize(w, h int) { lib.cellSize(t.h, uint32(w), uint32(h)) }
