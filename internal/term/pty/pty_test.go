@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"os/exec"
 	"os/signal"
+	"strconv"
 	"strings"
-	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -104,18 +105,41 @@ func TestForegroundAndEcho(t *testing.T) {
 }
 
 // Ctrl+C stops the program even when this process started with SIGINT
-// ignored, as a background job of a non-interactive shell does.
+// ignored, as a background job of a non-interactive shell does. The
+// helper below is this test binary run again from such a shell: Go's own
+// signal.Ignore would not do, since Go ignores again in every child what
+// it ignored itself.
 func TestInterruptWhenIgnored(t *testing.T) {
-	signal.Ignore(syscall.SIGINT)
-	defer signal.Reset(syscall.SIGINT)
-	defaultOnce = sync.Once{}
-	p, err := Start([]string{"sh", "-c", "echo ready; sleep 30; echo not interrupted"}, "", nil, 80, 24)
+	cmd := exec.Command("sh", "-c", `trap '' INT; exec "$0" -test.run=TestInterruptHelper -test.count=1`, os.Args[0])
+	cmd.Env = append(os.Environ(), "INUA_PTY_HELPER=1")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Errorf("Ctrl+C did not stop the program: %v\n%s", err, out)
+	}
+}
+
+func TestInterruptHelper(t *testing.T) {
+	if os.Getenv("INUA_PTY_HELPER") == "" {
+		t.Skip("run by TestInterruptWhenIgnored")
+	}
+	if !signal.Ignored(syscall.SIGINT) {
+		t.Fatal("the helper was not started with SIGINT ignored")
+	}
+	p, err := Start([]string{"sh", "-c", "exec sleep 30"}, "", nil, 80, 24)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer p.Close()
-	buf := make([]byte, 64)
-	p.Read(buf)
+	// Ctrl+C once sleep runs: before, the shell would take it itself.
+	comm := "/proc/" + strconv.Itoa(p.Pid()) + "/comm"
+	for deadline := time.Now().Add(5 * time.Second); ; time.Sleep(10 * time.Millisecond) {
+		if b, _ := os.ReadFile(comm); strings.TrimSpace(string(b)) == "sleep" {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("sleep did not start")
+		}
+	}
 	p.Write([]byte{0x03}) // Ctrl+C
 	done := make(chan int)
 	go func() { code, _ := p.Wait(); done <- code }()
