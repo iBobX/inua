@@ -2855,7 +2855,20 @@ window.disk .disk-command {
   color: @t0;
 }
 window.disk .disk-explain { padding-top: 6px; color: @t0; }
-window.disk .disk-confirm { padding: 12px; border: 1px solid alpha(@danger, 0.5); border-radius: 3px; }
+window.disk .disk-command-head { padding-top: 4px; }
+window.disk .disk-output {
+  padding: 6px 8px;
+  border-left: 2px solid @line;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t1;
+}
+window.disk .disk-done { color: @ok; }
+/* The question before deleting or running: the settings dialog's look, as
+   GPG's and Pass's. */
+window.disk-dialog { background: @app; }
+window.disk-dialog .page { padding: 22px 24px 20px; }
+window.disk-dialog .disk-dialog-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 18px; color: @t0; }
 window.disk button.destructive-action {
   min-height: 34px;
   padding: 0 14px;

@@ -550,6 +550,17 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                   </object>
                                 </child>
                                 <child>
+                                  <object class="GtkLabel" id="sel_done">
+                                    <style>
+                                      <class name="sub"/>
+                                      <class name="disk-done"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="visible">false</property>
+                                  </object>
+                                </child>
+                                <child>
                                   <object class="GtkLabel" id="sel_item_error">
                                     <style>
                                       <class name="sub"/>
@@ -648,12 +659,13 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                 <child>
                                   <object class="GtkBox" id="sel_clean_box">
                                     <property name="orientation">1</property>
-                                    <property name="spacing">2</property>
+                                    <property name="spacing">6</property>
                                     <property name="visible">false</property>
                                     <child>
                                       <object class="GtkLabel">
                                         <style>
                                           <class name="sub"/>
+                                          <class name="disk-command-head"/>
                                         </style>
                                         <property name="label" translatable="yes">The proper way to clean it:</property>
                                         <property name="xalign">0</property>
@@ -669,6 +681,77 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <property name="wrap">true</property>
                                         <property name="wrap-mode">1</property>
                                         <property name="selectable">true</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="disk-actions"/>
+                                        </style>
+                                        <property name="spacing">6</property>
+                                        <child>
+                                          <object class="GtkButton" id="sel_copy">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">sel_copy</property>
+                                            <property name="label" translatable="yes">Copy</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="sel_run">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">sel_run</property>
+                                            <property name="label" translatable="yes">Run</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="sel_run_note">
+                                        <style>
+                                          <class name="sub"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="sel_run_out">
+                                        <style>
+                                          <class name="readout"/>
+                                          <class name="disk-output"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="wrap-mode">1</property>
+                                        <property name="selectable">true</property>
+                                        <property name="visible">false</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="sel_run_done">
+                                        <style>
+                                          <class name="sub"/>
+                                          <class name="disk-done"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="visible">false</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="sel_run_error">
+                                        <style>
+                                          <class name="sub"/>
+                                          <class name="disk-error"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="visible">false</property>
                                       </object>
                                     </child>
                                   </object>
@@ -775,48 +858,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         </style>
                                         <property name="name">sel_delete</property>
                                         <property name="label" translatable="yes">Delete…</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="sel_confirm">
-                                    <style>
-                                      <class name="disk-confirm"/>
-                                    </style>
-                                    <property name="orientation">1</property>
-                                    <property name="spacing">8</property>
-                                    <property name="visible">false</property>
-                                    <child>
-                                      <object class="GtkLabel" id="sel_confirm_text">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="spacing">6</property>
-                                        <child>
-                                          <object class="GtkButton" id="sel_confirm_yes">
-                                            <style>
-                                              <class name="destructive-action"/>
-                                            </style>
-                                            <property name="name">sel_confirm_yes</property>
-                                            <property name="label" translatable="yes">Delete</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="sel_confirm_no">
-                                            <style>
-                                              <class name="outlined"/>
-                                            </style>
-                                            <property name="name">sel_confirm_no</property>
-                                            <property name="label" translatable="yes">Cancel</property>
-                                          </object>
-                                        </child>
                                       </object>
                                     </child>
                                   </object>

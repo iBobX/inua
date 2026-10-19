@@ -40,28 +40,28 @@ type window struct {
 	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
-	sidePlaces, sideKinds                       gtk.Box
-	sideChoose                                  gtk.Button
-	pages                                       gtk.Stack
-	placeLabel, placeMeta, placeEmpty           gtk.Label
-	placeError, progressText, progressAt        gtk.Label
-	placeScan, placeStop                        gtk.Button
-	placeProgress, placeMap, crumbs             gtk.Box
-	mapList, legend, mapMiddle                  gtk.Box
-	mapPicture                                  gtk.Picture
-	mapName, mapSize                            gtk.Label
-	kindLabel, kindMeta, kindDesc, kindEmpty    gtk.Label
-	kindRows                                    gtk.Box
-	detailsEmpty                                gtk.Label
-	details, selSteps, selCleanBox, selAskBox   gtk.Box
-	selConfirm                                  gtk.Box
-	selTag, selName, selPath, selMeta           gtk.Label
-	selVerdict, selClean, selAI, selAskError    gtk.Label
-	selExplainText, selExplainError             gtk.Label
-	selConfirmText, selDeleteNote, selDeleteErr gtk.Label
-	selItemError                                gtk.Label
-	selMap, selOpen, selAsk, selExplain         gtk.Button
-	selTrash, selDelete, selYes, selNo          gtk.Button
+	sidePlaces, sideKinds                     gtk.Box
+	sideChoose                                gtk.Button
+	pages                                     gtk.Stack
+	placeLabel, placeMeta, placeEmpty         gtk.Label
+	placeError, progressText, progressAt      gtk.Label
+	placeScan, placeStop                      gtk.Button
+	placeProgress, placeMap, crumbs           gtk.Box
+	mapList, legend, mapMiddle                gtk.Box
+	mapPicture                                gtk.Picture
+	mapName, mapSize                          gtk.Label
+	kindLabel, kindMeta, kindDesc, kindEmpty  gtk.Label
+	kindRows                                  gtk.Box
+	detailsEmpty                              gtk.Label
+	details, selSteps, selCleanBox, selAskBox gtk.Box
+	selTag, selName, selPath, selMeta         gtk.Label
+	selVerdict, selClean, selAI, selAskError  gtk.Label
+	selExplainText, selExplainError           gtk.Label
+	selDeleteNote, selDeleteErr, selItemError gtk.Label
+	selRunNote, selRunOut, selRunDone         gtk.Label
+	selRunError, selDone                      gtk.Label
+	selMap, selOpen, selAsk, selExplain       gtk.Button
+	selTrash, selDelete, selCopy, selRun      gtk.Button
 
 	home   string
 	places []disk.Place
@@ -78,6 +78,14 @@ type window struct {
 	failed   map[*disk.Node]string // why explaining failed
 	asking   map[*disk.Node]bool   // a decision asked, not answered yet
 	telling  *disk.Node            // the item being explained
+	running  *disk.Node            // the item whose clean command runs
+	runs     map[*disk.Node]runResult
+	question *dialog // the question asked, while it is open
+	done     struct {
+		n    *disk.Node
+		text string
+	} // what was just done, said on the item it was done to or in
+	onCopied glib.SourceFunc
 	ai       aiState
 
 	arcs  []disk.Arc
@@ -119,7 +127,7 @@ func openWindow(c *appui.Ctx) *window {
 	w := &window{
 		c: c, win: &gtk.ApplicationWindow{}, scans: map[string]*scanState{}, page: "place",
 		routes: map[*disk.Node]*disk.Route{}, asked: map[*disk.Node]disk.Verdict{}, explains: map[*disk.Node]string{}, reasons: map[*disk.Node]string{},
-		failed: map[*disk.Node]string{}, asking: map[*disk.Node]bool{},
+		failed: map[*disk.Node]string{}, asking: map[*disk.Node]bool{}, runs: map[*disk.Node]runResult{},
 		sideRows: map[uintptr]string{}, kindBtns: map[uintptr]disk.Kind{}, nodeRows: map[uintptr]*disk.Node{},
 		sideBtns: map[string]*gtk.Button{}, rowHover: map[uintptr]*disk.Node{},
 	}
@@ -135,14 +143,15 @@ func openWindow(c *appui.Ctx) *window {
 		"map_middle": &w.mapMiddle, "map": &w.mapPicture, "map_name": &w.mapName, "map_size": &w.mapSize,
 		"kind_label": &w.kindLabel, "kind_meta": &w.kindMeta, "kind_desc": &w.kindDesc, "kind_empty": &w.kindEmpty,
 		"kind_rows": &w.kindRows, "details_empty": &w.detailsEmpty, "details": &w.details, "sel_steps": &w.selSteps,
-		"sel_clean_box": &w.selCleanBox, "sel_ask_box": &w.selAskBox, "sel_confirm": &w.selConfirm,
+		"sel_clean_box": &w.selCleanBox, "sel_ask_box": &w.selAskBox,
 		"sel_tag": &w.selTag, "sel_name": &w.selName, "sel_path": &w.selPath, "sel_meta": &w.selMeta,
 		"sel_verdict": &w.selVerdict, "sel_clean": &w.selClean, "sel_ai": &w.selAI, "sel_ask_error": &w.selAskError,
 		"sel_explain_text": &w.selExplainText, "sel_explain_error": &w.selExplainError,
-		"sel_confirm_text": &w.selConfirmText, "sel_delete_note": &w.selDeleteNote, "sel_delete_error": &w.selDeleteErr,
+		"sel_delete_note": &w.selDeleteNote, "sel_delete_error": &w.selDeleteErr,
+		"sel_copy": &w.selCopy, "sel_run": &w.selRun, "sel_run_note": &w.selRunNote, "sel_run_out": &w.selRunOut,
+		"sel_run_done": &w.selRunDone, "sel_run_error": &w.selRunError, "sel_done": &w.selDone,
 		"sel_item_error": &w.selItemError, "sel_map": &w.selMap, "sel_open": &w.selOpen, "sel_ask": &w.selAsk,
 		"sel_explain": &w.selExplain, "sel_trash": &w.selTrash, "sel_delete": &w.selDelete,
-		"sel_confirm_yes": &w.selYes, "sel_confirm_no": &w.selNo,
 	} {
 		b.Get(name, ptr)
 	}
@@ -150,7 +159,7 @@ func openWindow(c *appui.Ctx) *window {
 
 	w.onClick = func(b gtk.Button) { w.clicked(b) }
 	for _, btn := range []*gtk.Button{&w.sideChoose, &w.placeScan, &w.placeStop, &w.selMap, &w.selOpen, &w.selAsk,
-		&w.selExplain, &w.selTrash, &w.selDelete, &w.selYes, &w.selNo} {
+		&w.selExplain, &w.selTrash, &w.selDelete, &w.selCopy, &w.selRun} {
 		btn.ConnectClicked(&w.onClick)
 	}
 	w.onChosen = func(_, result, _ uintptr) { w.folderChosen(result) }
@@ -269,16 +278,13 @@ func (w *window) clicked(b gtk.Button) {
 	case w.selExplain.GoPointer():
 		w.explain()
 	case w.selTrash.GoPointer():
-		w.remove(false)
+		w.remove(w.sel, false)
 	case w.selDelete.GoPointer():
-		say(&w.selDeleteErr, "")
-		w.selConfirmText.SetText(i18n.Tf("Delete %s for good? This cannot be undone.", disk.Size(w.sel.Size)))
-		w.selConfirm.SetVisible(true)
-	case w.selYes.GoPointer():
-		w.selConfirm.SetVisible(false)
-		w.remove(true)
-	case w.selNo.GoPointer():
-		w.selConfirm.SetVisible(false)
+		w.askDelete()
+	case w.selCopy.GoPointer():
+		w.copyCommand()
+	case w.selRun.GoPointer():
+		w.askRun()
 	}
 }
 

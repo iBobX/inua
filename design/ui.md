@@ -203,6 +203,11 @@ still say their errors in a status line at the foot of the index
   stay, with counters in mono: Disk Usage's map fills ring by ring as
   folders are measured, while a sweep of square-ended cells, stepped in
   opacity (no gradient), turns through the rings outside.
+- **Asking first**: what cannot be undone (deleting for good, a command
+  that deletes) is asked in a dialog over the window: the question as its
+  title, the thing in mono, a line on what follows, Cancel with the focus
+  and the action beside it (filled with `danger` for what is lost for
+  good). What can be undone (to the trash) is done at once.
 - **What a failure needs**: when something is missing (a program, a
   permission), say what and give the command that fixes it, selectable.
 

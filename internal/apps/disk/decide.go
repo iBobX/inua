@@ -26,10 +26,10 @@ type Step struct {
 type Route struct {
 	Steps   []Step
 	Verdict Verdict
-	Rule    *Rule  // the rule that knows the folder, if one does
-	Clean   string // the proper way to clean it, when there is one
-	Repo    string // the git work tree it is in, if any
-	Ignored bool   // ignored by that work tree
+	Rule    *Rule   // the rule that knows the folder, if one does
+	Command Command // the proper way to clean it, when there is one
+	Repo    string  // the git work tree it is in, if any
+	Ignored bool    // ignored by that work tree
 }
 
 func (r *Route) add(check, found string, v Verdict) bool {
@@ -62,7 +62,6 @@ func Decide(ctx context.Context, path, home string) Route {
 	if home == "" {
 		home, _ = os.UserHomeDir()
 	}
-	tilde := Tilde(path, home)
 
 	// 1. The system's, or the user's own.
 	if why := protected(path, home); why != "" {
@@ -73,13 +72,13 @@ func Decide(ctx context.Context, path, home string) Route {
 
 	r.Rule = Match(path, home)
 	if r.Rule != nil {
-		r.Clean = strings.ReplaceAll(r.Rule.Clean, "PATH", tilde)
+		r.Command = CleanCommand(r.Rule, path, home)
 	}
 
 	// 2. Whether this user can delete it at all.
 	if unix.Access(filepath.Dir(path), unix.W_OK) != nil {
 		found := i18n.T("No: the folder it is in is not yours, so only root can delete it.")
-		if r.Clean != "" {
+		if r.Command.Text != "" {
 			found += " " + i18n.T("Clean it with the command below instead.")
 		}
 		r.add(i18n.T("Yours to delete?"), found, Keep)

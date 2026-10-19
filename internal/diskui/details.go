@@ -5,9 +5,11 @@ import (
 	"errors"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
+	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/disk"
@@ -26,12 +28,15 @@ import (
 // selectNode shows n in the panel; nil empties it.
 func (w *window) selectNode(n *disk.Node) {
 	if n != w.sel {
-		w.selConfirm.SetVisible(false)
 		say(&w.selDeleteErr, "")
 		say(&w.selItemError, "")
 		say(&w.selAskError, "")
 	}
 	w.sel = n
+	if n != nil && w.done.n != n { // another item chosen: what was done is said
+		w.done.n, w.done.text = nil, ""
+	}
+	say(&w.selDone, w.done.text)
 	w.detailsEmpty.SetVisible(n == nil)
 	w.details.SetVisible(n != nil)
 	if n == nil {
@@ -143,8 +148,7 @@ func (w *window) showRoute() {
 		w.selVerdict.SetText(r.Verdict.Name())
 	}
 	setVerdictClass(&w.selVerdict, r.Verdict)
-	w.selClean.SetText(r.Clean)
-	w.selCleanBox.SetVisible(r.Clean != "")
+	w.showCommand()
 
 	w.selAskBox.SetVisible(r.Verdict == disk.Unknown)
 	w.selAsk.SetSensitive(!w.asking[n])
@@ -182,9 +186,6 @@ func (w *window) showRoute() {
 func (w *window) setDeletable(on bool, note string) {
 	w.selTrash.SetSensitive(on)
 	w.selDelete.SetSensitive(on)
-	if !on {
-		w.selConfirm.SetVisible(false)
-	}
 	w.selDeleteNote.SetText(note)
 	w.selDeleteNote.SetVisible(note != "")
 }
@@ -412,10 +413,9 @@ func (w *window) openInFiles() {
 	}
 }
 
-// remove moves the item chosen to the trash, or deletes it for good, and
-// takes it off the map.
-func (w *window) remove(forGood bool) {
-	n := w.sel
+// remove moves n to the trash, or deletes it for good, takes it off the
+// map, and says so on the folder it was in.
+func (w *window) remove(n *disk.Node, forGood bool) {
 	if n == nil || n.Parent == nil || n.Rest {
 		return
 	}
@@ -443,26 +443,178 @@ func (w *window) remove(forGood bool) {
 			}
 			return
 		}
-		parent := n.Parent
+		text := i18n.Tf("Moved %s to the trash: its %s are freed when the trash is emptied.", n.Name, disk.Size(n.Size))
+		if forGood {
+			text = i18n.Tf("Deleted %s: %s freed.", n.Name, disk.Size(n.Size))
+		}
+		w.gone(n, n.Parent, text)
+	})
+}
+
+// gone shows the tree after n left it (n.Remove has not run yet) or changed:
+// the folder in view, the lists and totals, and text said on then, the item
+// chosen now.
+func (w *window) gone(n, then *disk.Node, text string) {
+	if n != then {
 		n.Remove()
 		delete(w.routes, n)
 		delete(w.explains, n)
-		w.fillSide()
-		switch {
-		case w.page == "kind":
-			w.showKind(w.kind)
-			w.selectNode(nil)
-		default:
-			s := w.scans[w.place]
-			f := s.focus
-			for a := f; a != nil; a = a.Parent {
-				if a == n { // the folder in view went with it
-					f = parent
-				}
-			}
-			w.focus(f)
-			w.selectNode(parent)
-			w.showScan()
+		delete(w.runs, n)
+	}
+	w.done.n, w.done.text = then, text
+	w.fillSide()
+	if w.page == "kind" {
+		w.showKind(w.kind)
+		w.selectNode(then)
+		return
+	}
+	s := w.scans[w.place]
+	if s == nil || s.focus == nil {
+		return
+	}
+	f := s.focus
+	for a := f; a != nil; a = a.Parent {
+		if a == n && n != then { // the folder in view went with it
+			f = then
 		}
+	}
+	w.focus(f)
+	w.selectNode(then)
+	w.showScan()
+}
+
+// askDelete asks before deleting the item chosen for good.
+func (w *window) askDelete() {
+	n := w.sel
+	if n == nil {
+		return
+	}
+	text := i18n.Nf("%s in %s file. It does not go to the trash; this cannot be undone.",
+		"%s in %s files. They do not go to the trash; this cannot be undone.", int(n.Files), disk.Size(n.Size), count(n.Files))
+	if !n.Dir {
+		text = i18n.Tf("%s. It does not go to the trash; this cannot be undone.", disk.Size(n.Size))
+	}
+	w.confirm(i18n.Tf("Delete %s for good?", nodeName(n)), disk.Tilde(n.Path(), w.home), text, i18n.T("Delete"), true,
+		func() { w.remove(n, true) })
+}
+
+// --- the clean command ---
+
+// runResult is how a clean command ended: what it printed, and the
+// sentence on it.
+type runResult struct{ out, done, err string }
+
+// showCommand shows the item chosen's clean command, whether inua can run
+// it, and how its last run ended.
+func (w *window) showCommand() {
+	n := w.sel
+	r := w.routes[n]
+	if n == nil || r == nil || r.Command.Text == "" {
+		w.selCleanBox.SetVisible(false)
+		return
+	}
+	c := r.Command
+	w.selCleanBox.SetVisible(true)
+	w.selClean.SetText(c.Text)
+	w.selRun.SetSensitive(c.Not == "" && w.running == nil)
+	if w.running == n {
+		w.selRun.SetLabel(i18n.T("Running…"))
+	} else {
+		w.selRun.SetLabel(i18n.T("Run"))
+	}
+	note := c.Not
+	switch {
+	case note != "":
+	case c.Root:
+		note = i18n.T("It runs as root: inua asks for your password first.")
+	default:
+		note = i18n.Tf("It runs in %s.", disk.Tilde(c.Dir, w.home))
+	}
+	w.selRunNote.SetText(note)
+	res := w.runs[n]
+	say(&w.selRunOut, res.out)
+	say(&w.selRunDone, res.done)
+	say(&w.selRunError, res.err)
+}
+
+// copyCommand puts the clean command on the clipboard.
+func (w *window) copyCommand() {
+	r := w.routes[w.sel]
+	if r == nil || r.Command.Text == "" {
+		return
+	}
+	w.win.GetClipboard().SetText(r.Command.Text)
+	w.selCopy.SetLabel(i18n.T("Copied"))
+	w.onCopied = func(uintptr) bool {
+		if !w.closed {
+			w.selCopy.SetLabel(i18n.T("Copy"))
+		}
+		return false
+	}
+	glib.TimeoutAdd(1500, &w.onCopied, 0)
+}
+
+// askRun asks before running the clean command of the item chosen.
+func (w *window) askRun() {
+	n := w.sel
+	r := w.routes[n]
+	if n == nil || r == nil || r.Command.Not != "" || w.running != nil {
+		return
+	}
+	c := r.Command
+	text := i18n.Tf("It runs in %s and cleans %s, %s now; inua measures it again when it ends.",
+		filepath.Base(c.Dir), nodeName(n), disk.Size(n.Size))
+	if c.Root {
+		text += " " + i18n.T("It runs as root: inua asks for your password first.")
+	}
+	w.confirm(i18n.T("Run the clean command?"), c.Text, text, i18n.T("Run"), false, func() { w.run(n, c) })
+}
+
+// run runs c, the clean command of n, then measures n again.
+func (w *window) run(n *disk.Node, c disk.Command) {
+	w.running = n
+	w.runs[n] = runResult{}
+	if w.sel == n {
+		w.showCommand()
+	}
+	var out string
+	var err, rerr error
+	var fresh *disk.Node
+	w.background(func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+		defer cancel()
+		out, err = disk.Run(ctx, c)
+		fresh, rerr = disk.Rescan(ctx, n, w.home)
+	}, func() {
+		w.running = nil
+		before := n.Size
+		res := runResult{out: out}
+		if err != nil {
+			res.err = i18n.Tf("%s ended with an error: %v", c.Args[0], err)
+		}
+		if rerr != nil {
+			res.err = strings.TrimSpace(res.err + " " + i18n.Tf("Cannot measure it again: %v", rerr))
+			w.runs[n] = res
+			if w.sel == n {
+				w.showCommand()
+			}
+			return
+		}
+		after := int64(0)
+		if fresh != nil {
+			after = fresh.Size
+		}
+		if freed := before - after; freed > 0 {
+			res.done = i18n.Tf("Done: %s freed.", disk.Size(freed))
+		} else if err == nil {
+			res.done = i18n.T("Done: it freed no room here.")
+		}
+		if fresh == nil { // the command took the folder away
+			w.gone(n, n.Parent, i18n.Tf("%s removed %s: %s freed.", c.Text, n.Name, disk.Size(before)))
+			return
+		}
+		n.Replace(fresh)
+		w.runs[n] = res
+		w.gone(n, n, "")
 	})
 }

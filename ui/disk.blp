@@ -394,6 +394,15 @@ ApplicationWindow disk {
                   wrap: true;
                 }
 
+                // What was just done here: deleted, cleaned, and the room
+                // it freed.
+                Label sel_done {
+                  styles ["sub", "disk-done"]
+                  xalign: 0;
+                  wrap: true;
+                  visible: false;
+                }
+
                 Label sel_item_error {
                   styles ["sub", "disk-error"]
                   xalign: 0;
@@ -461,11 +470,11 @@ ApplicationWindow disk {
 
                 Box sel_clean_box {
                   orientation: vertical;
-                  spacing: 2;
+                  spacing: 6;
                   visible: false;
 
                   Label {
-                    styles ["sub"]
+                    styles ["sub", "disk-command-head"]
                     label: _("The proper way to clean it:");
                     xalign: 0;
                   }
@@ -476,6 +485,55 @@ ApplicationWindow disk {
                     wrap: true;
                     wrap-mode: char;
                     selectable: true;
+                  }
+
+                  Box {
+                    styles ["disk-actions"]
+                    spacing: 6;
+
+                    Button sel_copy {
+                      styles ["outlined"]
+                      name: "sel_copy";
+                      label: _("Copy");
+                    }
+
+                    Button sel_run {
+                      styles ["outlined"]
+                      name: "sel_run";
+                      label: _("Run");
+                    }
+                  }
+
+                  // Why inua cannot run it, or how it runs.
+                  Label sel_run_note {
+                    styles ["sub"]
+                    xalign: 0;
+                    wrap: true;
+                  }
+
+                  // What the command printed, its end.
+                  Label sel_run_out {
+                    styles ["readout", "disk-output"]
+                    xalign: 0;
+                    wrap: true;
+                    wrap-mode: char;
+                    selectable: true;
+                    visible: false;
+                  }
+
+                  Label sel_run_done {
+                    styles ["sub", "disk-done"]
+                    xalign: 0;
+                    wrap: true;
+                    visible: false;
+                  }
+
+                  Label sel_run_error {
+                    styles ["sub", "disk-error"]
+                    xalign: 0;
+                    wrap: true;
+                    selectable: true;
+                    visible: false;
                   }
                 }
 
@@ -549,36 +607,6 @@ ApplicationWindow disk {
                     styles ["outlined", "danger"]
                     name: "sel_delete";
                     label: _("Delete…");
-                  }
-                }
-
-                // Deleting for good asks once more, here.
-                Box sel_confirm {
-                  styles ["disk-confirm"]
-                  orientation: vertical;
-                  spacing: 8;
-                  visible: false;
-
-                  Label sel_confirm_text {
-                    styles ["label"]
-                    xalign: 0;
-                    wrap: true;
-                  }
-
-                  Box {
-                    spacing: 6;
-
-                    Button sel_confirm_yes {
-                      styles ["destructive-action"]
-                      name: "sel_confirm_yes";
-                      label: _("Delete");
-                    }
-
-                    Button sel_confirm_no {
-                      styles ["outlined"]
-                      name: "sel_confirm_no";
-                      label: _("Cancel");
-                    }
                   }
                 }
 

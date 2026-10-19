@@ -56,10 +56,31 @@ kind every scan found, largest first, with whether they can go and the
 total that can.
 
 **The item chosen**, in the panel on the right: its size, files and last
-change; *[CAN IT GO]*, the route; *[DELETE]*, Move to Trash or Delete for
-good (asked once more, in place); *[WHAT IS IT]*, the assistant's
-explanation. What is kept cannot be deleted from here; the place scanned
-itself neither. What goes wrong is said under what it is about.
+change; *[CAN IT GO]*, the route, and the item's clean command when a rule
+knows one; *[DELETE]*, Move to Trash, or Delete…, which asks in a dialog
+first; *[WHAT IS IT]*, the assistant's explanation. What is kept cannot be
+deleted from here; the place scanned itself neither. What was done (moved
+to the trash, deleted, cleaned) and the room it freed is said on the item,
+or on the folder it was in; what goes wrong, under what it is about.
+
+## Cleaning with its command
+
+Many folders have a proper way to be cleaned, which knows more than
+deleting does: `go clean -modcache` (Go's modules are read-only),
+`cargo clean`, `pnpm store prune`, `npm cache clean --force`. The panel
+shows the rule's command with **Copy** and **Run**.
+
+Run asks in a dialog, then runs the command in the folder the item is in,
+with no terminal and nothing to answer it; its output, and how it ended,
+show under it. inua then measures the item again and says how much room
+was freed, or that the command took the folder away (`cargo clean` and
+`target`). A command written with `sudo` runs through `pkexec`, so inua's
+password dialog asks first.
+
+Some commands are only copied, with why: those that need a name filled in
+(`ollama rm MODEL`, `git worktree remove …/NAME`), those that ask before
+they delete (`docker system prune`, `flatpak uninstall --unused`), and
+those whose program is not installed.
 
 ## Can it go
 

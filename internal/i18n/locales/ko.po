@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:220
+#: internal/diskui/details.go:221
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "어시스턴트가 꺼진다. 설정 → AI에서 켜주세요."
 
@@ -24,7 +24,7 @@ msgid "No API key for %s: type one and Save first."
 msgstr "%s의 API 키가 없습니다. 먼저 입력하고 저장하세요."
 
 #: cmd/inua-assistant/mcp.go:57
-#: internal/apps/disk/rules.go:172
+#: internal/apps/disk/rules.go:175
 msgid "inua's assistant"
 msgstr "inua 어시스턴트"
 
@@ -324,122 +324,143 @@ msgid "Sent %d file to %s"
 msgid_plural "Sent %d files to %s"
 msgstr[0] "%d개의 파일을 %s에 보냈습니다"
 
-#: internal/apps/disk/decide.go:69
-#: internal/apps/disk/decide.go:72
+#: internal/apps/disk/command.go:47
+msgid "Fill in the name it asks for, and run it in a terminal."
+msgstr "요구하는 이름을 채워 터미널에서 실행하세요."
+
+#: internal/apps/disk/command.go:52
+msgid "It asks before it deletes: run it in a terminal."
+msgstr "삭제하기 전에 묻는 명령입니다. 터미널에서 실행하세요."
+
+#: internal/apps/disk/command.go:61
+#: internal/filesui/remote.go:353
+msgid "%s is not there."
+msgstr "%s이(가) 없습니다."
+
+#: internal/apps/disk/command.go:64
+msgid "%s is not installed."
+msgstr "%s이(가) 설치되어 있지 않습니다."
+
+#: internal/apps/disk/command.go:67
+msgid "It needs root, and pkexec is not installed: run it in a terminal with sudo."
+msgstr "root가 필요하지만 pkexec가 없습니다. 터미널에서 sudo로 실행하세요."
+
+#: internal/apps/disk/decide.go:68
+#: internal/apps/disk/decide.go:71
 msgid "Part of the system, or one of your main folders?"
 msgstr "시스템의 일부, 또는 주요 폴더인가?"
 
-#: internal/apps/disk/decide.go:72
+#: internal/apps/disk/decide.go:71
 msgid "No."
 msgstr "아니요."
 
-#: internal/apps/disk/decide.go:81
+#: internal/apps/disk/decide.go:80
 msgid "No: the folder it is in is not yours, so only root can delete it."
 msgstr "아니요. 들어 있는 폴더가 내 것이 아니므로 root만 삭제할 수 있습니다."
 
-#: internal/apps/disk/decide.go:83
+#: internal/apps/disk/decide.go:82
 msgid "Clean it with the command below instead."
 msgstr "대신 아래 명령으로 정리하세요."
 
-#: internal/apps/disk/decide.go:85
-#: internal/apps/disk/decide.go:88
+#: internal/apps/disk/decide.go:84
+#: internal/apps/disk/decide.go:87
 msgid "Yours to delete?"
 msgstr "내가 삭제할 수 있나?"
 
-#: internal/apps/disk/decide.go:88
+#: internal/apps/disk/decide.go:87
 msgid "Yes."
 msgstr "예."
 
-#: internal/apps/disk/decide.go:92
-#: internal/apps/disk/decide.go:100
-#: internal/apps/disk/decide.go:104
-#: internal/apps/disk/decide.go:109
-#: internal/apps/disk/decide.go:111
-#: internal/apps/disk/decide.go:114
+#: internal/apps/disk/decide.go:91
+#: internal/apps/disk/decide.go:99
+#: internal/apps/disk/decide.go:103
+#: internal/apps/disk/decide.go:108
+#: internal/apps/disk/decide.go:110
+#: internal/apps/disk/decide.go:113
 msgid "Kept by git?"
 msgstr "git이 관리하나?"
 
-#: internal/apps/disk/decide.go:92
+#: internal/apps/disk/decide.go:91
 msgid "It is a project's git history: what is not pushed exists only here."
 msgstr "프로젝트의 git 기록입니다. 푸시하지 않은 것은 여기에만 있습니다."
 
-#: internal/apps/disk/decide.go:104
+#: internal/apps/disk/decide.go:103
 msgid "Its files are part of the project in %s: delete them with git, so the project knows."
 msgstr "%s 프로젝트의 일부입니다. 프로젝트가 알 수 있도록 git으로 삭제하세요."
 
-#: internal/apps/disk/decide.go:109
+#: internal/apps/disk/decide.go:108
 msgid "No: the project in %s ignores it, which is usual for what is built or downloaded."
 msgstr "아니요. %s 프로젝트가 무시합니다. 빌드나 다운로드로 생긴 것은 보통 그렇습니다."
 
-#: internal/apps/disk/decide.go:111
+#: internal/apps/disk/decide.go:110
 msgid "Not yet: it is new in the project in %s, not committed."
 msgstr "아직 아닙니다. %s 프로젝트에 새로 생겼고 커밋되지 않았습니다."
 
-#: internal/apps/disk/decide.go:114
+#: internal/apps/disk/decide.go:113
 msgid "No: it is in no git project."
 msgstr "아니요. 어떤 git 프로젝트에도 없습니다."
 
-#: internal/apps/disk/decide.go:119
-#: internal/apps/disk/decide.go:122
+#: internal/apps/disk/decide.go:118
+#: internal/apps/disk/decide.go:121
 msgid "A kind inua knows?"
 msgstr "inua가 아는 종류인가?"
 
-#: internal/apps/disk/decide.go:122
+#: internal/apps/disk/decide.go:121
 msgid "No rule knows it."
 msgstr "아는 규칙이 없습니다."
 
-#: internal/apps/disk/decide.go:146
+#: internal/apps/disk/decide.go:145
 msgid "It is a git project; git could not say what is not committed."
 msgstr "git 프로젝트이지만, 커밋되지 않은 것을 git이 알려 주지 못했습니다."
 
-#: internal/apps/disk/decide.go:165
+#: internal/apps/disk/decide.go:164
 msgid "%d change not committed"
 msgid_plural "%d changes not committed"
 msgstr[0] "커밋되지 않은 변경 %d개"
 
-#: internal/apps/disk/decide.go:168
+#: internal/apps/disk/decide.go:167
 msgid "%d commit not pushed"
 msgid_plural "%d commits not pushed"
 msgstr[0] "푸시되지 않은 커밋 %d개"
 
-#: internal/apps/disk/decide.go:172
+#: internal/apps/disk/decide.go:171
 msgid "It is a git project with %s: they exist only here."
 msgstr "%s이(가) 있는 git 프로젝트입니다. 이것들은 여기에만 있습니다."
 
-#: internal/apps/disk/decide.go:172
+#: internal/apps/disk/decide.go:171
 msgid " and "
 msgstr ", "
 
-#: internal/apps/disk/decide.go:174
+#: internal/apps/disk/decide.go:173
 msgid "It is a git project with no remote: its history exists only here."
 msgstr "원격 저장소가 없는 git 프로젝트입니다. 기록은 여기에만 있습니다."
 
-#: internal/apps/disk/decide.go:176
+#: internal/apps/disk/decide.go:175
 msgid "It is a git project, all committed and pushed: it can be cloned again."
 msgstr "모두 커밋하고 푸시한 git 프로젝트입니다. 다시 클론할 수 있습니다."
 
-#: internal/apps/disk/decide.go:185
-#: internal/apps/disk/decide.go:189
+#: internal/apps/disk/decide.go:184
+#: internal/apps/disk/decide.go:188
 msgid "It is part of the system."
 msgstr "시스템의 일부입니다."
 
-#: internal/apps/disk/decide.go:194
+#: internal/apps/disk/decide.go:193
 msgid "It is part of the system: programs keep their state there."
 msgstr "시스템의 일부입니다. 프로그램이 상태를 저장하는 곳입니다."
 
-#: internal/apps/disk/decide.go:200
+#: internal/apps/disk/decide.go:199
 msgid "It is your home folder."
 msgstr "홈 폴더입니다."
 
-#: internal/apps/disk/decide.go:209
+#: internal/apps/disk/decide.go:208
 msgid "Your settings, keys or programs' data are kept there."
 msgstr "설정, 키 또는 프로그램 데이터가 저장되어 있습니다."
 
-#: internal/apps/disk/decide.go:213
+#: internal/apps/disk/decide.go:212
 msgid "Your keys and passwords are kept there."
 msgstr "키와 비밀번호가 저장되어 있습니다."
 
-#: internal/apps/disk/decide.go:219
+#: internal/apps/disk/decide.go:218
 msgid "It is one of your main folders: look inside it instead."
 msgstr "주요 폴더 중 하나입니다. 안을 살펴보세요."
 
@@ -498,593 +519,593 @@ msgstr "확인"
 msgid "KEEP"
 msgstr "유지"
 
-#: internal/apps/disk/rules.go:126
+#: internal/apps/disk/rules.go:129
 msgid "Claude Code conversations"
 msgstr "Claude Code 대화"
 
-#: internal/apps/disk/rules.go:127
+#: internal/apps/disk/rules.go:130
 msgid "Each conversation of Claude Code, by project; deleting them loses what claude --resume continues."
 msgstr "프로젝트별 Claude Code 대화입니다. 삭제하면 claude --resume으로 이어갈 수 없습니다."
 
-#: internal/apps/disk/rules.go:128
+#: internal/apps/disk/rules.go:131
 msgid "Claude Code shell snapshots"
 msgstr "Claude Code 셸 스냅숏"
 
-#: internal/apps/disk/rules.go:129
+#: internal/apps/disk/rules.go:132
 msgid "Claude Code takes them again when it starts a shell."
 msgstr "Claude Code가 셸을 시작할 때 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:130
+#: internal/apps/disk/rules.go:133
 msgid "Claude Code task lists"
 msgstr "Claude Code 작업 목록"
 
-#: internal/apps/disk/rules.go:131
+#: internal/apps/disk/rules.go:134
 msgid "The task lists of conversations that ended."
 msgstr "끝난 대화의 작업 목록입니다."
 
-#: internal/apps/disk/rules.go:132
+#: internal/apps/disk/rules.go:135
 msgid "Claude Code file history"
 msgstr "Claude Code 파일 기록"
 
-#: internal/apps/disk/rules.go:133
+#: internal/apps/disk/rules.go:136
 msgid "Copies of files before Claude Code changed them, for going back."
 msgstr "Claude Code가 바꾸기 전 파일의 사본으로, 되돌리기 위한 것입니다."
 
-#: internal/apps/disk/rules.go:134
+#: internal/apps/disk/rules.go:137
 msgid "Claude Code logs"
 msgstr "Claude Code 로그"
 
-#: internal/apps/disk/rules.go:135
-#: internal/apps/disk/rules.go:153
+#: internal/apps/disk/rules.go:138
+#: internal/apps/disk/rules.go:156
 msgid "Logs for finding faults; nothing reads them back."
 msgstr "문제를 찾기 위한 로그로, 다시 읽는 것은 없습니다."
 
-#: internal/apps/disk/rules.go:136
+#: internal/apps/disk/rules.go:139
 msgid "Claude Code plugins"
 msgstr "Claude Code 플러그인"
 
-#: internal/apps/disk/rules.go:137
+#: internal/apps/disk/rules.go:140
 msgid "Plugins installed in Claude Code; they are downloaded again when installed again."
 msgstr "Claude Code에 설치한 플러그인입니다. 다시 설치하면 다시 다운로드됩니다."
 
-#: internal/apps/disk/rules.go:138
+#: internal/apps/disk/rules.go:141
 msgid "Claude Code"
 msgstr "Claude Code"
 
-#: internal/apps/disk/rules.go:139
+#: internal/apps/disk/rules.go:142
 msgid "Claude Code's settings, memory and conversations."
 msgstr "Claude Code의 설정, 메모리, 대화입니다."
 
-#: internal/apps/disk/rules.go:140
+#: internal/apps/disk/rules.go:143
 msgid "Claude Code versions"
 msgstr "Claude Code 버전"
 
-#: internal/apps/disk/rules.go:141
-#: internal/apps/disk/rules.go:146
+#: internal/apps/disk/rules.go:144
+#: internal/apps/disk/rules.go:149
 msgid "Each version its updates installed; only the newest is used, so the older ones can go."
 msgstr "업데이트로 설치된 각 버전입니다. 최신 버전만 쓰므로 이전 버전은 지워도 됩니다."
 
-#: internal/apps/disk/rules.go:142
-#: internal/apps/disk/rules.go:147
+#: internal/apps/disk/rules.go:145
+#: internal/apps/disk/rules.go:150
 msgid "Agent worktrees"
 msgstr "에이전트 워크트리"
 
-#: internal/apps/disk/rules.go:143
-#: internal/apps/disk/rules.go:148
+#: internal/apps/disk/rules.go:146
+#: internal/apps/disk/rules.go:151
 msgid "Git worktrees an agent works in; their changes may not be committed yet."
 msgstr "에이전트가 작업하는 git 워크트리입니다. 변경 사항이 아직 커밋되지 않았을 수 있습니다."
 
-#: internal/apps/disk/rules.go:145
+#: internal/apps/disk/rules.go:148
 msgid "Codex versions"
 msgstr "Codex 버전"
 
-#: internal/apps/disk/rules.go:150
+#: internal/apps/disk/rules.go:153
 msgid "Codex conversations"
 msgstr "Codex 대화"
 
-#: internal/apps/disk/rules.go:151
+#: internal/apps/disk/rules.go:154
 msgid "Codex's conversations; deleting them loses what codex resume continues."
 msgstr "Codex의 대화입니다. 삭제하면 codex resume으로 이어갈 수 없습니다."
 
-#: internal/apps/disk/rules.go:152
+#: internal/apps/disk/rules.go:155
 msgid "Codex logs"
 msgstr "Codex 로그"
 
-#: internal/apps/disk/rules.go:154
+#: internal/apps/disk/rules.go:157
 msgid "Codex"
 msgstr "Codex"
 
-#: internal/apps/disk/rules.go:155
+#: internal/apps/disk/rules.go:158
 msgid "Codex's settings and conversations."
 msgstr "Codex의 설정과 대화입니다."
 
-#: internal/apps/disk/rules.go:156
+#: internal/apps/disk/rules.go:159
 msgid "Gemini CLI temporary files"
 msgstr "Gemini CLI 임시 파일"
 
-#: internal/apps/disk/rules.go:157
+#: internal/apps/disk/rules.go:160
 msgid "Files the Gemini CLI keeps while it works."
 msgstr "Gemini CLI가 작업하는 동안 보관하는 파일입니다."
 
-#: internal/apps/disk/rules.go:158
+#: internal/apps/disk/rules.go:161
 msgid "Gemini CLI"
 msgstr "Gemini CLI"
 
-#: internal/apps/disk/rules.go:159
+#: internal/apps/disk/rules.go:162
 msgid "The Gemini CLI's settings and history."
 msgstr "Gemini CLI의 설정과 기록입니다."
 
-#: internal/apps/disk/rules.go:160
+#: internal/apps/disk/rules.go:163
 msgid "Cursor extensions"
 msgstr "Cursor 확장"
 
-#: internal/apps/disk/rules.go:161
+#: internal/apps/disk/rules.go:164
 msgid "Cursor downloads its extensions again."
 msgstr "Cursor가 확장을 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:162
-#: internal/apps/disk/rules.go:164
+#: internal/apps/disk/rules.go:165
+#: internal/apps/disk/rules.go:167
 msgid "Cursor"
 msgstr "Cursor"
 
-#: internal/apps/disk/rules.go:163
+#: internal/apps/disk/rules.go:166
 msgid "Cursor's settings and extensions."
 msgstr "Cursor의 설정과 확장입니다."
 
-#: internal/apps/disk/rules.go:165
+#: internal/apps/disk/rules.go:168
 msgid "Cursor's settings, history and caches."
 msgstr "Cursor의 설정, 기록, 캐시입니다."
 
-#: internal/apps/disk/rules.go:166
+#: internal/apps/disk/rules.go:169
 msgid "Aider"
 msgstr "Aider"
 
-#: internal/apps/disk/rules.go:167
+#: internal/apps/disk/rules.go:170
 msgid "Aider's settings and caches."
 msgstr "Aider의 설정과 캐시입니다."
 
-#: internal/apps/disk/rules.go:168
+#: internal/apps/disk/rules.go:171
 #: ui/vm.ui:777
 msgid "Continue"
 msgstr "계속"
 
-#: internal/apps/disk/rules.go:169
+#: internal/apps/disk/rules.go:172
 msgid "Continue's settings, indexes and sessions."
 msgstr "Continue의 설정, 색인, 세션입니다."
 
-#: internal/apps/disk/rules.go:170
+#: internal/apps/disk/rules.go:173
 msgid "Windsurf and Codeium"
 msgstr "Windsurf와 Codeium"
 
-#: internal/apps/disk/rules.go:171
+#: internal/apps/disk/rules.go:174
 msgid "Windsurf's and Codeium's settings and language servers."
 msgstr "Windsurf와 Codeium의 설정과 언어 서버입니다."
 
-#: internal/apps/disk/rules.go:173
+#: internal/apps/disk/rules.go:176
 msgid "The assistant's memory and tasks."
 msgstr "어시스턴트의 메모리와 작업입니다."
 
-#: internal/apps/disk/rules.go:174
+#: internal/apps/disk/rules.go:177
 msgid "npx packages"
 msgstr "npx 패키지"
 
-#: internal/apps/disk/rules.go:175
+#: internal/apps/disk/rules.go:178
 msgid "Packages npx downloaded to run, such as agents' MCP servers; it downloads them again."
 msgstr "npx가 실행하려고 다운로드한 패키지(에이전트의 MCP 서버 등)입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:178
 #: internal/apps/disk/rules.go:181
+#: internal/apps/disk/rules.go:184
 msgid "Ollama models"
 msgstr "Ollama 모델"
 
-#: internal/apps/disk/rules.go:179
 #: internal/apps/disk/rules.go:182
+#: internal/apps/disk/rules.go:185
 msgid "Models Ollama downloaded; delete the ones not used, and pull them again when needed."
 msgstr "Ollama가 다운로드한 모델입니다. 쓰지 않는 것은 지우고, 필요할 때 다시 pull하세요."
 
-#: internal/apps/disk/rules.go:184
+#: internal/apps/disk/rules.go:187
 msgid "Hugging Face models and datasets"
 msgstr "Hugging Face 모델과 데이터셋"
 
-#: internal/apps/disk/rules.go:185
 #: internal/apps/disk/rules.go:188
+#: internal/apps/disk/rules.go:191
 msgid "Downloaded again by the program that asks for them."
 msgstr "필요로 하는 프로그램이 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:187
+#: internal/apps/disk/rules.go:190
 msgid "PyTorch models"
 msgstr "PyTorch 모델"
 
-#: internal/apps/disk/rules.go:189
-#: internal/apps/disk/rules.go:191
+#: internal/apps/disk/rules.go:192
+#: internal/apps/disk/rules.go:194
 msgid "LM Studio models"
 msgstr "LM Studio 모델"
 
-#: internal/apps/disk/rules.go:190
-#: internal/apps/disk/rules.go:192
+#: internal/apps/disk/rules.go:193
+#: internal/apps/disk/rules.go:195
 msgid "Models LM Studio downloaded; it downloads them again when chosen."
 msgstr "LM Studio가 다운로드한 모델입니다. 선택하면 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:193
+#: internal/apps/disk/rules.go:196
 msgid "Playwright browsers"
 msgstr "Playwright 브라우저"
 
-#: internal/apps/disk/rules.go:194
+#: internal/apps/disk/rules.go:197
 msgid "Browsers Playwright downloaded for agents and tests; it installs them again."
 msgstr "Playwright가 에이전트와 테스트용으로 다운로드한 브라우저입니다. 다시 설치합니다."
 
-#: internal/apps/disk/rules.go:195
+#: internal/apps/disk/rules.go:198
 msgid "Puppeteer browsers"
 msgstr "Puppeteer 브라우저"
 
-#: internal/apps/disk/rules.go:196
+#: internal/apps/disk/rules.go:199
 msgid "Browsers Puppeteer downloaded; it installs them again."
 msgstr "Puppeteer가 다운로드한 브라우저입니다. 다시 설치합니다."
 
-#: internal/apps/disk/rules.go:199
+#: internal/apps/disk/rules.go:202
 msgid "npm packages"
 msgstr "npm 패키지"
 
-#: internal/apps/disk/rules.go:200
-#: internal/apps/disk/rules.go:261
-#: internal/apps/disk/rules.go:263
-#: internal/apps/disk/rules.go:273
+#: internal/apps/disk/rules.go:203
+#: internal/apps/disk/rules.go:264
+#: internal/apps/disk/rules.go:266
+#: internal/apps/disk/rules.go:276
 msgid "The project's packages; installing them again brings them back."
 msgstr "프로젝트의 패키지입니다. 다시 설치하면 돌아옵니다."
 
-#: internal/apps/disk/rules.go:201
+#: internal/apps/disk/rules.go:204
 msgid "npm cache"
 msgstr "npm 캐시"
 
-#: internal/apps/disk/rules.go:202
+#: internal/apps/disk/rules.go:205
 msgid "Packages npm downloaded; it downloads them again."
 msgstr "npm이 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:203
-#: internal/apps/disk/rules.go:205
+#: internal/apps/disk/rules.go:206
+#: internal/apps/disk/rules.go:208
 msgid "Yarn cache"
 msgstr "Yarn 캐시"
 
-#: internal/apps/disk/rules.go:204
-#: internal/apps/disk/rules.go:206
+#: internal/apps/disk/rules.go:207
+#: internal/apps/disk/rules.go:209
 msgid "Packages Yarn downloaded; it downloads them again."
 msgstr "Yarn이 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:207
-#: internal/apps/disk/rules.go:209
+#: internal/apps/disk/rules.go:210
+#: internal/apps/disk/rules.go:212
 msgid "pnpm store"
 msgstr "pnpm 저장소"
 
-#: internal/apps/disk/rules.go:208
-#: internal/apps/disk/rules.go:210
+#: internal/apps/disk/rules.go:211
+#: internal/apps/disk/rules.go:213
 msgid "Packages pnpm downloaded; projects link to them, and it downloads them again."
 msgstr "pnpm이 다운로드한 패키지입니다. 프로젝트가 여기에 연결되며, 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:211
+#: internal/apps/disk/rules.go:214
 msgid "Bun cache"
 msgstr "Bun 캐시"
 
-#: internal/apps/disk/rules.go:212
+#: internal/apps/disk/rules.go:215
 msgid "Packages Bun downloaded; it downloads them again."
 msgstr "Bun이 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:213
+#: internal/apps/disk/rules.go:216
 msgid "Deno cache"
 msgstr "Deno 캐시"
 
-#: internal/apps/disk/rules.go:214
+#: internal/apps/disk/rules.go:217
 msgid "Modules Deno downloaded and compiled; it makes them again."
 msgstr "Deno가 다운로드하고 컴파일한 모듈입니다. 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:215
+#: internal/apps/disk/rules.go:218
 msgid "Next.js build"
 msgstr "Next.js 빌드"
 
-#: internal/apps/disk/rules.go:216
-#: internal/apps/disk/rules.go:218
-#: internal/apps/disk/rules.go:220
-#: internal/apps/disk/rules.go:291
+#: internal/apps/disk/rules.go:219
+#: internal/apps/disk/rules.go:221
+#: internal/apps/disk/rules.go:223
+#: internal/apps/disk/rules.go:294
 msgid "Built from the project's sources; the next build makes it again."
 msgstr "프로젝트 소스로 빌드한 것입니다. 다음 빌드에서 다시 만들어집니다."
 
-#: internal/apps/disk/rules.go:217
+#: internal/apps/disk/rules.go:220
 msgid "Nuxt build"
 msgstr "Nuxt 빌드"
 
-#: internal/apps/disk/rules.go:219
+#: internal/apps/disk/rules.go:222
 msgid "SvelteKit build"
 msgstr "SvelteKit 빌드"
 
-#: internal/apps/disk/rules.go:221
+#: internal/apps/disk/rules.go:224
 msgid "Turborepo cache"
 msgstr "Turborepo 캐시"
 
-#: internal/apps/disk/rules.go:222
-#: internal/apps/disk/rules.go:224
-#: internal/apps/disk/rules.go:299
-#: internal/apps/disk/rules.go:301
-#: internal/apps/disk/rules.go:307
+#: internal/apps/disk/rules.go:225
+#: internal/apps/disk/rules.go:227
+#: internal/apps/disk/rules.go:302
+#: internal/apps/disk/rules.go:304
+#: internal/apps/disk/rules.go:310
 msgid "Build results kept to skip work; the next build makes them again."
 msgstr "작업을 줄이려고 보관하는 빌드 결과입니다. 다음 빌드에서 다시 만들어집니다."
 
-#: internal/apps/disk/rules.go:223
+#: internal/apps/disk/rules.go:226
 msgid "Parcel cache"
 msgstr "Parcel 캐시"
 
-#: internal/apps/disk/rules.go:227
+#: internal/apps/disk/rules.go:230
 msgid "Go build cache"
 msgstr "Go 빌드 캐시"
 
-#: internal/apps/disk/rules.go:228
+#: internal/apps/disk/rules.go:231
 msgid "Compiled packages kept to build faster; go build makes them again."
 msgstr "빌드를 빠르게 하려고 보관하는 컴파일된 패키지입니다. go build가 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:229
+#: internal/apps/disk/rules.go:232
 msgid "Go modules"
 msgstr "Go 모듈"
 
-#: internal/apps/disk/rules.go:230
+#: internal/apps/disk/rules.go:233
 msgid "Modules Go downloaded; it downloads them again. Go makes them read-only: clean them with go."
 msgstr "Go가 다운로드한 모듈입니다. 다시 다운로드합니다. Go가 읽기 전용으로 만드므로 go로 정리하세요."
 
-#: internal/apps/disk/rules.go:232
+#: internal/apps/disk/rules.go:235
 msgid "golangci-lint cache"
 msgstr "golangci-lint 캐시"
 
-#: internal/apps/disk/rules.go:233
-#: internal/apps/disk/rules.go:267
-#: internal/apps/disk/rules.go:269
-#: internal/apps/disk/rules.go:271
+#: internal/apps/disk/rules.go:236
+#: internal/apps/disk/rules.go:270
+#: internal/apps/disk/rules.go:272
+#: internal/apps/disk/rules.go:274
 msgid "Results kept to check faster; the next run makes them again."
 msgstr "검사를 빠르게 하려고 보관하는 결과입니다. 다음 실행에서 다시 만들어집니다."
 
-#: internal/apps/disk/rules.go:236
-#: internal/apps/disk/rules.go:256
-#: internal/apps/disk/rules.go:353
+#: internal/apps/disk/rules.go:239
+#: internal/apps/disk/rules.go:259
+#: internal/apps/disk/rules.go:356
 msgid "Rust build"
 msgstr "Rust 빌드"
 
-#: internal/apps/disk/rules.go:237
-#: internal/apps/disk/rules.go:354
+#: internal/apps/disk/rules.go:240
+#: internal/apps/disk/rules.go:357
 msgid "Built from the project's sources; cargo build makes it again."
 msgstr "프로젝트 소스로 빌드한 것입니다. cargo build가 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:238
-#: internal/apps/disk/rules.go:240
+#: internal/apps/disk/rules.go:241
+#: internal/apps/disk/rules.go:243
 msgid "Cargo packages"
 msgstr "Cargo 패키지"
 
-#: internal/apps/disk/rules.go:239
-#: internal/apps/disk/rules.go:241
+#: internal/apps/disk/rules.go:242
+#: internal/apps/disk/rules.go:244
 msgid "Crates Cargo downloaded; it downloads them again."
 msgstr "Cargo가 다운로드한 크레이트입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:242
+#: internal/apps/disk/rules.go:245
 msgid "Programs installed with Cargo"
 msgstr "Cargo로 설치한 프로그램"
 
-#: internal/apps/disk/rules.go:243
+#: internal/apps/disk/rules.go:246
 msgid "Programs cargo install built, and rustup's own commands; deleting them uninstalls them."
 msgstr "cargo install로 빌드한 프로그램과 rustup 자체 명령입니다. 삭제하면 제거됩니다."
 
-#: internal/apps/disk/rules.go:245
+#: internal/apps/disk/rules.go:248
 msgid "Rust toolchains"
 msgstr "Rust 툴체인"
 
-#: internal/apps/disk/rules.go:246
+#: internal/apps/disk/rules.go:249
 msgid "The Rust versions installed; remove the ones not used with rustup."
 msgstr "설치된 Rust 버전입니다. 쓰지 않는 것은 rustup으로 제거하세요."
 
-#: internal/apps/disk/rules.go:248
-#: internal/apps/disk/rules.go:250
+#: internal/apps/disk/rules.go:251
+#: internal/apps/disk/rules.go:253
 msgid "rustup downloads"
 msgstr "rustup 다운로드"
 
-#: internal/apps/disk/rules.go:249
-#: internal/apps/disk/rules.go:251
+#: internal/apps/disk/rules.go:252
+#: internal/apps/disk/rules.go:254
 msgid "Downloads rustup keeps while it installs; nothing needs them after."
 msgstr "rustup이 설치하는 동안 보관하는 다운로드입니다. 설치 후에는 필요 없습니다."
 
-#: internal/apps/disk/rules.go:252
+#: internal/apps/disk/rules.go:255
 msgid "sccache cache"
 msgstr "sccache 캐시"
 
-#: internal/apps/disk/rules.go:253
-#: internal/apps/disk/rules.go:305
+#: internal/apps/disk/rules.go:256
+#: internal/apps/disk/rules.go:308
 msgid "Compiled files kept to build faster; the next build makes them again."
 msgstr "빌드를 빠르게 하려고 보관하는 컴파일된 파일입니다. 다음 빌드에서 다시 만들어집니다."
 
-#: internal/apps/disk/rules.go:254
+#: internal/apps/disk/rules.go:257
 msgid "rust-analyzer cache"
 msgstr "rust-analyzer 캐시"
 
-#: internal/apps/disk/rules.go:255
+#: internal/apps/disk/rules.go:258
 msgid "Indexes rust-analyzer makes again when it opens a project."
 msgstr "rust-analyzer가 프로젝트를 열 때 다시 만드는 색인입니다."
 
-#: internal/apps/disk/rules.go:257
+#: internal/apps/disk/rules.go:260
 msgid "Built from the projects' sources; cargo build makes it again."
 msgstr "프로젝트들의 소스로 빌드한 것입니다. cargo build가 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:260
-#: internal/apps/disk/rules.go:262
+#: internal/apps/disk/rules.go:263
+#: internal/apps/disk/rules.go:265
 msgid "Python environment"
 msgstr "Python 환경"
 
-#: internal/apps/disk/rules.go:264
+#: internal/apps/disk/rules.go:267
 msgid "Python bytecode"
 msgstr "Python 바이트코드"
 
-#: internal/apps/disk/rules.go:265
+#: internal/apps/disk/rules.go:268
 msgid "Python compiles it again when it runs the code."
 msgstr "Python이 코드를 실행할 때 다시 컴파일합니다."
 
-#: internal/apps/disk/rules.go:266
+#: internal/apps/disk/rules.go:269
 msgid "pytest cache"
 msgstr "pytest 캐시"
 
-#: internal/apps/disk/rules.go:268
+#: internal/apps/disk/rules.go:271
 msgid "mypy cache"
 msgstr "mypy 캐시"
 
-#: internal/apps/disk/rules.go:270
+#: internal/apps/disk/rules.go:273
 msgid "Ruff cache"
 msgstr "Ruff 캐시"
 
-#: internal/apps/disk/rules.go:272
+#: internal/apps/disk/rules.go:275
 msgid "tox environments"
 msgstr "tox 환경"
 
-#: internal/apps/disk/rules.go:274
+#: internal/apps/disk/rules.go:277
 msgid "pip cache"
 msgstr "pip 캐시"
 
-#: internal/apps/disk/rules.go:275
+#: internal/apps/disk/rules.go:278
 msgid "Packages pip downloaded; it downloads them again."
 msgstr "pip가 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:276
+#: internal/apps/disk/rules.go:279
 msgid "uv cache"
 msgstr "uv 캐시"
 
-#: internal/apps/disk/rules.go:277
+#: internal/apps/disk/rules.go:280
 msgid "Packages uv downloaded; it downloads them again."
 msgstr "uv가 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:278
+#: internal/apps/disk/rules.go:281
 msgid "Poetry cache"
 msgstr "Poetry 캐시"
 
-#: internal/apps/disk/rules.go:279
+#: internal/apps/disk/rules.go:282
 msgid "Packages Poetry downloaded; it downloads them again."
 msgstr "Poetry가 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:280
+#: internal/apps/disk/rules.go:283
 msgid "Conda packages"
 msgstr "Conda 패키지"
 
-#: internal/apps/disk/rules.go:281
+#: internal/apps/disk/rules.go:284
 msgid "Packages Conda downloaded; it downloads them again."
 msgstr "Conda가 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:284
-#: internal/apps/disk/rules.go:302
+#: internal/apps/disk/rules.go:287
+#: internal/apps/disk/rules.go:305
 msgid "Gradle cache"
 msgstr "Gradle 캐시"
 
-#: internal/apps/disk/rules.go:285
-#: internal/apps/disk/rules.go:303
+#: internal/apps/disk/rules.go:288
+#: internal/apps/disk/rules.go:306
 msgid "Packages and build results Gradle keeps; it makes them again."
 msgstr "Gradle이 보관하는 패키지와 빌드 결과입니다. 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:286
+#: internal/apps/disk/rules.go:289
 msgid "Gradle versions"
 msgstr "Gradle 버전"
 
-#: internal/apps/disk/rules.go:287
+#: internal/apps/disk/rules.go:290
 msgid "Gradle versions projects asked for; they are downloaded again."
 msgstr "프로젝트가 요구한 Gradle 버전입니다. 다시 다운로드됩니다."
 
-#: internal/apps/disk/rules.go:288
+#: internal/apps/disk/rules.go:291
 msgid "Maven packages"
 msgstr "Maven 패키지"
 
-#: internal/apps/disk/rules.go:289
+#: internal/apps/disk/rules.go:292
 msgid "Packages Maven downloaded; it downloads them again."
 msgstr "Maven이 다운로드한 패키지입니다. 다시 다운로드합니다."
 
-#: internal/apps/disk/rules.go:290
+#: internal/apps/disk/rules.go:293
 msgid "Gradle build"
 msgstr "Gradle 빌드"
 
-#: internal/apps/disk/rules.go:292
+#: internal/apps/disk/rules.go:295
 msgid "Android emulators"
 msgstr "Android 에뮬레이터"
 
-#: internal/apps/disk/rules.go:293
+#: internal/apps/disk/rules.go:296
 msgid "The emulators' phones, with what was installed on them."
 msgstr "에뮬레이터의 기기와 거기에 설치한 것입니다."
 
-#: internal/apps/disk/rules.go:294
+#: internal/apps/disk/rules.go:297
 msgid "Android SDK"
 msgstr "Android SDK"
 
-#: internal/apps/disk/rules.go:295
+#: internal/apps/disk/rules.go:298
 msgid "Android's tools and system images; the SDK manager installs them again."
 msgstr "Android의 도구와 시스템 이미지입니다. SDK 관리자로 다시 설치할 수 있습니다."
 
-#: internal/apps/disk/rules.go:298
-#: internal/apps/disk/rules.go:300
+#: internal/apps/disk/rules.go:301
+#: internal/apps/disk/rules.go:303
 msgid "Zig cache"
 msgstr "Zig 캐시"
 
-#: internal/apps/disk/rules.go:304
+#: internal/apps/disk/rules.go:307
 msgid "ccache"
 msgstr "ccache"
 
-#: internal/apps/disk/rules.go:306
+#: internal/apps/disk/rules.go:309
 msgid "Bazel cache"
 msgstr "Bazel 캐시"
 
-#: internal/apps/disk/rules.go:308
+#: internal/apps/disk/rules.go:311
 msgid "JetBrains caches"
 msgstr "JetBrains 캐시"
 
-#: internal/apps/disk/rules.go:309
+#: internal/apps/disk/rules.go:312
 msgid "Indexes the IDEs make again when they open a project."
 msgstr "IDE가 프로젝트를 열 때 다시 만드는 색인입니다."
 
-#: internal/apps/disk/rules.go:310
+#: internal/apps/disk/rules.go:313
 msgid "VS Code extensions"
 msgstr "VS Code 확장"
 
-#: internal/apps/disk/rules.go:311
+#: internal/apps/disk/rules.go:314
 msgid "Extensions installed in VS Code; they are downloaded again when installed again."
 msgstr "VS Code에 설치한 확장입니다. 다시 설치하면 다시 다운로드됩니다."
 
-#: internal/apps/disk/rules.go:312
+#: internal/apps/disk/rules.go:315
 msgid "VS Code server"
 msgstr "VS Code 서버"
 
-#: internal/apps/disk/rules.go:313
+#: internal/apps/disk/rules.go:316
 msgid "VS Code installs it again when it connects to this computer."
 msgstr "VS Code가 이 컴퓨터에 연결할 때 다시 설치합니다."
 
-#: internal/apps/disk/rules.go:314
-#: internal/apps/disk/rules.go:316
+#: internal/apps/disk/rules.go:317
+#: internal/apps/disk/rules.go:319
 msgid "VS Code cache"
 msgstr "VS Code 캐시"
 
-#: internal/apps/disk/rules.go:315
-#: internal/apps/disk/rules.go:317
+#: internal/apps/disk/rules.go:318
+#: internal/apps/disk/rules.go:320
 msgid "VS Code makes it again."
 msgstr "VS Code가 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:318
+#: internal/apps/disk/rules.go:321
 msgid "Podman images and containers"
 msgstr "Podman 이미지와 컨테이너"
 
-#: internal/apps/disk/rules.go:319
+#: internal/apps/disk/rules.go:322
 msgid "Podman's images and containers; deleting the folder breaks Podman. Remove them with podman."
 msgstr "Podman의 이미지와 컨테이너입니다. 폴더를 지우면 Podman이 망가집니다. podman으로 제거하세요."
 
-#: internal/apps/disk/rules.go:321
+#: internal/apps/disk/rules.go:324
 msgid "Docker images and containers"
 msgstr "Docker 이미지와 컨테이너"
 
-#: internal/apps/disk/rules.go:322
+#: internal/apps/disk/rules.go:325
 msgid "Docker's images, containers and volumes; deleting the folder breaks Docker. Remove them with docker."
 msgstr "Docker의 이미지, 컨테이너, 볼륨입니다. 폴더를 지우면 Docker가 망가집니다. docker로 제거하세요."
 
-#: internal/apps/disk/rules.go:324
+#: internal/apps/disk/rules.go:327
 msgid "Git history"
 msgstr "Git 기록"
 
-#: internal/apps/disk/rules.go:325
+#: internal/apps/disk/rules.go:328
 msgid "The project's history, branches and stashes; what is not pushed exists only here."
 msgstr "프로젝트의 기록, 브랜치, stash입니다. 푸시하지 않은 것은 여기에만 있습니다."
 
-#: internal/apps/disk/rules.go:328
+#: internal/apps/disk/rules.go:331
 #: internal/filesui/details.go:55
 #: internal/filesui/pane.go:1030
 #: internal/filesui/sidebar.go:54
@@ -1093,65 +1114,65 @@ msgstr "프로젝트의 기록, 브랜치, stash입니다. 푸시하지 않은 �
 msgid "Trash"
 msgstr "휴지통"
 
-#: internal/apps/disk/rules.go:329
+#: internal/apps/disk/rules.go:332
 msgid "What was moved to the trash; it takes room until the trash is emptied."
 msgstr "휴지통으로 옮긴 것입니다. 휴지통을 비울 때까지 공간을 차지합니다."
 
-#: internal/apps/disk/rules.go:330
+#: internal/apps/disk/rules.go:333
 msgid "pacman packages"
 msgstr "pacman 패키지"
 
-#: internal/apps/disk/rules.go:331
+#: internal/apps/disk/rules.go:334
 msgid "Packages pacman downloaded; old versions are needed only to go back to them."
 msgstr "pacman이 다운로드한 패키지입니다. 이전 버전은 되돌릴 때만 필요합니다."
 
-#: internal/apps/disk/rules.go:332
+#: internal/apps/disk/rules.go:335
 msgid "APT packages"
 msgstr "APT 패키지"
 
-#: internal/apps/disk/rules.go:333
+#: internal/apps/disk/rules.go:336
 msgid "Packages APT downloaded and installed already."
 msgstr "APT가 다운로드해 이미 설치한 패키지입니다."
 
-#: internal/apps/disk/rules.go:334
+#: internal/apps/disk/rules.go:337
 msgid "DNF cache"
 msgstr "DNF 캐시"
 
-#: internal/apps/disk/rules.go:335
+#: internal/apps/disk/rules.go:338
 msgid "Packages and lists DNF downloaded."
 msgstr "DNF가 다운로드한 패키지와 목록입니다."
 
-#: internal/apps/disk/rules.go:336
 #: internal/apps/disk/rules.go:339
+#: internal/apps/disk/rules.go:342
 msgid "Flatpak apps"
 msgstr "Flatpak 앱"
 
-#: internal/apps/disk/rules.go:337
 #: internal/apps/disk/rules.go:340
+#: internal/apps/disk/rules.go:343
 msgid "Installed Flatpak apps and runtimes; remove the ones not used with flatpak."
 msgstr "설치한 Flatpak 앱과 런타임입니다. 쓰지 않는 것은 flatpak으로 제거하세요."
 
-#: internal/apps/disk/rules.go:342
+#: internal/apps/disk/rules.go:345
 msgid "System logs"
 msgstr "시스템 로그"
 
-#: internal/apps/disk/rules.go:343
+#: internal/apps/disk/rules.go:346
 msgid "The system's journal; shrink it with journalctl rather than deleting files."
 msgstr "시스템 저널입니다. 파일을 지우지 말고 journalctl로 줄이세요."
 
-#: internal/apps/disk/rules.go:345
+#: internal/apps/disk/rules.go:348
 msgid "A program's cache"
 msgstr "프로그램의 캐시"
 
-#: internal/apps/disk/rules.go:346
+#: internal/apps/disk/rules.go:349
 msgid "Programs keep caches to work faster and make them again when they are gone."
 msgstr "프로그램은 빠르게 동작하려고 캐시를 두고, 없어지면 다시 만듭니다."
 
-#: internal/apps/disk/rules.go:355
+#: internal/apps/disk/rules.go:358
 msgid "A cache its program marked"
 msgstr "프로그램이 표시한 캐시"
 
-#: internal/apps/disk/rules.go:356
+#: internal/apps/disk/rules.go:359
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "프로그램이 캐시로 표시했습니다(CACHEDIR.TAG). 없어지면 다시 만듭니다."
 
@@ -1496,11 +1517,11 @@ msgstr "비디오"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
+#: internal/diskui/details.go:497
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
-#: ui/disk.ui:808
 #: ui/gpg.ui:1572
 #: ui/pass.ui:249
 #: ui/vm.ui:1464
@@ -1886,12 +1907,13 @@ msgid "Extend 2 years"
 msgstr "2년 연장"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:777
+#: ui/disk.ui:860
 msgid "Delete…"
 msgstr "삭제…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
+#: internal/diskui/details.go:547
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2077,7 +2099,7 @@ msgstr "복호화한 사본은 휴지통으로 가며 거기서 복원할 수 �
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:767
+#: ui/disk.ui:850
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2253,8 +2275,10 @@ msgstr "숨기기"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
+#: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
 #: internal/ui/askpass.go:203
+#: ui/disk.ui:698
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2901,7 +2925,7 @@ msgstr "이름"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:317
+#: internal/diskui/window.go:323
 msgid "System"
 msgstr "시스템"
 
@@ -3554,6 +3578,7 @@ msgstr "알 수 없는 블록 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/diskui/dialog.go:92
 #: internal/filesui/archive.go:49
 #: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:347
@@ -3575,7 +3600,6 @@ msgstr "알 수 없는 블록 %q"
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
-#: ui/disk.ui:817
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -4486,102 +4510,102 @@ msgstr "일반 텍스트 열기"
 msgid "Disk Usage"
 msgstr "디스크 사용량"
 
-#: internal/diskui/details.go:44
+#: internal/diskui/details.go:49
 msgid "%s file"
 msgid_plural "%s files"
 msgstr[0] "파일 %s개"
 
-#: internal/diskui/details.go:47
+#: internal/diskui/details.go:52
 msgid "changed %s"
 msgstr "%s에 변경"
 
-#: internal/diskui/details.go:47
+#: internal/diskui/details.go:52
 msgid "2006-01-02"
 msgstr "2006년 1월 2일"
 
-#: internal/diskui/details.go:50
+#: internal/diskui/details.go:55
 msgid "some of it could not be read"
 msgstr "일부를 읽을 수 없었습니다"
 
-#: internal/diskui/details.go:70
+#: internal/diskui/details.go:75
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:153
 msgid "Checking…"
 msgstr "확인 중..."
 
-#: internal/diskui/details.go:99
+#: internal/diskui/details.go:104
 msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
 msgstr "1 MB보다 작은 여러 파일입니다. 파일에서 폴더를 열어 살펴보세요."
 
-#: internal/diskui/details.go:103
+#: internal/diskui/details.go:108
 msgid "They are not one item to delete."
 msgstr "하나의 항목으로 삭제할 것이 아닙니다."
 
-#: internal/diskui/details.go:141
+#: internal/diskui/details.go:146
 msgid "No check settles it."
 msgstr "판단한 검사가 없습니다."
 
-#: internal/diskui/details.go:152
-#: internal/diskui/details.go:323
-#: internal/diskui/details.go:372
+#: internal/diskui/details.go:156
+#: internal/diskui/details.go:324
+#: internal/diskui/details.go:373
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "확인 중…"
 
-#: internal/diskui/details.go:154
+#: internal/diskui/details.go:158
 #: internal/shell/launcher.go:379
-#: ui/disk.ui:687
+#: ui/disk.ui:770
 msgid "Ask the assistant"
 msgstr "어시스턴트에게 물어보세요"
 
-#: internal/diskui/details.go:157
+#: internal/diskui/details.go:161
 msgid "The assistant: %s"
 msgstr "어시스턴트: %s"
 
-#: internal/diskui/details.go:170
+#: internal/diskui/details.go:174
 msgid "It is the place scanned: choose what is in it."
 msgstr "스캔한 위치 자체입니다. 안의 항목을 고르세요."
 
-#: internal/diskui/details.go:172
+#: internal/diskui/details.go:176
 msgid "Kept: the checks above say why."
 msgstr "유지합니다. 이유는 위의 검사에 있습니다."
 
-#: internal/diskui/details.go:174
+#: internal/diskui/details.go:178
 msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
 msgstr "필요할 때 돌아옵니다. 휴지통은 비울 때까지 보관하고, 삭제는 바로 공간을 비웁니다."
 
-#: internal/diskui/details.go:176
+#: internal/diskui/details.go:180
 msgid "Look inside before deleting: it may hold your work, settings or history."
 msgstr "삭제하기 전에 안을 확인하세요. 작업, 설정, 기록이 있을 수 있습니다."
 
-#: internal/diskui/details.go:178
+#: internal/diskui/details.go:182
 msgid "No check settled it: look inside first, or ask the assistant."
 msgstr "판단한 검사가 없습니다. 먼저 안을 확인하거나 어시스턴트에게 물어보세요."
 
-#: internal/diskui/details.go:291
+#: internal/diskui/details.go:292
 msgid "it answered %q"
 msgstr "%q(이)라고 답했습니다"
 
-#: internal/diskui/details.go:301
+#: internal/diskui/details.go:302
 msgid "The assistant could not decide: %v"
 msgstr "어시스턴트가 판단하지 못했습니다: %v"
 
-#: internal/diskui/details.go:352
+#: internal/diskui/details.go:353
 msgid "The assistant could not answer: %v"
 msgstr "어시스턴트가 답하지 못했습니다: %v"
 
-#: internal/diskui/details.go:357
-#: internal/diskui/details.go:385
-#: ui/disk.ui:885
+#: internal/diskui/details.go:358
+#: internal/diskui/details.go:386
+#: ui/disk.ui:926
 msgid "Explain"
 msgstr "설명"
 
-#: internal/diskui/details.go:383
+#: internal/diskui/details.go:384
 msgid "Explain again"
 msgstr "다시 설명"
 
-#: internal/diskui/details.go:411
+#: internal/diskui/details.go:412
 msgid "Cannot open it in Files: %v"
 msgstr "파일에서 열 수 없습니다: %v"
 
@@ -4597,11 +4621,77 @@ msgstr "휴지통으로 이동 중…"
 msgid "Cannot delete %s: %v"
 msgstr "%s을(를) 삭제할 수 없습니다: %v"
 
-#: internal/diskui/window.go:275
-msgid "Delete %s for good? This cannot be undone."
-msgstr "%s을(를) 영구히 삭제할까요? 되돌릴 수 없습니다."
+#: internal/diskui/details.go:446
+msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
+msgstr "%s을(를) 휴지통으로 옮겼습니다. %s은(는) 휴지통을 비우면 확보됩니다."
 
-#: internal/diskui/window.go:315
+#: internal/diskui/details.go:448
+msgid "Deleted %s: %s freed."
+msgstr "%s 삭제함: %s 확보."
+
+#: internal/diskui/details.go:492
+msgid "%s in %s file. It does not go to the trash; this cannot be undone."
+msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
+msgstr[0] "%s, 파일 %s개. 휴지통으로 가지 않으며 되돌릴 수 없습니다."
+
+#: internal/diskui/details.go:495
+msgid "%s. It does not go to the trash; this cannot be undone."
+msgstr "%s. 휴지통으로 가지 않으며 되돌릴 수 없습니다."
+
+#: internal/diskui/details.go:497
+msgid "Delete %s for good?"
+msgstr "%s을(를) 영구히 삭제할까요?"
+
+#: internal/diskui/details.go:521
+#: internal/ui/settings_bench.go:187
+#: internal/ui/settings_bench.go:332
+msgid "Running…"
+msgstr "실행 중…"
+
+#: internal/diskui/details.go:523
+#: internal/diskui/details.go:570
+#: ui/disk.ui:707
+msgid "Run"
+msgstr "실행"
+
+#: internal/diskui/details.go:529
+#: internal/diskui/details.go:568
+msgid "It runs as root: inua asks for your password first."
+msgstr "root로 실행됩니다. 먼저 inua가 비밀번호를 묻습니다."
+
+#: internal/diskui/details.go:531
+msgid "It runs in %s."
+msgstr "%s에서 실행됩니다."
+
+#: internal/diskui/details.go:565
+msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
+msgstr "%s에서 실행되어 %s(지금 %s)을(를) 정리합니다. 끝나면 inua가 다시 잽니다."
+
+#: internal/diskui/details.go:570
+msgid "Run the clean command?"
+msgstr "정리 명령을 실행할까요?"
+
+#: internal/diskui/details.go:593
+msgid "%s ended with an error: %v"
+msgstr "%s이(가) 오류로 끝났습니다: %v"
+
+#: internal/diskui/details.go:596
+msgid "Cannot measure it again: %v"
+msgstr "다시 잴 수 없습니다: %v"
+
+#: internal/diskui/details.go:608
+msgid "Done: %s freed."
+msgstr "완료: %s 확보."
+
+#: internal/diskui/details.go:610
+msgid "Done: it freed no room here."
+msgstr "완료: 여기서는 공간이 늘지 않았습니다."
+
+#: internal/diskui/details.go:613
+msgid "%s removed %s: %s freed."
+msgstr "%s이(가) %s을(를) 지웠습니다: %s 확보."
+
+#: internal/diskui/window.go:321
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4609,119 +4699,119 @@ msgstr "%s을(를) 영구히 삭제할까요? 되돌릴 수 없습니다."
 msgid "Home"
 msgstr "홈"
 
-#: internal/diskui/window.go:345
-#: internal/diskui/window.go:542
+#: internal/diskui/window.go:351
+#: internal/diskui/window.go:548
 msgid "Scanning…"
 msgstr "스캔 중…"
 
-#: internal/diskui/window.go:349
+#: internal/diskui/window.go:355
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 남음 / %s"
 
-#: internal/diskui/window.go:361
+#: internal/diskui/window.go:367
 msgid "Scan a place first"
 msgstr "먼저 위치를 스캔하세요"
 
-#: internal/diskui/window.go:364
+#: internal/diskui/window.go:370
 msgid "%s · %s safe"
 msgstr "%s · 안전 %s"
 
-#: internal/diskui/window.go:434
+#: internal/diskui/window.go:440
 msgid "Choose a folder to scan"
 msgstr "스캔할 폴더 선택"
 
-#: internal/diskui/window.go:507
+#: internal/diskui/window.go:513
 msgid "Scan again"
 msgstr "다시 스캔"
 
-#: internal/diskui/window.go:511
+#: internal/diskui/window.go:517
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "스캔"
 
-#: internal/diskui/window.go:518
+#: internal/diskui/window.go:524
 msgid "your home"
 msgstr "홈"
 
-#: internal/diskui/window.go:520
+#: internal/diskui/window.go:526
 msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
 msgstr "아직 스캔하지 않았습니다. 스캔하면 이 디스크에 있는 %s의 모든 폴더를 재고, 개발, 에이전트, 프로그램 폴더를 찾습니다."
 
-#: internal/diskui/window.go:537
+#: internal/diskui/window.go:543
 msgid "%s used of %s"
 msgstr "%[2]s 중 %[1]s 사용"
 
-#: internal/diskui/window.go:545
+#: internal/diskui/window.go:551
 msgid "%s in %s files · %s"
 msgstr "%s · 파일 %s개 · %s"
 
-#: internal/diskui/window.go:545
+#: internal/diskui/window.go:551
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:563
+#: internal/diskui/window.go:569
 msgid "%s files · %s · %.0f s"
 msgstr "파일 %s개 · %s · %.0f초"
 
-#: internal/diskui/window.go:609
+#: internal/diskui/window.go:615
 msgid "Cannot scan %s: %v"
 msgstr "%s을(를) 스캔할 수 없습니다: %v"
 
-#: internal/diskui/window.go:731
+#: internal/diskui/window.go:737
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "작은 파일 %d개"
 
-#: internal/diskui/window.go:766
+#: internal/diskui/window.go:772
 msgid "counted"
 msgstr "집계됨"
 
-#: internal/diskui/window.go:791
+#: internal/diskui/window.go:797
 msgid "free"
 msgstr "여유"
 
-#: internal/diskui/window.go:793
+#: internal/diskui/window.go:799
 msgid "Not scanned"
 msgstr "스캔 안 함"
 
-#: internal/diskui/window.go:810
+#: internal/diskui/window.go:816
 msgid "Other"
 msgstr "기타"
 
-#: internal/diskui/window.go:873
+#: internal/diskui/window.go:879
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "%d개 더"
 
-#: internal/diskui/window.go:884
+#: internal/diskui/window.go:890
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "이 폴더는 비어 있습니다."
 
-#: internal/diskui/window.go:940
+#: internal/diskui/window.go:946
 msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
 msgstr "의존성, 빌드 출력, 툴체인, 패키지 캐시: 대부분 명령 하나로 돌아옵니다."
 
-#: internal/diskui/window.go:941
+#: internal/diskui/window.go:947
 msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
 msgstr "코딩 에이전트의 대화, 워크트리, 캐시와 다운로드한 AI 모델."
 
-#: internal/diskui/window.go:942
+#: internal/diskui/window.go:948
 msgid "Programs' caches, packages downloaded and the trash."
 msgstr "프로그램의 캐시, 다운로드한 패키지, 휴지통."
 
-#: internal/diskui/window.go:960
+#: internal/diskui/window.go:966
 msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
 msgstr "아직 스캔한 것이 없습니다. 위치를 스캔하면 이 종류의 것이 여기에 나옵니다."
 
-#: internal/diskui/window.go:962
+#: internal/diskui/window.go:968
 msgid "Nothing of this kind in the places scanned."
 msgstr "스캔한 위치에 이 종류의 것이 없습니다."
 
-#: internal/diskui/window.go:965
+#: internal/diskui/window.go:971
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s · 폴더 %d개 · %s 안전하게 삭제 가능"
@@ -5610,10 +5700,6 @@ msgstr "%s의 SSH 호스트 키를 모르거나 바뀌었습니다. 먼저 ssh�
 #: internal/filesui/remote.go:351
 msgid "%s does not answer."
 msgstr "%s이(가) 응답하지 않습니다."
-
-#: internal/filesui/remote.go:353
-msgid "%s is not there."
-msgstr "%s이(가) 없습니다."
 
 #: internal/filesui/remote.go:355
 msgid "%s has files in it: a disk is mounted only on an empty folder."
@@ -10928,11 +11014,6 @@ msgstr "모델이 올바른 항목을 고르지 않았습니다"
 msgid "Run again"
 msgstr "다시 실행"
 
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
-msgid "Running…"
-msgstr "실행 중…"
-
 #: internal/ui/settings_bench.go:296
 msgid "Show what the model answered"
 msgstr "모델의 응답 보기"
@@ -12165,31 +12246,31 @@ msgstr "맵이나 목록에서 항목을 고르면 그것이 무엇인지, 삭�
 msgid "[ITEM]"
 msgstr "[항목]"
 
-#: ui/disk.ui:576
+#: ui/disk.ui:587
 msgid "Show on the map"
 msgstr "맵에서 보기"
 
-#: ui/disk.ui:585
+#: ui/disk.ui:596
 msgid "Show in Files"
 msgstr "파일에서 보기"
 
-#: ui/disk.ui:619
+#: ui/disk.ui:630
 msgid "[CAN IT GO]"
 msgstr "[삭제해도 되나]"
 
-#: ui/disk.ui:658
+#: ui/disk.ui:670
 msgid "The proper way to clean it:"
 msgstr "올바른 정리 방법:"
 
-#: ui/disk.ui:744
+#: ui/disk.ui:827
 msgid "[DELETE]"
 msgstr "[삭제]"
 
-#: ui/disk.ui:874
+#: ui/disk.ui:915
 msgid "[WHAT IS IT]"
 msgstr "[무엇인가]"
 
-#: ui/disk.ui:927
+#: ui/disk.ui:968
 msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
 msgstr "어시스턴트에게는 경로, 크기, 안의 가장 큰 항목 이름만 보내며 파일 내용은 보내지 않습니다."
 

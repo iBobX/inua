@@ -104,6 +104,9 @@ type Rule struct {
 	Verdict Verdict // whether it can go
 	Why     string  // why, in a sentence
 	Clean   string  // the proper way to clean it, a command; "" for none
+	// Terminal: Clean asks before it deletes, or wants more than the
+	// folder, so the user runs it in a terminal rather than inua.
+	Terminal bool
 
 	// Where: a folder called Name anywhere, or the path Home under the
 	// home (a last element * is any folder there), or the absolute Abs.
@@ -183,7 +186,7 @@ var Rules = []*Rule{
 		Clean: "ollama rm MODEL"},
 	{Kind: KindAgent, Home: ".cache/huggingface", What: i18n.M("Hugging Face models and datasets"), Verdict: Safe,
 		Why:   i18n.M("Downloaded again by the program that asks for them."),
-		Clean: "huggingface-cli delete-cache"},
+		Clean: "huggingface-cli delete-cache", Terminal: true},
 	{Kind: KindAgent, Home: ".cache/torch", What: i18n.M("PyTorch models"), Verdict: Safe,
 		Why: i18n.M("Downloaded again by the program that asks for them.")},
 	{Kind: KindAgent, Home: ".lmstudio/models", What: i18n.M("LM Studio models"), Verdict: Review,
@@ -278,7 +281,7 @@ var Rules = []*Rule{
 	{Kind: KindDev, Home: ".cache/pypoetry", What: i18n.M("Poetry cache"), Verdict: Safe,
 		Why: i18n.M("Packages Poetry downloaded; it downloads them again.")},
 	{Kind: KindDev, Home: ".conda/pkgs", What: i18n.M("Conda packages"), Verdict: Safe,
-		Why: i18n.M("Packages Conda downloaded; it downloads them again."), Clean: "conda clean --all"},
+		Why: i18n.M("Packages Conda downloaded; it downloads them again."), Clean: "conda clean --all --yes"},
 
 	// JVM, Android.
 	{Kind: KindDev, Home: ".gradle/caches", What: i18n.M("Gradle cache"), Verdict: Safe,
@@ -304,7 +307,7 @@ var Rules = []*Rule{
 	{Kind: KindDev, Home: ".cache/ccache", What: i18n.M("ccache"), Verdict: Safe,
 		Why: i18n.M("Compiled files kept to build faster; the next build makes them again."), Clean: "ccache -C"},
 	{Kind: KindDev, Home: ".cache/bazel", What: i18n.M("Bazel cache"), Verdict: Safe,
-		Why: i18n.M("Build results kept to skip work; the next build makes them again."), Clean: "bazel clean --expunge"},
+		Why: i18n.M("Build results kept to skip work; the next build makes them again."), Clean: "bazel clean --expunge", Terminal: true},
 	{Kind: KindDev, Home: ".cache/JetBrains", What: i18n.M("JetBrains caches"), Verdict: Safe,
 		Why: i18n.M("Indexes the IDEs make again when they open a project.")},
 	{Kind: KindDev, Home: ".vscode/extensions", What: i18n.M("VS Code extensions"), Verdict: Review,
@@ -317,10 +320,10 @@ var Rules = []*Rule{
 		Why: i18n.M("VS Code makes it again.")},
 	{Kind: KindDev, Home: ".local/share/containers/storage", What: i18n.M("Podman images and containers"), Verdict: Keep,
 		Why:   i18n.M("Podman's images and containers; deleting the folder breaks Podman. Remove them with podman."),
-		Clean: "podman system prune"},
+		Clean: "podman system prune", Terminal: true},
 	{Kind: KindDev, Abs: "/var/lib/docker", What: i18n.M("Docker images and containers"), Verdict: Keep,
 		Why:   i18n.M("Docker's images, containers and volumes; deleting the folder breaks Docker. Remove them with docker."),
-		Clean: "docker system prune"},
+		Clean: "docker system prune", Terminal: true},
 	{Kind: KindDev, Name: ".git", What: i18n.M("Git history"), Verdict: Keep,
 		Why: i18n.M("The project's history, branches and stashes; what is not pushed exists only here.")},
 
@@ -335,10 +338,10 @@ var Rules = []*Rule{
 		Why: i18n.M("Packages and lists DNF downloaded."), Clean: "sudo dnf clean all"},
 	{Kind: KindCache, Abs: "/var/lib/flatpak", What: i18n.M("Flatpak apps"), Verdict: Keep,
 		Why:   i18n.M("Installed Flatpak apps and runtimes; remove the ones not used with flatpak."),
-		Clean: "flatpak uninstall --unused"},
+		Clean: "flatpak uninstall --unused", Terminal: true},
 	{Kind: KindCache, Home: ".local/share/flatpak", What: i18n.M("Flatpak apps"), Verdict: Keep,
 		Why:   i18n.M("Installed Flatpak apps and runtimes; remove the ones not used with flatpak."),
-		Clean: "flatpak uninstall --unused"},
+		Clean: "flatpak uninstall --unused", Terminal: true},
 	{Kind: KindCache, Abs: "/var/log/journal", What: i18n.M("System logs"), Verdict: Keep,
 		Why:   i18n.M("The system's journal; shrink it with journalctl rather than deleting files."),
 		Clean: "sudo journalctl --vacuum-size=200M"},
@@ -351,7 +354,7 @@ var Rules = []*Rule{
 // marks every target folder so, wherever CARGO_TARGET_DIR puts it.
 var (
 	rustTarget = &Rule{Kind: KindDev, What: i18n.M("Rust build"), Verdict: Safe,
-		Why: i18n.M("Built from the project's sources; cargo build makes it again."), Clean: "cargo clean"}
+		Why: i18n.M("Built from the project's sources; cargo build makes it again.")}
 	taggedCache = &Rule{Kind: KindCache, What: i18n.M("A cache its program marked"), Verdict: Safe,
 		Why: i18n.M("Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone.")}
 )

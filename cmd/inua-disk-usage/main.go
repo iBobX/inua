@@ -159,8 +159,8 @@ func runWhy(path string) int {
 	} else {
 		fmt.Println(r.Verdict.Name())
 	}
-	if r.Clean != "" {
-		fmt.Println(i18n.T("The proper way:"), r.Clean)
+	if r.Command.Text != "" {
+		fmt.Println(i18n.T("The proper way:"), r.Command.Text)
 	}
 	return 0
 }

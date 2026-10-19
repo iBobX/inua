@@ -364,3 +364,84 @@ func TestSizeAndMounts(t *testing.T) {
 }
 
 func rgba(r, g, b uint8) color.NRGBA { return color.NRGBA{r, g, b, 255} }
+
+func TestCleanCommand(t *testing.T) {
+	old := LookPath
+	t.Cleanup(func() { LookPath = old })
+	installed := map[string]bool{"go": true, "paccache": true, "pkexec": true, "rm": true}
+	LookPath = func(p string) (string, error) {
+		if installed[p] {
+			return "/usr/bin/" + p, nil
+		}
+		return "", errors.New("not found")
+	}
+	home := "/home/u"
+	for _, c := range []struct {
+		clean, path string
+		terminal    bool
+		args        string
+		root        bool
+		not         string
+	}{
+		{"go clean -cache", "/home/u/.cache/go-build", false, "go clean -cache", false, ""},
+		{"sudo paccache -r", "/var/cache/pacman/pkg", false, "pkexec paccache -r", true, ""},
+		{"rm -rf ~/.npm/_npx", "/home/u/.npm/_npx", false, "rm -rf /home/u/.npm/_npx", false, ""},
+		{"git worktree remove PATH/NAME", "/home/u/p/.claude/worktrees", false, "git worktree remove /home/u/p/.claude/worktrees/NAME", false, "name"},
+		{"ollama rm MODEL", "/home/u/.ollama/models", false, "ollama rm MODEL", false, "name"},
+		{"docker system prune", "/var/lib/docker", true, "docker system prune", false, "terminal"},
+		{"cargo clean", "/home/u/p/target", false, "cargo clean", false, "cargo is not installed"},
+	} {
+		got := CleanCommand(&Rule{Clean: c.clean, Terminal: c.terminal}, c.path, home)
+		if strings.Join(got.Args, " ") != c.args || got.Root != c.root || got.Dir != filepath.Dir(c.path) {
+			t.Errorf("%s: %+v", c.clean, got)
+		}
+		if (got.Not == "") != (c.not == "") || c.not != "" && c.not != "name" && c.not != "terminal" && !strings.Contains(got.Not, c.not) {
+			t.Errorf("%s: why not %q, want %q", c.clean, got.Not, c.not)
+		}
+	}
+	if got := CleanCommand(&Rule{Clean: "git worktree remove PATH/NAME"}, "/home/u/p/.claude/worktrees", home); got.Text != "git worktree remove ~/p/.claude/worktrees/NAME" {
+		t.Errorf("text = %q", got.Text)
+	}
+	if got := CleanCommand(&Rule{}, "/x", home); got.Text != "" || got.Args != nil {
+		t.Errorf("no command: %+v", got)
+	}
+}
+
+func TestRunAndReplace(t *testing.T) {
+	dir := t.TempDir()
+	tree(t, dir, map[string]int{"cache/a": 2 << 20, "cache/b": 2 << 20, "keep/x": 2 << 20})
+	root, err := Scan(context.Background(), dir, Options{}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cache := root.Find(filepath.Join(dir, "cache"))
+	out, err := Run(context.Background(), Command{Args: []string{"sh", "-c", "rm a; echo cleaned"}, Dir: cache.Path()})
+	if err != nil || out != "cleaned" {
+		t.Fatalf("run: %q %v", out, err)
+	}
+	before := root.Size
+	fresh, err := Rescan(context.Background(), cache, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	freed := cache.Size - fresh.Size
+	cache.Replace(fresh)
+	if freed < 2<<20 || root.Size != before-freed || cache.Kids[0].Parent != cache {
+		t.Errorf("after the command: freed %d, root %d from %d", freed, root.Size, before)
+	}
+	if _, err := Run(context.Background(), Command{Args: []string{"sh", "-c", "echo no >&2; exit 3"}, Dir: dir}); err == nil {
+		t.Error("a failing command reports no error")
+	}
+	if _, err := Run(context.Background(), Command{Args: []string{"x"}, Not: "cannot"}); err == nil || err.Error() != "cannot" {
+		t.Errorf("a command inua cannot run: %v", err)
+	}
+	os.RemoveAll(cache.Path())
+	fresh, err = Rescan(context.Background(), cache, "")
+	if fresh != nil || err != nil {
+		t.Fatalf("a folder gone: %v %v", fresh, err)
+	}
+	cache.Replace(nil)
+	if root.Find(filepath.Join(dir, "cache")) != nil {
+		t.Error("a folder gone is still in the tree")
+	}
+}

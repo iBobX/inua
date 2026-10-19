@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:220
+#: internal/diskui/details.go:221
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "助手关闭。在“设置”→“AI”中将其打开。"
 
@@ -24,7 +24,7 @@ msgid "No API key for %s: type one and Save first."
 msgstr "%s 没有 API 密钥：请先填写并保存。"
 
 #: cmd/inua-assistant/mcp.go:57
-#: internal/apps/disk/rules.go:172
+#: internal/apps/disk/rules.go:175
 msgid "inua's assistant"
 msgstr "inua 助手"
 
@@ -324,122 +324,143 @@ msgid "Sent %d file to %s"
 msgid_plural "Sent %d files to %s"
 msgstr[0] "已将 %d 个文件发送到 %s"
 
-#: internal/apps/disk/decide.go:69
-#: internal/apps/disk/decide.go:72
+#: internal/apps/disk/command.go:47
+msgid "Fill in the name it asks for, and run it in a terminal."
+msgstr "填入它要求的名称，然后在终端中运行。"
+
+#: internal/apps/disk/command.go:52
+msgid "It asks before it deletes: run it in a terminal."
+msgstr "它会在删除前询问：请在终端中运行。"
+
+#: internal/apps/disk/command.go:61
+#: internal/filesui/remote.go:353
+msgid "%s is not there."
+msgstr "%s 不存在。"
+
+#: internal/apps/disk/command.go:64
+msgid "%s is not installed."
+msgstr "%s 未安装。"
+
+#: internal/apps/disk/command.go:67
+msgid "It needs root, and pkexec is not installed: run it in a terminal with sudo."
+msgstr "它需要 root，但未安装 pkexec：请在终端中用 sudo 运行。"
+
+#: internal/apps/disk/decide.go:68
+#: internal/apps/disk/decide.go:71
 msgid "Part of the system, or one of your main folders?"
 msgstr "属于系统，或是你的主要文件夹？"
 
-#: internal/apps/disk/decide.go:72
+#: internal/apps/disk/decide.go:71
 msgid "No."
 msgstr "否。"
 
-#: internal/apps/disk/decide.go:81
+#: internal/apps/disk/decide.go:80
 msgid "No: the folder it is in is not yours, so only root can delete it."
 msgstr "否：它所在的文件夹不属于你，只有 root 能删除。"
 
-#: internal/apps/disk/decide.go:83
+#: internal/apps/disk/decide.go:82
 msgid "Clean it with the command below instead."
 msgstr "请改用下面的命令清理。"
 
-#: internal/apps/disk/decide.go:85
-#: internal/apps/disk/decide.go:88
+#: internal/apps/disk/decide.go:84
+#: internal/apps/disk/decide.go:87
 msgid "Yours to delete?"
 msgstr "你能删除吗？"
 
-#: internal/apps/disk/decide.go:88
+#: internal/apps/disk/decide.go:87
 msgid "Yes."
 msgstr "是。"
 
-#: internal/apps/disk/decide.go:92
-#: internal/apps/disk/decide.go:100
-#: internal/apps/disk/decide.go:104
-#: internal/apps/disk/decide.go:109
-#: internal/apps/disk/decide.go:111
-#: internal/apps/disk/decide.go:114
+#: internal/apps/disk/decide.go:91
+#: internal/apps/disk/decide.go:99
+#: internal/apps/disk/decide.go:103
+#: internal/apps/disk/decide.go:108
+#: internal/apps/disk/decide.go:110
+#: internal/apps/disk/decide.go:113
 msgid "Kept by git?"
 msgstr "由 git 管理？"
 
-#: internal/apps/disk/decide.go:92
+#: internal/apps/disk/decide.go:91
 msgid "It is a project's git history: what is not pushed exists only here."
 msgstr "这是项目的 git 历史：未推送的内容只存在于这里。"
 
-#: internal/apps/disk/decide.go:104
+#: internal/apps/disk/decide.go:103
 msgid "Its files are part of the project in %s: delete them with git, so the project knows."
 msgstr "它的文件属于 %s 中的项目：请用 git 删除，让项目知道。"
 
-#: internal/apps/disk/decide.go:109
+#: internal/apps/disk/decide.go:108
 msgid "No: the project in %s ignores it, which is usual for what is built or downloaded."
 msgstr "否：%s 中的项目忽略了它，构建或下载生成的内容通常如此。"
 
-#: internal/apps/disk/decide.go:111
+#: internal/apps/disk/decide.go:110
 msgid "Not yet: it is new in the project in %s, not committed."
 msgstr "还没有：它是 %s 项目中的新内容，尚未提交。"
 
-#: internal/apps/disk/decide.go:114
+#: internal/apps/disk/decide.go:113
 msgid "No: it is in no git project."
 msgstr "否：它不在任何 git 项目中。"
 
-#: internal/apps/disk/decide.go:119
-#: internal/apps/disk/decide.go:122
+#: internal/apps/disk/decide.go:118
+#: internal/apps/disk/decide.go:121
 msgid "A kind inua knows?"
 msgstr "inua 认识的类型？"
 
-#: internal/apps/disk/decide.go:122
+#: internal/apps/disk/decide.go:121
 msgid "No rule knows it."
 msgstr "没有规则认识它。"
 
-#: internal/apps/disk/decide.go:146
+#: internal/apps/disk/decide.go:145
 msgid "It is a git project; git could not say what is not committed."
 msgstr "这是一个 git 项目；git 无法说明哪些内容未提交。"
 
-#: internal/apps/disk/decide.go:165
+#: internal/apps/disk/decide.go:164
 msgid "%d change not committed"
 msgid_plural "%d changes not committed"
 msgstr[0] "%d 处更改未提交"
 
-#: internal/apps/disk/decide.go:168
+#: internal/apps/disk/decide.go:167
 msgid "%d commit not pushed"
 msgid_plural "%d commits not pushed"
 msgstr[0] "%d 个提交未推送"
 
-#: internal/apps/disk/decide.go:172
+#: internal/apps/disk/decide.go:171
 msgid "It is a git project with %s: they exist only here."
 msgstr "这是一个有 %s 的 git 项目：它们只存在于这里。"
 
-#: internal/apps/disk/decide.go:172
+#: internal/apps/disk/decide.go:171
 msgid " and "
 msgstr "、"
 
-#: internal/apps/disk/decide.go:174
+#: internal/apps/disk/decide.go:173
 msgid "It is a git project with no remote: its history exists only here."
 msgstr "这是一个没有远程仓库的 git 项目：历史只存在于这里。"
 
-#: internal/apps/disk/decide.go:176
+#: internal/apps/disk/decide.go:175
 msgid "It is a git project, all committed and pushed: it can be cloned again."
 msgstr "这是一个已全部提交并推送的 git 项目：可以重新克隆。"
 
-#: internal/apps/disk/decide.go:185
-#: internal/apps/disk/decide.go:189
+#: internal/apps/disk/decide.go:184
+#: internal/apps/disk/decide.go:188
 msgid "It is part of the system."
 msgstr "它属于系统。"
 
-#: internal/apps/disk/decide.go:194
+#: internal/apps/disk/decide.go:193
 msgid "It is part of the system: programs keep their state there."
 msgstr "它属于系统：程序在那里保存状态。"
 
-#: internal/apps/disk/decide.go:200
+#: internal/apps/disk/decide.go:199
 msgid "It is your home folder."
 msgstr "这是你的主文件夹。"
 
-#: internal/apps/disk/decide.go:209
+#: internal/apps/disk/decide.go:208
 msgid "Your settings, keys or programs' data are kept there."
 msgstr "你的设置、密钥或程序数据保存在那里。"
 
-#: internal/apps/disk/decide.go:213
+#: internal/apps/disk/decide.go:212
 msgid "Your keys and passwords are kept there."
 msgstr "你的密钥和密码保存在那里。"
 
-#: internal/apps/disk/decide.go:219
+#: internal/apps/disk/decide.go:218
 msgid "It is one of your main folders: look inside it instead."
 msgstr "这是你的主要文件夹之一：请查看里面的内容。"
 
@@ -498,593 +519,593 @@ msgstr "需查看"
 msgid "KEEP"
 msgstr "保留"
 
-#: internal/apps/disk/rules.go:126
+#: internal/apps/disk/rules.go:129
 msgid "Claude Code conversations"
 msgstr "Claude Code 对话"
 
-#: internal/apps/disk/rules.go:127
+#: internal/apps/disk/rules.go:130
 msgid "Each conversation of Claude Code, by project; deleting them loses what claude --resume continues."
 msgstr "按项目保存的 Claude Code 对话；删除后 claude --resume 无法继续。"
 
-#: internal/apps/disk/rules.go:128
+#: internal/apps/disk/rules.go:131
 msgid "Claude Code shell snapshots"
 msgstr "Claude Code shell 快照"
 
-#: internal/apps/disk/rules.go:129
+#: internal/apps/disk/rules.go:132
 msgid "Claude Code takes them again when it starts a shell."
 msgstr "Claude Code 启动 shell 时会重新生成。"
 
-#: internal/apps/disk/rules.go:130
+#: internal/apps/disk/rules.go:133
 msgid "Claude Code task lists"
 msgstr "Claude Code 任务列表"
 
-#: internal/apps/disk/rules.go:131
+#: internal/apps/disk/rules.go:134
 msgid "The task lists of conversations that ended."
 msgstr "已结束对话的任务列表。"
 
-#: internal/apps/disk/rules.go:132
+#: internal/apps/disk/rules.go:135
 msgid "Claude Code file history"
 msgstr "Claude Code 文件历史"
 
-#: internal/apps/disk/rules.go:133
+#: internal/apps/disk/rules.go:136
 msgid "Copies of files before Claude Code changed them, for going back."
 msgstr "Claude Code 修改文件前的副本，用于回退。"
 
-#: internal/apps/disk/rules.go:134
+#: internal/apps/disk/rules.go:137
 msgid "Claude Code logs"
 msgstr "Claude Code 日志"
 
-#: internal/apps/disk/rules.go:135
-#: internal/apps/disk/rules.go:153
+#: internal/apps/disk/rules.go:138
+#: internal/apps/disk/rules.go:156
 msgid "Logs for finding faults; nothing reads them back."
 msgstr "用于排查问题的日志；没有程序会读回。"
 
-#: internal/apps/disk/rules.go:136
+#: internal/apps/disk/rules.go:139
 msgid "Claude Code plugins"
 msgstr "Claude Code 插件"
 
-#: internal/apps/disk/rules.go:137
+#: internal/apps/disk/rules.go:140
 msgid "Plugins installed in Claude Code; they are downloaded again when installed again."
 msgstr "安装在 Claude Code 中的插件；重新安装时会再次下载。"
 
-#: internal/apps/disk/rules.go:138
+#: internal/apps/disk/rules.go:141
 msgid "Claude Code"
 msgstr "Claude Code"
 
-#: internal/apps/disk/rules.go:139
+#: internal/apps/disk/rules.go:142
 msgid "Claude Code's settings, memory and conversations."
 msgstr "Claude Code 的设置、记忆和对话。"
 
-#: internal/apps/disk/rules.go:140
+#: internal/apps/disk/rules.go:143
 msgid "Claude Code versions"
 msgstr "Claude Code 版本"
 
-#: internal/apps/disk/rules.go:141
-#: internal/apps/disk/rules.go:146
+#: internal/apps/disk/rules.go:144
+#: internal/apps/disk/rules.go:149
 msgid "Each version its updates installed; only the newest is used, so the older ones can go."
 msgstr "每次更新安装的版本；只使用最新的，旧版本可以删除。"
 
-#: internal/apps/disk/rules.go:142
-#: internal/apps/disk/rules.go:147
+#: internal/apps/disk/rules.go:145
+#: internal/apps/disk/rules.go:150
 msgid "Agent worktrees"
 msgstr "代理工作树"
 
-#: internal/apps/disk/rules.go:143
-#: internal/apps/disk/rules.go:148
+#: internal/apps/disk/rules.go:146
+#: internal/apps/disk/rules.go:151
 msgid "Git worktrees an agent works in; their changes may not be committed yet."
 msgstr "代理工作所用的 git 工作树；其中的更改可能尚未提交。"
 
-#: internal/apps/disk/rules.go:145
+#: internal/apps/disk/rules.go:148
 msgid "Codex versions"
 msgstr "Codex 版本"
 
-#: internal/apps/disk/rules.go:150
+#: internal/apps/disk/rules.go:153
 msgid "Codex conversations"
 msgstr "Codex 对话"
 
-#: internal/apps/disk/rules.go:151
+#: internal/apps/disk/rules.go:154
 msgid "Codex's conversations; deleting them loses what codex resume continues."
 msgstr "Codex 的对话；删除后 codex resume 无法继续。"
 
-#: internal/apps/disk/rules.go:152
+#: internal/apps/disk/rules.go:155
 msgid "Codex logs"
 msgstr "Codex 日志"
 
-#: internal/apps/disk/rules.go:154
+#: internal/apps/disk/rules.go:157
 msgid "Codex"
 msgstr "Codex"
 
-#: internal/apps/disk/rules.go:155
+#: internal/apps/disk/rules.go:158
 msgid "Codex's settings and conversations."
 msgstr "Codex 的设置和对话。"
 
-#: internal/apps/disk/rules.go:156
+#: internal/apps/disk/rules.go:159
 msgid "Gemini CLI temporary files"
 msgstr "Gemini CLI 临时文件"
 
-#: internal/apps/disk/rules.go:157
+#: internal/apps/disk/rules.go:160
 msgid "Files the Gemini CLI keeps while it works."
 msgstr "Gemini CLI 工作时保留的文件。"
 
-#: internal/apps/disk/rules.go:158
+#: internal/apps/disk/rules.go:161
 msgid "Gemini CLI"
 msgstr "Gemini CLI"
 
-#: internal/apps/disk/rules.go:159
+#: internal/apps/disk/rules.go:162
 msgid "The Gemini CLI's settings and history."
 msgstr "Gemini CLI 的设置和历史。"
 
-#: internal/apps/disk/rules.go:160
+#: internal/apps/disk/rules.go:163
 msgid "Cursor extensions"
 msgstr "Cursor 扩展"
 
-#: internal/apps/disk/rules.go:161
+#: internal/apps/disk/rules.go:164
 msgid "Cursor downloads its extensions again."
 msgstr "Cursor 会重新下载其扩展。"
 
-#: internal/apps/disk/rules.go:162
-#: internal/apps/disk/rules.go:164
+#: internal/apps/disk/rules.go:165
+#: internal/apps/disk/rules.go:167
 msgid "Cursor"
 msgstr "Cursor"
 
-#: internal/apps/disk/rules.go:163
+#: internal/apps/disk/rules.go:166
 msgid "Cursor's settings and extensions."
 msgstr "Cursor 的设置和扩展。"
 
-#: internal/apps/disk/rules.go:165
+#: internal/apps/disk/rules.go:168
 msgid "Cursor's settings, history and caches."
 msgstr "Cursor 的设置、历史和缓存。"
 
-#: internal/apps/disk/rules.go:166
+#: internal/apps/disk/rules.go:169
 msgid "Aider"
 msgstr "Aider"
 
-#: internal/apps/disk/rules.go:167
+#: internal/apps/disk/rules.go:170
 msgid "Aider's settings and caches."
 msgstr "Aider 的设置和缓存。"
 
-#: internal/apps/disk/rules.go:168
+#: internal/apps/disk/rules.go:171
 #: ui/vm.ui:777
 msgid "Continue"
 msgstr "继续"
 
-#: internal/apps/disk/rules.go:169
+#: internal/apps/disk/rules.go:172
 msgid "Continue's settings, indexes and sessions."
 msgstr "Continue 的设置、索引和会话。"
 
-#: internal/apps/disk/rules.go:170
+#: internal/apps/disk/rules.go:173
 msgid "Windsurf and Codeium"
 msgstr "Windsurf 和 Codeium"
 
-#: internal/apps/disk/rules.go:171
+#: internal/apps/disk/rules.go:174
 msgid "Windsurf's and Codeium's settings and language servers."
 msgstr "Windsurf 和 Codeium 的设置与语言服务器。"
 
-#: internal/apps/disk/rules.go:173
+#: internal/apps/disk/rules.go:176
 msgid "The assistant's memory and tasks."
 msgstr "助手的记忆和任务。"
 
-#: internal/apps/disk/rules.go:174
+#: internal/apps/disk/rules.go:177
 msgid "npx packages"
 msgstr "npx 包"
 
-#: internal/apps/disk/rules.go:175
+#: internal/apps/disk/rules.go:178
 msgid "Packages npx downloaded to run, such as agents' MCP servers; it downloads them again."
 msgstr "npx 为运行而下载的包，例如代理的 MCP 服务器；它会重新下载。"
 
-#: internal/apps/disk/rules.go:178
 #: internal/apps/disk/rules.go:181
+#: internal/apps/disk/rules.go:184
 msgid "Ollama models"
 msgstr "Ollama 模型"
 
-#: internal/apps/disk/rules.go:179
 #: internal/apps/disk/rules.go:182
+#: internal/apps/disk/rules.go:185
 msgid "Models Ollama downloaded; delete the ones not used, and pull them again when needed."
 msgstr "Ollama 下载的模型；删除不用的，需要时再 pull。"
 
-#: internal/apps/disk/rules.go:184
+#: internal/apps/disk/rules.go:187
 msgid "Hugging Face models and datasets"
 msgstr "Hugging Face 模型和数据集"
 
-#: internal/apps/disk/rules.go:185
 #: internal/apps/disk/rules.go:188
+#: internal/apps/disk/rules.go:191
 msgid "Downloaded again by the program that asks for them."
 msgstr "需要它们的程序会重新下载。"
 
-#: internal/apps/disk/rules.go:187
+#: internal/apps/disk/rules.go:190
 msgid "PyTorch models"
 msgstr "PyTorch 模型"
 
-#: internal/apps/disk/rules.go:189
-#: internal/apps/disk/rules.go:191
+#: internal/apps/disk/rules.go:192
+#: internal/apps/disk/rules.go:194
 msgid "LM Studio models"
 msgstr "LM Studio 模型"
 
-#: internal/apps/disk/rules.go:190
-#: internal/apps/disk/rules.go:192
+#: internal/apps/disk/rules.go:193
+#: internal/apps/disk/rules.go:195
 msgid "Models LM Studio downloaded; it downloads them again when chosen."
 msgstr "LM Studio 下载的模型；选择时会重新下载。"
 
-#: internal/apps/disk/rules.go:193
+#: internal/apps/disk/rules.go:196
 msgid "Playwright browsers"
 msgstr "Playwright 浏览器"
 
-#: internal/apps/disk/rules.go:194
+#: internal/apps/disk/rules.go:197
 msgid "Browsers Playwright downloaded for agents and tests; it installs them again."
 msgstr "Playwright 为代理和测试下载的浏览器；它会重新安装。"
 
-#: internal/apps/disk/rules.go:195
+#: internal/apps/disk/rules.go:198
 msgid "Puppeteer browsers"
 msgstr "Puppeteer 浏览器"
 
-#: internal/apps/disk/rules.go:196
+#: internal/apps/disk/rules.go:199
 msgid "Browsers Puppeteer downloaded; it installs them again."
 msgstr "Puppeteer 下载的浏览器；它会重新安装。"
 
-#: internal/apps/disk/rules.go:199
+#: internal/apps/disk/rules.go:202
 msgid "npm packages"
 msgstr "npm 包"
 
-#: internal/apps/disk/rules.go:200
-#: internal/apps/disk/rules.go:261
-#: internal/apps/disk/rules.go:263
-#: internal/apps/disk/rules.go:273
+#: internal/apps/disk/rules.go:203
+#: internal/apps/disk/rules.go:264
+#: internal/apps/disk/rules.go:266
+#: internal/apps/disk/rules.go:276
 msgid "The project's packages; installing them again brings them back."
 msgstr "项目的依赖包；重新安装即可恢复。"
 
-#: internal/apps/disk/rules.go:201
+#: internal/apps/disk/rules.go:204
 msgid "npm cache"
 msgstr "npm 缓存"
 
-#: internal/apps/disk/rules.go:202
+#: internal/apps/disk/rules.go:205
 msgid "Packages npm downloaded; it downloads them again."
 msgstr "npm 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:203
-#: internal/apps/disk/rules.go:205
+#: internal/apps/disk/rules.go:206
+#: internal/apps/disk/rules.go:208
 msgid "Yarn cache"
 msgstr "Yarn 缓存"
 
-#: internal/apps/disk/rules.go:204
-#: internal/apps/disk/rules.go:206
+#: internal/apps/disk/rules.go:207
+#: internal/apps/disk/rules.go:209
 msgid "Packages Yarn downloaded; it downloads them again."
 msgstr "Yarn 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:207
-#: internal/apps/disk/rules.go:209
+#: internal/apps/disk/rules.go:210
+#: internal/apps/disk/rules.go:212
 msgid "pnpm store"
 msgstr "pnpm 存储"
 
-#: internal/apps/disk/rules.go:208
-#: internal/apps/disk/rules.go:210
+#: internal/apps/disk/rules.go:211
+#: internal/apps/disk/rules.go:213
 msgid "Packages pnpm downloaded; projects link to them, and it downloads them again."
 msgstr "pnpm 下载的包；项目链接到这里，它会重新下载。"
 
-#: internal/apps/disk/rules.go:211
+#: internal/apps/disk/rules.go:214
 msgid "Bun cache"
 msgstr "Bun 缓存"
 
-#: internal/apps/disk/rules.go:212
+#: internal/apps/disk/rules.go:215
 msgid "Packages Bun downloaded; it downloads them again."
 msgstr "Bun 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:213
+#: internal/apps/disk/rules.go:216
 msgid "Deno cache"
 msgstr "Deno 缓存"
 
-#: internal/apps/disk/rules.go:214
+#: internal/apps/disk/rules.go:217
 msgid "Modules Deno downloaded and compiled; it makes them again."
 msgstr "Deno 下载并编译的模块；它会重新生成。"
 
-#: internal/apps/disk/rules.go:215
+#: internal/apps/disk/rules.go:218
 msgid "Next.js build"
 msgstr "Next.js 构建"
 
-#: internal/apps/disk/rules.go:216
-#: internal/apps/disk/rules.go:218
-#: internal/apps/disk/rules.go:220
-#: internal/apps/disk/rules.go:291
+#: internal/apps/disk/rules.go:219
+#: internal/apps/disk/rules.go:221
+#: internal/apps/disk/rules.go:223
+#: internal/apps/disk/rules.go:294
 msgid "Built from the project's sources; the next build makes it again."
 msgstr "由项目源码构建；下次构建会重新生成。"
 
-#: internal/apps/disk/rules.go:217
+#: internal/apps/disk/rules.go:220
 msgid "Nuxt build"
 msgstr "Nuxt 构建"
 
-#: internal/apps/disk/rules.go:219
+#: internal/apps/disk/rules.go:222
 msgid "SvelteKit build"
 msgstr "SvelteKit 构建"
 
-#: internal/apps/disk/rules.go:221
+#: internal/apps/disk/rules.go:224
 msgid "Turborepo cache"
 msgstr "Turborepo 缓存"
 
-#: internal/apps/disk/rules.go:222
-#: internal/apps/disk/rules.go:224
-#: internal/apps/disk/rules.go:299
-#: internal/apps/disk/rules.go:301
-#: internal/apps/disk/rules.go:307
+#: internal/apps/disk/rules.go:225
+#: internal/apps/disk/rules.go:227
+#: internal/apps/disk/rules.go:302
+#: internal/apps/disk/rules.go:304
+#: internal/apps/disk/rules.go:310
 msgid "Build results kept to skip work; the next build makes them again."
 msgstr "为省去重复工作而保留的构建结果；下次构建会重新生成。"
 
-#: internal/apps/disk/rules.go:223
+#: internal/apps/disk/rules.go:226
 msgid "Parcel cache"
 msgstr "Parcel 缓存"
 
-#: internal/apps/disk/rules.go:227
+#: internal/apps/disk/rules.go:230
 msgid "Go build cache"
 msgstr "Go 构建缓存"
 
-#: internal/apps/disk/rules.go:228
+#: internal/apps/disk/rules.go:231
 msgid "Compiled packages kept to build faster; go build makes them again."
 msgstr "为加快构建而保留的已编译包；go build 会重新生成。"
 
-#: internal/apps/disk/rules.go:229
+#: internal/apps/disk/rules.go:232
 msgid "Go modules"
 msgstr "Go 模块"
 
-#: internal/apps/disk/rules.go:230
+#: internal/apps/disk/rules.go:233
 msgid "Modules Go downloaded; it downloads them again. Go makes them read-only: clean them with go."
 msgstr "Go 下载的模块；它会重新下载。Go 将其设为只读：请用 go 清理。"
 
-#: internal/apps/disk/rules.go:232
+#: internal/apps/disk/rules.go:235
 msgid "golangci-lint cache"
 msgstr "golangci-lint 缓存"
 
-#: internal/apps/disk/rules.go:233
-#: internal/apps/disk/rules.go:267
-#: internal/apps/disk/rules.go:269
-#: internal/apps/disk/rules.go:271
+#: internal/apps/disk/rules.go:236
+#: internal/apps/disk/rules.go:270
+#: internal/apps/disk/rules.go:272
+#: internal/apps/disk/rules.go:274
 msgid "Results kept to check faster; the next run makes them again."
 msgstr "为加快检查而保留的结果；下次运行会重新生成。"
 
-#: internal/apps/disk/rules.go:236
-#: internal/apps/disk/rules.go:256
-#: internal/apps/disk/rules.go:353
+#: internal/apps/disk/rules.go:239
+#: internal/apps/disk/rules.go:259
+#: internal/apps/disk/rules.go:356
 msgid "Rust build"
 msgstr "Rust 构建"
 
-#: internal/apps/disk/rules.go:237
-#: internal/apps/disk/rules.go:354
+#: internal/apps/disk/rules.go:240
+#: internal/apps/disk/rules.go:357
 msgid "Built from the project's sources; cargo build makes it again."
 msgstr "由项目源码构建；cargo build 会重新生成。"
 
-#: internal/apps/disk/rules.go:238
-#: internal/apps/disk/rules.go:240
+#: internal/apps/disk/rules.go:241
+#: internal/apps/disk/rules.go:243
 msgid "Cargo packages"
 msgstr "Cargo 包"
 
-#: internal/apps/disk/rules.go:239
-#: internal/apps/disk/rules.go:241
+#: internal/apps/disk/rules.go:242
+#: internal/apps/disk/rules.go:244
 msgid "Crates Cargo downloaded; it downloads them again."
 msgstr "Cargo 下载的 crate；它会重新下载。"
 
-#: internal/apps/disk/rules.go:242
+#: internal/apps/disk/rules.go:245
 msgid "Programs installed with Cargo"
 msgstr "用 Cargo 安装的程序"
 
-#: internal/apps/disk/rules.go:243
+#: internal/apps/disk/rules.go:246
 msgid "Programs cargo install built, and rustup's own commands; deleting them uninstalls them."
 msgstr "cargo install 构建的程序，以及 rustup 自己的命令；删除即卸载。"
 
-#: internal/apps/disk/rules.go:245
+#: internal/apps/disk/rules.go:248
 msgid "Rust toolchains"
 msgstr "Rust 工具链"
 
-#: internal/apps/disk/rules.go:246
+#: internal/apps/disk/rules.go:249
 msgid "The Rust versions installed; remove the ones not used with rustup."
 msgstr "已安装的 Rust 版本；用 rustup 移除不用的。"
 
-#: internal/apps/disk/rules.go:248
-#: internal/apps/disk/rules.go:250
+#: internal/apps/disk/rules.go:251
+#: internal/apps/disk/rules.go:253
 msgid "rustup downloads"
 msgstr "rustup 下载"
 
-#: internal/apps/disk/rules.go:249
-#: internal/apps/disk/rules.go:251
+#: internal/apps/disk/rules.go:252
+#: internal/apps/disk/rules.go:254
 msgid "Downloads rustup keeps while it installs; nothing needs them after."
 msgstr "rustup 安装时保留的下载；安装后不再需要。"
 
-#: internal/apps/disk/rules.go:252
+#: internal/apps/disk/rules.go:255
 msgid "sccache cache"
 msgstr "sccache 缓存"
 
-#: internal/apps/disk/rules.go:253
-#: internal/apps/disk/rules.go:305
+#: internal/apps/disk/rules.go:256
+#: internal/apps/disk/rules.go:308
 msgid "Compiled files kept to build faster; the next build makes them again."
 msgstr "为加快构建而保留的已编译文件；下次构建会重新生成。"
 
-#: internal/apps/disk/rules.go:254
+#: internal/apps/disk/rules.go:257
 msgid "rust-analyzer cache"
 msgstr "rust-analyzer 缓存"
 
-#: internal/apps/disk/rules.go:255
+#: internal/apps/disk/rules.go:258
 msgid "Indexes rust-analyzer makes again when it opens a project."
 msgstr "rust-analyzer 打开项目时会重新生成的索引。"
 
-#: internal/apps/disk/rules.go:257
+#: internal/apps/disk/rules.go:260
 msgid "Built from the projects' sources; cargo build makes it again."
 msgstr "由各项目源码构建；cargo build 会重新生成。"
 
-#: internal/apps/disk/rules.go:260
-#: internal/apps/disk/rules.go:262
+#: internal/apps/disk/rules.go:263
+#: internal/apps/disk/rules.go:265
 msgid "Python environment"
 msgstr "Python 环境"
 
-#: internal/apps/disk/rules.go:264
+#: internal/apps/disk/rules.go:267
 msgid "Python bytecode"
 msgstr "Python 字节码"
 
-#: internal/apps/disk/rules.go:265
+#: internal/apps/disk/rules.go:268
 msgid "Python compiles it again when it runs the code."
 msgstr "Python 运行代码时会重新编译。"
 
-#: internal/apps/disk/rules.go:266
+#: internal/apps/disk/rules.go:269
 msgid "pytest cache"
 msgstr "pytest 缓存"
 
-#: internal/apps/disk/rules.go:268
+#: internal/apps/disk/rules.go:271
 msgid "mypy cache"
 msgstr "mypy 缓存"
 
-#: internal/apps/disk/rules.go:270
+#: internal/apps/disk/rules.go:273
 msgid "Ruff cache"
 msgstr "Ruff 缓存"
 
-#: internal/apps/disk/rules.go:272
+#: internal/apps/disk/rules.go:275
 msgid "tox environments"
 msgstr "tox 环境"
 
-#: internal/apps/disk/rules.go:274
+#: internal/apps/disk/rules.go:277
 msgid "pip cache"
 msgstr "pip 缓存"
 
-#: internal/apps/disk/rules.go:275
+#: internal/apps/disk/rules.go:278
 msgid "Packages pip downloaded; it downloads them again."
 msgstr "pip 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:276
+#: internal/apps/disk/rules.go:279
 msgid "uv cache"
 msgstr "uv 缓存"
 
-#: internal/apps/disk/rules.go:277
+#: internal/apps/disk/rules.go:280
 msgid "Packages uv downloaded; it downloads them again."
 msgstr "uv 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:278
+#: internal/apps/disk/rules.go:281
 msgid "Poetry cache"
 msgstr "Poetry 缓存"
 
-#: internal/apps/disk/rules.go:279
+#: internal/apps/disk/rules.go:282
 msgid "Packages Poetry downloaded; it downloads them again."
 msgstr "Poetry 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:280
+#: internal/apps/disk/rules.go:283
 msgid "Conda packages"
 msgstr "Conda 包"
 
-#: internal/apps/disk/rules.go:281
+#: internal/apps/disk/rules.go:284
 msgid "Packages Conda downloaded; it downloads them again."
 msgstr "Conda 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:284
-#: internal/apps/disk/rules.go:302
+#: internal/apps/disk/rules.go:287
+#: internal/apps/disk/rules.go:305
 msgid "Gradle cache"
 msgstr "Gradle 缓存"
 
-#: internal/apps/disk/rules.go:285
-#: internal/apps/disk/rules.go:303
+#: internal/apps/disk/rules.go:288
+#: internal/apps/disk/rules.go:306
 msgid "Packages and build results Gradle keeps; it makes them again."
 msgstr "Gradle 保留的包和构建结果；它会重新生成。"
 
-#: internal/apps/disk/rules.go:286
+#: internal/apps/disk/rules.go:289
 msgid "Gradle versions"
 msgstr "Gradle 版本"
 
-#: internal/apps/disk/rules.go:287
+#: internal/apps/disk/rules.go:290
 msgid "Gradle versions projects asked for; they are downloaded again."
 msgstr "项目要求的 Gradle 版本；会重新下载。"
 
-#: internal/apps/disk/rules.go:288
+#: internal/apps/disk/rules.go:291
 msgid "Maven packages"
 msgstr "Maven 包"
 
-#: internal/apps/disk/rules.go:289
+#: internal/apps/disk/rules.go:292
 msgid "Packages Maven downloaded; it downloads them again."
 msgstr "Maven 下载的包；它会重新下载。"
 
-#: internal/apps/disk/rules.go:290
+#: internal/apps/disk/rules.go:293
 msgid "Gradle build"
 msgstr "Gradle 构建"
 
-#: internal/apps/disk/rules.go:292
+#: internal/apps/disk/rules.go:295
 msgid "Android emulators"
 msgstr "Android 模拟器"
 
-#: internal/apps/disk/rules.go:293
+#: internal/apps/disk/rules.go:296
 msgid "The emulators' phones, with what was installed on them."
 msgstr "模拟器中的手机，以及装在上面的内容。"
 
-#: internal/apps/disk/rules.go:294
+#: internal/apps/disk/rules.go:297
 msgid "Android SDK"
 msgstr "Android SDK"
 
-#: internal/apps/disk/rules.go:295
+#: internal/apps/disk/rules.go:298
 msgid "Android's tools and system images; the SDK manager installs them again."
 msgstr "Android 的工具和系统镜像；SDK 管理器可以重新安装。"
 
-#: internal/apps/disk/rules.go:298
-#: internal/apps/disk/rules.go:300
+#: internal/apps/disk/rules.go:301
+#: internal/apps/disk/rules.go:303
 msgid "Zig cache"
 msgstr "Zig 缓存"
 
-#: internal/apps/disk/rules.go:304
+#: internal/apps/disk/rules.go:307
 msgid "ccache"
 msgstr "ccache"
 
-#: internal/apps/disk/rules.go:306
+#: internal/apps/disk/rules.go:309
 msgid "Bazel cache"
 msgstr "Bazel 缓存"
 
-#: internal/apps/disk/rules.go:308
+#: internal/apps/disk/rules.go:311
 msgid "JetBrains caches"
 msgstr "JetBrains 缓存"
 
-#: internal/apps/disk/rules.go:309
+#: internal/apps/disk/rules.go:312
 msgid "Indexes the IDEs make again when they open a project."
 msgstr "IDE 打开项目时会重新生成的索引。"
 
-#: internal/apps/disk/rules.go:310
+#: internal/apps/disk/rules.go:313
 msgid "VS Code extensions"
 msgstr "VS Code 扩展"
 
-#: internal/apps/disk/rules.go:311
+#: internal/apps/disk/rules.go:314
 msgid "Extensions installed in VS Code; they are downloaded again when installed again."
 msgstr "安装在 VS Code 中的扩展；重新安装时会再次下载。"
 
-#: internal/apps/disk/rules.go:312
+#: internal/apps/disk/rules.go:315
 msgid "VS Code server"
 msgstr "VS Code 服务器"
 
-#: internal/apps/disk/rules.go:313
+#: internal/apps/disk/rules.go:316
 msgid "VS Code installs it again when it connects to this computer."
 msgstr "VS Code 连接到这台电脑时会重新安装。"
 
-#: internal/apps/disk/rules.go:314
-#: internal/apps/disk/rules.go:316
+#: internal/apps/disk/rules.go:317
+#: internal/apps/disk/rules.go:319
 msgid "VS Code cache"
 msgstr "VS Code 缓存"
 
-#: internal/apps/disk/rules.go:315
-#: internal/apps/disk/rules.go:317
+#: internal/apps/disk/rules.go:318
+#: internal/apps/disk/rules.go:320
 msgid "VS Code makes it again."
 msgstr "VS Code 会重新生成。"
 
-#: internal/apps/disk/rules.go:318
+#: internal/apps/disk/rules.go:321
 msgid "Podman images and containers"
 msgstr "Podman 镜像和容器"
 
-#: internal/apps/disk/rules.go:319
+#: internal/apps/disk/rules.go:322
 msgid "Podman's images and containers; deleting the folder breaks Podman. Remove them with podman."
 msgstr "Podman 的镜像和容器；删除文件夹会损坏 Podman。请用 podman 删除。"
 
-#: internal/apps/disk/rules.go:321
+#: internal/apps/disk/rules.go:324
 msgid "Docker images and containers"
 msgstr "Docker 镜像和容器"
 
-#: internal/apps/disk/rules.go:322
+#: internal/apps/disk/rules.go:325
 msgid "Docker's images, containers and volumes; deleting the folder breaks Docker. Remove them with docker."
 msgstr "Docker 的镜像、容器和卷；删除文件夹会损坏 Docker。请用 docker 删除。"
 
-#: internal/apps/disk/rules.go:324
+#: internal/apps/disk/rules.go:327
 msgid "Git history"
 msgstr "Git 历史"
 
-#: internal/apps/disk/rules.go:325
+#: internal/apps/disk/rules.go:328
 msgid "The project's history, branches and stashes; what is not pushed exists only here."
 msgstr "项目的历史、分支和 stash；未推送的内容只存在于这里。"
 
-#: internal/apps/disk/rules.go:328
+#: internal/apps/disk/rules.go:331
 #: internal/filesui/details.go:55
 #: internal/filesui/pane.go:1030
 #: internal/filesui/sidebar.go:54
@@ -1093,65 +1114,65 @@ msgstr "项目的历史、分支和 stash；未推送的内容只存在于这里
 msgid "Trash"
 msgstr "垃圾箱"
 
-#: internal/apps/disk/rules.go:329
+#: internal/apps/disk/rules.go:332
 msgid "What was moved to the trash; it takes room until the trash is emptied."
 msgstr "移到回收站的内容；在清空回收站之前一直占用空间。"
 
-#: internal/apps/disk/rules.go:330
+#: internal/apps/disk/rules.go:333
 msgid "pacman packages"
 msgstr "pacman 包"
 
-#: internal/apps/disk/rules.go:331
+#: internal/apps/disk/rules.go:334
 msgid "Packages pacman downloaded; old versions are needed only to go back to them."
 msgstr "pacman 下载的包；旧版本只在回退时需要。"
 
-#: internal/apps/disk/rules.go:332
+#: internal/apps/disk/rules.go:335
 msgid "APT packages"
 msgstr "APT 包"
 
-#: internal/apps/disk/rules.go:333
+#: internal/apps/disk/rules.go:336
 msgid "Packages APT downloaded and installed already."
 msgstr "APT 下载并已安装的包。"
 
-#: internal/apps/disk/rules.go:334
+#: internal/apps/disk/rules.go:337
 msgid "DNF cache"
 msgstr "DNF 缓存"
 
-#: internal/apps/disk/rules.go:335
+#: internal/apps/disk/rules.go:338
 msgid "Packages and lists DNF downloaded."
 msgstr "DNF 下载的包和列表。"
 
-#: internal/apps/disk/rules.go:336
 #: internal/apps/disk/rules.go:339
+#: internal/apps/disk/rules.go:342
 msgid "Flatpak apps"
 msgstr "Flatpak 应用"
 
-#: internal/apps/disk/rules.go:337
 #: internal/apps/disk/rules.go:340
+#: internal/apps/disk/rules.go:343
 msgid "Installed Flatpak apps and runtimes; remove the ones not used with flatpak."
 msgstr "已安装的 Flatpak 应用和运行时；用 flatpak 移除不用的。"
 
-#: internal/apps/disk/rules.go:342
+#: internal/apps/disk/rules.go:345
 msgid "System logs"
 msgstr "系统日志"
 
-#: internal/apps/disk/rules.go:343
+#: internal/apps/disk/rules.go:346
 msgid "The system's journal; shrink it with journalctl rather than deleting files."
 msgstr "系统日志；请用 journalctl 缩减，而不是删除文件。"
 
-#: internal/apps/disk/rules.go:345
+#: internal/apps/disk/rules.go:348
 msgid "A program's cache"
 msgstr "程序的缓存"
 
-#: internal/apps/disk/rules.go:346
+#: internal/apps/disk/rules.go:349
 msgid "Programs keep caches to work faster and make them again when they are gone."
 msgstr "程序为加快运行而保留缓存，没有了会重新生成。"
 
-#: internal/apps/disk/rules.go:355
+#: internal/apps/disk/rules.go:358
 msgid "A cache its program marked"
 msgstr "程序标记的缓存"
 
-#: internal/apps/disk/rules.go:356
+#: internal/apps/disk/rules.go:359
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "程序把它标记为缓存（CACHEDIR.TAG）：没有了会重新生成。"
 
@@ -1496,11 +1517,11 @@ msgstr "视频"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
+#: internal/diskui/details.go:497
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
 #: ui/clock.ui:231
-#: ui/disk.ui:808
 #: ui/gpg.ui:1572
 #: ui/pass.ui:249
 #: ui/vm.ui:1464
@@ -1886,12 +1907,13 @@ msgid "Extend 2 years"
 msgstr "延长 2 年"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:777
+#: ui/disk.ui:860
 msgid "Delete…"
 msgstr "删除…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
+#: internal/diskui/details.go:547
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2077,7 +2099,7 @@ msgstr "解密出的副本会移到回收站，可从那里恢复；加密文件
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:767
+#: ui/disk.ui:850
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2253,8 +2275,10 @@ msgstr "隐藏"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
+#: internal/diskui/details.go:550
 #: internal/filesui/window.go:729
 #: internal/ui/askpass.go:203
+#: ui/disk.ui:698
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2901,7 +2925,7 @@ msgstr "名称"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:317
+#: internal/diskui/window.go:323
 msgid "System"
 msgstr "系统"
 
@@ -3554,6 +3578,7 @@ msgstr "未知的组件 %q"
 
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
+#: internal/diskui/dialog.go:92
 #: internal/filesui/archive.go:49
 #: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:347
@@ -3575,7 +3600,6 @@ msgstr "未知的组件 %q"
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
-#: ui/disk.ui:817
 #: ui/files.ui:155
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
@@ -4486,102 +4510,102 @@ msgstr "打开纯文本"
 msgid "Disk Usage"
 msgstr "磁盘用量"
 
-#: internal/diskui/details.go:44
+#: internal/diskui/details.go:49
 msgid "%s file"
 msgid_plural "%s files"
 msgstr[0] "%s 个文件"
 
-#: internal/diskui/details.go:47
+#: internal/diskui/details.go:52
 msgid "changed %s"
 msgstr "修改于 %s"
 
-#: internal/diskui/details.go:47
+#: internal/diskui/details.go:52
 msgid "2006-01-02"
 msgstr "2006年1月2日"
 
-#: internal/diskui/details.go:50
+#: internal/diskui/details.go:55
 msgid "some of it could not be read"
 msgstr "部分内容无法读取"
 
-#: internal/diskui/details.go:70
+#: internal/diskui/details.go:75
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:153
 msgid "Checking…"
 msgstr "正在检查..."
 
-#: internal/diskui/details.go:99
+#: internal/diskui/details.go:104
 msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
 msgstr "各种小于 1 MB 的文件：在“文件”中打开文件夹查看。"
 
-#: internal/diskui/details.go:103
+#: internal/diskui/details.go:108
 msgid "They are not one item to delete."
 msgstr "它们不是一个可删除的项目。"
 
-#: internal/diskui/details.go:141
+#: internal/diskui/details.go:146
 msgid "No check settles it."
 msgstr "没有检查能判断。"
 
-#: internal/diskui/details.go:152
-#: internal/diskui/details.go:323
-#: internal/diskui/details.go:372
+#: internal/diskui/details.go:156
+#: internal/diskui/details.go:324
+#: internal/diskui/details.go:373
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "正在询问……"
 
-#: internal/diskui/details.go:154
+#: internal/diskui/details.go:158
 #: internal/shell/launcher.go:379
-#: ui/disk.ui:687
+#: ui/disk.ui:770
 msgid "Ask the assistant"
 msgstr "询问助理"
 
-#: internal/diskui/details.go:157
+#: internal/diskui/details.go:161
 msgid "The assistant: %s"
 msgstr "助手：%s"
 
-#: internal/diskui/details.go:170
+#: internal/diskui/details.go:174
 msgid "It is the place scanned: choose what is in it."
 msgstr "这是扫描的位置本身：请选择其中的项目。"
 
-#: internal/diskui/details.go:172
+#: internal/diskui/details.go:176
 msgid "Kept: the checks above say why."
 msgstr "保留：原因见上方检查。"
 
-#: internal/diskui/details.go:174
+#: internal/diskui/details.go:178
 msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
 msgstr "需要时会恢复。回收站会保留到清空为止；“删除”会立即释放空间。"
 
-#: internal/diskui/details.go:176
+#: internal/diskui/details.go:180
 msgid "Look inside before deleting: it may hold your work, settings or history."
 msgstr "删除前请查看里面：可能有你的工作、设置或历史。"
 
-#: internal/diskui/details.go:178
+#: internal/diskui/details.go:182
 msgid "No check settled it: look inside first, or ask the assistant."
 msgstr "没有检查能判断：请先查看里面，或询问助手。"
 
-#: internal/diskui/details.go:291
+#: internal/diskui/details.go:292
 msgid "it answered %q"
 msgstr "它回答了 %q"
 
-#: internal/diskui/details.go:301
+#: internal/diskui/details.go:302
 msgid "The assistant could not decide: %v"
 msgstr "助手无法判断：%v"
 
-#: internal/diskui/details.go:352
+#: internal/diskui/details.go:353
 msgid "The assistant could not answer: %v"
 msgstr "助手无法回答：%v"
 
-#: internal/diskui/details.go:357
-#: internal/diskui/details.go:385
-#: ui/disk.ui:885
+#: internal/diskui/details.go:358
+#: internal/diskui/details.go:386
+#: ui/disk.ui:926
 msgid "Explain"
 msgstr "解释"
 
-#: internal/diskui/details.go:383
+#: internal/diskui/details.go:384
 msgid "Explain again"
 msgstr "再次解释"
 
-#: internal/diskui/details.go:411
+#: internal/diskui/details.go:412
 msgid "Cannot open it in Files: %v"
 msgstr "无法在“文件”中打开：%v"
 
@@ -4597,11 +4621,77 @@ msgstr "正在移到回收站…"
 msgid "Cannot delete %s: %v"
 msgstr "无法删除 %s：%v"
 
-#: internal/diskui/window.go:275
-msgid "Delete %s for good? This cannot be undone."
-msgstr "永久删除 %s？此操作无法撤销。"
+#: internal/diskui/details.go:446
+msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
+msgstr "已将 %s 移到回收站：清空回收站后释放 %s。"
 
-#: internal/diskui/window.go:315
+#: internal/diskui/details.go:448
+msgid "Deleted %s: %s freed."
+msgstr "已删除 %s：释放了 %s。"
+
+#: internal/diskui/details.go:492
+msgid "%s in %s file. It does not go to the trash; this cannot be undone."
+msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
+msgstr[0] "%s，%s 个文件。不会进入回收站，无法撤销。"
+
+#: internal/diskui/details.go:495
+msgid "%s. It does not go to the trash; this cannot be undone."
+msgstr "%s。不会进入回收站，无法撤销。"
+
+#: internal/diskui/details.go:497
+msgid "Delete %s for good?"
+msgstr "永久删除 %s？"
+
+#: internal/diskui/details.go:521
+#: internal/ui/settings_bench.go:187
+#: internal/ui/settings_bench.go:332
+msgid "Running…"
+msgstr "正在运行…"
+
+#: internal/diskui/details.go:523
+#: internal/diskui/details.go:570
+#: ui/disk.ui:707
+msgid "Run"
+msgstr "运行"
+
+#: internal/diskui/details.go:529
+#: internal/diskui/details.go:568
+msgid "It runs as root: inua asks for your password first."
+msgstr "它以 root 身份运行：inua 会先询问你的密码。"
+
+#: internal/diskui/details.go:531
+msgid "It runs in %s."
+msgstr "在 %s 中运行。"
+
+#: internal/diskui/details.go:565
+msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
+msgstr "在 %s 中运行，清理 %s（现在 %s）；结束后 inua 会重新测量。"
+
+#: internal/diskui/details.go:570
+msgid "Run the clean command?"
+msgstr "运行清理命令？"
+
+#: internal/diskui/details.go:593
+msgid "%s ended with an error: %v"
+msgstr "%s 以错误结束：%v"
+
+#: internal/diskui/details.go:596
+msgid "Cannot measure it again: %v"
+msgstr "无法重新测量：%v"
+
+#: internal/diskui/details.go:608
+msgid "Done: %s freed."
+msgstr "完成：释放了 %s。"
+
+#: internal/diskui/details.go:610
+msgid "Done: it freed no room here."
+msgstr "完成：这里没有释放空间。"
+
+#: internal/diskui/details.go:613
+msgid "%s removed %s: %s freed."
+msgstr "%s 移除了 %s：释放了 %s。"
+
+#: internal/diskui/window.go:321
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4609,119 +4699,119 @@ msgstr "永久删除 %s？此操作无法撤销。"
 msgid "Home"
 msgstr "主文件夹"
 
-#: internal/diskui/window.go:345
-#: internal/diskui/window.go:542
+#: internal/diskui/window.go:351
+#: internal/diskui/window.go:548
 msgid "Scanning…"
 msgstr "正在扫描…"
 
-#: internal/diskui/window.go:349
+#: internal/diskui/window.go:355
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 可用，共 %s"
 
-#: internal/diskui/window.go:361
+#: internal/diskui/window.go:367
 msgid "Scan a place first"
 msgstr "请先扫描一个位置"
 
-#: internal/diskui/window.go:364
+#: internal/diskui/window.go:370
 msgid "%s · %s safe"
 msgstr "%s · 可安全删除 %s"
 
-#: internal/diskui/window.go:434
+#: internal/diskui/window.go:440
 msgid "Choose a folder to scan"
 msgstr "选择要扫描的文件夹"
 
-#: internal/diskui/window.go:507
+#: internal/diskui/window.go:513
 msgid "Scan again"
 msgstr "重新扫描"
 
-#: internal/diskui/window.go:511
+#: internal/diskui/window.go:517
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "扫描"
 
-#: internal/diskui/window.go:518
+#: internal/diskui/window.go:524
 msgid "your home"
 msgstr "你的主文件夹"
 
-#: internal/diskui/window.go:520
+#: internal/diskui/window.go:526
 msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
 msgstr "尚未扫描。扫描会测量 %s 在此磁盘上的每个文件夹，并找出其中开发、代理和程序的文件夹。"
 
-#: internal/diskui/window.go:537
+#: internal/diskui/window.go:543
 msgid "%s used of %s"
 msgstr "已用 %s，共 %s"
 
-#: internal/diskui/window.go:545
+#: internal/diskui/window.go:551
 msgid "%s in %s files · %s"
 msgstr "%s，%s 个文件 · %s"
 
-#: internal/diskui/window.go:545
+#: internal/diskui/window.go:551
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:563
+#: internal/diskui/window.go:569
 msgid "%s files · %s · %.0f s"
 msgstr "%s 个文件 · %s · %.0f 秒"
 
-#: internal/diskui/window.go:609
+#: internal/diskui/window.go:615
 msgid "Cannot scan %s: %v"
 msgstr "无法扫描 %s：%v"
 
-#: internal/diskui/window.go:731
+#: internal/diskui/window.go:737
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "%d 个小文件"
 
-#: internal/diskui/window.go:766
+#: internal/diskui/window.go:772
 msgid "counted"
 msgstr "已统计"
 
-#: internal/diskui/window.go:791
+#: internal/diskui/window.go:797
 msgid "free"
 msgstr "可用"
 
-#: internal/diskui/window.go:793
+#: internal/diskui/window.go:799
 msgid "Not scanned"
 msgstr "未扫描"
 
-#: internal/diskui/window.go:810
+#: internal/diskui/window.go:816
 msgid "Other"
 msgstr "其他"
 
-#: internal/diskui/window.go:873
+#: internal/diskui/window.go:879
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "另有 %d 项"
 
-#: internal/diskui/window.go:884
+#: internal/diskui/window.go:890
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "此文件夹是空的。"
 
-#: internal/diskui/window.go:940
+#: internal/diskui/window.go:946
 msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
 msgstr "依赖、构建输出、工具链和包缓存：大多一条命令即可恢复。"
 
-#: internal/diskui/window.go:941
+#: internal/diskui/window.go:947
 msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
 msgstr "编程代理的对话、工作树和缓存，以及下载的 AI 模型。"
 
-#: internal/diskui/window.go:942
+#: internal/diskui/window.go:948
 msgid "Programs' caches, packages downloaded and the trash."
 msgstr "程序的缓存、下载的包和回收站。"
 
-#: internal/diskui/window.go:960
+#: internal/diskui/window.go:966
 msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
 msgstr "尚未扫描：扫描一个位置后，这类内容会显示在这里。"
 
-#: internal/diskui/window.go:962
+#: internal/diskui/window.go:968
 msgid "Nothing of this kind in the places scanned."
 msgstr "已扫描的位置中没有这类内容。"
 
-#: internal/diskui/window.go:965
+#: internal/diskui/window.go:971
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s，%d 个文件夹 · %s 可安全删除"
@@ -5610,10 +5700,6 @@ msgstr "%s 的 SSH 主机密钥未知或已更改：请先用 ssh 核对。"
 #: internal/filesui/remote.go:351
 msgid "%s does not answer."
 msgstr "%s 没有响应。"
-
-#: internal/filesui/remote.go:353
-msgid "%s is not there."
-msgstr "%s 不存在。"
 
 #: internal/filesui/remote.go:355
 msgid "%s has files in it: a disk is mounted only on an empty folder."
@@ -10928,11 +11014,6 @@ msgstr "模型没有选对"
 msgid "Run again"
 msgstr "再运行一次"
 
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
-msgid "Running…"
-msgstr "正在运行…"
-
 #: internal/ui/settings_bench.go:296
 msgid "Show what the model answered"
 msgstr "显示模型的回答"
@@ -12165,31 +12246,31 @@ msgstr "在地图或列表中选择一项：这里会显示它是什么，以及
 msgid "[ITEM]"
 msgstr "[项目]"
 
-#: ui/disk.ui:576
+#: ui/disk.ui:587
 msgid "Show on the map"
 msgstr "在地图中显示"
 
-#: ui/disk.ui:585
+#: ui/disk.ui:596
 msgid "Show in Files"
 msgstr "在“文件”中显示"
 
-#: ui/disk.ui:619
+#: ui/disk.ui:630
 msgid "[CAN IT GO]"
 msgstr "[能否删除]"
 
-#: ui/disk.ui:658
+#: ui/disk.ui:670
 msgid "The proper way to clean it:"
 msgstr "正确的清理方法："
 
-#: ui/disk.ui:744
+#: ui/disk.ui:827
 msgid "[DELETE]"
 msgstr "[删除]"
 
-#: ui/disk.ui:874
+#: ui/disk.ui:915
 msgid "[WHAT IS IT]"
 msgstr "[这是什么]"
 
-#: ui/disk.ui:927
+#: ui/disk.ui:968
 msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
 msgstr "发送给助手的只有路径、大小和其中最大项目的名称，从不发送文件内容。"
 
