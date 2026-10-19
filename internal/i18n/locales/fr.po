@@ -1398,6 +1398,7 @@ msgid "NOTES"
 msgstr "NOTES"
 
 #: internal/appui/pass.go:595
+#: internal/term/host/agents.go:269
 msgid "Show"
 msgstr "Afficher"
 
@@ -2731,7 +2732,7 @@ msgstr "Bloc inconnu %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:208
+#: internal/termui/keys.go:212
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3606,11 +3607,11 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:58
-#: internal/termui/app.go:72
-#: internal/termui/app.go:223
-#: internal/termui/app.go:225
-#: internal/termui/tiles.go:309
+#: internal/termui/app.go:68
+#: internal/termui/app.go:82
+#: internal/termui/app.go:249
+#: internal/termui/app.go:251
+#: internal/termui/tiles.go:324
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 msgid "Terminal"
@@ -3825,7 +3826,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:210
+#: internal/termui/keys.go:214
 msgid "Rename"
 msgstr "Renommer"
 
@@ -8817,17 +8818,61 @@ msgstr "Complètement chargé"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · Chargement"
 
-#: internal/termui/columns.go:168
+#: internal/term/host/agents.go:257
+msgid "%s needs you"
+msgstr "%s a besoin de vous"
+
+#: internal/term/host/agents.go:260
+msgid "%s is done"
+msgstr "%s a terminé"
+
+#: internal/termui/agents.go:33
+msgid "EXITED %d"
+msgstr "TERMINÉ %d"
+
+#: internal/termui/agents.go:35
+msgid "RESTORED"
+msgstr "RESTAURÉ"
+
+#: internal/termui/agents.go:39
+msgid "WORKING"
+msgstr "AU TRAVAIL"
+
+#: internal/termui/agents.go:41
+msgid "NEEDS YOU"
+msgstr "VOUS ATTEND"
+
+#: internal/termui/agents.go:43
+msgid "DONE"
+msgstr "TERMINÉ"
+
+#: internal/termui/agents.go:45
+msgid "IDLE"
+msgstr "INACTIF"
+
+#: internal/termui/agents.go:131
+msgid "Agents that need you"
+msgstr "Agents qui ont besoin de vous"
+
+#: internal/termui/agents.go:209
+msgid "Agents"
+msgstr "Agents"
+
+#: internal/termui/agents.go:216
+msgid "No agent runs in any workspace."
+msgstr "Aucun agent ne tourne dans aucun espace de travail."
+
+#: internal/termui/columns.go:193
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d panneau"
 msgstr[1] "%d panneaux"
 
-#: internal/termui/keys.go:143
+#: internal/termui/keys.go:147
 msgid "Choose the workspace's folder"
 msgstr "Choisir le dossier de l’espace de travail"
 
-#: internal/termui/keys.go:199
+#: internal/termui/keys.go:203
 msgid "Rename the session"
 msgstr "Renommer la session"
 
@@ -8868,18 +8913,6 @@ msgstr "Occurrence suivante (Maj+Entrée)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "Fermer (Échapper)"
-
-#: internal/termui/tiles.go:315
-msgid "EXITED %d"
-msgstr "TERMINÉ %d"
-
-#: internal/termui/tiles.go:318
-msgid "RESTORED"
-msgstr "RESTAURÉ"
-
-#: internal/termui/tiles.go:320
-msgid "IDLE"
-msgstr "INACTIF"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

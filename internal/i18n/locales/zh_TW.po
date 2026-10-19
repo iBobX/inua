@@ -1390,6 +1390,7 @@ msgid "NOTES"
 msgstr "備註"
 
 #: internal/appui/pass.go:595
+#: internal/term/host/agents.go:269
 msgid "Show"
 msgstr "顯示"
 
@@ -2715,7 +2716,7 @@ msgstr "未知的元件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:208
+#: internal/termui/keys.go:212
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3590,11 +3591,11 @@ msgid "Opens folders"
 msgstr "開啟資料夾"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:58
-#: internal/termui/app.go:72
-#: internal/termui/app.go:223
-#: internal/termui/app.go:225
-#: internal/termui/tiles.go:309
+#: internal/termui/app.go:68
+#: internal/termui/app.go:82
+#: internal/termui/app.go:249
+#: internal/termui/app.go:251
+#: internal/termui/tiles.go:324
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 msgid "Terminal"
@@ -3807,7 +3808,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:210
+#: internal/termui/keys.go:214
 msgid "Rename"
 msgstr "重新命名"
 
@@ -8776,16 +8777,60 @@ msgstr "充滿電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充電中"
 
-#: internal/termui/columns.go:168
+#: internal/term/host/agents.go:257
+msgid "%s needs you"
+msgstr "%s 需要你"
+
+#: internal/term/host/agents.go:260
+msgid "%s is done"
+msgstr "%s 已完成"
+
+#: internal/termui/agents.go:33
+msgid "EXITED %d"
+msgstr "已結束 %d"
+
+#: internal/termui/agents.go:35
+msgid "RESTORED"
+msgstr "已還原"
+
+#: internal/termui/agents.go:39
+msgid "WORKING"
+msgstr "工作中"
+
+#: internal/termui/agents.go:41
+msgid "NEEDS YOU"
+msgstr "需要你"
+
+#: internal/termui/agents.go:43
+msgid "DONE"
+msgstr "已完成"
+
+#: internal/termui/agents.go:45
+msgid "IDLE"
+msgstr "閒置"
+
+#: internal/termui/agents.go:131
+msgid "Agents that need you"
+msgstr "需要你的代理"
+
+#: internal/termui/agents.go:209
+msgid "Agents"
+msgstr "代理"
+
+#: internal/termui/agents.go:216
+msgid "No agent runs in any workspace."
+msgstr "沒有工作區在執行代理。"
+
+#: internal/termui/columns.go:193
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d 個窗格"
 
-#: internal/termui/keys.go:143
+#: internal/termui/keys.go:147
 msgid "Choose the workspace's folder"
 msgstr "選擇工作區的資料夾"
 
-#: internal/termui/keys.go:199
+#: internal/termui/keys.go:203
 msgid "Rename the session"
 msgstr "重新命名工作階段"
 
@@ -8824,18 +8869,6 @@ msgstr "下一個符合 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "關閉（逃脫）"
-
-#: internal/termui/tiles.go:315
-msgid "EXITED %d"
-msgstr "已結束 %d"
-
-#: internal/termui/tiles.go:318
-msgid "RESTORED"
-msgstr "已還原"
-
-#: internal/termui/tiles.go:320
-msgid "IDLE"
-msgstr "閒置"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

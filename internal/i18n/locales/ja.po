@@ -1390,6 +1390,7 @@ msgid "NOTES"
 msgstr "メモ"
 
 #: internal/appui/pass.go:595
+#: internal/term/host/agents.go:269
 msgid "Show"
 msgstr "表示"
 
@@ -2715,7 +2716,7 @@ msgstr "不明な部品 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:208
+#: internal/termui/keys.go:212
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3590,11 +3591,11 @@ msgid "Opens folders"
 msgstr "フォルダーを開く"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:58
-#: internal/termui/app.go:72
-#: internal/termui/app.go:223
-#: internal/termui/app.go:225
-#: internal/termui/tiles.go:309
+#: internal/termui/app.go:68
+#: internal/termui/app.go:82
+#: internal/termui/app.go:249
+#: internal/termui/app.go:251
+#: internal/termui/tiles.go:324
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 msgid "Terminal"
@@ -3807,7 +3808,7 @@ msgstr[0] "%d 項目"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:210
+#: internal/termui/keys.go:214
 msgid "Rename"
 msgstr "名前を変更"
 
@@ -8776,16 +8777,60 @@ msgstr "フル充電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 充電中"
 
-#: internal/termui/columns.go:168
+#: internal/term/host/agents.go:257
+msgid "%s needs you"
+msgstr "%s が応答を待っています"
+
+#: internal/term/host/agents.go:260
+msgid "%s is done"
+msgstr "%s が完了しました"
+
+#: internal/termui/agents.go:33
+msgid "EXITED %d"
+msgstr "終了 %d"
+
+#: internal/termui/agents.go:35
+msgid "RESTORED"
+msgstr "復元"
+
+#: internal/termui/agents.go:39
+msgid "WORKING"
+msgstr "作業中"
+
+#: internal/termui/agents.go:41
+msgid "NEEDS YOU"
+msgstr "応答待ち"
+
+#: internal/termui/agents.go:43
+msgid "DONE"
+msgstr "完了"
+
+#: internal/termui/agents.go:45
+msgid "IDLE"
+msgstr "待機"
+
+#: internal/termui/agents.go:131
+msgid "Agents that need you"
+msgstr "応答を待つエージェント"
+
+#: internal/termui/agents.go:209
+msgid "Agents"
+msgstr "エージェント"
+
+#: internal/termui/agents.go:216
+msgid "No agent runs in any workspace."
+msgstr "どのワークスペースでもエージェントは動いていません。"
+
+#: internal/termui/columns.go:193
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "%d ペイン"
 
-#: internal/termui/keys.go:143
+#: internal/termui/keys.go:147
 msgid "Choose the workspace's folder"
 msgstr "ワークスペースのフォルダを選ぶ"
 
-#: internal/termui/keys.go:199
+#: internal/termui/keys.go:203
 msgid "Rename the session"
 msgstr "セッション名を変更"
 
@@ -8824,18 +8869,6 @@ msgstr "次の一致 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "クローズ(エスケープ)"
-
-#: internal/termui/tiles.go:315
-msgid "EXITED %d"
-msgstr "終了 %d"
-
-#: internal/termui/tiles.go:318
-msgid "RESTORED"
-msgstr "復元"
-
-#: internal/termui/tiles.go:320
-msgid "IDLE"
-msgstr "待機"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

@@ -10,6 +10,7 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/layout"
 )
@@ -27,6 +28,7 @@ type tile struct {
 	id    int
 	box   *gtk.Box
 	mark  *gtk.Box
+	icon  *gtk.Image
 	title *gtk.Label
 	dir   *gtk.Label
 	state *gtk.Label
@@ -225,10 +227,10 @@ func (a *App) addTile(id int) error {
 	t.mark.AddCssClass("mark")
 	t.mark.SetValign(gtk.AlignCenterValue)
 	head.Append(&t.mark.Widget)
-	icon := gtk.NewImageFromIconName("utilities-terminal-symbolic")
-	icon.SetPixelSize(14)
-	icon.AddCssClass("term-kind")
-	head.Append(&icon.Widget)
+	t.icon = gtk.NewImageFromIconName(iconOf(info))
+	t.icon.SetPixelSize(14)
+	t.icon.AddCssClass("term-kind")
+	head.Append(&t.icon.Widget)
 	t.title = gtk.NewLabel("")
 	t.title.AddCssClass("term-head-title")
 	t.title.SetEllipsize(3) // end
@@ -275,9 +277,8 @@ func (a *App) dropTile(id int) {
 func (t *tile) update(info host.PaneInfo) {
 	t.title.SetText(paneTitle(info))
 	t.dir.SetText(shortDir(info.Dir))
-	label, on := paneState(info)
-	t.state.SetText(label)
-	setMark(t.mark, on)
+	t.icon.SetFromIconName(iconOf(info))
+	paint(t.mark, t.state, lookOf(info))
 }
 
 // focusPane tells the host which pane has the focus, when the user moved
@@ -301,9 +302,19 @@ func (a *App) focusPane(id int) {
 	})
 }
 
-// paneTitle is what a pane's head and row call it: the title its program
-// set, else the program.
+// paneTitle is what a pane's head and row call it: an agent's title
+// without its spinner, a shell's command running, else the title the
+// program set, else the program.
 func paneTitle(info host.PaneInfo) string {
+	if info.Agent != "" {
+		if t, _ := agent.Title(info.Title); t != "" {
+			return t
+		}
+		return info.AgentName
+	}
+	if info.Command != "" {
+		return info.Command
+	}
 	if info.Title != "" {
 		return info.Title
 	}
@@ -311,24 +322,4 @@ func paneTitle(info host.PaneInfo) string {
 		return baseName(info.Argv[0])
 	}
 	return i18n.T("Terminal")
-}
-
-// paneState is a pane's state label and whether its mark is filled.
-func paneState(info host.PaneInfo) (string, bool) {
-	if info.Exited {
-		return i18n.Tf("EXITED %d", info.Code), false
-	}
-	if info.Restored {
-		return i18n.T("RESTORED"), false
-	}
-	return i18n.T("IDLE"), false
-}
-
-// setMark fills a state mark, or leaves it hollow.
-func setMark(m *gtk.Box, on bool) {
-	if on {
-		m.AddCssClass("on")
-	} else {
-		m.RemoveCssClass("on")
-	}
 }

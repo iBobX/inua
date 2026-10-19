@@ -72,6 +72,10 @@ func (a *App) chord(base, keyval uint32, state gdk.ModifierType) bool {
 		a.toggleColumn(1)
 	case k == 'r':
 		a.renameSession()
+	case k == 'j':
+		a.nextWaiting()
+	case k == 'a':
+		a.overview()
 	default:
 		return false
 	}

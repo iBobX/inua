@@ -2841,9 +2841,9 @@ window.term .term-ws-dir {
   color: @t2;
 }
 window.term .mark { border-radius: 1px; border: 1px solid @t2; background: transparent; }
-window.term .mark.on { border-color: @accent; background: @accent; }
-window.term .mark.warn { border-color: @warn; background: @warn; }
-window.term .mark.ok { border-color: @ok; background: @ok; }
+window.term .mark.s-on { border-color: @accent; background: @accent; }
+window.term .mark.s-warn { border-color: @warn; background: @warn; }
+window.term .mark.s-ok { border-color: @ok; background: @ok; }
 window.term .term-foot { padding: 8px 12px 12px; border-top: 1px solid alpha(@line, 0.55); }
 window.term .term-foot-button { min-height: 34px; padding: 0 14px; }
 window.term .term-keys {
@@ -2902,9 +2902,9 @@ window.term .term-state {
   letter-spacing: 0.06em;
   color: @t2;
 }
-window.term .term-state.on { color: @accent; }
-window.term .term-state.warn { color: @warn; }
-window.term .term-state.ok { color: @ok; }
+window.term .term-state.s-on { color: @accent; }
+window.term .term-state.s-warn { color: @warn; }
+window.term .term-state.s-ok { color: @ok; }
 window.term .term-pane-dir, window.term .term-head-dir {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 11px;
@@ -2921,3 +2921,28 @@ window.term .term-head { min-height: 32px; padding: 0 12px; border-bottom: 1px s
 window.term .term-kind { color: @t1; }
 window.term .term-head-title { font-size: 12.5px; color: @t1; }
 window.term .term-error { margin: 32px; color: @danger; }
+window.term .term-badge {
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: alpha(@warn, 0.12);
+  color: @warn;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+}
+window.term .term-ask { color: @warn; letter-spacing: 0; font-size: 11px; }
+window.term .term-overview list { background: transparent; }
+window.term .term-overview-row { min-height: 40px; padding: 4px 6px; }
+window.term .term-overview list row {
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: @t0;
+}
+window.term .term-overview list row:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); }
+window.term .term-overview list row:selected, window.term .term-overview list row:focus {
+  border-color: alpha(@accent, 0.3);
+  background: mix(@surface, @primary, 0.1);
+  outline: none;
+}
+window.term .term-overview-row label { color: @t0; }
+window.term .term-overview-row .term-pane-dir { color: @t2; }

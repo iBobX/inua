@@ -1390,6 +1390,7 @@ msgid "NOTES"
 msgstr "메모"
 
 #: internal/appui/pass.go:595
+#: internal/term/host/agents.go:269
 msgid "Show"
 msgstr "보기"
 
@@ -2715,7 +2716,7 @@ msgstr "알 수 없는 블록 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:208
+#: internal/termui/keys.go:212
 #: internal/termui/paste.go:279
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
@@ -3590,11 +3591,11 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:58
-#: internal/termui/app.go:72
-#: internal/termui/app.go:223
-#: internal/termui/app.go:225
-#: internal/termui/tiles.go:309
+#: internal/termui/app.go:68
+#: internal/termui/app.go:82
+#: internal/termui/app.go:249
+#: internal/termui/app.go:251
+#: internal/termui/tiles.go:324
 #: ui/settings.ui:1933
 #: ui/term.ui:28
 msgid "Terminal"
@@ -3807,7 +3808,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:210
+#: internal/termui/keys.go:214
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -8776,16 +8777,60 @@ msgstr "완전히 충전됨"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 충전 중"
 
-#: internal/termui/columns.go:168
+#: internal/term/host/agents.go:257
+msgid "%s needs you"
+msgstr "%s이(가) 응답을 기다립니다"
+
+#: internal/term/host/agents.go:260
+msgid "%s is done"
+msgstr "%s 작업 완료"
+
+#: internal/termui/agents.go:33
+msgid "EXITED %d"
+msgstr "종료 %d"
+
+#: internal/termui/agents.go:35
+msgid "RESTORED"
+msgstr "복원됨"
+
+#: internal/termui/agents.go:39
+msgid "WORKING"
+msgstr "작업 중"
+
+#: internal/termui/agents.go:41
+msgid "NEEDS YOU"
+msgstr "응답 필요"
+
+#: internal/termui/agents.go:43
+msgid "DONE"
+msgstr "완료"
+
+#: internal/termui/agents.go:45
+msgid "IDLE"
+msgstr "대기"
+
+#: internal/termui/agents.go:131
+msgid "Agents that need you"
+msgstr "응답을 기다리는 에이전트"
+
+#: internal/termui/agents.go:209
+msgid "Agents"
+msgstr "에이전트"
+
+#: internal/termui/agents.go:216
+msgid "No agent runs in any workspace."
+msgstr "어느 작업 공간에서도 에이전트가 실행되고 있지 않습니다."
+
+#: internal/termui/columns.go:193
 msgid "%d pane"
 msgid_plural "%d panes"
 msgstr[0] "창 %d개"
 
-#: internal/termui/keys.go:143
+#: internal/termui/keys.go:147
 msgid "Choose the workspace's folder"
 msgstr "작업 공간의 폴더 선택"
 
-#: internal/termui/keys.go:199
+#: internal/termui/keys.go:203
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
 
@@ -8824,18 +8869,6 @@ msgstr "다음 일치 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "닫기(Escape)"
-
-#: internal/termui/tiles.go:315
-msgid "EXITED %d"
-msgstr "종료 %d"
-
-#: internal/termui/tiles.go:318
-msgid "RESTORED"
-msgstr "복원됨"
-
-#: internal/termui/tiles.go:320
-msgid "IDLE"
-msgstr "대기"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"

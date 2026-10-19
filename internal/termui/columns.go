@@ -4,11 +4,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/model"
 )
@@ -35,6 +37,21 @@ type columns struct {
 	// clicks are the session heads' and pane rows' callbacks, kept for
 	// as long as their buttons.
 	clicks []*func(gtk.Button)
+	// times are the labels of the time in state, by pane.
+	times []timed
+}
+
+type timed struct {
+	label *gtk.Label
+	pane  int
+}
+
+// updateTimes counts the times in state on.
+func (c *columns) updateTimes(a *App) {
+	now := time.Now()
+	for _, t := range c.times {
+		t.label.SetText(since(a.info[t.pane].Since, now))
+	}
 }
 
 func (a *App) buildColumns(ui *gtkx.Builder) {
@@ -100,9 +117,14 @@ func (c *columns) fillWorkspaces(a *App) {
 		text.Append(&name.Widget)
 		text.Append(&path.Widget)
 		row.Append(&text.Widget)
+		blocked, l := a.rollup(workspacePanes(w))
+		if b := badge(blocked); b != nil {
+			row.Append(&b.Widget)
+		}
 		mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 		mark.AddCssClass("mark")
 		mark.SetValign(gtk.AlignCenterValue)
+		paint(mark, nil, l)
 		row.Append(&mark.Widget)
 		c.list.Append(&row.Widget)
 		c.rowIDs = append(c.rowIDs, w.ID)
@@ -133,6 +155,7 @@ func (c *columns) fillSessions(a *App) {
 		c.sessions.Remove(w)
 	}
 	c.clicks = c.clicks[:0]
+	c.times = c.times[:0]
 	w := a.shownWorkspace()
 	if w == nil {
 		return
@@ -155,6 +178,8 @@ func (c *columns) fillSessions(a *App) {
 		mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 		mark.AddCssClass("mark")
 		mark.SetValign(gtk.AlignCenterValue)
+		blocked, l := a.rollup(s.Tree.Panes())
+		paint(mark, nil, l)
 		hb.Append(&mark.Widget)
 		label := gtk.NewLabel("")
 		label.SetUseMarkup(true)
@@ -168,6 +193,9 @@ func (c *columns) fillSessions(a *App) {
 		count := gtk.NewLabel(i18n.Nf("%d pane", "%d panes", n, n))
 		count.AddCssClass("term-session-count")
 		hb.Append(&count.Widget)
+		if b := badge(blocked); b != nil {
+			hb.Append(&b.Widget)
+		}
 		head.SetChild(&hb.Widget)
 		ws, sid := w.ID, s.ID
 		click(head, func() { a.showSession(ws, sid) })
@@ -191,7 +219,7 @@ func (c *columns) paneRow(a *App, ws int, s *model.Session, id int, click func(*
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	kind := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	kind.AddCssClass("term-kind-box")
-	icon := gtk.NewImageFromIconName("utilities-terminal-symbolic")
+	icon := gtk.NewImageFromIconName(iconOf(info))
 	icon.SetPixelSize(15)
 	icon.SetHexpand(true)
 	icon.SetHalign(gtk.AlignCenterValue)
@@ -211,18 +239,31 @@ func (c *columns) paneRow(a *App, ws int, s *model.Session, id int, click func(*
 	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	mark.AddCssClass("mark")
 	mark.SetValign(gtk.AlignCenterValue)
-	label, on := paneState(info)
-	setMark(mark, on)
 	line.Append(&mark.Widget)
-	state := gtk.NewLabel(label)
+	l := lookOf(info)
+	state := gtk.NewLabel("")
 	state.AddCssClass("term-state")
+	paint(mark, state, l)
+	if agent.State(info.State) == agent.Blocked && info.Ask != "" {
+		// What it asks, in the label's place.
+		b.AddCssClass("blocked")
+		state.SetText(info.Ask)
+		state.AddCssClass("term-ask")
+		state.SetEllipsize(3)
+		state.SetHexpand(true)
+		state.SetXalign(0)
+	}
 	line.Append(&state.Widget)
-	dir := gtk.NewLabel(shortDir(info.Dir))
-	dir.AddCssClass("term-pane-dir")
-	dir.SetHexpand(true)
-	dir.SetXalign(1)
-	dir.SetEllipsize(1)
-	line.Append(&dir.Widget)
+	right := gtk.NewLabel(shortDir(info.Dir))
+	right.AddCssClass("term-pane-dir")
+	right.SetHexpand(true)
+	right.SetXalign(1)
+	right.SetEllipsize(1)
+	if info.Agent != "" {
+		right.SetText(since(info.Since, time.Now()))
+		c.times = append(c.times, timed{right, id})
+	}
+	line.Append(&right.Widget)
 	text.Append(&line.Widget)
 	row.Append(&text.Widget)
 	b.SetChild(&row.Widget)

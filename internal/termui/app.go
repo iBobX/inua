@@ -11,6 +11,7 @@ import (
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
+	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/appui"
@@ -56,6 +57,10 @@ type App struct {
 	onRenameOK, onRenameCancel func(gtk.Button)
 	onRenameActivate           func(gtk.Entry)
 	onRenameKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onTick                     glib.SourceFunc
+	onOverviewRow              func(gtk.ListBox, uintptr)
+	onOverviewKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onActive                   func(uintptr, uintptr, uintptr)
 }
 
 // Register makes inua-term an appui app, "term".
@@ -81,6 +86,13 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		return false
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
+	a.startTicks()
+	// An agent in the pane shown is looked at while the window is active.
+	a.onActive = func(uintptr, uintptr, uintptr) {
+		active := a.win.IsActive()
+		a.ask("active", func(c *host.Client) error { return c.SetActive(active) })
+	}
+	gtkx.ConnectNotify(a.win, "is-active", &a.onActive)
 	// The host may need starting: off the main thread, the state after.
 	go func() {
 		st, err := a.connect()
