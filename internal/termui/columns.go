@@ -3,6 +3,7 @@ package termui
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 
 // Column 1 lists the workspaces (name, folder, the state of what runs in
 // them); column 2 the shown workspace's sessions, each a section head
-// over its panes. Both are made anew from each State: there are few.
+// over its panes. Both follow each State (fillWorkspaces, fillSessions).
 
 type columns struct {
 	col1, col2 *gtk.Box
@@ -28,8 +29,15 @@ type columns struct {
 	// shown workspace's name over its sessions.
 	newWorkspace, newSession *gtk.Button
 	title                    *gtk.Label
-	// rowIDs is the workspace of each row of the list, in order.
+	// rowIDs is the workspace of each row of the list, in order, and
+	// wsRows their widgets.
 	rowIDs []int
+	wsRows []wsRow
+	// sessionShape is what column 2 was made for (fillSessions); heads
+	// and paneRows its widgets, by session and by pane.
+	sessionShape []int
+	heads        map[int]*sessionHead
+	paneRows     map[int]*paneRowWidgets
 	// filling is set while the list is made, so selecting a row then
 	// does not show it.
 	filling bool
@@ -54,11 +62,13 @@ type timed struct {
 	pane  int
 }
 
-// updateTimes counts the times in state on.
+// updateTimes counts the agents' times in state on.
 func (c *columns) updateTimes(a *App) {
 	now := time.Now()
 	for _, t := range c.times {
-		t.label.SetText(since(a.info[t.pane].Since, now))
+		if info := a.info[t.pane]; info.Agent != "" {
+			t.label.SetText(since(info.Since, now))
+		}
 	}
 }
 
@@ -116,46 +126,100 @@ func (c *columns) update(a *App) {
 	c.fillSessions(a)
 }
 
+// The rows stay while the lists keep their shape (the same workspaces,
+// sessions and panes, in the same order): an update sets their text,
+// marks and classes. An agent changes its title many times a second, and
+// a row made anew under the pointer lost its hover, and a click pressed
+// on the old one and released on the new.
+
+// wsRow is a workspace's row in column 1.
+type wsRow struct {
+	name, dir, badge *gtk.Label
+	mark             *gtk.Box
+}
+
+// sessionHead is a session's head in column 2.
+type sessionHead struct {
+	button              *gtk.Button
+	mark                *gtk.Box
+	label, count, badge *gtk.Label
+}
+
+// paneRowWidgets is a pane's row in column 2.
+type paneRowWidgets struct {
+	button              *gtk.Button
+	icon                *gtk.Image
+	mark                *gtk.Box
+	title, state, right *gtk.Label
+}
+
 func (c *columns) fillWorkspaces(a *App) {
 	m := &a.state.Model
 	query := strings.ToLower(strings.TrimSpace(c.find.GetText()))
+	var ws []*model.Workspace
+	shape := []int{}
+	for _, w := range m.Workspaces {
+		if query == "" || a.matches(w, query) {
+			ws = append(ws, w)
+			shape = append(shape, w.ID)
+		}
+	}
 	c.filling = true
 	defer func() { c.filling = false }()
-	c.list.RemoveAll()
-	c.rowIDs = c.rowIDs[:0]
-	for _, w := range m.Workspaces {
-		if query != "" && !a.matches(w, query) {
-			continue
+	if !slices.Equal(shape, c.rowIDs) || len(c.wsRows) != len(ws) {
+		c.list.RemoveAll()
+		c.rowIDs, c.wsRows = shape, make([]wsRow, len(ws))
+		for i := range ws {
+			c.list.Append(&c.wsRows[i].make().Widget)
 		}
-		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-		row.AddCssClass("term-ws")
-		text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-		text.SetHexpand(true)
-		name := gtk.NewLabel(w.Name)
-		name.AddCssClass("term-ws-name")
-		name.SetXalign(0)
-		name.SetEllipsize(3)
-		path := gtk.NewLabel(shortDir(w.Dir))
-		path.AddCssClass("term-ws-dir")
-		path.SetXalign(0)
-		path.SetEllipsize(1)
-		text.Append(&name.Widget)
-		text.Append(&path.Widget)
-		row.Append(&text.Widget)
+	}
+	for i, w := range ws {
+		r := &c.wsRows[i]
+		r.name.SetText(w.Name)
+		r.dir.SetText(shortDir(w.Dir))
 		blocked, l := a.rollup(workspacePanes(w))
-		if b := badge(blocked); b != nil {
-			row.Append(&b.Widget)
-		}
-		mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-		mark.AddCssClass("mark")
-		mark.SetValign(gtk.AlignCenterValue)
-		paint(mark, nil, l)
-		row.Append(&mark.Widget)
-		c.list.Append(&row.Widget)
-		c.rowIDs = append(c.rowIDs, w.ID)
+		setBadge(r.badge, blocked)
+		paint(r.mark, nil, l)
 		if w.ID == m.Shown.Workspace {
-			c.list.SelectRow(c.list.GetRowAtIndex(int32(len(c.rowIDs) - 1)))
+			if row := c.list.GetRowAtIndex(int32(i)); row != nil && !row.IsSelected() {
+				c.list.SelectRow(row)
+			}
 		}
+	}
+}
+
+// make is a workspace row's widgets, their content left to set.
+func (r *wsRow) make() *gtk.Box {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	row.AddCssClass("term-ws")
+	text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	text.SetHexpand(true)
+	r.name = gtk.NewLabel("")
+	r.name.AddCssClass("term-ws-name")
+	r.name.SetXalign(0)
+	r.name.SetEllipsize(3)
+	r.dir = gtk.NewLabel("")
+	r.dir.AddCssClass("term-ws-dir")
+	r.dir.SetXalign(0)
+	r.dir.SetEllipsize(1)
+	text.Append(&r.name.Widget)
+	text.Append(&r.dir.Widget)
+	row.Append(&text.Widget)
+	r.badge = newBadge()
+	row.Append(&r.badge.Widget)
+	r.mark = gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	r.mark.AddCssClass("mark")
+	r.mark.SetValign(gtk.AlignCenterValue)
+	row.Append(&r.mark.Widget)
+	return row
+}
+
+// classIf adds or takes away a widget's class.
+func classIf(w *gtk.Widget, class string, on bool) {
+	if on {
+		w.AddCssClass(class)
+	} else {
+		w.RemoveCssClass(class)
 	}
 }
 
@@ -176,129 +240,167 @@ func (a *App) matches(w *model.Workspace, query string) bool {
 }
 
 func (c *columns) fillSessions(a *App) {
-	for w := c.sessions.GetFirstChild(); w != nil; w = c.sessions.GetFirstChild() {
-		c.sessions.Remove(w)
-	}
-	c.clicks = c.clicks[:0]
-	c.times = c.times[:0]
 	w := a.shownWorkspace()
 	c.newSession.SetSensitive(w != nil)
+	// The shape: the workspace, then each session and its panes.
+	shape := []int{}
+	if w != nil {
+		shape = append(shape, w.ID)
+		for _, s := range w.Sessions {
+			shape = append(shape, -s.ID)
+			shape = append(shape, s.Tree.Panes()...)
+		}
+	}
+	if !slices.Equal(shape, c.sessionShape) {
+		c.sessionShape = shape
+		c.makeSessions(a, w)
+	}
 	if w == nil {
 		c.title.SetText("")
 		return
 	}
 	c.title.SetText(w.Name)
+	shown := a.state.Model.Shown.Session
+	for _, s := range w.Sessions {
+		h := c.heads[s.ID]
+		classIf(&h.button.Widget, "current", s.ID == shown)
+		blocked, l := a.rollup(s.Tree.Panes())
+		paint(h.mark, nil, l)
+		h.label.SetMarkup("<span alpha='55%'>[</span>" + escape(strings.ToUpper(s.Name)) + "<span alpha='55%'>]</span>")
+		n := len(s.Tree.Panes())
+		h.count.SetText(i18n.Nf("%d pane", "%d panes", n, n))
+		setBadge(h.badge, blocked)
+		for _, id := range s.Tree.Panes() {
+			c.setPaneRow(a, c.paneRows[id], id, s.ID == shown && s.Focus == id)
+		}
+	}
+}
+
+// makeSessions makes column 2's heads and rows for a workspace's sessions,
+// their content left to set.
+func (c *columns) makeSessions(a *App, w *model.Workspace) {
+	for child := c.sessions.GetFirstChild(); child != nil; child = c.sessions.GetFirstChild() {
+		c.sessions.Remove(child)
+	}
+	c.clicks = c.clicks[:0]
+	c.times = c.times[:0]
+	c.heads, c.paneRows = map[int]*sessionHead{}, map[int]*paneRowWidgets{}
+	if w == nil {
+		return
+	}
 	click := func(b *gtk.Button, do func()) {
 		f := func(gtk.Button) { do() }
 		c.clicks = append(c.clicks, &f)
 		b.ConnectClicked(c.clicks[len(c.clicks)-1])
 	}
-	shown := a.state.Model.Shown.Session
 	for _, s := range w.Sessions {
 		section := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 		section.AddCssClass("term-session")
-		head := gtk.NewButton()
-		head.AddCssClass("term-session-head")
-		if s.ID == shown {
-			head.AddCssClass("current")
-		}
+		h := &sessionHead{button: gtk.NewButton()}
+		h.button.AddCssClass("term-session-head")
 		hb := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-		mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-		mark.AddCssClass("mark")
-		mark.SetValign(gtk.AlignCenterValue)
-		blocked, l := a.rollup(s.Tree.Panes())
-		paint(mark, nil, l)
-		hb.Append(&mark.Widget)
-		label := gtk.NewLabel("")
-		label.SetUseMarkup(true)
-		label.SetMarkup("<span alpha='55%'>[</span>" + escape(strings.ToUpper(s.Name)) + "<span alpha='55%'>]</span>")
-		label.AddCssClass("term-session-label")
-		label.SetEllipsize(3)
-		label.SetXalign(0)
-		label.SetHexpand(true)
-		hb.Append(&label.Widget)
-		n := len(s.Tree.Panes())
-		count := gtk.NewLabel(i18n.Nf("%d pane", "%d panes", n, n))
-		count.AddCssClass("term-session-count")
-		hb.Append(&count.Widget)
-		if b := badge(blocked); b != nil {
-			hb.Append(&b.Widget)
-		}
-		head.SetChild(&hb.Widget)
+		h.mark = gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+		h.mark.AddCssClass("mark")
+		h.mark.SetValign(gtk.AlignCenterValue)
+		hb.Append(&h.mark.Widget)
+		h.label = gtk.NewLabel("")
+		h.label.SetUseMarkup(true)
+		h.label.AddCssClass("term-session-label")
+		h.label.SetEllipsize(3)
+		h.label.SetXalign(0)
+		h.label.SetHexpand(true)
+		hb.Append(&h.label.Widget)
+		h.count = gtk.NewLabel("")
+		h.count.AddCssClass("term-session-count")
+		hb.Append(&h.count.Widget)
+		h.badge = newBadge()
+		hb.Append(&h.badge.Widget)
+		h.button.SetChild(&hb.Widget)
 		ws, sid := w.ID, s.ID
-		click(head, func() { c.headClicked(a, ws, sid) })
-		section.Append(&head.Widget)
+		click(h.button, func() { c.headClicked(a, ws, sid) })
+		section.Append(&h.button.Widget)
+		c.heads[s.ID] = h
 		for _, id := range s.Tree.Panes() {
-			section.Append(&c.paneRow(a, ws, s, id, click).Widget)
+			r := makePaneRow()
+			c.paneRows[id] = r
+			c.times = append(c.times, timed{r.right, id})
+			click(r.button, func() { a.showPane(ws, sid, id) })
+			section.Append(&r.button.Widget)
 		}
 		c.sessions.Append(&section.Widget)
 	}
 }
 
-// paneRow is a pane in its session's section: its kind, its title, its
-// state and folder.
-func (c *columns) paneRow(a *App, ws int, s *model.Session, id int, click func(*gtk.Button, func())) *gtk.Button {
-	info := a.info[id]
-	b := gtk.NewButton()
-	b.AddCssClass("term-pane-row")
-	if s.ID == a.state.Model.Shown.Session && s.Focus == id {
-		b.AddCssClass("current")
-	}
+// makePaneRow is a pane's row: its kind, its title, its state and folder,
+// their content left to set.
+func makePaneRow() *paneRowWidgets {
+	r := &paneRowWidgets{button: gtk.NewButton()}
+	r.button.AddCssClass("term-pane-row")
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	kind := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	kind.AddCssClass("term-kind-box")
-	icon := gtk.NewImageFromIconName(iconOf(info))
-	icon.SetPixelSize(15)
-	a.brand(icon, info)
-	icon.SetHexpand(true)
-	icon.SetHalign(gtk.AlignCenterValue)
-	kind.Append(&icon.Widget)
+	r.icon = gtk.NewImage()
+	r.icon.SetPixelSize(15)
+	r.icon.SetHexpand(true)
+	r.icon.SetHalign(gtk.AlignCenterValue)
+	kind.Append(&r.icon.Widget)
 	kind.SetValign(gtk.AlignCenterValue)
 	kind.SetHexpand(false)
 	kind.SetSizeRequest(28, 28)
 	row.Append(&kind.Widget)
 	text := gtk.NewBox(gtk.OrientationVerticalValue, 3)
 	text.SetHexpand(true)
-	title := gtk.NewLabel(paneTitle(info))
-	title.AddCssClass("term-pane-title")
-	title.SetXalign(0)
-	title.SetEllipsize(3)
-	text.Append(&title.Widget)
+	r.title = gtk.NewLabel("")
+	r.title.AddCssClass("term-pane-title")
+	r.title.SetXalign(0)
+	r.title.SetEllipsize(3)
+	text.Append(&r.title.Widget)
 	line := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
-	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-	mark.AddCssClass("mark")
-	mark.SetValign(gtk.AlignCenterValue)
-	line.Append(&mark.Widget)
-	l := lookOf(info)
-	state := gtk.NewLabel("")
-	state.AddCssClass("term-state")
-	paint(mark, state, l)
-	if agent.State(info.State) == agent.Blocked && info.Ask != "" {
-		// What it asks, in the label's place.
-		b.AddCssClass("blocked")
-		state.SetText(info.Ask)
-		state.AddCssClass("term-ask")
-		state.SetEllipsize(3)
-		state.SetHexpand(true)
-		state.SetXalign(0)
-	}
-	line.Append(&state.Widget)
-	right := gtk.NewLabel(shortDir(info.Dir))
-	right.AddCssClass("term-pane-dir")
-	right.SetHexpand(true)
-	right.SetXalign(1)
-	right.SetEllipsize(1)
-	if info.Agent != "" {
-		right.SetText(since(info.Since, time.Now()))
-		c.times = append(c.times, timed{right, id})
-	}
-	line.Append(&right.Widget)
+	r.mark = gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	r.mark.AddCssClass("mark")
+	r.mark.SetValign(gtk.AlignCenterValue)
+	line.Append(&r.mark.Widget)
+	r.state = gtk.NewLabel("")
+	r.state.AddCssClass("term-state")
+	r.state.SetXalign(0)
+	line.Append(&r.state.Widget)
+	r.right = gtk.NewLabel("")
+	r.right.AddCssClass("term-pane-dir")
+	r.right.SetHexpand(true)
+	r.right.SetXalign(1)
+	r.right.SetEllipsize(1)
+	line.Append(&r.right.Widget)
 	text.Append(&line.Widget)
 	row.Append(&text.Widget)
-	b.SetChild(&row.Widget)
-	sid := s.ID
-	click(b, func() { a.showPane(ws, sid, id) })
-	return b
+	r.button.SetChild(&row.Widget)
+	return r
+}
+
+// setPaneRow shows a pane's info on its row; current is set for the
+// pane with the focus in the session shown.
+func (c *columns) setPaneRow(a *App, r *paneRowWidgets, id int, current bool) {
+	info := a.info[id]
+	classIf(&r.button.Widget, "current", current)
+	r.icon.SetFromIconName(iconOf(info))
+	a.brand(r.icon, info)
+	r.title.SetText(paneTitle(info))
+	paint(r.mark, r.state, lookOf(info))
+	// An agent waiting for you: what it asks, in the state's place.
+	asks := agent.State(info.State) == agent.Blocked && info.Ask != ""
+	classIf(&r.button.Widget, "blocked", asks)
+	classIf(&r.state.Widget, "term-ask", asks)
+	r.state.SetHexpand(asks)
+	if asks {
+		r.state.SetText(info.Ask)
+		r.state.SetEllipsize(3)
+	} else {
+		r.state.SetEllipsize(0)
+	}
+	if info.Agent != "" {
+		r.right.SetText(since(info.Since, time.Now()))
+	} else {
+		r.right.SetText(shortDir(info.Dir))
+	}
 }
 
 // showWorkspace shows a workspace, at the session it last showed.

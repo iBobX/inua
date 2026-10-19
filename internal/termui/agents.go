@@ -173,16 +173,20 @@ func workspacePanes(w *model.Workspace) []int {
 	return out
 }
 
-// badge is the count of agents waiting, in warn; nil for none.
-func badge(n int) *gtk.Label {
-	if n == 0 {
-		return nil
-	}
-	b := gtk.NewLabel(fmt.Sprint(n))
+// newBadge is a count of agents waiting, in warn, hidden until set.
+func newBadge() *gtk.Label {
+	b := gtk.NewLabel("")
 	b.AddCssClass("term-badge")
 	b.SetValign(gtk.AlignCenterValue)
 	b.SetTooltipText(i18n.T("Agents that need you"))
+	b.SetVisible(false)
 	return b
+}
+
+// setBadge shows n on a badge, hidden for none.
+func setBadge(b *gtk.Label, n int) {
+	b.SetVisible(n > 0)
+	b.SetText(fmt.Sprint(n))
 }
 
 // agents are every pane with an agent, as column 1 and 2 order them,
