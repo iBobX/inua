@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:221
+#: internal/diskui/details.go:332
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "助手关闭。在“设置”→“AI”中将其打开。"
 
@@ -1523,7 +1523,7 @@ msgstr "视频"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/ui/clipboard.go:459
 #: internal/vmui/window.go:299
@@ -1914,13 +1914,13 @@ msgid "Extend 2 years"
 msgstr "延长 2 年"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:860
+#: ui/disk.ui:781
 msgid "Delete…"
 msgstr "删除…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:547
+#: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2106,7 +2106,7 @@ msgstr "解密出的副本会移到回收站，可从那里恢复；加密文件
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:850
+#: ui/disk.ui:771
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2283,11 +2283,11 @@ msgstr "隐藏"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/diskui/details.go:550
+#: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:103
 #: internal/ui/askpass.go:203
-#: ui/disk.ui:698
+#: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2935,7 +2935,7 @@ msgstr "名称"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:323
+#: internal/diskui/window.go:329
 msgid "System"
 msgstr "系统"
 
@@ -4535,188 +4535,179 @@ msgstr "打开纯文本"
 msgid "Disk Usage"
 msgstr "磁盘用量"
 
+#: internal/diskui/details.go:47
+#: internal/termui/prefs.go:89
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "尺寸"
+
 #: internal/diskui/details.go:49
-msgid "%s file"
-msgid_plural "%s files"
-msgstr[0] "%s 个文件"
+msgid "File"
+msgid_plural "Files"
+msgstr[0] "文件"
 
-#: internal/diskui/details.go:52
-msgid "changed %s"
-msgstr "修改于 %s"
-
-#: internal/diskui/details.go:52
+#: internal/diskui/details.go:53
 msgid "2006-01-02"
 msgstr "2006年1月2日"
 
-#: internal/diskui/details.go:55
-msgid "some of it could not be read"
-msgstr "部分内容无法读取"
+#: internal/diskui/details.go:53
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "更改时间"
 
-#: internal/diskui/details.go:75
+#: internal/diskui/details.go:56
+msgid "Some of it could not be read."
+msgstr "有一部分无法读取。"
+
+#: internal/diskui/details.go:76
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "正在检查..."
 
-#: internal/diskui/details.go:104
-msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
-msgstr "各种小于 1 MB 的文件：在“文件”中打开文件夹查看。"
+#: internal/diskui/details.go:118
+msgid "AI · %s"
+msgstr "AI · %s"
 
-#: internal/diskui/details.go:108
-msgid "They are not one item to delete."
-msgstr "它们不是一个可删除的项目。"
+#: internal/diskui/details.go:169
+msgid "Small files, each under 1 MB."
+msgstr "小文件，每个都不到 1 MB。"
 
-#: internal/diskui/details.go:146
-msgid "No check settles it."
-msgstr "没有检查能判断。"
+#: internal/diskui/details.go:172
+msgid "Not one item to delete."
+msgstr "不是可以一并删除的一项。"
 
-#: internal/diskui/details.go:156
-#: internal/diskui/details.go:324
-#: internal/diskui/details.go:373
+#: internal/diskui/details.go:221
+msgid "Look inside first."
+msgstr "先看看里面。"
+
+#: internal/diskui/details.go:223
+msgid "Look inside first, or ask the AI."
+msgstr "先看看里面，或问问 AI。"
+
+#: internal/diskui/details.go:239
+msgid "Can it go"
+msgstr "能否删除"
+
+#: internal/diskui/details.go:242
+msgid "What it is"
+msgstr "这是什么"
+
+#: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "正在询问……"
 
-#: internal/diskui/details.go:158
-#: internal/shell/launcher.go:379
-#: ui/disk.ui:770
-msgid "Ask the assistant"
-msgstr "询问助理"
+#: internal/diskui/details.go:257
+msgid "Ask AI"
+msgstr "问 AI"
 
-#: internal/diskui/details.go:161
-msgid "The assistant: %s"
-msgstr "助手：%s"
+#: internal/diskui/details.go:259
+msgid "Ask again"
+msgstr "再问一次"
 
-#: internal/diskui/details.go:174
-msgid "It is the place scanned: choose what is in it."
-msgstr "这是扫描的位置本身：请选择其中的项目。"
+#: internal/diskui/details.go:267
+msgid "Sends the path, the size and the largest names, never the files' contents."
+msgstr "只发送路径、大小和最大项目的名称，从不发送文件内容。"
 
-#: internal/diskui/details.go:176
-msgid "Kept: the checks above say why."
-msgstr "保留：原因见上方检查。"
+#: internal/diskui/details.go:411
+msgid "The AI could not answer: %v"
+msgstr "AI 无法回答：%v"
 
-#: internal/diskui/details.go:178
-msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
-msgstr "需要时会恢复。回收站会保留到清空为止；“删除”会立即释放空间。"
+#: internal/diskui/details.go:413
+msgid "The AI answered %q"
+msgstr "AI 的回答：%q"
 
-#: internal/diskui/details.go:180
-msgid "Look inside before deleting: it may hold your work, settings or history."
-msgstr "删除前请查看里面：可能有你的工作、设置或历史。"
-
-#: internal/diskui/details.go:182
-msgid "No check settled it: look inside first, or ask the assistant."
-msgstr "没有检查能判断：请先查看里面，或询问助手。"
-
-#: internal/diskui/details.go:292
-msgid "it answered %q"
-msgstr "它回答了 %q"
-
-#: internal/diskui/details.go:302
-msgid "The assistant could not decide: %v"
-msgstr "助手无法判断：%v"
-
-#: internal/diskui/details.go:353
-msgid "The assistant could not answer: %v"
-msgstr "助手无法回答：%v"
-
-#: internal/diskui/details.go:358
-#: internal/diskui/details.go:386
-#: ui/disk.ui:926
-msgid "Explain"
-msgstr "解释"
-
-#: internal/diskui/details.go:384
-msgid "Explain again"
-msgstr "再次解释"
-
-#: internal/diskui/details.go:412
+#: internal/diskui/details.go:443
 msgid "Cannot open it in Files: %v"
 msgstr "无法在“文件”中打开：%v"
 
-#: internal/diskui/details.go:427
+#: internal/diskui/details.go:458
 msgid "Deleting…"
 msgstr "正在删除…"
 
-#: internal/diskui/details.go:429
+#: internal/diskui/details.go:460
 msgid "Moving to the trash…"
 msgstr "正在移到回收站…"
 
-#: internal/diskui/details.go:441
+#: internal/diskui/details.go:472
 msgid "Cannot delete %s: %v"
 msgstr "无法删除 %s：%v"
 
-#: internal/diskui/details.go:446
-msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
-msgstr "已将 %s 移到回收站：清空回收站后释放 %s。"
+#: internal/diskui/details.go:477
+msgid "Moved %s to the trash."
+msgstr "已将 %s 移到回收站。"
 
-#: internal/diskui/details.go:448
+#: internal/diskui/details.go:479
 msgid "Deleted %s: %s freed."
 msgstr "已删除 %s：释放了 %s。"
 
-#: internal/diskui/details.go:492
-msgid "%s in %s file. It does not go to the trash; this cannot be undone."
-msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
-msgstr[0] "%s，%s 个文件。不会进入回收站，无法撤销。"
+#: internal/diskui/details.go:523
+msgid "%s in %s file. This cannot be undone."
+msgid_plural "%s in %s files. This cannot be undone."
+msgstr[0] "%s，%s 个文件。此操作无法撤销。"
 
-#: internal/diskui/details.go:495
-msgid "%s. It does not go to the trash; this cannot be undone."
-msgstr "%s。不会进入回收站，无法撤销。"
+#: internal/diskui/details.go:526
+msgid "%s. This cannot be undone."
+msgstr "%s。此操作无法撤销。"
 
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 msgid "Delete %s for good?"
 msgstr "永久删除 %s？"
 
-#: internal/diskui/details.go:521
+#: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:187
 #: internal/ui/settings_bench.go:332
 msgid "Running…"
 msgstr "正在运行…"
 
-#: internal/diskui/details.go:523
-#: internal/diskui/details.go:570
-#: ui/disk.ui:707
+#: internal/diskui/details.go:554
+#: internal/diskui/details.go:600
+#: ui/disk.ui:706
 msgid "Run"
 msgstr "运行"
 
-#: internal/diskui/details.go:529
-#: internal/diskui/details.go:568
-msgid "It runs as root: inua asks for your password first."
-msgstr "它以 root 身份运行：inua 会先询问你的密码。"
+#: internal/diskui/details.go:560
+#: internal/diskui/details.go:598
+msgid "Runs as root, after your password."
+msgstr "输入密码后以 root 运行。"
 
-#: internal/diskui/details.go:531
-msgid "It runs in %s."
+#: internal/diskui/details.go:562
+msgid "Runs in %s."
 msgstr "在 %s 中运行。"
 
-#: internal/diskui/details.go:565
-msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
-msgstr "在 %s 中运行，清理 %s（现在 %s）；结束后 inua 会重新测量。"
+#: internal/diskui/details.go:596
+msgid "Cleans %s, %s now."
+msgstr "清理 %s，目前 %s。"
 
-#: internal/diskui/details.go:570
+#: internal/diskui/details.go:600
 msgid "Run the clean command?"
 msgstr "运行清理命令？"
 
-#: internal/diskui/details.go:593
+#: internal/diskui/details.go:623
 msgid "%s ended with an error: %v"
 msgstr "%s 以错误结束：%v"
 
-#: internal/diskui/details.go:596
+#: internal/diskui/details.go:626
 msgid "Cannot measure it again: %v"
 msgstr "无法重新测量：%v"
 
-#: internal/diskui/details.go:608
+#: internal/diskui/details.go:638
 msgid "Done: %s freed."
 msgstr "完成：释放了 %s。"
 
-#: internal/diskui/details.go:610
+#: internal/diskui/details.go:640
 msgid "Done: it freed no room here."
 msgstr "完成：这里没有释放空间。"
 
-#: internal/diskui/details.go:613
+#: internal/diskui/details.go:643
 msgid "%s removed %s: %s freed."
 msgstr "%s 移除了 %s：释放了 %s。"
 
-#: internal/diskui/window.go:321
+#: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4724,119 +4715,115 @@ msgstr "%s 移除了 %s：释放了 %s。"
 msgid "Home"
 msgstr "主文件夹"
 
-#: internal/diskui/window.go:351
-#: internal/diskui/window.go:548
+#: internal/diskui/window.go:357
+#: internal/diskui/window.go:553
 msgid "Scanning…"
 msgstr "正在扫描…"
 
-#: internal/diskui/window.go:355
+#: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 可用，共 %s"
 
-#: internal/diskui/window.go:367
-msgid "Scan a place first"
-msgstr "请先扫描一个位置"
-
-#: internal/diskui/window.go:370
+#: internal/diskui/window.go:375
 msgid "%s · %s safe"
 msgstr "%s · 可安全删除 %s"
 
-#: internal/diskui/window.go:440
+#: internal/diskui/window.go:445
 msgid "Choose a folder to scan"
 msgstr "选择要扫描的文件夹"
 
-#: internal/diskui/window.go:513
+#: internal/diskui/window.go:518
 msgid "Scan again"
 msgstr "重新扫描"
 
-#: internal/diskui/window.go:517
+#: internal/diskui/window.go:522
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "扫描"
 
-#: internal/diskui/window.go:524
+#: internal/diskui/window.go:529
 msgid "your home"
 msgstr "你的主文件夹"
 
-#: internal/diskui/window.go:526
-msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
-msgstr "尚未扫描。扫描会测量 %s 在此磁盘上的每个文件夹，并找出其中开发、代理和程序的文件夹。"
+#: internal/diskui/window.go:531
+msgid "Scan to see what fills %s."
+msgstr "扫描以查看是什么占满了%s。"
 
-#: internal/diskui/window.go:543
+#: internal/diskui/window.go:548
 msgid "%s used of %s"
 msgstr "已用 %s，共 %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 msgid "%s in %s files · %s"
 msgstr "%s，%s 个文件 · %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:569
+#: internal/diskui/window.go:575
 msgid "%s files · %s · %.0f s"
 msgstr "%s 个文件 · %s · %.0f 秒"
 
-#: internal/diskui/window.go:615
+#: internal/diskui/window.go:609
 msgid "Cannot scan %s: %v"
 msgstr "无法扫描 %s：%v"
 
-#: internal/diskui/window.go:737
+#: internal/diskui/window.go:724
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "%d 个小文件"
 
-#: internal/diskui/window.go:772
+#: internal/diskui/window.go:757
 msgid "counted"
 msgstr "已统计"
 
-#: internal/diskui/window.go:797
+#: internal/diskui/window.go:782
 msgid "free"
 msgstr "可用"
 
-#: internal/diskui/window.go:799
+#: internal/diskui/window.go:784
 msgid "Not scanned"
 msgstr "未扫描"
 
-#: internal/diskui/window.go:816
+#: internal/diskui/window.go:797
 msgid "Other"
 msgstr "其他"
 
-#: internal/diskui/window.go:879
+#: internal/diskui/window.go:860
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "另有 %d 项"
 
-#: internal/diskui/window.go:890
+#: internal/diskui/window.go:871
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "此文件夹是空的。"
 
-#: internal/diskui/window.go:946
-msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
-msgstr "依赖、构建输出、工具链和包缓存：大多一条命令即可恢复。"
+#: internal/diskui/window.go:927
+msgid "Dependencies, builds and toolchains."
+msgstr "依赖、构建产物和工具链。"
 
-#: internal/diskui/window.go:947
-msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
-msgstr "编程代理的对话、工作树和缓存，以及下载的 AI 模型。"
+#: internal/diskui/window.go:928
+msgid "Agents' sessions, worktrees and AI models."
+msgstr "智能体的会话、工作树和 AI 模型。"
 
-#: internal/diskui/window.go:948
-msgid "Programs' caches, packages downloaded and the trash."
-msgstr "程序的缓存、下载的包和回收站。"
+#: internal/diskui/window.go:929
+msgid "Caches, downloaded packages and the trash."
+msgstr "缓存、下载的软件包和回收站。"
 
-#: internal/diskui/window.go:966
-msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
-msgstr "尚未扫描：扫描一个位置后，这类内容会显示在这里。"
+#: internal/diskui/window.go:953
+msgid "Scan a place first."
+msgstr "请先扫描一个位置。"
 
-#: internal/diskui/window.go:968
-msgid "Nothing of this kind in the places scanned."
-msgstr "已扫描的位置中没有这类内容。"
+#: internal/diskui/window.go:955
+msgid "Nothing found."
+msgstr "未找到。"
 
-#: internal/diskui/window.go:971
+#: internal/diskui/window.go:957
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s，%d 个文件夹 · %s 可安全删除"
@@ -9941,6 +9928,10 @@ msgstr "或者开始于？"
 msgid "%s · Enter copies"
 msgstr "%s · 按 Enter 复制"
 
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "询问助理"
+
 #: internal/shell/launcher.go:416
 msgid "%s · workspace %s"
 msgstr "%[1]s·工作空间%[2]s"
@@ -10390,13 +10381,6 @@ msgstr "字体"
 #: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "等宽字体；CJK 由 Pango 补全"
-
-#: internal/termui/prefs.go:89
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "尺寸"
 
 #: internal/termui/prefs.go:89
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
@@ -12291,10 +12275,6 @@ msgstr "页面尺寸"
 msgid "Created"
 msgstr "创建时间"
 
-#: internal/viewerui/app.go:809
-msgid "Changed"
-msgstr "更改时间"
-
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "制作工具"
@@ -12900,19 +12880,11 @@ msgstr "选择文件夹…"
 msgid "FOUND"
 msgstr "已发现"
 
-#: ui/disk.ui:465
-msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
-msgstr "在地图或列表中选择一项：这里会显示它是什么，以及能否删除。"
-
-#: ui/disk.ui:499
-msgid "[ITEM]"
-msgstr "[项目]"
-
-#: ui/disk.ui:587
+#: ui/disk.ui:543
 msgid "Show on the map"
 msgstr "在地图中显示"
 
-#: ui/disk.ui:596
+#: ui/disk.ui:554
 msgid "Show in Files"
 msgstr "在“文件”中显示"
 
@@ -12920,21 +12892,9 @@ msgstr "在“文件”中显示"
 msgid "[CAN IT GO]"
 msgstr "[能否删除]"
 
-#: ui/disk.ui:670
-msgid "The proper way to clean it:"
-msgstr "正确的清理方法："
-
-#: ui/disk.ui:827
-msgid "[DELETE]"
-msgstr "[删除]"
-
-#: ui/disk.ui:915
-msgid "[WHAT IS IT]"
-msgstr "[这是什么]"
-
-#: ui/disk.ui:968
-msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
-msgstr "发送给助手的只有路径、大小和其中最大项目的名称，从不发送文件内容。"
+#: ui/disk.ui:672
+msgid "Clean it with:"
+msgstr "清理命令："
 
 #: ui/files.ui:57
 msgid "Hidden files (Ctrl+H)"

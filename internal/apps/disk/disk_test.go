@@ -293,25 +293,25 @@ func TestFactsAndPrompts(t *testing.T) {
 			t.Errorf("facts lack %q:\n%s", want, f)
 		}
 	}
-	if p := ExplainPrompt(f, "ja"); !strings.Contains(p, `"ja"`) || !strings.HasSuffix(p, f) {
+	if p := AskPrompt(f, "ja"); !strings.Contains(p, `"ja"`) || !strings.Contains(p, "VERDICT:") || !strings.HasSuffix(p, f) {
 		t.Errorf("prompt: %s", p)
 	}
-	if p := DecidePrompt(f, ""); !strings.Contains(p, "SAFE, REVIEW or KEEP") || !strings.Contains(p, `"en"`) {
-		t.Errorf("decide prompt: %s", p)
-	}
 	for text, want := range map[string]Verdict{
-		"SAFE\nGo makes it again.": Safe, "**Review**\nIt holds notes.": Review, "keep.": Keep, "Maybe": Unknown,
+		"VERDICT: SAFE\nWHY: Go makes it again.": Safe, "**Verdict:** Review\nWHY: It holds notes.": Review,
+		"verdict: keep.": Keep, "VERDICT: Maybe": Unknown, "WHY: not yet": Unknown,
 	} {
-		v, _, ok := ParseDecision(text)
-		if v != want || ok != (want != Unknown) {
-			t.Errorf("ParseDecision(%q) = %v %v, want %v", text, v, ok, want)
+		a, ok := ParseAnswer(text)
+		if a.Verdict != want || ok != (want != Unknown) {
+			t.Errorf("ParseAnswer(%q) = %v %v, want %v", text, a.Verdict, ok, want)
 		}
 	}
-	if _, why, _ := ParseDecision("SAFE\n  Go makes it again.  "); why != "Go makes it again." {
-		t.Errorf("reason = %q", why)
+	a, _ := ParseAnswer("VERDICT: SAFE\nWHY:  Go makes it again.  \nWHAT: Go's build cache:\nkept to build faster.\n")
+	if a.Why != "Go makes it again." || a.What != "Go's build cache: kept to build faster." {
+		t.Errorf("answer = %+v", a)
 	}
-	if len(ChooseOptions) != len(Verdicts) {
-		t.Error("an option without its verdict")
+	// as it comes: the reason begun, the rest not yet
+	if a, ok := ParseAnswer("VERDICT: KEEP\nWHY: It hol"); !ok || a.Why != "It hol" || a.What != "" {
+		t.Errorf("partial answer = %+v %v", a, ok)
 	}
 }
 
@@ -340,12 +340,18 @@ func TestLayoutAndHit(t *testing.T) {
 	if _, mid := Hit(arcs, g, g.CX, g.CY); !mid {
 		t.Error("the middle is not hit")
 	}
-	img := Render(arcs, 200, 200, 1, Paint{Plain: rgba(1, 2, 3), Middle: rgba(9, 9, 9)})
-	if c := img.NRGBAAt(int(g.CX+g.Middle+g.Ring/2), int(g.CY)); c != rgba(1, 2, 3) {
-		t.Errorf("a slice's pixel = %v", c)
+	shapes := Shapes(arcs, g, Paint{Plain: rgba(1, 2, 3)})
+	if len(shapes) != 3 || shapes[0].Color != rgba(1, 2, 3) {
+		t.Fatalf("shapes %+v", shapes)
 	}
-	if c := img.NRGBAAt(0, 0); c.A != 0 {
-		t.Errorf("a corner is painted: %v", c)
+	// The gaps are off each side: a slice starts past its arc and ends
+	// before it, between its ring's radii.
+	s := shapes[0]
+	if s.A0 <= arcs[0].A0 || s.A1 >= arcs[0].A1 || s.R0 <= g.Middle || s.R1 >= g.Middle+g.Ring {
+		t.Errorf("first slice %+v of %+v", s, arcs[0])
+	}
+	if gs := g.Guides(); len(gs) != Rings+1 || gs[0] != g.Middle {
+		t.Errorf("guides %v", gs)
 	}
 }
 

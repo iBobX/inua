@@ -298,6 +298,8 @@ disk-drive                            hard-drive
 disk-dev                              code
 disk-agent                            robot
 disk-cache                            broom
+disk-choose                           cursor-click
+disk-locate                           crosshair
 LIST
 if [ "$weight" = regular ] && [ -n "${LOBEHUB_ICONS:-}" ]; then
 	# agent name (inua-term's)   LobeHub's monochrome icon
