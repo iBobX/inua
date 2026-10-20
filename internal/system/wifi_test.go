@@ -95,6 +95,9 @@ func newFakeWifi(t *testing.T, addr string) *fakeWifi {
 	export(t, f.conn, "/org/freedesktop/NetworkManager/IP4Config/1", prop.Map{nmName + ".IP4Config": {
 		"AddressData": {Value: []map[string]dbus.Variant{{"address": dbus.MakeVariant("192.168.1.20"), "prefix": dbus.MakeVariant(uint32(24))}}},
 		"Gateway":     {Value: "192.168.1.1"},
+		"NameserverData": {Value: []map[string]dbus.Variant{
+			{"address": dbus.MakeVariant("192.168.1.1")}, {"address": dbus.MakeVariant("1.1.1.1")},
+		}},
 	}})
 	f.addActive(1, "/org/freedesktop/NetworkManager/Settings/1", 2)
 	f.conn.Export(fakeSettingsMethods{f}, nmSet, nmName+".Settings")
@@ -264,7 +267,7 @@ func TestReadWifi(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if l.Device != string(wifiDev) || l.Hardware != "AA:BB:CC:DD:EE:FF" || l.Address != "192.168.1.20" || l.Gateway != "192.168.1.1" {
+	if l.Device != string(wifiDev) || l.Hardware != "AA:BB:CC:DD:EE:FF" || l.Address != "192.168.1.20" || l.Gateway != "192.168.1.1" || !slices.Equal(l.DNS, []string{"192.168.1.1", "1.1.1.1"}) {
 		t.Errorf("device %+v", l)
 	}
 	// One a name: Home's stronger access point and the connection in use;
@@ -384,5 +387,22 @@ func TestAPSecurity(t *testing.T) {
 		if got := apSecurity(c.flags, c.wpa, c.rsn); got != c.want {
 			t.Errorf("apSecurity(%#x, %#x, %#x) = %q, want %q", c.flags, c.wpa, c.rsn, got, c.want)
 		}
+	}
+}
+
+// DNS servers from NameserverData, or from an older NetworkManager's
+// Nameservers: numbers, each an address in network byte order.
+func TestNameservers(t *testing.T) {
+	data := map[string]dbus.Variant{"NameserverData": dbus.MakeVariant([]map[string]dbus.Variant{{"address": dbus.MakeVariant("9.9.9.9")}})}
+	if got := nameservers(data); !slices.Equal(got, []string{"9.9.9.9"}) {
+		t.Errorf("NameserverData: %v", got)
+	}
+	// 192.168.1.1, as NetworkManager stores it on a little-endian machine.
+	old := map[string]dbus.Variant{"Nameservers": dbus.MakeVariant([]uint32{0x0101a8c0})}
+	if got := nameservers(old); !slices.Equal(got, []string{"192.168.1.1"}) {
+		t.Errorf("Nameservers: %v", got)
+	}
+	if got := nameservers(map[string]dbus.Variant{}); got != nil {
+		t.Errorf("none: %v", got)
 	}
 }

@@ -64,7 +64,7 @@ msgstr "“%s” · %s"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:337
+#: internal/ui/control.go:323
 #: internal/ui/lock.go:242
 msgid "Monday, January 2"
 msgstr "1月2日 Monday"
@@ -276,10 +276,10 @@ msgstr "%d%%，正在充电"
 #: internal/ui/settings.go:282
 #: internal/ui/settings.go:290
 #: internal/ui/settings.go:293
-#: internal/ui/settings.go:656
-#: internal/ui/settings.go:658
-#: internal/ui/settings.go:710
-#: internal/ui/settings.go:727
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:679
+#: internal/ui/settings.go:731
+#: internal/ui/settings.go:748
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d%%"
@@ -1725,7 +1725,6 @@ msgid "HSL"
 msgstr "HSL"
 
 #: internal/appui/colorpicker.go:134
-#: internal/ui/control_detail.go:282
 msgid "Copy %s"
 msgstr "复制 %s"
 
@@ -1928,7 +1927,6 @@ msgstr "删除…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
-#: internal/ui/control_detail.go:284
 #: internal/ui/settings_fetch.go:167
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2239,8 +2237,8 @@ msgid "Top level"
 msgstr "顶层"
 
 #: internal/appui/pass.go:417
-#: internal/ui/settings.go:737
-#: internal/ui/settings.go:764
+#: internal/ui/settings.go:758
+#: internal/ui/settings.go:785
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 条"
@@ -2554,7 +2552,7 @@ msgstr "含二维码的图片"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:874
+#: internal/ui/settings.go:895
 msgid "Images"
 msgstr "图像"
 
@@ -2971,6 +2969,7 @@ msgstr "名称"
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
 #: internal/diskui/window.go:329
+#: internal/ui/settings.go:520
 msgid "System"
 msgstr "系统"
 
@@ -3514,7 +3513,7 @@ msgstr "无法播放：%s"
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
-#: internal/ui/settings_wifi.go:280
+#: internal/ui/settings_wifi.go:285
 #: ui/remote.ui:308
 #: ui/settings.ui:5748
 msgid "Off"
@@ -3658,7 +3657,7 @@ msgstr "未知的组件 %q"
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
-#: internal/ui/settings_wifi.go:442
+#: internal/ui/settings_wifi.go:440
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
@@ -4706,8 +4705,8 @@ msgid "Delete %s for good?"
 msgstr "永久删除 %s？"
 
 #: internal/diskui/details.go:552
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
+#: internal/ui/settings_bench.go:195
+#: internal/ui/settings_bench.go:340
 msgid "Running…"
 msgstr "正在运行…"
 
@@ -5159,7 +5158,8 @@ msgstr[0] "……还有 %d 项"
 #: internal/filesui/cards.go:716
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
-#: internal/ui/settings_bench.go:139
+#: internal/ui/settings_bench.go:130
+#: internal/ui/settings_wifi_details.go:62
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
 msgid "Close"
@@ -5622,8 +5622,8 @@ msgstr "正在连接 %s……"
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
 #: internal/ui/settings_bluetooth.go:340
-#: internal/ui/settings_wifi.go:416
-#: internal/ui/settings_wifi.go:441
+#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:439
 #: ui/remote.ui:603
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
@@ -5672,7 +5672,7 @@ msgstr "%s 已断开连接。"
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:346
-#: internal/ui/settings_wifi.go:422
+#: internal/ui/settings_wifi.go:420
 #: ui/remote.ui:572
 msgid "Forget"
 msgstr "删除密钥"
@@ -5691,7 +5691,7 @@ msgstr "远程磁盘"
 
 #: internal/filesui/remote.go:269
 #: internal/ui/settings_bluetooth.go:338
-#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:412
 msgid "Disconnect"
 msgstr "断开连接"
 
@@ -8800,7 +8800,7 @@ msgid "Pay $50 bail"
 msgstr "缴纳50美元保释金"
 
 #: internal/gamesui/fortune_ai.go:80
-#: internal/ui/settings_bench.go:217
+#: internal/ui/settings_bench.go:225
 msgid "inua-assistant is not installed"
 msgstr "未安装 inua-assistant"
 
@@ -9683,7 +9683,7 @@ msgstr "暂停，先锁定"
 
 #: internal/shell/commands.go:29
 #: internal/termui/restart.go:44
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 #: ui/control.ui:172
 msgid "Restart"
 msgstr "重启"
@@ -9967,7 +9967,7 @@ msgid "Theme"
 msgstr "主题"
 
 #: internal/shell/fetch.go:64
-#: ui/control.ui:682
+#: ui/control.ui:608
 msgid "Display"
 msgstr "显示"
 
@@ -10091,7 +10091,7 @@ msgid "Offline"
 msgstr "离线"
 
 #: internal/shell/status.go:71
-#: internal/ui/settings_wifi.go:278
+#: internal/ui/settings_wifi.go:283
 msgid "No Wi-Fi device"
 msgstr "无Wi-Fi设备"
 
@@ -11075,97 +11075,88 @@ msgstr "[复制于 %s，来自 %s]"
 msgid "[COPIED %s]"
 msgstr "[复制于 %s]"
 
-#: internal/ui/control.go:314
+#: internal/ui/control.go:300
 msgid "inua control center"
 msgstr "inua控制中心"
 
-#: internal/ui/control.go:527
+#: internal/ui/control.go:510
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr "挂起"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 #: ui/control.ui:148
 msgid "Hibernate"
 msgstr "休眠"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 msgid "Hibernate?"
 msgstr "休眠？"
 
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 msgid "Restart?"
 msgstr "重新启动？"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 #: ui/control.ui:196
 msgid "Shut down"
 msgstr "关闭"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 msgid "Shut down?"
 msgstr "确认关机？"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 #: ui/control.ui:220
 msgid "Log out"
 msgstr "退出"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 msgid "Log out?"
 msgstr "确认退出登录？"
 
-#: internal/ui/control_detail.go:101
+#: internal/ui/control_detail.go:92
 msgid "Settings…"
 msgstr "设置…"
 
-#: internal/ui/control_detail.go:164
+#: internal/ui/control_detail.go:155
 msgid "Networks"
 msgstr "网络"
 
-#: internal/ui/control_detail.go:171
+#: internal/ui/control_detail.go:162
 msgid "Wi-Fi is off."
 msgstr "Wi-Fi 已关闭。"
 
-#: internal/ui/control_detail.go:189
+#: internal/ui/control_detail.go:180
 msgid "No networks in range."
 msgstr "范围内没有网络。"
 
-#: internal/ui/control_detail.go:191
+#: internal/ui/control_detail.go:182
 #: internal/ui/settings_bluetooth.go:224
-#: internal/ui/settings_wifi.go:300
+#: internal/ui/settings_wifi.go:305
 #: ui/settings.ui:5232
 #: ui/settings.ui:5461
 msgid "Searching…"
 msgstr "正在搜索…"
 
-#: internal/ui/control_detail.go:223
+#: internal/ui/control_detail.go:214
+#: internal/ui/settings.go:517
 msgid "Devices"
 msgstr "设备"
 
-#: internal/ui/control_detail.go:227
+#: internal/ui/control_detail.go:218
 #: internal/ui/settings_bluetooth.go:212
 msgid "No Bluetooth adapter, or BlueZ is not running"
 msgstr "没有蓝牙适配器,或 BlueZ 未运行"
 
-#: internal/ui/control_detail.go:230
+#: internal/ui/control_detail.go:221
 msgid "Bluetooth is off."
 msgstr "蓝牙已关闭。"
 
-#: internal/ui/control_detail.go:235
+#: internal/ui/control_detail.go:226
 #: internal/ui/settings_bluetooth.go:250
 msgid "No devices paired yet"
 msgstr "还没有配对的设备"
-
-#: internal/ui/control_detail.go:277
-#: ui/control.ui:597
-msgid "IP"
-msgstr "IP"
-
-#: internal/ui/control_detail.go:278
-#: ui/control.ui:632
-msgid "DNS"
-msgstr "DNS"
 
 #: internal/ui/dock.go:405
 msgid "New Window"
@@ -11184,6 +11175,7 @@ msgid "Quit (%d windows)"
 msgstr "退出(%d窗口)"
 
 #: internal/ui/drawer.go:212
+#: internal/ui/settings.go:519
 #: ui/settings.ui:1982
 msgid "Apps"
 msgstr "应用程序"
@@ -11522,72 +11514,80 @@ msgstr "截图"
 msgid "Not restarted: %s"
 msgstr "未重新启动：%s"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:516
+msgid "Connections"
+msgstr "连接"
+
+#: internal/ui/settings.go:518
+msgid "Desktop"
+msgstr "桌面"
+
+#: internal/ui/settings.go:711
 #: ui/settings.ui:414
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:711
 #: ui/settings.ui:415
 msgid "System theme"
 msgstr "系统主题"
 
-#: internal/ui/settings.go:763
+#: internal/ui/settings.go:784
 msgid "%s (%s, %s) · %s"
 msgstr "%s(%s,%s)· %s"
 
-#: internal/ui/settings.go:765
+#: internal/ui/settings.go:786
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d 段文字"
 
-#: internal/ui/settings.go:766
+#: internal/ui/settings.go:787
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d 张图片"
 
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:788
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:846
+#: internal/ui/settings.go:867
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "未保存：%s"
 
-#: internal/ui/settings.go:872
+#: internal/ui/settings.go:893
 msgid "Choose a wallpaper"
 msgstr "选择壁纸"
 
-#: internal/ui/settings.go:914
+#: internal/ui/settings.go:935
 msgid "Off: another notification daemon can show them"
 msgstr "关闭：另一个通知守护进程可以显示它们"
 
-#: internal/ui/settings.go:916
+#: internal/ui/settings.go:937
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "先显示横幅，再收进通知中心（顶栏铃铛或 Super+N）"
 
-#: internal/ui/settings.go:918
+#: internal/ui/settings.go:939
 msgid "Waiting: another notification daemon is running"
 msgstr "等待：另一个通知守护进程正在运行"
 
-#: internal/ui/settings.go:936
+#: internal/ui/settings.go:957
 msgid "Nothing pinned"
 msgstr "尚未固定应用"
 
-#: internal/ui/settings.go:952
+#: internal/ui/settings.go:973
 msgid "%s (not installed)"
 msgstr "%s(未安装)"
 
-#: internal/ui/settings.go:965
+#: internal/ui/settings.go:986
 msgid "Move earlier"
 msgstr "向前移动"
 
-#: internal/ui/settings.go:966
+#: internal/ui/settings.go:987
 msgid "Move later"
 msgstr "向后移动"
 
-#: internal/ui/settings.go:967
+#: internal/ui/settings.go:988
 msgid "Remove from the dock"
 msgstr "从程序坞移除"
 
@@ -11766,7 +11766,7 @@ msgid "Fallback: answers when the profiles above it fail"
 msgstr "备用：前面的模型配置失败时使用"
 
 #: internal/ui/settings_ai.go:543
-#: internal/ui/settings_bench.go:115
+#: internal/ui/settings_bench.go:106
 msgid "Benchmark"
 msgstr "基准测试"
 
@@ -11959,29 +11959,29 @@ msgstr "模型能从列表中挑选"
 msgid "The model did not pick the right option"
 msgstr "模型没有选对"
 
-#: internal/ui/settings_bench.go:137
-#: internal/ui/settings_bench.go:204
+#: internal/ui/settings_bench.go:128
+#: internal/ui/settings_bench.go:212
 msgid "Run again"
 msgstr "再运行一次"
 
-#: internal/ui/settings_bench.go:296
+#: internal/ui/settings_bench.go:304
 msgid "Show what the model answered"
 msgstr "显示模型的回答"
 
-#: internal/ui/settings_bench.go:347
+#: internal/ui/settings_bench.go:355
 msgid "Passed"
 msgstr "通过"
 
-#: internal/ui/settings_bench.go:350
+#: internal/ui/settings_bench.go:358
 msgid "Failed"
 msgstr "失败"
 
-#: internal/ui/settings_bench.go:363
+#: internal/ui/settings_bench.go:371
 msgid "No answer"
 msgstr "没有回答"
 
 #: internal/ui/settings_bluetooth.go:170
-#: internal/ui/settings_wifi.go:250
+#: internal/ui/settings_wifi.go:255
 msgid "Not disconnected: %s"
 msgstr "未断开:%s"
 
@@ -11990,7 +11990,7 @@ msgid "Not paired: %s"
 msgstr "未配对:%s"
 
 #: internal/ui/settings_bluetooth.go:178
-#: internal/ui/settings_wifi.go:252
+#: internal/ui/settings_wifi.go:257
 msgid "Not forgotten: %s"
 msgstr "未忘记:%s"
 
@@ -12007,7 +12007,7 @@ msgid "Nothing found yet. Make the device ready to pair: often by holding its Bl
 msgstr "还没有找到。让设备进入配对状态:通常是按住它的蓝牙按钮。"
 
 #: internal/ui/settings_bluetooth.go:344
-#: internal/ui/settings_wifi.go:420
+#: internal/ui/settings_wifi.go:418
 msgid "Forget it?"
 msgstr "确定忘记?"
 
@@ -12389,49 +12389,69 @@ msgstr "不再允许：会重新询问其中的程序"
 msgid "Page"
 msgstr "页面"
 
-#: internal/ui/settings_wifi.go:276
+#: internal/ui/settings_wifi.go:281
 msgid "NetworkManager is not running"
 msgstr "NetworkManager 未运行"
 
-#: internal/ui/settings_wifi.go:282
+#: internal/ui/settings_wifi.go:287
 msgid "Connected to “%s”"
 msgstr "已连接到“%s”"
 
-#: internal/ui/settings_wifi.go:284
+#: internal/ui/settings_wifi.go:289
 msgid "On; the computer uses “%s”"
 msgstr "已开启；电脑正在使用“%s”"
 
-#: internal/ui/settings_wifi.go:286
+#: internal/ui/settings_wifi.go:291
 msgid "On, not connected"
 msgstr "已开启，未连接"
 
-#: internal/ui/settings_wifi.go:298
+#: internal/ui/settings_wifi.go:303
 msgid "Networks in range"
 msgstr "范围内的网络"
 
-#: internal/ui/settings_wifi.go:322
-msgid "IP address"
-msgstr "IP 地址"
-
-#: internal/ui/settings_wifi.go:323
-msgid "Router"
-msgstr "路由器"
-
-#: internal/ui/settings_wifi.go:324
-msgid "Hardware address"
-msgstr "硬件地址"
-
-#: internal/ui/settings_wifi.go:334
+#: internal/ui/settings_wifi.go:329
 msgid "Nothing found yet."
 msgstr "尚未找到任何网络。"
 
-#: internal/ui/settings_wifi.go:336
+#: internal/ui/settings_wifi.go:331
 msgid "No other networks in range."
 msgstr "范围内没有其他网络。"
 
-#: internal/ui/settings_wifi.go:430
+#: internal/ui/settings_wifi.go:408
+msgid "Details…"
+msgstr "详细信息…"
+
+#: internal/ui/settings_wifi.go:428
 msgid "The password for “%s”"
 msgstr "“%s”的密码"
+
+#: internal/ui/settings_wifi_details.go:111
+msgid "Security"
+msgstr "安全"
+
+#: internal/ui/settings_wifi_details.go:113
+msgid "Signal"
+msgstr "信号"
+
+#: internal/ui/settings_wifi_details.go:116
+msgid "Band"
+msgstr "频段"
+
+#: internal/ui/settings_wifi_details.go:118
+msgid "IP address"
+msgstr "IP 地址"
+
+#: internal/ui/settings_wifi_details.go:119
+msgid "Router"
+msgstr "路由器"
+
+#: internal/ui/settings_wifi_details.go:120
+msgid "DNS"
+msgstr "DNS"
+
+#: internal/ui/settings_wifi_details.go:121
+msgid "Hardware address"
+msgstr "硬件地址"
 
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
@@ -13239,15 +13259,15 @@ msgstr "节能模式"
 msgid "Open Tailscale"
 msgstr "打开 Tailscale"
 
-#: ui/control.ui:744
+#: ui/control.ui:670
 msgid "Sound"
 msgstr "声音"
 
-#: ui/control.ui:772
+#: ui/control.ui:698
 msgid "Mute"
 msgstr "静音"
 
-#: ui/control.ui:812
+#: ui/control.ui:738
 msgid "Now playing"
 msgstr "正在播放"
 

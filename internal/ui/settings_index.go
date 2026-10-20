@@ -1,9 +1,12 @@
 package ui
 
 import (
+	"slices"
+
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // settingsIcons are the pages' icons in the settings index, by page.
@@ -26,9 +29,20 @@ var settingsIcons = map[string]string{
 }
 
 // buildSettingsIndex lists the pages beside them, each its icon and
-// title, the page shown selected; choosing one shows it.
+// title under its group's kicker (settingsGroups), the page shown
+// selected; choosing one shows it. Rows are known by their page's name.
 func (s *shellUI) buildSettingsIndex() {
 	st := &s.settings
+	// The kicker over each group's first page, set by the list's header
+	// function as it lays the rows out.
+	heads := map[string]*gtk.Label{}
+	for _, g := range settingsGroups {
+		k := gtk.NewLabel(i18n.T(g.title))
+		k.AddCssClass("kicker")
+		k.AddCssClass("index-group")
+		k.SetXalign(0)
+		heads[g.pages[0]] = k
+	}
 	for _, name := range settingsPages {
 		child := st.pages.GetChildByName(name)
 		if child == nil {
@@ -46,14 +60,21 @@ func (s *shellUI) buildSettingsIndex() {
 		row.SetChild(&box.Widget)
 		st.index.Append(&row.Widget)
 	}
+	s.onSettingsHeader = func(ptr, _, _ uintptr) {
+		row := gtk.ListBoxRowNewFromInternalPtr(ptr)
+		if k, ok := heads[row.GetName()]; ok {
+			row.SetHeader(&k.Widget)
+		}
+	}
+	s.onSettingsHeaderDone = func(uintptr) {}
+	st.index.SetHeaderFunc(&s.onSettingsHeader, 0, &s.onSettingsHeaderDone)
 	s.onSettingsIndex = func(_ gtk.ListBox, ptr uintptr) {
 		if ptr == 0 {
 			return
 		}
-		if i := int(gtk.ListBoxRowNewFromInternalPtr(ptr).GetIndex()); i >= 0 && i < len(settingsPages) {
-			if st.pages.GetVisibleChildName() != settingsPages[i] {
-				st.pages.SetVisibleChildName(settingsPages[i])
-			}
+		name := gtk.ListBoxRowNewFromInternalPtr(ptr).GetName()
+		if slices.Contains(settingsPages, name) && st.pages.GetVisibleChildName() != name {
+			st.pages.SetVisibleChildName(name)
 		}
 	}
 	st.index.ConnectRowSelected(&s.onSettingsIndex)
@@ -64,11 +85,14 @@ func (s *shellUI) buildSettingsIndex() {
 func (s *shellUI) selectSettingsIndex() {
 	st := &s.settings
 	name := st.pages.GetVisibleChildName()
-	for i, p := range settingsPages {
-		if p == name {
-			if row := st.index.GetRowAtIndex(int32(i)); row != nil {
-				st.index.SelectRow(row)
-			}
+	for i := int32(0); ; i++ {
+		row := st.index.GetRowAtIndex(i)
+		if row == nil {
+			return
+		}
+		if row.GetName() == name {
+			st.index.SelectRow(row)
+			return
 		}
 	}
 }

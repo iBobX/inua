@@ -20,6 +20,7 @@ type WifiList struct {
 	Hardware string // its MAC address
 	Address  string // the connected network's IPv4 address, "" for none
 	Gateway  string
+	DNS      []string // the connected network's DNS servers (IPv4)
 	// Networks are one a name: the connected one first, then those in
 	// range by strength, then the saved ones out of range by name.
 	Networks []WifiNetwork
@@ -99,6 +100,25 @@ func (n *Network) conn() (*dbus.Conn, error) {
 	return n.src.conn, nil
 }
 
+// nameservers are an IP4Config's DNS servers: NameserverData's addresses,
+// or, from a NetworkManager older than 1.14, Nameservers' numbers (each an
+// address in network byte order).
+func nameservers(p map[string]dbus.Variant) []string {
+	var out []string
+	for _, d := range value[[]map[string]dbus.Variant](p, "NameserverData") {
+		if a := value[string](d, "address"); a != "" {
+			out = append(out, a)
+		}
+	}
+	if out != nil {
+		return out
+	}
+	for _, n := range value[[]uint32](p, "Nameservers") {
+		out = append(out, fmt.Sprintf("%d.%d.%d.%d", byte(n), byte(n>>8), byte(n>>16), byte(n>>24)))
+	}
+	return out
+}
+
 // ReadWifi reads the networks now.
 func (n *Network) ReadWifi(ctx context.Context) (WifiList, error) {
 	conn, err := n.conn()
@@ -142,6 +162,7 @@ func readWifi(ctx context.Context, conn *dbus.Conn, dev dbus.ObjectPath) (WifiLi
 					}
 				}
 				l.Gateway = value[string](p, "Gateway")
+				l.DNS = nameservers(p)
 			}
 		}
 	}

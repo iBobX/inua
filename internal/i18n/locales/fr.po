@@ -64,7 +64,7 @@ msgstr "« %s » · %s"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:337
+#: internal/ui/control.go:323
 #: internal/ui/lock.go:242
 msgid "Monday, January 2"
 msgstr "Monday 2 January"
@@ -276,10 +276,10 @@ msgstr "%d %%, en charge"
 #: internal/ui/settings.go:282
 #: internal/ui/settings.go:290
 #: internal/ui/settings.go:293
-#: internal/ui/settings.go:656
-#: internal/ui/settings.go:658
-#: internal/ui/settings.go:710
-#: internal/ui/settings.go:727
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:679
+#: internal/ui/settings.go:731
+#: internal/ui/settings.go:748
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d %%"
@@ -1729,7 +1729,6 @@ msgid "HSL"
 msgstr "HSL"
 
 #: internal/appui/colorpicker.go:134
-#: internal/ui/control_detail.go:282
 msgid "Copy %s"
 msgstr "Copier %s"
 
@@ -1935,7 +1934,6 @@ msgstr "Supprimer…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
-#: internal/ui/control_detail.go:284
 #: internal/ui/settings_fetch.go:167
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2249,8 +2247,8 @@ msgid "Top level"
 msgstr "Niveau supérieur"
 
 #: internal/appui/pass.go:417
-#: internal/ui/settings.go:737
-#: internal/ui/settings.go:764
+#: internal/ui/settings.go:758
+#: internal/ui/settings.go:785
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d entrée"
@@ -2570,7 +2568,7 @@ msgstr "Une image avec un code QR"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:874
+#: internal/ui/settings.go:895
 msgid "Images"
 msgstr "Images"
 
@@ -2989,6 +2987,7 @@ msgstr "Nom"
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
 #: internal/diskui/window.go:329
+#: internal/ui/settings.go:520
 msgid "System"
 msgstr "Système"
 
@@ -3534,7 +3533,7 @@ msgstr "Lecture impossible : %s"
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
-#: internal/ui/settings_wifi.go:280
+#: internal/ui/settings_wifi.go:285
 #: ui/remote.ui:308
 #: ui/settings.ui:5748
 msgid "Off"
@@ -3678,7 +3677,7 @@ msgstr "Bloc inconnu %q"
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
-#: internal/ui/settings_wifi.go:442
+#: internal/ui/settings_wifi.go:440
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
@@ -4728,8 +4727,8 @@ msgid "Delete %s for good?"
 msgstr "Supprimer %s définitivement ?"
 
 #: internal/diskui/details.go:552
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
+#: internal/ui/settings_bench.go:195
+#: internal/ui/settings_bench.go:340
 msgid "Running…"
 msgstr "En cours…"
 
@@ -5188,7 +5187,8 @@ msgstr[1] "… et %d de plus"
 #: internal/filesui/cards.go:716
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
-#: internal/ui/settings_bench.go:139
+#: internal/ui/settings_bench.go:130
+#: internal/ui/settings_wifi_details.go:62
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
 msgid "Close"
@@ -5659,8 +5659,8 @@ msgstr "Connexion à %s…"
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
 #: internal/ui/settings_bluetooth.go:340
-#: internal/ui/settings_wifi.go:416
-#: internal/ui/settings_wifi.go:441
+#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:439
 #: ui/remote.ui:603
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
@@ -5709,7 +5709,7 @@ msgstr "%s est déconnecté."
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:346
-#: internal/ui/settings_wifi.go:422
+#: internal/ui/settings_wifi.go:420
 #: ui/remote.ui:572
 msgid "Forget"
 msgstr "Supprimer la clé"
@@ -5728,7 +5728,7 @@ msgstr "DISQUES DISTANTS"
 
 #: internal/filesui/remote.go:269
 #: internal/ui/settings_bluetooth.go:338
-#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:412
 msgid "Disconnect"
 msgstr "Déconnecter"
 
@@ -8849,7 +8849,7 @@ msgid "Pay $50 bail"
 msgstr "Payer une caution de 50 $"
 
 #: internal/gamesui/fortune_ai.go:80
-#: internal/ui/settings_bench.go:217
+#: internal/ui/settings_bench.go:225
 msgid "inua-assistant is not installed"
 msgstr "inua-assistant n’est pas installé"
 
@@ -9733,7 +9733,7 @@ msgstr "Suspendre, verrouiller d'abord"
 
 #: internal/shell/commands.go:29
 #: internal/termui/restart.go:44
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 #: ui/control.ui:172
 msgid "Restart"
 msgstr "Redémarrer"
@@ -10017,7 +10017,7 @@ msgid "Theme"
 msgstr "Thème"
 
 #: internal/shell/fetch.go:64
-#: ui/control.ui:682
+#: ui/control.ui:608
 msgid "Display"
 msgstr "Affichage"
 
@@ -10143,7 +10143,7 @@ msgid "Offline"
 msgstr "Hors ligne"
 
 #: internal/shell/status.go:71
-#: internal/ui/settings_wifi.go:278
+#: internal/ui/settings_wifi.go:283
 msgid "No Wi-Fi device"
 msgstr "Pas de périphérique Wi-Fi"
 
@@ -11137,97 +11137,88 @@ msgstr "[COPIÉ %s DEPUIS %s]"
 msgid "[COPIED %s]"
 msgstr "[COPIÉ %s]"
 
-#: internal/ui/control.go:314
+#: internal/ui/control.go:300
 msgid "inua control center"
 msgstr "centre de contrôle inua"
 
-#: internal/ui/control.go:527
+#: internal/ui/control.go:510
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr "Mettre en veille"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 #: ui/control.ui:148
 msgid "Hibernate"
 msgstr "Mettre en veille prolongée"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 msgid "Hibernate?"
 msgstr "Mettre en veille prolongée ?"
 
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 msgid "Restart?"
 msgstr "Redémarrer ?"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 #: ui/control.ui:196
 msgid "Shut down"
 msgstr "Arrêt"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 msgid "Shut down?"
 msgstr "Éteindre ?"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 #: ui/control.ui:220
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 msgid "Log out?"
 msgstr "Fermer la session ?"
 
-#: internal/ui/control_detail.go:101
+#: internal/ui/control_detail.go:92
 msgid "Settings…"
 msgstr "Réglages…"
 
-#: internal/ui/control_detail.go:164
+#: internal/ui/control_detail.go:155
 msgid "Networks"
 msgstr "Réseaux"
 
-#: internal/ui/control_detail.go:171
+#: internal/ui/control_detail.go:162
 msgid "Wi-Fi is off."
 msgstr "Le Wi-Fi est désactivé."
 
-#: internal/ui/control_detail.go:189
+#: internal/ui/control_detail.go:180
 msgid "No networks in range."
 msgstr "Aucun réseau à portée."
 
-#: internal/ui/control_detail.go:191
+#: internal/ui/control_detail.go:182
 #: internal/ui/settings_bluetooth.go:224
-#: internal/ui/settings_wifi.go:300
+#: internal/ui/settings_wifi.go:305
 #: ui/settings.ui:5232
 #: ui/settings.ui:5461
 msgid "Searching…"
 msgstr "Recherche…"
 
-#: internal/ui/control_detail.go:223
+#: internal/ui/control_detail.go:214
+#: internal/ui/settings.go:517
 msgid "Devices"
 msgstr "Appareils"
 
-#: internal/ui/control_detail.go:227
+#: internal/ui/control_detail.go:218
 #: internal/ui/settings_bluetooth.go:212
 msgid "No Bluetooth adapter, or BlueZ is not running"
 msgstr "Pas d’adaptateur Bluetooth, ou BlueZ ne tourne pas"
 
-#: internal/ui/control_detail.go:230
+#: internal/ui/control_detail.go:221
 msgid "Bluetooth is off."
 msgstr "Le Bluetooth est désactivé."
 
-#: internal/ui/control_detail.go:235
+#: internal/ui/control_detail.go:226
 #: internal/ui/settings_bluetooth.go:250
 msgid "No devices paired yet"
 msgstr "Aucun appareil associé pour l’instant"
-
-#: internal/ui/control_detail.go:277
-#: ui/control.ui:597
-msgid "IP"
-msgstr "IP"
-
-#: internal/ui/control_detail.go:278
-#: ui/control.ui:632
-msgid "DNS"
-msgstr "DNS"
 
 #: internal/ui/dock.go:405
 msgid "New Window"
@@ -11246,6 +11237,7 @@ msgid "Quit (%d windows)"
 msgstr "Quitter (fenêtres %d)"
 
 #: internal/ui/drawer.go:212
+#: internal/ui/settings.go:519
 #: ui/settings.ui:1982
 msgid "Apps"
 msgstr "Applications"
@@ -11588,74 +11580,82 @@ msgstr "Capture d'écran prise"
 msgid "Not restarted: %s"
 msgstr "Non redémarré : %s"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:516
+msgid "Connections"
+msgstr "Connexions"
+
+#: internal/ui/settings.go:518
+msgid "Desktop"
+msgstr "Bureau"
+
+#: internal/ui/settings.go:711
 #: ui/settings.ui:414
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:711
 #: ui/settings.ui:415
 msgid "System theme"
 msgstr "Thème système"
 
-#: internal/ui/settings.go:763
+#: internal/ui/settings.go:784
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:765
+#: internal/ui/settings.go:786
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d texte"
 msgstr[1] "%d textes"
 
-#: internal/ui/settings.go:766
+#: internal/ui/settings.go:787
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d image"
 msgstr[1] "%d images"
 
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:788
 msgid "%.1f KB"
 msgstr "%.1f Ko"
 
-#: internal/ui/settings.go:846
+#: internal/ui/settings.go:867
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "Non sauvegardé : %s"
 
-#: internal/ui/settings.go:872
+#: internal/ui/settings.go:893
 msgid "Choose a wallpaper"
 msgstr "Choisir un fond d'écran"
 
-#: internal/ui/settings.go:914
+#: internal/ui/settings.go:935
 msgid "Off: another notification daemon can show them"
 msgstr "Désactivé : un autre démon de notification peut les afficher"
 
-#: internal/ui/settings.go:916
+#: internal/ui/settings.go:937
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "Bannières puis centre de notifications (cloche de la barre ou Super+N)"
 
-#: internal/ui/settings.go:918
+#: internal/ui/settings.go:939
 msgid "Waiting: another notification daemon is running"
 msgstr "En attente : un autre démon de notification est en cours d'exécution"
 
-#: internal/ui/settings.go:936
+#: internal/ui/settings.go:957
 msgid "Nothing pinned"
 msgstr "Aucune application épinglée"
 
-#: internal/ui/settings.go:952
+#: internal/ui/settings.go:973
 msgid "%s (not installed)"
 msgstr "%s (non installé)"
 
-#: internal/ui/settings.go:965
+#: internal/ui/settings.go:986
 msgid "Move earlier"
 msgstr "Déplacer avant"
 
-#: internal/ui/settings.go:966
+#: internal/ui/settings.go:987
 msgid "Move later"
 msgstr "Déplacer après"
 
-#: internal/ui/settings.go:967
+#: internal/ui/settings.go:988
 msgid "Remove from the dock"
 msgstr "Retirer du dock"
 
@@ -11834,7 +11834,7 @@ msgid "Fallback: answers when the profiles above it fail"
 msgstr "Secours : répond si les profils précédents échouent"
 
 #: internal/ui/settings_ai.go:543
-#: internal/ui/settings_bench.go:115
+#: internal/ui/settings_bench.go:106
 msgid "Benchmark"
 msgstr "Banc d'essai"
 
@@ -12027,29 +12027,29 @@ msgstr "Le modèle choisit dans une liste"
 msgid "The model did not pick the right option"
 msgstr "Le modèle n'a pas choisi la bonne option"
 
-#: internal/ui/settings_bench.go:137
-#: internal/ui/settings_bench.go:204
+#: internal/ui/settings_bench.go:128
+#: internal/ui/settings_bench.go:212
 msgid "Run again"
 msgstr "Relancer"
 
-#: internal/ui/settings_bench.go:296
+#: internal/ui/settings_bench.go:304
 msgid "Show what the model answered"
 msgstr "Afficher la réponse du modèle"
 
-#: internal/ui/settings_bench.go:347
+#: internal/ui/settings_bench.go:355
 msgid "Passed"
 msgstr "Réussi"
 
-#: internal/ui/settings_bench.go:350
+#: internal/ui/settings_bench.go:358
 msgid "Failed"
 msgstr "Échoué"
 
-#: internal/ui/settings_bench.go:363
+#: internal/ui/settings_bench.go:371
 msgid "No answer"
 msgstr "Pas de réponse"
 
 #: internal/ui/settings_bluetooth.go:170
-#: internal/ui/settings_wifi.go:250
+#: internal/ui/settings_wifi.go:255
 msgid "Not disconnected: %s"
 msgstr "Non déconnecté : %s"
 
@@ -12058,7 +12058,7 @@ msgid "Not paired: %s"
 msgstr "Non associé : %s"
 
 #: internal/ui/settings_bluetooth.go:178
-#: internal/ui/settings_wifi.go:252
+#: internal/ui/settings_wifi.go:257
 msgid "Not forgotten: %s"
 msgstr "Non oublié : %s"
 
@@ -12075,7 +12075,7 @@ msgid "Nothing found yet. Make the device ready to pair: often by holding its Bl
 msgstr "Rien pour l’instant. Mettez l’appareil en mode d’association : souvent en maintenant son bouton Bluetooth."
 
 #: internal/ui/settings_bluetooth.go:344
-#: internal/ui/settings_wifi.go:420
+#: internal/ui/settings_wifi.go:418
 msgid "Forget it?"
 msgstr "L’oublier ?"
 
@@ -12462,49 +12462,69 @@ msgstr "Ne plus l'autoriser : ses programmes sont de nouveau demandés"
 msgid "Page"
 msgstr "Page"
 
-#: internal/ui/settings_wifi.go:276
+#: internal/ui/settings_wifi.go:281
 msgid "NetworkManager is not running"
 msgstr "NetworkManager n’est pas lancé"
 
-#: internal/ui/settings_wifi.go:282
+#: internal/ui/settings_wifi.go:287
 msgid "Connected to “%s”"
 msgstr "Connecté à « %s »"
 
-#: internal/ui/settings_wifi.go:284
+#: internal/ui/settings_wifi.go:289
 msgid "On; the computer uses “%s”"
 msgstr "Activé ; l’ordinateur utilise « %s »"
 
-#: internal/ui/settings_wifi.go:286
+#: internal/ui/settings_wifi.go:291
 msgid "On, not connected"
 msgstr "Activé, non connecté"
 
-#: internal/ui/settings_wifi.go:298
+#: internal/ui/settings_wifi.go:303
 msgid "Networks in range"
 msgstr "Réseaux à portée"
 
-#: internal/ui/settings_wifi.go:322
-msgid "IP address"
-msgstr "Adresse IP"
-
-#: internal/ui/settings_wifi.go:323
-msgid "Router"
-msgstr "Routeur"
-
-#: internal/ui/settings_wifi.go:324
-msgid "Hardware address"
-msgstr "Adresse matérielle"
-
-#: internal/ui/settings_wifi.go:334
+#: internal/ui/settings_wifi.go:329
 msgid "Nothing found yet."
 msgstr "Rien de trouvé pour l’instant."
 
-#: internal/ui/settings_wifi.go:336
+#: internal/ui/settings_wifi.go:331
 msgid "No other networks in range."
 msgstr "Aucun autre réseau à portée."
 
-#: internal/ui/settings_wifi.go:430
+#: internal/ui/settings_wifi.go:408
+msgid "Details…"
+msgstr "Détails…"
+
+#: internal/ui/settings_wifi.go:428
 msgid "The password for “%s”"
 msgstr "Le mot de passe de « %s »"
+
+#: internal/ui/settings_wifi_details.go:111
+msgid "Security"
+msgstr "Sécurité"
+
+#: internal/ui/settings_wifi_details.go:113
+msgid "Signal"
+msgstr "Signal"
+
+#: internal/ui/settings_wifi_details.go:116
+msgid "Band"
+msgstr "Bande"
+
+#: internal/ui/settings_wifi_details.go:118
+msgid "IP address"
+msgstr "Adresse IP"
+
+#: internal/ui/settings_wifi_details.go:119
+msgid "Router"
+msgstr "Routeur"
+
+#: internal/ui/settings_wifi_details.go:120
+msgid "DNS"
+msgstr "DNS"
+
+#: internal/ui/settings_wifi_details.go:121
+msgid "Hardware address"
+msgstr "Adresse matérielle"
 
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
@@ -13313,15 +13333,15 @@ msgstr "Économie d’énergie"
 msgid "Open Tailscale"
 msgstr "Ouvrir Tailscale"
 
-#: ui/control.ui:744
+#: ui/control.ui:670
 msgid "Sound"
 msgstr "Son"
 
-#: ui/control.ui:772
+#: ui/control.ui:698
 msgid "Mute"
 msgstr "Muet"
 
-#: ui/control.ui:812
+#: ui/control.ui:738
 msgid "Now playing"
 msgstr "En cours de lecture"
 

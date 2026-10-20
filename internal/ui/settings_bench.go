@@ -92,20 +92,11 @@ func (s *shellUI) benchAI(profile string) {
 	s.closeBench()
 	d := &benchDialog{profile: profile, rows: map[string]*benchRow{}}
 	st.ai.bench = d
-	// The window's page under an overlay, once, for the card to go over.
-	if st.overlay == nil {
-		page := st.win.GetChild()
-		page.Ref()
-		st.win.SetChild(nil)
-		st.overlay = gtk.NewOverlay()
-		st.overlay.SetChild(page)
-		page.Unref()
-		st.win.SetChild(&st.overlay.Widget)
-		st.overlay.Unref() // the window's
-	}
+	s.settingsOverlay()
 	d.scrim = gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	d.scrim.AddCssClass("bench-scrim")
+	d.scrim.AddCssClass("settings-scrim")
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 12)
+	box.AddCssClass("settings-dialog")
 	box.AddCssClass("bench-dialog")
 	box.SetHalign(gtk.AlignCenterValue)
 	box.SetValign(gtk.AlignCenterValue)
@@ -157,6 +148,23 @@ func (s *shellUI) benchAI(profile string) {
 	d.scrim.Unref() // the overlay's
 	closeButton.GrabFocus()
 	s.runBench(d)
+}
+
+// settingsOverlay puts the window's page under an overlay, once, for a
+// dialog's card to go over: the Benchmark dialog, Wi-Fi's details.
+func (s *shellUI) settingsOverlay() *gtk.Overlay {
+	st := &s.settings
+	if st.overlay == nil {
+		page := st.win.GetChild()
+		page.Ref()
+		st.win.SetChild(nil)
+		st.overlay = gtk.NewOverlay()
+		st.overlay.SetChild(page)
+		page.Unref()
+		st.win.SetChild(&st.overlay.Widget)
+		st.overlay.Unref() // the window's
+	}
+	return st.overlay
 }
 
 // closeBench closes the Benchmark dialog, stopping what it runs; false

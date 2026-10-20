@@ -64,7 +64,7 @@ msgstr "“%s” · %s"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:337
+#: internal/ui/control.go:323
 #: internal/ui/lock.go:242
 msgid "Monday, January 2"
 msgstr "1월 2일 Monday"
@@ -276,10 +276,10 @@ msgstr "%d%%, 충전 중"
 #: internal/ui/settings.go:282
 #: internal/ui/settings.go:290
 #: internal/ui/settings.go:293
-#: internal/ui/settings.go:656
-#: internal/ui/settings.go:658
-#: internal/ui/settings.go:710
-#: internal/ui/settings.go:727
+#: internal/ui/settings.go:677
+#: internal/ui/settings.go:679
+#: internal/ui/settings.go:731
+#: internal/ui/settings.go:748
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d%%"
@@ -1725,7 +1725,6 @@ msgid "HSL"
 msgstr "HSL"
 
 #: internal/appui/colorpicker.go:134
-#: internal/ui/control_detail.go:282
 msgid "Copy %s"
 msgstr "%s 복사"
 
@@ -1928,7 +1927,6 @@ msgstr "삭제…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/ui/askpass.go:537
-#: internal/ui/control_detail.go:284
 #: internal/ui/settings_fetch.go:167
 #: internal/viewerui/app.go:548
 msgid "Copied"
@@ -2239,8 +2237,8 @@ msgid "Top level"
 msgstr "최상위"
 
 #: internal/appui/pass.go:417
-#: internal/ui/settings.go:737
-#: internal/ui/settings.go:764
+#: internal/ui/settings.go:758
+#: internal/ui/settings.go:785
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
@@ -2554,7 +2552,7 @@ msgstr "QR 코드가 있는 이미지"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:874
+#: internal/ui/settings.go:895
 msgid "Images"
 msgstr "이미지"
 
@@ -2971,6 +2969,7 @@ msgstr "이름"
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
 #: internal/diskui/window.go:329
+#: internal/ui/settings.go:520
 msgid "System"
 msgstr "시스템"
 
@@ -3514,7 +3513,7 @@ msgstr "재생할 수 없습니다: %s"
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
-#: internal/ui/settings_wifi.go:280
+#: internal/ui/settings_wifi.go:285
 #: ui/remote.ui:308
 #: ui/settings.ui:5748
 msgid "Off"
@@ -3658,7 +3657,7 @@ msgstr "알 수 없는 블록 %q"
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
-#: internal/ui/settings_wifi.go:442
+#: internal/ui/settings_wifi.go:440
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
@@ -4706,8 +4705,8 @@ msgid "Delete %s for good?"
 msgstr "%s을(를) 영구히 삭제할까요?"
 
 #: internal/diskui/details.go:552
-#: internal/ui/settings_bench.go:187
-#: internal/ui/settings_bench.go:332
+#: internal/ui/settings_bench.go:195
+#: internal/ui/settings_bench.go:340
 msgid "Running…"
 msgstr "실행 중…"
 
@@ -5159,7 +5158,8 @@ msgstr[0] "… 그 외 %d개"
 #: internal/filesui/cards.go:716
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
-#: internal/ui/settings_bench.go:139
+#: internal/ui/settings_bench.go:130
+#: internal/ui/settings_wifi_details.go:62
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
 msgid "Close"
@@ -5622,8 +5622,8 @@ msgstr "%s에 연결하는 중…"
 #: internal/filesui/remote.go:160
 #: internal/filesui/remotesetup.go:132
 #: internal/ui/settings_bluetooth.go:340
-#: internal/ui/settings_wifi.go:416
-#: internal/ui/settings_wifi.go:441
+#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:439
 #: ui/remote.ui:603
 #: ui/vm.ui:1548
 #: ui/vm.ui:1569
@@ -5672,7 +5672,7 @@ msgstr "%s의 연결을 끊었습니다."
 #: internal/filesui/remote.go:273
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:346
-#: internal/ui/settings_wifi.go:422
+#: internal/ui/settings_wifi.go:420
 #: ui/remote.ui:572
 msgid "Forget"
 msgstr "키 삭제"
@@ -5691,7 +5691,7 @@ msgstr "원격 디스크"
 
 #: internal/filesui/remote.go:269
 #: internal/ui/settings_bluetooth.go:338
-#: internal/ui/settings_wifi.go:414
+#: internal/ui/settings_wifi.go:412
 msgid "Disconnect"
 msgstr "연결 끊기"
 
@@ -8800,7 +8800,7 @@ msgid "Pay $50 bail"
 msgstr "보석금 $50 지불"
 
 #: internal/gamesui/fortune_ai.go:80
-#: internal/ui/settings_bench.go:217
+#: internal/ui/settings_bench.go:225
 msgid "inua-assistant is not installed"
 msgstr "inua-assistant가 설치되어 있지 않습니다"
 
@@ -9683,7 +9683,7 @@ msgstr "일시 중지, 먼저 잠금"
 
 #: internal/shell/commands.go:29
 #: internal/termui/restart.go:44
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 #: ui/control.ui:172
 msgid "Restart"
 msgstr "다시 시작"
@@ -9967,7 +9967,7 @@ msgid "Theme"
 msgstr "테마"
 
 #: internal/shell/fetch.go:64
-#: ui/control.ui:682
+#: ui/control.ui:608
 msgid "Display"
 msgstr "디스플레이"
 
@@ -10091,7 +10091,7 @@ msgid "Offline"
 msgstr "오프라인"
 
 #: internal/shell/status.go:71
-#: internal/ui/settings_wifi.go:278
+#: internal/ui/settings_wifi.go:283
 msgid "No Wi-Fi device"
 msgstr "Wi-Fi 장치 없음"
 
@@ -11075,97 +11075,88 @@ msgstr "[%s에 %s에서 복사]"
 msgid "[COPIED %s]"
 msgstr "[%s 복사]"
 
-#: internal/ui/control.go:314
+#: internal/ui/control.go:300
 msgid "inua control center"
 msgstr "이누아 통제 센터"
 
-#: internal/ui/control.go:527
+#: internal/ui/control.go:510
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr "절전"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 #: ui/control.ui:148
 msgid "Hibernate"
 msgstr "최대 절전"
 
-#: internal/ui/control.go:528
+#: internal/ui/control.go:511
 msgid "Hibernate?"
 msgstr "최대 절전 모드로 전환하시겠습니까?"
 
-#: internal/ui/control.go:529
+#: internal/ui/control.go:512
 msgid "Restart?"
 msgstr "재시작하시겠습니까?"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 #: ui/control.ui:196
 msgid "Shut down"
 msgstr "종료"
 
-#: internal/ui/control.go:530
+#: internal/ui/control.go:513
 msgid "Shut down?"
 msgstr "종료할까요?"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 #: ui/control.ui:220
 msgid "Log out"
 msgstr "로그아웃"
 
-#: internal/ui/control.go:531
+#: internal/ui/control.go:514
 msgid "Log out?"
 msgstr "로그아웃할까요?"
 
-#: internal/ui/control_detail.go:101
+#: internal/ui/control_detail.go:92
 msgid "Settings…"
 msgstr "설정…"
 
-#: internal/ui/control_detail.go:164
+#: internal/ui/control_detail.go:155
 msgid "Networks"
 msgstr "네트워크"
 
-#: internal/ui/control_detail.go:171
+#: internal/ui/control_detail.go:162
 msgid "Wi-Fi is off."
 msgstr "Wi-Fi가 꺼져 있습니다."
 
-#: internal/ui/control_detail.go:189
+#: internal/ui/control_detail.go:180
 msgid "No networks in range."
 msgstr "범위 안에 네트워크가 없습니다."
 
-#: internal/ui/control_detail.go:191
+#: internal/ui/control_detail.go:182
 #: internal/ui/settings_bluetooth.go:224
-#: internal/ui/settings_wifi.go:300
+#: internal/ui/settings_wifi.go:305
 #: ui/settings.ui:5232
 #: ui/settings.ui:5461
 msgid "Searching…"
 msgstr "검색 중…"
 
-#: internal/ui/control_detail.go:223
+#: internal/ui/control_detail.go:214
+#: internal/ui/settings.go:517
 msgid "Devices"
 msgstr "기기"
 
-#: internal/ui/control_detail.go:227
+#: internal/ui/control_detail.go:218
 #: internal/ui/settings_bluetooth.go:212
 msgid "No Bluetooth adapter, or BlueZ is not running"
 msgstr "블루투스 어댑터가 없거나 BlueZ가 실행 중이 아닙니다"
 
-#: internal/ui/control_detail.go:230
+#: internal/ui/control_detail.go:221
 msgid "Bluetooth is off."
 msgstr "블루투스가 꺼져 있습니다."
 
-#: internal/ui/control_detail.go:235
+#: internal/ui/control_detail.go:226
 #: internal/ui/settings_bluetooth.go:250
 msgid "No devices paired yet"
 msgstr "아직 페어링된 기기가 없습니다"
-
-#: internal/ui/control_detail.go:277
-#: ui/control.ui:597
-msgid "IP"
-msgstr "IP"
-
-#: internal/ui/control_detail.go:278
-#: ui/control.ui:632
-msgid "DNS"
-msgstr "DNS"
 
 #: internal/ui/dock.go:405
 msgid "New Window"
@@ -11184,6 +11175,7 @@ msgid "Quit (%d windows)"
 msgstr "종료(%d 창)"
 
 #: internal/ui/drawer.go:212
+#: internal/ui/settings.go:519
 #: ui/settings.ui:1982
 msgid "Apps"
 msgstr "앱"
@@ -11522,72 +11514,80 @@ msgstr "촬영된 스크린샷"
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:516
+msgid "Connections"
+msgstr "연결"
+
+#: internal/ui/settings.go:518
+msgid "Desktop"
+msgstr "데스크톱"
+
+#: internal/ui/settings.go:711
 #: ui/settings.ui:414
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:711
 #: ui/settings.ui:415
 msgid "System theme"
 msgstr "시스템 테마"
 
-#: internal/ui/settings.go:763
+#: internal/ui/settings.go:784
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:765
+#: internal/ui/settings.go:786
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:766
+#: internal/ui/settings.go:787
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:767
+#: internal/ui/settings.go:788
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:846
+#: internal/ui/settings.go:867
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:872
+#: internal/ui/settings.go:893
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:914
+#: internal/ui/settings.go:935
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:916
+#: internal/ui/settings.go:937
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:918
+#: internal/ui/settings.go:939
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:936
+#: internal/ui/settings.go:957
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:952
+#: internal/ui/settings.go:973
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:965
+#: internal/ui/settings.go:986
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:966
+#: internal/ui/settings.go:987
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:967
+#: internal/ui/settings.go:988
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
@@ -11766,7 +11766,7 @@ msgid "Fallback: answers when the profiles above it fail"
 msgstr "앞선 프로필이 실패하면 대신 응답"
 
 #: internal/ui/settings_ai.go:543
-#: internal/ui/settings_bench.go:115
+#: internal/ui/settings_bench.go:106
 msgid "Benchmark"
 msgstr "벤치마크"
 
@@ -11959,29 +11959,29 @@ msgstr "모델이 목록에서 고를 수 있습니다"
 msgid "The model did not pick the right option"
 msgstr "모델이 올바른 항목을 고르지 않았습니다"
 
-#: internal/ui/settings_bench.go:137
-#: internal/ui/settings_bench.go:204
+#: internal/ui/settings_bench.go:128
+#: internal/ui/settings_bench.go:212
 msgid "Run again"
 msgstr "다시 실행"
 
-#: internal/ui/settings_bench.go:296
+#: internal/ui/settings_bench.go:304
 msgid "Show what the model answered"
 msgstr "모델의 응답 보기"
 
-#: internal/ui/settings_bench.go:347
+#: internal/ui/settings_bench.go:355
 msgid "Passed"
 msgstr "통과"
 
-#: internal/ui/settings_bench.go:350
+#: internal/ui/settings_bench.go:358
 msgid "Failed"
 msgstr "실패"
 
-#: internal/ui/settings_bench.go:363
+#: internal/ui/settings_bench.go:371
 msgid "No answer"
 msgstr "응답 없음"
 
 #: internal/ui/settings_bluetooth.go:170
-#: internal/ui/settings_wifi.go:250
+#: internal/ui/settings_wifi.go:255
 msgid "Not disconnected: %s"
 msgstr "연결 해제되지 않음: %s"
 
@@ -11990,7 +11990,7 @@ msgid "Not paired: %s"
 msgstr "페어링되지 않음: %s"
 
 #: internal/ui/settings_bluetooth.go:178
-#: internal/ui/settings_wifi.go:252
+#: internal/ui/settings_wifi.go:257
 msgid "Not forgotten: %s"
 msgstr "삭제되지 않음: %s"
 
@@ -12007,7 +12007,7 @@ msgid "Nothing found yet. Make the device ready to pair: often by holding its Bl
 msgstr "아직 찾지 못했습니다. 기기를 페어링 모드로 두세요. 보통 블루투스 버튼을 길게 누릅니다."
 
 #: internal/ui/settings_bluetooth.go:344
-#: internal/ui/settings_wifi.go:420
+#: internal/ui/settings_wifi.go:418
 msgid "Forget it?"
 msgstr "삭제할까요?"
 
@@ -12389,49 +12389,69 @@ msgstr "허용 중지: 이 경로의 프로그램에 다시 묻습니다"
 msgid "Page"
 msgstr "페이지"
 
-#: internal/ui/settings_wifi.go:276
+#: internal/ui/settings_wifi.go:281
 msgid "NetworkManager is not running"
 msgstr "NetworkManager가 실행 중이 아닙니다"
 
-#: internal/ui/settings_wifi.go:282
+#: internal/ui/settings_wifi.go:287
 msgid "Connected to “%s”"
 msgstr "“%s”에 연결됨"
 
-#: internal/ui/settings_wifi.go:284
+#: internal/ui/settings_wifi.go:289
 msgid "On; the computer uses “%s”"
 msgstr "켜짐. 이 컴퓨터는 “%s”을(를) 사용 중"
 
-#: internal/ui/settings_wifi.go:286
+#: internal/ui/settings_wifi.go:291
 msgid "On, not connected"
 msgstr "켜짐, 연결되지 않음"
 
-#: internal/ui/settings_wifi.go:298
+#: internal/ui/settings_wifi.go:303
 msgid "Networks in range"
 msgstr "범위 안의 네트워크"
 
-#: internal/ui/settings_wifi.go:322
-msgid "IP address"
-msgstr "IP 주소"
-
-#: internal/ui/settings_wifi.go:323
-msgid "Router"
-msgstr "라우터"
-
-#: internal/ui/settings_wifi.go:324
-msgid "Hardware address"
-msgstr "하드웨어 주소"
-
-#: internal/ui/settings_wifi.go:334
+#: internal/ui/settings_wifi.go:329
 msgid "Nothing found yet."
 msgstr "아직 찾은 것이 없습니다."
 
-#: internal/ui/settings_wifi.go:336
+#: internal/ui/settings_wifi.go:331
 msgid "No other networks in range."
 msgstr "범위 안에 다른 네트워크가 없습니다."
 
-#: internal/ui/settings_wifi.go:430
+#: internal/ui/settings_wifi.go:408
+msgid "Details…"
+msgstr "세부 정보…"
+
+#: internal/ui/settings_wifi.go:428
 msgid "The password for “%s”"
 msgstr "“%s”의 비밀번호"
+
+#: internal/ui/settings_wifi_details.go:111
+msgid "Security"
+msgstr "보안"
+
+#: internal/ui/settings_wifi_details.go:113
+msgid "Signal"
+msgstr "신호"
+
+#: internal/ui/settings_wifi_details.go:116
+msgid "Band"
+msgstr "대역"
+
+#: internal/ui/settings_wifi_details.go:118
+msgid "IP address"
+msgstr "IP 주소"
+
+#: internal/ui/settings_wifi_details.go:119
+msgid "Router"
+msgstr "라우터"
+
+#: internal/ui/settings_wifi_details.go:120
+msgid "DNS"
+msgstr "DNS"
+
+#: internal/ui/settings_wifi_details.go:121
+msgid "Hardware address"
+msgstr "하드웨어 주소"
 
 #: internal/ui/shortcuts.go:88
 msgid "Set in inua"
@@ -13239,15 +13259,15 @@ msgstr "절전 모드"
 msgid "Open Tailscale"
 msgstr "Tailscale 열기"
 
-#: ui/control.ui:744
+#: ui/control.ui:670
 msgid "Sound"
 msgstr "소리"
 
-#: ui/control.ui:772
+#: ui/control.ui:698
 msgid "Mute"
 msgstr "음소거"
 
-#: ui/control.ui:812
+#: ui/control.ui:738
 msgid "Now playing"
 msgstr "지금 재생 중"
 

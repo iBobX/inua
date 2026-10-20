@@ -78,9 +78,9 @@ The arrow beside the Wi-Fi tile opens the networks in range under the
 tiles: a click joins a saved or open network, and one that needs a
 password opens Settings → Wi-Fi to type it. The arrow beside Bluetooth
 lists the paired devices, a click connecting or disconnecting one. A
-failure shows on the row it is about. While Tailscale is connected, its
-tile has this computer's tailnet address and MagicDNS name beside it; a
-click copies either.
+failure shows on the row it is about. The Tailscale tile connects and
+disconnects; its arrow opens the Tailscale app, which has this
+computer's tailnet address and MagicDNS name.
 
 ## Notifications
 
@@ -103,10 +103,12 @@ its window to the current workspace.
 
 ## Settings
 
-A two-column settings window for everything: appearance and wallpaper, bar
-and dock, launcher, default apps, AI (the assistant's models),
-notifications, shortcuts, Wi-Fi, Bluetooth, displays, keyboard, mouse and touchpad. Changes apply as
-you make them.
+A two-column settings window for everything, its index grouped by what is
+most often looked for: Connections (Wi-Fi, Bluetooth), Devices (displays,
+keyboard, mouse and touchpad), Desktop (appearance and wallpaper, the bar
+and dock, the launcher, notifications, shortcuts), Apps (default apps, AI
+for the assistant's models, clipboard, keyring) and System (About).
+Changes apply as you make them.
 
 The search above the index (Ctrl+F, or just type) finds pages and the
 settings on them by what they say, and pages by other words for them
@@ -321,9 +323,10 @@ See [workshop.md](workshop.md).
 ## Wi-Fi
 
 Settings → Wi-Fi (or Wi-Fi Settings in the launcher) turns Wi-Fi on or
-off through NetworkManager and shows the network in use, with its IP
-address, router and the device's hardware address: disconnect or forget
-it. The saved networks follow, in range or not (connect, forget; Forget
+off through NetworkManager and shows the network in use: disconnect or
+forget it, or open its details (Details…), a dialog with its security,
+signal and band, its IP address, router and DNS servers and the device's
+hardware address, each to select and copy. The saved networks follow, in range or not (connect, forget; Forget
 asks again), then the others in range, strongest first, with their
 security and a lock on those that take a password. Connect asks for the
 password under the network's row; a network joined is saved, so it is

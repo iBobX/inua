@@ -46,6 +46,7 @@ type wifiSettings struct {
 	current, known, nearby                      gtk.Box
 	currentSection, knownSection, nearbySection gtk.Box
 
+	details  *wifiDetails            // the details dialog, while open
 	shown    string                  // what the lists show, to lay them out only when it changes
 	controls map[uintptr]wifiControl // the rows' buttons
 	forget   string                  // the network whose Forget asks again
@@ -85,6 +86,7 @@ func (s *shellUI) bindWifiHandlers() {
 			s.wifiAction(c)
 		}
 	}
+	s.onWifiDetailsClose = func(gtk.Button) { s.closeWifiDetails() }
 	s.onWifiEntry = func(gtk.PasswordEntry) {
 		s.wifiAction(wifiControl{ssid: s.settings.wifi.ask, action: "join"})
 	}
@@ -171,6 +173,9 @@ func (s *shellUI) wifiAction(c wifiControl) {
 	}
 	n, ok := s.wifiNetwork(c.ssid)
 	switch c.action {
+	case "details":
+		s.openWifiDetails(c.ssid)
+		return
 	case "cancel":
 		w.ask = ""
 		s.showWifi()
@@ -300,8 +305,8 @@ func (s *shellUI) showWifi() {
 		w.nearbyMeta.SetText(i18n.T("Searching…"))
 	}
 
-	l := s.wifi.list
-	key := fmt.Sprint(current, known, nearby, l.Address, l.Gateway, l.Hardware, s.wifi.busy, s.wifi.errs, w.forget, w.ask, on)
+	s.fillWifiDetails(current)
+	key := fmt.Sprint(current, known, nearby, s.wifi.busy, s.wifi.errs, w.forget, w.ask, on)
 	if key == w.shown {
 		return
 	}
@@ -317,18 +322,8 @@ func (s *shellUI) showWifi() {
 
 	gtkx.Clear(&w.current)
 	if current != nil {
+		// Its addresses are in its details (Details…), not on the page.
 		gtkx.Append(&w.current, &s.wifiRow(*current, typed).Widget)
-		for _, d := range [][2]string{
-			{i18n.T("IP address"), l.Address},
-			{i18n.T("Router"), l.Gateway},
-			{i18n.T("Hardware address"), l.Hardware},
-		} {
-			if d[1] == "" {
-				continue
-			}
-			gtkx.Append(&w.current, &gtk.NewSeparator(gtk.OrientationHorizontalValue).Widget)
-			gtkx.Append(&w.current, &detailRow(d[0], d[1]).Widget)
-		}
 	}
 	s.layOutWifi(&w.known, known, "", typed)
 	empty := i18n.T("Nothing found yet.")
@@ -408,6 +403,9 @@ func (s *shellUI) wifiRow(n system.WifiNetwork, typed string) *gtk.Box {
 		w.controls[btn.GoPointer()] = wifiControl{ssid: n.SSID, action: action}
 		btn.ConnectClicked(&s.onWifiButton)
 		gtkx.Append(parent, &btn.Widget)
+	}
+	if n.Connected {
+		add(row, i18n.T("Details…"), "details")
 	}
 	switch {
 	case n.Connected || n.Connecting:

@@ -311,7 +311,7 @@ func (s *shellUI) bindSettingsHandlers() {
 		}
 		if keyval == keyEscape {
 			// The dialog first, then a search typed.
-			if !s.closeBench() && !s.clearSettingsSearch() {
+			if !s.closeBench() && !s.closeWifiDetails() && !s.clearSettingsSearch() {
 				s.closeSettings()
 			}
 			return true
@@ -506,8 +506,28 @@ func (s *shellUI) openSettings() {
 	st.win.Present()
 }
 
-// settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "wifi", "bluetooth", "displays", "keyboard", "mouse", "about"}
+// settingsGroups are the index's groups, each a kicker over its pages, in
+// the order a page is most likely looked for: the connections, then the
+// devices, the desktop, the apps, and the system last.
+var settingsGroups = []struct {
+	title string // i18n.M: said in the user's language when shown
+	pages []string
+}{
+	{i18n.M("Connections"), []string{"wifi", "bluetooth"}},
+	{i18n.M("Devices"), []string{"displays", "keyboard", "mouse"}},
+	{i18n.M("Desktop"), []string{"appearance", "bar", "launcher", "notifications", "shortcuts"}},
+	{i18n.M("Apps"), []string{"apps", "ai", "clipboard", "keyring"}},
+	{i18n.M("System"), []string{"about"}},
+}
+
+// settingsPages are the pages' names in settings.ui, in the index's order.
+var settingsPages = func() []string {
+	var pages []string
+	for _, g := range settingsGroups {
+		pages = append(pages, g.pages...)
+	}
+	return pages
+}()
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
@@ -539,6 +559,7 @@ func (s *shellUI) closeSettings() {
 	}
 	s.stopRecording()
 	s.closeBench()
+	s.closeWifiDetails()
 	if st.dirty {
 		s.saveSettings()
 	}

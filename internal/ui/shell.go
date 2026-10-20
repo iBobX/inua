@@ -127,7 +127,6 @@ type shellUI struct {
 	onQueryFocus           func(gtk.EventControllerFocus)
 	onControlButton        func(gtk.Button)
 	onControlItem          func(gtk.Button)
-	onControlCopied        glib.SourceFunc
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
@@ -158,9 +157,12 @@ type shellUI struct {
 	onBluetoothEntry       func(gtk.Entry)
 	onWifiSwitch           func(gtk.Switch, bool) bool
 	onWifiButton           func(gtk.Button)
+	onWifiDetailsClose     func(gtk.Button) // the details dialog's Close, one for every opening
 	onWifiEntry            func(gtk.PasswordEntry)
 	onWifiPoll             glib.SourceFunc
 	onSettingsIndex        func(gtk.ListBox, uintptr)
+	onSettingsHeader       gtk.ListBoxUpdateHeaderFunc // the index's group kickers
+	onSettingsHeaderDone   glib.DestroyNotify
 	onSettingsSearch       func(gtk.SearchEntry)
 	onSettingsSearchGo     func(gtk.SearchEntry)
 	onSettingsSearchStop   func(gtk.SearchEntry)

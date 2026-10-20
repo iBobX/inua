@@ -2,9 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"log"
 
-	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
@@ -32,13 +30,6 @@ func (s *shellUI) bindControlDetailHandlers() {
 		case "bt":
 			s.controlBluetooth(key)
 		}
-	}
-	s.onControlCopied = func(gen uintptr) bool {
-		if c := &s.control; gen == c.copyGen && c.open {
-			c.copied = ""
-			s.applyTailscaleInfo()
-		}
-		return false
 	}
 }
 
@@ -259,54 +250,4 @@ func (s *shellUI) controlBluetooth(path string) {
 		s.bluetoothAction(btControl{path: path, action: action})
 		return
 	}
-}
-
-// applyTailscaleInfo shows this computer's Tailscale address and name
-// beside the tile while connected; the one just copied says so.
-func (s *shellUI) applyTailscaleInfo() {
-	c := &s.control
-	ts := s.sys.TS
-	_, on, _ := shell.TailscaleTile(ts)
-	c.vpnInfo.SetVisible(on && (ts.IP != "" || ts.DNS != ""))
-	for _, x := range []struct {
-		btn         *gtk.Button
-		kicker, val *gtk.Label
-		name, label string
-		value       string
-	}{
-		{&c.vpnIP, &c.vpnIPKicker, &c.vpnIPValue, "vpn-ip", i18n.T("IP"), ts.IP},
-		{&c.vpnDNS, &c.vpnDNSKicker, &c.vpnDNSValue, "vpn-dns", i18n.T("DNS"), ts.DNS},
-	} {
-		x.btn.SetVisible(x.value != "")
-		x.val.SetText(x.value)
-		x.btn.SetTooltipText(i18n.Tf("Copy %s", x.value))
-		if c.copied == x.name {
-			x.kicker.SetText(i18n.T("Copied"))
-		} else {
-			x.kicker.SetText(x.label)
-		}
-		toggle(&x.btn.Widget, "on", c.copied == x.name)
-	}
-}
-
-// copyTailscale copies the address or the name, and says so on its tile
-// for a moment.
-func (s *shellUI) copyTailscale(name string) {
-	c := &s.control
-	text := s.sys.TS.IP
-	if name == "vpn-dns" {
-		text = s.sys.TS.DNS
-	}
-	if text == "" {
-		return
-	}
-	go func() {
-		if err := copyText(text); err != nil {
-			log.Printf("tailscale: copy: %v", err)
-		}
-	}()
-	c.copied = name
-	c.copyGen++
-	s.applyTailscaleInfo()
-	glib.TimeoutAdd(1500, &s.onControlCopied, c.copyGen)
 }

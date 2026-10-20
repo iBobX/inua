@@ -407,12 +407,6 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 .control button.tile.tile-more image { transition: -gtk-icon-transform 180ms ease-out; }
 .control button.tile.tile-more.open { border-color: alpha(@accent, 0.38); }
 .control button.tile.tile-more.open image { color: @accent; -gtk-icon-transform: rotate(180deg); }
-/* Tailscale's address and name beside its tile: a kicker over the value,
-   "Copied" in the accent for a moment after a click. */
-.control button.tile.copy-tile { padding: 4px 10px; }
-.control button.tile.copy-tile .kicker { font-size: 9.5px; }
-.control button.tile.copy-tile .readout { font-size: 11px; color: @t1; }
-.control button.tile.copy-tile.on .kicker { color: @accent; }
 /* The list an arrow opens: a kicker on a hairline, rows that are buttons,
    each with the status mark of what it is about. */
 .control .cc-detail { padding-top: 6px; }
@@ -757,6 +751,9 @@ window.settings { background: @app; font-size: 14px; }
   background: mix(@surface, @primary, 0.1);
   color: @t0;
 }
+/* A group's kicker over its first page: room above it, its first letter
+   over the rows' icons (7 px of padding and the border's 1). */
+.settings .index .index-group { margin: 16px 0 6px 8px; }
 .settings .status {
   min-height: 16px;
   padding: 14px 22px 18px;
@@ -1984,8 +1981,10 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 
 /* The Benchmark dialog, a card over the Settings window: a row each, its
    status at the end. */
-.settings .bench-scrim { background: alpha(black, 0.45); }
-.settings .bench-dialog {
+/* A dialog of the settings window: a card over it (the Benchmark dialog,
+   Wi-Fi's details), not a window of its own. */
+.settings .settings-scrim { background: alpha(black, 0.45); }
+.settings .settings-dialog {
   padding: 22px 24px 20px;
   border: 1px solid @line;
   border-radius: 2px;
