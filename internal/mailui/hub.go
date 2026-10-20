@@ -24,6 +24,7 @@ type hub struct {
 	entered  map[uintptr]func()
 	closing  map[uintptr]func() bool
 	selected map[uintptr]func()
+	rows     map[uintptr]func(row uintptr)
 	notified map[uintptr]func()
 	dropped  map[uintptr]func(paths []string)
 	async    map[uintptr]func(result uintptr)
@@ -39,6 +40,7 @@ type hub struct {
 	onEntered   func(uintptr, uintptr)
 	onClose     func(gtk.Window) bool
 	onSelection func(uintptr, uint32, uint32, uintptr)
+	onRow       func(uintptr, uintptr, uintptr)
 	onNotify    func(uintptr, uintptr, uintptr)
 	onDrop      func(gtk.DropTarget, uintptr, float64, float64) bool
 	onAsync     gio.AsyncReadyCallback
@@ -50,7 +52,7 @@ func newHub() *hub {
 		clicked: map[uintptr]func(){}, keys: map[uintptr]func(uint32, gdk.ModifierType) bool{},
 		setup: map[uintptr]func(uintptr){}, bind: map[uintptr]func(uintptr){}, teardown: map[uintptr]func(uintptr){},
 		changed: map[uintptr]func(){}, entered: map[uintptr]func(){}, closing: map[uintptr]func() bool{},
-		selected: map[uintptr]func(){}, notified: map[uintptr]func(){}, dropped: map[uintptr]func([]string){},
+		selected: map[uintptr]func(){}, rows: map[uintptr]func(uintptr){}, notified: map[uintptr]func(){}, dropped: map[uintptr]func([]string){},
 		async: map[uintptr]func(uintptr){}, timers: map[uintptr]func(){},
 	}
 	h.onClicked = func(b gtk.Button) {
@@ -98,6 +100,11 @@ func newHub() *hub {
 	h.onSelection = func(model uintptr, _, _ uint32, _ uintptr) {
 		if f := h.selected[model]; f != nil {
 			f()
+		}
+	}
+	h.onRow = func(list, row, _ uintptr) {
+		if f := h.rows[list]; f != nil {
+			f(row)
 		}
 	}
 	h.onNotify = func(obj, _, _ uintptr) {
@@ -196,6 +203,13 @@ func (h *hub) selection(model gobject.Ptr, f func()) uintptr {
 	return model.GoPointer()
 }
 
+// rowSelected runs f with the row a list box selects (0 for none).
+func (h *hub) rowSelected(list *gtk.ListBox, f func(row uintptr)) uintptr {
+	h.rows[list.GoPointer()] = f
+	gobject.SignalConnect(list.GoPointer(), "row-selected", glib.NewCallback(&h.onRow))
+	return list.GoPointer()
+}
+
 // notify runs f when obj's property changes.
 func (h *hub) notify(obj gobject.Ptr, property string, f func()) uintptr {
 	h.notified[obj.GoPointer()] = f
@@ -235,6 +249,7 @@ func (h *hub) forget(ptrs []uintptr) {
 		delete(h.entered, p)
 		delete(h.closing, p)
 		delete(h.selected, p)
+		delete(h.rows, p)
 		delete(h.notified, p)
 		delete(h.dropped, p)
 	}

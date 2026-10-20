@@ -30,42 +30,22 @@ ApplicationWindow mail {
           width-request: 236;
           hexpand: false;
 
-          // A readout of the sync: its state and time, the messages and the
-          // unread; Go fills it.
-          Box {
-            styles ["mail-index-head"]
+          // Writing a message: the index's one primary action.
+          Button compose {
+            styles ["suggested-action", "mail-compose-button"]
+            tooltip-text: _("Write a message (C)");
 
             Box {
-              orientation: vertical;
-              hexpand: true;
-              valign: center;
-              spacing: 4;
+              spacing: 8;
+              halign: center;
 
-              Box {
-                spacing: 7;
-
-                Box status_mark {
-                  styles ["mark", "mail-status-mark"]
-                  valign: center;
-                }
-
-                Label status_state {
-                  styles ["mail-status"]
-                  xalign: 0;
-                }
+              Image {
+                icon-name: "document-edit-symbolic";
               }
 
-              Label status_counts {
-                styles ["mail-status-counts"]
-                xalign: 0;
+              Label {
+                label: _("New message");
               }
-            }
-
-            Button compose {
-              styles ["outlined", "mail-compose-button"]
-              icon-name: "document-edit-symbolic";
-              tooltip-text: _("Write a message (C)");
-              valign: center;
             }
           }
 
@@ -82,13 +62,28 @@ ApplicationWindow mail {
             }
           }
 
-          Button add_account {
-            styles ["index-item", "mail-add"]
+          // The sync, in words (Go fills it), and the settings.
+          Box {
+            styles ["mail-index-foot"]
+            spacing: 8;
 
-            Label {
-              styles ["title"]
-              label: _("Add account");
+            Box status_mark {
+              styles ["mark", "mail-status-mark"]
+              valign: center;
+            }
+
+            Label status_state {
+              styles ["mail-status"]
               xalign: 0;
+              hexpand: true;
+              ellipsize: end;
+            }
+
+            Button settings_button {
+              styles ["flat", "mail-settings-button"]
+              icon-name: "emblem-system-symbolic";
+              tooltip-text: _("Settings (Ctrl+,)");
+              valign: center;
             }
           }
         }

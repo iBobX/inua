@@ -500,7 +500,7 @@ msgid "AI"
 msgstr ""
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:459
+#: internal/mailui/settings.go:605
 msgid "CACHE"
 msgstr ""
 
@@ -1565,6 +1565,7 @@ msgid "online"
 msgstr ""
 
 #: internal/apps/tailscale/status.go:168
+#: internal/mailui/window.go:1335
 msgid "just now"
 msgstr ""
 
@@ -1974,6 +1975,7 @@ msgid "5 years"
 msgstr ""
 
 #: internal/appui/gpg.go:144
+#: internal/mailui/settings.go:499
 #: ui/settings.ui:3924
 msgid "Never"
 msgstr ""
@@ -3723,7 +3725,7 @@ msgstr ""
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/mailui/settings.go:378
+#: internal/mailui/settings.go:532
 #: internal/remoteui/window.go:495
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -3896,7 +3898,7 @@ msgid "OK"
 msgstr ""
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:437
+#: internal/mailui/settings.go:583
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -3910,7 +3912,7 @@ msgid "Uses: %s"
 msgstr ""
 
 #: internal/appui/workshop_manager.go:64
-#: internal/mailui/settings.go:310
+#: internal/mailui/settings.go:463
 msgid "Remove…"
 msgstr ""
 
@@ -4029,7 +4031,7 @@ msgid "Running a script with the tools"
 msgstr ""
 
 #: internal/assistantui/assistantui.go:37
-#: internal/mailui/settings.go:138
+#: internal/mailui/settings.go:210
 #: ui/assistant.ui:35
 #: ui/settings.ui:2160
 #: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
@@ -4069,7 +4071,7 @@ msgid "✕ Not done: %s"
 msgstr ""
 
 #: internal/assistantui/assistantui.go:449
-#: internal/mailui/settings.go:351
+#: internal/mailui/settings.go:499
 #: ui/assistant.ui:136
 msgid "Ask"
 msgstr ""
@@ -5212,7 +5214,7 @@ msgid "Names starting with a dot, inside the folders: .git, .cache …"
 msgstr ""
 
 #: internal/filesui/archive.go:187
-#: internal/mailui/settings.go:139
+#: internal/mailui/settings.go:211
 msgid "Advanced"
 msgstr ""
 
@@ -5519,7 +5521,7 @@ msgstr ""
 #: internal/mailui/compose.go:492
 #: internal/mailui/quick.go:124
 #: ui/mail-compose.ui:234
-#: ui/mail.ui:236
+#: ui/mail.ui:226
 msgid "Undo"
 msgstr ""
 
@@ -5919,6 +5921,7 @@ msgstr ""
 
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
+#: internal/mailui/settings.go:504
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:339
 #: ui/remote.ui:572
@@ -8225,7 +8228,7 @@ msgid "Small Fortune"
 msgstr ""
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 #: internal/mailui/welcome.go:572
 msgid "Your name"
 msgstr ""
@@ -9512,7 +9515,6 @@ msgstr ""
 
 #: internal/hyprconf/keys.go:30
 #: internal/mailui/picker.go:151
-#: internal/mailui/settings.go:76
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:291
 #: internal/term/settings/settings.go:110
@@ -9768,6 +9770,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: internal/mailui/app.go:23
+#: internal/mailui/settings.go:95
 #: internal/mailui/window.go:1326
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
@@ -9818,6 +9821,7 @@ msgstr ""
 
 #: internal/mailui/compose.go:195
 #: ui/mail-compose.ui:15
+#: ui/mail.ui:53
 msgid "New message"
 msgstr ""
 
@@ -9946,6 +9950,7 @@ msgid "Pictures from the web tell the sender you opened the message, and when."
 msgstr ""
 
 #: internal/mailui/formatted.go:181
+#: internal/mailui/settings.go:498
 msgid "Load them"
 msgstr ""
 
@@ -9954,8 +9959,7 @@ msgid "Always from this sender"
 msgstr ""
 
 #: internal/mailui/formatted.go:189
-#: internal/mailui/settings.go:245
-#: internal/mailui/settings.go:329
+#: internal/mailui/settings.go:410
 msgid "Not saved: %v"
 msgstr ""
 
@@ -10282,203 +10286,223 @@ msgstr ""
 msgid "Could not read it: %v"
 msgstr ""
 
-#: internal/mailui/settings.go:55
+#: internal/mailui/settings.go:73
 msgid "Mail settings"
 msgstr ""
 
-#: internal/mailui/settings.go:125
+#: internal/mailui/settings.go:202
 msgid "ACCOUNTS"
 msgstr ""
 
-#: internal/mailui/settings.go:129
-#: ui/mail.ui:118
+#: internal/mailui/settings.go:206
 msgid "Add account"
 msgstr ""
 
-#: internal/mailui/settings.go:135
+#: internal/mailui/settings.go:207
 msgid "MAIL"
 msgstr ""
 
-#: internal/mailui/settings.go:136
+#: internal/mailui/settings.go:208
 msgid "Reading"
 msgstr ""
 
-#: internal/mailui/settings.go:137
+#: internal/mailui/settings.go:209
 msgid "Writing"
 msgstr ""
 
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 msgid "On the messages you send"
 msgstr ""
 
-#: internal/mailui/settings.go:283
+#: internal/mailui/settings.go:445
 msgid "Signature"
 msgstr ""
 
-#: internal/mailui/settings.go:287
+#: internal/mailui/settings.go:445
 msgid "Under what you write, after a line with two dashes; kept as you type."
 msgstr ""
 
-#: internal/mailui/settings.go:294
+#: internal/mailui/settings.go:447
 msgid "With a password, at its IMAP and SMTP servers"
 msgstr ""
 
-#: internal/mailui/settings.go:296
+#: internal/mailui/settings.go:449
 msgid "On %s's page, in the browser"
 msgstr ""
 
-#: internal/mailui/settings.go:300
+#: internal/mailui/settings.go:451
+msgid "SIGN-IN"
+msgstr ""
+
+#: internal/mailui/settings.go:452
 msgid "Sign in again"
 msgstr ""
 
-#: internal/mailui/settings.go:308
-msgid "Sign-in"
+#: internal/mailui/settings.go:452
+msgid "Sign in…"
 msgstr ""
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:460
+msgid "Servers"
+msgstr ""
+
+#: internal/mailui/settings.go:462
 msgid "Remove the account"
 msgstr ""
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:462
 msgid "Forgets it on this computer: its sign-in and the mail kept. The mail on the server stays."
 msgstr ""
 
-#: internal/mailui/settings.go:337
-msgid "READING"
+#: internal/mailui/settings.go:486
+msgid "MESSAGES"
 msgstr ""
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:486
+msgid "How a conversation shows"
+msgstr ""
+
+#: internal/mailui/settings.go:491
 msgid "HTML mail"
 msgstr ""
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:491
 msgid "Formatted keeps its headings, emphasis, links and pictures; plain text keeps only the words."
 msgstr ""
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Formatted"
 msgstr ""
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Plain text"
 msgstr ""
 
-#: internal/mailui/settings.go:350
-msgid "Pictures from the web"
-msgstr ""
-
-#: internal/mailui/settings.go:350
-msgid "A picture a message loads from the web tells its sender you opened it, and when. Asking shows a line to load them, for the message or always for its sender."
-msgstr ""
-
-#: internal/mailui/settings.go:351
-msgid "Always load"
-msgstr ""
-
-#: internal/mailui/settings.go:351
-msgid "Never load"
-msgstr ""
-
-#: internal/mailui/settings.go:358
-msgid "Forget them"
-msgstr ""
-
-#: internal/mailui/settings.go:361
-msgid "Pictures load from %d sender"
-msgid_plural "Pictures load from %d senders"
-msgstr[0] ""
-msgstr[1] ""
-
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Mark as read when opened"
 msgstr ""
 
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr ""
 
-#: internal/mailui/settings.go:370
-msgid "WRITING"
+#: internal/mailui/settings.go:496
+msgid "PICTURES FROM THE WEB"
 msgstr ""
 
-#: internal/mailui/settings.go:380
+#: internal/mailui/settings.go:496
+msgid "They tell the sender you opened the message"
+msgstr ""
+
+#: internal/mailui/settings.go:498
+msgid "Asking shows a line over the message: load them for it, or always for its sender. A suspicious message never loads them by itself."
+msgstr ""
+
+#: internal/mailui/settings.go:499
+msgid "Always"
+msgstr ""
+
+#: internal/mailui/settings.go:504
+msgid "Its pictures always load"
+msgstr ""
+
+#: internal/mailui/settings.go:524
+msgid "SENDING"
+msgstr ""
+
+#: internal/mailui/settings.go:534
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "Time to take a send back"
 msgstr ""
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "A message waits this long before it goes; Undo stops it."
 msgstr ""
 
-#: internal/mailui/settings.go:394
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
+#: internal/mailui/settings.go:548
+msgid "SORTING"
 msgstr ""
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:548
+msgid "The only thing it does unasked"
+msgstr ""
+
+#: internal/mailui/settings.go:549
 msgid "Sort new mail"
 msgstr ""
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:549
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters."
 msgstr ""
 
-#: internal/mailui/settings.go:397
+#: internal/mailui/settings.go:551
 msgid "Everything else the assistant does in Mail (summaries, reply ideas, drafting, search from a sentence, phishing judgments) happens only when you ask. The assistant itself is set in Settings → AI."
 msgstr ""
 
-#: internal/mailui/settings.go:409
+#: internal/mailui/settings.go:557
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr ""
 
-#: internal/mailui/settings.go:410
+#: internal/mailui/settings.go:557
+msgid "Empty fields use inua's"
+msgstr ""
+
+#: internal/mailui/settings.go:558
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr ""
 
-#: internal/mailui/settings.go:429
+#: internal/mailui/settings.go:571
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr ""
 
-#: internal/mailui/settings.go:433
+#: internal/mailui/settings.go:575
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr ""
 
-#: internal/mailui/settings.go:434
+#: internal/mailui/settings.go:576
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr ""
 
-#: internal/mailui/settings.go:435
+#: internal/mailui/settings.go:577
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr ""
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr ""
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 msgid "common, or your organization's"
 msgstr ""
 
-#: internal/mailui/settings.go:452
+#: internal/mailui/settings.go:593
 msgid "Saved."
 msgstr ""
 
-#: internal/mailui/settings.go:460
+#: internal/mailui/settings.go:606
 msgid "Counting…"
 msgstr ""
 
-#: internal/mailui/settings.go:479
+#: internal/mailui/settings.go:625
+msgid "Mail kept on this computer"
+msgstr ""
+
+#: internal/mailui/settings.go:625
+msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
+msgstr ""
+
+#: internal/mailui/settings.go:626
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10487,19 +10511,7 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: internal/mailui/settings.go:485
-msgid "Cleared. Mail fetches what it shows again from the servers, at the next start."
-msgstr ""
-
-#: internal/mailui/settings.go:491
-msgid "Mail kept on this computer"
-msgstr ""
-
-#: internal/mailui/settings.go:491
-msgid "The indexes and the messages opened, in %s. A copy of the servers': clearing it loses nothing."
-msgstr ""
-
-#: internal/mailui/settings.go:517
+#: internal/mailui/settings.go:657
 msgid "Could not keep the secret in the keyring: %v"
 msgstr ""
 
@@ -10773,6 +10785,7 @@ msgid "Offline: %v"
 msgstr ""
 
 #: internal/mailui/window.go:431
+#: internal/mailui/window.go:1306
 msgid "No account yet"
 msgstr ""
 
@@ -10896,38 +10909,41 @@ msgstr ""
 msgid "The server's search failed: %s"
 msgstr ""
 
-#: internal/mailui/window.go:1304
-#: internal/termui/agents.go:48
-msgid "IDLE"
+#: internal/mailui/window.go:1303
+msgid "Up to date"
 msgstr ""
 
-#: internal/mailui/window.go:1307
-msgid "NO ACCOUNT"
+#: internal/mailui/window.go:1308
+msgid "Checking for mail…"
 msgstr ""
 
-#: internal/mailui/window.go:1309
-msgid "SYNCING"
+#: internal/mailui/window.go:1310
+msgid "Offline: trying again soon"
 msgstr ""
 
-#: internal/mailui/window.go:1311
-msgid "OFFLINE"
+#: internal/mailui/window.go:1312
+msgid "%d account cannot connect"
+msgid_plural "%d accounts cannot connect"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/mailui/window.go:1314
+msgid "Checked %s"
 msgstr ""
 
-#: internal/mailui/window.go:1313
-msgid "%d OFFLINE"
-msgstr ""
-
-#: internal/mailui/window.go:1322
-msgid "%s MSG · %d UNREAD"
+#: internal/mailui/window.go:1318
+msgid "Last checked at %s"
 msgstr ""
 
 #: internal/mailui/window.go:1324
 msgid "Mail · %d unread"
 msgstr ""
 
-#: internal/mailui/window.go:1328
-msgid "Messages kept from the inboxes, and how many are unread"
-msgstr ""
+#: internal/mailui/window.go:1338
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] ""
+msgstr[1] ""
 
 #: internal/remoteui/app.go:20
 #: ui/remote.ui:14
@@ -11743,6 +11759,10 @@ msgstr ""
 
 #: internal/termui/agents.go:46
 msgid "DONE"
+msgstr ""
+
+#: internal/termui/agents.go:48
+msgid "IDLE"
 msgstr ""
 
 #: internal/termui/agents.go:181
@@ -14747,6 +14767,10 @@ msgstr ""
 msgid "Bcc"
 msgstr ""
 
+#: ui/mail-compose.ui:200
+msgid "ASSISTANT"
+msgstr ""
+
 #: ui/mail-compose.ui:209
 msgid "What to say: the assistant drafts it"
 msgstr ""
@@ -14767,19 +14791,23 @@ msgstr ""
 msgid "Ctrl+Enter"
 msgstr ""
 
-#: ui/mail.ui:85
+#: ui/mail.ui:41
 msgid "Write a message (C)"
 msgstr ""
 
-#: ui/mail.ui:139
+#: ui/mail.ui:108
+msgid "Settings (Ctrl+,)"
+msgstr ""
+
+#: ui/mail.ui:129
 msgid "Search, or ask in a sentence"
 msgstr ""
 
-#: ui/mail.ui:209
+#: ui/mail.ui:199
 msgid "Loading older mail…"
 msgstr ""
 
-#: ui/mail.ui:263
+#: ui/mail.ui:253
 msgid "No conversation chosen"
 msgstr ""
 

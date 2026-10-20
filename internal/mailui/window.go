@@ -69,8 +69,8 @@ type window struct {
 	statusMark, undoBar                     gtk.Box
 	undoText                                gtk.Label
 	undoBtn                                 gtk.Button
-	statusState, statusCounts               gtk.Label
-	compose, addAccount                     gtk.Button
+	statusState                             gtk.Label
+	compose, settingsButton                 gtk.Button
 	search                                  gtk.SearchEntry
 	searchNote, listEmpty, listError, older gtk.Label
 	readerEmpty                             gtk.Label
@@ -158,10 +158,10 @@ func openWindow(c *appui.Ctx) *window {
 	b.Get("mail", w.win)
 	for name, ptr := range map[string]gobject.Ptr{
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
-		"compose": &w.compose, "add_account": &w.addAccount, "older": &w.older,
+		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState, "status_counts": &w.statusCounts,
-		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
+		"status_state": &w.statusState,
+		"undo_bar":     &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
 		"reader_empty": &w.readerEmpty, "list_stack": &w.listStack, "reader_stack": &w.readerStack,
 		"list_scroll": &w.listScroll, "reader_scroll": &w.readerScroll,
@@ -182,7 +182,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.listScroll.SetChild(&w.list.Widget)
 
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
-	w.h.click(&w.addAccount, func() { w.showWelcome("", nil) })
+	w.h.click(&w.settingsButton, func() { w.showSettings("") })
 	w.h.notify(w.listScroll.GetVadjustment(), "value", w.nearEnd)
 	w.h.click(&w.undoBtn, w.undo)
 	w.h.searched(&w.search, w.searchChanged)
@@ -1285,7 +1285,7 @@ func (w *window) move(d int) {
 func (w *window) drawStatus() {
 	syncing, down := 0, 0
 	var last time.Time
-	msgs, unread := 0, 0
+	unread := 0
 	for _, x := range w.accts {
 		syncing += x.syncing
 		if x.state != "" {
@@ -1294,38 +1294,50 @@ func (w *window) drawStatus() {
 		if x.last.After(last) {
 			last = x.last
 		}
-		for _, it := range x.s.Items(x.s.Role(mail.RoleInbox)) {
-			msgs++
-			if !it.Has(mail.Seen) {
-				unread++
+		for _, b := range x.boxes {
+			if b.Role == mail.RoleInbox {
+				unread += b.Unread
 			}
 		}
 	}
-	state, class := i18n.T("IDLE"), "on"
+	state, class := i18n.T("Up to date"), "on"
 	switch {
 	case len(w.accts) == 0:
-		state, class = i18n.T("NO ACCOUNT"), "off"
+		state, class = i18n.T("No account yet"), "off"
 	case syncing > 0:
-		state, class = i18n.T("SYNCING"), "busy"
+		state, class = i18n.T("Checking for mail…"), "busy"
 	case down == len(w.accts):
-		state, class = i18n.T("OFFLINE"), "off"
+		state, class = i18n.T("Offline: trying again soon"), "warn"
 	case down > 0:
-		state, class = i18n.Tf("%d OFFLINE", down), "warn"
-	}
-	if !last.IsZero() {
-		state += " · " + last.Format("15:04:05")
+		state, class = i18n.Nf("%d account cannot connect", "%d accounts cannot connect", down, down), "warn"
+	case !last.IsZero() && time.Since(last) >= time.Minute:
+		state = i18n.Tf("Checked %s", ago(last))
 	}
 	w.statusState.SetText(state)
+	if !last.IsZero() {
+		w.statusState.SetTooltipText(i18n.Tf("Last checked at %s", last.Format("15:04:05")))
+	}
 	for _, c := range []string{"on", "off", "busy", "warn"} {
 		setClass(&w.statusMark.Widget, c, c == class)
 	}
-	w.statusCounts.SetText(i18n.Tf("%s MSG · %d UNREAD", thousands(msgs), unread))
 	if unread > 0 {
 		w.win.SetTitle(i18n.Tf("Mail · %d unread", unread))
 	} else {
 		w.win.SetTitle(i18n.T("Mail"))
 	}
-	w.statusCounts.SetTooltipText(i18n.T("Messages kept from the inboxes, and how many are unread"))
+}
+
+// ago says how long ago a time was, in the status's words.
+func ago(t time.Time) string {
+	d := time.Since(t)
+	switch {
+	case d < time.Minute:
+		return i18n.T("just now")
+	case d < time.Hour:
+		n := int(d.Minutes())
+		return i18n.Nf("%d minute ago", "%d minutes ago", n, n)
+	}
+	return t.Format("15:04")
 }
 
 // statusTick redraws the readout every few seconds.

@@ -499,7 +499,7 @@ msgid "AI"
 msgstr "AI"
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:459
+#: internal/mailui/settings.go:605
 msgid "CACHE"
 msgstr "CACHE"
 
@@ -1562,6 +1562,7 @@ msgid "online"
 msgstr "온라인"
 
 #: internal/apps/tailscale/status.go:168
+#: internal/mailui/window.go:1335
 msgid "just now"
 msgstr "지금 막"
 
@@ -1971,6 +1972,7 @@ msgid "5 years"
 msgstr "5년"
 
 #: internal/appui/gpg.go:144
+#: internal/mailui/settings.go:499
 #: ui/settings.ui:3924
 msgid "Never"
 msgstr "만료 없음"
@@ -3705,7 +3707,7 @@ msgstr "재생할 수 없습니다: %s"
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/mailui/settings.go:378
+#: internal/mailui/settings.go:532
 #: internal/remoteui/window.go:495
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -3878,7 +3880,7 @@ msgid "OK"
 msgstr "OK"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:437
+#: internal/mailui/settings.go:583
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -3892,7 +3894,7 @@ msgid "Uses: %s"
 msgstr "사용: %s"
 
 #: internal/appui/workshop_manager.go:64
-#: internal/mailui/settings.go:310
+#: internal/mailui/settings.go:463
 msgid "Remove…"
 msgstr "제거…"
 
@@ -4011,7 +4013,7 @@ msgid "Running a script with the tools"
 msgstr "도구를 쓰는 스크립트 실행 중"
 
 #: internal/assistantui/assistantui.go:37
-#: internal/mailui/settings.go:138
+#: internal/mailui/settings.go:210
 #: ui/assistant.ui:35
 #: ui/settings.ui:2160
 #: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
@@ -4051,7 +4053,7 @@ msgid "✕ Not done: %s"
 msgstr "✕ 완료되지 않음: %s"
 
 #: internal/assistantui/assistantui.go:449
-#: internal/mailui/settings.go:351
+#: internal/mailui/settings.go:499
 #: ui/assistant.ui:136
 msgid "Ask"
 msgstr "질문하다"
@@ -5188,7 +5190,7 @@ msgid "Names starting with a dot, inside the folders: .git, .cache …"
 msgstr "폴더 안의 점으로 시작하는 이름: .git, .cache …"
 
 #: internal/filesui/archive.go:187
-#: internal/mailui/settings.go:139
+#: internal/mailui/settings.go:211
 msgid "Advanced"
 msgstr "고급"
 
@@ -5492,7 +5494,7 @@ msgstr "새 폴더 / 새 파일"
 #: internal/mailui/compose.go:492
 #: internal/mailui/quick.go:124
 #: ui/mail-compose.ui:234
-#: ui/mail.ui:236
+#: ui/mail.ui:226
 msgid "Undo"
 msgstr "실행 취소"
 
@@ -5884,6 +5886,7 @@ msgstr "%s의 연결을 끊었습니다."
 
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
+#: internal/mailui/settings.go:504
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:339
 #: ui/remote.ui:572
@@ -8183,7 +8186,7 @@ msgid "Small Fortune"
 msgstr "작은 부자"
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 #: internal/mailui/welcome.go:572
 msgid "Your name"
 msgstr "이름"
@@ -9464,7 +9467,6 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/mailui/picker.go:151
-#: internal/mailui/settings.go:76
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:291
 #: internal/term/settings/settings.go:110
@@ -9718,6 +9720,7 @@ msgid_plural "%s and %d more messages"
 msgstr[0] "%s 외 %d개"
 
 #: internal/mailui/app.go:23
+#: internal/mailui/settings.go:95
 #: internal/mailui/window.go:1326
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
@@ -9768,6 +9771,7 @@ msgstr "%s 검색함"
 
 #: internal/mailui/compose.go:195
 #: ui/mail-compose.ui:15
+#: ui/mail.ui:53
 msgid "New message"
 msgstr "새 메시지"
 
@@ -9893,6 +9897,7 @@ msgid "Pictures from the web tell the sender you opened the message, and when."
 msgstr "웹 이미지는 메시지를 열었다는 사실과 그 시각을 보낸 사람에게 알립니다."
 
 #: internal/mailui/formatted.go:181
+#: internal/mailui/settings.go:498
 msgid "Load them"
 msgstr "불러오기"
 
@@ -9901,8 +9906,7 @@ msgid "Always from this sender"
 msgstr "이 보낸 사람은 항상"
 
 #: internal/mailui/formatted.go:189
-#: internal/mailui/settings.go:245
-#: internal/mailui/settings.go:329
+#: internal/mailui/settings.go:410
 msgid "Not saved: %v"
 msgstr "저장하지 못함: %v"
 
@@ -10227,201 +10231,222 @@ msgstr "읽을 텍스트가 없습니다(스캔본은 페이지 이미지입니�
 msgid "Could not read it: %v"
 msgstr "읽을 수 없습니다: %v"
 
-#: internal/mailui/settings.go:55
+#: internal/mailui/settings.go:73
 msgid "Mail settings"
 msgstr "메일 설정"
 
-#: internal/mailui/settings.go:125
+#: internal/mailui/settings.go:202
 msgid "ACCOUNTS"
 msgstr "계정"
 
-#: internal/mailui/settings.go:129
-#: ui/mail.ui:118
+#: internal/mailui/settings.go:206
 msgid "Add account"
 msgstr "계정 추가"
 
-#: internal/mailui/settings.go:135
+#: internal/mailui/settings.go:207
 msgid "MAIL"
 msgstr "메일"
 
-#: internal/mailui/settings.go:136
+#: internal/mailui/settings.go:208
 msgid "Reading"
 msgstr "읽기"
 
-#: internal/mailui/settings.go:137
+#: internal/mailui/settings.go:209
 msgid "Writing"
 msgstr "쓰기"
 
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 msgid "On the messages you send"
 msgstr "보내는 메시지에 표시됩니다"
 
-#: internal/mailui/settings.go:283
+#: internal/mailui/settings.go:445
 msgid "Signature"
 msgstr "서명"
 
-#: internal/mailui/settings.go:287
+#: internal/mailui/settings.go:445
 msgid "Under what you write, after a line with two dashes; kept as you type."
 msgstr "쓴 글 아래, 대시 두 개가 있는 줄 뒤에 붙습니다. 입력하는 대로 저장됩니다."
 
-#: internal/mailui/settings.go:294
+#: internal/mailui/settings.go:447
 msgid "With a password, at its IMAP and SMTP servers"
 msgstr "비밀번호로, IMAP 및 SMTP 서버에서"
 
-#: internal/mailui/settings.go:296
+#: internal/mailui/settings.go:449
 msgid "On %s's page, in the browser"
 msgstr "%s 페이지에서, 브라우저로"
 
-#: internal/mailui/settings.go:300
+#: internal/mailui/settings.go:451
+msgid "SIGN-IN"
+msgstr "로그인"
+
+#: internal/mailui/settings.go:452
 msgid "Sign in again"
 msgstr "다시 로그인"
 
-#: internal/mailui/settings.go:308
-msgid "Sign-in"
-msgstr "로그인"
+#: internal/mailui/settings.go:452
+msgid "Sign in…"
+msgstr "로그인…"
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:460
+msgid "Servers"
+msgstr "서버"
+
+#: internal/mailui/settings.go:462
 msgid "Remove the account"
 msgstr "계정 제거"
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:462
 msgid "Forgets it on this computer: its sign-in and the mail kept. The mail on the server stays."
 msgstr "이 컴퓨터에서 로그인 정보와 보관한 메일을 지웁니다. 서버의 메일은 남습니다."
 
-#: internal/mailui/settings.go:337
-msgid "READING"
-msgstr "읽기"
+#: internal/mailui/settings.go:486
+msgid "MESSAGES"
+msgstr "메시지"
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:486
+msgid "How a conversation shows"
+msgstr "대화 표시 방식"
+
+#: internal/mailui/settings.go:491
 msgid "HTML mail"
 msgstr "HTML 메일"
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:491
 msgid "Formatted keeps its headings, emphasis, links and pictures; plain text keeps only the words."
 msgstr "서식은 제목, 강조, 링크, 이미지를 유지하고 일반 텍스트는 글자만 남깁니다."
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Formatted"
 msgstr "서식"
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Plain text"
 msgstr "일반 텍스트"
 
-#: internal/mailui/settings.go:350
-msgid "Pictures from the web"
-msgstr "웹 이미지"
-
-#: internal/mailui/settings.go:350
-msgid "A picture a message loads from the web tells its sender you opened it, and when. Asking shows a line to load them, for the message or always for its sender."
-msgstr "메시지가 웹에서 불러오는 이미지는 열었다는 사실과 그 시각을 보낸 사람에게 알립니다. ‘묻기’는 해당 메시지만 또는 그 보낸 사람은 항상 불러오는 줄을 보여 줍니다."
-
-#: internal/mailui/settings.go:351
-msgid "Always load"
-msgstr "항상 불러오기"
-
-#: internal/mailui/settings.go:351
-msgid "Never load"
-msgstr "불러오지 않기"
-
-#: internal/mailui/settings.go:358
-msgid "Forget them"
-msgstr "잊기"
-
-#: internal/mailui/settings.go:361
-msgid "Pictures load from %d sender"
-msgid_plural "Pictures load from %d senders"
-msgstr[0] "보낸 사람 %d명의 이미지를 불러옵니다"
-
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Mark as read when opened"
 msgstr "열면 읽음으로 표시"
 
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "끄면: 직접 표시(U)할 때까지 읽지 않음으로 남습니다."
 
-#: internal/mailui/settings.go:370
-msgid "WRITING"
-msgstr "쓰기"
+#: internal/mailui/settings.go:496
+msgid "PICTURES FROM THE WEB"
+msgstr "웹 이미지"
 
-#: internal/mailui/settings.go:380
+#: internal/mailui/settings.go:496
+msgid "They tell the sender you opened the message"
+msgstr "열었다는 사실이 보낸 사람에게 전해집니다"
+
+#: internal/mailui/settings.go:498
+msgid "Asking shows a line over the message: load them for it, or always for its sender. A suspicious message never loads them by itself."
+msgstr "‘묻기’는 메시지 위에 줄을 보여 줍니다: 해당 메시지만 또는 그 보낸 사람은 항상 불러올 수 있습니다. 의심스러운 메시지는 저절로 불러오지 않습니다."
+
+#: internal/mailui/settings.go:499
+msgid "Always"
+msgstr "항상"
+
+#: internal/mailui/settings.go:504
+msgid "Its pictures always load"
+msgstr "이미지를 항상 불러옵니다"
+
+#: internal/mailui/settings.go:524
+msgid "SENDING"
+msgstr "보내기"
+
+#: internal/mailui/settings.go:534
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "%d초"
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "Time to take a send back"
 msgstr "보내기 취소 가능 시간"
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "A message waits this long before it goes; Undo stops it."
 msgstr "메시지는 이 시간만큼 기다린 뒤 보내집니다. ‘실행 취소’로 멈출 수 있습니다."
 
-#: internal/mailui/settings.go:394
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
-msgstr "어시스턴트"
+#: internal/mailui/settings.go:548
+msgid "SORTING"
+msgstr "분류"
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:548
+msgid "The only thing it does unasked"
+msgstr "요청하지 않아도 하는 유일한 일"
+
+#: internal/mailui/settings.go:549
 msgid "Sort new mail"
 msgstr "새 메일 분류"
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:549
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters."
 msgstr "규칙이 분류하지 않은 새 메일에 어시스턴트의 판단으로 태그(답장 필요, 뉴스레터, 영수증 …)를 붙입니다. 각 메시지의 보낸 사람, 제목, 처음 400자를 보냅니다."
 
-#: internal/mailui/settings.go:397
+#: internal/mailui/settings.go:551
 msgid "Everything else the assistant does in Mail (summaries, reply ideas, drafting, search from a sentence, phishing judgments) happens only when you ask. The assistant itself is set in Settings → AI."
 msgstr "메일에서 어시스턴트가 하는 다른 일(요약, 답장 아이디어, 초안, 문장 검색, 피싱 판단)은 요청할 때만 합니다. 어시스턴트 자체는 설정 → AI에서 정합니다."
 
-#: internal/mailui/settings.go:409
+#: internal/mailui/settings.go:557
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr "나만의 OAUTH 클라이언트"
 
-#: internal/mailui/settings.go:410
+#: internal/mailui/settings.go:557
+msgid "Empty fields use inua's"
+msgstr "비워 두면 inua의 값을 씁니다"
+
+#: internal/mailui/settings.go:558
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr "직접 만든 Google Cloud 프로젝트나 Azure 앱용입니다. 비워 두면 inua의 것을 씁니다. 시크릿은 mail.toml이 아니라 키링에 보관됩니다. 클라이언트를 바꾸면 그 제공업체로 로그인한 계정은 다시 로그인합니다."
 
-#: internal/mailui/settings.go:429
+#: internal/mailui/settings.go:571
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr "키링에 보관됨. 입력하면 바꿉니다"
 
-#: internal/mailui/settings.go:433
+#: internal/mailui/settings.go:575
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr "Google 클라이언트 ID"
 
-#: internal/mailui/settings.go:434
+#: internal/mailui/settings.go:576
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr "Google 클라이언트 시크릿"
 
-#: internal/mailui/settings.go:435
+#: internal/mailui/settings.go:577
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr "Microsoft 클라이언트 ID"
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr "Microsoft 테넌트"
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 msgid "common, or your organization's"
 msgstr "common 또는 조직의 값"
 
-#: internal/mailui/settings.go:452
+#: internal/mailui/settings.go:593
 msgid "Saved."
 msgstr "저장했습니다."
 
-#: internal/mailui/settings.go:460
+#: internal/mailui/settings.go:606
 msgid "Counting…"
 msgstr "세는 중…"
 
-#: internal/mailui/settings.go:479
+#: internal/mailui/settings.go:625
+msgid "Mail kept on this computer"
+msgstr "이 컴퓨터에 보관한 메일"
+
+#: internal/mailui/settings.go:625
+msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
+msgstr "색인과 열어 본 메시지: 서버의 사본이므로 지워도 잃는 것이 없습니다. 다음 시작 때 다시 가져옵니다."
+
+#: internal/mailui/settings.go:626
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10430,19 +10455,7 @@ msgstr "세는 중…"
 msgid "Clear"
 msgstr "지우기"
 
-#: internal/mailui/settings.go:485
-msgid "Cleared. Mail fetches what it shows again from the servers, at the next start."
-msgstr "지웠습니다. 표시할 내용은 다음 시작 때 서버에서 다시 가져옵니다."
-
-#: internal/mailui/settings.go:491
-msgid "Mail kept on this computer"
-msgstr "이 컴퓨터에 보관한 메일"
-
-#: internal/mailui/settings.go:491
-msgid "The indexes and the messages opened, in %s. A copy of the servers': clearing it loses nothing."
-msgstr "색인과 열어 본 메시지(%s). 서버의 사본이므로 지워도 잃는 것이 없습니다."
-
-#: internal/mailui/settings.go:517
+#: internal/mailui/settings.go:657
 msgid "Could not keep the secret in the keyring: %v"
 msgstr "시크릿을 키링에 보관할 수 없습니다: %v"
 
@@ -10713,6 +10726,7 @@ msgid "Offline: %v"
 msgstr "오프라인: %v"
 
 #: internal/mailui/window.go:431
+#: internal/mailui/window.go:1306
 msgid "No account yet"
 msgstr "아직 계정이 없습니다"
 
@@ -10835,38 +10849,39 @@ msgstr "서버를 검색하는 중…"
 msgid "The server's search failed: %s"
 msgstr "서버 검색에 실패했습니다: %s"
 
-#: internal/mailui/window.go:1304
-#: internal/termui/agents.go:48
-msgid "IDLE"
-msgstr "대기"
+#: internal/mailui/window.go:1303
+msgid "Up to date"
+msgstr "최신 상태"
 
-#: internal/mailui/window.go:1307
-msgid "NO ACCOUNT"
-msgstr "계정 없음"
+#: internal/mailui/window.go:1308
+msgid "Checking for mail…"
+msgstr "메일 확인 중…"
 
-#: internal/mailui/window.go:1309
-msgid "SYNCING"
-msgstr "동기화 중"
+#: internal/mailui/window.go:1310
+msgid "Offline: trying again soon"
+msgstr "오프라인: 곧 다시 시도합니다"
 
-#: internal/mailui/window.go:1311
-msgid "OFFLINE"
-msgstr "오프라인"
+#: internal/mailui/window.go:1312
+msgid "%d account cannot connect"
+msgid_plural "%d accounts cannot connect"
+msgstr[0] "계정 %d개에 연결할 수 없습니다"
 
-#: internal/mailui/window.go:1313
-msgid "%d OFFLINE"
-msgstr "%d 오프라인"
+#: internal/mailui/window.go:1314
+msgid "Checked %s"
+msgstr "%s 확인함"
 
-#: internal/mailui/window.go:1322
-msgid "%s MSG · %d UNREAD"
-msgstr "%s 메시지 · 안 읽음 %d"
+#: internal/mailui/window.go:1318
+msgid "Last checked at %s"
+msgstr "마지막 확인 %s"
 
 #: internal/mailui/window.go:1324
 msgid "Mail · %d unread"
 msgstr "메일 · 안 읽음 %d"
 
-#: internal/mailui/window.go:1328
-msgid "Messages kept from the inboxes, and how many are unread"
-msgstr "받은편지함에서 보관한 메시지와 그중 안 읽은 수"
+#: internal/mailui/window.go:1338
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d분 전"
 
 #: internal/remoteui/app.go:20
 #: ui/remote.ui:14
@@ -11683,6 +11698,10 @@ msgstr "응답 필요"
 #: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "완료"
+
+#: internal/termui/agents.go:48
+msgid "IDLE"
+msgstr "대기"
 
 #: internal/termui/agents.go:181
 msgid "Agents that need you"
@@ -14669,6 +14688,10 @@ msgstr "참조"
 msgid "Bcc"
 msgstr "숨은 참조"
 
+#: ui/mail-compose.ui:200
+msgid "ASSISTANT"
+msgstr "어시스턴트"
+
 #: ui/mail-compose.ui:209
 msgid "What to say: the assistant drafts it"
 msgstr "할 말: 어시스턴트가 초안을 씁니다"
@@ -14689,19 +14712,23 @@ msgstr "첨부…"
 msgid "Ctrl+Enter"
 msgstr "Ctrl+Enter"
 
-#: ui/mail.ui:85
+#: ui/mail.ui:41
 msgid "Write a message (C)"
 msgstr "메시지 쓰기 (C)"
 
-#: ui/mail.ui:139
+#: ui/mail.ui:108
+msgid "Settings (Ctrl+,)"
+msgstr "설정 (Ctrl+,)"
+
+#: ui/mail.ui:129
 msgid "Search, or ask in a sentence"
 msgstr "검색하거나 문장으로 묻기"
 
-#: ui/mail.ui:209
+#: ui/mail.ui:199
 msgid "Loading older mail…"
 msgstr "이전 메일을 불러오는 중…"
 
-#: ui/mail.ui:263
+#: ui/mail.ui:253
 msgid "No conversation chosen"
 msgstr "선택한 대화가 없습니다"
 

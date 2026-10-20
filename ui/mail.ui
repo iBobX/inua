@@ -33,57 +33,26 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="width-request">236</property>
                     <property name="hexpand">false</property>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkButton" id="compose">
                         <style>
-                          <class name="mail-index-head"/>
+                          <class name="suggested-action"/>
+                          <class name="mail-compose-button"/>
                         </style>
+                        <property name="tooltip-text" translatable="yes">Write a message (C)</property>
                         <child>
                           <object class="GtkBox">
-                            <property name="orientation">1</property>
-                            <property name="hexpand">true</property>
-                            <property name="valign">3</property>
-                            <property name="spacing">4</property>
+                            <property name="spacing">8</property>
+                            <property name="halign">3</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="spacing">7</property>
-                                <child>
-                                  <object class="GtkBox" id="status_mark">
-                                    <style>
-                                      <class name="mark"/>
-                                      <class name="mail-status-mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="status_state">
-                                    <style>
-                                      <class name="mail-status"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
+                              <object class="GtkImage">
+                                <property name="icon-name">document-edit-symbolic</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="status_counts">
-                                <style>
-                                  <class name="mail-status-counts"/>
-                                </style>
-                                <property name="xalign">0</property>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">New message</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="compose">
-                            <style>
-                              <class name="outlined"/>
-                              <class name="mail-compose-button"/>
-                            </style>
-                            <property name="icon-name">document-edit-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Write a message (C)</property>
-                            <property name="valign">3</property>
                           </object>
                         </child>
                       </object>
@@ -105,18 +74,39 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="add_account">
+                      <object class="GtkBox">
                         <style>
-                          <class name="index-item"/>
-                          <class name="mail-add"/>
+                          <class name="mail-index-foot"/>
                         </style>
+                        <property name="spacing">8</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkBox" id="status_mark">
                             <style>
-                              <class name="title"/>
+                              <class name="mark"/>
+                              <class name="mail-status-mark"/>
                             </style>
-                            <property name="label" translatable="yes">Add account</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="status_state">
+                            <style>
+                              <class name="mail-status"/>
+                            </style>
                             <property name="xalign">0</property>
+                            <property name="hexpand">true</property>
+                            <property name="ellipsize">3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="settings_button">
+                            <style>
+                              <class name="flat"/>
+                              <class name="mail-settings-button"/>
+                            </style>
+                            <property name="icon-name">emblem-system-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Settings (Ctrl+,)</property>
+                            <property name="valign">3</property>
                           </object>
                         </child>
                       </object>

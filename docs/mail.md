@@ -18,24 +18,24 @@ inua-mail --check FILE.eml    the phishing checks on a message
 
 ```
 ┌──────────────────┬──────────────────────────┬───────────────────────────────┐
-│ ■ IDLE · 20:41:07 [✎]│ ⌕ Search, or ask…    │ The Q3 report                 │
-│ 1,204 MSG · 3 UNREAD │ ALL UNREAD FILES REPLY │ SUMMARY · ASSISTANT         │
-│ All inboxes   3  │                          │                               │
+│ [ ✎ New message ]│ ⌕ Search, or ask…        │ The Q3 report                 │
+│ All inboxes   3  │ ALL UNREAD FILES REPLY   │ SUMMARY · ASSISTANT           │
 │ Needs reply   1  │ ■ Ana Souza       18:06  │ Ana needs the numbers by Fri… │
 │ Starred          │   The Q3 report       3  │ Summarize · Reply ideas       │
-│ STUDIO  ana@st…  │   Thanks! Can you send…  │ ───────────────────────────── │
+│ ┌ A Ana Souza    │   Thanks! Can you send…  │ ───────────────────────────── │
 │ Inbox         3  │   REPLY  FILE            │ Ana Souza  Hi both, Here's…   │
 │ Drafts · Sent    │ □ Hetzner Online   Sun   │ Lyric      Looks right to…    │
 │ Archive · Spam   │   Your invoice R0021455  │ Ana Souza  to me, Ben  18:06  │
 │ Trash            │   FILE                   │ Thanks! Can you send the …    │
 │ 1 more folder    │                          │ [PDF q3-draft.pdf · Save…]    │
-│ Add account      │                          │ [Reply]  Reply all  Forward   │
+│ ■ Up to date  ⚙  │                          │ [Reply]  Reply all  Forward   │
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
 
-- **The readout** at the top: whether Mail is waiting for new mail
-  (IDLE), syncing or offline, when it last synced, and the messages kept
-  from the inboxes with how many are unread. ✎ writes a message.
+- **New message** at the top writes a message (`c`).
+- **The foot** says how the sync is, in words: up to date, when it last
+  checked, checking, or which accounts cannot connect; ⚙ opens the
+  settings.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours); *Starred*; *Unsent* when
   drafts are kept; then each account in a panel of its own: its photo
@@ -87,7 +87,7 @@ The window's title counts the unread.
 
 ## Accounts
 
-With no account, and on *Add account*, Mail shows the welcome in its
+With no account, and on *Add account* in the settings, Mail shows the welcome in its
 window: three steps, ADDRESS, SIGN IN and FIRST SYNC. Type your address;
 the way to sign in is worked out from it (Gmail → Google, Outlook,
 Hotmail and Live → Microsoft, the rest → IMAP), or click another way (a
@@ -137,9 +137,9 @@ undo_send = 5                   # seconds to take a send back; -1 sends at once
 sort = false                    # sort new mail with the assistant
 ```
 
-**Settings** (Ctrl+, or a click on an account's head) is a window of
-its own: each account (its name, signature, signing in again, removing
-it), Reading, Writing, the assistant's sorting, and Advanced (your own
+**Settings** (Ctrl+, ⚙ at the index's foot, or a click on an account's
+head) is a window of its own, in the look of inua's Settings: each account (its name, signature, signing in again, removing
+it; *Add account*), Reading, Writing, the assistant's sorting, and Advanced (your own
 OAuth client, the cache kept and *Clear*).
 
 ### OAuth client IDs
@@ -161,7 +161,8 @@ INUA_GOOGLE_CLIENT_SECRET=GOCSPX-… make build
 A build without it marks Google *no client ID*.
 
 To use a client of your own, open *Your own OAuth client…* under the
-ways to sign in in the welcome (Add account); empty fields use inua's.
+ways to sign in in the welcome, or Settings → Advanced; empty fields use
+inua's.
 The client ID goes to `mail.toml`, the secret to your keyring (as the
 accounts' tokens), and `mail.toml` notes `secret_in_keyring = true`.
 A `client_secret` written in `mail.toml` by hand still works. An account signed in with one client signs in

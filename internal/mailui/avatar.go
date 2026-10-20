@@ -11,6 +11,9 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 )
 
+// avatarSize is an account's photo's side, in the index and the settings.
+const avatarSize = 22
+
 // avatarWidget is an account's photo, or its initial while there is none
 // (or while the photo is fetched).
 func (w *window) avatarWidget(x *acct) *gtk.Widget {
@@ -19,7 +22,7 @@ func (w *window) avatarWidget(x *acct) *gtk.Widget {
 		pic := gtk.NewPictureForPaintable(tex)
 		pic.SetContentFit(gtk.ContentFitCoverValue)
 		pic.SetCanShrink(true)
-		pic.SetSizeRequest(30, 30)
+		pic.SetSizeRequest(avatarSize, avatarSize)
 		pic.SetValign(gtk.AlignCenterValue)
 		pic.AddCssClass("mail-avatar")
 		pic.SetOverflow(gtk.OverflowHiddenValue)
@@ -46,7 +49,7 @@ func (w *window) avatarWidget(x *acct) *gtk.Widget {
 	l := gtk.NewLabel(initial(x.s.Acc.DisplayName()))
 	l.AddCssClass("mail-avatar")
 	l.AddCssClass("mail-monogram")
-	l.SetSizeRequest(30, 30)
+	l.SetSizeRequest(avatarSize, avatarSize)
 	l.SetValign(gtk.AlignCenterValue)
 	return &l.Widget
 }

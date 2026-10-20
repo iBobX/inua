@@ -499,7 +499,7 @@ msgid "AI"
 msgstr "人工智慧"
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:459
+#: internal/mailui/settings.go:605
 msgid "CACHE"
 msgstr "快取"
 
@@ -1562,6 +1562,7 @@ msgid "online"
 msgstr "在線"
 
 #: internal/apps/tailscale/status.go:168
+#: internal/mailui/window.go:1335
 msgid "just now"
 msgstr "剛才"
 
@@ -1971,6 +1972,7 @@ msgid "5 years"
 msgstr "5 年"
 
 #: internal/appui/gpg.go:144
+#: internal/mailui/settings.go:499
 #: ui/settings.ui:3924
 msgid "Never"
 msgstr "永不過期"
@@ -3705,7 +3707,7 @@ msgstr "無法播放：%s"
 
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
-#: internal/mailui/settings.go:378
+#: internal/mailui/settings.go:532
 #: internal/remoteui/window.go:495
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
@@ -3878,7 +3880,7 @@ msgid "OK"
 msgstr "好的"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:437
+#: internal/mailui/settings.go:583
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -3892,7 +3894,7 @@ msgid "Uses: %s"
 msgstr "使用：%s"
 
 #: internal/appui/workshop_manager.go:64
-#: internal/mailui/settings.go:310
+#: internal/mailui/settings.go:463
 msgid "Remove…"
 msgstr "移除…"
 
@@ -4011,7 +4013,7 @@ msgid "Running a script with the tools"
 msgstr "正在用這些工具執行指令碼"
 
 #: internal/assistantui/assistantui.go:37
-#: internal/mailui/settings.go:138
+#: internal/mailui/settings.go:210
 #: ui/assistant.ui:35
 #: ui/settings.ui:2160
 #: config/apps/io.github.lyricat.Inua.Assistant.desktop:3
@@ -4051,7 +4053,7 @@ msgid "✕ Not done: %s"
 msgstr "✕ 未完成:%s"
 
 #: internal/assistantui/assistantui.go:449
-#: internal/mailui/settings.go:351
+#: internal/mailui/settings.go:499
 #: ui/assistant.ui:136
 msgid "Ask"
 msgstr "詢問"
@@ -5188,7 +5190,7 @@ msgid "Names starting with a dot, inside the folders: .git, .cache …"
 msgstr "資料夾中以點開頭的名稱：.git、.cache……"
 
 #: internal/filesui/archive.go:187
-#: internal/mailui/settings.go:139
+#: internal/mailui/settings.go:211
 msgid "Advanced"
 msgstr "進階"
 
@@ -5492,7 +5494,7 @@ msgstr "新增資料夾 / 新增檔案"
 #: internal/mailui/compose.go:492
 #: internal/mailui/quick.go:124
 #: ui/mail-compose.ui:234
-#: ui/mail.ui:236
+#: ui/mail.ui:226
 msgid "Undo"
 msgstr "復原"
 
@@ -5884,6 +5886,7 @@ msgstr "%s 已中斷連線。"
 
 #: internal/filesui/remote.go:220
 #: internal/filesui/remote.go:273
+#: internal/mailui/settings.go:504
 #: internal/ui/settings_ai.go:497
 #: internal/ui/settings_bluetooth.go:339
 #: ui/remote.ui:572
@@ -8183,7 +8186,7 @@ msgid "Small Fortune"
 msgstr "小小富翁"
 
 #: internal/games/fortunenet/texts.go:18
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 #: internal/mailui/welcome.go:572
 msgid "Your name"
 msgstr "你的名字"
@@ -9464,7 +9467,6 @@ msgstr "聚焦或關閉"
 
 #: internal/hyprconf/keys.go:30
 #: internal/mailui/picker.go:151
-#: internal/mailui/settings.go:76
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:291
 #: internal/term/settings/settings.go:110
@@ -9718,6 +9720,7 @@ msgid_plural "%s and %d more messages"
 msgstr[0] "%s 及另外 %d 封"
 
 #: internal/mailui/app.go:23
+#: internal/mailui/settings.go:95
 #: internal/mailui/window.go:1326
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
@@ -9768,6 +9771,7 @@ msgstr "已搜尋 %s"
 
 #: internal/mailui/compose.go:195
 #: ui/mail-compose.ui:15
+#: ui/mail.ui:53
 msgid "New message"
 msgstr "新郵件"
 
@@ -9893,6 +9897,7 @@ msgid "Pictures from the web tell the sender you opened the message, and when."
 msgstr "網路圖片會告訴寄件者你打開了郵件，以及打開的時間。"
 
 #: internal/mailui/formatted.go:181
+#: internal/mailui/settings.go:498
 msgid "Load them"
 msgstr "載入"
 
@@ -9901,8 +9906,7 @@ msgid "Always from this sender"
 msgstr "一律載入此寄件者的"
 
 #: internal/mailui/formatted.go:189
-#: internal/mailui/settings.go:245
-#: internal/mailui/settings.go:329
+#: internal/mailui/settings.go:410
 msgid "Not saved: %v"
 msgstr "未儲存：%v"
 
@@ -10227,201 +10231,222 @@ msgstr "郵件沒找到可讀的文字（掃描檔是頁面的圖片）。"
 msgid "Could not read it: %v"
 msgstr "無法讀取：%v"
 
-#: internal/mailui/settings.go:55
+#: internal/mailui/settings.go:73
 msgid "Mail settings"
 msgstr "郵件設定"
 
-#: internal/mailui/settings.go:125
+#: internal/mailui/settings.go:202
 msgid "ACCOUNTS"
 msgstr "帳號"
 
-#: internal/mailui/settings.go:129
-#: ui/mail.ui:118
+#: internal/mailui/settings.go:206
 msgid "Add account"
 msgstr "新增帳戶"
 
-#: internal/mailui/settings.go:135
+#: internal/mailui/settings.go:207
 msgid "MAIL"
 msgstr "郵件"
 
-#: internal/mailui/settings.go:136
+#: internal/mailui/settings.go:208
 msgid "Reading"
 msgstr "閱讀"
 
-#: internal/mailui/settings.go:137
+#: internal/mailui/settings.go:209
 msgid "Writing"
 msgstr "撰寫"
 
-#: internal/mailui/settings.go:264
+#: internal/mailui/settings.go:428
 msgid "On the messages you send"
 msgstr "顯示在你寄出的郵件上"
 
-#: internal/mailui/settings.go:283
+#: internal/mailui/settings.go:445
 msgid "Signature"
 msgstr "簽名"
 
-#: internal/mailui/settings.go:287
+#: internal/mailui/settings.go:445
 msgid "Under what you write, after a line with two dashes; kept as you type."
 msgstr "附在你所寫內容下方、兩個短橫線的一行之後；輸入時即儲存。"
 
-#: internal/mailui/settings.go:294
+#: internal/mailui/settings.go:447
 msgid "With a password, at its IMAP and SMTP servers"
 msgstr "使用密碼，連線至其 IMAP 與 SMTP 伺服器"
 
-#: internal/mailui/settings.go:296
+#: internal/mailui/settings.go:449
 msgid "On %s's page, in the browser"
 msgstr "在 %s 的頁面上，透過瀏覽器"
 
-#: internal/mailui/settings.go:300
+#: internal/mailui/settings.go:451
+msgid "SIGN-IN"
+msgstr "登入"
+
+#: internal/mailui/settings.go:452
 msgid "Sign in again"
 msgstr "重新登入"
 
-#: internal/mailui/settings.go:308
-msgid "Sign-in"
-msgstr "登入"
+#: internal/mailui/settings.go:452
+msgid "Sign in…"
+msgstr "登入…"
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:460
+msgid "Servers"
+msgstr "伺服器"
+
+#: internal/mailui/settings.go:462
 msgid "Remove the account"
 msgstr "移除帳號"
 
-#: internal/mailui/settings.go:313
+#: internal/mailui/settings.go:462
 msgid "Forgets it on this computer: its sign-in and the mail kept. The mail on the server stays."
 msgstr "從這台電腦刪除它的登入資訊與保存的郵件。伺服器上的郵件仍會保留。"
 
-#: internal/mailui/settings.go:337
-msgid "READING"
-msgstr "閱讀"
+#: internal/mailui/settings.go:486
+msgid "MESSAGES"
+msgstr "郵件"
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:486
+msgid "How a conversation shows"
+msgstr "對話如何顯示"
+
+#: internal/mailui/settings.go:491
 msgid "HTML mail"
 msgstr "HTML 郵件"
 
-#: internal/mailui/settings.go:342
+#: internal/mailui/settings.go:491
 msgid "Formatted keeps its headings, emphasis, links and pictures; plain text keeps only the words."
 msgstr "格式顯示保留標題、強調、連結與圖片；純文字只保留文字。"
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Formatted"
 msgstr "格式"
 
-#: internal/mailui/settings.go:343
+#: internal/mailui/settings.go:492
 msgid "Plain text"
 msgstr "純文字"
 
-#: internal/mailui/settings.go:350
-msgid "Pictures from the web"
-msgstr "網路圖片"
-
-#: internal/mailui/settings.go:350
-msgid "A picture a message loads from the web tells its sender you opened it, and when. Asking shows a line to load them, for the message or always for its sender."
-msgstr "郵件從網路載入的圖片會告訴寄件者你打開了它，以及時間。「詢問」會顯示一行，可僅為這封郵件載入，或一律為該寄件者載入。"
-
-#: internal/mailui/settings.go:351
-msgid "Always load"
-msgstr "一律載入"
-
-#: internal/mailui/settings.go:351
-msgid "Never load"
-msgstr "永不載入"
-
-#: internal/mailui/settings.go:358
-msgid "Forget them"
-msgstr "忘記它們"
-
-#: internal/mailui/settings.go:361
-msgid "Pictures load from %d sender"
-msgid_plural "Pictures load from %d senders"
-msgstr[0] "從 %d 位寄件者載入圖片"
-
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Mark as read when opened"
 msgstr "開啟時標為已讀"
 
-#: internal/mailui/settings.go:364
+#: internal/mailui/settings.go:493
 msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "關閉：對話會保持未讀，直到你手動標記（U）。"
 
-#: internal/mailui/settings.go:370
-msgid "WRITING"
-msgstr "撰寫"
+#: internal/mailui/settings.go:496
+msgid "PICTURES FROM THE WEB"
+msgstr "網路圖片"
 
-#: internal/mailui/settings.go:380
+#: internal/mailui/settings.go:496
+msgid "They tell the sender you opened the message"
+msgstr "它們會告訴寄件者你打開了郵件"
+
+#: internal/mailui/settings.go:498
+msgid "Asking shows a line over the message: load them for it, or always for its sender. A suspicious message never loads them by itself."
+msgstr "「詢問」會在郵件上方顯示一行：僅為這封郵件載入，或一律為其寄件者載入。可疑郵件從不自動載入。"
+
+#: internal/mailui/settings.go:499
+msgid "Always"
+msgstr "一律"
+
+#: internal/mailui/settings.go:504
+msgid "Its pictures always load"
+msgstr "一律載入其圖片"
+
+#: internal/mailui/settings.go:524
+msgid "SENDING"
+msgstr "寄送"
+
+#: internal/mailui/settings.go:534
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "%d 秒"
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "Time to take a send back"
 msgstr "收回寄送的時間"
 
-#: internal/mailui/settings.go:382
+#: internal/mailui/settings.go:536
 msgid "A message waits this long before it goes; Undo stops it."
 msgstr "郵件會等待這麼久再寄出；「復原」可以阻止。"
 
-#: internal/mailui/settings.go:394
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
-msgstr "助理"
+#: internal/mailui/settings.go:548
+msgid "SORTING"
+msgstr "整理"
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:548
+msgid "The only thing it does unasked"
+msgstr "它唯一會主動做的事"
+
+#: internal/mailui/settings.go:549
 msgid "Sort new mail"
 msgstr "整理新郵件"
 
-#: internal/mailui/settings.go:395
+#: internal/mailui/settings.go:549
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters."
 msgstr "為規則沒有處理的新郵件，以助理的快速判斷加上標籤（需回覆、電子報、收據……）。會傳送每封郵件的寄件者、主旨與前 400 個字元。"
 
-#: internal/mailui/settings.go:397
+#: internal/mailui/settings.go:551
 msgid "Everything else the assistant does in Mail (summaries, reply ideas, drafting, search from a sentence, phishing judgments) happens only when you ask. The assistant itself is set in Settings → AI."
 msgstr "助理在郵件中做的其他事（摘要、回覆建議、起草、以句子搜尋、釣魚判斷）只在你要求時進行。助理本身在 設定 → AI 中設定。"
 
-#: internal/mailui/settings.go:409
+#: internal/mailui/settings.go:557
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr "你自己的 OAUTH 用戶端"
 
-#: internal/mailui/settings.go:410
+#: internal/mailui/settings.go:557
+msgid "Empty fields use inua's"
+msgstr "留空則使用 inua 的"
+
+#: internal/mailui/settings.go:558
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr "用於你自己的 Google Cloud 專案或 Azure 應用程式。留空則用 inua 的。密鑰保存在你的鑰匙圈中，而不是 mail.toml。更換用戶端後，已用該服務商登入的帳戶需要重新登入。"
 
-#: internal/mailui/settings.go:429
+#: internal/mailui/settings.go:571
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr "已保存在鑰匙圈中；輸入以取代"
 
-#: internal/mailui/settings.go:433
+#: internal/mailui/settings.go:575
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr "Google 用戶端 ID"
 
-#: internal/mailui/settings.go:434
+#: internal/mailui/settings.go:576
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr "Google 用戶端密鑰"
 
-#: internal/mailui/settings.go:435
+#: internal/mailui/settings.go:577
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr "Microsoft 用戶端 ID"
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr "Microsoft 租用戶"
 
-#: internal/mailui/settings.go:436
+#: internal/mailui/settings.go:578
 msgid "common, or your organization's"
 msgstr "common，或你所屬組織的"
 
-#: internal/mailui/settings.go:452
+#: internal/mailui/settings.go:593
 msgid "Saved."
 msgstr "已儲存。"
 
-#: internal/mailui/settings.go:460
+#: internal/mailui/settings.go:606
 msgid "Counting…"
 msgstr "正在計算…"
 
-#: internal/mailui/settings.go:479
+#: internal/mailui/settings.go:625
+msgid "Mail kept on this computer"
+msgstr "保存在這台電腦上的郵件"
+
+#: internal/mailui/settings.go:625
+msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
+msgstr "索引與開啟過的郵件：這是伺服器內容的副本，清除不會遺失任何東西。郵件會在下次啟動時重新取得。"
+
+#: internal/mailui/settings.go:626
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10430,19 +10455,7 @@ msgstr "正在計算…"
 msgid "Clear"
 msgstr "清除"
 
-#: internal/mailui/settings.go:485
-msgid "Cleared. Mail fetches what it shows again from the servers, at the next start."
-msgstr "已清除。郵件會在下次啟動時從伺服器重新取得要顯示的內容。"
-
-#: internal/mailui/settings.go:491
-msgid "Mail kept on this computer"
-msgstr "保存在這台電腦上的郵件"
-
-#: internal/mailui/settings.go:491
-msgid "The indexes and the messages opened, in %s. A copy of the servers': clearing it loses nothing."
-msgstr "索引與開啟過的郵件，位於 %s。這是伺服器內容的副本：清除不會遺失任何東西。"
-
-#: internal/mailui/settings.go:517
+#: internal/mailui/settings.go:657
 msgid "Could not keep the secret in the keyring: %v"
 msgstr "無法把密鑰保存到鑰匙圈：%v"
 
@@ -10713,6 +10726,7 @@ msgid "Offline: %v"
 msgstr "離線：%v"
 
 #: internal/mailui/window.go:431
+#: internal/mailui/window.go:1306
 msgid "No account yet"
 msgstr "還沒有帳戶"
 
@@ -10835,38 +10849,39 @@ msgstr "正在搜尋伺服器…"
 msgid "The server's search failed: %s"
 msgstr "伺服器搜尋失敗：%s"
 
-#: internal/mailui/window.go:1304
-#: internal/termui/agents.go:48
-msgid "IDLE"
-msgstr "閒置"
+#: internal/mailui/window.go:1303
+msgid "Up to date"
+msgstr "已是最新"
 
-#: internal/mailui/window.go:1307
-msgid "NO ACCOUNT"
-msgstr "沒有帳戶"
+#: internal/mailui/window.go:1308
+msgid "Checking for mail…"
+msgstr "正在檢查郵件…"
 
-#: internal/mailui/window.go:1309
-msgid "SYNCING"
-msgstr "同步中"
+#: internal/mailui/window.go:1310
+msgid "Offline: trying again soon"
+msgstr "離線：稍後重試"
 
-#: internal/mailui/window.go:1311
-msgid "OFFLINE"
-msgstr "離線"
+#: internal/mailui/window.go:1312
+msgid "%d account cannot connect"
+msgid_plural "%d accounts cannot connect"
+msgstr[0] "%d 個帳號無法連線"
 
-#: internal/mailui/window.go:1313
-msgid "%d OFFLINE"
-msgstr "%d 個離線"
+#: internal/mailui/window.go:1314
+msgid "Checked %s"
+msgstr "%s檢查過"
 
-#: internal/mailui/window.go:1322
-msgid "%s MSG · %d UNREAD"
-msgstr "%s 封 · %d 未讀"
+#: internal/mailui/window.go:1318
+msgid "Last checked at %s"
+msgstr "上次檢查於 %s"
 
 #: internal/mailui/window.go:1324
 msgid "Mail · %d unread"
 msgstr "郵件 · %d 未讀"
 
-#: internal/mailui/window.go:1328
-msgid "Messages kept from the inboxes, and how many are unread"
-msgstr "從收件匣保存的郵件，以及其中未讀的數量"
+#: internal/mailui/window.go:1338
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d 分鐘前"
 
 #: internal/remoteui/app.go:20
 #: ui/remote.ui:14
@@ -11683,6 +11698,10 @@ msgstr "需要你"
 #: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "已完成"
+
+#: internal/termui/agents.go:48
+msgid "IDLE"
+msgstr "閒置"
 
 #: internal/termui/agents.go:181
 msgid "Agents that need you"
@@ -14669,6 +14688,10 @@ msgstr "副本"
 msgid "Bcc"
 msgstr "密件副本"
 
+#: ui/mail-compose.ui:200
+msgid "ASSISTANT"
+msgstr "助理"
+
 #: ui/mail-compose.ui:209
 msgid "What to say: the assistant drafts it"
 msgstr "要說什麼：助理來起草"
@@ -14689,19 +14712,23 @@ msgstr "附加…"
 msgid "Ctrl+Enter"
 msgstr "Ctrl+Enter"
 
-#: ui/mail.ui:85
+#: ui/mail.ui:41
 msgid "Write a message (C)"
 msgstr "寫一封郵件 (C)"
 
-#: ui/mail.ui:139
+#: ui/mail.ui:108
+msgid "Settings (Ctrl+,)"
+msgstr "設定 (Ctrl+,)"
+
+#: ui/mail.ui:129
 msgid "Search, or ask in a sentence"
 msgstr "搜尋，或用一句話提問"
 
-#: ui/mail.ui:209
+#: ui/mail.ui:199
 msgid "Loading older mail…"
 msgstr "正在載入較舊的郵件…"
 
-#: ui/mail.ui:263
+#: ui/mail.ui:253
 msgid "No conversation chosen"
 msgstr "未選擇對話"
 

@@ -186,7 +186,7 @@ func (t *textOut) link(n *html.Node) {
 	case text == "" && web:
 		t.text(" " + href + " ")
 	case text == "":
-	case !web || sameLink(text, href):
+	case !web || sameLink(text, href) || strings.HasPrefix(text, "[") && strings.HasSuffix(text, "]"): // a picture's alt text: no address after it
 		t.text(" " + text + " ")
 	default:
 		t.text(" " + text + " ")
