@@ -241,6 +241,9 @@ func writeFile(path string, b []byte) error {
 	return os.Rename(f.Name(), path)
 }
 
+// Dir is the folder the store keeps everything in, every account's.
+func (s *Store) Dir() string { return s.dir }
+
 // AvatarPath is where an account's photo is kept.
 func (s *Store) AvatarPath(account string) string {
 	return filepath.Join(s.dir, url.PathEscape(account), "avatar")

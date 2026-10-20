@@ -137,8 +137,8 @@ func (w *window) panelError(box *gtk.Box, text string) {
 }
 
 // panelActions are what the assistant can be asked for the conversation:
-// side by side, a summary and replies to pick from; under them, a line of
-// what to reply. The answers come in the sections below.
+// side by side, a summary and replies to pick from. The answers come in
+// the sections below.
 func (w *window) panelActions(c *mail.Conversation, draft bool) {
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 8)
 	box.AddCssClass("mail-assist-actions")
@@ -163,18 +163,6 @@ func (w *window) panelActions(c *mail.Conversation, draft bool) {
 		b.SetSensitive((ideas == nil || !ideas.busy) && idle)
 	}
 	gtkx.Append(box, &row.Widget)
-	if !draft {
-		say := gtk.NewEntry()
-		say.AddCssClass("mail-assist-say")
-		say.SetPlaceholderText(i18n.T("Or say what to reply, then Enter"))
-		say.SetSensitive(idle)
-		w.panelBtns = append(w.panelBtns, w.h.enter(say, func() {
-			if what := strings.TrimSpace(say.GetText()); what != "" {
-				w.draftQuick(c, what)
-			}
-		}))
-		gtkx.Append(box, &say.Widget)
-	}
 	gtkx.Append(&w.assist, &box.Widget)
 }
 

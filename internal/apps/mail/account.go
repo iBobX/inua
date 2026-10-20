@@ -104,6 +104,31 @@ type Reading struct {
 	ImagesFrom []string `toml:"images_from,omitempty"`
 	// KeepUnread leaves a conversation unread when it is opened.
 	KeepUnread bool `toml:"keep_unread,omitempty"`
+	// PreviewLines is how many lines of each conversation's newest text
+	// the list shows, 1 to 3; 0 is 2.
+	PreviewLines int `toml:"preview_lines,omitempty"`
+	// TextSize is the size of a message's text, in percent, 85 to 150;
+	// 0 is 100.
+	TextSize int `toml:"text_size,omitempty"`
+}
+
+// Lines is how many lines of preview the list shows.
+func (r Reading) Lines() int {
+	if r.PreviewLines < 1 || r.PreviewLines > 3 {
+		return 2
+	}
+	return r.PreviewLines
+}
+
+// TextSizes are the sizes a message's text can be read at, in percent.
+var TextSizes = []int{85, 100, 115, 130, 150}
+
+// Scale is the size of a message's text, 1 for its own.
+func (r Reading) Scale() float64 {
+	if r.TextSize < TextSizes[0] || r.TextSize > TextSizes[len(TextSizes)-1] {
+		return 1
+	}
+	return float64(r.TextSize) / 100
 }
 
 // SummaryLanguages are the languages a summary can be asked in, by code,

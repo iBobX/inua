@@ -121,6 +121,7 @@ type window struct {
 	quick           map[string]*quickReply  // a conversation's quick reply, by its ID
 	sideSig         string                  // the index's counts when last drawn
 	avatars         map[string]*gdk.Texture // accounts' photos, by ID
+	textCSS         *gtk.CssProvider        // messages' text at the size chosen (reading.go)
 	avatarAsked     map[string]bool
 	loadingOlder    bool                      // older mail is being fetched
 	settingsWin     *settingsWin              // the settings, while open
@@ -282,6 +283,11 @@ func (w *window) loadSettings() {
 	w.refresh()
 	w.aiChanged()
 	w.restoreLayout()
+	w.applyTextSize()
+	if adj := w.readerScroll.GetHadjustment(); adj != nil {
+		w.h.notify(adj, "page-size", w.fitReader) // the pane's width, as it changes
+		adj.Unref()
+	}
 	w.h.later(1000, w.statusTick)
 }
 
@@ -948,6 +954,7 @@ func (w *window) loadOlder() {
 
 type convRow struct {
 	box                          gtk.Box
+	face                         gtk.Label // the sender's initial, as the reader shows them
 	mark                         gtk.Box
 	who, when, subject, count    gtk.Label
 	snippet, tag, clip, accountL gtk.Label
@@ -957,18 +964,38 @@ type convRow struct {
 	ptrs                         []uintptr
 }
 
+// rowFace is the side of a row's initial.
+const rowFace = 34
+
+// relist shows the rows again, as the settings now say.
+func (w *window) relist() {
+	for _, r := range w.rows {
+		w.fillRow(r)
+	}
+}
+
 func (w *window) setupRow(item uintptr) {
 	li := gtk.ListItemNewFromInternalPtr(item)
 	r := &convRow{item: item}
-	r.box = *gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	// The sender's initial, then a column whose lines all start at one
+	// edge: who and when, the subject, the preview, the marks.
+	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	r.box.AddCssClass("mail-row")
+	r.face = *gtk.NewLabel("")
+	r.face.AddCssClass("mail-sender-mark")
+	r.face.AddCssClass("mail-row-face")
+	r.face.SetSizeRequest(rowFace, rowFace)
+	r.face.SetValign(gtk.AlignStartValue)
+	gtkx.Append(&r.box, &r.face.Widget)
+	col := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	col.SetHexpand(true)
 	top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	r.who = *label("mail-who", true)
+	gtkx.Append(top, &r.who.Widget)
 	r.mark = *gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	r.mark.AddCssClass("mark")
 	r.mark.SetValign(gtk.AlignCenterValue)
 	gtkx.Append(top, &r.mark.Widget)
-	r.who = *label("mail-who", true)
-	gtkx.Append(top, &r.who.Widget)
 	r.when = *label("mail-when", false)
 	gtkx.Append(top, &r.when.Widget)
 	// The actions a pointer over the row shows, in the time's place.
@@ -996,19 +1023,17 @@ func (w *window) setupRow(item uintptr) {
 	r.read = *act("mail-read-symbolic", "", w.toggleRead)
 	r.star = *act("mail-starred-symbolic", "", w.starConv)
 	over.AddOverlay(&acts.Widget)
-	gtkx.Append(&r.box, &over.Widget)
+	gtkx.Append(col, &over.Widget)
 	mid := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
-	mid.AddCssClass("mail-row-indent")
 	r.subject = *label("mail-subject-line", true)
 	gtkx.Append(mid, &r.subject.Widget)
 	r.count = *label("mail-n", false)
 	gtkx.Append(mid, &r.count.Widget)
-	gtkx.Append(&r.box, &mid.Widget)
+	gtkx.Append(col, &mid.Widget)
 	r.snippet = *label("mail-snippet", true)
-	r.snippet.AddCssClass("mail-row-indent")
-	gtkx.Append(&r.box, &r.snippet.Widget)
+	r.snippet.SetWrapMode(2) // word_char
+	gtkx.Append(col, &r.snippet.Widget)
 	foot := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-	foot.AddCssClass("mail-row-indent")
 	r.tag = *label("mail-tag", false)
 	gtkx.Append(foot, &r.tag.Widget)
 	r.clip = *label("mail-clip", false)
@@ -1022,7 +1047,8 @@ func (w *window) setupRow(item uintptr) {
 	r.accountL.SetHexpand(true)
 	r.accountL.SetXalign(1)
 	gtkx.Append(foot, &r.accountL.Widget)
-	gtkx.Append(&r.box, &foot.Widget)
+	gtkx.Append(col, &foot.Widget)
+	gtkx.Append(&r.box, &col.Widget)
 	li.SetChild(&r.box.Widget)
 	r.box.Unref()
 	w.rows[item] = r
@@ -1088,6 +1114,21 @@ func (w *window) fillRow(r *convRow) {
 	}
 	r.snippet.SetText(latest.Snippet)
 	r.snippet.SetVisible(latest.Snippet != "")
+	// The preview in as many lines as the settings say; a wrapping label
+	// takes the row's width, not its text's.
+	lines := w.settings.Reading.Lines()
+	r.snippet.SetWrap(lines > 1)
+	r.snippet.SetLines(int32(lines))
+	r.snippet.SetMaxWidthChars(1)
+	face := latest.From
+	if len(people) > 0 {
+		face = people[0]
+	}
+	name := face.Name
+	if name == "" {
+		name = face.Addr
+	}
+	r.face.SetText(initial(name))
 	unread := c.Unread() > 0
 	setClass(&r.box.Widget, "unread", unread)
 	setClass(&r.mark.Widget, "on", unread)

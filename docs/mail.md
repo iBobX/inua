@@ -46,10 +46,13 @@ inua-mail --check FILE.eml    the phishing checks on a message
   Archive, Spam, Trash), the others behind *N more folders*. A click on
   the account's head opens its settings. An account that cannot connect
   says so under its name, with *Sign in* when its sign-in ended.
-- **The list**: a conversation once, by its newest message: who wrote,
-  when, the subject and how many messages, the first line, and a mark for
+- **The list**: a conversation once, by its newest message: the initial
+  of who wrote, and beside it, each line starting at one edge, who wrote
+  and when, the subject and how many messages, the text in one to three
+  lines (Settings → Reading → *Preview*, two at first), and a mark for
   what to act on: REPLY (someone asks you something), WAITING (you wrote
-  last), SUSPICIOUS (the phishing checks), FILE. The square is unread.
+  last), SUSPICIOUS (the phishing checks), FILE. The square by the time
+  is unread.
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
   while the list has unread mail, marks every conversation of the view
   read, on the server too. A mailbox fetched the first time shows the
@@ -59,7 +62,11 @@ inua-mail --check FILE.eml    the phishing checks on a message
   all and forward; archive, trash, spam, move, star and unread; ⋯ for
   showing the newest message as text or formatted, opening it in the
   browser, and the keys. Under the subject, the assistant's offers as
-  chips (*Summarize*, *Reply ideas*). Each message is headed by its
+  chips (*Summarize*, *Reply ideas*). It reads in a column no wider
+  than a line is comfortable to follow (720 pixels, grown with the
+  text), in the middle of a wider pane; its text is at the size
+  Settings → Reading → *Text size* says, 85% to 150%, formatted mail
+  zoomed to it. Each message is headed by its
   sender's initial, name and address, who it went to and when; older
   ones fold to a line (a click opens one); quoted text and signatures
   wait behind •••; attachments are cards: a click opens one (images and
@@ -142,6 +149,8 @@ text = false                    # show HTML mail as text
 images = "ask"                  # pictures from the web: ask, always or never
 images_from = []                # senders whose pictures always load
 keep_unread = false             # opening a conversation does not mark it read
+preview_lines = 2               # lines of each conversation's text in the list, 1 to 3
+text_size = 100                 # a message's text, in percent: 85, 100, 115, 130 or 150
 
 [writing]
 undo_send = 5                   # seconds to take a send back; -1 sends at once
@@ -265,7 +274,7 @@ model.
 
 The right panel opens from ✦ in the conversation's bar (in a window too
 narrow for both, the sidebar makes room, and comes back when it closes):
-*Sum it up* and *Suggest replies*, a line of what to reply, then *Is it
+*Sum it up* and *Suggest replies*, then *Is it
 safe?*: each check's finding for the newest message not yours, and AI's
 judgment when asked (*Ask AI*). A reply it writes goes into the quick
 reply under the conversation, marked *Drafted by the assistant*, with
@@ -290,7 +299,6 @@ too, and the draft kept is your text.
 | --- | --- | --- |
 | The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates, in the conversation's language, or the one chosen in Settings → AI (*Summary language*); kept until the conversation gets a new message | The messages' text, quotes cut |
 | The panel: *Suggest replies* | Three short replies; the one picked is written out in the quick reply | The last six messages; to write it out, also three of your sent messages kept on this computer |
-| The panel: a line of what to say | The reply, written in the quick reply | The line, the conversation, three of your sent messages |
 | An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |
 | The composer's panel: a reply idea, or a line of what to write | The text, in the conversation's language and your voice, as a suggestion | The line, the conversation, three of your sent messages kept on this computer |
 | The composer's panel: a change | Shorter, friendlier, more formal, spelling and grammar, a translation, or as your own words say, as a suggestion | The text you wrote (not the signature or the quote), or only the selection |
