@@ -1063,3 +1063,25 @@ func TestClientSecretInKeyring(t *testing.T) {
 		t.Fatalf("by hand %+v", ep.Client)
 	}
 }
+
+func TestShownHost(t *testing.T) {
+	for text, want := range map[string]string{
+		"yarn.lock":                  "",
+		"readme.md":                  "",
+		"setup.py":                   "",
+		"Click here":                 "",
+		"paypal.com":                 "paypal.com",
+		"www.readme.md":              "www.readme.md",
+		"https://notes.zip/x":        "notes.zip",
+		"bitbank.cc":                 "bitbank.cc",
+		"github.com/fox-one/x":       "github.com",
+		"accounts.google.co.uk/home": "accounts.google.co.uk",
+	} {
+		if got := shownHost(text); got != want {
+			t.Errorf("shownHost(%q) = %q, want %q", text, got, want)
+		}
+	}
+	if site("a.example.co.uk") != "example.co.uk" || site("mail.github.com") != "github.com" {
+		t.Error("site")
+	}
+}

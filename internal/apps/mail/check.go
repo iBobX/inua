@@ -9,6 +9,8 @@ import (
 	"strings"
 	"unicode"
 
+	"golang.org/x/net/publicsuffix"
+
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -291,33 +293,40 @@ func mixedScripts(domain string) bool {
 	return latin && other
 }
 
-var twoPart = []string{"co.uk", "co.jp", "com.au", "com.cn", "com.br", "co.kr", "co.nz", "com.tw", "com.hk", "co.in", "org.uk", "ac.uk"}
-
-// site is a domain's registrable part: example.com for mail.example.com,
-// example.co.uk for a.example.co.uk.
+// site is a domain's registrable part, by the Public Suffix List:
+// example.com for mail.example.com, example.co.uk for a.example.co.uk.
 func site(domain string) string {
 	d := strings.TrimSuffix(strings.ToLower(domain), ".")
-	labels := strings.Split(d, ".")
-	n := 2
-	if len(labels) >= 3 && slices.Contains(twoPart, strings.Join(labels[len(labels)-2:], ".")) {
-		n = 3
+	if s, err := publicsuffix.EffectiveTLDPlusOne(d); err == nil {
+		return s
 	}
-	if len(labels) <= n {
-		return d
-	}
-	return strings.Join(labels[len(labels)-n:], ".")
+	return d
 }
 
-var hostLike = regexp.MustCompile(`^(?:https?://)?((?:[a-z0-9-]+\.)+[a-z]{2,})(?:[/:?#].*)?$`)
+var hostLike = regexp.MustCompile(`^(https?://)?(www\.)?((?:[a-z0-9-]+\.)+[a-z]{2,})([/:?#].*)?$`)
 
-// shownHost is the domain a link's text names, when its text is an
-// address; "" for ordinary words.
+// fileLike are endings that are top-level domains as well as files'
+// (readme.md, setup.py, notes.zip): a bare name with one is a file.
+var fileLike = map[string]bool{"md": true, "py": true, "sh": true, "rs": true, "pl": true, "zip": true, "mov": true, "ps": true, "so": true, "in": true, "ts": true}
+
+// shownHost is the domain a link's text names, when its text is a web
+// address: its ending a real top-level domain (yarn.lock and file names
+// are not addresses); "" for ordinary words.
 func shownHost(text string) string {
 	m := hostLike.FindStringSubmatch(strings.ToLower(strings.TrimSpace(text)))
 	if m == nil {
 		return ""
 	}
-	return m[1]
+	host := m[2] + m[3]
+	suffix, icann := publicsuffix.PublicSuffix(host)
+	if !icann {
+		return "" // not under a real top-level domain
+	}
+	bare := m[1] == "" && m[2] == "" && m[4] == ""
+	if bare && fileLike[suffix] {
+		return ""
+	}
+	return host
 }
 
 // JudgeFacts is what the assistant is given to judge a message, after

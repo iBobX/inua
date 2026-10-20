@@ -234,7 +234,9 @@ ApplicationWindow mail {
         }
 
         // ── the assistant, at the right edge when asked for ────────────
+        // Its width its own: the reader takes what is left.
         Revealer assist_reveal {
+          hexpand: false;
           transition-type: slide_left;
           transition-duration: 160;
           reveal-child: false;

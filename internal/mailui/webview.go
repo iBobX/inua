@@ -35,6 +35,7 @@ var wk struct {
 	setWebGL      func(s uintptr, on bool)
 	setGestures   func(s uintptr, on bool)
 	setDefaultSz  func(s uintptr, px uint32)
+	setAccel      func(s uintptr, policy int32)
 	loadHTML      func(view uintptr, html, base string)
 	setBG         func(view uintptr, rgba *gdk.RGBA)
 	setZoom       func(view uintptr, level float64)
@@ -74,6 +75,7 @@ func webOK() bool {
 			{&wk.setWebGL, lib, "webkit_settings_set_enable_webgl"},
 			{&wk.setGestures, lib, "webkit_settings_set_enable_back_forward_navigation_gestures"},
 			{&wk.setDefaultSz, lib, "webkit_settings_set_default_font_size"},
+			{&wk.setAccel, lib, "webkit_settings_set_hardware_acceleration_policy"},
 			{&wk.loadHTML, lib, "webkit_web_view_load_html"},
 			{&wk.setBG, lib, "webkit_web_view_set_background_color"},
 			{&wk.setZoom, lib, "webkit_web_view_set_zoom_level"},
@@ -111,6 +113,7 @@ type webMsg struct {
 
 const (
 	webLoadFinished   = 3 // WEBKIT_LOAD_FINISHED
+	webAccelNever     = 1 // WEBKIT_HARDWARE_ACCELERATION_POLICY_NEVER
 	webNavigation     = 0 // WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION
 	webNewWindow      = 1 // WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION
 	webLinkClicked    = 0 // WEBKIT_NAVIGATION_TYPE_LINK_CLICKED
@@ -125,6 +128,7 @@ const (
 type webHub struct {
 	policy   func(view, decision uintptr, kind int32, _ uintptr) bool
 	loaded   func(view uintptr, event int32, _ uintptr)
+	ended    func(view uintptr, reason int32, _ uintptr)
 	scrolled func(c gtk.EventControllerScroll, dx, dy float64) bool
 	measured uintptr // the C function evaluate_javascript calls back
 	byView   map[uintptr]*webMsg
@@ -190,6 +194,15 @@ func (w *window) newWebMsg() *webMsg {
 				w.measure(wm)
 			}
 		}
+		// Its web process ended (a crash, or memory taken back): the view
+		// is blank until its page is loaded again.
+		h.ended = func(view uintptr, _ int32, _ uintptr) {
+			if wm := h.byView[view]; wm != nil {
+				wm.sig, wm.height = "", 0
+				w.lastDrawn = ""
+				w.h.later(200, w.drawReader)
+			}
+		}
 		// The reader scrolls, not the page: it is as tall as its content.
 		h.scrolled = func(c gtk.EventControllerScroll, dx, dy float64) bool {
 			adj := w.readerScroll.GetVadjustment()
@@ -222,12 +235,17 @@ func (w *window) newWebMsg() *webMsg {
 	wk.setWebGL(s, false)
 	wk.setGestures(s, false)
 	wk.setDefaultSz(s, 14)
+	// Drawn without the GPU: a view taken out of the window and put back
+	// (each redraw of the reader) could come back blank, and mail needs no
+	// GPU.
+	wk.setAccel(s, webAccelNever)
 	wk.setBG(ptr, &gdk.RGBA{Red: 1, Green: 1, Blue: 1, Alpha: 1})
 	view.SetHexpand(true)
 	view.SetSizeRequest(-1, webMinHeight)
 	view.AddCssClass("mail-web-view")
 	gobject.SignalConnect(ptr, "decide-policy", glib.NewCallback(&h.policy))
 	gobject.SignalConnect(ptr, "load-changed", glib.NewCallback(&h.loaded))
+	gobject.SignalConnect(ptr, "web-process-terminated", glib.NewCallback(&h.ended))
 	sc := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue)
 	sc.SetPropagationPhase(gtk.PhaseCaptureValue)
 	sc.ConnectScroll(&h.scrolled)
