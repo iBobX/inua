@@ -28,6 +28,9 @@ import (
 // read from the server; the messages not read are marked read.
 func (w *window) openConversation(c *mail.Conversation) {
 	w.open, w.openID, w.actErr = c, c.ID, ""
+	w.dropWebs(func(k mail.Key) bool {
+		return slices.ContainsFunc(c.Messages, func(m mail.Item) bool { return m.Key() == k })
+	})
 	w.lastDrawn = ""
 	w.readerStack.SetVisibleChildName("read")
 	w.readerScroll.GetVadjustment().SetValue(0)
@@ -135,14 +138,14 @@ func (w *window) signature() string {
 		k := m.Key()
 		rd := w.reading[k]
 		fmt.Fprintf(&b, "%v:%v:%v:%v:%v:%v;", k, m.Flags, rd != nil && rd.m != nil, rd != nil && rd.err != "", w.folded[k], w.quotes[k])
-		fmt.Fprintf(&b, "%v%v%v", w.checks[k], w.judged[k].sig(), w.answers[k].sig())
+		fmt.Fprintf(&b, "%v%v%v", w.checks[k], w.judged[k] == nil, w.answers[k].sig())
 		if rd != nil && rd.m != nil {
 			for _, a := range rd.m.Shown() {
 				b.WriteString(w.fileSums[fileKey(m, a)].sig())
 			}
 		}
 	}
-	fmt.Fprintf(&b, "|%s|%s|%s", w.sumState[c.ID].sig(), w.ideas[c.ID].sig(), w.quick[c.ID].sig())
+	fmt.Fprintf(&b, "|%v|%s", w.assistOpen, w.quick[c.ID].sig()) // the assistant's answers are the panel's
 	return b.String()
 }
 
@@ -180,9 +183,6 @@ func (w *window) drawReader() {
 	t.SetWrapMode(2)
 	t.SetSelectable(true)
 	gtkx.Append(head, &t.Widget)
-	if !w.isDraft(c.Latest()) {
-		w.drawAssistChips(head, c) // not on the user's own draft
-	}
 	gtkx.Append(&w.reader, &head.Widget)
 	if w.actErr != "" {
 		e := gtk.NewLabel(w.actErr)
@@ -192,9 +192,6 @@ func (w *window) drawReader() {
 		gtkx.Append(&w.reader, &e.Widget)
 	}
 	w.drawWarning(c)
-	if !w.isDraft(c.Latest()) {
-		w.drawAssist(c)
-	}
 	last := len(c.Messages) - 1
 	for i, m := range c.Messages {
 		w.drawMessage(m, i == last)
@@ -202,6 +199,7 @@ func (w *window) drawReader() {
 	if !w.isDraft(c.Latest()) {
 		w.drawQuick(c)
 	}
+	w.drawPanel()
 }
 
 // tool adds an icon button to the reader's bar.
@@ -230,6 +228,10 @@ func (w *window) drawBar(c *mail.Conversation) {
 		gap.SetHexpand(true)
 		gtkx.Append(bar, &gap.Widget)
 		w.tool(bar, "user-trash-symbolic", i18n.T("Discard the draft"), w.trash)
+		ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
+		if w.assistOpen {
+			ai.AddCssClass("on")
+		}
 		return
 	}
 	w.tool(bar, "mail-reply-symbolic", i18n.T("Reply (R)"), func() { w.reply(false) })
@@ -253,6 +255,10 @@ func (w *window) drawBar(c *mail.Conversation) {
 		star.SetTooltipText(i18n.T("Unstar (S)"))
 	}
 	w.tool(bar, "mail-unread-symbolic", i18n.T("Mark as unread (U)"), w.markUnread)
+	ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
+	if w.assistOpen {
+		ai.AddCssClass("on")
+	}
 
 	more := gtk.NewMenuButton()
 	more.SetIconName("view-more-symbolic")
@@ -311,36 +317,6 @@ func (w *window) chip(box *gtk.Box, icon, label string, f func()) *gtk.Button {
 	return b
 }
 
-// drawAssistChips puts the assistant's offers under the subject: a
-// summary of a long conversation, reply ideas.
-func (w *window) drawAssistChips(head *gtk.Box, c *mail.Conversation) {
-	sum, ideas := w.sumState[c.ID], w.ideas[c.ID]
-	if sum == nil {
-		if text := w.keptSummary(c); text != "" {
-			sum = &aiText{text: text}
-			w.sumState[c.ID] = sum
-		}
-	}
-	row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-	row.AddCssClass("mail-chips")
-	n := 0
-	if sum == nil && w.worthSummary(c) {
-		w.chip(row, "applications-science-symbolic", i18n.T("Summarize"), func() { w.summarize(c) })
-		n++
-	}
-	switch {
-	case ideas == nil:
-		w.chip(row, "applications-science-symbolic", i18n.T("Reply ideas"), func() { w.askIdeas(c) })
-		n++
-	case ideas.busy:
-		w.chip(row, "applications-science-symbolic", i18n.T("Thinking of replies…"), nil)
-		n++
-	}
-	if n > 0 {
-		gtkx.Append(head, &row.Widget)
-	}
-}
-
 // drawWarning shows the phishing route's verdict for the newest message
 // that is not fine: a banner of one line, its checks folded behind it.
 func (w *window) drawWarning(c *mail.Conversation) {
@@ -394,9 +370,6 @@ func (w *window) drawWarning(c *mail.Conversation) {
 		}
 		gtkx.Append(box, &steps.Widget)
 	}
-	if a := w.judged[k]; a != nil {
-		w.aiLine(box, a, i18n.T("THE ASSISTANT"))
-	}
 	chips := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	chips.AddCssClass("mail-chips")
 	more := i18n.Nf("Why: %d check", "Why: %d checks", len(j.Steps), len(j.Steps))
@@ -408,50 +381,9 @@ func (w *window) drawWarning(c *mail.Conversation) {
 		w.chip(chips, "mail-mark-junk-symbolic", i18n.T("Move to Spam"), w.spam)
 	}
 	if a := w.judged[k]; a == nil || a.err != "" {
-		w.chip(chips, "applications-science-symbolic", i18n.T("Ask the assistant"), func() { w.askJudge(k) })
+		w.chip(chips, "applications-science-symbolic", i18n.T("Ask the assistant"), func() { w.openAssist(func() { w.askJudge(k) }) })
 	}
 	gtkx.Append(box, &chips.Widget)
-	gtkx.Append(&w.reader, &box.Widget)
-}
-
-// drawAssist shows what the assistant was asked for: the summary, the
-// reply ideas, or why it could not.
-func (w *window) drawAssist(c *mail.Conversation) {
-	sum, ideas := w.sumState[c.ID], w.ideas[c.ID]
-	if sum == nil && (ideas == nil || ideas.busy) {
-		return
-	}
-	box := gtk.NewBox(gtk.OrientationVerticalValue, 6)
-	box.AddCssClass("mail-strip")
-	if sum != nil {
-		w.aiLine(box, sum, i18n.T("SUMMARY · ASSISTANT"))
-	}
-	if ideas != nil && ideas.err != "" {
-		e := gtk.NewLabel(ideas.err)
-		e.AddCssClass("mail-error")
-		e.SetXalign(0)
-		e.SetWrap(true)
-		gtkx.Append(box, &e.Widget)
-	} else if ideas != nil && !ideas.busy {
-		k := gtk.NewLabel(i18n.T("REPLY IDEAS · ASSISTANT"))
-		k.AddCssClass("kicker")
-		k.AddCssClass("mail-ai-kicker")
-		k.SetXalign(0)
-		gtkx.Append(box, &k.Widget)
-		// One a line: side by side they would widen the window.
-		for _, idea := range strings.Split(ideas.text, "\n") {
-			if idea = strings.TrimSpace(idea); idea != "" {
-				b := gtk.NewButtonWithLabel(idea)
-				b.AddCssClass("mail-idea")
-				b.SetHalign(gtk.AlignStartValue)
-				if l := b.GetChild(); l != nil {
-					(&gtk.Label{Widget: *l}).SetEllipsize(3)
-				}
-				w.readerBtns = append(w.readerBtns, w.h.click(b, func() { w.replyWith(idea) }))
-				gtkx.Append(box, &b.Widget)
-			}
-		}
-	}
 	gtkx.Append(&w.reader, &box.Widget)
 }
 
@@ -645,12 +577,18 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 	if strings.TrimSpace(written) == "" {
 		written, rest = m.Text, ""
 	}
-	if formatted {
+	switch {
+	case formatted && webOK():
+		rest = ""
+		if w.webView(box, k, m) {
+			rest = "-"
+		}
+	case formatted:
 		rest = ""
 		if w.drawFormatted(box, k, m) {
 			rest = "-"
 		}
-	} else {
+	default:
 		body := gtk.NewLabel("")
 		body.AddCssClass("mail-text")
 		body.SetMarkup(linkify(written))

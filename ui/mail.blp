@@ -232,6 +232,54 @@ ApplicationWindow mail {
             };
           }
         }
+
+        // ── the assistant, at the right edge when asked for ────────────
+        Revealer assist_reveal {
+          transition-type: slide_left;
+          transition-duration: 160;
+          reveal-child: false;
+
+          child: Box {
+            styles ["mail-assist-panel"]
+            orientation: vertical;
+            width-request: 320;
+
+            Box {
+              styles ["mail-assist-head"]
+              spacing: 8;
+
+              Image {
+                styles ["mail-assist-mark"]
+                icon-name: "applications-science-symbolic";
+              }
+
+              Label {
+                styles ["mail-assist-title"]
+                label: _("Assistant");
+                xalign: 0;
+                hexpand: true;
+              }
+
+              Button assist_close {
+                styles ["mail-tool"]
+                icon-name: "window-close-symbolic";
+                tooltip-text: _("Close the assistant");
+              }
+            }
+
+            ScrolledWindow {
+              hscrollbar-policy: never;
+              vexpand: true;
+
+              // Its sections for the conversation open; Go fills it.
+              Box assist {
+                styles ["mail-assist-body"]
+                orientation: vertical;
+                spacing: 22;
+              }
+            }
+          };
+        }
       };
     }
 

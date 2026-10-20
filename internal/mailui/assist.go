@@ -128,12 +128,13 @@ func (w *window) summarize(c *mail.Conversation) {
 	msgs := w.said(c)
 	if len(msgs) < len(c.Messages) {
 		w.actErr = i18n.T("The messages are still loading.")
+		w.lastDrawn = ""
 		w.drawReader()
 		return
 	}
 	a := &aiText{busy: true}
 	w.sumState[c.ID] = a
-	w.drawReader()
+	w.drawPanel()
 	latest := c.Latest()
 	user := latest.Account
 	if x := w.acct(latest.Account); x != nil {
@@ -143,8 +144,13 @@ func (w *window) summarize(c *mail.Conversation) {
 	go func() {
 		text, err := w.ai.ask(prompt, 2*time.Minute, func(t string) {
 			a.text = strings.TrimSpace(t)
-			if w.openID == c.ID {
-				w.drawReader()
+			if w.openID != c.ID {
+				return
+			}
+			if w.panelSum != nil {
+				w.panelSum.SetText(a.text) // as it comes, without drawing the panel again
+			} else {
+				w.drawPanel()
 			}
 		})
 		gtkx.Post(func() {
@@ -158,7 +164,7 @@ func (w *window) summarize(c *mail.Conversation) {
 				}
 			}
 			if w.openID == c.ID {
-				w.drawReader()
+				w.drawPanel()
 			}
 		})
 	}()
@@ -171,7 +177,7 @@ func (w *window) askIdeas(c *mail.Conversation) {
 	}
 	a := &aiText{busy: true}
 	w.ideas[c.ID] = a
-	w.drawReader()
+	w.drawPanel()
 	user := ""
 	if x := w.acct(c.Latest().Account); x != nil {
 		user = x.s.Acc.Address
@@ -192,7 +198,7 @@ func (w *window) askIdeas(c *mail.Conversation) {
 				a.err = i18n.T("The assistant gave no replies.")
 			}
 			if w.openID == c.ID {
-				w.drawReader()
+				w.drawPanel()
 			}
 		})
 	}()
@@ -207,7 +213,7 @@ func (w *window) askJudge(k mail.Key) {
 	}
 	a := &aiText{busy: true}
 	w.judged[k] = a
-	w.drawReader()
+	w.drawPanel()
 	prompt := mail.JudgePrompt(mail.JudgeFacts(rd.m, rd.judged), i18n.Lang())
 	go func() {
 		text, err := w.ai.ask(prompt, time.Minute, nil)
@@ -223,7 +229,7 @@ func (w *window) askJudge(k mail.Key) {
 			} else {
 				a.err = i18n.Tf("The assistant answered %q", strings.TrimSpace(text))
 			}
-			w.drawReader()
+			w.drawPanel()
 		})
 	}()
 }

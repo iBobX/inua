@@ -3,6 +3,7 @@ package mailui
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -18,8 +19,10 @@ import (
 type quickReply struct {
 	text    string
 	focused bool   // its field had the focus when the reader was last drawn
-	state   string // "", "waiting" (the undo's seconds), "sending", "sent"
+	state   string // "", "drafting" (the assistant writes it), "waiting" (the undo's seconds), "sending", "sent"
 	err     string
+	before  string             // the text before the assistant wrote it
+	drafted bool               // the assistant wrote the text
 	cancel  context.CancelFunc // stops a send in its seconds
 	left    int
 }
@@ -28,7 +31,7 @@ func (q *quickReply) sig() string {
 	if q == nil {
 		return "-"
 	}
-	return q.state + q.err
+	return fmt.Sprint(q.state, q.err, q.drafted)
 }
 
 // drawQuick draws the reply field under the conversation.
@@ -63,6 +66,7 @@ func (w *window) drawQuick(c *mail.Conversation) {
 	view.SetEditable(q.state == "")
 	buf := view.GetBuffer()
 	buf.SetText(q.text, -1)
+	w.quickBuf, w.quickFor = buf, c.ID // the assistant writes into it as it comes
 	over.SetChild(&view.Widget)
 	hint := gtk.NewLabel(i18n.Tf("Reply to %s…", firstName(m.From)))
 	hint.AddCssClass("mail-quick-hint")
@@ -98,6 +102,10 @@ func (w *window) drawQuick(c *mail.Conversation) {
 	switch {
 	case q.err != "":
 		note = q.err
+	case q.state == "drafting":
+		note = i18n.T("The assistant is writing…")
+	case q.drafted:
+		note = i18n.T("Drafted by the assistant")
 	case q.state == "waiting":
 		note = i18n.Nf("Sending in %d second…", "Sending in %d seconds…", q.left, q.left)
 	case q.state == "sending":
@@ -113,7 +121,17 @@ func (w *window) drawQuick(c *mail.Conversation) {
 	l.SetXalign(0)
 	l.SetHexpand(true)
 	l.SetEllipsize(3)
+	if q.drafted {
+		l.SetTooltipText(i18n.T("Read it before you send: the assistant can be wrong."))
+	}
 	gtkx.Append(row, &l.Widget)
+	if q.state == "" && q.drafted {
+		w.link(row, i18n.T("Undo"), func() {
+			q.text, q.drafted = q.before, false
+			w.lastDrawn = ""
+			w.drawReader()
+		})
+	}
 	if q.state == "" {
 		w.link(row, i18n.T("Open in a window"), func() { w.quickToWindow(id) })
 		send := gtk.NewButtonWithLabel(i18n.T("Send"))

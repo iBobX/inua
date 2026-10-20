@@ -314,6 +314,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkRevealer" id="assist_reveal">
+                    <property name="transition-type">3</property>
+                    <property name="transition-duration">160</property>
+                    <property name="reveal-child">false</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <style>
+                          <class name="mail-assist-panel"/>
+                        </style>
+                        <property name="orientation">1</property>
+                        <property name="width-request">320</property>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="mail-assist-head"/>
+                            </style>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkImage">
+                                <style>
+                                  <class name="mail-assist-mark"/>
+                                </style>
+                                <property name="icon-name">applications-science-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <style>
+                                  <class name="mail-assist-title"/>
+                                </style>
+                                <property name="label" translatable="yes">Assistant</property>
+                                <property name="xalign">0</property>
+                                <property name="hexpand">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="assist_close">
+                                <style>
+                                  <class name="mail-tool"/>
+                                </style>
+                                <property name="icon-name">window-close-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Close the assistant</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkScrolledWindow">
+                            <property name="hscrollbar-policy">2</property>
+                            <property name="vexpand">true</property>
+                            <child>
+                              <object class="GtkBox" id="assist">
+                                <style>
+                                  <class name="mail-assist-body"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <property name="spacing">22</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
               </object>
             </property>
           </object>

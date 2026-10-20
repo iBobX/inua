@@ -66,7 +66,9 @@ type window struct {
 
 	top                                     gtk.Stack
 	side, filters, reader, welcomeBox       gtk.Box
-	readerBar, indexCol                     gtk.Box
+	readerBar, indexCol, assist             gtk.Box
+	assistReveal                            gtk.Revealer
+	assistClose                             gtk.Button
 	statusMark, undoBar                     gtk.Box
 	undoText                                gtk.Label
 	undoBtn                                 gtk.Button
@@ -90,37 +92,45 @@ type window struct {
 	drafts   *mail.Drafts
 	accts    []*acct
 
-	view         view
-	filter       filter
-	query        string
-	parsed       mail.Query
-	found        map[mail.Key]bool // what the server's search found
-	asked        string            // the sentence the assistant turned into the query
-	convs        []*mail.Conversation
-	ids          []string // the list's model, by conversation
-	open         *mail.Conversation
-	openID       string
-	reading      map[mail.Key]*reading
-	sumState     map[string]*aiText // conversation → its summary
-	ideas        map[string]*aiText // conversation → reply ideas, a line each
-	judged       map[mail.Key]*aiText
-	actErr       string // an action's error, said on the conversation
-	folded       map[mail.Key]bool
-	quotes       map[mail.Key]bool
-	checks       map[mail.Key]bool       // the phishing checks unfolded
-	answers      map[mail.Key]*aiText    // an invitation's answer: busy, sent (text), or why not
-	fileSums     map[string]*aiText      // an attachment's summary, by fileKey
-	quick        map[string]*quickReply  // a conversation's quick reply, by its ID
-	sideSig      string                  // the index's counts when last drawn
-	avatars      map[string]*gdk.Texture // accounts' photos, by ID
-	avatarAsked  map[string]bool
-	loadingOlder bool                      // older mail is being fetched
-	settingsWin  *settingsWin              // the settings, while open
-	flipped      map[mail.Key]bool         // messages shown not as the settings say: text for formatted, or formatted for text
-	picsOK       map[mail.Key]bool         // messages whose pictures from the web the user loaded
-	blocks       map[mail.Key][]mail.Block // the formatted messages' blocks
-	pics         map[string]*pic           // pictures, by where they come from and the width drawn
-	picsDue      bool                      // a redraw for pictures is coming
+	view            view
+	filter          filter
+	query           string
+	parsed          mail.Query
+	found           map[mail.Key]bool // what the server's search found
+	asked           string            // the sentence the assistant turned into the query
+	convs           []*mail.Conversation
+	ids             []string // the list's model, by conversation
+	open            *mail.Conversation
+	openID          string
+	reading         map[mail.Key]*reading
+	sumState        map[string]*aiText // conversation → its summary
+	ideas           map[string]*aiText // conversation → reply ideas, a line each
+	judged          map[mail.Key]*aiText
+	actErr          string // an action's error, said on the conversation
+	folded          map[mail.Key]bool
+	quotes          map[mail.Key]bool
+	checks          map[mail.Key]bool       // the phishing checks unfolded
+	answers         map[mail.Key]*aiText    // an invitation's answer: busy, sent (text), or why not
+	fileSums        map[string]*aiText      // an attachment's summary, by fileKey
+	quick           map[string]*quickReply  // a conversation's quick reply, by its ID
+	sideSig         string                  // the index's counts when last drawn
+	avatars         map[string]*gdk.Texture // accounts' photos, by ID
+	avatarAsked     map[string]bool
+	loadingOlder    bool                      // older mail is being fetched
+	settingsWin     *settingsWin              // the settings, while open
+	flipped         map[mail.Key]bool         // messages shown not as the settings say: text for formatted, or formatted for text
+	picsOK          map[mail.Key]bool         // messages whose pictures from the web the user loaded
+	blocks          map[mail.Key][]mail.Block // the formatted messages' blocks
+	pics            map[string]*pic           // pictures, by where they come from and the width drawn
+	picsDue         bool                      // a redraw for pictures is coming
+	sidebarForPanel bool                      // the panel hid the sidebar
+	assistOpen      bool                      // the assistant's panel is open
+	panelBtns       []uintptr
+	panelSum        *gtk.Label           // the summary as it comes
+	quickBuf        *gtk.TextBuffer      // the quick reply's text, for the assistant to write into
+	quickFor        string               // the conversation it is for
+	webs            map[mail.Key]*webMsg // the HTML messages shown by web views
+	web             *webHub              // their signals
 
 	sideBtns   []uintptr // the index's buttons, forgotten when it is made again
 	readerBtns []uintptr // the conversation's buttons, likewise
@@ -152,7 +162,7 @@ func openWindow(c *appui.Ctx) *window {
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
 		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{}, avatars: map[string]*gdk.Texture{}, avatarAsked: map[string]bool{},
-		flipped: map[mail.Key]bool{}, picsOK: map[mail.Key]bool{}, blocks: map[mail.Key][]mail.Block{}, pics: map[string]*pic{},
+		flipped: map[mail.Key]bool{}, picsOK: map[mail.Key]bool{}, blocks: map[mail.Key][]mail.Block{}, pics: map[string]*pic{}, webs: map[mail.Key]*webMsg{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
 	w.ctx, w.cancel = context.WithCancel(context.Background())
@@ -162,7 +172,7 @@ func openWindow(c *appui.Ctx) *window {
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState, "reader_bar": &w.readerBar, "index_col": &w.indexCol,
+		"status_state": &w.statusState, "reader_bar": &w.readerBar, "index_col": &w.indexCol, "assist": &w.assist, "assist_reveal": &w.assistReveal, "assist_close": &w.assistClose,
 		"sidebar_hide": &w.sidebarHide, "sidebar_show": &w.sidebarShow,
 		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
@@ -187,6 +197,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
 	w.h.click(&w.settingsButton, func() { w.showSettings("") })
 	w.h.click(&w.sidebarHide, w.toggleSidebar)
+	w.h.click(&w.assistClose, w.toggleAssist)
 	w.h.click(&w.sidebarShow, w.toggleSidebar)
 	w.h.notify(w.listScroll.GetVadjustment(), "value", w.nearEnd)
 	w.h.click(&w.undoBtn, w.undo)
@@ -1337,6 +1348,7 @@ func (w *window) drawStatus() {
 // toggleSidebar hides the index, or shows it again; its toggle moves to
 // the list's head while it is hidden.
 func (w *window) toggleSidebar() {
+	w.sidebarForPanel = false // the user's choice from now on
 	shown := !w.indexCol.GetVisible()
 	w.indexCol.SetVisible(shown)
 	w.sidebarShow.SetVisible(!shown)

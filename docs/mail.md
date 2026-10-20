@@ -242,12 +242,18 @@ and Outlook keep their own).
 ## The assistant
 
 Mail uses inua's assistant (Settings → AI), only when asked, except the
-sorting, which is off until turned on:
+sorting, which is off until turned on. Its panel opens at the window's
+right edge from ✦ in the conversation's bar (the sidebar makes room, and
+comes back when it closes): the summary, replies to pick or a line of
+what to say, and its judgment of a message the checks doubt. A reply it
+writes goes into the quick reply under the conversation, marked *Drafted
+by the assistant*, with *Undo*, for you to read and send.
 
 | Where | What | What it sends |
 | --- | --- | --- |
-| A conversation: *Summarize* (three messages or more, or a long one) | Two or three sentences, then what you are asked to do, with dates; kept until the conversation gets a new message | The messages' text, quotes cut |
-| A conversation: *Reply ideas* | Three short replies; one opens the composer and drafts it | The last six messages |
+| The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates; kept until the conversation gets a new message | The messages' text, quotes cut |
+| The panel: *Suggest replies* | Three short replies; the one picked is written out in the quick reply | The last six messages; to write it out, also three of your sent messages kept on this computer |
+| The panel: a line of what to say | The reply, written in the quick reply | The line, the conversation, three of your sent messages |
 | An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |
 | The composer: *Draft* | The text from a line of what to say, in the conversation's language and your voice | The line, the conversation, three of your sent messages kept on this computer |
 | The composer: *Polish* | Shorter, friendlier, more formal, spelling and grammar, or a translation; *Undo* puts your text back | The text you wrote (not the signature or the quote) |
@@ -274,13 +280,18 @@ the cache at once; Enter searches the server too. Operators:
 
 ## Reading safely
 
-- HTML is shown formatted, without a web engine: headings, bold and
-  italic, links, lists, quotes, code and pictures, in Mail's own type
-  and colours; the sender's styles, scripts, forms and hidden text are
-  dropped, and so are tracking pixels. The part of a reply quoting
-  earlier mail folds behind •••. *Show as text* in ⋯ (or
+- HTML is shown as sent, by WebKitGTK 6.0 when the system has it
+  (`libwebkitgtk-6.0`, loaded on the first HTML message, so Mail starts
+  as fast without it): its layout, tables and styles, on white, sized to
+  its page and zoomed out to fit a narrow column. The mail's scripts do
+  not run; frames, forms, refreshes and event attributes are taken out
+  before it loads; a content policy in the page lets nothing load from
+  the network unless its pictures are allowed; links open in your
+  browser. Without WebKitGTK, Mail draws it itself: headings, emphasis,
+  links, lists, quotes, code and pictures, in its own type. The part of
+  a reply quoting earlier mail folds behind •••. *Show as text* in ⋯ (or
   Settings → Reading) shows the words alone; *Open in browser* shows it
-  as sent.
+  in the browser.
 - Pictures a message carries show at once. Pictures from the web are
   asked for: a line says how many are hidden, with *Show* and *Always
   from this sender*. Settings → Reading can load them always or

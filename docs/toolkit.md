@@ -10,7 +10,7 @@ Decision: **GTK4 + puregotk, with layouts in Blueprint/`.ui` markup.**
 | gotk4 | A cgo binding of GTK4 | The fallback; the interface code and `.ui` files mostly carry over |
 | MyGO | Views are Go functions drawn by MyGO, on GTK3 | No markup layouts; young, one author |
 | Qt/QML | Qt Quick through cgo bindings | Needs Qt, cgo, moc and C++ |
-| Web views | WebKitGTK | 100 MB or more per view, too heavy for a resident shell |
+| Web views | WebKitGTK | 100 MB or more per view, too heavy for a resident shell (Mail, an app of its own, loads it at run time for HTML mail: [mail.md](mail.md)) |
 
 Both GTK4 + puregotk and MyGO were built as the same bar and launcher and
 tested in a nested Hyprland ([spike/gtk4-layershell](../spike/gtk4-layershell/README.md)):
