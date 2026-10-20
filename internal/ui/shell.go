@@ -159,6 +159,12 @@ type shellUI struct {
 	onWifiEntry            func(gtk.PasswordEntry)
 	onWifiPoll             glib.SourceFunc
 	onSettingsIndex        func(gtk.ListBox, uintptr)
+	onSettingsSearch       func(gtk.SearchEntry)
+	onSettingsSearchGo     func(gtk.SearchEntry)
+	onSettingsSearchStop   func(gtk.SearchEntry)
+	onSettingsResult       func(gtk.ListBox, uintptr)
+	onSearchScroll         glib.SourceFunc
+	onSearchFlash          glib.SourceFunc
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
 	onSettingsClose        func(gtk.Window) bool

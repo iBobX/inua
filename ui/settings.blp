@@ -27,13 +27,38 @@ ApplicationWindow settings {
         xalign: 0;
       }
 
-      // The pages, each with its icon (settings_index.go).
+      // Finds a page or a setting by what it says (settings_search.go);
+      // typing anywhere in the window types here.
+      SearchEntry settings_search {
+        placeholder-text:  _("Search settings");
+      }
+
+      // The pages, each with its icon (settings_index.go); while a search
+      // is typed, what it found instead.
       ScrolledWindow {
         vexpand: true;
         hscrollbar-policy: never;
 
-        ListBox index {
-          selection-mode: browse;
+        Box {
+          orientation: vertical;
+
+          ListBox index {
+            selection-mode: browse;
+          }
+
+          ListBox settings_results {
+            styles ["results"]
+            selection-mode: browse;
+            visible: false;
+          }
+
+          Label settings_no_results {
+            styles ["index-note"]
+            label:  _("Nothing matches.");
+            xalign: 0;
+            wrap: true;
+            visible: false;
+          }
         }
       }
 

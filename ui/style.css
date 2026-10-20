@@ -728,6 +728,20 @@ window.settings { background: @app; font-size: 14px; }
   color: @t2;
 }
 .settings .status.error { color: @danger; }
+/* The search over the index, and what it found: a row's title, and the
+   page and section it is on in mono under it. */
+.settings .index > entry { margin: 0 14px 12px; }
+.settings .index list.results row { padding-top: 5px; padding-bottom: 5px; }
+.settings .index list.results .result-where {
+  padding: 0 1px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: @t2;
+}
+.settings .index .index-note { padding: 8px 22px; }
+/* A row the search turned to, lit for a moment. */
+.settings .row, .settings .field { transition: background 400ms ease-out; }
+.settings .found { background: alpha(@accent, 0.12); box-shadow: inset 2px 0 @accent; }
 
 .settings .page { padding: 18px 32px 32px; }
 

@@ -82,6 +82,7 @@ type settings struct {
 	displays displaysSettings  // the Displays page
 	bt       bluetoothSettings // the Bluetooth page
 	wifi     wifiSettings      // the Wi-Fi page
+	search   settingsSearch    // the search over the index
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -309,9 +310,14 @@ func (s *shellUI) bindSettingsHandlers() {
 			return true
 		}
 		if keyval == keyEscape {
-			if !s.closeBench() { // the dialog first
+			// The dialog first, then a search typed.
+			if !s.closeBench() && !s.clearSettingsSearch() {
 				s.closeSettings()
 			}
+			return true
+		}
+		if keyval == 'f' && state&gdk.ControlMaskValue != 0 {
+			s.focusSettingsSearch()
 			return true
 		}
 		return false
@@ -462,6 +468,7 @@ func (s *shellUI) openSettings() {
 	s.getWifiSettings(ui)
 	s.getBluetoothSettings(ui)
 	s.buildSettingsIndex()
+	s.getSettingsSearch(ui)
 	ui.Close()
 
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot, &st.clipSensitive} {
@@ -535,6 +542,7 @@ func (s *shellUI) closeSettings() {
 	if st.dirty {
 		s.saveSettings()
 	}
+	s.releaseSearch()
 	st.win.Destroy()
 	st.refs.Release()
 	st.win, st.swatches, st.entries, st.drops, st.sticky, st.overlay = nil, nil, nil, nil, nil, nil
