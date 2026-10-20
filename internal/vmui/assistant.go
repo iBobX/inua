@@ -51,7 +51,7 @@ func assistantPrompt(s MachineView) string {
 	failed := failedChecks(s.Checks)
 	b.WriteString(i18n.Tf("%d checks failed:", len(failed)) + "\n")
 	for i, c := range failed {
-		hint := vmPackageHint(c.Name, s.Distribution)
+		hint, _ := vmCheckHint(c, s.Distribution)
 		if hint == "" {
 			hint = i18n.T("no package of ours covers it")
 		}

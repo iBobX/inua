@@ -303,16 +303,23 @@ custom OS has no seamless mode until it implements one of these ways.
 
 ## The window
 
-As Settings → AI: the machines one a row (the OS's mark, the name, OS ·
-state), a row clicked opens its settings in a panel at the right, with
-Start, Stop, Connect and, with seamless mode, its programs. **New
-machine** picks a template, then the panel shows its fields. Each
-machine's state shows #18's pages: prerequisites with their fixes,
-setup, provisioning (with the console), ready. All text through
-`internal/i18n`, in the six catalogs; Phosphor icons.
+In the settings language (`design/ui.md`): the index holds the machines
+one a row (the OS's mark, the name, OS · state), the folders that do not
+load under NEEDS RECOVERY, and **New machine…** at its foot, which picks a
+template and a name. The page beside it is the chosen machine's: its name
+and state in the head, with a mark filled while it is up, then the page for
+its stage: prerequisites with their fixes, setup (resources, install, the
+install images), the installation running or paused, starting, stopped
+(start, resources, removal) and running. How a guest is seen decides the
+rows that show it: Windows in a container through Remote Desktop with a web
+console besides, a QEMU guest in a SPICE viewer, in QEMU's own window or on
+its serial console, Waydroid by itself. An action's error shows under its
+section, kept per machine; removing a container, deleting a disk or a
+machine is asked in a dialog first. All text through `internal/i18n`, in
+the six catalogs; Phosphor icons.
 
 Delete removes a machine definition and its files after an explicit confirmation.
-It is available while setup is incomplete and while provisioning is stopped; a
+It is on the setup page, the paused installation's and the stopped machine's; a
 running or busy guest must be stopped first. Folders with invalid or unreadable
 machine definitions appear under **Needs recovery**. Deleting one requires the
 same confirmation and removes the entire owned folder; the store refuses unsafe

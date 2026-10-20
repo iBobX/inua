@@ -2818,32 +2818,121 @@ window.video.video-loaded .video-empty { opacity: 0; }
 }
 .video-notice button.plain { color: @accent; }
 
-/* --- Windows VM ------------------------------------------------------ */
+/* --- Virtual machines (inua-vm) ------------------------------------- */
 
-/* The manager window reuses the settings window's sections, rows and fields;
-   only what is particular to it is here. Its pages sit on a stack whose
-   switcher is hidden: Go picks the page from the guest's state. */
+/* The settings language: the machines in the index, the chosen one's page
+   beside it, in sections and rows. Only what is particular to it is here.
+   Its pages sit on a stack whose switcher is hidden: Go picks the page from
+   the machine's state. */
 
-.vmpage .vm-head { padding: 14px 24px; border-bottom: 1px solid alpha(@line, 0.55); }
-.vmpage .vm-title { font-size: 17px; color: @t0; }
+.vmpage .vm-kicker { margin: 14px 22px 6px; }
+.vmpage .index row { min-height: 44px; }
+.vmpage .index row .vm-os-mark, .vmpage .index row .index-icon { margin: 0 2px 0 1px; }
+.vmpage .vm-row-sub { padding: 0 1px; font-size: 12px; color: @t2; }
+.vmpage .index row:selected .vm-row-sub { color: @t1; }
+.vmpage .vm-os-mark { color: @t2; transition: color 180ms ease-out; }
+.vmpage .index row:hover .vm-os-mark { color: @t1; }
+.vmpage .index row:selected .vm-os-mark { color: @accent; }
+.vmpage button.vm-new { margin: 8px 14px 18px; }
+.vmpage button.vm-new .index-icon { color: @t2; }
 
-/* The headline's status mark: filled while the guest is up, hollow when it
-   is not (as the control center's tiles and the bar's marks do it). */
+/* The head: the machine's name and what it is doing, its mark filled while
+   it is up. */
+.vmpage .vm-head { padding: 22px 32px 16px; border-bottom: 1px solid alpha(@line, 0.55); }
+.vmpage .vm-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 20px; color: @t0; }
 .vmpage .vm-head .mark.on { background: @accent; border-color: @accent; }
 
-/* The pages' sections carry their own margins, as the settings window's do. */
-.vmpage .section { margin: 18px 24px 22px; }
+/* A control in a section's head is smaller than a row's. */
+.vmpage .section-head button.outlined { min-height: 26px; padding: 0 10px; font-size: 12px; }
+.vmpage .section-head button + button { margin-left: 6px; }
+
+/* A page that holds no machine: a mark, a title, a line and what to do. */
+.vmpage .vm-empty-mark { color: @t2; }
+.vmpage .vm-empty-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 17px; color: @t0; }
+
+/* The templates of a new machine: one a row, chosen as an index item is. */
+.vmpage .vm-templates { margin-top: 8px; background: transparent; }
+.vmpage .vm-templates row {
+  min-height: 44px;
+  margin-bottom: 2px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: @t1;
+  transition: background 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
+}
+.vmpage .vm-templates row label { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; }
+.vmpage .vm-templates row .vm-template-sub { font-family: inherit; font-size: 12px; color: @t2; }
+.vmpage .vm-templates row:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
+.vmpage .vm-templates row:selected { border-color: alpha(@accent, 0.3); background: mix(@surface, @primary, 0.1); color: @t0; }
+.vmpage .vm-templates row:selected .vm-os-mark { color: @accent; }
 
 /* A host check that failed: the mark is the one thing that stands out. */
-.vmpage .vm-check-rows .mark { background: @danger; border-color: @danger; }
+.vmpage .vm-check-rows .mark { margin-top: 5px; background: @danger; border-color: @danger; }
 
-/* The installation takes a while and reports no figure, so the bar is a
-   moving indeterminate one rather than a percentage. */
-.vmpage progressbar { min-height: 3px; }
+/* Commands and paths to copy, and the debugger's line. */
+.vmpage .vm-command, .vm-dialog .vm-command {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: @t1;
+}
+.vmpage .vm-check-rows .vm-command { margin-top: 4px; }
 
-.vmpage button.suggested-action { border: 1px solid @accent; background: @accent; color: @app; }
-.vmpage button.suggested-action:disabled { opacity: 0.45; }
-.vmpage spinbutton { min-width: 8em; }
+/* An action's error, under its section; what a fix did, under the checks. */
+.vmpage .vm-error { padding: 4px 0 8px; color: @danger; }
+.vmpage .vm-note { color: @t1; }
+.vmpage .vm-note.error { color: @danger; }
+
+/* An install, a start and a download: a hairline that fills with the accent. */
+.vmpage progressbar trough { min-height: 2px; border: none; border-radius: 1px; box-shadow: none; background: alpha(@line, 0.9); }
+.vmpage progressbar progress { min-height: 2px; border: none; border-radius: 1px; box-shadow: none; background: @accent; }
+
+/* The serial console is a readout rather than an editor: the guest's own
+   output keeps its columns. */
+.vmpage .vm-console, .vmpage .vm-console text {
+  margin-top: 10px;
+  background: alpha(@surface, 0.6);
+  color: @t0;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12px;
+}
+
+/* The install images: a note, the filters, a count, then the systems, each
+   opening onto its own images. */
+.vmpage .vm-media-note { padding: 12px 0 4px; }
+.vmpage .vm-media-filters { padding: 8px 0 4px; }
+.vmpage .vm-iso-filter { min-width: 150px; }
+.vmpage .vm-switch-label { margin-left: 10px; }
+.vmpage .vm-media-count { padding: 6px 0 2px; }
+.vmpage .vm-media-group { margin: 14px 0 4px; }
+.vmpage .vm-media-rows .row { min-height: 0; padding: 8px 0; }
+.vmpage .vm-media-error { font-size: 12px; color: @danger; }
+.vmpage button.vm-iso-system-head {
+  min-height: 0;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+}
+.vmpage button.vm-iso-system-head:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); }
+.vmpage .vm-iso-chevron { color: @t2; }
+.vmpage .vm-iso-media { margin-left: 34px; padding-left: 12px; border-left: 1px solid alpha(@line, 0.55); }
+
+/* The question before removing a container or deleting a machine. */
+window.vm-dialog { background: @app; }
+window.vm-dialog .page { padding: 22px 24px 20px; }
+window.vm-dialog .vm-dialog-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 18px; color: @t0; }
+window.vm-dialog button.destructive-action {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid @danger;
+  border-radius: 2px;
+  background: @danger;
+  background-image: none;
+  box-shadow: none;
+  color: @app;
+}
+window.vm-dialog button.destructive-action:hover { background: mix(@danger, @t0, 0.14); }
 
 /* Remote Desktop (inua-remote): the settings look, its index holding This
    computer and the machines; a stream in a window of its own. */
@@ -2872,7 +2961,8 @@ window.connect .connect-key-digits { font-family: "Geist Mono", "IBM Plex Mono",
 window.connect-reply .page { padding: 18px; }
 /* Their one action at a time (Connect, Pair, Save, Add, Scan): the outlined
    buttons' shape, filled with the accent, as GPG's and Pass's are. */
-window.remote button.suggested-action, window.connect button.suggested-action, window.disk button.suggested-action {
+window.remote button.suggested-action, window.connect button.suggested-action, window.disk button.suggested-action,
+window.vmpage button.suggested-action, window.vm-dialog button.suggested-action {
   min-height: 34px;
   padding: 0 14px;
   border: 1px solid @accent;
@@ -2884,12 +2974,13 @@ window.remote button.suggested-action, window.connect button.suggested-action, w
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
 window.remote button.suggested-action:hover, window.connect button.suggested-action:hover,
-window.disk button.suggested-action:hover {
+window.disk button.suggested-action:hover, window.vmpage button.suggested-action:hover,
+window.vm-dialog button.suggested-action:hover {
   border-color: mix(@accent, @t0, 0.14);
   background: mix(@accent, @t0, 0.14);
 }
 window.remote button.suggested-action:disabled, window.connect button.suggested-action:disabled,
-window.disk button.suggested-action:disabled { opacity: 0.45; }
+window.disk button.suggested-action:disabled, window.vmpage button.suggested-action:disabled { opacity: 0.45; }
 window.remote-stream { background: #000; }
 window.remote-stream .remote-note {
   margin-top: 14px;
@@ -2900,109 +2991,6 @@ window.remote-stream .remote-note {
   font-size: 13px;
 }
 
-/* The machines sit in a column beside the one chosen, as the settings window's
-   pages do: the panel on the right is the machine, the column is the list. */
-.vmpage .vm-index { background: @panel; border-right: 1px solid alpha(@line, 0.7); }
-.vmpage .vm-index-head { padding: 16px 14px 10px 24px; }
-.vmpage .vm-index-title { font-size: 17px; color: @t0; }
-
-/* GTK frames a list as a view; here the list sits on the panel. */
-.vmpage .vm-index scrolledwindow,
-.vmpage .vm-index viewport,
-.vmpage .vm-machines,
-.vmpage .vm-templates { background: transparent; border: none; box-shadow: none; }
-.vmpage .vm-machines { padding: 0 10px 12px; }
-.vmpage .vm-machines row {
-  min-height: 48px;
-  margin-bottom: 2px;
-  padding: 6px 10px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  color: @t1;
-  transition: background 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
-}
-.vmpage .vm-machines row:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
-.vmpage .vm-machines row:selected {
-  border-color: alpha(@accent, 0.3);
-  background: mix(@surface, @primary, 0.1);
-  color: @t0;
-}
-.vmpage .vm-row-name { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; }
-.vmpage .vm-row-sub { font-size: 12px; color: @t2; }
-.vmpage .vm-machines row:selected .vm-row-sub { color: @t1; }
-.vmpage .vm-os-mark { color: @t2; transition: color 180ms ease-out; }
-.vmpage .vm-machines row:hover .vm-os-mark { color: @t1; }
-.vmpage .vm-machines row:selected .vm-os-mark { color: @accent; }
-
-/* A template is one line of the new-machine page. */
-.vmpage .vm-templates row {
-  min-height: 42px;
-  margin-bottom: 2px;
-  padding: 6px 12px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  color: @t1;
-  transition: background 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
-}
-.vmpage .vm-templates row:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
-.vmpage .vm-templates row:selected {
-  border-color: alpha(@accent, 0.3);
-  background: mix(@surface, @primary, 0.1);
-  color: @t0;
-}
-.vmpage .vm-templates row:selected .vm-os-mark { color: @accent; }
-.vmpage .vm-template-sub { font-size: 12px; color: @t2; }
-
-/* A page that holds no machine yet: a mark, a title and a line. */
-.vmpage .vm-empty-mark { color: @t2; }
-.vmpage .vm-empty-title { font-size: 15px; color: @t0; }
-
-/* The serial console is a readout rather than an editor: the same dimmed
-   surface and monospace face the other readouts use (see .gpg-text and
-   .gpg-mono), so the guest's own output keeps its columns. */
-.vmpage .vm-console, .vmpage .vm-console text {
-  background: alpha(@surface, 0.6);
-  color: @t0;
-  font-family: "Geist Mono", "IBM Plex Mono", monospace;
-  font-size: 12px;
-}
-
-/* The attach line is the same kind of readout: a command to copy, not prose. */
-.vmpage .vm-console-cmd {
-  font-family: "Geist Mono", "IBM Plex Mono", monospace;
-  font-size: 12px;
-}
-
-/* The install images are a list to choose one from rather than a page of
-   settings rows: a row is as tall as its name and the line under it. */
-.vmpage .vm-media-rows .row { min-height: 0; padding: 8px 0; }
-
-/* A download that failed carries the downloader's own sentence - how much room
-   is missing, which answer the server gave - so it is shown as it is, only
-   coloured as the failure it is. */
-.vmpage .vm-media-error { font-size: 12px; color: @danger; }
-
-/* What the list is showing: what it is searched for, the platform and the
-   architecture it is limited to, and the two switches that offer the systems
-   the guide's rule leaves out. They stand above the list, where a filter is
-   looked for. */
-.vmpage .vm-media-filters { padding: 6px 0 0; }
-.vmpage .vm-iso-search { min-width: 190px; }
-.vmpage .vm-iso-filter { min-width: 148px; }
-.vmpage .vm-iso-switch { margin-left: 4px; }
-.vmpage .vm-media-count { padding: 4px 0 2px; opacity: 0.75; }
-
-/* The two groups of the list: what is offered first, and everything the
-   filters left. A small heading, not a section of its own. */
-.vmpage .vm-media-group { padding: 10px 0 2px; font-size: 12px; font-weight: bold; opacity: 0.8; }
-
-/* A system is one row: its mark, its name, what it holds, and a chevron that
-   opens its own images. The images are indented by the mark's own width, so
-   they read as inside the system rather than beside it. */
-.vmpage .vm-iso-system-head { padding: 6px 0; }
-.vmpage .vm-iso-system-head:hover { background: alpha(@t0, 0.04); }
-.vmpage .vm-iso-chevron { opacity: 0.7; }
-.vmpage .vm-iso-media { margin-left: 30px; border-left: 1px solid alpha(@line, 0.12); padding-left: 10px; }
 /* inua-term's paste sheet: over the pane, asking before text that could
    run commands. */
 window.term .term-sheet {

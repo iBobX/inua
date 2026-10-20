@@ -60,7 +60,8 @@ func TestAssistantPromptCarriesTheMachineAndTheHost(t *testing.T) {
 		t.Errorf("the prompt does not carry the reason's own name:\n%s", prompt)
 	}
 	// The hint is the window's, worded the way the assistant is to run it.
-	if hint := vmPackageHintForAssistant(vmPackageHint("QEMU", "debian")); hint == "" || !strings.Contains(prompt, hint) {
+	qemu, _ := vmCheckHint(vm.DoctorItem{Name: "QEMU", Reason: vm.ReasonMissing}, "debian")
+	if hint := vmPackageHintForAssistant(qemu); hint == "" || !strings.Contains(prompt, hint) {
 		t.Errorf("the prompt does not say how QEMU is usually installed (%q):\n%s", hint, prompt)
 	}
 	if !strings.Contains(prompt, "qemu-system-") {
