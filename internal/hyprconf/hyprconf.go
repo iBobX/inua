@@ -65,6 +65,13 @@ windowrule {
     tile = yes
 }
 
+# And Mail, inua-mail.
+windowrule {
+    name = inua-mail
+    match:class = ^(io\.github\.lyricat\.Inua\.Mail)$
+    tile = yes
+}
+
 # Their dialogs (inua-term's first-start guide) float over them.
 windowrule {
     name = inua-dialogs
@@ -203,6 +210,13 @@ hl.window_rule({
 hl.window_rule({
     name = "inua-term",
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Term)$" },
+    tile = true,
+})
+
+-- And Mail, inua-mail.
+hl.window_rule({
+    name = "inua-mail",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Mail)$" },
     tile = true,
 })
 

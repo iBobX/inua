@@ -1,0 +1,324 @@
+// Mail (docs/feat/inua-mail.md): the mailboxes of every account on the
+// left, the conversations of the one chosen in the middle, the
+// conversation on the right; or, with no account yet and when one is
+// added, the welcome: the address, the sign-in, the first sync. The
+// index's rows, the list's rows, the conversation and the welcome's steps
+// are made in Go.
+//
+//   main    — the three columns
+//   welcome — adding an account
+using Gtk 4.0;
+
+ApplicationWindow mail {
+  styles ["settings", "mail"]
+  title: _("Mail");
+  default-width: 1320;
+  default-height: 840;
+
+  Stack top {
+    transition-type: crossfade;
+    transition-duration: 120;
+
+    StackPage {
+      name: "main";
+
+      child: Box {
+        // ── the index ──────────────────────────────────────────────────
+        Box index_col {
+          styles ["index", "mail-index"]
+          orientation: vertical;
+          width-request: 236;
+          hexpand: false;
+
+          // Hiding the index, as Apple Mail does.
+          Box {
+            styles ["mail-index-head"]
+
+            Button sidebar_hide {
+              styles ["mail-tool"]
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Hide the sidebar (F9)");
+            }
+          }
+
+          ScrolledWindow {
+            hscrollbar-policy: never;
+            propagate-natural-width: false;
+            vexpand: true;
+
+            // All inboxes, Needs reply, Starred, then each account's mailboxes.
+            Box side {
+              styles ["mail-side"]
+              orientation: vertical;
+              spacing: 1;
+            }
+          }
+
+          // The sync, in words (Go fills it), and the settings.
+          Box {
+            styles ["mail-index-foot"]
+            spacing: 8;
+
+            Box status_mark {
+              styles ["mark", "mail-status-mark"]
+              valign: center;
+            }
+
+            Label status_state {
+              styles ["mail-status"]
+              xalign: 0;
+              hexpand: true;
+              ellipsize: end;
+            }
+
+            Button settings_button {
+              styles ["outlined", "mail-head-button"]
+              icon-name: "emblem-system-symbolic";
+              tooltip-text: _("Settings (Ctrl+,)");
+              valign: center;
+            }
+          }
+        }
+
+        // ── the conversations ──────────────────────────────────────────
+        Box {
+          styles ["mail-list"]
+          orientation: vertical;
+          width-request: 380;
+          hexpand: false;
+
+          // The search, and writing a message; the sidebar's toggle
+          // when it is hidden.
+          Box {
+            styles ["mail-list-head"]
+            spacing: 8;
+
+            Button sidebar_show {
+              styles ["mail-tool"]
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Show the sidebar (F9)");
+              visible: false;
+              valign: center;
+            }
+
+            SearchEntry search {
+              styles ["mail-search"]
+              placeholder-text: _("Search, or ask in a sentence");
+              hexpand: true;
+            }
+
+            Button compose {
+              styles ["suggested-action", "mail-head-button", "mail-compose-button"]
+              icon-name: "document-edit-symbolic";
+              tooltip-text: _("Write a message (C)");
+              valign: center;
+            }
+          }
+
+          Label search_note {
+            styles ["sub", "mail-search-note"]
+            xalign: 0;
+            wrap: true;
+            visible: false;
+          }
+
+          // All, Unread, With files, Needs reply; Go fills it.
+          Box filters {
+            styles ["mail-filters"]
+            spacing: 16;
+          }
+
+          // A line that runs while the mailbox shown syncs the first time.
+          Box list_progress {
+            styles ["mail-progress"]
+            visible: false;
+          }
+
+          Stack list_stack {
+            vexpand: true;
+
+            StackPage {
+              name: "list";
+
+              child: ScrolledWindow list_scroll {
+                hscrollbar-policy: never;
+              };
+            }
+
+            // The first sync of a mailbox with nothing kept yet; Go fills
+            // it with the loader.
+            StackPage {
+              name: "loading";
+
+              child: Box list_loading {
+                styles ["mail-list-loading"]
+                orientation: vertical;
+                valign: center;
+                halign: center;
+                spacing: 12;
+              };
+            }
+
+            StackPage {
+              name: "empty";
+
+              child: Label list_empty {
+                styles ["sub", "mail-list-empty"]
+                valign: center;
+                wrap: true;
+                justify: center;
+              };
+            }
+          }
+
+          Label list_error {
+            styles ["sub", "error", "mail-list-error"]
+            xalign: 0;
+            wrap: true;
+            visible: false;
+          }
+
+          // Older mail loads as the list nears its end; this says so.
+          Label older {
+            styles ["mail-older"]
+            label: _("Loading older mail…");
+            xalign: 0;
+            visible: false;
+          }
+
+          // What was just archived, deleted or moved, a few seconds to
+          // take it back; the server is told when it goes.
+          Box undo_bar {
+            styles ["mail-undo"]
+            spacing: 12;
+            visible: false;
+
+            Label undo_text {
+              styles ["mail-undo-text"]
+              xalign: 0;
+              hexpand: true;
+              ellipsize: end;
+            }
+
+            Button undo {
+              styles ["mail-link"]
+              label: _("Undo");
+            }
+
+            Label {
+              styles ["mail-keys"]
+              label: "Z";
+            }
+          }
+        }
+
+        // ── the conversation ───────────────────────────────────────────
+        Stack reader_stack {
+          hexpand: true;
+
+          StackPage {
+            name: "empty";
+
+            child: Label reader_empty {
+              styles ["sub", "mail-reader-empty"]
+              label: _("No conversation chosen");
+              valign: center;
+            };
+          }
+
+          StackPage {
+            name: "read";
+
+            child: Box {
+              orientation: vertical;
+
+              // The conversation's actions, over it as it scrolls; Go
+              // fills it.
+              Box reader_bar {
+                styles ["mail-reader-bar"]
+                spacing: 2;
+              }
+
+              ScrolledWindow reader_scroll {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box reader {
+                  styles ["mail-reader"]
+                  orientation: vertical;
+                  spacing: 16;
+                }
+              }
+            };
+          }
+        }
+
+        // ── AI and the checks, at the right edge when asked for ────────
+        // Its width its own: the reader takes what is left.
+        Revealer assist_reveal {
+          hexpand: false;
+          transition-type: slide_left;
+          transition-duration: 160;
+          reveal-child: false;
+
+          child: Box {
+            styles ["mail-assist-panel"]
+            orientation: vertical;
+            width-request: 320;
+
+            Box {
+              styles ["mail-assist-head"]
+              spacing: 8;
+
+              Image assist_icon {
+                styles ["mail-assist-mark"]
+                icon-name: "applications-science-symbolic";
+              }
+
+              Label assist_title {
+                styles ["mail-assist-title"]
+                label: _("AI");
+                xalign: 0;
+                hexpand: true;
+              }
+
+              Button assist_close {
+                styles ["mail-tool"]
+                icon-name: "window-close-symbolic";
+                tooltip-text: _("Close");
+              }
+            }
+
+            ScrolledWindow {
+              hscrollbar-policy: never;
+              vexpand: true;
+
+              // Its sections for the conversation open; Go fills it.
+              Box assist {
+                styles ["mail-assist-body"]
+                orientation: vertical;
+                spacing: 22;
+              }
+            }
+          };
+        }
+      };
+    }
+
+    // ── the welcome ────────────────────────────────────────────────────
+    StackPage {
+      name: "welcome";
+
+      child: ScrolledWindow {
+        hscrollbar-policy: never;
+
+        Box welcome {
+          styles ["mail-welcome"]
+          orientation: vertical;
+          halign: center;
+          valign: center;
+        }
+      };
+    }
+  }
+}

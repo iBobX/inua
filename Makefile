@@ -6,10 +6,13 @@
 #                  text), bin/inua-games (light games),
 #                  bin/inua-pinentry (gpg's prompt), bin/inua-assistant (the
 #                  assistant), bin/inua-keyring (the Secret Service kept in
-#                  pass) and bin/inua-term (the terminal)
+#                  pass), bin/inua-term (the terminal) and bin/inua-mail
+#                  (mail)
 #   make term-engine
 #                  build bin/libinua-vt.so, inua-term's engine (libghostty-vt
 #                  at its pinned commit; needs git and Zig 0.16)
+#                  (INUA_GOOGLE_CLIENT_SECRET=… make sets inua-mail's
+#                  Google client secret; releases take it from CI)
 #   make deps      install what inua needs to run, build and test
 #                  (Ubuntu 26.04, sudo; the full list is in docs/design.md)
 #   make deps-desktop
@@ -53,6 +56,7 @@ build:
 	go build -o bin/inua-remote ./cmd/inua-remote
 	go build -o bin/inua-connect ./cmd/inua-connect
 	go build -o bin/inua-disk-usage ./cmd/inua-disk-usage
+	go build -ldflags "-X github.com/lyricat/inua/internal/apps/mail.GoogleClientSecret=$(INUA_GOOGLE_CLIENT_SECRET)" -o bin/inua-mail ./cmd/inua-mail
 	go build -o bin/inua-games ./cmd/inua-games
 	go build -o bin/inua-pinentry ./cmd/inua-pinentry
 	go build -o bin/inua-assistant ./cmd/inua-assistant
@@ -99,7 +103,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-disk-usage bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-disk-usage bin/inua-mail bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
 	# inua-term's engine, when built (make term-engine)
 	if [ -f bin/libinua-vt.so ]; then install -Dm644 -t "$(PREFIX)/lib/inua" bin/libinua-vt.so; fi
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop

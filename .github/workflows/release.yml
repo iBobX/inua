@@ -46,3 +46,5 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # inua-mail's Google sign-in (docs/mail.md, "OAuth client IDs")
+          INUA_GOOGLE_CLIENT_SECRET: ${{ secrets.INUA_GOOGLE_CLIENT_SECRET }}
