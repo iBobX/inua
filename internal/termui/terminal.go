@@ -197,10 +197,7 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 		p.widget.QueueDraw()
 	}
 	p.onPreedit = func(im gtk.IMContext) {
-		var text string
-		var cursor int32
-		im.GetPreeditString(&text, nil, &cursor)
-		p.preedit, p.preeditAt = text, int(cursor)
+		p.preedit, p.preeditAt = gtkx.PreeditString(&im)
 		p.imCursor()
 		p.widget.QueueDraw()
 	}
