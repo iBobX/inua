@@ -100,6 +100,9 @@ func (t *textOut) walk(n *html.Node) {
 	case html.CommentNode, html.DoctypeNode:
 		return
 	case html.ElementNode:
+		if hidden(n) {
+			return
+		}
 		switch n.DataAtom {
 		case atom.Script, atom.Style, atom.Head, atom.Title, atom.Noscript, atom.Template, atom.Svg:
 			return
