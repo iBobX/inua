@@ -205,6 +205,7 @@ func openWindow(c *appui.Ctx) *window {
 // loadSettings reads mail.toml and starts a session for each account.
 func (w *window) loadSettings() {
 	s, err := mail.LoadSettings(mail.SettingsPath())
+	s.Keyring = w.secrets
 	w.settings = s
 	if err != nil {
 		w.say(&w.listError, err.Error())

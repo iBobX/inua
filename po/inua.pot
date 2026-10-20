@@ -102,7 +102,7 @@ msgstr ""
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:1025
+#: internal/mailui/window.go:1026
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -1124,7 +1124,7 @@ msgstr ""
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
-#: internal/mailui/window.go:556
+#: internal/mailui/window.go:557
 msgid "Trash"
 msgstr ""
 
@@ -1190,7 +1190,7 @@ msgstr ""
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr ""
 
-#: internal/apps/mail/account.go:227
+#: internal/apps/mail/account.go:232
 msgid "IMAP"
 msgstr ""
 
@@ -1326,31 +1326,35 @@ msgstr ""
 msgid "To:"
 msgstr ""
 
-#: internal/apps/mail/oauth.go:43
+#: internal/apps/mail/oauth.go:54
 msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
 msgstr ""
 
-#: internal/apps/mail/oauth.go:58
+#: internal/apps/mail/oauth.go:70
 msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
 msgstr ""
 
-#: internal/apps/mail/oauth.go:141
+#: internal/apps/mail/oauth.go:100
+msgid "the client's secret is not in the keyring: type it again under Your own OAuth client"
+msgstr ""
+
+#: internal/apps/mail/oauth.go:170
 msgid "the sign-in page answered for another request"
 msgstr ""
 
-#: internal/apps/mail/oauth.go:145
+#: internal/apps/mail/oauth.go:174
 msgid "the sign-in page gave no code"
 msgstr ""
 
-#: internal/apps/mail/oauth.go:162
+#: internal/apps/mail/oauth.go:191
 msgid "Signed in"
 msgstr ""
 
-#: internal/apps/mail/oauth.go:162
+#: internal/apps/mail/oauth.go:191
 msgid "You can close this tab and go back to Mail."
 msgstr ""
 
-#: internal/apps/mail/oauth.go:164
+#: internal/apps/mail/oauth.go:193
 msgid "Not signed in"
 msgstr ""
 
@@ -1610,7 +1614,7 @@ msgstr ""
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
-#: internal/mailui/window.go:476
+#: internal/mailui/window.go:477
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
@@ -2586,7 +2590,7 @@ msgstr ""
 #: internal/appui/pass.go:866
 #: internal/mailui/reader.go:454
 #: internal/mailui/reader.go:607
-#: internal/mailui/window.go:875
+#: internal/mailui/window.go:876
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr ""
@@ -3890,7 +3894,7 @@ msgid "OK"
 msgstr ""
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/welcome.go:815
+#: internal/mailui/welcome.go:818
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -5135,7 +5139,7 @@ msgstr ""
 
 #: internal/filesui/archive.go:79
 #: internal/mailui/picker.go:142
-#: internal/mailui/window.go:552
+#: internal/mailui/window.go:553
 msgid "Archive"
 msgstr ""
 
@@ -9715,13 +9719,13 @@ msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The m
 msgstr ""
 
 #: internal/mailui/actions.go:467
-#: internal/mailui/window.go:438
+#: internal/mailui/window.go:439
 msgid "Unsent"
 msgstr ""
 
 #: internal/mailui/actions.go:483
 #: internal/mailui/reader.go:167
-#: internal/mailui/window.go:942
+#: internal/mailui/window.go:943
 msgid "(no subject)"
 msgstr ""
 
@@ -9754,7 +9758,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: internal/mailui/app.go:23
-#: internal/mailui/window.go:1285
+#: internal/mailui/window.go:1286
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
 msgid "Mail"
@@ -9798,7 +9802,7 @@ msgid "The assistant gave no search."
 msgstr ""
 
 #: internal/mailui/assist.go:256
-#: internal/mailui/window.go:1143
+#: internal/mailui/window.go:1144
 msgid "Searched for %s"
 msgstr ""
 
@@ -10058,12 +10062,12 @@ msgid "Thinking…"
 msgstr ""
 
 #: internal/mailui/reader.go:474
-#: internal/mailui/window.go:793
+#: internal/mailui/window.go:794
 msgid "Loading…"
 msgstr ""
 
 #: internal/mailui/reader.go:494
-#: internal/mailui/window.go:936
+#: internal/mailui/window.go:937
 msgid "me"
 msgstr ""
 
@@ -10386,7 +10390,7 @@ msgid "Enter signs in · Esc goes back"
 msgstr ""
 
 #: internal/mailui/welcome.go:599
-#: internal/mailui/window.go:469
+#: internal/mailui/window.go:470
 msgid "Sign in"
 msgstr ""
 
@@ -10469,23 +10473,31 @@ msgid "Hide your own OAuth client"
 msgstr ""
 
 #: internal/mailui/welcome.go:787
-msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."
+msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr ""
 
-#: internal/mailui/welcome.go:812
+#: internal/mailui/welcome.go:804
+msgid "Kept in your keyring; type to replace it"
+msgstr ""
+
+#: internal/mailui/welcome.go:815
 msgid "Google client ID"
 msgstr ""
 
-#: internal/mailui/welcome.go:812
+#: internal/mailui/welcome.go:815
 msgid "Google client secret"
 msgstr ""
 
-#: internal/mailui/welcome.go:813
+#: internal/mailui/welcome.go:816
 msgid "Microsoft client ID"
 msgstr ""
 
-#: internal/mailui/welcome.go:813
+#: internal/mailui/welcome.go:816
 msgid "Microsoft tenant"
+msgstr ""
+
+#: internal/mailui/welcome.go:859
+msgid "Could not keep the secret in the keyring: %v"
 msgstr ""
 
 #: internal/mailui/window.go:186
@@ -10512,173 +10524,173 @@ msgstr ""
 msgid "Waiting for your reply"
 msgstr ""
 
-#: internal/mailui/window.go:361
+#: internal/mailui/window.go:362
 msgid "Signed out"
 msgstr ""
 
-#: internal/mailui/window.go:365
+#: internal/mailui/window.go:366
 msgid "Offline: %v"
 msgstr ""
 
-#: internal/mailui/window.go:420
+#: internal/mailui/window.go:421
 msgid "No account yet"
 msgstr ""
 
-#: internal/mailui/window.go:434
+#: internal/mailui/window.go:435
 msgid "All inboxes"
 msgstr ""
 
-#: internal/mailui/window.go:435
+#: internal/mailui/window.go:436
 msgid "Needs reply"
 msgstr ""
 
-#: internal/mailui/window.go:436
+#: internal/mailui/window.go:437
 msgid "Starred"
 msgstr ""
 
-#: internal/mailui/window.go:456
+#: internal/mailui/window.go:457
 msgid "Show or hide the other folders"
 msgstr ""
 
-#: internal/mailui/window.go:500
+#: internal/mailui/window.go:501
 msgid "Remove account…"
 msgstr ""
 
-#: internal/mailui/window.go:504
+#: internal/mailui/window.go:505
 msgid "%d more folder"
 msgid_plural "%d more folders"
 msgstr[0] ""
 msgstr[1] ""
 
-#: internal/mailui/window.go:546
+#: internal/mailui/window.go:547
 msgid "Inbox"
 msgstr ""
 
-#: internal/mailui/window.go:548
+#: internal/mailui/window.go:549
 msgid "Drafts"
 msgstr ""
 
-#: internal/mailui/window.go:550
+#: internal/mailui/window.go:551
 msgid "Sent"
 msgstr ""
 
-#: internal/mailui/window.go:554
+#: internal/mailui/window.go:555
 msgid "Spam"
 msgstr ""
 
-#: internal/mailui/window.go:736
+#: internal/mailui/window.go:737
 msgid "Nothing found"
 msgstr ""
 
-#: internal/mailui/window.go:738
+#: internal/mailui/window.go:739
 msgid "Fetching your mail…"
 msgstr ""
 
-#: internal/mailui/window.go:740
+#: internal/mailui/window.go:741
 msgid "Nothing waits for your reply"
 msgstr ""
 
-#: internal/mailui/window.go:742
+#: internal/mailui/window.go:743
 msgid "No starred conversation"
 msgstr ""
 
-#: internal/mailui/window.go:744
+#: internal/mailui/window.go:745
 msgid "All read"
 msgstr ""
 
-#: internal/mailui/window.go:746
+#: internal/mailui/window.go:747
 msgid "Inbox empty. Nothing waits for you."
 msgstr ""
 
-#: internal/mailui/window.go:748
+#: internal/mailui/window.go:749
 msgid "No mail here"
 msgstr ""
 
-#: internal/mailui/window.go:798
+#: internal/mailui/window.go:799
 #: ui/mail.ui:209
 msgid "Load older"
 msgstr ""
 
-#: internal/mailui/window.go:800
+#: internal/mailui/window.go:801
 msgid "Could not load older mail: %v"
 msgstr ""
 
-#: internal/mailui/window.go:854
+#: internal/mailui/window.go:855
 msgid "Archive (E)"
 msgstr ""
 
-#: internal/mailui/window.go:855
+#: internal/mailui/window.go:856
 msgid "Delete (#)"
 msgstr ""
 
-#: internal/mailui/window.go:964
-#: internal/mailui/window.go:967
+#: internal/mailui/window.go:965
+#: internal/mailui/window.go:968
 msgid "SUSPICIOUS"
 msgstr ""
 
-#: internal/mailui/window.go:974
+#: internal/mailui/window.go:975
 msgid "Unstar (S)"
 msgstr ""
 
-#: internal/mailui/window.go:976
+#: internal/mailui/window.go:977
 msgid "Star (S)"
 msgstr ""
 
-#: internal/mailui/window.go:980
+#: internal/mailui/window.go:981
 msgid "Mark as read"
 msgstr ""
 
-#: internal/mailui/window.go:983
+#: internal/mailui/window.go:984
 msgid "Mark as unread (U)"
 msgstr ""
 
-#: internal/mailui/window.go:1027
+#: internal/mailui/window.go:1028
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr ""
 
-#: internal/mailui/window.go:1081
+#: internal/mailui/window.go:1082
 msgid "Press Enter to ask the assistant to search for this."
 msgstr ""
 
-#: internal/mailui/window.go:1122
+#: internal/mailui/window.go:1123
 msgid "Searching the server…"
 msgstr ""
 
-#: internal/mailui/window.go:1146
+#: internal/mailui/window.go:1147
 msgid "The server's search failed: %s"
 msgstr ""
 
-#: internal/mailui/window.go:1263
+#: internal/mailui/window.go:1264
 #: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr ""
 
-#: internal/mailui/window.go:1266
+#: internal/mailui/window.go:1267
 msgid "NO ACCOUNT"
 msgstr ""
 
-#: internal/mailui/window.go:1268
+#: internal/mailui/window.go:1269
 msgid "SYNCING"
 msgstr ""
 
-#: internal/mailui/window.go:1270
+#: internal/mailui/window.go:1271
 msgid "OFFLINE"
 msgstr ""
 
-#: internal/mailui/window.go:1272
+#: internal/mailui/window.go:1273
 msgid "%d OFFLINE"
 msgstr ""
 
-#: internal/mailui/window.go:1281
+#: internal/mailui/window.go:1282
 msgid "%s MSG · %d UNREAD"
 msgstr ""
 
-#: internal/mailui/window.go:1283
+#: internal/mailui/window.go:1284
 msgid "Mail · %d unread"
 msgstr ""
 
-#: internal/mailui/window.go:1287
+#: internal/mailui/window.go:1288
 msgid "Messages kept from the inboxes, and how many are unread"
 msgstr ""
 

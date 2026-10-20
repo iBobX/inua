@@ -784,7 +784,7 @@ func (wl *welcome) drawCustom(box *gtk.Box) {
 	o := wl.w.settings.OAuth
 	sec := gtk.NewBox(gtk.OrientationVerticalValue, 10)
 	sec.AddCssClass("mail-custom")
-	note := gtk.NewLabel(i18n.T("For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."))
+	note := gtk.NewLabel(i18n.T("For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."))
 	note.AddCssClass("mail-welcome-text")
 	note.SetXalign(0)
 	note.SetWrap(true)
@@ -800,6 +800,9 @@ func (wl *welcome) drawCustom(box *gtk.Box) {
 	wl.gID = entry(o.Google.ClientID, "…apps.googleusercontent.com")
 	wl.gSecret = entry(o.Google.ClientSecret, "GOCSPX-…")
 	wl.gSecret.SetVisibility(false)
+	if o.Google.SecretInKeyring && o.Google.ClientSecret == "" {
+		wl.gSecret.SetPlaceholderText(i18n.T("Kept in your keyring; type to replace it"))
+	}
 	wl.mID = entry(o.Microsoft.ClientID, "00000000-0000-0000-0000-000000000000")
 	wl.mTenant = entry(o.Microsoft.Tenant, "common")
 	two := func(a, b *gtk.Widget, la, lb string) {
@@ -822,15 +825,58 @@ func (wl *welcome) drawCustom(box *gtk.Box) {
 
 // saveCustom keeps the user's own clients in mail.toml.
 func (wl *welcome) saveCustom() {
-	s := &wl.w.settings
-	s.OAuth.Google.ClientID = strings.TrimSpace(wl.gID.GetText())
-	s.OAuth.Google.ClientSecret = strings.TrimSpace(wl.gSecret.GetText())
-	s.OAuth.Microsoft.ClientID = strings.TrimSpace(wl.mID.GetText())
-	s.OAuth.Microsoft.Tenant = strings.TrimSpace(wl.mTenant.GetText())
-	if err := s.Save(mail.SettingsPath()); err != nil {
-		wl.err = err.Error()
-	} else {
-		wl.err, wl.custom = "", false
+	w := wl.w
+	id := strings.TrimSpace(wl.gID.GetText())
+	secret := strings.TrimSpace(wl.gSecret.GetText())
+	mID, tenant := strings.TrimSpace(wl.mID.GetText()), strings.TrimSpace(wl.mTenant.GetText())
+	// The secret goes to the keyring, not mail.toml; empty keeps the one
+	// kept, and no client ID drops it. Off the main thread: the keyring may
+	// ask for a passphrase.
+	keep := ""
+	switch {
+	case id == "":
+		keep = "-"
+	case secret != "":
+		keep = secret
 	}
+	wl.busy = true
 	wl.draw()
+	go func() {
+		var err error
+		switch keep {
+		case "":
+		case "-":
+			err = w.secrets.Set(mail.SecretKey, mail.ClientSecretKind(mail.Google), "")
+		default:
+			err = w.secrets.Set(mail.SecretKey, mail.ClientSecretKind(mail.Google), keep)
+		}
+		gtkx.Post(func() {
+			if w.welcome != wl {
+				return
+			}
+			wl.busy = false
+			if err != nil {
+				wl.err = i18n.Tf("Could not keep the secret in the keyring: %v", err)
+				wl.draw()
+				return
+			}
+			s := &w.settings
+			g := &s.OAuth.Google
+			g.ClientID = id
+			switch keep {
+			case "-":
+				g.ClientSecret, g.SecretInKeyring = "", false
+			case "":
+			default:
+				g.ClientSecret, g.SecretInKeyring = "", true // out of mail.toml
+			}
+			s.OAuth.Microsoft.ClientID, s.OAuth.Microsoft.Tenant = mID, tenant
+			if err := s.Save(mail.SettingsPath()); err != nil {
+				wl.err = err.Error()
+			} else {
+				wl.err, wl.custom = "", false
+			}
+			wl.draw()
+		})
+	}()
 }

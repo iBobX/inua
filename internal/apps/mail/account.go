@@ -45,13 +45,18 @@ type Account struct {
 // OAuthClient is an app registered with a provider: the user's own, or
 // inua's when left out.
 type OAuthClient struct {
-	ClientID     string `toml:"client_id,omitempty"`
-	ClientSecret string `toml:"client_secret,omitempty"`
-	Tenant       string `toml:"tenant,omitempty"` // Microsoft: "common" when empty
+	ClientID string `toml:"client_id,omitempty"`
+	// ClientSecret is a secret written here by hand; the welcome keeps the
+	// one typed in it in the keyring instead (SecretInKeyring).
+	ClientSecret    string `toml:"client_secret,omitempty"`
+	SecretInKeyring bool   `toml:"secret_in_keyring,omitempty"`
+	Tenant          string `toml:"tenant,omitempty"` // Microsoft: "common" when empty
 }
 
 // Settings is mail.toml.
 type Settings struct {
+	// Keyring holds the user's own clients' secrets (SecretInKeyring).
+	Keyring  *Secrets  `toml:"-"`
 	Accounts []Account `toml:"account"`
 	OAuth    struct {
 		Google    OAuthClient `toml:"google"`

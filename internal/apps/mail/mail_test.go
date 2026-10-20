@@ -475,6 +475,7 @@ func TestReplyAndForward(t *testing.T) {
 
 type fakeProvider struct {
 	srv       *httptest.Server
+	secret    string // the client_secret the last trade sent
 	challenge string
 	refresh   string
 	refreshed int
@@ -484,6 +485,7 @@ func newProvider(t *testing.T) *fakeProvider {
 	p := &fakeProvider{refresh: "r1"}
 	p.srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
+		p.secret = r.Form.Get("client_secret")
 		w.Header().Set("Content-Type", "application/json")
 		if r.Form.Get("client_id") != "cid" {
 			w.WriteHeader(400)
@@ -1022,5 +1024,42 @@ func TestContacts(t *testing.T) {
 	}
 	if Suggest(cs, "", 5) != nil || len(Suggest(cs, "o", 1)) != 1 {
 		t.Fatal("empty or limit")
+	}
+}
+
+func TestClientSecretInKeyring(t *testing.T) {
+	dir := t.TempDir()
+	keys := SecretsAt(filepath.Join(dir, "s.json"))
+	keys.Set(SecretKey, ClientSecretKind(Google), "GOCSPX-kept")
+	var s Settings
+	s.Keyring = keys
+	s.OAuth.Google = OAuthClient{ClientID: "mine.apps.googleusercontent.com", SecretInKeyring: true}
+	path := filepath.Join(dir, "mail.toml")
+	if err := s.Save(path); err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := os.ReadFile(path); strings.Contains(string(b), "GOCSPX") || !strings.Contains(string(b), "secret_in_keyring = true") {
+		t.Fatalf("mail.toml:\n%s", b)
+	}
+	ep, err := s.Endpoint(Google)
+	if err != nil || ep.Client.ClientSecret != "" {
+		t.Fatalf("endpoint %+v %v", ep.Client, err)
+	}
+	// The trade reads it from the keyring.
+	p := newProvider(t)
+	ep.TokenURL = p.srv.URL + "/token"
+	ep.Client.ClientID = "cid"
+	if _, err := ep.Refresh(context.Background(), "r1"); err != nil || p.secret != "GOCSPX-kept" {
+		t.Fatalf("refresh sent secret %q: %v", p.secret, err)
+	}
+	// Gone from the keyring: said, not sent empty.
+	keys.Set(SecretKey, ClientSecretKind(Google), "")
+	if _, err := ep.Refresh(context.Background(), "r1"); err == nil || !strings.Contains(err.Error(), "keyring") {
+		t.Fatalf("missing secret: %v", err)
+	}
+	// One written in mail.toml by hand still wins.
+	s.OAuth.Google.ClientSecret = "by-hand"
+	if ep, _ := s.Endpoint(Google); ep.Client.ClientSecret != "by-hand" || ep.secret != nil {
+		t.Fatalf("by hand %+v", ep.Client)
 	}
 }

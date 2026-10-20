@@ -145,14 +145,16 @@ INUA_GOOGLE_CLIENT_SECRET=GOCSPX-… make build
 A build without it marks Google *no client ID*.
 
 To use a client of your own, open *Your own OAuth client…* under the
-ways to sign in in the welcome (Add account), or put it in `mail.toml`;
-empty fields use inua's. An account signed in with one client signs in
+ways to sign in in the welcome (Add account); empty fields use inua's.
+The client ID goes to `mail.toml`, the secret to your keyring (as the
+accounts' tokens), and `mail.toml` notes `secret_in_keyring = true`.
+A `client_secret` written in `mail.toml` by hand still works. An account signed in with one client signs in
 again after the client changes.
 
 ```toml
 [oauth.google]
 client_id = "123-abc.apps.googleusercontent.com"
-client_secret = "GOCSPX-…"      # a desktop client's; Google does not treat it as secret
+secret_in_keyring = true        # the welcome keeps the secret in the keyring
 
 [oauth.microsoft]
 client_id = "00000000-0000-0000-0000-000000000000"

@@ -25,7 +25,18 @@ type Endpoint struct {
 	Scopes            []string
 	Extra             url.Values // more for the authorization page
 	Client            OAuthClient
+	// secret reads the client's secret from the keyring when it is
+	// needed, at a token's trade, off the main thread: the keyring may ask
+	// for a passphrase.
+	secret func() (string, error)
 }
+
+// SecretKey names a provider's client secret among the keyring's items.
+const SecretKey = "@oauth"
+
+// ClientSecretKind is the kind of a provider's client secret in the
+// keyring (account SecretKey).
+func ClientSecretKind(p Provider) string { return string(p) + "-client-secret" }
 
 // ErrNoClient is signing in with a provider that has no client ID.
 var ErrNoClient = errors.New("no client ID")
@@ -39,7 +50,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 			c = OAuthClient{ClientID: GoogleClientID, ClientSecret: GoogleClientSecret}
 		}
 		// Google's token page refuses a desktop client without its secret.
-		if c.ClientID == "" || c.ClientSecret == "" {
+		if c.ClientID == "" || (c.ClientSecret == "" && !c.SecretInKeyring) {
 			return Endpoint{}, fmt.Errorf("%w: %s", ErrNoClient, i18n.T("Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."))
 		}
 		return Endpoint{
@@ -48,6 +59,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 			Scopes:   []string{"https://mail.google.com/", "openid", "email"},
 			Extra:    url.Values{"access_type": {"offline"}, "prompt": {"consent"}},
 			Client:   c,
+			secret:   s.keyringSecret(Google, c),
 		}, nil
 	case Microsoft:
 		c := s.OAuth.Microsoft
@@ -69,9 +81,26 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 				"offline_access", "openid", "email"},
 			Extra:  url.Values{"prompt": {"select_account"}},
 			Client: c,
+			secret: s.keyringSecret(Microsoft, c),
 		}, nil
 	}
 	return Endpoint{}, fmt.Errorf("%s does not sign in with OAuth", p)
+}
+
+// keyringSecret reads a user's client's secret kept in the keyring, when
+// mail.toml says it is there and holds none itself.
+func (s Settings) keyringSecret(p Provider, c OAuthClient) func() (string, error) {
+	if !c.SecretInKeyring || c.ClientSecret != "" || s.Keyring == nil {
+		return nil
+	}
+	k := s.Keyring
+	return func() (string, error) {
+		v, err := k.Get(SecretKey, ClientSecretKind(p))
+		if err == nil && v == "" {
+			err = errors.New(i18n.T("the client's secret is not in the keyring: type it again under Your own OAuth client"))
+		}
+		return v, err
+	}
 }
 
 // Token is what a provider gives for a sign-in.
@@ -216,8 +245,15 @@ func (ep Endpoint) Refresh(ctx context.Context, refresh string) (Token, error) {
 
 func (ep Endpoint) token(ctx context.Context, form url.Values) (Token, error) {
 	form.Set("client_id", ep.Client.ClientID)
-	if ep.Client.ClientSecret != "" {
-		form.Set("client_secret", ep.Client.ClientSecret)
+	secret := ep.Client.ClientSecret
+	if secret == "" && ep.secret != nil {
+		var err error
+		if secret, err = ep.secret(); err != nil {
+			return Token{}, err
+		}
+	}
+	if secret != "" {
+		form.Set("client_secret", secret)
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep.TokenURL, strings.NewReader(form.Encode()))
 	if err != nil {

@@ -104,7 +104,7 @@ msgstr "일"
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:1025
+#: internal/mailui/window.go:1026
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -1123,7 +1123,7 @@ msgstr "프로젝트의 기록, 브랜치, stash입니다. 푸시하지 않은 �
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
-#: internal/mailui/window.go:556
+#: internal/mailui/window.go:557
 msgid "Trash"
 msgstr "휴지통"
 
@@ -1189,7 +1189,7 @@ msgstr "프로그램이 표시한 캐시"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "프로그램이 캐시로 표시했습니다(CACHEDIR.TAG). 없어지면 다시 만듭니다."
 
-#: internal/apps/mail/account.go:227
+#: internal/apps/mail/account.go:232
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -1323,31 +1323,35 @@ msgstr "제목:"
 msgid "To:"
 msgstr "받는 사람:"
 
-#: internal/apps/mail/oauth.go:43
+#: internal/apps/mail/oauth.go:54
 msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
 msgstr "Google 로그인에는 클라이언트 ID와 시크릿이 필요하지만 이 빌드에는 없습니다. '내 OAuth 클라이언트'에서 추가하거나(docs/mail.md) 앱 비밀번호로 IMAP 계정을 추가하세요."
 
-#: internal/apps/mail/oauth.go:58
+#: internal/apps/mail/oauth.go:70
 msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
 msgstr "Microsoft 로그인에는 클라이언트 ID가 필요하지만 이 빌드에는 없습니다. '내 OAuth 클라이언트'에서 추가하세요(docs/mail.md)."
 
-#: internal/apps/mail/oauth.go:141
+#: internal/apps/mail/oauth.go:100
+msgid "the client's secret is not in the keyring: type it again under Your own OAuth client"
+msgstr "클라이언트 시크릿이 키링에 없습니다: '내 OAuth 클라이언트'에서 다시 입력하세요"
+
+#: internal/apps/mail/oauth.go:170
 msgid "the sign-in page answered for another request"
 msgstr "로그인 페이지가 다른 요청에 응답했습니다"
 
-#: internal/apps/mail/oauth.go:145
+#: internal/apps/mail/oauth.go:174
 msgid "the sign-in page gave no code"
 msgstr "로그인 페이지가 코드를 주지 않았습니다"
 
-#: internal/apps/mail/oauth.go:162
+#: internal/apps/mail/oauth.go:191
 msgid "Signed in"
 msgstr "로그인됨"
 
-#: internal/apps/mail/oauth.go:162
+#: internal/apps/mail/oauth.go:191
 msgid "You can close this tab and go back to Mail."
 msgstr "이 탭을 닫고 메일로 돌아가세요."
 
-#: internal/apps/mail/oauth.go:164
+#: internal/apps/mail/oauth.go:193
 msgid "Not signed in"
 msgstr "로그인되지 않음"
 
@@ -1607,7 +1611,7 @@ msgstr "승인 대기 중"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
-#: internal/mailui/window.go:476
+#: internal/mailui/window.go:477
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
@@ -2575,7 +2579,7 @@ msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니�
 #: internal/appui/pass.go:866
 #: internal/mailui/reader.go:454
 #: internal/mailui/reader.go:607
-#: internal/mailui/window.go:875
+#: internal/mailui/window.go:876
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "파일"
@@ -3872,7 +3876,7 @@ msgid "OK"
 msgstr "OK"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/welcome.go:815
+#: internal/mailui/welcome.go:818
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -5111,7 +5115,7 @@ msgstr "압축 파일은 “%s”에 만들어집니다."
 
 #: internal/filesui/archive.go:79
 #: internal/mailui/picker.go:142
-#: internal/mailui/window.go:552
+#: internal/mailui/window.go:553
 msgid "Archive"
 msgstr "압축 파일"
 
@@ -9666,13 +9670,13 @@ msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The m
 msgstr "이 컴퓨터에서 로그인 정보와 보관한 메일을 지웁니다. 서버의 메일은 남습니다."
 
 #: internal/mailui/actions.go:467
-#: internal/mailui/window.go:438
+#: internal/mailui/window.go:439
 msgid "Unsent"
 msgstr "보내지 않음"
 
 #: internal/mailui/actions.go:483
 #: internal/mailui/reader.go:167
-#: internal/mailui/window.go:942
+#: internal/mailui/window.go:943
 msgid "(no subject)"
 msgstr "(제목 없음)"
 
@@ -9704,7 +9708,7 @@ msgid_plural "%s and %d more messages"
 msgstr[0] "%s 외 %d개"
 
 #: internal/mailui/app.go:23
-#: internal/mailui/window.go:1285
+#: internal/mailui/window.go:1286
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
 msgid "Mail"
@@ -9748,7 +9752,7 @@ msgid "The assistant gave no search."
 msgstr "어시스턴트가 검색어를 주지 않았습니다."
 
 #: internal/mailui/assist.go:256
-#: internal/mailui/window.go:1143
+#: internal/mailui/window.go:1144
 msgid "Searched for %s"
 msgstr "%s 검색함"
 
@@ -10006,12 +10010,12 @@ msgid "Thinking…"
 msgstr "생각하는 중…"
 
 #: internal/mailui/reader.go:474
-#: internal/mailui/window.go:793
+#: internal/mailui/window.go:794
 msgid "Loading…"
 msgstr "불러오는 중…"
 
 #: internal/mailui/reader.go:494
-#: internal/mailui/window.go:936
+#: internal/mailui/window.go:937
 msgid "me"
 msgstr "나"
 
@@ -10333,7 +10337,7 @@ msgid "Enter signs in · Esc goes back"
 msgstr "Enter로 로그인 · Esc로 뒤로"
 
 #: internal/mailui/welcome.go:599
-#: internal/mailui/window.go:469
+#: internal/mailui/window.go:470
 msgid "Sign in"
 msgstr "로그인"
 
@@ -10413,24 +10417,32 @@ msgid "Hide your own OAuth client"
 msgstr "내 OAuth 클라이언트 숨기기"
 
 #: internal/mailui/welcome.go:787
-msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. Accounts already signed in with a provider sign in again after its client changes."
-msgstr "직접 만든 Google Cloud 프로젝트나 Azure 앱용입니다. 비워 두면 inua의 것을 씁니다. 클라이언트를 바꾸면 그 제공업체로 로그인한 계정은 다시 로그인합니다."
+msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
+msgstr "직접 만든 Google Cloud 프로젝트나 Azure 앱용입니다. 비워 두면 inua의 것을 씁니다. 시크릿은 mail.toml이 아니라 키링에 보관됩니다. 클라이언트를 바꾸면 그 제공업체로 로그인한 계정은 다시 로그인합니다."
 
-#: internal/mailui/welcome.go:812
+#: internal/mailui/welcome.go:804
+msgid "Kept in your keyring; type to replace it"
+msgstr "키링에 보관됨. 입력하면 바꿉니다"
+
+#: internal/mailui/welcome.go:815
 msgid "Google client ID"
 msgstr "Google 클라이언트 ID"
 
-#: internal/mailui/welcome.go:812
+#: internal/mailui/welcome.go:815
 msgid "Google client secret"
 msgstr "Google 클라이언트 시크릿"
 
-#: internal/mailui/welcome.go:813
+#: internal/mailui/welcome.go:816
 msgid "Microsoft client ID"
 msgstr "Microsoft 클라이언트 ID"
 
-#: internal/mailui/welcome.go:813
+#: internal/mailui/welcome.go:816
 msgid "Microsoft tenant"
 msgstr "Microsoft 테넌트"
+
+#: internal/mailui/welcome.go:859
+msgid "Could not keep the secret in the keyring: %v"
+msgstr "시크릿을 키링에 보관할 수 없습니다: %v"
 
 #: internal/mailui/window.go:186
 msgid "ALL"
@@ -10456,172 +10468,172 @@ msgstr "파일이 첨부된"
 msgid "Waiting for your reply"
 msgstr "내 답장을 기다리는"
 
-#: internal/mailui/window.go:361
+#: internal/mailui/window.go:362
 msgid "Signed out"
 msgstr "로그아웃됨"
 
-#: internal/mailui/window.go:365
+#: internal/mailui/window.go:366
 msgid "Offline: %v"
 msgstr "오프라인: %v"
 
-#: internal/mailui/window.go:420
+#: internal/mailui/window.go:421
 msgid "No account yet"
 msgstr "아직 계정이 없습니다"
 
-#: internal/mailui/window.go:434
+#: internal/mailui/window.go:435
 msgid "All inboxes"
 msgstr "모든 받은편지함"
 
-#: internal/mailui/window.go:435
+#: internal/mailui/window.go:436
 msgid "Needs reply"
 msgstr "답장 필요"
 
-#: internal/mailui/window.go:436
+#: internal/mailui/window.go:437
 msgid "Starred"
 msgstr "별표"
 
-#: internal/mailui/window.go:456
+#: internal/mailui/window.go:457
 msgid "Show or hide the other folders"
 msgstr "다른 폴더 보기/숨기기"
 
-#: internal/mailui/window.go:500
+#: internal/mailui/window.go:501
 msgid "Remove account…"
 msgstr "계정 제거…"
 
-#: internal/mailui/window.go:504
+#: internal/mailui/window.go:505
 msgid "%d more folder"
 msgid_plural "%d more folders"
 msgstr[0] "폴더 %d개 더"
 
-#: internal/mailui/window.go:546
+#: internal/mailui/window.go:547
 msgid "Inbox"
 msgstr "받은편지함"
 
-#: internal/mailui/window.go:548
+#: internal/mailui/window.go:549
 msgid "Drafts"
 msgstr "임시 보관함"
 
-#: internal/mailui/window.go:550
+#: internal/mailui/window.go:551
 msgid "Sent"
 msgstr "보낸 편지함"
 
-#: internal/mailui/window.go:554
+#: internal/mailui/window.go:555
 msgid "Spam"
 msgstr "스팸"
 
-#: internal/mailui/window.go:736
+#: internal/mailui/window.go:737
 msgid "Nothing found"
 msgstr "찾지 못했습니다"
 
-#: internal/mailui/window.go:738
+#: internal/mailui/window.go:739
 msgid "Fetching your mail…"
 msgstr "메일을 가져오는 중…"
 
-#: internal/mailui/window.go:740
+#: internal/mailui/window.go:741
 msgid "Nothing waits for your reply"
 msgstr "답장을 기다리는 것이 없습니다"
 
-#: internal/mailui/window.go:742
+#: internal/mailui/window.go:743
 msgid "No starred conversation"
 msgstr "별표한 대화가 없습니다"
 
-#: internal/mailui/window.go:744
+#: internal/mailui/window.go:745
 msgid "All read"
 msgstr "모두 읽음"
 
-#: internal/mailui/window.go:746
+#: internal/mailui/window.go:747
 msgid "Inbox empty. Nothing waits for you."
 msgstr "받은편지함이 비었습니다. 기다리는 것이 없습니다."
 
-#: internal/mailui/window.go:748
+#: internal/mailui/window.go:749
 msgid "No mail here"
 msgstr "메일이 없습니다"
 
-#: internal/mailui/window.go:798
+#: internal/mailui/window.go:799
 #: ui/mail.ui:209
 msgid "Load older"
 msgstr "이전 메일 불러오기"
 
-#: internal/mailui/window.go:800
+#: internal/mailui/window.go:801
 msgid "Could not load older mail: %v"
 msgstr "이전 메일을 불러올 수 없습니다: %v"
 
-#: internal/mailui/window.go:854
+#: internal/mailui/window.go:855
 msgid "Archive (E)"
 msgstr "보관 (E)"
 
-#: internal/mailui/window.go:855
+#: internal/mailui/window.go:856
 msgid "Delete (#)"
 msgstr "삭제 (#)"
 
-#: internal/mailui/window.go:964
-#: internal/mailui/window.go:967
+#: internal/mailui/window.go:965
+#: internal/mailui/window.go:968
 msgid "SUSPICIOUS"
 msgstr "의심스러움"
 
-#: internal/mailui/window.go:974
+#: internal/mailui/window.go:975
 msgid "Unstar (S)"
 msgstr "별표 빼기 (S)"
 
-#: internal/mailui/window.go:976
+#: internal/mailui/window.go:977
 msgid "Star (S)"
 msgstr "별표 달기 (S)"
 
-#: internal/mailui/window.go:980
+#: internal/mailui/window.go:981
 msgid "Mark as read"
 msgstr "읽음으로 표시"
 
-#: internal/mailui/window.go:983
+#: internal/mailui/window.go:984
 msgid "Mark as unread (U)"
 msgstr "안 읽음으로 표시 (U)"
 
-#: internal/mailui/window.go:1027
+#: internal/mailui/window.go:1028
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1월 2일"
 
-#: internal/mailui/window.go:1081
+#: internal/mailui/window.go:1082
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "Enter를 누르면 어시스턴트에게 이것을 검색해 달라고 합니다."
 
-#: internal/mailui/window.go:1122
+#: internal/mailui/window.go:1123
 msgid "Searching the server…"
 msgstr "서버를 검색하는 중…"
 
-#: internal/mailui/window.go:1146
+#: internal/mailui/window.go:1147
 msgid "The server's search failed: %s"
 msgstr "서버 검색에 실패했습니다: %s"
 
-#: internal/mailui/window.go:1263
+#: internal/mailui/window.go:1264
 #: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "대기"
 
-#: internal/mailui/window.go:1266
+#: internal/mailui/window.go:1267
 msgid "NO ACCOUNT"
 msgstr "계정 없음"
 
-#: internal/mailui/window.go:1268
+#: internal/mailui/window.go:1269
 msgid "SYNCING"
 msgstr "동기화 중"
 
-#: internal/mailui/window.go:1270
+#: internal/mailui/window.go:1271
 msgid "OFFLINE"
 msgstr "오프라인"
 
-#: internal/mailui/window.go:1272
+#: internal/mailui/window.go:1273
 msgid "%d OFFLINE"
 msgstr "%d 오프라인"
 
-#: internal/mailui/window.go:1281
+#: internal/mailui/window.go:1282
 msgid "%s MSG · %d UNREAD"
 msgstr "%s 메시지 · 안 읽음 %d"
 
-#: internal/mailui/window.go:1283
+#: internal/mailui/window.go:1284
 msgid "Mail · %d unread"
 msgstr "메일 · 안 읽음 %d"
 
-#: internal/mailui/window.go:1287
+#: internal/mailui/window.go:1288
 msgid "Messages kept from the inboxes, and how many are unread"
 msgstr "받은편지함에서 보관한 메시지와 그중 안 읽은 수"
 

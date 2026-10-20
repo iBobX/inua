@@ -78,6 +78,8 @@ func syncAccount(id string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
+	secrets := mail.NewSecrets()
+	s.Keyring = secrets
 	acc := s.Account(id)
 	if acc == nil {
 		fmt.Fprintf(os.Stderr, "no account %q (inua-mail --accounts lists them)\n", id)
@@ -87,7 +89,7 @@ func syncAccount(id string) int {
 	defer stop()
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
-	sess := mail.NewSession(*acc, s, mail.NewStore(), mail.NewSecrets())
+	sess := mail.NewSession(*acc, s, mail.NewStore(), secrets)
 	defer sess.Close()
 	start := time.Now()
 	boxes, err := sess.Mailboxes(ctx)
