@@ -10,7 +10,10 @@ package appui
 import (
 	"cmp"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -368,9 +371,11 @@ func (c *Ctx) followConfig() {
 func (c *Ctx) loadIcons() {
 	cfg := c.config()
 	overlay := cfg.IconSetDir()
-	name := appIconTheme
+	// Named by the set, so an app of another inua build (another set)
+	// running at the same time does not write its icons over these.
+	name := appIconTheme + "-" + iconSetTag()
 	if overlay != "" {
-		name = "inua-apps-icons-" + cfg.Style.Icons
+		name = "inua-apps-icons-" + cfg.Style.Icons + "-" + iconSetTag()
 	}
 	if overlay == "" && c.iconTheme == name {
 		return // the built-in icons do not change
@@ -458,6 +463,16 @@ func desktopIconTheme() string {
 
 // appIconTheme names the apps' icon theme.
 const appIconTheme = "inua-phosphor-apps"
+
+// iconSetTag names the built-in icon set: a sum of its icons' names.
+func iconSetTag() string {
+	entries, _ := layouts.FS.ReadDir("icons")
+	h := sha256.New()
+	for _, e := range entries {
+		io.WriteString(h, e.Name()+"\n")
+	}
+	return hex.EncodeToString(h.Sum(nil))[:8]
+}
 
 func (c *Ctx) writeIconTheme(dir, name, overlay string) error {
 	entries, err := layouts.FS.ReadDir("icons")

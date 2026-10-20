@@ -104,7 +104,7 @@ msgstr "일"
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:1138
+#: internal/mailui/window.go:1163
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:350
 #: ui/calendar.ui:127
@@ -1125,7 +1125,7 @@ msgstr "프로젝트의 기록, 브랜치, stash입니다. 푸시하지 않은 �
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
-#: internal/mailui/window.go:616
+#: internal/mailui/window.go:641
 msgid "Trash"
 msgstr "휴지통"
 
@@ -1358,7 +1358,7 @@ msgid "Not signed in"
 msgstr "로그인되지 않음"
 
 #: internal/apps/mail/sort.go:31
-#: internal/mailui/window.go:214
+#: internal/mailui/window.go:217
 msgid "REPLY"
 msgstr "답장"
 
@@ -1563,7 +1563,7 @@ msgid "online"
 msgstr "온라인"
 
 #: internal/apps/tailscale/status.go:168
-#: internal/mailui/window.go:1469
+#: internal/mailui/window.go:1494
 msgid "just now"
 msgstr "지금 막"
 
@@ -1614,7 +1614,7 @@ msgstr "승인 대기 중"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
-#: internal/mailui/window.go:529
+#: internal/mailui/window.go:554
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
@@ -1674,55 +1674,55 @@ msgstr "뇌우"
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: internal/appui/app.go:63
+#: internal/appui/app.go:66
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:1129
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "시계"
 
-#: internal/appui/app.go:64
+#: internal/appui/app.go:67
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:320
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "날씨"
 
-#: internal/appui/app.go:65
+#: internal/appui/app.go:68
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "주식"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:69
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "계산기"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:70
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "달력"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:71
 #: internal/ui/picker.go:148
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "색상 선택기"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:72
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "시스템 모니터"
 
-#: internal/appui/app.go:70
+#: internal/appui/app.go:73
 #: ui/control.ui:498
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:71
+#: internal/appui/app.go:74
 #: internal/appui/pass.go:264
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:29
@@ -1730,13 +1730,13 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:72
+#: internal/appui/app.go:75
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
 
-#: internal/appui/app.go:73
+#: internal/appui/app.go:76
 #: internal/appui/music.go:292
 #: internal/appui/music.go:1103
 #: internal/desktop/defaults.go:41
@@ -1744,7 +1744,7 @@ msgstr "GPG"
 msgid "Music"
 msgstr "음악"
 
-#: internal/appui/app.go:74
+#: internal/appui/app.go:77
 #: internal/appui/video.go:256
 #: internal/appui/video.go:510
 #: internal/desktop/defaults.go:45
@@ -2607,7 +2607,7 @@ msgstr "pass가 파일을 지웁니다. git 저장소라면 기록에 남습니�
 #: internal/appui/pass.go:1013
 #: internal/mailui/reader.go:514
 #: internal/mailui/reader.go:675
-#: internal/mailui/window.go:988
+#: internal/mailui/window.go:1013
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "파일"
@@ -2799,7 +2799,7 @@ msgid "Search for a symbol to add it."
 msgstr "추가할 기호를 검색한다."
 
 #: internal/appui/stocks.go:281
-#: internal/mailui/window.go:790
+#: internal/mailui/window.go:815
 msgid "Loading %s…"
 msgstr "%s 로딩 중..."
 
@@ -3064,7 +3064,7 @@ msgstr "피크"
 
 #: internal/appui/sysmon.go:792
 #: internal/filesui/details.go:51
-#: internal/mailui/window.go:214
+#: internal/mailui/window.go:217
 msgid "FILES"
 msgstr "파일"
 
@@ -5160,7 +5160,7 @@ msgstr "압축 파일은 “%s”에 만들어집니다."
 
 #: internal/filesui/archive.go:79
 #: internal/mailui/picker.go:142
-#: internal/mailui/window.go:612
+#: internal/mailui/window.go:637
 msgid "Archive"
 msgstr "압축 파일"
 
@@ -5688,7 +5688,7 @@ msgstr "파일 크기"
 
 #: internal/filesui/details.go:55
 #: internal/mailui/picker.go:137
-#: internal/mailui/window.go:1442
+#: internal/mailui/window.go:1467
 msgid "Search"
 msgstr "검색"
 
@@ -9726,13 +9726,13 @@ msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The m
 msgstr "이 컴퓨터에서 로그인 정보와 보관한 메일을 지웁니다. 서버의 메일은 남습니다."
 
 #: internal/mailui/actions.go:467
-#: internal/mailui/window.go:483
+#: internal/mailui/window.go:508
 msgid "Unsent"
 msgstr "보내지 않음"
 
 #: internal/mailui/actions.go:483
 #: internal/mailui/reader.go:194
-#: internal/mailui/window.go:1055
+#: internal/mailui/window.go:1080
 msgid "(no subject)"
 msgstr "(제목 없음)"
 
@@ -9764,7 +9764,7 @@ msgstr[0] "%s 외 %d개"
 
 #: internal/mailui/app.go:23
 #: internal/mailui/settings.go:96
-#: internal/mailui/window.go:1402
+#: internal/mailui/window.go:1427
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
 msgid "Mail"
@@ -9808,7 +9808,7 @@ msgid "The assistant gave no search."
 msgstr "어시스턴트가 검색어를 주지 않았습니다."
 
 #: internal/mailui/assist.go:260
-#: internal/mailui/window.go:1256
+#: internal/mailui/window.go:1281
 msgid "Searched for %s"
 msgstr "%s 검색함"
 
@@ -9945,7 +9945,7 @@ msgstr "이 보낸 사람은 항상"
 
 #: internal/mailui/formatted.go:192
 #: internal/mailui/settings.go:411
-#: internal/mailui/window.go:1432
+#: internal/mailui/window.go:1457
 msgid "Not saved: %v"
 msgstr "저장하지 못함: %v"
 
@@ -9977,21 +9977,9 @@ msgstr "또는 답할 내용을 쓰고 Enter"
 msgid "SUMMARY"
 msgstr "요약"
 
-#: internal/mailui/panel.go:204
-msgid "Reading the conversation…"
-msgstr "대화를 읽는 중…"
-
 #: internal/mailui/panel.go:229
 msgid "REPLIES"
 msgstr "답장"
-
-#: internal/mailui/panel.go:231
-msgid "Writing it in the reply under the conversation…"
-msgstr "대화 아래 답장에 쓰는 중…"
-
-#: internal/mailui/panel.go:238
-msgid "Thinking of replies…"
-msgstr "답장을 생각하는 중…"
 
 #: internal/mailui/panel.go:256
 msgid "Write this reply"
@@ -10008,10 +9996,6 @@ msgstr "확인할 것이 없습니다: 여기서 읽은 메시지는 내 것입�
 #: internal/mailui/panel.go:287
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI가 검사 결과와 보낸 사람, 제목, 링크, 본문을 읽고 판단을 알려 줍니다."
-
-#: internal/mailui/panel.go:290
-msgid "AI is reading it…"
-msgstr "AI가 읽는 중…"
 
 #: internal/mailui/picker.go:61
 msgid "Move to"
@@ -10135,7 +10119,7 @@ msgid "Forward (F)"
 msgstr "전달 (F)"
 
 #: internal/mailui/reader.go:264
-#: internal/mailui/window.go:967
+#: internal/mailui/window.go:992
 msgid "Archive (E)"
 msgstr "보관 (E)"
 
@@ -10152,17 +10136,17 @@ msgid "Move to a folder (V)"
 msgstr "폴더로 이동 (V)"
 
 #: internal/mailui/reader.go:271
-#: internal/mailui/window.go:1089
+#: internal/mailui/window.go:1114
 msgid "Star (S)"
 msgstr "별표 달기 (S)"
 
 #: internal/mailui/reader.go:274
-#: internal/mailui/window.go:1087
+#: internal/mailui/window.go:1112
 msgid "Unstar (S)"
 msgstr "별표 빼기 (S)"
 
 #: internal/mailui/reader.go:276
-#: internal/mailui/window.go:1096
+#: internal/mailui/window.go:1121
 msgid "Mark as unread (U)"
 msgstr "안 읽음으로 표시 (U)"
 
@@ -10200,7 +10184,7 @@ msgid "Fold or unfold"
 msgstr "접기 또는 펼치기"
 
 #: internal/mailui/reader.go:553
-#: internal/mailui/window.go:1049
+#: internal/mailui/window.go:1074
 msgid "me"
 msgstr "나"
 
@@ -10754,7 +10738,7 @@ msgid "Enter signs in · Esc goes back"
 msgstr "Enter로 로그인 · Esc로 뒤로"
 
 #: internal/mailui/welcome.go:600
-#: internal/mailui/window.go:522
+#: internal/mailui/window.go:547
 msgid "Sign in"
 msgstr "로그인"
 
@@ -10833,193 +10817,193 @@ msgstr "내 OAuth 클라이언트…"
 msgid "Hide your own OAuth client"
 msgstr "내 OAuth 클라이언트 숨기기"
 
-#: internal/mailui/window.go:214
+#: internal/mailui/window.go:217
 msgid "ALL"
 msgstr "전체"
 
-#: internal/mailui/window.go:214
+#: internal/mailui/window.go:217
 msgid "UNREAD"
 msgstr "안 읽음"
 
-#: internal/mailui/window.go:218
+#: internal/mailui/window.go:221
 msgid "Every conversation"
 msgstr "모든 대화"
 
-#: internal/mailui/window.go:218
+#: internal/mailui/window.go:221
 msgid "With messages not read"
 msgstr "안 읽은 메시지가 있는"
 
-#: internal/mailui/window.go:219
+#: internal/mailui/window.go:222
 msgid "With files attached"
 msgstr "파일이 첨부된"
 
-#: internal/mailui/window.go:219
+#: internal/mailui/window.go:222
 msgid "Waiting for your reply"
 msgstr "내 답장을 기다리는"
 
-#: internal/mailui/window.go:229
+#: internal/mailui/window.go:232
 msgid "MARK READ"
 msgstr "모두 읽음"
 
-#: internal/mailui/window.go:232
+#: internal/mailui/window.go:235
 msgid "Mark every conversation here as read"
 msgstr "여기 있는 대화를 모두 읽음으로 표시"
 
-#: internal/mailui/window.go:402
+#: internal/mailui/window.go:427
 msgid "Signed out"
 msgstr "로그아웃됨"
 
-#: internal/mailui/window.go:406
+#: internal/mailui/window.go:431
 msgid "Offline: %v"
 msgstr "오프라인: %v"
 
-#: internal/mailui/window.go:465
-#: internal/mailui/window.go:1382
+#: internal/mailui/window.go:490
+#: internal/mailui/window.go:1407
 msgid "No account yet"
 msgstr "아직 계정이 없습니다"
 
-#: internal/mailui/window.go:479
+#: internal/mailui/window.go:504
 msgid "All inboxes"
 msgstr "모든 받은편지함"
 
-#: internal/mailui/window.go:480
+#: internal/mailui/window.go:505
 msgid "Needs reply"
 msgstr "답장 필요"
 
-#: internal/mailui/window.go:481
+#: internal/mailui/window.go:506
 msgid "Starred"
 msgstr "별표"
 
-#: internal/mailui/window.go:493
+#: internal/mailui/window.go:518
 msgid "This account's settings"
 msgstr "이 계정의 설정"
 
-#: internal/mailui/window.go:553
+#: internal/mailui/window.go:578
 msgid "%d more folder"
 msgid_plural "%d more folders"
 msgstr[0] "폴더 %d개 더"
 
-#: internal/mailui/window.go:555
+#: internal/mailui/window.go:580
 msgid "Fewer folders"
 msgstr "폴더 줄이기"
 
-#: internal/mailui/window.go:606
+#: internal/mailui/window.go:631
 msgid "Inbox"
 msgstr "받은편지함"
 
-#: internal/mailui/window.go:608
+#: internal/mailui/window.go:633
 msgid "Drafts"
 msgstr "임시 보관함"
 
-#: internal/mailui/window.go:610
+#: internal/mailui/window.go:635
 msgid "Sent"
 msgstr "보낸 편지함"
 
-#: internal/mailui/window.go:614
+#: internal/mailui/window.go:639
 msgid "Spam"
 msgstr "스팸"
 
-#: internal/mailui/window.go:823
+#: internal/mailui/window.go:848
 msgid "your mail"
 msgstr "메일"
 
-#: internal/mailui/window.go:836
+#: internal/mailui/window.go:861
 msgid "Nothing found"
 msgstr "찾지 못했습니다"
 
-#: internal/mailui/window.go:838
+#: internal/mailui/window.go:863
 msgid "Fetching your mail…"
 msgstr "메일을 가져오는 중…"
 
-#: internal/mailui/window.go:840
+#: internal/mailui/window.go:865
 msgid "Nothing waits for your reply"
 msgstr "답장을 기다리는 것이 없습니다"
 
-#: internal/mailui/window.go:842
+#: internal/mailui/window.go:867
 msgid "No starred conversation"
 msgstr "별표한 대화가 없습니다"
 
-#: internal/mailui/window.go:844
+#: internal/mailui/window.go:869
 msgid "All read"
 msgstr "모두 읽음"
 
-#: internal/mailui/window.go:846
+#: internal/mailui/window.go:871
 msgid "Inbox empty. Nothing waits for you."
 msgstr "받은편지함이 비었습니다. 기다리는 것이 없습니다."
 
-#: internal/mailui/window.go:848
+#: internal/mailui/window.go:873
 msgid "No mail here"
 msgstr "메일이 없습니다"
 
-#: internal/mailui/window.go:913
+#: internal/mailui/window.go:938
 msgid "Could not load older mail: %v"
 msgstr "이전 메일을 불러올 수 없습니다: %v"
 
-#: internal/mailui/window.go:968
+#: internal/mailui/window.go:993
 msgid "Delete (#)"
 msgstr "삭제 (#)"
 
-#: internal/mailui/window.go:1077
-#: internal/mailui/window.go:1080
+#: internal/mailui/window.go:1102
+#: internal/mailui/window.go:1105
 msgid "SUSPICIOUS"
 msgstr "의심스러움"
 
-#: internal/mailui/window.go:1093
+#: internal/mailui/window.go:1118
 msgid "Mark as read"
 msgstr "읽음으로 표시"
 
-#: internal/mailui/window.go:1140
+#: internal/mailui/window.go:1165
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1월 2일"
 
-#: internal/mailui/window.go:1194
+#: internal/mailui/window.go:1219
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "Enter를 누르면 어시스턴트에게 이것을 검색해 달라고 합니다."
 
-#: internal/mailui/window.go:1235
+#: internal/mailui/window.go:1260
 msgid "Searching the server…"
 msgstr "서버를 검색하는 중…"
 
-#: internal/mailui/window.go:1259
+#: internal/mailui/window.go:1284
 msgid "The server's search failed: %s"
 msgstr "서버 검색에 실패했습니다: %s"
 
-#: internal/mailui/window.go:1379
+#: internal/mailui/window.go:1404
 msgid "Up to date"
 msgstr "최신 상태"
 
-#: internal/mailui/window.go:1384
+#: internal/mailui/window.go:1409
 msgid "Checking for mail…"
 msgstr "메일 확인 중…"
 
-#: internal/mailui/window.go:1386
+#: internal/mailui/window.go:1411
 msgid "Offline: trying again soon"
 msgstr "오프라인: 곧 다시 시도합니다"
 
-#: internal/mailui/window.go:1388
+#: internal/mailui/window.go:1413
 msgid "%d account cannot connect"
 msgid_plural "%d accounts cannot connect"
 msgstr[0] "계정 %d개에 연결할 수 없습니다"
 
-#: internal/mailui/window.go:1390
+#: internal/mailui/window.go:1415
 msgid "Checked %s"
 msgstr "%s 확인함"
 
-#: internal/mailui/window.go:1394
+#: internal/mailui/window.go:1419
 msgid "Last checked at %s"
 msgstr "마지막 확인 %s"
 
-#: internal/mailui/window.go:1400
+#: internal/mailui/window.go:1425
 msgid "Mail · %d unread"
 msgstr "메일 · 안 읽음 %d"
 
-#: internal/mailui/window.go:1440
+#: internal/mailui/window.go:1465
 #: ui/mail.ui:137
 msgid "Search, or ask in a sentence"
 msgstr "검색하거나 문장으로 묻기"
 
-#: internal/mailui/window.go:1472
+#: internal/mailui/window.go:1497
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d분 전"

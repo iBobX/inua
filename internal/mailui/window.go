@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"slices"
 	"strings"
 	"time"
@@ -15,6 +17,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/mail"
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -237,7 +240,29 @@ func openWindow(c *appui.Ctx) *window {
 
 	w.loadSettings()
 	w.h.later(3*60*1000, w.tick)
+	go tileWindow()
 	return w
+}
+
+// tileWindow tiles Mail's window on Hyprland, as Files' and the
+// terminal's are: an inua.conf written by an inua older than Mail floats
+// every inua app's window. The window is looked for until it maps.
+func tileWindow() {
+	paths, err := hypr.PathsFromEnv()
+	if err != nil {
+		return // not on Hyprland
+	}
+	c := hypr.NewClient(paths)
+	for range 30 {
+		time.Sleep(100 * time.Millisecond)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		_, err = c.Tile(ctx, os.Getpid())
+		cancel()
+		if err == nil {
+			return
+		}
+	}
+	log.Printf("tiling the window: %v", err)
 }
 
 // loadSettings reads mail.toml and starts a session for each account.

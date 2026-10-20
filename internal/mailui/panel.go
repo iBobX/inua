@@ -201,7 +201,7 @@ func (w *window) panelSummary(c *mail.Conversation) {
 	case sum.err != "":
 		w.panelError(sec, sum.err)
 	case sum.text == "" && sum.busy:
-		l := loader(i18n.T("Reading the conversation…"))
+		l := loader("")
 		l.SetHalign(gtk.AlignStartValue)
 		gtkx.Append(sec, &l.Widget)
 	default:
@@ -228,14 +228,14 @@ func (w *window) panelReply(c *mail.Conversation) {
 	}
 	sec := w.panelSection(i18n.T("REPLIES"))
 	if drafting {
-		l := loader(i18n.T("Writing it in the reply under the conversation…"))
+		l := loader("")
 		l.SetHalign(gtk.AlignStartValue)
 		gtkx.Append(sec, &l.Widget)
 	}
 	switch {
 	case ideas == nil:
 	case ideas.busy:
-		l := loader(i18n.T("Thinking of replies…"))
+		l := loader("")
 		l.SetHalign(gtk.AlignStartValue)
 		gtkx.Append(sec, &l.Widget)
 	case ideas.err != "":
@@ -287,7 +287,7 @@ func (w *window) panelSafety(c *mail.Conversation) {
 		w.panelNote(ai, i18n.T("AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."))
 		w.panelButton(ai, i18n.T("Ask AI"), func() { w.askJudge(k) })
 	case a.busy:
-		gtkx.Append(ai, &loader(i18n.T("AI is reading it…")).Widget)
+		gtkx.Append(ai, &loader("").Widget)
 	case a.err != "":
 		w.panelError(ai, a.err)
 		w.panelLink(ai, i18n.T("Try again"), func() { w.askJudge(k) })
