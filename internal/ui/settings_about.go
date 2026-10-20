@@ -12,6 +12,7 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/upgrade"
 )
 
@@ -23,6 +24,13 @@ type aboutSettings struct {
 	check, upgrade gtk.Button
 	daily          gtk.Switch
 	changelog      gtk.Box
+
+	// The system at a glance, read each time the page is shown.
+	fetch      gtk.Box
+	fetchCopy  gtk.Button
+	facts      []shell.Fact
+	fetchTitle string // user@host
+	fetching   bool
 
 	// What GitHub said, kept while the shell runs.
 	latest    string
@@ -42,6 +50,9 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	ui.Get("about_upgrade", &a.upgrade)
 	ui.Get("about_daily", &a.daily)
 	ui.Get("about_changelog", &a.changelog)
+	ui.Get("about_fetch", &a.fetch)
+	ui.Get("about_fetch_copy", &a.fetchCopy)
+	a.fetchCopy.ConnectClicked(&s.onSettingsButton)
 	a.check.ConnectClicked(&s.onSettingsButton)
 	a.upgrade.ConnectClicked(&s.onSettingsButton)
 	a.daily.ConnectStateSet(&s.onSettingsSwitch)
@@ -58,6 +69,9 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 		}
 		s.syncBluetoothSearch() // only while its page is shown
 		s.pollWifi()            // likewise
+		if page == "about" {
+			s.fetchSystem()
+		}
 		switch {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()
@@ -76,6 +90,8 @@ func (s *shellUI) aboutButton(name string) bool {
 	switch name {
 	case "about_check":
 		s.checkReleases()
+	case "about_fetch_copy":
+		s.copyFetch()
 	case "about_upgrade":
 		if a.latest == "" || a.upgrading {
 			break

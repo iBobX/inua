@@ -1226,6 +1226,27 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
    network, under its row. */
 .settings .wifi-lock { color: @t2; -gtk-icon-size: 14px; }
 .settings .row-error { padding: 0 0 12px 28px; font-size: 12px; color: @danger; }
+/* About: the system at a glance, as fastfetch prints it: inua's name in
+   blocks in the accent, the keys in the accent, the theme's colours as a
+   row of squares. */
+.settings .fetch { padding: 16px 0 18px; }
+.settings .fetch label { font-family: "Geist Mono", "IBM Plex Mono", "JetBrains Mono", monospace; font-feature-settings: "tnum"; }
+.settings .fetch .fetch-logo { color: @accent; font-size: 9px; line-height: 1; }
+.settings .fetch .fetch-title { color: @accent; font-size: 13px; font-weight: 600; }
+.settings .fetch .fetch-rule { color: @t2; font-size: 12px; }
+.settings .fetch .fetch-key { color: @accent; font-size: 12px; font-weight: 600; }
+.settings .fetch .fetch-value { color: @t0; font-size: 12px; }
+.settings .fetch .fetch-swatches { margin-top: 12px; }
+.settings .fetch .fetch-swatch { min-width: 22px; min-height: 12px; }
+.settings .fetch .c-t0 { background: @t0; }
+.settings .fetch .c-t1 { background: @t1; }
+.settings .fetch .c-t2 { background: @t2; }
+.settings .fetch .c-line { background: @line; }
+.settings .fetch .c-accent { background: @accent; }
+.settings .fetch .c-primary { background: @primary; }
+.settings .fetch .c-ok { background: @ok; }
+.settings .fetch .c-warn { background: @warn; }
+.settings .fetch .c-danger { background: @danger; }
 
 /* Toggle buttons joined in a row: °C/°F, chart ranges. */
 .settings .segmented > button {

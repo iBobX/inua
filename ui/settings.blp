@@ -4406,6 +4406,50 @@ ApplicationWindow settings {
               styles ["page"]
               orientation: vertical;
 
+              // [SYSTEM]: this computer at a glance, as fastfetch shows it:
+              // inua's name in blocks, then a fact a line (settings_about.go).
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>SYSTEM<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("This computer at a glance");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+
+                  Button about_fetch_copy {
+                    styles ["outlined"]
+                    name: "about_fetch_copy";
+                    label:  _("Copy");
+                    valign: center;
+                    tooltip-text:  _("Copy as text");
+                  }
+                }
+
+                Box about_fetch {
+                  styles ["section-body", "fetch"]
+                  spacing: 28;
+                }
+              }
+
               // [INUA]
               Box {
                 styles ["section"]
