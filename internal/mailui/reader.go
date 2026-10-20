@@ -266,6 +266,7 @@ func (w *window) drawBar(c *mail.Conversation) {
 	more.SetTooltipText(i18n.T("More"))
 	pop := gtk.NewPopover()
 	pop.AddCssClass("mail-menu")
+	pop.SetHasArrow(false)
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	item := func(label string, f func()) {
 		b := gtk.NewButtonWithLabel(label)

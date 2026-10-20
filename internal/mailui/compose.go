@@ -570,6 +570,7 @@ func (c *composer) fields(on bool) {
 func (c *composer) buildPolish() {
 	c.popover = gtk.NewPopover()
 	c.popover.AddCssClass("mail-menu")
+	c.popover.SetHasArrow(false)
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	for _, p := range []struct {
 		label string
