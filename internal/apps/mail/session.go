@@ -31,11 +31,12 @@ type Session struct {
 
 	imu     sync.Mutex // the indexes
 	indexes map[string]*Index
+	held    map[string]map[uint32]bool // out of the list for an action that can still be undone
 }
 
 // NewSession makes an account's session; nothing connects yet.
 func NewSession(acc Account, settings Settings, store *Store, secrets *Secrets) *Session {
-	s := &Session{Acc: acc, store: store, secrets: secrets, indexes: map[string]*Index{}}
+	s := &Session{Acc: acc, store: store, secrets: secrets, indexes: map[string]*Index{}, held: map[string]map[uint32]bool{}}
 	if acc.OAuth() {
 		s.ep, _ = settings.Endpoint(acc.Provider)
 	}
@@ -230,6 +231,7 @@ func (s *Session) Sync(ctx context.Context, mailbox string) (SyncResult, error) 
 	// it back. What only this computer keeps (tags, summaries, answers)
 	// is taken from the index as it is now.
 	keepLocal(work, s.index(mailbox))
+	work.Drop(func(u uint32) bool { return s.held[mailbox][u] }) // still on the server until the action is done
 	s.indexes[mailbox] = work
 	s.imu.Unlock()
 	if res.Reset {
@@ -337,6 +339,53 @@ func (s *Session) Move(ctx context.Context, mailbox string, uids []uint32, to st
 	err := s.Do(ctx, func(c *Conn) error { return c.Move(mailbox, uids, to) })
 	if err != nil {
 		s.restore(mailbox, before)
+		return err
+	}
+	s.store.DropRaw(s.Acc.ID, mailbox, uids...)
+	s.save(mailbox)
+	return nil
+}
+
+// Hold takes messages out of the list at once, for an action the user
+// can still undo; the server is told later (MoveHeld), or never (Release).
+// A sync meanwhile leaves them out.
+func (s *Session) Hold(mailbox string, uids []uint32) []Envelope {
+	s.imu.Lock()
+	if s.held[mailbox] == nil {
+		s.held[mailbox] = map[uint32]bool{}
+	}
+	for _, u := range uids {
+		s.held[mailbox][u] = true
+	}
+	s.imu.Unlock()
+	return s.take(mailbox, uids)
+}
+
+// Release puts held messages back, the action undone.
+func (s *Session) Release(mailbox string, held []Envelope) {
+	s.unhold(mailbox, held)
+	s.restore(mailbox, held)
+}
+
+func (s *Session) unhold(mailbox string, held []Envelope) {
+	s.imu.Lock()
+	for _, e := range held {
+		delete(s.held[mailbox], e.UID)
+	}
+	s.imu.Unlock()
+}
+
+// MoveHeld moves held messages on the server; when the server refuses,
+// they come back to the list.
+func (s *Session) MoveHeld(ctx context.Context, mailbox string, held []Envelope, to string) error {
+	uids := make([]uint32, len(held))
+	for i, e := range held {
+		uids[i] = e.UID
+	}
+	err := s.Do(ctx, func(c *Conn) error { return c.Move(mailbox, uids, to) })
+	s.unhold(mailbox, held)
+	if err != nil {
+		s.restore(mailbox, held)
 		return err
 	}
 	s.store.DropRaw(s.Acc.ID, mailbox, uids...)

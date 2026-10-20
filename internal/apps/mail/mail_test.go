@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -953,5 +954,73 @@ func TestAttachmentText(t *testing.T) {
 	}
 	if err != nil || !strings.Contains(s, "Invoice total 14.28 EUR") {
 		t.Fatalf("pdf %q %v", s, err)
+	}
+}
+
+func TestHoldAndUndo(t *testing.T) {
+	srv := newIMAP(t, "Archive")
+	for i := range 3 {
+		srv.put(t, "INBOX", msg(fmt.Sprintf("h%d@x", i), "x@x.org", fmt.Sprint("n", i), "t"))
+	}
+	ctx := context.Background()
+	s := srv.session(t)
+	s.Mailboxes(ctx)
+	s.Sync(ctx, "INBOX")
+	held := s.Hold("INBOX", []uint32{3}) // the newest: a sync would fetch it again
+	if len(held) != 1 || len(s.Items("INBOX")) != 2 {
+		t.Fatalf("held %d, listed %d", len(held), len(s.Items("INBOX")))
+	}
+	if s.Sync(ctx, "INBOX"); len(s.Items("INBOX")) != 2 {
+		t.Fatal("a sync listed a held message again")
+	}
+	s.Release("INBOX", held)
+	if len(s.Items("INBOX")) != 3 {
+		t.Fatal("undo did not put it back")
+	}
+	held = s.Hold("INBOX", []uint32{3})
+	if err := s.MoveHeld(ctx, "INBOX", held, "Archive"); err != nil {
+		t.Fatal(err)
+	}
+	s.Sync(ctx, "INBOX")
+	s.Sync(ctx, "Archive")
+	if len(s.Items("INBOX")) != 2 || len(s.Items("Archive")) != 1 {
+		t.Fatalf("after the move: inbox %d, archive %d", len(s.Items("INBOX")), len(s.Items("Archive")))
+	}
+	held = s.Hold("INBOX", []uint32{2})
+	if err := s.MoveHeld(ctx, "INBOX", held, "Nowhere"); err == nil || len(s.Items("INBOX")) != 2 {
+		t.Fatalf("a refused move: %v, %d listed", err, len(s.Items("INBOX")))
+	}
+}
+
+func TestContacts(t *testing.T) {
+	now := time.Date(2026, 10, 20, 0, 0, 0, 0, time.UTC)
+	mine := func(a string) bool { return a == "me@x" }
+	it := func(from Address, to []Address, days int, bulk bool) Item {
+		return Item{Envelope: &Envelope{From: from, To: to, Date: now.AddDate(0, 0, -days), Bulk: bulk}}
+	}
+	items := []Item{
+		it(Address{Addr: "me@x"}, []Address{{Name: "Ana Souza", Addr: "ana@studio.dev"}}, 1, false),
+		it(Address{Name: "Ben Ito", Addr: "ben@studio.dev"}, []Address{{Addr: "me@x"}}, 2, false),
+		it(Address{Name: "Ben Ito", Addr: "ben@studio.dev"}, []Address{{Addr: "me@x"}}, 3, false),
+		it(Address{Name: "Go Blog", Addr: "news@golang.example"}, nil, 1, true),
+		it(Address{Name: "GitHub", Addr: "noreply@github.com"}, nil, 1, false),
+		it(Address{Name: "Old Friend", Addr: "old@x.org"}, nil, 900, false),
+	}
+	cs := Contacts(items, mine, now)
+	var addrs []string
+	for _, c := range cs {
+		addrs = append(addrs, c.Addr)
+	}
+	if !slices.Equal(addrs, []string{"ana@studio.dev", "ben@studio.dev", "old@x.org"}) {
+		t.Fatalf("contacts %v", addrs)
+	}
+	if got := Suggest(cs, "sou", 5); len(got) != 1 || got[0].Name != "Ana Souza" {
+		t.Fatalf("by name %+v", got)
+	}
+	if got := Suggest(cs, "BEN@", 5); len(got) != 1 {
+		t.Fatalf("by address %+v", got)
+	}
+	if Suggest(cs, "", 5) != nil || len(Suggest(cs, "o", 1)) != 1 {
+		t.Fatal("empty or limit")
 	}
 }

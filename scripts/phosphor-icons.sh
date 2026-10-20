@@ -306,6 +306,13 @@ disk-drive                            hard-drive
 disk-dev                              code
 disk-agent                            robot
 disk-cache                            broom
+# Mail: a conversation's actions
+mail-archive                          archive
+mail-starred                          star
+mail-unread                           envelope-simple
+mail-read                             envelope-simple-open
+mail-reply                            arrow-bend-up-left
+mail-move                             folder-simple
 disk-choose                           cursor-click
 disk-locate                           crosshair
 LIST

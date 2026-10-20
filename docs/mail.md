@@ -61,11 +61,27 @@ keeps it; *Add to calendar* opens the event with your calendar app. A
 cancelled event says so. Google's, Outlook's (Windows zone names) and
 other calendars' invitations are read.
 
-Keys: `j`/`k` or the arrows choose a conversation, `/` or `Ctrl+F`
-searches, `c` composes; on a conversation `r` replies, `a` replies to
-all, `f` forwards, `e` archives, `#` or Delete moves it to the Trash (in
-the Trash: deletes it, after asking), `s` stars, `u` marks it unread,
-`!` moves it to Spam. In the composer, `Ctrl+Enter` sends.
+**Acting on a conversation.** A pointer over a row shows its actions in
+place of the time: archive, delete, read or unread, star. Archiving,
+deleting and moving take the conversation out of the list at once, with
+an *Undo* bar for a few seconds (`z`); the server is told when the bar
+goes, so an undo never reaches it. The next conversation opens in its
+place. `v` moves to any folder: a short list, narrowed as you type,
+Enter takes the first.
+
+**Quick reply.** Under a conversation, a field answers its newest
+message without a window: it quotes what it answers, under your
+signature, and sends with `Ctrl+Enter` after the same five seconds to
+take it back. *Open in a window* moves what you wrote to the composer.
+
+Keys (`?` lists them): `j`/`k` or the arrows choose a conversation, `/`
+or `Ctrl+F` searches, `c` composes; on a conversation `r` replies, `a`
+replies to all, `f` forwards, `e` archives, `#` or Delete moves it to
+the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
+stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
+move. In the composer and the quick reply, `Ctrl+Enter` sends.
+
+The window's title counts the unread.
 
 ## Accounts
 
@@ -178,7 +194,10 @@ The cache can be deleted at any time; drafts are not in it
 
 The composer is a window of its own: From (when there are several
 accounts), To, Cc and Bcc, the subject, the text and the files attached
-(*Attach…*, or drop files on the window). A reply quotes what it answers
+(*Attach…*, or drop files on the window). Typing in To, Cc or Bcc
+suggests the people you mail, under the field: those you write to
+first, then those who write to you, lists and automated senders left
+out; Tab or Enter takes the first, ↓ goes into the list. A reply quotes what it answers
 under your signature and keeps the conversation's headers; Reply all
 leaves your own addresses out; Forward attaches the original's files.
 

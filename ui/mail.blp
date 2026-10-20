@@ -153,6 +153,31 @@ ApplicationWindow mail {
             label: _("Load older");
             visible: false;
           }
+
+          // What was just archived, deleted or moved, a few seconds to
+          // take it back; the server is told when it goes.
+          Box undo_bar {
+            styles ["mail-undo"]
+            spacing: 12;
+            visible: false;
+
+            Label undo_text {
+              styles ["mail-undo-text"]
+              xalign: 0;
+              hexpand: true;
+              ellipsize: end;
+            }
+
+            Button undo {
+              styles ["mail-link"]
+              label: _("Undo");
+            }
+
+            Label {
+              styles ["mail-keys"]
+              label: "Z";
+            }
+          }
         }
 
         // ── the conversation ───────────────────────────────────────────

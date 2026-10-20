@@ -19,7 +19,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
       <object class="GtkBox">
         <property name="orientation">1</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="fields">
             <style>
               <class name="mail-compose-fields"/>
             </style>
@@ -49,7 +49,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="to_row">
                 <style>
                   <class name="mail-field"/>
                 </style>

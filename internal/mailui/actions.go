@@ -1,8 +1,11 @@
 package mailui
 
 import (
+	"context"
 	"net/url"
+	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/godbus/dbus/v5"
@@ -14,15 +17,15 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 )
 
-// byBox groups the open conversation's messages by account and mailbox,
-// those in skip left out (the user's Sent, when acting on a conversation
-// seen from the inbox).
-func (w *window) byBox(skip ...mail.Role) map[[2]string][]uint32 {
+// byBox groups a conversation's messages by account and mailbox, those
+// in skip left out (the user's Sent, when acting on a conversation seen
+// from the inbox).
+func (w *window) byBox(c *mail.Conversation, skip ...mail.Role) map[[2]string][]uint32 {
 	out := map[[2]string][]uint32{}
-	if w.open == nil {
+	if c == nil {
 		return out
 	}
-	for _, m := range w.open.Messages {
+	for _, m := range c.Messages {
 		x := w.acct(m.Account)
 		if x == nil {
 			continue
@@ -41,42 +44,125 @@ func (w *window) byBox(skip ...mail.Role) map[[2]string][]uint32 {
 	return out
 }
 
-// moveOpen moves the open conversation to a mailbox of the role, then
-// chooses the next one.
-func (w *window) moveOpen(role mail.Role, missing string) {
-	groups := w.byBox(mail.RoleSent)
-	if len(groups) == 0 {
+// pending is an action the user can still undo: its messages are out of
+// the list, and the server is told when the undo bar goes.
+type pending struct {
+	moves []heldMove
+	open  string // the conversation it took, to choose again on undo
+}
+
+type heldMove struct {
+	x       *acct
+	mailbox string
+	to      string
+	held    []mail.Envelope
+}
+
+// moveConv moves a conversation to a mailbox (to gives it for an account; ""
+// when the account has none, said with missing), out of the list at
+// once, with done in the undo bar.
+func (w *window) moveConv(c *mail.Conversation, to func(*acct) string, missing, done string) {
+	if c == nil {
 		return
 	}
-	for k, uids := range groups {
+	groups := w.byBox(c, mail.RoleSent)
+	p := &pending{}
+	for k := range groups {
 		x := w.acct(k[0])
-		to := x.s.Role(role)
-		if to == "" {
+		dest := to(x)
+		if dest == "" {
 			w.actErr = missing
 			w.drawReader()
 			return
 		}
-		if to == k[1] {
-			delete(groups, k)
+		if dest == k[1] {
 			continue
 		}
-		mailbox := k[1]
-		uids := uids
+		p.moves = append(p.moves, heldMove{x: x, mailbox: k[1], to: dest})
+	}
+	if len(p.moves) == 0 {
+		return
+	}
+	w.commitPending() // one action waits at a time
+	for i := range p.moves {
+		m := &p.moves[i]
+		m.held = m.x.s.Hold(m.mailbox, groups[[2]string{m.x.s.Acc.ID, m.mailbox}])
+		w.counted(m.x, m.mailbox)
+	}
+	if c.ID == w.openID {
+		p.open = c.ID
+		w.next()
+	} else {
+		w.refresh()
+	}
+	w.pending = p
+	w.undoText.SetText(done)
+	w.undoBar.SetVisible(true)
+	w.h.later(6000, func() {
+		if w.pending == p {
+			w.commitPending()
+		}
+	})
+}
+
+// commitPending tells the server what the action waiting did.
+func (w *window) commitPending() {
+	p := w.pending
+	if p == nil {
+		return
+	}
+	w.pending = nil
+	w.undoBar.SetVisible(false)
+	for _, m := range p.moves {
 		go func() {
-			err := x.s.Move(w.ctx, mailbox, uids, to)
+			err := m.x.s.MoveHeld(w.ctx, m.mailbox, m.held, m.to)
 			gtkx.Post(func() {
 				if err != nil {
-					w.actErr = i18n.Tf("The server did not move it: %v", err)
+					w.say(&w.listError, i18n.Tf("The server did not move it: %v", err))
 				}
-				w.counted(x, mailbox)
+				w.counted(m.x, m.mailbox)
 				w.refresh()
-				if err != nil && w.open != nil {
-					w.drawReader()
-				}
 			})
 		}()
 	}
-	w.next()
+}
+
+// undo takes the action waiting back: its messages return, the server
+// untouched.
+func (w *window) undo() {
+	p := w.pending
+	if p == nil {
+		return
+	}
+	w.pending = nil
+	w.undoBar.SetVisible(false)
+	for _, m := range p.moves {
+		m.x.s.Release(m.mailbox, m.held)
+		w.counted(m.x, m.mailbox)
+	}
+	w.refresh()
+	if p.open != "" {
+		if i := slices.Index(w.ids, p.open); i >= 0 {
+			w.sel.SetSelected(uint32(i))
+		}
+	}
+}
+
+// flushPending tells the server before Mail quits, waiting a little.
+func (w *window) flushPending() {
+	p := w.pending
+	if p == nil {
+		return
+	}
+	w.pending = nil
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+	var wg sync.WaitGroup
+	for _, m := range p.moves {
+		wg.Add(1)
+		go func() { defer wg.Done(); m.x.s.MoveHeld(ctx, m.mailbox, m.held, m.to) }()
+	}
+	wg.Wait()
 }
 
 // next chooses the conversation after the open one, which is leaving the
@@ -96,37 +182,45 @@ func (w *window) next() {
 	}
 }
 
-func (w *window) archive() {
-	w.moveOpen(mail.RoleArchive, i18n.T("This account has no Archive folder."))
+func roleOf(r mail.Role) func(*acct) string {
+	return func(x *acct) string { return x.s.Role(r) }
+}
+
+func (w *window) archive() { w.archiveConv(w.open) }
+
+func (w *window) archiveConv(c *mail.Conversation) {
+	w.moveConv(c, roleOf(mail.RoleArchive), i18n.T("This account has no Archive folder."), i18n.T("Archived"))
 }
 
 func (w *window) spam() {
-	w.moveOpen(mail.RoleJunk, i18n.T("This account has no Spam folder."))
+	w.moveConv(w.open, roleOf(mail.RoleJunk), i18n.T("This account has no Spam folder."), i18n.T("Moved to Spam"))
 }
 
 // trash moves the open conversation to the Trash; in the Trash, it asks,
 // then deletes it for good.
-func (w *window) trash() {
-	if w.open == nil {
+func (w *window) trash() { w.trashConv(w.open) }
+
+func (w *window) trashConv(c *mail.Conversation) {
+	if c == nil {
 		return
 	}
-	latest := w.open.Latest()
+	latest := c.Latest()
 	x := w.acct(latest.Account)
 	if x == nil {
 		return
 	}
 	if latest.Mailbox == x.s.Role(mail.RoleTrash) || x.s.Role(mail.RoleTrash) == "" {
-		n := len(w.open.Messages)
-		w.confirm(i18n.T("Delete for good?"), w.open.Subject(),
+		n := len(c.Messages)
+		w.confirm(i18n.T("Delete for good?"), c.Subject(),
 			i18n.Nf("Its %d message is deleted from the server. This cannot be undone.", "Its %d messages are deleted from the server. This cannot be undone.", n, n),
-			i18n.T("Delete"), true, w.deleteOpen)
+			i18n.T("Delete"), true, func() { w.deleteConv(c) })
 		return
 	}
-	w.moveOpen(mail.RoleTrash, "")
+	w.moveConv(c, roleOf(mail.RoleTrash), "", i18n.T("Moved to Trash"))
 }
 
-func (w *window) deleteOpen() {
-	for k, uids := range w.byBox() {
+func (w *window) deleteConv(c *mail.Conversation) {
+	for k, uids := range w.byBox(c) {
 		x := w.acct(k[0])
 		mailbox, uids := k[1], uids
 		go func() {
@@ -139,21 +233,27 @@ func (w *window) deleteOpen() {
 			})
 		}()
 	}
-	w.next()
+	if c.ID == w.openID {
+		w.next()
+	} else {
+		w.refresh()
+	}
 }
 
 // star stars the newest message, or unstars the conversation.
-func (w *window) star() {
-	if w.open == nil {
+func (w *window) star() { w.starConv(w.open) }
+
+func (w *window) starConv(c *mail.Conversation) {
+	if c == nil {
 		return
 	}
-	on := !w.open.Starred()
+	on := !c.Starred()
 	targets := map[[2]string][]uint32{}
 	if on {
-		m := w.open.Latest()
+		m := c.Latest()
 		targets[[2]string{m.Account, m.Mailbox}] = []uint32{m.UID}
 	} else {
-		for _, m := range w.open.Messages {
+		for _, m := range c.Messages {
 			if m.Has(mail.Flagged) {
 				k := [2]string{m.Account, m.Mailbox}
 				targets[k] = append(targets[k], m.UID)
@@ -173,6 +273,26 @@ func (w *window) markUnread() {
 	w.open, w.openID = nil, ""
 	w.sel.UnselectAll()
 	w.readerStack.SetVisibleChildName("empty")
+}
+
+// toggleRead marks a conversation read, or its newest message unread.
+func (w *window) toggleRead(c *mail.Conversation) {
+	if c == nil {
+		return
+	}
+	if c.Unread() == 0 {
+		m := c.Latest()
+		w.setFlags(map[[2]string][]uint32{{m.Account, m.Mailbox}: {m.UID}}, mail.Seen, false)
+		return
+	}
+	targets := map[[2]string][]uint32{}
+	for _, m := range c.Messages {
+		if !m.Has(mail.Seen) {
+			k := [2]string{m.Account, m.Mailbox}
+			targets[k] = append(targets[k], m.UID)
+		}
+	}
+	w.setFlags(targets, mail.Seen, true)
 }
 
 func (w *window) setFlags(targets map[[2]string][]uint32, flag string, on bool) {

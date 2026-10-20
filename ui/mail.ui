@@ -210,6 +210,41 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <property name="visible">false</property>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkBox" id="undo_bar">
+                        <style>
+                          <class name="mail-undo"/>
+                        </style>
+                        <property name="spacing">12</property>
+                        <property name="visible">false</property>
+                        <child>
+                          <object class="GtkLabel" id="undo_text">
+                            <style>
+                              <class name="mail-undo-text"/>
+                            </style>
+                            <property name="xalign">0</property>
+                            <property name="hexpand">true</property>
+                            <property name="ellipsize">3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="undo">
+                            <style>
+                              <class name="mail-link"/>
+                            </style>
+                            <property name="label" translatable="yes">Undo</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <style>
+                              <class name="mail-keys"/>
+                            </style>
+                            <property name="label">Z</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

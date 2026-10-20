@@ -27,7 +27,12 @@ type composer struct {
 	from                           gtk.DropDown
 	to, cc, bcc, subject           gtk.Entry
 	draftWhat                      gtk.Entry
-	ccRow, bccRow                  gtk.Box
+	ccRow, bccRow, toRow, fieldBox gtk.Box
+	sug                            *gtk.Box       // the suggestions under the field typed in
+	sugFor                         *gtk.Entry     // that field
+	sugs                           []mail.Contact // what it suggests
+	sugPtrs                        []uintptr
+	contacts                       []mail.Contact
 	body                           gtk.TextView
 	buf                            *gtk.TextBuffer
 	attachments                    gtk.FlowBox
@@ -90,7 +95,7 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	b.Get("compose", &c.win)
 	for name, ptr := range map[string]gobject.Ptr{
 		"from": &c.from, "to": &c.to, "cc": &c.cc, "bcc": &c.bcc, "subject": &c.subject, "draft_what": &c.draftWhat,
-		"cc_row": &c.ccRow, "bcc_row": &c.bccRow, "body": &c.body, "attachments": &c.attachments,
+		"cc_row": &c.ccRow, "bcc_row": &c.bccRow, "to_row": &c.toRow, "fields": &c.fieldBox, "body": &c.body, "attachments": &c.attachments,
 		"show_cc": &c.showCc, "attach": &c.attach, "send": &c.send, "draft": &c.draftBtn, "undo_ai": &c.undoAI,
 		"polish": &c.polish, "status": &c.status, "ai_note": &c.aiNote,
 	} {
@@ -132,7 +137,10 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 		h.click(&c.draftBtn, c.draftNow),
 		h.click(&c.undoAI, c.undoAssistant),
 		h.enter(&c.draftWhat, c.draftNow),
-		h.edit(&c.to, c.changed), h.edit(&c.cc, c.changed), h.edit(&c.bcc, c.changed), h.edit(&c.subject, c.changed),
+		h.edit(&c.to, func() { c.changed(); c.suggest(&c.to, &c.toRow) }),
+		h.edit(&c.cc, func() { c.changed(); c.suggest(&c.cc, &c.ccRow) }),
+		h.edit(&c.bcc, func() { c.changed(); c.suggest(&c.bcc, &c.bccRow) }),
+		h.edit(&c.subject, c.changed),
 		h.edit(c.buf, c.changed),
 		h.close(&c.win, c.closeRequested),
 		h.key(&c.win.Widget, true, c.key),
@@ -140,6 +148,15 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 		h.notify(&c.from, "selected", c.fromChanged),
 	)
 	c.buildPolish()
+	c.sug = gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	c.sug.AddCssClass("mail-suggest")
+	c.sug.SetVisible(false)
+	c.fieldBox.InsertChildAfter(&c.sug.Widget, &c.toRow.Widget)
+	c.contacts = w.contacts()
+	for _, e := range []*gtk.Entry{&c.to, &c.cc, &c.bcc} {
+		e := e
+		c.ptrs = append(c.ptrs, h.key(&e.Widget, true, func(keyval uint32, _ gdk.ModifierType) bool { return c.suggestKey(e, keyval) }))
+	}
 	w.composers = append(w.composers, c)
 	w.h.later(60000, c.serverTick)
 	c.win.Present()
@@ -740,4 +757,116 @@ func (w *window) voice(x *acct) []string {
 		}
 	}
 	return out
+}
+
+// --- suggestions ---
+
+// contacts are the people of every account's mail kept, for the
+// composer's suggestions.
+func (w *window) contacts() []mail.Contact {
+	var items []mail.Item
+	for _, x := range w.accts {
+		for _, r := range []mail.Role{mail.RoleInbox, mail.RoleSent, mail.RoleArchive} {
+			if name := x.s.Role(r); name != "" {
+				items = append(items, x.s.Items(name)...)
+			}
+		}
+	}
+	return mail.Contacts(items, w.mine, time.Now())
+}
+
+// typedPart is the address being typed in a field: after the last comma.
+func typedPart(s string) string {
+	if i := strings.LastIndexAny(s, ",;"); i >= 0 {
+		s = s[i+1:]
+	}
+	return strings.TrimSpace(s)
+}
+
+// suggest shows, under a field's row, the people whose name or address
+// starts with what is being typed.
+func (c *composer) suggest(e *gtk.Entry, row *gtk.Box) {
+	if c.filling {
+		return
+	}
+	typed := typedPart(e.GetText())
+	c.sugs = nil
+	if len(typed) >= 1 { // typing changed it: c.filling guards the code's changes
+		for _, s := range mail.Suggest(c.contacts, typed, 6) {
+			if !strings.EqualFold(s.Addr, typed) {
+				c.sugs = append(c.sugs, s)
+			}
+		}
+	}
+	c.w.h.forget(c.sugPtrs)
+	c.sugPtrs = nil
+	gtkx.Clear(c.sug)
+	if len(c.sugs) == 0 {
+		c.sug.SetVisible(false)
+		return
+	}
+	c.sugFor = e
+	c.fieldBox.ReorderChildAfter(&c.sug.Widget, &row.Widget)
+	for i, s := range c.sugs {
+		b := gtk.NewButton()
+		b.AddCssClass("mail-suggestion")
+		if i == 0 {
+			b.AddCssClass("first")
+		}
+		box := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		name := gtk.NewLabel(s.Short())
+		name.AddCssClass("mail-suggestion-name")
+		name.SetXalign(0)
+		gtkx.Append(box, &name.Widget)
+		if s.Name != "" {
+			addr := gtk.NewLabel(s.Addr)
+			addr.AddCssClass("mail-suggestion-addr")
+			addr.SetXalign(0)
+			gtkx.Append(box, &addr.Widget)
+		}
+		b.SetChild(&box.Widget)
+		s := s
+		c.sugPtrs = append(c.sugPtrs, c.w.h.click(b, func() { c.pick(s) }))
+		gtkx.Append(c.sug, &b.Widget)
+	}
+	c.sug.SetVisible(true)
+}
+
+// pick puts a suggestion in the field, in the place of what was typed.
+func (c *composer) pick(s mail.Contact) {
+	e := c.sugFor
+	if e == nil {
+		return
+	}
+	text := e.GetText()
+	head := ""
+	if i := strings.LastIndexAny(text, ",;"); i >= 0 {
+		head = strings.TrimSpace(text[:i+1]) + " "
+	}
+	c.sug.SetVisible(false)
+	c.sugs = nil
+	e.SetText(head + s.String() + ", ")
+	e.GrabFocus()
+	e.SetPosition(-1)
+}
+
+// suggestKey takes the field's keys while suggestions show: Tab or Enter
+// takes the first, Down goes into them, Escape closes them.
+func (c *composer) suggestKey(e *gtk.Entry, keyval uint32) bool {
+	if !c.sug.GetVisible() || c.sugFor != e || len(c.sugs) == 0 {
+		return false
+	}
+	switch keyval {
+	case uint32(gdk.KEY_Tab), uint32(gdk.KEY_Return), uint32(gdk.KEY_KP_Enter):
+		c.pick(c.sugs[0])
+	case uint32(gdk.KEY_Down):
+		if first := c.sug.GetFirstChild(); first != nil {
+			first.GrabFocus()
+		}
+	case uint32(gdk.KEY_Escape):
+		c.sug.SetVisible(false)
+	default:
+		return false
+	}
+	return true
 }

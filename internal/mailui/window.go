@@ -66,7 +66,9 @@ type window struct {
 
 	top                               gtk.Stack
 	side, filters, reader, welcomeBox gtk.Box
-	statusMark                        gtk.Box
+	statusMark, undoBar               gtk.Box
+	undoText                          gtk.Label
+	undoBtn                           gtk.Button
 	statusState, statusCounts         gtk.Label
 	compose, addAccount, older        gtk.Button
 	search                            gtk.SearchEntry
@@ -103,15 +105,18 @@ type window struct {
 	actErr   string // an action's error, said on the conversation
 	folded   map[mail.Key]bool
 	quotes   map[mail.Key]bool
-	checks   map[mail.Key]bool    // the phishing checks unfolded
-	answers  map[mail.Key]*aiText // an invitation's answer: busy, sent (text), or why not
-	fileSums map[string]*aiText   // an attachment's summary, by fileKey
+	checks   map[mail.Key]bool      // the phishing checks unfolded
+	answers  map[mail.Key]*aiText   // an invitation's answer: busy, sent (text), or why not
+	fileSums map[string]*aiText     // an attachment's summary, by fileKey
+	quick    map[string]*quickReply // a conversation's quick reply, by its ID
+	sideSig  string                 // the index's counts when last drawn
 
 	sideBtns   []uintptr // the index's buttons, forgotten when it is made again
 	readerBtns []uintptr // the conversation's buttons, likewise
 	filterBtns map[filter]*gtk.Button
 	question   *dialog
 	welcome    *welcome
+	pending    *pending // an action the undo bar can still take back
 	composers  []*composer
 	ai         aiState
 	sorting    bool
@@ -135,7 +140,7 @@ func openWindow(c *appui.Ctx) *window {
 		store: mail.NewStore(), secrets: mail.NewSecrets(), drafts: mail.NewDrafts(),
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
-		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{},
+		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
 	w.ctx, w.cancel = context.WithCancel(context.Background())
@@ -146,6 +151,7 @@ func openWindow(c *appui.Ctx) *window {
 		"compose": &w.compose, "add_account": &w.addAccount, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
 		"status_state": &w.statusState, "status_counts": &w.statusCounts,
+		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
 		"reader_empty": &w.readerEmpty, "list_stack": &w.listStack, "reader_stack": &w.readerStack,
 		"list_scroll": &w.listScroll, "reader_scroll": &w.readerScroll,
@@ -168,6 +174,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
 	w.h.click(&w.addAccount, func() { w.showWelcome("", nil) })
 	w.h.click(&w.older, w.loadOlder)
+	w.h.click(&w.undoBtn, w.undo)
 	w.h.searched(&w.search, w.searchChanged)
 	w.h.enter(&w.search, w.searchEntered)
 	w.h.key(&w.win.Widget, false, w.key)
@@ -386,6 +393,7 @@ func (w *window) counted(x *acct, mailbox string) {
 }
 
 func (w *window) quit() {
+	w.flushPending()
 	w.closed = true
 	w.cancel()
 	w.ai.close()
@@ -715,6 +723,7 @@ func (w *window) refresh() {
 		w.drawReader()
 	}
 	w.older.SetVisible(w.canLoadOlder())
+	w.sideCounts()
 }
 
 func (w *window) emptyText() string {
@@ -733,6 +742,8 @@ func (w *window) emptyText() string {
 		return i18n.T("No starred conversation")
 	case w.filter == filterUnread:
 		return i18n.T("All read")
+	case w.view.kind == viewInboxes || (w.view.kind == viewBox && w.isInbox(w.view)):
+		return i18n.T("Inbox empty. Nothing waits for you.")
 	}
 	return i18n.T("No mail here")
 }
@@ -800,7 +811,10 @@ type convRow struct {
 	mark                         gtk.Box
 	who, when, subject, count    gtk.Label
 	snippet, tag, clip, accountL gtk.Label
+	read, star                   gtk.Button // the hover actions that change with the row
+	starred                      gtk.Image
 	item                         uintptr
+	ptrs                         []uintptr
 }
 
 func (w *window) setupRow(item uintptr) {
@@ -817,7 +831,32 @@ func (w *window) setupRow(item uintptr) {
 	gtkx.Append(top, &r.who.Widget)
 	r.when = *label("mail-when", false)
 	gtkx.Append(top, &r.when.Widget)
-	gtkx.Append(&r.box, &top.Widget)
+	// The actions a pointer over the row shows, in the time's place.
+	over := gtk.NewOverlay()
+	over.SetChild(&top.Widget)
+	acts := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	acts.AddCssClass("mail-row-acts")
+	acts.SetHalign(gtk.AlignEndValue)
+	acts.SetValign(gtk.AlignCenterValue)
+	act := func(icon, tip string, f func(c *mail.Conversation)) *gtk.Button {
+		b := gtk.NewButtonFromIconName(icon)
+		b.AddCssClass("mail-row-act")
+		b.SetTooltipText(tip)
+		b.SetFocusOnClick(false)
+		r.ptrs = append(r.ptrs, w.h.click(b, func() {
+			if c := w.rowConv(r); c != nil {
+				f(c)
+			}
+		}))
+		gtkx.Append(acts, &b.Widget)
+		return b
+	}
+	act("mail-archive-symbolic", i18n.T("Archive (E)"), w.archiveConv)
+	act("user-trash-symbolic", i18n.T("Delete (#)"), w.trashConv)
+	r.read = *act("mail-read-symbolic", "", w.toggleRead)
+	r.star = *act("mail-starred-symbolic", "", w.starConv)
+	over.AddOverlay(&acts.Widget)
+	gtkx.Append(&r.box, &over.Widget)
 	mid := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
 	mid.AddCssClass("mail-row-indent")
 	r.subject = *label("mail-subject-line", true)
@@ -835,6 +874,10 @@ func (w *window) setupRow(item uintptr) {
 	r.clip = *label("mail-clip", false)
 	r.clip.SetText(i18n.T("FILE"))
 	gtkx.Append(foot, &r.clip.Widget)
+	r.starred = *gtk.NewImageFromIconName("mail-starred-symbolic")
+	r.starred.AddCssClass("mail-row-starred")
+	r.starred.SetPixelSize(11)
+	gtkx.Append(foot, &r.starred.Widget)
 	r.accountL = *label("mail-row-account", false)
 	r.accountL.SetHexpand(true)
 	r.accountL.SetXalign(1)
@@ -845,7 +888,21 @@ func (w *window) setupRow(item uintptr) {
 	w.rows[item] = r
 }
 
-func (w *window) teardownRow(item uintptr) { delete(w.rows, item) }
+func (w *window) teardownRow(item uintptr) {
+	if r := w.rows[item]; r != nil {
+		w.h.forget(r.ptrs)
+	}
+	delete(w.rows, item)
+}
+
+// rowConv is the conversation a row shows now.
+func (w *window) rowConv(r *convRow) *mail.Conversation {
+	pos := gtk.ListItemNewFromInternalPtr(r.item).GetPosition()
+	if int(pos) >= len(w.convs) {
+		return nil
+	}
+	return w.convs[pos]
+}
 
 func (w *window) bindRow(item uintptr) {
 	r := w.rows[item]
@@ -910,6 +967,21 @@ func (w *window) fillRow(r *convRow) {
 	setClass(&r.tag.Widget, "suspicious", tag == i18n.T("SUSPICIOUS"))
 	r.tag.SetVisible(tag != "")
 	r.clip.SetVisible(c.Attach())
+	starred := c.Starred()
+	r.starred.SetVisible(starred)
+	setClass(&r.star.Widget, "on", starred)
+	if starred {
+		r.star.SetTooltipText(i18n.T("Unstar (S)"))
+	} else {
+		r.star.SetTooltipText(i18n.T("Star (S)"))
+	}
+	if unread {
+		r.read.SetIconName("mail-read-symbolic")
+		r.read.SetTooltipText(i18n.T("Mark as read"))
+	} else {
+		r.read.SetIconName("mail-unread-symbolic")
+		r.read.SetTooltipText(i18n.T("Mark as unread (U)"))
+	}
 	acc := ""
 	if w.view.kind != viewBox && len(w.accts) > 1 {
 		if x := w.acct(latest.Account); x != nil {
@@ -1105,6 +1177,10 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 		w.move(-1)
 	case keyval == uint32(gdk.KEY_c):
 		w.newComposer(mail.Draft{}, nil)
+	case keyval == uint32(gdk.KEY_z) && w.pending != nil:
+		w.undo()
+	case keyval == uint32(gdk.KEY_question):
+		w.showKeys()
 	case w.open == nil:
 		return false
 	case keyval == uint32(gdk.KEY_e) || keyval == uint32(gdk.KEY_y):
@@ -1123,6 +1199,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 		w.forward()
 	case keyval == uint32(gdk.KEY_exclam):
 		w.spam()
+	case keyval == uint32(gdk.KEY_v):
+		w.moveTo()
 	default:
 		return false
 	}
@@ -1201,6 +1279,11 @@ func (w *window) drawStatus() {
 		setClass(&w.statusMark.Widget, c, c == class)
 	}
 	w.statusCounts.SetText(i18n.Tf("%s MSG · %d UNREAD", thousands(msgs), unread))
+	if unread > 0 {
+		w.win.SetTitle(i18n.Tf("Mail · %d unread", unread))
+	} else {
+		w.win.SetTitle(i18n.T("Mail"))
+	}
 	w.statusCounts.SetTooltipText(i18n.T("Messages kept from the inboxes, and how many are unread"))
 }
 
@@ -1237,4 +1320,27 @@ func (w *window) gone(c *mail.Conversation) bool {
 		}
 	}
 	return true
+}
+
+// isInbox says whether a view is an account's inbox.
+func (w *window) isInbox(v view) bool {
+	x := w.acct(v.account)
+	return x != nil && v.mailbox == x.s.Role(mail.RoleInbox)
+}
+
+// sideCounts redraws the index when its counts changed (a sync, an
+// action, a reply sent), and the readout.
+func (w *window) sideCounts() {
+	sig := fmt.Sprint(len(w.conversations(view{kind: viewReply})))
+	for _, x := range w.accts {
+		for _, b := range x.boxes {
+			sig += fmt.Sprintf("/%d", b.Unread)
+		}
+	}
+	if sig != w.sideSig {
+		w.sideSig = sig
+		w.drawSide()
+	} else {
+		w.drawStatus()
+	}
 }

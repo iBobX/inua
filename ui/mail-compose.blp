@@ -12,7 +12,8 @@ Window compose {
   Box {
     orientation: vertical;
 
-    Box {
+    // The fields; the suggestions for an address open under its row.
+    Box fields {
       styles ["mail-compose-fields"]
       orientation: vertical;
 
@@ -31,7 +32,7 @@ Window compose {
         }
       }
 
-      Box {
+      Box to_row {
         styles ["mail-field"]
 
         Label {

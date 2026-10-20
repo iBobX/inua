@@ -140,7 +140,7 @@ func (w *window) signature() string {
 			}
 		}
 	}
-	fmt.Fprintf(&b, "|%s|%s", w.sumState[c.ID].sig(), w.ideas[c.ID].sig())
+	fmt.Fprintf(&b, "|%s|%s|%s", w.sumState[c.ID].sig(), w.ideas[c.ID].sig(), w.quick[c.ID].sig())
 	return b.String()
 }
 
@@ -221,13 +221,14 @@ func (w *window) drawReader() {
 		w.readerBtns = append(w.readerBtns, w.h.click(b, a.f))
 		gtkx.Append(acts, &b.Widget)
 	}
-	hint := gtk.NewLabel(i18n.T("E archive · # delete · S star · U unread"))
+	hint := gtk.NewLabel(i18n.T("E archive · # delete · V move · ? keys"))
 	hint.AddCssClass("mail-keys")
 	hint.SetHexpand(true)
 	hint.SetXalign(1)
 	hint.SetEllipsize(3) // it gives way before the window grows
 	gtkx.Append(acts, &hint.Widget)
 	gtkx.Append(&w.reader, &acts.Widget)
+	w.drawQuick(c)
 }
 
 // drawWarning shows the phishing route's verdict for the newest message
