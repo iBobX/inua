@@ -109,6 +109,8 @@ func TestInstall(t *testing.T) {
 		"scripts/inua-session":            "session",
 		"config/apps/x.Clock.desktop":     "[Desktop Entry]",
 		"config/apps/x.Clock.svg":         "<svg/>",
+		"lib/inua/libinua-vt.so":          "new engine",
+		"lib/inua/notes.txt":              "no",
 		"config/session/inua.desktop":     "session entry",
 		"config/apps/../../../escape.txt": "no",
 		"config/apps/nested/deep.desktop": "no",
@@ -119,6 +121,9 @@ func TestInstall(t *testing.T) {
 	os.MkdirAll(bin, 0o755)
 	os.WriteFile(filepath.Join(bin, "inua"), []byte("old inua"), 0o755)
 	os.WriteFile(filepath.Join(bin, "mine"), []byte("not inua's"), 0o755)
+	// An engine from an earlier release, which the upgrade replaces.
+	os.MkdirAll(filepath.Join(root, "lib", "inua"), 0o755)
+	os.WriteFile(filepath.Join(root, "lib", "inua", "libinua-vt.so"), []byte("old engine"), 0o644)
 
 	programs, err := Install(archive, bin, data)
 	if err != nil {
@@ -132,6 +137,7 @@ func TestInstall(t *testing.T) {
 		"bin/inua":                           "new inua",
 		"bin/inua-shell":                     "new shell",
 		"bin/mine":                           "not inua's",
+		"lib/inua/libinua-vt.so":             "new engine",
 		"share/applications/x.Clock.desktop": "[Desktop Entry]",
 		"share/icons/hicolor/scalable/apps/x.Clock.svg": "<svg/>",
 	} {
@@ -143,6 +149,9 @@ func TestInstall(t *testing.T) {
 	if st, _ := os.Stat(filepath.Join(bin, "inua-shell")); st == nil || st.Mode().Perm() != 0o755 {
 		t.Errorf("inua-shell mode = %v", st.Mode())
 	}
+	if st, _ := os.Stat(filepath.Join(root, "lib", "inua", "libinua-vt.so")); st == nil || st.Mode().Perm() != 0o644 {
+		t.Errorf("libinua-vt.so mode = %v", st.Mode())
+	}
 	var left []string
 	filepath.WalkDir(root, func(p string, d os.DirEntry, _ error) error {
 		if !d.IsDir() {
@@ -152,7 +161,7 @@ func TestInstall(t *testing.T) {
 		return nil
 	})
 	slices.Sort(left)
-	want := []string{"bin/inua", "bin/inua-shell", "bin/mine", "share/applications/x.Clock.desktop", "share/icons/hicolor/scalable/apps/x.Clock.svg"}
+	want := []string{"bin/inua", "bin/inua-shell", "bin/mine", "lib/inua/libinua-vt.so", "share/applications/x.Clock.desktop", "share/icons/hicolor/scalable/apps/x.Clock.svg"}
 	if !slices.Equal(left, want) {
 		t.Errorf("files = %v\nwant %v", left, want)
 	}
