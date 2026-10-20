@@ -112,17 +112,25 @@ Changes apply as you make them.
 
 The search above the index (Ctrl+F, or just type) finds pages and the
 settings on them by what they say, and pages by other words for them
-("network", "trackpad", "neofetch"); the results replace the index while
+("network", "trackpad", "neofetch", "system card"); the results replace the index while
 it is typed. Enter or a click turns to the result's page, scrolls its
 row into view and lights it for a moment. Escape clears the search, and
 closes the window when there is none.
 
-About starts with the computer at a glance, as fastfetch prints it:
-inua's name in blocks beside the OS, machine, kernel, uptime, packages,
-shell, Hyprland's version, theme, displays, CPU, GPU, memory, swap, the
-root disk, battery and locale, and the theme's colours. It is read from
-`/proc`, `/sys` and `/etc` each time the page is shown; Copy puts it on
-the clipboard as text.
+About starts with the system manifest, a card of this computer to
+share: a slip the machine prints of itself, in the theme's colours. It
+lists the unit (the machine), its silicon (CPU, GPU, memory and disk
+with their use), the stack from Linux to inua with the packages, the
+screens, and the uptime as the total, under a serial (`INUA-0.0.30-7A3F`:
+the version and four hex digits of the machine's model). A label at its
+foot carries a barcode of the serial and a QR code of this release's
+page on GitHub, both real, dark on light, to scan. A stamp says
+NOMINAL, or what needs a look (a disk or the memory at 90%, a battery
+under 15%), and so does the headline beside it. Nothing of yours is on
+it: no user or host name, no paths. It is read from `/proc`, `/sys` and
+`/etc` each time the page is shown. *Copy image* puts it on the
+clipboard as a PNG (2400×1350), *Copy text* as Markdown, *Save…* writes
+the PNG to a file.
 
 Default Apps chooses what opens links (the web browser), mailto: links,
 folders (the file manager), audio, video, pictures, PDFs and plain text,

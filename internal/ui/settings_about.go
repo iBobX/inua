@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
@@ -25,12 +26,17 @@ type aboutSettings struct {
 	daily          gtk.Switch
 	changelog      gtk.Box
 
-	// The system at a glance, read each time the page is shown.
-	fetch      gtk.Box
-	fetchCopy  gtk.Button
-	facts      []shell.Fact
-	fetchTitle string // user@host
-	fetching   bool
+	// The system manifest, a card to share (settings_card.go), read each
+	// time the page is shown.
+	fetch                         gtk.Box
+	fetchCopy, cardImage, cardSav gtk.Button
+	card                          *shell.Card
+	cardCodes                     cardCodes
+	cardView                      *gtk.Widget  // the card, drawn smaller
+	cardTex                       *gdk.Texture // the card drawn at twice its size, the page shows smaller
+	cardColors                    map[string]string
+	cardNote                      *gtk.Label // what Copy or Save did, under the card
+	fetching                      bool
 
 	// What GitHub said, kept while the shell runs.
 	latest    string
@@ -52,7 +58,16 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	ui.Get("about_changelog", &a.changelog)
 	ui.Get("about_fetch", &a.fetch)
 	ui.Get("about_fetch_copy", &a.fetchCopy)
+	ui.Get("about_card_image", &a.cardImage)
+	ui.Get("about_card_save", &a.cardSav)
 	a.fetchCopy.ConnectClicked(&s.onSettingsButton)
+	a.cardImage.ConnectClicked(&s.onSettingsButton)
+	a.cardSav.ConnectClicked(&s.onSettingsButton)
+	if a.cardView != nil {
+		gtkx.ForgetCanvas(a.cardView) // the old window's card
+	}
+	s.dropCardTexture()
+	a.card, a.cardView, a.cardNote = nil, nil, nil // a new window: the old one's widgets are gone
 	a.check.ConnectClicked(&s.onSettingsButton)
 	a.upgrade.ConnectClicked(&s.onSettingsButton)
 	a.daily.ConnectStateSet(&s.onSettingsSwitch)
@@ -94,7 +109,11 @@ func (s *shellUI) aboutButton(name string) bool {
 	case "about_check":
 		s.checkReleases()
 	case "about_fetch_copy":
-		s.copyFetch()
+		s.copyCardText()
+	case "about_card_image":
+		s.copyCardImage()
+	case "about_card_save":
+		s.saveCard()
 	case "about_upgrade":
 		if a.latest == "" || a.upgrading {
 			break

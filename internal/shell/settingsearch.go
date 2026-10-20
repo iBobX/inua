@@ -33,7 +33,7 @@ var SettingsKeywords = map[string][]string{
 	"displays":      {"monitor", "screen", "resolution", "scale", "refresh rate", "lid", "mirror"},
 	"keyboard":      {"layout", "caps lock", "ctrl", "swap", "repeat"},
 	"mouse":         {"touchpad", "trackpad", "pointer", "speed", "scroll", "acceleration"},
-	"about":         {"version", "update", "upgrade", "system", "fastfetch", "neofetch", "cpu", "memory", "kernel", "changelog"},
+	"about":         {"version", "update", "upgrade", "system", "fastfetch", "neofetch", "manifest", "card", "share", "qr", "cpu", "memory", "kernel", "changelog"},
 }
 
 // SearchSettings finds the items whose words hold every word of the query,

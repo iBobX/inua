@@ -1558,11 +1558,8 @@ msgstr "%[1]d h %[2]d mín."
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
 #: internal/filesui/jobs.go:168
-#: internal/shell/fetch.go:102
 msgid "%d min"
-msgid_plural "%d mins"
-msgstr[0] "%d mín."
-msgstr[1] "%d mín."
+msgstr "%d mín."
 
 #: internal/apps/tailscale/status.go:143
 #: internal/apps/tailscale/status.go:159
@@ -2026,7 +2023,7 @@ msgstr "creada el %s"
 #: internal/ui/askpass.go:448
 #: internal/ui/askpass.go:452
 #: internal/ui/askpass.go:454
-#: internal/ui/settings_about.go:217
+#: internal/ui/settings_about.go:236
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "Jan 2, 2006"
@@ -2196,7 +2193,6 @@ msgstr "Eliminar…"
 #: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:480
 #: internal/ui/askpass.go:537
-#: internal/ui/settings_fetch.go:167
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:878
 msgid "Copied"
@@ -2594,13 +2590,11 @@ msgstr "Ocultar"
 #: internal/term/settings/settings.go:104
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:623
-#: internal/ui/settings_fetch.go:95
 #: internal/vmui/window.go:881
 #: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2947
-#: ui/settings.ui:6290
 #: ui/vm.ui:829
 msgid "Copy"
 msgstr "Copiar"
@@ -2952,7 +2946,6 @@ msgstr "Salir de todos por nombre"
 
 #: internal/appui/sysmon.go:142
 #: internal/appui/sysmon.go:727
-#: internal/shell/fetch.go:73
 #: ui/sysmon.ui:84
 msgid "CPU"
 msgstr "CPU"
@@ -2965,7 +2958,6 @@ msgid "MEMORY"
 msgstr "MEMORIA"
 
 #: internal/appui/sysmon.go:146
-#: internal/shell/fetch.go:75
 msgid "GPU"
 msgstr "GPU"
 
@@ -2977,6 +2969,7 @@ msgid "NETWORK"
 msgstr "RED"
 
 #: internal/appui/sysmon.go:149
+#: internal/ui/settings_card.go:519
 msgid "DISK"
 msgstr "DISCO"
 
@@ -3267,7 +3260,6 @@ msgid "System"
 msgstr "Sistema"
 
 #: internal/appui/sysmon.go:969
-#: internal/shell/fetch.go:50
 msgid "Kernel"
 msgstr "Núcleo"
 
@@ -3337,7 +3329,6 @@ msgid "Free"
 msgstr "Gratis"
 
 #: internal/appui/sysmon.go:998
-#: internal/shell/fetch.go:78
 msgid "Swap"
 msgstr "Intercambiar"
 
@@ -3975,6 +3966,7 @@ msgstr "Cancelar"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
+#: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "OK"
 
@@ -4924,7 +4916,7 @@ msgstr "Parte no se pudo leer."
 #: internal/diskui/details.go:76
 #: internal/ui/lock.go:273
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:174
+#: internal/ui/settings_about.go:193
 #: internal/vmui/window.go:1892
 msgid "Checking…"
 msgstr "Comprobando…"
@@ -9270,7 +9262,6 @@ msgid "The game could not open to the network: %v"
 msgstr "No se pudo abrir la partida a la red: %v"
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/shell/fetch.go:49
 msgid "Host"
 msgstr "Anfitrión"
 
@@ -10413,6 +10404,7 @@ msgstr "El asistente lo lee y lo resume"
 #: internal/mailui/reader.go:703
 #: ui/gpg.ui:652
 #: ui/gpg.ui:896
+#: ui/settings.ui:6311
 msgid "Save…"
 msgstr "Guardar…"
 
@@ -11478,6 +11470,75 @@ msgstr "¿Dejar que %s se conecte?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "Pide emparejarse o usar este ordenador sin código."
 
+#: internal/shell/card.go:79
+#: ui/settings.ui:5037
+#: ui/settings.ui:5318
+msgid "This computer"
+msgstr "Este ordenador"
+
+#: internal/shell/card.go:98
+msgid "%s package"
+msgid_plural "%s packages"
+msgstr[0] "%s paquete"
+msgstr[1] "%s paquetes"
+
+#: internal/shell/card.go:136
+msgid "DISK %d%%"
+msgstr "DISCO %d%%"
+
+#: internal/shell/card.go:136
+msgid "The disk is nearly full."
+msgstr "El disco está casi lleno."
+
+#: internal/shell/card.go:138
+msgid "MEMORY %d%%"
+msgstr "MEMORIA %d%%"
+
+#: internal/shell/card.go:138
+msgid "Memory is running short."
+msgstr "Queda poca memoria."
+
+#: internal/shell/card.go:140
+msgid "BATTERY %.0f%%"
+msgstr "BATERÍA %.0f%%"
+
+#: internal/shell/card.go:140
+msgid "The battery is running low."
+msgstr "Queda poca batería."
+
+#: internal/shell/card.go:142
+msgid "NOMINAL"
+msgstr "NOMINAL"
+
+#: internal/shell/card.go:142
+msgid "All systems nominal."
+msgstr "Todos los sistemas en orden."
+
+#: internal/shell/card.go:179
+#: ui/sysmon.ui:90
+msgid "Memory"
+msgstr "Memoria"
+
+#: internal/shell/card.go:182
+msgid "Disk"
+msgstr "Disco"
+
+#: internal/shell/card.go:192
+#: internal/vmui/window.go:2546
+#: internal/vmui/window.go:2550
+#: ui/screenshot.ui:187
+#: ui/shotdrawer.ui:146
+msgid "Screen"
+msgstr "Pantalla"
+
+#: internal/shell/card.go:194
+msgid "Theme"
+msgstr "Tema"
+
+#: internal/shell/card.go:195
+msgid "Uptime"
+msgstr "Tiempo encendido"
+
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
 msgstr "Bloquear pantalla"
@@ -11750,61 +11811,6 @@ msgstr "OTRAS"
 msgid "WORKSHOP"
 msgstr "TALLER"
 
-#: internal/shell/fetch.go:48
-msgid "OS"
-msgstr "SO"
-
-#: internal/shell/fetch.go:52
-msgid "Uptime"
-msgstr "Tiempo encendido"
-
-#: internal/shell/fetch.go:58
-msgid "Packages"
-msgstr "Paquetes"
-
-#: internal/shell/fetch.go:59
-#: internal/termui/prefs.go:120
-msgid "Shell"
-msgstr "Shell"
-
-#: internal/shell/fetch.go:60
-msgid "WM"
-msgstr "WM"
-
-#: internal/shell/fetch.go:62
-msgid "Theme"
-msgstr "Tema"
-
-#: internal/shell/fetch.go:64
-#: ui/control.ui:608
-msgid "Display"
-msgstr "Pantalla"
-
-#: internal/shell/fetch.go:77
-#: ui/sysmon.ui:90
-msgid "Memory"
-msgstr "Memoria"
-
-#: internal/shell/fetch.go:83
-msgid "Disk (/)"
-msgstr "Disco (/)"
-
-#: internal/shell/fetch.go:84
-#: internal/ui/settings_power.go:112
-msgid "Battery"
-msgstr "Batería"
-
-#: internal/shell/fetch.go:85
-msgid "Locale"
-msgstr "Configuración regional"
-
-#: internal/shell/fetch.go:96
-msgid "%d day"
-msgid_plural "%d days"
-msgstr[0] "%d día"
-msgstr[1] "%d días"
-
-#: internal/shell/fetch.go:99
 #: internal/shell/idle.go:164
 msgid "%d hour"
 msgid_plural "%d hours"
@@ -12489,6 +12495,10 @@ msgstr "SHELL Y AGENTES"
 #: internal/termui/prefs.go:115
 msgid "Below the shell: used when the terminal host starts again"
 msgstr "Bajo el shell: se aplica cuando el anfitrión del terminal vuelve a iniciarse"
+
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "Shell"
 
 #: internal/termui/prefs.go:120
 msgid "What new panes start; the panes open already keep theirs"
@@ -13391,6 +13401,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:871
 #: internal/ui/settings_apps.go:168
+#: internal/ui/settings_card.go:304
 msgid "Not saved: %s"
 msgstr "No guardado: %s"
 
@@ -13430,60 +13441,60 @@ msgstr "Mover después"
 msgid "Remove from the dock"
 msgstr "Quitar del dock"
 
-#: internal/ui/settings_about.go:162
+#: internal/ui/settings_about.go:181
 msgid "inua %s, built from source"
 msgstr "inua %s, construido a partir de la fuente"
 
-#: internal/ui/settings_about.go:169
+#: internal/ui/settings_about.go:188
 msgid "Upgrade to %s"
 msgstr "Actualizar a %s"
 
-#: internal/ui/settings_about.go:172
+#: internal/ui/settings_about.go:191
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "Actualizando… el shell se reinicia en la nueva versión"
 
-#: internal/ui/settings_about.go:178
+#: internal/ui/settings_about.go:197
 msgid "Could not reach GitHub: %s"
 msgstr "No se pudo acceder a GitHub: %s"
 
-#: internal/ui/settings_about.go:180
+#: internal/ui/settings_about.go:199
 msgid "Not checked yet"
 msgstr "Aún no comprobado"
 
-#: internal/ui/settings_about.go:182
+#: internal/ui/settings_about.go:201
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "La última versión es %s; esta versión no se puede comparar con ella"
 
-#: internal/ui/settings_about.go:184
+#: internal/ui/settings_about.go:203
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s está disponible; la actualización sustituye esta compilación desde el código fuente"
 
-#: internal/ui/settings_about.go:186
+#: internal/ui/settings_about.go:205
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s ya está disponible"
 
-#: internal/ui/settings_about.go:188
+#: internal/ui/settings_about.go:207
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "Actualizado: %[1]s es la última versión (marcado %[2]s)"
 
-#: internal/ui/settings_about.go:190
+#: internal/ui/settings_about.go:209
 msgid "Newer than the latest release, %s"
 msgstr "Más reciente que la última versión, %s"
 
-#: internal/ui/settings_about.go:200
+#: internal/ui/settings_about.go:219
 msgid "Shown once the releases are read"
 msgstr "Se muestra una vez leídos los comunicados."
 
-#: internal/ui/settings_about.go:202
+#: internal/ui/settings_about.go:221
 msgid "Reading the releases…"
 msgstr "Leyendo las versiones…"
 
-#: internal/ui/settings_about.go:223
+#: internal/ui/settings_about.go:242
 msgid "installed"
 msgstr "instalado"
 
-#: internal/ui/settings_about.go:227
+#: internal/ui/settings_about.go:246
 msgid "On GitHub"
 msgstr "En GitHub"
 
@@ -13850,6 +13861,81 @@ msgstr "Aún no se ha encontrado nada. Pon el dispositivo en modo de emparejamie
 msgid "Forget it?"
 msgstr "¿Olvidarlo?"
 
+#: internal/ui/settings_card.go:159
+#: internal/ui/settings_card.go:160
+msgid "Reading…"
+msgstr "Leyendo…"
+
+#: internal/ui/settings_card.go:228
+#: internal/ui/settings_card.go:254
+#: internal/ui/settings_card.go:261
+msgid "Not copied: %s"
+msgstr "No copiado: %s"
+
+#: internal/ui/settings_card.go:231
+msgid "Copied as text."
+msgstr "Copiado como texto."
+
+#: internal/ui/settings_card.go:240
+msgid "the window cannot draw it now"
+msgstr "la ventana no puede dibujarla ahora"
+
+#: internal/ui/settings_card.go:244
+msgid "%s cannot be written"
+msgstr "No se puede escribir %s"
+
+#: internal/ui/settings_card.go:264
+msgid "Copied as an image: paste it in a chat or a post."
+msgstr "Copiado como imagen: pégala en un chat o una publicación."
+
+#: internal/ui/settings_card.go:277
+msgid "Save the card"
+msgstr "Guardar la tarjeta"
+
+#: internal/ui/settings_card.go:307
+msgid "Saved as %s"
+msgstr "Guardado como %s"
+
+#: internal/ui/settings_card.go:465
+msgid "INUA // SYSTEM MANIFEST"
+msgstr "INUA // MANIFIESTO DEL SISTEMA"
+
+#: internal/ui/settings_card.go:496
+msgid "[UNIT]"
+msgstr "[UNIDAD]"
+
+#: internal/ui/settings_card.go:499
+msgid "[SILICON]"
+msgstr "[SILICIO]"
+
+#: internal/ui/settings_card.go:503
+msgid "%d thr"
+msgstr "%d hilos"
+
+#: internal/ui/settings_card.go:522
+msgid "[STACK]"
+msgstr "[PILA]"
+
+#: internal/ui/settings_card.go:536
+msgid "[OPTICS]"
+msgstr "[ÓPTICA]"
+
+#: internal/ui/settings_card.go:545
+msgid "UPTIME"
+msgstr "TIEMPO ACTIVO"
+
+#: internal/ui/settings_card.go:619
+msgid "[TRANSMISSION]"
+msgstr "[TRANSMISIÓN]"
+
+#: internal/ui/settings_card.go:626
+msgid "CHECK"
+msgstr "REVISAR"
+
+#: internal/ui/settings_card.go:633
+msgid "Hyprland, with inua on top."
+msgstr "Hyprland, con inua encima."
+
 #: internal/ui/settings_custom.go:74
 msgid "Not moved to the trash: %s"
 msgstr "No se movió a la papelera: %s"
@@ -13993,14 +14079,6 @@ msgstr "%d × %d"
 #: internal/ui/settings_displays.go:433
 msgid "%d × %d, %s Hz"
 msgstr "%d × %d, %s Hz"
-
-#: internal/ui/settings_fetch.go:98
-msgid "Reading…"
-msgstr "Leyendo…"
-
-#: internal/ui/settings_fetch.go:162
-msgid "Not copied: %s"
-msgstr "No copiado: %s"
 
 #: internal/ui/settings_keyring.go:176
 msgid "Cannot reach inua-keyring"
@@ -14237,6 +14315,10 @@ msgstr "ENERGÍA"
 msgid "The battery and how the computer runs"
 msgstr "La batería y cómo funciona el equipo"
 
+#: internal/ui/settings_power.go:112
+msgid "Battery"
+msgstr "Batería"
+
 #: internal/ui/settings_power.go:115
 msgid "Power mode"
 msgstr "Modo de energía"
@@ -14431,7 +14513,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "Actualización %s con: actualización inua"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:6435
+#: ui/settings.ui:6457
 msgid "Upgrade"
 msgstr "Actualización"
 
@@ -15297,13 +15379,6 @@ msgid "The installer's screen, in a window of its own."
 msgstr "La pantalla del instalador, en una ventana propia."
 
 #: internal/vmui/window.go:2546
-#: internal/vmui/window.go:2550
-#: ui/screenshot.ui:187
-#: ui/shotdrawer.ui:146
-msgid "Screen"
-msgstr "Pantalla"
-
-#: internal/vmui/window.go:2546
 msgid "The guest's screen, in a window of its own."
 msgstr "La pantalla del invitado, en una ventana propia."
 
@@ -15654,6 +15729,10 @@ msgstr "Ahorro de energía"
 #: ui/control.ui:565
 msgid "Open Tailscale"
 msgstr "Abrir Tailscale"
+
+#: ui/control.ui:608
+msgid "Display"
+msgstr "Pantalla"
 
 #: ui/control.ui:670
 msgid "Sound"
@@ -17153,7 +17232,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "Presione el nuevo acceso directo. Esc cancela; La tecla de retroceso lo desactiva."
 
 #: ui/settings.ui:4729
-#: ui/settings.ui:6334
+#: ui/settings.ui:6356
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -17196,11 +17275,6 @@ msgstr "Otros atajos, de hyprland.conf"
 #: ui/settings.ui:5029
 msgid "<span alpha='55%'>[</span>WI-FI<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>WI-FI<span alpha='55%'>]</span>"
-
-#: ui/settings.ui:5037
-#: ui/settings.ui:5318
-msgid "This computer"
-msgstr "Este ordenador"
 
 #: ui/settings.ui:5120
 msgid "<span alpha='55%'>[</span>CONNECTED<span alpha='55%'>]</span>"
@@ -17355,42 +17429,54 @@ msgid "<span alpha='55%'>[</span>SYSTEM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>SISTEMA<span alpha='55%'>]</span>"
 
 #: ui/settings.ui:6278
-msgid "This computer at a glance"
-msgstr "Este equipo de un vistazo"
+msgid "This computer, as a card to share"
+msgstr "Este equipo, como tarjeta para compartir"
 
-#: ui/settings.ui:6292
-msgid "Copy as text"
-msgstr "Copiar como texto"
+#: ui/settings.ui:6290
+msgid "Copy image"
+msgstr "Copiar imagen"
 
-#: ui/settings.ui:6342
+#: ui/settings.ui:6300
+msgid "Copy text"
+msgstr "Copiar texto"
+
+#: ui/settings.ui:6302
+msgid "As Markdown"
+msgstr "Como Markdown"
+
+#: ui/settings.ui:6313
+msgid "As a PNG image"
+msgstr "Como imagen PNG"
+
+#: ui/settings.ui:6364
 msgid "The version, and new releases"
 msgstr "La versión y nuevos lanzamientos."
 
-#: ui/settings.ui:6372
+#: ui/settings.ui:6394
 msgid "Version"
 msgstr "Versión"
 
-#: ui/settings.ui:6408
+#: ui/settings.ui:6430
 msgid "Updates"
 msgstr "Actualizaciones"
 
-#: ui/settings.ui:6444
+#: ui/settings.ui:6466
 msgid "Check for updates"
 msgstr "Buscar actualizaciones"
 
-#: ui/settings.ui:6470
+#: ui/settings.ui:6492
 msgid "Check every day"
 msgstr "Comprobar todos los días"
 
-#: ui/settings.ui:6479
+#: ui/settings.ui:6501
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "Una notificación indica cuándo sale una nueva versión, con un botón para actualizar"
 
-#: ui/settings.ui:6524
+#: ui/settings.ui:6546
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CAMBIAR REGISTRO<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:6532
+#: ui/settings.ui:6554
 msgid "What the latest release changed"
 msgstr "Qué cambió la última versión"
 

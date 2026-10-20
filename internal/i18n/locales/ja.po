@@ -1553,10 +1553,8 @@ msgstr "%[1]d h %[2]d 分"
 #: internal/apps/sysmon/sysmon.go:404
 #: internal/appui/clock.go:156
 #: internal/filesui/jobs.go:168
-#: internal/shell/fetch.go:102
 msgid "%d min"
-msgid_plural "%d mins"
-msgstr[0] "%d分"
+msgstr "%d分"
 
 #: internal/apps/tailscale/status.go:143
 #: internal/apps/tailscale/status.go:159
@@ -2020,7 +2018,7 @@ msgstr "%s 作成"
 #: internal/ui/askpass.go:448
 #: internal/ui/askpass.go:452
 #: internal/ui/askpass.go:454
-#: internal/ui/settings_about.go:217
+#: internal/ui/settings_about.go:236
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "Jan 2, 2006"
@@ -2187,7 +2185,6 @@ msgstr "削除…"
 #: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:480
 #: internal/ui/askpass.go:537
-#: internal/ui/settings_fetch.go:167
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:878
 msgid "Copied"
@@ -2580,13 +2577,11 @@ msgstr "ヒデ"
 #: internal/term/settings/settings.go:104
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:623
-#: internal/ui/settings_fetch.go:95
 #: internal/vmui/window.go:881
 #: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2947
-#: ui/settings.ui:6290
 #: ui/vm.ui:829
 msgid "Copy"
 msgstr "コピー"
@@ -2934,7 +2929,6 @@ msgstr "名前で全員を辞める"
 
 #: internal/appui/sysmon.go:142
 #: internal/appui/sysmon.go:727
-#: internal/shell/fetch.go:73
 #: ui/sysmon.ui:84
 msgid "CPU"
 msgstr "CPU"
@@ -2947,7 +2941,6 @@ msgid "MEMORY"
 msgstr "記憶"
 
 #: internal/appui/sysmon.go:146
-#: internal/shell/fetch.go:75
 msgid "GPU"
 msgstr "GPU"
 
@@ -2959,6 +2952,7 @@ msgid "NETWORK"
 msgstr "ネットワーク"
 
 #: internal/appui/sysmon.go:149
+#: internal/ui/settings_card.go:519
 msgid "DISK"
 msgstr "ディスク"
 
@@ -3247,7 +3241,6 @@ msgid "System"
 msgstr "システム"
 
 #: internal/appui/sysmon.go:969
-#: internal/shell/fetch.go:50
 msgid "Kernel"
 msgstr "カーネル"
 
@@ -3315,7 +3308,6 @@ msgid "Free"
 msgstr "無料"
 
 #: internal/appui/sysmon.go:998
-#: internal/shell/fetch.go:78
 msgid "Swap"
 msgstr "スワップ"
 
@@ -3953,6 +3945,7 @@ msgstr "キャンセル"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
+#: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "わかりました"
 
@@ -4901,7 +4894,7 @@ msgstr "一部を読めませんでした。"
 #: internal/diskui/details.go:76
 #: internal/ui/lock.go:273
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:174
+#: internal/ui/settings_about.go:193
 #: internal/vmui/window.go:1892
 msgid "Checking…"
 msgstr "チェック中…"
@@ -9219,7 +9212,6 @@ msgid "The game could not open to the network: %v"
 msgstr "ネットワークに公開できませんでした: %v"
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/shell/fetch.go:49
 msgid "Host"
 msgstr "ホスト"
 
@@ -10356,6 +10348,7 @@ msgstr "アシスタントが読んで要約します"
 #: internal/mailui/reader.go:703
 #: ui/gpg.ui:652
 #: ui/gpg.ui:896
+#: ui/settings.ui:6311
 msgid "Save…"
 msgstr "保存…"
 
@@ -11413,6 +11406,74 @@ msgstr "%s の接続を許可しますか?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "コードなしでペアリング、またはこのコンピュータの使用を求めています。"
 
+#: internal/shell/card.go:79
+#: ui/settings.ui:5037
+#: ui/settings.ui:5318
+msgid "This computer"
+msgstr "このコンピュータ"
+
+#: internal/shell/card.go:98
+msgid "%s package"
+msgid_plural "%s packages"
+msgstr[0] "%s パッケージ"
+
+#: internal/shell/card.go:136
+msgid "DISK %d%%"
+msgstr "ディスク %d%%"
+
+#: internal/shell/card.go:136
+msgid "The disk is nearly full."
+msgstr "ディスクがほぼいっぱいです。"
+
+#: internal/shell/card.go:138
+msgid "MEMORY %d%%"
+msgstr "メモリ %d%%"
+
+#: internal/shell/card.go:138
+msgid "Memory is running short."
+msgstr "メモリが不足しています。"
+
+#: internal/shell/card.go:140
+msgid "BATTERY %.0f%%"
+msgstr "バッテリー %.0f%%"
+
+#: internal/shell/card.go:140
+msgid "The battery is running low."
+msgstr "バッテリー残量が少なくなっています。"
+
+#: internal/shell/card.go:142
+msgid "NOMINAL"
+msgstr "正常"
+
+#: internal/shell/card.go:142
+msgid "All systems nominal."
+msgstr "全システム正常。"
+
+#: internal/shell/card.go:179
+#: ui/sysmon.ui:90
+msgid "Memory"
+msgstr "メモリ"
+
+#: internal/shell/card.go:182
+msgid "Disk"
+msgstr "ディスク"
+
+#: internal/shell/card.go:192
+#: internal/vmui/window.go:2546
+#: internal/vmui/window.go:2550
+#: ui/screenshot.ui:187
+#: ui/shotdrawer.ui:146
+msgid "Screen"
+msgstr "スクリーン"
+
+#: internal/shell/card.go:194
+msgid "Theme"
+msgstr "テーマ"
+
+#: internal/shell/card.go:195
+msgid "Uptime"
+msgstr "稼働時間"
+
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
 msgstr "画面をロック"
@@ -11685,60 +11746,6 @@ msgstr "その他"
 msgid "WORKSHOP"
 msgstr "ワークショップ"
 
-#: internal/shell/fetch.go:48
-msgid "OS"
-msgstr "OS"
-
-#: internal/shell/fetch.go:52
-msgid "Uptime"
-msgstr "稼働時間"
-
-#: internal/shell/fetch.go:58
-msgid "Packages"
-msgstr "パッケージ"
-
-#: internal/shell/fetch.go:59
-#: internal/termui/prefs.go:120
-msgid "Shell"
-msgstr "シェル"
-
-#: internal/shell/fetch.go:60
-msgid "WM"
-msgstr "WM"
-
-#: internal/shell/fetch.go:62
-msgid "Theme"
-msgstr "テーマ"
-
-#: internal/shell/fetch.go:64
-#: ui/control.ui:608
-msgid "Display"
-msgstr "ディスプレイ"
-
-#: internal/shell/fetch.go:77
-#: ui/sysmon.ui:90
-msgid "Memory"
-msgstr "メモリ"
-
-#: internal/shell/fetch.go:83
-msgid "Disk (/)"
-msgstr "ディスク (/)"
-
-#: internal/shell/fetch.go:84
-#: internal/ui/settings_power.go:112
-msgid "Battery"
-msgstr "バッテリー"
-
-#: internal/shell/fetch.go:85
-msgid "Locale"
-msgstr "ロケール"
-
-#: internal/shell/fetch.go:96
-msgid "%d day"
-msgid_plural "%d days"
-msgstr[0] "%d日"
-
-#: internal/shell/fetch.go:99
 #: internal/shell/idle.go:164
 msgid "%d hour"
 msgid_plural "%d hours"
@@ -12417,6 +12424,10 @@ msgstr "シェルとエージェント"
 #: internal/termui/prefs.go:115
 msgid "Below the shell: used when the terminal host starts again"
 msgstr "シェルより下の項目：ターミナルホストの再起動時に反映"
+
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "シェル"
 
 #: internal/termui/prefs.go:120
 msgid "What new panes start; the panes open already keep theirs"
@@ -13307,6 +13318,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:871
 #: internal/ui/settings_apps.go:168
+#: internal/ui/settings_card.go:304
 msgid "Not saved: %s"
 msgstr "保存されていません: %s"
 
@@ -13346,60 +13358,60 @@ msgstr "後ろに移動"
 msgid "Remove from the dock"
 msgstr "ドックから削除"
 
-#: internal/ui/settings_about.go:162
+#: internal/ui/settings_about.go:181
 msgid "inua %s, built from source"
 msgstr "inua %s、ソースから構築"
 
-#: internal/ui/settings_about.go:169
+#: internal/ui/settings_about.go:188
 msgid "Upgrade to %s"
 msgstr "%s へのアップグレード"
 
-#: internal/ui/settings_about.go:172
+#: internal/ui/settings_about.go:191
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "アップグレード...シェルが新しいバージョンで再起動します"
 
-#: internal/ui/settings_about.go:178
+#: internal/ui/settings_about.go:197
 msgid "Could not reach GitHub: %s"
 msgstr "GitHub にアクセスできませんでした: %s"
 
-#: internal/ui/settings_about.go:180
+#: internal/ui/settings_about.go:199
 msgid "Not checked yet"
 msgstr "まだ確認されていません"
 
-#: internal/ui/settings_about.go:182
+#: internal/ui/settings_about.go:201
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "最新のリリースは%sである。このバージョンはそれと比較できません"
 
-#: internal/ui/settings_about.go:184
+#: internal/ui/settings_about.go:203
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s が公開されました。更新するとソースからのビルドを置き換えます"
 
-#: internal/ui/settings_about.go:186
+#: internal/ui/settings_about.go:205
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s が公開されました"
 
-#: internal/ui/settings_about.go:188
+#: internal/ui/settings_about.go:207
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "最新: %[1]s が最新リリースです (%[2]s を確認)"
 
-#: internal/ui/settings_about.go:190
+#: internal/ui/settings_about.go:209
 msgid "Newer than the latest release, %s"
 msgstr "最新リリース %s よりも新しい"
 
-#: internal/ui/settings_about.go:200
+#: internal/ui/settings_about.go:219
 msgid "Shown once the releases are read"
 msgstr "リリースが読み込まれると表示されます"
 
-#: internal/ui/settings_about.go:202
+#: internal/ui/settings_about.go:221
 msgid "Reading the releases…"
 msgstr "リリース情報を読み込み中…"
 
-#: internal/ui/settings_about.go:223
+#: internal/ui/settings_about.go:242
 msgid "installed"
 msgstr "インストールされました"
 
-#: internal/ui/settings_about.go:227
+#: internal/ui/settings_about.go:246
 msgid "On GitHub"
 msgstr "GitHub 上"
 
@@ -13766,6 +13778,81 @@ msgstr "まだ見つかりません。デバイスをペアリングできる状
 msgid "Forget it?"
 msgstr "削除しますか?"
 
+#: internal/ui/settings_card.go:159
+#: internal/ui/settings_card.go:160
+msgid "Reading…"
+msgstr "読み込み中…"
+
+#: internal/ui/settings_card.go:228
+#: internal/ui/settings_card.go:254
+#: internal/ui/settings_card.go:261
+msgid "Not copied: %s"
+msgstr "コピーできませんでした: %s"
+
+#: internal/ui/settings_card.go:231
+msgid "Copied as text."
+msgstr "テキストとしてコピーしました。"
+
+#: internal/ui/settings_card.go:240
+msgid "the window cannot draw it now"
+msgstr "ウィンドウが今は描画できません"
+
+#: internal/ui/settings_card.go:244
+msgid "%s cannot be written"
+msgstr "%s に書き込めません"
+
+#: internal/ui/settings_card.go:264
+msgid "Copied as an image: paste it in a chat or a post."
+msgstr "画像としてコピーしました。チャットや投稿に貼り付けられます。"
+
+#: internal/ui/settings_card.go:277
+msgid "Save the card"
+msgstr "カードを保存"
+
+#: internal/ui/settings_card.go:307
+msgid "Saved as %s"
+msgstr "%s として保存しました"
+
+#: internal/ui/settings_card.go:465
+msgid "INUA // SYSTEM MANIFEST"
+msgstr "INUA // システム・マニフェスト"
+
+#: internal/ui/settings_card.go:496
+msgid "[UNIT]"
+msgstr "[本体]"
+
+#: internal/ui/settings_card.go:499
+msgid "[SILICON]"
+msgstr "[シリコン]"
+
+#: internal/ui/settings_card.go:503
+msgid "%d thr"
+msgstr "%d スレッド"
+
+#: internal/ui/settings_card.go:522
+msgid "[STACK]"
+msgstr "[スタック]"
+
+#: internal/ui/settings_card.go:536
+msgid "[OPTICS]"
+msgstr "[ディスプレイ]"
+
+#: internal/ui/settings_card.go:545
+msgid "UPTIME"
+msgstr "稼働時間"
+
+#: internal/ui/settings_card.go:619
+msgid "[TRANSMISSION]"
+msgstr "[送信]"
+
+#: internal/ui/settings_card.go:626
+msgid "CHECK"
+msgstr "要確認"
+
+#: internal/ui/settings_card.go:633
+msgid "Hyprland, with inua on top."
+msgstr "Hyprland、その上に inua。"
+
 #: internal/ui/settings_custom.go:74
 msgid "Not moved to the trash: %s"
 msgstr "ゴミ箱に移動できませんでした: %s"
@@ -13909,14 +13996,6 @@ msgstr "%d × %d"
 #: internal/ui/settings_displays.go:433
 msgid "%d × %d, %s Hz"
 msgstr "%d × %d、%s Hz"
-
-#: internal/ui/settings_fetch.go:98
-msgid "Reading…"
-msgstr "読み込み中…"
-
-#: internal/ui/settings_fetch.go:162
-msgid "Not copied: %s"
-msgstr "コピーできませんでした: %s"
 
 #: internal/ui/settings_keyring.go:176
 msgid "Cannot reach inua-keyring"
@@ -14148,6 +14227,10 @@ msgstr "電源"
 msgid "The battery and how the computer runs"
 msgstr "バッテリーとコンピュータの動作"
 
+#: internal/ui/settings_power.go:112
+msgid "Battery"
+msgstr "バッテリー"
+
 #: internal/ui/settings_power.go:115
 msgid "Power mode"
 msgstr "電源モード"
@@ -14342,7 +14425,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s アップグレード: inua upgrade"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:6435
+#: ui/settings.ui:6457
 msgid "Upgrade"
 msgstr "アップグレード"
 
@@ -15202,13 +15285,6 @@ msgid "The installer's screen, in a window of its own."
 msgstr "インストーラの画面を専用のウィンドウで表示します。"
 
 #: internal/vmui/window.go:2546
-#: internal/vmui/window.go:2550
-#: ui/screenshot.ui:187
-#: ui/shotdrawer.ui:146
-msgid "Screen"
-msgstr "スクリーン"
-
-#: internal/vmui/window.go:2546
 msgid "The guest's screen, in a window of its own."
 msgstr "ゲストの画面を専用のウィンドウで表示します。"
 
@@ -15559,6 +15635,10 @@ msgstr "省電力モード"
 #: ui/control.ui:565
 msgid "Open Tailscale"
 msgstr "Tailscale を開く"
+
+#: ui/control.ui:608
+msgid "Display"
+msgstr "ディスプレイ"
 
 #: ui/control.ui:670
 msgid "Sound"
@@ -17058,7 +17138,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "新しいショートカットを押します。 Esc でキャンセルします。バックスペースキーを押すとオフになります。"
 
 #: ui/settings.ui:4729
-#: ui/settings.ui:6334
+#: ui/settings.ui:6356
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -17101,11 +17181,6 @@ msgstr "他のショートカット、hyprland.confから"
 #: ui/settings.ui:5029
 msgid "<span alpha='55%'>[</span>WI-FI<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>WI-FI<span alpha='55%'>]</span>"
-
-#: ui/settings.ui:5037
-#: ui/settings.ui:5318
-msgid "This computer"
-msgstr "このコンピュータ"
 
 #: ui/settings.ui:5120
 msgid "<span alpha='55%'>[</span>CONNECTED<span alpha='55%'>]</span>"
@@ -17260,42 +17335,54 @@ msgid "<span alpha='55%'>[</span>SYSTEM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>システム<span alpha='55%'>]</span>"
 
 #: ui/settings.ui:6278
-msgid "This computer at a glance"
-msgstr "このコンピュータの概要"
+msgid "This computer, as a card to share"
+msgstr "このコンピュータを共有用カードに"
 
-#: ui/settings.ui:6292
-msgid "Copy as text"
-msgstr "テキストとしてコピー"
+#: ui/settings.ui:6290
+msgid "Copy image"
+msgstr "画像をコピー"
 
-#: ui/settings.ui:6342
+#: ui/settings.ui:6300
+msgid "Copy text"
+msgstr "テキストをコピー"
+
+#: ui/settings.ui:6302
+msgid "As Markdown"
+msgstr "Markdown で"
+
+#: ui/settings.ui:6313
+msgid "As a PNG image"
+msgstr "PNG 画像で"
+
+#: ui/settings.ui:6364
 msgid "The version, and new releases"
 msgstr "バージョンと新しいリリース"
 
-#: ui/settings.ui:6372
+#: ui/settings.ui:6394
 msgid "Version"
 msgstr "バージョン"
 
-#: ui/settings.ui:6408
+#: ui/settings.ui:6430
 msgid "Updates"
 msgstr "アップデート"
 
-#: ui/settings.ui:6444
+#: ui/settings.ui:6466
 msgid "Check for updates"
 msgstr "アップデートをチェックする"
 
-#: ui/settings.ui:6470
+#: ui/settings.ui:6492
 msgid "Check every day"
 msgstr "毎日チェックする"
 
-#: ui/settings.ui:6479
+#: ui/settings.ui:6501
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "新しいリリースがリリースされると、アップグレードするボタンが表示される通知が表示されます。"
 
-#: ui/settings.ui:6524
+#: ui/settings.ui:6546
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:6532
+#: ui/settings.ui:6554
 msgid "What the latest release changed"
 msgstr "最新リリースの変更点"
 

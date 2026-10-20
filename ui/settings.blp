@@ -4459,7 +4459,8 @@ ApplicationWindow settings {
               orientation: vertical;
 
               // [SYSTEM]: this computer at a glance, as fastfetch shows it:
-              // inua's name in blocks, then a fact a line (settings_about.go).
+              // The system manifest: a card of this computer to share, as
+              // an image or as text (settings_card.go).
               Box {
                 styles ["section"]
                 orientation: vertical;
@@ -4481,24 +4482,40 @@ ApplicationWindow settings {
 
                   Label {
                     styles ["section-meta"]
-                    label:  _("This computer at a glance");
+                    label:  _("This computer, as a card to share");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
                   }
 
+                  Button about_card_image {
+                    styles ["outlined"]
+                    name: "about_card_image";
+                    label:  _("Copy image");
+                    valign: center;
+                  }
+
                   Button about_fetch_copy {
                     styles ["outlined"]
                     name: "about_fetch_copy";
-                    label:  _("Copy");
+                    label:  _("Copy text");
                     valign: center;
-                    tooltip-text:  _("Copy as text");
+                    tooltip-text:  _("As Markdown");
+                  }
+
+                  Button about_card_save {
+                    styles ["outlined"]
+                    name: "about_card_save";
+                    label:  _("Save…");
+                    valign: center;
+                    tooltip-text:  _("As a PNG image");
                   }
                 }
 
                 Box about_fetch {
                   styles ["section-body", "fetch"]
-                  spacing: 28;
+                  orientation: vertical;
+                  spacing: 8;
                 }
               }
 

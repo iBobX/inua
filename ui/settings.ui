@@ -6275,10 +6275,20 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label" translatable="yes">This computer at a glance</property>
+                                        <property name="label" translatable="yes">This computer, as a card to share</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="about_card_image">
+                                        <style>
+                                          <class name="outlined"/>
+                                        </style>
+                                        <property name="name">about_card_image</property>
+                                        <property name="label" translatable="yes">Copy image</property>
+                                        <property name="valign">3</property>
                                       </object>
                                     </child>
                                     <child>
@@ -6287,9 +6297,20 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           <class name="outlined"/>
                                         </style>
                                         <property name="name">about_fetch_copy</property>
-                                        <property name="label" translatable="yes">Copy</property>
+                                        <property name="label" translatable="yes">Copy text</property>
                                         <property name="valign">3</property>
-                                        <property name="tooltip-text" translatable="yes">Copy as text</property>
+                                        <property name="tooltip-text" translatable="yes">As Markdown</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="about_card_save">
+                                        <style>
+                                          <class name="outlined"/>
+                                        </style>
+                                        <property name="name">about_card_save</property>
+                                        <property name="label" translatable="yes">Save…</property>
+                                        <property name="valign">3</property>
+                                        <property name="tooltip-text" translatable="yes">As a PNG image</property>
                                       </object>
                                     </child>
                                   </object>
@@ -6300,7 +6321,8 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                       <class name="section-body"/>
                                       <class name="fetch"/>
                                     </style>
-                                    <property name="spacing">28</property>
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">8</property>
                                   </object>
                                 </child>
                               </object>
