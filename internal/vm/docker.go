@@ -5,6 +5,7 @@ package vm
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -169,7 +170,7 @@ func writeCompose(path, envPath, storageDir string, m Machine, rdpPort, consoleP
 		volumes += "      - type: bind\n        source: " + yamlQuote(m.Boot.ISO) + "\n        target: /boot.iso\n        read_only: true\n"
 	}
 	content := fmt.Sprintf("services:\n  windows:\n    image: %s\n    container_name: inua-%s\n    environment:\n      VERSION: \"11\"\n      USERNAME: \"%s\"\n      RAM_SIZE: \"%dG\"\n      CPU_CORES: \"%d\"\n      DISK_SIZE: \"%dG\"\n    env_file:\n      - %s\n    devices:\n      - /dev/kvm\n      - /dev/net/tun\n    cap_add:\n      - NET_ADMIN\n    ports:\n      - \"127.0.0.1:%d:3389/tcp\"\n      - \"127.0.0.1:%d:3389/udp\"\n      - \"127.0.0.1:%d:8006\"\n    volumes:\n%s    restart: unless-stopped\n    stop_grace_period: 2m\n",
-		dockerImage, m.Name, GuestUser, m.MemoryMiB/1024, m.CPUs, m.DiskGiB, yamlQuote(envPath), rdpPort, rdpPort, consolePort, volumes)
+		dockerImage, dockerName(m.Name), GuestUser, m.MemoryMiB/1024, m.CPUs, m.DiskGiB, yamlQuote(envPath), rdpPort, rdpPort, consolePort, volumes)
 	return writeAtomic(path, []byte(content), 0600)
 }
 
@@ -486,7 +487,30 @@ func (b *DockerBackend) compose(ctx context.Context, m Machine, args ...string) 
 // composeProject is the Compose project name for a machine, namespaced so it
 // can never collide with a user's own Compose files.
 func composeProject(name string) string {
-	return "inua-vm-" + name
+	return "inua-vm-" + dockerName(name)
+}
+
+// dockerName is a machine's name as Docker and Compose take one in a project
+// or container name: lowercase letters, digits, '-' and '_', anything else as
+// '-'. A name that had to change gets a short hash of itself, so two names
+// that come out alike ("My VM", "my-vm") stay two projects; one that did not
+// (step 1's "windows") keeps the project it has.
+func dockerName(name string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(name) {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '-', r == '_':
+			b.WriteRune(r)
+		default:
+			b.WriteByte('-')
+		}
+	}
+	out := b.String()
+	if out == name && out != "" && out[0] != '-' && out[0] != '_' {
+		return out
+	}
+	sum := sha256.Sum256([]byte(name))
+	return strings.Trim(out, "-_") + "-" + hex.EncodeToString(sum[:3])
 }
 
 func (b *DockerBackend) containerLogs(ctx context.Context, m Machine, tail string) (string, error) {

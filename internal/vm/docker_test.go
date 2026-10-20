@@ -667,3 +667,28 @@ func TestRemoveEmptiesRootOwnedFilesWithAContainer(t *testing.T) {
 		t.Errorf("the folder was not emptied by a container; calls: %v", runner.calls)
 	}
 }
+
+// A machine's name as Docker and Compose take one: a name they take already is
+// kept (step 1's "windows" keeps its project), any other made valid and kept
+// apart from the names it could be confused with.
+func TestDockerName(t *testing.T) {
+	if got := dockerName("windows"); got != "windows" {
+		t.Errorf("dockerName(windows) = %q", got)
+	}
+	if got := composeProject("windows"); got != "inua-vm-windows" {
+		t.Errorf("composeProject(windows) = %q", got)
+	}
+	seen := map[string]string{}
+	for _, name := range []string{"My VM", "my-vm", "my vm", "a: b\nc", "日本", "_x"} {
+		got := dockerName(name)
+		for _, r := range got {
+			if !(r >= 'a' && r <= 'z' || r >= '0' && r <= '9' || r == '-' || r == '_') {
+				t.Errorf("dockerName(%q) = %q: %q is not for Docker", name, got, r)
+			}
+		}
+		if other, ok := seen[got]; ok {
+			t.Errorf("%q and %q are both %q", name, other, got)
+		}
+		seen[got] = name
+	}
+}
