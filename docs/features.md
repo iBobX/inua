@@ -195,6 +195,21 @@ pointer cannot take it: with Hyprland's classic dispatchers on 0.53, its
 Lua ones on 0.55. Without Hyprland it types the shortcut with `wtype`.
 `clipboard.paste_on_click = false` only copies.
 
+
+## Passwords
+
+The key in the top bar (`bar.pass`, Settings → Bar "Passwords"; shown
+when there is a password store), a shortcut set for "Search passwords",
+or `inua call pass toggle|open|close` opens a search through the store
+the Pass app uses, in the clipboard history's card. Each word typed is
+looked for in the entry's whole path, in any order: `google abc` finds
+`corp/google.com/abc@corp.com`. Up and Down choose, Enter or a click opens
+an entry: its user (the last part of its path), password, one-time code,
+fields and notes, each with a copy button; Enter copies the password. A
+copy closes the panel, is marked as a password manager's, and is cleared
+after 45 seconds. The panel opens again as it was left: the search and the
+entry open; the decrypted entry is forgotten five minutes after it
+closes. See docs/feat/pass.md.
 ## Keyring
 
 `inua-keyring` is a Secret Service (what apps use through libsecret:

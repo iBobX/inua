@@ -192,6 +192,7 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	s.closeControl()
 	s.closeCenter()
 	s.closeAgenda()
+	s.closePasswords()
 	c.target, c.targetClass = s.snap.ActiveToplevel, ""
 	for _, w := range s.snap.Toplevels {
 		if w.Address == c.target {

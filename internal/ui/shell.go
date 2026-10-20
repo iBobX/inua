@@ -90,6 +90,7 @@ type shellUI struct {
 	overview  workspaceOverview
 	control   control
 	clipboard clipboardPanel
+	passwords passwordsPanel
 	agenda    agenda
 	shot      shooter
 	recording recorder
@@ -229,6 +230,14 @@ type shellUI struct {
 	onClipboardBackdrop    func(gtk.GestureClick, int32, float64, float64)
 	onClipboardKey         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onClipboardTick        glib.SourceFunc
+	onPasswordsButton      func(gtk.Button)
+	onPasswordsSearch      func(gtk.SearchEntry)
+	onPasswordsActivate    func(gtk.SearchEntry)
+	onPasswordsAction      func(gtk.Button)
+	onPasswordsBackdrop    func(gtk.GestureClick, int32, float64, float64)
+	onPasswordsKey         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onPasswordsTick        glib.SourceFunc
+	onPasswordsForget      glib.SourceFunc
 	onDrawerClicked        func(gtk.Button)
 	onDrawerApp            func(gtk.Button)
 	onDrawerSearch         func(gtk.SearchEntry)
@@ -382,6 +391,7 @@ func (s *shellUI) start() {
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()
 	s.bindClipboardHandlers()
+	s.bindPasswordsHandlers()
 	s.bindLockHandlers()
 	s.applyLauncherWeb()
 	s.bindPolkitHandlers()
@@ -404,6 +414,7 @@ func (s *shellUI) start() {
 	s.startSystem()
 	s.startAssistant()
 	s.startClipboardCapture()
+	s.checkPasswordsStore()
 	if s.layer { // elsewhere (GNOME) the desktop has its own agent
 		s.startPolkit()
 	}
@@ -435,6 +446,7 @@ func (s *shellUI) bindHandlers() {
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		if b := s.barOf(c.GetWidget()); b != nil {
 			end, _ := b.endReach(x, y)
+			toggle(&b.passwords.Widget, "hover", end == "passwords")
 			toggle(&b.clipboard.Widget, "hover", end == "clipboard")
 			toggle(&b.notes.Widget, "hover", end == "notes")
 			toggle(&b.status.Widget, "hover", end == "status")
@@ -444,7 +456,7 @@ func (s *shellUI) bindHandlers() {
 	}
 	s.onBarLeave = func(c gtk.EventControllerMotion) {
 		if b := s.barOf(c.GetWidget()); b != nil {
-			for _, w := range []*gtk.Widget{&b.clipboard.Widget, &b.notes.Widget, &b.status.Widget, &b.clockButton.Widget} {
+			for _, w := range []*gtk.Widget{&b.passwords.Widget, &b.clipboard.Widget, &b.notes.Widget, &b.status.Widget, &b.clockButton.Widget} {
 				toggle(w, "hover", false)
 			}
 		}
@@ -459,6 +471,8 @@ func (s *shellUI) bindHandlers() {
 		clock, onClock := b.clockReach(x, y)
 		switch {
 		case onEnd || (end == "" && onClock):
+		case end == "passwords":
+			s.onPasswordsButton(b.passwords)
 		case end == "clipboard":
 			s.onClipboardButton(b.clipboard)
 		case end == "notes":
@@ -725,7 +739,7 @@ func (s *shellUI) barNames() []string {
 //	shell    state|close|reload|restart|snapshot DIR|tray-menu N
 func (s *shellUI) request(req ipc.Request) ipc.Response {
 	if req.Op == "show" {
-		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list dismiss invoke\nmedia: status play-pause next previous\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area silent-area pick-window pick-screen screen window color record stop close\nlock: now unlock state\nclipboard: toggle open close\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
+		return ipc.Response{OK: true, Result: "launcher: toggle apps windows close (apps|windows QUERY…)\noverview: toggle open close\ncontrol: toggle open close\nsettings: toggle open close\nnotifications: toggle open close clear focus list dismiss invoke\nmedia: status play-pause next previous\nsystem: status set (wifi bluetooth volume mute brightness focus saver) power (suspend reboot poweroff logout)\nscreenshot: area silent-area pick-window pick-screen screen window color record stop close\nlock: now unlock state\nclipboard: toggle open close\npass: toggle open close\ndrawer: toggle open close\nshell: state close reload restart snapshot tray-menu"}
 	}
 	if req.Op != "call" {
 		return ipc.Response{Error: "unknown op " + req.Op}
@@ -804,6 +818,21 @@ func (s *shellUI) request(req ipc.Request) ipc.Response {
 			s.openClipboard(nil)
 		case "close":
 			s.closeClipboard()
+		default:
+			return bad
+		}
+	case "pass":
+		switch req.Function {
+		case "toggle":
+			if s.passwords.open {
+				s.closePasswords()
+			} else {
+				s.openPasswords(nil)
+			}
+		case "open":
+			s.openPasswords(nil)
+		case "close":
+			s.closePasswords()
 		default:
 			return bad
 		}

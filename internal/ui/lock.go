@@ -99,6 +99,7 @@ func (s *shellUI) bindLockHandlers() {
 // without session lock support, or without the password helper.
 func (s *shellUI) lockScreen() error {
 	s.closeClipboard()
+	s.closePasswords()
 	l := &s.lock
 	if l.ending { // the last lock is still being let go
 		l.relock = true

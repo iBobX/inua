@@ -120,6 +120,7 @@ func (s *shellUI) toggleAgenda() {
 
 func (s *shellUI) openAgenda() {
 	s.closeClipboard()
+	s.closePasswords()
 	a := &s.agenda
 	if a.open {
 		return

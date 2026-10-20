@@ -194,8 +194,12 @@ func (s *shellUI) applyConfig(c config.Config) {
 		b.title.SetVisible(c.Bar.Title)
 		b.tray.SetVisible(c.Bar.Tray)
 		b.clipboard.SetVisible(c.Clipboard.Enable && c.Clipboard.Bar)
+		b.passwords.SetVisible(c.Bar.Pass && s.passwords.hasStore)
 		b.setHypr(s, s.snap)
 		s.syncWallpaper(b)
+	}
+	if c.Bar.Pass && !old.Bar.Pass {
+		s.checkPasswordsStore() // one may have been made since
 	}
 	if old.Clipboard.Opacity != c.Clipboard.Opacity {
 		s.loadClipboardStyle()

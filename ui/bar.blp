@@ -72,6 +72,17 @@ ApplicationWindow bar {
         }
       }
 
+      // Opens the search through the password store; shown when there is
+      // one.
+      Button passwords {
+        styles ["passwords"]
+        name: "passwords";
+        focusable: false;
+        visible: false;
+        tooltip-text: _("Passwords");
+        icon-name: "dialog-password-symbolic";
+      }
+
       Button clipboard {
         styles ["clipboard"]
         focusable: false;

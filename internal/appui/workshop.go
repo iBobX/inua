@@ -96,7 +96,7 @@ type workshopApp struct {
 	events   chan func() // what goes to the app, in order
 	gen      int         // counts sessions, so a gone one's news are dropped
 	stopping bool
-	clip     secretClip
+	clip     gtkx.SecretClip
 	dialogs  map[*wsDialog]bool // open, with their callbacks
 
 	onClick     func(gtk.Button)
@@ -916,7 +916,7 @@ func (h wsHost) State() map[string]any {
 func (h wsHost) Copy(text string, secret bool) error {
 	gtkx.Post(func() {
 		if secret {
-			h.a.clip.copy(&h.a.win.Widget, text)
+			h.a.clip.Copy(text)
 			return
 		}
 		clip := h.a.win.GetClipboard()
