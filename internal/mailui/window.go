@@ -66,10 +66,11 @@ type window struct {
 
 	top                                     gtk.Stack
 	side, filters, reader, welcomeBox       gtk.Box
+	readerBar                               gtk.Box
 	statusMark, undoBar                     gtk.Box
 	undoText                                gtk.Label
 	undoBtn                                 gtk.Button
-	statusState                             gtk.Label
+	statusState, headTitle, headSub         gtk.Label
 	compose, settingsButton                 gtk.Button
 	search                                  gtk.SearchEntry
 	searchNote, listEmpty, listError, older gtk.Label
@@ -160,8 +161,8 @@ func openWindow(c *appui.Ctx) *window {
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState,
-		"undo_bar":     &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
+		"status_state": &w.statusState, "head_title": &w.headTitle, "head_sub": &w.headSub, "reader_bar": &w.readerBar,
+		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
 		"reader_empty": &w.readerEmpty, "list_stack": &w.listStack, "reader_stack": &w.readerStack,
 		"list_scroll": &w.listScroll, "reader_scroll": &w.readerScroll,
@@ -470,7 +471,7 @@ func (w *window) drawSide() {
 		addr := gtk.NewLabel(x.s.Acc.Address)
 		addr.AddCssClass("mail-acct-addr")
 		addr.SetXalign(0)
-		addr.SetEllipsize(2)
+		addr.SetEllipsize(3)
 		gtkx.Append(who, &addr.Widget)
 		gtkx.Append(hb, &who.Widget)
 		head.SetChild(&hb.Widget)
@@ -1322,9 +1323,32 @@ func (w *window) drawStatus() {
 	}
 	if unread > 0 {
 		w.win.SetTitle(i18n.Tf("Mail · %d unread", unread))
+		w.headTitle.SetText(i18n.Nf("%d unread", "%d unread", unread, unread))
 	} else {
 		w.win.SetTitle(i18n.T("Mail"))
+		w.headTitle.SetText(i18n.T("All read"))
 	}
+	// What waits besides: the conversations to answer, and today's mail.
+	var sub []string
+	if n := len(w.conversations(view{kind: viewReply})); n > 0 {
+		sub = append(sub, i18n.Nf("%d to answer", "%d to answer", n, n))
+	}
+	today := 0
+	y, m, d := time.Now().Date()
+	for _, x := range w.accts {
+		for _, it := range x.s.Items(x.s.Role(mail.RoleInbox)) {
+			if yy, mm, dd := it.Date.Local().Date(); yy == y && mm == m && dd == d {
+				today++
+			}
+		}
+	}
+	if today > 0 {
+		sub = append(sub, i18n.Nf("%d today", "%d today", today, today))
+	}
+	if len(sub) == 0 {
+		sub = append(sub, i18n.Time(time.Now(), "Monday, January 2"))
+	}
+	w.headSub.SetText(strings.Join(sub, " · "))
 }
 
 // ago says how long ago a time was, in the status's words.

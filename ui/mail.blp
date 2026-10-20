@@ -30,22 +30,43 @@ ApplicationWindow mail {
           width-request: 236;
           hexpand: false;
 
-          // Writing a message: the index's one primary action.
-          Button compose {
-            styles ["suggested-action", "mail-compose-button"]
-            tooltip-text: _("Write a message (C)");
+          // What waits: the unread, and the conversations to answer and
+          // today's (Go fills it); the settings, and writing a message.
+          Box {
+            styles ["mail-index-head"]
+            spacing: 6;
 
             Box {
-              spacing: 8;
-              halign: center;
+              orientation: vertical;
+              hexpand: true;
+              valign: center;
+              spacing: 2;
 
-              Image {
-                icon-name: "document-edit-symbolic";
+              Label head_title {
+                styles ["mail-head-title"]
+                xalign: 0;
+                ellipsize: end;
               }
 
-              Label {
-                label: _("New message");
+              Label head_sub {
+                styles ["mail-head-sub"]
+                xalign: 0;
+                ellipsize: end;
               }
+            }
+
+            Button settings_button {
+              styles ["outlined", "mail-head-button"]
+              icon-name: "emblem-system-symbolic";
+              tooltip-text: _("Settings (Ctrl+,)");
+              valign: center;
+            }
+
+            Button compose {
+              styles ["suggested-action", "mail-head-button", "mail-compose-button"]
+              icon-name: "document-edit-symbolic";
+              tooltip-text: _("Write a message (C)");
+              valign: center;
             }
           }
 
@@ -62,7 +83,7 @@ ApplicationWindow mail {
             }
           }
 
-          // The sync, in words (Go fills it), and the settings.
+          // The sync, in words; Go fills it.
           Box {
             styles ["mail-index-foot"]
             spacing: 8;
@@ -77,13 +98,6 @@ ApplicationWindow mail {
               xalign: 0;
               hexpand: true;
               ellipsize: end;
-            }
-
-            Button settings_button {
-              styles ["flat", "mail-settings-button"]
-              icon-name: "emblem-system-symbolic";
-              tooltip-text: _("Settings (Ctrl+,)");
-              valign: center;
             }
           }
         }
@@ -194,14 +208,25 @@ ApplicationWindow mail {
           StackPage {
             name: "read";
 
-            child: ScrolledWindow reader_scroll {
-              hscrollbar-policy: never;
+            child: Box {
+              orientation: vertical;
 
-              Box reader {
-                styles ["mail-reader"]
-                orientation: vertical;
-                spacing: 16;
-                halign: start;
+              // The conversation's actions, over it as it scrolls; Go
+              // fills it.
+              Box reader_bar {
+                styles ["mail-reader-bar"]
+                spacing: 2;
+              }
+
+              ScrolledWindow reader_scroll {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Box reader {
+                  styles ["mail-reader"]
+                  orientation: vertical;
+                  spacing: 16;
+                }
               }
             };
           }

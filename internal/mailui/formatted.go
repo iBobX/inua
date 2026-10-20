@@ -164,23 +164,26 @@ func stripMarkup(s string) string {
 // drawHeld is the line over a message whose pictures from the web are not
 // loaded: load them, for it or always for its sender.
 func (w *window) drawHeld(box *gtk.Box, k mail.Key, m *mail.Message, n int) {
-	held := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-	held.AddCssClass("mail-held")
-	text := i18n.Nf("%d picture from the web not loaded", "%d pictures from the web not loaded", n, n)
-	if j := w.judgment(k); j != nil && j.Verdict == mail.Suspicious {
-		text = i18n.Nf("%d picture from the web not loaded: the message looks suspicious", "%d pictures from the web not loaded: the message looks suspicious", n, n)
-	}
-	l := gtk.NewLabel(text)
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	row.AddCssClass("mail-held")
+	icon := gtk.NewImageFromIconName("image-x-generic-symbolic")
+	icon.AddCssClass("mail-held-icon")
+	gtkx.Append(row, &icon.Widget)
+	l := gtk.NewLabel(i18n.Nf("%d picture hidden", "%d pictures hidden", n, n))
 	l.AddCssClass("mail-held-text")
 	l.SetXalign(0)
-	l.SetWrap(true)
-	l.SetTooltipText(i18n.T("Pictures from the web tell the sender you opened the message, and when."))
-	gtkx.Append(held, &l.Widget)
+	l.SetHexpand(true)
+	l.SetEllipsize(3)
+	tip := i18n.T("Pictures from the web tell the sender you opened the message, and when.")
+	if j := w.judgment(k); j != nil && j.Verdict == mail.Suspicious {
+		tip = i18n.T("Pictures from the web are not loaded by themselves for a message that looks suspicious.")
+	}
+	l.SetTooltipText(tip)
+	gtkx.Append(row, &l.Widget)
 	if w.settings.Reading.Images != "never" {
-		row := gtk.NewBox(gtk.OrientationHorizontalValue, 14)
-		w.link(row, i18n.T("Load them"), func() { w.picsOK[k] = true; w.lastDrawn = ""; w.drawReader() })
+		w.chip(row, "", i18n.T("Show"), func() { w.picsOK[k] = true; w.lastDrawn = ""; w.drawReader() })
 		if addr := strings.ToLower(m.From.Addr); addr != "" {
-			w.link(row, i18n.T("Always from this sender"), func() {
+			w.chip(row, "", i18n.T("Always from this sender"), func() {
 				r := &w.settings.Reading
 				if !slices.Contains(r.ImagesFrom, addr) {
 					r.ImagesFrom = append(r.ImagesFrom, addr)
@@ -190,11 +193,10 @@ func (w *window) drawHeld(box *gtk.Box, k mail.Key, m *mail.Message, n int) {
 				}
 				w.lastDrawn = ""
 				w.drawReader()
-			})
+			}).SetTooltipText(addr)
 		}
-		gtkx.Append(held, &row.Widget)
 	}
-	gtkx.Append(box, &held.Widget)
+	gtkx.Append(box, &row.Widget)
 }
 
 // picture is a message's picture: drawn when it is had, read in the

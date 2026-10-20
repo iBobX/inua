@@ -18,24 +18,24 @@ inua-mail --check FILE.eml    the phishing checks on a message
 
 ```
 ┌──────────────────┬──────────────────────────┬───────────────────────────────┐
-│ [ ✎ New message ]│ ⌕ Search, or ask…        │ The Q3 report                 │
-│ All inboxes   3  │ ALL UNREAD FILES REPLY   │ SUMMARY · ASSISTANT           │
-│ Needs reply   1  │ ■ Ana Souza       18:06  │ Ana needs the numbers by Fri… │
-│ Starred          │   The Q3 report       3  │ Summarize · Reply ideas       │
-│ ┌ A Ana Souza    │   Thanks! Can you send…  │ ───────────────────────────── │
-│ Inbox         3  │   REPLY  FILE            │ Ana Souza  Hi both, Here's…   │
-│ Drafts · Sent    │ □ Hetzner Online   Sun   │ Lyric      Looks right to…    │
-│ Archive · Spam   │   Your invoice R0021455  │ Ana Souza  to me, Ben  18:06  │
-│ Trash            │   FILE                   │ Thanks! Can you send the …    │
-│ 1 more folder    │                          │ [PDF q3-draft.pdf · Save…]    │
-│ ■ Up to date  ⚙  │                          │ [Reply]  Reply all  Forward   │
+│ 3 unread  [⚙][✎] │ ⌕ Search, or ask…        │ ↩ ↩↩ ↪          ▣ 🗑 ⊘ ▭ ☆ ✉ ⋯ │
+│ 1 to answer      │ ALL UNREAD FILES REPLY   │───────────────────────────────│
+│ All inboxes   3  │ ■ Ana Souza       18:06  │ The Q3 report                 │
+│ Needs reply   1  │   The Q3 report       3  │ (✦ Summarize) (✦ Reply ideas) │
+│ Starred          │   Thanks! Can you send…  │ (A) Ana Souza  ana@studio.dev │
+│ ┌ A Ana Souza    │   REPLY  FILE            │     to me, Ben    Tue 18:06   │
+│ Inbox         3  │ □ Hetzner Online   Sun   │ Thanks! Can you send the …    │
+│ Drafts · Sent    │   Your invoice R0021455  │ [PDF q3-draft.pdf · Save…]    │
+│ 1 more folder    │   FILE                   │ ┌ Reply to Ana…             ┐ │
+│ ■ Up to date     │                          │ └───────────────────────────┘ │
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
 
-- **New message** at the top writes a message (`c`).
+- **The head** says what waits: the unread, then how many conversations
+  to answer and how many came today. ⚙ opens the settings; ✎ writes a
+  message (`c`).
 - **The foot** says how the sync is, in words: up to date, when it last
-  checked, checking, or which accounts cannot connect; ⚙ opens the
-  settings.
+  checked, checking, or which accounts cannot connect.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours); *Starred*; *Unsent* when
   drafts are kept; then each account in a panel of its own: its photo
@@ -49,10 +49,15 @@ inua-mail --check FILE.eml    the phishing checks on a message
   what to act on: REPLY (someone asks you something), WAITING (you wrote
   last), SUSPICIOUS (the phishing checks), FILE. The square is unread.
   ALL, UNREAD, FILES and REPLY filter it.
-- **The conversation**: older messages folded to a line (a click opens
-  one), the newest open; quoted text and signatures behind *Show quoted
-  text*; attachments as cards: a click opens one (images and PDFs in
-  Viewer, the rest with the desktop's app), *Save…* keeps it.
+- **The conversation**: a bar of its actions stays over it: reply, reply
+  all and forward; archive, trash, spam, move, star and unread; ⋯ for
+  showing the newest message as text or formatted, opening it in the
+  browser, and the keys. Under the subject, the assistant's offers as
+  chips (*Summarize*, *Reply ideas*). Each message is headed by its
+  sender's initial, name and address, who it went to and when; older
+  ones fold to a line (a click opens one); quoted text and signatures
+  wait behind •••; attachments are cards: a click opens one (images and
+  PDFs in Viewer, the rest with the desktop's app), *Save…* keeps it.
 
 **Invitations** show as a card above the message's text: the event, when
 in your time, where (with *Join* for a video meeting), who invited whom
@@ -272,12 +277,12 @@ the cache at once; Enter searches the server too. Operators:
   italic, links, lists, quotes, code and pictures, in Mail's own type
   and colours; the sender's styles, scripts, forms and hidden text are
   dropped, and so are tracking pixels. The part of a reply quoting
-  earlier mail folds behind *Show quoted text*. *Show as text* (or
+  earlier mail folds behind •••. *Show as text* in ⋯ (or
   Settings → Reading) shows the words alone; *Open in browser* shows it
   as sent.
 - Pictures a message carries show at once. Pictures from the web are
-  asked for: a line says how many were not loaded, with *Load them* and
-  *Always from this sender*. Settings → Reading can load them always or
+  asked for: a line says how many are hidden, with *Show* and *Always
+  from this sender*. Settings → Reading can load them always or
   never; a message the phishing checks find suspicious never loads them
   by itself.
 - No read receipts are sent.

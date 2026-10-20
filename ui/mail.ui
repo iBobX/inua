@@ -33,26 +33,58 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="width-request">236</property>
                     <property name="hexpand">false</property>
                     <child>
-                      <object class="GtkButton" id="compose">
+                      <object class="GtkBox">
                         <style>
-                          <class name="suggested-action"/>
-                          <class name="mail-compose-button"/>
+                          <class name="mail-index-head"/>
                         </style>
-                        <property name="tooltip-text" translatable="yes">Write a message (C)</property>
+                        <property name="spacing">6</property>
                         <child>
                           <object class="GtkBox">
-                            <property name="spacing">8</property>
-                            <property name="halign">3</property>
+                            <property name="orientation">1</property>
+                            <property name="hexpand">true</property>
+                            <property name="valign">3</property>
+                            <property name="spacing">2</property>
                             <child>
-                              <object class="GtkImage">
-                                <property name="icon-name">document-edit-symbolic</property>
+                              <object class="GtkLabel" id="head_title">
+                                <style>
+                                  <class name="mail-head-title"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="ellipsize">3</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel">
-                                <property name="label" translatable="yes">New message</property>
+                              <object class="GtkLabel" id="head_sub">
+                                <style>
+                                  <class name="mail-head-sub"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="ellipsize">3</property>
                               </object>
                             </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="settings_button">
+                            <style>
+                              <class name="outlined"/>
+                              <class name="mail-head-button"/>
+                            </style>
+                            <property name="icon-name">emblem-system-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Settings (Ctrl+,)</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="compose">
+                            <style>
+                              <class name="suggested-action"/>
+                              <class name="mail-head-button"/>
+                              <class name="mail-compose-button"/>
+                            </style>
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Write a message (C)</property>
+                            <property name="valign">3</property>
                           </object>
                         </child>
                       </object>
@@ -96,17 +128,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <property name="xalign">0</property>
                             <property name="hexpand">true</property>
                             <property name="ellipsize">3</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="settings_button">
-                            <style>
-                              <class name="flat"/>
-                              <class name="mail-settings-button"/>
-                            </style>
-                            <property name="icon-name">emblem-system-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Settings (Ctrl+,)</property>
-                            <property name="valign">3</property>
                           </object>
                         </child>
                       </object>
@@ -260,16 +281,29 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                       <object class="GtkStackPage">
                         <property name="name">read</property>
                         <property name="child">
-                          <object class="GtkScrolledWindow" id="reader_scroll">
-                            <property name="hscrollbar-policy">2</property>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
                             <child>
-                              <object class="GtkBox" id="reader">
+                              <object class="GtkBox" id="reader_bar">
                                 <style>
-                                  <class name="mail-reader"/>
+                                  <class name="mail-reader-bar"/>
                                 </style>
-                                <property name="orientation">1</property>
-                                <property name="spacing">16</property>
-                                <property name="halign">1</property>
+                                <property name="spacing">2</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkScrolledWindow" id="reader_scroll">
+                                <property name="hscrollbar-policy">2</property>
+                                <property name="vexpand">true</property>
+                                <child>
+                                  <object class="GtkBox" id="reader">
+                                    <style>
+                                      <class name="mail-reader"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">16</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>

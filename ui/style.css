@@ -3212,26 +3212,30 @@ window.disk button.destructive-action:hover { background: mix(@danger, @t0, 0.14
    section 5). The accent marks unread and the selection only; danger only
    a suspicious message; the assistant's words sit over a hairline, never
    in a box. */
-/* The index's one primary action, at its top. */
-window.mail button.mail-compose-button {
-  min-height: 36px;
-  margin: 20px 14px 6px;
-  padding: 0 14px;
-  border: 1px solid @accent;
-  border-radius: 3px;
-  background: @accent;
-  color: @app;
-  box-shadow: none;
+/* The index's head: what waits, the settings, and writing a message. */
+window.mail .mail-index-head { padding: 20px 14px 10px 22px; }
+window.mail .mail-head-title {
+  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
+  font-size: 17px;
   font-weight: 600;
+  color: @t0;
 }
+window.mail .mail-head-sub { font-size: 12px; color: @t2; }
+window.mail button.mail-head-button {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border-radius: 3px;
+  box-shadow: none;
+}
+window.mail button.mail-compose-button { border: 1px solid @accent; background: @accent; color: @app; }
 window.mail button.mail-compose-button:hover { background: mix(@accent, @t0, 0.14); }
 /* The foot: the sync in words, and the settings. */
 window.mail .mail-index-foot {
-  padding: 8px 10px 10px 22px;
+  min-height: 40px;
+  padding: 0 14px 0 22px;
   border-top: 1px solid alpha(@line, 0.55);
 }
-window.mail button.mail-settings-button { min-height: 28px; min-width: 28px; padding: 0; color: @t2; }
-window.mail button.mail-settings-button:hover { color: @t0; }
 window.mail .mail-status-mark { border-radius: 1px; }
 window.mail .mail-status-mark.on { background: @accent; border-color: @accent; }
 window.mail .mail-status-mark.busy { background: transparent; border-color: @accent; }
@@ -3410,27 +3414,91 @@ window.mail .mail-undo {
 window.mail .mail-undo-text { font-size: 13px; color: @t0; }
 
 /* The conversation. */
-window.mail .mail-reader { padding: 30px 40px 48px; }
+/* The reader: a bar of its actions over the conversation, then the
+   subject, a warning when there is one, and the messages, each headed by
+   its sender. */
+window.mail .mail-reader-bar {
+  min-height: 48px;
+  padding: 0 16px 0 28px;
+  border-bottom: 1px solid alpha(@line, 0.55);
+}
+window.mail button.mail-tool, window.mail menubutton.mail-tool > button {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+  color: @t1;
+}
+window.mail button.mail-tool:hover, window.mail menubutton.mail-tool > button:hover {
+  border-color: alpha(@accent, 0.2);
+  background: alpha(@accent, 0.07);
+  color: @t0;
+}
+window.mail button.mail-tool.on { color: @accent; }
+window.mail button.mail-bar-button { min-height: 30px; padding: 0 14px; }
+window.mail .mail-reader { padding: 26px 40px 48px; }
 window.mail .mail-reader-empty { margin: 32px; }
 window.mail .mail-read-subject {
   font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
-  font-size: 21px;
+  font-size: 20px;
+  font-weight: 600;
   color: @t0;
 }
+window.mail .mail-chips { margin-top: 2px; }
+window.mail button.mail-chip {
+  min-height: 26px;
+  padding: 0 11px;
+  border: 1px solid alpha(@line, 0.9);
+  border-radius: 13px;
+  background: transparent;
+  box-shadow: none;
+  color: @t1;
+  font-size: 12.5px;
+}
+window.mail button.mail-chip image { color: @accent; }
+window.mail button.mail-chip:hover { border-color: alpha(@accent, 0.4); background: alpha(@accent, 0.06); color: @t0; }
+window.mail button.mail-chip:disabled { color: @t2; }
 window.mail .mail-error { color: @danger; font-size: 12.5px; }
-window.mail .mail-strip { padding-bottom: 14px; border-bottom: 1px solid alpha(@line, 0.55); }
+window.mail .mail-strip { padding: 2px 0 14px; border-bottom: 1px solid alpha(@line, 0.55); }
 window.mail .mail-ai-kicker { margin-bottom: 2px; }
 window.mail .mail-ai-text { font-size: 13.5px; color: @t1; }
 window.mail .mail-ai-busy { font-size: 12.5px; color: @t2; }
+window.mail button.mail-idea {
+  min-height: 0;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: @t1;
+  font-size: 13.5px;
+}
+window.mail button.mail-idea:hover { color: @accent; }
+/* A warning: a banner with the verdict's colour at its edge. */
+window.mail .mail-warning {
+  padding: 12px 14px;
+  border: 1px solid alpha(@line, 0.6);
+  border-left: 3px solid @warn;
+  border-radius: 3px;
+  background: alpha(@warn, 0.05);
+}
+window.mail .mail-warning.suspicious { border-left-color: @danger; background: alpha(@danger, 0.05); }
+window.mail .mail-warning-icon { color: @warn; margin-top: 2px; }
+window.mail .mail-warning.suspicious .mail-warning-icon { color: @danger; }
 window.mail .mail-warning-text { font-size: 13.5px; color: @t0; }
 window.mail .mark.fine { background: @ok; border-color: @ok; }
 window.mail .mark.careful { background: @warn; border-color: @warn; }
 window.mail .mark.suspicious { background: @danger; border-color: @danger; }
-window.mail .mail-steps { margin: 4px 0 2px 15px; }
+window.mail .mail-steps { margin: 0 0 0 26px; }
 window.mail .mail-steps .mark { margin-top: 6px; }
 window.mail .mail-step { font-size: 12.5px; color: @t1; }
-window.mail .mail-message { padding-top: 4px; }
-window.mail .mail-message + .mail-message { padding-top: 14px; border-top: 1px solid alpha(@line, 0.4); }
+window.mail .mail-warning .mail-chips { margin-left: 26px; }
+/* The messages: a hairline between them; an older one folds to a line. */
+window.mail .mail-message { padding-top: 6px; }
+window.mail .mail-message + .mail-message { padding-top: 16px; border-top: 1px solid alpha(@line, 0.45); }
+window.mail .mail-message.folded { padding-bottom: 2px; }
 window.mail button.mail-message-head {
   min-height: 0;
   padding: 0;
@@ -3438,8 +3506,18 @@ window.mail button.mail-message-head {
   background: transparent;
   box-shadow: none;
 }
-window.mail .mail-from { font-size: 13.5px; font-weight: 600; color: @t0; }
-window.mail .mail-message.folded .mail-from { font-weight: 400; color: @t1; }
+window.mail .mail-sender-mark {
+  border-radius: 50%;
+  background: alpha(@accent, 0.14);
+  color: @accent;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+window.mail .mail-message.folded .mail-sender-mark { font-size: 11px; }
+window.mail .mail-from { font-size: 14px; font-weight: 600; color: @t0; }
+window.mail .mail-from-addr { font-size: 12.5px; color: @t2; }
+window.mail .mail-message.folded .mail-from { font-weight: 500; color: @t1; }
 window.mail .mail-to { font-size: 12.5px; color: @t2; }
 window.mail .mail-date {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
@@ -3448,31 +3526,32 @@ window.mail .mail-date {
 }
 window.mail .mail-loading { color: @t2; font-size: 13px; }
 window.mail .mail-text { font-size: 14px; color: @t0; }
-window.mail .mail-text, window.mail .mail-quoted { line-height: 1.4; }
+window.mail .mail-text, window.mail .mail-quoted { line-height: 1.3; }
 window.mail .mail-quoted { font-size: 13px; color: @t2; padding-left: 12px; border-left: 2px solid alpha(@line, 0.8); }
-window.mail .mail-text link, window.mail .mail-quoted link { color: @t0; }
+window.mail .mail-text link, window.mail .mail-quoted link { color: @accent; }
 /* A message's HTML, formatted: its blocks as labels and pictures, in the
    reader's type; the sender's fonts and colours are not kept. */
 window.mail .mail-html { font-size: 14px; color: @t0; }
-window.mail .mail-html > * { margin-bottom: 10px; }
-window.mail .mail-html-p, window.mail .mail-html-h { line-height: 1.45; }
-window.mail .mail-html link { color: @t0; }
-window.mail .mail-html-h { font-weight: 600; margin-top: 6px; }
-window.mail .mail-html-h1 { font-size: 20px; }
+window.mail .mail-html > * { margin-bottom: 9px; }
+window.mail .mail-html-p { line-height: 1.3; }
+window.mail .mail-html-h { line-height: 1.15; }
+window.mail .mail-html link { color: @accent; }
+window.mail .mail-html-h { font-weight: 600; margin-top: 8px; }
+window.mail .mail-html-h1 { font-size: 19px; }
 window.mail .mail-html-h2 { font-size: 17px; }
 window.mail .mail-html-h3, window.mail .mail-html-h4 { font-size: 15px; }
-window.mail .mail-html > .mail-html-item { margin-bottom: 4px; }
-window.mail .mail-html-mark { min-width: 14px; line-height: 1.45; color: @t2; }
+window.mail .mail-html > .mail-html-item { margin-bottom: 3px; }
+window.mail .mail-html-mark { min-width: 14px; line-height: 1.3; color: @t2; }
 window.mail .mail-html-pre {
   padding: 8px 10px;
-  border-radius: 4px;
+  border-radius: 3px;
   background: alpha(@line, 0.35);
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 12.5px;
 }
 window.mail .mail-html-quote { padding-left: 12px; border-left: 2px solid alpha(@line, 0.8); color: @t1; }
 window.mail .mail-html .mail-quoted { margin-bottom: 6px; }
-window.mail .mail-html-rule { margin: 6px 0 16px; }
+window.mail .mail-html-rule { margin: 4px 0 12px; }
 window.mail .mail-html-img { border-radius: 3px; }
 window.mail button.mail-html-img-link {
   min-height: 0;
@@ -3484,17 +3563,15 @@ window.mail button.mail-html-img-link {
 window.mail button.mail-html-img-link:hover { opacity: 0.85; }
 window.mail .mail-html-alt { font-size: 12px; color: @t2; font-style: italic; }
 window.mail .mail-html-alt.loading { opacity: 0.6; }
+/* Pictures from the web held back: one quiet line. */
 window.mail .mail-held {
-  margin-bottom: 12px;
-  padding: 6px 10px;
-  border: 1px solid alpha(@line, 0.7);
-  border-radius: 4px;
+  margin-bottom: 4px;
+  padding: 5px 6px 5px 10px;
+  border-radius: 3px;
+  background: alpha(@line, 0.25);
 }
-window.mail .mail-held-text {
-  font-family: "Geist Mono", "IBM Plex Mono", monospace;
-  font-size: 11px;
-  color: @t2;
-}
+window.mail .mail-held-icon { color: @t2; }
+window.mail .mail-held-text { font-size: 12.5px; color: @t2; }
 window.mail .mail-files { margin-top: 4px; }
 window.mail .mail-file { border: 1px solid @line; border-radius: 3px; }
 window.mail button.mail-file-open {
@@ -3752,8 +3829,8 @@ window.mail-compose entry.mail-draft-what { min-height: 30px; }
 window.mail-compose .mail-ai-note { margin: 6px 28px 0; }
 window.mail-compose .error { color: @danger; }
 window.mail-compose .mail-compose-foot { padding: 12px 28px 16px; }
-window.mail-compose popover.mail-menu > contents { padding: 6px; background: @app; border: 1px solid @line; border-radius: 3px; }
-window.mail-compose button.mail-menu-item {
+window.mail popover.mail-menu > contents { padding: 6px; background: @app; border: 1px solid @line; border-radius: 3px; }
+window.mail button.mail-menu-item {
   min-height: 30px;
   padding: 0 10px;
   border: none;
@@ -3762,8 +3839,8 @@ window.mail-compose button.mail-menu-item {
   box-shadow: none;
   color: @t0;
 }
-window.mail-compose button.mail-menu-item label { font-weight: 400; }
-window.mail-compose button.mail-menu-item:hover { background: alpha(@accent, 0.09); }
+window.mail button.mail-menu-item label { font-weight: 400; }
+window.mail button.mail-menu-item:hover { background: alpha(@accent, 0.09); }
 
 /* The questions: before deleting or removing. */
 window.mail-dialog { background: @app; }

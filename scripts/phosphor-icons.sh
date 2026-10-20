@@ -316,6 +316,9 @@ mail-unread                           envelope-simple
 mail-read                             envelope-simple-open
 mail-reply                            arrow-bend-up-left
 mail-move                             folder-simple
+mail-reply-all                        arrow-bend-double-up-left
+mail-forward                          arrow-bend-up-right
+mail-mark-junk                        prohibit
 disk-choose                           cursor-click
 disk-locate                           crosshair
 LIST

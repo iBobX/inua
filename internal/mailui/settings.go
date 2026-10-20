@@ -70,6 +70,7 @@ func (w *window) showSettings(account string) {
 	s.win.SetTransientFor(&w.win.Window)
 	s.win.SetDestroyWithParent(true)
 	s.win.SetDefaultSize(820, 600)
+	s.win.SetModal(true) // Hyprland floats it over Mail, which tiles
 	s.win.SetTitle(i18n.T("Mail settings"))
 	for _, c := range []string{"settings", "mail", "mail-settings"} {
 		s.win.AddCssClass(c)
