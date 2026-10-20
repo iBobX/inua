@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
+	"codeberg.org/puregotk/puregotk/v4/gobject/types"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
@@ -70,23 +71,32 @@ func (p *termPane) pasteFrom(primary bool) {
 
 // imageMime is the image type the clipboard offers, PNG first, when it
 // offers no text (a browser's image comes with its HTML, which is not
-// what a terminal wants either); "" for none.
+// what a terminal wants either); "" for none. The formats are asked one
+// by one: their list is NULL for a clipboard that offers no MIME type,
+// and the bindings crash on it.
 func imageMime(f *gdk.ContentFormats) string {
-	var n uint
-	mimes := f.GetMimeTypes(&n)
-	image := ""
-	for _, m := range mimes {
-		switch {
-		case strings.HasPrefix(m, "text/plain"):
+	if f.ContainGtype(types.GType(gobject.TypeStringVal)) {
+		return ""
+	}
+	for _, m := range textMimes {
+		if f.ContainMimeType(m) {
 			return ""
-		case m == "image/png":
-			image = m
-		case strings.HasPrefix(m, "image/") && image == "":
-			image = m
 		}
 	}
-	return image
+	for _, m := range imageMimes {
+		if f.ContainMimeType(m) {
+			return m
+		}
+	}
+	return ""
 }
+
+// textMimes are the clipboard's names for text; imageMimes the images a
+// terminal pastes as files, the first offered taken.
+var (
+	textMimes  = []string{"text/plain;charset=utf-8", "text/plain", "UTF8_STRING", "STRING", "TEXT"}
+	imageMimes = []string{"image/png", "image/jpeg", "image/webp", "image/gif", "image/avif", "image/bmp", "image/tiff"}
+)
 
 // pasteImage saves the clipboard's image to a file and pastes its path:
 // for programs that take images as files. (An agent that reads the
