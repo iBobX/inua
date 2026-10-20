@@ -588,7 +588,7 @@ func (w *window) sortNew(x *acct, uids []uint32) {
 		}
 	}
 	w.refresh()
-	if len(left) > 0 && w.settings.Assistant.Sort {
+	if len(left) > 0 && w.settings.Assistant.Sort && w.settings.AI() {
 		if len(left) > 30 {
 			left = left[:30] // the newest; older ones stay unsorted
 		}

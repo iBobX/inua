@@ -64,10 +64,19 @@ type Settings struct {
 		Microsoft OAuthClient `toml:"microsoft"`
 	} `toml:"oauth"`
 	Assistant struct {
+		// Off turns every AI feature of Mail off: the assistant's panel,
+		// Ask AI, search from a sentence, drafting and polishing, an
+		// attachment's summary, and sorting.
+		Off bool `toml:"off,omitempty"`
 		// Sort tags new mail in the inbox, asking the assistant when the
 		// rules do not settle it (docs/feat/inua-mail.md, 7.2).
 		Sort bool `toml:"sort"`
 	} `toml:"assistant"`
+	// Window is the window's layout as it was left.
+	Window struct {
+		HideSidebar bool `toml:"hide_sidebar,omitempty"`
+		Assistant   bool `toml:"assistant,omitempty"` // the assistant's panel is open
+	} `toml:"window"`
 	Reading Reading `toml:"reading"`
 	Writing struct {
 		// UndoSend is the seconds a send waits, to be taken back: 0 is 5,
@@ -88,6 +97,9 @@ type Reading struct {
 	// KeepUnread leaves a conversation unread when it is opened.
 	KeepUnread bool `toml:"keep_unread,omitempty"`
 }
+
+// AI says whether Mail's AI features are on.
+func (s Settings) AI() bool { return !s.Assistant.Off }
 
 // LoadImages says whether a sender's images from the web load at once.
 func (r Reading) LoadImages(from string) bool {

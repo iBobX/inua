@@ -100,11 +100,25 @@ func (w *window) knownSender(addr string) bool {
 
 // markRead marks a conversation's unread messages read, on the server too.
 func (w *window) markRead(c *mail.Conversation) {
+	w.markSeen([]*mail.Conversation{c})
+}
+
+// markAllRead marks every conversation of the list's view read: the
+// mailbox shown, or the inboxes.
+func (w *window) markAllRead() {
+	w.markSeen(w.conversations(w.view))
+}
+
+// markSeen marks conversations' unread messages read, on the server too,
+// a mailbox at a time.
+func (w *window) markSeen(cs []*mail.Conversation) {
 	byBox := map[[2]string][]uint32{}
-	for _, m := range c.Messages {
-		if !m.Has(mail.Seen) {
-			k := [2]string{m.Account, m.Mailbox}
-			byBox[k] = append(byBox[k], m.UID)
+	for _, c := range cs {
+		for _, m := range c.Messages {
+			if !m.Has(mail.Seen) {
+				k := [2]string{m.Account, m.Mailbox}
+				byBox[k] = append(byBox[k], m.UID)
+			}
 		}
 	}
 	for k, uids := range byBox {
@@ -231,9 +245,11 @@ func (w *window) drawBar(c *mail.Conversation) {
 		gap.SetHexpand(true)
 		gtkx.Append(bar, &gap.Widget)
 		w.tool(bar, "user-trash-symbolic", i18n.T("Discard the draft"), w.trash)
-		ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
-		if w.assistOpen {
-			ai.AddCssClass("on")
+		if w.settings.AI() {
+			ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
+			if w.assistOpen {
+				ai.AddCssClass("on")
+			}
 		}
 		return
 	}
@@ -258,9 +274,11 @@ func (w *window) drawBar(c *mail.Conversation) {
 		star.SetTooltipText(i18n.T("Unstar (S)"))
 	}
 	w.tool(bar, "mail-unread-symbolic", i18n.T("Mark as unread (U)"), w.markUnread)
-	ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
-	if w.assistOpen {
-		ai.AddCssClass("on")
+	if w.settings.AI() {
+		ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
+		if w.assistOpen {
+			ai.AddCssClass("on")
+		}
 	}
 
 	more := gtk.NewMenuButton()
@@ -366,7 +384,7 @@ func (w *window) drawWarning(c *mail.Conversation) {
 	if x := w.acct(k.Account); x != nil && x.s.Role(mail.RoleJunk) != "" && k.Mailbox != x.s.Role(mail.RoleJunk) {
 		w.chip(chips, "mail-mark-junk-symbolic", i18n.T("Move to Spam"), w.spam)
 	}
-	if a := w.judged[k]; a == nil || a.err != "" {
+	if a := w.judged[k]; w.settings.AI() && (a == nil || a.err != "") {
 		w.chip(chips, "applications-science-symbolic", i18n.T("Ask AI"), func() { w.openAssist(func() { w.askJudge(k) }) })
 	}
 	gtkx.Append(box, &chips.Widget)
@@ -675,7 +693,7 @@ func (w *window) fileCard(it mail.Item, m *mail.Message, a mail.Attachment) *gtk
 	open.SetChild(&ob.Widget)
 	w.readerBtns = append(w.readerBtns, w.h.click(open, func() { w.openFile(a) }))
 	gtkx.Append(card, &open.Widget)
-	if a.HasText() {
+	if a.HasText() && w.settings.AI() {
 		sum := gtk.NewButtonWithLabel(i18n.T("Sum up"))
 		sum.AddCssClass("mail-file-save")
 		sum.SetTooltipText(i18n.T("The assistant reads it and sums it up"))

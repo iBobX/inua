@@ -38,7 +38,8 @@ inua-mail --check FILE.eml    the phishing checks on a message
   checked, checking, or which accounts cannot connect; ⚙ opens the
   settings.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
-  REPLY whose newest message is not yours); *Starred*; *Unsent* when
+  REPLY whose newest message is not yours: only the assistant's sorting
+  tags REPLY, so it is empty with sorting off); *Starred*; *Unsent* when
   drafts are kept; then each account in a panel of its own: its photo
   (a Google account's) or initial, its name and address, then its
   mailboxes in the same order for every account (Inbox, Drafts, Sent,
@@ -49,7 +50,11 @@ inua-mail --check FILE.eml    the phishing checks on a message
   when, the subject and how many messages, the first line, and a mark for
   what to act on: REPLY (someone asks you something), WAITING (you wrote
   last), SUSPICIOUS (the phishing checks), FILE. The square is unread.
-  ALL, UNREAD, FILES and REPLY filter it.
+  ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
+  while the list has unread mail, marks every conversation of the view
+  read, on the server too. A mailbox fetched the first time shows the
+  loader until it comes. Whether the sidebar is hidden and the
+  assistant's panel open is kept for the next start.
 - **The conversation**: a bar of its actions stays over it: reply, reply
   all and forward; archive, trash, spam, move, star and unread; ⋯ for
   showing the newest message as text or formatted, opening it in the
@@ -140,7 +145,12 @@ keep_unread = false             # opening a conversation does not mark it read
 undo_send = 5                   # seconds to take a send back; -1 sends at once
 
 [assistant]
+off = false                     # true turns every AI feature of Mail off
 sort = false                    # sort new mail with the assistant
+
+[window]
+hide_sidebar = false            # kept as the window was left
+assistant = false               # the assistant's panel open
 ```
 
 **Settings** (Ctrl+, ⚙ at the index's foot, or a click on an account's
@@ -242,7 +252,9 @@ and Outlook keep their own).
 ## The assistant
 
 Mail uses inua's assistant (Settings → AI), only when asked, except the
-sorting, which is off until turned on. Its panel opens at the window's
+sorting, which is off until turned on; *Use AI in Mail* (Mail's
+Settings → Assistant) turns every bit of it off, and then nothing of your
+mail goes to a model. Its panel opens at the window's
 right edge from ✦ in the conversation's bar (the sidebar makes room, and
 comes back when it closes): the summary, replies to pick or a line of
 what to say, and *Is it safe?*: the checks' verdict and each check's finding, for any message not yours, and AI's judgment when asked (*Ask AI*). A reply it
@@ -251,7 +263,7 @@ by the assistant*, with *Undo*, for you to read and send.
 
 | Where | What | What it sends |
 | --- | --- | --- |
-| The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates; kept until the conversation gets a new message | The messages' text, quotes cut |
+| The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates, in the conversation's language; kept until the conversation gets a new message | The messages' text, quotes cut |
 | The panel: *Suggest replies* | Three short replies; the one picked is written out in the quick reply | The last six messages; to write it out, also three of your sent messages kept on this computer |
 | The panel: a line of what to say | The reply, written in the quick reply | The line, the conversation, three of your sent messages |
 | An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |

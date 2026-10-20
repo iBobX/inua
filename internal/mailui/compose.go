@@ -27,6 +27,7 @@ type composer struct {
 	from                           gtk.DropDown
 	to, cc, bcc, subject           gtk.Entry
 	draftWhat                      gtk.Entry
+	assistRow                      gtk.Box
 	ccRow, bccRow, toRow, fieldBox gtk.Box
 	sug                            *gtk.Box       // the suggestions under the field typed in
 	sugFor                         *gtk.Entry     // that field
@@ -97,11 +98,12 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 		"from": &c.from, "to": &c.to, "cc": &c.cc, "bcc": &c.bcc, "subject": &c.subject, "draft_what": &c.draftWhat,
 		"cc_row": &c.ccRow, "bcc_row": &c.bccRow, "to_row": &c.toRow, "fields": &c.fieldBox, "body": &c.body, "attachments": &c.attachments,
 		"show_cc": &c.showCc, "attach": &c.attach, "send": &c.send, "draft": &c.draftBtn, "undo_ai": &c.undoAI,
-		"polish": &c.polish, "status": &c.status, "ai_note": &c.aiNote,
+		"polish": &c.polish, "status": &c.status, "ai_note": &c.aiNote, "assist_row": &c.assistRow,
 	} {
 		b.Get(name, ptr)
 	}
 	b.Close()
+	c.assistRow.SetVisible(w.settings.AI())
 	c.win.SetApplication(w.c.App)
 	c.buf = c.body.GetBuffer()
 

@@ -69,8 +69,9 @@ var receiptWords = []string{"receipt", "invoice", "your order", "order confirmat
 
 // Rules sorts a message without the assistant when its headers settle
 // it; false when they do not. mine says whether the user's own message is
-// the conversation's last; user is the account's address. A person
-// writing to the user with a question is REPLY.
+// the conversation's last; user is the account's address. Whether a
+// person's message asks something of the user (REPLY) is never settled
+// here: the assistant's sorting decides it.
 func Rules(e Envelope, mine bool, user string) (Tag, bool) {
 	local, _, _ := strings.Cut(strings.ToLower(e.From.Addr), "@")
 	automated := e.Auto || containsAny(local, noReply)
@@ -84,22 +85,10 @@ func Rules(e Envelope, mine bool, user string) (Tag, bool) {
 		return TagNews, true
 	case automated:
 		return TagNotice, true
-	case !e.Bulk && direct(e, user) && (strings.Contains(e.Snippet, "?") || strings.Contains(e.Subject, "?") ||
-		strings.Contains(e.Snippet, "？") || strings.Contains(e.Subject, "？")):
-		return TagReply, true
 	}
 	return TagNone, false
 }
 
-// direct says whether the user is among a message's To.
-func direct(e Envelope, user string) bool {
-	for _, a := range e.To {
-		if strings.EqualFold(a.Addr, user) {
-			return true
-		}
-	}
-	return false
-}
 
 func containsAny(s string, words []string) bool {
 	for _, w := range words {

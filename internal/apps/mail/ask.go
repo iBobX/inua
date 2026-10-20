@@ -45,7 +45,7 @@ func langOr(lang string) string {
 func SummaryPrompt(msgs []Said, user string, today time.Time, lang string) string {
 	return `Summarize this e-mail conversation for its reader, ` + user + `. Today is ` + today.Format("Monday 2 January 2006") + `.
 
-Write two or three plain sentences: what it is about and where it stands now. Then, only if the reader is asked to do something, one line per action starting with "▸ ", with its date or deadline in parentheses when there is one (as "Fri 24 Oct"). No headings, no markdown, no greeting. Answer in the language whose code is "` + langOr(lang) + `".
+Write two or three plain sentences: what it is about and where it stands now. Then, only if the reader is asked to do something, one line per action starting with "▸ ", with its date or deadline in parentheses when there is one (as "Fri 24 Oct"). No headings, no markdown, no greeting. Write in the language the conversation is written in (its most recent messages when it mixes languages); only if that is unclear, the language whose code is "` + langOr(lang) + `".
 
 The conversation, oldest first:
 

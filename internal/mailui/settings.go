@@ -546,10 +546,20 @@ func (s *settingsWin) writingPage() {
 
 func (s *settingsWin) assistantPage() {
 	w := s.w
-	body := s.section(i18n.T("SORTING"), i18n.T("The only thing it does unasked"))
-	s.row(body, i18n.T("Sort new mail"), i18n.T("Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters."),
-		s.toggle(w.settings.Assistant.Sort, func(on bool) { w.settings.Assistant.Sort = on; s.save() }))
-	s.note(body, i18n.T("Everything else the assistant does in Mail (summaries, reply ideas, drafting, search from a sentence, phishing judgments) happens only when you ask. The assistant itself is set in Settings → AI."))
+	on := gtk.NewSwitch()
+	on.SetActive(w.settings.AI())
+	body := s.section(i18n.T("AI"), i18n.T("In Mail only; the assistant itself is set in Settings → AI"))
+	s.row(body, i18n.T("Use AI in Mail"), i18n.T("Off: no assistant's panel, no Ask AI, no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."), &on.Widget)
+	sort := s.toggle(w.settings.Assistant.Sort, func(v bool) { w.settings.Assistant.Sort = v; s.save() })
+	sort.SetSensitive(w.settings.AI())
+	sorting := s.section(i18n.T("SORTING"), i18n.T("The only thing it does unasked"))
+	s.row(sorting, i18n.T("Sort new mail"), i18n.T("Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters. Whether a message needs your reply is only ever decided here."), sort)
+	s.pptrs = append(s.pptrs, w.h.notify(on, "active", func() {
+		w.settings.Assistant.Off = !on.GetActive()
+		s.save()
+		sort.SetSensitive(w.settings.AI())
+		w.aiChanged()
+	}))
 }
 
 func (s *settingsWin) advancedPage() {

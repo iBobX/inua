@@ -20,18 +20,20 @@ import (
 // toggleAssist opens or closes the panel.
 // The sidebar makes room for it, and comes back when it closes.
 func (w *window) toggleAssist() {
+	if !w.assistOpen && !w.settings.AI() {
+		return
+	}
 	w.assistOpen = !w.assistOpen
 	w.assistReveal.SetRevealChild(w.assistOpen)
 	switch {
 	case w.assistOpen && w.indexCol.GetVisible():
-		w.toggleSidebar()
+		w.setSidebar(false)
 		w.sidebarForPanel = true
 	case !w.assistOpen && w.sidebarForPanel:
 		w.sidebarForPanel = false
-		if !w.indexCol.GetVisible() {
-			w.toggleSidebar()
-		}
+		w.setSidebar(true)
 	}
+	w.keepLayout()
 	w.drawPanel()
 	w.lastDrawn = ""
 	w.drawReader() // the bar's ✦

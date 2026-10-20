@@ -768,7 +768,7 @@ func TestSortRules(t *testing.T) {
 		{Envelope{From: Address{Addr: "news@blog.com"}, Bulk: true}, false, TagNews, true},
 		{Envelope{From: Address{Addr: "notifications@github.com"}, Bulk: true}, false, TagNotice, true},
 		{Envelope{From: Address{Addr: "ana@x"}, Subject: "Lunch?"}, false, TagNone, false}, // not to the user
-		{Envelope{From: Address{Addr: "ana@x"}, To: []Address{{Addr: "Me@x"}}, Snippet: "Free on Friday?"}, false, TagReply, true},
+		{Envelope{From: Address{Addr: "ana@x"}, To: []Address{{Addr: "Me@x"}}, Snippet: "Free on Friday?"}, false, TagNone, false}, // the assistant decides
 		{Envelope{From: Address{Addr: "ana@x"}, To: []Address{{Addr: "me@x"}}, Snippet: "Here it is."}, false, TagNone, false},
 	}
 	for _, c := range cases {

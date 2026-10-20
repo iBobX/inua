@@ -124,6 +124,7 @@ type window struct {
 	blocks          map[mail.Key][]mail.Block // the formatted messages' blocks
 	pics            map[string]*pic           // pictures, by where they come from and the width drawn
 	picsDue         bool                      // a redraw for pictures is coming
+	markAll         *gtk.Button               // marks the list read; shown while it has unread mail
 	sidebarForPanel bool                      // the panel hid the sidebar
 	assistOpen      bool                      // the assistant's panel is open
 	panelBtns       []uintptr
@@ -222,6 +223,16 @@ func openWindow(c *appui.Ctx) *window {
 		w.filterBtns[f.f] = btn
 		gtkx.Append(&w.filters, &btn.Widget)
 	}
+	gap := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	gap.SetHexpand(true)
+	gtkx.Append(&w.filters, &gap.Widget)
+	w.markAll = gtk.NewButtonWithLabel(i18n.T("MARK READ"))
+	w.markAll.AddCssClass("mail-filter")
+	w.markAll.AddCssClass("mail-mark-all")
+	w.markAll.SetTooltipText(i18n.T("Mark every conversation here as read"))
+	w.markAll.SetVisible(false)
+	w.h.click(w.markAll, w.markAllRead)
+	w.filters.Append(&w.markAll.Widget) // kept: shown when the list has unread mail
 	w.syncFilters()
 
 	w.loadSettings()
@@ -242,6 +253,8 @@ func (w *window) loadSettings() {
 	}
 	w.drawSide()
 	w.refresh()
+	w.aiChanged()
+	w.restoreLayout()
 	w.h.later(1000, w.statusTick)
 }
 
@@ -759,6 +772,14 @@ func (w *window) refresh() {
 			w.readerStack.SetVisibleChildName("empty")
 		}
 	}
+	unread := false
+	for _, c := range w.conversations(w.view) {
+		if c.Unread() > 0 {
+			unread = true
+			break
+		}
+	}
+	w.markAll.SetVisible(unread && w.query == "")
 	loading, what := w.loadingView()
 	w.listProgress.SetVisible(loading && len(cs) > 0)
 	switch {
@@ -1185,7 +1206,7 @@ func (w *window) searchEntered() {
 	if text == "" {
 		return
 	}
-	if mail.Looks(text) && w.asked != text {
+	if mail.Looks(text) && w.asked != text && w.settings.AI() {
 		w.askSearch(text)
 		return
 	}
@@ -1386,9 +1407,58 @@ func (w *window) drawStatus() {
 // the list's head while it is hidden.
 func (w *window) toggleSidebar() {
 	w.sidebarForPanel = false // the user's choice from now on
-	shown := !w.indexCol.GetVisible()
+	w.setSidebar(!w.indexCol.GetVisible())
+	w.keepLayout()
+}
+
+// setSidebar shows or hides the index; its toggle moves to the list's
+// head while it is hidden.
+func (w *window) setSidebar(shown bool) {
 	w.indexCol.SetVisible(shown)
 	w.sidebarShow.SetVisible(!shown)
+}
+
+// keepLayout keeps in mail.toml whether the sidebar is hidden (by the
+// user, not to make room for the assistant) and the assistant's panel
+// open, when that changed.
+func (w *window) keepLayout() {
+	hide := !w.indexCol.GetVisible() && !w.sidebarForPanel
+	l := &w.settings.Window
+	if l.HideSidebar == hide && l.Assistant == w.assistOpen {
+		return
+	}
+	l.HideSidebar, l.Assistant = hide, w.assistOpen
+	if err := w.settings.Save(mail.SettingsPath()); err != nil {
+		w.say(&w.listError, i18n.Tf("Not saved: %v", err))
+	}
+}
+
+// aiChanged shows or hides what is the AI's: the search's sentence, the
+// assistant's panel.
+func (w *window) aiChanged() {
+	if w.settings.AI() {
+		w.search.SetPlaceholderText(i18n.T("Search, or ask in a sentence"))
+	} else {
+		w.search.SetPlaceholderText(i18n.T("Search"))
+		if w.assistOpen {
+			w.toggleAssist()
+		}
+	}
+	for _, c := range w.composers {
+		c.assistRow.SetVisible(w.settings.AI())
+	}
+	w.lastDrawn = ""
+	w.drawReader()
+}
+
+// restoreLayout shows the window as it was left.
+func (w *window) restoreLayout() {
+	if w.settings.Window.HideSidebar {
+		w.setSidebar(false)
+	}
+	if w.settings.Window.Assistant && w.settings.AI() {
+		w.toggleAssist()
+	}
 }
 
 // ago says how long ago a time was, in the status's words.
