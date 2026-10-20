@@ -382,6 +382,12 @@ func (h *Host) layout(m Message) error {
 		if !layout.SetRatioAt(s.Tree, m.Path, m.Ratio) {
 			return fmt.Errorf("no split at %q", m.Path)
 		}
+	case OpMove:
+		pane := cmp.Or(m.Pane, s.Focus)
+		if !s.Tree.Has(pane) {
+			return model.ErrNotFound
+		}
+		return h.m.MovePane(pane, m.To, m.From, layout.Right)
 	default:
 		return fmt.Errorf("layout %q", m.Op)
 	}

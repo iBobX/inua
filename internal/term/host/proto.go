@@ -109,6 +109,7 @@ const (
 	OpZoom     = "zoom"     // the focused pane to the whole session, and back
 	OpPreset   = "preset"   // the next preset, or Name's
 	OpRatio    = "ratio"    // the split at Path to Ratio
+	OpMove     = "move"     // Pane (the focused one when 0) to session To, beside From (its focused one when 0)
 )
 
 // PaneInfo is what the host knows of a pane.

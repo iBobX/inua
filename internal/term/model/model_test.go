@@ -82,6 +82,37 @@ func TestRemoveShown(t *testing.T) {
 	}
 }
 
+func TestMovePane(t *testing.T) {
+	var m Model
+	w := m.AddWorkspace("/w", "", true)
+	a := m.AddSession(w, "", 1)
+	m.Split(a.ID, 2, layout.Right)
+	b := m.AddSession(w, "", 3)
+	m.Split(b.ID, 4, layout.Down) // b's focus is 4
+	m.Show(w.ID, a.ID)
+	// Beside the pane it was dropped on, focused, its session shown.
+	if err := m.MovePane(2, b.ID, 3, layout.Right); err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(a.Tree.Panes(), []int{1}) || !slices.Equal(b.Tree.Panes(), []int{3, 2, 4}) {
+		t.Errorf("panes %v, %v", a.Tree.Panes(), b.Tree.Panes())
+	}
+	if b.Focus != 2 || m.Shown != (Shown{w.ID, b.ID}) {
+		t.Errorf("focus %d, shown %+v", b.Focus, m.Shown)
+	}
+	// Beside the focused one when none is named; the session it leaves
+	// empty goes.
+	if err := m.MovePane(1, b.ID, 0, layout.Right); err != nil {
+		t.Fatal(err)
+	}
+	if len(w.Sessions) != 1 || !slices.Equal(b.Tree.Panes(), []int{3, 2, 1, 4}) {
+		t.Errorf("sessions %d, panes %v", len(w.Sessions), b.Tree.Panes())
+	}
+	if err := m.MovePane(9, b.ID, 0, layout.Right); err != ErrNotFound {
+		t.Errorf("a pane that is not: %v", err)
+	}
+}
+
 func TestMove(t *testing.T) {
 	var m Model
 	a := m.AddWorkspace("/a", "", true)

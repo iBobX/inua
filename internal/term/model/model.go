@@ -210,6 +210,28 @@ func (m *Model) RemovePane(pane int) (sessionGone, workspaceGone bool) {
 	return false, false
 }
 
+// MovePane takes a pane out of its session into another, split beside
+// pane beside there (that session's focused pane when 0), focused and
+// shown. The session it leaves goes when it was its last pane, and that
+// session's workspace when it was its last session.
+func (m *Model) MovePane(pane, session, beside int, sp layout.Split) error {
+	from, _ := m.PaneSession(pane)
+	to, w := m.Session(session)
+	if from == nil || to == nil {
+		return ErrNotFound
+	}
+	if from == to {
+		return nil
+	}
+	if beside == 0 || !to.Tree.Has(beside) {
+		beside = to.Focus
+	}
+	m.RemovePane(pane)
+	to.Tree = layout.SplitPane(to.Tree, beside, pane, sp)
+	to.Focus, to.Zoom = pane, 0
+	return m.Show(w.ID, to.ID)
+}
+
 // RemoveSession forgets a session (its panes are the host's to close);
 // it reports whether its workspace went too.
 func (m *Model) RemoveSession(session int) (workspaceGone bool, err error) {
