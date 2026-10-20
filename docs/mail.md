@@ -46,13 +46,17 @@ inua-mail --check FILE.eml    the phishing checks on a message
   Archive, Spam, Trash), the others behind *N more folders*. A click on
   the account's head opens its settings. An account that cannot connect
   says so under its name, with *Sign in* when its sign-in ended.
-- **The list**: a conversation once, by its newest message: the initial
+- **The list**: a conversation once, by its newest message: the face
   of who wrote, and beside it, each line starting at one edge, who wrote
   and when, the subject and how many messages, the text in one to three
   lines (Settings → Reading → *Preview*, two at first), and a mark for
   what to act on: REPLY (someone asks you something), WAITING (you wrote
   last), SUSPICIOUS (the phishing checks), FILE. The square by the time
-  is unread.
+  is unread. A face is the photo of one of your own accounts, else the
+  logo of the service the address is at (GitHub, Google, Spotify… the
+  logos Pass draws; not for a mailbox anyone can have, as gmail.com),
+  else the initial; on a round mark in one of six tones of the theme,
+  the same for an address each time.
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
   while the list has unread mail, marks every conversation of the view
   read, on the server too. A mailbox fetched the first time shows the
@@ -67,7 +71,7 @@ inua-mail --check FILE.eml    the phishing checks on a message
   text), in the middle of a wider pane; its text is at the size
   Settings → Reading → *Text size* says, 85% to 150%, formatted mail
   zoomed to it. Each message is headed by its
-  sender's initial, name and address, who it went to and when; older
+  sender's face, name and address, who it went to and when; older
   ones fold to a line (a click opens one); quoted text and signatures
   wait behind •••; attachments are cards: a click opens one (images and
   PDFs in Viewer, the rest with the desktop's app), *Save…* keeps it.

@@ -954,7 +954,7 @@ func (w *window) loadOlder() {
 
 type convRow struct {
 	box                          gtk.Box
-	face                         gtk.Label // the sender's initial, as the reader shows them
+	face                         face // the sender, as the reader shows them
 	mark                         gtk.Box
 	who, when, subject, count    gtk.Label
 	snippet, tag, clip, accountL gtk.Label
@@ -964,7 +964,7 @@ type convRow struct {
 	ptrs                         []uintptr
 }
 
-// rowFace is the side of a row's initial.
+// rowFace is the side of a row's face.
 const rowFace = 34
 
 // relist shows the rows again, as the settings now say.
@@ -981,12 +981,9 @@ func (w *window) setupRow(item uintptr) {
 	// edge: who and when, the subject, the preview, the marks.
 	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	r.box.AddCssClass("mail-row")
-	r.face = *gtk.NewLabel("")
-	r.face.AddCssClass("mail-sender-mark")
-	r.face.AddCssClass("mail-row-face")
-	r.face.SetSizeRequest(rowFace, rowFace)
-	r.face.SetValign(gtk.AlignStartValue)
-	gtkx.Append(&r.box, &r.face.Widget)
+	r.face = *newFace(rowFace)
+	r.face.box.AddCssClass("mail-row-face")
+	gtkx.Append(&r.box, &r.face.box.Widget)
 	col := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 	col.SetHexpand(true)
 	top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -1124,11 +1121,7 @@ func (w *window) fillRow(r *convRow) {
 	if len(people) > 0 {
 		face = people[0]
 	}
-	name := face.Name
-	if name == "" {
-		name = face.Addr
-	}
-	r.face.SetText(initial(name))
+	w.setFace(&r.face, face)
 	unread := c.Unread() > 0
 	setClass(&r.box.Widget, "unread", unread)
 	setClass(&r.mark.Widget, "on", unread)

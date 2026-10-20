@@ -440,19 +440,6 @@ func (w *window) link(box *gtk.Box, text string, f func()) {
 	gtkx.Append(box, &b.Widget)
 }
 
-// senderMark is a sender's initial on a tinted square.
-func senderMark(a mail.Address, size int32) *gtk.Widget {
-	name := a.Name
-	if name == "" {
-		name = a.Addr
-	}
-	l := gtk.NewLabel(initial(name))
-	l.AddCssClass("mail-sender-mark")
-	l.SetSizeRequest(size, size)
-	l.SetValign(gtk.AlignStartValue)
-	return &l.Widget
-}
-
 // drawMessage shows a message: open (the newest, or one unfolded) or
 // folded to its sender and first line.
 func (w *window) drawMessage(it mail.Item, newest bool) {
@@ -474,7 +461,7 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 	date.AddCssClass("mail-date")
 	date.SetValign(gtk.AlignStartValue)
 	if open {
-		gtkx.Append(hb, senderMark(it.From, 34))
+		gtkx.Append(hb, w.senderMark(it.From, 34))
 		who := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		who.SetHexpand(true)
 		top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -496,7 +483,7 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 		gtkx.Append(who, &to.Widget)
 		gtkx.Append(hb, &who.Widget)
 	} else {
-		gtkx.Append(hb, senderMark(it.From, 24))
+		gtkx.Append(hb, w.senderMark(it.From, 24))
 		from := gtk.NewLabel(it.From.Short())
 		from.AddCssClass("mail-from")
 		from.SetValign(gtk.AlignCenterValue)

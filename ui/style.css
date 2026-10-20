@@ -3507,7 +3507,6 @@ window.mail .mail-row .mark.on { background: @accent; border-color: @accent; }
 /* The sender's initial, as the reader shows senders; a row's lines start
    together beside it. */
 window.mail .mail-row-face { font-size: 14px; margin-top: 1px; }
-window.mail .mail-row.unread .mail-row-face { background: alpha(@accent, 0.22); }
 window.mail .mail-who { font-size: 13.5px; color: @t1; }
 window.mail .mail-row.unread .mail-who { color: @t0; font-weight: 600; }
 window.mail .mail-when, window.mail .mail-n {
@@ -3662,6 +3661,16 @@ window.mail .mail-sender-mark {
   font-size: 13px;
   font-weight: 600;
 }
+/* A sender's tone, which tells senders apart down the list: the theme's
+   four hues and the two blends far from them all. */
+window.mail .mail-sender-mark.tone-0 { background: alpha(@accent, 0.2); color: @accent; }
+window.mail .mail-sender-mark.tone-1 { background: alpha(@danger, 0.2); color: @danger; }
+window.mail .mail-sender-mark.tone-2 { background: alpha(@ok, 0.2); color: @ok; }
+window.mail .mail-sender-mark.tone-3 { background: alpha(@warn, 0.2); color: @warn; }
+window.mail .mail-sender-mark.tone-4 { background: alpha(mix(@accent, @danger, 0.5), 0.2); color: mix(@accent, @danger, 0.5); }
+window.mail .mail-sender-mark.tone-5 { background: alpha(mix(@ok, @warn, 0.5), 0.2); color: mix(@ok, @warn, 0.5); }
+window.mail .mail-sender-mark image { color: inherit; }
+window.mail .mail-sender-mark.photo { background: none; }
 window.mail .mail-message.folded .mail-sender-mark { font-size: 11px; }
 window.mail .mail-from { font-size: 14px; font-weight: 600; color: @t0; }
 window.mail .mail-from-addr { font-size: 12.5px; color: @t2; }
