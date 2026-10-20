@@ -97,7 +97,10 @@ type termPane struct {
 	// tells it this pane took the focus.
 	chord   func(p *termPane, base, keyval uint32, state gdk.ModifierType) bool
 	focused func()
-	look    paneLook
+	// wrote follows the engine taking output, for a pane with no host to
+	// answer its program (quick.go); nil for none.
+	wrote func()
+	look  paneLook
 	// blinkOff hides a blinking cursor for its off half.
 	blinkOff bool
 	// hover is the link under the pointer while Ctrl is held.
@@ -489,6 +492,9 @@ func (p *termPane) drain() {
 			log.Printf("term: %v", err)
 		}
 		all = true
+	}
+	if p.wrote != nil {
+		p.wrote()
 	}
 	p.update(all)
 }

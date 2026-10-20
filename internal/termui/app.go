@@ -75,8 +75,12 @@ type App struct {
 	restartWait glib.SourceFunc
 	guide       *guide
 	nerd        nerdInfo
-	paneDrag    paneDrag
-	brands      brands
+	// quick is set for the quick mode's window (quick.go), quickTerm its
+	// pane and program.
+	quick     bool
+	quickTerm quickTerm
+	paneDrag  paneDrag
+	brands    brands
 
 	onCloseOK, onCloseCancel func(gtk.Button)
 
@@ -126,6 +130,9 @@ func (a *App) Prepare(*appui.Ctx) {
 func (a *App) Theme() string { return a.set.Look.Theme }
 
 func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
+	if a.quick {
+		return a.buildQuick(c)
+	}
 	a.c = c
 	a.info, a.tiles, a.live = map[int]host.PaneInfo{}, map[int]*tile{}, map[int]*termPane{}
 	a.win = &gtk.ApplicationWindow{}
@@ -388,8 +395,8 @@ func (a *App) ThemeChanged() {
 // terminals' colours.
 func (a *App) schemeChanged() {
 	sc := a.scheme()
-	for _, t := range a.tiles {
-		t.pane.setScheme(sc, a.c.Colors["warn"])
+	for _, p := range a.panes() {
+		p.setScheme(sc, a.c.Colors["warn"])
 	}
 	colors := a.colors()
 	a.ask("colors", func(c *host.Client) error { return c.SetColors(colors) })

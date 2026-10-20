@@ -2317,7 +2317,7 @@ msgstr "Ocultar"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:104
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:623
 #: ui/disk.ui:697
@@ -3369,7 +3369,7 @@ msgid "IN USE"
 msgstr "EN USO"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:280
+#: internal/termui/prefs.go:281
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3649,9 +3649,9 @@ msgstr "Bloque desconocido %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:271
-#: internal/termui/keys.go:399
-#: internal/termui/paste.go:279
+#: internal/termui/keys.go:273
+#: internal/termui/keys.go:401
+#: internal/termui/paste.go:287
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
@@ -4531,11 +4531,14 @@ msgid "Opens folders"
 msgstr "Abre carpetas"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:102
-#: internal/termui/app.go:135
-#: internal/termui/app.go:322
-#: internal/termui/app.go:324
-#: internal/termui/tiles.go:471
+#: internal/termui/app.go:111
+#: internal/termui/app.go:147
+#: internal/termui/app.go:336
+#: internal/termui/app.go:338
+#: internal/termui/quick.go:30
+#: internal/termui/quick.go:48
+#: internal/termui/quick.go:158
+#: internal/termui/tiles.go:570
 #: ui/settings.ui:1976
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
@@ -5055,7 +5058,7 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:401
+#: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -5164,7 +5167,7 @@ msgstr[1] "… y %d más"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:273
+#: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3076
@@ -6150,8 +6153,8 @@ msgid "New file…"
 msgstr "Nuevo archivo…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:104
-#: internal/termui/paste.go:284
+#: internal/term/settings/settings.go:105
+#: internal/termui/paste.go:289
 msgid "Paste"
 msgstr "Pegar"
 
@@ -9276,7 +9279,7 @@ msgstr "Enfoque activado o desactivado"
 #: internal/hyprconf/keys.go:31
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:290
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10145,7 +10148,7 @@ msgid "New session in this workspace"
 msgstr "Nueva sesión en este espacio"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:141
+#: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "Nuevo espacio de trabajo"
 
@@ -10190,87 +10193,107 @@ msgid "Next agent that needs you"
 msgstr "Siguiente agente que te necesita"
 
 #: internal/term/settings/settings.go:100
+msgid "Next agent that needs you or is idle"
+msgstr "Siguiente agente que te necesita o está inactivo"
+
+#: internal/term/settings/settings.go:101
 msgid "Every agent"
 msgstr "Todos los agentes"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:102
 msgid "Fold the workspaces"
 msgstr "Plegar los espacios de trabajo"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:103
 msgid "Fold the sessions"
 msgstr "Plegar las sesiones"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:106
 msgid "Search the scrollback"
 msgstr "Buscar en el historial"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:107
 msgid "Copy mode"
 msgstr "Modo de copia"
 
-#: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:373
+#: internal/term/settings/settings.go:108
+#: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "Renombrar la sesión"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:109
 msgid "Every action by name"
 msgstr "Todas las acciones por nombre"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:110
 msgid "Show the keys"
 msgstr "Mostrar las teclas"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:112
 msgid "Restart the terminal host"
 msgstr "Reiniciar el anfitrión del terminal"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:113
 msgid "Font larger"
 msgstr "Letra más grande"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:114
 msgid "Font smaller"
 msgstr "Letra más pequeña"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:115
 msgid "Font size as set"
 msgstr "Tamaño de letra configurado"
 
-#: internal/termui/agents.go:36
+#: internal/termui/agents.go:37
 msgid "EXITED %d"
 msgstr "SALIÓ %d"
 
-#: internal/termui/agents.go:38
+#: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "RESTAURADO"
 
-#: internal/termui/agents.go:42
+#: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "TRABAJANDO"
 
-#: internal/termui/agents.go:44
+#: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "TE NECESITA"
 
-#: internal/termui/agents.go:46
+#: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "TERMINADO"
 
-#: internal/termui/agents.go:48
+#: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "INACTIVO"
 
-#: internal/termui/agents.go:181
+#: internal/termui/agents.go:182
 msgid "Agents that need you"
 msgstr "Agentes que te necesitan"
 
-#: internal/termui/agents.go:267
+#: internal/termui/agents.go:289
+msgid "%d agent needs you"
+msgid_plural "%d agents need you"
+msgstr[0] "%d agente te necesita"
+msgstr[1] "%d agentes te necesitan"
+
+#: internal/termui/agents.go:292
+msgid "%d agent is idle"
+msgid_plural "%d agents are idle"
+msgstr[0] "%d agente está inactivo"
+msgstr[1] "%d agentes están inactivos"
+
+#: internal/termui/agents.go:296
+msgid "%s goes to the next"
+msgstr "%s va al siguiente"
+
+#: internal/termui/agents.go:328
 msgid "Agents"
 msgstr "Agentes"
 
-#: internal/termui/agents.go:274
+#: internal/termui/agents.go:335
 msgid "No agent runs in any workspace."
 msgstr "No hay ningún agente en ningún espacio de trabajo."
 
@@ -10298,12 +10321,12 @@ msgstr "Los terminales toman los colores de la ventana"
 msgid "Your login shell (%s)"
 msgstr "Tu shell de inicio de sesión (%s)"
 
-#: internal/termui/columns.go:140
+#: internal/termui/columns.go:167
 #: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "Acciones"
 
-#: internal/termui/columns.go:142
+#: internal/termui/columns.go:169
 msgid "New session"
 msgstr "Nueva sesión"
 
@@ -10349,20 +10372,20 @@ msgstr "El aspecto de la ventana alrededor de los terminales. Sigue el tema de i
 msgid "Keep these choices; the settings change them later"
 msgstr "Conservar estas opciones; los ajustes las cambian después"
 
-#: internal/termui/keys.go:260
+#: internal/termui/keys.go:262
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "¿Cerrar %s?"
 
-#: internal/termui/keys.go:261
+#: internal/termui/keys.go:263
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "Está trabajando en «%s»; cerrar el panel lo termina."
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:265
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "Te está esperando: %s. Cerrar el panel lo termina."
 
-#: internal/termui/keys.go:304
+#: internal/termui/keys.go:306
 msgid "Choose the workspace's folder"
 msgstr "Elige la carpeta del espacio de trabajo"
 
@@ -10414,27 +10437,27 @@ msgstr "Cámbialas en los ajustes."
 msgid "Change them in the settings (%s)."
 msgstr "Cámbialas en los ajustes (%s)."
 
-#: internal/termui/paste.go:238
+#: internal/termui/paste.go:237
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "¿Pegar %d línea?"
 msgstr[1] "¿Pegar %d líneas?"
 
-#: internal/termui/paste.go:242
+#: internal/termui/paste.go:241
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "Este programa toma un salto de línea como Intro, así que cada línea se ejecutaría en cuanto se pegue."
 
-#: internal/termui/paste.go:244
+#: internal/termui/paste.go:243
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "El texto contiene la marca que termina un pegado, así que lo que sigue se ejecutaría como si se escribiera."
 
-#: internal/termui/paste.go:261
+#: internal/termui/paste.go:260
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "y %d línea más"
 msgstr[1] "y %d líneas más"
 
-#: internal/termui/paste.go:280
+#: internal/termui/paste.go:288
 msgid "Paste as one line"
 msgstr "Pegar en una línea"
 
@@ -10587,20 +10610,20 @@ msgstr "CLAVES"
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "Pulsa una tecla y luego la nueva; Retroceso la libera"
 
-#: internal/termui/prefs.go:292
+#: internal/termui/prefs.go:293
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "Pulsar las teclas…"
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:294
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape cancela; Retroceso libera las teclas de la acción."
 
-#: internal/termui/prefs.go:315
+#: internal/termui/prefs.go:316
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "Una tecla necesita Ctrl, Alt o Súper: las demás son de los programas."
 
-#: internal/termui/prefs.go:326
+#: internal/termui/prefs.go:327
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s era de %s; esa acción ya no tiene teclas."
 
@@ -15201,6 +15224,18 @@ msgstr "Los dispositivos de su tailnet, los nodos de salida y la configuración 
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;red;nodo de salida;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:3
+msgid "Quick Terminal"
+msgstr "Terminal rápida"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:10
+msgid "A terminal for a moment: one shell, nothing kept"
+msgstr "Una terminal para un momento: un shell, nada guardado"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:21
+msgid "shell;prompt;command;commandline;cli;quick;temporary;"
+msgstr "shell;consola;orden;línea de órdenes;cli;rápida;temporal;"
 
 #: config/apps/io.github.lyricat.Inua.Term.desktop:10
 msgid "Workspaces of terminals, and the agents working in them"

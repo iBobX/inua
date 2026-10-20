@@ -9,6 +9,7 @@ with their panes, and the shown session's terminals, tiled.
 inua-term                        open the window (the last workspace shown)
 inua-term --workspace DIR        open or show the workspace for a folder
 inua-term -e COMMAND [ARGS…]     run a command in a session of its own ("Commands")
+inua-term --quick [-e COMMAND …] a terminal for a moment (below)
 inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
@@ -18,6 +19,15 @@ inua-term integration remove claude|codex|all
 It is in the app drawer, under Tools. It can be the desktop's terminal:
 Settings → Default Apps writes `xdg-terminals.list`, and its desktop
 entry takes `-e` as xdg-terminal-exec expects.
+
+**Quick mode.** `inua-term --quick` (Quick Terminal in the drawer) is a
+terminal for a moment: one window, your shell in the folder it was
+started from, and nothing else: no columns, no workspace or session, no
+host, nothing remembered. The shell ending closes the window, and the
+window closing ends the shell. With `-e`, it runs the command in place of
+the shell. Each start is a window of its own. Its keys are the pane's
+alone: copy, paste, search, copy mode and the font's size; every other
+key goes to the program.
 
 ## The first start
 
@@ -146,6 +156,7 @@ inua-term report --state done
 When an agent waits for you or finishes in a pane you are not looking at,
 a notification says so; its *Show* brings the window to that pane.
 Ctrl+Shift+J goes to the next agent that needs you, in any workspace;
+Ctrl+` (the finder) to the next that needs you or is idle;
 Ctrl+Shift+A lists every agent.
 
 ## What it remembers
@@ -156,7 +167,6 @@ and opens the new host in the same window, as for a new build), it
 keeps the sessions you used (typed in, or ran something in),
 their layouts, and each pane's folder, title and **last command**: what
 was typed at the prompt and not run, else the command running, else the
-Ctrl+` (the finder) to the next that needs you or is idle;
 one run last. The next host starts a shell in each pane's folder, in the
 same layout, and puts the command back at the prompt **not run**; the
 pane says RESTORED until you type. An agent with a resume command comes
@@ -196,6 +206,7 @@ it kept at that version's defaults moved to these.
 | Alt+1…8 / Alt+9 | Session 1…8 / the last session |
 | Ctrl+Shift+1…9 | Workspace 1…9 |
 | Ctrl+Shift+J / Ctrl+Shift+A | Next agent that needs you / every agent |
+| Ctrl+` | Next agent that needs you or is idle |
 | Ctrl+Shift+B / Ctrl+Shift+S | Fold the workspaces / the sessions |
 | Ctrl+Shift+C / Ctrl+Shift+V | Copy / paste |
 | Shift+Insert, middle click | Paste the primary selection |
@@ -206,7 +217,6 @@ it kept at that version's defaults moved to these.
 | Ctrl+Shift+R | Rename the session (or double-click its head) |
 | Ctrl+, | Settings |
 | Ctrl+= / Ctrl+- / Ctrl+0 | Font larger / smaller / as set |
-| Ctrl+` | Next agent that needs you or is idle |
 
 ## Copy and paste
 

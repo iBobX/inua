@@ -2306,7 +2306,7 @@ msgstr "隱藏"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:104
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:623
 #: ui/disk.ui:697
@@ -3350,7 +3350,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:280
+#: internal/termui/prefs.go:281
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3630,9 +3630,9 @@ msgstr "未知的元件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:271
-#: internal/termui/keys.go:399
-#: internal/termui/paste.go:279
+#: internal/termui/keys.go:273
+#: internal/termui/keys.go:401
+#: internal/termui/paste.go:287
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
@@ -4512,11 +4512,14 @@ msgid "Opens folders"
 msgstr "開啟資料夾"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:102
-#: internal/termui/app.go:135
-#: internal/termui/app.go:322
-#: internal/termui/app.go:324
-#: internal/termui/tiles.go:471
+#: internal/termui/app.go:111
+#: internal/termui/app.go:147
+#: internal/termui/app.go:336
+#: internal/termui/app.go:338
+#: internal/termui/quick.go:30
+#: internal/termui/quick.go:48
+#: internal/termui/quick.go:158
+#: internal/termui/tiles.go:570
 #: ui/settings.ui:1976
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
@@ -5029,7 +5032,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:401
+#: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "重新命名"
 
@@ -5136,7 +5139,7 @@ msgstr[0] "……還有 %d 項"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:273
+#: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3076
@@ -6111,8 +6114,8 @@ msgid "New file…"
 msgstr "新增檔案……"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:104
-#: internal/termui/paste.go:284
+#: internal/term/settings/settings.go:105
+#: internal/termui/paste.go:289
 msgid "Paste"
 msgstr "貼上"
 
@@ -9227,7 +9230,7 @@ msgstr "聚焦或關閉"
 #: internal/hyprconf/keys.go:31
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:290
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10096,7 +10099,7 @@ msgid "New session in this workspace"
 msgstr "在此工作區新增工作階段"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:141
+#: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "新增工作區"
 
@@ -10141,87 +10144,105 @@ msgid "Next agent that needs you"
 msgstr "下一個需要你的代理"
 
 #: internal/term/settings/settings.go:100
+msgid "Next agent that needs you or is idle"
+msgstr "下一個需要你或閒置的代理"
+
+#: internal/term/settings/settings.go:101
 msgid "Every agent"
 msgstr "所有代理"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:102
 msgid "Fold the workspaces"
 msgstr "收合工作區"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:103
 msgid "Fold the sessions"
 msgstr "收合工作階段"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:106
 msgid "Search the scrollback"
 msgstr "搜尋捲動紀錄"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:107
 msgid "Copy mode"
 msgstr "複製模式"
 
-#: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:373
+#: internal/term/settings/settings.go:108
+#: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "重新命名工作階段"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:109
 msgid "Every action by name"
 msgstr "依名稱列出所有動作"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:110
 msgid "Show the keys"
 msgstr "顯示按鍵"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:112
 msgid "Restart the terminal host"
 msgstr "重新啟動終端機主機"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:113
 msgid "Font larger"
 msgstr "字體放大"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:114
 msgid "Font smaller"
 msgstr "字體縮小"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:115
 msgid "Font size as set"
 msgstr "恢復設定的字級"
 
-#: internal/termui/agents.go:36
+#: internal/termui/agents.go:37
 msgid "EXITED %d"
 msgstr "已結束 %d"
 
-#: internal/termui/agents.go:38
+#: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "已還原"
 
-#: internal/termui/agents.go:42
+#: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "工作中"
 
-#: internal/termui/agents.go:44
+#: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "需要你"
 
-#: internal/termui/agents.go:46
+#: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "已完成"
 
-#: internal/termui/agents.go:48
+#: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "閒置"
 
-#: internal/termui/agents.go:181
+#: internal/termui/agents.go:182
 msgid "Agents that need you"
 msgstr "需要你的代理"
 
-#: internal/termui/agents.go:267
+#: internal/termui/agents.go:289
+msgid "%d agent needs you"
+msgid_plural "%d agents need you"
+msgstr[0] "%d 個代理需要你"
+
+#: internal/termui/agents.go:292
+msgid "%d agent is idle"
+msgid_plural "%d agents are idle"
+msgstr[0] "%d 個代理閒置中"
+
+#: internal/termui/agents.go:296
+msgid "%s goes to the next"
+msgstr "%s 前往下一個"
+
+#: internal/termui/agents.go:328
 msgid "Agents"
 msgstr "代理"
 
-#: internal/termui/agents.go:274
+#: internal/termui/agents.go:335
 msgid "No agent runs in any workspace."
 msgstr "沒有工作區在執行代理。"
 
@@ -10249,12 +10270,12 @@ msgstr "終端機使用視窗的顏色"
 msgid "Your login shell (%s)"
 msgstr "你的登入 shell（%s）"
 
-#: internal/termui/columns.go:140
+#: internal/termui/columns.go:167
 #: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "動作"
 
-#: internal/termui/columns.go:142
+#: internal/termui/columns.go:169
 msgid "New session"
 msgstr "新增工作階段"
 
@@ -10300,20 +10321,20 @@ msgstr "終端機周圍視窗的外觀。它跟隨 inua 的主題，或者無論
 msgid "Keep these choices; the settings change them later"
 msgstr "保留這些選擇；之後可在設定中變更"
 
-#: internal/termui/keys.go:260
+#: internal/termui/keys.go:262
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "關閉 %s？"
 
-#: internal/termui/keys.go:261
+#: internal/termui/keys.go:263
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "它正在處理「%s」；關閉窗格會結束它。"
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:265
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "它在等你：%s。關閉窗格會結束它。"
 
-#: internal/termui/keys.go:304
+#: internal/termui/keys.go:306
 msgid "Choose the workspace's folder"
 msgstr "選擇工作區的資料夾"
 
@@ -10365,25 +10386,25 @@ msgstr "可在設定中變更。"
 msgid "Change them in the settings (%s)."
 msgstr "可在設定中變更（%s）。"
 
-#: internal/termui/paste.go:238
+#: internal/termui/paste.go:237
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "貼上 %d 行？"
 
-#: internal/termui/paste.go:242
+#: internal/termui/paste.go:241
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "此程式將換行視為 Enter，因此每一行貼上後會立即執行。"
 
-#: internal/termui/paste.go:244
+#: internal/termui/paste.go:243
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "文字中含有結束貼上的標記，其後的內容會像輸入的一樣執行。"
 
-#: internal/termui/paste.go:261
+#: internal/termui/paste.go:260
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "還有 %d 行"
 
-#: internal/termui/paste.go:280
+#: internal/termui/paste.go:288
 msgid "Paste as one line"
 msgstr "貼上為一行"
 
@@ -10536,20 +10557,20 @@ msgstr "金鑰"
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "點選一個按鍵，再按下新的按鍵；Backspace 清除"
 
-#: internal/termui/prefs.go:292
+#: internal/termui/prefs.go:293
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "按鍵…"
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:294
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape 取消；Backspace 清除此動作的按鍵。"
 
-#: internal/termui/prefs.go:315
+#: internal/termui/prefs.go:316
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "按鍵需搭配 Ctrl、Alt 或 Super：其餘按鍵屬於程式。"
 
-#: internal/termui/prefs.go:326
+#: internal/termui/prefs.go:327
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s 原屬於 %s；該動作現在沒有按鍵。"
 
@@ -15132,6 +15153,18 @@ msgstr "您的 tailnet 的裝置、出口節點和該裝置的 Tailscale 設置"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;網路;出口節點;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:3
+msgid "Quick Terminal"
+msgstr "快速終端機"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:10
+msgid "A terminal for a moment: one shell, nothing kept"
+msgstr "臨時用的終端機：一個 shell，什麼都不保留"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:21
+msgid "shell;prompt;command;commandline;cli;quick;temporary;"
+msgstr "shell;提示字元;命令;命令列;cli;快速;臨時;"
 
 #: config/apps/io.github.lyricat.Inua.Term.desktop:10
 msgid "Workspaces of terminals, and the agents working in them"

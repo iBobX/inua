@@ -2306,7 +2306,7 @@ msgstr "숨기기"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:104
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:623
 #: ui/disk.ui:697
@@ -3350,7 +3350,7 @@ msgid "IN USE"
 msgstr "사용 중"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:280
+#: internal/termui/prefs.go:281
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3630,9 +3630,9 @@ msgstr "알 수 없는 블록 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:271
-#: internal/termui/keys.go:399
-#: internal/termui/paste.go:279
+#: internal/termui/keys.go:273
+#: internal/termui/keys.go:401
+#: internal/termui/paste.go:287
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
@@ -4512,11 +4512,14 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:102
-#: internal/termui/app.go:135
-#: internal/termui/app.go:322
-#: internal/termui/app.go:324
-#: internal/termui/tiles.go:471
+#: internal/termui/app.go:111
+#: internal/termui/app.go:147
+#: internal/termui/app.go:336
+#: internal/termui/app.go:338
+#: internal/termui/quick.go:30
+#: internal/termui/quick.go:48
+#: internal/termui/quick.go:158
+#: internal/termui/tiles.go:570
 #: ui/settings.ui:1976
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
@@ -5029,7 +5032,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:401
+#: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -5136,7 +5139,7 @@ msgstr[0] "… 그 외 %d개"
 
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
-#: internal/termui/keys.go:273
+#: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3076
@@ -6111,8 +6114,8 @@ msgid "New file…"
 msgstr "새 파일…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:104
-#: internal/termui/paste.go:284
+#: internal/term/settings/settings.go:105
+#: internal/termui/paste.go:289
 msgid "Paste"
 msgstr "붙여넣기"
 
@@ -9227,7 +9230,7 @@ msgstr "포커스 온 또는 오프"
 #: internal/hyprconf/keys.go:31
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:290
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10096,7 +10099,7 @@ msgid "New session in this workspace"
 msgstr "이 작업 공간에 새 세션"
 
 #: internal/term/settings/settings.go:89
-#: internal/termui/columns.go:141
+#: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "새 작업 공간"
 
@@ -10141,87 +10144,105 @@ msgid "Next agent that needs you"
 msgstr "응답이 필요한 다음 에이전트"
 
 #: internal/term/settings/settings.go:100
+msgid "Next agent that needs you or is idle"
+msgstr "응답을 기다리거나 쉬고 있는 다음 에이전트"
+
+#: internal/term/settings/settings.go:101
 msgid "Every agent"
 msgstr "모든 에이전트"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:102
 msgid "Fold the workspaces"
 msgstr "작업 공간 접기"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:103
 msgid "Fold the sessions"
 msgstr "세션 접기"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:106
 msgid "Search the scrollback"
 msgstr "스크롤백 검색"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:107
 msgid "Copy mode"
 msgstr "복사 모드"
 
-#: internal/term/settings/settings.go:107
-#: internal/termui/keys.go:373
+#: internal/term/settings/settings.go:108
+#: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:109
 msgid "Every action by name"
 msgstr "모든 동작을 이름으로"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:110
 msgid "Show the keys"
 msgstr "키 보기"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:112
 msgid "Restart the terminal host"
 msgstr "터미널 호스트 다시 시작"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:113
 msgid "Font larger"
 msgstr "글자 크게"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:114
 msgid "Font smaller"
 msgstr "글자 작게"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:115
 msgid "Font size as set"
 msgstr "설정한 글자 크기"
 
-#: internal/termui/agents.go:36
+#: internal/termui/agents.go:37
 msgid "EXITED %d"
 msgstr "종료 %d"
 
-#: internal/termui/agents.go:38
+#: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "복원됨"
 
-#: internal/termui/agents.go:42
+#: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "작업 중"
 
-#: internal/termui/agents.go:44
+#: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "응답 필요"
 
-#: internal/termui/agents.go:46
+#: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "완료"
 
-#: internal/termui/agents.go:48
+#: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "대기"
 
-#: internal/termui/agents.go:181
+#: internal/termui/agents.go:182
 msgid "Agents that need you"
 msgstr "응답을 기다리는 에이전트"
 
-#: internal/termui/agents.go:267
+#: internal/termui/agents.go:289
+msgid "%d agent needs you"
+msgid_plural "%d agents need you"
+msgstr[0] "에이전트 %d개가 응답을 기다립니다"
+
+#: internal/termui/agents.go:292
+msgid "%d agent is idle"
+msgid_plural "%d agents are idle"
+msgstr[0] "에이전트 %d개가 쉬고 있습니다"
+
+#: internal/termui/agents.go:296
+msgid "%s goes to the next"
+msgstr "%s(으)로 다음으로 이동"
+
+#: internal/termui/agents.go:328
 msgid "Agents"
 msgstr "에이전트"
 
-#: internal/termui/agents.go:274
+#: internal/termui/agents.go:335
 msgid "No agent runs in any workspace."
 msgstr "어느 작업 공간에서도 에이전트가 실행되고 있지 않습니다."
 
@@ -10249,12 +10270,12 @@ msgstr "터미널이 창의 색을 씁니다"
 msgid "Your login shell (%s)"
 msgstr "로그인 셸 (%s)"
 
-#: internal/termui/columns.go:140
+#: internal/termui/columns.go:167
 #: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "동작"
 
-#: internal/termui/columns.go:142
+#: internal/termui/columns.go:169
 msgid "New session"
 msgstr "새 세션"
 
@@ -10300,20 +10321,20 @@ msgstr "터미널을 둘러싼 창의 모양입니다. inua의 테마를 따르�
 msgid "Keep these choices; the settings change them later"
 msgstr "이 선택을 유지합니다. 나중에 설정에서 바꿀 수 있습니다"
 
-#: internal/termui/keys.go:260
+#: internal/termui/keys.go:262
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "%s을(를) 닫을까요?"
 
-#: internal/termui/keys.go:261
+#: internal/termui/keys.go:263
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "“%s” 작업 중입니다. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:265
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "응답을 기다리고 있습니다: %s. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:304
+#: internal/termui/keys.go:306
 msgid "Choose the workspace's folder"
 msgstr "작업 공간의 폴더 선택"
 
@@ -10365,25 +10386,25 @@ msgstr "설정에서 바꿀 수 있습니다."
 msgid "Change them in the settings (%s)."
 msgstr "설정에서 바꿀 수 있습니다 (%s)."
 
-#: internal/termui/paste.go:238
+#: internal/termui/paste.go:237
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "%d줄을 붙여 넣을까요?"
 
-#: internal/termui/paste.go:242
+#: internal/termui/paste.go:241
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "이 프로그램은 줄바꿈을 Enter로 받으므로, 붙여 넣는 즉시 각 줄이 실행됩니다."
 
-#: internal/termui/paste.go:244
+#: internal/termui/paste.go:243
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "텍스트에 붙여 넣기의 끝을 나타내는 표시가 있어, 그 뒤의 내용은 입력한 것처럼 실행됩니다."
 
-#: internal/termui/paste.go:261
+#: internal/termui/paste.go:260
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "외 %d줄"
 
-#: internal/termui/paste.go:280
+#: internal/termui/paste.go:288
 msgid "Paste as one line"
 msgstr "한 줄로 붙여 넣기"
 
@@ -10536,20 +10557,20 @@ msgstr "키"
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "키를 클릭한 뒤 새 키를 누르세요. Backspace는 해제합니다"
 
-#: internal/termui/prefs.go:292
+#: internal/termui/prefs.go:293
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "키를 누른다..."
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:294
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape는 취소, Backspace는 이 동작의 키를 해제합니다."
 
-#: internal/termui/prefs.go:315
+#: internal/termui/prefs.go:316
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "키에는 Ctrl, Alt 또는 Super가 필요합니다. 나머지는 프로그램의 것입니다."
 
-#: internal/termui/prefs.go:326
+#: internal/termui/prefs.go:327
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s은(는) %s의 키였습니다. 그 동작은 이제 키가 없습니다."
 
@@ -15132,6 +15153,18 @@ msgstr "Tailnet의 장치, 종료 노드 및 이 장치의 Tailscale 설정"
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:20
 msgid "vpn;tailnet;network;exit node;taildrop;"
 msgstr "vpn;tailnet;네트워크;출구 노드;taildrop;"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:3
+msgid "Quick Terminal"
+msgstr "빠른 터미널"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:10
+msgid "A terminal for a moment: one shell, nothing kept"
+msgstr "잠깐 쓰는 터미널: 셸 하나, 아무것도 남기지 않음"
+
+#: config/apps/io.github.lyricat.Inua.Term.Quick.desktop:21
+msgid "shell;prompt;command;commandline;cli;quick;temporary;"
+msgstr "셸;프롬프트;명령;명령줄;cli;빠른;임시;"
 
 #: config/apps/io.github.lyricat.Inua.Term.desktop:10
 msgid "Workspaces of terminals, and the agents working in them"
