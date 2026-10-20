@@ -134,6 +134,11 @@ func (w *window) signature() string {
 		rd := w.reading[k]
 		fmt.Fprintf(&b, "%v:%v:%v:%v:%v:%v;", k, m.Flags, rd != nil && rd.m != nil, rd != nil && rd.err != "", w.folded[k], w.quotes[k])
 		fmt.Fprintf(&b, "%v%v%v", w.checks[k], w.judged[k].sig(), w.answers[k].sig())
+		if rd != nil && rd.m != nil {
+			for _, a := range rd.m.Shown() {
+				b.WriteString(w.fileSums[fileKey(m, a)].sig())
+			}
+		}
 	}
 	fmt.Fprintf(&b, "|%s|%s", w.sumState[c.ID].sig(), w.ideas[c.ID].sig())
 	return b.String()
@@ -319,11 +324,27 @@ func (w *window) drawAssist(c *mail.Conversation) {
 	links := gtk.NewBox(gtk.OrientationHorizontalValue, 16)
 	links.AddCssClass("mail-links")
 	if ideas != nil && ideas.err == "" && !ideas.busy {
+		// One a line: side by side they would widen the window.
+		list := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+		list.AddCssClass("mail-ideas")
+		k := gtk.NewLabel(i18n.T("REPLY IDEAS · ASSISTANT"))
+		k.AddCssClass("kicker")
+		k.AddCssClass("mail-ai-kicker")
+		k.SetXalign(0)
+		gtkx.Append(list, &k.Widget)
 		for _, idea := range strings.Split(ideas.text, "\n") {
 			if idea = strings.TrimSpace(idea); idea != "" {
-				w.link(links, idea, func() { w.replyWith(idea) })
+				b := gtk.NewButtonWithLabel("› " + idea)
+				b.AddCssClass("mail-link")
+				b.SetHalign(gtk.AlignStartValue)
+				if l := b.GetChild(); l != nil {
+					(&gtk.Label{Widget: *l}).SetEllipsize(3)
+				}
+				w.readerBtns = append(w.readerBtns, w.h.click(b, func() { w.replyWith(idea) }))
+				gtkx.Append(list, &b.Widget)
 			}
 		}
+		gtkx.Append(box, &list.Widget)
 	}
 	if sum == nil && w.worthSummary(c) {
 		w.link(links, i18n.T("Summarize"), func() { w.summarize(c) })
@@ -547,16 +568,21 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 		flow.SetRowSpacing(8)
 		flow.SetHalign(gtk.AlignStartValue)
 		for _, a := range shown {
-			flow.Append(&w.fileCard(a).Widget)
+			flow.Append(&w.fileCard(it, m, a).Widget)
 		}
 		gtkx.Append(box, &flow.Widget)
+		for _, a := range shown {
+			if s := w.fileSums[fileKey(it, a)]; s != nil {
+				w.aiLine(box, s, i18n.Tf("SUMMARY · ASSISTANT · %s", a.Name))
+			}
+		}
 	}
 	gtkx.Append(box, &links.Widget)
 }
 
 // fileCard is an attachment: a picture's thumbnail or its type, its name
 // and size; a click opens it, Save… keeps it.
-func (w *window) fileCard(a mail.Attachment) *gtk.Box {
+func (w *window) fileCard(it mail.Item, m *mail.Message, a mail.Attachment) *gtk.Box {
 	card := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	card.AddCssClass("mail-file")
 	open := gtk.NewButton()
@@ -598,6 +624,15 @@ func (w *window) fileCard(a mail.Attachment) *gtk.Box {
 	open.SetChild(&ob.Widget)
 	w.readerBtns = append(w.readerBtns, w.h.click(open, func() { w.openFile(a) }))
 	gtkx.Append(card, &open.Widget)
+	if a.HasText() {
+		sum := gtk.NewButtonWithLabel(i18n.T("Sum up"))
+		sum.AddCssClass("mail-file-save")
+		sum.SetTooltipText(i18n.T("The assistant reads it and sums it up"))
+		s := w.fileSums[fileKey(it, a)]
+		sum.SetSensitive(s == nil || (!s.busy && s.err != ""))
+		w.readerBtns = append(w.readerBtns, w.h.click(sum, func() { w.sumUpFile(it, m, a) }))
+		gtkx.Append(card, &sum.Widget)
+	}
 	save := gtk.NewButtonWithLabel(i18n.T("Save…"))
 	save.AddCssClass("mail-file-save")
 	w.readerBtns = append(w.readerBtns, w.h.click(save, func() { w.saveFile(a) }))
@@ -979,4 +1014,47 @@ func cmpOr(a, b string) string {
 		return a
 	}
 	return b
+}
+
+// fileKey names an attachment of a message, for its summary.
+func fileKey(it mail.Item, a mail.Attachment) string {
+	return fmt.Sprintf("%s/%s/%d/%s", it.Account, it.Mailbox, it.UID, a.Name)
+}
+
+// sumUpFile reads an attachment's text and asks the assistant for its
+// gist, shown under the files as it comes.
+func (w *window) sumUpFile(it mail.Item, m *mail.Message, a mail.Attachment) {
+	k := fileKey(it, a)
+	s := &aiText{busy: true}
+	w.fileSums[k] = s
+	w.drawReader()
+	about := mail.SaidOf(m)
+	go func() {
+		text, err := a.Text()
+		if err != nil {
+			gtkx.Post(func() {
+				s.busy = false
+				if errors.Is(err, mail.ErrNoText) {
+					s.err = i18n.T("Mail found no text in it to read (a scan is pictures of pages).")
+				} else {
+					s.err = i18n.Tf("Could not read it: %v", err)
+				}
+				w.drawReader()
+			})
+			return
+		}
+		answer, err := w.ai.ask(mail.AttachmentPrompt(a.Name, text, about, i18n.Lang()), 2*time.Minute, func(t string) {
+			s.text = strings.TrimSpace(t)
+			w.drawReader()
+		})
+		gtkx.Post(func() {
+			s.busy = false
+			if err != nil {
+				s.err = failed(i18n.T("The assistant could not sum it up"), err)
+			} else {
+				s.text = strings.TrimSpace(answer)
+			}
+			w.drawReader()
+		})
+	}()
 }

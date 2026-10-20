@@ -202,6 +202,7 @@ sorting, which is off until turned on:
 | --- | --- | --- |
 | A conversation: *Summarize* (three messages or more, or a long one) | Two or three sentences, then what you are asked to do, with dates; kept until the conversation gets a new message | The messages' text, quotes cut |
 | A conversation: *Reply ideas* | Three short replies; one opens the composer and drafts it | The last six messages |
+| An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |
 | The composer: *Draft* | The text from a line of what to say, in the conversation's language and your voice | The line, the conversation, three of your sent messages kept on this computer |
 | The composer: *Polish* | Shorter, friendlier, more formal, spelling and grammar, or a translation; *Undo* puts your text back | The text you wrote (not the signature or the quote) |
 | The search: a sentence and Enter | The search's operators, shown in the entry, then searched | The sentence and today's date |

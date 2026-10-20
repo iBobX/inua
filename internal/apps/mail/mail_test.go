@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"archive/zip"
 	"bytes"
 	"context"
 	"crypto/sha256"
@@ -920,5 +921,37 @@ func TestSyncKeepsLocal(t *testing.T) {
 	}
 	if _, err := s.Sync(ctx, "INBOX"); err != nil || s.AnswerOf("INBOX", uid) != Accepted {
 		t.Fatalf("a sync lost the answer: %v", err)
+	}
+}
+
+func TestAttachmentText(t *testing.T) {
+	if s, err := (Attachment{Name: "notes.md", Type: "text/markdown", Data: []byte("# Plan\n\nShip on Friday.")}).Text(); err != nil || s != "# Plan\n\nShip on Friday." {
+		t.Fatalf("text %q %v", s, err)
+	}
+	var docx bytes.Buffer
+	zw := zip.NewWriter(&docx)
+	f, _ := zw.Create("word/document.xml")
+	io.WriteString(f, `<w:document><w:body><w:p><w:r><w:t>Contract &amp; terms</w:t></w:r></w:p><w:p><w:r><w:t>Sign by 1 Nov.</w:t></w:r></w:p></w:body></w:document>`)
+	zw.Close()
+	a := Attachment{Name: "contract.docx", Data: docx.Bytes()}
+	if s, err := a.Text(); err != nil || s != "Contract & terms\nSign by 1 Nov." || !a.HasText() {
+		t.Fatalf("docx %q %v", s, err)
+	}
+	if (Attachment{Name: "photo.png", Type: "image/png"}).HasText() {
+		t.Fatal("a picture has text")
+	}
+	if _, err := (Attachment{Name: "x.zip", Type: "application/zip"}).Text(); !errors.Is(err, ErrNoText) {
+		t.Fatalf("zip: %v", err)
+	}
+	pdf := "%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n" +
+		"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj\n" +
+		"4 0 obj << /Length 52 >> stream\nBT /F1 12 Tf 72 712 Td (Invoice total 14.28 EUR) Tj ET\nendstream endobj\n" +
+		"5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\ntrailer << /Root 1 0 R >>\n%%EOF\n"
+	s, err := (Attachment{Name: "R0021455.pdf", Type: "application/pdf", Data: []byte(pdf)}).Text()
+	if err != nil && strings.Contains(err.Error(), "poppler") {
+		t.Skip("no poppler:", err)
+	}
+	if err != nil || !strings.Contains(s, "Invoice total 14.28 EUR") {
+		t.Fatalf("pdf %q %v", s, err)
 	}
 }

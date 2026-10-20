@@ -105,6 +105,7 @@ type window struct {
 	quotes   map[mail.Key]bool
 	checks   map[mail.Key]bool    // the phishing checks unfolded
 	answers  map[mail.Key]*aiText // an invitation's answer: busy, sent (text), or why not
+	fileSums map[string]*aiText   // an attachment's summary, by fileKey
 
 	sideBtns   []uintptr // the index's buttons, forgotten when it is made again
 	readerBtns []uintptr // the conversation's buttons, likewise
@@ -134,7 +135,7 @@ func openWindow(c *appui.Ctx) *window {
 		store: mail.NewStore(), secrets: mail.NewSecrets(), drafts: mail.NewDrafts(),
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
-		answers:    map[mail.Key]*aiText{},
+		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
 	w.ctx, w.cancel = context.WithCancel(context.Background())
