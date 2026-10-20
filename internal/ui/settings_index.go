@@ -17,6 +17,7 @@ var settingsIcons = map[string]string{
 	"clipboard":     "edit-paste-symbolic",
 	"keyring":       "dialog-password-symbolic",
 	"shortcuts":     "preferences-desktop-keyboard-shortcuts-symbolic",
+	"wifi":          "network-wireless-signal-excellent-symbolic",
 	"bluetooth":     "bluetooth-active-symbolic",
 	"displays":      "video-display-symbolic",
 	"keyboard":      "input-keyboard-symbolic",

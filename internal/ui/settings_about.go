@@ -57,6 +57,7 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 			s.openKeyringRead(-1)
 		}
 		s.syncBluetoothSearch() // only while its page is shown
+		s.pollWifi()            // likewise
 		switch {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()

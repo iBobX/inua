@@ -3542,6 +3542,201 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "wifi";
+        title:  _("Wi-Fi");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_wifi {
+            hscrollbar-policy: never;
+
+            Box {
+              styles ["page"]
+              orientation: vertical;
+
+              // [WI-FI]
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>WI-FI<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("This computer");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Wi-Fi");
+                        xalign: 0;
+                      }
+
+                      // The network in use, or why there is none.
+                      Label wifi_state {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch wifi_power {
+                      name: "wifi_power";
+                      valign: center;
+                    }
+                  }
+                }
+              }
+
+              // [CONNECTED]: the network in use and its addresses, laid
+              // out by showWifi.
+              Box wifi_current_section {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>CONNECTED<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("The network in use");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box wifi_current {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+
+              // [KNOWN NETWORKS]: those saved, in range or not.
+              Box wifi_known_section {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>KNOWN NETWORKS<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("Saved on this computer; joined again by themselves");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box wifi_known {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+
+              // [NEARBY]: the others in range, found while the page is shown.
+              Box wifi_nearby_section {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>NEARBY<span alpha='55%'>]</span>");
+                  }
+
+                  Label wifi_nearby_meta {
+                    styles ["section-meta"]
+                    label:  _("Searching…");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box wifi_nearby {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+              }
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_wifi {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "bluetooth";
         title:  _("Bluetooth");
 

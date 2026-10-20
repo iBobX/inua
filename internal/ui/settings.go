@@ -81,6 +81,7 @@ type settings struct {
 	apps     appsSettings      // the Default Apps page
 	displays displaysSettings  // the Displays page
 	bt       bluetoothSettings // the Bluetooth page
+	wifi     wifiSettings      // the Wi-Fi page
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -458,6 +459,7 @@ func (s *shellUI) openSettings() {
 	s.getKeyringSettings(ui)
 	s.getAppsSettings(ui)
 	s.getDisplaySettings(ui)
+	s.getWifiSettings(ui)
 	s.getBluetoothSettings(ui)
 	s.buildSettingsIndex()
 	ui.Close()
@@ -498,12 +500,13 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "bluetooth", "displays", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "wifi", "bluetooth", "displays", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
 var settingsPageAliases = map[string]string{
 	"wallpaper": "appearance", "dock": "bar", "control": "bar", "touchpad": "mouse",
+	"network": "wifi", "wi-fi": "wifi",
 }
 
 // showSettingsPage turns the open settings window to a page, reporting
@@ -651,6 +654,7 @@ func (s *shellUI) showSettings() {
 	// The shell chose its language when it started.
 	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
 	s.showInput()
+	s.showWifi()
 	s.showBluetooth()
 	s.showDisplays()
 	s.showNotifySettings()

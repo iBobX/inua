@@ -1222,6 +1222,10 @@ window.polkit { background: rgba(0, 0, 0, 0.45); } /* the screen behind, dimmed 
 .settings .bt-prompt { padding: 2px 0 16px 28px; }
 .settings .bt-code .keycap { min-width: 22px; font-size: 15px; }
 .settings .bt-code .keycap.typed { color: @accent; border-color: @accent; }
+/* Wi-Fi: the lock of a network that takes a password; what failed with a
+   network, under its row. */
+.settings .wifi-lock { color: @t2; -gtk-icon-size: 14px; }
+.settings .row-error { padding: 0 0 12px 28px; font-size: 12px; color: @danger; }
 
 /* Toggle buttons joined in a row: °C/°F, chart ranges. */
 .settings .segmented > button {

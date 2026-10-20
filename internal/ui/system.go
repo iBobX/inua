@@ -61,6 +61,10 @@ func (s *shellUI) update(f func(*shell.System)) {
 			s.applyControl()
 		}
 		s.showBluetooth()
+		s.showWifi()
+		if s.wantWifi() {
+			s.readWifiList() // connected, or off, meanwhile
+		}
 	})
 }
 

@@ -99,6 +99,7 @@ type shellUI struct {
 	pass      passPrompts // gpg's passphrases (inua-pinentry)
 	alarms    alarms
 	settings  settings
+	wifi      wifiState // the networks, while a list shows them
 	tray      tray
 	sys       shell.System
 	svc       services
@@ -153,6 +154,10 @@ type shellUI struct {
 	onBluetoothSwitch      func(gtk.Switch, bool) bool
 	onBluetoothButton      func(gtk.Button)
 	onBluetoothEntry       func(gtk.Entry)
+	onWifiSwitch           func(gtk.Switch, bool) bool
+	onWifiButton           func(gtk.Button)
+	onWifiEntry            func(gtk.PasswordEntry)
+	onWifiPoll             glib.SourceFunc
 	onSettingsIndex        func(gtk.ListBox, uintptr)
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
@@ -387,6 +392,7 @@ func (s *shellUI) start() {
 	s.bindTrayHandlers()
 	s.bindSettingsHandlers()
 	s.bindAboutHandlers()
+	s.bindWifiHandlers()
 	s.bindNotifyHandlers()
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()
