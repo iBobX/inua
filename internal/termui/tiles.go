@@ -19,8 +19,9 @@ import (
 
 // Column 3 is the shown session's panes and nothing else: tiles laid out
 // by the session's split tree, 8 px apart and from the edges, each a
-// 32 px head (state, kind, title, folder) over its terminal. The focused
-// tile's border is the accent; the gaps drag to resize.
+// 32 px head (state, kind, title, folder or checkout) over its
+// terminal. The focused tile's border is the accent; the gaps drag to
+// resize.
 
 // gap is the space between tiles and around them.
 const gap = 8
@@ -36,7 +37,39 @@ type tile struct {
 	state *gtk.Label
 	head  *gtk.Box // the handle that drags the pane (panedrag.go)
 	pane  *termPane
+	// In a checkout, it shows in the folder's place: its name, the
+	// branch's mark and the branch, as much of it as the head has room
+	// for (fitGit).
+	git       *gtk.Box
+	gitName   *gtk.Label
+	gitIcon   *gtk.Image
+	gitBranch *gtk.Label
+	gitNeed   [2]int // the tile's width for the whole checkout, for the branch alone
+	gitShown  gitFit
+	width     int // where it was put last
 }
+
+// gitFit is how much of the checkout a head shows.
+type gitFit int
+
+const (
+	gitNone   gitFit = iota
+	gitBranch        // the mark and the branch
+	gitAll           // the name too
+)
+
+// What a head needs around its title and checkout (ui/style.css's
+// .term-head padding and the tile's border; the head's spacing), the
+// title's room kept before the checkout shows, and the longest name and
+// branch shown whole.
+const (
+	headChrome     = 2*12 + 2
+	headSpacing    = 9
+	gitSpacing     = 5
+	titleRoom      = 160
+	gitNameChars   = 20
+	gitBranchChars = 28
+)
 
 // tiling is column 3's layout: the tree laid out (a copy while a gap is
 // dragged), and the drag.
@@ -235,6 +268,14 @@ func (a *App) allocateTiles(w, h int) {
 		}
 		rect := gdk.Rectangle{X: int32(rr.X), Y: int32(rr.Y), Width: int32(math.Max(rr.W, 1)), Height: int32(math.Max(rr.H, 1))}
 		tl.box.SizeAllocate((*gtk.Allocation)(unsafe.Pointer(&rect)), -1)
+		tl.width = int(rect.Width)
+		if tl.gitFor(tl.width) != tl.gitShown {
+			gtkx.Post(func() { // not during the layout
+				if a.tiles[id] == tl {
+					tl.fitGit()
+				}
+			})
+		}
 	}
 }
 
@@ -445,6 +486,23 @@ func (a *App) addTile(id int) error {
 	t.dir.AddCssClass("term-head-dir")
 	t.dir.SetEllipsize(1) // start
 	head.Append(&t.dir.Widget)
+	t.git = gtk.NewBox(gtk.OrientationHorizontalValue, gitSpacing)
+	t.git.AddCssClass("term-head-git")
+	t.git.SetVisible(false)
+	t.gitName = gtk.NewLabel("")
+	t.gitName.AddCssClass("term-head-dir")
+	t.gitName.SetEllipsize(3) // end
+	t.gitName.SetMaxWidthChars(gitNameChars)
+	t.git.Append(&t.gitName.Widget)
+	t.gitIcon = gtk.NewImageFromIconName("term-git-branch-symbolic")
+	t.gitIcon.SetPixelSize(12)
+	t.git.Append(&t.gitIcon.Widget)
+	t.gitBranch = gtk.NewLabel("")
+	t.gitBranch.AddCssClass("term-head-branch")
+	t.gitBranch.SetEllipsize(3) // end
+	t.gitBranch.SetMaxWidthChars(gitBranchChars)
+	t.git.Append(&t.gitBranch.Widget)
+	head.Append(&t.git.Widget)
 	t.state = gtk.NewLabel("")
 	t.state.AddCssClass("term-state")
 	head.Append(&t.state.Widget)
@@ -520,11 +578,87 @@ func (a *App) freeGone() bool {
 
 // update writes a pane's head.
 func (t *tile) update(a *App, info host.PaneInfo) {
-	t.title.SetText(paneTitle(info))
+	title := paneTitle(info)
+	t.title.SetText(title)
 	t.dir.SetText(shortDir(info.Dir))
 	t.icon.SetFromIconName(iconOf(info))
 	a.brand(t.icon, info)
 	paint(t.mark, t.state, lookOf(info))
+	if r, ok := a.tiling.rects[t.id]; ok && t.width == 0 {
+		t.width = int(r.W)
+	}
+	t.showGit(info.Git, title)
+}
+
+// showGit writes the checkout in the head, in the folder's place, and
+// what it needs to show whole or in part.
+func (t *tile) showGit(g *host.Git, title string) {
+	t.dir.SetVisible(g == nil)
+	if g == nil {
+		t.gitNeed = [2]int{}
+		t.fitGit()
+		return
+	}
+	name := baseName(g.Root)
+	t.gitName.SetText(name)
+	t.gitBranch.SetText(g.Branch)
+	icon, tip := "term-git-branch-symbolic", i18n.Tf("%s\nBranch %s", shortDir(g.Root), g.Branch)
+	if g.Worktree {
+		icon, tip = "term-git-worktree-symbolic", i18n.Tf("%s, a worktree of %s\nBranch %s", shortDir(g.Root), shortDir(g.Repo), g.Branch)
+	}
+	t.gitIcon.SetFromIconName(icon)
+	t.git.SetTooltipText(tip)
+	// Measured from the text: a hidden widget measures nothing.
+	fixed := headChrome + 4*headSpacing + natural(&t.mark.Widget) + natural(&t.icon.Widget) + natural(&t.state.Widget) +
+		min(textWidth(&t.title.Widget, title), titleRoom)
+	branch := 12 + gitSpacing + textWidth(&t.gitBranch.Widget, clip(g.Branch, gitBranchChars))
+	t.gitNeed = [2]int{fixed + textWidth(&t.gitName.Widget, clip(name, gitNameChars)) + gitSpacing + branch, fixed + branch}
+	t.fitGit()
+}
+
+// gitFor is how much of the checkout a tile width wide shows.
+func (t *tile) gitFor(width int) gitFit {
+	switch {
+	case t.gitNeed[0] == 0:
+		return gitNone
+	case width >= t.gitNeed[0]:
+		return gitAll
+	case width >= t.gitNeed[1]:
+		return gitBranch
+	}
+	return gitNone
+}
+
+// fitGit shows as much of the checkout as the tile has room for.
+func (t *tile) fitGit() {
+	f := t.gitFor(t.width)
+	t.gitShown = f
+	t.git.SetVisible(f != gitNone)
+	t.gitName.SetVisible(f == gitAll)
+}
+
+// natural is a widget's natural width.
+func natural(w *gtk.Widget) int {
+	var minimum, nat, minBase, natBase int32
+	w.Measure(gtk.OrientationHorizontalValue, -1, &minimum, &nat, &minBase, &natBase)
+	return int(nat)
+}
+
+// textWidth is the width of text in a widget's font.
+func textWidth(w *gtk.Widget, text string) int {
+	l := w.CreatePangoLayout(text)
+	var x, y int32
+	l.GetPixelSize(&x, &y)
+	l.Unref()
+	return int(x)
+}
+
+// clip is text as a label n characters at most shows it.
+func clip(text string, n int) string {
+	if r := []rune(text); len(r) > n {
+		return string(r[:n-1]) + "…"
+	}
+	return text
 }
 
 // focusPane tells the host which pane has the focus, when the user moved

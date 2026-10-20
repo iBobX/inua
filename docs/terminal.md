@@ -92,7 +92,11 @@ from it, or at `$INUA_VT_LIB`.
   asks. A shell shows the command running in it. An agent's mark takes
   its own colour (Claude Code's orange, Gemini's blue…) while it runs.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
-  head (state, mark, title, folder). Drag a gap to resize; drag a head
+  head (state, mark, title, folder). In a git checkout, the folder's
+  place shows its name and branch (a linked worktree's with a fork for
+  a mark), read from the checkout's files when the shell changes folder
+  and at each prompt; a narrow pane shows the branch alone, or neither.
+  Drag a gap to resize; drag a head
   onto another pane to swap them, or onto a session's head or a pane's
   row in column 2 to move the pane to that session, beside its focused
   pane or that one. When the layout changes, the panes slide to their

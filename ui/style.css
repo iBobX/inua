@@ -2992,6 +2992,12 @@ window.term button.term-pane-row.drop-on { border-color: alpha(@accent, 0.38); b
 window.term .term-head { min-height: 32px; padding: 0 12px; border-bottom: 1px solid alpha(@line, 0.55); }
 window.term .term-kind { color: @t1; }
 window.term .term-head-title { font-size: 12.5px; color: @t1; }
+window.term .term-head-git image { color: @t2; }
+window.term .term-head-branch {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t1;
+}
 window.term .term-error { margin: 32px; color: @danger; }
 window.term .term-badge {
   padding: 1px 5px;

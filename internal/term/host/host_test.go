@@ -288,6 +288,37 @@ func TestTitleAndFolder(t *testing.T) {
 	})
 }
 
+// A pane's checkout comes with its folder, and is read again at the
+// next prompt: a command may have changed the branch.
+func TestGitEvents(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	repo := t.TempDir()
+	write(t, filepath.Join(repo, ".git", "HEAD"), "ref: refs/heads/main\n")
+	_, path := startHost(t)
+	w := newWatcher()
+	c := dial(t, path, w)
+	script := `printf '\033]7;file://host%s\033\\'; read x; printf '\033]133;A\007'; read y`
+	id, _ := c.Create([]string{"sh", "-c", fmt.Sprintf(script, repo)}, t.TempDir(), nil, 80, 24)
+	c.Attach(id)
+	branch := func(want string) func() bool {
+		return func() bool {
+			panes, _ := c.List()
+			return len(panes) == 1 && panes[0].Git != nil && panes[0].Git.Root == repo && panes[0].Git.Branch == want
+		}
+	}
+	w.waitFor(t, "the checkout of the new folder", branch("main"))
+	write(t, filepath.Join(repo, ".git", "HEAD"), "ref: refs/heads/dev\n")
+	c.Input(id, []byte("\n"))
+	w.waitFor(t, "the branch read again at the prompt", branch("dev"))
+	w.waitFor(t, "the event", func() bool {
+		w.mu.Lock()
+		defer w.mu.Unlock()
+		return slices.ContainsFunc(w.events, func(m Message) bool { return m.Git != nil && m.Git.Branch == "dev" })
+	})
+}
+
 func TestVersion(t *testing.T) {
 	_, path := startHost(t)
 	conn, err := net.Dial("unix", path)

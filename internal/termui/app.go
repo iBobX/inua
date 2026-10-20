@@ -276,7 +276,7 @@ func (a *App) event(m host.Message) {
 			if p := a.paneFor(m.Pane); p != nil {
 				p.feedSize(m.Cols, m.Rows)
 			}
-			if m.Title == "" && m.Dir == "" && m.Code == nil && m.Clipboard == nil {
+			if m.Title == "" && m.Dir == "" && m.Git == nil && m.Code == nil && m.Clipboard == nil {
 				return
 			}
 		}
@@ -284,7 +284,7 @@ func (a *App) event(m host.Message) {
 	}
 }
 
-// paneEvent is a pane's title, folder, exit or clipboard write.
+// paneEvent is a pane's title, folder, checkout, exit or clipboard write.
 func (a *App) paneEvent(m host.Message) {
 	info, ok := a.info[m.Pane]
 	if !ok {
@@ -295,6 +295,12 @@ func (a *App) paneEvent(m host.Message) {
 	}
 	if m.Dir != "" {
 		info.Dir = m.Dir
+	}
+	if m.Git != nil {
+		info.Git = m.Git
+		if m.Git.Root == "" {
+			info.Git = nil
+		}
 	}
 	if m.Code != nil {
 		info.Exited, info.Code = true, *m.Code

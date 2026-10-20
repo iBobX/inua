@@ -94,6 +94,7 @@ type pane struct {
 	replay   []byte
 	title    string
 	pwd      string
+	git      Git // the checkout the folder is in
 	cols     int
 	rows     int
 	exited   bool
@@ -423,7 +424,7 @@ func (h *Host) list() []PaneInfo {
 		infos = append(infos, PaneInfo{
 			ID: p.id, Argv: p.argv, Title: p.title, Dir: p.folder(),
 			Cols: p.cols, Rows: p.rows, Exited: p.exited, Code: p.code,
-			Restored: p.restored, Command: p.agent.command,
+			Restored: p.restored, Command: p.agent.command, Git: p.gitInfo(),
 			Agent: p.agent.t.Type, State: string(p.agent.t.State), Ask: p.agent.t.Ask,
 		})
 		if m := p.agent.m; m != nil {
@@ -470,6 +471,7 @@ func (h *Host) start(argv []string, dir string, env []string, cols, rows, cellW,
 		return 0, err
 	}
 	p := &pane{id: id, host: h, argv: argv, dir: dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
+	p.git = readGit(dir)
 	if t, err := vt.New(cols, rows); err == nil {
 		p.term = t
 		// The host reads a screen's last rows; the windows keep the long
@@ -593,8 +595,12 @@ func (p *pane) output(b []byte, limit int) {
 		return
 	}
 	p.term.Write(b)
+	// The checkout is read again in a new folder, and at each prompt:
+	// a command run may have changed the branch.
+	look := false
 	if marks := p.term.Prompts(); marks != nil {
 		p.prompts(marks)
+		look = slices.ContainsFunc(marks, func(m vt.Prompt) bool { return m.Kind == vt.PromptStart })
 	}
 	if ns := p.term.Notifications(); ns != nil {
 		p.host.programNotes(p, ns)
@@ -617,6 +623,10 @@ func (p *pane) output(b []byte, limit int) {
 	if d := p.term.Pwd(); d != p.pwd {
 		p.pwd = d
 		p.host.tell(Message{Type: MsgEvent, Pane: p.id, Dir: p.folder()})
+		look = true
+	}
+	if look {
+		p.lookGit()
 	}
 }
 
@@ -651,7 +661,7 @@ func (p *pane) attach(c *client) {
 		c.send(frameOutput, paneBytes(p.id, append([]byte(nil), p.replay...))...)
 	}
 	p.attached[c] = true
-	c.message(Message{Type: MsgEvent, Pane: p.id, Title: p.title, Dir: p.folder()})
+	c.message(Message{Type: MsgEvent, Pane: p.id, Title: p.title, Dir: p.folder(), Git: &p.git})
 	if p.exited {
 		code := p.code
 		c.message(Message{Type: MsgEvent, Pane: p.id, Code: &code})

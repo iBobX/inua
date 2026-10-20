@@ -288,6 +288,9 @@ open-menu                             list
 term-cpu                              cpu
 term-memory                           memory
 term-uptime                           clock
+# inua-term: a pane's checkout, in its head: a branch, a linked worktree's
+term-git-branch                       git-branch
+term-git-worktree                     git-fork
 # inua-term: agents LobeHub has no mark of
 agent-pi                              pi
 agent-mistermorph                     butterfly
