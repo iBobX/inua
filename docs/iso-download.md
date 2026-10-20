@@ -240,11 +240,16 @@ that pays off:
    architecture, live or installer, and `<volume-size>` when present, so the
    user knows a 2 GB live image from a 700 MB netinst.
 3. **Download with the parts Boxes lacks**: stream to
-   `$XDG_CACHE_HOME/inua/iso/<name>.part`, resume with an `If-Range`/`Range`
-   request, verify a published SHA-256 when the distribution publishes one
-   (Debian `SHA256SUMS`, Fedora `Fedora-Server-…-CHECKSUM`), and only then
-   rename into place. Refuse to start when free space is less than the
-   expected size plus a margin.
+   `$XDG_CACHE_HOME/inua/iso/<hash of the URL>/<name>.part` (a folder per
+   URL, so two images of one name from two places are never confused),
+   resume with an `If-Range`/`Range` request, verify a published SHA-256
+   when the distribution publishes one (Debian `SHA256SUMS`, Fedora
+   `Fedora-Server-…-CHECKSUM`), and only then rename into place. Refuse to
+   start when free space is less than the expected size plus a margin.
+   Fetch over HTTPS only: most media have no published checksum, so a
+   plain `http://` URL in the database is fetched as `https://`, and a
+   redirect away from HTTPS is refused (plain http to this host's own
+   loopback, a local mirror, is allowed).
 4. **Identify the file before offering Install**: volume ID from osinfo-db,
    and for a custom image let the user skip identification. Report the
    recognised OS, release and variant in the window.

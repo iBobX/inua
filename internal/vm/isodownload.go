@@ -4,8 +4,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -183,6 +185,12 @@ func (d *ISODownloader) Download(ctx context.Context, media ISOMedia, progress f
 	if d.targetName(media) == "" {
 		return "", fmt.Errorf("%s: the URL names no file", media.URL)
 	}
+	// The image is fetched over HTTPS: most have no published checksum, and
+	// over plain HTTP anyone on the way could hand over an image of their own.
+	// osinfo-db still names some media by http://, and their servers answer
+	// https:// as well, so the request is upgraded rather than refused.
+	fetch := media
+	fetch.URL = secureURL(media.URL)
 
 	d.mu.Lock()
 	if d.inflight == nil {
@@ -203,7 +211,7 @@ func (d *ISODownloader) Download(ctx context.Context, media ISOMedia, progress f
 	d.inflight[media.URL] = t
 	d.mu.Unlock()
 
-	file, err := d.transfer(ctx, media, progress)
+	file, err := d.transfer(ctx, fetch, media.URL, progress)
 
 	d.mu.Lock()
 	delete(d.inflight, media.URL)
@@ -226,10 +234,40 @@ func (d *ISODownloader) Checksum(url string) (ISOChecksum, bool) {
 	return c, ok
 }
 
-// TargetPath is where a medium's image is kept: the cache directory and the
-// file name the URL itself carries, which is what the distribution calls it.
+// TargetPath is where a medium's image is kept: a folder of its URL's own in
+// the cache directory, and in it the file name the URL carries, which is what
+// the distribution calls it. Two images of one name from two places (every
+// distribution has an install.iso) are two files, never one served for the
+// other.
 func (d *ISODownloader) TargetPath(media ISOMedia) string {
-	return filepath.Join(d.dir(), d.targetName(media))
+	sum := sha256.Sum256([]byte(secureURL(media.URL)))
+	return filepath.Join(d.dir(), hex.EncodeToString(sum[:6]), d.targetName(media))
+}
+
+// secureURL is an image's URL as it is fetched: https, or plain http to this
+// host's own loopback (a mirror of one's own, which nothing on a network can
+// come between). Any other http URL is the same URL over https.
+func secureURL(raw string) string {
+	u, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil || u.Scheme != "http" || loopbackHost(u.Hostname()) {
+		return strings.TrimSpace(raw)
+	}
+	u.Scheme = "https"
+	return u.String()
+}
+
+// secureTarget says whether a request may go to u: https, or http to this
+// host's loopback. A redirect anywhere else is refused.
+func secureTarget(u *url.URL) bool {
+	return u.Scheme == "https" || u.Scheme == "http" && loopbackHost(u.Hostname())
+}
+
+func loopbackHost(host string) bool {
+	if host == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 // CachedPath is a medium's image that is already in the cache, and whether
@@ -257,11 +295,12 @@ func existingFile(p string) (string, bool) {
 	return p, true
 }
 
-// transfer is one download, from the space check to the rename.
-func (d *ISODownloader) transfer(ctx context.Context, media ISOMedia, progress func(done, total int64)) (string, error) {
+// transfer is one download, from the space check to the rename; key is the
+// URL the caller asked for, which the checksum's outcome is kept under.
+func (d *ISODownloader) transfer(ctx context.Context, media ISOMedia, key string, progress func(done, total int64)) (string, error) {
 	target := d.TargetPath(media)
 	if _, ok := d.CachedPath(media); ok {
-		d.setChecksum(media.URL, ISOChecksumNotChecked)
+		d.setChecksum(key, ISOChecksumNotChecked)
 		return target, nil
 	}
 	if err := os.MkdirAll(d.dir(), 0700); err != nil {
@@ -289,6 +328,10 @@ func (d *ISODownloader) transfer(ctx context.Context, media ISOMedia, progress f
 	}
 	if err := d.checkFreeSpace(remaining); err != nil {
 		return "", err
+	}
+	// The image's own folder, once there is room for it.
+	if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
+		return "", fmt.Errorf("make the image cache %s: %w", d.dir(), err)
 	}
 
 	img, err := d.openImage(ctx, media, resume)
@@ -336,7 +379,7 @@ func (d *ISODownloader) transfer(ctx context.Context, media ISOMedia, progress f
 		return "", fmt.Errorf("move %s into place: %w", part, err)
 	}
 	d.removeValidator(media)
-	d.setChecksum(media.URL, outcome)
+	d.setChecksum(key, outcome)
 	return target, nil
 }
 
@@ -723,7 +766,8 @@ func (d *ISODownloader) targetName(media ISOMedia) string {
 		return ""
 	}
 	name := path.Base(u.Path)
-	if name == "" || name == "." || name == "/" {
+	if name == "" || name == "." || name == ".." || name == "/" {
+		// ".." would put the image beside the cache, not in it.
 		return ""
 	}
 	return name
@@ -736,11 +780,29 @@ func (d *ISODownloader) dir() string {
 	return DefaultISODir()
 }
 
+// httpClient is the client every request goes through, refusing a redirect
+// that leaves HTTPS (secureTarget): an https URL whose mirror sends it to
+// plain http is refused, not followed.
 func (d *ISODownloader) httpClient() *http.Client {
+	c := http.DefaultClient
 	if d.Client != nil {
-		return d.Client
+		c = d.Client
 	}
-	return http.DefaultClient
+	secure := *c
+	next := c.CheckRedirect
+	secure.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if !secureTarget(req.URL) {
+			return fmt.Errorf("%s: a redirect away from https is refused", req.URL.Redacted())
+		}
+		if next != nil {
+			return next(req, via)
+		}
+		if len(via) >= 10 {
+			return errors.New("stopped after 10 redirects")
+		}
+		return nil
+	}
+	return &secure
 }
 
 func (d *ISODownloader) userAgent() string {

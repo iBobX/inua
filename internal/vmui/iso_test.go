@@ -171,14 +171,17 @@ func TestISORowsFollowTheCache(t *testing.T) {
 		Arch: "x86_64", Installer: true,
 		URL: "https://example.org/debian/debian-12.11.0-amd64-netinst.iso",
 	}
-	s, _, dir := isoService(t, live, netinst)
-	if err := os.MkdirAll(dir, 0700); err != nil {
+	s, _, _ := isoService(t, live, netinst)
+	cache := s.isoDownloader()
+	for _, p := range []string{cache.TargetPath(live), cache.TargetPath(netinst)} {
+		if err := os.MkdirAll(filepath.Dir(p), 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(cache.TargetPath(live), []byte("an image"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "Fedora-Workstation-42.iso"), []byte("an image"), 0600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(dir, "debian-12.11.0-amd64-netinst.iso.part"), []byte("half an image"), 0600); err != nil {
+	if err := os.WriteFile(cache.TargetPath(netinst)+".part", []byte("half an image"), 0600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -189,7 +192,7 @@ func TestISORowsFollowTheCache(t *testing.T) {
 	if rows[0].Media.URL != live.URL || rows[1].Media.URL != netinst.URL {
 		t.Errorf("the rows are not in the catalog's order: %v", rows)
 	}
-	if !rows[0].Cached || rows[0].Partial || rows[0].Path != filepath.Join(dir, "Fedora-Workstation-42.iso") {
+	if !rows[0].Cached || rows[0].Partial || rows[0].Path != cache.TargetPath(live) {
 		t.Errorf("the image in the cache: %+v", rows[0])
 	}
 	if rows[1].Cached || !rows[1].Partial {
@@ -274,13 +277,13 @@ func TestFetchISOMakesTheImageTheInstallMedia(t *testing.T) {
 		OSID: "testos", OSName: "Test OS", Arch: "x86_64", Installer: true,
 		URL: mirror.url(), VolumeSize: int64(len(body)),
 	}
-	s, store, dir := isoService(t, media)
+	s, store, _ := isoService(t, media)
 	m := aQEMUMachine(t, store, "fedora")
 
 	if err := s.FetchISO(m.Name, media); err != nil {
 		t.Fatalf("fetch: %v", err)
 	}
-	target := filepath.Join(dir, "test.iso")
+	target := s.isoDownloader().TargetPath(media)
 	data, err := os.ReadFile(target)
 	if err != nil || !bytes.Equal(data, body) {
 		t.Fatalf("the image in the cache is not the one served: %v", err)
@@ -317,7 +320,7 @@ func TestFetchISOFailureIsShownAndCanBeRetried(t *testing.T) {
 		OSID: "testos", OSName: "Test OS", Arch: "x86_64", Installer: true,
 		URL: mirror.url(), VolumeSize: int64(len(body)),
 	}
-	s, store, dir := isoService(t, media)
+	s, store, _ := isoService(t, media)
 	m := aQEMUMachine(t, store, "fedora")
 
 	err := s.FetchISO(m.Name, media)
@@ -343,10 +346,10 @@ func TestFetchISOFailureIsShownAndCanBeRetried(t *testing.T) {
 	if err := s.FetchISO(m.Name, media); err != nil {
 		t.Fatalf("retry: %v", err)
 	}
-	if data, err := os.ReadFile(filepath.Join(dir, "test.iso")); err != nil || !bytes.Equal(data, body) {
+	if data, err := os.ReadFile(s.isoDownloader().TargetPath(media)); err != nil || !bytes.Equal(data, body) {
 		t.Fatalf("the retried image is not the one served: %v", err)
 	}
-	if got, _ := store.Load(m.Name); got.Boot.ISO != filepath.Join(dir, "test.iso") {
+	if got, _ := store.Load(m.Name); got.Boot.ISO != s.isoDownloader().TargetPath(media) {
 		t.Errorf("boot.iso = %q after the retry", got.Boot.ISO)
 	}
 }
@@ -361,9 +364,9 @@ func TestCancelStopsTheDownloadAndKeepsThePartFile(t *testing.T) {
 		OSID: "testos", OSName: "Test OS", Arch: "x86_64", Installer: true,
 		URL: mirror.url(), VolumeSize: int64(len(body)),
 	}
-	s, store, dir := isoService(t, media)
+	s, store, _ := isoService(t, media)
 	m := aQEMUMachine(t, store, "fedora")
-	part := filepath.Join(dir, "test.iso.part")
+	part := s.isoDownloader().TargetPath(media) + ".part"
 
 	done := make(chan error, 1)
 	go func() { done <- s.FetchISO(m.Name, media) }()
@@ -386,7 +389,7 @@ func TestCancelStopsTheDownloadAndKeepsThePartFile(t *testing.T) {
 	if fi, err := os.Stat(part); err != nil || fi.Size() == 0 {
 		t.Fatalf("the part file should be there to resume: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(dir, "test.iso")); !os.IsNotExist(err) {
+	if _, err := os.Stat(s.isoDownloader().TargetPath(media)); !os.IsNotExist(err) {
 		t.Error("a stopped download left a file under the image's own name")
 	}
 	if got, _ := store.Load(m.Name); got.Boot.ISO != "" {
@@ -412,13 +415,13 @@ func TestFetchISOResumesFromThePartFile(t *testing.T) {
 		OSID: "testos", OSName: "Test OS", Arch: "x86_64", Installer: true,
 		URL: mirror.url(), VolumeSize: int64(len(body)),
 	}
-	s, store, dir := isoService(t, media)
+	s, store, _ := isoService(t, media)
 	m := aQEMUMachine(t, store, "fedora")
 
 	if err := s.FetchISO(m.Name, media); err == nil {
 		t.Fatal("a transfer the mirror cut short should fail")
 	}
-	part := filepath.Join(dir, "test.iso.part")
+	part := s.isoDownloader().TargetPath(media) + ".part"
 	fi, err := os.Stat(part)
 	if err != nil || fi.Size() == 0 {
 		t.Fatalf("the part file should be kept for the next attempt: %v", err)
@@ -432,7 +435,7 @@ func TestFetchISOResumesFromThePartFile(t *testing.T) {
 	if want := fmt.Sprintf("bytes=%d-", half); mirror.lastRange() != want {
 		t.Errorf("the resume asked for %q, want %q", mirror.lastRange(), want)
 	}
-	data, err := os.ReadFile(filepath.Join(dir, "test.iso"))
+	data, err := os.ReadFile(s.isoDownloader().TargetPath(media))
 	if err != nil || !bytes.Equal(data, body) {
 		t.Fatalf("the resumed image is %d bytes, want the whole %d: %v", len(data), len(body), err)
 	}
@@ -480,7 +483,7 @@ func TestFetchISOVerifiesAPublishedChecksum(t *testing.T) {
 		URL: mirror.url(), VolumeSize: int64(len(body)),
 	}
 
-	s, store, dir := isoService(t, media)
+	s, store, _ := isoService(t, media)
 	m := aQEMUMachine(t, store, "fedora")
 	if err := s.FetchISO(m.Name, media); err != nil {
 		t.Fatalf("fetch: %v", err)
@@ -491,20 +494,20 @@ func TestFetchISOVerifiesAPublishedChecksum(t *testing.T) {
 
 	// The same image from a mirror whose published sum is another file's.
 	mirror.digest = strings.Repeat("0", 64)
-	other, otherStore, otherDir := isoService(t, media)
+	other, otherStore, _ := isoService(t, media)
 	otherMachine := aQEMUMachine(t, otherStore, "fedora")
 	if err := other.FetchISO(otherMachine.Name, media); err == nil || !strings.Contains(err.Error(), "SHA-256") {
 		t.Fatalf("err = %v, want the published sum named", err)
 	}
-	for _, leftover := range []string{"test.iso", "test.iso.part"} {
-		if _, err := os.Stat(filepath.Join(otherDir, leftover)); !os.IsNotExist(err) {
+	for _, leftover := range []string{other.isoDownloader().TargetPath(media), other.isoDownloader().TargetPath(media) + ".part"} {
+		if _, err := os.Stat(leftover); !os.IsNotExist(err) {
 			t.Errorf("a file that failed its checksum was left as %s", leftover)
 		}
 	}
 	if got, _ := otherStore.Load(m.Name); got.Boot.ISO != "" {
 		t.Errorf("a file that failed its checksum became the install media: %q", got.Boot.ISO)
 	}
-	if _, err := os.Stat(filepath.Join(dir, "test.iso")); err != nil {
+	if _, err := os.Stat(s.isoDownloader().TargetPath(media)); err != nil {
 		t.Errorf("the verified image is gone: %v", err)
 	}
 }

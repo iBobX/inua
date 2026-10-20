@@ -160,7 +160,7 @@ func TestISODownloadResumesAPartialFile(t *testing.T) {
 
 	d := NewISODownloader(filepath.Join(t.TempDir(), "iso"))
 	media := isoTestMedia(server, "test-1-amd64-netinst.iso")
-	if err := os.MkdirAll(d.Dir, 0700); err != nil {
+	if err := os.MkdirAll(filepath.Dir(d.TargetPath(media)), 0700); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(d.partPath(media), image[:first], 0600); err != nil {
@@ -210,7 +210,7 @@ func TestISODownloadStartsAgainOnAWholeAnswer(t *testing.T) {
 
 	d := NewISODownloader(filepath.Join(t.TempDir(), "iso"))
 	media := isoTestMedia(server, "test-1-amd64-netinst.iso")
-	if err := os.MkdirAll(d.Dir, 0700); err != nil {
+	if err := os.MkdirAll(filepath.Dir(d.TargetPath(media)), 0700); err != nil {
 		t.Fatal(err)
 	}
 	// A part file that is not this image's beginning, and no validator to tell
@@ -648,4 +648,52 @@ func checksumOutcome(t *testing.T, d *ISODownloader, raw string) ISOChecksum {
 	t.Helper()
 	outcome, _ := d.Checksum(raw)
 	return outcome
+}
+
+// An image is fetched over HTTPS: a plain http URL is upgraded, unless it is
+// this host's own loopback, which nothing on a network comes between.
+func TestISOSecureURL(t *testing.T) {
+	for in, want := range map[string]string{
+		"http://releases.example.org/a.iso":  "https://releases.example.org/a.iso",
+		"https://releases.example.org/a.iso": "https://releases.example.org/a.iso",
+		"http://127.0.0.1:8080/a.iso":        "http://127.0.0.1:8080/a.iso",
+		"http://localhost/a.iso":             "http://localhost/a.iso",
+		"http://[::1]/a.iso":                 "http://[::1]/a.iso",
+	} {
+		if got := secureURL(in); got != want {
+			t.Errorf("secureURL(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+// A redirect away from HTTPS is refused rather than followed: the image would
+// otherwise come over plain http after all.
+func TestISODownloadRefusesARedirectToHTTP(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "http://mirror.example.org/a.iso", http.StatusFound)
+	}))
+	defer server.Close()
+	d := NewISODownloader(filepath.Join(t.TempDir(), "iso"))
+	d.FreeSpace = func(string) (int64, error) { return 100 << 30, nil }
+	_, err := d.Download(context.Background(), isoTestMedia(server, "a.iso"), nil)
+	if err == nil || !strings.Contains(err.Error(), "redirect away from https") {
+		t.Errorf("err = %v, want the redirect refused", err)
+	}
+}
+
+// Images are kept by where they come from: two of one name from two places are
+// two files, and a URL whose name is ".." has none.
+func TestISOTargetPathByURL(t *testing.T) {
+	d := NewISODownloader(t.TempDir())
+	a := d.TargetPath(ISOMedia{URL: "https://one.example.org/install.iso"})
+	b := d.TargetPath(ISOMedia{URL: "https://two.example.org/install.iso"})
+	if a == b || filepath.Base(a) != "install.iso" || !strings.HasPrefix(a, d.Dir+string(filepath.Separator)) {
+		t.Errorf("%s and %s", a, b)
+	}
+	if plain := d.TargetPath(ISOMedia{URL: "http://one.example.org/install.iso"}); plain != a {
+		t.Errorf("the same image over http and https: %s, %s", plain, a)
+	}
+	if name := d.targetName(ISOMedia{URL: "https://example.org/a/.."}); name != "" {
+		t.Errorf("targetName of a .. = %q", name)
+	}
 }
