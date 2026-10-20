@@ -496,7 +496,7 @@ msgstr "DEV"
 #: internal/apps/disk/rules.go:43
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
-#: internal/mailui/panel.go:231
+#: internal/mailui/panel.go:293
 #: ui/settings.ui:2124
 msgid "AI"
 msgstr "IA"
@@ -1362,7 +1362,6 @@ msgid "Not signed in"
 msgstr "Sesión no iniciada"
 
 #: internal/apps/mail/sort.go:31
-#: internal/mailui/panel.go:150
 #: internal/mailui/window.go:213
 msgid "REPLY"
 msgstr "RESPONDER"
@@ -3800,9 +3799,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "No se pudo leer el tiempo.\n%s"
 
 #: internal/appui/weather.go:273
-#: internal/mailui/panel.go:130
-#: internal/mailui/panel.go:164
-#: internal/mailui/panel.go:229
+#: internal/mailui/panel.go:291
 #: internal/ui/passwords.go:514
 #: ui/pass.ui:375
 msgid "Try again"
@@ -4912,13 +4909,13 @@ msgid "Asking…"
 msgstr "Preguntando…"
 
 #: internal/diskui/details.go:257
-#: internal/mailui/panel.go:224
+#: internal/mailui/panel.go:286
 #: internal/mailui/reader.go:370
 msgid "Ask AI"
 msgstr "Preguntar a la IA"
 
 #: internal/diskui/details.go:259
-#: internal/mailui/panel.go:256
+#: internal/mailui/panel.go:318
 msgid "Ask again"
 msgstr "Preguntar de nuevo"
 
@@ -9973,7 +9970,7 @@ msgid "The assistant is writing…"
 msgstr "El asistente está escribiendo…"
 
 #: internal/mailui/compose.go:669
-#: internal/mailui/panel.go:358
+#: internal/mailui/panel.go:420
 msgid "The assistant could not write it"
 msgstr "El asistente no pudo escribirlo"
 
@@ -10008,71 +10005,63 @@ msgstr "No guardado: %v"
 msgid "Open a conversation: the assistant sums it up, suggests replies and writes them, and judges a message that looks suspicious."
 msgstr "Abre una conversación: el asistente la resume, sugiere y redacta respuestas y juzga un mensaje que parece sospechoso."
 
-#: internal/mailui/panel.go:116
-msgid "SUMMARY"
-msgstr "RESUMEN"
-
 #: internal/mailui/panel.go:126
-msgid "Who wants what, what was decided, and what is asked of you."
-msgstr "Quién quiere qué, qué se decidió y qué se te pide."
-
-#: internal/mailui/panel.go:127
 msgid "Sum it up"
 msgstr "Resumir"
 
-#: internal/mailui/panel.go:132
-msgid "Reading the conversation…"
-msgstr "Leyendo la conversación…"
-
-#: internal/mailui/panel.go:144
+#: internal/mailui/panel.go:128
 msgid "Sum it up again"
 msgstr "Resumir de nuevo"
 
-#: internal/mailui/panel.go:154
-msgid "Writing it in the reply under the conversation…"
-msgstr "Escribiéndolo en la respuesta bajo la conversación…"
-
-#: internal/mailui/panel.go:158
-msgid "Three short replies to pick from; the one picked is written out in the reply under the conversation, for you to read and send."
-msgstr "Tres respuestas cortas para elegir; la elegida se redacta en la respuesta bajo la conversación, para leerla y enviarla."
-
-#: internal/mailui/panel.go:159
+#: internal/mailui/panel.go:136
 msgid "Suggest replies"
 msgstr "Sugerir respuestas"
 
-#: internal/mailui/panel.go:161
-msgid "Thinking of replies…"
-msgstr "Pensando respuestas…"
-
-#: internal/mailui/panel.go:178
-msgid "Write this reply"
-msgstr "Escribir esta respuesta"
-
-#: internal/mailui/panel.go:183
+#: internal/mailui/panel.go:138
 msgid "Other replies"
 msgstr "Otras respuestas"
 
-#: internal/mailui/panel.go:188
+#: internal/mailui/panel.go:147
 msgid "Or say what to reply, then Enter"
 msgstr "O di qué responder y pulsa Intro"
 
-#: internal/mailui/panel.go:199
+#: internal/mailui/panel.go:197
+msgid "SUMMARY"
+msgstr "RESUMEN"
+
+#: internal/mailui/panel.go:202
+msgid "Reading the conversation…"
+msgstr "Leyendo la conversación…"
+
+#: internal/mailui/panel.go:227
+msgid "REPLIES"
+msgstr "RESPUESTAS"
+
+#: internal/mailui/panel.go:229
+msgid "Writing it in the reply under the conversation…"
+msgstr "Escribiéndolo en la respuesta bajo la conversación…"
+
+#: internal/mailui/panel.go:236
+msgid "Thinking of replies…"
+msgstr "Pensando respuestas…"
+
+#: internal/mailui/panel.go:254
+msgid "Write this reply"
+msgstr "Escribir esta respuesta"
+
+#: internal/mailui/panel.go:263
 msgid "IS IT SAFE?"
 msgstr "¿ES SEGURO?"
 
-#: internal/mailui/panel.go:211
+#: internal/mailui/panel.go:275
 msgid "Nothing to check: the messages read here are yours."
 msgstr "Nada que comprobar: los mensajes leídos aquí son tuyos."
 
-#: internal/mailui/panel.go:215
-msgid "inua's checks"
-msgstr "Comprobaciones de inua"
-
-#: internal/mailui/panel.go:223
+#: internal/mailui/panel.go:285
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "La IA lee lo que encontraron las comprobaciones, con el remitente, el asunto, los enlaces y el texto, y dice qué piensa."
 
-#: internal/mailui/panel.go:226
+#: internal/mailui/panel.go:288
 msgid "AI is reading it…"
 msgstr "La IA lo está leyendo…"
 

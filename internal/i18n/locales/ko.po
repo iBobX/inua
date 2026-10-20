@@ -493,7 +493,7 @@ msgstr "DEV"
 #: internal/apps/disk/rules.go:43
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
-#: internal/mailui/panel.go:231
+#: internal/mailui/panel.go:293
 #: ui/settings.ui:2124
 msgid "AI"
 msgstr "AI"
@@ -1357,7 +1357,6 @@ msgid "Not signed in"
 msgstr "로그인되지 않음"
 
 #: internal/apps/mail/sort.go:31
-#: internal/mailui/panel.go:150
 #: internal/mailui/window.go:213
 msgid "REPLY"
 msgstr "답장"
@@ -3779,9 +3778,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "날씨를 읽을 수 없습니다.\n%s"
 
 #: internal/appui/weather.go:273
-#: internal/mailui/panel.go:130
-#: internal/mailui/panel.go:164
-#: internal/mailui/panel.go:229
+#: internal/mailui/panel.go:291
 #: internal/ui/passwords.go:514
 #: ui/pass.ui:375
 msgid "Try again"
@@ -4890,13 +4887,13 @@ msgid "Asking…"
 msgstr "확인 중…"
 
 #: internal/diskui/details.go:257
-#: internal/mailui/panel.go:224
+#: internal/mailui/panel.go:286
 #: internal/mailui/reader.go:370
 msgid "Ask AI"
 msgstr "AI에게 묻기"
 
 #: internal/diskui/details.go:259
-#: internal/mailui/panel.go:256
+#: internal/mailui/panel.go:318
 msgid "Ask again"
 msgstr "다시 묻기"
 
@@ -9919,7 +9916,7 @@ msgid "The assistant is writing…"
 msgstr "어시스턴트가 쓰는 중…"
 
 #: internal/mailui/compose.go:669
-#: internal/mailui/panel.go:358
+#: internal/mailui/panel.go:420
 msgid "The assistant could not write it"
 msgstr "어시스턴트가 쓰지 못했습니다"
 
@@ -9953,71 +9950,63 @@ msgstr "저장하지 못함: %v"
 msgid "Open a conversation: the assistant sums it up, suggests replies and writes them, and judges a message that looks suspicious."
 msgstr "대화를 여세요: 어시스턴트가 요약하고, 답장을 제안해 쓰고, 의심스러운 메시지를 판단합니다."
 
-#: internal/mailui/panel.go:116
-msgid "SUMMARY"
-msgstr "요약"
-
 #: internal/mailui/panel.go:126
-msgid "Who wants what, what was decided, and what is asked of you."
-msgstr "누가 무엇을 원하는지, 무엇이 정해졌는지, 무엇을 요청받았는지."
-
-#: internal/mailui/panel.go:127
 msgid "Sum it up"
 msgstr "요약하기"
 
-#: internal/mailui/panel.go:132
-msgid "Reading the conversation…"
-msgstr "대화를 읽는 중…"
-
-#: internal/mailui/panel.go:144
+#: internal/mailui/panel.go:128
 msgid "Sum it up again"
 msgstr "다시 요약하기"
 
-#: internal/mailui/panel.go:154
-msgid "Writing it in the reply under the conversation…"
-msgstr "대화 아래 답장에 쓰는 중…"
-
-#: internal/mailui/panel.go:158
-msgid "Three short replies to pick from; the one picked is written out in the reply under the conversation, for you to read and send."
-msgstr "고를 수 있는 짧은 답장 세 개; 고른 것은 대화 아래 답장에 쓰여 읽고 보낼 수 있습니다."
-
-#: internal/mailui/panel.go:159
+#: internal/mailui/panel.go:136
 msgid "Suggest replies"
 msgstr "답장 제안"
 
-#: internal/mailui/panel.go:161
-msgid "Thinking of replies…"
-msgstr "답장을 생각하는 중…"
-
-#: internal/mailui/panel.go:178
-msgid "Write this reply"
-msgstr "이 답장 쓰기"
-
-#: internal/mailui/panel.go:183
+#: internal/mailui/panel.go:138
 msgid "Other replies"
 msgstr "다른 답장"
 
-#: internal/mailui/panel.go:188
+#: internal/mailui/panel.go:147
 msgid "Or say what to reply, then Enter"
 msgstr "또는 답할 내용을 쓰고 Enter"
 
-#: internal/mailui/panel.go:199
+#: internal/mailui/panel.go:197
+msgid "SUMMARY"
+msgstr "요약"
+
+#: internal/mailui/panel.go:202
+msgid "Reading the conversation…"
+msgstr "대화를 읽는 중…"
+
+#: internal/mailui/panel.go:227
+msgid "REPLIES"
+msgstr "답장"
+
+#: internal/mailui/panel.go:229
+msgid "Writing it in the reply under the conversation…"
+msgstr "대화 아래 답장에 쓰는 중…"
+
+#: internal/mailui/panel.go:236
+msgid "Thinking of replies…"
+msgstr "답장을 생각하는 중…"
+
+#: internal/mailui/panel.go:254
+msgid "Write this reply"
+msgstr "이 답장 쓰기"
+
+#: internal/mailui/panel.go:263
 msgid "IS IT SAFE?"
 msgstr "안전한가요?"
 
-#: internal/mailui/panel.go:211
+#: internal/mailui/panel.go:275
 msgid "Nothing to check: the messages read here are yours."
 msgstr "확인할 것이 없습니다: 여기서 읽은 메시지는 내 것입니다."
 
-#: internal/mailui/panel.go:215
-msgid "inua's checks"
-msgstr "inua의 검사"
-
-#: internal/mailui/panel.go:223
+#: internal/mailui/panel.go:285
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI가 검사 결과와 보낸 사람, 제목, 링크, 본문을 읽고 판단을 알려 줍니다."
 
-#: internal/mailui/panel.go:226
+#: internal/mailui/panel.go:288
 msgid "AI is reading it…"
 msgstr "AI가 읽는 중…"
 

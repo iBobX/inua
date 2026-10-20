@@ -58,8 +58,10 @@ func (w *window) drawPanel() {
 		w.panelNote(&w.assist, i18n.T("Open a conversation: the assistant sums it up, suggests replies and writes them, and judges a message that looks suspicious."))
 		return
 	}
+	draft := w.isDraft(c.Latest())
+	w.panelActions(c, draft)
 	w.panelSummary(c)
-	if !w.isDraft(c.Latest()) {
+	if !draft {
 		w.panelReply(c)
 	}
 	w.panelSafety(c)
@@ -112,8 +114,70 @@ func (w *window) panelError(box *gtk.Box, text string) {
 	l.AddCssClass("mail-error")
 }
 
-func (w *window) panelSummary(c *mail.Conversation) {
-	sec := w.panelSection(i18n.T("SUMMARY"))
+// panelActions are what the assistant can be asked for the conversation:
+// side by side, a summary and replies to pick from; under them, a line of
+// what to reply. The answers come in the sections below.
+func (w *window) panelActions(c *mail.Conversation, draft bool) {
+	box := gtk.NewBox(gtk.OrientationVerticalValue, 8)
+	box.AddCssClass("mail-assist-actions")
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	row.SetHomogeneous(true)
+	sum := w.summaryOf(c)
+	label := i18n.T("Sum it up")
+	if sum != nil && sum.text != "" {
+		label = i18n.T("Sum it up again")
+	}
+	b := w.panelAction(row, label, func() { w.summarize(c) })
+	b.SetSensitive(sum == nil || !sum.busy)
+	q := w.quick[c.ID]
+	idle := q == nil || q.state == ""
+	if !draft {
+		ideas := w.ideas[c.ID]
+		label := i18n.T("Suggest replies")
+		if ideas != nil && ideas.text != "" {
+			label = i18n.T("Other replies")
+		}
+		b := w.panelAction(row, label, func() { w.askIdeas(c) })
+		b.SetSensitive((ideas == nil || !ideas.busy) && idle)
+	}
+	gtkx.Append(box, &row.Widget)
+	if !draft {
+		say := gtk.NewEntry()
+		say.AddCssClass("mail-assist-say")
+		say.SetPlaceholderText(i18n.T("Or say what to reply, then Enter"))
+		say.SetSensitive(idle)
+		w.panelBtns = append(w.panelBtns, w.h.enter(say, func() {
+			if what := strings.TrimSpace(say.GetText()); what != "" {
+				w.draftQuick(c, what)
+			}
+		}))
+		gtkx.Append(box, &say.Widget)
+	}
+	gtkx.Append(&w.assist, &box.Widget)
+}
+
+// panelAction is one of the actions' buttons: the assistant's mark and
+// what it does.
+func (w *window) panelAction(row *gtk.Box, label string, f func()) *gtk.Button {
+	b := gtk.NewButton()
+	b.AddCssClass("outlined")
+	b.AddCssClass("mail-assist-action")
+	in := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+	in.SetHalign(gtk.AlignCenterValue)
+	icon := gtk.NewImageFromIconName("applications-science-symbolic")
+	gtkx.Append(in, &icon.Widget)
+	l := gtk.NewLabel(label)
+	l.SetEllipsize(3)
+	gtkx.Append(in, &l.Widget)
+	b.SetChild(&in.Widget)
+	w.panelBtns = append(w.panelBtns, w.h.click(b, f))
+	gtkx.Append(row, &b.Widget)
+	return b
+}
+
+// summaryOf is the conversation's summary: asked for here, or kept from
+// before.
+func (w *window) summaryOf(c *mail.Conversation) *aiText {
 	sum := w.sumState[c.ID]
 	if sum == nil {
 		if text := w.keptSummary(c); text != "" {
@@ -121,15 +185,23 @@ func (w *window) panelSummary(c *mail.Conversation) {
 			w.sumState[c.ID] = sum
 		}
 	}
+	return sum
+}
+
+// panelSummary shows the summary, once asked for.
+func (w *window) panelSummary(c *mail.Conversation) {
+	sum := w.summaryOf(c)
+	if sum == nil {
+		return
+	}
+	sec := w.panelSection(i18n.T("SUMMARY"))
 	switch {
-	case sum == nil:
-		w.panelNote(sec, i18n.T("Who wants what, what was decided, and what is asked of you."))
-		w.panelButton(sec, i18n.T("Sum it up"), func() { w.summarize(c) })
 	case sum.err != "":
 		w.panelError(sec, sum.err)
-		w.panelLink(sec, i18n.T("Try again"), func() { w.summarize(c) })
 	case sum.text == "" && sum.busy:
-		w.panelNote(sec, i18n.T("Reading the conversation…")).AddCssClass("mail-ai-busy")
+		l := loader(i18n.T("Reading the conversation…"))
+		l.SetHalign(gtk.AlignStartValue)
+		gtkx.Append(sec, &l.Widget)
 	default:
 		l := gtk.NewLabel(sum.text)
 		l.AddCssClass("mail-assist-text")
@@ -140,28 +212,32 @@ func (w *window) panelSummary(c *mail.Conversation) {
 		l.SetSelectable(true)
 		gtkx.Append(sec, &l.Widget)
 		w.panelSum = l
-		if !sum.busy {
-			w.panelLink(sec, i18n.T("Sum it up again"), func() { w.summarize(c) })
-		}
 	}
 }
 
+// panelReply shows the replies to pick from, once asked for, and the
+// reply being written.
 func (w *window) panelReply(c *mail.Conversation) {
-	sec := w.panelSection(i18n.T("REPLY"))
 	ideas := w.ideas[c.ID]
 	q := w.quick[c.ID]
-	if q != nil && q.state == "drafting" {
-		w.panelNote(sec, i18n.T("Writing it in the reply under the conversation…")).AddCssClass("mail-ai-busy")
+	drafting := q != nil && q.state == "drafting"
+	if ideas == nil && !drafting {
+		return
+	}
+	sec := w.panelSection(i18n.T("REPLIES"))
+	if drafting {
+		l := loader(i18n.T("Writing it in the reply under the conversation…"))
+		l.SetHalign(gtk.AlignStartValue)
+		gtkx.Append(sec, &l.Widget)
 	}
 	switch {
 	case ideas == nil:
-		w.panelNote(sec, i18n.T("Three short replies to pick from; the one picked is written out in the reply under the conversation, for you to read and send."))
-		w.panelButton(sec, i18n.T("Suggest replies"), func() { w.askIdeas(c) })
 	case ideas.busy:
-		w.panelNote(sec, i18n.T("Thinking of replies…")).AddCssClass("mail-ai-busy")
+		l := loader(i18n.T("Thinking of replies…"))
+		l.SetHalign(gtk.AlignStartValue)
+		gtkx.Append(sec, &l.Widget)
 	case ideas.err != "":
 		w.panelError(sec, ideas.err)
-		w.panelLink(sec, i18n.T("Try again"), func() { w.askIdeas(c) })
 	default:
 		for _, idea := range strings.Split(ideas.text, "\n") {
 			if idea = strings.TrimSpace(idea); idea == "" {
@@ -180,19 +256,7 @@ func (w *window) panelReply(c *mail.Conversation) {
 			w.panelBtns = append(w.panelBtns, w.h.click(b, func() { w.draftQuick(c, idea) }))
 			gtkx.Append(sec, &b.Widget)
 		}
-		w.panelLink(sec, i18n.T("Other replies"), func() { w.askIdeas(c) })
 	}
-	// Or a line of what to say.
-	say := gtk.NewEntry()
-	say.AddCssClass("mail-assist-say")
-	say.SetPlaceholderText(i18n.T("Or say what to reply, then Enter"))
-	say.SetSensitive(q == nil || q.state == "")
-	w.panelBtns = append(w.panelBtns, w.h.enter(say, func() {
-		if what := strings.TrimSpace(say.GetText()); what != "" {
-			w.draftQuick(c, what)
-		}
-	}))
-	gtkx.Append(sec, &say.Widget)
 }
 
 func (w *window) panelSafety(c *mail.Conversation) {
@@ -211,9 +275,7 @@ func (w *window) panelSafety(c *mail.Conversation) {
 		w.panelNote(sec, i18n.T("Nothing to check: the messages read here are yours."))
 		return
 	}
-	j := rd.judged
-	verdictLine(sec, j.Verdict, i18n.T("inua's checks"))
-	drawChecks(sec, j)
+	drawChecks(sec, rd.judged)
 
 	ai := gtk.NewBox(gtk.OrientationVerticalValue, 8)
 	ai.AddCssClass("mail-safety-ai")
