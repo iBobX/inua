@@ -501,8 +501,8 @@ msgstr ""
 #: internal/apps/disk/rules.go:43
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
-#: internal/mailui/panel.go:43
-#: internal/mailui/panel.go:310
+#: internal/mailui/panel.go:51
+#: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
 #: ui/mail.ui:373
@@ -511,7 +511,7 @@ msgid "AI"
 msgstr ""
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:616
+#: internal/mailui/settings.go:637
 msgid "CACHE"
 msgstr ""
 
@@ -1202,7 +1202,7 @@ msgstr ""
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr ""
 
-#: internal/apps/mail/account.go:295
+#: internal/apps/mail/account.go:314
 msgid "IMAP"
 msgstr ""
 
@@ -3842,7 +3842,7 @@ msgid "The weather could not be read.\n%s"
 msgstr ""
 
 #: internal/appui/weather.go:273
-#: internal/mailui/panel.go:308
+#: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
 #: ui/pass.ui:375
 msgid "Try again"
@@ -3974,7 +3974,7 @@ msgid "OK"
 msgstr ""
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:594
+#: internal/mailui/settings.go:615
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -4959,13 +4959,13 @@ msgid "Asking…"
 msgstr ""
 
 #: internal/diskui/details.go:257
-#: internal/mailui/panel.go:303
+#: internal/mailui/panel.go:311
 #: internal/mailui/reader.go:386
 msgid "Ask AI"
 msgstr ""
 
 #: internal/diskui/details.go:259
-#: internal/mailui/panel.go:335
+#: internal/mailui/panel.go:343
 msgid "Ask again"
 msgstr ""
 
@@ -9889,44 +9889,44 @@ msgstr[1] ""
 msgid "Mail"
 msgstr ""
 
-#: internal/mailui/assist.go:131
+#: internal/mailui/assist.go:135
 msgid "The messages are still loading."
 msgstr ""
 
-#: internal/mailui/assist.go:160
+#: internal/mailui/assist.go:165
 #: internal/mailui/reader.go:1120
 msgid "The assistant could not sum it up"
 msgstr ""
 
-#: internal/mailui/assist.go:195
+#: internal/mailui/assist.go:200
 msgid "The assistant could not suggest replies"
 msgstr ""
 
-#: internal/mailui/assist.go:199
+#: internal/mailui/assist.go:204
 msgid "The assistant gave no replies."
 msgstr ""
 
-#: internal/mailui/assist.go:224
+#: internal/mailui/assist.go:229
 msgid "The assistant could not judge it"
 msgstr ""
 
-#: internal/mailui/assist.go:228
+#: internal/mailui/assist.go:233
 msgid "The assistant answered %q"
 msgstr ""
 
-#: internal/mailui/assist.go:238
+#: internal/mailui/assist.go:243
 msgid "Asking the assistant what to search for…"
 msgstr ""
 
-#: internal/mailui/assist.go:247
+#: internal/mailui/assist.go:252
 msgid "The assistant could not search"
 msgstr ""
 
-#: internal/mailui/assist.go:252
+#: internal/mailui/assist.go:257
 msgid "The assistant gave no search."
 msgstr ""
 
-#: internal/mailui/assist.go:260
+#: internal/mailui/assist.go:265
 #: internal/mailui/window.go:1283
 msgid "Searched for %s"
 msgstr ""
@@ -10038,7 +10038,7 @@ msgid "The assistant is writing…"
 msgstr ""
 
 #: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:437
+#: internal/mailui/panel.go:445
 msgid "The assistant could not write it"
 msgstr ""
 
@@ -10070,59 +10070,59 @@ msgstr ""
 msgid "Not saved: %v"
 msgstr ""
 
-#: internal/mailui/panel.go:45
+#: internal/mailui/panel.go:53
 msgid "Checks"
 msgstr ""
 
-#: internal/mailui/panel.go:67
+#: internal/mailui/panel.go:75
 msgid "Open a conversation: AI sums it up, suggests replies and writes them, and judges a message that looks suspicious."
 msgstr ""
 
-#: internal/mailui/panel.go:69
+#: internal/mailui/panel.go:77
 msgid "Open a conversation to see what the checks found."
 msgstr ""
 
-#: internal/mailui/panel.go:140
+#: internal/mailui/panel.go:148
 msgid "Sum it up"
 msgstr ""
 
-#: internal/mailui/panel.go:142
+#: internal/mailui/panel.go:150
 msgid "Sum it up again"
 msgstr ""
 
-#: internal/mailui/panel.go:150
+#: internal/mailui/panel.go:158
 msgid "Suggest replies"
 msgstr ""
 
-#: internal/mailui/panel.go:152
+#: internal/mailui/panel.go:160
 msgid "Other replies"
 msgstr ""
 
-#: internal/mailui/panel.go:161
+#: internal/mailui/panel.go:169
 msgid "Or say what to reply, then Enter"
 msgstr ""
 
-#: internal/mailui/panel.go:211
+#: internal/mailui/panel.go:219
 msgid "SUMMARY"
 msgstr ""
 
-#: internal/mailui/panel.go:241
+#: internal/mailui/panel.go:249
 msgid "REPLIES"
 msgstr ""
 
-#: internal/mailui/panel.go:268
+#: internal/mailui/panel.go:276
 msgid "Write this reply"
 msgstr ""
 
-#: internal/mailui/panel.go:277
+#: internal/mailui/panel.go:285
 msgid "IS IT SAFE?"
 msgstr ""
 
-#: internal/mailui/panel.go:289
+#: internal/mailui/panel.go:297
 msgid "Nothing to check: the messages read here are yours."
 msgstr ""
 
-#: internal/mailui/panel.go:302
+#: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr ""
 
@@ -10628,81 +10628,93 @@ msgstr ""
 msgid "Off: no summaries, reply ideas or Ask AI (the right panel keeps the checks), no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."
 msgstr ""
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:554
+msgid "As the conversation"
+msgstr ""
+
+#: internal/mailui/settings.go:572
+msgid "Summary language"
+msgstr ""
+
+#: internal/mailui/settings.go:572
+msgid "What Sum it up writes in"
+msgstr ""
+
+#: internal/mailui/settings.go:575
 msgid "SORTING"
 msgstr ""
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:575
 msgid "The only thing it does unasked"
 msgstr ""
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Sort new mail"
 msgstr ""
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters. Whether a message needs your reply is only ever decided here."
 msgstr ""
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr ""
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "Empty fields use inua's"
 msgstr ""
 
-#: internal/mailui/settings.go:569
+#: internal/mailui/settings.go:590
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr ""
 
-#: internal/mailui/settings.go:582
+#: internal/mailui/settings.go:603
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr ""
 
-#: internal/mailui/settings.go:586
+#: internal/mailui/settings.go:607
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr ""
 
-#: internal/mailui/settings.go:587
+#: internal/mailui/settings.go:608
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr ""
 
-#: internal/mailui/settings.go:588
+#: internal/mailui/settings.go:609
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr ""
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr ""
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 msgid "common, or your organization's"
 msgstr ""
 
-#: internal/mailui/settings.go:604
+#: internal/mailui/settings.go:625
 msgid "Saved."
 msgstr ""
 
-#: internal/mailui/settings.go:617
+#: internal/mailui/settings.go:638
 msgid "Counting…"
 msgstr ""
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "Mail kept on this computer"
 msgstr ""
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
 msgstr ""
 
-#: internal/mailui/settings.go:637
+#: internal/mailui/settings.go:658
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10711,7 +10723,7 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: internal/mailui/settings.go:668
+#: internal/mailui/settings.go:689
 msgid "Could not keep the secret in the keyring: %v"
 msgstr ""
 

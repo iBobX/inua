@@ -147,6 +147,7 @@ undo_send = 5                   # seconds to take a send back; -1 sends at once
 [assistant]
 off = false                     # true turns every AI feature of Mail off
 sort = false                    # sort new mail with the assistant
+summary_lang = ""               # the summaries' language: en, zh-Hans, zh-Hant, ja, ko, es, fr, de, it, pt or ru; empty: the conversation's
 
 [window]
 hide_sidebar = false            # kept as the window was left
@@ -270,7 +271,7 @@ next start.
 
 | Where | What | What it sends |
 | --- | --- | --- |
-| The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates, in the conversation's language; kept until the conversation gets a new message | The messages' text, quotes cut |
+| The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates, in the conversation's language, or the one chosen in Settings → AI (*Summary language*); kept until the conversation gets a new message | The messages' text, quotes cut |
 | The panel: *Suggest replies* | Three short replies; the one picked is written out in the quick reply | The last six messages; to write it out, also three of your sent messages kept on this computer |
 | The panel: a line of what to say | The reply, written in the quick reply | The line, the conversation, three of your sent messages |
 | An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |

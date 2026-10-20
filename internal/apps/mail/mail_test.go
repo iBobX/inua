@@ -795,9 +795,16 @@ func TestAnswers(t *testing.T) {
 	if _, ok := ParseJudgment("maybe"); ok {
 		t.Error("no verdict read as one")
 	}
-	p := SummaryPrompt([]Said{{From: Address{Name: "Ana", Addr: "a@x"}, Text: "Numbers by Friday?"}}, "me@x", time.Date(2026, 10, 19, 0, 0, 0, 0, time.UTC), "ja")
-	if !strings.Contains(p, "Numbers by Friday?") || !strings.Contains(p, `"ja"`) || !strings.Contains(p, "Monday 19 October 2026") {
+	said := []Said{{From: Address{Name: "Ana", Addr: "a@x"}, Text: "Numbers by Friday?"}}
+	day := time.Date(2026, 10, 19, 0, 0, 0, 0, time.UTC)
+	p := SummaryPrompt(said, "me@x", day, "ja", "")
+	if !strings.Contains(p, "Numbers by Friday?") || !strings.Contains(p, `"ja"`) || !strings.Contains(p, "the language the conversation is written in") || !strings.Contains(p, "Monday 19 October 2026") {
 		t.Fatalf("summary prompt %s", p)
+	}
+	// A language chosen: that one, whatever the conversation's.
+	p = SummaryPrompt(said, "me@x", day, "ja", "zh-Hans")
+	if !strings.Contains(p, `"zh-Hans", whatever the conversation's language`) || strings.Contains(p, "the language the conversation is written in") {
+		t.Fatalf("summary prompt in a chosen language %s", p)
 	}
 }
 

@@ -500,8 +500,8 @@ msgstr "开发"
 #: internal/apps/disk/rules.go:43
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
-#: internal/mailui/panel.go:43
-#: internal/mailui/panel.go:310
+#: internal/mailui/panel.go:51
+#: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
 #: ui/mail.ui:373
@@ -510,7 +510,7 @@ msgid "AI"
 msgstr "人工智能"
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:616
+#: internal/mailui/settings.go:637
 msgid "CACHE"
 msgstr "缓存"
 
@@ -1201,7 +1201,7 @@ msgstr "程序标记的缓存"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "程序把它标记为缓存（CACHEDIR.TAG）：没有了会重新生成。"
 
-#: internal/apps/mail/account.go:295
+#: internal/apps/mail/account.go:314
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -3822,7 +3822,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "无法读取天气。\n%s"
 
 #: internal/appui/weather.go:273
-#: internal/mailui/panel.go:308
+#: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
 #: ui/pass.ui:375
 msgid "Try again"
@@ -3954,7 +3954,7 @@ msgid "OK"
 msgstr "好的"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:594
+#: internal/mailui/settings.go:615
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -4938,13 +4938,13 @@ msgid "Asking…"
 msgstr "正在询问……"
 
 #: internal/diskui/details.go:257
-#: internal/mailui/panel.go:303
+#: internal/mailui/panel.go:311
 #: internal/mailui/reader.go:386
 msgid "Ask AI"
 msgstr "问 AI"
 
 #: internal/diskui/details.go:259
-#: internal/mailui/panel.go:335
+#: internal/mailui/panel.go:343
 msgid "Ask again"
 msgstr "再问一次"
 
@@ -9837,44 +9837,44 @@ msgstr[0] "%s 及另外 %d 封"
 msgid "Mail"
 msgstr "邮件"
 
-#: internal/mailui/assist.go:131
+#: internal/mailui/assist.go:135
 msgid "The messages are still loading."
 msgstr "邮件仍在加载。"
 
-#: internal/mailui/assist.go:160
+#: internal/mailui/assist.go:165
 #: internal/mailui/reader.go:1120
 msgid "The assistant could not sum it up"
 msgstr "助手无法总结"
 
-#: internal/mailui/assist.go:195
+#: internal/mailui/assist.go:200
 msgid "The assistant could not suggest replies"
 msgstr "助手无法建议回复"
 
-#: internal/mailui/assist.go:199
+#: internal/mailui/assist.go:204
 msgid "The assistant gave no replies."
 msgstr "助手没有给出回复。"
 
-#: internal/mailui/assist.go:224
+#: internal/mailui/assist.go:229
 msgid "The assistant could not judge it"
 msgstr "助手无法判断"
 
-#: internal/mailui/assist.go:228
+#: internal/mailui/assist.go:233
 msgid "The assistant answered %q"
 msgstr "助手回答了 %q"
 
-#: internal/mailui/assist.go:238
+#: internal/mailui/assist.go:243
 msgid "Asking the assistant what to search for…"
 msgstr "正在问助手要搜索什么…"
 
-#: internal/mailui/assist.go:247
+#: internal/mailui/assist.go:252
 msgid "The assistant could not search"
 msgstr "助手无法搜索"
 
-#: internal/mailui/assist.go:252
+#: internal/mailui/assist.go:257
 msgid "The assistant gave no search."
 msgstr "助手没有给出搜索。"
 
-#: internal/mailui/assist.go:260
+#: internal/mailui/assist.go:265
 #: internal/mailui/window.go:1283
 msgid "Searched for %s"
 msgstr "已搜索 %s"
@@ -9985,7 +9985,7 @@ msgid "The assistant is writing…"
 msgstr "助手正在写…"
 
 #: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:437
+#: internal/mailui/panel.go:445
 msgid "The assistant could not write it"
 msgstr "助手无法写出"
 
@@ -10016,59 +10016,59 @@ msgstr "始终加载此发件人的"
 msgid "Not saved: %v"
 msgstr "未保存：%v"
 
-#: internal/mailui/panel.go:45
+#: internal/mailui/panel.go:53
 msgid "Checks"
 msgstr "检查"
 
-#: internal/mailui/panel.go:67
+#: internal/mailui/panel.go:75
 msgid "Open a conversation: AI sums it up, suggests replies and writes them, and judges a message that looks suspicious."
 msgstr "打开一个会话：AI 会总结它、建议并写出回复，并判断看起来可疑的邮件。"
 
-#: internal/mailui/panel.go:69
+#: internal/mailui/panel.go:77
 msgid "Open a conversation to see what the checks found."
 msgstr "打开一个会话，查看检查的结果。"
 
-#: internal/mailui/panel.go:140
+#: internal/mailui/panel.go:148
 msgid "Sum it up"
 msgstr "总结"
 
-#: internal/mailui/panel.go:142
+#: internal/mailui/panel.go:150
 msgid "Sum it up again"
 msgstr "重新总结"
 
-#: internal/mailui/panel.go:150
+#: internal/mailui/panel.go:158
 msgid "Suggest replies"
 msgstr "建议回复"
 
-#: internal/mailui/panel.go:152
+#: internal/mailui/panel.go:160
 msgid "Other replies"
 msgstr "其他回复"
 
-#: internal/mailui/panel.go:161
+#: internal/mailui/panel.go:169
 msgid "Or say what to reply, then Enter"
 msgstr "或者写下要回复什么，然后按 Enter"
 
-#: internal/mailui/panel.go:211
+#: internal/mailui/panel.go:219
 msgid "SUMMARY"
 msgstr "摘要"
 
-#: internal/mailui/panel.go:241
+#: internal/mailui/panel.go:249
 msgid "REPLIES"
 msgstr "回复"
 
-#: internal/mailui/panel.go:268
+#: internal/mailui/panel.go:276
 msgid "Write this reply"
 msgstr "写这条回复"
 
-#: internal/mailui/panel.go:277
+#: internal/mailui/panel.go:285
 msgid "IS IT SAFE?"
 msgstr "安全吗？"
 
-#: internal/mailui/panel.go:289
+#: internal/mailui/panel.go:297
 msgid "Nothing to check: the messages read here are yours."
 msgstr "无需检查：这里读过的邮件都是你自己的。"
 
-#: internal/mailui/panel.go:302
+#: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI 会读取检查结果以及发件人、主题、链接和正文，并给出判断。"
 
@@ -10571,81 +10571,93 @@ msgstr "在邮件中使用 AI"
 msgid "Off: no summaries, reply ideas or Ask AI (the right panel keeps the checks), no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."
 msgstr "关闭：没有摘要、回复建议和 Ask AI（右侧面板保留检查），也没有用句子搜索、撰写时的起草与润色、附件摘要和整理。你的邮件内容不会发给模型。"
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:554
+msgid "As the conversation"
+msgstr "与会话相同"
+
+#: internal/mailui/settings.go:572
+msgid "Summary language"
+msgstr "总结语言"
+
+#: internal/mailui/settings.go:572
+msgid "What Sum it up writes in"
+msgstr "“总结”使用的语言"
+
+#: internal/mailui/settings.go:575
 msgid "SORTING"
 msgstr "整理"
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:575
 msgid "The only thing it does unasked"
 msgstr "它唯一会主动做的事"
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Sort new mail"
 msgstr "整理新邮件"
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters. Whether a message needs your reply is only ever decided here."
 msgstr "为规则没有处理的新邮件，用助手的快速判断加上标签（需回复、新闻通讯、收据……）。会发送每封邮件的发件人、主题和前 400 个字符。是否需要你回复只在这里判断。"
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr "你自己的 OAUTH 客户端"
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "Empty fields use inua's"
 msgstr "留空则使用 inua 的"
 
-#: internal/mailui/settings.go:569
+#: internal/mailui/settings.go:590
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr "用于你自己的 Google Cloud 项目或 Azure 应用。留空则用 inua 的。密钥保存在你的钥匙环中，而不是 mail.toml。更换客户端后，已用该服务商登录的账户需要重新登录。"
 
-#: internal/mailui/settings.go:582
+#: internal/mailui/settings.go:603
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr "已保存在钥匙环中；输入以替换"
 
-#: internal/mailui/settings.go:586
+#: internal/mailui/settings.go:607
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr "Google 客户端 ID"
 
-#: internal/mailui/settings.go:587
+#: internal/mailui/settings.go:608
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr "Google 客户端密钥"
 
-#: internal/mailui/settings.go:588
+#: internal/mailui/settings.go:609
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr "Microsoft 客户端 ID"
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr "Microsoft 租户"
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 msgid "common, or your organization's"
 msgstr "common，或你所在组织的"
 
-#: internal/mailui/settings.go:604
+#: internal/mailui/settings.go:625
 msgid "Saved."
 msgstr "已保存。"
 
-#: internal/mailui/settings.go:617
+#: internal/mailui/settings.go:638
 msgid "Counting…"
 msgstr "正在统计…"
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "Mail kept on this computer"
 msgstr "保存在这台电脑上的邮件"
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
 msgstr "索引和打开过的邮件：这是服务器内容的副本，清除不会丢失任何东西。邮件会在下次启动时重新获取。"
 
-#: internal/mailui/settings.go:637
+#: internal/mailui/settings.go:658
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10654,7 +10666,7 @@ msgstr "索引和打开过的邮件：这是服务器内容的副本，清除不
 msgid "Clear"
 msgstr "清除"
 
-#: internal/mailui/settings.go:668
+#: internal/mailui/settings.go:689
 msgid "Could not keep the secret in the keyring: %v"
 msgstr "无法把密钥保存到钥匙环：%v"
 

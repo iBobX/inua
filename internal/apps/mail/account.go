@@ -71,6 +71,9 @@ type Settings struct {
 		// Sort tags new mail in the inbox, asking the assistant when the
 		// rules do not settle it (docs/feat/inua-mail.md, 7.2).
 		Sort bool `toml:"sort"`
+		// SummaryLang is the language summaries are written in, a code of
+		// SummaryLanguages; empty: the conversation's.
+		SummaryLang string `toml:"summary_lang,omitempty"`
 	} `toml:"assistant"`
 	// Window is the window's layout as it was left.
 	Window struct {
@@ -99,6 +102,22 @@ type Reading struct {
 	ImagesFrom []string `toml:"images_from,omitempty"`
 	// KeepUnread leaves a conversation unread when it is opened.
 	KeepUnread bool `toml:"keep_unread,omitempty"`
+}
+
+// SummaryLanguages are the languages a summary can be asked in, by code,
+// each named in itself.
+var SummaryLanguages = []struct{ Code, Name string }{
+	{"en", "English"},
+	{"zh-Hans", "简体中文"},
+	{"zh-Hant", "繁體中文"},
+	{"ja", "日本語"},
+	{"ko", "한국어"},
+	{"es", "Español"},
+	{"fr", "Français"},
+	{"de", "Deutsch"},
+	{"it", "Italiano"},
+	{"pt", "Português"},
+	{"ru", "Русский"},
 }
 
 // AI says whether Mail's AI features are on.

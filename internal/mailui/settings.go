@@ -550,6 +550,26 @@ func (s *settingsWin) assistantPage() {
 	on.SetActive(w.settings.AI())
 	body := s.section(i18n.T("AI"), i18n.T("In Mail only; the assistant itself is set in Settings → AI"))
 	s.row(body, i18n.T("Use AI in Mail"), i18n.T("Off: no summaries, reply ideas or Ask AI (the right panel keeps the checks), no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."), &on.Widget)
+	// The summaries' language: the conversation's, or one of these.
+	langs := []string{i18n.T("As the conversation")}
+	at := 0
+	for i, l := range mail.SummaryLanguages {
+		langs = append(langs, l.Name)
+		if l.Code == w.settings.Assistant.SummaryLang {
+			at = i + 1
+		}
+	}
+	lang := s.choice(langs, at, func(i int) {
+		w.settings.Assistant.SummaryLang = ""
+		if i > 0 {
+			w.settings.Assistant.SummaryLang = mail.SummaryLanguages[i-1].Code
+		}
+		s.save()
+		w.sumState = map[string]*aiText{} // asked again, in the new language
+		w.drawPanel()
+	})
+	lang.SetSensitive(w.settings.AI())
+	s.row(body, i18n.T("Summary language"), i18n.T("What Sum it up writes in"), lang)
 	sort := s.toggle(w.settings.Assistant.Sort, func(v bool) { w.settings.Assistant.Sort = v; s.save() })
 	sort.SetSensitive(w.settings.AI())
 	sorting := s.section(i18n.T("SORTING"), i18n.T("The only thing it does unasked"))
@@ -558,6 +578,7 @@ func (s *settingsWin) assistantPage() {
 		w.settings.Assistant.Off = !on.GetActive()
 		s.save()
 		sort.SetSensitive(w.settings.AI())
+		lang.SetSensitive(w.settings.AI())
 		w.aiChanged()
 	}))
 }

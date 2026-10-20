@@ -116,13 +116,17 @@ func (w *window) keptSummary(c *mail.Conversation) string {
 	if x == nil {
 		return ""
 	}
-	return x.s.Summary(latest.Mailbox, summaryKey(c))
+	return x.s.Summary(latest.Mailbox, summaryKey(c, w.settings.Assistant.SummaryLang))
 }
 
-// summaryKey names a conversation as it is now: a new message makes the
-// summary kept old.
-func summaryKey(c *mail.Conversation) string {
-	return fmt.Sprintf("%s#%d", c.ID, len(c.Messages))
+// summaryKey names a conversation as it is now, and the language its
+// summary was asked in (Settings → AI): a new message, or another
+// language, makes the summary kept old.
+func summaryKey(c *mail.Conversation, lang string) string {
+	if lang == "" {
+		return fmt.Sprintf("%s#%d", c.ID, len(c.Messages))
+	}
+	return fmt.Sprintf("%s#%d@%s", c.ID, len(c.Messages), lang)
 }
 
 func (w *window) summarize(c *mail.Conversation) {
@@ -141,7 +145,8 @@ func (w *window) summarize(c *mail.Conversation) {
 	if x := w.acct(latest.Account); x != nil {
 		user = x.s.Acc.Address
 	}
-	prompt := mail.SummaryPrompt(msgs, user, time.Now(), i18n.Lang())
+	lang := w.settings.Assistant.SummaryLang
+	prompt := mail.SummaryPrompt(msgs, user, time.Now(), i18n.Lang(), lang)
 	go func() {
 		text, err := w.ai.ask(prompt, 2*time.Minute, func(t string) {
 			a.text = strings.TrimSpace(t)
@@ -161,7 +166,7 @@ func (w *window) summarize(c *mail.Conversation) {
 			} else {
 				a.text = strings.TrimSpace(text)
 				if x := w.acct(latest.Account); x != nil {
-					x.s.SaveSummary(latest.Mailbox, summaryKey(c), a.text)
+					x.s.SaveSummary(latest.Mailbox, summaryKey(c, lang), a.text)
 				}
 			}
 			if w.openID == c.ID {

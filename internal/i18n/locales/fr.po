@@ -503,8 +503,8 @@ msgstr "DEV"
 #: internal/apps/disk/rules.go:43
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
-#: internal/mailui/panel.go:43
-#: internal/mailui/panel.go:310
+#: internal/mailui/panel.go:51
+#: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
 #: ui/mail.ui:373
@@ -513,7 +513,7 @@ msgid "AI"
 msgstr "IA"
 
 #: internal/apps/disk/rules.go:45
-#: internal/mailui/settings.go:616
+#: internal/mailui/settings.go:637
 msgid "CACHE"
 msgstr "CACHE"
 
@@ -1204,7 +1204,7 @@ msgstr "Un cache marqué par son programme"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "Son programme l'a marqué comme cache (CACHEDIR.TAG) : il le refait quand il manque."
 
-#: internal/apps/mail/account.go:295
+#: internal/apps/mail/account.go:314
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -3844,7 +3844,7 @@ msgid "The weather could not be read.\n%s"
 msgstr "La météo n'a pas pu être lue.\n%s"
 
 #: internal/appui/weather.go:273
-#: internal/mailui/panel.go:308
+#: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
 #: ui/pass.ui:375
 msgid "Try again"
@@ -3976,7 +3976,7 @@ msgid "OK"
 msgstr "D'accord"
 
 #: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:594
+#: internal/mailui/settings.go:615
 #: internal/mailui/welcome.go:823
 #: internal/ui/settings_ai.go:496
 #: ui/clock.ui:252
@@ -4961,13 +4961,13 @@ msgid "Asking…"
 msgstr "Interrogation…"
 
 #: internal/diskui/details.go:257
-#: internal/mailui/panel.go:303
+#: internal/mailui/panel.go:311
 #: internal/mailui/reader.go:386
 msgid "Ask AI"
 msgstr "Demander à l’IA"
 
 #: internal/diskui/details.go:259
-#: internal/mailui/panel.go:335
+#: internal/mailui/panel.go:343
 msgid "Ask again"
 msgstr "Redemander"
 
@@ -9891,44 +9891,44 @@ msgstr[1] "%s et %d autres messages"
 msgid "Mail"
 msgstr "Courrier"
 
-#: internal/mailui/assist.go:131
+#: internal/mailui/assist.go:135
 msgid "The messages are still loading."
 msgstr "Les messages sont encore en cours de chargement."
 
-#: internal/mailui/assist.go:160
+#: internal/mailui/assist.go:165
 #: internal/mailui/reader.go:1120
 msgid "The assistant could not sum it up"
 msgstr "L'assistant n'a pas pu le résumer"
 
-#: internal/mailui/assist.go:195
+#: internal/mailui/assist.go:200
 msgid "The assistant could not suggest replies"
 msgstr "L'assistant n'a pas pu suggérer de réponses"
 
-#: internal/mailui/assist.go:199
+#: internal/mailui/assist.go:204
 msgid "The assistant gave no replies."
 msgstr "L'assistant n'a donné aucune réponse."
 
-#: internal/mailui/assist.go:224
+#: internal/mailui/assist.go:229
 msgid "The assistant could not judge it"
 msgstr "L'assistant n'a pas pu en juger"
 
-#: internal/mailui/assist.go:228
+#: internal/mailui/assist.go:233
 msgid "The assistant answered %q"
 msgstr "L'assistant a répondu %q"
 
-#: internal/mailui/assist.go:238
+#: internal/mailui/assist.go:243
 msgid "Asking the assistant what to search for…"
 msgstr "L'assistant cherche quoi rechercher…"
 
-#: internal/mailui/assist.go:247
+#: internal/mailui/assist.go:252
 msgid "The assistant could not search"
 msgstr "L'assistant n'a pas pu chercher"
 
-#: internal/mailui/assist.go:252
+#: internal/mailui/assist.go:257
 msgid "The assistant gave no search."
 msgstr "L'assistant n'a donné aucune recherche."
 
-#: internal/mailui/assist.go:260
+#: internal/mailui/assist.go:265
 #: internal/mailui/window.go:1283
 msgid "Searched for %s"
 msgstr "Recherché : %s"
@@ -10040,7 +10040,7 @@ msgid "The assistant is writing…"
 msgstr "L'assistant écrit…"
 
 #: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:437
+#: internal/mailui/panel.go:445
 msgid "The assistant could not write it"
 msgstr "L'assistant n'a pas pu l'écrire"
 
@@ -10072,59 +10072,59 @@ msgstr "Toujours pour cet expéditeur"
 msgid "Not saved: %v"
 msgstr "Non enregistré : %v"
 
-#: internal/mailui/panel.go:45
+#: internal/mailui/panel.go:53
 msgid "Checks"
 msgstr "Vérifications"
 
-#: internal/mailui/panel.go:67
+#: internal/mailui/panel.go:75
 msgid "Open a conversation: AI sums it up, suggests replies and writes them, and judges a message that looks suspicious."
 msgstr "Ouvrez une conversation : l’IA la résume, propose et rédige des réponses, et juge un message qui semble suspect."
 
-#: internal/mailui/panel.go:69
+#: internal/mailui/panel.go:77
 msgid "Open a conversation to see what the checks found."
 msgstr "Ouvrez une conversation pour voir ce que les vérifications ont trouvé."
 
-#: internal/mailui/panel.go:140
+#: internal/mailui/panel.go:148
 msgid "Sum it up"
 msgstr "Résumer"
 
-#: internal/mailui/panel.go:142
+#: internal/mailui/panel.go:150
 msgid "Sum it up again"
 msgstr "Résumer à nouveau"
 
-#: internal/mailui/panel.go:150
+#: internal/mailui/panel.go:158
 msgid "Suggest replies"
 msgstr "Proposer des réponses"
 
-#: internal/mailui/panel.go:152
+#: internal/mailui/panel.go:160
 msgid "Other replies"
 msgstr "D’autres réponses"
 
-#: internal/mailui/panel.go:161
+#: internal/mailui/panel.go:169
 msgid "Or say what to reply, then Enter"
 msgstr "Ou dites quoi répondre, puis Entrée"
 
-#: internal/mailui/panel.go:211
+#: internal/mailui/panel.go:219
 msgid "SUMMARY"
 msgstr "RÉSUMÉ"
 
-#: internal/mailui/panel.go:241
+#: internal/mailui/panel.go:249
 msgid "REPLIES"
 msgstr "RÉPONSES"
 
-#: internal/mailui/panel.go:268
+#: internal/mailui/panel.go:276
 msgid "Write this reply"
 msgstr "Rédiger cette réponse"
 
-#: internal/mailui/panel.go:277
+#: internal/mailui/panel.go:285
 msgid "IS IT SAFE?"
 msgstr "EST-CE SÛR ?"
 
-#: internal/mailui/panel.go:289
+#: internal/mailui/panel.go:297
 msgid "Nothing to check: the messages read here are yours."
 msgstr "Rien à vérifier : les messages lus ici sont les vôtres."
 
-#: internal/mailui/panel.go:302
+#: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "L’IA lit ce que les vérifications ont trouvé, avec l’expéditeur, l’objet, les liens et le texte, et dit ce qu’elle en pense."
 
@@ -10630,81 +10630,93 @@ msgstr "Utiliser l’IA dans Mail"
 msgid "Off: no summaries, reply ideas or Ask AI (the right panel keeps the checks), no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."
 msgstr "Désactivé : ni résumé, ni idées de réponse, ni Ask AI (le panneau de droite garde les vérifications), ni recherche par une phrase, ni brouillon ni retouche dans la rédaction, ni résumé des pièces jointes, ni tri. Rien de votre courrier ne va à un modèle."
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:554
+msgid "As the conversation"
+msgstr "Comme la conversation"
+
+#: internal/mailui/settings.go:572
+msgid "Summary language"
+msgstr "Langue du résumé"
+
+#: internal/mailui/settings.go:572
+msgid "What Sum it up writes in"
+msgstr "La langue dans laquelle Résumer écrit"
+
+#: internal/mailui/settings.go:575
 msgid "SORTING"
 msgstr "TRI"
 
-#: internal/mailui/settings.go:555
+#: internal/mailui/settings.go:575
 msgid "The only thing it does unasked"
 msgstr "La seule chose qu’il fait sans qu’on le demande"
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Sort new mail"
 msgstr "Trier le nouveau courrier"
 
-#: internal/mailui/settings.go:556
+#: internal/mailui/settings.go:576
 msgid "Tags new mail the rules leave (needs a reply, newsletter, receipt …) with the assistant's quick choices. It sends each message's sender, subject and first 400 characters. Whether a message needs your reply is only ever decided here."
 msgstr "Étiquette le nouveau courrier que les règles laissent (à répondre, lettre d’info, reçu…) avec les choix rapides de l’assistant. Il envoie l’expéditeur, l’objet et les 400 premiers caractères de chaque message. Seul ce tri décide si un message attend votre réponse."
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "YOUR OWN OAUTH CLIENT"
 msgstr "VOTRE PROPRE CLIENT OAUTH"
 
-#: internal/mailui/settings.go:568
+#: internal/mailui/settings.go:589
 msgid "Empty fields use inua's"
 msgstr "Les champs vides utilisent ceux d’inua"
 
-#: internal/mailui/settings.go:569
+#: internal/mailui/settings.go:590
 #: internal/mailui/welcome.go:792
 msgid "For a Google Cloud project or an Azure app of your own. Empty fields use inua's. The secret is kept in your keyring, not in mail.toml. Accounts already signed in with a provider sign in again after its client changes."
 msgstr "Pour un projet Google Cloud ou une app Azure à vous. Les champs vides utilisent ceux d'inua. Le secret est gardé dans votre trousseau, pas dans mail.toml. Les comptes déjà connectés avec un fournisseur se reconnectent quand son client change."
 
-#: internal/mailui/settings.go:582
+#: internal/mailui/settings.go:603
 #: internal/mailui/welcome.go:809
 msgid "Kept in your keyring; type to replace it"
 msgstr "Gardé dans votre trousseau ; saisissez pour le remplacer"
 
-#: internal/mailui/settings.go:586
+#: internal/mailui/settings.go:607
 #: internal/mailui/welcome.go:820
 msgid "Google client ID"
 msgstr "Identifiant client Google"
 
-#: internal/mailui/settings.go:587
+#: internal/mailui/settings.go:608
 #: internal/mailui/welcome.go:820
 msgid "Google client secret"
 msgstr "Secret client Google"
 
-#: internal/mailui/settings.go:588
+#: internal/mailui/settings.go:609
 #: internal/mailui/welcome.go:821
 msgid "Microsoft client ID"
 msgstr "Identifiant client Microsoft"
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 #: internal/mailui/welcome.go:821
 msgid "Microsoft tenant"
 msgstr "Locataire Microsoft"
 
-#: internal/mailui/settings.go:589
+#: internal/mailui/settings.go:610
 msgid "common, or your organization's"
 msgstr "common, ou celui de votre organisation"
 
-#: internal/mailui/settings.go:604
+#: internal/mailui/settings.go:625
 msgid "Saved."
 msgstr "Enregistré."
 
-#: internal/mailui/settings.go:617
+#: internal/mailui/settings.go:638
 msgid "Counting…"
 msgstr "Calcul…"
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "Mail kept on this computer"
 msgstr "Courrier conservé sur cet ordinateur"
 
-#: internal/mailui/settings.go:636
+#: internal/mailui/settings.go:657
 msgid "The indexes and the messages opened: a copy of the servers', so clearing it loses nothing. Mail fetches them again at its next start."
 msgstr "Les index et les messages ouverts : une copie de ceux des serveurs, l’effacer ne perd donc rien. Mail les récupère au prochain démarrage."
 
-#: internal/mailui/settings.go:637
+#: internal/mailui/settings.go:658
 #: internal/ui/notify.go:404
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
@@ -10713,7 +10725,7 @@ msgstr "Les index et les messages ouverts : une copie de ceux des serveurs, l’
 msgid "Clear"
 msgstr "Effacer"
 
-#: internal/mailui/settings.go:668
+#: internal/mailui/settings.go:689
 msgid "Could not keep the secret in the keyring: %v"
 msgstr "Impossible de garder le secret dans le trousseau : %v"
 
