@@ -88,7 +88,7 @@ take it back. *Open in a window* moves what you wrote to the composer.
 
 Keys (`?` lists them): `j`/`k` or the arrows choose a conversation, `/`
 or `Ctrl+F` searches, `c` composes; on a conversation `r` replies, `a`
-replies to all, `f` forwards, `e` archives, `#` or Delete moves it to
+replies to all, `f` forwards, `e` archives, `d` or Delete moves it to
 the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
 stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
 move, `F9` hides or shows the sidebar, `Ctrl+,` opens the settings. In the composer and the quick reply,

@@ -992,7 +992,7 @@ func (w *window) setupRow(item uintptr) {
 		return b
 	}
 	act("mail-archive-symbolic", i18n.T("Archive (E)"), w.archiveConv)
-	act("user-trash-symbolic", i18n.T("Delete (#)"), w.trashConv)
+	act("user-trash-symbolic", i18n.T("Delete (D)"), w.trashConv)
 	r.read = *act("mail-read-symbolic", "", w.toggleRead)
 	r.star = *act("mail-starred-symbolic", "", w.starConv)
 	over.AddOverlay(&acts.Widget)
@@ -1329,7 +1329,7 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 		return false
 	case keyval == uint32(gdk.KEY_e) || keyval == uint32(gdk.KEY_y):
 		w.archive()
-	case keyval == uint32(gdk.KEY_numbersign) || keyval == uint32(gdk.KEY_Delete):
+	case keyval == uint32(gdk.KEY_d) || keyval == uint32(gdk.KEY_Delete):
 		w.trash()
 	case keyval == uint32(gdk.KEY_s):
 		w.star()

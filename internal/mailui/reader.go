@@ -261,7 +261,7 @@ func (w *window) drawBar(c *mail.Conversation) {
 	latest := c.Latest()
 	x := w.acct(latest.Account)
 	w.tool(bar, "mail-archive-symbolic", i18n.T("Archive (E)"), w.archive)
-	w.tool(bar, "user-trash-symbolic", i18n.T("Move to Trash (#)"), w.trash)
+	w.tool(bar, "user-trash-symbolic", i18n.T("Move to Trash (D)"), w.trash)
 	if x != nil && x.s.Role(mail.RoleJunk) != "" && latest.Mailbox != x.s.Role(mail.RoleJunk) {
 		w.tool(bar, "mail-mark-junk-symbolic", i18n.T("Move to Spam (!)"), w.spam)
 	}

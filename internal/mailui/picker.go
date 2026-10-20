@@ -140,7 +140,7 @@ func (w *window) showKeys() {
 		{"A", i18n.T("Reply all")},
 		{"F", i18n.T("Forward")},
 		{"E", i18n.T("Archive")},
-		{"#  Delete", i18n.T("Move to Trash")},
+		{"D  Delete", i18n.T("Move to Trash")},
 		{"!", i18n.T("Move to Spam")},
 		{"V", i18n.T("Move to a folder")},
 		{"S", i18n.T("Star or unstar")},
