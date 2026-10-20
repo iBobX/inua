@@ -65,7 +65,7 @@ func TestAppSearch(t *testing.T) {
 		want []string
 	}{
 		// Name matches outrank generic names and keywords; NoDisplay is hidden.
-		{"fi", []string{"Files", "Firefox", "Toggle Wi-Fi"}}, // and a command, on a word of its title
+		{"fi", []string{"Files", "Firefox", "Toggle Wi-Fi", "Wi-Fi Settings"}}, // and commands, on a word of their titles
 		{"text", []string{"Visual Studio Code", "文本编辑器"}},
 		{"folder", []string{"Files"}},
 		{"code", []string{"Visual Studio Code"}},

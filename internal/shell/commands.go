@@ -39,6 +39,7 @@ var Commands = []Command{
 	{ID: "clear-notes", Title: i18n.M("Clear Notifications"), Detail: i18n.M("All of them"), Icon: "preferences-system-notifications-symbolic", Keywords: []string{"notifications", "dismiss"}},
 	{ID: "focus", Title: i18n.M("Focus"), Detail: i18n.M("Quiet notifications, or not"), Icon: "weather-clear-night-symbolic", Keywords: []string{"do not disturb", "dnd", "quiet"}},
 	{ID: "wifi", Title: i18n.M("Toggle Wi-Fi"), Detail: i18n.M("Turn Wi-Fi on or off"), Icon: "network-wireless-signal-excellent-symbolic", Keywords: []string{"wireless", "network", "wifi"}},
+	{ID: "wifi-settings", Title: i18n.M("Wi-Fi Settings"), Detail: i18n.M("Join and forget networks"), Icon: "network-wireless-signal-excellent-symbolic", Keywords: []string{"wifi", "wireless", "network", "wlan", "password"}},
 	{ID: "bluetooth", Title: i18n.M("Toggle Bluetooth"), Detail: i18n.M("Turn Bluetooth on or off"), Icon: "bluetooth-active-symbolic", Keywords: []string{"bluetooth"}},
 	{ID: "bluetooth-settings", Title: i18n.M("Bluetooth Settings"), Detail: i18n.M("Pair and connect devices"), Icon: "bluetooth-active-symbolic", Keywords: []string{"bluetooth", "pair", "headphones", "keyboard", "devices"}},
 	{ID: "restart-shell", Title: i18n.M("Restart inua"), Detail: i18n.M("Start the shell again"), Icon: "system-reboot-symbolic", Keywords: []string{"reload", "shell"}},

@@ -32,12 +32,42 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
+              <object class="GtkSearchEntry" id="settings_search">
+                <property name="placeholder-text" translatable="yes">Search settings</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkScrolledWindow">
                 <property name="vexpand">true</property>
                 <property name="hscrollbar-policy">2</property>
                 <child>
-                  <object class="GtkListBox" id="index">
-                    <property name="selection-mode">2</property>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkListBox" id="index">
+                        <property name="selection-mode">2</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBox" id="settings_results">
+                        <style>
+                          <class name="results"/>
+                        </style>
+                        <property name="selection-mode">2</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="settings_no_results">
+                        <style>
+                          <class name="index-note"/>
+                        </style>
+                        <property name="label" translatable="yes">Nothing matches.</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">true</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -4957,6 +4987,287 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             </child>
             <child>
               <object class="GtkStackPage">
+                <property name="name">wifi</property>
+                <property name="title" translatable="yes">Wi-Fi</property>
+                <property name="child">
+                  <object class="GtkOverlay">
+                    <property name="child">
+                      <object class="GtkScrolledWindow" id="scroll_wifi">
+                        <property name="hscrollbar-policy">2</property>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="page"/>
+                            </style>
+                            <property name="orientation">1</property>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;WI-FI&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">This computer</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Wi-Fi</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="wifi_state">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="wifi_power">
+                                            <property name="name">wifi_power</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="wifi_current_section">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;CONNECTED&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">The network in use</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="wifi_current">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="wifi_known_section">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;KNOWN NETWORKS&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">Saved on this computer; joined again by themselves</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="wifi_known">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="wifi_nearby_section">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;NEARBY&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="wifi_nearby_meta">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">Searching…</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="wifi_nearby">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <child type="overlay">
+                      <object class="GtkBox" id="sticky_wifi">
+                        <style>
+                          <class name="section-head"/>
+                          <class name="sticky"/>
+                        </style>
+                        <property name="spacing">10</property>
+                        <property name="valign">1</property>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
                 <property name="name">bluetooth</property>
                 <property name="title" translatable="yes">Bluetooth</property>
                 <property name="child">
@@ -5896,6 +6207,70 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                               <class name="page"/>
                             </style>
                             <property name="orientation">1</property>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="use-markup">true</property>
+                                        <property name="label" translatable="yes">&lt;span alpha='55%'&gt;[&lt;/span&gt;SYSTEM&lt;span alpha='55%'&gt;]&lt;/span&gt;</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">This computer at a glance</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="about_fetch_copy">
+                                        <style>
+                                          <class name="outlined"/>
+                                        </style>
+                                        <property name="name">about_fetch_copy</property>
+                                        <property name="label" translatable="yes">Copy</property>
+                                        <property name="valign">3</property>
+                                        <property name="tooltip-text" translatable="yes">Copy as text</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="about_fetch">
+                                    <style>
+                                      <class name="section-body"/>
+                                      <class name="fetch"/>
+                                    </style>
+                                    <property name="spacing">28</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                             <child>
                               <object class="GtkBox">
                                 <style>
