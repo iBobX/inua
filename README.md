@@ -23,10 +23,10 @@ and a settings window, in one calm visual language. It works with
 | **Bar** | Workspaces, the focused window's title, the clock and its calendar, the tray, notifications and the control center. One per monitor. |
 | **Launcher** | One search for apps, windows and the system's commands; it answers arithmetic, units, currencies and crypto, searches the web and sites by keyword, finds emoji after `:`, and asks the assistant after `?` (Super+Space). |
 | **Workspace overview** | Live window previews across monitors; tap Win, or cycle with Win+Tab. Drag to move, middle click to close, / to search. Needs Hyprland 0.55 or later (its Lua interface); before that, Super+Tab switches windows in the launcher. |
-| **Control center** | Wi-Fi, Bluetooth, power saver, Focus and Tailscale tiles; brightness, volume and media; power. |
+| **Control center** | Wi-Fi, Bluetooth, power saver, Focus and Tailscale tiles, with lists to switch networks and connect devices, and Tailscale's address to copy; brightness, volume and media; power. |
 | **Notifications** | inua is the notification server: banners, then a notification center grouped by app. |
 | **Dock** | Pinned and running apps; drag to reorder or to unpin; a drawer of the shell's tools and the light apps. |
-| **Settings** | One window for everything, applied as you change it. |
+| **Settings** | One window for everything, applied as you change it, with a search over every page; Wi-Fi networks to join and forget; About shows the computer at a glance, as fastfetch does. |
 | **Shortcuts** | Rebind the shell's actions and your own commands by pressing keys. |
 | **Lock screen** | On the compositor's session lock: if the shell stops, the screen stays locked. |
 | **Screenshots** | Areas, windows and screens, recordings, and a drawer of recent shots to drag into apps. |
