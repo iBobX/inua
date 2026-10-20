@@ -28,6 +28,7 @@ type bluetoothSettings struct {
 	shown     string
 	controls  map[*gtk.Box]map[uintptr]btControl // each list's buttons
 	busy      map[string]string                  // what is being done with a device, by path (shell.BTConnect…)
+	errs      map[string]string                  // why the last action on a device failed, by path; the control center's list shows it
 	forget    string                             // the device whose Forget asks again
 	searching bool                               // the shell's search is on
 
@@ -153,7 +154,9 @@ func (s *shellUI) bluetoothAction(c btControl) {
 		return
 	}
 	b.busy[c.path] = c.action
+	delete(b.errs, c.path)
 	s.showBluetooth()
+	s.showControlDetail()
 	go func() {
 		var err error
 		var msg string
@@ -180,8 +183,12 @@ func (s *shellUI) bluetoothAction(c btControl) {
 		}
 		gtkx.Post(func() {
 			delete(b.busy, c.path)
+			if err != nil {
+				b.errs[c.path] = msg
+			}
 			s.setStatus(msg, err != nil)
 			s.showBluetooth()
+			s.showControlDetail()
 		})
 	}()
 }

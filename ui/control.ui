@@ -237,51 +237,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <property name="spacing">8</property>
                         <property name="homogeneous">true</property>
                         <child>
-                          <object class="GtkButton" id="wifi">
-                            <style>
-                              <class name="tile"/>
-                            </style>
-                            <property name="name">wifi</property>
+                          <object class="GtkBox">
+                            <property name="spacing">4</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="orientation">1</property>
-                                <property name="spacing">6</property>
+                              <object class="GtkButton" id="wifi">
+                                <style>
+                                  <class name="tile"/>
+                                </style>
+                                <property name="name">wifi</property>
+                                <property name="hexpand">true</property>
                                 <child>
                                   <object class="GtkBox">
-                                    <child>
-                                      <object class="GtkImage" id="wifi_icon">
-                                        <property name="icon-name">network-wireless-signal-excellent-symbolic</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="halign">1</property>
-                                      </object>
-                                    </child>
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">6</property>
                                     <child>
                                       <object class="GtkBox">
+                                        <child>
+                                          <object class="GtkImage" id="wifi_icon">
+                                            <property name="icon-name">network-wireless-signal-excellent-symbolic</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="halign">1</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <style>
+                                              <class name="mark"/>
+                                            </style>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
                                         <style>
-                                          <class name="mark"/>
+                                          <class name="title"/>
                                         </style>
-                                        <property name="valign">3</property>
+                                        <property name="label" translatable="yes">Wi-Fi</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="wifi_sub">
+                                        <style>
+                                          <class name="sub"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                        <property name="max-width-chars">12</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="wifi_more">
+                                <style>
+                                  <class name="tile"/>
+                                  <class name="tile-more"/>
+                                </style>
+                                <property name="name">wifi-more</property>
+                                <property name="tooltip-text" translatable="yes">Wi-Fi networks</property>
                                 <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="title"/>
-                                    </style>
-                                    <property name="label" translatable="yes">Wi-Fi</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="wifi_sub">
-                                    <style>
-                                      <class name="sub"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="ellipsize">3</property>
-                                    <property name="max-width-chars">16</property>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">pan-down-symbolic</property>
                                   </object>
                                 </child>
                               </object>
@@ -289,51 +310,72 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="bt">
-                            <style>
-                              <class name="tile"/>
-                            </style>
-                            <property name="name">bt</property>
+                          <object class="GtkBox">
+                            <property name="spacing">4</property>
                             <child>
-                              <object class="GtkBox">
-                                <property name="orientation">1</property>
-                                <property name="spacing">6</property>
+                              <object class="GtkButton" id="bt">
+                                <style>
+                                  <class name="tile"/>
+                                </style>
+                                <property name="name">bt</property>
+                                <property name="hexpand">true</property>
                                 <child>
                                   <object class="GtkBox">
-                                    <child>
-                                      <object class="GtkImage">
-                                        <property name="icon-name">bluetooth-active-symbolic</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="halign">1</property>
-                                      </object>
-                                    </child>
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">6</property>
                                     <child>
                                       <object class="GtkBox">
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="icon-name">bluetooth-active-symbolic</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="halign">1</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <style>
+                                              <class name="mark"/>
+                                            </style>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
                                         <style>
-                                          <class name="mark"/>
+                                          <class name="title"/>
                                         </style>
-                                        <property name="valign">3</property>
+                                        <property name="label" translatable="yes">Bluetooth</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="bt_sub">
+                                        <style>
+                                          <class name="sub"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                        <property name="max-width-chars">12</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="bt_more">
+                                <style>
+                                  <class name="tile"/>
+                                  <class name="tile-more"/>
+                                </style>
+                                <property name="name">bt-more</property>
+                                <property name="tooltip-text" translatable="yes">Bluetooth devices</property>
                                 <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="title"/>
-                                    </style>
-                                    <property name="label" translatable="yes">Bluetooth</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="bt_sub">
-                                    <style>
-                                      <class name="sub"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="ellipsize">3</property>
-                                    <property name="max-width-chars">16</property>
+                                  <object class="GtkImage">
+                                    <property name="icon-name">pan-down-symbolic</property>
                                   </object>
                                 </child>
                               </object>
@@ -531,7 +573,95 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           </object>
                         </child>
                         <child>
-                          <object class="GtkBox"></object>
+                          <object class="GtkBox" id="vpn_info">
+                            <property name="orientation">1</property>
+                            <property name="spacing">4</property>
+                            <property name="visible">false</property>
+                            <child>
+                              <object class="GtkButton" id="vpn_ip">
+                                <style>
+                                  <class name="tile"/>
+                                  <class name="copy-tile"/>
+                                </style>
+                                <property name="name">vpn-ip</property>
+                                <property name="vexpand">true</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">2</property>
+                                    <child>
+                                      <object class="GtkLabel" id="vpn_ip_kicker">
+                                        <style>
+                                          <class name="kicker"/>
+                                        </style>
+                                        <property name="label" translatable="yes">IP</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="vpn_ip_value">
+                                        <style>
+                                          <class name="readout"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">3</property>
+                                        <property name="max-width-chars">14</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="vpn_dns">
+                                <style>
+                                  <class name="tile"/>
+                                  <class name="copy-tile"/>
+                                </style>
+                                <property name="name">vpn-dns</property>
+                                <property name="vexpand">true</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="orientation">1</property>
+                                    <property name="spacing">2</property>
+                                    <child>
+                                      <object class="GtkLabel" id="vpn_dns_kicker">
+                                        <style>
+                                          <class name="kicker"/>
+                                        </style>
+                                        <property name="label" translatable="yes">DNS</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="vpn_dns_value">
+                                        <style>
+                                          <class name="readout"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="ellipsize">2</property>
+                                        <property name="max-width-chars">14</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkRevealer" id="detail_reveal">
+                        <property name="transition-type">5</property>
+                        <property name="transition-duration">180</property>
+                        <child>
+                          <object class="GtkBox" id="detail">
+                            <style>
+                              <class name="cc-detail"/>
+                            </style>
+                            <property name="orientation">1</property>
+                          </object>
                         </child>
                       </object>
                     </child>

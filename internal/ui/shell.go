@@ -126,6 +126,8 @@ type shellUI struct {
 	onQueryActivate        func(gtk.Entry)
 	onQueryFocus           func(gtk.EventControllerFocus)
 	onControlButton        func(gtk.Button)
+	onControlItem          func(gtk.Button)
+	onControlCopied        glib.SourceFunc
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
@@ -399,6 +401,7 @@ func (s *shellUI) start() {
 	s.bindSettingsHandlers()
 	s.bindAboutHandlers()
 	s.bindWifiHandlers()
+	s.bindControlDetailHandlers()
 	s.bindNotifyHandlers()
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()

@@ -15,6 +15,8 @@ type TailscaleState struct {
 	Backend   string // its state: "Running", "Stopped", "NeedsLogin" …
 	Online    int    // devices online in the tailnet
 	ExitNode  string // the device traffic goes through, "" for none
+	IP        string // this device's Tailscale IPv4 address, "" before it has one
+	DNS       string // its full MagicDNS name ("laptop.tailnet.ts.net"), "" without MagicDNS
 }
 
 // Tailscale reads and changes Tailscale through tailscaled's local API. It
@@ -36,6 +38,9 @@ func (t *Tailscale) Read(ctx context.Context) TailscaleState {
 		return s
 	}
 	s.Installed, s.Running, s.Backend, s.Online = true, true, st.BackendState, st.Online()
+	if st.Self != nil {
+		s.IP, s.DNS = st.Self.IPv4(), st.Self.MagicDNS()
+	}
 	for _, p := range st.Peer {
 		if p.ExitNode {
 			s.ExitNode = p.Name()

@@ -180,74 +180,104 @@ ApplicationWindow control {
             spacing: 8;
             homogeneous: true;
 
-            Button wifi {
-              styles ["tile"]
-              name: "wifi";
+            Box {
+              spacing: 4;
 
-              Box {
-                orientation: vertical;
-                spacing: 6;
+              Button wifi {
+                styles ["tile"]
+                name: "wifi";
+                hexpand: true;
 
                 Box {
-                  Image wifi_icon {
-                    icon-name: "network-wireless-signal-excellent-symbolic";
-                    hexpand: true;
-                    halign: start;
-                  }
+                  orientation: vertical;
+                  spacing: 6;
 
                   Box {
-                    styles ["mark"]
-                    valign: center;
+                    Image wifi_icon {
+                      icon-name: "network-wireless-signal-excellent-symbolic";
+                      hexpand: true;
+                      halign: start;
+                    }
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+                  }
+
+                  Label {
+                    styles ["title"]
+                    label:  _("Wi-Fi");
+                    xalign: 0;
+                  }
+
+                  Label wifi_sub {
+                    styles ["sub"]
+                    xalign: 0;
+                    ellipsize: end;
+                    max-width-chars: 12;
                   }
                 }
+              }
 
-                Label {
-                  styles ["title"]
-                  label:  _("Wi-Fi");
-                  xalign: 0;
-                }
+              Button wifi_more {
+                styles ["tile", "tile-more"]
+                name: "wifi-more";
+                tooltip-text:  _("Wi-Fi networks");
 
-                Label wifi_sub {
-                  styles ["sub"]
-                  xalign: 0;
-                  ellipsize: end;
-                  max-width-chars: 16;
+                Image {
+                  icon-name: "pan-down-symbolic";
                 }
               }
             }
 
-            Button bt {
-              styles ["tile"]
-              name: "bt";
+            Box {
+              spacing: 4;
 
-              Box {
-                orientation: vertical;
-                spacing: 6;
+              Button bt {
+                styles ["tile"]
+                name: "bt";
+                hexpand: true;
 
                 Box {
-                  Image {
-                    icon-name: "bluetooth-active-symbolic";
-                    hexpand: true;
-                    halign: start;
-                  }
+                  orientation: vertical;
+                  spacing: 6;
 
                   Box {
-                    styles ["mark"]
-                    valign: center;
+                    Image {
+                      icon-name: "bluetooth-active-symbolic";
+                      hexpand: true;
+                      halign: start;
+                    }
+
+                    Box {
+                      styles ["mark"]
+                      valign: center;
+                    }
+                  }
+
+                  Label {
+                    styles ["title"]
+                    label:  _("Bluetooth");
+                    xalign: 0;
+                  }
+
+                  Label bt_sub {
+                    styles ["sub"]
+                    xalign: 0;
+                    ellipsize: end;
+                    max-width-chars: 12;
                   }
                 }
+              }
 
-                Label {
-                  styles ["title"]
-                  label:  _("Bluetooth");
-                  xalign: 0;
-                }
+              Button bt_more {
+                styles ["tile", "tile-more"]
+                name: "bt-more";
+                tooltip-text:  _("Bluetooth devices");
 
-                Label bt_sub {
-                  styles ["sub"]
-                  xalign: 0;
-                  ellipsize: end;
-                  max-width-chars: 16;
+                Image {
+                  icon-name: "pan-down-symbolic";
                 }
               }
             }
@@ -389,8 +419,73 @@ ApplicationWindow control {
               }
             }
 
-            // The other half, empty.
-            Box {}
+            // The other half: this computer's address and name in the
+            // tailnet, each copied by a click. Shown while connected.
+            Box vpn_info {
+              orientation: vertical;
+              spacing: 4;
+              visible: false;
+
+              Button vpn_ip {
+                styles ["tile", "copy-tile"]
+                name: "vpn-ip";
+                vexpand: true;
+
+                Box {
+                  orientation: vertical;
+                  spacing: 2;
+
+                  Label vpn_ip_kicker {
+                    styles ["kicker"]
+                    label:  _("IP");
+                    xalign: 0;
+                  }
+
+                  Label vpn_ip_value {
+                    styles ["readout"]
+                    xalign: 0;
+                    ellipsize: end;
+                    max-width-chars: 14;
+                  }
+                }
+              }
+
+              Button vpn_dns {
+                styles ["tile", "copy-tile"]
+                name: "vpn-dns";
+                vexpand: true;
+
+                Box {
+                  orientation: vertical;
+                  spacing: 2;
+
+                  Label vpn_dns_kicker {
+                    styles ["kicker"]
+                    label:  _("DNS");
+                    xalign: 0;
+                  }
+
+                  Label vpn_dns_value {
+                    styles ["readout"]
+                    xalign: 0;
+                    ellipsize: middle;
+                    max-width-chars: 14;
+                  }
+                }
+              }
+            }
+          }
+
+          // The list an arrow beside a tile opens: Wi-Fi's networks or
+          // Bluetooth's devices, laid out by showControlDetail.
+          Revealer detail_reveal {
+            transition-type: slide_down;
+            transition-duration: 180;
+
+            Box detail {
+              styles ["cc-detail"]
+              orientation: vertical;
+            }
           }
         }
 

@@ -98,11 +98,12 @@ func (s *shellUI) bindWifiHandlers() {
 	}
 }
 
-// wantWifi reports whether the Wi-Fi page, and so its list of networks, is shown.
+// wantWifi reports whether a list of networks is shown: the Wi-Fi page,
+// or the control center's.
 func (s *shellUI) wantWifi() bool {
 	st := &s.settings
 	page := st.win != nil && st.pages.GetVisibleChildName() == "wifi"
-	return page
+	return page || (s.control.open && !s.control.closing && s.control.detail == "wifi")
 }
 
 // pollWifi reads the networks now and every few seconds while they are
@@ -147,6 +148,7 @@ func (s *shellUI) readWifiList() {
 				w.list, w.read = l, true
 			}
 			s.showWifi()
+			s.showControlDetail()
 		})
 	}()
 }
@@ -214,6 +216,7 @@ func (s *shellUI) startWifiAction(n system.WifiNetwork, action, password string)
 	ws.busy[n.SSID] = action
 	delete(ws.errs, n.SSID)
 	s.showWifi()
+	s.showControlDetail()
 	net := s.svc.net
 	go func() {
 		ctx := context.Background()
@@ -250,6 +253,7 @@ func (s *shellUI) startWifiAction(n system.WifiNetwork, action, password string)
 			}
 			s.readWifiList()
 			s.showWifi()
+			s.showControlDetail()
 		})
 	}()
 }
