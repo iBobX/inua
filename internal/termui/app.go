@@ -75,6 +75,7 @@ type App struct {
 	restartWait glib.SourceFunc
 	guide       *guide
 	nerd        nerdInfo
+	paneDrag    paneDrag
 	brands      brands
 
 	onCloseOK, onCloseCancel func(gtk.Button)
@@ -95,6 +96,10 @@ type App struct {
 	onOverviewKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onActive                   func(uintptr, uintptr, uintptr)
 	onWindowKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onFree                     glib.SourceFunc
+	// gone are the panes and windows closed whose callbacks are yet to
+	// be freed.
+	gone []gone
 }
 
 // Register makes inua-term an appui app, "term".
@@ -134,6 +139,8 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui.Close()
 	a.win.SetTitle(i18n.T("Terminal"))
 	a.buildTiling()
+	a.startPaneDrag()
+	a.onFree = func(uintptr) bool { return a.freeGone() }
 	a.onClose = func(gtk.Window) bool {
 		a.closeWindow()
 		return false

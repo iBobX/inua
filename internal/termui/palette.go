@@ -36,7 +36,7 @@ func keycaps(chord string) string {
 		"ctrl": "Ctrl", "shift": "Shift", "alt": "Alt", "super": "Super",
 		"equal": "=", "minus": "-", "bracketleft": "[", "bracketright": "]", "slash": "/",
 		"comma": ",", "space": "Space", "backslash": "\\", "period": ".",
-		"return": "Enter", "page_up": "PgUp", "page_down": "PgDn",
+		"return": "Enter", "page_up": "PgUp", "page_down": "PgDn", "grave": "`",
 	}
 	parts := strings.Split(chord, "+")
 	for i, p := range parts {

@@ -70,7 +70,10 @@ from it, or at `$INUA_VT_LIB`.
   works, hollow when quiet. Drag a workspace to put it in another place;
   its menu (a right click, or the Menu key) renames it or closes it,
   after asking, since every program in it quits.
-  The search finds workspaces by name, folder or pane title.
+  The search finds workspaces by name, folder or pane title. At its
+  foot, as Warcraft's idle worker, the finder counts the agents waiting
+  for you (a square in warn) and those done or idle (hollow); a click on
+  it, or Ctrl+`, goes to the next: waiting, then done, then idle.
 - **Sessions** (column 2): at its top, the shown workspace's name and
   the new session button; then its sessions, each a section of its
   panes under a head with the same square and a badge counting the
@@ -79,11 +82,14 @@ from it, or at `$INUA_VT_LIB`.
   asks. A shell shows the command running in it. An agent's mark takes
   its own colour (Claude Code's orange, Gemini's blue…) while it runs.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
-  head (state, mark, title, folder). Drag a gap to resize, drag a head
-  onto another pane to swap them. A pane closes when its program ends
-  (`exit`, or the command of `inua-term -e` done), the others taking its
-  room; a session closes with its last pane, a workspace with its last
-  session, and the window with the last of all.
+  head (state, mark, title, folder). Drag a gap to resize; drag a head
+  onto another pane to swap them, or onto a session's head or a pane's
+  row in column 2 to move the pane to that session, beside its focused
+  pane or that one. When the layout changes, the panes slide to their
+  new places, the programs resized once they are there. A pane closes
+  when its program ends (`exit`, or the command of `inua-term -e` done),
+  the others taking its room; a session closes with its last pane, a
+  workspace with its last session, and the window with the last of all.
 
 A window narrower than 1040 px folds column 2, narrower than 720 px
 column 1 as well; Ctrl+Shift+S and Ctrl+Shift+B show them anyway.
@@ -150,6 +156,7 @@ and opens the new host in the same window, as for a new build), it
 keeps the sessions you used (typed in, or ran something in),
 their layouts, and each pane's folder, title and **last command**: what
 was typed at the prompt and not run, else the command running, else the
+Ctrl+` (the finder) to the next that needs you or is idle;
 one run last. The next host starts a shell in each pane's folder, in the
 same layout, and puts the command back at the prompt **not run**; the
 pane says RESTORED until you type. An agent with a resume command comes
@@ -199,6 +206,7 @@ it kept at that version's defaults moved to these.
 | Ctrl+Shift+R | Rename the session (or double-click its head) |
 | Ctrl+, | Settings |
 | Ctrl+= / Ctrl+- / Ctrl+0 | Font larger / smaller / as set |
+| Ctrl+` | Next agent that needs you or is idle |
 
 ## Copy and paste
 

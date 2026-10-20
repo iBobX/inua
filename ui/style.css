@@ -2877,6 +2877,17 @@ window.term .term-find-row { margin: 0 14px 10px; }
 window.term .term-find-row entry { margin: 0; } /* not the settings index's */
 window.term .term-find-entry { min-height: 34px; }
 window.term .term-col1 list row { min-height: 40px; padding: 6px 12px 6px 13px; }
+/* The finder at the foot of column 1: the agents needing you, and idle. */
+window.term button.term-finder {
+  margin: 6px 14px 12px;
+  padding: 6px 10px;
+  border: 1px solid alpha(@line, 0.9);
+  border-radius: 2px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: @t1;
+}
+window.term button.term-finder:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
 /* Not the settings index's spacing: a workspace's row as tall as a pane's. */
 window.term .term-col1 list row label { padding: 0; }
 window.term .term-ws-name { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; }
@@ -2971,6 +2982,13 @@ window.term .term-tile {
   background: @app;
 }
 window.term .term-tile.focused { border-color: alpha(@accent, 0.38); }
+/* GTK's own mark on a drop target, a line in its drop colour: the window
+   shows where a drop lands itself (the lit tile or row, the gap). */
+window.term *:drop(active) { box-shadow: none; outline: none; }
+/* Where a pane dragged by its head would land. */
+window.term .term-tile.drop-on { border-color: @accent; }
+window.term button.term-session-head.drop-on,
+window.term button.term-pane-row.drop-on { border-color: alpha(@accent, 0.38); background: alpha(@accent, 0.09); }
 window.term .term-head { min-height: 32px; padding: 0 12px; border-bottom: 1px solid alpha(@line, 0.55); }
 window.term .term-kind { color: @t1; }
 window.term .term-head-title { font-size: 12.5px; color: @t1; }

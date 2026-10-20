@@ -141,6 +141,8 @@ func (a *App) do(action string, p *termPane) bool {
 		a.stepSession(1)
 	case "next_waiting":
 		a.nextWaiting()
+	case "next_idle":
+		a.nextIdle()
 	case "agents":
 		a.overview()
 	case "fold_workspaces":

@@ -224,7 +224,6 @@ func oneLine(text string) string {
 // as one line, or Cancel (Escape).
 func (p *termPane) showSheet(text string, primary bool) {
 	p.hideSheet()
-	p.sheetCbs = nil
 	ls := lines(text)
 	sheet := gtk.NewBox(gtk.OrientationVerticalValue, 10)
 	sheet.AddCssClass("term-sheet")
@@ -267,24 +266,27 @@ func (p *termPane) showSheet(text string, primary bool) {
 	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	buttons.SetHalign(gtk.AlignEndValue)
 	buttons.SetMarginTop(6)
-	button := func(label, class string, do func()) *gtk.Button {
+	// The buttons' callbacks are the pane's, the same each time: a
+	// callback made anew for each sheet would never be freed.
+	button := func(label, class string, cb *func(gtk.Button)) *gtk.Button {
 		b := gtk.NewButtonWithLabel(label)
 		b.AddCssClass(class)
-		cb := func(gtk.Button) { do() }
-		p.sheetCbs = append(p.sheetCbs, &cb)
-		b.ConnectClicked(p.sheetCbs[len(p.sheetCbs)-1])
+		b.ConnectClicked(cb)
 		buttons.Append(&b.Widget)
 		return b
 	}
-	button(i18n.T("Cancel"), "outlined", p.hideSheet)
-	button(i18n.T("Paste as one line"), "outlined", func() {
+	p.onSheetCancel = func(gtk.Button) { p.hideSheet() }
+	p.onSheetOneLine = func(gtk.Button) {
 		p.hideSheet()
 		p.paste(oneLine(text), primary, true)
-	})
-	ok := button(i18n.T("Paste"), "suggested-action", func() {
+	}
+	p.onSheetPaste = func(gtk.Button) {
 		p.hideSheet()
 		p.paste(text, primary, true)
-	})
+	}
+	button(i18n.T("Cancel"), "outlined", &p.onSheetCancel)
+	button(i18n.T("Paste as one line"), "outlined", &p.onSheetOneLine)
+	ok := button(i18n.T("Paste"), "suggested-action", &p.onSheetPaste)
 	sheet.Append(&buttons.Widget)
 
 	keys := gtk.NewEventControllerKey()

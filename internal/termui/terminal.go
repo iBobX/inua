@@ -113,7 +113,8 @@ type termPane struct {
 	onFindChanged                     func(uintptr, uintptr)
 	onFindKey                         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onFindUp, onFindDown, onFindClose func(gtk.Button)
-	sheetCbs                          []*func(gtk.Button)
+	onSheetCancel, onSheetOneLine     func(gtk.Button)
+	onSheetPaste                      func(gtk.Button)
 	onSheetKey                        func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onText, onFiles                   [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
 	onMiddle                          func(gtk.GestureClick, int32, float64, float64)
@@ -673,6 +674,19 @@ func (p *termPane) setScheme(sc scheme.Scheme, warn string) {
 	p.dropLines()
 	p.term.SetPalette(sc.Palette)
 	p.update(true)
+}
+
+// callbacks are the pane's callbacks, to free once it is gone (one never
+// connected frees nothing).
+func (p *termPane) callbacks() []any {
+	return []any{
+		&p.onKey, &p.onKeyUp, &p.onCopyKey, &p.onCommit, &p.onPreedit,
+		&p.onFocusIn, &p.onFocusOut, &p.onDragBegin, &p.onDragUpdate, &p.onDragEnd,
+		&p.onMiddle, &p.onScroll, &p.onDecelerate, &p.onDrop, &p.onMotion, &p.onRaw,
+		&p.onGlide, &p.onFindChanged, &p.onFindKey, &p.onFindUp, &p.onFindDown,
+		&p.onFindClose, &p.onSheetKey, &p.onSheetCancel, &p.onSheetOneLine,
+		&p.onSheetPaste, &p.onText[0], &p.onText[1], &p.onFiles[0], &p.onFiles[1],
+	}
 }
 
 func (p *termPane) close() {
