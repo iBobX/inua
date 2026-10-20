@@ -245,7 +245,7 @@ Mail uses inua's assistant (Settings → AI), only when asked, except the
 sorting, which is off until turned on. Its panel opens at the window's
 right edge from ✦ in the conversation's bar (the sidebar makes room, and
 comes back when it closes): the summary, replies to pick or a line of
-what to say, and its judgment of a message the checks doubt. A reply it
+what to say, and *Is it safe?*: the checks' verdict and each check's finding, for any message not yours, and AI's judgment when asked (*Ask AI*). A reply it
 writes goes into the quick reply under the conversation, marked *Drafted
 by the assistant*, with *Undo*, for you to read and send.
 
@@ -258,7 +258,7 @@ by the assistant*, with *Undo*, for you to read and send.
 | The composer: *Draft* | The text from a line of what to say, in the conversation's language and your voice | The line, the conversation, three of your sent messages kept on this computer |
 | The composer: *Polish* | Shorter, friendlier, more formal, spelling and grammar, or a translation; *Undo* puts your text back | The text you wrote (not the signature or the quote) |
 | The search: a sentence and Enter | The search's operators, shown in the entry, then searched | The sentence and today's date |
-| A suspicious message: *Ask the assistant* | Its judgment after the checks | The checks' findings, the sender, the subject, the links and the text |
+| The panel's *Is it safe?*, or a warning's *Ask AI* | Its verdict, two or three reasons, and what to do, under the checks' own verdict and findings | The checks' findings, the sender, the subject, the links and the text |
 | New mail (`[assistant] sort = true`) | A tag for what the rules do not settle | The sender, the subject, the first 400 characters |
 
 What the assistant writes in the composer is said to be its own; read it

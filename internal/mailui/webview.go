@@ -107,8 +107,10 @@ type webMsg struct {
 	sig    string // the page loaded: options and message
 	height int
 	zoom   float64
-	asks   int  // measures still to come after a load
-	gone   bool // let go of: its view is no more
+	asks   int      // measures still to come after a load
+	gone   bool     // let go of: its view is no more
+	shown  bool     // its page was measured: laid out, worth showing
+	frame  *gtk.Box // the frame showing the loader before then
 }
 
 const (
@@ -157,6 +159,11 @@ func (w *window) webView(box *gtk.Box, k mail.Key, m *mail.Message) (quoted bool
 	frame.AddCssClass("mail-web")
 	frame.SetOverflow(gtk.OverflowHiddenValue)
 	unparent(wm.view)
+	if !wm.shown {
+		frame.AddCssClass("loading")
+		gtkx.Append(frame, &loader("").Widget)
+		wm.frame = frame
+	}
 	frame.Append(wm.view) // not gtkx.Append: the view's own reference stays the window's
 	gtkx.Append(box, &frame.Widget)
 	return page.Quoted
@@ -280,6 +287,17 @@ func (w *window) measured(wm *webMsg, answer string) {
 		wk.setZoom(wm.view.Ptr, wm.zoom)
 		w.h.later(60, func() { w.measure(wm) })
 		return
+	}
+	if !wm.shown {
+		wm.shown = true
+		if wm.frame != nil {
+			if l := wm.frame.GetFirstChild(); l != nil && l.Ptr != wm.view.Ptr {
+				wm.frame.Remove(l)
+				l.Unref() // GetFirstChild returned a new reference
+			}
+			wm.frame.RemoveCssClass("loading")
+			wm.frame = nil
+		}
 	}
 	px := int(float64(height)*wm.zoom) + 2
 	if px > wm.height {

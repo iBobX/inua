@@ -86,9 +86,10 @@ func (a *aiState) ask(prompt string, timeout time.Duration, each func(string)) (
 
 // aiText is an answer of the assistant's as it comes.
 type aiText struct {
-	text string
-	err  string
-	busy bool
+	text  string
+	err   string
+	busy  bool
+	judge *mail.AIJudgment // a judgment's parts, when it is one
 }
 
 func (a *aiText) sig() string {
@@ -221,11 +222,8 @@ func (w *window) askJudge(k mail.Key) {
 			a.busy = false
 			if err != nil {
 				a.err = failed(i18n.T("The assistant could not judge it"), err)
-			} else if v, why, ok := mail.ParseJudge(text); ok {
-				a.text = v.Name()
-				if why != "" {
-					a.text += ": " + why
-				}
+			} else if j, ok := mail.ParseJudgment(text); ok {
+				a.judge, a.text = &j, j.Verdict.Name()
 			} else {
 				a.err = i18n.Tf("The assistant answered %q", strings.TrimSpace(text))
 			}

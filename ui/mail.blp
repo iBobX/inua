@@ -128,6 +128,12 @@ ApplicationWindow mail {
             spacing: 16;
           }
 
+          // A line that runs while the mailbox shown syncs the first time.
+          Box list_progress {
+            styles ["mail-progress"]
+            visible: false;
+          }
+
           Stack list_stack {
             vexpand: true;
 
@@ -136,6 +142,20 @@ ApplicationWindow mail {
 
               child: ScrolledWindow list_scroll {
                 hscrollbar-policy: never;
+              };
+            }
+
+            // The first sync of a mailbox with nothing kept yet; Go fills
+            // it with the loader.
+            StackPage {
+              name: "loading";
+
+              child: Box list_loading {
+                styles ["mail-list-loading"]
+                orientation: vertical;
+                valign: center;
+                halign: center;
+                spacing: 12;
               };
             }
 

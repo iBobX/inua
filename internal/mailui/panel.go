@@ -196,33 +196,126 @@ func (w *window) panelReply(c *mail.Conversation) {
 }
 
 func (w *window) panelSafety(c *mail.Conversation) {
+	sec := w.panelSection(i18n.T("IS IT SAFE?"))
+	// The newest message read that is not the user's own.
 	var k mail.Key
 	var rd *reading
 	for i := len(c.Messages) - 1; i >= 0; i-- {
-		kk := c.Messages[i].Key()
-		if r := w.reading[kk]; r != nil && r.m != nil && r.judged.Verdict != mail.Fine {
-			k, rd = kk, r
+		it := c.Messages[i]
+		if r := w.reading[it.Key()]; r != nil && r.m != nil && !w.mine(r.m.From.Addr) {
+			k, rd = it.Key(), r
 			break
 		}
 	}
 	if rd == nil {
+		w.panelNote(sec, i18n.T("Nothing to check: the messages read here are yours."))
 		return
 	}
-	sec := w.panelSection(i18n.T("IS IT SAFE?"))
+	j := rd.judged
+	verdictLine(sec, j.Verdict, i18n.T("inua's checks"))
+	drawChecks(sec, j)
+
+	ai := gtk.NewBox(gtk.OrientationVerticalValue, 8)
+	ai.AddCssClass("mail-safety-ai")
 	a := w.judged[k]
 	switch {
 	case a == nil:
-		w.panelNote(sec, i18n.T("The checks doubt this message. The assistant reads what they found and says what it makes of it."))
-		w.panelButton(sec, i18n.T("Ask the assistant"), func() { w.askJudge(k) })
+		w.panelNote(ai, i18n.T("AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."))
+		w.panelButton(ai, i18n.T("Ask AI"), func() { w.askJudge(k) })
 	case a.busy:
-		w.panelNote(sec, i18n.T("Thinking…")).AddCssClass("mail-ai-busy")
+		gtkx.Append(ai, &loader(i18n.T("AI is reading it…")).Widget)
 	case a.err != "":
-		w.panelError(sec, a.err)
-		w.panelLink(sec, i18n.T("Try again"), func() { w.askJudge(k) })
+		w.panelError(ai, a.err)
+		w.panelLink(ai, i18n.T("Try again"), func() { w.askJudge(k) })
+	case a.judge != nil:
+		verdictLine(ai, a.judge.Verdict, i18n.T("AI"))
+		for _, r := range a.judge.Reasons {
+			row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+			row.AddCssClass("mail-safety-reason")
+			dot := gtk.NewLabel("·")
+			dot.AddCssClass("mail-safety-dot")
+			dot.SetValign(gtk.AlignStartValue)
+			gtkx.Append(row, &dot.Widget)
+			l := gtk.NewLabel(r)
+			l.SetXalign(0)
+			l.SetWrap(true)
+			l.SetWrapMode(2)
+			l.SetMaxWidthChars(34)
+			gtkx.Append(row, &l.Widget)
+			gtkx.Append(ai, &row.Widget)
+		}
+		if a.judge.Advice != "" {
+			l := gtk.NewLabel(a.judge.Advice)
+			l.AddCssClass("mail-safety-advice")
+			l.SetXalign(0)
+			l.SetWrap(true)
+			l.SetWrapMode(2)
+			l.SetMaxWidthChars(34)
+			gtkx.Append(ai, &l.Widget)
+		}
+		w.panelLink(ai, i18n.T("Ask again"), func() { w.askJudge(k) })
 	default:
-		l := w.panelNote(sec, a.text)
-		l.AddCssClass("mail-assist-text")
+		w.panelNote(ai, a.text)
 	}
+	gtkx.Append(sec, &ai.Widget)
+}
+
+// verdictLine is a verdict as a coloured mark and its name, with who
+// gave it.
+func verdictLine(box *gtk.Box, v mail.Verdict, by string) {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	row.AddCssClass("mail-verdict")
+	row.AddCssClass(v.ID())
+	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	mark.AddCssClass("mark")
+	mark.AddCssClass(v.ID())
+	mark.SetValign(gtk.AlignCenterValue)
+	gtkx.Append(row, &mark.Widget)
+	name := gtk.NewLabel(v.Name())
+	name.AddCssClass("mail-verdict-name")
+	gtkx.Append(row, &name.Widget)
+	who := gtk.NewLabel(by)
+	who.AddCssClass("mail-verdict-by")
+	who.SetHexpand(true)
+	who.SetXalign(1)
+	who.SetEllipsize(3)
+	gtkx.Append(row, &who.Widget)
+	gtkx.Append(box, &row.Widget)
+}
+
+// drawChecks lists the checks: each its mark, its question and what it
+// found.
+func drawChecks(box *gtk.Box, j mail.Judgment) {
+	list := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	list.AddCssClass("mail-checks")
+	for _, s := range j.Steps {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		row.AddCssClass("mail-check")
+		m := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+		m.AddCssClass("mark")
+		if c := map[mail.Level]string{mail.LevelGood: "fine", mail.LevelWarn: "careful", mail.LevelBad: "suspicious"}[s.Level]; c != "" {
+			m.AddCssClass(c)
+		}
+		m.SetValign(gtk.AlignStartValue)
+		gtkx.Append(row, &m.Widget)
+		texts := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+		q := gtk.NewLabel(s.Check)
+		q.AddCssClass("mail-check-q")
+		q.SetXalign(0)
+		q.SetWrap(true)
+		q.SetMaxWidthChars(40)
+		gtkx.Append(texts, &q.Widget)
+		f := gtk.NewLabel(s.Found)
+		f.AddCssClass("mail-check-found")
+		f.SetXalign(0)
+		f.SetWrap(true)
+		f.SetWrapMode(2)
+		f.SetMaxWidthChars(40)
+		gtkx.Append(texts, &f.Widget)
+		gtkx.Append(row, &texts.Widget)
+		gtkx.Append(list, &row.Widget)
+	}
+	gtkx.Append(box, &list.Widget)
 }
 
 // draftQuick has the assistant write a reply from a line of what to say,

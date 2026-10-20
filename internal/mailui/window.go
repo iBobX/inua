@@ -67,6 +67,7 @@ type window struct {
 	top                                     gtk.Stack
 	side, filters, reader, welcomeBox       gtk.Box
 	readerBar, indexCol, assist             gtk.Box
+	listProgress, listLoading               gtk.Box
 	assistReveal                            gtk.Revealer
 	assistClose                             gtk.Button
 	statusMark, undoBar                     gtk.Box
@@ -172,7 +173,7 @@ func openWindow(c *appui.Ctx) *window {
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState, "reader_bar": &w.readerBar, "index_col": &w.indexCol, "assist": &w.assist, "assist_reveal": &w.assistReveal, "assist_close": &w.assistClose,
+		"status_state": &w.statusState, "reader_bar": &w.readerBar, "list_progress": &w.listProgress, "list_loading": &w.listLoading, "index_col": &w.indexCol, "assist": &w.assist, "assist_reveal": &w.assistReveal, "assist_close": &w.assistClose,
 		"sidebar_hide": &w.sidebarHide, "sidebar_show": &w.sidebarShow,
 		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
@@ -431,6 +432,10 @@ func (w *window) quit() {
 		c.save()
 	}
 	cleanOpened()
+	w.dropWebs(func(mail.Key) bool { return false })
+	// Mail ends with its window, whatever else is open: the composers'
+	// drafts are kept above.
+	w.h.later(0, func() { w.c.App.Quit() })
 }
 
 // --- the index ---
@@ -632,12 +637,12 @@ func (w *window) setView(v view) {
 		w.syncFilters()
 	}
 	w.drawSide()
-	w.refresh()
 	if v.kind == viewBox {
 		if x := w.acct(v.account); x != nil && !x.synced[v.mailbox] {
-			w.syncBox(x, v.mailbox)
+			w.syncBox(x, v.mailbox) // before the list is drawn: it shows the loading
 		}
 	}
+	w.refresh()
 	w.nearEnd()
 }
 
@@ -754,9 +759,15 @@ func (w *window) refresh() {
 			w.readerStack.SetVisibleChildName("empty")
 		}
 	}
+	loading, what := w.loadingView()
+	w.listProgress.SetVisible(loading && len(cs) > 0)
 	switch {
 	case len(cs) > 0:
 		w.listStack.SetVisibleChildName("list")
+	case loading:
+		gtkx.Clear(&w.listLoading)
+		gtkx.Append(&w.listLoading, &loader(i18n.Tf("Loading %s…", what)).Widget)
+		w.listStack.SetVisibleChildName("loading")
 	default:
 		w.listStack.SetVisibleChildName("empty")
 		w.listEmpty.SetText(w.emptyText())
@@ -766,6 +777,32 @@ func (w *window) refresh() {
 	}
 	w.nearEnd()
 	w.sideCounts()
+}
+
+// loadingView says whether what the list shows is still being fetched
+// the first time, and its name.
+func (w *window) loadingView() (bool, string) {
+	if w.query != "" {
+		return false, ""
+	}
+	if w.view.kind == viewBox {
+		x := w.acct(w.view.account)
+		if x == nil || x.synced[w.view.mailbox] || (x.syncing == 0 && !x.busy) || x.state != "" {
+			return false, ""
+		}
+		for _, b := range x.boxes {
+			if b.Name == w.view.mailbox {
+				return true, boxName(b)
+			}
+		}
+		return true, w.view.mailbox
+	}
+	for _, x := range w.accts {
+		if x.busy && x.state == "" {
+			return true, i18n.T("your mail")
+		}
+	}
+	return false, ""
 }
 
 func (w *window) emptyText() string {

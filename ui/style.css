@@ -3218,8 +3218,7 @@ window.mail button.mail-compose-button { border: 1px solid @accent; background: 
 window.mail button.mail-compose-button:hover { background: mix(@accent, @t0, 0.14); }
 /* The foot: the sync in words, and the settings. */
 window.mail .mail-index-foot {
-  min-height: 40px;
-  padding: 0 14px 0 22px;
+  padding: 10px 14px 12px 28px;
   border-top: 1px solid alpha(@line, 0.55);
 }
 window.mail .mail-status-mark { border-radius: 1px; }
@@ -3824,6 +3823,12 @@ window.mail-compose .error { color: @danger; }
 window.mail-compose .mail-compose-foot { padding: 12px 28px 16px; }
 /* Mail's menus (More, Polish), as Files' are: on the theme's panel, a
    hairline round them, the accent's tint under the pointer. */
+/* A popover is a surface of its own: the window's type is not passed on. */
+popover.mail-menu, .settings dropdown popover {
+  font-family: "Zen Kaku Gothic New", "Noto Sans CJK JP", "Noto Sans CJK SC", sans-serif;
+  font-size: 14px;
+  color: @t0;
+}
 window.mail popover.mail-menu > contents {
   padding: 4px;
   border: 1px solid @line;
@@ -3923,3 +3928,73 @@ window.mail button.mail-assist-idea {
 window.mail button.mail-assist-idea:hover { border-color: alpha(@accent, 0.45); background: alpha(@accent, 0.07); }
 window.mail button.mail-assist-idea:disabled { opacity: 0.5; }
 window.mail entry.mail-assist-say { min-height: 34px; }
+
+/* Mail's loader: three square marks lit in turn; a message's lines
+   pulsing under it; a line running under the filters. */
+@keyframes mail-lit { 0%, 100% { opacity: 0.18; } 40% { opacity: 1; } }
+@keyframes mail-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.8; } }
+window.mail .mail-loader-marks .mark {
+  min-width: 7px;
+  min-height: 7px;
+  border: none;
+  border-radius: 1px;
+  background: @accent;
+  animation: mail-lit 1.1s ease-in-out infinite;
+}
+window.mail .mail-loader-marks .mark.two { animation-delay: 180ms; }
+window.mail .mail-loader-marks .mark.three { animation-delay: 360ms; }
+window.mail .mail-loader-text {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: @t2;
+}
+window.mail .mail-skeleton { margin-top: 4px; }
+window.mail .mail-skeleton .mail-loader { margin-bottom: 4px; }
+window.mail .mail-skeleton-line {
+  min-height: 10px;
+  border-radius: 2px;
+  background: alpha(@line, 0.9);
+  animation: mail-pulse 1.4s ease-in-out infinite;
+}
+window.mail .mail-web.loading { min-height: 90px; background: alpha(@line, 0.25); }
+window.mail .mail-web.loading .mail-loader { margin: 36px 0 0; }
+window.mail .mail-progress {
+  min-height: 2px;
+  margin: 0 14px;
+  background: @accent;
+  animation: mail-pulse 1.1s ease-in-out infinite;
+}
+
+/* "Is it safe?": a verdict as its mark and name, the checks as rows, and
+   what AI made of it under a hairline. */
+window.mail .mail-verdict { min-height: 26px; }
+window.mail .mail-verdict .mark { min-width: 9px; min-height: 9px; border-radius: 1px; }
+window.mail .mail-verdict-name { font-size: 15px; font-weight: 600; color: @t0; }
+window.mail .mail-verdict.careful .mail-verdict-name { color: @warn; }
+window.mail .mail-verdict.suspicious .mail-verdict-name { color: @danger; }
+window.mail .mail-verdict-by {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: @t2;
+}
+window.mail .mail-checks { margin-top: 2px; }
+window.mail .mail-check { padding: 8px 0; border-top: 1px solid alpha(@line, 0.45); }
+window.mail .mail-check .mark { min-width: 7px; min-height: 7px; margin-top: 5px; border-radius: 1px; background: alpha(@t2, 0.5); border-color: transparent; }
+window.mail .mail-check .mark.fine { background: @ok; }
+window.mail .mail-check .mark.careful { background: @warn; }
+window.mail .mail-check .mark.suspicious { background: @danger; }
+window.mail .mail-check-q { font-size: 13px; color: @t0; }
+window.mail .mail-check-found { font-size: 12.5px; color: @t2; }
+window.mail .mail-warning .mail-checks { margin-left: 26px; }
+window.mail .mail-safety-ai { margin-top: 6px; padding-top: 12px; border-top: 1px solid alpha(@line, 0.7); }
+window.mail .mail-safety-reason { font-size: 13px; color: @t0; }
+window.mail .mail-safety-dot { min-width: 8px; color: @t2; font-weight: 700; }
+window.mail .mail-safety-advice {
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-left: 2px solid @accent;
+  background: alpha(@accent, 0.06);
+  font-size: 13px;
+  color: @t0;
+}

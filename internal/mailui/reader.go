@@ -167,6 +167,9 @@ func (w *window) drawReader() {
 	}
 	w.h.forget(w.readerBtns)
 	w.readerBtns = nil
+	for _, wm := range w.webs {
+		wm.frame = nil // cleared with the reader; made again below
+	}
 	gtkx.Clear(&w.reader)
 	w.drawBar(c)
 
@@ -351,25 +354,7 @@ func (w *window) drawWarning(c *mail.Conversation) {
 	gtkx.Append(line, &text.Widget)
 	gtkx.Append(box, &line.Widget)
 	if w.checks[k] {
-		steps := gtk.NewBox(gtk.OrientationVerticalValue, 4)
-		steps.AddCssClass("mail-steps")
-		for _, s := range j.Steps {
-			row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-			m := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-			m.AddCssClass("mark")
-			if c := map[mail.Level]string{mail.LevelGood: "fine", mail.LevelWarn: "careful", mail.LevelBad: "suspicious"}[s.Level]; c != "" {
-				m.AddCssClass(c)
-			}
-			m.SetValign(gtk.AlignStartValue)
-			gtkx.Append(row, &m.Widget)
-			l := gtk.NewLabel(s.Check + " " + s.Found)
-			l.AddCssClass("mail-step")
-			l.SetXalign(0)
-			l.SetWrap(true)
-			gtkx.Append(row, &l.Widget)
-			gtkx.Append(steps, &row.Widget)
-		}
-		gtkx.Append(box, &steps.Widget)
+		drawChecks(box, j)
 	}
 	chips := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	chips.AddCssClass("mail-chips")
@@ -382,7 +367,7 @@ func (w *window) drawWarning(c *mail.Conversation) {
 		w.chip(chips, "mail-mark-junk-symbolic", i18n.T("Move to Spam"), w.spam)
 	}
 	if a := w.judged[k]; a == nil || a.err != "" {
-		w.chip(chips, "applications-science-symbolic", i18n.T("Ask the assistant"), func() { w.openAssist(func() { w.askJudge(k) }) })
+		w.chip(chips, "applications-science-symbolic", i18n.T("Ask AI"), func() { w.openAssist(func() { w.askJudge(k) }) })
 	}
 	gtkx.Append(box, &chips.Widget)
 	gtkx.Append(&w.reader, &box.Widget)
@@ -530,10 +515,7 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 	}
 	switch {
 	case rd == nil || rd.loading:
-		l := gtk.NewLabel(i18n.T("Loading…"))
-		l.AddCssClass("mail-loading")
-		l.SetXalign(0)
-		gtkx.Append(box, &l.Widget)
+		gtkx.Append(box, &skeleton().Widget)
 	case rd.err != "":
 		e := gtk.NewLabel(rd.err)
 		e.AddCssClass("mail-error")

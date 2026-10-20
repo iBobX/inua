@@ -159,29 +159,64 @@ func ParseSearch(answer string) string {
 func JudgePrompt(facts, lang string) string {
 	return `Is this e-mail a phishing or scam attempt? The checks inua already did are listed with what they found.
 
-Answer on two lines. The first is exactly one word: FINE (an ordinary message), CAREFUL (something is off: the user should check before acting) or SUSPICIOUS (signs of phishing or fraud). The second is one short sentence saying why, in the language whose code is "` + langOr(lang) + `".
+Answer in exactly this form, nothing before or after it, the reasons and the advice in the language whose code is "` + langOr(lang) + `":
+
+VERDICT: FINE, CAREFUL or SUSPICIOUS (FINE: an ordinary message; CAREFUL: something is off, check before acting; SUSPICIOUS: signs of phishing or fraud)
+- a reason, one short line
+- another reason, if there is one (three at most)
+DO: one short line on what the reader should do
 
 ` + facts
 }
 
-// ParseJudge reads JudgePrompt's answer.
-func ParseJudge(answer string) (Verdict, string, bool) {
-	lines := strings.Split(strings.TrimSpace(answer), "\n")
-	if len(lines) == 0 {
-		return Fine, "", false
+// AIJudgment is the assistant's answer to JudgePrompt: its verdict, its
+// reasons and what it advises.
+type AIJudgment struct {
+	Verdict Verdict
+	Reasons []string
+	Advice  string
+}
+
+// ParseJudgment reads JudgePrompt's answer; an answer in another form
+// still gives its verdict when its first words name one, and its other
+// lines as reasons.
+func ParseJudgment(answer string) (AIJudgment, bool) {
+	var j AIJudgment
+	found := false
+	for _, line := range strings.Split(strings.TrimSpace(answer), "\n") {
+		line = strings.TrimSpace(line)
+		plain := strings.ToUpper(strings.Trim(line, "*_` "))
+		switch {
+		case line == "":
+		case !found && verdictWord(plain) >= 0:
+			j.Verdict, found = Verdict(verdictWord(plain)), true
+		case strings.HasPrefix(plain, "DO:"):
+			j.Advice = strings.TrimSpace(strings.Trim(line, "*_` ")[3:])
+		case strings.HasPrefix(line, "-") || strings.HasPrefix(line, "•") || strings.HasPrefix(line, "*"):
+			if r := strings.TrimSpace(strings.TrimLeft(line, "-•* ")); r != "" {
+				j.Reasons = append(j.Reasons, r)
+			}
+		case found:
+			j.Reasons = append(j.Reasons, line)
+		}
 	}
-	word := strings.ToUpper(strings.Trim(strings.TrimSpace(lines[0]), "*.:` "))
-	why := ""
-	if len(lines) > 1 {
-		why = strings.TrimSpace(strings.Join(lines[1:], " "))
+	if len(j.Reasons) > 3 {
+		j.Reasons = j.Reasons[:3]
 	}
+	return j, found
+}
+
+// verdictWord is the verdict a line names first ("VERDICT: SUSPICIOUS",
+// "**Suspicious**"), or -1.
+func verdictWord(line string) int {
+	line = strings.TrimSpace(strings.TrimPrefix(line, "VERDICT:"))
 	switch {
-	case strings.HasPrefix(word, "FINE"):
-		return Fine, why, true
-	case strings.HasPrefix(word, "CAREFUL"):
-		return Careful, why, true
-	case strings.HasPrefix(word, "SUSPICIOUS"):
-		return Suspicious, why, true
+	case strings.HasPrefix(line, "FINE"):
+		return int(Fine)
+	case strings.HasPrefix(line, "CAREFUL"):
+		return int(Careful)
+	case strings.HasPrefix(line, "SUSPICIOUS"):
+		return int(Suspicious)
 	}
-	return Fine, "", false
+	return -1
 }

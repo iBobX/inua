@@ -785,11 +785,15 @@ func TestAnswers(t *testing.T) {
 	if got := ParseSearch("```\nfrom:hetzner invoice after:2026-09-01\n```"); got != "from:hetzner invoice after:2026-09-01" {
 		t.Fatalf("search %q", got)
 	}
-	if v, why, ok := ParseJudge("**SUSPICIOUS**\nThe link goes elsewhere."); v != Suspicious || why != "The link goes elsewhere." || !ok {
-		t.Fatalf("judge %v %q %v", v, why, ok)
+	if j, ok := ParseJudgment("**SUSPICIOUS**\nThe link goes elsewhere."); j.Verdict != Suspicious || len(j.Reasons) != 1 || j.Reasons[0] != "The link goes elsewhere." || !ok {
+		t.Errorf("an answer in another form: %+v", j)
 	}
-	if _, _, ok := ParseJudge("maybe"); ok {
-		t.Fatal("judge took a non-answer")
+	j, ok := ParseJudgment("VERDICT: CAREFUL\n- Reply-To is another domain.\n- The link text names a bank.\nDO: Check with the sender another way.")
+	if !ok || j.Verdict != Careful || len(j.Reasons) != 2 || j.Advice != "Check with the sender another way." {
+		t.Errorf("the asked form: %+v", j)
+	}
+	if _, ok := ParseJudgment("maybe"); ok {
+		t.Error("no verdict read as one")
 	}
 	p := SummaryPrompt([]Said{{From: Address{Name: "Ana", Addr: "a@x"}, Text: "Numbers by Friday?"}}, "me@x", time.Date(2026, 10, 19, 0, 0, 0, 0, time.UTC), "ja")
 	if !strings.Contains(p, "Numbers by Friday?") || !strings.Contains(p, `"ja"`) || !strings.Contains(p, "Monday 19 October 2026") {
