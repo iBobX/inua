@@ -1,9 +1,8 @@
-// Package vm contains toolkit-free Windows virtual machine configuration,
-// host recommendations, and backend contracts.
+// Package vm contains toolkit-free machine configuration, host
+// recommendations, and the backends that run a guest.
 package vm
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,6 +21,7 @@ const (
 	MinMemoryMiB     = 2048
 	MinCPUs          = 1
 	MinDiskGiB       = 32
+	ConfigFileName   = "windows-vm.json"
 	// GuestUser is the Windows account Dockur creates. Connect uses it.
 	GuestUser = "Inua"
 )
@@ -228,42 +228,13 @@ func DetectHost(root string) Host {
 			}
 		}
 	}
-	// The free space is where the guest's disk goes, which is often not the
-	// filesystem of /var: a home on a partition of its own, say.
-	return Host{MemoryBytes: mem, CPUs: runtime.NumCPU(), FreeDiskBytes: freeSpace(filepath.Join(root, DefaultDataDir())), OS: runtime.GOOS}
+	return Host{MemoryBytes: mem, CPUs: runtime.NumCPU(), FreeDiskBytes: freeSpace(filepath.Join(root, "var")), OS: runtime.GOOS}
 }
 
-// freeSpace is what this user may still write on the filesystem that holds
-// path, or would hold it before it exists: its nearest folder's. Blocks
-// kept for root are not counted.
 func freeSpace(path string) uint64 {
-	for {
-		var stat unix.Statfs_t
-		if err := unix.Statfs(path, &stat); err == nil {
-			return stat.Bavail * uint64(stat.Bsize)
-		}
-		parent := filepath.Dir(path)
-		if parent == path {
-			return 0
-		}
-		path = parent
+	var stat unix.Statfs_t
+	if err := unix.Statfs(path, &stat); err != nil {
+		return 0
 	}
-}
-
-// Backend is the lifecycle boundary implemented by the Docker/Dockur backend;
-// capability detection lives in DetectPlatform.
-type Backend interface {
-	Install(context.Context, Config) error
-	State(context.Context) (State, error)
-	Start(context.Context) error
-	Stop(context.Context) error
-	Connect(context.Context) (Connection, error)
-	Console(context.Context) (string, error)
-	Remove(context.Context) error
-}
-
-// Connection describes the local RDP endpoint of a running VM.
-type Connection struct {
-	Address string
-	Port    int
+	return stat.Bfree * uint64(stat.Bsize)
 }
