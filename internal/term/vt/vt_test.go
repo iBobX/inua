@@ -745,3 +745,28 @@ func TestPalette(t *testing.T) {
 		t.Errorf("bright red is %06x (%+v)", r.FG, f.Lines[0].Runs)
 	}
 }
+
+// The library is found where a release puts it: beside the programs'
+// folder once installed (../lib/inua), and in lib/inua when its archive
+// is unpacked and run where it is.
+func TestPaths(t *testing.T) {
+	exe, err := os.Executable()
+	if err != nil {
+		t.Skip(err)
+	}
+	dir := filepath.Dir(exe)
+	paths := Paths()
+	for _, want := range []string{
+		filepath.Join(dir, Library),
+		filepath.Join(dir, "..", "lib", "inua", Library),
+		filepath.Join(dir, "lib", "inua", Library),
+	} {
+		found := false
+		for _, p := range paths {
+			found = found || p == want
+		}
+		if !found {
+			t.Errorf("%s is not looked in: %q", want, paths)
+		}
+	}
+}
