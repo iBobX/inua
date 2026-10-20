@@ -52,6 +52,8 @@ type Host struct {
 	// ShellDir holds the shell integration's scripts (shellint); "" for
 	// none.
 	ShellDir string
+	// shellProg is the shell new panes start, "" for $SHELL (SetShell).
+	shellProg string
 	// Agents are the manifests panes' agents are known by; nil follows
 	// none. Notify posts notifications for agents that need the user.
 	Agents *agent.Set
@@ -59,21 +61,21 @@ type Host struct {
 	// Raise brings a window up after a notification's Show; nil runs
 	// inua-term again, which raises the one open or opens one.
 	Raise func()
-	// Hooks adds inua-term's hooks to an agent's settings the first time
-	// one is seen, through Hook (the type); nil adds none.
-	Hook   func(agentType string)
-	hooked map[string]bool
-	notes  notifier
+	notes notifier
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string
 	forget       []string
 	keepCommands bool
 	saveTimer    *time.Timer
-	next         int
-	clients      map[*client]bool
-	closed       bool
-	done         chan struct{}
+	// waiting are the kept sessions whose folders are not there yet;
+	// waitIDs numbers their panes, below zero.
+	waiting []waitingSession
+	waitIDs int
+	next    int
+	clients map[*client]bool
+	closed  bool
+	done    chan struct{}
 }
 
 // pane is a program on a PTY, with the host's own engine for its state.
@@ -111,7 +113,9 @@ type client struct {
 	conn   net.Conn
 	active bool          // its window is the active one
 	out    chan [][]byte // frames: kind byte first, then payload parts
-	once   sync.Once
+	// mu guards out's closing: a frame is not sent to a closed queue.
+	mu     sync.Mutex
+	closed bool
 }
 
 // Listen makes a host on the socket at path: its folder is made private
@@ -209,7 +213,7 @@ func (h *Host) serveConn(conn net.Conn) {
 		writeMessage(conn, Message{Type: MsgReply, Error: fmt.Sprintf("protocol %d, the host speaks %d", hello.Version, Version)})
 		return
 	}
-	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version}); err != nil {
+	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version, Sizes: true}); err != nil {
 		return
 	}
 	h.mu.Lock()
@@ -259,14 +263,19 @@ func (c *client) write() {
 	}
 }
 
-// send queues a frame; a client too far behind is let go.
+// send queues a frame; a client too far behind is let go, and one gone
+// gets nothing.
 func (c *client) send(kind byte, payload ...[]byte) {
 	f := append([][]byte{{kind}}, payload...)
-	defer func() { recover() }() // the queue closed under us: the client is gone
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.closed {
+		return
+	}
 	select {
 	case c.out <- f:
 	default:
-		c.close()
+		c.closeLocked(true)
 	}
 }
 
@@ -279,15 +288,29 @@ func (c *client) message(m Message) {
 
 // close drops the client now.
 func (c *client) close() {
-	c.once.Do(func() {
-		c.conn.Close()
-		close(c.out)
-	})
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.closeLocked(true)
 }
 
 // finish lets the client's writer send what is queued, then close.
 func (c *client) finish() {
-	c.once.Do(func() { close(c.out) })
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.closeLocked(false)
+}
+
+// closeLocked closes the queue once, and the connection now with conn;
+// c.mu is held.
+func (c *client) closeLocked(conn bool) {
+	if c.closed {
+		return
+	}
+	c.closed = true
+	if conn {
+		c.conn.Close()
+	}
+	close(c.out)
 }
 
 // drop forgets a client that went away.
@@ -331,6 +354,17 @@ func (h *Host) handle(c *client, m Message) {
 			return
 		}
 		h.setColors(*m.Colors)
+	case MsgShell:
+		program := ""
+		if len(m.Argv) > 0 {
+			program = m.Argv[0]
+		}
+		h.SetShell(program)
+	case MsgQuit:
+		// The reply goes out, then the host keeps its sessions and ends.
+		c.message(reply)
+		go h.Close()
+		return
 	case MsgCreate:
 		id, err := h.create(m)
 		if err != nil {
@@ -394,7 +428,7 @@ func (h *Host) list() []PaneInfo {
 		})
 		if m := p.agent.m; m != nil {
 			i := &infos[len(infos)-1]
-			i.AgentName, i.Icon, i.Since = m.Name, m.Icon, p.agent.t.Since.UnixMilli()
+			i.AgentName, i.Icon, i.Color, i.Since = m.Name, m.Icon, m.Color, p.agent.t.Since.UnixMilli()
 			if p.agent.title != "" {
 				i.Title = p.agent.title
 			}
@@ -515,6 +549,32 @@ func (h *Host) read(p *pane) {
 	p.exited, p.code = true, code
 	p.mu.Unlock()
 	h.tell(Message{Type: MsgEvent, Pane: p.id, Code: &code})
+	h.closeExited(p, code)
+}
+
+// exitGrace is how long a pane its program left by a signal waits before
+// it closes: a logout hangs the shells up as it ends the host, and the
+// host keeps their sessions first.
+var exitGrace = time.Second
+
+// closeExited closes a session's pane once its program ended, as a
+// terminal's split closes; the layout closes up, a session without panes
+// goes, and the host ends with its last pane when it should. A pane
+// outside the sessions (Create) stays, exited, for its client.
+func (h *Host) closeExited(p *pane, code int) {
+	if code < 0 {
+		time.Sleep(exitGrace)
+	}
+	h.mu.Lock()
+	s, _ := h.m.PaneSession(p.id)
+	if h.closed || s == nil {
+		h.mu.Unlock()
+		return
+	}
+	h.m.RemovePane(p.id)
+	h.mu.Unlock()
+	h.publish()
+	h.endPanes([]int{p.id})
 }
 
 // output keeps, feeds and sends what the program wrote, and tells the
@@ -583,6 +643,10 @@ func (p *pane) folder() string {
 func (p *pane) attach(c *client) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	// Its size first: the client's engine takes it before the replay.
+	if p.cols > 0 && p.rows > 0 {
+		c.message(Message{Type: MsgEvent, Pane: p.id, Cols: p.cols, Rows: p.rows})
+	}
 	if len(p.replay) > 0 {
 		c.send(frameOutput, paneBytes(p.id, append([]byte(nil), p.replay...))...)
 	}
@@ -607,6 +671,10 @@ func (p *pane) resize(cols, rows, cellW, cellH int) error {
 			p.term.SetCellSize(cellW, cellH)
 		}
 	}
+	// The clients' engines take the size here, between the output before
+	// and the output after, as this one did: the program's output on its
+	// way, meant for the old size, reaches them at the old size.
+	p.broadcast(Message{Type: MsgEvent, Pane: p.id, Cols: cols, Rows: rows})
 	if p.exited {
 		return nil
 	}

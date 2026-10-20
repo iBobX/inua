@@ -13,14 +13,17 @@ import (
 	"github.com/lyricat/inua/internal/term/layout"
 )
 
-// inua-term's own keys are Ctrl+Shift chords (section 7); everything else
+// inua-term's own keys are Ghostty's (docs/terminal.md): a workspace is
+// Ghostty's window, a session its tab, a pane its split; everything else
 // goes to the program. A chord is matched by its key without Shift (base),
 // so Ctrl+Shift+1 is "1" whatever Shift makes of it on the layout.
 
 // chord does the window's action for a chord of the settings' keys
-// (term.toml [keys]), or the fixed ones: Ctrl+Shift with an arrow moves
-// the focus, with Alt too resizes, and an arrow after the swap key swaps.
-// false leaves the key to the pane.
+// (term.toml [keys]), or the fixed ones: Ctrl+Alt with an arrow moves the
+// focus, Ctrl+Shift+Super with one resizes, an arrow after the swap key
+// swaps; Alt+1…9 shows a session, Ctrl+Shift+1…9 a workspace, and
+// Ctrl+PgUp and PgDn step through the sessions. false leaves the key to
+// the pane.
 func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bool {
 	held := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
 	if a.swapping {
@@ -30,17 +33,26 @@ func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bo
 			return true
 		}
 	}
-	cs := gdk.ControlMaskValue | gdk.ShiftMaskValue
 	if d, ok := arrow(keyval); ok {
 		switch held {
-		case cs:
+		case gdk.ControlMaskValue | gdk.AltMaskValue:
 			a.layoutOp(host.OpFocus, host.Message{Direction: int(d)})
 			return true
-		case cs | gdk.AltMaskValue:
+		case gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.SuperMaskValue:
 			a.layoutOp(host.OpResize, host.Message{Direction: int(d), Step: 0.05})
 			return true
 		}
 		return false
+	}
+	if held == gdk.ControlMaskValue {
+		switch int32(keyval) {
+		case gdk.KEY_Page_Up, gdk.KEY_KP_Page_Up:
+			a.stepSession(-1)
+			return true
+		case gdk.KEY_Page_Down, gdk.KEY_KP_Page_Down:
+			a.stepSession(1)
+			return true
+		}
 	}
 	if a.nthChord(base, held) {
 		return true
@@ -50,6 +62,29 @@ func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bo
 		return false
 	}
 	return a.do(action, p)
+}
+
+// windowKeys takes the window's chords where no pane has the keys: a
+// workspace without panes, the columns. A pane's keys reach it first.
+func (a *App) windowKeys() {
+	loadGObject()
+	keys := gtk.NewEventControllerKey()
+	a.onWindowKey = func(c gtk.EventControllerKey, keyval, keycode uint32, state gdk.ModifierType) bool {
+		if a.sheet != nil {
+			return false
+		}
+		var layout uint32
+		if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
+			layout = gdk.KeyEventNewFromInternalPtr(ev).GetLayout()
+		}
+		var base uint32
+		if !a.win.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
+			base = keyval
+		}
+		return a.chord(nil, base, keyval, state)
+	}
+	keys.ConnectKeyPressed(&a.onWindowKey)
+	a.win.AddController(&keys.EventController)
 }
 
 // chordName is a key as term.toml writes it: "ctrl+shift+t".
@@ -113,7 +148,7 @@ func (a *App) do(action string, p *termPane) bool {
 	case "fold_sessions":
 		a.toggleColumn(1)
 	case "rename":
-		a.renameSession()
+		a.renameSession(0)
 	case "font_larger":
 		a.zoomFont(1)
 	case "font_smaller":
@@ -126,6 +161,8 @@ func (a *App) do(action string, p *termPane) bool {
 		a.showKeys()
 	case "settings":
 		a.openSettings()
+	case "restart_host":
+		a.restartHost()
 	case "copy_mode":
 		if p == nil {
 			return false
@@ -152,13 +189,21 @@ func (a *App) do(action string, p *termPane) bool {
 	return true
 }
 
-// nth workspaces: Ctrl+Shift+1…9, fixed.
+// nthChord shows the nth session (Alt+1…9, Ghostty's tabs) or workspace
+// (Ctrl+Shift+1…9); fixed.
 func (a *App) nthChord(base uint32, held gdk.ModifierType) bool {
 	k := rune(gdk.KeyvalToUnicode(base))
-	if held != gdk.ControlMaskValue|gdk.ShiftMaskValue || k < '1' || k > '9' {
+	if k < '1' || k > '9' {
 		return false
 	}
-	a.nthWorkspace(int(k - '1'))
+	switch held {
+	case gdk.AltMaskValue:
+		a.nthSession(int(k - '1'))
+	case gdk.ControlMaskValue | gdk.ShiftMaskValue:
+		a.nthWorkspace(int(k - '1'))
+	default:
+		return false
+	}
 	return true
 }
 
@@ -283,6 +328,22 @@ func (a *App) nthWorkspace(i int) {
 	a.showWorkspace(a.state.Model.Workspaces[i].ID)
 }
 
+// nthSession shows the shown workspace's session at place i; Alt+9 is
+// the last, as Ghostty's last tab.
+func (a *App) nthSession(i int) {
+	w := a.shownWorkspace()
+	if w == nil || len(w.Sessions) == 0 {
+		return
+	}
+	if i == 8 {
+		i = len(w.Sessions) - 1
+	}
+	if i >= len(w.Sessions) {
+		return
+	}
+	a.showSession(w.ID, w.Sessions[i].ID)
+}
+
 // stepSession shows the previous (-1) or next session of the workspace.
 func (a *App) stepSession(dir int) {
 	w := a.shownWorkspace()
@@ -299,25 +360,39 @@ func (a *App) stepSession(dir int) {
 	a.showSession(w.ID, w.Sessions[i].ID)
 }
 
-// renameSession asks for the shown session's new name, in a sheet over
-// column 3.
-func (a *App) renameSession() {
+// renameSession asks for a session's new name (0: the shown one's).
+func (a *App) renameSession(id int) {
 	s := a.shown()
-	if s == nil || a.sheet != nil {
+	if id != 0 && a.state != nil {
+		s, _ = a.state.Model.Session(id)
+	}
+	if s == nil {
 		return
 	}
 	session := s.ID
+	a.renameSheet(i18n.T("Rename the session"), s.Name, func(c *host.Client, name string) error {
+		return c.Rename(0, session, name)
+	})
+}
+
+// renameSheet asks for a new name over the window, name in it to start
+// with; Enter or Rename gives it to rename, Escape or Cancel keeps the
+// old one.
+func (a *App) renameSheet(title, name string, rename func(c *host.Client, name string) error) {
+	if a.sheet != nil {
+		return
+	}
 	sheet := gtk.NewBox(gtk.OrientationVerticalValue, 10)
 	sheet.AddCssClass("term-sheet")
 	sheet.SetHalign(gtk.AlignCenterValue)
 	sheet.SetValign(gtk.AlignCenterValue)
 	sheet.SetSizeRequest(360, -1)
-	title := gtk.NewLabel(i18n.T("Rename the session"))
-	title.AddCssClass("term-sheet-title")
-	title.SetXalign(0)
-	sheet.Append(&title.Widget)
+	t := gtk.NewLabel(title)
+	t.AddCssClass("term-sheet-title")
+	t.SetXalign(0)
+	sheet.Append(&t.Widget)
 	entry := gtk.NewEntry()
-	entry.SetText(s.Name)
+	entry.SetText(name)
 	sheet.Append(&entry.Widget)
 	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	buttons.SetHalign(gtk.AlignEndValue)
@@ -328,15 +403,17 @@ func (a *App) renameSession() {
 	buttons.Append(&cancel.Widget)
 	buttons.Append(&ok.Widget)
 	sheet.Append(&buttons.Widget)
-	done := func(rename bool) {
+	done := func(ok bool) {
 		name := entry.GetText()
-		a.stage.RemoveOverlay(&sheet.Widget)
+		a.sheets.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
-		if t := a.tiles[s.Focus]; t != nil {
-			t.pane.widget.GrabFocus()
+		if shown := a.shown(); shown != nil {
+			if t := a.tiles[shown.Focus]; t != nil {
+				t.pane.widget.GrabFocus()
+			}
 		}
-		if rename && name != "" {
-			a.ask("rename", func(c *host.Client) error { return c.Rename(0, session, name) })
+		if ok && name != "" {
+			a.ask("rename", func(c *host.Client) error { return rename(c, name) })
 		}
 	}
 	a.onRenameOK = func(gtk.Button) { done(true) }
@@ -356,7 +433,7 @@ func (a *App) renameSession() {
 	keys.ConnectKeyPressed(&a.onRenameKey)
 	sheet.AddController(&keys.EventController)
 	a.sheet = sheet
-	a.stage.AddOverlay(&sheet.Widget)
+	a.sheets.AddOverlay(&sheet.Widget)
 	entry.GrabFocus()
 	entry.SelectRegion(0, -1)
 }

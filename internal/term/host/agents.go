@@ -1,18 +1,23 @@
 package host
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/godbus/dbus/v5"
+	"golang.org/x/sys/unix"
 
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/vt"
@@ -110,7 +115,6 @@ func (h *Host) checkProcess(p *pane) bool {
 		a.m, a.title = m, ""
 		a.t = agent.Tracker{Type: m.Type, State: agent.Idle, Since: time.Now()}
 		h.readScreenLater(p)
-		go h.hook(m.Type)
 		return true
 	}
 	return true
@@ -120,7 +124,7 @@ func (h *Host) checkProcess(p *pane) bool {
 // from now, once for any output until then. p.mu is held.
 func (h *Host) readScreenLater(p *pane) {
 	a := &p.agent
-	if a.m == nil || a.timer != nil || a.t.Reported {
+	if a.m == nil || a.timer != nil || (a.t.Reported && len(a.m.States) == 0) {
 		return
 	}
 	a.timer = time.AfterFunc(screenDelay, func() {
@@ -145,6 +149,15 @@ func (h *Host) readScreen(p *pane) (bool, *note) {
 		return false, nil
 	}
 	state, ask := a.m.State(p.term.Tail(p.rows))
+	if a.t.Reported && state == "" {
+		// An agent that reports says what it does; its screen adds what
+		// its reports leave out (Claude Code's hooks say nothing of a
+		// question it asks), and a question gone was answered.
+		if a.t.State != agent.Blocked {
+			return false, nil
+		}
+		state = agent.Working
+	}
 	if state == "" {
 		state = agent.Idle
 		if _, spinning := agent.Title(p.title); spinning && strings.ContainsFunc(p.title, func(r rune) bool { return r >= 0x2800 && r <= 0x28ff }) {
@@ -227,11 +240,18 @@ func (h *Host) programNotes(p *pane, ns []vt.Notification) {
 }
 
 // report is an agent saying what it does, through its hooks or
-// `inua-term report`: its screen is not read for state after that.
-func (h *Host) report(m Message) error {
+// `inua-term report`: its screen is not read for state after that. Only
+// a process running in the pane (from, the reporter, whose controlling
+// terminal is the pane's) may: Codex runs its notify from a daemon that
+// left the pane it started in and keeps that pane's INUA_TERM_PANE, so
+// the turns of every Codex anywhere came to that pane.
+func (h *Host) report(m Message, from int) error {
 	p := h.pane(m.Pane)
 	if p == nil {
 		return fmt.Errorf("no pane %d", m.Pane)
+	}
+	if from <= 0 || !p.pty.Controls(from) {
+		return fmt.Errorf("pane %d: the reporter does not run in it", m.Pane)
 	}
 	s := agent.State(m.AgentState)
 	switch s {
@@ -309,25 +329,6 @@ func (h *Host) looking(id int) bool {
 	return active && s != nil && s.Focus == id
 }
 
-// hook has an agent's hooks added once a host's life.
-func (h *Host) hook(t string) {
-	h.mu.Lock()
-	if h.Hook == nil || h.hooked[t] {
-		h.mu.Unlock()
-		return
-	}
-	if h.hooked == nil {
-		h.hooked = map[string]bool{}
-	}
-	h.hooked[t] = true
-	f := h.Hook
-	h.mu.Unlock()
-	f(t)
-}
-
-// Announce posts a notification of the host's own (hooks it added).
-func (h *Host) Announce(summary, body string) { h.notify(note{summary: summary, body: body}) }
-
 // procArgs is a process's argument list.
 func procArgs(pid int) []string {
 	b, err := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/cmdline")
@@ -404,7 +405,7 @@ func (h *Host) notify(n note) {
 	err := nf.conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications").Call(
 		"org.freedesktop.Notifications.Notify", 0,
 		"inua-term", uint32(0), "utilities-terminal", summary, body,
-		[]string{"default", i18n.T("Show")}, map[string]dbus.Variant{"desktop-entry": dbus.MakeVariant("io.github.lyricat.Inua.Term")}, int32(-1),
+		[]string{"default", i18n.T("Show")}, map[string]dbus.Variant{"desktop-entry": dbus.MakeVariant(appID)}, int32(-1),
 	).Store(&id)
 	if err != nil {
 		log.Printf("host: notify: %v", err)
@@ -415,8 +416,12 @@ func (h *Host) notify(n note) {
 	nf.mu.Unlock()
 }
 
+// appID is the window's: its desktop entry and its Hyprland class.
+const appID = "io.github.lyricat.Inua.Term"
+
 // showPane shows a pane's session with the pane focused, and brings a
-// window up: inua-term again, which raises the one open or opens one.
+// window up: the one open, focused on its own workspace, else a new one
+// (inua-term again).
 func (h *Host) showPane(id int) {
 	h.mu.Lock()
 	s, w := h.m.PaneSession(id)
@@ -434,10 +439,40 @@ func (h *Host) showPane(id int) {
 		h.Raise()
 		return
 	}
+	// Started again, the window would come to the workspace shown, as
+	// it does from the dock; from a notification it is gone to instead.
+	if paths, err := hypr.PathsFromEnv(); err == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		err = hypr.NewClient(paths).Focus(ctx, "class:^("+regexp.QuoteMeta(appID)+")$")
+		cancel()
+		if err == nil {
+			return
+		}
+	}
 	if exe, err := os.Executable(); err == nil {
 		cmd := exec.Command(exe)
 		if err := cmd.Start(); err == nil {
 			go cmd.Wait()
 		}
 	}
+}
+
+// peerPid is the process at the other end of a Unix socket, 0 when it
+// cannot be told.
+func peerPid(conn net.Conn) int {
+	uc, ok := conn.(*net.UnixConn)
+	if !ok {
+		return 0
+	}
+	raw, err := uc.SyscallConn()
+	if err != nil {
+		return 0
+	}
+	pid := 0
+	raw.Control(func(fd uintptr) {
+		if cred, err := unix.GetsockoptUcred(int(fd), unix.SOL_SOCKET, unix.SO_PEERCRED); err == nil {
+			pid = int(cred.Pid)
+		}
+	})
+	return pid
 }

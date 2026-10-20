@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -35,6 +36,7 @@ type Manifest struct {
 	Type    string   `toml:"type"`
 	Name    string   `toml:"name"`
 	Icon    string   `toml:"icon"`    // ui/icons/ICON-symbolic.svg; "" for the terminal's
+	Color   string   `toml:"color"`   // its mark's colour, "#rrggbb"; "" for the theme's
 	Process []string `toml:"process"` // its program's names
 	Resume  string   `toml:"resume"`  // the command that continues where it was
 	States  []Rule   `toml:"state"`
@@ -113,6 +115,9 @@ func (s *Set) add(name string, b []byte) error {
 		if m.Name == "" {
 			m.Name = m.Type
 		}
+		if m.Color != "" && !colorRe.MatchString(m.Color) {
+			return fmt.Errorf("%s: %s: color %q: want #rrggbb", name, m.Type, m.Color)
+		}
 		if i := slices.IndexFunc(s.list, func(o Manifest) bool { return o.Type == m.Type }); i >= 0 {
 			s.list[i] = m
 		} else {
@@ -121,6 +126,8 @@ func (s *Set) add(name string, b []byte) error {
 	}
 	return nil
 }
+
+var colorRe = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
 
 // ByType is the manifest of a type, nil for none.
 func (s *Set) ByType(t string) *Manifest {
@@ -185,15 +192,28 @@ func (m *Manifest) State(screen []string) (State, string) {
 		if n <= 0 || n > len(screen) {
 			n = len(screen)
 		}
-		for _, line := range screen[len(screen)-n:] {
+		rows := screen[len(screen)-n:]
+		for i, line := range rows {
 			for _, a := range r.Any {
 				if strings.Contains(line, a) {
-					return r.State, ask(line)
+					return r.State, question(rows[:i+1])
 				}
 			}
 		}
 	}
 	return "", ""
+}
+
+// question is what a screen asks, its last row matching a rule: the
+// nearest row up to it ending in "?" (the question over a picker's
+// choices and keys), else that row.
+func question(rows []string) string {
+	for i := len(rows) - 1; i >= 0; i-- {
+		if q := ask(rows[i]); strings.HasSuffix(q, "?") {
+			return q
+		}
+	}
+	return ask(rows[len(rows)-1])
 }
 
 // ask is a screen line as the question it asks: without a box's borders
@@ -224,8 +244,8 @@ type Tracker struct {
 	State State
 	Since time.Time
 	Ask   string // what a blocked agent asks
-	// Reported is set while the agent's own hooks report its state: the
-	// screen is not read then.
+	// Reported is set while the agent reports its state: its screen only
+	// adds the questions it asks.
 	Reported bool
 }
 

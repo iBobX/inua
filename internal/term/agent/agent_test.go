@@ -27,6 +27,9 @@ func TestDetect(t *testing.T) {
 		{[]string{"node", "/usr/lib/node_modules/.bin/codex", "--full-auto"}, "", "codex"},
 		{[]string{"python3", "-m", "aider"}, "", "aider"}, // python -m aider runs aider
 		{[]string{"cursor-agent"}, "", "cursor"},
+		{[]string{"/usr/bin/opencode", "--continue"}, "", "opencode"},
+		{[]string{"node", "/usr/local/bin/pi"}, "", "pi"},
+		{[]string{"mistermorph", "chat"}, "", "mistermorph"},
 		{[]string{"vim", "claude"}, "", ""},
 		{[]string{"bash"}, "", ""},
 		{[]string{"bash"}, "mybot", "mybot"},
@@ -56,6 +59,39 @@ func TestScreenState(t *testing.T) {
 	if st, _ := m.State([]string{"> ", ""}); st != "" {
 		t.Errorf("prompt: %q", st)
 	}
+	// A question of AskUserQuestion's: the question shows, not the keys.
+	picker := []string{"☐ Layout  ☐ Keys  ✔ Submit", "", "Which layout should the guide use?", "", "› 1. Steps", "     One step at a time", "  2. One page", "  3. Type something.", "", "Enter to select · ↑/↓ to navigate · Esc to cancel", "", "  ? for shortcuts"}
+	if st, ask := m.State(picker); st != Blocked || ask != "Which layout should the guide use?" {
+		t.Errorf("question: %q %q", st, ask)
+	}
+}
+
+// The screens below are as opencode, pi and Mister Morph draw them.
+func TestScreenStateOthers(t *testing.T) {
+	s := load(t, "")
+	for _, c := range []struct {
+		agent  string
+		screen []string
+		want   State
+		ask    string
+	}{
+		{"opencode", []string{"  Read main.go", "", "┃ Fix the tests", "┃", "┃ Build  claude-sonnet", "", " ⣾ esc interrupt          ~/src/app"}, Working, ""},
+		{"opencode", []string{" ⣾ esc again to interrupt"}, Working, ""},
+		{"opencode", []string{"△ Permission required", "  # rm -rf build", "", "Allow once  Allow always  Reject", "⇆ select  enter confirm"}, Blocked, "△ Permission required"},
+		{"opencode", []string{"┃ ", "", " Build  claude-sonnet   ~/src/app"}, "", ""},
+		{"pi", []string{"Reading main.go", "", "⠼ Working", "", "─────────", "> ", "─────────", "~/src/app", "↑12k ↓3k $0.04"}, Working, ""},
+		{"pi", []string{"──── ⠋ Working ────", "> ", "─────────", "~/src/app"}, Working, ""},
+		{"pi", []string{"─────────", "", " Trust this folder?", "", "→ Yes", "  No", "", " ↑↓ navigate  enter select  esc cancel", "", "─────────"}, Blocked, "Trust this folder?"},
+		{"pi", []string{"Working tree clean.", "─────────", "> ", "─────────", "~/src/app"}, "", ""},
+		{"mistermorph", []string{"", "⠙ Running · waiting for model · 4s", "", "> ", "", "  Enter steer · Ctrl+J newline · Esc/Ctrl+C stop"}, Working, ""},
+		{"mistermorph", []string{"", "! Approval · bash", "  $ rm -rf build", "", "  y approve · n deny · Esc stop"}, Blocked, "! Approval · bash"},
+		{"mistermorph", []string{"✓ bash · ls", "", "> ", "", "gpt-5 · app · ctx 3%     Ctrl+J newline · / commands"}, "", ""},
+	} {
+		st, ask := s.ByType(c.agent).State(c.screen)
+		if st != c.want || st == Blocked && ask != c.ask {
+			t.Errorf("%s %q: %q %q, want %q %q", c.agent, c.screen, st, ask, c.want, c.ask)
+		}
+	}
 }
 
 func TestOverride(t *testing.T) {
@@ -82,6 +118,13 @@ any = ["approve?"]
 	os.WriteFile(filepath.Join(dir, "bad.toml"), []byte("type = "), 0o600)
 	if _, errs := Load(dir); len(errs) != 1 {
 		t.Errorf("errors %v", errs)
+	}
+	os.WriteFile(filepath.Join(dir, "bad.toml"), []byte("type = \"x\"\ncolor = \"orange\"\n"), 0o600)
+	if _, errs := Load(dir); len(errs) != 1 {
+		t.Errorf("a colour not #rrggbb: %v", errs)
+	}
+	if m := load(t, "").ByType("claude"); m == nil || m.Color != "#d97757" {
+		t.Errorf("claude's colour %+v", m)
 	}
 }
 

@@ -1,10 +1,9 @@
-// Package hooks adds inua-term's hooks to the agents that have them, so
-// they report their state to inua-term themselves (docs/feat/inua-term.md,
-// section 9): Claude Code's UserPromptSubmit, Notification and Stop in
-// its settings.json, Codex's notify in its config.toml. What is there is
-// kept: the user's own hooks stay, a notify Codex has already is left
-// alone, and the file changed is kept first as FILE.bak. Remove takes
-// inua-term's out again.
+// Package hooks takes out the hooks an earlier inua-term added to the
+// agents' settings (Claude Code's UserPromptSubmit, Notification and Stop
+// in its settings.json, Codex's notify in its config.toml), for
+// `inua-term integration remove`. inua-term adds none now: it knows the
+// agents by their process and their screen. What else is there stays,
+// and the file changed is kept first as FILE.bak.
 package hooks
 
 import (
@@ -21,7 +20,7 @@ import (
 // Marker is what every hook command of inua-term's has in it.
 const Marker = "inua-term report"
 
-// claudeEvents are the hooks Claude Code runs that tell its state.
+// claudeEvents are the hooks of Claude Code's that inua-term added.
 var claudeEvents = []string{"UserPromptSubmit", "Notification", "Stop"}
 
 // ClaudePath is Claude Code's settings: $CLAUDE_CONFIG_DIR/settings.json,
@@ -44,33 +43,6 @@ func CodexPath() string {
 		dir = filepath.Join(home, ".codex")
 	}
 	return filepath.Join(dir, "config.toml")
-}
-
-// InstallClaude adds `exe report --hook claude` to Claude Code's hooks
-// in path; it reports whether it changed the file.
-func InstallClaude(path, exe string) (bool, error) {
-	root, orig, err := readJSON(path)
-	if err != nil {
-		return false, err
-	}
-	command := exe + " report --hook claude"
-	hooks := root.object("hooks")
-	changed := false
-	for _, ev := range claudeEvents {
-		groups, _ := hooks.get(ev).([]any)
-		if hasOurs(groups) {
-			continue
-		}
-		group := &object{}
-		group.set("hooks", []any{(&object{}).set("type", "command").set("command", command)})
-		hooks.set(ev, append(groups, group))
-		changed = true
-	}
-	if !changed {
-		return false, nil
-	}
-	root.set("hooks", hooks)
-	return true, writeJSON(path, root, orig)
 }
 
 // RemoveClaude takes inua-term's hooks out of Claude Code's settings.
@@ -133,20 +105,6 @@ func ours(h any) bool {
 	return strings.Contains(c, Marker)
 }
 
-func hasOurs(groups []any) bool {
-	for _, g := range groups {
-		if gg, ok := g.(*object); ok {
-			hs, _ := gg.get("hooks").([]any)
-			for _, h := range hs {
-				if ours(h) {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
 // readJSON is a settings file as an object keeping its keys' order, and
 // its bytes (nil when there is no file).
 func readJSON(path string) (*object, []byte, error) {
@@ -198,41 +156,6 @@ func write(path string, b, orig []byte) error {
 		return err
 	}
 	return os.Rename(tmp, path)
-}
-
-// InstallCodex sets Codex's notify to `exe report --hook codex`, unless
-// it has a notify already; it reports whether it changed the file.
-func InstallCodex(path, exe string) (bool, error) {
-	b, err := os.ReadFile(path)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return false, err
-	}
-	lines := strings.Split(string(b), "\n")
-	first := len(lines) // the first table: notify goes above it, at the top level
-	for i, l := range lines {
-		t := strings.TrimSpace(l)
-		if strings.HasPrefix(t, "[") {
-			first = i
-			break
-		}
-		if k, _, ok := strings.Cut(t, "="); ok && strings.TrimSpace(k) == "notify" {
-			return false, nil // the user's own, or ours already
-		}
-	}
-	line := fmt.Sprintf("notify = [%q, \"report\", \"--hook\", \"codex\"] # %s: added by inua-term", exe, Marker)
-	if strings.TrimSpace(string(b)) == "" {
-		lines, first = []string{""}, 0 // a new file: the line and its newline
-	} else if first == len(lines) && lines[first-1] == "" {
-		first-- // no table: last, before the final newline
-	}
-	out := append([]string{}, lines[:first]...)
-	out = append(out, line)
-	out = append(out, lines[first:]...)
-	var orig []byte
-	if err == nil {
-		orig = b
-	}
-	return true, write(path, []byte(strings.Join(out, "\n")), orig)
 }
 
 // RemoveCodex takes inua-term's notify out of Codex's config.

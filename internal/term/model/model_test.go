@@ -57,8 +57,7 @@ func TestSplitAndRemove(t *testing.T) {
 		t.Errorf("after closing 3: gone %v, focus %d", gone, s.Focus)
 	}
 	m.RemovePane(1)
-	// The last pane takes the session, and the workspace the user did
-	// not add.
+	// The last pane takes the session, and the workspace.
 	sGone, wGone := m.RemovePane(2)
 	if !sGone || !wGone || len(m.Workspaces) != 0 || m.Shown != (Shown{}) {
 		t.Errorf("gone %v %v, %d workspaces, shown %+v", sGone, wGone, len(m.Workspaces), m.Shown)
@@ -77,9 +76,9 @@ func TestRemoveShown(t *testing.T) {
 	if m.Shown.Session != b.ID {
 		t.Errorf("shown after removing a %+v", m.Shown)
 	}
-	m.RemoveSession(b.ID)
-	if len(m.Workspaces) != 1 || m.Shown != (Shown{w.ID, 0}) {
-		t.Errorf("an added workspace stays: %d, %+v", len(m.Workspaces), m.Shown)
+	// Its last session takes a workspace the user added too.
+	if gone, _ := m.RemoveSession(b.ID); !gone || len(m.Workspaces) != 0 || m.Shown != (Shown{}) {
+		t.Errorf("an added workspace without sessions: gone %v, %d, %+v", gone, len(m.Workspaces), m.Shown)
 	}
 }
 

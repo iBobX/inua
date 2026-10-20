@@ -109,8 +109,8 @@ started only when installed; `make deps-desktop`): `fonts-ibm-plex`,
 `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk`,
 `brightnessctl`, `playerctl`, `fcitx5`, and the
 `grim` and `wl-clipboard` above. inua-files, the sample's file manager
-([files.md](files.md)), uses `udisks2` for drives and `gvfs-backends` with
-`gvfs-fuse` for network shares.
+([files.md](files.md)), uses `udisks2` for drives and `rclone` with
+`fuse3` for remote disks (sftp, SMB, S3 …).
 
 Window layouts are whatever the installed Hyprland offers; pick Dwindle or
 Master by trying them. Scrolling layouts are not assumed, and no plugins are
@@ -248,7 +248,7 @@ opening, cancelling and handing focus back.
 | Sound | PipeWire and WirePlumber |
 | Bluetooth | BlueZ |
 | Screen sharing and file choosers | xdg-desktop-portal; the Hyprland backend shares screens, the GTK backend provides file choosers |
-| Passwords and app secrets | gnome-keyring |
+| Passwords and app secrets | inua itself (`inua-keyring`, the Secret Service kept in pass); without pass, gnome-keyring |
 | Administrator prompts | inua itself (the session's Polkit agent) |
 | gpg passphrases | inua itself (`inua-pinentry`) |
 | Input methods | Fcitx 5, with inua's own themes |

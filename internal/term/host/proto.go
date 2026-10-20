@@ -40,13 +40,16 @@ type Message struct {
 
 	Version int    `json:"version,omitempty"` // hello, welcome
 	Error   string `json:"error,omitempty"`   // a reply that failed
+	// Sizes, in a welcome: the host tells its clients each size a pane
+	// takes, in the output's order (an older host does not).
+	Sizes bool `json:"sizes,omitempty"`
 
 	Pane  int      `json:"pane,omitempty"`
 	Argv  []string `json:"argv,omitempty"`   // create
 	Dir   string   `json:"dir,omitempty"`    // create; event "pwd"
 	Env   []string `json:"env,omitempty"`    // create
-	Cols  int      `json:"cols,omitempty"`   // create, resize
-	Rows  int      `json:"rows,omitempty"`   // create, resize
+	Cols  int      `json:"cols,omitempty"`   // create, resize; event: the size taken
+	Rows  int      `json:"rows,omitempty"`   // create, resize; event: the size taken
 	CellW int      `json:"cell_w,omitempty"` // create, resize: a cell in pixels, for size reports
 	CellH int      `json:"cell_h,omitempty"`
 	Title string   `json:"title,omitempty"`
@@ -122,11 +125,12 @@ type PaneInfo struct {
 	Restored bool `json:"restored,omitempty"`
 	// Command is what runs in the pane's shell now, "" while it waits.
 	Command string `json:"command,omitempty"`
-	// The agent in the pane, when one runs: its type, name and mark, its
+	// The agent in the pane, when one runs: its type, name, mark and colour, its
 	// state since when (Unix milliseconds), and what it asks.
 	Agent     string `json:"agent,omitempty"`
 	AgentName string `json:"agent_name,omitempty"`
 	Icon      string `json:"icon,omitempty"`
+	Color     string `json:"color,omitempty"` // the mark's, "#rrggbb"
 	State     string `json:"state,omitempty"`
 	Since     int64  `json:"since,omitempty"`
 	Ask       string `json:"ask,omitempty"`
@@ -144,6 +148,8 @@ const (
 	MsgDetach  = "detach"  // client: no more of the pane's output
 	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane
+	MsgShell   = "shell"   // client: the shell new panes start, Argv[0]; none for $SHELL
+	MsgQuit    = "quit"    // client: end the host, its sessions kept for the next
 	MsgClose   = "close"   // client: end the pane's program and forget it
 	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
 	// The workspaces and sessions; each change sends every client a

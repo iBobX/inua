@@ -71,6 +71,25 @@ windowrule {
     match:class = ^(io\.github\.lyricat\.Inua\.Mail)$
     tile = yes
 }
+
+# Their dialogs (inua-term's first-start guide) float over them.
+windowrule {
+    name = inua-dialogs
+    match:class = ^(io\.github\.lyricat\.Inua\..+)$
+    match:modal = true
+    float = yes
+    center = yes
+}
+
+# The portal's dialogs (choosing a file or a folder for an app) are another
+# program's windows: floated and centred, over the app that asked rather
+# than tiled behind it.
+windowrule {
+    name = inua-portal-dialogs
+    match:class = ^(xdg-desktop-portal-gtk|xdg-desktop-portal-gnome|org\.freedesktop\.impl\.portal\..+)$
+    float = yes
+    center = yes
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -199,6 +218,24 @@ hl.window_rule({
     name = "inua-mail",
     match = { class = "^(io\\.github\\.lyricat\\.Inua\\.Mail)$" },
     tile = true,
+})
+
+-- Their dialogs (inua-term's first-start guide) float over them.
+hl.window_rule({
+    name = "inua-dialogs",
+    match = { class = "^(io\\.github\\.lyricat\\.Inua\\..+)$", modal = true },
+    float = true,
+    center = true,
+})
+
+-- The portal's dialogs (choosing a file or a folder for an app) are another
+-- program's windows: floated and centred, over the app that asked rather
+-- than tiled behind it.
+hl.window_rule({
+    name = "inua-portal-dialogs",
+    match = { class = "^(xdg-desktop-portal-gtk|xdg-desktop-portal-gnome|org\\.freedesktop\\.impl\\.portal\\..+)$" },
+    float = true,
+    center = true,
 })
 `
 

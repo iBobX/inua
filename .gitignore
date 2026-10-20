@@ -5,5 +5,10 @@ docs/feat/*
 /.claude/
 __pycache__/
 
+# inua-term's engine as releases build it (scripts/libghostty.sh): Zig's
+# cache, and the library for each machine that .goreleaser.yaml packs.
+/.zig-cache/
+/lib/
+
 # The symlink `nix build` leaves at the tree's top.
 /result

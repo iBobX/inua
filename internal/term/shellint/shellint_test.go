@@ -90,6 +90,9 @@ func start(t *testing.T, name string) *shell {
 	argv, env := Wrap([]string{path}, env, dir)
 	if name == "zsh" {
 		os.WriteFile(filepath.Join(home, ".zshrc"), []byte("PS1='%% '\n"), 0o600)
+		// Debian's /etc/zsh/zshrc runs compinit, which stops to ask about
+		// folders others may write (/usr/local/share on CI's machines).
+		os.WriteFile(filepath.Join(home, ".zshenv"), []byte("skip_global_compinit=1\n"), 0o600)
 	}
 	if name == "bash" {
 		os.WriteFile(filepath.Join(home, ".bashrc"), []byte("PS1='$ '\n"), 0o600)
@@ -140,7 +143,7 @@ func (s *shell) until(kind vt.PromptKind) []vt.Prompt {
 			s.term.Write(b)
 			s.marks = append(s.marks, s.term.Prompts()...)
 		case <-deadline:
-			s.t.Fatalf("no mark %d; marks %+v", kind, seen)
+			s.t.Fatalf("no mark %d; marks %+v; the screen:\n%s", kind, seen, s.screen())
 		}
 	}
 }
@@ -180,3 +183,19 @@ func testShell(t *testing.T, name string) {
 func TestBash(t *testing.T) { testShell(t, "bash") }
 func TestZsh(t *testing.T)  { testShell(t, "zsh") }
 func TestFish(t *testing.T) { testShell(t, "fish") }
+
+// screen is the shell's screen as text, for a failure to show.
+func (s *shell) screen() string {
+	f, err := s.term.Frame(true)
+	if err != nil {
+		return err.Error()
+	}
+	var b strings.Builder
+	for _, l := range f.Lines {
+		for _, r := range l.Runs {
+			b.WriteString(r.Text)
+		}
+		b.WriteByte('\n')
+	}
+	return strings.TrimRight(b.String(), "\n")
+}

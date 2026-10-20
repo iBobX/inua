@@ -2,11 +2,9 @@ package disk
 
 import (
 	"cmp"
-	"image"
 	"image/color"
 	"math"
 	"slices"
-	"sort"
 )
 
 // The map is a sunburst: the folder in view is the disc in the middle, the
@@ -116,91 +114,71 @@ type Paint struct {
 	Guide  color.NRGBA // hairlines where the rings meet, and around them
 }
 
-// Render draws the map of arcs, w×h pixels; scale is how many pixels a
-// unit is, for the gaps between slices to stay a hairline.
-func Render(arcs []Arc, w, h int, scale float64, p Paint) *image.NRGBA {
-	img := image.NewNRGBA(image.Rect(0, 0, w, h))
-	g := Measure(float64(w), float64(h))
-	gap := 0.5 * scale // half the gap between slices, in pixels
-	// The arcs of each ring, by angle, to find a pixel's.
-	byRing := make([][]int, Rings+1)
-	for i, a := range arcs {
-		for r := a.Ring; r < a.Ring+a.span() && r <= Rings; r++ {
-			byRing[r] = append(byRing[r], i)
-		}
+// ColorOf is an arc's colour: its own, else its kind's, the hot one's,
+// faded by its ring and when it is the rest of a folder.
+func (p Paint) ColorOf(a Arc) color.NRGBA {
+	if a.Fill != nil {
+		return *a.Fill
 	}
-	for _, list := range byRing {
-		sort.Slice(list, func(x, y int) bool { return arcs[list[x]].A0 < arcs[list[y]].A0 })
+	c := p.Plain
+	if r := ruleOf(a.Node); r != nil {
+		c = p.Kind[r.Kind]
 	}
-	colorOf := func(a Arc) color.NRGBA {
-		if a.Fill != nil {
-			return *a.Fill
-		}
-		c := p.Plain
-		if r := ruleOf(a.Node); r != nil {
-			c = p.Kind[r.Kind]
-		}
-		if p.HotArc[a.Node] {
-			c = p.Hot
-		}
-		f := 1.0
-		if p.Fade != nil {
-			f = p.Fade(a.Ring)
-		}
-		if a.Node.Rest {
-			f *= 0.45
-		}
-		c.A = uint8(float64(c.A) * f)
-		return c
+	if p.HotArc[a.Node] {
+		c = p.Hot
 	}
-	cols := make([]color.NRGBA, len(arcs))
-	for i, a := range arcs {
-		cols[i] = colorOf(a)
+	f := 1.0
+	if p.Fade != nil {
+		f = p.Fade(a.Ring)
 	}
-	for y := range h {
-		for x := range w {
-			px, py := float64(x)+0.5, float64(y)+0.5
-			r, ang := g.polar(px, py)
-			var c color.NRGBA
-			cover := 0.0
-			switch {
-			case r <= g.Middle:
-				c, cover = p.Middle, clamp(g.Middle-gap-r+0.5)
-			case r <= g.R:
-				ring := int((r-g.Middle)/g.Ring) + 1
-				if ring > Rings {
-					break
-				}
-				list := byRing[ring]
-				j := sort.Search(len(list), func(k int) bool { return arcs[list[k]].A0 > ang }) - 1
-				if j < 0 {
-					break
-				}
-				a := arcs[list[j]]
-				if ang >= a.A1 {
-					break
-				}
-				r0 := g.Middle + float64(a.Ring-1)*g.Ring
-				r1 := r0 + float64(a.span())*g.Ring
-				d := math.Min(r-r0, r1-r)
-				d = math.Min(d, math.Min((ang-a.A0)*r, (a.A1-ang)*r))
-				c, cover = cols[list[j]], clamp(d-gap+0.5)
-			}
-			if cover <= 0 && p.Guide.A > 0 && r > g.Middle-1 {
-				// The guides: a hairline at each ring's edge.
-				k := (r - g.Middle) / g.Ring
-				if d := math.Abs(k-math.Round(k)) * g.Ring; d < 0.5*scale && math.Round(k) <= Rings {
-					c, cover = p.Guide, clamp(0.5*scale-d+0.5)
-				}
-			}
-			if cover <= 0 {
-				continue
-			}
-			c.A = uint8(float64(c.A) * cover)
-			img.SetNRGBA(x, y, c)
+	if a.Node != nil && a.Node.Rest {
+		f *= 0.45
+	}
+	c.A = uint8(float64(c.A) * f)
+	return c
+}
+
+// Shape is a slice as drawn: between radii R0 and R1, angles A0 to A1
+// (clockwise from the top), the gaps between slices already taken off.
+type Shape struct {
+	R0, R1, A0, A1 float64
+	Color          color.NRGBA
+}
+
+// Gap is the space between slices, in the units of the geometry.
+const Gap = 1.0
+
+// Shapes are the map's slices in geometry g, for drawing as paths: what
+// is too thin once its gaps are off is left out.
+func Shapes(arcs []Arc, g Geometry, p Paint) []Shape {
+	out := make([]Shape, 0, len(arcs))
+	for _, a := range arcs {
+		r0 := g.Middle + float64(a.Ring-1)*g.Ring + Gap/2
+		r1 := g.Middle + float64(a.Ring-1+a.span())*g.Ring - Gap/2
+		if a.Ring+a.span()-1 > Rings {
+			r1 = g.R - Gap/2
 		}
+		// The angular gap is the same width at the inner edge.
+		da := Gap / 2 / r0
+		a0, a1 := a.A0+da, a.A1-da
+		if a1-a0 < 0.002 || r1 <= r0 {
+			continue
+		}
+		if a.A1-a.A0 >= 2*math.Pi-1e-9 {
+			a0, a1 = 0, 2*math.Pi // a whole ring: no gap
+		}
+		out = append(out, Shape{R0: r0, R1: r1, A0: a0, A1: a1, Color: p.ColorOf(a)})
 	}
-	return img
+	return out
+}
+
+// Guides are the radii of the hairlines where the rings meet.
+func (g Geometry) Guides() []float64 {
+	out := make([]float64, 0, Rings+1)
+	for k := 0; k <= Rings; k++ {
+		out = append(out, g.Middle+float64(k)*g.Ring)
+	}
+	return out
 }
 
 // Used is the map of a filesystem not scanned yet: one band over two

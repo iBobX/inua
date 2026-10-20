@@ -2,6 +2,9 @@ package termui
 
 import (
 	"fmt"
+	"maps"
+	"slices"
+	"strings"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -72,6 +75,56 @@ func iconOf(info host.PaneInfo) string {
 	return "agent-shell-symbolic"
 }
 
+// brands colour the agents' marks, each its manifest's colour (a class of
+// its own, term-brand-TYPE).
+type brands struct {
+	css   *gtk.CssProvider
+	known map[string]string // colour by agent type
+}
+
+// brand gives a pane's mark its agent's colour while the agent runs,
+// whatever it does; a shell's, or an agent's without a colour, keeps the
+// mark's own.
+func (a *App) brand(icon *gtk.Image, info host.PaneInfo) {
+	classes := slices.DeleteFunc(icon.GetCssClasses(), func(c string) bool { return strings.HasPrefix(c, "term-brand") })
+	if name := cssName(info.Agent); name != "" && info.Color != "" && !info.Exited {
+		a.brands.add(name, info.Color)
+		classes = append(classes, "term-brand", "term-brand-"+name)
+	}
+	icon.SetCssClasses(classes)
+}
+
+// add has the style colour an agent type's marks, once.
+func (b *brands) add(name, color string) {
+	if b.known[name] == color {
+		return
+	}
+	if b.css == nil {
+		b.css, b.known = gtk.NewCssProvider(), map[string]string{}
+		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), b.css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
+	}
+	b.known[name] = color
+	var css strings.Builder
+	for _, n := range slices.Sorted(maps.Keys(b.known)) {
+		fmt.Fprintf(&css, "window.term image.term-brand.term-brand-%s { color: %s; }\n", n, b.known[n])
+	}
+	b.css.LoadFromString(css.String())
+}
+
+// cssName is an agent type as a class name may have it: letters, digits
+// and dashes; "" for none left.
+func cssName(t string) string {
+	return strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '-':
+			return r
+		case r >= 'A' && r <= 'Z':
+			return r + 'a' - 'A'
+		}
+		return -1
+	}, t)
+}
+
 // since is how long a pane has been in its state: "42s", "2m 14s",
 // "1h 5m", "3d".
 func since(ms int64, now time.Time) string {
@@ -120,16 +173,20 @@ func workspacePanes(w *model.Workspace) []int {
 	return out
 }
 
-// badge is the count of agents waiting, in warn; nil for none.
-func badge(n int) *gtk.Label {
-	if n == 0 {
-		return nil
-	}
-	b := gtk.NewLabel(fmt.Sprint(n))
+// newBadge is a count of agents waiting, in warn, hidden until set.
+func newBadge() *gtk.Label {
+	b := gtk.NewLabel("")
 	b.AddCssClass("term-badge")
 	b.SetValign(gtk.AlignCenterValue)
 	b.SetTooltipText(i18n.T("Agents that need you"))
+	b.SetVisible(false)
 	return b
+}
+
+// setBadge shows n on a badge, hidden for none.
+func setBadge(b *gtk.Label, n int) {
+	b.SetVisible(n > 0)
+	b.SetText(fmt.Sprint(n))
 }
 
 // agents are every pane with an agent, as column 1 and 2 order them,
@@ -184,6 +241,7 @@ func (a *App) nextWaiting() {
 // shows any.
 func (a *App) startTicks() {
 	a.onTick = func(uintptr) bool {
+		a.updateNerd()
 		if a.state == nil {
 			return true
 		}
@@ -224,6 +282,7 @@ func (a *App) overview() {
 		row.AddCssClass("term-overview-row")
 		icon := gtk.NewImageFromIconName(iconOf(info))
 		icon.SetPixelSize(15)
+		a.brand(icon, info)
 		row.Append(&icon.Widget)
 		text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		text.SetHexpand(true)
@@ -248,7 +307,7 @@ func (a *App) overview() {
 	}
 	sheet.Append(&list.Widget)
 	done := func() {
-		a.stage.RemoveOverlay(&sheet.Widget)
+		a.sheets.RemoveOverlay(&sheet.Widget)
 		a.sheet = nil
 		if s := a.shown(); s != nil {
 			if t := a.tiles[s.Focus]; t != nil {
@@ -275,7 +334,7 @@ func (a *App) overview() {
 	keys.ConnectKeyPressed(&a.onOverviewKey)
 	sheet.AddController(&keys.EventController)
 	a.sheet = sheet
-	a.stage.AddOverlay(&sheet.Widget)
+	a.sheets.AddOverlay(&sheet.Widget)
 	if r := list.GetRowAtIndex(0); r != nil {
 		r.GrabFocus()
 	} else {

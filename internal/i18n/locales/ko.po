@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:221
+#: internal/diskui/details.go:332
 #: internal/mailui/assist.go:43
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "어시스턴트가 꺼진다. 설정 → AI에서 켜주세요."
@@ -62,14 +62,6 @@ msgstr "%s이(가) 비밀을 읽었습니다"
 #: cmd/inua-keyring/main.go:155
 msgid "“%s” · %s"
 msgstr "“%s” · %s"
-
-#: cmd/inua-term/main.go:186
-msgid "inua-term added its hooks"
-msgstr "inua-term이 훅을 추가했습니다"
-
-#: cmd/inua-term/main.go:187
-msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
-msgstr "이제 %s이(가) 상태를 inua-term에 알립니다. 이전 파일은 %s.bak이며, `inua-term integration remove %s`로 제거할 수 있습니다."
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
@@ -1755,7 +1747,7 @@ msgstr "비디오"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/mailui/actions.go:122
 #: internal/ui/clipboard.go:459
@@ -1873,6 +1865,7 @@ msgstr "편집하다"
 #: internal/appui/clock.go:491
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
+#: internal/termui/guide.go:161
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:1313
@@ -2146,13 +2139,13 @@ msgid "Extend 2 years"
 msgstr "2년 연장"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:860
+#: ui/disk.ui:781
 msgid "Delete…"
 msgstr "삭제…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:547
+#: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:479
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
@@ -2339,7 +2332,7 @@ msgstr "복호화한 사본은 휴지통으로 가며 거기서 복원할 수 �
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:850
+#: ui/disk.ui:771
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2505,7 +2498,7 @@ msgid "NOTES"
 msgstr "메모"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:407
+#: internal/term/host/agents.go:408
 msgid "Show"
 msgstr "보기"
 
@@ -2516,11 +2509,11 @@ msgstr "숨기기"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/diskui/details.go:550
+#: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:84
+#: internal/term/settings/settings.go:103
 #: internal/ui/askpass.go:203
-#: ui/disk.ui:698
+#: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2564,6 +2557,7 @@ msgid "Its path: the first part is its category. Its content comes next."
 msgstr "경로: 첫 부분이 카테고리입니다. 내용은 그다음에."
 
 #: internal/appui/pass.go:797
+#: internal/termui/guide.go:163
 msgid "Next"
 msgstr "다음"
 
@@ -2886,8 +2880,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:267
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:268
+#: internal/shell/dock.go:301
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -3173,7 +3167,7 @@ msgstr "이름"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:323
+#: internal/diskui/window.go:329
 msgid "System"
 msgstr "시스템"
 
@@ -3565,7 +3559,7 @@ msgid "IN USE"
 msgstr "사용 중"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:265
+#: internal/termui/prefs.go:280
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3845,9 +3839,11 @@ msgstr "알 수 없는 블록 %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:226
-#: internal/termui/keys.go:324
+#: internal/termui/keys.go:271
+#: internal/termui/keys.go:399
 #: internal/termui/paste.go:279
+#: internal/termui/restart.go:42
+#: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4727,13 +4723,12 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:84
-#: internal/termui/app.go:98
-#: internal/termui/app.go:264
-#: internal/termui/app.go:266
-#: internal/termui/tiles.go:352
+#: internal/termui/app.go:102
+#: internal/termui/app.go:135
+#: internal/termui/app.go:322
+#: internal/termui/app.go:324
+#: internal/termui/tiles.go:471
 #: ui/settings.ui:1933
-#: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "터미널"
@@ -4777,189 +4772,179 @@ msgstr "일반 텍스트 열기"
 msgid "Disk Usage"
 msgstr "디스크 사용량"
 
+#: internal/diskui/details.go:47
+#: internal/termui/prefs.go:89
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "크기"
+
 #: internal/diskui/details.go:49
-msgid "%s file"
-msgid_plural "%s files"
-msgstr[0] "파일 %s개"
+msgid "File"
+msgid_plural "Files"
+msgstr[0] "파일"
 
-#: internal/diskui/details.go:52
-msgid "changed %s"
-msgstr "%s에 변경"
-
-#: internal/diskui/details.go:52
+#: internal/diskui/details.go:53
 msgid "2006-01-02"
 msgstr "2006년 1월 2일"
 
-#: internal/diskui/details.go:55
-msgid "some of it could not be read"
-msgstr "일부를 읽을 수 없었습니다"
+#: internal/diskui/details.go:53
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "바뀐 날짜"
 
-#: internal/diskui/details.go:75
+#: internal/diskui/details.go:56
+msgid "Some of it could not be read."
+msgstr "일부를 읽을 수 없었습니다."
+
+#: internal/diskui/details.go:76
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "확인 중..."
 
-#: internal/diskui/details.go:104
-msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
-msgstr "1 MB보다 작은 여러 파일입니다. 파일에서 폴더를 열어 살펴보세요."
+#: internal/diskui/details.go:118
+msgid "AI · %s"
+msgstr "AI · %s"
 
-#: internal/diskui/details.go:108
-msgid "They are not one item to delete."
-msgstr "하나의 항목으로 삭제할 것이 아닙니다."
+#: internal/diskui/details.go:169
+msgid "Small files, each under 1 MB."
+msgstr "각각 1 MB 미만인 작은 파일."
 
-#: internal/diskui/details.go:146
-msgid "No check settles it."
-msgstr "판단한 검사가 없습니다."
+#: internal/diskui/details.go:172
+msgid "Not one item to delete."
+msgstr "하나로 삭제할 항목이 아닙니다."
 
-#: internal/diskui/details.go:156
-#: internal/diskui/details.go:324
-#: internal/diskui/details.go:373
+#: internal/diskui/details.go:221
+msgid "Look inside first."
+msgstr "먼저 안을 살펴보세요."
+
+#: internal/diskui/details.go:223
+msgid "Look inside first, or ask the AI."
+msgstr "먼저 안을 살펴보거나 AI에게 물어보세요."
+
+#: internal/diskui/details.go:239
+msgid "Can it go"
+msgstr "지워도 되나"
+
+#: internal/diskui/details.go:242
+msgid "What it is"
+msgstr "무엇인가"
+
+#: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "확인 중…"
 
-#: internal/diskui/details.go:158
-#: internal/mailui/reader.go:259
-#: internal/shell/launcher.go:379
-#: ui/disk.ui:770
-msgid "Ask the assistant"
-msgstr "어시스턴트에게 물어보세요"
+#: internal/diskui/details.go:257
+msgid "Ask AI"
+msgstr "AI에게 묻기"
 
-#: internal/diskui/details.go:161
-msgid "The assistant: %s"
-msgstr "어시스턴트: %s"
+#: internal/diskui/details.go:259
+msgid "Ask again"
+msgstr "다시 묻기"
 
-#: internal/diskui/details.go:174
-msgid "It is the place scanned: choose what is in it."
-msgstr "스캔한 위치 자체입니다. 안의 항목을 고르세요."
+#: internal/diskui/details.go:267
+msgid "Sends the path, the size and the largest names, never the files' contents."
+msgstr "경로, 크기, 가장 큰 항목의 이름만 보내고 파일 내용은 보내지 않습니다."
 
-#: internal/diskui/details.go:176
-msgid "Kept: the checks above say why."
-msgstr "유지합니다. 이유는 위의 검사에 있습니다."
+#: internal/diskui/details.go:411
+msgid "The AI could not answer: %v"
+msgstr "AI가 답하지 못했습니다: %v"
 
-#: internal/diskui/details.go:178
-msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
-msgstr "필요할 때 돌아옵니다. 휴지통은 비울 때까지 보관하고, 삭제는 바로 공간을 비웁니다."
+#: internal/diskui/details.go:413
+msgid "The AI answered %q"
+msgstr "AI의 답: %q"
 
-#: internal/diskui/details.go:180
-msgid "Look inside before deleting: it may hold your work, settings or history."
-msgstr "삭제하기 전에 안을 확인하세요. 작업, 설정, 기록이 있을 수 있습니다."
-
-#: internal/diskui/details.go:182
-msgid "No check settled it: look inside first, or ask the assistant."
-msgstr "판단한 검사가 없습니다. 먼저 안을 확인하거나 어시스턴트에게 물어보세요."
-
-#: internal/diskui/details.go:292
-msgid "it answered %q"
-msgstr "%q(이)라고 답했습니다"
-
-#: internal/diskui/details.go:302
-msgid "The assistant could not decide: %v"
-msgstr "어시스턴트가 판단하지 못했습니다: %v"
-
-#: internal/diskui/details.go:353
-msgid "The assistant could not answer: %v"
-msgstr "어시스턴트가 답하지 못했습니다: %v"
-
-#: internal/diskui/details.go:358
-#: internal/diskui/details.go:386
-#: ui/disk.ui:926
-msgid "Explain"
-msgstr "설명"
-
-#: internal/diskui/details.go:384
-msgid "Explain again"
-msgstr "다시 설명"
-
-#: internal/diskui/details.go:412
+#: internal/diskui/details.go:443
 msgid "Cannot open it in Files: %v"
 msgstr "파일에서 열 수 없습니다: %v"
 
-#: internal/diskui/details.go:427
+#: internal/diskui/details.go:458
 msgid "Deleting…"
 msgstr "삭제 중…"
 
-#: internal/diskui/details.go:429
+#: internal/diskui/details.go:460
 msgid "Moving to the trash…"
 msgstr "휴지통으로 이동 중…"
 
-#: internal/diskui/details.go:441
+#: internal/diskui/details.go:472
 msgid "Cannot delete %s: %v"
 msgstr "%s을(를) 삭제할 수 없습니다: %v"
 
-#: internal/diskui/details.go:446
-msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
-msgstr "%s을(를) 휴지통으로 옮겼습니다. %s은(는) 휴지통을 비우면 확보됩니다."
+#: internal/diskui/details.go:477
+msgid "Moved %s to the trash."
+msgstr "%s을(를) 휴지통으로 옮겼습니다."
 
-#: internal/diskui/details.go:448
+#: internal/diskui/details.go:479
 msgid "Deleted %s: %s freed."
 msgstr "%s 삭제함: %s 확보."
 
-#: internal/diskui/details.go:492
-msgid "%s in %s file. It does not go to the trash; this cannot be undone."
-msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
-msgstr[0] "%s, 파일 %s개. 휴지통으로 가지 않으며 되돌릴 수 없습니다."
+#: internal/diskui/details.go:523
+msgid "%s in %s file. This cannot be undone."
+msgid_plural "%s in %s files. This cannot be undone."
+msgstr[0] "%s, 파일 %s개. 되돌릴 수 없습니다."
 
-#: internal/diskui/details.go:495
-msgid "%s. It does not go to the trash; this cannot be undone."
-msgstr "%s. 휴지통으로 가지 않으며 되돌릴 수 없습니다."
+#: internal/diskui/details.go:526
+msgid "%s. This cannot be undone."
+msgstr "%s. 되돌릴 수 없습니다."
 
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 msgid "Delete %s for good?"
 msgstr "%s을(를) 영구히 삭제할까요?"
 
-#: internal/diskui/details.go:521
+#: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:187
 #: internal/ui/settings_bench.go:332
 msgid "Running…"
 msgstr "실행 중…"
 
-#: internal/diskui/details.go:523
-#: internal/diskui/details.go:570
-#: ui/disk.ui:707
+#: internal/diskui/details.go:554
+#: internal/diskui/details.go:600
+#: ui/disk.ui:706
 msgid "Run"
 msgstr "실행"
 
-#: internal/diskui/details.go:529
-#: internal/diskui/details.go:568
-msgid "It runs as root: inua asks for your password first."
-msgstr "root로 실행됩니다. 먼저 inua가 비밀번호를 묻습니다."
+#: internal/diskui/details.go:560
+#: internal/diskui/details.go:598
+msgid "Runs as root, after your password."
+msgstr "암호를 입력한 뒤 root로 실행됩니다."
 
-#: internal/diskui/details.go:531
-msgid "It runs in %s."
+#: internal/diskui/details.go:562
+msgid "Runs in %s."
 msgstr "%s에서 실행됩니다."
 
-#: internal/diskui/details.go:565
-msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
-msgstr "%s에서 실행되어 %s(지금 %s)을(를) 정리합니다. 끝나면 inua가 다시 잽니다."
+#: internal/diskui/details.go:596
+msgid "Cleans %s, %s now."
+msgstr "%s을(를) 정리합니다. 지금 %s."
 
-#: internal/diskui/details.go:570
+#: internal/diskui/details.go:600
 msgid "Run the clean command?"
 msgstr "정리 명령을 실행할까요?"
 
-#: internal/diskui/details.go:593
+#: internal/diskui/details.go:623
 msgid "%s ended with an error: %v"
 msgstr "%s이(가) 오류로 끝났습니다: %v"
 
-#: internal/diskui/details.go:596
+#: internal/diskui/details.go:626
 msgid "Cannot measure it again: %v"
 msgstr "다시 잴 수 없습니다: %v"
 
-#: internal/diskui/details.go:608
+#: internal/diskui/details.go:638
 msgid "Done: %s freed."
 msgstr "완료: %s 확보."
 
-#: internal/diskui/details.go:610
+#: internal/diskui/details.go:640
 msgid "Done: it freed no room here."
 msgstr "완료: 여기서는 공간이 늘지 않았습니다."
 
-#: internal/diskui/details.go:613
+#: internal/diskui/details.go:643
 msgid "%s removed %s: %s freed."
 msgstr "%s이(가) %s을(를) 지웠습니다: %s 확보."
 
-#: internal/diskui/window.go:321
+#: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4967,119 +4952,115 @@ msgstr "%s이(가) %s을(를) 지웠습니다: %s 확보."
 msgid "Home"
 msgstr "홈"
 
-#: internal/diskui/window.go:351
-#: internal/diskui/window.go:548
+#: internal/diskui/window.go:357
+#: internal/diskui/window.go:553
 msgid "Scanning…"
 msgstr "스캔 중…"
 
-#: internal/diskui/window.go:355
+#: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 남음 / %s"
 
-#: internal/diskui/window.go:367
-msgid "Scan a place first"
-msgstr "먼저 위치를 스캔하세요"
-
-#: internal/diskui/window.go:370
+#: internal/diskui/window.go:375
 msgid "%s · %s safe"
 msgstr "%s · 안전 %s"
 
-#: internal/diskui/window.go:440
+#: internal/diskui/window.go:445
 msgid "Choose a folder to scan"
 msgstr "스캔할 폴더 선택"
 
-#: internal/diskui/window.go:513
+#: internal/diskui/window.go:518
 msgid "Scan again"
 msgstr "다시 스캔"
 
-#: internal/diskui/window.go:517
+#: internal/diskui/window.go:522
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "스캔"
 
-#: internal/diskui/window.go:524
+#: internal/diskui/window.go:529
 msgid "your home"
 msgstr "홈"
 
-#: internal/diskui/window.go:526
-msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
-msgstr "아직 스캔하지 않았습니다. 스캔하면 이 디스크에 있는 %s의 모든 폴더를 재고, 개발, 에이전트, 프로그램 폴더를 찾습니다."
+#: internal/diskui/window.go:531
+msgid "Scan to see what fills %s."
+msgstr "스캔해서 %s을(를) 무엇이 채우는지 보세요."
 
-#: internal/diskui/window.go:543
+#: internal/diskui/window.go:548
 msgid "%s used of %s"
 msgstr "%[2]s 중 %[1]s 사용"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 msgid "%s in %s files · %s"
 msgstr "%s · 파일 %s개 · %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:569
+#: internal/diskui/window.go:575
 msgid "%s files · %s · %.0f s"
 msgstr "파일 %s개 · %s · %.0f초"
 
-#: internal/diskui/window.go:615
+#: internal/diskui/window.go:609
 msgid "Cannot scan %s: %v"
 msgstr "%s을(를) 스캔할 수 없습니다: %v"
 
-#: internal/diskui/window.go:737
+#: internal/diskui/window.go:724
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "작은 파일 %d개"
 
-#: internal/diskui/window.go:772
+#: internal/diskui/window.go:757
 msgid "counted"
 msgstr "집계됨"
 
-#: internal/diskui/window.go:797
+#: internal/diskui/window.go:782
 msgid "free"
 msgstr "여유"
 
-#: internal/diskui/window.go:799
+#: internal/diskui/window.go:784
 msgid "Not scanned"
 msgstr "스캔 안 함"
 
-#: internal/diskui/window.go:816
+#: internal/diskui/window.go:797
 msgid "Other"
 msgstr "기타"
 
-#: internal/diskui/window.go:879
+#: internal/diskui/window.go:860
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "%d개 더"
 
-#: internal/diskui/window.go:890
+#: internal/diskui/window.go:871
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "이 폴더는 비어 있습니다."
 
-#: internal/diskui/window.go:946
-msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
-msgstr "의존성, 빌드 출력, 툴체인, 패키지 캐시: 대부분 명령 하나로 돌아옵니다."
+#: internal/diskui/window.go:927
+msgid "Dependencies, builds and toolchains."
+msgstr "의존성, 빌드, 툴체인."
 
-#: internal/diskui/window.go:947
-msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
-msgstr "코딩 에이전트의 대화, 워크트리, 캐시와 다운로드한 AI 모델."
+#: internal/diskui/window.go:928
+msgid "Agents' sessions, worktrees and AI models."
+msgstr "에이전트의 세션, 워크트리, AI 모델."
 
-#: internal/diskui/window.go:948
-msgid "Programs' caches, packages downloaded and the trash."
-msgstr "프로그램의 캐시, 다운로드한 패키지, 휴지통."
+#: internal/diskui/window.go:929
+msgid "Caches, downloaded packages and the trash."
+msgstr "캐시, 내려받은 패키지, 휴지통."
 
-#: internal/diskui/window.go:966
-msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
-msgstr "아직 스캔한 것이 없습니다. 위치를 스캔하면 이 종류의 것이 여기에 나옵니다."
+#: internal/diskui/window.go:953
+msgid "Scan a place first."
+msgstr "먼저 위치를 스캔하세요."
 
-#: internal/diskui/window.go:968
-msgid "Nothing of this kind in the places scanned."
-msgstr "스캔한 위치에 이 종류의 것이 없습니다."
+#: internal/diskui/window.go:955
+msgid "Nothing found."
+msgstr "찾은 것이 없습니다."
 
-#: internal/diskui/window.go:971
+#: internal/diskui/window.go:957
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s · 폴더 %d개 · %s 안전하게 삭제 가능"
@@ -5261,7 +5242,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:326
+#: internal/termui/keys.go:401
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -5336,6 +5317,7 @@ msgid "There: %s, %s. This one: %s, %s."
 msgstr "기존: %s, %s. 이것: %s, %s."
 
 #: internal/filesui/cards.go:490
+#: internal/termui/guide.go:106
 msgid "Skip"
 msgstr "건너뛰기"
 
@@ -5368,7 +5350,8 @@ msgstr[0] "… 그 외 %d개"
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:155
-#: internal/termui/keys.go:228
+#: internal/termui/keys.go:273
+#: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -5574,7 +5557,7 @@ msgid "Reload"
 msgstr "새로 고침"
 
 #: internal/filesui/cards.go:717
-#: internal/termui/palette.go:195
+#: internal/termui/palette.go:198
 msgid "Keys"
 msgstr "단축키"
 
@@ -6346,7 +6329,7 @@ msgid "New file…"
 msgstr "새 파일…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:85
+#: internal/term/settings/settings.go:104
 #: internal/termui/paste.go:284
 msgid "Paste"
 msgstr "붙여넣기"
@@ -6397,6 +6380,7 @@ msgid "Move to the other pane"
 msgstr "다른 창으로 이동"
 
 #: internal/filesui/window.go:749
+#: internal/termui/wsmenu.go:80
 msgid "Rename…"
 msgstr "이름 바꾸기…"
 
@@ -9143,6 +9127,7 @@ msgstr "메뉴로 나가기"
 #: internal/gamesui/fortune_menu.go:109
 #: internal/mailui/welcome.go:493
 #: internal/mailui/welcome.go:597
+#: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9425,7 +9410,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "실행기"
@@ -9458,8 +9443,8 @@ msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:290
-#: internal/term/settings/settings.go:91
+#: internal/shell/dock.go:291
+#: internal/term/settings/settings.go:110
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -9874,6 +9859,11 @@ msgstr "확인 숨기기"
 #: internal/mailui/reader.go:256
 msgid "Move to Spam"
 msgstr "스팸으로 이동"
+
+#: internal/mailui/reader.go:259
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "어시스턴트에게 물어보세요"
 
 #: internal/mailui/reader.go:282
 msgid "THE ASSISTANT"
@@ -10348,7 +10338,7 @@ msgid "The server's search failed: %s"
 msgstr "서버 검색에 실패했습니다: %s"
 
 #: internal/mailui/window.go:1178
-#: internal/termui/agents.go:45
+#: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "대기"
 
@@ -10650,6 +10640,7 @@ msgid "Suspend, locking first"
 msgstr "일시 중지, 먼저 잠금"
 
 #: internal/shell/commands.go:29
+#: internal/termui/restart.go:44
 #: internal/ui/control.go:488
 #: ui/control.ui:172
 msgid "Restart"
@@ -10692,7 +10683,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -10842,56 +10833,56 @@ msgid "Web search"
 msgstr "웹 검색"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "EVERYDAY"
 msgstr "매일"
 
 #: internal/shell/dock.go:256
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:272
+#: internal/shell/dock.go:273
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:277
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:278
+#: internal/shell/dock.go:303
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "DEVELOPMENT"
 msgstr "개발"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "MEDIA"
 msgstr "미디어"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "GAMES"
 msgstr "게임"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:303
 msgid "OTHER"
 msgstr "기타"
 
-#: internal/shell/dock.go:327
+#: internal/shell/dock.go:328
 msgid "WORKSHOP"
 msgstr "워크숍"
 
@@ -11016,167 +11007,282 @@ msgstr "완전히 충전됨"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 충전 중"
 
-#: internal/term/host/agents.go:166
+#: internal/term/host/agents.go:179
 msgid "%s needs you"
 msgstr "%s이(가) 응답을 기다립니다"
 
-#: internal/term/host/agents.go:168
+#: internal/term/host/agents.go:181
 msgid "%s is done"
 msgstr "%s 작업 완료"
 
-#: internal/term/host/sessions.go:265
+#: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
 msgid "Commands"
 msgstr "명령"
 
-#: internal/term/settings/settings.go:69
+#: internal/term/scheme/scheme.go:26
+msgid "Cool blues and violets on a deep navy"
+msgstr "짙은 남색 위의 시원한 파랑과 보라"
+
+#: internal/term/scheme/scheme.go:29
+msgid "Soft pastels on a warm dark ground"
+msgstr "따뜻한 어두운 바탕 위의 부드러운 파스텔"
+
+#: internal/term/scheme/scheme.go:32
+msgid "Vivid pinks, greens and purples, high contrast"
+msgstr "선명한 분홍, 초록, 보라, 높은 대비"
+
+#: internal/term/scheme/scheme.go:35
+msgid "Earthy, retro, easy on the eyes"
+msgstr "흙빛, 레트로, 눈이 편안함"
+
+#: internal/term/scheme/scheme.go:38
+msgid "Calm arctic greys and frost blues"
+msgstr "차분한 북극의 회색과 서리 파랑"
+
+#: internal/term/scheme/scheme.go:41
+msgid "Atom's balanced dark, muted and clear"
+msgstr "Atom의 균형 잡힌 다크, 차분하고 또렷함"
+
+#: internal/term/scheme/scheme.go:44
+msgid "Muted roses and pines at dusk"
+msgstr "해 질 녘의 차분한 장미와 소나무"
+
+#: internal/term/scheme/scheme.go:47
+msgid "The classic: low contrast on blue-green"
+msgstr "고전: 청록 바탕 위의 낮은 대비"
+
+#: internal/term/scheme/scheme.go:48
+msgid "Pastels on a light, milky ground"
+msgstr "밝은 우윳빛 바탕 위의 파스텔"
+
+#: internal/term/scheme/scheme.go:51
+msgid "Earthy tones on warm paper"
+msgstr "따뜻한 종이 위의 흙빛"
+
+#: internal/term/scheme/scheme.go:54
+msgid "The classic, on cream"
+msgstr "고전, 크림색 바탕"
+
+#: internal/term/settings/settings.go:88
 msgid "New session in this workspace"
 msgstr "이 작업 공간에 새 세션"
 
-#: internal/term/settings/settings.go:70
-#: ui/term.ui:68
+#: internal/term/settings/settings.go:89
+#: internal/termui/columns.go:141
 msgid "New workspace"
 msgstr "새 작업 공간"
 
-#: internal/term/settings/settings.go:71
+#: internal/term/settings/settings.go:90
 msgid "Split right"
 msgstr "오른쪽으로 분할"
 
-#: internal/term/settings/settings.go:72
+#: internal/term/settings/settings.go:91
 msgid "Split down"
 msgstr "아래로 분할"
 
-#: internal/term/settings/settings.go:73
+#: internal/term/settings/settings.go:92
 msgid "Close pane"
 msgstr "창 닫기"
 
-#: internal/term/settings/settings.go:74
+#: internal/term/settings/settings.go:93
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "그 방향의 창과 바꾸기 (이어서 화살표)"
 
-#: internal/term/settings/settings.go:75
+#: internal/term/settings/settings.go:94
 msgid "Zoom pane / back"
 msgstr "창 확대 / 되돌리기"
 
-#: internal/term/settings/settings.go:76
+#: internal/term/settings/settings.go:95
 msgid "Equalize"
 msgstr "균등하게"
 
-#: internal/term/settings/settings.go:77
+#: internal/term/settings/settings.go:96
 msgid "Next layout"
 msgstr "다음 배치"
 
-#: internal/term/settings/settings.go:78
+#: internal/term/settings/settings.go:97
 msgid "Previous session"
 msgstr "이전 세션"
 
-#: internal/term/settings/settings.go:79
+#: internal/term/settings/settings.go:98
 msgid "Next session"
 msgstr "다음 세션"
 
-#: internal/term/settings/settings.go:80
+#: internal/term/settings/settings.go:99
 msgid "Next agent that needs you"
 msgstr "응답이 필요한 다음 에이전트"
 
-#: internal/term/settings/settings.go:81
+#: internal/term/settings/settings.go:100
 msgid "Every agent"
 msgstr "모든 에이전트"
 
-#: internal/term/settings/settings.go:82
+#: internal/term/settings/settings.go:101
 msgid "Fold the workspaces"
 msgstr "작업 공간 접기"
 
-#: internal/term/settings/settings.go:83
+#: internal/term/settings/settings.go:102
 msgid "Fold the sessions"
 msgstr "세션 접기"
 
-#: internal/term/settings/settings.go:86
+#: internal/term/settings/settings.go:105
 msgid "Search the scrollback"
 msgstr "스크롤백 검색"
 
-#: internal/term/settings/settings.go:87
+#: internal/term/settings/settings.go:106
 msgid "Copy mode"
 msgstr "복사 모드"
 
-#: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:315
+#: internal/term/settings/settings.go:107
+#: internal/termui/keys.go:373
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
 
-#: internal/term/settings/settings.go:89
+#: internal/term/settings/settings.go:108
 msgid "Every action by name"
 msgstr "모든 동작을 이름으로"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:109
 msgid "Show the keys"
 msgstr "키 보기"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:111
+msgid "Restart the terminal host"
+msgstr "터미널 호스트 다시 시작"
+
+#: internal/term/settings/settings.go:112
 msgid "Font larger"
 msgstr "글자 크게"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:113
 msgid "Font smaller"
 msgstr "글자 작게"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:114
 msgid "Font size as set"
 msgstr "설정한 글자 크기"
 
-#: internal/termui/agents.go:33
+#: internal/termui/agents.go:36
 msgid "EXITED %d"
 msgstr "종료 %d"
 
-#: internal/termui/agents.go:35
+#: internal/termui/agents.go:38
 msgid "RESTORED"
 msgstr "복원됨"
 
-#: internal/termui/agents.go:39
+#: internal/termui/agents.go:42
 msgid "WORKING"
 msgstr "작업 중"
 
-#: internal/termui/agents.go:41
+#: internal/termui/agents.go:44
 msgid "NEEDS YOU"
 msgstr "응답 필요"
 
-#: internal/termui/agents.go:43
+#: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "완료"
 
-#: internal/termui/agents.go:131
+#: internal/termui/agents.go:181
 msgid "Agents that need you"
 msgstr "응답을 기다리는 에이전트"
 
-#: internal/termui/agents.go:209
+#: internal/termui/agents.go:267
 msgid "Agents"
 msgstr "에이전트"
 
-#: internal/termui/agents.go:216
+#: internal/termui/agents.go:274
 msgid "No agent runs in any workspace."
 msgstr "어느 작업 공간에서도 에이전트가 실행되고 있지 않습니다."
 
-#: internal/termui/columns.go:193
-msgid "%d pane"
-msgid_plural "%d panes"
-msgstr[0] "창 %d개"
+#: internal/termui/choices.go:32
+msgid "As inua (%s)"
+msgstr "inua와 같이 (%s)"
+
+#: internal/termui/choices.go:32
+msgid "The window changes with inua's theme"
+msgstr "창이 inua의 테마를 따라 바뀝니다"
+
+#: internal/termui/choices.go:34
+msgid "A theme of your own"
+msgstr "직접 만든 테마"
+
+#: internal/termui/choices.go:59
+msgid "The window's theme"
+msgstr "창의 테마"
+
+#: internal/termui/choices.go:59
+msgid "The terminals take the window's colours"
+msgstr "터미널이 창의 색을 씁니다"
+
+#: internal/termui/choices.go:71
+msgid "Your login shell (%s)"
+msgstr "로그인 셸 (%s)"
+
+#: internal/termui/columns.go:140
+#: internal/termui/palette.go:98
+msgid "Actions"
+msgstr "동작"
+
+#: internal/termui/columns.go:142
+msgid "New session"
+msgstr "새 세션"
 
 #: internal/termui/copymode.go:35
 msgid "COPY"
 msgstr "복사"
 
-#: internal/termui/keys.go:215
+#: internal/termui/guide.go:50
+msgid "Welcome to the Terminal"
+msgstr "터미널에 오신 것을 환영합니다"
+
+#: internal/termui/guide.go:62
+msgid "Set up the terminal"
+msgstr "터미널 설정하기"
+
+#: internal/termui/guide.go:78
+msgid "Your shell"
+msgstr "셸"
+
+#: internal/termui/guide.go:79
+msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
+msgstr "새 창마다 시작하는 셸입니다. inua-term은 bash, zsh, fish의 프롬프트에 표시를 남겨 다시 시작한 뒤에도 창의 마지막 명령을 되살립니다. 다른 셸은 그대로 실행됩니다."
+
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "터미널 색"
+
+#: internal/termui/guide.go:87
+msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
+msgstr "프로그램이 그릴 때 쓰는 색입니다. 창 테마의 색이면 터미널이 inua의 나머지와 어울리고, 고전적인 색 구성표를 따로 쓸 수도 있습니다."
+
+#: internal/termui/guide.go:95
+#: internal/termui/prefs.go:68
+msgid "Window theme"
+msgstr "창 테마"
+
+#: internal/termui/guide.go:96
+msgid "The look of the window around the terminals. It follows inua's theme, or keeps one of its own whatever inua's is."
+msgstr "터미널을 둘러싼 창의 모양입니다. inua의 테마를 따르거나, inua의 테마와 상관없이 자기 테마를 유지합니다."
+
+#: internal/termui/guide.go:108
+msgid "Keep these choices; the settings change them later"
+msgstr "이 선택을 유지합니다. 나중에 설정에서 바꿀 수 있습니다"
+
+#: internal/termui/keys.go:260
+#: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "%s을(를) 닫을까요?"
 
-#: internal/termui/keys.go:216
+#: internal/termui/keys.go:261
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "“%s” 작업 중입니다. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:218
+#: internal/termui/keys.go:263
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "응답을 기다리고 있습니다: %s. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:259
+#: internal/termui/keys.go:304
 msgid "Choose the workspace's folder"
 msgstr "작업 공간의 폴더 선택"
 
@@ -11189,36 +11295,44 @@ msgid "Resize the focused pane"
 msgstr "선택한 창 크기 조절"
 
 #: internal/termui/palette.go:21
+msgid "Session 1…8 / the last session"
+msgstr "세션 1…8 / 마지막 세션"
+
+#: internal/termui/palette.go:22
+msgid "Previous / next session"
+msgstr "이전 / 다음 세션"
+
+#: internal/termui/palette.go:23
 msgid "Workspace 1…9"
 msgstr "작업 공간 1…9"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:24
 msgid "Paste the primary selection"
 msgstr "기본 선택 붙여 넣기"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:25
 msgid "Scroll a page"
 msgstr "한 페이지 이동"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:26
 msgid "Scroll to the top / the bottom"
 msgstr "맨 위 / 맨 아래로"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "이전 / 다음 프롬프트로"
 
-#: internal/termui/palette.go:95
-msgid "Actions"
-msgstr "동작"
-
-#: internal/termui/palette.go:97
+#: internal/termui/palette.go:100
 msgid "Find an action"
 msgstr "동작 찾기"
 
-#: internal/termui/palette.go:209
-msgid "Change them in the settings (Ctrl+Shift+,)."
-msgstr "설정(Ctrl+Shift+,)에서 바꿀 수 있습니다."
+#: internal/termui/palette.go:212
+msgid "Change them in the settings."
+msgstr "설정에서 바꿀 수 있습니다."
+
+#: internal/termui/palette.go:214
+msgid "Change them in the settings (%s)."
+msgstr "설정에서 바꿀 수 있습니다 (%s)."
 
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
@@ -11247,161 +11361,180 @@ msgid "Terminal Settings"
 msgstr "터미널 설정"
 
 #: internal/termui/prefs.go:63
+msgid "LOOK"
+msgstr "모양"
+
+#: internal/termui/prefs.go:68
+msgid "inua's theme, or one of its others for this window alone"
+msgstr "inua의 테마, 또는 이 창에만 쓰는 다른 테마"
+
+#: internal/termui/prefs.go:73
+msgid "The colours programs draw with: the window theme's, or a scheme"
+msgstr "프로그램이 그릴 때 쓰는 색: 창 테마의 색, 또는 색 구성표"
+
+#: internal/termui/prefs.go:75
 #: internal/viewerui/app.go:817
 msgid "TEXT"
 msgstr "텍스트"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "글꼴"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "고정폭 글꼴. CJK는 Pango가 채웁니다"
 
-#: internal/termui/prefs.go:77
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "크기"
-
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
 msgstr "포인트 단위. 창에서는 Ctrl+=와 Ctrl+-로 바꿉니다"
 
-#: internal/termui/prefs.go:79
+#: internal/termui/prefs.go:91
 msgid "CURSOR"
 msgstr "커서"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Block"
 msgstr "블록"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Bar"
 msgstr "막대"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Underline"
 msgstr "밑줄"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "Shape"
 msgstr "모양"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "What a program resetting the cursor gets"
 msgstr "프로그램이 커서를 되돌릴 때의 모양"
 
-#: internal/termui/prefs.go:89
+#: internal/termui/prefs.go:101
 msgid "Blink"
 msgstr "깜박임"
 
-#: internal/termui/prefs.go:91
+#: internal/termui/prefs.go:103
 msgid "TERMINAL"
 msgstr "터미널"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Copy on select"
 msgstr "선택하면 복사"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Selecting copies to the clipboard; the primary selection follows it either way"
 msgstr "선택하면 클립보드에 복사. 기본 선택은 언제나 따라갑니다"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Scrollback"
 msgstr "스크롤백"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Lines kept per pane"
 msgstr "창마다 보관하는 줄 수"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "Replay"
 msgstr "다시 보내기"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "MiB of a pane's recent output kept for a window opened later"
 msgstr "나중에 여는 창을 위해 보관하는 창의 최근 출력 (MiB)"
 
-#: internal/termui/prefs.go:103
+#: internal/termui/prefs.go:115
 msgid "SHELL AND AGENTS"
 msgstr "셸과 에이전트"
 
-#: internal/termui/prefs.go:103
-msgid "Used when the terminal host starts again"
-msgstr "터미널 호스트를 다시 시작하면 적용"
+#: internal/termui/prefs.go:115
+msgid "Below the shell: used when the terminal host starts again"
+msgstr "셸 아래 항목: 터미널 호스트가 다시 시작될 때 적용"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "셸"
+
+#: internal/termui/prefs.go:120
+msgid "What new panes start; the panes open already keep theirs"
+msgstr "새 창이 시작하는 셸. 이미 열린 창은 그대로입니다"
+
+#: internal/termui/prefs.go:121
 msgid "Shell integration"
 msgstr "셸 통합"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:121
 msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "bash, zsh, fish가 프롬프트를 표시해 명령을 기억할 수 있게 합니다"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
 #: ui/settings.ui:3064
 msgid "Notifications"
 msgstr "알림"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 msgid "When an agent needs you or is done in a pane you are not looking at"
 msgstr "보고 있지 않은 창에서 에이전트가 응답을 기다리거나 끝났을 때"
 
-#: internal/termui/prefs.go:108
-msgid "Agents' hooks"
-msgstr "에이전트 훅"
-
-#: internal/termui/prefs.go:108
-msgid "Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"
-msgstr "Claude Code와 Codex가 처음 실행될 때 inua-term의 훅을 추가해 상태를 알리게 합니다"
-
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Remember commands"
 msgstr "명령 기억"
 
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Put each pane's last command back at its prompt, not run"
 msgstr "각 창의 마지막 명령을 실행하지 않고 프롬프트에 되돌려 놓습니다"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Never keep"
 msgstr "기억하지 않기"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "이 패턴과 일치하는 명령, 쉼표로 구분"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "키"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "키를 클릭한 뒤 새 키를 누르세요. Backspace는 해제합니다"
 
-#: internal/termui/prefs.go:277
+#: internal/termui/prefs.go:292
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "키를 누른다..."
 
-#: internal/termui/prefs.go:278
+#: internal/termui/prefs.go:293
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape는 취소, Backspace는 이 동작의 키를 해제합니다."
 
-#: internal/termui/prefs.go:300
+#: internal/termui/prefs.go:315
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "키에는 Ctrl, Alt 또는 Super가 필요합니다. 나머지는 프로그램의 것입니다."
 
-#: internal/termui/prefs.go:311
+#: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s은(는) %s의 키였습니다. 그 동작은 이제 키가 없습니다."
+
+#: internal/termui/restart.go:31
+msgid "Restart the terminal host?"
+msgstr "터미널 호스트를 다시 시작할까요?"
+
+#: internal/termui/restart.go:32
+msgid "Every program in the panes ends. The sessions come back, each pane's last command at its prompt, not run; agents come back as their resume command."
+msgstr "창의 모든 프로그램이 끝납니다. 세션은 돌아오고, 각 창의 마지막 명령이 실행되지 않은 채 프롬프트에 놓입니다. 에이전트는 재개 명령으로 돌아옵니다."
+
+#: internal/termui/restart.go:34
+#: internal/termui/wsmenu.go:140
+msgid "%d agent is working or waiting for you."
+msgid_plural "%d agents are working or waiting for you."
+msgstr[0] "에이전트 %d개가 작업 중이거나 당신을 기다리고 있습니다."
 
 #: internal/termui/search.go:54
 msgid "Previous match (Enter)"
@@ -11416,6 +11549,28 @@ msgstr "다음 일치 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "닫기(Escape)"
+
+#: internal/termui/wsmenu.go:81
+msgid "Close…"
+msgstr "닫기…"
+
+#: internal/termui/wsmenu.go:113
+msgid "Rename the workspace"
+msgstr "작업 공간 이름 바꾸기"
+
+#: internal/termui/wsmenu.go:136
+msgid "Its %s and %s end, and every program running in them quits."
+msgstr "%s과(와) %s이(가) 끝나고, 그 안에서 실행 중인 모든 프로그램이 종료됩니다."
+
+#: internal/termui/wsmenu.go:137
+msgid "%d session"
+msgid_plural "%d sessions"
+msgstr[0] "세션 %d개"
+
+#: internal/termui/wsmenu.go:138
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "창 %d개"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -13156,10 +13311,6 @@ msgstr "페이지 크기"
 msgid "Created"
 msgstr "만든 날짜"
 
-#: internal/viewerui/app.go:809
-msgid "Changed"
-msgstr "바뀐 날짜"
-
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "만든 프로그램"
@@ -13760,19 +13911,11 @@ msgstr "폴더 선택…"
 msgid "FOUND"
 msgstr "발견"
 
-#: ui/disk.ui:465
-msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
-msgstr "맵이나 목록에서 항목을 고르면 그것이 무엇인지, 삭제해도 되는지 여기에 나옵니다."
-
-#: ui/disk.ui:499
-msgid "[ITEM]"
-msgstr "[항목]"
-
-#: ui/disk.ui:587
+#: ui/disk.ui:543
 msgid "Show on the map"
 msgstr "맵에서 보기"
 
-#: ui/disk.ui:596
+#: ui/disk.ui:554
 msgid "Show in Files"
 msgstr "파일에서 보기"
 
@@ -13780,21 +13923,9 @@ msgstr "파일에서 보기"
 msgid "[CAN IT GO]"
 msgstr "[삭제해도 되나]"
 
-#: ui/disk.ui:670
-msgid "The proper way to clean it:"
-msgstr "올바른 정리 방법:"
-
-#: ui/disk.ui:827
-msgid "[DELETE]"
-msgstr "[삭제]"
-
-#: ui/disk.ui:915
-msgid "[WHAT IS IT]"
-msgstr "[무엇인가]"
-
-#: ui/disk.ui:968
-msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
-msgstr "어시스턴트에게는 경로, 크기, 안의 가장 큰 항목 이름만 보내며 파일 내용은 보내지 않습니다."
+#: ui/disk.ui:672
+msgid "Clean it with:"
+msgstr "정리 명령:"
 
 #: ui/files.ui:57
 msgid "Hidden files (Ctrl+H)"
@@ -15513,13 +15644,21 @@ msgstr "이름, 주소, OS 또는 태그로 필터링"
 msgid "EXIT NODE"
 msgstr "출구 노드"
 
-#: ui/term.ui:38
+#: ui/term.ui:62
+msgid "CPU in use"
+msgstr "CPU 사용률"
+
+#: ui/term.ui:81
+msgid "Memory in use"
+msgstr "메모리 사용률"
+
+#: ui/term.ui:100
+msgid "Up since the computer started"
+msgstr "컴퓨터를 켠 뒤 지난 시간"
+
+#: ui/term.ui:146
 msgid "Find a workspace or agent"
 msgstr "작업 공간이나 에이전트 찾기"
-
-#: ui/term.ui:128
-msgid "New session"
-msgstr "새 세션"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

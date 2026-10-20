@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -99,6 +101,11 @@ func (h *Host) Save() {
 	h.mu.Lock()
 	file := h.saveFile
 	b, _ := json.Marshal(&h.m)
+	waiting := make([]waitingSession, len(h.waiting))
+	for i, ws := range h.waiting {
+		s := *ws.s // a copy: the session changes as it starts
+		waiting[i] = waitingSession{ws: ws.ws, s: &s, panes: ws.panes}
+	}
 	h.mu.Unlock()
 	if file == "" {
 		return
@@ -126,6 +133,17 @@ func (h *Host) Save() {
 		if p := h.pane(id); p != nil {
 			s.Panes[id] = h.savedPane(p)
 		}
+	}
+	// The sessions waiting for their folders stay as they were kept.
+	for _, ws := range waiting {
+		w := s.Model.Workspace(ws.ws.ID)
+		if w == nil {
+			copied := ws.ws
+			w = &copied
+			s.Model.Workspaces = append(s.Model.Workspaces, w)
+		}
+		w.Sessions = append(w.Sessions, ws.s)
+		maps.Copy(s.Panes, ws.panes)
 	}
 	if err := writeFile(file, &s); err != nil {
 		log.Printf("host: remembering: %v", err)
@@ -219,51 +237,183 @@ func writeFile(file string, s *Saved) error {
 	return os.Rename(tmp, file)
 }
 
+// waitingSession is a kept session whose folders are not there yet, as on
+// a drive mounted after the host started (a network share, a disk): it
+// stays out of the model, in the file all the same, and starts once its
+// folders are there. Its panes are numbered below zero, apart from the
+// host's.
+type waitingSession struct {
+	ws    model.Workspace // its workspace, without sessions
+	s     *model.Session
+	panes map[int]SavedPane
+}
+
+// waitCheck is how often the waiting sessions' folders are looked for
+// (a test's shorter).
+var waitCheck = 3 * time.Second
+
 // restore starts the kept sessions again: a shell in each pane's folder,
 // in the same layouts, each pane's command waiting to be put back at its
-// prompt.
+// prompt. A session whose folders are not there waits for them; one
+// that fails to start is dropped whole, its panes started closed again.
 func (h *Host) restore(s Saved) {
-	ids := map[int]int{} // old pane IDs to new
+	var waiting []waitingSession
+	var keep []*model.Workspace
 	for _, w := range s.Model.Workspaces {
 		var kept []*model.Session
+		waits := false
 		for _, ss := range w.Sessions {
-			ok := true
-			for _, old := range ss.Tree.Panes() {
-				sp := s.Panes[old]
-				dir := sp.Dir
-				if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
-					dir = w.Dir
-				}
-				id, err := h.startIn(dir, 0)
-				if err != nil {
-					log.Printf("host: restoring %s: %v", ss.Name, err)
-					ok = false
-					break
-				}
-				ids[old] = id
-				if p := h.pane(id); p != nil {
-					p.mu.Lock()
-					p.title, p.pending, p.restored = sp.Title, h.resume(sp.Command), true
-					p.mu.Unlock()
-				}
+			if !reachable(w, ss, s.Panes) {
+				waiting = append(waiting, h.toWait(w, ss, s.Panes))
+				waits = true
+				continue
 			}
-			if ok {
-				ss.Tree = renumber(ss.Tree, ids)
-				ss.Focus, ss.Zoom = ids[ss.Focus], ids[ss.Zoom]
-				if !ss.Tree.Has(ss.Focus) {
-					ss.Focus = ss.Tree.Panes()[0]
-				}
+			if h.startSession(w, ss, s.Panes) {
 				kept = append(kept, ss)
 			}
 		}
 		w.Sessions = kept
+		// A workspace whose sessions all wait comes back with them.
+		if len(kept) > 0 || !waits {
+			keep = append(keep, w)
+		}
+	}
+	s.Model.Workspaces = keep
+	if ws := s.Model.Workspace(s.Model.Shown.Workspace); ws == nil || (s.Model.Shown.Session != 0 && !slices.ContainsFunc(ws.Sessions, func(ss *model.Session) bool { return ss.ID == s.Model.Shown.Session })) {
+		s.Model.Shown = model.Shown{}
 	}
 	h.mu.Lock()
 	next := h.m.Next
 	h.m = s.Model
 	h.m.Next = max(h.m.Next, next)
+	h.waiting = append(h.waiting, waiting...)
 	h.mu.Unlock()
 	h.publish()
+	if len(waiting) > 0 {
+		go h.wait()
+	}
+}
+
+// reachable says every pane of a session has a folder to start in: its
+// own, else its workspace's.
+func reachable(w *model.Workspace, ss *model.Session, panes map[int]SavedPane) bool {
+	for _, old := range ss.Tree.Panes() {
+		if !isDir(panes[old].Dir) && !isDir(w.Dir) {
+			return false
+		}
+	}
+	return true
+}
+
+func isDir(dir string) bool {
+	fi, err := os.Stat(dir)
+	return dir != "" && err == nil && fi.IsDir()
+}
+
+// toWait is a session set aside until its folders are there, its panes
+// numbered below zero.
+func (h *Host) toWait(w *model.Workspace, ss *model.Session, panes map[int]SavedPane) waitingSession {
+	ws := *w
+	ws.Sessions = nil
+	ids := map[int]int{}
+	kept := map[int]SavedPane{}
+	h.mu.Lock()
+	for _, old := range ss.Tree.Panes() {
+		h.waitIDs--
+		ids[old] = h.waitIDs
+		kept[h.waitIDs] = panes[old]
+	}
+	h.mu.Unlock()
+	ss.Tree = renumber(ss.Tree, ids)
+	ss.Focus, ss.Zoom = ids[ss.Focus], ids[ss.Zoom]
+	log.Printf("host: %s / %s waits for %s", w.Name, ss.Name, w.Dir)
+	return waitingSession{ws: ws, s: ss, panes: kept}
+}
+
+// startSession starts a kept session's panes, each in its folder (else
+// its workspace's), and numbers the session's layout with them; when one
+// fails, those started are closed and it reports false.
+func (h *Host) startSession(w *model.Workspace, ss *model.Session, panes map[int]SavedPane) bool {
+	ids := map[int]int{} // old pane IDs to new
+	for _, old := range ss.Tree.Panes() {
+		sp := panes[old]
+		dir := sp.Dir
+		if !isDir(dir) {
+			dir = w.Dir
+		}
+		id, err := h.startIn(dir, 0)
+		if err != nil {
+			log.Printf("host: restoring %s / %s: %v", w.Name, ss.Name, err)
+			for _, started := range ids {
+				if p := h.pane(started); p != nil {
+					h.closePane(p)
+				}
+			}
+			return false
+		}
+		ids[old] = id
+		if p := h.pane(id); p != nil {
+			p.mu.Lock()
+			p.title, p.pending, p.restored = sp.Title, h.resume(sp.Command), true
+			p.mu.Unlock()
+		}
+	}
+	ss.Tree = renumber(ss.Tree, ids)
+	ss.Focus, ss.Zoom = ids[ss.Focus], ids[ss.Zoom]
+	if !ss.Tree.Has(ss.Focus) {
+		ss.Focus = ss.Tree.Panes()[0]
+	}
+	return true
+}
+
+// wait starts the waiting sessions as their folders appear, until none
+// waits or the host ends.
+func (h *Host) wait() {
+	tick := time.NewTicker(waitCheck)
+	defer tick.Stop()
+	for {
+		select {
+		case <-h.done:
+			return
+		case <-tick.C:
+		}
+		h.mu.Lock()
+		waiting := h.waiting
+		h.waiting = nil
+		h.mu.Unlock()
+		var still []waitingSession
+		started := false
+		for _, ws := range waiting {
+			if !reachable(&ws.ws, ws.s, ws.panes) {
+				still = append(still, ws)
+				continue
+			}
+			if !h.startSession(&ws.ws, ws.s, ws.panes) {
+				continue // dropped, as at the start
+			}
+			started = true
+			log.Printf("host: %s / %s is back", ws.ws.Name, ws.s.Name)
+			h.mu.Lock()
+			w := h.m.Workspace(ws.ws.ID)
+			if w == nil {
+				copied := ws.ws
+				w = &copied
+				h.m.Workspaces = append(h.m.Workspaces, w)
+			}
+			w.Sessions = append(w.Sessions, ws.s)
+			h.mu.Unlock()
+		}
+		h.mu.Lock()
+		h.waiting = append(still, h.waiting...)
+		left := len(h.waiting)
+		h.mu.Unlock()
+		if started {
+			h.publish()
+		}
+		if left == 0 {
+			return
+		}
+	}
 }
 
 // resume is the command to put back for one that ran: an agent that can

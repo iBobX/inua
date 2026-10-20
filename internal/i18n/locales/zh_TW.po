@@ -7,7 +7,7 @@ msgstr ""
 
 #: cmd/inua-assistant/answer.go:36
 #: internal/assistantui/assistantui.go:277
-#: internal/diskui/details.go:221
+#: internal/diskui/details.go:332
 #: internal/mailui/assist.go:43
 msgid "The assistant is turned off. Turn it on in Settings → AI."
 msgstr "助手關閉。在“設定”→“AI”中將其開啟。"
@@ -62,14 +62,6 @@ msgstr "%s 讀取了一個密鑰"
 #: cmd/inua-keyring/main.go:155
 msgid "“%s” · %s"
 msgstr "「%s」 · %s"
-
-#: cmd/inua-term/main.go:186
-msgid "inua-term added its hooks"
-msgstr "inua-term 已加入它的掛鉤"
-
-#: cmd/inua-term/main.go:187
-msgid "%s now reports its state to inua-term. The file before is %s.bak; `inua-term integration remove %s` takes them out."
-msgstr "%s 現在會向 inua-term 回報狀態。原檔案為 %s.bak；`inua-term integration remove %s` 可以移除它們。"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
@@ -1755,7 +1747,7 @@ msgstr "影片"
 #: internal/appui/calculator.go:49
 #: internal/appui/gpg.go:1529
 #: internal/appui/pass.go:801
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/mailui/actions.go:122
 #: internal/ui/clipboard.go:459
@@ -1873,6 +1865,7 @@ msgstr "編輯"
 #: internal/appui/clock.go:491
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
+#: internal/termui/guide.go:161
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:1313
@@ -2146,13 +2139,13 @@ msgid "Extend 2 years"
 msgstr "延長 2 年"
 
 #: internal/appui/gpg.go:823
-#: ui/disk.ui:860
+#: ui/disk.ui:781
 msgid "Delete…"
 msgstr "刪除…"
 
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:547
+#: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:479
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
@@ -2339,7 +2332,7 @@ msgstr "解密出的副本會移到垃圾桶，可從那裡復原；加密檔案
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
 #: internal/filesui/window.go:754
-#: ui/disk.ui:850
+#: ui/disk.ui:771
 #: ui/settings.ui:184
 #: ui/settings.ui:442
 msgid "Move to Trash"
@@ -2505,7 +2498,7 @@ msgid "NOTES"
 msgstr "備註"
 
 #: internal/appui/pass.go:595
-#: internal/term/host/agents.go:407
+#: internal/term/host/agents.go:408
 msgid "Show"
 msgstr "顯示"
 
@@ -2516,11 +2509,11 @@ msgstr "隱藏"
 
 #: internal/appui/pass.go:601
 #: internal/appui/pass.go:626
-#: internal/diskui/details.go:550
+#: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:84
+#: internal/term/settings/settings.go:103
 #: internal/ui/askpass.go:203
-#: ui/disk.ui:698
+#: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2874
@@ -2564,6 +2557,7 @@ msgid "Its path: the first part is its category. Its content comes next."
 msgstr "路徑：第一段是類別。接著填寫內容。"
 
 #: internal/appui/pass.go:797
+#: internal/termui/guide.go:163
 msgid "Next"
 msgstr "下一步"
 
@@ -2886,8 +2880,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:267
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:268
+#: internal/shell/dock.go:301
 msgid "NETWORK"
 msgstr "網路"
 
@@ -3173,7 +3167,7 @@ msgstr "名稱"
 #: internal/appui/sysmon.go:968
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:323
+#: internal/diskui/window.go:329
 msgid "System"
 msgstr "系統"
 
@@ -3565,7 +3559,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:265
+#: internal/termui/prefs.go:280
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3845,9 +3839,11 @@ msgstr "未知的元件 %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:746
-#: internal/termui/keys.go:226
-#: internal/termui/keys.go:324
+#: internal/termui/keys.go:271
+#: internal/termui/keys.go:399
 #: internal/termui/paste.go:279
+#: internal/termui/restart.go:42
+#: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:270
 #: internal/ui/askpass.go:412
 #: internal/ui/askpass.go:416
@@ -4727,13 +4723,12 @@ msgid "Opens folders"
 msgstr "開啟資料夾"
 
 #: internal/desktop/defaults.go:39
-#: internal/termui/app.go:84
-#: internal/termui/app.go:98
-#: internal/termui/app.go:264
-#: internal/termui/app.go:266
-#: internal/termui/tiles.go:352
+#: internal/termui/app.go:102
+#: internal/termui/app.go:135
+#: internal/termui/app.go:322
+#: internal/termui/app.go:324
+#: internal/termui/tiles.go:471
 #: ui/settings.ui:1933
-#: ui/term.ui:28
 #: config/apps/io.github.lyricat.Inua.Term.desktop:3
 msgid "Terminal"
 msgstr "終端"
@@ -4777,189 +4772,179 @@ msgstr "開啟純文字"
 msgid "Disk Usage"
 msgstr "磁碟用量"
 
+#: internal/diskui/details.go:47
+#: internal/termui/prefs.go:89
+#: internal/viewerui/app.go:795
+#: internal/viewerui/app.go:813
+#: internal/viewerui/app.go:828
+msgid "Size"
+msgstr "尺寸"
+
 #: internal/diskui/details.go:49
-msgid "%s file"
-msgid_plural "%s files"
-msgstr[0] "%s 個檔案"
+msgid "File"
+msgid_plural "Files"
+msgstr[0] "檔案"
 
-#: internal/diskui/details.go:52
-msgid "changed %s"
-msgstr "修改於 %s"
-
-#: internal/diskui/details.go:52
+#: internal/diskui/details.go:53
 msgid "2006-01-02"
 msgstr "2006年1月2日"
 
-#: internal/diskui/details.go:55
-msgid "some of it could not be read"
-msgstr "部分內容無法讀取"
+#: internal/diskui/details.go:53
+#: internal/viewerui/app.go:809
+msgid "Changed"
+msgstr "變更時間"
 
-#: internal/diskui/details.go:75
+#: internal/diskui/details.go:56
+msgid "Some of it could not be read."
+msgstr "有一部分無法讀取。"
+
+#: internal/diskui/details.go:76
 #: internal/ui/lock.go:272
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:154
 msgid "Checking…"
 msgstr "正在檢查中…"
 
-#: internal/diskui/details.go:104
-msgid "Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."
-msgstr "各種小於 1 MB 的檔案：在「檔案」中開啟資料夾查看。"
+#: internal/diskui/details.go:118
+msgid "AI · %s"
+msgstr "AI · %s"
 
-#: internal/diskui/details.go:108
-msgid "They are not one item to delete."
-msgstr "它們不是一個可刪除的項目。"
+#: internal/diskui/details.go:169
+msgid "Small files, each under 1 MB."
+msgstr "小檔案，每個都不到 1 MB。"
 
-#: internal/diskui/details.go:146
-msgid "No check settles it."
-msgstr "沒有檢查能判斷。"
+#: internal/diskui/details.go:172
+msgid "Not one item to delete."
+msgstr "不是可以一併刪除的一項。"
 
-#: internal/diskui/details.go:156
-#: internal/diskui/details.go:324
-#: internal/diskui/details.go:373
+#: internal/diskui/details.go:221
+msgid "Look inside first."
+msgstr "先看看裡面。"
+
+#: internal/diskui/details.go:223
+msgid "Look inside first, or ask the AI."
+msgstr "先看看裡面，或問問 AI。"
+
+#: internal/diskui/details.go:239
+msgid "Can it go"
+msgstr "能否刪除"
+
+#: internal/diskui/details.go:242
+msgid "What it is"
+msgstr "這是什麼"
+
+#: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
 msgid "Asking…"
 msgstr "正在詢問……"
 
-#: internal/diskui/details.go:158
-#: internal/mailui/reader.go:259
-#: internal/shell/launcher.go:379
-#: ui/disk.ui:770
-msgid "Ask the assistant"
-msgstr "詢問助理"
+#: internal/diskui/details.go:257
+msgid "Ask AI"
+msgstr "問 AI"
 
-#: internal/diskui/details.go:161
-msgid "The assistant: %s"
-msgstr "助手：%s"
+#: internal/diskui/details.go:259
+msgid "Ask again"
+msgstr "再問一次"
 
-#: internal/diskui/details.go:174
-msgid "It is the place scanned: choose what is in it."
-msgstr "這是掃描的位置本身：請選擇其中的項目。"
+#: internal/diskui/details.go:267
+msgid "Sends the path, the size and the largest names, never the files' contents."
+msgstr "只傳送路徑、大小和最大項目的名稱，從不傳送檔案內容。"
 
-#: internal/diskui/details.go:176
-msgid "Kept: the checks above say why."
-msgstr "保留：原因見上方檢查。"
+#: internal/diskui/details.go:411
+msgid "The AI could not answer: %v"
+msgstr "AI 無法回答：%v"
 
-#: internal/diskui/details.go:178
-msgid "It comes back when needed. The trash keeps it until emptied; Delete frees the room now."
-msgstr "需要時會恢復。垃圾桶會保留到清空為止；「刪除」會立即釋放空間。"
+#: internal/diskui/details.go:413
+msgid "The AI answered %q"
+msgstr "AI 的回答：%q"
 
-#: internal/diskui/details.go:180
-msgid "Look inside before deleting: it may hold your work, settings or history."
-msgstr "刪除前請查看裡面：可能有你的工作、設定或歷史。"
-
-#: internal/diskui/details.go:182
-msgid "No check settled it: look inside first, or ask the assistant."
-msgstr "沒有檢查能判斷：請先查看裡面，或詢問助手。"
-
-#: internal/diskui/details.go:292
-msgid "it answered %q"
-msgstr "它回答了 %q"
-
-#: internal/diskui/details.go:302
-msgid "The assistant could not decide: %v"
-msgstr "助手無法判斷：%v"
-
-#: internal/diskui/details.go:353
-msgid "The assistant could not answer: %v"
-msgstr "助手無法回答：%v"
-
-#: internal/diskui/details.go:358
-#: internal/diskui/details.go:386
-#: ui/disk.ui:926
-msgid "Explain"
-msgstr "解釋"
-
-#: internal/diskui/details.go:384
-msgid "Explain again"
-msgstr "再次解釋"
-
-#: internal/diskui/details.go:412
+#: internal/diskui/details.go:443
 msgid "Cannot open it in Files: %v"
 msgstr "無法在「檔案」中開啟：%v"
 
-#: internal/diskui/details.go:427
+#: internal/diskui/details.go:458
 msgid "Deleting…"
 msgstr "正在刪除…"
 
-#: internal/diskui/details.go:429
+#: internal/diskui/details.go:460
 msgid "Moving to the trash…"
 msgstr "正在移到垃圾桶…"
 
-#: internal/diskui/details.go:441
+#: internal/diskui/details.go:472
 msgid "Cannot delete %s: %v"
 msgstr "無法刪除 %s：%v"
 
-#: internal/diskui/details.go:446
-msgid "Moved %s to the trash: its %s are freed when the trash is emptied."
-msgstr "已將 %s 移到垃圾桶：清空垃圾桶後釋放 %s。"
+#: internal/diskui/details.go:477
+msgid "Moved %s to the trash."
+msgstr "已將 %s 移到垃圾桶。"
 
-#: internal/diskui/details.go:448
+#: internal/diskui/details.go:479
 msgid "Deleted %s: %s freed."
 msgstr "已刪除 %s：釋放了 %s。"
 
-#: internal/diskui/details.go:492
-msgid "%s in %s file. It does not go to the trash; this cannot be undone."
-msgid_plural "%s in %s files. They do not go to the trash; this cannot be undone."
-msgstr[0] "%s，%s 個檔案。不會進入垃圾桶，無法復原。"
+#: internal/diskui/details.go:523
+msgid "%s in %s file. This cannot be undone."
+msgid_plural "%s in %s files. This cannot be undone."
+msgstr[0] "%s，%s 個檔案。此動作無法復原。"
 
-#: internal/diskui/details.go:495
-msgid "%s. It does not go to the trash; this cannot be undone."
-msgstr "%s。不會進入垃圾桶，無法復原。"
+#: internal/diskui/details.go:526
+msgid "%s. This cannot be undone."
+msgstr "%s。此動作無法復原。"
 
-#: internal/diskui/details.go:497
+#: internal/diskui/details.go:528
 msgid "Delete %s for good?"
 msgstr "永久刪除 %s？"
 
-#: internal/diskui/details.go:521
+#: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:187
 #: internal/ui/settings_bench.go:332
 msgid "Running…"
 msgstr "正在執行…"
 
-#: internal/diskui/details.go:523
-#: internal/diskui/details.go:570
-#: ui/disk.ui:707
+#: internal/diskui/details.go:554
+#: internal/diskui/details.go:600
+#: ui/disk.ui:706
 msgid "Run"
 msgstr "執行"
 
-#: internal/diskui/details.go:529
-#: internal/diskui/details.go:568
-msgid "It runs as root: inua asks for your password first."
-msgstr "它以 root 身分執行：inua 會先詢問你的密碼。"
+#: internal/diskui/details.go:560
+#: internal/diskui/details.go:598
+msgid "Runs as root, after your password."
+msgstr "輸入密碼後以 root 執行。"
 
-#: internal/diskui/details.go:531
-msgid "It runs in %s."
+#: internal/diskui/details.go:562
+msgid "Runs in %s."
 msgstr "在 %s 中執行。"
 
-#: internal/diskui/details.go:565
-msgid "It runs in %s and cleans %s, %s now; inua measures it again when it ends."
-msgstr "在 %s 中執行，清理 %s（現在 %s）；結束後 inua 會重新測量。"
+#: internal/diskui/details.go:596
+msgid "Cleans %s, %s now."
+msgstr "清理 %s，目前 %s。"
 
-#: internal/diskui/details.go:570
+#: internal/diskui/details.go:600
 msgid "Run the clean command?"
 msgstr "執行清理指令？"
 
-#: internal/diskui/details.go:593
+#: internal/diskui/details.go:623
 msgid "%s ended with an error: %v"
 msgstr "%s 以錯誤結束：%v"
 
-#: internal/diskui/details.go:596
+#: internal/diskui/details.go:626
 msgid "Cannot measure it again: %v"
 msgstr "無法重新測量：%v"
 
-#: internal/diskui/details.go:608
+#: internal/diskui/details.go:638
 msgid "Done: %s freed."
 msgstr "完成：釋放了 %s。"
 
-#: internal/diskui/details.go:610
+#: internal/diskui/details.go:640
 msgid "Done: it freed no room here."
 msgstr "完成：這裡沒有釋放空間。"
 
-#: internal/diskui/details.go:613
+#: internal/diskui/details.go:643
 msgid "%s removed %s: %s freed."
 msgstr "%s 移除了 %s：釋放了 %s。"
 
-#: internal/diskui/window.go:321
+#: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
 #: internal/filesui/sidebar.go:41
 #: internal/filesui/tabs.go:96
@@ -4967,119 +4952,115 @@ msgstr "%s 移除了 %s：釋放了 %s。"
 msgid "Home"
 msgstr "家目錄"
 
-#: internal/diskui/window.go:351
-#: internal/diskui/window.go:548
+#: internal/diskui/window.go:357
+#: internal/diskui/window.go:553
 msgid "Scanning…"
 msgstr "正在掃描…"
 
-#: internal/diskui/window.go:355
+#: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
 #: internal/filesui/sidebar.go:68
 msgid "%s free of %s"
 msgstr "%s 可用，共 %s"
 
-#: internal/diskui/window.go:367
-msgid "Scan a place first"
-msgstr "請先掃描一個位置"
-
-#: internal/diskui/window.go:370
+#: internal/diskui/window.go:375
 msgid "%s · %s safe"
 msgstr "%s · 可安全刪除 %s"
 
-#: internal/diskui/window.go:440
+#: internal/diskui/window.go:445
 msgid "Choose a folder to scan"
 msgstr "選擇要掃描的資料夾"
 
-#: internal/diskui/window.go:513
+#: internal/diskui/window.go:518
 msgid "Scan again"
 msgstr "重新掃描"
 
-#: internal/diskui/window.go:517
+#: internal/diskui/window.go:522
 #: ui/disk.ui:190
 msgid "Scan"
 msgstr "掃描"
 
-#: internal/diskui/window.go:524
+#: internal/diskui/window.go:529
 msgid "your home"
 msgstr "你的家目錄"
 
-#: internal/diskui/window.go:526
-msgid "Not scanned yet. Scan measures every folder in %s on this disk, and finds the developer's, the agents' and the programs' folders in it."
-msgstr "尚未掃描。掃描會測量 %s 在此磁碟上的每個資料夾，並找出其中開發、代理和程式的資料夾。"
+#: internal/diskui/window.go:531
+msgid "Scan to see what fills %s."
+msgstr "掃描以查看是什麼佔滿了%s。"
 
-#: internal/diskui/window.go:543
+#: internal/diskui/window.go:548
 msgid "%s used of %s"
 msgstr "已用 %s，共 %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 msgid "%s in %s files · %s"
 msgstr "%s，%s 個檔案 · %s"
 
-#: internal/diskui/window.go:551
+#: internal/diskui/window.go:557
 #: internal/filesui/pane.go:1500
 msgid "15:04"
 msgstr "15:04"
 
-#: internal/diskui/window.go:569
+#: internal/diskui/window.go:575
 msgid "%s files · %s · %.0f s"
 msgstr "%s 個檔案 · %s · %.0f 秒"
 
-#: internal/diskui/window.go:615
+#: internal/diskui/window.go:609
 msgid "Cannot scan %s: %v"
 msgstr "無法掃描 %s：%v"
 
-#: internal/diskui/window.go:737
+#: internal/diskui/window.go:724
 msgid "%d smaller file"
 msgid_plural "%d smaller files"
 msgstr[0] "%d 個小檔案"
 
-#: internal/diskui/window.go:772
+#: internal/diskui/window.go:757
 msgid "counted"
 msgstr "已統計"
 
-#: internal/diskui/window.go:797
+#: internal/diskui/window.go:782
 msgid "free"
 msgstr "可用"
 
-#: internal/diskui/window.go:799
+#: internal/diskui/window.go:784
 msgid "Not scanned"
 msgstr "未掃描"
 
-#: internal/diskui/window.go:816
+#: internal/diskui/window.go:797
 msgid "Other"
 msgstr "其他"
 
-#: internal/diskui/window.go:879
+#: internal/diskui/window.go:860
 msgid "%d more item"
 msgid_plural "%d more items"
 msgstr[0] "另有 %d 項"
 
-#: internal/diskui/window.go:890
+#: internal/diskui/window.go:871
 #: internal/filesui/pane.go:797
 msgid "This folder is empty."
 msgstr "此資料夾是空的。"
 
-#: internal/diskui/window.go:946
-msgid "Dependencies, build output, toolchains and package caches: most come back with one command."
-msgstr "相依套件、建置輸出、工具鏈和套件快取：大多一條指令即可恢復。"
+#: internal/diskui/window.go:927
+msgid "Dependencies, builds and toolchains."
+msgstr "相依套件、建置產物和工具鏈。"
 
-#: internal/diskui/window.go:947
-msgid "Coding agents' conversations, worktrees and caches, and the AI models downloaded."
-msgstr "程式設計代理的對話、工作樹和快取，以及下載的 AI 模型。"
+#: internal/diskui/window.go:928
+msgid "Agents' sessions, worktrees and AI models."
+msgstr "代理的工作階段、工作樹和 AI 模型。"
 
-#: internal/diskui/window.go:948
-msgid "Programs' caches, packages downloaded and the trash."
-msgstr "程式的快取、下載的套件和垃圾桶。"
+#: internal/diskui/window.go:929
+msgid "Caches, downloaded packages and the trash."
+msgstr "快取、下載的套件和垃圾桶。"
 
-#: internal/diskui/window.go:966
-msgid "Nothing is scanned yet: scan a place, and what it holds of this kind shows here."
-msgstr "尚未掃描：掃描一個位置後，這類內容會顯示在這裡。"
+#: internal/diskui/window.go:953
+msgid "Scan a place first."
+msgstr "請先掃描一個位置。"
 
-#: internal/diskui/window.go:968
-msgid "Nothing of this kind in the places scanned."
-msgstr "已掃描的位置中沒有這類內容。"
+#: internal/diskui/window.go:955
+msgid "Nothing found."
+msgstr "找不到。"
 
-#: internal/diskui/window.go:971
+#: internal/diskui/window.go:957
 msgid "%s in %d folder · %s safe to delete"
 msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s，%d 個資料夾 · %s 可安全刪除"
@@ -5261,7 +5242,7 @@ msgstr[0] "%d 項"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/termui/keys.go:326
+#: internal/termui/keys.go:401
 msgid "Rename"
 msgstr "重新命名"
 
@@ -5336,6 +5317,7 @@ msgid "There: %s, %s. This one: %s, %s."
 msgstr "已有的：%s，%s。這個：%s，%s。"
 
 #: internal/filesui/cards.go:490
+#: internal/termui/guide.go:106
 msgid "Skip"
 msgstr "略過"
 
@@ -5368,7 +5350,8 @@ msgstr[0] "……還有 %d 項"
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:155
-#: internal/termui/keys.go:228
+#: internal/termui/keys.go:273
+#: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:139
 #: ui/settings.ui:3033
 #: ui/settings.ui:4565
@@ -5574,7 +5557,7 @@ msgid "Reload"
 msgstr "重新載入"
 
 #: internal/filesui/cards.go:717
-#: internal/termui/palette.go:195
+#: internal/termui/palette.go:198
 msgid "Keys"
 msgstr "快速鍵"
 
@@ -6346,7 +6329,7 @@ msgid "New file…"
 msgstr "新增檔案……"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:85
+#: internal/term/settings/settings.go:104
 #: internal/termui/paste.go:284
 msgid "Paste"
 msgstr "貼上"
@@ -6397,6 +6380,7 @@ msgid "Move to the other pane"
 msgstr "移動到另一窗格"
 
 #: internal/filesui/window.go:749
+#: internal/termui/wsmenu.go:80
 msgid "Rename…"
 msgstr "重新命名……"
 
@@ -9143,6 +9127,7 @@ msgstr "返回選單"
 #: internal/gamesui/fortune_menu.go:109
 #: internal/mailui/welcome.go:493
 #: internal/mailui/welcome.go:597
+#: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4265
 msgid "Back"
@@ -9425,7 +9410,7 @@ msgid "SPACE PINBALL"
 msgstr "太空彈珠"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 #: ui/settings.ui:1810
 msgid "Launcher"
 msgstr "啟動器"
@@ -9458,8 +9443,8 @@ msgstr "聚焦或關閉"
 
 #: internal/hyprconf/keys.go:30
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:290
-#: internal/term/settings/settings.go:91
+#: internal/shell/dock.go:291
+#: internal/term/settings/settings.go:110
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -9874,6 +9859,11 @@ msgstr "隱藏檢查"
 #: internal/mailui/reader.go:256
 msgid "Move to Spam"
 msgstr "移到垃圾郵件"
+
+#: internal/mailui/reader.go:259
+#: internal/shell/launcher.go:379
+msgid "Ask the assistant"
+msgstr "詢問助理"
 
 #: internal/mailui/reader.go:282
 msgid "THE ASSISTANT"
@@ -10348,7 +10338,7 @@ msgid "The server's search failed: %s"
 msgstr "伺服器搜尋失敗：%s"
 
 #: internal/mailui/window.go:1178
-#: internal/termui/agents.go:45
+#: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "閒置"
 
@@ -10650,6 +10640,7 @@ msgid "Suspend, locking first"
 msgstr "暫停，先鎖定"
 
 #: internal/shell/commands.go:29
+#: internal/termui/restart.go:44
 #: internal/ui/control.go:488
 #: ui/control.ui:172
 msgid "Restart"
@@ -10692,7 +10683,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空垃圾桶"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:290
+#: internal/shell/dock.go:291
 msgid "inua's settings"
 msgstr "inua的設置"
 
@@ -10842,56 +10833,56 @@ msgid "Web search"
 msgstr "網路搜尋"
 
 #: internal/shell/dock.go:246
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "EVERYDAY"
 msgstr "日常"
 
 #: internal/shell/dock.go:256
-#: internal/shell/dock.go:300
+#: internal/shell/dock.go:301
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:272
+#: internal/shell/dock.go:273
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:277
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:278
+#: internal/shell/dock.go:303
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系統"
 
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:292
 msgid "Find apps, windows and answers"
 msgstr "尋找應用程式、視窗和答案"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1770
 msgid "Screenshot"
 msgstr "螢幕截圖"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:293
 msgid "Capture an area, a window or a screen"
 msgstr "捕捉區域、視窗或螢幕"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "DEVELOPMENT"
 msgstr "開發"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "MEDIA"
 msgstr "媒體"
 
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:302
 msgid "GAMES"
 msgstr "遊戲"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:303
 msgid "OTHER"
 msgstr "其他"
 
-#: internal/shell/dock.go:327
+#: internal/shell/dock.go:328
 msgid "WORKSHOP"
 msgstr "工坊"
 
@@ -11016,167 +11007,282 @@ msgstr "充滿電"
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充電中"
 
-#: internal/term/host/agents.go:166
+#: internal/term/host/agents.go:179
 msgid "%s needs you"
 msgstr "%s 需要你"
 
-#: internal/term/host/agents.go:168
+#: internal/term/host/agents.go:181
 msgid "%s is done"
 msgstr "%s 已完成"
 
-#: internal/term/host/sessions.go:265
+#: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
 msgid "Commands"
 msgstr "指令"
 
-#: internal/term/settings/settings.go:69
+#: internal/term/scheme/scheme.go:26
+msgid "Cool blues and violets on a deep navy"
+msgstr "深海軍藍上的冷調藍紫"
+
+#: internal/term/scheme/scheme.go:29
+msgid "Soft pastels on a warm dark ground"
+msgstr "溫暖深色底上的柔和粉彩"
+
+#: internal/term/scheme/scheme.go:32
+msgid "Vivid pinks, greens and purples, high contrast"
+msgstr "鮮豔的粉、綠、紫，高對比度"
+
+#: internal/term/scheme/scheme.go:35
+msgid "Earthy, retro, easy on the eyes"
+msgstr "大地色調，復古，不傷眼"
+
+#: internal/term/scheme/scheme.go:38
+msgid "Calm arctic greys and frost blues"
+msgstr "沉靜的極地灰與霜藍"
+
+#: internal/term/scheme/scheme.go:41
+msgid "Atom's balanced dark, muted and clear"
+msgstr "Atom 均衡的深色，柔和而清晰"
+
+#: internal/term/scheme/scheme.go:44
+msgid "Muted roses and pines at dusk"
+msgstr "黃昏時柔和的玫瑰與松"
+
+#: internal/term/scheme/scheme.go:47
+msgid "The classic: low contrast on blue-green"
+msgstr "經典：藍綠底上的低對比度"
+
+#: internal/term/scheme/scheme.go:48
+msgid "Pastels on a light, milky ground"
+msgstr "乳白淺色底上的粉彩"
+
+#: internal/term/scheme/scheme.go:51
+msgid "Earthy tones on warm paper"
+msgstr "暖色紙面上的大地色調"
+
+#: internal/term/scheme/scheme.go:54
+msgid "The classic, on cream"
+msgstr "經典，米色底"
+
+#: internal/term/settings/settings.go:88
 msgid "New session in this workspace"
 msgstr "在此工作區新增工作階段"
 
-#: internal/term/settings/settings.go:70
-#: ui/term.ui:68
+#: internal/term/settings/settings.go:89
+#: internal/termui/columns.go:141
 msgid "New workspace"
 msgstr "新增工作區"
 
-#: internal/term/settings/settings.go:71
+#: internal/term/settings/settings.go:90
 msgid "Split right"
 msgstr "向右分割"
 
-#: internal/term/settings/settings.go:72
+#: internal/term/settings/settings.go:91
 msgid "Split down"
 msgstr "向下分割"
 
-#: internal/term/settings/settings.go:73
+#: internal/term/settings/settings.go:92
 msgid "Close pane"
 msgstr "關閉窗格"
 
-#: internal/term/settings/settings.go:74
+#: internal/term/settings/settings.go:93
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "與該方向的窗格交換（再按方向鍵）"
 
-#: internal/term/settings/settings.go:75
+#: internal/term/settings/settings.go:94
 msgid "Zoom pane / back"
 msgstr "放大窗格 / 還原"
 
-#: internal/term/settings/settings.go:76
+#: internal/term/settings/settings.go:95
 msgid "Equalize"
 msgstr "平均分配"
 
-#: internal/term/settings/settings.go:77
+#: internal/term/settings/settings.go:96
 msgid "Next layout"
 msgstr "下一種版面"
 
-#: internal/term/settings/settings.go:78
+#: internal/term/settings/settings.go:97
 msgid "Previous session"
 msgstr "上一個工作階段"
 
-#: internal/term/settings/settings.go:79
+#: internal/term/settings/settings.go:98
 msgid "Next session"
 msgstr "下一個工作階段"
 
-#: internal/term/settings/settings.go:80
+#: internal/term/settings/settings.go:99
 msgid "Next agent that needs you"
 msgstr "下一個需要你的代理"
 
-#: internal/term/settings/settings.go:81
+#: internal/term/settings/settings.go:100
 msgid "Every agent"
 msgstr "所有代理"
 
-#: internal/term/settings/settings.go:82
+#: internal/term/settings/settings.go:101
 msgid "Fold the workspaces"
 msgstr "收合工作區"
 
-#: internal/term/settings/settings.go:83
+#: internal/term/settings/settings.go:102
 msgid "Fold the sessions"
 msgstr "收合工作階段"
 
-#: internal/term/settings/settings.go:86
+#: internal/term/settings/settings.go:105
 msgid "Search the scrollback"
 msgstr "搜尋捲動紀錄"
 
-#: internal/term/settings/settings.go:87
+#: internal/term/settings/settings.go:106
 msgid "Copy mode"
 msgstr "複製模式"
 
-#: internal/term/settings/settings.go:88
-#: internal/termui/keys.go:315
+#: internal/term/settings/settings.go:107
+#: internal/termui/keys.go:373
 msgid "Rename the session"
 msgstr "重新命名工作階段"
 
-#: internal/term/settings/settings.go:89
+#: internal/term/settings/settings.go:108
 msgid "Every action by name"
 msgstr "依名稱列出所有動作"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:109
 msgid "Show the keys"
 msgstr "顯示按鍵"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:111
+msgid "Restart the terminal host"
+msgstr "重新啟動終端機主機"
+
+#: internal/term/settings/settings.go:112
 msgid "Font larger"
 msgstr "字體放大"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:113
 msgid "Font smaller"
 msgstr "字體縮小"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:114
 msgid "Font size as set"
 msgstr "恢復設定的字級"
 
-#: internal/termui/agents.go:33
+#: internal/termui/agents.go:36
 msgid "EXITED %d"
 msgstr "已結束 %d"
 
-#: internal/termui/agents.go:35
+#: internal/termui/agents.go:38
 msgid "RESTORED"
 msgstr "已還原"
 
-#: internal/termui/agents.go:39
+#: internal/termui/agents.go:42
 msgid "WORKING"
 msgstr "工作中"
 
-#: internal/termui/agents.go:41
+#: internal/termui/agents.go:44
 msgid "NEEDS YOU"
 msgstr "需要你"
 
-#: internal/termui/agents.go:43
+#: internal/termui/agents.go:46
 msgid "DONE"
 msgstr "已完成"
 
-#: internal/termui/agents.go:131
+#: internal/termui/agents.go:181
 msgid "Agents that need you"
 msgstr "需要你的代理"
 
-#: internal/termui/agents.go:209
+#: internal/termui/agents.go:267
 msgid "Agents"
 msgstr "代理"
 
-#: internal/termui/agents.go:216
+#: internal/termui/agents.go:274
 msgid "No agent runs in any workspace."
 msgstr "沒有工作區在執行代理。"
 
-#: internal/termui/columns.go:193
-msgid "%d pane"
-msgid_plural "%d panes"
-msgstr[0] "%d 個窗格"
+#: internal/termui/choices.go:32
+msgid "As inua (%s)"
+msgstr "跟隨 inua（%s）"
+
+#: internal/termui/choices.go:32
+msgid "The window changes with inua's theme"
+msgstr "視窗隨 inua 的主題變化"
+
+#: internal/termui/choices.go:34
+msgid "A theme of your own"
+msgstr "你自己的主題"
+
+#: internal/termui/choices.go:59
+msgid "The window's theme"
+msgstr "視窗的主題"
+
+#: internal/termui/choices.go:59
+msgid "The terminals take the window's colours"
+msgstr "終端機使用視窗的顏色"
+
+#: internal/termui/choices.go:71
+msgid "Your login shell (%s)"
+msgstr "你的登入 shell（%s）"
+
+#: internal/termui/columns.go:140
+#: internal/termui/palette.go:98
+msgid "Actions"
+msgstr "動作"
+
+#: internal/termui/columns.go:142
+msgid "New session"
+msgstr "新增工作階段"
 
 #: internal/termui/copymode.go:35
 msgid "COPY"
 msgstr "複製"
 
-#: internal/termui/keys.go:215
+#: internal/termui/guide.go:50
+msgid "Welcome to the Terminal"
+msgstr "歡迎使用終端機"
+
+#: internal/termui/guide.go:62
+msgid "Set up the terminal"
+msgstr "設定終端機"
+
+#: internal/termui/guide.go:78
+msgid "Your shell"
+msgstr "你的 shell"
+
+#: internal/termui/guide.go:79
+msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
+msgstr "每個新窗格啟動的 shell。inua-term 會標記 bash、zsh 和 fish 的提示字元，因此重新啟動後窗格的最後一條命令會回來；其他 shell 照常執行。"
+
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "終端機顏色"
+
+#: internal/termui/guide.go:87
+msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
+msgstr "程式繪製時使用的顏色：用視窗主題的顏色，終端機便與 inua 的其餘部分一致；也可以用一套經典配色。"
+
+#: internal/termui/guide.go:95
+#: internal/termui/prefs.go:68
+msgid "Window theme"
+msgstr "視窗主題"
+
+#: internal/termui/guide.go:96
+msgid "The look of the window around the terminals. It follows inua's theme, or keeps one of its own whatever inua's is."
+msgstr "終端機周圍視窗的外觀。它跟隨 inua 的主題，或者無論 inua 用什麼主題都保留自己的一個。"
+
+#: internal/termui/guide.go:108
+msgid "Keep these choices; the settings change them later"
+msgstr "保留這些選擇；之後可在設定中變更"
+
+#: internal/termui/keys.go:260
+#: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "關閉 %s？"
 
-#: internal/termui/keys.go:216
+#: internal/termui/keys.go:261
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "它正在處理「%s」；關閉窗格會結束它。"
 
-#: internal/termui/keys.go:218
+#: internal/termui/keys.go:263
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "它在等你：%s。關閉窗格會結束它。"
 
-#: internal/termui/keys.go:259
+#: internal/termui/keys.go:304
 msgid "Choose the workspace's folder"
 msgstr "選擇工作區的資料夾"
 
@@ -11189,36 +11295,44 @@ msgid "Resize the focused pane"
 msgstr "調整目前窗格大小"
 
 #: internal/termui/palette.go:21
+msgid "Session 1…8 / the last session"
+msgstr "工作階段 1…8 / 最後一個工作階段"
+
+#: internal/termui/palette.go:22
+msgid "Previous / next session"
+msgstr "上一個 / 下一個工作階段"
+
+#: internal/termui/palette.go:23
 msgid "Workspace 1…9"
 msgstr "工作區 1…9"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:24
 msgid "Paste the primary selection"
 msgstr "貼上主要選取"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:25
 msgid "Scroll a page"
 msgstr "捲動一頁"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:26
 msgid "Scroll to the top / the bottom"
 msgstr "捲到頂端 / 底端"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:27
 msgid "Scroll to the previous / next prompt"
 msgstr "跳到上一個 / 下一個提示字元"
 
-#: internal/termui/palette.go:95
-msgid "Actions"
-msgstr "動作"
-
-#: internal/termui/palette.go:97
+#: internal/termui/palette.go:100
 msgid "Find an action"
 msgstr "尋找動作"
 
-#: internal/termui/palette.go:209
-msgid "Change them in the settings (Ctrl+Shift+,)."
-msgstr "可在設定（Ctrl+Shift+,）中更改。"
+#: internal/termui/palette.go:212
+msgid "Change them in the settings."
+msgstr "可在設定中變更。"
+
+#: internal/termui/palette.go:214
+msgid "Change them in the settings (%s)."
+msgstr "可在設定中變更（%s）。"
 
 #: internal/termui/paste.go:238
 msgid "Paste %d line?"
@@ -11247,161 +11361,180 @@ msgid "Terminal Settings"
 msgstr "終端機設定"
 
 #: internal/termui/prefs.go:63
+msgid "LOOK"
+msgstr "外觀"
+
+#: internal/termui/prefs.go:68
+msgid "inua's theme, or one of its others for this window alone"
+msgstr "inua 的主題，或僅用於此視窗的另一個主題"
+
+#: internal/termui/prefs.go:73
+msgid "The colours programs draw with: the window theme's, or a scheme"
+msgstr "程式繪製時使用的顏色：視窗主題的，或一套配色"
+
+#: internal/termui/prefs.go:75
 #: internal/viewerui/app.go:817
 msgid "TEXT"
 msgstr "文字"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "字體"
 
-#: internal/termui/prefs.go:73
+#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "等寬字體；CJK 由 Pango 補足"
 
-#: internal/termui/prefs.go:77
-#: internal/viewerui/app.go:795
-#: internal/viewerui/app.go:813
-#: internal/viewerui/app.go:828
-msgid "Size"
-msgstr "尺寸"
-
-#: internal/termui/prefs.go:77
+#: internal/termui/prefs.go:89
 msgid "In points; Ctrl+= and Ctrl+- change it in the window"
 msgstr "以點為單位；視窗中可用 Ctrl+= 和 Ctrl+- 調整"
 
-#: internal/termui/prefs.go:79
+#: internal/termui/prefs.go:91
 msgid "CURSOR"
 msgstr "游標"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Block"
 msgstr "方塊"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Bar"
 msgstr "直線"
 
-#: internal/termui/prefs.go:81
+#: internal/termui/prefs.go:93
 msgid "Underline"
 msgstr "底線"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "Shape"
 msgstr "形狀"
 
-#: internal/termui/prefs.go:88
+#: internal/termui/prefs.go:100
 msgid "What a program resetting the cursor gets"
 msgstr "程式重設游標時得到的形狀"
 
-#: internal/termui/prefs.go:89
+#: internal/termui/prefs.go:101
 msgid "Blink"
 msgstr "閃爍"
 
-#: internal/termui/prefs.go:91
+#: internal/termui/prefs.go:103
 msgid "TERMINAL"
 msgstr "終端機"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Copy on select"
 msgstr "選取即複製"
 
-#: internal/termui/prefs.go:92
+#: internal/termui/prefs.go:104
 msgid "Selecting copies to the clipboard; the primary selection follows it either way"
 msgstr "選取即複製到剪貼簿；主要選取一律跟隨"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Scrollback"
 msgstr "捲動紀錄"
 
-#: internal/termui/prefs.go:97
+#: internal/termui/prefs.go:109
 msgid "Lines kept per pane"
 msgstr "每個窗格保留的行數"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "Replay"
 msgstr "重播"
 
-#: internal/termui/prefs.go:101
+#: internal/termui/prefs.go:113
 msgid "MiB of a pane's recent output kept for a window opened later"
 msgstr "為之後開啟的視窗保留的窗格近期輸出（MiB）"
 
-#: internal/termui/prefs.go:103
+#: internal/termui/prefs.go:115
 msgid "SHELL AND AGENTS"
 msgstr "SHELL 與代理"
 
-#: internal/termui/prefs.go:103
-msgid "Used when the terminal host starts again"
-msgstr "終端機主機下次啟動時生效"
+#: internal/termui/prefs.go:115
+msgid "Below the shell: used when the terminal host starts again"
+msgstr "shell 以下各項：終端機主機再次啟動時生效"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "Shell"
+
+#: internal/termui/prefs.go:120
+msgid "What new panes start; the panes open already keep theirs"
+msgstr "新窗格啟動的程式；已開啟的窗格保持原樣"
+
+#: internal/termui/prefs.go:121
 msgid "Shell integration"
 msgstr "Shell 整合"
 
-#: internal/termui/prefs.go:104
+#: internal/termui/prefs.go:121
 msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "讓 bash、zsh 和 fish 標記提示字元，以便記住命令"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 #: internal/ui/notify.go:316
 #: ui/bar.ui:122
 #: ui/settings.ui:3064
 msgid "Notifications"
 msgstr "通知"
 
-#: internal/termui/prefs.go:106
+#: internal/termui/prefs.go:123
 msgid "When an agent needs you or is done in a pane you are not looking at"
 msgstr "當代理在你未檢視的窗格中需要你或已完成時"
 
-#: internal/termui/prefs.go:108
-msgid "Agents' hooks"
-msgstr "代理掛鉤"
-
-#: internal/termui/prefs.go:108
-msgid "Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"
-msgstr "Claude Code 與 Codex 首次執行時為其加入 inua-term 的掛鉤，讓它們回報狀態"
-
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Remember commands"
 msgstr "記住命令"
 
-#: internal/termui/prefs.go:110
+#: internal/termui/prefs.go:125
 msgid "Put each pane's last command back at its prompt, not run"
 msgstr "將每個窗格的最後一個命令放回提示字元，不執行"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Never keep"
 msgstr "永不保留"
 
-#: internal/termui/prefs.go:125
+#: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "符合這些模式的命令，以逗號分隔"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "金鑰"
 
-#: internal/termui/prefs.go:127
+#: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "點選一個按鍵，再按下新的按鍵；Backspace 清除"
 
-#: internal/termui/prefs.go:277
+#: internal/termui/prefs.go:292
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "按鍵…"
 
-#: internal/termui/prefs.go:278
+#: internal/termui/prefs.go:293
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape 取消；Backspace 清除此動作的按鍵。"
 
-#: internal/termui/prefs.go:300
+#: internal/termui/prefs.go:315
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "按鍵需搭配 Ctrl、Alt 或 Super：其餘按鍵屬於程式。"
 
-#: internal/termui/prefs.go:311
+#: internal/termui/prefs.go:326
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s 原屬於 %s；該動作現在沒有按鍵。"
+
+#: internal/termui/restart.go:31
+msgid "Restart the terminal host?"
+msgstr "要重新啟動終端機主機嗎？"
+
+#: internal/termui/restart.go:32
+msgid "Every program in the panes ends. The sessions come back, each pane's last command at its prompt, not run; agents come back as their resume command."
+msgstr "窗格中的所有程式都會結束。工作階段會回來，每個窗格的最後一條命令放回提示字元處，不會執行；代理以其恢復命令回來。"
+
+#: internal/termui/restart.go:34
+#: internal/termui/wsmenu.go:140
+msgid "%d agent is working or waiting for you."
+msgid_plural "%d agents are working or waiting for you."
+msgstr[0] "%d 個代理正在工作或等待你。"
 
 #: internal/termui/search.go:54
 msgid "Previous match (Enter)"
@@ -11416,6 +11549,28 @@ msgstr "下一個符合 (Shift+Enter)"
 #: ui/tailscale.ui:240
 msgid "Close (Escape)"
 msgstr "關閉（逃脫）"
+
+#: internal/termui/wsmenu.go:81
+msgid "Close…"
+msgstr "關閉…"
+
+#: internal/termui/wsmenu.go:113
+msgid "Rename the workspace"
+msgstr "重新命名工作區"
+
+#: internal/termui/wsmenu.go:136
+msgid "Its %s and %s end, and every program running in them quits."
+msgstr "其中的 %s和 %s都會結束，在其中執行的所有程式都會結束。"
+
+#: internal/termui/wsmenu.go:137
+msgid "%d session"
+msgid_plural "%d sessions"
+msgstr[0] "%d 個工作階段"
+
+#: internal/termui/wsmenu.go:138
+msgid "%d pane"
+msgid_plural "%d panes"
+msgstr[0] "%d 個窗格"
 
 #: internal/ui/agenda.go:213
 msgid "inua calendar"
@@ -13156,10 +13311,6 @@ msgstr "頁面尺寸"
 msgid "Created"
 msgstr "建立時間"
 
-#: internal/viewerui/app.go:809
-msgid "Changed"
-msgstr "變更時間"
-
 #: internal/viewerui/app.go:810
 msgid "Made with"
 msgstr "製作工具"
@@ -13760,19 +13911,11 @@ msgstr "選擇資料夾…"
 msgid "FOUND"
 msgstr "已發現"
 
-#: ui/disk.ui:465
-msgid "Choose an item on the map or in a list: what it is, and whether it can go, show here."
-msgstr "在地圖或清單中選擇一項：這裡會顯示它是什麼，以及能否刪除。"
-
-#: ui/disk.ui:499
-msgid "[ITEM]"
-msgstr "[項目]"
-
-#: ui/disk.ui:587
+#: ui/disk.ui:543
 msgid "Show on the map"
 msgstr "在地圖中顯示"
 
-#: ui/disk.ui:596
+#: ui/disk.ui:554
 msgid "Show in Files"
 msgstr "在「檔案」中顯示"
 
@@ -13780,21 +13923,9 @@ msgstr "在「檔案」中顯示"
 msgid "[CAN IT GO]"
 msgstr "[能否刪除]"
 
-#: ui/disk.ui:670
-msgid "The proper way to clean it:"
-msgstr "正確的清理方法："
-
-#: ui/disk.ui:827
-msgid "[DELETE]"
-msgstr "[刪除]"
-
-#: ui/disk.ui:915
-msgid "[WHAT IS IT]"
-msgstr "[這是什麼]"
-
-#: ui/disk.ui:968
-msgid "The assistant is sent the path, the size and the names of the largest items in it, never what the files hold."
-msgstr "傳送給助手的只有路徑、大小和其中最大項目的名稱，從不傳送檔案內容。"
+#: ui/disk.ui:672
+msgid "Clean it with:"
+msgstr "清理指令："
 
 #: ui/files.ui:57
 msgid "Hidden files (Ctrl+H)"
@@ -15513,13 +15644,21 @@ msgstr "依名稱、位址、作業系統或標籤過濾"
 msgid "EXIT NODE"
 msgstr "出口節點"
 
-#: ui/term.ui:38
+#: ui/term.ui:62
+msgid "CPU in use"
+msgstr "CPU 使用率"
+
+#: ui/term.ui:81
+msgid "Memory in use"
+msgstr "記憶體使用率"
+
+#: ui/term.ui:100
+msgid "Up since the computer started"
+msgstr "自電腦啟動以來的時間"
+
+#: ui/term.ui:146
 msgid "Find a workspace or agent"
 msgstr "尋找工作區或代理"
-
-#: ui/term.ui:128
-msgid "New session"
-msgstr "新增工作階段"
 
 #: ui/video.ui:45
 msgid "Drop a video here"

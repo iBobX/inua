@@ -4,37 +4,30 @@
 package termui
 
 import (
+	"encoding/binary"
 	"sync"
-	"unsafe"
 
 	"codeberg.org/puregotk/purego"
 	"codeberg.org/puregotk/puregotk/v4/gdk"
-	"codeberg.org/puregotk/puregotk/v4/gobject"
-	"codeberg.org/puregotk/puregotk/v4/gobject/types"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
+	"codeberg.org/puregotk/puregotk/v4/gsk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
+
+	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/term/vt"
 )
 
-// GObject's and GTK's own calls that puregotk does not bind in a form
-// purego can make: g_type_query, g_object_new without varargs, and the
-// controller's current event.
+// GTK's own call that puregotk does not bind in a form purego can make:
+// the controller's current event (puregotk's wrapper refs a GdkEvent as a
+// GObject).
 var gobj struct {
-	once      sync.Once
-	typeQuery func(t types.GType, q *gobject.TypeQuery)
-	newObject func(t types.GType, n uint32, names, values uintptr) uintptr
-	// GTK's own, since puregotk's wrapper refs a GdkEvent as a GObject.
+	once         sync.Once
 	currentEvent func(controller uintptr) uintptr
 }
 
 func loadGObject() {
 	gobj.once.Do(func() {
-		h, err := purego.Dlopen("libgobject-2.0.so.0", purego.RTLD_NOW|purego.RTLD_GLOBAL)
-		if err != nil {
-			panic("termui: " + err.Error())
-		}
-		purego.RegisterLibFunc(&gobj.typeQuery, h, "g_type_query")
-		purego.RegisterLibFunc(&gobj.newObject, h, "g_object_new_with_properties")
 		g, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
 		if err != nil {
 			panic("termui: " + err.Error())
@@ -43,71 +36,126 @@ func loadGObject() {
 	})
 }
 
-// paneDrawer is what draws a pane and hears its size: a Go value, found
-// by the widget's pointer.
-type paneDrawer interface {
-	snapshot(w *gtk.Widget, s *gtk.Snapshot)
-	allocate(w *gtk.Widget, width, height int)
+// newPaneWidget makes a pane's widget, drawn by it.
+func newPaneWidget(p *termPane) *gtk.Widget {
+	loadGObject()
+	return gtkx.NewCanvas(&gtkx.Canvas{Snapshot: p.snapshot, Allocate: p.allocate})
 }
 
-var panes struct {
-	once sync.Once
-	t    types.GType
-	mu   sync.Mutex
-	by   map[uintptr]paneDrawer
-	// The class's callbacks live as long as the type.
-	classInit gobject.ClassInitFunc
-	instInit  gobject.InstanceInitFunc
+func forgetPaneWidget(w *gtk.Widget) { gtkx.ForgetCanvas(w) }
+
+// A line is drawn once, to a render node kept while the line shows:
+// scrolling then draws only the lines coming in, and a program redrawing
+// a spinner only the lines it changed. Shaping a run's text is most of a
+// frame's time (a screen of an agent's coloured output, every run of
+// every row, took 36 ms a frame). The nodes are the pane's colours and
+// font: dropLines forgets them when those change.
+
+// drawnLine is a line's node, nil for one with nothing to draw.
+type drawnLine struct {
+	node *gsk.RenderNode
+	used bool // shown in the frame being drawn
 }
 
-// paneType registers InuaTermPane, a GtkWidget whose snapshot and
-// size_allocate are its drawer's.
-func paneType() types.GType {
-	panes.once.Do(func() {
-		loadGObject()
-		panes.by = map[uintptr]paneDrawer{}
-		parent := gtk.WidgetGLibType()
-		var q gobject.TypeQuery
-		gobj.typeQuery(parent, &q)
-		panes.classInit = func(c *gobject.TypeClass, _ uintptr) {
-			wc := (*gtk.WidgetClass)(unsafe.Pointer(c))
-			wc.OverrideSnapshot(func(w *gtk.Widget, s *gtk.Snapshot) {
-				if d := drawerOf(w); d != nil {
-					d.snapshot(w, s)
-				}
-			})
-			wc.OverrideSizeAllocate(func(w *gtk.Widget, width, height, _ int32) {
-				if d := drawerOf(w); d != nil {
-					d.allocate(w, int(width), int(height))
-				}
-			})
-		}
-		panes.instInit = func(*gobject.TypeInstance, *gobject.TypeClass) {}
-		panes.t = gobject.TypeRegisterStaticSimple(parent, "InuaTermPane", q.ClassSize, &panes.classInit, q.InstanceSize, &panes.instInit, 0)
-	})
-	return panes.t
+func (l *drawnLine) free() {
+	if l.node != nil {
+		l.node.Unref()
+	}
 }
 
-func drawerOf(w *gtk.Widget) paneDrawer {
-	panes.mu.Lock()
-	defer panes.mu.Unlock()
-	return panes.by[w.GoPointer()]
+// lineNode is a line's node, drawn now unless the same line was drawn
+// before.
+func (p *termPane) lineNode(w *gtk.Widget, runs []vt.Run, cw, ch float32) *gsk.RenderNode {
+	key := lineKey(runs)
+	if l, ok := p.drawn[key]; ok {
+		l.used = true
+		return l.node
+	}
+	s := gtk.NewSnapshot()
+	for _, r := range runs {
+		p.drawRun(w, s, r, cw, ch)
+	}
+	l := &drawnLine{node: s.FreeToNode(), used: true}
+	if p.drawn == nil {
+		p.drawn = map[string]*drawnLine{}
+	}
+	p.drawn[key] = l
+	return l.node
 }
 
-// newPaneWidget makes an InuaTermPane drawn by d; the caller owns its
-// floating reference, as with any new widget.
-func newPaneWidget(d paneDrawer) *gtk.Widget {
-	ptr := gobj.newObject(paneType(), 0, 0, 0)
-	panes.mu.Lock()
-	panes.by[ptr] = d
-	panes.mu.Unlock()
-	return gtk.WidgetNewFromInternalPtr(ptr)
+// lineKey is what a line draws: each run's place, colours, attributes
+// and text.
+func lineKey(runs []vt.Run) string {
+	n := 0
+	for _, r := range runs {
+		n += 20 + len(r.Text)
+	}
+	b := make([]byte, 0, n)
+	for _, r := range runs {
+		b = binary.LittleEndian.AppendUint32(b, uint32(r.X))
+		b = binary.LittleEndian.AppendUint32(b, uint32(r.Cells))
+		b = binary.LittleEndian.AppendUint32(b, r.FG)
+		b = binary.LittleEndian.AppendUint32(b, r.BG)
+		b = binary.LittleEndian.AppendUint16(b, r.Attrs)
+		b = binary.LittleEndian.AppendUint16(b, uint16(len(r.Text)))
+		b = append(b, r.Text...)
+	}
+	return string(b)
 }
 
-func forgetPaneWidget(w *gtk.Widget) {
-	panes.mu.Lock()
-	delete(panes.by, w.GoPointer())
-	panes.mu.Unlock()
+// dropLines forgets the lines drawn, for new colours or a new font.
+func (p *termPane) dropLines() {
+	for _, l := range p.drawn {
+		l.free()
+	}
+	p.drawn = nil
+}
+
+// drawRun draws a run of a line, the line's top at 0.
+func (p *termPane) drawRun(w *gtk.Widget, s *gtk.Snapshot, r vt.Run, cw, ch float32) {
+	fg, bg := p.color(r.FG, p.fg), p.color(r.BG, p.bg)
+	if r.Attrs&vt.Inverse != 0 {
+		fg, bg = bg, fg
+	}
+	switch {
+	case r.Attrs&vt.MatchCurrent != 0:
+		bg, fg = p.warn, p.bg
+	case r.Attrs&vt.Selected != 0:
+		bg = p.cursor
+		bg.Alpha = 0.3
+	case r.Attrs&vt.Match != 0:
+		bg = p.warn
+		bg.Alpha = 0.3
+	}
+	if r.BG != vt.DefaultColor || r.Attrs&(vt.Inverse|vt.Selected|vt.Match) != 0 {
+		s.AppendColor(&bg, rect(float32(r.X)*cw, 0, float32(r.Cells)*cw, ch))
+	}
+	if r.Attrs&vt.Invisible != 0 || r.Text == "" {
+		return
+	}
+	if r.Attrs&vt.Faint != 0 {
+		fg.Alpha = 0.6
+	}
+	font := 0
+	if r.Attrs&vt.Bold != 0 {
+		font |= 1
+	}
+	if r.Attrs&vt.Italic != 0 {
+		font |= 2
+	}
+	l := w.CreatePangoLayout(r.Text)
+	l.SetFontDescription(p.fonts[font])
+	s.Save()
+	s.Translate(&graphene.Point{X: float32(r.X) * cw})
+	s.AppendLayout(l, &fg)
+	if r.Attrs&vt.Underline != 0 {
+		s.AppendColor(&fg, rect(0, ch-2, float32(r.Cells)*cw, 1))
+	}
+	if r.Attrs&vt.Strike != 0 {
+		s.AppendColor(&fg, rect(0, ch/2, float32(r.Cells)*cw, 1))
+	}
+	s.Restore()
+	l.Unref()
 }
 
 // Drawing helpers: GSK takes these by pointer.
@@ -138,6 +186,12 @@ func rgba(hex string) gdk.RGBA {
 		c = gdk.RGBA{Red: v(1), Green: v(3), Blue: v(5), Alpha: 1}
 	}
 	return c
+}
+
+// rgbaOf is a colour 0xRRGGBB.
+func rgbaOf(v uint32) gdk.RGBA {
+	b := func(s uint) float32 { return float32(v>>s&0xff) / 255 }
+	return gdk.RGBA{Red: b(16), Green: b(8), Blue: b(0), Alpha: 1}
 }
 
 // cellSize is a monospace font's cell in pixels.

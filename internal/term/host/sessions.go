@@ -24,18 +24,30 @@ import (
 // ShellEnv is what a pane's shell gets on top of the host's environment.
 var ShellEnv = []string{"TERM=xterm-256color", "COLORTERM=truecolor", "TERM_PROGRAM=inua-term"}
 
-// shell is the command a new pane runs: the user's shell.
-func shell() []string { return []string{cmp.Or(os.Getenv("SHELL"), "/bin/sh")} }
+// SetShell sets the shell new panes start (term.toml's shell.program);
+// "" is $SHELL.
+func (h *Host) SetShell(program string) {
+	h.mu.Lock()
+	h.shellProg = program
+	h.mu.Unlock()
+}
+
+// shell is the shell a new pane starts, which its SHELL names too.
+func (h *Host) shell() string {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return cmp.Or(h.shellProg, os.Getenv("SHELL"), "/bin/sh")
+}
 
 // shellEnv is the host's environment for a pane's shell.
-func shellEnv() []string {
+func shellEnv(shell string) []string {
 	var env []string
 	for _, e := range os.Environ() {
-		if !strings.HasPrefix(e, "INUA_TERM_") {
+		if !strings.HasPrefix(e, "INUA_TERM_") && !strings.HasPrefix(e, "SHELL=") {
 			env = append(env, e)
 		}
 	}
-	return append(env, ShellEnv...)
+	return append(append(env, "SHELL="+shell), ShellEnv...)
 }
 
 // tell sends every client a message.
@@ -113,7 +125,8 @@ func (h *Host) startIn(dir string, size int) (int, error) {
 		cols, rows = p.cols, p.rows
 		p.mu.Unlock()
 	}
-	argv, env := shell(), shellEnv()
+	sh := h.shell()
+	argv, env := []string{sh}, shellEnv(sh)
 	if h.ShellDir != "" {
 		argv, env = shellint.Wrap(argv, env, h.ShellDir)
 	}
@@ -169,7 +182,7 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 	case MsgRun:
 		reply.Session, err = h.run(m.Argv, m.Dir)
 	case MsgReport:
-		err = h.report(m)
+		err = h.report(m, peerPid(c.conn))
 		c.message(Message{Type: MsgReply, ID: m.ID, Error: errText(err)})
 		return true
 	case MsgActive:
@@ -249,7 +262,7 @@ func (h *Host) run(argv []string, dir string) (int, error) {
 	if dir == "" {
 		dir = home
 	}
-	pane, err := h.start(argv, dir, shellEnv(), 80, 24, 0, 0)
+	pane, err := h.start(argv, dir, shellEnv(h.shell()), 80, 24, 0, 0)
 	if err != nil {
 		return 0, err
 	}

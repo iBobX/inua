@@ -13,7 +13,7 @@ import (
 	"github.com/lyricat/inua/internal/term/settings"
 )
 
-// The settings (Ctrl+Shift+,) edit term.toml in the settings window's
+// The settings (Ctrl+,) edit term.toml in the settings window's
 // language: sections of rows, each change saved and used at once. The
 // host's own (shell integration, agents, remembering, replay) take hold
 // when it starts again. A key is recorded by pressing it.
@@ -60,7 +60,19 @@ func (a *App) openSettings() {
 		a.useSettings(*s)
 	}
 
-	sec := pr.section(page, i18n.T("TEXT"), "")
+	sec := pr.section(page, i18n.T("LOOK"), "")
+	themes := themeChoices(a.c)
+	theme := gtk.NewDropDownFromStrings(choiceLabels(themes))
+	theme.SetSelected(uint32(choiceIndex(themes, s.Look.Theme)))
+	pr.selected(theme, func(i uint) { s.Look.Theme = themes[i].value; save() })
+	pr.row(sec, i18n.T("Window theme"), i18n.T("inua's theme, or one of its others for this window alone"), &theme.Widget)
+	schemes := schemeChoices()
+	sch := gtk.NewDropDownFromStrings(choiceLabels(schemes))
+	sch.SetSelected(uint32(choiceIndex(schemes, s.Look.Scheme)))
+	pr.selected(sch, func(i uint) { s.Look.Scheme = schemes[i].value; save() })
+	pr.row(sec, i18n.T("Terminal colours"), i18n.T("The colours programs draw with: the window theme's, or a scheme"), &sch.Widget)
+
+	sec = pr.section(page, i18n.T("TEXT"), "")
 	family := gtk.NewEntry()
 	family.SetText(s.Font.Family)
 	family.SetWidthChars(18)
@@ -100,13 +112,16 @@ func (a *App) openSettings() {
 	pr.spin(replay, func(v float64) { s.Terminal.Replay = int(v); save() })
 	pr.row(sec, i18n.T("Replay"), i18n.T("MiB of a pane's recent output kept for a window opened later"), &replay.Widget)
 
-	sec = pr.section(page, i18n.T("SHELL AND AGENTS"), i18n.T("Used when the terminal host starts again"))
+	sec = pr.section(page, i18n.T("SHELL AND AGENTS"), i18n.T("Below the shell: used when the terminal host starts again"))
+	shells := shellChoices(s.Shell.Program)
+	sh := gtk.NewDropDownFromStrings(choiceLabels(shells))
+	sh.SetSelected(uint32(choiceIndex(shells, s.Shell.Program)))
+	pr.selected(sh, func(i uint) { s.Shell.Program = shells[i].value; save() })
+	pr.row(sec, i18n.T("Shell"), i18n.T("What new panes start; the panes open already keep theirs"), &sh.Widget)
 	pr.row(sec, i18n.T("Shell integration"), i18n.T("bash, zsh and fish mark their prompts, so the commands are remembered"),
 		pr.toggle(s.Shell.Integration, func(on bool) { s.Shell.Integration = on; save() }))
 	pr.row(sec, i18n.T("Notifications"), i18n.T("When an agent needs you or is done in a pane you are not looking at"),
 		pr.toggle(s.Agents.Notifications, func(on bool) { s.Agents.Notifications = on; save() }))
-	pr.row(sec, i18n.T("Agents' hooks"), i18n.T("Add inua-term's hooks to Claude Code and Codex when they first run, so they report their state"),
-		pr.toggle(s.Agents.Hooks, func(on bool) { s.Agents.Hooks = on; save() }))
 	pr.row(sec, i18n.T("Remember commands"), i18n.T("Put each pane's last command back at its prompt, not run"),
 		pr.toggle(s.Remember.Commands, func(on bool) { s.Remember.Commands = on; save() }))
 	forget := gtk.NewEntry()

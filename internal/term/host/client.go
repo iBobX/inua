@@ -26,6 +26,8 @@ type Client struct {
 	onOutput func(pane int, b []byte)
 	onEvent  func(Message)
 	done     chan struct{}
+	// sizes is set when the host tells each size a pane takes.
+	sizes bool
 }
 
 // Dial connects to the host at path; onOutput and onEvent may be nil.
@@ -50,7 +52,7 @@ func Dial(path string, onOutput func(pane int, b []byte), onEvent func(Message))
 		conn.Close()
 		return nil, err
 	}
-	c := &Client{conn: conn, pending: map[int]chan Message{}, onOutput: onOutput, onEvent: onEvent, done: make(chan struct{})}
+	c := &Client{conn: conn, pending: map[int]chan Message{}, onOutput: onOutput, onEvent: onEvent, done: make(chan struct{}), sizes: m.Sizes}
 	go c.read()
 	return c, nil
 }
@@ -178,6 +180,27 @@ func (c *Client) SetColors(colors Colors) error {
 	_, err := c.call(Message{Type: MsgColors, Colors: &colors})
 	return err
 }
+
+// SetShell tells the host the shell new panes start; "" is $SHELL.
+func (c *Client) SetShell(program string) error {
+	m := Message{Type: MsgShell}
+	if program != "" {
+		m.Argv = []string{program}
+	}
+	_, err := c.call(m)
+	return err
+}
+
+// Quit ends the host as a logout does: it keeps the sessions for the next
+// host, then ends every pane's program.
+func (c *Client) Quit() error {
+	_, err := c.call(Message{Type: MsgQuit})
+	return err
+}
+
+// TellsSizes reports whether the host tells each size a pane takes
+// (Message.Cols and Rows in an event), in the output's order.
+func (c *Client) TellsSizes() bool { return c.sizes }
 
 // ClosePane ends a pane's program and forgets the pane.
 func (c *Client) ClosePane(pane int) error {

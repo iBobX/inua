@@ -1,0 +1,16 @@
+type = "opencode"
+name = "opencode"
+icon = "agent-opencode"
+process = ["opencode"]
+resume = "opencode --continue"
+
+# Asking: a permission, its panel at the foot of the session.
+[[state]]
+state = "blocked"
+lines = 30
+any = ["Permission required", "Allow once"]
+
+[[state]]
+state = "working"
+lines = 6
+any = ["esc interrupt", "esc again to interrupt"]

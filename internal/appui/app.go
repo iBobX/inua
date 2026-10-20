@@ -339,6 +339,13 @@ func (c *Ctx) loadStyle() {
 	}
 }
 
+// ReloadStyle loads the style again, for a Themed view whose theme
+// changed, and has the view take the new colours.
+func (c *Ctx) ReloadStyle() {
+	c.loadStyle()
+	c.v.themeChanged()
+}
+
 // followConfig reloads the style when inua's settings change.
 func (c *Ctx) followConfig() {
 	st, err := os.Stat(c.cfgPath)

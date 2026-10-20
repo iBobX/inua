@@ -2,11 +2,13 @@ package host
 
 import (
 	"encoding/json"
+	"fmt"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -124,6 +126,84 @@ func TestPane(t *testing.T) {
 	if panes, _ := c.List(); panes[0].Cols != 100 || panes[0].Rows != 30 {
 		t.Errorf("after resize %+v", panes[0])
 	}
+}
+
+// A client hears each size a pane takes in the output's order: on
+// attaching, before the replay; on a resize, between the output before
+// and the output after.
+func TestSizesInOrder(t *testing.T) {
+	_, path := startHost(t)
+	var mu sync.Mutex
+	var log []string
+	add := func(s string) {
+		mu.Lock()
+		log = append(log, s)
+		mu.Unlock()
+	}
+	c, err := Dial(path, func(_ int, b []byte) { add("out " + string(b)) }, func(m Message) {
+		if m.Cols > 0 {
+			add(fmt.Sprintf("size %dx%d", m.Cols, m.Rows))
+		}
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+	if !c.TellsSizes() {
+		t.Fatal("the host does not tell sizes")
+	}
+	id, err := c.Create([]string{"sh", "-c", "echo one; read x; echo two; read y"}, t.TempDir(), nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The output starts before the attach: it comes as the replay.
+	time.Sleep(200 * time.Millisecond)
+	if err := c.Attach(id); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Resize(id, 100, 30, 0, 0); err != nil {
+		t.Fatal(err)
+	}
+	c.Input(id, []byte("\n"))
+	at := func(s string) int {
+		mu.Lock()
+		defer mu.Unlock()
+		for i, l := range log {
+			if strings.Contains(l, s) {
+				return i
+			}
+		}
+		return -1
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for at("two") < 0 {
+		if time.Now().After(deadline) {
+			t.Fatalf("no output after the resize: %q", log)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if !(at("size 80x24") < at("one") && at("one") < at("size 100x30") && at("size 100x30") < at("two")) {
+		t.Errorf("out of order: %q", log)
+	}
+}
+
+// The shell the window sets is what new panes start, and their SHELL.
+func TestSetShell(t *testing.T) {
+	t.Setenv("SHELL", "/bin/sh")
+	_, path := startHost(t)
+	w := newWatcher()
+	c := dial(t, path, w)
+	sh := filepath.Join(t.TempDir(), "myshell")
+	os.WriteFile(sh, []byte("#!/bin/sh\necho \"in $0 as $SHELL\"\nread x\n"), 0o755)
+	if err := c.SetShell(sh); err != nil {
+		t.Fatal(err)
+	}
+	c.Open(t.TempDir(), "")
+	st, _ := c.State()
+	id := st.Model.Workspaces[0].Sessions[0].Focus
+	c.Attach(id)
+	want := "in " + sh + " as " + sh
+	w.waitFor(t, want, func() bool { return strings.Contains(w.text(id), want) })
 }
 
 // A client attaching later gets what came before; two clients both get
@@ -386,7 +466,8 @@ func TestSessions(t *testing.T) {
 		t.Fatal(err)
 	}
 	st, _ = c.State()
-	if w := st.Model.Workspaces; len(w) != 1 || len(w[0].Sessions) != 0 || len(st.Panes) != 0 {
+	// Its last session gone, the workspace goes.
+	if w := st.Model.Workspaces; len(w) != 0 || len(st.Panes) != 0 {
 		t.Errorf("after closing: %+v, %d panes", w, len(st.Panes))
 	}
 }
@@ -663,27 +744,65 @@ func TestNotify(t *testing.T) {
 	}
 }
 
+// TestHelperReport is an agent's hook in a pane, for TestReport: it
+// reports INUA_HELPER_REPORT ("agent|state|title|summary") for the pane
+// it runs in, and prints "reported:" and the error.
+func TestHelperReport(t *testing.T) {
+	spec := os.Getenv("INUA_HELPER_REPORT")
+	if spec == "" {
+		t.Skip("run by TestReport in a pane")
+	}
+	f := append(strings.SplitN(spec, "|", 4), "", "", "")
+	pane, _ := strconv.Atoi(os.Getenv("INUA_TERM_PANE"))
+	c, err := Dial(os.Getenv("INUA_TERM_SOCK"), nil, nil)
+	if err == nil {
+		err = c.Report(pane, f[0], f[1], f[2], f[3])
+		c.Close()
+	}
+	fmt.Printf("reported:%v;\n", err)
+}
+
 // An agent reporting itself: its state and title are what it says, and
-// its screen is not read for them.
+// its screen is not read for them. Only what runs in the pane reports for
+// it.
 func TestReport(t *testing.T) {
 	t.Setenv("SHELL", "/bin/sh")
 	h, path := startHost(t)
 	h.ExitWhenEmpty = false
 	h.Agents, _ = agent.Load("")
-	hooked := make(chan string, 2)
-	h.Hook = func(t string) { hooked <- t }
-	c := dial(t, path, newWatcher())
+	w := newWatcher()
+	c := dial(t, path, w)
 	c.Open(t.TempDir(), "")
 	st, _ := c.State()
 	id := st.Model.Workspaces[0].Sessions[0].Focus
-	// The agent, as far as the process check sees: a program not known.
-	c.Input(id, []byte("sleep 2\n"))
+	c.Attach(id)
+	// The agent, as far as the process check sees a program not known,
+	// runs its hook for each line typed, until "end".
+	exe, _ := os.Executable()
+	c.Input(id, []byte(`sh -c 'while IFS= read -r l && [ "$l" != end ]; do INUA_HELPER_REPORT="$l" `+exe+` -test.run=^TestHelperReport$; done'`+"\n"))
 	time.Sleep(1200 * time.Millisecond)
-	if err := c.Report(id, "", "working", "", ""); err == nil {
+	reports := 0
+	report := func(spec string) string {
+		t.Helper()
+		reports++
+		c.Input(id, []byte(spec+"\n"))
+		w.waitFor(t, "a report", func() bool { return strings.Count(w.text(id), "reported:") >= reports })
+		out := w.text(id)
+		for range reports - 1 {
+			_, out, _ = strings.Cut(out, "reported:")
+		}
+		_, out, _ = strings.Cut(out, "reported:")
+		res, _, _ := strings.Cut(out, ";")
+		return res
+	}
+	if res := report("|working||"); res == "<nil>" {
 		t.Error("a report without an agent")
 	}
-	if err := c.Report(id, "claude", "working", "Fix the flaky test", ""); err != nil {
-		t.Fatal(err)
+	if err := c.Report(id, "claude", "working", "", ""); err == nil {
+		t.Error("a report from outside the pane")
+	}
+	if res := report("claude|working|Fix the flaky test|"); res != "<nil>" {
+		t.Fatal(res)
 	}
 	pane := func() PaneInfo {
 		st, _ := c.State()
@@ -697,15 +816,15 @@ func TestReport(t *testing.T) {
 	if p := pane(); p.Agent != "claude" || p.State != "working" || p.Title != "Fix the flaky test" || p.AgentName != "Claude Code" {
 		t.Errorf("working %+v", p)
 	}
-	c.Report(id, "claude", "blocked", "", "Claude needs your permission to use Bash")
+	report("claude|blocked||Claude needs your permission to use Bash")
 	if p := pane(); p.State != "blocked" || p.Ask != "Claude needs your permission to use Bash" {
 		t.Errorf("blocked %+v", p)
 	}
-	c.Report(id, "claude", "done", "", "")
+	report("claude|done||")
 	if p := pane(); p.State != "done" {
 		t.Errorf("done %+v", p)
 	}
-	if err := c.Report(id, "claude", "sleeping", "", ""); err == nil {
+	if res := report("claude|sleeping||"); res == "<nil>" {
 		t.Error("an unknown state")
 	}
 	// The process check keeps a reporting agent while it runs, and
@@ -714,6 +833,7 @@ func TestReport(t *testing.T) {
 	if p := pane(); p.Agent != "claude" {
 		t.Errorf("forgotten %+v", p)
 	}
+	c.Input(id, []byte("end\n"))
 	deadline := time.Now().Add(5 * time.Second)
 	for pane().Agent != "" {
 		if time.Now().After(deadline) {

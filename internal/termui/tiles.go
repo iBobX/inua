@@ -3,9 +3,11 @@ package termui
 import (
 	"log"
 	"math"
+	"time"
 	"unsafe"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
@@ -45,15 +47,32 @@ type tiling struct {
 	zoom     int
 	dragging *layout.Divider
 	dragFrom float64
-	// rects is where each tile was put last.
+	// rects is where each tile was put last, as the layout puts it.
 	rects map[int]layout.Rect
+	// session is the session laid out; anim a zoom on its way.
+	session int
+	anim    zoomAnim
+	ticking bool
 
 	onMeasure                            gtk.CustomMeasureFunc
 	onAllocate                           gtk.CustomAllocateFunc
 	onMode                               gtk.CustomRequestModeFunc
 	onDragBegin, onDragUpdate, onDragEnd func(gtk.GestureDrag, float64, float64)
 	onMotion                             func(gtk.EventControllerMotion, float64, float64)
+	onAnim                               glib.SourceFunc
 }
+
+// zoomAnim is a tile zooming: in, from its place to all of column 3
+// while the others fade; out, back to its place while they come back.
+type zoomAnim struct {
+	id    int // the tile, 0 for none
+	in    bool
+	from  layout.Rect // in: its place before
+	start time.Time
+}
+
+// zoomTime is how long a zoom takes.
+const zoomTime = 220 * time.Millisecond
 
 func (a *App) buildTiling() {
 	t := &a.tiling
@@ -62,6 +81,14 @@ func (a *App) buildTiling() {
 		*min, *nat, *minBase, *natBase = 1, 1, -1, -1
 	}
 	t.onAllocate = func(_ uintptr, w, h, _ int32) { a.allocateTiles(int(w), int(h)) }
+	t.onAnim = func(uintptr) bool {
+		if t.anim.id != 0 && time.Since(t.anim.start) >= zoomTime {
+			a.endZoom()
+		}
+		a.tilesW.QueueAllocate()
+		t.ticking = t.anim.id != 0
+		return t.ticking
+	}
 	t.layout = gtk.NewCustomLayout(&t.onMode, &t.onMeasure, &t.onAllocate)
 	a.tilesW.SetLayoutManager(&t.layout.LayoutManager)
 
@@ -155,14 +182,30 @@ func (a *App) allocateTiles(w, h int) {
 	t := &a.tiling
 	r := layout.Rect{X: gap, Y: gap, W: max(float64(w)-2*gap, 1), H: max(float64(h)-2*gap, 1)}
 	rects := layout.Rects(t.tree, r, gap)
-	if t.zoom != 0 {
-		rects = map[int]layout.Rect{t.zoom: r}
+	zoom := t.zoom
+	if an := t.anim; an.id != 0 {
+		// On its way: the tile between its place and all of column 3,
+		// the others in their places, fading.
+		p := easeOut(float64(time.Since(an.start)) / float64(zoomTime))
+		from, to, shown := an.from, r, 1-p
+		if !an.in {
+			from, to, shown = r, rects[an.id], p
+		}
+		rects[an.id] = lerp(from, to, p)
+		for id, tl := range a.tiles {
+			if id != an.id {
+				tl.box.SetOpacity(shown)
+			}
+		}
+		zoom = 0
+	} else if zoom != 0 {
+		rects = map[int]layout.Rect{zoom: r}
 	}
 	t.rects = rects
 	for id, tl := range a.tiles {
 		rr, ok := rects[id]
-		if t.zoom != 0 {
-			ok = id == t.zoom
+		if zoom != 0 {
+			ok = id == zoom
 			rr = r
 		}
 		tl.box.SetChildVisible(ok)
@@ -174,6 +217,73 @@ func (a *App) allocateTiles(w, h int) {
 	}
 }
 
+// startZoom animates a zoom from pane from to pane to (0: none): in,
+// from the tile's place; out, back to it. The tile's grid keeps its size
+// on the way, and goes over the others. Without the desktop's
+// animations, or from one zoomed pane to another, it is at once.
+func (a *App) startZoom(from, to int) {
+	t := &a.tiling
+	a.endZoom()
+	if !gtk.SettingsGetDefault().GetPropertyGtkEnableAnimations() {
+		return
+	}
+	switch {
+	case from == 0 && to != 0:
+		r, ok := t.rects[to]
+		if !ok || a.tiles[to] == nil {
+			return
+		}
+		t.anim = zoomAnim{id: to, in: true, from: r}
+	case from != 0 && to == 0 && a.tiles[from] != nil:
+		t.anim = zoomAnim{id: from}
+	default:
+		return
+	}
+	t.anim.start = time.Now()
+	tl := a.tiles[t.anim.id]
+	tl.pane.sizeHeld = true
+	if last := a.tilesW.GetLastChild(); last != nil && last.GoPointer() != tl.box.GoPointer() {
+		a.tilesW.ReorderChildAfter(&tl.box.Widget, last)
+	}
+	if !t.ticking {
+		t.ticking = true
+		glibTimeout(16, &t.onAnim)
+	}
+}
+
+// endZoom ends a zoom's animation where it goes: the grid takes the
+// tile's size, the others show or hide.
+func (a *App) endZoom() {
+	t := &a.tiling
+	if t.anim.id == 0 {
+		return
+	}
+	if tl := a.tiles[t.anim.id]; tl != nil {
+		tl.pane.sizeHeld = false
+		// The last frame put the tile where it ends already, or a pixel
+		// off: allocated the same size again, GTK would leave its
+		// widgets be, and the grid would keep the size it was held at.
+		tl.pane.widget.QueueAllocate()
+	}
+	for _, tl := range a.tiles {
+		tl.box.SetOpacity(1)
+	}
+	t.anim = zoomAnim{}
+	a.tilesW.QueueAllocate()
+}
+
+// easeOut slows to a stop: x from 0 to 1 (clamped), cubic.
+func easeOut(x float64) float64 {
+	x = min(max(x, 0), 1)
+	return 1 - math.Pow(1-x, 3)
+}
+
+// lerp is the rect p of the way from a to b.
+func lerp(a, b layout.Rect, p float64) layout.Rect {
+	mix := func(x, y float64) float64 { return x + (y-x)*p }
+	return layout.Rect{X: mix(a.X, b.X), Y: mix(a.Y, b.Y), W: mix(a.W, b.W), H: mix(a.H, b.H)}
+}
+
 // syncTiles makes the shown session's tiles: new panes get one, attached
 // to the host; panes gone or no longer shown lose theirs.
 func (a *App) syncTiles() {
@@ -183,9 +293,16 @@ func (a *App) syncTiles() {
 		for _, id := range s.Tree.Panes() {
 			want[id] = true
 		}
+		if s.ID == a.tiling.session && s.Zoom != a.tiling.zoom {
+			a.startZoom(a.tiling.zoom, s.Zoom)
+		} else if s.ID != a.tiling.session {
+			a.endZoom()
+		}
+		a.tiling.session = s.ID
 		a.tiling.tree, a.tiling.zoom = s.Tree.Clone(), s.Zoom
 	} else {
-		a.tiling.tree, a.tiling.zoom = nil, 0
+		a.endZoom()
+		a.tiling.session, a.tiling.tree, a.tiling.zoom = 0, nil, 0
 	}
 	for id := range a.tiles {
 		if !want[id] {
@@ -200,7 +317,7 @@ func (a *App) syncTiles() {
 		}
 	}
 	for id, t := range a.tiles {
-		t.update(a.info[id])
+		t.update(a, a.info[id])
 		if id == s.Focus {
 			t.box.AddCssClass("focused")
 		} else {
@@ -218,7 +335,7 @@ func (a *App) syncTiles() {
 // addTile makes a pane's tile and attaches it: its replay comes first.
 func (a *App) addTile(id int) error {
 	info := a.info[id]
-	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.c.Colors, a.look())
+	p, err := newTermPane(paneBackend{a, id}, max(info.Cols, 2), max(info.Rows, 1), a.scheme(), a.c.Colors["warn"], a.look())
 	if err != nil {
 		return err
 	}
@@ -228,6 +345,7 @@ func (a *App) addTile(id int) error {
 	t := &tile{id: id, pane: p}
 	t.box = gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	t.box.AddCssClass("term-tile")
+	t.box.SetOverflow(gtk.OverflowHiddenValue) // a held grid, in a smaller tile
 	t.box.SetCursorFromName("default")
 	head := gtk.NewBox(gtk.OrientationHorizontalValue, 9)
 	head.AddCssClass("term-head")
@@ -279,7 +397,7 @@ func (a *App) addTile(id int) error {
 	a.mu.Lock()
 	a.live[id] = p
 	a.mu.Unlock()
-	t.update(info)
+	t.update(a, info)
 	a.ask("attach", func(c *host.Client) error { return c.Attach(id) })
 	return nil
 }
@@ -302,10 +420,11 @@ func (a *App) dropTile(id int) {
 }
 
 // update writes a pane's head.
-func (t *tile) update(info host.PaneInfo) {
+func (t *tile) update(a *App, info host.PaneInfo) {
 	t.title.SetText(paneTitle(info))
 	t.dir.SetText(shortDir(info.Dir))
 	t.icon.SetFromIconName(iconOf(info))
+	a.brand(t.icon, info)
 	paint(t.mark, t.state, lookOf(info))
 }
 

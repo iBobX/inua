@@ -1,6 +1,7 @@
 package termui
 
 import (
+	"errors"
 	"log"
 	"os"
 	"sync"
@@ -15,6 +16,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/model"
+	"github.com/lyricat/inua/internal/term/scheme"
 	"github.com/lyricat/inua/internal/term/settings"
 )
 
@@ -38,9 +40,10 @@ type App struct {
 
 	cols   columns
 	stage  *gtk.Overlay
+	sheets *gtk.Overlay // the whole window, for the sheets
 	tilesW *gtk.Box
 	tiling tiling
-	sheet  *gtk.Box // the rename sheet, while it asks
+	sheet  *gtk.Box // the sheet up, while it asks
 	// swapping is set after Ctrl+Shift+X, until the arrow.
 	swapping bool
 	// fold is the columns the user folded; peek those shown anyway while
@@ -53,12 +56,26 @@ type App struct {
 	set      settings.Settings
 	keymap   map[string]string
 	fontStep float64
+	// used are the look and the shell in use, which the settings change
+	// in a.set itself.
+	used      settings.Look
+	usedShell string
 	// extra does the actions other files of the window add (the palette,
 	// the settings); false for none of theirs.
 	extra   func(action string, p *termPane) bool
 	onBlink glib.SourceFunc
 
 	prefs *prefs // the settings window, while open
+	// firstRun is set when there was no term.toml: the guide asks for
+	// the shell and the look before the host starts.
+	firstRun bool
+	// restarting is set while the host restarts (restartHost); restartWait
+	// starts the new one.
+	restarting  bool
+	restartWait glib.SourceFunc
+	guide       *guide
+	nerd        nerdInfo
+	brands      brands
 
 	onCloseOK, onCloseCancel func(gtk.Button)
 
@@ -77,12 +94,31 @@ type App struct {
 	onOverviewRow              func(gtk.ListBox, uintptr)
 	onOverviewKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onActive                   func(uintptr, uintptr, uintptr)
+	onWindowKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 }
 
 // Register makes inua-term an appui app, "term".
 func Register() {
 	appui.Register("term", "Term", i18n.M("Terminal"), func() appui.View { return &App{} })
 }
+
+// Prepare reads term.toml before the style loads: the window's theme may
+// be its own.
+func (a *App) Prepare(*appui.Ctx) {
+	set, warnings, err := settings.Load(settings.Path())
+	if err != nil {
+		log.Printf("term: %v", err)
+	}
+	for _, w := range warnings {
+		log.Printf("term: %s: %s", settings.Path(), w)
+	}
+	a.set, a.keymap = set, keymapOf(set.Keys)
+	a.used, a.usedShell = set.Look, set.Shell.Program
+	a.firstRun = !settings.Exists(settings.Path())
+}
+
+// Theme is the window's own theme, "" for inua's.
+func (a *App) Theme() string { return a.set.Look.Theme }
 
 func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
@@ -91,8 +127,9 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui := c.Load("term.ui")
 	ui.Get("term", a.win)
 	a.buildColumns(ui)
-	a.stage, a.tilesW = &gtk.Overlay{}, &gtk.Box{}
+	a.stage, a.sheets, a.tilesW = &gtk.Overlay{}, &gtk.Overlay{}, &gtk.Box{}
 	ui.Get("stage", a.stage)
+	ui.Get("sheets", a.sheets)
 	ui.Get("tiles", a.tilesW)
 	ui.Close()
 	a.win.SetTitle(i18n.T("Terminal"))
@@ -102,8 +139,8 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		return false
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
+	a.windowKeys()
 	a.startTicks()
-	a.set, a.keymap = settings.Default(), keymapOf(settings.Default().Keys)
 	a.startBlink()
 	// An agent in the pane shown is looked at while the window is active.
 	a.onActive = func(uintptr, uintptr, uintptr) {
@@ -111,9 +148,21 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		a.ask("active", func(c *host.Client) error { return c.SetActive(active) })
 	}
 	gtkx.ConnectNotify(a.win, "is-active", &a.onActive)
-	// The host may need starting: off the main thread, the state after.
+	a.startNerd()
+	if a.firstRun {
+		// The shell is chosen before the first pane starts.
+		a.openGuide(a.start)
+	} else {
+		a.start()
+	}
+	return a.win
+}
+
+// start reaches the host: off the main thread, the state after.
+func (a *App) start() {
+	shell := a.set.Shell.Program
 	go func() {
-		st, err := a.connect()
+		st, err := a.connect(shell)
 		gtkx.Post(func() {
 			if err != nil {
 				a.fail(err)
@@ -122,20 +171,12 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 			a.apply(st)
 		})
 	}()
-	return a.win
 }
 
-// connect reaches the host, starting it if none runs, and opens the home
-// folder's workspace when there is none.
-func (a *App) connect() (*host.State, error) {
-	set, warnings, err := settings.Load(settings.Path())
-	if err != nil {
-		log.Printf("term: %v", err)
-	}
-	for _, w := range warnings {
-		log.Printf("term: %s: %s", settings.Path(), w)
-	}
-	gtkx.Post(func() { a.useSettings(set) })
+// connect reaches the host, starting it if none runs, tells it the shell
+// new panes start, and opens the home folder's workspace when there is
+// none.
+func (a *App) connect(shell string) (*host.State, error) {
 	client, err := host.Connect(a.output, a.event)
 	if err != nil {
 		return nil, err
@@ -148,11 +189,19 @@ func (a *App) connect() (*host.State, error) {
 	if err := client.SetColors(<-ready); err != nil {
 		log.Printf("term: colors: %v", err)
 	}
+	if err := client.SetShell(shell); err != nil {
+		log.Printf("term: shell: %v", err)
+	}
 	go func() {
 		<-client.Done()
 		gtkx.Post(func() {
-			if a.client == client {
-				a.win.Close() // the host ended: its last pane closed
+			switch {
+			case a.client != client:
+			case a.restarting:
+				a.hostEnded()
+			default:
+				log.Printf("term: the host ended; the window closes")
+				a.win.Close() // its last pane closed
 			}
 		})
 	}()
@@ -208,6 +257,15 @@ func (a *App) event(m host.Message) {
 		st := m.State
 		gtkx.Post(func() { a.apply(st) })
 	case m.Type == host.MsgEvent:
+		if m.Cols > 0 && m.Rows > 0 {
+			// In the output's order, as the host took it.
+			if p := a.paneFor(m.Pane); p != nil {
+				p.feedSize(m.Cols, m.Rows)
+			}
+			if m.Title == "" && m.Dir == "" && m.Code == nil && m.Clipboard == nil {
+				return
+			}
+		}
 		gtkx.Post(func() { a.paneEvent(m) })
 	}
 }
@@ -235,7 +293,7 @@ func (a *App) paneEvent(m host.Message) {
 		if m.Clipboard != nil {
 			t.pane.setClipboard(*m.Clipboard, m.Primary)
 		}
-		t.update(info)
+		t.update(a, info)
 	}
 	if m.Title != "" || m.Dir != "" || m.Code != nil {
 		a.cols.update(a)
@@ -295,6 +353,7 @@ func (a *App) fail(err error) {
 // closeWindow leaves the panes running on the host, and has it keep how
 // the window is.
 func (a *App) closeWindow() {
+	log.Printf("term: the window closes")
 	if a.client != nil && a.uiDone {
 		a.client.SetUI(model.UI{
 			Width: int(a.win.GetWidth()), Height: int(a.win.GetHeight()),
@@ -312,22 +371,36 @@ func (a *App) closeWindow() {
 }
 
 func (a *App) ThemeChanged() {
+	a.schemeChanged()
+	if a.guide != nil {
+		a.guide.themeChanged(a)
+	}
+}
+
+// schemeChanged gives the panes, and the host for new ones, the
+// terminals' colours.
+func (a *App) schemeChanged() {
+	sc := a.scheme()
 	for _, t := range a.tiles {
-		t.pane.setTheme(a.c.Colors)
+		t.pane.setScheme(sc, a.c.Colors["warn"])
 	}
 	colors := a.colors()
 	a.ask("colors", func(c *host.Client) error { return c.SetColors(colors) })
 }
 
-// colors are the theme's, for programs that ask.
-func (a *App) colors() host.Colors {
-	v := func(name string) uint32 {
-		c := rgba(a.c.Colors[name])
-		b := func(f float32) uint32 { return uint32(f*255+0.5) & 0xff }
-		return b(c.Red)<<16 | b(c.Green)<<8 | b(c.Blue)
+// scheme is the terminals' colours: the settings' scheme, else the
+// theme's.
+func (a *App) scheme() scheme.Scheme {
+	if sc, ok := scheme.Find(a.set.Look.Scheme); ok {
+		return sc
 	}
-	pal := themePalette(a.c.Colors)
-	return host.Colors{FG: v("t0"), BG: v("app"), Cursor: v("accent"), Palette: &pal}
+	return themeScheme(a.c.Colors)
+}
+
+// colors are the terminals', for programs that ask.
+func (a *App) colors() host.Colors {
+	sc := a.scheme()
+	return host.Colors{FG: sc.FG, BG: sc.BG, Cursor: sc.Cursor, Palette: &sc.Palette}
 }
 
 // paneBackend is a pane on the host.
@@ -343,7 +416,21 @@ func (b paneBackend) Input(p []byte) error {
 	return b.app.client.Input(b.id, p)
 }
 
+// Resize asks the host for a size; the pane's engine takes it when the
+// host says it did (feedSize), or now, from a host that does not say.
 func (b paneBackend) Resize(cols, rows, cellW, cellH int) error {
+	c := b.app.client
+	if c == nil {
+		return errNoHost
+	}
 	b.app.ask("resize", func(c *host.Client) error { return c.Resize(b.id, cols, rows, cellW, cellH) })
+	if !c.TellsSizes() {
+		return errNoSizes
+	}
 	return nil
 }
+
+var (
+	errNoHost  = errors.New("no host")
+	errNoSizes = errors.New("the host does not tell sizes")
+)

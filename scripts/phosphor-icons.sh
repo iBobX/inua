@@ -283,6 +283,14 @@ remote-machine                        desktop
 view-refresh                          arrow-clockwise
 # inua-term: a shell or a program that is no agent
 agent-shell                           terminal
+# inua-term: the actions, from column 1's head, and its readings
+open-menu                             list
+term-cpu                              cpu
+term-memory                           memory
+term-uptime                           clock
+# inua-term: agents LobeHub has no mark of
+agent-pi                              pi
+agent-mistermorph                     butterfly
 # Mobile Link
 connect-this                          devices
 connect-phone                         device-mobile
@@ -298,6 +306,8 @@ disk-drive                            hard-drive
 disk-dev                              code
 disk-agent                            robot
 disk-cache                            broom
+disk-choose                           cursor-click
+disk-locate                           crosshair
 LIST
 if [ "$weight" = regular ] && [ -n "${LOBEHUB_ICONS:-}" ]; then
 	# agent name (inua-term's)   LobeHub's monochrome icon

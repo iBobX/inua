@@ -45,7 +45,8 @@ type Workspace struct {
 	Name     string     `json:"name"`
 	Dir      string     `json:"dir"`
 	Sessions []*Session `json:"sessions"`
-	// Added is set for a workspace the user made, kept without sessions.
+	// Added is set for a workspace the user made: a restart keeps it
+	// though none of its sessions was used.
 	Added bool `json:"added,omitempty"`
 	// Last is the session last shown in it.
 	Last int `json:"last,omitempty"`
@@ -179,8 +180,8 @@ func (m *Model) Split(session, pane int, s layout.Split) error {
 }
 
 // RemovePane takes a closed pane out of its session; a session left
-// with none goes, and with it a workspace left with none that the user
-// did not add. It reports what went, for the host to show another.
+// with none goes, and with it a workspace left with none. It reports
+// what went, for the host to show another.
 func (m *Model) RemovePane(pane int) (sessionGone, workspaceGone bool) {
 	s, w := m.PaneSession(pane)
 	if s == nil {
@@ -229,7 +230,7 @@ func (m *Model) removeSession(s *Session, w *Workspace) bool {
 		}
 		w.Last = m.Shown.Session
 	}
-	if len(w.Sessions) > 0 || w.Added {
+	if len(w.Sessions) > 0 {
 		return false
 	}
 	m.RemoveWorkspace(w.ID)

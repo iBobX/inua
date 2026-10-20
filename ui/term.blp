@@ -1,5 +1,5 @@
-// inua-term's window (docs/feat/inua-term.md, section 3): the workspaces,
-// the shown workspace's sessions and their panes, and the shown session's
+// inua-term's window (docs/terminal.md): the workspaces, the shown
+// workspace's sessions and their panes, and the shown session's
 // terminals, tiled. Rows, sections and tiles are made in Go.
 using Gtk 4.0;
 
@@ -7,107 +7,179 @@ ApplicationWindow term {
   default-width: 1280;
   default-height: 800;
 
-  Box {
-    // Column 1: the workspaces.
-    Box workspaces_col {
-      styles ["index", "term-col1"]
-      orientation: vertical;
-      hexpand: false;
-      width-request: 232;
+  // The sheets (actions, agents, keys, renaming) over the whole window.
+  Overlay sheets {
+    Box {
+      // Column 1: the workspaces, under who and where this is.
+      Box workspaces_col {
+        styles ["index", "term-col1"]
+        orientation: vertical;
+        hexpand: false;
+        width-request: 232;
 
-      Label {
-        styles ["index-title"]
-        label: _("Terminal");
-        xalign: 0;
-      }
-
-      SearchEntry find {
-        styles ["index-search", "term-find-entry"]
-        placeholder-text: _("Find a workspace or agent");
-      }
-
-      ScrolledWindow {
-        vexpand: true;
-        hscrollbar-policy: never;
-
-        ListBox workspaces {
-          selection-mode: single;
-        }
-      }
-
-      Box {
-        styles ["term-foot"]
-
-        Button new_workspace {
-          styles ["outlined", "term-foot-button"]
-          hexpand: true;
+        Box {
+          styles ["term-col-head"]
+          spacing: 8;
 
           Box {
-            Label {
-              label: _("New workspace");
-              hexpand: true;
+            orientation: vertical;
+            hexpand: true;
+            valign: center;
+            spacing: 2;
+
+            // A label asks for no more room than one character: the column
+            // keeps its width whatever it says.
+            Label nerd_who {
+              styles ["term-nerd-who"]
               xalign: 0;
+              ellipsize: end;
+              max-width-chars: 1;
             }
 
-            Label {
-              styles ["term-keys"]
-              label: "Ctrl Shift N";
+            // The shell new panes start, then the readings, each in a place of
+            // its own width: changing, they move nothing.
+            Box {
+              styles ["term-nerd-sys"]
+              spacing: 8;
+
+              Label nerd_shell {
+                xalign: 0;
+              }
+
+              Box nerd_cpu_box {
+                spacing: 3;
+                visible: false;
+                tooltip-text: _("CPU in use");
+
+                Image {
+                  icon-name: "term-cpu-symbolic";
+                  pixel-size: 12;
+                }
+
+                Label nerd_cpu {
+                  xalign: 0;
+                  width-chars: 4;
+                }
+              }
+
+              Box nerd_mem_box {
+                spacing: 3;
+                visible: false;
+                tooltip-text: _("Memory in use");
+
+                Image {
+                  icon-name: "term-memory-symbolic";
+                  pixel-size: 12;
+                }
+
+                Label nerd_mem {
+                  xalign: 0;
+                  width-chars: 4;
+                }
+              }
+
+              Box nerd_up_box {
+                spacing: 3;
+                visible: false;
+                tooltip-text: _("Up since the computer started");
+
+                Image {
+                  icon-name: "term-uptime-symbolic";
+                  pixel-size: 12;
+                }
+
+                Label nerd_up {
+                  xalign: 0;
+                  hexpand: true;
+                  ellipsize: end;
+                  max-width-chars: 1;
+                }
+              }
             }
+          }
+
+          Button menu {
+            styles ["plain", "term-head-button"]
+            icon-name: "open-menu-symbolic";
+            valign: center;
+          }
+        }
+
+        Box {
+          styles ["term-find-row"]
+          spacing: 6;
+
+          SearchEntry find {
+            styles ["index-search", "term-find-entry"]
+            hexpand: true;
+            placeholder-text: _("Find a workspace or agent");
+          }
+
+          Button new_workspace {
+            styles ["plain", "term-head-button"]
+            icon-name: "list-add-symbolic";
+            valign: center;
+          }
+        }
+
+        ScrolledWindow {
+          vexpand: true;
+          hscrollbar-policy: never;
+
+          ListBox workspaces {
+            selection-mode: single;
           }
         }
       }
-    }
 
-    // Column 2: the shown workspace's sessions, each a section of its
-    // panes.
-    Box sessions_col {
-      styles ["index", "term-col2"]
-      orientation: vertical;
-      hexpand: false;
-      width-request: 312;
+      // Column 2: the shown workspace's sessions, each a section of its
+      // panes.
+      Box sessions_col {
+        styles ["index", "term-col2"]
+        orientation: vertical;
+        hexpand: false;
+        width-request: 312;
 
-      ScrolledWindow {
-        vexpand: true;
-        hscrollbar-policy: never;
+        Box {
+          styles ["term-col-head"]
+          spacing: 8;
 
-        Box sessions {
-          styles ["term-sessions"]
-          orientation: vertical;
+          Label sessions_title {
+            styles ["term-col-title"]
+            hexpand: true;
+            xalign: 0;
+            ellipsize: end;
+            max-width-chars: 1;
+          }
+
+          Button new_session {
+            styles ["plain", "term-head-button"]
+            icon-name: "list-add-symbolic";
+            valign: center;
+          }
         }
-      }
 
-      Box {
-        styles ["term-foot"]
+        ScrolledWindow {
+          vexpand: true;
+          hscrollbar-policy: never;
 
-        Button new_session {
-          styles ["outlined", "term-foot-button"]
-          hexpand: true;
-
-          Box {
-            Label {
-              label: _("New session");
-              hexpand: true;
-              xalign: 0;
-            }
-
-            Label {
-              styles ["term-keys"]
-              label: "Ctrl Shift T";
-            }
+          Box sessions {
+            styles ["term-sessions"]
+            orientation: vertical;
           }
         }
       }
-    }
 
-    // Column 3: the shown session's panes, tiled, and nothing else.
-    Overlay stage {
-      hexpand: true;
-      vexpand: true;
-
-      Box tiles {
-        styles ["term-tiles"]
+      // Column 3: the shown session's panes, tiled, and nothing else.
+      Overlay stage {
         hexpand: true;
         vexpand: true;
+
+        Box tiles {
+          styles ["term-tiles"]
+          hexpand: true;
+          vexpand: true;
+        }
       }
     }
   }

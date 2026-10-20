@@ -30,7 +30,6 @@ func (w *window) selectNode(n *disk.Node) {
 	if n != w.sel {
 		say(&w.selDeleteErr, "")
 		say(&w.selItemError, "")
-		say(&w.selAskError, "")
 	}
 	w.sel = n
 	if n != nil && w.done.n != n { // another item chosen: what was done is said
@@ -44,39 +43,39 @@ func (w *window) selectNode(n *disk.Node) {
 	}
 	w.selName.SetText(nodeName(n))
 	w.selPath.SetText(disk.Tilde(n.Path(), w.home))
-	meta := disk.Size(n.Size)
+	gtkx.Clear(&w.selFacts)
+	w.fact(disk.Size(n.Size), i18n.T("Size"))
 	if n.Dir || n.Rest {
-		meta += " · " + i18n.Nf("%s file", "%s files", int(n.Files), count(n.Files))
+		w.fact(count(n.Files), i18n.N("File", "Files", int(n.Files)))
 	}
-	if n.Mod > 0 {
-		meta += " · " + i18n.Tf("changed %s", i18n.Time(time.Unix(n.Mod, 0), "2006-01-02"))
+	// a date from the future is a clock's mistake, not news
+	if n.Mod > 0 && n.Mod <= time.Now().Unix()+86400 {
+		w.fact(i18n.Time(time.Unix(n.Mod, 0), "2006-01-02"), i18n.T("Changed"))
 	}
 	if n.Denied {
-		meta += " · " + i18n.T("some of it could not be read")
+		say(&w.selMeta, i18n.T("Some of it could not be read."))
+	} else {
+		say(&w.selMeta, "")
 	}
-	w.selMeta.SetText(meta)
 	tag := ""
 	if r := disk.RuleOf(n); r != nil {
 		tag = "[" + r.Kind.Tag() + "]"
 	}
-	w.selTag.SetText(tag)
+	say(&w.selTag, tag)
 	w.selMap.SetVisible(w.page == "kind")
 	w.selOpen.SetVisible(!n.Rest)
-	w.selExplain.SetSensitive(!n.Rest && w.telling == nil)
-	w.showExplain()
 	if n.Rest {
-		w.showRestRoute(n)
+		w.showRestRoute()
 		return
 	}
 	if r := w.routes[n]; r != nil {
 		w.showRoute()
 		return
 	}
-	w.selVerdict.SetText(i18n.T("Checking…"))
-	setVerdictClass(&w.selVerdict, disk.Unknown)
 	gtkx.Clear(&w.selSteps)
+	w.routeNode("", sub(i18n.T("Checking…")), true)
+	w.showVerdict(disk.Unknown, false)
 	w.selCleanBox.SetVisible(false)
-	w.selAskBox.SetVisible(false)
 	w.setDeletable(false, "")
 	path := n.Path()
 	var r disk.Route
@@ -90,6 +89,21 @@ func (w *window) selectNode(n *disk.Node) {
 	})
 }
 
+// fact is a figure of the item chosen with its name under it.
+func (w *window) fact(value, name string) {
+	box := gtk.NewBox(gtk.OrientationVerticalValue, 1)
+	v := gtk.NewLabel(value)
+	v.AddCssClass("disk-fact")
+	v.SetXalign(0)
+	v.SetEllipsize(3) // end
+	gtkx.Append(box, &v.Widget)
+	k := gtk.NewLabel(name)
+	k.AddCssClass("disk-fact-name")
+	k.SetXalign(0)
+	gtkx.Append(box, &k.Widget)
+	gtkx.Append(&w.selFacts, &box.Widget)
+}
+
 func setVerdictClass(l *gtk.Label, v disk.Verdict) {
 	for _, c := range []string{"safe", "review", "keep", "unknown"} {
 		l.RemoveCssClass(c)
@@ -97,90 +111,187 @@ func setVerdictClass(l *gtk.Label, v disk.Verdict) {
 	l.AddCssClass(verdictClass(v))
 }
 
-// showRestRoute is the panel of a folder's small files counted together:
-// they are not one thing to delete.
-func (w *window) showRestRoute(n *disk.Node) {
-	gtkx.Clear(&w.selSteps)
-	w.selVerdict.SetText(i18n.T("Files of all kinds, each smaller than 1 MB: open the folder in Files to look at them."))
-	setVerdictClass(&w.selVerdict, disk.Unknown)
-	w.selCleanBox.SetVisible(false)
-	w.selAskBox.SetVisible(false)
-	w.setDeletable(false, i18n.T("They are not one item to delete."))
+// showVerdict puts v in the section's head, marked when the AI gave it.
+func (w *window) showVerdict(v disk.Verdict, byAI bool) {
+	text := v.Tag()
+	if text != "" && byAI {
+		text = i18n.Tf("AI · %s", text)
+	}
+	w.selVerdict.SetText(text)
+	w.selVerdict.SetVisible(text != "")
+	setVerdictClass(&w.selVerdict, v)
 }
 
-// showRoute shows how the item chosen came to its verdict.
+// sub is a line of quiet text.
+func sub(text string) *gtk.Widget {
+	l := gtk.NewLabel(text)
+	l.AddCssClass("sub")
+	l.SetXalign(0)
+	l.SetWrap(true)
+	return &l.Widget
+}
+
+// routeNode adds a node to the route: its mark (a class: "" for a check
+// passed, "on" for the one that settled it, a verdict's class for the
+// verdict, "ai" for asking the AI), the line on to the next unless it is
+// the last, and what it says.
+func (w *window) routeNode(mark string, body *gtk.Widget, last bool) {
+	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	row.AddCssClass("disk-node")
+	row.SetVexpand(false) // the line grows within the row, not the row
+	rail := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	rail.AddCssClass("disk-rail")
+	m := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	m.AddCssClass("mark")
+	if mark != "" {
+		m.AddCssClass(mark)
+	}
+	m.SetHalign(gtk.AlignCenterValue)
+	gtkx.Append(rail, &m.Widget)
+	if !last {
+		line := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+		line.AddCssClass("disk-line")
+		line.SetHalign(gtk.AlignCenterValue)
+		line.SetVexpand(true)
+		gtkx.Append(rail, &line.Widget)
+	}
+	gtkx.Append(row, &rail.Widget)
+	body.AddCssClass("disk-node-body")
+	body.SetHexpand(true)
+	gtkx.Append(row, body)
+	gtkx.Append(&w.selSteps, &row.Widget)
+}
+
+// showRestRoute is the panel of a folder's small files counted together:
+// they are not one thing to delete.
+func (w *window) showRestRoute() {
+	gtkx.Clear(&w.selSteps)
+	w.routeNode("", sub(i18n.T("Small files, each under 1 MB.")), true)
+	w.showVerdict(disk.Unknown, false)
+	w.selCleanBox.SetVisible(false)
+	w.setDeletable(false, i18n.T("Not one item to delete."))
+}
+
+// showRoute shows how the item chosen came to its verdict: each check,
+// the verdict when one settled it, and the AI, asked or to ask.
 func (w *window) showRoute() {
 	n := w.sel
 	r := w.routes[n]
 	gtkx.Clear(&w.selSteps)
 	for _, s := range r.Steps {
-		row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-		row.AddCssClass("disk-step")
-		mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-		mark.AddCssClass("mark")
-		if s.Verdict != disk.Unknown {
-			mark.AddCssClass("on")
-		}
-		mark.SetValign(gtk.AlignStartValue)
-		gtkx.Append(row, &mark.Widget)
-		text := gtk.NewBox(gtk.OrientationVerticalValue, 1)
-		text.SetHexpand(true)
+		body := gtk.NewBox(gtk.OrientationVerticalValue, 1)
 		q := gtk.NewLabel(s.Check)
 		q.AddCssClass("disk-step-check")
 		q.SetXalign(0)
 		q.SetWrap(true)
-		gtkx.Append(text, &q.Widget)
+		gtkx.Append(body, &q.Widget)
 		a := gtk.NewLabel(s.Found)
 		a.AddCssClass("sub")
 		a.SetXalign(0)
 		a.SetWrap(true)
-		gtkx.Append(text, &a.Widget)
-		gtkx.Append(row, &text.Widget)
-		gtkx.Append(&w.selSteps, &row.Widget)
-	}
-	verdict := r.Verdict
-	if v, ok := w.asked[n]; ok && verdict == disk.Unknown {
-		verdict = v
-	}
-	if r.Verdict == disk.Unknown {
-		w.selVerdict.SetText(i18n.T("No check settles it."))
-	} else {
-		w.selVerdict.SetText(r.Verdict.Name())
-	}
-	setVerdictClass(&w.selVerdict, r.Verdict)
-	w.showCommand()
-
-	w.selAskBox.SetVisible(r.Verdict == disk.Unknown)
-	w.selAsk.SetSensitive(!w.asking[n])
-	if w.asking[n] {
-		w.selAsk.SetLabel(i18n.T("Asking…"))
-	} else {
-		w.selAsk.SetLabel(i18n.T("Ask the assistant"))
-	}
-	if v, ok := w.asked[n]; ok {
-		text := i18n.Tf("The assistant: %s", v.Name())
-		if why := w.reasons[n]; why != "" {
-			text += "\n" + why
+		gtkx.Append(body, &a.Widget)
+		mark := ""
+		if s.Verdict != disk.Unknown {
+			mark = "on"
 		}
-		w.selAI.SetText(text)
-		setVerdictClass(&w.selAI, v)
-		w.selAI.SetVisible(true)
-	} else {
-		w.selAI.SetVisible(false)
+		w.routeNode(mark, &body.Widget, false)
 	}
+	if r.Verdict != disk.Unknown {
+		l := gtk.NewLabel(r.Verdict.Name())
+		l.AddCssClass("disk-verdict")
+		l.SetXalign(0)
+		setVerdictClass(l, r.Verdict)
+		w.routeNode(verdictClass(r.Verdict), &l.Widget, false)
+	}
+	w.routeNode("ai", w.aiNode(n, r.Verdict == disk.Unknown), true)
+
+	verdict, byAI := r.Verdict, false
+	if a := w.answers[n]; verdict == disk.Unknown && a != nil && a.ok {
+		verdict, byAI = a.Verdict, true
+	}
+	w.showVerdict(verdict, byAI)
+	w.showCommand()
 
 	switch {
 	case n.Parent == nil:
-		w.setDeletable(false, i18n.T("It is the place scanned: choose what is in it."))
-	case verdict == disk.Keep:
-		w.setDeletable(false, i18n.T("Kept: the checks above say why."))
-	case verdict == disk.Safe:
-		w.setDeletable(true, i18n.T("It comes back when needed. The trash keeps it until emptied; Delete frees the room now."))
+		w.setDeletable(false, "")
+	case verdict == disk.Keep, verdict == disk.Safe:
+		w.setDeletable(verdict == disk.Safe, "")
 	case verdict == disk.Review:
-		w.setDeletable(true, i18n.T("Look inside before deleting: it may hold your work, settings or history."))
+		w.setDeletable(true, i18n.T("Look inside first."))
 	default:
-		w.setDeletable(true, i18n.T("No check settled it: look inside first, or ask the assistant."))
+		w.setDeletable(true, i18n.T("Look inside first, or ask the AI."))
 	}
+}
+
+// aiNode is the route's end: the button to ask the AI, its answer as it
+// comes (whether it can go and why, what it is), or why asking failed.
+// first is whether no check settled it, the AI's answer the verdict.
+func (w *window) aiNode(n *disk.Node, first bool) *gtk.Widget {
+	box := gtk.NewBox(gtk.OrientationVerticalValue, 10)
+	a := w.answers[n]
+	asking := w.askingAI == n
+	if a != nil && a.ok {
+		v := gtk.NewLabel(a.Verdict.Name())
+		v.AddCssClass("disk-verdict")
+		v.SetXalign(0)
+		setVerdictClass(v, a.Verdict)
+		gtkx.Append(box, aiField(i18n.T("Can it go"), &v.Widget, a.Why))
+	}
+	if a != nil && a.What != "" {
+		gtkx.Append(box, aiField(i18n.T("What it is"), nil, a.What))
+	}
+	switch {
+	case asking:
+		gtkx.Append(box, sub(i18n.T("Asking…")))
+	case a != nil && a.err != "":
+		l := gtk.NewLabel(a.err)
+		l.AddCssClass("sub")
+		l.AddCssClass("disk-error")
+		l.SetXalign(0)
+		l.SetWrap(true)
+		l.SetSelectable(true)
+		gtkx.Append(box, &l.Widget)
+	}
+	if !asking {
+		label := i18n.T("Ask AI")
+		if a != nil && a.ok {
+			label = i18n.T("Ask again")
+		}
+		b := gtk.NewButtonWithLabel(label)
+		b.AddCssClass("outlined")
+		if !first || (a != nil && a.ok) {
+			b.AddCssClass("disk-ask-quiet")
+		}
+		b.SetHalign(gtk.AlignStartValue)
+		b.SetTooltipText(i18n.T("Sends the path, the size and the largest names, never the files' contents."))
+		b.SetSensitive(w.askingAI == nil)
+		b.ConnectClicked(&w.onAsk)
+		gtkx.Append(box, &b.Widget)
+	}
+	return &box.Widget
+}
+
+// aiField is a field of the AI's answer: its name, a headline when there
+// is one, and the text.
+func aiField(name string, headline *gtk.Widget, text string) *gtk.Widget {
+	box := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	k := gtk.NewLabel(name)
+	k.AddCssClass("disk-fact-name")
+	k.SetXalign(0)
+	gtkx.Append(box, &k.Widget)
+	if headline != nil {
+		gtkx.Append(box, headline)
+	}
+	if text != "" {
+		t := gtk.NewLabel(text)
+		t.AddCssClass("disk-ai-text")
+		t.SetXalign(0)
+		t.SetWrap(true)
+		t.SetSelectable(true)
+		gtkx.Append(box, &t.Widget)
+	}
+	return &box.Widget
 }
 
 func (w *window) setDeletable(on bool, note string) {
@@ -243,88 +354,31 @@ func (a *aiState) close() {
 	}
 }
 
-// askDecision asks the assistant's decision profile whether the item
-// chosen can go, when no check settled it.
-func (w *window) askDecision() {
-	n := w.sel
-	r := w.routes[n]
-	if n == nil || r == nil || w.asking[n] {
-		return
-	}
-	w.asking[n] = true
-	say(&w.selAskError, "")
-	w.showRoute()
-	facts := disk.Facts(n, *r, w.home)
-	var v disk.Verdict
-	var why string
-	var err error
-	w.background(func() {
-		as, ctx, e := w.ai.get()
-		if e != nil {
-			err = e
-			return
-		}
-		ctx, cancel := context.WithTimeout(ctx, 90*time.Second)
-		defer cancel()
-		// The decision route's profile, the one for quick choices; else
-		// the one that answers, asked for a word and a reason.
-		if len(as.Choosers()) > 0 {
-			i, e := as.Choose(ctx, "", disk.ChooseInstructions, facts, disk.ChooseOptions)
-			if e == nil {
-				v = disk.Verdicts[i]
-				return
-			}
-			if !errors.Is(e, assistant.ErrNoChoice) {
-				err = e
-				return
-			}
-		}
-		w.ai.asking.Lock()
-		defer w.ai.asking.Unlock()
-		as.Reset()
-		answer, e := as.Ask(ctx, disk.DecidePrompt(facts, i18n.Lang()), assistant.Events{})
-		if e != nil {
-			err = e
-			return
-		}
-		var ok bool
-		if v, why, ok = disk.ParseDecision(answer); !ok {
-			err = errors.New(i18n.Tf("it answered %q", answer))
-		}
-	}, func() {
-		delete(w.asking, n)
-		if err == nil {
-			w.asked[n] = v
-			w.reasons[n] = why
-		}
-		if w.sel == n {
-			if err != nil {
-				say(&w.selAskError, i18n.Tf("The assistant could not decide: %v", err))
-			}
-			w.showRoute()
-		}
-	})
+// aiAnswer is what the AI said of an item: the fields as they came, and
+// why asking failed.
+type aiAnswer struct {
+	disk.Answer
+	ok  bool // the verdict has come
+	err string
 }
 
-// explain asks the assistant what the item chosen is, the answer showing
-// as it comes.
-func (w *window) explain() {
+// askAI asks the AI whether the item chosen can go and what it is, the
+// answer showing as it comes; one item at a time.
+func (w *window) askAI() {
 	n := w.sel
-	if n == nil || n.Rest || w.telling != nil {
+	if n == nil || n.Rest || w.askingAI != nil {
 		return
 	}
 	r := w.routes[n]
 	if r == nil {
 		r = &disk.Route{}
 	}
-	w.telling = n
-	delete(w.failed, n)
-	w.explains[n] = ""
-	w.selExplain.SetSensitive(false)
-	w.selExplain.SetLabel(i18n.T("Asking…"))
-	w.showExplain()
-	prompt := disk.ExplainPrompt(disk.Facts(n, *r, w.home), i18n.Lang())
+	w.askingAI = n
+	w.answers[n] = &aiAnswer{}
+	w.showRoute()
+	prompt := disk.AskPrompt(disk.Facts(n, *r, w.home), i18n.Lang())
 	var err error
+	var text string
 	w.background(func() {
 		as, ctx, e := w.ai.get()
 		if e != nil {
@@ -336,56 +390,33 @@ func (w *window) explain() {
 		w.ai.asking.Lock()
 		defer w.ai.asking.Unlock()
 		as.Reset() // each question on its own
-		_, err = as.Ask(ctx, prompt, assistant.Events{Answer: func(text string) {
+		text, err = as.Ask(ctx, prompt, assistant.Events{Answer: func(text string) {
 			gtkx.Post(func() {
-				if w.closed || w.telling != n {
+				if w.closed || w.askingAI != n {
 					return
 				}
-				w.explains[n] = text
+				a, ok := disk.ParseAnswer(text)
+				w.answers[n] = &aiAnswer{Answer: a, ok: ok}
 				if w.sel == n {
-					w.showExplain()
+					w.showRoute()
 				}
 			})
 		}})
 	}, func() {
-		w.telling = nil
-		if err != nil {
-			w.failed[n] = i18n.Tf("The assistant could not answer: %v", err)
-			if w.explains[n] == "" {
-				delete(w.explains, n)
-			}
+		w.askingAI = nil
+		a, ok := disk.ParseAnswer(text)
+		ans := &aiAnswer{Answer: a, ok: ok}
+		switch {
+		case err != nil:
+			ans.err = i18n.Tf("The AI could not answer: %v", err)
+		case !ok:
+			ans.err = i18n.Tf("The AI answered %q", strings.TrimSpace(text))
 		}
-		w.selExplain.SetLabel(i18n.T("Explain"))
-		if w.sel != nil {
-			w.selExplain.SetSensitive(!w.sel.Rest)
-		}
-		if w.sel == n {
-			w.showExplain()
+		w.answers[n] = ans
+		if w.sel != nil && w.routes[w.sel] != nil && !w.sel.Rest {
+			w.showRoute() // the button is free again, whichever is chosen
 		}
 	})
-}
-
-func (w *window) showExplain() {
-	n := w.sel
-	text, ok := w.explains[n]
-	switch {
-	case ok && text == "":
-		w.selExplainText.SetText(i18n.T("Asking…"))
-		w.selExplainText.SetVisible(true)
-	case ok:
-		w.selExplainText.SetText(text)
-		w.selExplainText.SetVisible(true)
-	default:
-		w.selExplainText.SetVisible(false)
-	}
-	say(&w.selExplainError, w.failed[n])
-	if w.telling == nil {
-		if ok && text != "" {
-			w.selExplain.SetLabel(i18n.T("Explain again"))
-		} else {
-			w.selExplain.SetLabel(i18n.T("Explain"))
-		}
-	}
 }
 
 // --- acting on it ---
@@ -443,7 +474,7 @@ func (w *window) remove(n *disk.Node, forGood bool) {
 			}
 			return
 		}
-		text := i18n.Tf("Moved %s to the trash: its %s are freed when the trash is emptied.", n.Name, disk.Size(n.Size))
+		text := i18n.Tf("Moved %s to the trash.", n.Name)
 		if forGood {
 			text = i18n.Tf("Deleted %s: %s freed.", n.Name, disk.Size(n.Size))
 		}
@@ -458,7 +489,7 @@ func (w *window) gone(n, then *disk.Node, text string) {
 	if n != then {
 		n.Remove()
 		delete(w.routes, n)
-		delete(w.explains, n)
+		delete(w.answers, n)
 		delete(w.runs, n)
 	}
 	w.done.n, w.done.text = then, text
@@ -489,10 +520,10 @@ func (w *window) askDelete() {
 	if n == nil {
 		return
 	}
-	text := i18n.Nf("%s in %s file. It does not go to the trash; this cannot be undone.",
-		"%s in %s files. They do not go to the trash; this cannot be undone.", int(n.Files), disk.Size(n.Size), count(n.Files))
+	text := i18n.Nf("%s in %s file. This cannot be undone.",
+		"%s in %s files. This cannot be undone.", int(n.Files), disk.Size(n.Size), count(n.Files))
 	if !n.Dir {
-		text = i18n.Tf("%s. It does not go to the trash; this cannot be undone.", disk.Size(n.Size))
+		text = i18n.Tf("%s. This cannot be undone.", disk.Size(n.Size))
 	}
 	w.confirm(i18n.Tf("Delete %s for good?", nodeName(n)), disk.Tilde(n.Path(), w.home), text, i18n.T("Delete"), true,
 		func() { w.remove(n, true) })
@@ -526,9 +557,9 @@ func (w *window) showCommand() {
 	switch {
 	case note != "":
 	case c.Root:
-		note = i18n.T("It runs as root: inua asks for your password first.")
+		note = i18n.T("Runs as root, after your password.")
 	default:
-		note = i18n.Tf("It runs in %s.", disk.Tilde(c.Dir, w.home))
+		note = i18n.Tf("Runs in %s.", disk.Tilde(c.Dir, w.home))
 	}
 	w.selRunNote.SetText(note)
 	res := w.runs[n]
@@ -562,10 +593,9 @@ func (w *window) askRun() {
 		return
 	}
 	c := r.Command
-	text := i18n.Tf("It runs in %s and cleans %s, %s now; inua measures it again when it ends.",
-		filepath.Base(c.Dir), nodeName(n), disk.Size(n.Size))
+	text := i18n.Tf("Cleans %s, %s now.", nodeName(n), disk.Size(n.Size))
 	if c.Root {
-		text += " " + i18n.T("It runs as root: inua asks for your password first.")
+		text += " " + i18n.T("Runs as root, after your password.")
 	}
 	w.confirm(i18n.T("Run the clean command?"), c.Text, text, i18n.T("Run"), false, func() { w.run(n, c) })
 }

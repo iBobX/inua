@@ -1,0 +1,14 @@
+type = "mistermorph"
+name = "Mister Morph"
+icon = "agent-mistermorph"
+process = ["mistermorph"]
+
+# Asking: an approval fills the screen, its title at the top.
+[[state]]
+state = "blocked"
+any = ["! Approval · ", "y approve · n deny"]
+
+[[state]]
+state = "working"
+lines = 3
+any = ["Esc/Ctrl+C stop"]

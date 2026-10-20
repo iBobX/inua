@@ -211,6 +211,29 @@ still say their errors in a status line at the foot of the index
 - **What a failure needs**: when something is missing (a program, a
   permission), say what and give the command that fixes it, selectable.
 
+## Reordering
+
+A list whose order is the user's is put in order by dragging its items:
+the dock's pinned apps, inua-term's workspaces (column 1). It goes the
+same way in both:
+
+- **The item lifts.** A still of it follows the pointer; its own place
+  stays open as a gap, so nothing moves when the drag begins.
+- **The others make room.** Under the pointer, the gap opens where the
+  item would land: before the item whose first half the pointer is over,
+  or after the last. The items slide aside, a step every 16 ms of 30% of
+  the way left (no fixed duration), not jump.
+- **The drop puts it there**, at once, before whatever keeps the order
+  (the settings, inua-term's host) has answered: the list never shows the
+  old order again on the way.
+- **Anywhere else** (outside the list, or Escape), the item goes back
+  and the gap closes. Only where it means something does a drop outside
+  do more: a pinned app dropped off the dock is unpinned.
+- **A click is still a click.** The drag begins past GTK's threshold, so
+  pressing an item to open or show it is unchanged.
+- **A filtered list stays put.** While a search narrows the list, its
+  items do not drag: the places between them are not the list's.
+
 ## Icons
 
 Phosphor's regular icons (MIT), copied by `scripts/phosphor-icons.sh` into
