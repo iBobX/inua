@@ -103,7 +103,8 @@ type window struct {
 	actErr   string // an action's error, said on the conversation
 	folded   map[mail.Key]bool
 	quotes   map[mail.Key]bool
-	checks   map[mail.Key]bool // the phishing checks unfolded
+	checks   map[mail.Key]bool    // the phishing checks unfolded
+	answers  map[mail.Key]*aiText // an invitation's answer: busy, sent (text), or why not
 
 	sideBtns   []uintptr // the index's buttons, forgotten when it is made again
 	readerBtns []uintptr // the conversation's buttons, likewise
@@ -133,6 +134,7 @@ func openWindow(c *appui.Ctx) *window {
 		store: mail.NewStore(), secrets: mail.NewSecrets(), drafts: mail.NewDrafts(),
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
+		answers:    map[mail.Key]*aiText{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
 	w.ctx, w.cancel = context.WithCancel(context.Background())

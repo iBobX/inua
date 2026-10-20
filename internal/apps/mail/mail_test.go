@@ -838,3 +838,87 @@ func TestDraftsOnServer(t *testing.T) {
 		t.Fatal("the draft stayed")
 	}
 }
+
+const googleInvite = "BEGIN:VCALENDAR\r\nPRODID:-//Google Inc//Google Calendar 70.9054//EN\r\nVERSION:2.0\r\nMETHOD:REQUEST\r\n" +
+	"BEGIN:VTIMEZONE\r\nTZID:Asia/Tokyo\r\nEND:VTIMEZONE\r\n" +
+	"BEGIN:VEVENT\r\nDTSTART;TZID=Asia/Tokyo:20261021T140000\r\nDTEND;TZID=Asia/Tokyo:20261021T150000\r\n" +
+	"DTSTAMP:20261019T010000Z\r\nORGANIZER;CN=Ana Souza:mailto:ana@studio.dev\r\nUID:abc123@google.com\r\n" +
+	"ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=\r\n TRUE;CN=me@example.com;X-NUM-GUESTS=0:mailto:me@example.com\r\n" +
+	"ATTENDEE;PARTSTAT=ACCEPTED;CN=Ben Ito:mailto:ben@studio.dev\r\n" +
+	"SEQUENCE:2\r\nSUMMARY:Q3 review\\, with numbers\r\nLOCATION:Room 4 / meet.google.com/abc-defg-hij\r\n" +
+	"DESCRIPTION:Bring the deck.\\nThanks\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n"
+
+func TestInvite(t *testing.T) {
+	inv := ParseInvite([]byte(googleInvite))
+	if inv == nil || inv.Method != "REQUEST" || !inv.Asks() || inv.Summary != "Q3 review, with numbers" || inv.UID != "abc123@google.com" {
+		t.Fatalf("invite %+v", inv)
+	}
+	tokyo, _ := time.LoadLocation("Asia/Tokyo")
+	if !inv.Start.Equal(time.Date(2026, 10, 21, 14, 0, 0, 0, tokyo)) || inv.End.Sub(inv.Start) != time.Hour {
+		t.Fatalf("times %v %v", inv.Start, inv.End)
+	}
+	if inv.Organizer.Addr != "ana@studio.dev" || inv.Organizer.Name != "Ana Souza" || len(inv.Attendees) != 2 {
+		t.Fatalf("people %+v %+v", inv.Organizer, inv.Attendees)
+	}
+	if inv.Status("ME@example.com") != "NEEDS-ACTION" || inv.Status("ben@studio.dev") != Accepted || inv.URL != "https://meet.google.com/abc-defg-hij" {
+		t.Fatalf("status %q url %q", inv.Status("me@example.com"), inv.URL)
+	}
+	outlook := ParseInvite([]byte("BEGIN:VCALENDAR\nMETHOD:CANCEL\nBEGIN:VEVENT\nDTSTART;TZID=Pacific Standard Time:20261021T090000\nSUMMARY:Standup\nEND:VEVENT\nEND:VCALENDAR\n"))
+	la, _ := time.LoadLocation("America/Los_Angeles")
+	if outlook == nil || outlook.Method != "CANCEL" || outlook.Asks() || !outlook.Start.Equal(time.Date(2026, 10, 21, 9, 0, 0, 0, la)) {
+		t.Fatalf("outlook %+v", outlook)
+	}
+	day := ParseInvite([]byte("BEGIN:VEVENT\nDTSTART;VALUE=DATE:20261101\nSUMMARY:Holiday\nEND:VEVENT\n"))
+	if day == nil || !day.AllDay || day.End.Sub(day.Start) != 24*time.Hour {
+		t.Fatalf("all day %+v", day)
+	}
+	if ParseInvite([]byte("BEGIN:VCALENDAR\nEND:VCALENDAR\n")) != nil {
+		t.Fatal("an event from nothing")
+	}
+
+	// The answer, sent to the organizer.
+	srv := newIMAP(t, "Sent")
+	be, smtpAddr := newSMTP(t)
+	ctx := context.Background()
+	s := srv.session(t)
+	s.Acc.SMTP, s.Acc.Name = smtpAddr, "Lyric"
+	s.Mailboxes(ctx)
+	if err := s.Answer(ctx, inv, Accepted); err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(be.rcpts, []string{"ana@studio.dev"}) {
+		t.Fatalf("sent to %v", be.rcpts)
+	}
+	got := string(be.got)
+	for _, want := range []string{"Subject: Accepted: Q3 review, with numbers", "method=REPLY", "METHOD:REPLY", "UID:abc123@google.com",
+		"SEQUENCE:2", "PARTSTAT=ACCEPTED", "mailto:me@example.com", "ORGANIZER;CN=Ana Souza:mailto:ana@studio.dev"} {
+		if !strings.Contains(strings.ReplaceAll(got, "\r\n ", ""), want) {
+			t.Errorf("the reply lacks %q:\n%s", want, got)
+		}
+	}
+}
+
+func TestSyncKeepsLocal(t *testing.T) {
+	srv := newIMAP(t)
+	srv.put(t, "INBOX", msg("a@x", "x@x.org", "one", "t"))
+	ctx := context.Background()
+	s := srv.session(t)
+	s.Sync(ctx, "INBOX")
+	uid := s.Items("INBOX")[0].UID
+	// A sync that began before the tag and the answer were kept.
+	s.imu.Lock()
+	work := s.index("INBOX").copy()
+	s.imu.Unlock()
+	s.SetTag("INBOX", uid, TagFYI, true)
+	s.SaveAnswer("INBOX", uid, Accepted)
+	s.imu.Lock()
+	keepLocal(work, s.index("INBOX"))
+	s.indexes["INBOX"] = work
+	s.imu.Unlock()
+	if it := s.Items("INBOX")[0]; it.Tag != TagFYI || !it.TagByUser || s.AnswerOf("INBOX", uid) != Accepted {
+		t.Fatalf("lost: %+v %q", *it.Envelope, s.AnswerOf("INBOX", uid))
+	}
+	if _, err := s.Sync(ctx, "INBOX"); err != nil || s.AnswerOf("INBOX", uid) != Accepted {
+		t.Fatalf("a sync lost the answer: %v", err)
+	}
+}

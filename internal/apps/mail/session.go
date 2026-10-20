@@ -227,7 +227,9 @@ func (s *Session) Sync(ctx context.Context, mailbox string) (SyncResult, error) 
 	}
 	s.imu.Lock()
 	// A flag set while it synced went to the server; the next sync reads
-	// it back.
+	// it back. What only this computer keeps (tags, summaries, answers)
+	// is taken from the index as it is now.
+	keepLocal(work, s.index(mailbox))
 	s.indexes[mailbox] = work
 	s.imu.Unlock()
 	if res.Reset {
@@ -255,9 +257,24 @@ func (s *Session) LoadOlder(ctx context.Context, mailbox string) (int, error) {
 		return 0, err
 	}
 	s.imu.Lock()
+	keepLocal(work, s.index(mailbox))
 	s.indexes[mailbox] = work
 	s.imu.Unlock()
 	return n, s.store.SaveIndex(s.Acc.ID, mailbox, work)
+}
+
+// keepLocal carries into a synced index what the server does not keep
+// and may have changed while it synced: the tags and the summaries.
+func keepLocal(work, now *Index) {
+	if work.Validity != now.Validity {
+		return // started over: the old UIDs mean other messages
+	}
+	work.Summary = now.Summary
+	for i := range work.Messages {
+		if e := now.Find(work.Messages[i].UID); e != nil && e.Tag != "" {
+			work.Messages[i].Tag, work.Messages[i].TagByUser = e.Tag, e.TagByUser
+		}
+	}
 }
 
 func (x *Index) copy() *Index {
@@ -398,6 +415,17 @@ func (s *Session) SaveSummary(mailbox, conv, text string) {
 	s.save(mailbox)
 }
 
+// SaveAnswer keeps the answer the user gave an invitation (a message of
+// mailbox), which the invitation itself does not show.
+func (s *Session) SaveAnswer(mailbox string, uid uint32, answer string) {
+	s.SaveSummary(mailbox, fmt.Sprintf("answer/%d", uid), answer)
+}
+
+// AnswerOf is the answer kept for an invitation, or "".
+func (s *Session) AnswerOf(mailbox string, uid uint32) string {
+	return s.Summary(mailbox, fmt.Sprintf("answer/%d", uid))
+}
+
 // Summary is a conversation's summary kept, or "".
 func (s *Session) Summary(mailbox, conv string) string {
 	s.imu.Lock()
@@ -456,24 +484,39 @@ func (s *Session) Send(ctx context.Context, d Draft) (Built, error) {
 	if err != nil {
 		return b, err
 	}
+	return b, s.SendBuilt(ctx, b)
+}
+
+// Answer answers an invitation for the user, to its organizer.
+func (s *Session) Answer(ctx context.Context, inv *Invite, answer string) error {
+	b, err := InviteReply(inv, s.Acc, answer, time.Now())
+	if err != nil {
+		return err
+	}
+	return s.SendBuilt(ctx, b)
+}
+
+// SendBuilt sends a built message: SMTP, then a copy in Sent unless the
+// server keeps one itself.
+func (s *Session) SendBuilt(ctx context.Context, b Built) error {
 	s.mu.Lock()
 	a, err := s.signIn()
 	s.mu.Unlock()
 	if err != nil {
-		return b, err
+		return err
 	}
 	_, smtpAddr := s.Acc.Servers()
 	if err := Send(ctx, smtpAddr, a, b); err != nil {
-		return b, err
+		return err
 	}
 	if !s.Acc.SavesSent() {
 		if sent := s.Role(RoleSent); sent != "" {
 			if err := s.Do(ctx, func(c *Conn) error { return c.Append(sent, b.Raw, Seen) }); err != nil {
-				return b, fmt.Errorf("%w: %v", ErrNotSaved, err)
+				return fmt.Errorf("%w: %v", ErrNotSaved, err)
 			}
 		}
 	}
-	return b, nil
+	return nil
 }
 
 // ErrNoDrafts is an account with no Drafts folder: drafts stay on this

@@ -2,11 +2,13 @@ package mailui
 
 import (
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -131,7 +133,7 @@ func (w *window) signature() string {
 		k := m.Key()
 		rd := w.reading[k]
 		fmt.Fprintf(&b, "%v:%v:%v:%v:%v:%v;", k, m.Flags, rd != nil && rd.m != nil, rd != nil && rd.err != "", w.folded[k], w.quotes[k])
-		fmt.Fprintf(&b, "%v%v", w.checks[k], w.judged[k].sig())
+		fmt.Fprintf(&b, "%v%v%v", w.checks[k], w.judged[k].sig(), w.answers[k].sig())
 	}
 	fmt.Fprintf(&b, "|%s|%s", w.sumState[c.ID].sig(), w.ideas[c.ID].sig())
 	return b.String()
@@ -486,6 +488,10 @@ func (w *window) toLine(it mail.Item) string {
 // attachments, and a note when the text was made from HTML.
 func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 	k := it.Key()
+	inv := m.Invitation()
+	if inv != nil {
+		w.drawInvite(box, it, inv)
+	}
 	written, rest := mail.Split(m.Text)
 	if strings.TrimSpace(written) == "" {
 		written, rest = m.Text, ""
@@ -526,7 +532,13 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 		q.SetMaxWidthChars(84)
 		gtkx.Append(box, &q.Widget)
 	}
-	if shown := m.Shown(); len(shown) > 0 {
+	shown := m.Shown()
+	if inv != nil { // the card stands for its calendar file
+		shown = slices.DeleteFunc(shown, func(a mail.Attachment) bool {
+			return a.Type == "text/calendar" || a.Type == "application/ics" || strings.HasSuffix(strings.ToLower(a.Name), ".ics")
+		})
+	}
+	if len(shown) > 0 {
 		flow := gtk.NewFlowBox()
 		flow.AddCssClass("mail-files")
 		flow.SetSelectionMode(gtk.SelectionNoneValue)
@@ -746,4 +758,225 @@ func (w *window) continueDraft() {
 		return
 	}
 	w.newComposer(d, w.said(w.open))
+}
+
+// --- invitations ---
+
+// drawInvite shows an invitation as an event card: what, when (in the
+// user's time), where, who; the answers when it asks for one, and Add to
+// calendar, which opens its file with the desktop's calendar.
+func (w *window) drawInvite(box *gtk.Box, it mail.Item, inv *mail.Invite) {
+	k := it.Key()
+	x := w.acct(it.Account)
+	card := gtk.NewBox(gtk.OrientationVerticalValue, 5)
+	card.AddCssClass("mail-invite")
+	kicker := i18n.T("INVITATION")
+	switch inv.Method {
+	case "CANCEL":
+		kicker = i18n.T("CANCELLED")
+		card.AddCssClass("cancelled")
+	case "REPLY":
+		kicker = i18n.T("ANSWER")
+	}
+	kl := gtk.NewLabel(kicker)
+	kl.AddCssClass("kicker")
+	kl.AddCssClass("mail-invite-kicker")
+	kl.SetXalign(0)
+	gtkx.Append(card, &kl.Widget)
+	title := gtk.NewLabel(cmpOr(inv.Summary, i18n.T("(no title)")))
+	title.AddCssClass("mail-invite-title")
+	title.SetXalign(0)
+	title.SetWrap(true)
+	gtkx.Append(card, &title.Widget)
+	if !inv.Start.IsZero() {
+		when := gtk.NewLabel(eventTime(inv))
+		when.AddCssClass("mail-invite-when")
+		when.SetXalign(0)
+		gtkx.Append(card, &when.Widget)
+	}
+	if inv.Location != "" || inv.URL != "" {
+		row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+		if inv.Location != "" {
+			l := gtk.NewLabel(inv.Location)
+			l.AddCssClass("mail-invite-where")
+			l.SetXalign(0)
+			l.SetWrap(true)
+			l.SetMaxWidthChars(60)
+			gtkx.Append(row, &l.Widget)
+		}
+		if inv.URL != "" {
+			link := gtk.NewLabel("")
+			link.SetMarkup(`<a href="` + gtkEscape(inv.URL) + `">` + gtkEscape(i18n.T("Join")) + `</a>`)
+			link.AddCssClass("mail-invite-join")
+			link.SetTooltipText(inv.URL)
+			gtkx.Append(row, &link.Widget)
+		}
+		gtkx.Append(card, &row.Widget)
+	}
+	who := gtk.NewLabel(w.inviteWho(inv, x))
+	who.AddCssClass("mail-invite-who")
+	who.SetXalign(0)
+	who.SetWrap(true)
+	who.SetMaxWidthChars(70)
+	gtkx.Append(card, &who.Widget)
+
+	acts := gtk.NewBox(gtk.OrientationHorizontalValue, 14)
+	acts.AddCssClass("mail-invite-actions")
+	a := w.answers[k]
+	mineNow := ""
+	if x != nil {
+		mineNow = inv.Status(x.s.Acc.Address)
+	}
+	if x != nil {
+		if kept := x.s.AnswerOf(it.Mailbox, it.UID); kept != "" {
+			mineNow = kept
+		}
+	}
+	if a != nil && a.text != "" && !a.busy && a.err == "" {
+		mineNow = a.text
+	}
+	if inv.Asks() && x != nil { // also when invited through a list, not by name
+		for _, ans := range []struct{ answer, label string }{
+			{mail.Accepted, i18n.T("Accept")}, {mail.Tentative, i18n.T("Maybe")}, {mail.Declined, i18n.T("Decline")},
+		} {
+			b := gtk.NewButtonWithLabel(ans.label)
+			if ans.answer == mail.Accepted {
+				b.AddCssClass("outlined")
+			} else {
+				b.AddCssClass("mail-plain")
+			}
+			if ans.answer == mineNow {
+				b.AddCssClass("chosen")
+			}
+			b.SetSensitive(a == nil || !a.busy)
+			answer := ans.answer
+			w.readerBtns = append(w.readerBtns, w.h.click(b, func() { w.answerInvite(it, inv, answer) }))
+			gtkx.Append(acts, &b.Widget)
+		}
+	}
+	add := gtk.NewButtonWithLabel(i18n.T("Add to calendar"))
+	add.AddCssClass("mail-link")
+	add.SetTooltipText(i18n.T("Open it with your calendar app"))
+	data := inv.Data
+	w.readerBtns = append(w.readerBtns, w.h.click(add, func() {
+		w.openFile(mail.Attachment{Name: "invite.ics", Type: "text/calendar", Data: data})
+	}))
+	if inv.Method != "CANCEL" {
+		gtkx.Append(acts, &add.Widget)
+	}
+	gtkx.Append(card, &acts.Widget)
+	if a != nil {
+		var note string
+		switch {
+		case a.busy:
+			note = i18n.T("Sending your answer…")
+		case a.err != "":
+			note = a.err
+		default:
+			note = i18n.Tf("%s · sent to %s", answerName(a.text), inv.Organizer.Short())
+		}
+		l := gtk.NewLabel(note)
+		l.AddCssClass("mail-invite-note")
+		if a.err != "" {
+			l.AddCssClass("mail-error")
+		}
+		l.SetXalign(0)
+		l.SetWrap(true)
+		gtkx.Append(card, &l.Widget)
+	}
+	gtkx.Append(box, &card.Widget)
+}
+
+// eventTime is when an event is, in the user's time: the day, then the
+// hours, or the days of an event that takes whole days.
+func eventTime(inv *mail.Invite) string {
+	s, e := inv.Start.Local(), inv.End.Local()
+	if inv.AllDay {
+		last := e.AddDate(0, 0, -1)
+		if !last.After(s) {
+			return i18n.Time(s, "Mon Jan 2") + " · " + i18n.T("all day")
+		}
+		return i18n.Time(s, "Mon Jan 2") + " – " + i18n.Time(last, "Mon Jan 2")
+	}
+	day := i18n.Time(s, "Mon Jan 2")
+	if s.YearDay() != e.YearDay() || s.Year() != e.Year() {
+		return day + " " + s.Format("15:04") + " – " + i18n.Time(e, "Mon Jan 2") + " " + e.Format("15:04")
+	}
+	return day + " · " + s.Format("15:04") + "–" + e.Format("15:04")
+}
+
+// inviteWho says who invited, and how the others answered.
+func (w *window) inviteWho(inv *mail.Invite, x *acct) string {
+	parts := []string{}
+	if inv.Organizer.Addr != "" {
+		parts = append(parts, i18n.Tf("from %s", inv.Organizer.Short()))
+	}
+	going, others := 0, 0
+	for _, a := range inv.Attendees {
+		if x != nil && strings.EqualFold(a.Addr, x.s.Acc.Address) {
+			continue
+		}
+		if strings.EqualFold(a.Addr, inv.Organizer.Addr) {
+			continue
+		}
+		others++
+		if a.Status == mail.Accepted {
+			going++
+		}
+	}
+	if others > 0 {
+		parts = append(parts, i18n.Nf("%d other invited, %d accepted", "%d others invited, %d accepted", others, others, going))
+	}
+	if inv.Method == "REPLY" && len(inv.Attendees) > 0 {
+		a := inv.Attendees[0]
+		parts = append(parts, i18n.Tf("%s: %s", a.Short(), answerName(a.Status)))
+	}
+	return strings.Join(parts, " · ")
+}
+
+// answerName is an answer in words.
+func answerName(answer string) string {
+	switch answer {
+	case mail.Accepted:
+		return i18n.T("Accepted")
+	case mail.Tentative:
+		return i18n.T("Maybe")
+	case mail.Declined:
+		return i18n.T("Declined")
+	}
+	return i18n.T("Not answered")
+}
+
+// answerInvite sends the user's answer to the invitation's organizer, and
+// marks the message answered.
+func (w *window) answerInvite(it mail.Item, inv *mail.Invite, answer string) {
+	x := w.acct(it.Account)
+	if x == nil {
+		return
+	}
+	k := it.Key()
+	a := &aiText{busy: true, text: answer}
+	w.answers[k] = a
+	w.drawReader()
+	go func() {
+		err := x.s.Answer(w.ctx, inv, answer)
+		if err == nil || errors.Is(err, mail.ErrNotSaved) {
+			x.s.SaveAnswer(it.Mailbox, it.UID, answer)
+			x.s.SetFlag(w.ctx, it.Mailbox, []uint32{it.UID}, mail.Answered, true)
+		}
+		gtkx.Post(func() {
+			a.busy = false
+			if err != nil && !errors.Is(err, mail.ErrNotSaved) {
+				a.err = i18n.Tf("Your answer was not sent: %v", err)
+			}
+			w.drawReader()
+		})
+	}()
+}
+
+func cmpOr(a, b string) string {
+	if a != "" {
+		return a
+	}
+	return b
 }

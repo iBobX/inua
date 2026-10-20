@@ -53,6 +53,14 @@ inua-mail --check FILE.eml    the phishing checks on a message
   text*; attachments as cards: a click opens one (images and PDFs in
   Viewer, the rest with the desktop's app), *Save…* keeps it.
 
+**Invitations** show as a card above the message's text: the event, when
+in your time, where (with *Join* for a video meeting), who invited whom
+and how many accepted. *Accept*, *Maybe* and *Decline* send your answer
+to the organizer (an iTIP reply their calendar takes in), and the card
+keeps it; *Add to calendar* opens the event with your calendar app. A
+cancelled event says so. Google's, Outlook's (Windows zone names) and
+other calendars' invitations are read.
+
 Keys: `j`/`k` or the arrows choose a conversation, `/` or `Ctrl+F`
 searches, `c` composes; on a conversation `r` replies, `a` replies to
 all, `f` forwards, `e` archives, `#` or Delete moves it to the Trash (in

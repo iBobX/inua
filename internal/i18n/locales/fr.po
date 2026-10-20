@@ -104,7 +104,7 @@ msgstr "dim."
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:950
+#: internal/mailui/window.go:952
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -202,7 +202,7 @@ msgstr "Trouvé"
 
 #: internal/apps/connect/notifications.go:94
 #: internal/connectui/app.go:38
-#: internal/mailui/reader.go:203
+#: internal/mailui/reader.go:205
 #: ui/connectreply.ui:14
 msgid "Reply"
 msgstr "Répondre"
@@ -1125,7 +1125,7 @@ msgstr "L'historique, les branches et les stashes du projet ; ce qui n'est pas p
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
-#: internal/mailui/window.go:545
+#: internal/mailui/window.go:547
 msgid "Trash"
 msgstr "Corbeille"
 
@@ -1356,7 +1356,7 @@ msgid "Not signed in"
 msgstr "Non connecté"
 
 #: internal/apps/mail/sort.go:31
-#: internal/mailui/window.go:176
+#: internal/mailui/window.go:178
 msgid "REPLY"
 msgstr "RÉPONDRE"
 
@@ -1611,7 +1611,7 @@ msgstr "En attente d'approbation"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
-#: internal/mailui/window.go:465
+#: internal/mailui/window.go:467
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 msgid "Connecting…"
@@ -2584,9 +2584,9 @@ msgstr "pass supprime son fichier ; un magasin git le garde dans son historique.
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
-#: internal/mailui/reader.go:430
-#: internal/mailui/reader.go:568
-#: internal/mailui/window.go:833
+#: internal/mailui/reader.go:432
+#: internal/mailui/reader.go:580
+#: internal/mailui/window.go:835
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "DOSSIER"
@@ -3045,7 +3045,7 @@ msgstr "Pic"
 
 #: internal/appui/sysmon.go:792
 #: internal/filesui/details.go:51
-#: internal/mailui/window.go:176
+#: internal/mailui/window.go:178
 msgid "FILES"
 msgstr "FICHIERS"
 
@@ -5133,7 +5133,7 @@ msgid "The archive is made in “%s”."
 msgstr "L'archive est créée dans « %s »."
 
 #: internal/filesui/archive.go:79
-#: internal/mailui/window.go:541
+#: internal/mailui/window.go:543
 msgid "Archive"
 msgstr "Archive"
 
@@ -8213,6 +8213,7 @@ msgid "Your name"
 msgstr "Votre nom"
 
 #: internal/games/fortunenet/texts.go:19
+#: internal/mailui/reader.go:809
 msgid "Join"
 msgstr "Rejoindre"
 
@@ -9682,7 +9683,7 @@ msgid "Could not forward it: %v"
 msgstr "Impossible de le transférer : %v"
 
 #: internal/mailui/actions.go:261
-#: internal/mailui/reader.go:738
+#: internal/mailui/reader.go:750
 msgid "The message is still loading."
 msgstr "Le message est encore en cours de chargement."
 
@@ -9695,13 +9696,13 @@ msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The m
 msgstr "Courrier l'oublie sur cet ordinateur : sa connexion et le courrier gardé. Le courrier sur le serveur reste."
 
 #: internal/mailui/actions.go:347
-#: internal/mailui/window.go:427
+#: internal/mailui/window.go:429
 msgid "Unsent"
 msgstr "Non envoyés"
 
 #: internal/mailui/actions.go:363
-#: internal/mailui/reader.go:160
-#: internal/mailui/window.go:882
+#: internal/mailui/reader.go:162
+#: internal/mailui/window.go:884
 msgid "(no subject)"
 msgstr "(sans objet)"
 
@@ -9714,12 +9715,12 @@ msgid "to %s · %s"
 msgstr "à %s · %s"
 
 #: internal/mailui/actions.go:374
-#: internal/mailui/reader.go:434
+#: internal/mailui/reader.go:436
 msgid "Mon Jan 2, 15:04"
 msgstr "Mon 2 Jan, 15:04"
 
 #: internal/mailui/actions.go:385
-#: internal/mailui/reader.go:191
+#: internal/mailui/reader.go:193
 msgid "Discard"
 msgstr "Abandonner"
 
@@ -9776,7 +9777,7 @@ msgid "The assistant gave no search."
 msgstr "L'assistant n'a donné aucune recherche."
 
 #: internal/mailui/assist.go:256
-#: internal/mailui/window.go:1068
+#: internal/mailui/window.go:1070
 msgid "Searched for %s"
 msgstr "Recherché : %s"
 
@@ -9890,138 +9891,226 @@ msgstr "L'assistant n'a pas pu l'écrire"
 msgid "Written by the assistant: read it before you send."
 msgstr "Écrit par l'assistant : relisez-le avant d'envoyer."
 
-#: internal/mailui/reader.go:57
+#: internal/mailui/reader.go:59
 msgid "Could not read this message: %v"
 msgstr "Impossible de lire ce message : %v"
 
-#: internal/mailui/reader.go:113
+#: internal/mailui/reader.go:115
 msgid "Could not mark it read: %v"
 msgstr "Impossible de le marquer comme lu : %v"
 
-#: internal/mailui/reader.go:187
+#: internal/mailui/reader.go:189
 msgid "Continue writing"
 msgstr "Continuer à écrire"
 
-#: internal/mailui/reader.go:204
+#: internal/mailui/reader.go:206
 msgid "Reply all"
 msgstr "Répondre à tous"
 
-#: internal/mailui/reader.go:205
+#: internal/mailui/reader.go:207
 msgid "Forward"
 msgstr "Transférer"
 
-#: internal/mailui/reader.go:217
+#: internal/mailui/reader.go:219
 msgid "E archive · # delete · S star · U unread"
 msgstr "E archiver · # supprimer · S suivre · U non lu"
 
-#: internal/mailui/reader.go:264
+#: internal/mailui/reader.go:266
 msgid "%d check ▸"
 msgid_plural "%d checks ▸"
 msgstr[0] "%d vérification ▸"
 msgstr[1] "%d vérifications ▸"
 
-#: internal/mailui/reader.go:266
+#: internal/mailui/reader.go:268
 msgid "Hide the checks"
 msgstr "Masquer les vérifications"
 
-#: internal/mailui/reader.go:270
+#: internal/mailui/reader.go:272
 msgid "Move to Spam"
 msgstr "Déplacer vers Spam"
 
-#: internal/mailui/reader.go:273
+#: internal/mailui/reader.go:275
 #: internal/shell/launcher.go:379
 msgid "Ask the assistant"
 msgstr "Demandez à l'assistant"
 
-#: internal/mailui/reader.go:296
+#: internal/mailui/reader.go:298
 msgid "THE ASSISTANT"
 msgstr "L'ASSISTANT"
 
-#: internal/mailui/reader.go:315
+#: internal/mailui/reader.go:317
 msgid "SUMMARY · ASSISTANT"
 msgstr "RÉSUMÉ · ASSISTANT"
 
-#: internal/mailui/reader.go:327
+#: internal/mailui/reader.go:329
 msgid "Summarize"
 msgstr "Résumer"
 
-#: internal/mailui/reader.go:330
+#: internal/mailui/reader.go:332
 msgid "Reply ideas"
 msgstr "Idées de réponse"
 
-#: internal/mailui/reader.go:332
+#: internal/mailui/reader.go:334
 msgid "Thinking of replies…"
 msgstr "Réflexion sur les réponses…"
 
-#: internal/mailui/reader.go:374
+#: internal/mailui/reader.go:376
 msgid "Thinking…"
 msgstr "Réflexion…"
 
-#: internal/mailui/reader.go:450
-#: internal/mailui/window.go:779
+#: internal/mailui/reader.go:452
+#: internal/mailui/window.go:781
 msgid "Loading…"
 msgstr "Chargement…"
 
-#: internal/mailui/reader.go:470
-#: internal/mailui/window.go:876
+#: internal/mailui/reader.go:472
+#: internal/mailui/window.go:878
 msgid "me"
 msgstr "moi"
 
-#: internal/mailui/reader.go:482
+#: internal/mailui/reader.go:484
 msgid "to %s"
 msgstr "à %s"
 
-#: internal/mailui/reader.go:505
+#: internal/mailui/reader.go:511
 msgid "Show quoted text"
 msgstr "Afficher le texte cité"
 
-#: internal/mailui/reader.go:507
+#: internal/mailui/reader.go:513
 msgid "Hide quoted text"
 msgstr "Masquer le texte cité"
 
-#: internal/mailui/reader.go:512
+#: internal/mailui/reader.go:518
 msgid "Open in browser"
 msgstr "Ouvrir dans le navigateur"
 
-#: internal/mailui/reader.go:514
+#: internal/mailui/reader.go:520
 msgid "Shown here as text. The browser shows it as sent, and may load its remote images, which tell the sender you opened it."
 msgstr "Affiché ici en texte. Le navigateur l'affiche tel qu'envoyé, et peut charger ses images distantes, qui signalent à l'expéditeur que vous l'avez ouvert."
 
-#: internal/mailui/reader.go:552
+#: internal/mailui/reader.go:564
 #: internal/shell/commands.go:162
 #: internal/shell/commands.go:164
 msgid "Open %s"
 msgstr "Ouvrir %s"
 
-#: internal/mailui/reader.go:589
+#: internal/mailui/reader.go:601
 #: ui/gpg.ui:652
 #: ui/gpg.ui:896
 msgid "Save…"
 msgstr "Enregistrer…"
 
-#: internal/mailui/reader.go:600
+#: internal/mailui/reader.go:612
 msgid "%d bytes"
 msgstr "%d octets"
 
-#: internal/mailui/reader.go:639
+#: internal/mailui/reader.go:651
 msgid "Could not open %s: %v"
 msgstr "Impossible d'ouvrir %s : %v"
 
-#: internal/mailui/reader.go:667
+#: internal/mailui/reader.go:679
 msgid "Could not open it in the browser: %v"
 msgstr "Impossible de l'ouvrir dans le navigateur : %v"
 
-#: internal/mailui/reader.go:675
+#: internal/mailui/reader.go:687
 msgid "Save the attachment"
 msgstr "Enregistrer la pièce jointe"
 
-#: internal/mailui/reader.go:694
+#: internal/mailui/reader.go:706
 msgid "Could not save %s: %v"
 msgstr "Impossible d'enregistrer %s : %v"
 
-#: internal/mailui/reader.go:744
+#: internal/mailui/reader.go:756
 msgid "Could not open the draft: %v"
 msgstr "Impossible d'ouvrir le brouillon : %v"
+
+#: internal/mailui/reader.go:773
+msgid "INVITATION"
+msgstr "INVITATION"
+
+#: internal/mailui/reader.go:776
+msgid "CANCELLED"
+msgstr "ANNULÉ"
+
+#: internal/mailui/reader.go:779
+msgid "ANSWER"
+msgstr "RÉPONSE"
+
+#: internal/mailui/reader.go:786
+msgid "(no title)"
+msgstr "(sans titre)"
+
+#: internal/mailui/reader.go:840
+msgid "Accept"
+msgstr "Accepter"
+
+#: internal/mailui/reader.go:840
+#: internal/mailui/reader.go:943
+msgid "Maybe"
+msgstr "Peut-être"
+
+#: internal/mailui/reader.go:840
+msgid "Decline"
+msgstr "Refuser"
+
+#: internal/mailui/reader.go:857
+msgid "Add to calendar"
+msgstr "Ajouter à l'agenda"
+
+#: internal/mailui/reader.go:859
+msgid "Open it with your calendar app"
+msgstr "L'ouvrir avec votre agenda"
+
+#: internal/mailui/reader.go:872
+msgid "Sending your answer…"
+msgstr "Envoi de votre réponse…"
+
+#: internal/mailui/reader.go:876
+msgid "%s · sent to %s"
+msgstr "%s · envoyé à %s"
+
+#: internal/mailui/reader.go:897
+#: internal/mailui/reader.go:899
+#: internal/mailui/reader.go:899
+#: internal/mailui/reader.go:901
+#: internal/mailui/reader.go:903
+#: internal/ui/agenda.go:223
+msgid "Mon Jan 2"
+msgstr "Mon 2 Jan"
+
+#: internal/mailui/reader.go:897
+msgid "all day"
+msgstr "toute la journée"
+
+#: internal/mailui/reader.go:912
+msgid "from %s"
+msgstr "de %s"
+
+#: internal/mailui/reader.go:928
+msgid "%d other invited, %d accepted"
+msgid_plural "%d others invited, %d accepted"
+msgstr[0] "%d autre invité, %d a accepté"
+msgstr[1] "%d autres invités, %d ont accepté"
+
+#: internal/mailui/reader.go:932
+msgid "%s: %s"
+msgstr "%s : %s"
+
+#: internal/mailui/reader.go:941
+msgid "Accepted"
+msgstr "Accepté"
+
+#: internal/mailui/reader.go:945
+msgid "Declined"
+msgstr "Refusé"
+
+#: internal/mailui/reader.go:947
+msgid "Not answered"
+msgstr "Sans réponse"
+
+#: internal/mailui/reader.go:970
+msgid "Your answer was not sent: %v"
+msgstr "Votre réponse n'a pas été envoyée : %v"
 
 #: internal/mailui/welcome.go:178
 msgid "ADDRESS"
@@ -10178,7 +10267,7 @@ msgid "Enter signs in · Esc goes back"
 msgstr "Entrée se connecte · Échap revient"
 
 #: internal/mailui/welcome.go:599
-#: internal/mailui/window.go:458
+#: internal/mailui/window.go:460
 msgid "Sign in"
 msgstr "Se connecter"
 
@@ -10280,165 +10369,165 @@ msgstr "Identifiant client Microsoft"
 msgid "Microsoft tenant"
 msgstr "Locataire Microsoft"
 
-#: internal/mailui/window.go:176
+#: internal/mailui/window.go:178
 msgid "ALL"
 msgstr "TOUS"
 
-#: internal/mailui/window.go:176
+#: internal/mailui/window.go:178
 msgid "UNREAD"
 msgstr "NON LUS"
 
-#: internal/mailui/window.go:180
+#: internal/mailui/window.go:182
 msgid "Every conversation"
 msgstr "Toutes les conversations"
 
-#: internal/mailui/window.go:180
+#: internal/mailui/window.go:182
 msgid "With messages not read"
 msgstr "Avec des messages non lus"
 
-#: internal/mailui/window.go:181
+#: internal/mailui/window.go:183
 msgid "With files attached"
 msgstr "Avec des fichiers joints"
 
-#: internal/mailui/window.go:181
+#: internal/mailui/window.go:183
 msgid "Waiting for your reply"
 msgstr "En attente de votre réponse"
 
-#: internal/mailui/window.go:351
+#: internal/mailui/window.go:353
 msgid "Signed out"
 msgstr "Déconnecté"
 
-#: internal/mailui/window.go:355
+#: internal/mailui/window.go:357
 msgid "Offline: %v"
 msgstr "Hors ligne : %v"
 
-#: internal/mailui/window.go:409
+#: internal/mailui/window.go:411
 msgid "No account yet"
 msgstr "Pas encore de compte"
 
-#: internal/mailui/window.go:423
+#: internal/mailui/window.go:425
 msgid "All inboxes"
 msgstr "Toutes les boîtes"
 
-#: internal/mailui/window.go:424
+#: internal/mailui/window.go:426
 msgid "Needs reply"
 msgstr "Demande une réponse"
 
-#: internal/mailui/window.go:425
+#: internal/mailui/window.go:427
 msgid "Starred"
 msgstr "Suivis"
 
-#: internal/mailui/window.go:445
+#: internal/mailui/window.go:447
 msgid "Show or hide the other folders"
 msgstr "Afficher ou masquer les autres dossiers"
 
-#: internal/mailui/window.go:489
+#: internal/mailui/window.go:491
 msgid "Remove account…"
 msgstr "Retirer le compte…"
 
-#: internal/mailui/window.go:493
+#: internal/mailui/window.go:495
 msgid "%d more folder"
 msgid_plural "%d more folders"
 msgstr[0] "%d autre dossier"
 msgstr[1] "%d autres dossiers"
 
-#: internal/mailui/window.go:535
+#: internal/mailui/window.go:537
 msgid "Inbox"
 msgstr "Boîte de réception"
 
-#: internal/mailui/window.go:537
+#: internal/mailui/window.go:539
 msgid "Drafts"
 msgstr "Brouillons"
 
-#: internal/mailui/window.go:539
+#: internal/mailui/window.go:541
 msgid "Sent"
 msgstr "Envoyés"
 
-#: internal/mailui/window.go:543
+#: internal/mailui/window.go:545
 msgid "Spam"
 msgstr "Spam"
 
-#: internal/mailui/window.go:724
+#: internal/mailui/window.go:726
 msgid "Nothing found"
 msgstr "Rien trouvé"
 
-#: internal/mailui/window.go:726
+#: internal/mailui/window.go:728
 msgid "Fetching your mail…"
 msgstr "Récupération de votre courrier…"
 
-#: internal/mailui/window.go:728
+#: internal/mailui/window.go:730
 msgid "Nothing waits for your reply"
 msgstr "Rien n'attend votre réponse"
 
-#: internal/mailui/window.go:730
+#: internal/mailui/window.go:732
 msgid "No starred conversation"
 msgstr "Aucune conversation suivie"
 
-#: internal/mailui/window.go:732
+#: internal/mailui/window.go:734
 msgid "All read"
 msgstr "Tout est lu"
 
-#: internal/mailui/window.go:734
+#: internal/mailui/window.go:736
 msgid "No mail here"
 msgstr "Aucun courrier ici"
 
-#: internal/mailui/window.go:784
+#: internal/mailui/window.go:786
 #: ui/mail.ui:209
 msgid "Load older"
 msgstr "Charger les plus anciens"
 
-#: internal/mailui/window.go:786
+#: internal/mailui/window.go:788
 msgid "Could not load older mail: %v"
 msgstr "Impossible de charger le courrier plus ancien : %v"
 
-#: internal/mailui/window.go:904
-#: internal/mailui/window.go:907
+#: internal/mailui/window.go:906
+#: internal/mailui/window.go:909
 msgid "SUSPICIOUS"
 msgstr "SUSPECT"
 
-#: internal/mailui/window.go:952
+#: internal/mailui/window.go:954
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "2 Jan"
 
-#: internal/mailui/window.go:1006
+#: internal/mailui/window.go:1008
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "Appuyez sur Entrée pour demander à l'assistant de le rechercher."
 
-#: internal/mailui/window.go:1047
+#: internal/mailui/window.go:1049
 msgid "Searching the server…"
 msgstr "Recherche sur le serveur…"
 
-#: internal/mailui/window.go:1071
+#: internal/mailui/window.go:1073
 msgid "The server's search failed: %s"
 msgstr "La recherche du serveur a échoué : %s"
 
-#: internal/mailui/window.go:1182
+#: internal/mailui/window.go:1184
 #: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "INACTIF"
 
-#: internal/mailui/window.go:1185
+#: internal/mailui/window.go:1187
 msgid "NO ACCOUNT"
 msgstr "AUCUN COMPTE"
 
-#: internal/mailui/window.go:1187
+#: internal/mailui/window.go:1189
 msgid "SYNCING"
 msgstr "SYNCHRO"
 
-#: internal/mailui/window.go:1189
+#: internal/mailui/window.go:1191
 msgid "OFFLINE"
 msgstr "HORS LIGNE"
 
-#: internal/mailui/window.go:1191
+#: internal/mailui/window.go:1193
 msgid "%d OFFLINE"
 msgstr "%d HORS LIGNE"
 
-#: internal/mailui/window.go:1200
+#: internal/mailui/window.go:1202
 msgid "%s MSG · %d UNREAD"
 msgstr "%s MSG · %d NON LUS"
 
-#: internal/mailui/window.go:1201
+#: internal/mailui/window.go:1203
 msgid "Messages kept from the inboxes, and how many are unread"
 msgstr "Messages gardés des boîtes de réception, et combien sont non lus"
 
@@ -11660,10 +11749,6 @@ msgstr "Calendrier Inua"
 #: internal/ui/agenda.go:223
 msgid "%s · WK %d"
 msgstr "%s · SEM %d"
-
-#: internal/ui/agenda.go:223
-msgid "Mon Jan 2"
-msgstr "Mon 2 Jan"
 
 #: internal/ui/agenda.go:320
 msgid "Add a place in Weather to see it here"

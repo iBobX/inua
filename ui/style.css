@@ -3356,6 +3356,25 @@ window.mail button.mail-file-save {
   color: @t2;
 }
 window.mail button.mail-file-save:hover { color: @t0; }
+/* An invitation: the event, the answers, Add to calendar. */
+window.mail .mail-invite {
+  margin: 2px 0 6px;
+  padding: 12px 16px 14px;
+  border-left: 2px solid alpha(@accent, 0.55);
+  background: alpha(@surface, 0.55);
+}
+window.mail .mail-invite.cancelled { border-left-color: alpha(@danger, 0.6); }
+window.mail .mail-invite.cancelled .mail-invite-kicker { color: @danger; }
+window.mail .mail-invite-title { font-size: 16px; color: @t0; }
+window.mail .mail-invite.cancelled .mail-invite-title { color: @t2; }
+window.mail .mail-invite-when { font-size: 13.5px; color: @t0; font-feature-settings: "tnum"; }
+window.mail .mail-invite-where { font-size: 12.5px; color: @t1; }
+window.mail .mail-invite-who, window.mail .mail-invite-note { font-size: 12.5px; color: @t2; }
+window.mail .mail-invite-join link { color: @t0; }
+window.mail .mail-invite-actions { margin-top: 6px; }
+window.mail .mail-invite-actions button.outlined { min-height: 30px; padding: 0 14px; }
+window.mail .mail-invite-actions button.chosen.outlined { border-color: @accent; color: @accent; }
+window.mail .mail-invite-actions button.mail-plain.chosen { color: @accent; }
 window.mail .mail-actions { margin-top: 6px; }
 window.mail .mail-actions button.outlined { min-height: 32px; padding: 0 16px; }
 window.mail .mail-keys {
