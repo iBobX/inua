@@ -89,7 +89,6 @@ func Rules(e Envelope, mine bool, user string) (Tag, bool) {
 	return TagNone, false
 }
 
-
 func containsAny(s string, words []string) bool {
 	for _, w := range words {
 		if strings.Contains(s, w) {
