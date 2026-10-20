@@ -20,9 +20,6 @@ import (
 // toggleAssist opens or closes the panel.
 // The sidebar makes room for it, and comes back when it closes.
 func (w *window) toggleAssist() {
-	if !w.assistOpen && !w.settings.AI() {
-		return
-	}
 	w.assistOpen = !w.assistOpen
 	w.assistReveal.SetRevealChild(w.assistOpen)
 	switch {
@@ -37,6 +34,15 @@ func (w *window) toggleAssist() {
 	w.drawPanel()
 	w.lastDrawn = ""
 	w.drawReader() // the bar's ✦
+}
+
+// panelLook is the right panel's icon and title: AI's, or, with AI off,
+// the checks', all it then shows.
+func panelLook(ai bool) (icon, title string) {
+	if ai {
+		return "applications-science-symbolic", i18n.T("AI")
+	}
+	return "security-high-symbolic", i18n.T("Checks")
 }
 
 // openAssist opens the panel, if it is not, and runs f.
@@ -57,14 +63,20 @@ func (w *window) drawPanel() {
 	}
 	c := w.open
 	if c == nil {
-		w.panelNote(&w.assist, i18n.T("Open a conversation: the assistant sums it up, suggests replies and writes them, and judges a message that looks suspicious."))
+		if w.settings.AI() {
+			w.panelNote(&w.assist, i18n.T("Open a conversation: AI sums it up, suggests replies and writes them, and judges a message that looks suspicious."))
+		} else {
+			w.panelNote(&w.assist, i18n.T("Open a conversation to see what the checks found."))
+		}
 		return
 	}
-	draft := w.isDraft(c.Latest())
-	w.panelActions(c, draft)
-	w.panelSummary(c)
-	if !draft {
-		w.panelReply(c)
+	if w.settings.AI() {
+		draft := w.isDraft(c.Latest())
+		w.panelActions(c, draft)
+		w.panelSummary(c)
+		if !draft {
+			w.panelReply(c)
+		}
 	}
 	w.panelSafety(c)
 }
@@ -279,6 +291,9 @@ func (w *window) panelSafety(c *mail.Conversation) {
 	}
 	drawChecks(sec, rd.judged)
 
+	if !w.settings.AI() {
+		return
+	}
 	ai := gtk.NewBox(gtk.OrientationVerticalValue, 8)
 	ai.AddCssClass("mail-safety-ai")
 	a := w.judged[k]

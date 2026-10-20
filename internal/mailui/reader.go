@@ -245,11 +245,10 @@ func (w *window) drawBar(c *mail.Conversation) {
 		gap.SetHexpand(true)
 		gtkx.Append(bar, &gap.Widget)
 		w.tool(bar, "user-trash-symbolic", i18n.T("Discard the draft"), w.trash)
-		if w.settings.AI() {
-			ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
-			if w.assistOpen {
-				ai.AddCssClass("on")
-			}
+		icon, title := panelLook(w.settings.AI())
+		ai := w.tool(bar, icon, title, w.toggleAssist)
+		if w.assistOpen {
+			ai.AddCssClass("on")
 		}
 		return
 	}
@@ -274,11 +273,10 @@ func (w *window) drawBar(c *mail.Conversation) {
 		star.SetTooltipText(i18n.T("Unstar (S)"))
 	}
 	w.tool(bar, "mail-unread-symbolic", i18n.T("Mark as unread (U)"), w.markUnread)
-	if w.settings.AI() {
-		ai := w.tool(bar, "applications-science-symbolic", i18n.T("Assistant"), w.toggleAssist)
-		if w.assistOpen {
-			ai.AddCssClass("on")
-		}
+	icon, title := panelLook(w.settings.AI())
+	ai := w.tool(bar, icon, title, w.toggleAssist)
+	if w.assistOpen {
+		ai.AddCssClass("on")
 	}
 
 	more := gtk.NewMenuButton()

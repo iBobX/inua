@@ -73,6 +73,8 @@ type window struct {
 	listProgress, listLoading               gtk.Box
 	assistReveal                            gtk.Revealer
 	assistClose                             gtk.Button
+	assistIcon                              gtk.Image
+	assistTitle                             gtk.Label
 	statusMark, undoBar                     gtk.Box
 	undoText                                gtk.Label
 	undoBtn                                 gtk.Button
@@ -177,7 +179,7 @@ func openWindow(c *appui.Ctx) *window {
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState, "reader_bar": &w.readerBar, "list_progress": &w.listProgress, "list_loading": &w.listLoading, "index_col": &w.indexCol, "assist": &w.assist, "assist_reveal": &w.assistReveal, "assist_close": &w.assistClose,
+		"status_state": &w.statusState, "reader_bar": &w.readerBar, "list_progress": &w.listProgress, "list_loading": &w.listLoading, "index_col": &w.indexCol, "assist": &w.assist, "assist_reveal": &w.assistReveal, "assist_close": &w.assistClose, "assist_icon": &w.assistIcon, "assist_title": &w.assistTitle,
 		"sidebar_hide": &w.sidebarHide, "sidebar_show": &w.sidebarShow,
 		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
@@ -1443,32 +1445,32 @@ func (w *window) setSidebar(shown bool) {
 	w.sidebarShow.SetVisible(!shown)
 }
 
-// keepLayout keeps in mail.toml whether the sidebar is hidden (by the
-// user, not to make room for the assistant) and the assistant's panel
-// open, when that changed.
+// keepLayout keeps in mail.toml whether the sidebar is hidden (and
+// whether the right panel hid it) and the panel open, when that changed.
 func (w *window) keepLayout() {
-	hide := !w.indexCol.GetVisible() && !w.sidebarForPanel
+	hide := !w.indexCol.GetVisible()
 	l := &w.settings.Window
-	if l.HideSidebar == hide && l.Assistant == w.assistOpen {
+	if l.HideSidebar == hide && l.Assistant == w.assistOpen && l.PanelHid == w.sidebarForPanel {
 		return
 	}
-	l.HideSidebar, l.Assistant = hide, w.assistOpen
+	l.HideSidebar, l.Assistant, l.PanelHid = hide, w.assistOpen, w.sidebarForPanel
 	if err := w.settings.Save(mail.SettingsPath()); err != nil {
 		w.say(&w.listError, i18n.Tf("Not saved: %v", err))
 	}
 }
 
 // aiChanged shows or hides what is the AI's: the search's sentence, the
-// assistant's panel.
+// composer's row, the right panel's AI parts.
 func (w *window) aiChanged() {
 	if w.settings.AI() {
 		w.search.SetPlaceholderText(i18n.T("Search, or ask in a sentence"))
 	} else {
 		w.search.SetPlaceholderText(i18n.T("Search"))
-		if w.assistOpen {
-			w.toggleAssist()
-		}
 	}
+	icon, title := panelLook(w.settings.AI())
+	w.assistIcon.SetFromIconName(icon)
+	w.assistTitle.SetText(title)
+	w.drawPanel()
 	for _, c := range w.composers {
 		c.assistRow.SetVisible(w.settings.AI())
 	}
@@ -1476,13 +1478,16 @@ func (w *window) aiChanged() {
 	w.drawReader()
 }
 
-// restoreLayout shows the window as it was left.
+// restoreLayout shows the window as it was left: the sidebar shown or
+// not, the right panel open or not, as they were, whoever hid what.
 func (w *window) restoreLayout() {
-	if w.settings.Window.HideSidebar {
-		w.setSidebar(false)
-	}
-	if w.settings.Window.Assistant && w.settings.AI() {
-		w.toggleAssist()
+	l := w.settings.Window
+	w.setSidebar(!l.HideSidebar)
+	if l.Assistant {
+		w.assistOpen = true
+		w.assistReveal.SetRevealChild(true)
+		w.sidebarForPanel = l.HideSidebar && l.PanelHid
+		w.drawPanel()
 	}
 }
 

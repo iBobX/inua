@@ -150,7 +150,8 @@ sort = false                    # sort new mail with the assistant
 
 [window]
 hide_sidebar = false            # kept as the window was left
-assistant = false               # the assistant's panel open
+assistant = false               # the right panel open
+panel_hid_sidebar = false       # the panel hid the sidebar, to make room
 ```
 
 **Settings** (Ctrl+, ⚙ at the index's foot, or a click on an account's
@@ -249,17 +250,23 @@ five seconds (Settings → Writing: off, 5, 10, 20 or 30), in which *Undo*
 takes it back. A copy goes to Sent (Gmail
 and Outlook keep their own).
 
-## The assistant
+## AI
 
 Mail uses inua's assistant (Settings → AI), only when asked, except the
-sorting, which is off until turned on; *Use AI in Mail* (Mail's
-Settings → Assistant) turns every bit of it off, and then nothing of your
-mail goes to a model. Its panel opens at the window's
-right edge from ✦ in the conversation's bar (the sidebar makes room, and
-comes back when it closes): the summary, replies to pick or a line of
-what to say, and *Is it safe?*: the checks' verdict and each check's finding, for any message not yours, and AI's judgment when asked (*Ask AI*). A reply it
-writes goes into the quick reply under the conversation, marked *Drafted
-by the assistant*, with *Undo*, for you to read and send.
+sorting, which is off until turned on. *Use AI in Mail* (Mail's Settings
+→ AI) turns every bit of it off, and then nothing of your mail goes to a
+model.
+
+The right panel opens from ✦ in the conversation's bar (the sidebar
+makes room when it was shown, and comes back when the panel closes):
+*Sum it up* and *Suggest replies*, a line of what to reply, then *Is it
+safe?*: each check's finding for the newest message not yours, and AI's
+judgment when asked (*Ask AI*). A reply it writes goes into the quick
+reply under the conversation, marked *Drafted by the assistant*, with
+*Undo*, for you to read and send. With AI off the panel is *Checks*,
+opened from a shield: the checks alone, which run on this computer.
+Whether it is open, and whether the sidebar is shown, are kept for the
+next start.
 
 | Where | What | What it sends |
 | --- | --- | --- |

@@ -75,7 +75,10 @@ type Settings struct {
 	// Window is the window's layout as it was left.
 	Window struct {
 		HideSidebar bool `toml:"hide_sidebar,omitempty"`
-		Assistant   bool `toml:"assistant,omitempty"` // the assistant's panel is open
+		Assistant   bool `toml:"assistant,omitempty"` // the right panel is open
+		// PanelHid says the panel hid the sidebar, to make room: it comes
+		// back when the panel closes.
+		PanelHid bool `toml:"panel_hid_sidebar,omitempty"`
 	} `toml:"window"`
 	Reading Reading `toml:"reading"`
 	Writing struct {

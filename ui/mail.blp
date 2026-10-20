@@ -253,7 +253,7 @@ ApplicationWindow mail {
           }
         }
 
-        // ── the assistant, at the right edge when asked for ────────────
+        // ── AI and the checks, at the right edge when asked for ────────
         // Its width its own: the reader takes what is left.
         Revealer assist_reveal {
           hexpand: false;
@@ -270,14 +270,14 @@ ApplicationWindow mail {
               styles ["mail-assist-head"]
               spacing: 8;
 
-              Image {
+              Image assist_icon {
                 styles ["mail-assist-mark"]
                 icon-name: "applications-science-symbolic";
               }
 
-              Label {
+              Label assist_title {
                 styles ["mail-assist-title"]
-                label: _("Assistant");
+                label: _("AI");
                 xalign: 0;
                 hexpand: true;
               }
@@ -285,7 +285,7 @@ ApplicationWindow mail {
               Button assist_close {
                 styles ["mail-tool"]
                 icon-name: "window-close-symbolic";
-                tooltip-text: _("Close the assistant");
+                tooltip-text: _("Close");
               }
             }
 

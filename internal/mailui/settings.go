@@ -208,7 +208,7 @@ func (s *settingsWin) draw() {
 	heading(i18n.T("MAIL"))
 	item("reading", i18n.T("Reading"), nil)
 	item("writing", i18n.T("Writing"), nil)
-	item("assistant", i18n.T("Assistant"), nil)
+	item("assistant", i18n.T("AI"), nil)
 	item("advanced", i18n.T("Advanced"), nil)
 	s.building = false
 	s.drawPage()
@@ -549,7 +549,7 @@ func (s *settingsWin) assistantPage() {
 	on := gtk.NewSwitch()
 	on.SetActive(w.settings.AI())
 	body := s.section(i18n.T("AI"), i18n.T("In Mail only; the assistant itself is set in Settings → AI"))
-	s.row(body, i18n.T("Use AI in Mail"), i18n.T("Off: no assistant's panel, no Ask AI, no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."), &on.Widget)
+	s.row(body, i18n.T("Use AI in Mail"), i18n.T("Off: no summaries, reply ideas or Ask AI (the right panel keeps the checks), no search from a sentence, no drafting or polishing in the composer, no summaries of attachments, no sorting. Nothing of your mail goes to a model."), &on.Widget)
 	sort := s.toggle(w.settings.Assistant.Sort, func(v bool) { w.settings.Assistant.Sort = v; s.save() })
 	sort.SetSensitive(w.settings.AI())
 	sorting := s.section(i18n.T("SORTING"), i18n.T("The only thing it does unasked"))
