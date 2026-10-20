@@ -24,7 +24,7 @@ Enter copies the answer.
 Commands rank with the apps: Lock Screen, Sleep, Restart, Shut Down, Log
 Out and Empty Trash (the last four ask for Enter again), Settings,
 screenshots and recording, Pick a Colour, Clear Notifications, Focus, Wi-Fi
-and Bluetooth, Bluetooth Settings, Restart inua; and for the window you came from, Close,
+and Bluetooth, Wi-Fi Settings, Bluetooth Settings, Restart inua; and for the window you came from, Close,
 Toggle Floating, Toggle Fullscreen and Center. `workspace 3` goes there,
 `move to workspace 3` takes the window along.
 
@@ -74,6 +74,14 @@ installed; brightness and volume; media controls; screenshot, lock and
 settings; suspend (locking first), restart, shut down and log out, the
 last three on a second click.
 
+The arrow beside the Wi-Fi tile opens the networks in range under the
+tiles: a click joins a saved or open network, and one that needs a
+password opens Settings → Wi-Fi to type it. The arrow beside Bluetooth
+lists the paired devices, a click connecting or disconnecting one. A
+failure shows on the row it is about. While Tailscale is connected, its
+tile has this computer's tailnet address and MagicDNS name beside it; a
+click copies either.
+
 ## Notifications
 
 inua is the notification server. Banners slide in at the top right, then
@@ -97,8 +105,22 @@ its window to the current workspace.
 
 A two-column settings window for everything: appearance and wallpaper, bar
 and dock, launcher, default apps, AI (the assistant's models),
-notifications, shortcuts, Bluetooth, displays, keyboard, mouse and touchpad. Changes apply as
+notifications, shortcuts, Wi-Fi, Bluetooth, displays, keyboard, mouse and touchpad. Changes apply as
 you make them.
+
+The search above the index (Ctrl+F, or just type) finds pages and the
+settings on them by what they say, and pages by other words for them
+("network", "trackpad", "neofetch"); the results replace the index while
+it is typed. Enter or a click turns to the result's page, scrolls its
+row into view and lights it for a moment. Escape clears the search, and
+closes the window when there is none.
+
+About starts with the computer at a glance, as fastfetch prints it:
+inua's name in blocks beside the OS, machine, kernel, uptime, packages,
+shell, Hyprland's version, theme, displays, CPU, GPU, memory, swap, the
+root disk, battery and locale, and the theme's colours. It is read from
+`/proc`, `/sys` and `/etc` each time the page is shown; Copy puts it on
+the clipboard as text.
 
 Default Apps chooses what opens links (the web browser), mailto: links,
 folders (the file manager), audio, video, pictures, PDFs and plain text,
@@ -295,6 +317,24 @@ inua. A puzzle button beside the dock's drawer, there once an app is
 installed, opens the workshop drawer: the apps by the category their
 manifest gives, and the Workshop app to open, install and remove them.
 See [workshop.md](workshop.md).
+
+## Wi-Fi
+
+Settings → Wi-Fi (or Wi-Fi Settings in the launcher) turns Wi-Fi on or
+off through NetworkManager and shows the network in use, with its IP
+address, router and the device's hardware address: disconnect or forget
+it. The saved networks follow, in range or not (connect, forget; Forget
+asks again), then the others in range, strongest first, with their
+security and a lock on those that take a password. Connect asks for the
+password under the network's row; a network joined is saved, so it is
+joined again by itself, and one that does not come up is not kept. A
+password turned down says so and asks again; a saved network takes a
+new password the same way. Networks that sign in with a user name or a
+certificate (802.1X) are left to `nmtui` or `nm-connection-editor`.
+
+The list is read every few seconds while the page (or the control
+center's list) is shown, with a scan every 20 seconds, and not at all
+otherwise.
 
 ## Bluetooth
 

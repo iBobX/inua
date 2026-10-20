@@ -81,6 +81,8 @@ type settings struct {
 	apps     appsSettings      // the Default Apps page
 	displays displaysSettings  // the Displays page
 	bt       bluetoothSettings // the Bluetooth page
+	wifi     wifiSettings      // the Wi-Fi page
+	search   settingsSearch    // the search over the index
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
 
@@ -308,9 +310,14 @@ func (s *shellUI) bindSettingsHandlers() {
 			return true
 		}
 		if keyval == keyEscape {
-			if !s.closeBench() { // the dialog first
+			// The dialog first, then a search typed.
+			if !s.closeBench() && !s.clearSettingsSearch() {
 				s.closeSettings()
 			}
+			return true
+		}
+		if keyval == 'f' && state&gdk.ControlMaskValue != 0 {
+			s.focusSettingsSearch()
 			return true
 		}
 		return false
@@ -458,8 +465,10 @@ func (s *shellUI) openSettings() {
 	s.getKeyringSettings(ui)
 	s.getAppsSettings(ui)
 	s.getDisplaySettings(ui)
+	s.getWifiSettings(ui)
 	s.getBluetoothSettings(ui)
 	s.buildSettingsIndex()
+	s.getSettingsSearch(ui)
 	ui.Close()
 
 	for _, e := range []*gtk.Entry{&st.bgImage, &st.bgColor, &st.clock, &st.terminal, &st.lock, &st.screenshot, &st.clipSensitive} {
@@ -498,12 +507,13 @@ func (s *shellUI) openSettings() {
 }
 
 // settingsPages are the pages' names in settings.ui, in order.
-var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "bluetooth", "displays", "keyboard", "mouse", "about"}
+var settingsPages = []string{"appearance", "bar", "launcher", "apps", "ai", "notifications", "clipboard", "keyring", "shortcuts", "wifi", "bluetooth", "displays", "keyboard", "mouse", "about"}
 
 // settingsPageAliases name the page that now holds a section that was once
 // a page of its own.
 var settingsPageAliases = map[string]string{
 	"wallpaper": "appearance", "dock": "bar", "control": "bar", "touchpad": "mouse",
+	"network": "wifi", "wi-fi": "wifi",
 }
 
 // showSettingsPage turns the open settings window to a page, reporting
@@ -532,6 +542,7 @@ func (s *shellUI) closeSettings() {
 	if st.dirty {
 		s.saveSettings()
 	}
+	s.releaseSearch()
 	st.win.Destroy()
 	st.refs.Release()
 	st.win, st.swatches, st.entries, st.drops, st.sticky, st.overlay = nil, nil, nil, nil, nil, nil
@@ -651,6 +662,7 @@ func (s *shellUI) showSettings() {
 	// The shell chose its language when it started.
 	st.langRestartRow.SetVisible(c.Language != s.opts.Config.Language)
 	s.showInput()
+	s.showWifi()
 	s.showBluetooth()
 	s.showDisplays()
 	s.showNotifySettings()

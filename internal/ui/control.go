@@ -52,6 +52,21 @@ type control struct {
 	vpn, vpnOpen                     gtk.Button
 	vpnSub                           gtk.Label
 	ticks                            int // of onControlTick, to read Tailscale every few
+	// This computer in the tailnet, beside the tile; copied by a click.
+	vpnInfo                   gtk.Box
+	vpnIP, vpnDNS             gtk.Button
+	vpnIPKicker, vpnDNSKicker gtk.Label
+	vpnIPValue, vpnDNSValue   gtk.Label
+	copied                    string  // the one just copied ("vpn-ip", "vpn-dns"), "" for none
+	copyGen                   uintptr // the latest copy; an older one's timer is moot
+
+	// The list an arrow beside a tile opens: "wifi", "bt", or "" for none.
+	wifiMore, btMore gtk.Button
+	detailReveal     gtk.Revealer
+	detailList       gtk.Box
+	detail           string
+	detailShown      string             // what the list shows, to lay it out only when it changes
+	items            map[uintptr]string // the list's rows: an SSID or a device's path
 
 	power       gtk.ToggleButton
 	powerReveal gtk.Revealer
@@ -228,6 +243,19 @@ func (s *shellUI) buildControl() {
 	ui.Get("vpn", &c.vpn)
 	ui.Get("vpn_open", &c.vpnOpen)
 	ui.Get("vpn_sub", &c.vpnSub)
+	ui.Get("vpn_info", &c.vpnInfo)
+	ui.Get("vpn_ip", &c.vpnIP)
+	ui.Get("vpn_dns", &c.vpnDNS)
+	ui.Get("vpn_ip_kicker", &c.vpnIPKicker)
+	ui.Get("vpn_dns_kicker", &c.vpnDNSKicker)
+	ui.Get("vpn_ip_value", &c.vpnIPValue)
+	ui.Get("vpn_dns_value", &c.vpnDNSValue)
+	ui.Get("wifi_more", &c.wifiMore)
+	ui.Get("bt_more", &c.btMore)
+	ui.Get("detail_reveal", &c.detailReveal)
+	ui.Get("detail", &c.detailList)
+	c.detail, c.detailShown, c.copied = "", "", ""
+	c.items = map[uintptr]string{}
 	var lock, screenshot, openSettings gtk.Button
 	ui.Get("power", &c.power)
 	ui.Get("power_reveal", &c.powerReveal)
@@ -249,7 +277,7 @@ func (s *shellUI) buildControl() {
 	ui.Close()
 	c.artURL = ""
 
-	for _, b := range []*gtk.Button{&lock, &screenshot, &openSettings, &c.wifi, &c.bt, &c.saver, &c.dnd, &c.mute, &c.mediaPrev, &c.mediaPlay, &c.mediaNext, &c.vpn, &c.vpnOpen} {
+	for _, b := range []*gtk.Button{&lock, &screenshot, &openSettings, &c.wifi, &c.bt, &c.saver, &c.dnd, &c.mute, &c.mediaPrev, &c.mediaPlay, &c.mediaNext, &c.vpn, &c.vpnOpen, &c.vpnIP, &c.vpnDNS, &c.wifiMore, &c.btMore} {
 		b.ConnectClicked(&s.onControlButton)
 	}
 	for _, b := range powerButtons {
@@ -330,6 +358,8 @@ func (s *shellUI) applyControl() {
 	tsSub, tsOn, _ := shell.TailscaleTile(st.TS)
 	setOn(&c.vpn, tsOn)
 	c.vpnSub.SetText(tsSub)
+	s.applyTailscaleInfo()
+	s.showControlDetail()
 
 	a := st.Audio
 	c.sound.SetSensitive(a.Available)
@@ -449,6 +479,16 @@ func (s *shellUI) controlAction(name string) {
 	case "vpn-open":
 		s.closeControl()
 		s.openLightApp(tailscaleApp, "tailscale")
+	case "vpn-ip", "vpn-dns":
+		s.copyTailscale(name)
+	case "wifi-more":
+		s.toggleDetail("wifi")
+	case "bt-more":
+		s.toggleDetail("bt")
+	case "wifi-settings", "bt-settings":
+		s.closeControl()
+		s.openSettings()
+		s.showSettingsPage(map[string]string{"wifi-settings": "wifi", "bt-settings": "bluetooth"}[name])
 	case "mute":
 		go func() { logErr("mute", v.audio.ToggleMute()) }()
 	case "prev":

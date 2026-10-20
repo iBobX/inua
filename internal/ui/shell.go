@@ -99,6 +99,7 @@ type shellUI struct {
 	pass      passPrompts // gpg's passphrases (inua-pinentry)
 	alarms    alarms
 	settings  settings
+	wifi      wifiState // the networks, while a list shows them
 	tray      tray
 	sys       shell.System
 	svc       services
@@ -125,6 +126,8 @@ type shellUI struct {
 	onQueryActivate        func(gtk.Entry)
 	onQueryFocus           func(gtk.EventControllerFocus)
 	onControlButton        func(gtk.Button)
+	onControlItem          func(gtk.Button)
+	onControlCopied        glib.SourceFunc
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
@@ -153,7 +156,17 @@ type shellUI struct {
 	onBluetoothSwitch      func(gtk.Switch, bool) bool
 	onBluetoothButton      func(gtk.Button)
 	onBluetoothEntry       func(gtk.Entry)
+	onWifiSwitch           func(gtk.Switch, bool) bool
+	onWifiButton           func(gtk.Button)
+	onWifiEntry            func(gtk.PasswordEntry)
+	onWifiPoll             glib.SourceFunc
 	onSettingsIndex        func(gtk.ListBox, uintptr)
+	onSettingsSearch       func(gtk.SearchEntry)
+	onSettingsSearchGo     func(gtk.SearchEntry)
+	onSettingsSearchStop   func(gtk.SearchEntry)
+	onSettingsResult       func(gtk.ListBox, uintptr)
+	onSearchScroll         glib.SourceFunc
+	onSearchFlash          glib.SourceFunc
 	onAboutLink            func(gtk.Button)
 	onSettingsButton       func(gtk.Button)
 	onSettingsClose        func(gtk.Window) bool
@@ -387,6 +400,8 @@ func (s *shellUI) start() {
 	s.bindTrayHandlers()
 	s.bindSettingsHandlers()
 	s.bindAboutHandlers()
+	s.bindWifiHandlers()
+	s.bindControlDetailHandlers()
 	s.bindNotifyHandlers()
 	s.bindDockHandlers()
 	s.bindDrawerHandlers()
