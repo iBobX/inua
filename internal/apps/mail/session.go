@@ -24,9 +24,11 @@ type Session struct {
 	store   *Store
 	secrets *Secrets
 
-	mu    sync.Mutex // the connection, one command at a time
-	conn  *Conn
-	auth  *Auth
+	mu   sync.Mutex // the connection, one command at a time
+	conn *Conn
+	auth *Auth
+
+	bmu   sync.Mutex // the mailboxes: never held across a command, so the window never waits for the network
 	boxes []Mailbox
 
 	imu     sync.Mutex // the indexes
@@ -138,11 +140,11 @@ func (s *Session) Close() {
 // frame.
 func (s *Session) Cached() []Mailbox {
 	boxes, _ := s.store.Mailboxes(s.Acc.ID)
-	s.mu.Lock()
+	s.bmu.Lock()
 	if s.boxes == nil {
 		s.boxes = boxes
 	}
-	s.mu.Unlock()
+	s.bmu.Unlock()
 	return boxes
 }
 
@@ -158,16 +160,16 @@ func (s *Session) Mailboxes(ctx context.Context) ([]Mailbox, error) {
 		return nil, err
 	}
 	s.store.SaveMailboxes(s.Acc.ID, boxes)
-	s.mu.Lock()
+	s.bmu.Lock()
 	s.boxes = boxes
-	s.mu.Unlock()
+	s.bmu.Unlock()
 	return boxes, nil
 }
 
 // Role is the name of the mailbox with a role; "" when there is none.
 func (s *Session) Role(r Role) string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.bmu.Lock()
+	defer s.bmu.Unlock()
 	for _, b := range s.boxes {
 		if b.Role == r {
 			return b.Name
