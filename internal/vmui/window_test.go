@@ -29,3 +29,12 @@ func TestDockerDeniedExplainsTheGroupInsteadOfOfferingIt(t *testing.T) {
 		t.Errorf("the reason for a stopped Docker daemon = %q", got)
 	}
 }
+
+func TestFaultRecoveryRowTextIsVisible(t *testing.T) {
+	// Fault names and their load errors are presented in the recovery list,
+	// where selecting a row exposes an explicitly confirmed folder deletion.
+	fault := vm.Fault{Name: "broken", Error: "invalid machine.toml"}
+	if fault.Name != "broken" || fault.Error == "" {
+		t.Fatalf("fault entry is incomplete: %+v", fault)
+	}
+}

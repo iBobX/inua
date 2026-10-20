@@ -36,7 +36,7 @@ and a settings window, in one calm visual language. It works with
 | **Files** | A file manager to replace Nautilus, keyboard first: one or two panes, list or grid, filter by typing, jump to folders used before, search, details; drives and USB sticks through UDisks2 (mount, unlock, eject), remote disks (sftp, SMB, S3 …) mounted by rclone, the freedesktop trash, undo; `inua-files`, see [docs/files.md](docs/files.md). |
 | **Terminal** | Workspaces of terminals for running many agents at once: the workspaces, their sessions and the tiled panes in three columns, each agent's state (working, waiting for you, done) where you can see it, notifications when one needs you, and sessions that come back after a reboot with their commands at the prompt, not run; on Ghostty's libghostty-vt; `inua-term`, see [docs/terminal.md](docs/terminal.md). |
 | **Viewer** | Images, PDFs, Markdown and plain text: steps through the files of a folder, zooms, shows the details; `inua-viewer`, see [docs/apps.md](docs/apps.md#viewer). |
-| **Windows VM** | A Windows guest of its own, run by Docker (Dockur) with KVM and reached over RDP: one page for each stage, the host checks with their fixes, the guest password in the Secret Service; `inua-vm`, see [docs/apps.md](docs/apps.md#windows-vm). |
+| **Virtual machines** | Machines of your own, each one a folder with a `machine.toml`: a list of machines on the left and the chosen machine's page on the right, the host checks with their fixes, the console while it installs, then Start, Stop and Connect. Eight templates, from Windows in Docker (Dockur) to Linux, FreeBSD, Android and a system of your own; QEMU runs Linux, FreeBSD and custom systems, Dockur runs Windows, and Android (Waydroid) is still to come; `inua-vm`, see [docs/apps.md](docs/apps.md#virtual-machines). |
 | **Remote Desktop** | This desktop shared with your other devices through Sunshine, and other machines' desktops shown here with the keyboard and mouse sent to them, over Moonlight's protocol: found on the local network or the tailnet, paired once with a PIN, decoded by the graphics card; `inua-remote`, see [docs/remote-desktop.md](docs/remote-desktop.md). |
 | **Mobile Link** | Your phone and this computer together, over KDE Connect's protocol (KDE Connect, GSConnect and Valent devices): the clipboard both ways, files and links shared, the phone's notifications and battery here, this computer's players driven and its pointer and keyboard used from the phone, and commands run from it; found on the local network or the tailnet; `inua-connect`, see [docs/mobile-link.md](docs/mobile-link.md). |
 | **Disk Usage** | What takes the room on a disk, as a map in DaisyDisk's manner, with the developer's and the agents' folders it knows (dependencies, build output, toolchains, caches; agents' conversations, worktrees and old versions; AI models): whether each can go, by a route of checks and then the assistant's decision, what it is in the assistant's words, and deleting it; `inua-disk-usage`, see [docs/disk-usage.md](docs/disk-usage.md). |
@@ -67,27 +67,41 @@ BlueZ, UPower, power-profiles-daemon, PipeWire. Without one, its part of the
 shell says "Unavailable" instead. The full list is in
 [docs/design.md](docs/design.md#packages).
 
-## Windows VM
+## Virtual machines
 
-`inua-vm` is the Windows guest's manager, a program of its own like
-`inua-files`: one guest, run by Docker (Dockur) with KVM and reached over
-RDP. Its window walks one path, one page at a time: the host checks to fix
-when something is missing (KVM, Docker, Compose v2, FreeRDP, …); a
-recommended profile and **Install Windows** when nothing is installed yet;
-the web console, and stopping without losing the disk, while Windows
-installs itself; then **Start**, **Connect** and **Stop**. Removing the
-guest keeps its disk and its password — deleting the Windows installation
-is its own, confirmed action. There is no ISO to prepare: the container
-fetches Windows' own installation media and installs it unattended, which
-is what takes tens of minutes. **Choose ISO…** installs from an ISO of
-yours instead, which the container only reads.
+`inua-vm` is the machines' manager, a program of its own like `inua-files`:
+any number of guests, each one a folder under `~/.local/share/inua/vm/NAME/`
+described by a `machine.toml` in it, beside the guest's own files. Its window
+is a list of machines on the left and the chosen machine's page on the right,
+one page per stage: the host checks to fix when something is missing (KVM,
+Docker, Compose v2, FreeRDP, …); a recommended profile and **Install
+Windows** when nothing is installed yet; the web console, and stopping
+without losing the disk, while Windows installs itself; then **Start**,
+**Connect** and **Stop**. **New** makes a machine from one of eight
+templates: Windows 11 in a container (Dockur), Windows 11 from your own ISO
+with QEMU, Ubuntu, Fedora, Arch, FreeBSD, Android in Waydroid, and a custom
+system with every boot field open. Removing a guest keeps its disk and its
+password — deleting the installation, or the machine with its folder, is its
+own, confirmed action.
 
-`inua-vm --doctor` and `inua-vm --status [--json]` print the same checks for
-scripts, and so does `inua vm doctor|status`; `inua-vm --start` and
-`--stop` run the guest without a window. The image is pinned by version and
-digest, the guest password is kept in the Secret Service (never in the
-project or in your configuration), and every published port binds to
-127.0.0.1.
+QEMU runs Linux, FreeBSD and custom systems, from an install image you
+choose or download (from the distributions' own list, osinfo-db), a disk or
+a kernel, and can hold a guest at its first instruction for gdb; Docker
+(Dockur) runs Windows. The Waydroid backend (Android) is a following step:
+an Android machine is stored, listed and described, and its page says this
+build has no backend for it yet. For a Windows guest there is no ISO to
+prepare: the container fetches Windows' own installation media and installs
+it unattended, which is what takes tens of minutes.
+
+`inua-vm --list` names the machines, one per line; `inua-vm --doctor
+[--json]` prints what this host provides and which machines there are, and
+`inua-vm --status [--json]` what each is doing now, both read-only, for
+scripts; `inua-vm --start NAME` and `--stop NAME` run a machine without a
+window. `inua vm list|doctor|status` prints the same from the shell's own
+command line. The image is pinned by version and digest, each machine's guest
+password is kept in the Secret Service under its name (never in the project
+or in your configuration), and every published port binds to 127.0.0.1, each
+machine reserving its own, so two never collide.
 
 Two things the window says outright: the web console on 127.0.0.1:8006 has
 no login of its own, and Windows needs a licence. Docker socket access is

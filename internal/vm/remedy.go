@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// currentUser is the login name a remedy runs for: the placeholders in a
+// Use returns the login name a remedy runs for: the placeholders in a
 // remedy's command are filled with it.
 func currentUser() (string, error) {
 	if u, err := user.Current(); err == nil && u.Username != "" {
