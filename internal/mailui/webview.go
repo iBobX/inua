@@ -107,6 +107,7 @@ type webMsg struct {
 	sig    string // the page loaded: options and message
 	height int
 	zoom   float64
+	fitted bool     // zoomed out to fit the column already
 	asks   int      // measures still to come after a load
 	gone   bool     // let go of: its view is no more
 	shown  bool     // its page was measured: laid out, worth showing
@@ -151,8 +152,10 @@ func (w *window) webView(box *gtk.Box, k mail.Key, m *mail.Message) (quoted bool
 		w.webs[k] = wm
 	}
 	if sig := fmt.Sprintf("%v%v%d", opt.Remote, opt.Quotes, len(m.HTML)); sig != wm.sig {
-		wm.sig, wm.zoom, wm.asks = sig, 1, 3
-		wk.setZoom(wm.view.Ptr, 1)
+		// At the text size the settings say; a page wider than the column
+		// zooms out from there (measured).
+		wm.sig, wm.zoom, wm.fitted, wm.asks = sig, w.settings.Reading.Scale(), false, 3
+		wk.setZoom(wm.view.Ptr, wm.zoom)
 		wk.loadHTML(wm.view.Ptr, page.HTML, "about:blank")
 	}
 	frame := gtk.NewBox(gtk.OrientationVerticalValue, 0)
@@ -282,8 +285,9 @@ func (w *window) measured(wm *webMsg, answer string) {
 	height, _ := strconv.Atoi(f[0])
 	width, _ := strconv.Atoi(f[1])
 	client, _ := strconv.Atoi(f[2])
-	if client > 0 && width > client+4 && wm.zoom == 1 {
-		wm.zoom = max(float64(client)/float64(width), 0.5)
+	if client > 0 && width > client+4 && !wm.fitted {
+		// The page is measured in its own pixels, at the zoom it has.
+		wm.zoom, wm.fitted = max(wm.zoom*float64(client)/float64(width), 0.5), true
 		wk.setZoom(wm.view.Ptr, wm.zoom)
 		w.h.later(60, func() { w.measure(wm) })
 		return

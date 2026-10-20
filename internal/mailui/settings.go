@@ -93,10 +93,6 @@ func (w *window) showSettings(account string) {
 	side := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	side.AddCssClass("index")
 	side.SetSizeRequest(220, -1)
-	title := gtk.NewLabel(i18n.T("Mail"))
-	title.AddCssClass("index-title")
-	title.SetXalign(0)
-	gtkx.Append(side, &title.Widget)
 	iscroll := gtk.NewScrolledWindow()
 	iscroll.SetVexpand(true)
 	iscroll.SetPolicy(gtk.PolicyNeverValue, gtk.PolicyAutomaticValue)
@@ -117,14 +113,18 @@ func (w *window) showSettings(account string) {
 			return
 		}
 		name := gtk.ListBoxRowNewFromInternalPtr(row).GetName()
-		switch {
-		case name == "add":
+		if name != "" && name != "add" && name != s.at {
+			s.at = name
+			s.drawPage()
+		}
+	}))
+	// Add account leaves the settings for the welcome: only when asked
+	// (Enter, a click), never as the keys pass over it.
+	s.ptrs = append(s.ptrs, w.h.rowActivated(s.index, func(row uintptr) {
+		if row != 0 && gtk.ListBoxRowNewFromInternalPtr(row).GetName() == "add" {
 			s.win.Close()
 			w.win.Present()
 			w.showWelcome("", nil)
-		case name != "" && name != s.at:
-			s.at = name
-			s.drawPage()
 		}
 	}))
 
@@ -183,8 +183,11 @@ func (s *settingsWin) draw() {
 	item := func(name, title string, lead *gtk.Widget) {
 		box := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 		if lead == nil {
+			// As wide as an account's photo, its icon in the middle: the
+			// titles start together whatever leads them.
 			img := gtk.NewImageFromIconName(settingsIcons[name])
 			img.AddCssClass("index-icon")
+			img.SetSizeRequest(avatarSize, -1)
 			lead = &img.Widget
 		}
 		gtkx.Append(box, lead)
@@ -195,6 +198,7 @@ func (s *settingsWin) draw() {
 		row := gtk.NewListBoxRow()
 		row.SetName(name)
 		row.SetChild(&box.Widget)
+		row.SetSelectable(name != "add") // an action, not a page
 		s.index.Append(&row.Widget)
 		if name == s.at {
 			s.index.SelectRow(row)
@@ -493,6 +497,32 @@ func (s *settingsWin) readingPage() {
 		s.choice([]string{i18n.T("Formatted"), i18n.T("Plain text")}, at, func(i int) { r.Text = i == 1; redraw() }))
 	s.row(body, i18n.T("Mark as read when opened"), i18n.T("Off: a conversation stays unread until you mark it (U)."),
 		s.toggle(!r.KeepUnread, func(on bool) { r.KeepUnread = !on; s.save() }))
+	sizes := make([]string, len(mail.TextSizes))
+	sizeAt := 1
+	for i, p := range mail.TextSizes {
+		sizes[i] = fmt.Sprintf("%d%%", p)
+		if float64(p)/100 == r.Scale() {
+			sizeAt = i
+		}
+	}
+	s.row(body, i18n.T("Text size"), i18n.T("Of a message's text, plain or formatted; the widest it reads at grows with it."),
+		s.choice(sizes, sizeAt, func(i int) {
+			r.TextSize = mail.TextSizes[i]
+			if r.TextSize == 100 {
+				r.TextSize = 0
+			}
+			w.applyTextSize()
+			redraw()
+		}))
+
+	list := s.section(i18n.T("THE LIST"), i18n.T("Each conversation in it"))
+	lines := []string{i18n.Nf("%d line", "%d lines", 1, 1), i18n.Nf("%d line", "%d lines", 2, 2), i18n.Nf("%d line", "%d lines", 3, 3)}
+	s.row(list, i18n.T("Preview"), i18n.T("How much of the newest message's text shows under the subject."),
+		s.choice(lines, r.Lines()-1, func(i int) {
+			r.PreviewLines = i + 1
+			s.save()
+			w.relist()
+		}))
 
 	pics := s.section(i18n.T("PICTURES FROM THE WEB"), i18n.T("They tell the sender you opened the message"))
 	img := map[string]int{"": 0, "ask": 0, "always": 1, "never": 2}[r.Images]
@@ -634,10 +664,10 @@ func (s *settingsWin) advancedPage() {
 	line(body)
 	gtkx.Append(body, &foot.Widget)
 
-	cache := s.section(i18n.T("CACHE"), tilde(filepath.Dir(w.store.AvatarPath("x"))))
+	dir := w.store.Dir()
+	cache := s.section(i18n.T("CACHE"), tilde(dir))
 	size := gtk.NewLabel(i18n.T("Counting…"))
 	size.AddCssClass("readout")
-	dir := filepath.Dir(w.store.AvatarPath("x"))
 	go func() {
 		var n int64
 		filepath.WalkDir(dir, func(_ string, d fs.DirEntry, err error) error {

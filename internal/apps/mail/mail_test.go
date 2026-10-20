@@ -823,6 +823,19 @@ func TestPolishPrompt(t *testing.T) {
 	}
 }
 
+func TestReadingSettings(t *testing.T) {
+	for n, want := range map[int]int{0: 2, 1: 1, 3: 3, 7: 2, -1: 2} {
+		if got := (Reading{PreviewLines: n}).Lines(); got != want {
+			t.Errorf("preview_lines %d: %d lines, want %d", n, got, want)
+		}
+	}
+	for n, want := range map[int]float64{0: 1, 100: 1, 130: 1.3, 85: 0.85, 300: 1, 40: 1} {
+		if got := (Reading{TextSize: n}).Scale(); got != want {
+			t.Errorf("text_size %d: %v, want %v", n, got, want)
+		}
+	}
+}
+
 func TestDraftsOnServer(t *testing.T) {
 	srv := newIMAP(t, "Drafts")
 	ctx := context.Background()

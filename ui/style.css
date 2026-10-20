@@ -3504,7 +3504,10 @@ window.mail listview.mail-conversations > row:selected { background: alpha(@acce
 window.mail .mail-row { padding: 11px 16px 11px 16px; }
 window.mail .mail-row .mark { border-radius: 1px; border-color: transparent; }
 window.mail .mail-row .mark.on { background: @accent; border-color: @accent; }
-window.mail .mail-row-indent { margin-left: 15px; }
+/* The sender's initial, as the reader shows senders; a row's lines start
+   together beside it. */
+window.mail .mail-row-face { font-size: 14px; margin-top: 1px; }
+window.mail .mail-row.unread .mail-row-face { background: alpha(@accent, 0.22); }
 window.mail .mail-who { font-size: 13.5px; color: @t1; }
 window.mail .mail-row.unread .mail-who { color: @t0; font-weight: 600; }
 window.mail .mail-when, window.mail .mail-n {
@@ -4074,7 +4077,7 @@ window.mail button.destructive-action:hover { background: mix(@danger, @t0, 0.14
 window.mail-settings .index row.mail-settings-heading,
 window.mail-settings .index row.mail-settings-heading:hover { min-height: 0; border-color: transparent; background: transparent; }
 window.mail-settings .mail-settings-kicker { margin: 16px 0 6px; color: @t2; }
-window.mail-settings .index row:first-child .mail-settings-kicker { margin-top: 2px; }
+window.mail-settings .index row:first-child .mail-settings-kicker { margin-top: 10px; }
 window.mail-settings textview.mail-settings-signature {
   min-height: 84px;
   border: 1px solid @line;
@@ -4123,7 +4126,6 @@ window.mail button.mail-assist-idea {
 }
 window.mail button.mail-assist-idea:hover { border-color: alpha(@accent, 0.45); background: alpha(@accent, 0.07); }
 window.mail button.mail-assist-idea:disabled { opacity: 0.5; }
-window.mail entry.mail-assist-say { min-height: 34px; }
 
 /* Mail's loader: three square marks lit in turn; a message's lines
    pulsing under it; a line running under the filters. */

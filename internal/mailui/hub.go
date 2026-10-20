@@ -15,21 +15,22 @@ import (
 // native trampoline for every Go function connected, never freed, and the
 // window makes rows, cards and composers again and again.
 type hub struct {
-	clicked  map[uintptr]func()
-	keys     map[uintptr]func(keyval uint32, state gdk.ModifierType) bool
-	setup    map[uintptr]func(item uintptr)
-	bind     map[uintptr]func(item uintptr)
-	teardown map[uintptr]func(item uintptr)
-	changed  map[uintptr]func()
-	entered  map[uintptr]func()
-	closing  map[uintptr]func() bool
-	selected map[uintptr]func()
-	rows     map[uintptr]func(row uintptr)
-	notified map[uintptr]func()
-	dropped  map[uintptr]func(paths []string)
-	async    map[uintptr]func(result uintptr)
-	timers   map[uintptr]func()
-	next     uintptr
+	clicked   map[uintptr]func()
+	keys      map[uintptr]func(keyval uint32, state gdk.ModifierType) bool
+	setup     map[uintptr]func(item uintptr)
+	bind      map[uintptr]func(item uintptr)
+	teardown  map[uintptr]func(item uintptr)
+	changed   map[uintptr]func()
+	entered   map[uintptr]func()
+	closing   map[uintptr]func() bool
+	selected  map[uintptr]func()
+	rows      map[uintptr]func(row uintptr)
+	activated map[uintptr]func(row uintptr)
+	notified  map[uintptr]func()
+	dropped   map[uintptr]func(paths []string)
+	async     map[uintptr]func(result uintptr)
+	timers    map[uintptr]func()
+	next      uintptr
 
 	onClicked   func(gtk.Button)
 	onKey       func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -41,6 +42,7 @@ type hub struct {
 	onClose     func(gtk.Window) bool
 	onSelection func(uintptr, uint32, uint32, uintptr)
 	onRow       func(uintptr, uintptr, uintptr)
+	onActivated func(uintptr, uintptr, uintptr)
 	onNotify    func(uintptr, uintptr, uintptr)
 	onDrop      func(gtk.DropTarget, uintptr, float64, float64) bool
 	onAsync     gio.AsyncReadyCallback
@@ -52,7 +54,7 @@ func newHub() *hub {
 		clicked: map[uintptr]func(){}, keys: map[uintptr]func(uint32, gdk.ModifierType) bool{},
 		setup: map[uintptr]func(uintptr){}, bind: map[uintptr]func(uintptr){}, teardown: map[uintptr]func(uintptr){},
 		changed: map[uintptr]func(){}, entered: map[uintptr]func(){}, closing: map[uintptr]func() bool{},
-		selected: map[uintptr]func(){}, rows: map[uintptr]func(uintptr){}, notified: map[uintptr]func(){}, dropped: map[uintptr]func([]string){},
+		selected: map[uintptr]func(){}, rows: map[uintptr]func(uintptr){}, activated: map[uintptr]func(uintptr){}, notified: map[uintptr]func(){}, dropped: map[uintptr]func([]string){},
 		async: map[uintptr]func(uintptr){}, timers: map[uintptr]func(){},
 	}
 	h.onClicked = func(b gtk.Button) {
@@ -104,6 +106,11 @@ func newHub() *hub {
 	}
 	h.onRow = func(list, row, _ uintptr) {
 		if f := h.rows[list]; f != nil {
+			f(row)
+		}
+	}
+	h.onActivated = func(list, row, _ uintptr) {
+		if f := h.activated[list]; f != nil {
 			f(row)
 		}
 	}
@@ -210,6 +217,14 @@ func (h *hub) rowSelected(list *gtk.ListBox, f func(row uintptr)) uintptr {
 	return list.GoPointer()
 }
 
+// rowActivated runs f with the row of a list box that Enter or a click
+// activates.
+func (h *hub) rowActivated(list *gtk.ListBox, f func(row uintptr)) uintptr {
+	h.activated[list.GoPointer()] = f
+	gobject.SignalConnect(list.GoPointer(), "row-activated", glib.NewCallback(&h.onActivated))
+	return list.GoPointer()
+}
+
 // notify runs f when obj's property changes.
 func (h *hub) notify(obj gobject.Ptr, property string, f func()) uintptr {
 	h.notified[obj.GoPointer()] = f
@@ -250,6 +265,7 @@ func (h *hub) forget(ptrs []uintptr) {
 		delete(h.closing, p)
 		delete(h.selected, p)
 		delete(h.rows, p)
+		delete(h.activated, p)
 		delete(h.notified, p)
 		delete(h.dropped, p)
 	}
