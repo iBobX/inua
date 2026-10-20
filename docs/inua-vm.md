@@ -159,7 +159,8 @@ ISO.
   unix:$XDG_RUNTIME_DIR/inua-vm/NAME/qmp.sock,server,nowait`.
 - The disk: `qemu-img create -f qcow2 disk.qcow2 40G`.
 - It runs as the user, outside inua-vm: `systemd-run --user --unit
-  inua-vm-NAME --collect …`, so a machine keeps running with the window
+  inua-vm-NAME --collect …` (the name escaped as `systemd-escape` does, so
+  `my fedora` is `inua-vm-my\x20fedora`), so a machine keeps running with the window
   closed and stops with the session. The state comes from QMP
   (`query-status`), Stop sends `system_powerdown` and, after a timeout,
   `quit`.
@@ -179,8 +180,15 @@ an OS in the making:
 - **The serial console**, `-serial unix:…/serial.sock,server,nowait`, shown
   in the window as a terminal view and kept as a log, often the only
   output a young kernel has.
-- **The debugger**, a switch for QEMU's gdb stub (`-s -S`: wait for gdb on
-  127.0.0.1:1234), with the command to attach shown and copied.
+- **The debugger**, a switch for QEMU's gdb stub (`-gdb tcp:127.0.0.1:PORT
+  -S`: wait for gdb on the loopback, at a port of the machine's own from
+  1234 up, so two machines held for gdb never collide), with the command to
+  attach shown and copied. A machine held there reads as starting.
+
+Paths go into QEMU's option strings (`-drive file=…`, `-cdrom`, the
+sockets) with their commas doubled, which QEMU reads as one comma of the
+path, so a name or an image with a comma in it is that path and nothing
+more.
 
 ### Dockur (Windows)
 
@@ -295,13 +303,28 @@ custom OS has no seamless mode until it implements one of these ways.
 
 ## The window
 
-As Settings → AI: the machines one a row (the OS's mark, the name, OS ·
-state), a row clicked opens its settings in a panel at the right, with
-Start, Stop, Connect and, with seamless mode, its programs. **New
-machine** picks a template, then the panel shows its fields. Each
-machine's state shows #18's pages: prerequisites with their fixes,
-setup, provisioning (with the console), ready. All text through
-`internal/i18n`, in the six catalogs; Phosphor icons.
+In the settings language (`design/ui.md`): the index holds the machines
+one a row (the OS's mark, the name, OS · state), the folders that do not
+load under NEEDS RECOVERY, and **New machine…** at its foot, which picks a
+template and a name. The page beside it is the chosen machine's: its name
+and state in the head, with a mark filled while it is up, then the page for
+its stage: prerequisites with their fixes, setup (resources, install, the
+install images), the installation running or paused, starting, stopped
+(start, resources, removal) and running. How a guest is seen decides the
+rows that show it: Windows in a container through Remote Desktop with a web
+console besides, a QEMU guest in a SPICE viewer, in QEMU's own window or on
+its serial console, Waydroid by itself. An action's error shows under its
+section, kept per machine; removing a container, deleting a disk or a
+machine is asked in a dialog first. All text through `internal/i18n`, in
+the six catalogs; Phosphor icons.
+
+Delete removes a machine definition and its files after an explicit confirmation.
+It is on the setup page, the paused installation's and the stopped machine's; a
+running or busy guest must be stopped first. Folders with invalid or unreadable
+machine definitions appear under **Needs recovery**. Deleting one requires the
+same confirmation and removes the entire owned folder; the store refuses unsafe
+names and symlinked paths. Deleting an unprepared definition does not require its
+backend to be installed.
 
 ## Security
 
@@ -353,6 +376,24 @@ Each its own PR, each usable on its own:
 4. **Android.** The Waydroid backend.
 5. **Seamless.** Linux and FreeBSD with waypipe, Android multi-window,
    Windows RemoteApp; the desktop entries and window rules.
+
+Where the work stands, step by step:
+
+1. **The app** - done: `inua-vm` is its own program, the shell carries no VM
+   manager, and the log-out fix went in as its own PR.
+2. **Machines** - done: `machine.toml`, the store, the templates, the list and
+   the panel, and the command line that goes with them.
+3. **QEMU** - **implemented and unit-tested, not yet accepted by hand**: the
+   command line per machine (firmware, architecture, a kernel booted directly,
+   the serial console, the gdb stub, KVM or emulation, virgl, venus or 2D), the
+   monitor on a socket the tests serve (state, power down, quit) and the
+   acceleration answers are covered by tests, and the checks reach the window's
+   own prerequisites page. What has **not** been run is a real guest: booting a
+   Linux or custom system, watching its serial console in the window, attaching
+   gdb, and a guest of another architecture. That happens on the machine that
+   has QEMU installed, and this line stays here until it has.
+4. **Android** - not started.
+5. **Seamless** - not started.
 
 ## Open questions
 

@@ -271,8 +271,6 @@ cannot see services on the session bus (Mobile Link shows "starting").
 
 - The settings window and Mobile Link report errors in the index's
   status line, not where they happen.
-- The VM manager's section marks are `Label`s, so they draw as bars; its
-  layout is to take `Box`es.
 - `suggested-action` is styled per window (GPG, Pass, Files, Workshop,
   Remote Desktop, Mobile Link, Disk Usage, Mail, the VM manager) with the same rule; one
   shared `.settings button.suggested-action` would replace them.
