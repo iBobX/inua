@@ -107,7 +107,7 @@ A two-column settings window for everything, its index grouped by what is
 most often looked for: Connections (Wi-Fi, Bluetooth), Devices (displays,
 keyboard, mouse and touchpad), Desktop (appearance and wallpaper, the bar
 and dock, the launcher, notifications, shortcuts), Apps (default apps, AI
-for the assistant's models, clipboard, keyring) and System (About).
+for the assistant's models, clipboard, keyring) and System (power, About).
 Changes apply as you make them.
 
 The search above the index (Ctrl+F, or just type) finds pages and the
@@ -368,7 +368,7 @@ On a laptop, closing the lid while another display is connected turns
 the built-in display off, and its windows and workspaces move to the
 other; opening the lid turns it on again, so both are in use
 (`[displays] lid_off`, on by default). Without another display, the lid
-is left to logind, which suspends. inua writes the panel off into
+is left to logind (Settings → Power). inua writes the panel off into
 `inua.conf` and binds the lid switch there to `inua config apply`, so it
 works without the shell running; the shell also applies it when a
 display is plugged in or out, and `inua-session` before Hyprland starts,
@@ -379,6 +379,29 @@ frame.
 
 Swap Ctrl and Alt, remap Caps Lock, set the touchpad's speed: written to
 Hyprland, so they hold even without the shell.
+
+## Power
+
+Settings → Power shows the battery and chooses the power mode (Power
+saver, Balanced, Performance, as power-profiles-daemon offers them; the
+control center's tile is the same).
+
+When idle sets hypridle's four timers: dim the screen, lock, turn the
+screens off and suspend, each after a minute to an hour, or never. They
+are written to `~/.config/hypr/hypridle.conf` and hypridle
+is started again to take them; the file the page first replaces is kept
+as `hypridle.conf.pre-inua`, and a time the file has that is not among
+the choices (2.5 minutes) is shown and kept. Without hypridle installed
+the page says so, since nothing then happens when the computer is idle.
+
+Lid and power button chooses what closing the lid on battery, closing
+it on mains power and pressing the power button do: suspend, hibernate
+(where the computer can), lock the screen, power off or nothing. They
+are logind's settings, written to
+`/etc/systemd/logind.conf.d/50-inua.conf` after asking for an
+administrator's password (pkexec), and logind is reloaded to take them.
+With another display connected, closing the lid still turns only the
+built-in display off (`[displays] lid_off`).
 
 ## Themes
 

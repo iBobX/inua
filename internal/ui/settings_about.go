@@ -72,6 +72,9 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 		if page == "about" {
 			s.fetchSystem()
 		}
+		if page == "power" {
+			s.readPower() // hypridle's file and logind's settings, as they are now
+		}
 		switch {
 		case page == "about" && s.settings.about.checked.IsZero():
 			s.checkReleases()

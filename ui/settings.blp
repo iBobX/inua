@@ -4420,6 +4420,33 @@ ApplicationWindow settings {
       }
 
       StackPage {
+        name: "power";
+        title:  _("Power");
+
+        child: Overlay {
+          child: ScrolledWindow scroll_power {
+            hscrollbar-policy: never;
+
+            // The battery and the power mode, the idle timers, the lid
+            // and the power button: laid out by settings_power.go.
+            Box power_page {
+              styles ["page"]
+              orientation: vertical;
+            }
+          };
+
+          // The head of the section scrolled under the top edge.
+          [overlay]
+          Box sticky_power {
+            styles ["section-head", "sticky"]
+            spacing: 10;
+            valign: start;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
         name: "about";
         title:  _("About");
 

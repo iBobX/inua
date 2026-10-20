@@ -25,6 +25,7 @@ var settingsIcons = map[string]string{
 	"displays":      "video-display-symbolic",
 	"keyboard":      "input-keyboard-symbolic",
 	"mouse":         "input-mouse-symbolic",
+	"power":         "battery-level-80-symbolic",
 	"about":         "help-about-symbolic",
 }
 

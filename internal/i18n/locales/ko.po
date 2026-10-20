@@ -273,13 +273,13 @@ msgid "%d%%, charging"
 msgstr "%d%%, 충전 중"
 
 #: internal/apps/connect/service.go:519
-#: internal/ui/settings.go:282
-#: internal/ui/settings.go:290
-#: internal/ui/settings.go:293
-#: internal/ui/settings.go:677
-#: internal/ui/settings.go:679
-#: internal/ui/settings.go:731
-#: internal/ui/settings.go:748
+#: internal/ui/settings.go:283
+#: internal/ui/settings.go:291
+#: internal/ui/settings.go:294
+#: internal/ui/settings.go:680
+#: internal/ui/settings.go:682
+#: internal/ui/settings.go:735
+#: internal/ui/settings.go:752
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d%%"
@@ -1745,6 +1745,7 @@ msgid "5 years"
 msgstr "5년"
 
 #: internal/appui/gpg.go:144
+#: internal/shell/idle.go:162
 #: ui/settings.ui:3997
 msgid "Never"
 msgstr "만료 없음"
@@ -1767,7 +1768,7 @@ msgstr "%s 생성"
 #: internal/ui/askpass.go:448
 #: internal/ui/askpass.go:452
 #: internal/ui/askpass.go:454
-#: internal/ui/settings_about.go:214
+#: internal/ui/settings_about.go:217
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "Jan 2, 2006"
@@ -2237,8 +2238,8 @@ msgid "Top level"
 msgstr "최상위"
 
 #: internal/appui/pass.go:417
-#: internal/ui/settings.go:758
-#: internal/ui/settings.go:785
+#: internal/ui/settings.go:762
+#: internal/ui/settings.go:789
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d개"
@@ -2320,7 +2321,7 @@ msgstr "숨기기"
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
 #: ui/settings.ui:2947
-#: ui/settings.ui:6256
+#: ui/settings.ui:6290
 msgid "Copy"
 msgstr "복사"
 
@@ -2552,7 +2553,7 @@ msgstr "QR 코드가 있는 이미지"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:895
+#: internal/ui/settings.go:899
 msgid "Images"
 msgstr "이미지"
 
@@ -2969,7 +2970,7 @@ msgstr "이름"
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
 #: internal/diskui/window.go:329
-#: internal/ui/settings.go:520
+#: internal/ui/settings.go:522
 msgid "System"
 msgstr "시스템"
 
@@ -4610,7 +4611,7 @@ msgstr "일부를 읽을 수 없었습니다."
 #: internal/diskui/details.go:76
 #: internal/ui/lock.go:273
 #: internal/ui/polkit.go:294
-#: internal/ui/settings_about.go:171
+#: internal/ui/settings_about.go:174
 msgid "Checking…"
 msgstr "확인 중..."
 
@@ -9265,6 +9266,7 @@ msgid "Restart the shell"
 msgstr "셸을 다시 시작합니다."
 
 #: internal/hyprconf/keys.go:33
+#: internal/shell/power.go:28
 msgid "Lock the screen"
 msgstr "화면 잠금"
 
@@ -9981,6 +9983,7 @@ msgid "Disk (/)"
 msgstr "디스크 (/)"
 
 #: internal/shell/fetch.go:84
+#: internal/ui/settings_power.go:112
 msgid "Battery"
 msgstr "배터리"
 
@@ -9994,9 +9997,19 @@ msgid_plural "%d days"
 msgstr[0] "%d일"
 
 #: internal/shell/fetch.go:99
+#: internal/shell/idle.go:164
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d시간"
+
+#: internal/shell/idle.go:166
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d분"
+
+#: internal/shell/idle.go:168
+msgid "%s minutes"
+msgstr "%s분"
 
 #: internal/shell/launcher.go:48
 msgid "[WINDOWS]"
@@ -10086,6 +10099,39 @@ msgstr "알림이 필요함"
 msgid "Banners quiet"
 msgstr "배너 알림 음소거됨"
 
+#: internal/shell/power.go:10
+msgid "Power saver"
+msgstr "절전"
+
+#: internal/shell/power.go:12
+msgid "Balanced"
+msgstr "균형"
+
+#: internal/shell/power.go:14
+#: internal/shell/status.go:105
+msgid "Performance"
+msgstr "성능"
+
+#: internal/shell/power.go:24
+#: internal/ui/control.go:510
+#: ui/control.ui:124
+msgid "Suspend"
+msgstr "절전"
+
+#: internal/shell/power.go:26
+#: internal/ui/control.go:511
+#: ui/control.ui:148
+msgid "Hibernate"
+msgstr "최대 절전"
+
+#: internal/shell/power.go:30
+msgid "Power off"
+msgstr "전원 끄기"
+
+#: internal/shell/power.go:32
+msgid "Do nothing"
+msgstr "아무것도 하지 않음"
+
 #: internal/shell/status.go:47
 msgid "Offline"
 msgstr "오프라인"
@@ -10103,10 +10149,6 @@ msgstr "%d 장치"
 #: internal/shell/status.go:103
 msgid "On"
 msgstr "켜짐"
-
-#: internal/shell/status.go:105
-msgid "Performance"
-msgstr "성능"
 
 #: internal/shell/status.go:118
 msgid "via %s"
@@ -11079,16 +11121,6 @@ msgstr "[%s 복사]"
 msgid "inua control center"
 msgstr "이누아 통제 센터"
 
-#: internal/ui/control.go:510
-#: ui/control.ui:124
-msgid "Suspend"
-msgstr "절전"
-
-#: internal/ui/control.go:511
-#: ui/control.ui:148
-msgid "Hibernate"
-msgstr "최대 절전"
-
 #: internal/ui/control.go:511
 msgid "Hibernate?"
 msgstr "최대 절전 모드로 전환하시겠습니까?"
@@ -11140,7 +11172,7 @@ msgid "Searching…"
 msgstr "검색 중…"
 
 #: internal/ui/control_detail.go:214
-#: internal/ui/settings.go:517
+#: internal/ui/settings.go:519
 msgid "Devices"
 msgstr "기기"
 
@@ -11175,7 +11207,7 @@ msgid "Quit (%d windows)"
 msgstr "종료(%d 창)"
 
 #: internal/ui/drawer.go:212
-#: internal/ui/settings.go:519
+#: internal/ui/settings.go:521
 #: ui/settings.ui:1982
 msgid "Apps"
 msgstr "앱"
@@ -11510,141 +11542,141 @@ msgstr "스크린샷이 복사되었습니다."
 msgid "Screenshot taken"
 msgstr "촬영된 스크린샷"
 
-#: internal/ui/settings.go:264
+#: internal/ui/settings.go:265
 msgid "Not restarted: %s"
 msgstr "다시 시작하지 못함: %s"
 
-#: internal/ui/settings.go:516
+#: internal/ui/settings.go:518
 msgid "Connections"
 msgstr "연결"
 
-#: internal/ui/settings.go:518
+#: internal/ui/settings.go:520
 msgid "Desktop"
 msgstr "데스크톱"
 
-#: internal/ui/settings.go:711
+#: internal/ui/settings.go:715
 #: ui/settings.ui:414
 msgid "Phosphor"
 msgstr "Phosphor"
 
-#: internal/ui/settings.go:711
+#: internal/ui/settings.go:715
 #: ui/settings.ui:415
 msgid "System theme"
 msgstr "시스템 테마"
 
-#: internal/ui/settings.go:784
+#: internal/ui/settings.go:788
 msgid "%s (%s, %s) · %s"
 msgstr "%s (%s, %s) · %s"
 
-#: internal/ui/settings.go:786
+#: internal/ui/settings.go:790
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "텍스트 %d개"
 
-#: internal/ui/settings.go:787
+#: internal/ui/settings.go:791
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "이미지 %d개"
 
-#: internal/ui/settings.go:788
+#: internal/ui/settings.go:792
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:867
+#: internal/ui/settings.go:871
 #: internal/ui/settings_apps.go:168
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
-#: internal/ui/settings.go:893
+#: internal/ui/settings.go:897
 msgid "Choose a wallpaper"
 msgstr "배경화면을 선택하세요"
 
-#: internal/ui/settings.go:935
+#: internal/ui/settings.go:939
 msgid "Off: another notification daemon can show them"
 msgstr "꺼짐: 다른 알림 데몬이 이를 표시할 수 있습니다."
 
-#: internal/ui/settings.go:937
+#: internal/ui/settings.go:941
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "배너를 표시한 후 알림 센터에 보관(표시줄의 종 또는 Super+N)"
 
-#: internal/ui/settings.go:939
+#: internal/ui/settings.go:943
 msgid "Waiting: another notification daemon is running"
 msgstr "대기 중: 다른 알림 데몬이 실행 중입니다."
 
-#: internal/ui/settings.go:957
+#: internal/ui/settings.go:961
 msgid "Nothing pinned"
 msgstr "고정된 앱 없음"
 
-#: internal/ui/settings.go:973
+#: internal/ui/settings.go:977
 msgid "%s (not installed)"
 msgstr "%s(설치되지 않음)"
 
-#: internal/ui/settings.go:986
+#: internal/ui/settings.go:990
 msgid "Move earlier"
 msgstr "앞으로 이동"
 
-#: internal/ui/settings.go:987
+#: internal/ui/settings.go:991
 msgid "Move later"
 msgstr "뒤로 이동"
 
-#: internal/ui/settings.go:988
+#: internal/ui/settings.go:992
 msgid "Remove from the dock"
 msgstr "독에서 제거"
 
-#: internal/ui/settings_about.go:159
+#: internal/ui/settings_about.go:162
 msgid "inua %s, built from source"
 msgstr "소스에서 빌드된 inua %s"
 
-#: internal/ui/settings_about.go:166
+#: internal/ui/settings_about.go:169
 msgid "Upgrade to %s"
 msgstr "%s로 업그레이드"
 
-#: internal/ui/settings_about.go:169
+#: internal/ui/settings_about.go:172
 msgid "Upgrading… the shell restarts on the new version"
 msgstr "업그레이드 중... 새 버전에서 쉘이 다시 시작됩니다."
 
-#: internal/ui/settings_about.go:175
+#: internal/ui/settings_about.go:178
 msgid "Could not reach GitHub: %s"
 msgstr "GitHub에 연결할 수 없습니다: %s"
 
-#: internal/ui/settings_about.go:177
+#: internal/ui/settings_about.go:180
 msgid "Not checked yet"
 msgstr "아직 확인되지 않음"
 
-#: internal/ui/settings_about.go:179
+#: internal/ui/settings_about.go:182
 msgid "The latest release is %s; this version cannot be compared with it"
 msgstr "최신 릴리스는 %s입니다. 이 버전은 그것과 비교할 수 없습니다"
 
-#: internal/ui/settings_about.go:181
+#: internal/ui/settings_about.go:184
 msgid "inua %s is out; upgrading replaces this build from source"
 msgstr "inua %s이(가) 출시되었습니다. 업데이트하면 현재 소스 빌드를 대체합니다"
 
-#: internal/ui/settings_about.go:183
+#: internal/ui/settings_about.go:186
 #: internal/ui/updates.go:90
 msgid "inua %s is out"
 msgstr "inua %s이(가) 출시되었습니다"
 
-#: internal/ui/settings_about.go:185
+#: internal/ui/settings_about.go:188
 msgid "Up to date: %s is the latest release (checked %s)"
 msgstr "최신: %[1]s가 최신 릴리스입니다(%[2]s 확인)."
 
-#: internal/ui/settings_about.go:187
+#: internal/ui/settings_about.go:190
 msgid "Newer than the latest release, %s"
 msgstr "최신 릴리스인 %s보다 최신 버전입니다."
 
-#: internal/ui/settings_about.go:197
+#: internal/ui/settings_about.go:200
 msgid "Shown once the releases are read"
 msgstr "릴리스가 읽혀지면 표시됩니다."
 
-#: internal/ui/settings_about.go:199
+#: internal/ui/settings_about.go:202
 msgid "Reading the releases…"
 msgstr "릴리스 정보 읽는 중…"
 
-#: internal/ui/settings_about.go:220
+#: internal/ui/settings_about.go:223
 msgid "installed"
 msgstr "설치됨"
 
-#: internal/ui/settings_about.go:224
+#: internal/ui/settings_about.go:227
 msgid "On GitHub"
 msgstr "GitHub에서"
 
@@ -12385,6 +12417,82 @@ msgstr "%s부터"
 msgid "Stop allowing it: its programs are asked about again"
 msgstr "허용 중지: 이 경로의 프로그램에 다시 묻습니다"
 
+#: internal/ui/settings_power.go:110
+msgid "POWER"
+msgstr "전원"
+
+#: internal/ui/settings_power.go:110
+msgid "The battery and how the computer runs"
+msgstr "배터리와 컴퓨터의 동작 방식"
+
+#: internal/ui/settings_power.go:115
+msgid "Power mode"
+msgstr "전원 모드"
+
+#: internal/ui/settings_power.go:115
+msgid "Saves the battery, or runs faster for more of it"
+msgstr "배터리를 아끼거나, 더 써서 더 빠르게 동작합니다"
+
+#: internal/ui/settings_power.go:118
+msgid "WHEN IDLE"
+msgstr "유휴 상태일 때"
+
+#: internal/ui/settings_power.go:118
+msgid "After no keys and no pointer for a while"
+msgstr "한동안 키와 포인터를 쓰지 않으면"
+
+#: internal/ui/settings_power.go:119
+msgid "Dim the screen after"
+msgstr "화면을 어둡게 하기까지"
+
+#: internal/ui/settings_power.go:119
+msgid "Lock after"
+msgstr "잠그기까지"
+
+#: internal/ui/settings_power.go:119
+msgid "Turn the screens off after"
+msgstr "화면을 끄기까지"
+
+#: internal/ui/settings_power.go:119
+msgid "Suspend after"
+msgstr "절전 모드까지"
+
+#: internal/ui/settings_power.go:125
+msgid "LID AND POWER BUTTON"
+msgstr "덮개와 전원 버튼"
+
+#: internal/ui/settings_power.go:125
+msgid "Changing these asks for an administrator's password"
+msgstr "바꾸려면 관리자 암호가 필요합니다"
+
+#: internal/ui/settings_power.go:126
+msgid "Closing the lid on battery"
+msgstr "배터리 사용 중 덮개를 닫으면"
+
+#: internal/ui/settings_power.go:126
+msgid "Closing the lid on mains power"
+msgstr "전원 연결 중 덮개를 닫으면"
+
+#: internal/ui/settings_power.go:126
+msgid "Pressing the power button"
+msgstr "전원 버튼을 누르면"
+
+#: internal/ui/settings_power.go:218
+msgid "%s cannot be read: %s"
+msgstr "%s을(를) 읽을 수 없습니다: %s"
+
+#: internal/ui/settings_power.go:220
+msgid "hypridle is not installed, so nothing happens when the computer is idle: install it (sudo apt install hypridle) and log in again."
+msgstr "hypridle이 설치되어 있지 않아 유휴 상태에서 아무 일도 일어나지 않습니다. 설치한 뒤(sudo apt install hypridle) 다시 로그인하세요."
+
+#: internal/ui/settings_power.go:253
+msgid "Asking for the password…"
+msgstr "암호를 묻는 중…"
+
+#: internal/ui/settings_power.go:307
+msgid "Not changed: the administrator's password was not given."
+msgstr "바뀌지 않았습니다: 관리자 암호를 입력하지 않았습니다."
+
 #: internal/ui/settings_search.go:165
 msgid "Page"
 msgstr "페이지"
@@ -12511,7 +12619,7 @@ msgid "%s Upgrade with: inua upgrade"
 msgstr "%s 업그레이드: inua 업그레이드"
 
 #: internal/ui/updates.go:99
-#: ui/settings.ui:6401
+#: ui/settings.ui:6435
 msgid "Upgrade"
 msgstr "업그레이드"
 
@@ -14690,7 +14798,7 @@ msgid "Press the new shortcut. Esc cancels; Backspace turns it off."
 msgstr "새로운 단축키를 누른다. Esc는 취소합니다. 백스페이스는 이 기능을 끕니다."
 
 #: ui/settings.ui:4729
-#: ui/settings.ui:6300
+#: ui/settings.ui:6334
 msgid "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>INUA<span alpha='55%'>]</span>"
 
@@ -14880,50 +14988,54 @@ msgid "Stop setting the touchpad in inua"
 msgstr "inua에서 터치패드 설정을 중지합니다."
 
 #: ui/settings.ui:6198
+msgid "Power"
+msgstr "전원"
+
+#: ui/settings.ui:6232
 msgid "About"
 msgstr "소개"
 
-#: ui/settings.ui:6236
+#: ui/settings.ui:6270
 msgid "<span alpha='55%'>[</span>SYSTEM<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>시스템<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:6244
+#: ui/settings.ui:6278
 msgid "This computer at a glance"
 msgstr "이 컴퓨터 한눈에 보기"
 
-#: ui/settings.ui:6258
+#: ui/settings.ui:6292
 msgid "Copy as text"
 msgstr "텍스트로 복사"
 
-#: ui/settings.ui:6308
+#: ui/settings.ui:6342
 msgid "The version, and new releases"
 msgstr "버전 및 새 릴리스"
 
-#: ui/settings.ui:6338
+#: ui/settings.ui:6372
 msgid "Version"
 msgstr "버전"
 
-#: ui/settings.ui:6374
+#: ui/settings.ui:6408
 msgid "Updates"
 msgstr "업데이트"
 
-#: ui/settings.ui:6410
+#: ui/settings.ui:6444
 msgid "Check for updates"
 msgstr "업데이트 확인"
 
-#: ui/settings.ui:6436
+#: ui/settings.ui:6470
 msgid "Check every day"
 msgstr "매일 확인"
 
-#: ui/settings.ui:6445
+#: ui/settings.ui:6479
 msgid "A notification says when a new release is out, with a button to upgrade"
 msgstr "새 릴리스가 출시되면 업그레이드 버튼과 함께 알림이 표시됩니다."
 
-#: ui/settings.ui:6490
+#: ui/settings.ui:6524
 msgid "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>CHANGELOG<span alpha='55%'>]</span>"
 
-#: ui/settings.ui:6498
+#: ui/settings.ui:6532
 msgid "What the latest release changed"
 msgstr "최신 릴리스에서 변경된 사항"
 

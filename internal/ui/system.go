@@ -62,6 +62,7 @@ func (s *shellUI) update(f func(*shell.System)) {
 		}
 		s.showBluetooth()
 		s.showWifi()
+		s.showPower() // the battery, the power mode
 		if s.wantWifi() {
 			s.readWifiList() // connected, or off, meanwhile
 		}

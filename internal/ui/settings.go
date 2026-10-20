@@ -82,6 +82,7 @@ type settings struct {
 	displays displaysSettings  // the Displays page
 	bt       bluetoothSettings // the Bluetooth page
 	wifi     wifiSettings      // the Wi-Fi page
+	power    powerSettings     // the Power page
 	search   settingsSearch    // the search over the index
 
 	sticky map[uintptr]*stickyHead // by the pages' vertical adjustments
@@ -467,6 +468,7 @@ func (s *shellUI) openSettings() {
 	s.getDisplaySettings(ui)
 	s.getWifiSettings(ui)
 	s.getBluetoothSettings(ui)
+	s.getPowerSettings(ui)
 	s.buildSettingsIndex()
 	s.getSettingsSearch(ui)
 	ui.Close()
@@ -517,7 +519,7 @@ var settingsGroups = []struct {
 	{i18n.M("Devices"), []string{"displays", "keyboard", "mouse"}},
 	{i18n.M("Desktop"), []string{"appearance", "bar", "launcher", "notifications", "shortcuts"}},
 	{i18n.M("Apps"), []string{"apps", "ai", "clipboard", "keyring"}},
-	{i18n.M("System"), []string{"about"}},
+	{i18n.M("System"), []string{"power", "about"}},
 }
 
 // settingsPages are the pages' names in settings.ui, in the index's order.
@@ -534,6 +536,7 @@ var settingsPages = func() []string {
 var settingsPageAliases = map[string]string{
 	"wallpaper": "appearance", "dock": "bar", "control": "bar", "touchpad": "mouse",
 	"network": "wifi", "wi-fi": "wifi",
+	"battery": "power", "lid": "power", "idle": "power", "sleep": "power", "suspend": "power",
 }
 
 // showSettingsPage turns the open settings window to a page, reporting
@@ -685,6 +688,7 @@ func (s *shellUI) showSettings() {
 	s.showInput()
 	s.showWifi()
 	s.showBluetooth()
+	s.showPower()
 	s.showDisplays()
 	s.showNotifySettings()
 	s.showDockSettings()
