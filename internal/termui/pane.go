@@ -143,11 +143,9 @@ func (p *termPane) drawRun(w *gtk.Widget, s *gtk.Snapshot, r vt.Run, cw, ch floa
 	if r.Attrs&vt.Italic != 0 {
 		font |= 2
 	}
-	l := w.CreatePangoLayout(r.Text)
-	l.SetFontDescription(p.fonts[font])
 	s.Save()
 	s.Translate(&graphene.Point{X: float32(r.X) * cw})
-	s.AppendLayout(l, &fg)
+	p.drawText(w, s, r.Text, r.Cells, p.fonts[font], &fg, cw)
 	if r.Attrs&vt.Underline != 0 {
 		s.AppendColor(&fg, rect(0, ch-2, float32(r.Cells)*cw, 1))
 	}
@@ -155,7 +153,69 @@ func (p *termPane) drawRun(w *gtk.Widget, s *gtk.Snapshot, r vt.Run, cw, ch floa
 		s.AppendColor(&fg, rect(0, ch/2, float32(r.Cells)*cw, 1))
 	}
 	s.Restore()
-	l.Unref()
+}
+
+// drawText draws text of cells cells from 0, on the cells' grid: ASCII
+// as it comes, in the terminal's font; a character from another font (a
+// Japanese one, a symbol's) at its own cells, in the middle of them, so
+// what follows it and the cursor stay where the engine counts them.
+func (p *termPane) drawText(w *gtk.Widget, s *gtk.Snapshot, text string, cells int, font *pango.FontDescription, fg *gdk.RGBA, cw float32) {
+	cs, ok := cellClusters(text, cells)
+	if isASCII(text) || !ok {
+		l := w.CreatePangoLayout(text)
+		l.SetFontDescription(font)
+		s.AppendLayout(l, fg)
+		l.Unref()
+		return
+	}
+	// Each piece on the terminal font's baseline: a layout with another
+	// font in it has that font's, lower.
+	m := w.CreatePangoLayout("M")
+	m.SetFontDescription(font)
+	base := m.GetBaseline()
+	m.Unref()
+	// put draws text from cell x; centred over span cells when span > 0,
+	// an advance wider than them starting at their left edge.
+	put := func(text string, x, span int) {
+		l := w.CreatePangoLayout(text)
+		l.SetFontDescription(font)
+		left := float32(x) * cw
+		if span > 0 {
+			var lw, lh int32
+			l.GetPixelSize(&lw, &lh)
+			left += max(0, (float32(span)*cw-float32(lw))/2)
+		}
+		s.Save()
+		s.Translate(&graphene.Point{X: left, Y: float32(base-l.GetBaseline()) / float32(pango.SCALE)})
+		s.AppendLayout(l, fg)
+		s.Restore()
+		l.Unref()
+	}
+	for i := 0; i < len(cs); i++ {
+		if !cs[i].ascii {
+			put(cs[i].text, cs[i].x, cs[i].w)
+			continue
+		}
+		j := i // a stretch of ASCII, in one layout
+		for j+1 < len(cs) && cs[j+1].ascii {
+			j++
+		}
+		put(joinText(cs[i:j+1]), cs[i].x, 0)
+		i = j
+	}
+}
+
+// joinText is clusters' text together.
+func joinText(cs []cluster) string {
+	n := 0
+	for _, c := range cs {
+		n += len(c.text)
+	}
+	b := make([]byte, 0, n)
+	for _, c := range cs {
+		b = append(b, c.text...)
+	}
+	return string(b)
 }
 
 // Drawing helpers: GSK takes these by pointer.

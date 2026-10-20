@@ -90,8 +90,9 @@ type termPane struct {
 	pending   []feedOp // from the host, not yet fed to the engine
 	scheduled bool
 
-	im      *gtk.IMMulticontext
-	preedit string // what the input method is composing, drawn at the cursor
+	im        *gtk.IMMulticontext
+	preedit   string // what the input method is composing, drawn at the cursor
+	preeditAt int    // the input method's cursor in it, in characters
 
 	// chord is the window's handler for its Ctrl+Shift chords; focused
 	// tells it this pane took the focus.
@@ -190,7 +191,8 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 	copyKeys.ConnectKeyPressed(&p.onCopyKey)
 	p.widget.AddController(&copyKeys.EventController)
 	p.onCommit = func(_ gtk.IMContext, text string) {
-		p.preedit = ""
+		p.preedit, p.preeditAt = "", 0
+		p.imCursor()
 		p.input([]byte(text))
 		p.widget.QueueDraw()
 	}
@@ -198,7 +200,8 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 		var text string
 		var cursor int32
 		im.GetPreeditString(&text, nil, &cursor)
-		p.preedit = text
+		p.preedit, p.preeditAt = text, int(cursor)
+		p.imCursor()
 		p.widget.QueueDraw()
 	}
 	p.im.ConnectCommit(&p.onCommit)
@@ -518,12 +521,24 @@ func (p *termPane) update(all bool) {
 	p.mouse = f.Mouse
 	p.alt = f.Alt
 	p.scroll = f.Scroll
-	if p.cw > 0 {
-		// The input method's candidates open at the cursor.
-		p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + p.cur.X*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
-	}
+	p.imCursor()
 	p.showCount()
 	p.widget.QueueDraw()
+}
+
+// imCursor tells the input method where the cursor is, in the preedit
+// when composing, so its candidates open there.
+func (p *termPane) imCursor() {
+	if p.cw == 0 {
+		return
+	}
+	x := p.cur.X
+	if p.preedit != "" {
+		cs, _ := cellClusters(p.preedit, 0)
+		_, at := preeditCells(cs, p.preeditAt)
+		x += at
+	}
+	p.im.SetCursorLocation(&gdk.Rectangle{X: int32(pad + x*p.cw), Y: int32(pad + p.cur.Y*p.ch), Width: int32(p.cw), Height: int32(p.ch)})
 }
 
 func (p *termPane) exit(code int) {
@@ -587,18 +602,18 @@ func (p *termPane) snapshot(w *gtk.Widget, s *gtk.Snapshot) {
 	}
 	if p.preedit != "" {
 		// What the input method is composing, over the cells at the cursor.
-		l := w.CreatePangoLayout(p.preedit)
-		l.SetFontDescription(p.font)
-		var lw, lh int32
-		l.GetPixelSize(&lw, &lh)
+		// On the cells it will take, its own cursor where the input
+		// method has it.
+		cs, _ := cellClusters(p.preedit, 0)
+		n, at := preeditCells(cs, p.preeditAt)
 		x, y := float32(p.cur.X)*cw, float32(p.cur.Y)*ch
-		s.AppendColor(&p.bg, rect(x, y, float32(lw), ch))
+		s.AppendColor(&p.bg, rect(x, y, float32(n)*cw, ch))
 		s.Save()
 		s.Translate(&graphene.Point{X: x, Y: y})
-		s.AppendLayout(l, &p.fg)
-		s.AppendColor(&p.cursor, rect(0, ch-2, float32(lw), 1))
+		p.drawText(w, s, p.preedit, n, p.font, &p.fg, cw)
+		s.AppendColor(&p.cursor, rect(0, ch-2, float32(n)*cw, 1))
+		s.AppendColor(&p.cursor, rect(float32(at)*cw, 0, 2, ch))
 		s.Restore()
-		l.Unref()
 	}
 	if c := p.copy; c != nil {
 		// The copy cursor: a hollow block in the accent.
