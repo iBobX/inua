@@ -27,6 +27,7 @@ const (
 	qemuSerialSock  = "serial.sock"
 	qemuSerialLog   = "serial.log"
 	qemuPortFile    = "ssh-port"
+	qemuGDBPortFile = "gdb-port"
 	qemuEfivarsFile = "efivars.fd"
 
 	// qemuUnitPrefix names the systemd user unit a machine runs as:
@@ -38,8 +39,10 @@ const (
 	// for. 2222 is where a second ssh on one host is usually put.
 	qemuSSHPortFrom = 2222
 
-	// qemuGDBAddr is QEMU's gdb stub: `-s` binds 127.0.0.1:1234.
-	qemuGDBAddr = "127.0.0.1:1234"
+	// qemuGDBPortFrom is where the first machine's gdb stub port is looked
+	// for: 1234 is QEMU's own (`-s`), and each machine reserves its own from
+	// there, so two machines held for gdb never ask for the same one.
+	qemuGDBPortFrom = 1234
 
 	// qemuShutdownGrace is how long Stop waits for the guest to act on
 	// system_powerdown before QEMU is told to quit. A guest doing `shutdown -h`
@@ -286,12 +289,14 @@ func (b *QEMUBackend) Command(m Machine) ([]string, error) {
 	}
 
 	// The guest's own disk, inside its own folder.
-	args = append(args, "-drive", "file="+b.diskPath(m)+",if=virtio")
+	args = append(args, "-drive", "file="+qemuOpt(b.diskPath(m))+",if=virtio")
 
 	// Install media, while there is any: the guest stops needing it by
 	// installing itself, and the machine's field is cleared then.
 	if iso := strings.TrimSpace(m.Boot.ISO); iso != "" {
-		args = append(args, "-cdrom", ExpandPath(iso))
+		// -cdrom is a drive's options underneath (file=…,media=cdrom), so
+		// its path is quoted as one.
+		args = append(args, "-cdrom", qemuOpt(ExpandPath(iso)))
 	}
 
 	// A kernel booted directly, which is what an OS in the making is: no
@@ -323,8 +328,8 @@ func (b *QEMUBackend) Command(m Machine) ([]string, error) {
 			return nil, vmError("command", ErrorBackend, err)
 		}
 		args = append(args,
-			"-drive", "if=pflash,format=raw,readonly=on,file="+firmware,
-			"-drive", "if=pflash,format=raw,file="+efivars)
+			"-drive", "if=pflash,format=raw,readonly=on,file="+qemuOpt(firmware),
+			"-drive", "if=pflash,format=raw,file="+qemuOpt(efivars))
 	}
 
 	// The network: QEMU's own user-mode stack, with the guest's ssh reachable
@@ -345,11 +350,11 @@ func (b *QEMUBackend) Command(m Machine) ([]string, error) {
 	// device's output to a socket and a file at once, and `socat`/`tee` beside
 	// QEMU would be a process nobody asked for. The socket is the console; the
 	// log is what a viewer mirrors into.
-	args = append(args, "-serial", "unix:"+filepath.Join(runtimeDir, qemuSerialSock)+",server,nowait")
+	args = append(args, "-serial", "unix:"+qemuOpt(filepath.Join(runtimeDir, qemuSerialSock))+",server,nowait")
 
 	// QMP, always: it is the only way to ask a QEMU guest what it is doing, and
 	// the only way to stop it without killing it.
-	args = append(args, "-qmp", "unix:"+filepath.Join(runtimeDir, qemuQMPFile)+",server,nowait")
+	args = append(args, "-qmp", "unix:"+qemuOpt(filepath.Join(runtimeDir, qemuQMPFile))+",server,nowait")
 
 	if b.debugged(m) {
 		// The gdb stub, on this host's loopback alone, plus -S, which holds the
@@ -357,8 +362,13 @@ func (b *QEMUBackend) Command(m Machine) ([]string, error) {
 		// `-s` is QEMU's shorthand for this, but it is `-gdb tcp::1234`, which
 		// does not pin the interface the way `tcp:HOST:PORT` does; the manual
 		// says only that it listens on port 1234. Everything inua opens is
-		// reachable from this host alone, so the host is spelled out.
-		args = append(args, "-gdb", "tcp:"+qemuGDBAddr, "-S")
+		// reachable from this host alone, so the host is spelled out, and the
+		// port is this machine's own (reserveGDBPort).
+		gdbPort, err := b.reserveGDBPort(m)
+		if err != nil {
+			return nil, vmError("command", ErrorConflict, err)
+		}
+		args = append(args, "-gdb", "tcp:"+qemuGDBAddr(gdbPort), "-S")
 	}
 	return append([]string{b.program(m)}, args...), nil
 }
@@ -392,7 +402,7 @@ func (b *QEMUBackend) displayArgs(m Machine, runtimeDir string) []string {
 		// disable-ticketing because the socket is this user's alone, in
 		// $XDG_RUNTIME_DIR; a password over it would be theatre.
 		out = append(out,
-			"-spice", fmt.Sprintf("unix=on,addr=%s,disable-ticketing=on,gl=%s", filepath.Join(runtimeDir, qemuSPICESock), gl),
+			"-spice", fmt.Sprintf("unix=on,addr=%s,disable-ticketing=on,gl=%s", qemuOpt(filepath.Join(runtimeDir, qemuSPICESock)), gl),
 			"-vga", "none")
 	}
 
@@ -480,12 +490,13 @@ func (b *QEMUBackend) State(ctx context.Context, m Machine) (State, error) {
 // qemuState maps QEMU's run state onto this package's:
 //
 //	running, paused     the guest is there. A paused guest is QEMU's, not the
-//	                    user's - `stop` in the monitor, a savevm, the gdb stub
-//	                    waiting at -S - and all of them mean "do not start it
-//	                    again".
-//	shutdown, prelaunch the guest is going away, or has not begun: stopped.
-//	debug               the guest is held by a debugger (the gdb switch), so it
-//	                    is waiting, not running: starting.
+//	                    user's - `stop` in the monitor, a savevm - and both
+//	                    mean "do not start it again".
+//	shutdown            the guest is going away: stopped.
+//	prelaunch, debug    the guest is held before its first instruction (-S,
+//	                    the gdb switch) or by a debugger: QEMU is there and
+//	                    waiting, so it is starting, and Start must not be
+//	                    offered again (its unit is still there).
 //	inmigrate, postmigrate, finish-migrate
 //	                    a guest that is arriving somewhere: starting.
 //	anything else       no state a window can offer Start or Connect on, which
@@ -494,9 +505,9 @@ func qemuState(status string) (State, error) {
 	switch status {
 	case "running", "paused":
 		return StateRunning, nil
-	case "shutdown", "prelaunch":
+	case "shutdown":
 		return StateStopped, nil
-	case "debug", "inmigrate", "postmigrate", "finish-migrate":
+	case "prelaunch", "debug", "inmigrate", "postmigrate", "finish-migrate":
 		return StateStarting, nil
 	}
 	return StateUnknown, vmError("state", ErrorBackend, fmt.Errorf("qemu reports %q", status))
@@ -719,12 +730,19 @@ func (b *QEMUBackend) ensureEfivars(path string) error {
 // recorded is skipped before it ever runs, which is the same per-machine
 // reservation the Docker backend makes for its ports.
 func (b *QEMUBackend) reserveSSHPort(m Machine) (int, error) {
+	return b.reservePort(m, qemuPortFile, qemuSSHPortFrom)
+}
+
+// reservePort is a loopback port of this machine's, recorded in file in its
+// runtime directory: the one recorded when it is still free, else the first
+// free one from `from` that no other machine has recorded under that file.
+func (b *QEMUBackend) reservePort(m Machine, file string, from int) (int, error) {
 	runtimeDir, err := b.Store.EnsureRuntime(m.Name)
 	if err != nil {
 		return 0, err
 	}
-	taken := b.portsReservedByOthers(m.Name)
-	path := filepath.Join(runtimeDir, qemuPortFile)
+	taken := b.portsReservedByOthers(m.Name, file)
+	path := filepath.Join(runtimeDir, file)
 	if data, err := os.ReadFile(path); err == nil {
 		var have int
 		if n, err := fmt.Sscanf(strings.TrimSpace(string(data)), "%d", &have); n == 1 && err == nil &&
@@ -732,7 +750,7 @@ func (b *QEMUBackend) reserveSSHPort(m Machine) (int, error) {
 			return have, nil
 		}
 	}
-	port, err := freePortFrom(qemuSSHPortFrom, taken)
+	port, err := freePortFrom(from, taken)
 	if err != nil {
 		return 0, err
 	}
@@ -746,8 +764,8 @@ func (b *QEMUBackend) reserveSSHPort(m Machine) (int, error) {
 // guest's own ssh on.
 func (b *QEMUBackend) SSHPort(m Machine) (int, error) { return b.reserveSSHPort(m) }
 
-// portsReservedByOthers is every ssh port another machine has recorded.
-func (b *QEMUBackend) portsReservedByOthers(name string) map[int]bool {
+// portsReservedByOthers is every port another machine has recorded in file.
+func (b *QEMUBackend) portsReservedByOthers(name, file string) map[int]bool {
 	out := map[int]bool{}
 	entries, err := os.ReadDir(b.Store.Runtime)
 	if err != nil {
@@ -757,7 +775,7 @@ func (b *QEMUBackend) portsReservedByOthers(name string) map[int]bool {
 		if !e.IsDir() || e.Name() == name {
 			continue
 		}
-		data, err := os.ReadFile(filepath.Join(b.Store.RuntimeDir(e.Name()), qemuPortFile))
+		data, err := os.ReadFile(filepath.Join(b.Store.RuntimeDir(e.Name()), file))
 		if err != nil {
 			continue
 		}
@@ -770,8 +788,37 @@ func (b *QEMUBackend) portsReservedByOthers(name string) map[int]bool {
 }
 
 // UnitName is the transient systemd unit a machine runs as, so a window or a
-// command line can ask systemctl about it.
-func (b *QEMUBackend) UnitName(m Machine) string { return qemuUnitPrefix + m.Name }
+// command line can ask systemctl about it. A machine's name may hold what a
+// unit's may not (a space, a comma), so it is escaped as systemd-escape
+// escapes it: `my fedora` is inua-vm-my\x20fedora.
+func (b *QEMUBackend) UnitName(m Machine) string { return qemuUnitPrefix + systemdEscape(m.Name) }
+
+// systemdEscape is a string as systemd-escape writes it for a unit name:
+// letters, digits, ':', '_' and '.' (but not a leading one) as they are, '/'
+// as '-', and every other byte as \xNN.
+func systemdEscape(s string) string {
+	var b strings.Builder
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c == '/':
+			b.WriteByte('-')
+		case c == '.' && i == 0:
+			fmt.Fprintf(&b, `\x%02x`, c)
+		case c >= 'a' && c <= 'z', c >= 'A' && c <= 'Z', c >= '0' && c <= '9', c == ':', c == '_', c == '.':
+			b.WriteByte(c)
+		default:
+			fmt.Fprintf(&b, `\x%02x`, c)
+		}
+	}
+	return b.String()
+}
+
+// qemuOpt is a value as it goes into one of QEMU's option strings
+// (key=value,key=value): a comma is doubled, which QEMU reads as one comma in
+// the value rather than the start of another option. A path with a comma in it
+// - a machine's name, an image's - is then that path and nothing more.
+func qemuOpt(s string) string { return strings.ReplaceAll(s, ",", ",,") }
 
 // QMPPath is the machine's control socket: what State and Stop speak to, and
 // what a window's own queries would.
@@ -801,7 +848,20 @@ func (b *QEMUBackend) GDBCommand(m Machine) string {
 	if !b.debugged(m) {
 		return ""
 	}
-	return `gdb -ex "target remote ` + qemuGDBAddr + `"`
+	port, err := b.reserveGDBPort(m)
+	if err != nil {
+		return ""
+	}
+	return `gdb -ex "target remote ` + qemuGDBAddr(port) + `"`
+}
+
+// qemuGDBAddr is a gdb stub's address: this host's loopback alone.
+func qemuGDBAddr(port int) string { return "127.0.0.1:" + strconv.Itoa(port) }
+
+// reserveGDBPort is the loopback port this machine's gdb stub listens on,
+// chosen once and recorded beside its ssh port, as that one is.
+func (b *QEMUBackend) reserveGDBPort(m Machine) (int, error) {
+	return b.reservePort(m, qemuGDBPortFile, qemuGDBPortFrom)
 }
 
 // TeeSerial mirrors a machine's serial console into its log file for as long as

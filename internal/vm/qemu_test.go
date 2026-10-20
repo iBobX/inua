@@ -839,7 +839,7 @@ func TestQEMUStateReadsTheMonitor(t *testing.T) {
 		{"running", StateRunning, false},
 		{"paused", StateRunning, false},
 		{"shutdown", StateStopped, false},
-		{"prelaunch", StateStopped, false},
+		{"prelaunch", StateStarting, false}, // held at -S for gdb: its unit is still there
 		{"debug", StateStarting, false},
 		{"guest-panicked", StateUnknown, true},
 	} {
@@ -960,5 +960,58 @@ func TestQEMUStopHonoursTheContext(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), string(ErrorUnavailable)) {
 		t.Errorf("the error does not say the caller gave up: %v", err)
+	}
+}
+
+// A machine's name may hold a space or a comma; its unit name is escaped as
+// systemd-escape escapes it, or systemd-run would refuse the unit.
+func TestQEMUUnitNameEscaped(t *testing.T) {
+	b, m, _ := newQEMUTestBackend(t, nil)
+	for name, want := range map[string]string{
+		"ubuntu":    "inua-vm-ubuntu",
+		"my fedora": `inua-vm-my\x20fedora`,
+		"a,b-c":     `inua-vm-a\x2cb\x2dc`,
+		"v1.2_x:y":  "inua-vm-v1.2_x:y",
+		"日本":        `inua-vm-\xe6\x97\xa5\xe6\x9c\xac`,
+	} {
+		m.Name = name
+		if got := b.UnitName(m); got != want {
+			t.Errorf("UnitName(%q) = %q, want %q", name, got, want)
+		}
+	}
+}
+
+// A comma in a path is doubled where the path goes into QEMU's options, so it
+// stays the path: a machine's name, its disk's and its image's.
+func TestQEMUCommandQuotesCommas(t *testing.T) {
+	b, m, _ := newQEMUTestBackend(t, nil)
+	m.Name = "a,b"
+	iso := filepath.Join(t.TempDir(), "x,if=none.iso")
+	m.Boot.ISO = iso
+	argv := command(t, b, m)
+	drive, _ := argValue(argv, "-drive")
+	if want := "file=" + strings.ReplaceAll(b.diskPath(m), ",", ",,") + ",if=virtio"; drive != want {
+		t.Errorf("-drive = %q, want %q", drive, want)
+	}
+	if cd, _ := argValue(argv, "-cdrom"); cd != strings.ReplaceAll(iso, ",", ",,") {
+		t.Errorf("-cdrom = %q", cd)
+	}
+	if qmp, _ := argValue(argv, "-qmp"); !strings.Contains(qmp, "a,,b") || !strings.HasSuffix(qmp, ",server,nowait") {
+		t.Errorf("-qmp = %q", qmp)
+	}
+}
+
+// Two machines held for gdb each have a stub port of their own.
+func TestQEMUGDBPortPerMachine(t *testing.T) {
+	b, m, _ := newQEMUTestBackend(t, &QEMUOptions{GDB: true})
+	other := m
+	other.Name = "other"
+	first, _ := argValue(command(t, b, m), "-gdb")
+	second, _ := argValue(command(t, b, other), "-gdb")
+	if first == "" || second == "" || first == second {
+		t.Errorf("gdb stubs %q and %q", first, second)
+	}
+	if !strings.HasPrefix(first, "tcp:127.0.0.1:") || !strings.Contains(b.GDBCommand(m), strings.TrimPrefix(first, "tcp:")) {
+		t.Errorf("stub %q, GDBCommand %q", first, b.GDBCommand(m))
 	}
 }

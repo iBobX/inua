@@ -159,7 +159,8 @@ ISO.
   unix:$XDG_RUNTIME_DIR/inua-vm/NAME/qmp.sock,server,nowait`.
 - The disk: `qemu-img create -f qcow2 disk.qcow2 40G`.
 - It runs as the user, outside inua-vm: `systemd-run --user --unit
-  inua-vm-NAME --collect …`, so a machine keeps running with the window
+  inua-vm-NAME --collect …` (the name escaped as `systemd-escape` does, so
+  `my fedora` is `inua-vm-my\x20fedora`), so a machine keeps running with the window
   closed and stops with the session. The state comes from QMP
   (`query-status`), Stop sends `system_powerdown` and, after a timeout,
   `quit`.
@@ -179,8 +180,15 @@ an OS in the making:
 - **The serial console**, `-serial unix:…/serial.sock,server,nowait`, shown
   in the window as a terminal view and kept as a log, often the only
   output a young kernel has.
-- **The debugger**, a switch for QEMU's gdb stub (`-s -S`: wait for gdb on
-  127.0.0.1:1234), with the command to attach shown and copied.
+- **The debugger**, a switch for QEMU's gdb stub (`-gdb tcp:127.0.0.1:PORT
+  -S`: wait for gdb on the loopback, at a port of the machine's own from
+  1234 up, so two machines held for gdb never collide), with the command to
+  attach shown and copied. A machine held there reads as starting.
+
+Paths go into QEMU's option strings (`-drive file=…`, `-cdrom`, the
+sockets) with their commas doubled, which QEMU reads as one comma of the
+path, so a name or an image with a comma in it is that path and nothing
+more.
 
 ### Dockur (Windows)
 
