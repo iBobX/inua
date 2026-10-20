@@ -92,7 +92,9 @@ replies to all, `f` forwards, `e` archives, `#` or Delete moves it to
 the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
 stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
 move, `F9` hides or shows the sidebar, `Ctrl+,` opens the settings. In the composer and the quick reply,
-`Ctrl+Enter` sends.
+`Ctrl+Enter` sends; in the composer, `Ctrl+J` opens AI's panel, goes
+into it, or closes it from inside it, and `Ctrl+W` closes the window,
+the draft kept.
 
 The window's title counts the unread.
 
@@ -153,6 +155,7 @@ summary_lang = ""               # the summaries' language: en, zh-Hans, zh-Hant,
 hide_sidebar = false            # kept as the window was left
 assistant = false               # the right panel open
 panel_hid_sidebar = false       # the panel hid the sidebar, to make room
+compose_assistant = false       # the composer's AI panel open
 ```
 
 **Settings** (Ctrl+, ⚙ at the index's foot, or a click on an account's
@@ -230,9 +233,11 @@ The cache can be deleted at any time; drafts are not in it
 
 ## Writing
 
-The composer is a window of its own: From (when there are several
-accounts), To, Cc and Bcc, the subject, the text and the files attached
-(*Attach…*, or drop files on the window). Typing in To, Cc or Bcc
+The composer is a window of its own, floating over Mail (its class,
+`io.github.lyricat.Inua.Mail.Compose`, has a rule of its own in
+`inua.conf`): From (when there are several accounts), To, Cc and Bcc,
+the subject, the text and the files attached (*Attach…*, or drop files
+on the window). Typing in To, Cc or Bcc
 suggests the people you mail, under the field: those you write to
 first, then those who write to you, lists and automated senders left
 out; Tab or Enter takes the first, ↓ goes into the list. A reply quotes what it answers
@@ -269,14 +274,26 @@ opened from a shield: the checks alone, which run on this computer.
 Whether it is open, and whether the sidebar is shown, are kept for the
 next start.
 
+The composer has an AI panel of its own at its right edge (✦ at the top
+right, or `Ctrl+J`). While nothing is written it offers a line to say
+what to write and the conversation's reply ideas; once something is,
+your own words for how to change it, *Shorter*, *Friendlier*, *More
+formal*, *Fix spelling* and *Translate* into one of eleven languages;
+with text selected, only the selection changes. What AI writes comes
+into the text tinted, a suggestion: *Keep* (Enter) makes it yours, *Try
+again* asks for another version (each one kept, ‹ › between them),
+*Discard* (Esc, or closing the panel) puts your text back, and *Yours*
+shows it for a moment to compare. While a suggestion waits, Send waits
+too, and the draft kept is your text.
+
 | Where | What | What it sends |
 | --- | --- | --- |
 | The panel: *Sum it up* | Two or three sentences, then what you are asked to do, with dates, in the conversation's language, or the one chosen in Settings → AI (*Summary language*); kept until the conversation gets a new message | The messages' text, quotes cut |
 | The panel: *Suggest replies* | Three short replies; the one picked is written out in the quick reply | The last six messages; to write it out, also three of your sent messages kept on this computer |
 | The panel: a line of what to say | The reply, written in the quick reply | The line, the conversation, three of your sent messages |
 | An attachment: *Sum up* (PDF, Word, OpenDocument, HTML, text) | What it is, the figures, dates and names that matter, what it asks of you | Its text, read on this computer (a PDF through poppler, as Viewer does), and the message it came with |
-| The composer: *Draft* | The text from a line of what to say, in the conversation's language and your voice | The line, the conversation, three of your sent messages kept on this computer |
-| The composer: *Polish* | Shorter, friendlier, more formal, spelling and grammar, or a translation; *Undo* puts your text back | The text you wrote (not the signature or the quote) |
+| The composer's panel: a reply idea, or a line of what to write | The text, in the conversation's language and your voice, as a suggestion | The line, the conversation, three of your sent messages kept on this computer |
+| The composer's panel: a change | Shorter, friendlier, more formal, spelling and grammar, a translation, or as your own words say, as a suggestion | The text you wrote (not the signature or the quote), or only the selection |
 | The search: a sentence and Enter | The search's operators, shown in the entry, then searched | The sentence and today's date |
 | The panel's *Is it safe?*, or a warning's *Ask AI* | Its verdict, two or three reasons, and what to do, under the checks' own verdict and findings | The checks' findings, the sender, the subject, the links and the text |
 | New mail (`[assistant] sort = true`) | A tag for what the rules do not settle | The sender, the subject, the first 400 characters |

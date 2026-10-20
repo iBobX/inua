@@ -308,7 +308,7 @@ msgstr "%s からのファイル"
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
 #: internal/filesui/window.go:713
-#: internal/mailui/actions.go:501
+#: internal/mailui/actions.go:502
 #: internal/shell/wifi.go:62
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
@@ -504,6 +504,7 @@ msgstr "DEV"
 #: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
+#: ui/mail-compose.ui:269
 #: ui/mail.ui:373
 #: ui/settings.ui:2154
 msgid "AI"
@@ -1201,7 +1202,7 @@ msgstr "プログラムが印を付けたキャッシュ"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "プログラムがキャッシュとして印を付けています(CACHEDIR.TAG)。なくなれば作り直されます。"
 
-#: internal/apps/mail/account.go:314
+#: internal/apps/mail/account.go:316
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -1908,6 +1909,7 @@ msgstr "リセット"
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
 #: ui/disk.ui:179
+#: ui/mail-compose.ui:375
 #: ui/vm.ui:885
 #: ui/vm.ui:1587
 #: ui/vm.ui:2052
@@ -2715,8 +2717,8 @@ msgstr "%s · %s"
 #: internal/appui/pass.go:1198
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
-#: internal/mailui/actions.go:424
-#: internal/mailui/compose.go:443
+#: internal/mailui/actions.go:425
+#: internal/mailui/compose.go:470
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -2951,8 +2953,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:268
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:308
 msgid "NETWORK"
 msgstr "ネットワーク"
 
@@ -3824,6 +3826,7 @@ msgstr "天気が読めませんでした。\n%s"
 #: internal/appui/weather.go:273
 #: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
+#: ui/mail-compose.ui:456
 #: ui/pass.ui:375
 msgid "Try again"
 msgstr "もう一度試してください"
@@ -4198,7 +4201,7 @@ msgid "Answer %s"
 msgstr "%s に返信"
 
 #: internal/connectui/reply.go:68
-#: internal/mailui/compose.go:538
+#: internal/mailui/compose.go:569
 #: internal/mailui/quick.go:235
 msgid "Not sent: %v"
 msgstr "送信されませんでした: %v"
@@ -5464,6 +5467,7 @@ msgstr[0] "…ほか %d 件"
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
 #: internal/ui/settings_wifi_details.go:62
+#: ui/mail-compose.ui:292
 #: ui/mail.ui:384
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
@@ -5586,10 +5590,9 @@ msgid "New folder / new file"
 msgstr "新規フォルダー / 新規ファイル"
 
 #: internal/filesui/cards.go:696
-#: internal/mailui/compose.go:494
+#: internal/mailui/compose.go:525
 #: internal/mailui/quick.go:129
 #: internal/mailui/quick.go:142
-#: ui/mail-compose.ui:234
 #: ui/mail.ui:273
 msgid "Undo"
 msgstr "元に戻す"
@@ -9540,7 +9543,7 @@ msgid "SPACE PINBALL"
 msgstr "スペースピンボール"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 #: ui/settings.ui:1883
 msgid "Launcher"
 msgstr "ランチャー"
@@ -9576,9 +9579,9 @@ msgid "Focus on or off"
 msgstr "フォーカスのオンまたはオフ"
 
 #: internal/hyprconf/keys.go:31
-#: internal/mailui/picker.go:152
+#: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 #: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -9775,56 +9778,57 @@ msgstr "サーバーが削除しませんでした：%v"
 msgid "The server did not take it: %v"
 msgstr "サーバーが受け付けませんでした：%v"
 
-#: internal/mailui/actions.go:352
+#: internal/mailui/actions.go:353
 msgid "Could not forward it: %v"
 msgstr "転送できません：%v"
 
-#: internal/mailui/actions.go:381
+#: internal/mailui/actions.go:382
 #: internal/mailui/reader.go:852
 msgid "The message is still loading."
 msgstr "メッセージはまだ読み込み中です。"
 
-#: internal/mailui/actions.go:422
+#: internal/mailui/actions.go:423
 msgid "Remove this account?"
 msgstr "このアカウントを削除しますか？"
 
-#: internal/mailui/actions.go:423
+#: internal/mailui/actions.go:424
 msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The mail on the server stays."
 msgstr "このコンピューター上のサインイン情報と保存したメールを消します。サーバー上のメールは残ります。"
 
-#: internal/mailui/actions.go:467
+#: internal/mailui/actions.go:468
 #: internal/mailui/window.go:510
 msgid "Unsent"
 msgstr "未送信"
 
-#: internal/mailui/actions.go:483
+#: internal/mailui/actions.go:484
 #: internal/mailui/reader.go:194
 #: internal/mailui/window.go:1082
 msgid "(no subject)"
 msgstr "（件名なし）"
 
-#: internal/mailui/actions.go:492
+#: internal/mailui/actions.go:493
 msgid "no recipient yet"
 msgstr "宛先はまだありません"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 msgid "to %s · %s"
 msgstr "宛先 %s · %s"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 #: internal/mailui/reader.go:473
 msgid "Mon Jan 2, 15:04"
 msgstr "1月2日(Mon) 15:04"
 
-#: internal/mailui/actions.go:505
+#: internal/mailui/actions.go:506
+#: ui/mail-compose.ui:464
 msgid "Discard"
 msgstr "破棄"
 
-#: internal/mailui/actions.go:516
+#: internal/mailui/actions.go:517
 msgid "Nothing unsent."
 msgstr "未送信のものはありません。"
 
-#: internal/mailui/actions.go:544
+#: internal/mailui/actions.go:545
 msgid "%s and %d more message"
 msgid_plural "%s and %d more messages"
 msgstr[0] "%s ほか %d 件"
@@ -9879,119 +9883,169 @@ msgstr "アシスタントから検索がありませんでした。"
 msgid "Searched for %s"
 msgstr "%s を検索しました"
 
-#: internal/mailui/compose.go:197
+#: internal/mailui/compose.go:205
 #: ui/mail-compose.ui:15
 msgid "New message"
 msgstr "新規メッセージ"
 
-#: internal/mailui/compose.go:251
+#: internal/mailui/compose.go:265
 msgid "Could not keep the draft: %v"
 msgstr "下書きを保存できません：%v"
 
-#: internal/mailui/compose.go:254
+#: internal/mailui/compose.go:268
 msgid "Draft kept at %s"
 msgstr "%s に下書きを保存しました"
 
-#: internal/mailui/compose.go:302
+#: internal/mailui/compose.go:316
 msgid "Draft kept in Drafts at %s"
 msgstr "%s に下書きフォルダーへ保存しました"
 
-#: internal/mailui/compose.go:309
+#: internal/mailui/compose.go:323
 msgid "Draft kept on this computer only: %v"
 msgstr "下書きはこのコンピューターにだけ保存されました：%v"
 
-#: internal/mailui/compose.go:382
+#: internal/mailui/compose.go:333
+#: internal/mailui/quick.go:114
+msgid "Ctrl+Enter sends"
+msgstr "Ctrl+Enter で送信"
+
+#: internal/mailui/compose.go:409
 msgid "Attach files"
 msgstr "ファイルを添付"
 
-#: internal/mailui/compose.go:419
+#: internal/mailui/compose.go:446
 msgid "Not attached (a folder, or not readable): %s"
 msgstr "添付できません（フォルダー、または読めません）：%s"
 
-#: internal/mailui/compose.go:455
+#: internal/mailui/compose.go:482
 msgid "The files come to %s; many servers refuse more than 20 MB."
 msgstr "ファイルは合計 %s です。多くのサーバーは 20 MB を超えると受け付けません。"
 
-#: internal/mailui/compose.go:473
+#: internal/mailui/compose.go:498
+msgid "Keep or discard AI's suggestion first."
+msgstr "先に AI の提案を採用するか破棄してください。"
+
+#: internal/mailui/compose.go:504
 msgid "Choose the account it is sent from."
 msgstr "送信元のアカウントを選んでください。"
 
-#: internal/mailui/compose.go:478
+#: internal/mailui/compose.go:509
 msgid "Add who it goes to."
 msgstr "宛先を追加してください。"
 
-#: internal/mailui/compose.go:486
+#: internal/mailui/compose.go:517
 msgid "The message is empty."
 msgstr "メッセージが空です。"
 
-#: internal/mailui/compose.go:504
+#: internal/mailui/compose.go:535
 msgid "Not sent. The draft is kept."
 msgstr "送信しませんでした。下書きは保存されています。"
 
-#: internal/mailui/compose.go:508
+#: internal/mailui/compose.go:539
 #: internal/mailui/quick.go:110
 msgid "Sending in %d second…"
 msgid_plural "Sending in %d seconds…"
 msgstr[0] "%d 秒後に送信…"
 
-#: internal/mailui/compose.go:513
+#: internal/mailui/compose.go:544
 #: internal/mailui/quick.go:112
 msgid "Sending…"
 msgstr "送信中…"
 
-#: internal/mailui/compose.go:526
+#: internal/mailui/compose.go:557
 #: internal/mailui/quick.go:137
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
-#: ui/mail-compose.ui:282
+#: ui/mail-compose.ui:237
 msgid "Send"
 msgstr "送信"
 
-#: internal/mailui/compose.go:553
+#: internal/mailui/compose.go:584
 msgid "Sent, but not saved in Sent: %v"
 msgstr "送信しましたが、送信済みに保存できませんでした：%v"
 
-#: internal/mailui/compose.go:582
-msgid "Shorter"
-msgstr "短く"
-
-#: internal/mailui/compose.go:583
-msgid "Friendlier"
-msgstr "親しみやすく"
-
-#: internal/mailui/compose.go:584
-msgid "More formal"
-msgstr "丁寧に"
-
-#: internal/mailui/compose.go:585
-msgid "Fix spelling and grammar"
-msgstr "スペルと文法を直す"
-
-#: internal/mailui/compose.go:596
+#: internal/mailui/compose_ai.go:83
 msgid "Translate into %s"
 msgstr "%s に翻訳"
 
-#: internal/mailui/compose.go:613
-msgid "Write a line of what to say, then Draft."
-msgstr "伝えたいことを 1 行書いてから「下書き」を押してください。"
+#: internal/mailui/compose_ai.go:133
+#: internal/mailui/formatted.go:192
+#: internal/mailui/settings.go:411
+#: internal/mailui/window.go:1458
+msgid "Not saved: %v"
+msgstr "保存されていません：%v"
 
-#: internal/mailui/compose.go:632
-msgid "Write something first, or Draft it."
-msgstr "まず何か書くか、下書きを作ってください。"
+#: internal/mailui/compose_ai.go:198
+msgid "· THE SELECTION"
+msgstr "· 選択範囲"
 
-#: internal/mailui/compose.go:649
-#: internal/mailui/quick.go:106
-msgid "The assistant is writing…"
-msgstr "アシスタントが書いています…"
+#: internal/mailui/compose_ai.go:209
+msgid "What should the reply say?"
+msgstr "返信で何を伝えますか？"
 
-#: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:445
-msgid "The assistant could not write it"
-msgstr "アシスタントが書けませんでした"
+#: internal/mailui/compose_ai.go:211
+msgid "What should it say?"
+msgstr "何を書きますか？"
 
-#: internal/mailui/compose.go:679
-msgid "Written by the assistant: read it before you send."
-msgstr "アシスタントが書きました。送信前に読んでください。"
+#: internal/mailui/compose_ai.go:213
+msgid "How should the selection change?"
+msgstr "選択範囲をどう変えますか？"
+
+#: internal/mailui/compose_ai.go:215
+msgid "How should it change?"
+msgstr "どう変えますか？"
+
+#: internal/mailui/compose_ai.go:217
+msgid "Writing… %s"
+msgstr "作成中… %s"
+
+#: internal/mailui/compose_ai.go:224
+msgid "Suggestion"
+msgstr "提案"
+
+#: internal/mailui/compose_ai.go:225
+msgid "Show AI's suggestion again"
+msgstr "AI の提案をもう一度表示"
+
+#: internal/mailui/compose_ai.go:227
+msgid "Yours"
+msgstr "元の文"
+
+#: internal/mailui/compose_ai.go:228
+msgid "Show your text as it was"
+msgstr "元の文を表示"
+
+#: internal/mailui/compose_ai.go:262
+msgid "Reading the conversation…"
+msgstr "会話を読んでいます…"
+
+#: internal/mailui/compose_ai.go:275
+msgid "Shorter"
+msgstr "短く"
+
+#: internal/mailui/compose_ai.go:276
+msgid "Friendlier"
+msgstr "親しみやすく"
+
+#: internal/mailui/compose_ai.go:277
+msgid "More formal"
+msgstr "丁寧に"
+
+#: internal/mailui/compose_ai.go:278
+msgid "Fix spelling"
+msgstr "誤字を直す"
+
+#: internal/mailui/compose_ai.go:375
+msgid "Write something first, or say what to write."
+msgstr "先に何か書くか、書く内容を伝えてください。"
+
+#: internal/mailui/compose_ai.go:430
+msgid "AI could not write it"
+msgstr "AI が書けませんでした"
+
+#: internal/mailui/compose_ai.go:432
+msgid "AI gave no text."
+msgstr "AI から文章が返ってきませんでした。"
 
 #: internal/mailui/formatted.go:172
 msgid "%d picture hidden"
@@ -10009,12 +10063,6 @@ msgstr "疑わしく見えるメッセージでは、ウェブ上の画像を自
 #: internal/mailui/formatted.go:186
 msgid "Always from this sender"
 msgstr "この送信者からは常に"
-
-#: internal/mailui/formatted.go:192
-#: internal/mailui/settings.go:411
-#: internal/mailui/window.go:1458
-msgid "Not saved: %v"
-msgstr "保存されていません：%v"
 
 #: internal/mailui/panel.go:53
 msgid "Checks"
@@ -10071,6 +10119,10 @@ msgstr "確認するものはありません：ここで読んだメッセージ
 #: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI がチェックの結果と、送信者・件名・リンク・本文を読み、どう判断するかを伝えます。"
+
+#: internal/mailui/panel.go:445
+msgid "The assistant could not write it"
+msgstr "アシスタントが書けませんでした"
 
 #: internal/mailui/picker.go:61
 msgid "Move to"
@@ -10130,14 +10182,22 @@ msgid "Send (in a reply or the composer)"
 msgstr "送信（返信欄または作成画面で）"
 
 #: internal/mailui/picker.go:150
+msgid "AI's panel, in the composer"
+msgstr "作成画面の AI パネル"
+
+#: internal/mailui/picker.go:151
+msgid "Close the composer, the draft kept"
+msgstr "作成画面を閉じる（下書きは保存）"
+
+#: internal/mailui/picker.go:152
 msgid "Leave the search or the reply field"
 msgstr "検索や返信欄から出る"
 
-#: internal/mailui/picker.go:151
+#: internal/mailui/picker.go:153
 msgid "Hide or show the sidebar"
 msgstr "サイドバーの表示／非表示"
 
-#: internal/mailui/picker.go:153
+#: internal/mailui/picker.go:155
 msgid "These keys"
 msgstr "このキー一覧"
 
@@ -10149,13 +10209,13 @@ msgstr "%s に送信しました。"
 msgid "Reply to %s…"
 msgstr "%s に返信…"
 
+#: internal/mailui/quick.go:106
+msgid "The assistant is writing…"
+msgstr "アシスタントが書いています…"
+
 #: internal/mailui/quick.go:108
 msgid "Drafted by the assistant"
 msgstr "アシスタントの下書き"
-
-#: internal/mailui/quick.go:114
-msgid "Ctrl+Enter sends"
-msgstr "Ctrl+Enter で送信"
 
 #: internal/mailui/quick.go:125
 msgid "Read it before you send: the assistant can be wrong."
@@ -11414,7 +11474,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "もう一度 Enter を押すとゴミ箱を空にします"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 msgid "inua's settings"
 msgstr "inuaの設定"
 
@@ -11571,57 +11631,57 @@ msgstr "ウェブアドレス"
 msgid "Web search"
 msgstr "ウェブ検索"
 
-#: internal/shell/dock.go:246
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:308
 msgid "EVERYDAY"
 msgstr "毎日"
 
-#: internal/shell/dock.go:256
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:263
+#: internal/shell/dock.go:308
 msgid "TOOLS"
 msgstr "ツール"
 
-#: internal/shell/dock.go:273
+#: internal/shell/dock.go:280
 msgid "PLAY"
 msgstr "遊び"
 
-#: internal/shell/dock.go:278
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:285
+#: internal/shell/dock.go:310
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "システム"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1843
 msgid "Screenshot"
 msgstr "スクリーンショット"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 msgid "Capture an area, a window or a screen"
 msgstr "領域、ウィンドウ、または画面をキャプチャする"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "DEVELOPMENT"
 msgstr "開発"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "MEDIA"
 msgstr "メディア"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "GAMES"
 msgstr "ゲーム"
 
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:310
 msgid "OTHER"
 msgstr "その他"
 
-#: internal/shell/dock.go:328
+#: internal/shell/dock.go:335
 msgid "WORKSHOP"
 msgstr "ワークショップ"
 
@@ -14422,7 +14482,7 @@ msgid "Author"
 msgstr "作成者"
 
 #: internal/viewerui/app.go:805
-#: ui/mail-compose.ui:143
+#: ui/mail-compose.ui:161
 msgid "Subject"
 msgstr "件名"
 
@@ -15768,49 +15828,65 @@ msgstr "↵ 開く"
 msgid "Esc  close"
 msgstr "Esc 閉じる"
 
-#: ui/mail-compose.ui:37
+#: ui/mail-compose.ui:41
 msgid "From"
 msgstr "差出人"
 
-#: ui/mail-compose.ui:61
+#: ui/mail-compose.ui:63
+msgid "AI (Ctrl+J)"
+msgstr "AI (Ctrl+J)"
+
+#: ui/mail-compose.ui:79
 msgid "To"
 msgstr "宛先"
 
-#: ui/mail-compose.ui:78
+#: ui/mail-compose.ui:96
 msgid "Cc, Bcc"
 msgstr "Cc、Bcc"
 
-#: ui/mail-compose.ui:94
+#: ui/mail-compose.ui:112
 msgid "Cc"
 msgstr "Cc"
 
-#: ui/mail-compose.ui:119
+#: ui/mail-compose.ui:137
 msgid "Bcc"
 msgstr "Bcc"
 
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
-msgstr "アシスタント"
-
-#: ui/mail-compose.ui:209
-msgid "What to say: the assistant drafts it"
-msgstr "伝えたいこと：アシスタントが下書きします"
-
-#: ui/mail-compose.ui:217
-msgid "Draft"
-msgstr "下書き"
-
-#: ui/mail-compose.ui:225
-msgid "Polish"
-msgstr "推敲"
-
-#: ui/mail-compose.ui:273
+#: ui/mail-compose.ui:228
 msgid "Attach…"
 msgstr "添付…"
 
-#: ui/mail-compose.ui:283
+#: ui/mail-compose.ui:238
 msgid "Ctrl+Enter"
 msgstr "Ctrl+Enter"
+
+#: ui/mail-compose.ui:338
+msgid "TRANSLATE"
+msgstr "翻訳"
+
+#: ui/mail-compose.ui:405
+msgid "The version before"
+msgstr "前の版"
+
+#: ui/mail-compose.ui:423
+msgid "The next version"
+msgstr "次の版"
+
+#: ui/mail-compose.ui:434
+msgid "Read it before you keep it."
+msgstr "採用する前に読んでください。"
+
+#: ui/mail-compose.ui:444
+msgid "Keep"
+msgstr "採用"
+
+#: ui/mail-compose.ui:445
+msgid "Enter"
+msgstr "Enter"
+
+#: ui/mail-compose.ui:465
+msgid "Esc"
+msgstr "Esc"
 
 #: ui/mail.ui:46
 msgid "Hide the sidebar (F9)"

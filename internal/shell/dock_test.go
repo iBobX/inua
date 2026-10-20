@@ -240,12 +240,15 @@ func TestForClassLoose(t *testing.T) {
 		{ID: "mixin-desktop_mixin-desktop", Command: []string{"/snap/bin/mixin-desktop", "%u"}},
 		{ID: "tool-runner", Command: []string{"env", "FOO=1", "thing"}},
 		{ID: "org.example.Viewer", Command: []string{"/opt/viewer/bin/fast_view"}},
+		{ID: "io.github.lyricat.Inua.Mail", Command: []string{"inua-mail"}},
 	})
 	for class, want := range map[string]string{
-		"mixin_desktop": "mixin-desktop_mixin-desktop", // a snap: the app part, - for _
-		"Tool_Runner":   "tool-runner",                 // the ID, loosely
-		"fast-view":     "org.example.Viewer",          // the program
-		"env":           "",                            // not a launcher's name
+		"mixin_desktop":                       "mixin-desktop_mixin-desktop", // a snap: the app part, - for _
+		"Tool_Runner":                         "tool-runner",                 // the ID, loosely
+		"fast-view":                           "org.example.Viewer",          // the program
+		"env":                                 "",                            // not a launcher's name
+		"io.github.lyricat.Inua.Mail.Compose": "io.github.lyricat.Inua.Mail", // a window of the app's, its class under the app's
+		"org.example.Other":                   "",                            // no app of that name
 	} {
 		got := ""
 		if e := apps.ForClass(class); e != nil {

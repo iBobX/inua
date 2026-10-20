@@ -3986,10 +3986,53 @@ window.mail-compose button.mail-chip-remove {
   color: @t2;
 }
 window.mail-compose button.mail-chip-remove:hover { color: @t0; }
-window.mail-compose .mail-assist { margin: 10px 28px 0; padding-top: 10px; border-top: 1px solid alpha(@line, 0.55); }
-window.mail-compose entry.mail-draft-what { min-height: 30px; }
-window.mail-compose .mail-ai-note { margin: 6px 28px 0; }
 window.mail-compose .error { color: @danger; }
+window.mail-compose button.mail-tool.image-button { min-width: 30px; min-height: 30px; }
+/* AI's panel: quiet, on the window's own ground behind a hairline; a line
+   to type in, actions as text, the accent only for Keep. */
+window.mail-compose .mail-compose-ai { background: @app; border-left: 1px solid alpha(@line, 0.8); }
+window.mail-compose .mail-compose-ai-head { padding: 12px 12px 6px 22px; }
+window.mail-compose .mail-compose-ai-scope { color: @accent; }
+window.mail-compose .mail-compose-ai-body { padding: 4px 22px 18px; }
+window.mail-compose entry.mail-compose-ai-say,
+window.mail-compose entry.mail-compose-ai-say:focus-within {
+  min-height: 32px;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid @line;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 13px;
+}
+window.mail-compose entry.mail-compose-ai-say:focus-within { border-bottom-color: @accent; }
+window.mail-compose .mail-compose-ai-list { margin-top: 8px; }
+window.mail-compose button.mail-compose-ai-item {
+  min-height: 32px;
+  padding: 5px 8px;
+  margin: 0 -8px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+  color: @t1;
+  font-size: 13px;
+  font-weight: 400;
+}
+window.mail-compose button.mail-compose-ai-item:hover { background: alpha(@accent, 0.07); color: @t0; }
+window.mail-compose .mail-compose-ai-langs flowboxchild { padding: 0; }
+window.mail-compose button.mail-compose-ai-lang {
+  min-height: 0;
+  padding: 2px 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: @t2;
+  font-size: 12.5px;
+  font-weight: 400;
+}
+window.mail-compose button.mail-compose-ai-lang:hover { color: @t0; }
+window.mail-compose .mail-compose-ai-what { font-size: 13px; color: @t1; }
 window.mail-compose .mail-compose-foot { padding: 12px 28px 16px; }
 /* Mail's menus (More, Polish), as Files' are: on the theme's panel, a
    hairline round them, the accent's tint under the pointer. */

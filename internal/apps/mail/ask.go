@@ -118,19 +118,26 @@ const (
 	Formal     Polish = "formal"
 	Fix        Polish = "fix"
 	Translate  Polish = "translate"
+	Custom     Polish = "custom" // as the user says
 )
 
-// PolishPrompt asks for a text rewritten; to is the language for
-// Translate.
-func PolishPrompt(text string, how Polish, to string) string {
+// PolishPrompt asks for a text rewritten. arg is the language's code for
+// Translate, the user's own words for Custom. part: the text is a part
+// of the message (what was selected), rewritten to fit back in its place.
+func PolishPrompt(text string, how Polish, arg string, part bool) string {
 	ask := map[Polish]string{
 		Shorter:    "Make it shorter: keep every fact and request, drop the rest.",
 		Friendlier: "Make it warmer and friendlier, without adding facts.",
 		Formal:     "Make it more formal and polite, without adding facts.",
 		Fix:        "Fix spelling, grammar and punctuation only; change nothing else.",
-		Translate:  `Translate it into the language whose code is "` + to + `", keeping its tone.`,
+		Translate:  `Translate it into the language whose code is "` + arg + `", keeping its tone.`,
+		Custom:     "Change it as its writer asks, and keep the rest as it is. What they ask: " + arg,
 	}[how]
-	return `Rewrite the text of this e-mail. ` + ask + ` Keep it in its language unless asked to translate. Answer with the new text only: no comments, no quotes, no markdown.
+	what := "the text of this e-mail"
+	if part {
+		what = "this part of an e-mail, so it still fits where it was"
+	}
+	return `Rewrite ` + what + `. ` + ask + ` Keep it in its language unless asked to translate. Answer with the new text only: no comments, no quotes, no markdown.
 
 The text:
 

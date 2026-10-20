@@ -147,6 +147,8 @@ func (w *window) showKeys() {
 		{"U", i18n.T("Mark as unread")},
 		{"Z", i18n.T("Undo the last archive, delete or move")},
 		{"Ctrl+Enter", i18n.T("Send (in a reply or the composer)")},
+		{"Ctrl+J", i18n.T("AI's panel, in the composer")},
+		{"Ctrl+W", i18n.T("Close the composer, the draft kept")},
 		{"Esc", i18n.T("Leave the search or the reply field")},
 		{"F9", i18n.T("Hide or show the sidebar")},
 		{"Ctrl+,", i18n.T("Settings")},

@@ -1472,7 +1472,7 @@ func (w *window) aiChanged() {
 	w.assistTitle.SetText(title)
 	w.drawPanel()
 	for _, c := range w.composers {
-		c.assistRow.SetVisible(w.settings.AI())
+		c.aiChanged()
 	}
 	w.lastDrawn = ""
 	w.drawReader()

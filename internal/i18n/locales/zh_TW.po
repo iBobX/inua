@@ -308,7 +308,7 @@ msgstr "來自 %s 的檔案"
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
 #: internal/filesui/window.go:713
-#: internal/mailui/actions.go:501
+#: internal/mailui/actions.go:502
 #: internal/shell/wifi.go:62
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
@@ -504,6 +504,7 @@ msgstr "開發"
 #: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
+#: ui/mail-compose.ui:269
 #: ui/mail.ui:373
 #: ui/settings.ui:2154
 msgid "AI"
@@ -1201,7 +1202,7 @@ msgstr "程式標記的快取"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "程式把它標記為快取（CACHEDIR.TAG）：沒有了會重新產生。"
 
-#: internal/apps/mail/account.go:314
+#: internal/apps/mail/account.go:316
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -1908,6 +1909,7 @@ msgstr "重設"
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
 #: ui/disk.ui:179
+#: ui/mail-compose.ui:375
 #: ui/vm.ui:885
 #: ui/vm.ui:1587
 #: ui/vm.ui:2052
@@ -2715,8 +2717,8 @@ msgstr "%s · %s"
 #: internal/appui/pass.go:1198
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
-#: internal/mailui/actions.go:424
-#: internal/mailui/compose.go:443
+#: internal/mailui/actions.go:425
+#: internal/mailui/compose.go:470
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -2951,8 +2953,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:268
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:308
 msgid "NETWORK"
 msgstr "網路"
 
@@ -3824,6 +3826,7 @@ msgstr "無法讀取天氣。\n%s"
 #: internal/appui/weather.go:273
 #: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
+#: ui/mail-compose.ui:456
 #: ui/pass.ui:375
 msgid "Try again"
 msgstr "再試一次"
@@ -4198,7 +4201,7 @@ msgid "Answer %s"
 msgstr "回覆 %s"
 
 #: internal/connectui/reply.go:68
-#: internal/mailui/compose.go:538
+#: internal/mailui/compose.go:569
 #: internal/mailui/quick.go:235
 msgid "Not sent: %v"
 msgstr "未傳送：%v"
@@ -5464,6 +5467,7 @@ msgstr[0] "……還有 %d 項"
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
 #: internal/ui/settings_wifi_details.go:62
+#: ui/mail-compose.ui:292
 #: ui/mail.ui:384
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
@@ -5586,10 +5590,9 @@ msgid "New folder / new file"
 msgstr "新增資料夾 / 新增檔案"
 
 #: internal/filesui/cards.go:696
-#: internal/mailui/compose.go:494
+#: internal/mailui/compose.go:525
 #: internal/mailui/quick.go:129
 #: internal/mailui/quick.go:142
-#: ui/mail-compose.ui:234
 #: ui/mail.ui:273
 msgid "Undo"
 msgstr "復原"
@@ -9540,7 +9543,7 @@ msgid "SPACE PINBALL"
 msgstr "太空彈珠"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 #: ui/settings.ui:1883
 msgid "Launcher"
 msgstr "啟動器"
@@ -9576,9 +9579,9 @@ msgid "Focus on or off"
 msgstr "聚焦或關閉"
 
 #: internal/hyprconf/keys.go:31
-#: internal/mailui/picker.go:152
+#: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 #: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -9775,56 +9778,57 @@ msgstr "伺服器沒有刪除它：%v"
 msgid "The server did not take it: %v"
 msgstr "伺服器沒有接受：%v"
 
-#: internal/mailui/actions.go:352
+#: internal/mailui/actions.go:353
 msgid "Could not forward it: %v"
 msgstr "無法轉寄：%v"
 
-#: internal/mailui/actions.go:381
+#: internal/mailui/actions.go:382
 #: internal/mailui/reader.go:852
 msgid "The message is still loading."
 msgstr "郵件仍在載入。"
 
-#: internal/mailui/actions.go:422
+#: internal/mailui/actions.go:423
 msgid "Remove this account?"
 msgstr "移除此帳戶？"
 
-#: internal/mailui/actions.go:423
+#: internal/mailui/actions.go:424
 msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The mail on the server stays."
 msgstr "郵件會在這台電腦上忘掉它：登入資訊和已保存的郵件。伺服器上的郵件仍會保留。"
 
-#: internal/mailui/actions.go:467
+#: internal/mailui/actions.go:468
 #: internal/mailui/window.go:510
 msgid "Unsent"
 msgstr "未寄出"
 
-#: internal/mailui/actions.go:483
+#: internal/mailui/actions.go:484
 #: internal/mailui/reader.go:194
 #: internal/mailui/window.go:1082
 msgid "(no subject)"
 msgstr "（無主旨）"
 
-#: internal/mailui/actions.go:492
+#: internal/mailui/actions.go:493
 msgid "no recipient yet"
 msgstr "還沒有收件者"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 msgid "to %s · %s"
 msgstr "寄給 %s · %s"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 #: internal/mailui/reader.go:473
 msgid "Mon Jan 2, 15:04"
 msgstr "1月2日 Mon 15:04"
 
-#: internal/mailui/actions.go:505
+#: internal/mailui/actions.go:506
+#: ui/mail-compose.ui:464
 msgid "Discard"
 msgstr "捨棄"
 
-#: internal/mailui/actions.go:516
+#: internal/mailui/actions.go:517
 msgid "Nothing unsent."
 msgstr "沒有未寄出的郵件。"
 
-#: internal/mailui/actions.go:544
+#: internal/mailui/actions.go:545
 msgid "%s and %d more message"
 msgid_plural "%s and %d more messages"
 msgstr[0] "%s 及另外 %d 封"
@@ -9879,119 +9883,169 @@ msgstr "助理沒有給出搜尋。"
 msgid "Searched for %s"
 msgstr "已搜尋 %s"
 
-#: internal/mailui/compose.go:197
+#: internal/mailui/compose.go:205
 #: ui/mail-compose.ui:15
 msgid "New message"
 msgstr "新郵件"
 
-#: internal/mailui/compose.go:251
+#: internal/mailui/compose.go:265
 msgid "Could not keep the draft: %v"
 msgstr "無法保存草稿：%v"
 
-#: internal/mailui/compose.go:254
+#: internal/mailui/compose.go:268
 msgid "Draft kept at %s"
 msgstr "已於 %s 保存草稿"
 
-#: internal/mailui/compose.go:302
+#: internal/mailui/compose.go:316
 msgid "Draft kept in Drafts at %s"
 msgstr "已於 %s 保存到草稿匣"
 
-#: internal/mailui/compose.go:309
+#: internal/mailui/compose.go:323
 msgid "Draft kept on this computer only: %v"
 msgstr "草稿只保存在這台電腦上：%v"
 
-#: internal/mailui/compose.go:382
+#: internal/mailui/compose.go:333
+#: internal/mailui/quick.go:114
+msgid "Ctrl+Enter sends"
+msgstr "Ctrl+Enter 寄出"
+
+#: internal/mailui/compose.go:409
 msgid "Attach files"
 msgstr "附加檔案"
 
-#: internal/mailui/compose.go:419
+#: internal/mailui/compose.go:446
 msgid "Not attached (a folder, or not readable): %s"
 msgstr "未附加（資料夾或無法讀取）：%s"
 
-#: internal/mailui/compose.go:455
+#: internal/mailui/compose.go:482
 msgid "The files come to %s; many servers refuse more than 20 MB."
 msgstr "檔案共 %s；許多伺服器拒收超過 20 MB 的郵件。"
 
-#: internal/mailui/compose.go:473
+#: internal/mailui/compose.go:498
+msgid "Keep or discard AI's suggestion first."
+msgstr "請先保留或捨棄 AI 的建議。"
+
+#: internal/mailui/compose.go:504
 msgid "Choose the account it is sent from."
 msgstr "請選擇寄件帳戶。"
 
-#: internal/mailui/compose.go:478
+#: internal/mailui/compose.go:509
 msgid "Add who it goes to."
 msgstr "請新增收件者。"
 
-#: internal/mailui/compose.go:486
+#: internal/mailui/compose.go:517
 msgid "The message is empty."
 msgstr "郵件是空的。"
 
-#: internal/mailui/compose.go:504
+#: internal/mailui/compose.go:535
 msgid "Not sent. The draft is kept."
 msgstr "未寄出。草稿已保留。"
 
-#: internal/mailui/compose.go:508
+#: internal/mailui/compose.go:539
 #: internal/mailui/quick.go:110
 msgid "Sending in %d second…"
 msgid_plural "Sending in %d seconds…"
 msgstr[0] "%d 秒後寄出…"
 
-#: internal/mailui/compose.go:513
+#: internal/mailui/compose.go:544
 #: internal/mailui/quick.go:112
 msgid "Sending…"
 msgstr "正在寄出…"
 
-#: internal/mailui/compose.go:526
+#: internal/mailui/compose.go:557
 #: internal/mailui/quick.go:137
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
-#: ui/mail-compose.ui:282
+#: ui/mail-compose.ui:237
 msgid "Send"
 msgstr "傳送"
 
-#: internal/mailui/compose.go:553
+#: internal/mailui/compose.go:584
 msgid "Sent, but not saved in Sent: %v"
 msgstr "已寄出，但未保存到寄件備份：%v"
 
-#: internal/mailui/compose.go:582
-msgid "Shorter"
-msgstr "更簡短"
-
-#: internal/mailui/compose.go:583
-msgid "Friendlier"
-msgstr "更友善"
-
-#: internal/mailui/compose.go:584
-msgid "More formal"
-msgstr "更正式"
-
-#: internal/mailui/compose.go:585
-msgid "Fix spelling and grammar"
-msgstr "修正拼字和文法"
-
-#: internal/mailui/compose.go:596
+#: internal/mailui/compose_ai.go:83
 msgid "Translate into %s"
 msgstr "翻譯成%s"
 
-#: internal/mailui/compose.go:613
-msgid "Write a line of what to say, then Draft."
-msgstr "寫一行要說的話，然後點「起草」。"
+#: internal/mailui/compose_ai.go:133
+#: internal/mailui/formatted.go:192
+#: internal/mailui/settings.go:411
+#: internal/mailui/window.go:1458
+msgid "Not saved: %v"
+msgstr "未儲存：%v"
 
-#: internal/mailui/compose.go:632
-msgid "Write something first, or Draft it."
-msgstr "請先寫點什麼，或讓助理起草。"
+#: internal/mailui/compose_ai.go:198
+msgid "· THE SELECTION"
+msgstr "· 選取部分"
 
-#: internal/mailui/compose.go:649
-#: internal/mailui/quick.go:106
-msgid "The assistant is writing…"
-msgstr "助理正在寫…"
+#: internal/mailui/compose_ai.go:209
+msgid "What should the reply say?"
+msgstr "回覆要說什麼？"
 
-#: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:445
-msgid "The assistant could not write it"
-msgstr "助理無法寫出"
+#: internal/mailui/compose_ai.go:211
+msgid "What should it say?"
+msgstr "要寫什麼？"
 
-#: internal/mailui/compose.go:679
-msgid "Written by the assistant: read it before you send."
-msgstr "由助理撰寫：寄出前請讀一遍。"
+#: internal/mailui/compose_ai.go:213
+msgid "How should the selection change?"
+msgstr "選取部分要怎麼改？"
+
+#: internal/mailui/compose_ai.go:215
+msgid "How should it change?"
+msgstr "要怎麼改？"
+
+#: internal/mailui/compose_ai.go:217
+msgid "Writing… %s"
+msgstr "正在寫… %s"
+
+#: internal/mailui/compose_ai.go:224
+msgid "Suggestion"
+msgstr "建議"
+
+#: internal/mailui/compose_ai.go:225
+msgid "Show AI's suggestion again"
+msgstr "再次顯示 AI 的建議"
+
+#: internal/mailui/compose_ai.go:227
+msgid "Yours"
+msgstr "原文"
+
+#: internal/mailui/compose_ai.go:228
+msgid "Show your text as it was"
+msgstr "顯示你原來的文字"
+
+#: internal/mailui/compose_ai.go:262
+msgid "Reading the conversation…"
+msgstr "正在閱讀對話…"
+
+#: internal/mailui/compose_ai.go:275
+msgid "Shorter"
+msgstr "更簡短"
+
+#: internal/mailui/compose_ai.go:276
+msgid "Friendlier"
+msgstr "更友善"
+
+#: internal/mailui/compose_ai.go:277
+msgid "More formal"
+msgstr "更正式"
+
+#: internal/mailui/compose_ai.go:278
+msgid "Fix spelling"
+msgstr "修正拼寫"
+
+#: internal/mailui/compose_ai.go:375
+msgid "Write something first, or say what to write."
+msgstr "請先寫點內容，或說明要寫什麼。"
+
+#: internal/mailui/compose_ai.go:430
+msgid "AI could not write it"
+msgstr "AI 無法寫出"
+
+#: internal/mailui/compose_ai.go:432
+msgid "AI gave no text."
+msgstr "AI 沒有給出文字。"
 
 #: internal/mailui/formatted.go:172
 msgid "%d picture hidden"
@@ -10009,12 +10063,6 @@ msgstr "看起來可疑的郵件不會自動載入網路圖片。"
 #: internal/mailui/formatted.go:186
 msgid "Always from this sender"
 msgstr "一律載入此寄件者的"
-
-#: internal/mailui/formatted.go:192
-#: internal/mailui/settings.go:411
-#: internal/mailui/window.go:1458
-msgid "Not saved: %v"
-msgstr "未儲存：%v"
 
 #: internal/mailui/panel.go:53
 msgid "Checks"
@@ -10071,6 +10119,10 @@ msgstr "無需檢查：這裡讀過的郵件都是你自己的。"
 #: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI 會讀取檢查結果以及寄件者、主旨、連結與內文，並給出判斷。"
+
+#: internal/mailui/panel.go:445
+msgid "The assistant could not write it"
+msgstr "助理無法寫出"
 
 #: internal/mailui/picker.go:61
 msgid "Move to"
@@ -10130,14 +10182,22 @@ msgid "Send (in a reply or the composer)"
 msgstr "寄出（在回覆框或寫郵件視窗中）"
 
 #: internal/mailui/picker.go:150
+msgid "AI's panel, in the composer"
+msgstr "撰寫視窗中的 AI 面板"
+
+#: internal/mailui/picker.go:151
+msgid "Close the composer, the draft kept"
+msgstr "關閉撰寫視窗，保留草稿"
+
+#: internal/mailui/picker.go:152
 msgid "Leave the search or the reply field"
 msgstr "離開搜尋或回覆框"
 
-#: internal/mailui/picker.go:151
+#: internal/mailui/picker.go:153
 msgid "Hide or show the sidebar"
 msgstr "隱藏或顯示側邊欄"
 
-#: internal/mailui/picker.go:153
+#: internal/mailui/picker.go:155
 msgid "These keys"
 msgstr "這些按鍵"
 
@@ -10149,13 +10209,13 @@ msgstr "已寄給 %s。"
 msgid "Reply to %s…"
 msgstr "回覆 %s…"
 
+#: internal/mailui/quick.go:106
+msgid "The assistant is writing…"
+msgstr "助理正在寫…"
+
 #: internal/mailui/quick.go:108
 msgid "Drafted by the assistant"
 msgstr "助理起草"
-
-#: internal/mailui/quick.go:114
-msgid "Ctrl+Enter sends"
-msgstr "Ctrl+Enter 寄出"
 
 #: internal/mailui/quick.go:125
 msgid "Read it before you send: the assistant can be wrong."
@@ -11414,7 +11474,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "再次按 Enter 清空垃圾桶"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 msgid "inua's settings"
 msgstr "inua的設置"
 
@@ -11571,57 +11631,57 @@ msgstr "網址"
 msgid "Web search"
 msgstr "網路搜尋"
 
-#: internal/shell/dock.go:246
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:308
 msgid "EVERYDAY"
 msgstr "日常"
 
-#: internal/shell/dock.go:256
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:263
+#: internal/shell/dock.go:308
 msgid "TOOLS"
 msgstr "工具"
 
-#: internal/shell/dock.go:273
+#: internal/shell/dock.go:280
 msgid "PLAY"
 msgstr "玩"
 
-#: internal/shell/dock.go:278
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:285
+#: internal/shell/dock.go:310
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "系統"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 msgid "Find apps, windows and answers"
 msgstr "尋找應用程式、視窗和答案"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1843
 msgid "Screenshot"
 msgstr "螢幕截圖"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 msgid "Capture an area, a window or a screen"
 msgstr "捕捉區域、視窗或螢幕"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "DEVELOPMENT"
 msgstr "開發"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "MEDIA"
 msgstr "媒體"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "GAMES"
 msgstr "遊戲"
 
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:310
 msgid "OTHER"
 msgstr "其他"
 
-#: internal/shell/dock.go:328
+#: internal/shell/dock.go:335
 msgid "WORKSHOP"
 msgstr "工坊"
 
@@ -14422,7 +14482,7 @@ msgid "Author"
 msgstr "作者"
 
 #: internal/viewerui/app.go:805
-#: ui/mail-compose.ui:143
+#: ui/mail-compose.ui:161
 msgid "Subject"
 msgstr "主旨"
 
@@ -15768,49 +15828,65 @@ msgstr "↵打開"
 msgid "Esc  close"
 msgstr "Esc關閉"
 
-#: ui/mail-compose.ui:37
+#: ui/mail-compose.ui:41
 msgid "From"
 msgstr "寄件者"
 
-#: ui/mail-compose.ui:61
+#: ui/mail-compose.ui:63
+msgid "AI (Ctrl+J)"
+msgstr "AI (Ctrl+J)"
+
+#: ui/mail-compose.ui:79
 msgid "To"
 msgstr "收件者"
 
-#: ui/mail-compose.ui:78
+#: ui/mail-compose.ui:96
 msgid "Cc, Bcc"
 msgstr "副本、密件副本"
 
-#: ui/mail-compose.ui:94
+#: ui/mail-compose.ui:112
 msgid "Cc"
 msgstr "副本"
 
-#: ui/mail-compose.ui:119
+#: ui/mail-compose.ui:137
 msgid "Bcc"
 msgstr "密件副本"
 
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
-msgstr "助理"
-
-#: ui/mail-compose.ui:209
-msgid "What to say: the assistant drafts it"
-msgstr "要說什麼：助理來起草"
-
-#: ui/mail-compose.ui:217
-msgid "Draft"
-msgstr "起草"
-
-#: ui/mail-compose.ui:225
-msgid "Polish"
-msgstr "潤飾"
-
-#: ui/mail-compose.ui:273
+#: ui/mail-compose.ui:228
 msgid "Attach…"
 msgstr "附加…"
 
-#: ui/mail-compose.ui:283
+#: ui/mail-compose.ui:238
 msgid "Ctrl+Enter"
 msgstr "Ctrl+Enter"
+
+#: ui/mail-compose.ui:338
+msgid "TRANSLATE"
+msgstr "翻譯"
+
+#: ui/mail-compose.ui:405
+msgid "The version before"
+msgstr "上一個版本"
+
+#: ui/mail-compose.ui:423
+msgid "The next version"
+msgstr "下一個版本"
+
+#: ui/mail-compose.ui:434
+msgid "Read it before you keep it."
+msgstr "保留前請先讀一遍。"
+
+#: ui/mail-compose.ui:444
+msgid "Keep"
+msgstr "保留"
+
+#: ui/mail-compose.ui:445
+msgid "Enter"
+msgstr "Enter"
+
+#: ui/mail-compose.ui:465
+msgid "Esc"
+msgstr "Esc"
 
 #: ui/mail.ui:46
 msgid "Hide the sidebar (F9)"

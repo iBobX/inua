@@ -808,6 +808,21 @@ func TestAnswers(t *testing.T) {
 	}
 }
 
+func TestPolishPrompt(t *testing.T) {
+	p := PolishPrompt("Hi Aiko, the 14th works.", Shorter, "", false)
+	if !strings.Contains(p, "the text of this e-mail") || !strings.Contains(p, "shorter") || !strings.HasSuffix(p, "Hi Aiko, the 14th works.") {
+		t.Fatalf("whole text %s", p)
+	}
+	p = PolishPrompt("the 14th works", Translate, "ja", true)
+	if !strings.Contains(p, "this part of an e-mail") || !strings.Contains(p, `"ja"`) {
+		t.Fatalf("a part, translated %s", p)
+	}
+	p = PolishPrompt("the 14th works", Custom, "mention dinner", false)
+	if !strings.Contains(p, "What they ask: mention dinner") {
+		t.Fatalf("in the user's words %s", p)
+	}
+}
+
 func TestDraftsOnServer(t *testing.T) {
 	srv := newIMAP(t, "Drafts")
 	ctx := context.Background()

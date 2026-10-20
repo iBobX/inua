@@ -308,7 +308,7 @@ msgstr "%s에서 온 파일"
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
 #: internal/filesui/window.go:713
-#: internal/mailui/actions.go:501
+#: internal/mailui/actions.go:502
 #: internal/shell/wifi.go:62
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
@@ -504,6 +504,7 @@ msgstr "DEV"
 #: internal/mailui/panel.go:318
 #: internal/mailui/settings.go:211
 #: internal/mailui/settings.go:551
+#: ui/mail-compose.ui:269
 #: ui/mail.ui:373
 #: ui/settings.ui:2154
 msgid "AI"
@@ -1201,7 +1202,7 @@ msgstr "프로그램이 표시한 캐시"
 msgid "Its program marked it as a cache (CACHEDIR.TAG): one it makes again when it is gone."
 msgstr "프로그램이 캐시로 표시했습니다(CACHEDIR.TAG). 없어지면 다시 만듭니다."
 
-#: internal/apps/mail/account.go:314
+#: internal/apps/mail/account.go:316
 msgid "IMAP"
 msgstr "IMAP"
 
@@ -1908,6 +1909,7 @@ msgstr "초기화"
 #: internal/assistantui/assistantui.go:431
 #: internal/ui/alarms.go:108
 #: ui/disk.ui:179
+#: ui/mail-compose.ui:375
 #: ui/vm.ui:885
 #: ui/vm.ui:1587
 #: ui/vm.ui:2052
@@ -2715,8 +2717,8 @@ msgstr "%s · %s"
 #: internal/appui/pass.go:1198
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
-#: internal/mailui/actions.go:424
-#: internal/mailui/compose.go:443
+#: internal/mailui/actions.go:425
+#: internal/mailui/compose.go:470
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -2951,8 +2953,8 @@ msgstr "GPU"
 
 #: internal/appui/sysmon.go:148
 #: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:268
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:275
+#: internal/shell/dock.go:308
 msgid "NETWORK"
 msgstr "네트워크"
 
@@ -3824,6 +3826,7 @@ msgstr "날씨를 읽을 수 없습니다.\n%s"
 #: internal/appui/weather.go:273
 #: internal/mailui/panel.go:316
 #: internal/ui/passwords.go:514
+#: ui/mail-compose.ui:456
 #: ui/pass.ui:375
 msgid "Try again"
 msgstr "다시 시도해 보세요"
@@ -4198,7 +4201,7 @@ msgid "Answer %s"
 msgstr "%s에 답장"
 
 #: internal/connectui/reply.go:68
-#: internal/mailui/compose.go:538
+#: internal/mailui/compose.go:569
 #: internal/mailui/quick.go:235
 msgid "Not sent: %v"
 msgstr "보내지 못함: %v"
@@ -5464,6 +5467,7 @@ msgstr[0] "… 그 외 %d개"
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
 #: internal/ui/settings_wifi_details.go:62
+#: ui/mail-compose.ui:292
 #: ui/mail.ui:384
 #: ui/settings.ui:3106
 #: ui/settings.ui:4638
@@ -5586,10 +5590,9 @@ msgid "New folder / new file"
 msgstr "새 폴더 / 새 파일"
 
 #: internal/filesui/cards.go:696
-#: internal/mailui/compose.go:494
+#: internal/mailui/compose.go:525
 #: internal/mailui/quick.go:129
 #: internal/mailui/quick.go:142
-#: ui/mail-compose.ui:234
 #: ui/mail.ui:273
 msgid "Undo"
 msgstr "실행 취소"
@@ -9540,7 +9543,7 @@ msgid "SPACE PINBALL"
 msgstr "우주 핀볼"
 
 #: internal/hyprconf/keys.go:23
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 #: ui/settings.ui:1883
 msgid "Launcher"
 msgstr "실행기"
@@ -9576,9 +9579,9 @@ msgid "Focus on or off"
 msgstr "포커스 온 또는 오프"
 
 #: internal/hyprconf/keys.go:31
-#: internal/mailui/picker.go:152
+#: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 #: internal/term/settings/settings.go:111
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -9775,56 +9778,57 @@ msgstr "서버가 삭제하지 않았습니다: %v"
 msgid "The server did not take it: %v"
 msgstr "서버가 받아들이지 않았습니다: %v"
 
-#: internal/mailui/actions.go:352
+#: internal/mailui/actions.go:353
 msgid "Could not forward it: %v"
 msgstr "전달할 수 없습니다: %v"
 
-#: internal/mailui/actions.go:381
+#: internal/mailui/actions.go:382
 #: internal/mailui/reader.go:852
 msgid "The message is still loading."
 msgstr "메시지를 아직 불러오는 중입니다."
 
-#: internal/mailui/actions.go:422
+#: internal/mailui/actions.go:423
 msgid "Remove this account?"
 msgstr "이 계정을 제거할까요?"
 
-#: internal/mailui/actions.go:423
+#: internal/mailui/actions.go:424
 msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The mail on the server stays."
 msgstr "이 컴퓨터에서 로그인 정보와 보관한 메일을 지웁니다. 서버의 메일은 남습니다."
 
-#: internal/mailui/actions.go:467
+#: internal/mailui/actions.go:468
 #: internal/mailui/window.go:510
 msgid "Unsent"
 msgstr "보내지 않음"
 
-#: internal/mailui/actions.go:483
+#: internal/mailui/actions.go:484
 #: internal/mailui/reader.go:194
 #: internal/mailui/window.go:1082
 msgid "(no subject)"
 msgstr "(제목 없음)"
 
-#: internal/mailui/actions.go:492
+#: internal/mailui/actions.go:493
 msgid "no recipient yet"
 msgstr "아직 받는 사람 없음"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 msgid "to %s · %s"
 msgstr "받는 사람 %s · %s"
 
-#: internal/mailui/actions.go:494
+#: internal/mailui/actions.go:495
 #: internal/mailui/reader.go:473
 msgid "Mon Jan 2, 15:04"
 msgstr "1월 2일 (Mon) 15:04"
 
-#: internal/mailui/actions.go:505
+#: internal/mailui/actions.go:506
+#: ui/mail-compose.ui:464
 msgid "Discard"
 msgstr "버리기"
 
-#: internal/mailui/actions.go:516
+#: internal/mailui/actions.go:517
 msgid "Nothing unsent."
 msgstr "보내지 않은 것이 없습니다."
 
-#: internal/mailui/actions.go:544
+#: internal/mailui/actions.go:545
 msgid "%s and %d more message"
 msgid_plural "%s and %d more messages"
 msgstr[0] "%s 외 %d개"
@@ -9879,119 +9883,169 @@ msgstr "어시스턴트가 검색어를 주지 않았습니다."
 msgid "Searched for %s"
 msgstr "%s 검색함"
 
-#: internal/mailui/compose.go:197
+#: internal/mailui/compose.go:205
 #: ui/mail-compose.ui:15
 msgid "New message"
 msgstr "새 메시지"
 
-#: internal/mailui/compose.go:251
+#: internal/mailui/compose.go:265
 msgid "Could not keep the draft: %v"
 msgstr "초안을 보관할 수 없습니다: %v"
 
-#: internal/mailui/compose.go:254
+#: internal/mailui/compose.go:268
 msgid "Draft kept at %s"
 msgstr "%s에 초안 보관함"
 
-#: internal/mailui/compose.go:302
+#: internal/mailui/compose.go:316
 msgid "Draft kept in Drafts at %s"
 msgstr "임시 보관함에 저장함 (%s)"
 
-#: internal/mailui/compose.go:309
+#: internal/mailui/compose.go:323
 msgid "Draft kept on this computer only: %v"
 msgstr "이 컴퓨터에만 초안을 보관함: %v"
 
-#: internal/mailui/compose.go:382
+#: internal/mailui/compose.go:333
+#: internal/mailui/quick.go:114
+msgid "Ctrl+Enter sends"
+msgstr "Ctrl+Enter로 보내기"
+
+#: internal/mailui/compose.go:409
 msgid "Attach files"
 msgstr "파일 첨부"
 
-#: internal/mailui/compose.go:419
+#: internal/mailui/compose.go:446
 msgid "Not attached (a folder, or not readable): %s"
 msgstr "첨부하지 못함 (폴더이거나 읽을 수 없음): %s"
 
-#: internal/mailui/compose.go:455
+#: internal/mailui/compose.go:482
 msgid "The files come to %s; many servers refuse more than 20 MB."
 msgstr "파일이 모두 %s입니다. 많은 서버가 20 MB를 넘으면 거부합니다."
 
-#: internal/mailui/compose.go:473
+#: internal/mailui/compose.go:498
+msgid "Keep or discard AI's suggestion first."
+msgstr "먼저 AI의 제안을 유지하거나 버리세요."
+
+#: internal/mailui/compose.go:504
 msgid "Choose the account it is sent from."
 msgstr "보낼 계정을 고르세요."
 
-#: internal/mailui/compose.go:478
+#: internal/mailui/compose.go:509
 msgid "Add who it goes to."
 msgstr "받는 사람을 추가하세요."
 
-#: internal/mailui/compose.go:486
+#: internal/mailui/compose.go:517
 msgid "The message is empty."
 msgstr "메시지가 비어 있습니다."
 
-#: internal/mailui/compose.go:504
+#: internal/mailui/compose.go:535
 msgid "Not sent. The draft is kept."
 msgstr "보내지 않았습니다. 초안은 보관됩니다."
 
-#: internal/mailui/compose.go:508
+#: internal/mailui/compose.go:539
 #: internal/mailui/quick.go:110
 msgid "Sending in %d second…"
 msgid_plural "Sending in %d seconds…"
 msgstr[0] "%d초 후에 보냄…"
 
-#: internal/mailui/compose.go:513
+#: internal/mailui/compose.go:544
 #: internal/mailui/quick.go:112
 msgid "Sending…"
 msgstr "보내는 중…"
 
-#: internal/mailui/compose.go:526
+#: internal/mailui/compose.go:557
 #: internal/mailui/quick.go:137
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
-#: ui/mail-compose.ui:282
+#: ui/mail-compose.ui:237
 msgid "Send"
 msgstr "보내기"
 
-#: internal/mailui/compose.go:553
+#: internal/mailui/compose.go:584
 msgid "Sent, but not saved in Sent: %v"
 msgstr "보냈지만 보낸 편지함에 저장하지 못했습니다: %v"
 
-#: internal/mailui/compose.go:582
-msgid "Shorter"
-msgstr "더 짧게"
-
-#: internal/mailui/compose.go:583
-msgid "Friendlier"
-msgstr "더 친근하게"
-
-#: internal/mailui/compose.go:584
-msgid "More formal"
-msgstr "더 격식 있게"
-
-#: internal/mailui/compose.go:585
-msgid "Fix spelling and grammar"
-msgstr "맞춤법과 문법 고치기"
-
-#: internal/mailui/compose.go:596
+#: internal/mailui/compose_ai.go:83
 msgid "Translate into %s"
 msgstr "%s(으)로 번역"
 
-#: internal/mailui/compose.go:613
-msgid "Write a line of what to say, then Draft."
-msgstr "하고 싶은 말을 한 줄 쓴 다음 초안을 누르세요."
+#: internal/mailui/compose_ai.go:133
+#: internal/mailui/formatted.go:192
+#: internal/mailui/settings.go:411
+#: internal/mailui/window.go:1458
+msgid "Not saved: %v"
+msgstr "저장하지 못함: %v"
 
-#: internal/mailui/compose.go:632
-msgid "Write something first, or Draft it."
-msgstr "먼저 무언가 쓰거나 초안을 만드세요."
+#: internal/mailui/compose_ai.go:198
+msgid "· THE SELECTION"
+msgstr "· 선택한 부분"
 
-#: internal/mailui/compose.go:649
-#: internal/mailui/quick.go:106
-msgid "The assistant is writing…"
-msgstr "어시스턴트가 쓰는 중…"
+#: internal/mailui/compose_ai.go:209
+msgid "What should the reply say?"
+msgstr "답장에 무엇을 쓸까요?"
 
-#: internal/mailui/compose.go:671
-#: internal/mailui/panel.go:445
-msgid "The assistant could not write it"
-msgstr "어시스턴트가 쓰지 못했습니다"
+#: internal/mailui/compose_ai.go:211
+msgid "What should it say?"
+msgstr "무엇을 쓸까요?"
 
-#: internal/mailui/compose.go:679
-msgid "Written by the assistant: read it before you send."
-msgstr "어시스턴트가 썼습니다. 보내기 전에 읽어 보세요."
+#: internal/mailui/compose_ai.go:213
+msgid "How should the selection change?"
+msgstr "선택한 부분을 어떻게 바꿀까요?"
+
+#: internal/mailui/compose_ai.go:215
+msgid "How should it change?"
+msgstr "어떻게 바꿀까요?"
+
+#: internal/mailui/compose_ai.go:217
+msgid "Writing… %s"
+msgstr "쓰는 중… %s"
+
+#: internal/mailui/compose_ai.go:224
+msgid "Suggestion"
+msgstr "제안"
+
+#: internal/mailui/compose_ai.go:225
+msgid "Show AI's suggestion again"
+msgstr "AI의 제안 다시 보기"
+
+#: internal/mailui/compose_ai.go:227
+msgid "Yours"
+msgstr "내 글"
+
+#: internal/mailui/compose_ai.go:228
+msgid "Show your text as it was"
+msgstr "원래 쓴 글 보기"
+
+#: internal/mailui/compose_ai.go:262
+msgid "Reading the conversation…"
+msgstr "대화를 읽는 중…"
+
+#: internal/mailui/compose_ai.go:275
+msgid "Shorter"
+msgstr "더 짧게"
+
+#: internal/mailui/compose_ai.go:276
+msgid "Friendlier"
+msgstr "더 친근하게"
+
+#: internal/mailui/compose_ai.go:277
+msgid "More formal"
+msgstr "더 격식 있게"
+
+#: internal/mailui/compose_ai.go:278
+msgid "Fix spelling"
+msgstr "맞춤법 고치기"
+
+#: internal/mailui/compose_ai.go:375
+msgid "Write something first, or say what to write."
+msgstr "먼저 무언가를 쓰거나, 무엇을 쓸지 말해 주세요."
+
+#: internal/mailui/compose_ai.go:430
+msgid "AI could not write it"
+msgstr "AI가 쓰지 못했습니다"
+
+#: internal/mailui/compose_ai.go:432
+msgid "AI gave no text."
+msgstr "AI가 글을 돌려주지 않았습니다."
 
 #: internal/mailui/formatted.go:172
 msgid "%d picture hidden"
@@ -10009,12 +10063,6 @@ msgstr "의심스러운 메시지는 웹 이미지를 저절로 불러오지 않
 #: internal/mailui/formatted.go:186
 msgid "Always from this sender"
 msgstr "이 보낸 사람은 항상"
-
-#: internal/mailui/formatted.go:192
-#: internal/mailui/settings.go:411
-#: internal/mailui/window.go:1458
-msgid "Not saved: %v"
-msgstr "저장하지 못함: %v"
 
 #: internal/mailui/panel.go:53
 msgid "Checks"
@@ -10071,6 +10119,10 @@ msgstr "확인할 것이 없습니다: 여기서 읽은 메시지는 내 것입�
 #: internal/mailui/panel.go:310
 msgid "AI reads what the checks found, with the sender, subject, links and text, and says what it makes of it."
 msgstr "AI가 검사 결과와 보낸 사람, 제목, 링크, 본문을 읽고 판단을 알려 줍니다."
+
+#: internal/mailui/panel.go:445
+msgid "The assistant could not write it"
+msgstr "어시스턴트가 쓰지 못했습니다"
 
 #: internal/mailui/picker.go:61
 msgid "Move to"
@@ -10130,14 +10182,22 @@ msgid "Send (in a reply or the composer)"
 msgstr "보내기 (답장 칸이나 쓰기 창에서)"
 
 #: internal/mailui/picker.go:150
+msgid "AI's panel, in the composer"
+msgstr "작성 창의 AI 패널"
+
+#: internal/mailui/picker.go:151
+msgid "Close the composer, the draft kept"
+msgstr "작성 창 닫기(임시 보관함에 보관)"
+
+#: internal/mailui/picker.go:152
 msgid "Leave the search or the reply field"
 msgstr "검색이나 답장 칸에서 나가기"
 
-#: internal/mailui/picker.go:151
+#: internal/mailui/picker.go:153
 msgid "Hide or show the sidebar"
 msgstr "사이드바 숨기기 또는 보이기"
 
-#: internal/mailui/picker.go:153
+#: internal/mailui/picker.go:155
 msgid "These keys"
 msgstr "이 키 목록"
 
@@ -10149,13 +10209,13 @@ msgstr "%s에게 보냄."
 msgid "Reply to %s…"
 msgstr "%s에게 답장…"
 
+#: internal/mailui/quick.go:106
+msgid "The assistant is writing…"
+msgstr "어시스턴트가 쓰는 중…"
+
 #: internal/mailui/quick.go:108
 msgid "Drafted by the assistant"
 msgstr "어시스턴트의 초안"
-
-#: internal/mailui/quick.go:114
-msgid "Ctrl+Enter sends"
-msgstr "Ctrl+Enter로 보내기"
 
 #: internal/mailui/quick.go:125
 msgid "Read it before you send: the assistant can be wrong."
@@ -11414,7 +11474,7 @@ msgid "Press Enter again to empty the Trash"
 msgstr "Enter를 다시 누르면 휴지통을 비웁니다"
 
 #: internal/shell/commands.go:33
-#: internal/shell/dock.go:291
+#: internal/shell/dock.go:298
 msgid "inua's settings"
 msgstr "inua의 설정"
 
@@ -11571,57 +11631,57 @@ msgstr "웹 주소"
 msgid "Web search"
 msgstr "웹 검색"
 
-#: internal/shell/dock.go:246
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:253
+#: internal/shell/dock.go:308
 msgid "EVERYDAY"
 msgstr "매일"
 
-#: internal/shell/dock.go:256
-#: internal/shell/dock.go:301
+#: internal/shell/dock.go:263
+#: internal/shell/dock.go:308
 msgid "TOOLS"
 msgstr "도구"
 
-#: internal/shell/dock.go:273
+#: internal/shell/dock.go:280
 msgid "PLAY"
 msgstr "재생"
 
-#: internal/shell/dock.go:278
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:285
+#: internal/shell/dock.go:310
 #: ui/sysmon.ui:149
 msgid "SYSTEM"
 msgstr "시스템"
 
-#: internal/shell/dock.go:292
+#: internal/shell/dock.go:299
 msgid "Find apps, windows and answers"
 msgstr "앱, 창 및 답변 찾기"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 #: internal/ui/screenshot.go:802
 #: ui/settings.ui:1843
 msgid "Screenshot"
 msgstr "스크린샷"
 
-#: internal/shell/dock.go:293
+#: internal/shell/dock.go:300
 msgid "Capture an area, a window or a screen"
 msgstr "영역, 창, 화면 캡처"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "DEVELOPMENT"
 msgstr "개발"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "MEDIA"
 msgstr "미디어"
 
-#: internal/shell/dock.go:302
+#: internal/shell/dock.go:309
 msgid "GAMES"
 msgstr "게임"
 
-#: internal/shell/dock.go:303
+#: internal/shell/dock.go:310
 msgid "OTHER"
 msgstr "기타"
 
-#: internal/shell/dock.go:328
+#: internal/shell/dock.go:335
 msgid "WORKSHOP"
 msgstr "워크숍"
 
@@ -14422,7 +14482,7 @@ msgid "Author"
 msgstr "작성자"
 
 #: internal/viewerui/app.go:805
-#: ui/mail-compose.ui:143
+#: ui/mail-compose.ui:161
 msgid "Subject"
 msgstr "주제"
 
@@ -15768,49 +15828,65 @@ msgstr "↵ 열림"
 msgid "Esc  close"
 msgstr "Esc 닫기"
 
-#: ui/mail-compose.ui:37
+#: ui/mail-compose.ui:41
 msgid "From"
 msgstr "보낸 사람"
 
-#: ui/mail-compose.ui:61
+#: ui/mail-compose.ui:63
+msgid "AI (Ctrl+J)"
+msgstr "AI (Ctrl+J)"
+
+#: ui/mail-compose.ui:79
 msgid "To"
 msgstr "받는 사람"
 
-#: ui/mail-compose.ui:78
+#: ui/mail-compose.ui:96
 msgid "Cc, Bcc"
 msgstr "참조, 숨은 참조"
 
-#: ui/mail-compose.ui:94
+#: ui/mail-compose.ui:112
 msgid "Cc"
 msgstr "참조"
 
-#: ui/mail-compose.ui:119
+#: ui/mail-compose.ui:137
 msgid "Bcc"
 msgstr "숨은 참조"
 
-#: ui/mail-compose.ui:200
-msgid "ASSISTANT"
-msgstr "어시스턴트"
-
-#: ui/mail-compose.ui:209
-msgid "What to say: the assistant drafts it"
-msgstr "할 말: 어시스턴트가 초안을 씁니다"
-
-#: ui/mail-compose.ui:217
-msgid "Draft"
-msgstr "초안"
-
-#: ui/mail-compose.ui:225
-msgid "Polish"
-msgstr "다듬기"
-
-#: ui/mail-compose.ui:273
+#: ui/mail-compose.ui:228
 msgid "Attach…"
 msgstr "첨부…"
 
-#: ui/mail-compose.ui:283
+#: ui/mail-compose.ui:238
 msgid "Ctrl+Enter"
 msgstr "Ctrl+Enter"
+
+#: ui/mail-compose.ui:338
+msgid "TRANSLATE"
+msgstr "번역"
+
+#: ui/mail-compose.ui:405
+msgid "The version before"
+msgstr "이전 버전"
+
+#: ui/mail-compose.ui:423
+msgid "The next version"
+msgstr "다음 버전"
+
+#: ui/mail-compose.ui:434
+msgid "Read it before you keep it."
+msgstr "유지하기 전에 읽어 보세요."
+
+#: ui/mail-compose.ui:444
+msgid "Keep"
+msgstr "유지"
+
+#: ui/mail-compose.ui:445
+msgid "Enter"
+msgstr "Enter"
+
+#: ui/mail-compose.ui:465
+msgid "Esc"
+msgstr "Esc"
 
 #: ui/mail.ui:46
 msgid "Hide the sidebar (F9)"

@@ -1,189 +1,354 @@
-// Mail's composer: a window of its own. From (the account), To, Cc and
-// Bcc, the subject, the text, the files attached, the assistant's row,
-// and Send. The account list and the attachments are filled in Go.
+// Mail's composer: a window of its own, floating over Mail. The message on
+// the left: From (the account), To, Cc and Bcc, the subject, the text, the
+// files attached and Send. AI's panel on the right, when asked for (✦ or
+// Ctrl+J): what to write or how to change it, and the suggestion to keep
+// or not. The account list, the attachments and the panel's lists are
+// filled in Go.
 using Gtk 4.0;
 
 Window compose {
   styles ["settings", "mail", "mail-compose"]
   title: _("New message");
-  default-width: 760;
-  default-height: 700;
+  default-width: 1000;
+  default-height: 720;
 
   Box {
-    orientation: vertical;
-
-    // The fields; the suggestions for an address open under its row.
-    Box fields {
-      styles ["mail-compose-fields"]
-      orientation: vertical;
-
-      Box {
-        styles ["mail-field"]
-
-        Label {
-          styles ["mail-field-label"]
-          label: _("From");
-          xalign: 0;
-        }
-
-        DropDown from {
-          styles ["mail-from"]
-          hexpand: true;
-        }
-      }
-
-      Box to_row {
-        styles ["mail-field"]
-
-        Label {
-          styles ["mail-field-label"]
-          label: _("To");
-          xalign: 0;
-        }
-
-        Entry to {
-          styles ["mail-field-entry"]
-          hexpand: true;
-        }
-
-        Button show_cc {
-          styles ["mail-plain"]
-          label: _("Cc, Bcc");
-        }
-      }
-
-      Box cc_row {
-        styles ["mail-field"]
-        visible: false;
-
-        Label {
-          styles ["mail-field-label"]
-          label: _("Cc");
-          xalign: 0;
-        }
-
-        Entry cc {
-          styles ["mail-field-entry"]
-          hexpand: true;
-        }
-      }
-
-      Box bcc_row {
-        styles ["mail-field"]
-        visible: false;
-
-        Label {
-          styles ["mail-field-label"]
-          label: _("Bcc");
-          xalign: 0;
-        }
-
-        Entry bcc {
-          styles ["mail-field-entry"]
-          hexpand: true;
-        }
-      }
-
-      Box {
-        styles ["mail-field"]
-
-        Label {
-          styles ["mail-field-label"]
-          label: _("Subject");
-          xalign: 0;
-        }
-
-        Entry subject {
-          styles ["mail-field-entry", "mail-subject"]
-          hexpand: true;
-        }
-      }
-    }
-
-    ScrolledWindow {
-      vexpand: true;
-      hscrollbar-policy: never;
-
-      TextView body {
-        styles ["mail-body"]
-        wrap-mode: word_char;
-        top-margin: 18;
-        bottom-margin: 18;
-        left-margin: 28;
-        right-margin: 28;
-      }
-    }
-
-    // The files attached, as chips; Go fills it.
-    FlowBox attachments {
-      styles ["mail-attachments"]
-      selection-mode: none;
-      max-children-per-line: 6;
-      visible: false;
-    }
-
-    // The assistant's row: what to say, then Draft; or Polish the text.
-    Box assist_row {
-      styles ["mail-assist"]
-      spacing: 10;
-
-      Label {
-        styles ["kicker", "mail-assist-kicker"]
-        label: _("ASSISTANT");
-      }
-
-      Entry draft_what {
-        styles ["mail-draft-what"]
-        hexpand: true;
-        placeholder-text: _("What to say: the assistant drafts it");
-      }
-
-      Button draft {
-        styles ["mail-plain"]
-        label: _("Draft");
-      }
-
-      MenuButton polish {
-        styles ["mail-plain"]
-        label: _("Polish");
-        direction: up;
-      }
-
-      Button undo_ai {
-        styles ["mail-plain"]
-        label: _("Undo");
-        visible: false;
-      }
-    }
-
-    Label ai_note {
-      styles ["sub", "mail-ai-note"]
-      xalign: 0;
-      wrap: true;
-      visible: false;
-    }
-
+    // ── the message ──────────────────────────────────────────────────
     Box {
-      styles ["mail-compose-foot"]
-      spacing: 8;
+      orientation: vertical;
+      hexpand: true;
 
-      Label status {
-        styles ["sub", "mail-compose-status"]
-        xalign: 0;
-        hexpand: true;
-        wrap: true;
+      // The fields; the suggestions for an address open under its row.
+      Box fields {
+        styles ["mail-compose-fields"]
+        orientation: vertical;
+
+        Box {
+          styles ["mail-field"]
+          spacing: 8;
+
+          Label {
+            styles ["mail-field-label"]
+            label: _("From");
+            xalign: 0;
+          }
+
+          DropDown from {
+            styles ["mail-from"]
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Button ai_toggle {
+            styles ["mail-tool"]
+            icon-name: "applications-science-symbolic";
+            tooltip-text: _("AI (Ctrl+J)");
+            valign: center;
+          }
+        }
+
+        Box to_row {
+          styles ["mail-field"]
+
+          Label {
+            styles ["mail-field-label"]
+            label: _("To");
+            xalign: 0;
+          }
+
+          Entry to {
+            styles ["mail-field-entry"]
+            hexpand: true;
+          }
+
+          Button show_cc {
+            styles ["mail-plain"]
+            label: _("Cc, Bcc");
+          }
+        }
+
+        Box cc_row {
+          styles ["mail-field"]
+          visible: false;
+
+          Label {
+            styles ["mail-field-label"]
+            label: _("Cc");
+            xalign: 0;
+          }
+
+          Entry cc {
+            styles ["mail-field-entry"]
+            hexpand: true;
+          }
+        }
+
+        Box bcc_row {
+          styles ["mail-field"]
+          visible: false;
+
+          Label {
+            styles ["mail-field-label"]
+            label: _("Bcc");
+            xalign: 0;
+          }
+
+          Entry bcc {
+            styles ["mail-field-entry"]
+            hexpand: true;
+          }
+        }
+
+        Box {
+          styles ["mail-field"]
+
+          Label {
+            styles ["mail-field-label"]
+            label: _("Subject");
+            xalign: 0;
+          }
+
+          Entry subject {
+            styles ["mail-field-entry", "mail-subject"]
+            hexpand: true;
+          }
+        }
       }
 
-      Button attach {
-        styles ["outlined"]
-        label: _("Attach…");
+      ScrolledWindow {
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        TextView body {
+          styles ["mail-body"]
+          wrap-mode: word_char;
+          top-margin: 18;
+          bottom-margin: 18;
+          left-margin: 28;
+          right-margin: 28;
+        }
       }
 
-      Button send {
-        styles ["suggested-action", "mail-send"]
-        label: _("Send");
-        tooltip-text: _("Ctrl+Enter");
+      // The files attached, as chips; Go fills it.
+      FlowBox attachments {
+        styles ["mail-attachments"]
+        selection-mode: none;
+        max-children-per-line: 6;
+        visible: false;
       }
+
+      Box {
+        styles ["mail-compose-foot"]
+        spacing: 8;
+
+        // What happened (the draft kept, why it was not sent); the keys
+        // when nothing did.
+        Label status {
+          styles ["sub", "mail-compose-status"]
+          xalign: 0;
+          hexpand: true;
+          wrap: true;
+        }
+
+        Button attach {
+          styles ["outlined"]
+          label: _("Attach…");
+        }
+
+        Button send {
+          styles ["suggested-action", "mail-send"]
+          label: _("Send");
+          tooltip-text: _("Ctrl+Enter");
+        }
+      }
+    }
+
+    // ── AI's panel ───────────────────────────────────────────────────
+    Revealer ai_reveal {
+      hexpand: false;
+      transition-type: slide_left;
+      transition-duration: 160;
+      reveal-child: false;
+
+      child: Box {
+        styles ["mail-compose-ai"]
+        orientation: vertical;
+        width-request: 300;
+
+        Box {
+          styles ["mail-compose-ai-head"]
+          spacing: 6;
+
+          Label {
+            styles ["kicker"]
+            label: _("AI");
+          }
+
+          // "· the selection" while text is selected.
+          Label ai_scope {
+            styles ["kicker", "mail-compose-ai-scope"]
+            visible: false;
+          }
+
+          Box {
+            hexpand: true;
+          }
+
+          Button ai_close {
+            styles ["mail-plain"]
+            icon-name: "window-close-symbolic";
+            tooltip-text: _("Close");
+          }
+        }
+
+        ScrolledWindow {
+          vexpand: true;
+          hscrollbar-policy: never;
+
+          Box {
+            styles ["mail-compose-ai-body"]
+            orientation: vertical;
+            spacing: 26;
+
+            // Asking: a line of one's own, then the ideas or the changes.
+            Box ai_ask {
+              orientation: vertical;
+              spacing: 4;
+
+              Entry ai_say {
+                styles ["mail-compose-ai-say"]
+              }
+
+              Box ai_list {
+                styles ["mail-compose-ai-list"]
+                orientation: vertical;
+              }
+            }
+
+            Box ai_translate {
+              orientation: vertical;
+              spacing: 6;
+
+              Label {
+                styles ["kicker"]
+                label: _("TRANSLATE");
+                xalign: 0;
+              }
+
+              FlowBox ai_langs {
+                styles ["mail-compose-ai-langs"]
+                halign: start;
+                selection-mode: none;
+                column-spacing: 12;
+                row-spacing: 2;
+                max-children-per-line: 6;
+              }
+            }
+
+            // While AI writes.
+            Box ai_work {
+              spacing: 8;
+              visible: false;
+
+              Label ai_working {
+                styles ["mail-compose-ai-what"]
+                xalign: 0;
+                hexpand: true;
+                wrap: true;
+              }
+
+              Button ai_stop {
+                styles ["mail-plain"]
+                label: _("Stop");
+                valign: start;
+              }
+            }
+
+            // The suggestion, to keep or not.
+            Box ai_review {
+              orientation: vertical;
+              spacing: 12;
+              visible: false;
+
+              Box {
+                spacing: 2;
+
+                Label ai_asked {
+                  styles ["mail-compose-ai-what"]
+                  xalign: 0;
+                  hexpand: true;
+                  wrap: true;
+                }
+
+                Button ai_prev {
+                  styles ["mail-plain"]
+                  label: "‹";
+                  tooltip-text: _("The version before");
+                  valign: start;
+                }
+
+                Label ai_count {
+                  styles ["readout"]
+                  valign: start;
+                }
+
+                Button ai_next {
+                  styles ["mail-plain"]
+                  label: "›";
+                  tooltip-text: _("The next version");
+                  valign: start;
+                }
+              }
+
+              Label {
+                styles ["sub"]
+                label: _("Read it before you keep it.");
+                xalign: 0;
+                wrap: true;
+              }
+
+              Button ai_keep {
+                styles ["suggested-action"]
+                label: _("Keep");
+                tooltip-text: _("Enter");
+              }
+
+              Box {
+                spacing: 14;
+
+                Button ai_retry {
+                  styles ["mail-plain"]
+                  label: _("Try again");
+                }
+
+                Button ai_discard {
+                  styles ["mail-plain"]
+                  label: _("Discard");
+                  tooltip-text: _("Esc");
+                }
+
+                Box {
+                  hexpand: true;
+                }
+
+                Button ai_flip {
+                  styles ["mail-plain"]
+                }
+              }
+            }
+
+            Label ai_error {
+              styles ["error"]
+              xalign: 0;
+              wrap: true;
+              selectable: true;
+              visible: false;
+            }
+          }
+        }
+      };
     }
   }
 }

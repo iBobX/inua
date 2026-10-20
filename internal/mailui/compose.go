@@ -26,8 +26,6 @@ type composer struct {
 
 	from                           gtk.DropDown
 	to, cc, bcc, subject           gtk.Entry
-	draftWhat                      gtk.Entry
-	assistRow                      gtk.Box
 	ccRow, bccRow, toRow, fieldBox gtk.Box
 	sug                            *gtk.Box       // the suggestions under the field typed in
 	sugFor                         *gtk.Entry     // that field
@@ -37,11 +35,19 @@ type composer struct {
 	body                           gtk.TextView
 	buf                            *gtk.TextBuffer
 	attachments                    gtk.FlowBox
-	showCc, attach, send, draftBtn gtk.Button
-	undoAI                         gtk.Button
-	polish                         gtk.MenuButton
-	popover                        *gtk.Popover
-	status, aiNote                 gtk.Label
+	showCc, attach, send           gtk.Button
+	status                         gtk.Label
+
+	// AI's panel (compose_ai.go).
+	aiToggle, aiClose, aiStop                   gtk.Button
+	aiPrev, aiNext, aiKeep, aiRetry, aiDiscard  gtk.Button
+	aiFlip                                      gtk.Button
+	aiReveal                                    gtk.Revealer
+	aiScope, aiWorking, aiAsked, aiCount, aiErr gtk.Label
+	aiSay                                       gtk.Entry
+	aiAsk, aiList, aiTranslate, aiWork, aiRev   gtk.Box
+	aiLangs                                     gtk.FlowBox
+	ai                                          composeAI
 
 	d        mail.Draft
 	conv     []mail.Said // the conversation a reply answers, for the assistant
@@ -52,8 +58,6 @@ type composer struct {
 	edits    int         // changes made, counted for the copy in Drafts
 	served   int         // edits when the copy in Drafts was last made
 	sentDone bool        // sent: a copy in Drafts made after it goes
-	before   string      // the text before the assistant changed it
-	asking   bool
 	sending  bool
 	undo     context.CancelFunc // stops a send in its seconds
 	filling  bool               // the fields are being set from the draft
@@ -95,15 +99,18 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	b := w.c.Load("mail-compose.ui")
 	b.Get("compose", &c.win)
 	for name, ptr := range map[string]gobject.Ptr{
-		"from": &c.from, "to": &c.to, "cc": &c.cc, "bcc": &c.bcc, "subject": &c.subject, "draft_what": &c.draftWhat,
+		"from": &c.from, "to": &c.to, "cc": &c.cc, "bcc": &c.bcc, "subject": &c.subject,
 		"cc_row": &c.ccRow, "bcc_row": &c.bccRow, "to_row": &c.toRow, "fields": &c.fieldBox, "body": &c.body, "attachments": &c.attachments,
-		"show_cc": &c.showCc, "attach": &c.attach, "send": &c.send, "draft": &c.draftBtn, "undo_ai": &c.undoAI,
-		"polish": &c.polish, "status": &c.status, "ai_note": &c.aiNote, "assist_row": &c.assistRow,
+		"show_cc": &c.showCc, "attach": &c.attach, "send": &c.send, "status": &c.status,
+		"ai_toggle": &c.aiToggle, "ai_close": &c.aiClose, "ai_stop": &c.aiStop, "ai_prev": &c.aiPrev, "ai_next": &c.aiNext,
+		"ai_keep": &c.aiKeep, "ai_retry": &c.aiRetry, "ai_discard": &c.aiDiscard, "ai_flip": &c.aiFlip,
+		"ai_reveal": &c.aiReveal, "ai_scope": &c.aiScope, "ai_working": &c.aiWorking, "ai_asked": &c.aiAsked,
+		"ai_count": &c.aiCount, "ai_error": &c.aiErr, "ai_say": &c.aiSay, "ai_ask": &c.aiAsk, "ai_list": &c.aiList,
+		"ai_translate": &c.aiTranslate, "ai_work": &c.aiWork, "ai_review": &c.aiRev, "ai_langs": &c.aiLangs,
 	} {
 		b.Get(name, ptr)
 	}
 	b.Close()
-	c.assistRow.SetVisible(w.settings.AI())
 	c.win.SetApplication(w.c.App)
 	c.buf = c.body.GetBuffer()
 
@@ -136,9 +143,6 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 		}),
 		h.click(&c.attach, c.chooseFiles),
 		h.click(&c.send, c.sendOrUndo),
-		h.click(&c.draftBtn, c.draftNow),
-		h.click(&c.undoAI, c.undoAssistant),
-		h.enter(&c.draftWhat, c.draftNow),
 		h.edit(&c.to, func() { c.changed(); c.suggest(&c.to, &c.toRow) }),
 		h.edit(&c.cc, func() { c.changed(); c.suggest(&c.cc, &c.ccRow) }),
 		h.edit(&c.bcc, func() { c.changed(); c.suggest(&c.bcc, &c.bccRow) }),
@@ -149,7 +153,7 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 		h.drop(&c.win.Widget, c.add),
 		h.notify(&c.from, "selected", c.fromChanged),
 	)
-	c.buildPolish()
+	c.buildAI()
 	c.sug = gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	c.sug.AddCssClass("mail-suggest")
 	c.sug.SetVisible(false)
@@ -162,6 +166,10 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	w.composers = append(w.composers, c)
 	w.h.later(60000, c.serverTick)
 	c.win.Present()
+	// A class of its own: Hyprland floats it over Mail, which tiles
+	// (config/hypr/inua.conf), and the dock counts it as Mail's. Set
+	// once the toplevel is made, before its first frame maps it.
+	gtkx.SetAppID(&c.win, composeAppID)
 	if c.d.To == "" {
 		c.to.GrabFocus()
 	} else {
@@ -204,6 +212,9 @@ func (c *composer) read() {
 	c.d.To, c.d.Cc, c.d.Bcc = c.to.GetText(), c.cc.GetText(), c.bcc.GetText()
 	c.d.Subject = c.subject.GetText()
 	c.d.Body = c.text()
+	if c.ai.phase != aiIdle {
+		c.d.Body = c.ai.before // what AI suggests is not the user's until kept
+	}
 	if i := int(c.from.GetSelected()); i < len(c.accounts) {
 		c.d.Account = c.accounts[i]
 	}
@@ -221,6 +232,9 @@ func (c *composer) changed() {
 		return
 	}
 	c.title()
+	if c.aiReveal.GetRevealChild() {
+		c.drawAI() // written now, or no longer: what the panel offers
+	}
 	c.dirty = true
 	c.edits++
 	if c.saving {
@@ -313,7 +327,11 @@ func (c *composer) saveServer(closing bool) {
 	}()
 }
 
+// say puts what happened in the foot; "" puts the keys back.
 func (c *composer) say(text string, bad bool) {
+	if text == "" {
+		text = i18n.T("Ctrl+Enter sends")
+	}
 	c.status.SetText(text)
 	setClass(&c.status.Widget, "error", bad)
 }
@@ -340,11 +358,18 @@ func (c *composer) fromChanged() {
 
 func (c *composer) key(keyval uint32, state gdk.ModifierType) bool {
 	ctrl := state&gdk.ControlMaskValue != 0
+	enter := keyval == uint32(gdk.KEY_Return) || keyval == uint32(gdk.KEY_KP_Enter)
 	switch {
-	case ctrl && (keyval == uint32(gdk.KEY_Return) || keyval == uint32(gdk.KEY_KP_Enter)):
+	case ctrl && enter:
 		c.sendOrUndo()
-	case keyval == uint32(gdk.KEY_Escape) && c.popover != nil && c.popover.GetVisible():
-		c.popover.Popdown()
+	case ctrl && (keyval == uint32(gdk.KEY_j) || keyval == uint32(gdk.KEY_J)):
+		c.keyAI()
+	case ctrl && (keyval == uint32(gdk.KEY_w) || keyval == uint32(gdk.KEY_W)):
+		c.win.Close() // the draft is kept as it closes
+	case c.ai.phase == aiReview && enter && !ctrl && !c.inEntry() && !c.inPanel():
+		c.keepAI() // the text cannot be typed in while a suggestion waits; in the panel, Enter is the button's
+	case c.ai.phase == aiReview && keyval == uint32(gdk.KEY_Escape):
+		c.discardAI()
 	default:
 		return false
 	}
@@ -367,6 +392,8 @@ func (c *composer) closeRequested() bool {
 
 func (c *composer) close() {
 	c.closed = true
+	c.ai.seq++ // an answer still coming is dropped
+	c.w.h.forget(c.ai.listPtrs)
 	if c.undo != nil {
 		c.undo()
 	}
@@ -467,6 +494,10 @@ func (c *composer) sendOrUndo() {
 		}
 		return
 	}
+	if c.ai.phase != aiIdle {
+		c.say(i18n.T("Keep or discard AI's suggestion first."), true)
+		return
+	}
 	c.read()
 	x := c.w.acct(c.d.Account)
 	if x == nil {
@@ -554,6 +585,7 @@ func (c *composer) sent(x *acct, d mail.Draft, b mail.Built, err error) {
 	}
 	c.closed = true
 	c.w.h.forget(c.ptrs)
+	c.w.h.forget(c.ai.listPtrs)
 	c.w.composers = slices.DeleteFunc(c.w.composers, func(y *composer) bool { return y == c })
 	c.win.Destroy()
 	c.w.drawSide()
@@ -561,138 +593,10 @@ func (c *composer) sent(x *acct, d mail.Draft, b mail.Built, err error) {
 
 // fields makes the fields editable or not, while a send waits.
 func (c *composer) fields(on bool) {
-	for _, wd := range []*gtk.Widget{&c.to.Widget, &c.cc.Widget, &c.bcc.Widget, &c.subject.Widget, &c.from.Widget, &c.attach.Widget, &c.draftWhat.Widget, &c.draftBtn.Widget, &c.polish.Widget} {
+	for _, wd := range []*gtk.Widget{&c.to.Widget, &c.cc.Widget, &c.bcc.Widget, &c.subject.Widget, &c.from.Widget, &c.attach.Widget, &c.aiToggle.Widget} {
 		wd.SetSensitive(on)
 	}
 	c.body.SetEditable(on)
-}
-
-// --- the assistant ---
-
-func (c *composer) buildPolish() {
-	c.popover = gtk.NewPopover()
-	c.popover.AddCssClass("mail-menu")
-	c.popover.SetHasArrow(false)
-	box := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	for _, p := range []struct {
-		label string
-		how   mail.Polish
-		to    string
-	}{
-		{i18n.T("Shorter"), mail.Shorter, ""},
-		{i18n.T("Friendlier"), mail.Friendlier, ""},
-		{i18n.T("More formal"), mail.Formal, ""},
-		{i18n.T("Fix spelling and grammar"), mail.Fix, ""},
-		{"English", mail.Translate, "en"},
-		{"中文", mail.Translate, "zh"},
-		{"日本語", mail.Translate, "ja"},
-		{"한국어", mail.Translate, "ko"},
-		{"Español", mail.Translate, "es"},
-		{"Français", mail.Translate, "fr"},
-		{"Deutsch", mail.Translate, "de"},
-	} {
-		label := p.label
-		if p.how == mail.Translate {
-			label = i18n.Tf("Translate into %s", p.label)
-		}
-		b := gtk.NewButtonWithLabel(label)
-		b.AddCssClass("mail-menu-item")
-		pp := p
-		c.ptrs = append(c.ptrs, c.w.h.click(b, func() { c.popover.Popdown(); c.polishWith(pp.how, pp.to) }))
-		gtkx.Append(box, &b.Widget)
-	}
-	c.popover.SetChild(&box.Widget)
-	c.polish.SetPopover(c.popover)
-}
-
-// draftNow asks the assistant for the text from the line of what to say.
-func (c *composer) draftNow() {
-	what := strings.TrimSpace(c.draftWhat.GetText())
-	if what == "" {
-		c.draftWhat.GrabFocus()
-		c.note(i18n.T("Write a line of what to say, then Draft."), false)
-		return
-	}
-	user := ""
-	var examples []string
-	if x := c.w.acct(c.d.Account); x != nil {
-		user = x.s.Acc.Name
-		if user == "" {
-			user = x.s.Acc.Address
-		}
-		examples = c.w.voice(x)
-	}
-	prompt := mail.DraftPrompt(what, c.conv, examples, user, i18n.Lang())
-	c.rewrite(prompt, true)
-}
-
-func (c *composer) polishWith(how mail.Polish, to string) {
-	text := splitText(c.text())
-	if text == "" {
-		c.note(i18n.T("Write something first, or Draft it."), false)
-		return
-	}
-	c.rewrite(mail.PolishPrompt(text, how, to), false)
-}
-
-// rewrite asks the assistant and puts its answer in place of what the user
-// wrote, keeping the signature and the quote under it; Undo puts it back.
-func (c *composer) rewrite(prompt string, drafting bool) {
-	if c.asking {
-		return
-	}
-	c.asking = true
-	c.before = c.text()
-	_, sig, quote := splitDraft(c.before)
-	c.draftBtn.SetSensitive(false)
-	c.polish.SetSensitive(false)
-	c.note(i18n.T("The assistant is writing…"), false)
-	put := func(t string) {
-		if c.closed {
-			return
-		}
-		c.filling = true
-		c.buf.SetText(joinDraft(strings.TrimSpace(t), sig, quote), -1)
-		c.filling = false
-	}
-	go func() {
-		text, err := c.w.ai.ask(prompt, 2*time.Minute, put)
-		gtkx.Post(func() {
-			if c.closed {
-				return
-			}
-			c.asking = false
-			c.draftBtn.SetSensitive(true)
-			c.polish.SetSensitive(true)
-			if err != nil {
-				c.filling = true
-				c.buf.SetText(c.before, -1)
-				c.filling = false
-				c.note(failed(i18n.T("The assistant could not write it"), err), true)
-				return
-			}
-			put(text)
-			c.undoAI.SetVisible(true)
-			if drafting {
-				c.draftWhat.SetText("")
-			}
-			c.note(i18n.T("Written by the assistant: read it before you send."), false)
-			c.changed()
-		})
-	}()
-}
-
-func (c *composer) undoAssistant() {
-	c.buf.SetText(c.before, -1)
-	c.undoAI.SetVisible(false)
-	c.note("", false)
-	c.changed()
-}
-
-func (c *composer) note(text string, bad bool) {
-	c.aiNote.SetText(text)
-	c.aiNote.SetVisible(text != "")
-	setClass(&c.aiNote.Widget, "error", bad)
 }
 
 // splitDraft cuts a draft's text into what the user writes, the

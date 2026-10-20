@@ -337,8 +337,9 @@ func (w *window) replyWith(idea string) {
 	}
 	x := w.acct(it.Account)
 	c := w.newComposer(mail.Reply(m, x.s.Acc, false, w.mine), w.said(w.open))
-	c.draftWhat.SetText(idea)
-	c.draftNow()
+	if c != nil {
+		c.writeAI(idea) // as a suggestion, its panel open, to keep or not
+	}
 }
 
 func (w *window) forward() {

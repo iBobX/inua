@@ -82,6 +82,8 @@ type Settings struct {
 		// PanelHid says the panel hid the sidebar, to make room: it comes
 		// back when the panel closes.
 		PanelHid bool `toml:"panel_hid_sidebar,omitempty"`
+		// ComposeAI is the composer's AI panel open, as last left.
+		ComposeAI bool `toml:"compose_assistant,omitempty"`
 	} `toml:"window"`
 	Reading Reading `toml:"reading"`
 	Writing struct {

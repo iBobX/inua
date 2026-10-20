@@ -13,276 +13,491 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
       <class name="mail-compose"/>
     </style>
     <property name="title" translatable="yes">New message</property>
-    <property name="default-width">760</property>
-    <property name="default-height">700</property>
+    <property name="default-width">1000</property>
+    <property name="default-height">720</property>
     <child>
       <object class="GtkBox">
-        <property name="orientation">1</property>
-        <child>
-          <object class="GtkBox" id="fields">
-            <style>
-              <class name="mail-compose-fields"/>
-            </style>
-            <property name="orientation">1</property>
-            <child>
-              <object class="GtkBox">
-                <style>
-                  <class name="mail-field"/>
-                </style>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="mail-field-label"/>
-                    </style>
-                    <property name="label" translatable="yes">From</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkDropDown" id="from">
-                    <style>
-                      <class name="mail-from"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="to_row">
-                <style>
-                  <class name="mail-field"/>
-                </style>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="mail-field-label"/>
-                    </style>
-                    <property name="label" translatable="yes">To</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="to">
-                    <style>
-                      <class name="mail-field-entry"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="show_cc">
-                    <style>
-                      <class name="mail-plain"/>
-                    </style>
-                    <property name="label" translatable="yes">Cc, Bcc</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="cc_row">
-                <style>
-                  <class name="mail-field"/>
-                </style>
-                <property name="visible">false</property>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="mail-field-label"/>
-                    </style>
-                    <property name="label" translatable="yes">Cc</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="cc">
-                    <style>
-                      <class name="mail-field-entry"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="bcc_row">
-                <style>
-                  <class name="mail-field"/>
-                </style>
-                <property name="visible">false</property>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="mail-field-label"/>
-                    </style>
-                    <property name="label" translatable="yes">Bcc</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="bcc">
-                    <style>
-                      <class name="mail-field-entry"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <style>
-                  <class name="mail-field"/>
-                </style>
-                <child>
-                  <object class="GtkLabel">
-                    <style>
-                      <class name="mail-field-label"/>
-                    </style>
-                    <property name="label" translatable="yes">Subject</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="subject">
-                    <style>
-                      <class name="mail-field-entry"/>
-                      <class name="mail-subject"/>
-                    </style>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="vexpand">true</property>
-            <property name="hscrollbar-policy">2</property>
-            <child>
-              <object class="GtkTextView" id="body">
-                <style>
-                  <class name="mail-body"/>
-                </style>
-                <property name="wrap-mode">3</property>
-                <property name="top-margin">18</property>
-                <property name="bottom-margin">18</property>
-                <property name="left-margin">28</property>
-                <property name="right-margin">28</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkFlowBox" id="attachments">
-            <style>
-              <class name="mail-attachments"/>
-            </style>
-            <property name="selection-mode">0</property>
-            <property name="max-children-per-line">6</property>
-            <property name="visible">false</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="assist_row">
-            <style>
-              <class name="mail-assist"/>
-            </style>
-            <property name="spacing">10</property>
-            <child>
-              <object class="GtkLabel">
-                <style>
-                  <class name="kicker"/>
-                  <class name="mail-assist-kicker"/>
-                </style>
-                <property name="label" translatable="yes">ASSISTANT</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="draft_what">
-                <style>
-                  <class name="mail-draft-what"/>
-                </style>
-                <property name="hexpand">true</property>
-                <property name="placeholder-text" translatable="yes">What to say: the assistant drafts it</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="draft">
-                <style>
-                  <class name="mail-plain"/>
-                </style>
-                <property name="label" translatable="yes">Draft</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuButton" id="polish">
-                <style>
-                  <class name="mail-plain"/>
-                </style>
-                <property name="label" translatable="yes">Polish</property>
-                <property name="direction">0</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="undo_ai">
-                <style>
-                  <class name="mail-plain"/>
-                </style>
-                <property name="label" translatable="yes">Undo</property>
-                <property name="visible">false</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="ai_note">
-            <style>
-              <class name="sub"/>
-              <class name="mail-ai-note"/>
-            </style>
-            <property name="xalign">0</property>
-            <property name="wrap">true</property>
-            <property name="visible">false</property>
-          </object>
-        </child>
         <child>
           <object class="GtkBox">
-            <style>
-              <class name="mail-compose-foot"/>
-            </style>
-            <property name="spacing">8</property>
+            <property name="orientation">1</property>
+            <property name="hexpand">true</property>
             <child>
-              <object class="GtkLabel" id="status">
+              <object class="GtkBox" id="fields">
                 <style>
-                  <class name="sub"/>
-                  <class name="mail-compose-status"/>
+                  <class name="mail-compose-fields"/>
                 </style>
-                <property name="xalign">0</property>
-                <property name="hexpand">true</property>
-                <property name="wrap">true</property>
+                <property name="orientation">1</property>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="mail-field"/>
+                    </style>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="mail-field-label"/>
+                        </style>
+                        <property name="label" translatable="yes">From</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkDropDown" id="from">
+                        <style>
+                          <class name="mail-from"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="ai_toggle">
+                        <style>
+                          <class name="mail-tool"/>
+                        </style>
+                        <property name="icon-name">applications-science-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">AI (Ctrl+J)</property>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="to_row">
+                    <style>
+                      <class name="mail-field"/>
+                    </style>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="mail-field-label"/>
+                        </style>
+                        <property name="label" translatable="yes">To</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="to">
+                        <style>
+                          <class name="mail-field-entry"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="show_cc">
+                        <style>
+                          <class name="mail-plain"/>
+                        </style>
+                        <property name="label" translatable="yes">Cc, Bcc</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="cc_row">
+                    <style>
+                      <class name="mail-field"/>
+                    </style>
+                    <property name="visible">false</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="mail-field-label"/>
+                        </style>
+                        <property name="label" translatable="yes">Cc</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="cc">
+                        <style>
+                          <class name="mail-field-entry"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="bcc_row">
+                    <style>
+                      <class name="mail-field"/>
+                    </style>
+                    <property name="visible">false</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="mail-field-label"/>
+                        </style>
+                        <property name="label" translatable="yes">Bcc</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="bcc">
+                        <style>
+                          <class name="mail-field-entry"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="mail-field"/>
+                    </style>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="mail-field-label"/>
+                        </style>
+                        <property name="label" translatable="yes">Subject</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="subject">
+                        <style>
+                          <class name="mail-field-entry"/>
+                          <class name="mail-subject"/>
+                        </style>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="attach">
-                <style>
-                  <class name="outlined"/>
-                </style>
-                <property name="label" translatable="yes">Attach…</property>
+              <object class="GtkScrolledWindow">
+                <property name="vexpand">true</property>
+                <property name="hscrollbar-policy">2</property>
+                <child>
+                  <object class="GtkTextView" id="body">
+                    <style>
+                      <class name="mail-body"/>
+                    </style>
+                    <property name="wrap-mode">3</property>
+                    <property name="top-margin">18</property>
+                    <property name="bottom-margin">18</property>
+                    <property name="left-margin">28</property>
+                    <property name="right-margin">28</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="send">
+              <object class="GtkFlowBox" id="attachments">
                 <style>
-                  <class name="suggested-action"/>
-                  <class name="mail-send"/>
+                  <class name="mail-attachments"/>
                 </style>
-                <property name="label" translatable="yes">Send</property>
-                <property name="tooltip-text" translatable="yes">Ctrl+Enter</property>
+                <property name="selection-mode">0</property>
+                <property name="max-children-per-line">6</property>
+                <property name="visible">false</property>
               </object>
             </child>
+            <child>
+              <object class="GtkBox">
+                <style>
+                  <class name="mail-compose-foot"/>
+                </style>
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkLabel" id="status">
+                    <style>
+                      <class name="sub"/>
+                      <class name="mail-compose-status"/>
+                    </style>
+                    <property name="xalign">0</property>
+                    <property name="hexpand">true</property>
+                    <property name="wrap">true</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="attach">
+                    <style>
+                      <class name="outlined"/>
+                    </style>
+                    <property name="label" translatable="yes">Attach…</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="send">
+                    <style>
+                      <class name="suggested-action"/>
+                      <class name="mail-send"/>
+                    </style>
+                    <property name="label" translatable="yes">Send</property>
+                    <property name="tooltip-text" translatable="yes">Ctrl+Enter</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer" id="ai_reveal">
+            <property name="hexpand">false</property>
+            <property name="transition-type">3</property>
+            <property name="transition-duration">160</property>
+            <property name="reveal-child">false</property>
+            <property name="child">
+              <object class="GtkBox">
+                <style>
+                  <class name="mail-compose-ai"/>
+                </style>
+                <property name="orientation">1</property>
+                <property name="width-request">300</property>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="mail-compose-ai-head"/>
+                    </style>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="kicker"/>
+                        </style>
+                        <property name="label" translatable="yes">AI</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="ai_scope">
+                        <style>
+                          <class name="kicker"/>
+                          <class name="mail-compose-ai-scope"/>
+                        </style>
+                        <property name="visible">false</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="ai_close">
+                        <style>
+                          <class name="mail-plain"/>
+                        </style>
+                        <property name="icon-name">window-close-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Close</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="vexpand">true</property>
+                    <property name="hscrollbar-policy">2</property>
+                    <child>
+                      <object class="GtkBox">
+                        <style>
+                          <class name="mail-compose-ai-body"/>
+                        </style>
+                        <property name="orientation">1</property>
+                        <property name="spacing">26</property>
+                        <child>
+                          <object class="GtkBox" id="ai_ask">
+                            <property name="orientation">1</property>
+                            <property name="spacing">4</property>
+                            <child>
+                              <object class="GtkEntry" id="ai_say">
+                                <style>
+                                  <class name="mail-compose-ai-say"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="ai_list">
+                                <style>
+                                  <class name="mail-compose-ai-list"/>
+                                </style>
+                                <property name="orientation">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="ai_translate">
+                            <property name="orientation">1</property>
+                            <property name="spacing">6</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <style>
+                                  <class name="kicker"/>
+                                </style>
+                                <property name="label" translatable="yes">TRANSLATE</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFlowBox" id="ai_langs">
+                                <style>
+                                  <class name="mail-compose-ai-langs"/>
+                                </style>
+                                <property name="halign">1</property>
+                                <property name="selection-mode">0</property>
+                                <property name="column-spacing">12</property>
+                                <property name="row-spacing">2</property>
+                                <property name="max-children-per-line">6</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="ai_work">
+                            <property name="spacing">8</property>
+                            <property name="visible">false</property>
+                            <child>
+                              <object class="GtkLabel" id="ai_working">
+                                <style>
+                                  <class name="mail-compose-ai-what"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="hexpand">true</property>
+                                <property name="wrap">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="ai_stop">
+                                <style>
+                                  <class name="mail-plain"/>
+                                </style>
+                                <property name="label" translatable="yes">Stop</property>
+                                <property name="valign">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="ai_review">
+                            <property name="orientation">1</property>
+                            <property name="spacing">12</property>
+                            <property name="visible">false</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">2</property>
+                                <child>
+                                  <object class="GtkLabel" id="ai_asked">
+                                    <style>
+                                      <class name="mail-compose-ai-what"/>
+                                    </style>
+                                    <property name="xalign">0</property>
+                                    <property name="hexpand">true</property>
+                                    <property name="wrap">true</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="ai_prev">
+                                    <style>
+                                      <class name="mail-plain"/>
+                                    </style>
+                                    <property name="label">‹</property>
+                                    <property name="tooltip-text" translatable="yes">The version before</property>
+                                    <property name="valign">1</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="ai_count">
+                                    <style>
+                                      <class name="readout"/>
+                                    </style>
+                                    <property name="valign">1</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="ai_next">
+                                    <style>
+                                      <class name="mail-plain"/>
+                                    </style>
+                                    <property name="label">›</property>
+                                    <property name="tooltip-text" translatable="yes">The next version</property>
+                                    <property name="valign">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <style>
+                                  <class name="sub"/>
+                                </style>
+                                <property name="label" translatable="yes">Read it before you keep it.</property>
+                                <property name="xalign">0</property>
+                                <property name="wrap">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="ai_keep">
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                                <property name="label" translatable="yes">Keep</property>
+                                <property name="tooltip-text" translatable="yes">Enter</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="spacing">14</property>
+                                <child>
+                                  <object class="GtkButton" id="ai_retry">
+                                    <style>
+                                      <class name="mail-plain"/>
+                                    </style>
+                                    <property name="label" translatable="yes">Try again</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="ai_discard">
+                                    <style>
+                                      <class name="mail-plain"/>
+                                    </style>
+                                    <property name="label" translatable="yes">Discard</property>
+                                    <property name="tooltip-text" translatable="yes">Esc</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="hexpand">true</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="ai_flip">
+                                    <style>
+                                      <class name="mail-plain"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="ai_error">
+                            <style>
+                              <class name="error"/>
+                            </style>
+                            <property name="xalign">0</property>
+                            <property name="wrap">true</property>
+                            <property name="selectable">true</property>
+                            <property name="visible">false</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
           </object>
         </child>
       </object>

@@ -112,6 +112,13 @@ func (a AppIndex) ForClass(class string) *desktop.Entry {
 	if found == nil {
 		found = a.byName[loose(class)]
 	}
+	if found == nil {
+		// A window of an app's with a class of its own, named under the
+		// app's (Mail's composer: io.github.lyricat.Inua.Mail.Compose).
+		if i := strings.LastIndexByte(class, '.'); i > 0 && strings.Count(class[:i], ".") >= 2 {
+			found = a.byID[class[:i]]
+		}
+	}
 	return found
 }
 
