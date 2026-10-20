@@ -189,7 +189,7 @@ func (w *window) sendQuick(id string) {
 		return
 	}
 	ctx, cancel := context.WithCancel(w.ctx)
-	q.cancel, q.err, q.state, q.left = cancel, "", "waiting", 5
+	q.cancel, q.err, q.state, q.left = cancel, "", "waiting", w.settings.UndoSeconds()
 	w.list.GrabFocus() // out of the field, so the keys work again
 	var count func()
 	count = func() {

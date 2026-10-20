@@ -31,7 +31,9 @@ func (w *window) openConversation(c *mail.Conversation) {
 	w.lastDrawn = ""
 	w.readerStack.SetVisibleChildName("read")
 	w.readerScroll.GetVadjustment().SetValue(0)
-	w.markRead(c)
+	if !w.settings.Reading.KeepUnread {
+		w.markRead(c)
+	}
 	w.drawReader()
 }
 
@@ -514,19 +516,27 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 	if inv != nil {
 		w.drawInvite(box, it, inv)
 	}
+	formatted := w.formatted(k, m)
 	written, rest := mail.Split(m.Text)
 	if strings.TrimSpace(written) == "" {
 		written, rest = m.Text, ""
 	}
-	body := gtk.NewLabel("")
-	body.AddCssClass("mail-text")
-	body.SetMarkup(linkify(written))
-	body.SetXalign(0)
-	body.SetWrap(true)
-	body.SetWrapMode(2) // word_char: long links
-	body.SetSelectable(true)
-	body.SetMaxWidthChars(84)
-	gtkx.Append(box, &body.Widget)
+	if formatted {
+		rest = ""
+		if w.drawFormatted(box, k, m) {
+			rest = "-"
+		}
+	} else {
+		body := gtk.NewLabel("")
+		body.AddCssClass("mail-text")
+		body.SetMarkup(linkify(written))
+		body.SetXalign(0)
+		body.SetWrap(true)
+		body.SetWrapMode(2) // word_char: long links
+		body.SetSelectable(true)
+		body.SetMaxWidthChars(84)
+		gtkx.Append(box, &body.Widget)
+	}
 	links := gtk.NewBox(gtk.OrientationHorizontalValue, 16)
 	links.AddCssClass("mail-links")
 	if rest != "" {
@@ -536,14 +546,21 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 		}
 		w.link(links, label, func() { w.quotes[k] = !w.quotes[k]; w.drawReader() })
 	}
+	if m.HTML != "" {
+		label := i18n.T("Show as text")
+		if !formatted {
+			label = i18n.T("Show formatted")
+		}
+		w.link(links, label, func() { w.flipped[k] = !w.flipped[k]; w.lastDrawn = ""; w.drawReader() })
+	}
 	if m.FromHTML || m.HTML != "" {
 		b := gtk.NewButtonWithLabel(i18n.T("Open in browser"))
 		b.AddCssClass("mail-link")
-		b.SetTooltipText(i18n.T("Shown here as text. The browser shows it as sent, and may load its remote images, which tell the sender you opened it."))
+		b.SetTooltipText(i18n.T("The browser shows it as sent, with its layout, and may load its pictures from the web, which tell the sender you opened it."))
 		w.readerBtns = append(w.readerBtns, w.h.click(b, func() { w.openHTML(m) }))
 		gtkx.Append(links, &b.Widget)
 	}
-	if rest != "" && w.quotes[k] {
+	if rest != "" && !formatted && w.quotes[k] {
 		q := gtk.NewLabel("")
 		q.AddCssClass("mail-quoted")
 		q.SetMarkup(linkify(rest))

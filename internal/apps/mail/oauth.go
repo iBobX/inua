@@ -56,7 +56,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 		return Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL: "https://oauth2.googleapis.com/token",
-			Scopes:   []string{"https://mail.google.com/", "openid", "email"},
+			Scopes:   []string{"https://mail.google.com/", "openid", "email", "profile"},
 			Extra:    url.Values{"access_type": {"offline"}, "prompt": {"consent"}},
 			Client:   c,
 			secret:   s.keyringSecret(Google, c),
@@ -78,7 +78,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 			AuthURL:  base + "authorize",
 			TokenURL: base + "token",
 			Scopes: []string{"https://outlook.office.com/IMAP.AccessAsUser.All", "https://outlook.office.com/SMTP.Send",
-				"offline_access", "openid", "email"},
+				"offline_access", "openid", "email", "profile"},
 			Extra:  url.Values{"prompt": {"select_account"}},
 			Client: c,
 			secret: s.keyringSecret(Microsoft, c),
@@ -110,6 +110,7 @@ type Token struct {
 	Expiry  time.Time
 	Email   string // from the ID token, when there is one
 	Name    string // the user's name, from the ID token
+	Picture string // the user's photo's address, from the ID token
 }
 
 // SignIn is a sign-in waiting for the browser: open URL, then Wait.
@@ -285,7 +286,7 @@ func (ep Endpoint) token(ctx context.Context, form url.Values) (Token, error) {
 		return Token{}, err
 	}
 	t := Token{Access: body.Access, Refresh: body.Refresh}
-	t.Email, t.Name = identity(body.IDToken)
+	t.Email, t.Name, t.Picture = identity(body.IDToken)
 	if body.ExpiresIn > 0 {
 		t.Expiry = time.Now().Add(time.Duration(body.ExpiresIn) * time.Second)
 	}
@@ -300,28 +301,32 @@ func firstLine(s string) string {
 // identity reads the address and the name from an ID token's claims.
 // The token came from the provider over TLS in answer to inua's own
 // request, so its signature is not checked.
-func identity(idToken string) (email, name string) {
+func identity(idToken string) (email, name, picture string) {
 	parts := strings.Split(idToken, ".")
 	if len(parts) != 3 {
-		return "", ""
+		return "", "", ""
 	}
 	b, err := base64.RawURLEncoding.DecodeString(strings.TrimRight(parts[1], "="))
 	if err != nil {
-		return "", ""
+		return "", "", ""
 	}
 	var claims struct {
 		Email    string `json:"email"`
 		Username string `json:"preferred_username"`
 		Name     string `json:"name"`
+		Picture  string `json:"picture"`
 	}
 	if json.Unmarshal(b, &claims) != nil {
-		return "", ""
+		return "", "", ""
 	}
 	email = claims.Email
 	if email == "" && strings.Contains(claims.Username, "@") {
 		email = claims.Username
 	}
-	return email, claims.Name
+	if !strings.HasPrefix(claims.Picture, "https://") {
+		claims.Picture = ""
+	}
+	return email, claims.Name, claims.Picture
 }
 
 // Tokens gives an account's access token, refreshed before it ends.

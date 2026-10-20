@@ -148,6 +148,7 @@ func (w *window) showKeys() {
 		{"Z", i18n.T("Undo the last archive, delete or move")},
 		{"Ctrl+Enter", i18n.T("Send (in a reply or the composer)")},
 		{"Esc", i18n.T("Leave the search or the reply field")},
+		{"Ctrl+,", i18n.T("Settings")},
 		{"?", i18n.T("These keys")},
 	}
 	for i, k := range keys {

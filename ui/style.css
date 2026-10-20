@@ -3171,6 +3171,42 @@ window.mail .mail-status-counts { color: @t2; font-feature-settings: "tnum"; }
 window.mail button.mail-compose-button { min-height: 32px; min-width: 32px; padding: 0; }
 window.mail .mail-side { padding: 0 14px 12px; }
 window.mail button.index-item.mail-box { min-height: 34px; padding: 2px 10px 2px 13px; }
+/* An account in the index: a panel of its own, its photo or initial,
+   name and address at its head (a click opens its settings), then its
+   mailboxes. */
+window.mail .mail-acct {
+  margin-top: 14px;
+  padding: 4px 4px 6px;
+  border: 1px solid alpha(@line, 0.6);
+  border-radius: 8px;
+  background: alpha(@surface, 0.5);
+}
+window.mail button.mail-acct-head {
+  min-height: 0;
+  margin-bottom: 4px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+}
+window.mail button.mail-acct-head:hover { background: alpha(@accent, 0.07); }
+window.mail .mail-acct-name { font-size: 13px; font-weight: 600; color: @t0; }
+window.mail .mail-acct-addr {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: @t2;
+}
+window.mail .mail-avatar { min-width: 30px; min-height: 30px; border-radius: 6px; }
+window.mail .mail-monogram {
+  background: alpha(@accent, 0.14);
+  color: @accent;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+window.mail .mail-acct button.index-item.mail-box { padding-left: 12px; }
+window.mail .mail-acct .mail-account-state { margin: 0 8px 4px 12px; }
 window.mail .mail-count {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 11.5px;
@@ -3240,7 +3276,12 @@ window.mail button.mail-filter:hover { color: @t1; }
 window.mail button.mail-filter.current { color: @t0; }
 window.mail .mail-list-empty { margin: 32px; }
 window.mail .mail-list-error { margin: 8px 16px; }
-window.mail button.mail-older { margin: 8px 14px 12px; }
+window.mail label.mail-older {
+  margin: 6px 14px 10px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: @t2;
+}
 window.mail listview.mail-conversations { background: transparent; }
 window.mail listview.mail-conversations > row {
   padding: 0;
@@ -3343,6 +3384,50 @@ window.mail .mail-text { font-size: 14px; color: @t0; }
 window.mail .mail-text, window.mail .mail-quoted { line-height: 1.4; }
 window.mail .mail-quoted { font-size: 13px; color: @t2; padding-left: 12px; border-left: 2px solid alpha(@line, 0.8); }
 window.mail .mail-text link, window.mail .mail-quoted link { color: @t0; }
+/* A message's HTML, formatted: its blocks as labels and pictures, in the
+   reader's type; the sender's fonts and colours are not kept. */
+window.mail .mail-html { font-size: 14px; color: @t0; }
+window.mail .mail-html > * { margin-bottom: 10px; }
+window.mail .mail-html-p, window.mail .mail-html-h { line-height: 1.45; }
+window.mail .mail-html link { color: @t0; }
+window.mail .mail-html-h { font-weight: 600; margin-top: 6px; }
+window.mail .mail-html-h1 { font-size: 20px; }
+window.mail .mail-html-h2 { font-size: 17px; }
+window.mail .mail-html-h3, window.mail .mail-html-h4 { font-size: 15px; }
+window.mail .mail-html > .mail-html-item { margin-bottom: 4px; }
+window.mail .mail-html-mark { min-width: 14px; line-height: 1.45; color: @t2; }
+window.mail .mail-html-pre {
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: alpha(@line, 0.35);
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+}
+window.mail .mail-html-quote { padding-left: 12px; border-left: 2px solid alpha(@line, 0.8); color: @t1; }
+window.mail .mail-html .mail-quoted { margin-bottom: 6px; }
+window.mail .mail-html-rule { margin: 6px 0 16px; }
+window.mail .mail-html-img { border-radius: 3px; }
+window.mail button.mail-html-img-link {
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+window.mail button.mail-html-img-link:hover { opacity: 0.85; }
+window.mail .mail-html-alt { font-size: 12px; color: @t2; font-style: italic; }
+window.mail .mail-html-alt.loading { opacity: 0.6; }
+window.mail .mail-held {
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border: 1px solid alpha(@line, 0.7);
+  border-radius: 4px;
+}
+window.mail .mail-held-text {
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: @t2;
+}
 window.mail .mail-files { margin-top: 4px; }
 window.mail .mail-file { border: 1px solid @line; border-radius: 3px; }
 window.mail button.mail-file-open {
@@ -3637,3 +3722,25 @@ window.mail button.destructive-action {
   color: @app;
 }
 window.mail button.destructive-action:hover { background: mix(@danger, @t0, 0.14); }
+
+/* Mail's settings: the settings look, a few things of Mail's own. */
+window.mail-settings .mail-settings-kicker { margin: 14px 12px 4px; }
+window.mail-settings button.mail-settings-add { margin: 4px 8px 0; }
+window.mail-settings textview.mail-settings-signature {
+  min-height: 84px;
+  border: 1px solid @line;
+  border-radius: 6px;
+}
+window.mail-settings textview.mail-settings-signature,
+window.mail-settings textview.mail-settings-signature text {
+  background: @surface;
+  color: @t0;
+  caret-color: @accent;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+}
+window.mail-settings textview.mail-settings-signature:focus-within { border-color: @accent; }
+window.mail-settings .mail-settings-note { margin: 4px 0 10px; }
+window.mail-settings .mail-settings-saved { margin: 4px 24px 16px; }
+window.mail-settings button.mail-settings-danger { border: 1px solid @line; background: transparent; box-shadow: none; color: @danger; }
+window.mail-settings button.mail-settings-danger:hover { border-color: @danger; }

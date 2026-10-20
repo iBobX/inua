@@ -37,6 +37,7 @@ type Account struct {
 	Address   string   `toml:"address"` // the address it sends from
 	Provider  Provider `toml:"provider"`
 	Signature string   `toml:"signature,omitempty"`
+	Picture   string   `toml:"picture,omitempty"`  // the provider's photo of the user, an address
 	IMAP      string   `toml:"imap,omitempty"`     // host:port; 993 TLS, else STARTTLS
 	SMTP      string   `toml:"smtp,omitempty"`     // host:port; 465 TLS, else STARTTLS
 	Username  string   `toml:"username,omitempty"` // the address when empty
@@ -67,6 +68,47 @@ type Settings struct {
 		// rules do not settle it (docs/feat/inua-mail.md, 7.2).
 		Sort bool `toml:"sort"`
 	} `toml:"assistant"`
+	Reading Reading `toml:"reading"`
+	Writing struct {
+		// UndoSend is the seconds a send waits, to be taken back: 0 is 5,
+		// below 0 none.
+		UndoSend int `toml:"undo_send,omitempty"`
+	} `toml:"writing"`
+}
+
+// Reading is how messages are shown.
+type Reading struct {
+	// Text shows HTML mail as plain text; else formatted (the default).
+	Text bool `toml:"text,omitempty"`
+	// Images is what to do with an HTML message's images from the web:
+	// "ask" (the default: a line offers to load them), "always" or "never".
+	Images string `toml:"images,omitempty"`
+	// ImagesFrom are the senders whose images load without asking.
+	ImagesFrom []string `toml:"images_from,omitempty"`
+	// KeepUnread leaves a conversation unread when it is opened.
+	KeepUnread bool `toml:"keep_unread,omitempty"`
+}
+
+// LoadImages says whether a sender's images from the web load at once.
+func (r Reading) LoadImages(from string) bool {
+	switch r.Images {
+	case "always":
+		return true
+	case "never":
+		return false
+	}
+	return slices.ContainsFunc(r.ImagesFrom, func(a string) bool { return strings.EqualFold(a, from) })
+}
+
+// UndoSeconds is how long a send waits to be taken back.
+func (s Settings) UndoSeconds() int {
+	switch {
+	case s.Writing.UndoSend < 0:
+		return 0
+	case s.Writing.UndoSend == 0:
+		return 5
+	}
+	return s.Writing.UndoSend
 }
 
 // SettingsPath is ~/.config/inua/mail.toml.
@@ -136,6 +178,12 @@ func (s *Settings) Add(a Account) Account {
 			a.ID = b.ID
 			if a.Signature == "" {
 				a.Signature = b.Signature
+			}
+			if a.Name == "" {
+				a.Name = b.Name
+			}
+			if a.Picture == "" {
+				a.Picture = b.Picture
 			}
 			s.Accounts[i] = a
 			return a

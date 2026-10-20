@@ -54,7 +54,7 @@ type composer struct {
 	before   string      // the text before the assistant changed it
 	asking   bool
 	sending  bool
-	undo     context.CancelFunc // stops a send in its 5 seconds
+	undo     context.CancelFunc // stops a send in its seconds
 	filling  bool               // the fields are being set from the draft
 	closed   bool
 }
@@ -456,7 +456,7 @@ func (c *composer) drawFiles() {
 
 // --- sending ---
 
-// sendOrUndo sends, after 5 seconds the user can take it back in; pressed
+// sendOrUndo sends, after the seconds (settings) the user can take it back in; pressed
 // again in those seconds, it takes it back.
 func (c *composer) sendOrUndo() {
 	if c.sending {
@@ -492,7 +492,7 @@ func (c *composer) sendOrUndo() {
 	c.send.SetLabel(i18n.T("Undo"))
 	c.send.RemoveCssClass("suggested-action")
 	c.send.AddCssClass("outlined")
-	left := 5
+	left := c.w.settings.UndoSeconds()
 	var count func()
 	count = func() {
 		if ctx.Err() != nil {

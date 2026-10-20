@@ -148,9 +148,11 @@ ApplicationWindow mail {
             visible: false;
           }
 
-          Button older {
+          // Older mail loads as the list nears its end; this says so.
+          Label older {
             styles ["mail-older"]
-            label: _("Load older");
+            label: _("Loading older mail…");
+            xalign: 0;
             visible: false;
           }
 

@@ -38,11 +38,12 @@ inua-mail --check FILE.eml    the phishing checks on a message
   from the inboxes with how many are unread. ✎ writes a message.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours); *Starred*; *Unsent* when
-  drafts are kept; then each account under its name, its mailboxes in
-  the same order for every account (Inbox, Drafts, Sent, Archive, Spam,
-  Trash), the others behind *N more folders*, which also shows *Remove
-  account…*. An account that cannot connect says so under its name, with
-  *Sign in* when its sign-in ended.
+  drafts are kept; then each account in a panel of its own: its photo
+  (a Google account's) or initial, its name and address, then its
+  mailboxes in the same order for every account (Inbox, Drafts, Sent,
+  Archive, Spam, Trash), the others behind *N more folders*. A click on
+  the account's head opens its settings. An account that cannot connect
+  says so under its name, with *Sign in* when its sign-in ended.
 - **The list**: a conversation once, by its newest message: who wrote,
   when, the subject and how many messages, the first line, and a mark for
   what to act on: REPLY (someone asks you something), WAITING (you wrote
@@ -79,7 +80,8 @@ or `Ctrl+F` searches, `c` composes; on a conversation `r` replies, `a`
 replies to all, `f` forwards, `e` archives, `#` or Delete moves it to
 the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
 stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
-move. In the composer and the quick reply, `Ctrl+Enter` sends.
+move, `Ctrl+,` opens the settings. In the composer and the quick reply,
+`Ctrl+Enter` sends.
 
 The window's title counts the unread.
 
@@ -122,9 +124,23 @@ imap = "imap.fastmail.com:993"
 smtp = "smtp.fastmail.com:465"
 username = ""                   # the address when empty
 
+[reading]
+text = false                    # show HTML mail as text
+images = "ask"                  # pictures from the web: ask, always or never
+images_from = []                # senders whose pictures always load
+keep_unread = false             # opening a conversation does not mark it read
+
+[writing]
+undo_send = 5                   # seconds to take a send back; -1 sends at once
+
 [assistant]
 sort = false                    # sort new mail with the assistant
 ```
+
+**Settings** (Ctrl+, or a click on an account's head) is a window of
+its own: each account (its name, signature, signing in again, removing
+it), Reading, Writing, the assistant's sorting, and Advanced (your own
+OAuth client, the cache kept and *Clear*).
 
 ### OAuth client IDs
 
@@ -182,7 +198,8 @@ the provider allows one.
 
 Mail opens with what it kept from last time (the indexes in
 `~/.cache/inua/mail/`), then connects. The first time, it fetches the
-newest 2000 messages of a mailbox (*Load older* fetches more); after
+newest 2000 messages of a mailbox, and older ones as the list is
+scrolled to its end; after
 that, what came, what changed and what went. A second connection waits
 in IDLE on each inbox, so new mail shows at once, with a notification
 when the window is not in front. Reading, starring, archiving and
@@ -211,7 +228,8 @@ opens it again (its people, text, files and the conversation it
 answers) and *Discard* moves it to the Trash; sending it removes its
 copy. A draft the server could not take (offline, or an account with no
 Drafts folder) stays on this computer, under *Unsent*. Send waits
-five seconds, in which *Undo* takes it back. A copy goes to Sent (Gmail
+five seconds (Settings → Writing: off, 5, 10, 20 or 30), in which *Undo*
+takes it back. A copy goes to Sent (Gmail
 and Outlook keep their own).
 
 ## The assistant
@@ -249,10 +267,18 @@ the cache at once; Enter searches the server too. Operators:
 
 ## Reading safely
 
-- HTML is shown as text: paragraphs, lists, quotes, and each link as its
-  text with where it goes after it. No styles, scripts or remote images,
-  so no tracking pixel loads. *Open in browser* shows the message as
-  sent, and may load its remote images.
+- HTML is shown formatted, without a web engine: headings, bold and
+  italic, links, lists, quotes, code and pictures, in Mail's own type
+  and colours; the sender's styles, scripts, forms and hidden text are
+  dropped, and so are tracking pixels. The part of a reply quoting
+  earlier mail folds behind *Show quoted text*. *Show as text* (or
+  Settings → Reading) shows the words alone; *Open in browser* shows it
+  as sent.
+- Pictures a message carries show at once. Pictures from the web are
+  asked for: a line says how many were not loaded, with *Load them* and
+  *Always from this sender*. Settings → Reading can load them always or
+  never; a message the phishing checks find suspicious never loads them
+  by itself.
 - No read receipts are sent.
 - Attachments open from `$XDG_RUNTIME_DIR/inua-mail/`, which only you can
   read and which is emptied when Mail quits.
@@ -276,8 +302,8 @@ suspicious message.
 
 | Where | What |
 | --- | --- |
-| `internal/apps/mail` | No GTK: accounts and `mail.toml`, secrets, OAuth and XOAUTH2, the IMAP session (sync, actions, IDLE, search), SMTP, parsing and building messages, HTML to text, conversations, search, sorting, the phishing checks, the prompts |
-| `internal/mailui`, `ui/mail.blp`, `ui/mail-compose.blp` | The window, the welcome, the composer |
+| `internal/apps/mail` | No GTK: accounts and `mail.toml`, secrets, OAuth and XOAUTH2, the IMAP session (sync, actions, IDLE, search), SMTP, parsing and building messages, HTML to text and to formatted blocks, pictures, conversations, search, sorting, the phishing checks, the prompts |
+| `internal/mailui`, `ui/mail.blp`, `ui/mail-compose.blp` | The window, the welcome, the settings, the composer, the formatted reader |
 | `cmd/inua-mail` | The program |
 
 It uses emersion's go-imap v2, go-message, go-smtp and go-sasl (MIT).

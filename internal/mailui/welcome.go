@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -524,7 +525,7 @@ func (wl *welcome) signedIn(p mail.Provider, tok mail.Token, err error) {
 		return
 	}
 	wl.say(lineDone, i18n.Tf("signed in as %s", tok.Email))
-	wl.keep(mail.Account{Name: tok.Name, Address: tok.Email, Provider: p}, mail.SecretRefresh, tok.Refresh)
+	wl.keep(mail.Account{Name: tok.Name, Address: tok.Email, Provider: p, Picture: tok.Picture}, mail.SecretRefresh, tok.Refresh)
 }
 
 // --- 2: a password ---
@@ -656,6 +657,10 @@ func (wl *welcome) keep(acc mail.Account, kind, secret string) {
 		acc.Name = wl.again.Name
 	}
 	acc = w.settings.Add(acc)
+	if acc.Picture != "" {
+		os.Remove(w.store.AvatarPath(acc.ID)) // the photo is fetched again: it may have changed
+		delete(w.avatars, acc.ID)
+	}
 	if err := w.secrets.Set(acc.ID, kind, secret); err != nil {
 		wl.say(lineBad, i18n.Tf("could not keep the sign-in in the keyring: %v", err))
 		return
@@ -826,57 +831,19 @@ func (wl *welcome) drawCustom(box *gtk.Box) {
 // saveCustom keeps the user's own clients in mail.toml.
 func (wl *welcome) saveCustom() {
 	w := wl.w
-	id := strings.TrimSpace(wl.gID.GetText())
-	secret := strings.TrimSpace(wl.gSecret.GetText())
-	mID, tenant := strings.TrimSpace(wl.mID.GetText()), strings.TrimSpace(wl.mTenant.GetText())
-	// The secret goes to the keyring, not mail.toml; empty keeps the one
-	// kept, and no client ID drops it. Off the main thread: the keyring may
-	// ask for a passphrase.
-	keep := ""
-	switch {
-	case id == "":
-		keep = "-"
-	case secret != "":
-		keep = secret
-	}
 	wl.busy = true
 	wl.draw()
-	go func() {
-		var err error
-		switch keep {
-		case "":
-		case "-":
-			err = w.secrets.Set(mail.SecretKey, mail.ClientSecretKind(mail.Google), "")
-		default:
-			err = w.secrets.Set(mail.SecretKey, mail.ClientSecretKind(mail.Google), keep)
-		}
-		gtkx.Post(func() {
+	w.saveClients(strings.TrimSpace(wl.gID.GetText()), strings.TrimSpace(wl.gSecret.GetText()),
+		strings.TrimSpace(wl.mID.GetText()), strings.TrimSpace(wl.mTenant.GetText()), func(err error) {
 			if w.welcome != wl {
 				return
 			}
 			wl.busy = false
 			if err != nil {
-				wl.err = i18n.Tf("Could not keep the secret in the keyring: %v", err)
-				wl.draw()
-				return
-			}
-			s := &w.settings
-			g := &s.OAuth.Google
-			g.ClientID = id
-			switch keep {
-			case "-":
-				g.ClientSecret, g.SecretInKeyring = "", false
-			case "":
-			default:
-				g.ClientSecret, g.SecretInKeyring = "", true // out of mail.toml
-			}
-			s.OAuth.Microsoft.ClientID, s.OAuth.Microsoft.Tenant = mID, tenant
-			if err := s.Save(mail.SettingsPath()); err != nil {
 				wl.err = err.Error()
 			} else {
 				wl.err, wl.custom = "", false
 			}
 			wl.draw()
 		})
-	}()
 }

@@ -64,18 +64,18 @@ type window struct {
 	h   *hub
 	win *gtk.ApplicationWindow
 
-	top                               gtk.Stack
-	side, filters, reader, welcomeBox gtk.Box
-	statusMark, undoBar               gtk.Box
-	undoText                          gtk.Label
-	undoBtn                           gtk.Button
-	statusState, statusCounts         gtk.Label
-	compose, addAccount, older        gtk.Button
-	search                            gtk.SearchEntry
-	searchNote, listEmpty, listError  gtk.Label
-	readerEmpty                       gtk.Label
-	listStack, readerStack            gtk.Stack
-	listScroll, readerScroll          gtk.ScrolledWindow
+	top                                     gtk.Stack
+	side, filters, reader, welcomeBox       gtk.Box
+	statusMark, undoBar                     gtk.Box
+	undoText                                gtk.Label
+	undoBtn                                 gtk.Button
+	statusState, statusCounts               gtk.Label
+	compose, addAccount                     gtk.Button
+	search                                  gtk.SearchEntry
+	searchNote, listEmpty, listError, older gtk.Label
+	readerEmpty                             gtk.Label
+	listStack, readerStack                  gtk.Stack
+	listScroll, readerScroll                gtk.ScrolledWindow
 
 	model *gtk.StringList
 	sel   *gtk.SingleSelection
@@ -88,28 +88,37 @@ type window struct {
 	drafts   *mail.Drafts
 	accts    []*acct
 
-	view     view
-	filter   filter
-	query    string
-	parsed   mail.Query
-	found    map[mail.Key]bool // what the server's search found
-	asked    string            // the sentence the assistant turned into the query
-	convs    []*mail.Conversation
-	ids      []string // the list's model, by conversation
-	open     *mail.Conversation
-	openID   string
-	reading  map[mail.Key]*reading
-	sumState map[string]*aiText // conversation → its summary
-	ideas    map[string]*aiText // conversation → reply ideas, a line each
-	judged   map[mail.Key]*aiText
-	actErr   string // an action's error, said on the conversation
-	folded   map[mail.Key]bool
-	quotes   map[mail.Key]bool
-	checks   map[mail.Key]bool      // the phishing checks unfolded
-	answers  map[mail.Key]*aiText   // an invitation's answer: busy, sent (text), or why not
-	fileSums map[string]*aiText     // an attachment's summary, by fileKey
-	quick    map[string]*quickReply // a conversation's quick reply, by its ID
-	sideSig  string                 // the index's counts when last drawn
+	view         view
+	filter       filter
+	query        string
+	parsed       mail.Query
+	found        map[mail.Key]bool // what the server's search found
+	asked        string            // the sentence the assistant turned into the query
+	convs        []*mail.Conversation
+	ids          []string // the list's model, by conversation
+	open         *mail.Conversation
+	openID       string
+	reading      map[mail.Key]*reading
+	sumState     map[string]*aiText // conversation → its summary
+	ideas        map[string]*aiText // conversation → reply ideas, a line each
+	judged       map[mail.Key]*aiText
+	actErr       string // an action's error, said on the conversation
+	folded       map[mail.Key]bool
+	quotes       map[mail.Key]bool
+	checks       map[mail.Key]bool       // the phishing checks unfolded
+	answers      map[mail.Key]*aiText    // an invitation's answer: busy, sent (text), or why not
+	fileSums     map[string]*aiText      // an attachment's summary, by fileKey
+	quick        map[string]*quickReply  // a conversation's quick reply, by its ID
+	sideSig      string                  // the index's counts when last drawn
+	avatars      map[string]*gdk.Texture // accounts' photos, by ID
+	avatarAsked  map[string]bool
+	loadingOlder bool                      // older mail is being fetched
+	settingsWin  *settingsWin              // the settings, while open
+	flipped      map[mail.Key]bool         // messages shown not as the settings say: text for formatted, or formatted for text
+	picsOK       map[mail.Key]bool         // messages whose pictures from the web the user loaded
+	blocks       map[mail.Key][]mail.Block // the formatted messages' blocks
+	pics         map[string]*pic           // pictures, by where they come from and the width drawn
+	picsDue      bool                      // a redraw for pictures is coming
 
 	sideBtns   []uintptr // the index's buttons, forgotten when it is made again
 	readerBtns []uintptr // the conversation's buttons, likewise
@@ -140,7 +149,8 @@ func openWindow(c *appui.Ctx) *window {
 		store: mail.NewStore(), secrets: mail.NewSecrets(), drafts: mail.NewDrafts(),
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
-		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{},
+		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{}, avatars: map[string]*gdk.Texture{}, avatarAsked: map[string]bool{},
+		flipped: map[mail.Key]bool{}, picsOK: map[mail.Key]bool{}, blocks: map[mail.Key][]mail.Block{}, pics: map[string]*pic{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
 	w.ctx, w.cancel = context.WithCancel(context.Background())
@@ -173,7 +183,7 @@ func openWindow(c *appui.Ctx) *window {
 
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
 	w.h.click(&w.addAccount, func() { w.showWelcome("", nil) })
-	w.h.click(&w.older, w.loadOlder)
+	w.h.notify(w.listScroll.GetVadjustment(), "value", w.nearEnd)
 	w.h.click(&w.undoBtn, w.undo)
 	w.h.searched(&w.search, w.searchChanged)
 	w.h.enter(&w.search, w.searchEntered)
@@ -440,24 +450,32 @@ func (w *window) drawSide() {
 		w.sideBtns = append(w.sideBtns, w.h.click(btn, w.showUnsent))
 	}
 	for _, x := range w.accts {
-		head := gtk.NewButton()
-		head.AddCssClass("mail-account")
-		box := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-		name := gtk.NewLabel(strings.ToUpper(accountName(x.s.Acc)))
-		name.AddCssClass("mail-account-name")
-		name.SetXalign(0)
-		gtkx.Append(box, &name.Widget)
-		addr := gtk.NewLabel(x.s.Acc.Address)
-		addr.AddCssClass("mail-account-addr")
-		addr.SetXalign(1)
-		addr.SetHexpand(true)
-		addr.SetEllipsize(1) // start: the domain stays
-		gtkx.Append(box, &addr.Widget)
-		head.SetChild(&box.Widget)
-		head.SetTooltipText(i18n.T("Show or hide the other folders"))
 		xx := x
-		w.sideBtns = append(w.sideBtns, w.h.click(head, func() { xx.more = !xx.more; w.drawSide() }))
-		gtkx.Append(&w.side, &head.Widget)
+		// A panel of its own: who, then the account's mailboxes.
+		panel := gtk.NewBox(gtk.OrientationVerticalValue, 1)
+		panel.AddCssClass("mail-acct")
+		head := gtk.NewButton()
+		head.AddCssClass("mail-acct-head")
+		head.SetTooltipText(i18n.T("This account's settings"))
+		hb := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		gtkx.Append(hb, w.avatarWidget(x))
+		who := gtk.NewBox(gtk.OrientationVerticalValue, 1)
+		who.SetValign(gtk.AlignCenterValue)
+		who.SetHexpand(true)
+		name := gtk.NewLabel(x.s.Acc.DisplayName())
+		name.AddCssClass("mail-acct-name")
+		name.SetXalign(0)
+		name.SetEllipsize(3)
+		gtkx.Append(who, &name.Widget)
+		addr := gtk.NewLabel(x.s.Acc.Address)
+		addr.AddCssClass("mail-acct-addr")
+		addr.SetXalign(0)
+		addr.SetEllipsize(2)
+		gtkx.Append(who, &addr.Widget)
+		gtkx.Append(hb, &who.Widget)
+		head.SetChild(&hb.Widget)
+		w.sideBtns = append(w.sideBtns, w.h.click(head, func() { w.showSettings(xx.s.Acc.ID) }))
+		gtkx.Append(panel, &head.Widget)
 		if x.state != "" {
 			st := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
 			st.AddCssClass("mail-account-state")
@@ -472,12 +490,12 @@ func (w *window) drawSide() {
 				w.sideBtns = append(w.sideBtns, w.h.click(b, func() { acc := xx.s.Acc; w.showWelcome(acc.Provider, &acc) }))
 				gtkx.Append(st, &b.Widget)
 			}
-			gtkx.Append(&w.side, &st.Widget)
+			gtkx.Append(panel, &st.Widget)
 		} else if x.busy && len(x.boxes) == 0 {
 			l := gtk.NewLabel(i18n.T("Connecting…"))
 			l.AddCssClass("mail-account-state")
 			l.SetXalign(0)
-			gtkx.Append(&w.side, &l.Widget)
+			gtkx.Append(panel, &l.Widget)
 		}
 		boxes := x.boxes
 		if len(boxes) == 0 {
@@ -495,27 +513,34 @@ func (w *window) drawSide() {
 			if b.Role != mail.RoleSent && b.Role != mail.RoleTrash && b.Role != mail.RoleJunk && b.Role != mail.RoleArchive {
 				n = b.Unread
 			}
-			w.sideItem(boxName(b), n, view{kind: viewBox, account: x.s.Acc.ID, mailbox: b.Name})
+			w.sideItemIn(panel, boxName(b), n, view{kind: viewBox, account: x.s.Acc.ID, mailbox: b.Name})
 		}
-		if x.more {
-			rm := w.sideButton(i18n.T("Remove account…"), 0, false)
-			rm.AddCssClass("mail-remove")
-			w.sideBtns = append(w.sideBtns, w.h.click(rm, func() { w.askRemove(xx) }))
-		} else if others > 0 {
-			more := w.sideButton(i18n.Nf("%d more folder", "%d more folders", others, others), 0, false)
+		if others > 0 {
+			label := i18n.Nf("%d more folder", "%d more folders", others, others)
+			if x.more {
+				label = i18n.T("Fewer folders")
+			}
+			more := w.sideButtonIn(panel, label, 0, false)
 			more.AddCssClass("mail-more")
-			w.sideBtns = append(w.sideBtns, w.h.click(more, func() { xx.more = true; w.drawSide() }))
+			w.sideBtns = append(w.sideBtns, w.h.click(more, func() { xx.more = !xx.more; w.drawSide() }))
 		}
+		gtkx.Append(&w.side, &panel.Widget)
 	}
 }
 
 // sideItem adds a view's button to the index.
-func (w *window) sideItem(title string, n int, v view) {
-	btn := w.sideButton(title, n, v == w.view)
+func (w *window) sideItem(title string, n int, v view) { w.sideItemIn(&w.side, title, n, v) }
+
+func (w *window) sideItemIn(parent *gtk.Box, title string, n int, v view) {
+	btn := w.sideButtonIn(parent, title, n, v == w.view)
 	w.sideBtns = append(w.sideBtns, w.h.click(btn, func() { w.setView(v) }))
 }
 
 func (w *window) sideButton(title string, n int, current bool) *gtk.Button {
+	return w.sideButtonIn(&w.side, title, n, current)
+}
+
+func (w *window) sideButtonIn(parent *gtk.Box, title string, n int, current bool) *gtk.Button {
 	btn := gtk.NewButton()
 	btn.AddCssClass("index-item")
 	btn.AddCssClass("mail-box")
@@ -535,7 +560,7 @@ func (w *window) sideButton(title string, n int, current bool) *gtk.Button {
 		gtkx.Append(box, &c.Widget)
 	}
 	btn.SetChild(&box.Widget)
-	gtkx.Append(&w.side, &btn.Widget)
+	gtkx.Append(parent, &btn.Widget)
 	return btn
 }
 
@@ -597,7 +622,7 @@ func (w *window) setView(v view) {
 			w.syncBox(x, v.mailbox)
 		}
 	}
-	w.older.SetVisible(w.canLoadOlder())
+	w.nearEnd()
 }
 
 func (w *window) setFilter(f filter) {
@@ -723,7 +748,7 @@ func (w *window) refresh() {
 	if w.open != nil {
 		w.drawReader()
 	}
-	w.older.SetVisible(w.canLoadOlder())
+	w.nearEnd()
 	w.sideCounts()
 }
 
@@ -784,19 +809,32 @@ func (w *window) canLoadOlder() bool {
 	return x != nil && x.s.Older(w.view.mailbox)
 }
 
+// nearEnd loads older mail of the mailbox shown when the list is
+// scrolled near its end, or does not fill the column.
+func (w *window) nearEnd() {
+	if w.loadingOlder || !w.canLoadOlder() || w.listStack.GetVisibleChildName() != "list" {
+		return
+	}
+	a := w.listScroll.GetVadjustment()
+	if a.GetValue()+a.GetPageSize() < a.GetUpper()-400 {
+		return
+	}
+	w.loadOlder()
+}
+
 func (w *window) loadOlder() {
 	x := w.acct(w.view.account)
 	if x == nil {
 		return
 	}
 	mailbox := w.view.mailbox
-	w.older.SetSensitive(false)
-	w.older.SetLabel(i18n.T("Loading…"))
+	w.loadingOlder = true
+	w.older.SetVisible(true)
 	go func() {
 		_, err := x.s.LoadOlder(w.ctx, mailbox)
 		gtkx.Post(func() {
-			w.older.SetSensitive(true)
-			w.older.SetLabel(i18n.T("Load older"))
+			w.loadingOlder = false
+			w.older.SetVisible(false)
 			if err != nil {
 				w.say(&w.listError, i18n.Tf("Could not load older mail: %v", err))
 			}
@@ -1170,6 +1208,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 	switch {
 	case ctrl && (keyval == uint32(gdk.KEY_f) || keyval == uint32(gdk.KEY_k)), keyval == uint32(gdk.KEY_slash):
 		w.search.GrabFocus()
+	case ctrl && keyval == uint32(gdk.KEY_comma):
+		w.showSettings("")
 	case ctrl:
 		return false
 	case keyval == uint32(gdk.KEY_j) || keyval == uint32(gdk.KEY_Down):
