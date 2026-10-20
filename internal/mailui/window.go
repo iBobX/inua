@@ -695,6 +695,10 @@ func (w *window) refresh() {
 				w.sel.SetSelected(uint32(i))
 			}
 			w.open = cs[i]
+		} else if w.open != nil && w.gone(w.open) {
+			// Its messages left (sent from Drafts, moved or deleted elsewhere).
+			w.open, w.openID = nil, ""
+			w.readerStack.SetVisibleChildName("empty")
 		}
 	}
 	switch {
@@ -1213,4 +1217,21 @@ func thousands(n int) string {
 		s = s[:i] + "," + s[i:]
 	}
 	return s
+}
+
+// gone says whether none of a conversation's messages is in its mailbox
+// any longer.
+func (w *window) gone(c *mail.Conversation) bool {
+	for _, m := range c.Messages {
+		x := w.acct(m.Account)
+		if x == nil {
+			continue
+		}
+		for _, it := range x.s.Items(m.Mailbox) {
+			if it.UID == m.UID {
+				return false
+			}
+		}
+	}
+	return true
 }

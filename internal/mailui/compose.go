@@ -43,6 +43,9 @@ type composer struct {
 	ptrs     []uintptr   // its registrations in the hub
 	dirty    bool        // changed since saved
 	saving   bool        // a save is due
+	edits    int         // changes made, counted for the copy in Drafts
+	served   int         // edits when the copy in Drafts was last made
+	sentDone bool        // sent: a copy in Drafts made after it goes
 	before   string      // the text before the assistant changed it
 	asking   bool
 	sending  bool
@@ -60,7 +63,7 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	}
 	// A draft open already comes forward.
 	for _, c := range w.composers {
-		if d.ID != "" && c.d.ID == d.ID {
+		if (d.ID != "" && c.d.ID == d.ID) || (d.Server != 0 && c.d.Server == d.Server && c.d.Account == d.Account) {
 			c.win.Present()
 			return c
 		}
@@ -138,6 +141,7 @@ func (w *window) newComposer(d mail.Draft, conv []mail.Said) *composer {
 	)
 	c.buildPolish()
 	w.composers = append(w.composers, c)
+	w.h.later(60000, c.serverTick)
 	c.win.Present()
 	if c.d.To == "" {
 		c.to.GrabFocus()
@@ -199,6 +203,7 @@ func (c *composer) changed() {
 	}
 	c.title()
 	c.dirty = true
+	c.edits++
 	if c.saving {
 		return
 	}
@@ -228,6 +233,65 @@ func (c *composer) save() {
 		return
 	}
 	c.say(i18n.Tf("Draft kept at %s", time.Now().Format("15:04")), false)
+}
+
+// serverTick keeps a copy in the account's Drafts folder once a minute
+// while the draft changes.
+func (c *composer) serverTick() {
+	if c.closed {
+		return
+	}
+	if !c.sending && c.edits != c.served {
+		c.saveServer(false)
+	}
+	c.w.h.later(60000, c.serverTick)
+}
+
+// saveServer keeps a copy of the draft in the account's Drafts folder, in
+// place of the one before. closing: the window has gone, and the draft on
+// this computer goes once the server has it.
+func (c *composer) saveServer(closing bool) {
+	if !closing {
+		c.read()
+	}
+	d := c.d
+	x := c.w.acct(d.Account)
+	if x == nil {
+		return
+	}
+	if d.Empty() {
+		if d.Server != 0 {
+			go x.s.DeleteDraft(c.w.ctx, d.Server)
+		}
+		return
+	}
+	edits := c.edits
+	go func() {
+		uid, err := x.s.SaveDraft(c.w.ctx, d)
+		gtkx.Post(func() {
+			if c.sentDone && uid != 0 {
+				go x.s.DeleteDraft(c.w.ctx, uid) // sent while it was being kept
+				return
+			}
+			switch {
+			case err == nil:
+				c.d.Server, c.served = uid, edits
+				if closing {
+					c.w.drafts.Delete(d.ID) // the Drafts folder has it
+				} else {
+					c.w.drafts.Save(c.d) // with its copy's UID
+					c.say(i18n.Tf("Draft kept in Drafts at %s", time.Now().Format("15:04")), false)
+				}
+				if drafts := x.s.Role(mail.RoleDrafts); drafts != "" {
+					c.w.syncBox(x, drafts)
+				}
+			case errors.Is(err, mail.ErrNoDrafts):
+			case !closing:
+				c.say(i18n.Tf("Draft kept on this computer only: %v", err), false)
+			}
+			c.w.drawSide()
+		})
+	}()
 }
 
 func (c *composer) say(text string, bad bool) {
@@ -273,6 +337,11 @@ func (c *composer) closeRequested() bool {
 		return true // it closes when sent, or comes back if it failed
 	}
 	c.save()
+	if c.edits != c.served {
+		c.saveServer(true)
+	} else if c.d.Server != 0 {
+		c.w.drafts.Delete(c.d.ID) // the Drafts folder has it as it is
+	}
 	c.close()
 	return false
 }
@@ -451,6 +520,10 @@ func (c *composer) sent(x *acct, d mail.Draft, b mail.Built, err error) {
 		return
 	}
 	c.w.drafts.Delete(d.ID)
+	c.sentDone = true
+	if c.d.Server != 0 { // the latest copy: one may have been kept while the send waited
+		go x.s.DeleteDraft(c.w.ctx, c.d.Server)
+	}
 	if d.InReplyTo != "" {
 		go x.s.Answered(c.w.ctx, d.InReplyTo)
 	}

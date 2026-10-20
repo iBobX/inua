@@ -792,3 +792,49 @@ func TestAnswers(t *testing.T) {
 		t.Fatalf("summary prompt %s", p)
 	}
 }
+
+func TestDraftsOnServer(t *testing.T) {
+	srv := newIMAP(t, "Drafts")
+	ctx := context.Background()
+	s := srv.session(t)
+	s.Acc.Name = "Me"
+	s.Mailboxes(ctx)
+	file := filepath.Join(t.TempDir(), "plan.txt")
+	os.WriteFile(file, []byte("the plan"), 0o600)
+	d := Draft{ID: "d1", To: "Ana <ana@studio.dev>, ben@", Bcc: "boss@x.org", Subject: "Plan",
+		Body: "First go.\n\n-- \nMe", Attachments: []string{file}, InReplyTo: "q3@studio.dev", References: []string{"q3@studio.dev"}}
+	uid, err := s.SaveDraft(ctx, d)
+	if err != nil || uid == 0 {
+		t.Fatalf("first save: %d %v", uid, err)
+	}
+	d.Server, d.Body = uid, "Second go.\n\n-- \nMe"
+	uid2, err := s.SaveDraft(ctx, d)
+	if err != nil || uid2 == uid {
+		t.Fatalf("second save: %d %v", uid2, err)
+	}
+	s.Sync(ctx, "Drafts")
+	items := s.Items("Drafts")
+	if len(items) != 1 || items[0].UID != uid2 || !items[0].Has(DraftFlag) {
+		t.Fatalf("drafts kept: %+v", items)
+	}
+	m, err := s.Message(ctx, "Drafts", uid2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	back, err := DraftOf(m, s.Acc, uid2, t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if back.To != "Ana <ana@studio.dev>, ben@" || back.Bcc != "boss@x.org" || back.Subject != "Plan" || back.Body != "Second go.\n\n-- \nMe" {
+		t.Fatalf("draft back: %+v", back)
+	}
+	if back.InReplyTo != "q3@studio.dev" || len(back.Attachments) != 1 || back.Server != uid2 {
+		t.Fatalf("draft back: %+v", back)
+	}
+	if err := s.DeleteDraft(ctx, uid2); err != nil {
+		t.Fatal(err)
+	}
+	if s.Sync(ctx, "Drafts"); len(s.Items("Drafts")) != 0 {
+		t.Fatal("the draft stayed")
+	}
+}

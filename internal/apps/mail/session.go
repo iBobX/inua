@@ -476,6 +476,58 @@ func (s *Session) Send(ctx context.Context, d Draft) (Built, error) {
 	return b, nil
 }
 
+// ErrNoDrafts is an account with no Drafts folder: drafts stay on this
+// computer.
+var ErrNoDrafts = errors.New("no Drafts folder")
+
+// SaveDraft keeps a copy of a draft in the account's Drafts folder, in
+// place of the copy kept before (d.Server), and returns the new copy's UID.
+func (s *Session) SaveDraft(ctx context.Context, d Draft) (uint32, error) {
+	box := s.Role(RoleDrafts)
+	if box == "" {
+		return 0, ErrNoDrafts
+	}
+	b, err := BuildDraft(d, s.Acc, time.Now())
+	if err != nil {
+		return 0, err
+	}
+	var uid uint32
+	err = s.Do(ctx, func(c *Conn) error {
+		var err error
+		if uid, err = c.appendUID(box, b.Raw, Seen, DraftFlag); err != nil {
+			return err
+		}
+		if uid == 0 {
+			if uid, err = c.uidOf(box, b.MessageID); err != nil {
+				return err
+			}
+		}
+		if d.Server != 0 && d.Server != uid {
+			return c.Delete(box, []uint32{d.Server})
+		}
+		return nil
+	})
+	if err != nil {
+		return uid, err
+	}
+	s.imu.Lock()
+	x := s.index(box)
+	x.Drop(func(u uint32) bool { return u == d.Server })
+	s.imu.Unlock()
+	s.save(box)
+	return uid, nil
+}
+
+// DeleteDraft removes a draft's copy from the Drafts folder, after it was
+// sent or discarded.
+func (s *Session) DeleteDraft(ctx context.Context, uid uint32) error {
+	box := s.Role(RoleDrafts)
+	if box == "" || uid == 0 {
+		return nil
+	}
+	return s.Delete(ctx, box, []uint32{uid})
+}
+
 // ErrNotSaved is a message sent but not put in Sent.
 var ErrNotSaved = errors.New("sent, but not saved in Sent")
 

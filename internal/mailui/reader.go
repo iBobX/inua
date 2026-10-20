@@ -173,7 +173,9 @@ func (w *window) drawReader() {
 		gtkx.Append(&w.reader, &e.Widget)
 	}
 	w.drawWarning(c)
-	w.drawAssist(c)
+	if !w.isDraft(c.Latest()) {
+		w.drawAssist(c) // not on the user's own draft
+	}
 
 	last := len(c.Messages) - 1
 	for i, m := range c.Messages {
@@ -181,6 +183,18 @@ func (w *window) drawReader() {
 	}
 	acts := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	acts.AddCssClass("mail-actions")
+	if w.isDraft(c.Latest()) {
+		b := gtk.NewButtonWithLabel(i18n.T("Continue writing"))
+		b.AddCssClass("outlined")
+		w.readerBtns = append(w.readerBtns, w.h.click(b, w.continueDraft))
+		gtkx.Append(acts, &b.Widget)
+		d := gtk.NewButtonWithLabel(i18n.T("Discard"))
+		d.AddCssClass("mail-plain")
+		w.readerBtns = append(w.readerBtns, w.h.click(d, w.trash))
+		gtkx.Append(acts, &d.Widget)
+		gtkx.Append(&w.reader, &acts.Widget)
+		return
+	}
 	for _, a := range []struct {
 		label, tip string
 		main       bool
@@ -703,4 +717,33 @@ func linkify(text string) string {
 
 func gtkEscape(s string) string {
 	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#39;").Replace(s)
+}
+
+// isDraft says whether a message is in its account's Drafts folder.
+func (w *window) isDraft(it mail.Item) bool {
+	x := w.acct(it.Account)
+	return x != nil && it.Mailbox == x.s.Role(mail.RoleDrafts)
+}
+
+// continueDraft opens the draft chosen in the composer, its copy in Drafts
+// replaced as it is written.
+func (w *window) continueDraft() {
+	if w.open == nil {
+		return
+	}
+	it := w.open.Latest()
+	rd := w.reading[it.Key()]
+	x := w.acct(it.Account)
+	if rd == nil || rd.m == nil || x == nil {
+		w.actErr = i18n.T("The message is still loading.")
+		w.drawReader()
+		return
+	}
+	d, err := mail.DraftOf(rd.m, x.s.Acc, it.UID, w.drafts.Dir)
+	if err != nil {
+		w.actErr = i18n.Tf("Could not open the draft: %v", err)
+		w.drawReader()
+		return
+	}
+	w.newComposer(d, w.said(w.open))
 }

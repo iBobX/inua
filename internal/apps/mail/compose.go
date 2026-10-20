@@ -33,6 +33,9 @@ type Draft struct {
 	InReplyTo   string    `json:"in_reply_to,omitempty"`
 	References  []string  `json:"references,omitempty"`
 	Saved       time.Time `json:"saved"`
+	// Server is the UID of its copy in the account's Drafts folder; 0
+	// when none is kept there.
+	Server uint32 `json:"server,omitempty"`
 }
 
 // NewDraft is an empty draft for an account, with its signature.
@@ -105,29 +108,35 @@ type Built struct {
 // Build makes the message from a draft: text/plain in UTF-8, the
 // attachments as base64, Message-ID and Date, and a reply's In-Reply-To
 // and References. Bcc goes in the recipients only.
-func Build(d Draft, acc Account, now time.Time) (Built, error) {
-	to, err := ParseAddresses(d.To)
-	if err != nil {
-		return Built{}, err
+func Build(d Draft, acc Account, now time.Time) (Built, error) { return build(d, acc, now, false) }
+
+// BuildDraft makes the copy of a draft kept in the Drafts folder: no
+// recipient is needed, Bcc stays in the header, and addresses still being
+// typed are kept as typed.
+func BuildDraft(d Draft, acc Account, now time.Time) (Built, error) { return build(d, acc, now, true) }
+
+func build(d Draft, acc Account, now time.Time, draft bool) (Built, error) {
+	var h gomail.Header
+	var all []Address
+	for _, f := range []struct{ key, typed string }{{"To", d.To}, {"Cc", d.Cc}, {"Bcc", d.Bcc}} {
+		l, err := ParseAddresses(f.typed)
+		switch {
+		case err != nil && draft:
+			h.SetText(f.key, strings.TrimSpace(f.typed))
+			continue
+		case err != nil:
+			return Built{}, err
+		}
+		all = append(all, l...)
+		if len(l) > 0 && (f.key != "Bcc" || draft) {
+			h.SetAddressList(f.key, gaddrs(l))
+		}
 	}
-	cc, err := ParseAddresses(d.Cc)
-	if err != nil {
-		return Built{}, err
-	}
-	bcc, err := ParseAddresses(d.Bcc)
-	if err != nil {
-		return Built{}, err
-	}
-	if len(to)+len(cc)+len(bcc) == 0 {
+	if len(all) == 0 && !draft {
 		return Built{}, ErrNoRecipient
 	}
-	var h gomail.Header
 	from := &gomail.Address{Name: acc.Name, Address: acc.Address}
 	h.SetAddressList("From", []*gomail.Address{from})
-	h.SetAddressList("To", gaddrs(to))
-	if len(cc) > 0 {
-		h.SetAddressList("Cc", gaddrs(cc))
-	}
 	h.SetSubject(d.Subject)
 	h.SetDate(now)
 	_, domain, _ := strings.Cut(acc.Address, "@")
@@ -189,7 +198,7 @@ func Build(d Draft, acc Account, now time.Time) (Built, error) {
 		}
 	}
 	b := Built{Raw: buf.Bytes(), MessageID: id, From: acc.Address}
-	for _, a := range slices.Concat(to, cc, bcc) {
+	for _, a := range all {
 		if !slices.Contains(b.Recipients, a.Addr) {
 			b.Recipients = append(b.Recipients, a.Addr)
 		}
@@ -318,6 +327,34 @@ func Forward(m *Message, acc Account, dir string) (Draft, error) {
 	if sig != "" {
 		d.Body = "\n\n" + sig + d.Body
 	}
+	if len(m.Shown()) > 0 {
+		folder := filepath.Join(dir, d.ID)
+		if err := os.MkdirAll(folder, 0o700); err != nil {
+			return d, err
+		}
+		for _, a := range m.Shown() {
+			p := filepath.Join(folder, safeName(a.Name))
+			if err := os.WriteFile(p, a.Data, 0o600); err != nil {
+				return d, err
+			}
+			d.Attachments = append(d.Attachments, p)
+		}
+	}
+	return d, nil
+}
+
+// DraftOf makes a draft from a message kept in the Drafts folder (uid
+// there), to go on writing it: its people, subject, text and reply
+// headers; its files written into dir.
+func DraftOf(m *Message, acc Account, uid uint32, dir string) (Draft, error) {
+	d := Draft{ID: newDraftID(), Account: acc.ID, Server: uid}
+	d.To, d.Cc, d.Bcc = joinAddrs(m.To), joinAddrs(m.Cc), joinAddrs(m.Bcc)
+	if d.To == "" {
+		d.To = strings.TrimSpace(m.Header.Get("To")) // still being typed when it was kept
+	}
+	d.Subject = m.Subject
+	d.Body = strings.Replace(m.Text, "\n--\n", "\n-- \n", 1) // the signature's line, its space trimmed in reading
+	d.InReplyTo, d.References = m.InReplyTo, m.References
 	if len(m.Shown()) > 0 {
 		folder := filepath.Join(dir, d.ID)
 		if err := os.MkdirAll(folder, 0o700); err != nil {

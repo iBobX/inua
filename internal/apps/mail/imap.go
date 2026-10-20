@@ -718,6 +718,13 @@ func (c *Conn) expunge(uids []uint32) error {
 
 // Append puts a message in a mailbox, as after sending it.
 func (c *Conn) Append(mailbox string, raw []byte, flags ...string) error {
+	_, err := c.appendUID(mailbox, raw, flags...)
+	return err
+}
+
+// appendUID is Append, with the UID the server gave the message (0 when
+// it does not say: no UIDPLUS).
+func (c *Conn) appendUID(mailbox string, raw []byte, flags ...string) (uint32, error) {
 	opts := &imap.AppendOptions{Time: time.Now()}
 	for _, f := range flags {
 		opts.Flags = append(opts.Flags, imap.Flag(f))
@@ -725,13 +732,33 @@ func (c *Conn) Append(mailbox string, raw []byte, flags ...string) error {
 	cmd := c.c.Append(mailbox, int64(len(raw)), opts)
 	if _, err := cmd.Write(raw); err != nil {
 		cmd.Close()
-		return err
+		return 0, err
 	}
 	if err := cmd.Close(); err != nil {
-		return err
+		return 0, err
 	}
-	_, err := cmd.Wait()
-	return err
+	d, err := cmd.Wait()
+	if err != nil || d == nil {
+		return 0, err
+	}
+	return uint32(d.UID), nil
+}
+
+// uidOf finds a message in a mailbox by its Message-ID; 0 when it is not
+// there.
+func (c *Conn) uidOf(mailbox, messageID string) (uint32, error) {
+	if err := c.fresh(mailbox); err != nil {
+		return 0, err
+	}
+	d, err := c.c.UIDSearch(&imap.SearchCriteria{Header: []imap.SearchCriteriaHeaderField{{Key: "Message-Id", Value: messageID}}}, nil).Wait()
+	if err != nil {
+		return 0, err
+	}
+	uids := d.AllUIDs()
+	if len(uids) == 0 {
+		return 0, nil
+	}
+	return uint32(uids[len(uids)-1]), nil
 }
 
 // Search asks the server which messages of a mailbox match.

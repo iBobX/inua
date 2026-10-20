@@ -104,7 +104,7 @@ msgstr "日"
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:946
+#: internal/mailui/window.go:950
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -202,7 +202,7 @@ msgstr "見つけました"
 
 #: internal/apps/connect/notifications.go:94
 #: internal/connectui/app.go:38
-#: internal/mailui/reader.go:189
+#: internal/mailui/reader.go:203
 #: ui/connectreply.ui:14
 msgid "Reply"
 msgstr "返信"
@@ -1294,31 +1294,31 @@ msgstr "あります：良い兆しですが、証拠ではありません。"
 msgid "Not from this computer."
 msgstr "このコンピューターからはありません。"
 
-#: internal/apps/mail/compose.go:67
+#: internal/apps/mail/compose.go:70
 msgid "%q is not an address"
 msgstr "%q はアドレスではありません"
 
-#: internal/apps/mail/compose.go:290
+#: internal/apps/mail/compose.go:299
 msgid "On %s, %s wrote:"
 msgstr "%[1]s、%[2]s のメッセージ："
 
-#: internal/apps/mail/compose.go:308
+#: internal/apps/mail/compose.go:317
 msgid "Forwarded message"
 msgstr "転送メッセージ"
 
-#: internal/apps/mail/compose.go:309
+#: internal/apps/mail/compose.go:318
 msgid "From:"
 msgstr "差出人："
 
-#: internal/apps/mail/compose.go:310
+#: internal/apps/mail/compose.go:319
 msgid "Date:"
 msgstr "日付："
 
-#: internal/apps/mail/compose.go:311
+#: internal/apps/mail/compose.go:320
 msgid "Subject:"
 msgstr "件名："
 
-#: internal/apps/mail/compose.go:313
+#: internal/apps/mail/compose.go:322
 msgid "To:"
 msgstr "宛先："
 
@@ -2571,9 +2571,9 @@ msgstr "pass がファイルを削除します。git のストアでは履歴に
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
-#: internal/mailui/reader.go:416
-#: internal/mailui/reader.go:554
-#: internal/mailui/window.go:829
+#: internal/mailui/reader.go:430
+#: internal/mailui/reader.go:568
+#: internal/mailui/window.go:833
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "ファイル"
@@ -2645,7 +2645,7 @@ msgstr "%s · %s"
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
 #: internal/mailui/actions.go:304
-#: internal/mailui/compose.go:355
+#: internal/mailui/compose.go:424
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -4110,7 +4110,7 @@ msgid "Answer %s"
 msgstr "%s に返信"
 
 #: internal/connectui/reply.go:68
-#: internal/mailui/compose.go:450
+#: internal/mailui/compose.go:519
 msgid "Not sent: %v"
 msgstr "送信されませんでした: %v"
 
@@ -5474,7 +5474,7 @@ msgid "New folder / new file"
 msgstr "新規フォルダー / 新規ファイル"
 
 #: internal/filesui/cards.go:696
-#: internal/mailui/compose.go:406
+#: internal/mailui/compose.go:475
 #: ui/mail-compose.ui:234
 msgid "Undo"
 msgstr "元に戻す"
@@ -9631,6 +9631,7 @@ msgid "Could not forward it: %v"
 msgstr "転送できません：%v"
 
 #: internal/mailui/actions.go:261
+#: internal/mailui/reader.go:738
 msgid "The message is still loading."
 msgstr "メッセージはまだ読み込み中です。"
 
@@ -9649,7 +9650,7 @@ msgstr "未送信"
 
 #: internal/mailui/actions.go:363
 #: internal/mailui/reader.go:160
-#: internal/mailui/window.go:878
+#: internal/mailui/window.go:882
 msgid "(no subject)"
 msgstr "（件名なし）"
 
@@ -9662,11 +9663,12 @@ msgid "to %s · %s"
 msgstr "宛先 %s · %s"
 
 #: internal/mailui/actions.go:374
-#: internal/mailui/reader.go:420
+#: internal/mailui/reader.go:434
 msgid "Mon Jan 2, 15:04"
 msgstr "1月2日(Mon) 15:04"
 
 #: internal/mailui/actions.go:385
+#: internal/mailui/reader.go:191
 msgid "Discard"
 msgstr "破棄"
 
@@ -9722,108 +9724,116 @@ msgid "The assistant gave no search."
 msgstr "アシスタントから検索がありませんでした。"
 
 #: internal/mailui/assist.go:256
-#: internal/mailui/window.go:1064
+#: internal/mailui/window.go:1068
 msgid "Searched for %s"
 msgstr "%s を検索しました"
 
-#: internal/mailui/compose.go:174
+#: internal/mailui/compose.go:178
 #: ui/mail-compose.ui:15
 msgid "New message"
 msgstr "新規メッセージ"
 
-#: internal/mailui/compose.go:227
+#: internal/mailui/compose.go:232
 msgid "Could not keep the draft: %v"
 msgstr "下書きを保存できません：%v"
 
-#: internal/mailui/compose.go:230
+#: internal/mailui/compose.go:235
 msgid "Draft kept at %s"
 msgstr "%s に下書きを保存しました"
 
-#: internal/mailui/compose.go:294
+#: internal/mailui/compose.go:283
+msgid "Draft kept in Drafts at %s"
+msgstr "%s に下書きフォルダーへ保存しました"
+
+#: internal/mailui/compose.go:290
+msgid "Draft kept on this computer only: %v"
+msgstr "下書きはこのコンピューターにだけ保存されました：%v"
+
+#: internal/mailui/compose.go:363
 msgid "Attach files"
 msgstr "ファイルを添付"
 
-#: internal/mailui/compose.go:331
+#: internal/mailui/compose.go:400
 msgid "Not attached (a folder, or not readable): %s"
 msgstr "添付できません（フォルダー、または読めません）：%s"
 
-#: internal/mailui/compose.go:367
+#: internal/mailui/compose.go:436
 msgid "The files come to %s; many servers refuse more than 20 MB."
 msgstr "ファイルは合計 %s です。多くのサーバーは 20 MB を超えると受け付けません。"
 
-#: internal/mailui/compose.go:385
+#: internal/mailui/compose.go:454
 msgid "Choose the account it is sent from."
 msgstr "送信元のアカウントを選んでください。"
 
-#: internal/mailui/compose.go:390
+#: internal/mailui/compose.go:459
 msgid "Add who it goes to."
 msgstr "宛先を追加してください。"
 
-#: internal/mailui/compose.go:398
+#: internal/mailui/compose.go:467
 msgid "The message is empty."
 msgstr "メッセージが空です。"
 
-#: internal/mailui/compose.go:416
+#: internal/mailui/compose.go:485
 msgid "Not sent. The draft is kept."
 msgstr "送信しませんでした。下書きは保存されています。"
 
-#: internal/mailui/compose.go:420
+#: internal/mailui/compose.go:489
 msgid "Sending in %d second…"
 msgid_plural "Sending in %d seconds…"
 msgstr[0] "%d 秒後に送信…"
 
-#: internal/mailui/compose.go:425
+#: internal/mailui/compose.go:494
 msgid "Sending…"
 msgstr "送信中…"
 
-#: internal/mailui/compose.go:438
+#: internal/mailui/compose.go:507
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
 #: ui/mail-compose.ui:282
 msgid "Send"
 msgstr "送信"
 
-#: internal/mailui/compose.go:461
+#: internal/mailui/compose.go:534
 msgid "Sent, but not saved in Sent: %v"
 msgstr "送信しましたが、送信済みに保存できませんでした：%v"
 
-#: internal/mailui/compose.go:489
+#: internal/mailui/compose.go:562
 msgid "Shorter"
 msgstr "短く"
 
-#: internal/mailui/compose.go:490
+#: internal/mailui/compose.go:563
 msgid "Friendlier"
 msgstr "親しみやすく"
 
-#: internal/mailui/compose.go:491
+#: internal/mailui/compose.go:564
 msgid "More formal"
 msgstr "丁寧に"
 
-#: internal/mailui/compose.go:492
+#: internal/mailui/compose.go:565
 msgid "Fix spelling and grammar"
 msgstr "スペルと文法を直す"
 
-#: internal/mailui/compose.go:503
+#: internal/mailui/compose.go:576
 msgid "Translate into %s"
 msgstr "%s に翻訳"
 
-#: internal/mailui/compose.go:520
+#: internal/mailui/compose.go:593
 msgid "Write a line of what to say, then Draft."
 msgstr "伝えたいことを 1 行書いてから「下書き」を押してください。"
 
-#: internal/mailui/compose.go:539
+#: internal/mailui/compose.go:612
 msgid "Write something first, or Draft it."
 msgstr "まず何か書くか、下書きを作ってください。"
 
-#: internal/mailui/compose.go:556
+#: internal/mailui/compose.go:629
 msgid "The assistant is writing…"
 msgstr "アシスタントが書いています…"
 
-#: internal/mailui/compose.go:578
+#: internal/mailui/compose.go:651
 msgid "The assistant could not write it"
 msgstr "アシスタントが書けませんでした"
 
-#: internal/mailui/compose.go:586
+#: internal/mailui/compose.go:659
 msgid "Written by the assistant: read it before you send."
 msgstr "アシスタントが書きました。送信前に読んでください。"
 
@@ -9835,121 +9845,129 @@ msgstr "このメッセージを読めません：%v"
 msgid "Could not mark it read: %v"
 msgstr "既読にできません：%v"
 
-#: internal/mailui/reader.go:190
+#: internal/mailui/reader.go:187
+msgid "Continue writing"
+msgstr "続きを書く"
+
+#: internal/mailui/reader.go:204
 msgid "Reply all"
 msgstr "全員に返信"
 
-#: internal/mailui/reader.go:191
+#: internal/mailui/reader.go:205
 msgid "Forward"
 msgstr "転送"
 
-#: internal/mailui/reader.go:203
+#: internal/mailui/reader.go:217
 msgid "E archive · # delete · S star · U unread"
 msgstr "E アーカイブ · # 削除 · S スター · U 未読"
 
-#: internal/mailui/reader.go:250
+#: internal/mailui/reader.go:264
 msgid "%d check ▸"
 msgid_plural "%d checks ▸"
 msgstr[0] "%d 項目のチェック ▸"
 
-#: internal/mailui/reader.go:252
+#: internal/mailui/reader.go:266
 msgid "Hide the checks"
 msgstr "チェックを隠す"
 
-#: internal/mailui/reader.go:256
+#: internal/mailui/reader.go:270
 msgid "Move to Spam"
 msgstr "迷惑メールへ移動"
 
-#: internal/mailui/reader.go:259
+#: internal/mailui/reader.go:273
 #: internal/shell/launcher.go:379
 msgid "Ask the assistant"
 msgstr "アシスタントに尋ねる"
 
-#: internal/mailui/reader.go:282
+#: internal/mailui/reader.go:296
 msgid "THE ASSISTANT"
 msgstr "アシスタント"
 
-#: internal/mailui/reader.go:301
+#: internal/mailui/reader.go:315
 msgid "SUMMARY · ASSISTANT"
 msgstr "要約 · アシスタント"
 
-#: internal/mailui/reader.go:313
+#: internal/mailui/reader.go:327
 msgid "Summarize"
 msgstr "要約"
 
-#: internal/mailui/reader.go:316
+#: internal/mailui/reader.go:330
 msgid "Reply ideas"
 msgstr "返信案"
 
-#: internal/mailui/reader.go:318
+#: internal/mailui/reader.go:332
 msgid "Thinking of replies…"
 msgstr "返信を考えています…"
 
-#: internal/mailui/reader.go:360
+#: internal/mailui/reader.go:374
 msgid "Thinking…"
 msgstr "考えています…"
 
-#: internal/mailui/reader.go:436
-#: internal/mailui/window.go:775
+#: internal/mailui/reader.go:450
+#: internal/mailui/window.go:779
 msgid "Loading…"
 msgstr "読み込み中…"
 
-#: internal/mailui/reader.go:456
-#: internal/mailui/window.go:872
+#: internal/mailui/reader.go:470
+#: internal/mailui/window.go:876
 msgid "me"
 msgstr "自分"
 
-#: internal/mailui/reader.go:468
+#: internal/mailui/reader.go:482
 msgid "to %s"
 msgstr "宛先 %s"
 
-#: internal/mailui/reader.go:491
+#: internal/mailui/reader.go:505
 msgid "Show quoted text"
 msgstr "引用を表示"
 
-#: internal/mailui/reader.go:493
+#: internal/mailui/reader.go:507
 msgid "Hide quoted text"
 msgstr "引用を隠す"
 
-#: internal/mailui/reader.go:498
+#: internal/mailui/reader.go:512
 msgid "Open in browser"
 msgstr "ブラウザーで開く"
 
-#: internal/mailui/reader.go:500
+#: internal/mailui/reader.go:514
 msgid "Shown here as text. The browser shows it as sent, and may load its remote images, which tell the sender you opened it."
 msgstr "ここではテキストとして表示しています。ブラウザーでは送られたとおりに表示され、外部の画像を読み込むことがあり、開いたことが送信者に伝わります。"
 
-#: internal/mailui/reader.go:538
+#: internal/mailui/reader.go:552
 #: internal/shell/commands.go:162
 #: internal/shell/commands.go:164
 msgid "Open %s"
 msgstr "%sを開く"
 
-#: internal/mailui/reader.go:575
+#: internal/mailui/reader.go:589
 #: ui/gpg.ui:652
 #: ui/gpg.ui:896
 msgid "Save…"
 msgstr "保存…"
 
-#: internal/mailui/reader.go:586
+#: internal/mailui/reader.go:600
 msgid "%d bytes"
 msgstr "%d バイト"
 
-#: internal/mailui/reader.go:625
+#: internal/mailui/reader.go:639
 msgid "Could not open %s: %v"
 msgstr "%s を開けません：%v"
 
-#: internal/mailui/reader.go:653
+#: internal/mailui/reader.go:667
 msgid "Could not open it in the browser: %v"
 msgstr "ブラウザーで開けません：%v"
 
-#: internal/mailui/reader.go:661
+#: internal/mailui/reader.go:675
 msgid "Save the attachment"
 msgstr "添付ファイルを保存"
 
-#: internal/mailui/reader.go:680
+#: internal/mailui/reader.go:694
 msgid "Could not save %s: %v"
 msgstr "%s を保存できません：%v"
+
+#: internal/mailui/reader.go:744
+msgid "Could not open the draft: %v"
+msgstr "下書きを開けません：%v"
 
 #: internal/mailui/welcome.go:178
 msgid "ADDRESS"
@@ -10282,87 +10300,87 @@ msgstr "送信済み"
 msgid "Spam"
 msgstr "迷惑メール"
 
-#: internal/mailui/window.go:720
+#: internal/mailui/window.go:724
 msgid "Nothing found"
 msgstr "見つかりません"
 
-#: internal/mailui/window.go:722
+#: internal/mailui/window.go:726
 msgid "Fetching your mail…"
 msgstr "メールを取得しています…"
 
-#: internal/mailui/window.go:724
+#: internal/mailui/window.go:728
 msgid "Nothing waits for your reply"
 msgstr "返信待ちのものはありません"
 
-#: internal/mailui/window.go:726
+#: internal/mailui/window.go:730
 msgid "No starred conversation"
 msgstr "スター付きの会話はありません"
 
-#: internal/mailui/window.go:728
+#: internal/mailui/window.go:732
 msgid "All read"
 msgstr "すべて既読"
 
-#: internal/mailui/window.go:730
+#: internal/mailui/window.go:734
 msgid "No mail here"
 msgstr "メールはありません"
 
-#: internal/mailui/window.go:780
+#: internal/mailui/window.go:784
 #: ui/mail.ui:209
 msgid "Load older"
 msgstr "古いメールを読み込む"
 
-#: internal/mailui/window.go:782
+#: internal/mailui/window.go:786
 msgid "Could not load older mail: %v"
 msgstr "古いメールを読み込めません：%v"
 
-#: internal/mailui/window.go:900
-#: internal/mailui/window.go:903
+#: internal/mailui/window.go:904
+#: internal/mailui/window.go:907
 msgid "SUSPICIOUS"
 msgstr "疑わしい"
 
-#: internal/mailui/window.go:948
+#: internal/mailui/window.go:952
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1月2日"
 
-#: internal/mailui/window.go:1002
+#: internal/mailui/window.go:1006
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "Enter でアシスタントにこの内容の検索を頼みます。"
 
-#: internal/mailui/window.go:1043
+#: internal/mailui/window.go:1047
 msgid "Searching the server…"
 msgstr "サーバーを検索しています…"
 
-#: internal/mailui/window.go:1067
+#: internal/mailui/window.go:1071
 msgid "The server's search failed: %s"
 msgstr "サーバーの検索に失敗しました：%s"
 
-#: internal/mailui/window.go:1178
+#: internal/mailui/window.go:1182
 #: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "待機"
 
-#: internal/mailui/window.go:1181
+#: internal/mailui/window.go:1185
 msgid "NO ACCOUNT"
 msgstr "アカウントなし"
 
-#: internal/mailui/window.go:1183
+#: internal/mailui/window.go:1187
 msgid "SYNCING"
 msgstr "同期中"
 
-#: internal/mailui/window.go:1185
+#: internal/mailui/window.go:1189
 msgid "OFFLINE"
 msgstr "オフライン"
 
-#: internal/mailui/window.go:1187
+#: internal/mailui/window.go:1191
 msgid "%d OFFLINE"
 msgstr "%d オフライン"
 
-#: internal/mailui/window.go:1196
+#: internal/mailui/window.go:1200
 msgid "%s MSG · %d UNREAD"
 msgstr "%s 件 · 未読 %d"
 
-#: internal/mailui/window.go:1197
+#: internal/mailui/window.go:1201
 msgid "Messages kept from the inboxes, and how many are unread"
 msgstr "受信トレイから保存したメッセージと、そのうちの未読数"
 

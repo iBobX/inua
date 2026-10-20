@@ -174,8 +174,14 @@ accounts), To, Cc and Bcc, the subject, the text and the files attached
 under your signature and keeps the conversation's headers; Reply all
 leaves your own addresses out; Forward attaches the original's files.
 
-The draft is kept a few seconds after you stop typing, and when the
-window closes; *Unsent* in the index lists the drafts kept. Send waits
+The draft is kept on this computer a few seconds after you stop typing,
+and a copy in the account's Drafts folder once a minute while it changes
+and when the window closes, each copy in place of the one before; so a
+draft follows you to your other devices. In Drafts, *Continue writing*
+opens it again (its people, text, files and the conversation it
+answers) and *Discard* moves it to the Trash; sending it removes its
+copy. A draft the server could not take (offline, or an account with no
+Drafts folder) stays on this computer, under *Unsent*. Send waits
 five seconds, in which *Undo* takes it back. A copy goes to Sent (Gmail
 and Outlook keep their own).
 

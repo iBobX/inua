@@ -104,7 +104,7 @@ msgstr "周日"
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:946
+#: internal/mailui/window.go:950
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:349
 #: ui/calendar.ui:127
@@ -202,7 +202,7 @@ msgstr "找到了"
 
 #: internal/apps/connect/notifications.go:94
 #: internal/connectui/app.go:38
-#: internal/mailui/reader.go:189
+#: internal/mailui/reader.go:203
 #: ui/connectreply.ui:14
 msgid "Reply"
 msgstr "回复"
@@ -1294,31 +1294,31 @@ msgstr "写过：是个好迹象，但不是证明。"
 msgid "Not from this computer."
 msgstr "不是从这台电脑。"
 
-#: internal/apps/mail/compose.go:67
+#: internal/apps/mail/compose.go:70
 msgid "%q is not an address"
 msgstr "%q 不是地址"
 
-#: internal/apps/mail/compose.go:290
+#: internal/apps/mail/compose.go:299
 msgid "On %s, %s wrote:"
 msgstr "%[1]s，%[2]s 写道："
 
-#: internal/apps/mail/compose.go:308
+#: internal/apps/mail/compose.go:317
 msgid "Forwarded message"
 msgstr "转发的邮件"
 
-#: internal/apps/mail/compose.go:309
+#: internal/apps/mail/compose.go:318
 msgid "From:"
 msgstr "发件人："
 
-#: internal/apps/mail/compose.go:310
+#: internal/apps/mail/compose.go:319
 msgid "Date:"
 msgstr "日期："
 
-#: internal/apps/mail/compose.go:311
+#: internal/apps/mail/compose.go:320
 msgid "Subject:"
 msgstr "主题："
 
-#: internal/apps/mail/compose.go:313
+#: internal/apps/mail/compose.go:322
 msgid "To:"
 msgstr "收件人："
 
@@ -2571,9 +2571,9 @@ msgstr "pass 会删除它的文件；git 管理的密码库会在历史中保留
 
 #: internal/appui/pass.go:836
 #: internal/appui/pass.go:866
-#: internal/mailui/reader.go:416
-#: internal/mailui/reader.go:554
-#: internal/mailui/window.go:829
+#: internal/mailui/reader.go:430
+#: internal/mailui/reader.go:568
+#: internal/mailui/window.go:833
 #: internal/viewerui/app.go:790
 msgid "FILE"
 msgstr "文件"
@@ -2645,7 +2645,7 @@ msgstr "%s · %s"
 #: internal/appui/workshop_manager.go:115
 #: internal/connectui/window.go:560
 #: internal/mailui/actions.go:304
-#: internal/mailui/compose.go:355
+#: internal/mailui/compose.go:424
 #: internal/ui/settings_ai.go:549
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
@@ -4110,7 +4110,7 @@ msgid "Answer %s"
 msgstr "回复 %s"
 
 #: internal/connectui/reply.go:68
-#: internal/mailui/compose.go:450
+#: internal/mailui/compose.go:519
 msgid "Not sent: %v"
 msgstr "未发送：%v"
 
@@ -5474,7 +5474,7 @@ msgid "New folder / new file"
 msgstr "新建文件夹 / 新建文件"
 
 #: internal/filesui/cards.go:696
-#: internal/mailui/compose.go:406
+#: internal/mailui/compose.go:475
 #: ui/mail-compose.ui:234
 msgid "Undo"
 msgstr "撤销"
@@ -9631,6 +9631,7 @@ msgid "Could not forward it: %v"
 msgstr "无法转发：%v"
 
 #: internal/mailui/actions.go:261
+#: internal/mailui/reader.go:738
 msgid "The message is still loading."
 msgstr "邮件仍在加载。"
 
@@ -9649,7 +9650,7 @@ msgstr "未发送"
 
 #: internal/mailui/actions.go:363
 #: internal/mailui/reader.go:160
-#: internal/mailui/window.go:878
+#: internal/mailui/window.go:882
 msgid "(no subject)"
 msgstr "（无主题）"
 
@@ -9662,11 +9663,12 @@ msgid "to %s · %s"
 msgstr "发给 %s · %s"
 
 #: internal/mailui/actions.go:374
-#: internal/mailui/reader.go:420
+#: internal/mailui/reader.go:434
 msgid "Mon Jan 2, 15:04"
 msgstr "1月2日 Mon 15:04"
 
 #: internal/mailui/actions.go:385
+#: internal/mailui/reader.go:191
 msgid "Discard"
 msgstr "丢弃"
 
@@ -9722,108 +9724,116 @@ msgid "The assistant gave no search."
 msgstr "助手没有给出搜索。"
 
 #: internal/mailui/assist.go:256
-#: internal/mailui/window.go:1064
+#: internal/mailui/window.go:1068
 msgid "Searched for %s"
 msgstr "已搜索 %s"
 
-#: internal/mailui/compose.go:174
+#: internal/mailui/compose.go:178
 #: ui/mail-compose.ui:15
 msgid "New message"
 msgstr "新邮件"
 
-#: internal/mailui/compose.go:227
+#: internal/mailui/compose.go:232
 msgid "Could not keep the draft: %v"
 msgstr "无法保存草稿：%v"
 
-#: internal/mailui/compose.go:230
+#: internal/mailui/compose.go:235
 msgid "Draft kept at %s"
 msgstr "已于 %s 保存草稿"
 
-#: internal/mailui/compose.go:294
+#: internal/mailui/compose.go:283
+msgid "Draft kept in Drafts at %s"
+msgstr "已于 %s 保存到草稿箱"
+
+#: internal/mailui/compose.go:290
+msgid "Draft kept on this computer only: %v"
+msgstr "草稿只保存在这台电脑上：%v"
+
+#: internal/mailui/compose.go:363
 msgid "Attach files"
 msgstr "附加文件"
 
-#: internal/mailui/compose.go:331
+#: internal/mailui/compose.go:400
 msgid "Not attached (a folder, or not readable): %s"
 msgstr "未附加（文件夹或无法读取）：%s"
 
-#: internal/mailui/compose.go:367
+#: internal/mailui/compose.go:436
 msgid "The files come to %s; many servers refuse more than 20 MB."
 msgstr "文件共 %s；许多服务器拒收超过 20 MB 的邮件。"
 
-#: internal/mailui/compose.go:385
+#: internal/mailui/compose.go:454
 msgid "Choose the account it is sent from."
 msgstr "请选择发信账户。"
 
-#: internal/mailui/compose.go:390
+#: internal/mailui/compose.go:459
 msgid "Add who it goes to."
 msgstr "请添加收件人。"
 
-#: internal/mailui/compose.go:398
+#: internal/mailui/compose.go:467
 msgid "The message is empty."
 msgstr "邮件是空的。"
 
-#: internal/mailui/compose.go:416
+#: internal/mailui/compose.go:485
 msgid "Not sent. The draft is kept."
 msgstr "未发送。草稿已保留。"
 
-#: internal/mailui/compose.go:420
+#: internal/mailui/compose.go:489
 msgid "Sending in %d second…"
 msgid_plural "Sending in %d seconds…"
 msgstr[0] "%d 秒后发送…"
 
-#: internal/mailui/compose.go:425
+#: internal/mailui/compose.go:494
 msgid "Sending…"
 msgstr "正在发送…"
 
-#: internal/mailui/compose.go:438
+#: internal/mailui/compose.go:507
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
 #: ui/mail-compose.ui:282
 msgid "Send"
 msgstr "发送"
 
-#: internal/mailui/compose.go:461
+#: internal/mailui/compose.go:534
 msgid "Sent, but not saved in Sent: %v"
 msgstr "已发送，但未保存到已发送：%v"
 
-#: internal/mailui/compose.go:489
+#: internal/mailui/compose.go:562
 msgid "Shorter"
 msgstr "更简短"
 
-#: internal/mailui/compose.go:490
+#: internal/mailui/compose.go:563
 msgid "Friendlier"
 msgstr "更友好"
 
-#: internal/mailui/compose.go:491
+#: internal/mailui/compose.go:564
 msgid "More formal"
 msgstr "更正式"
 
-#: internal/mailui/compose.go:492
+#: internal/mailui/compose.go:565
 msgid "Fix spelling and grammar"
 msgstr "修正拼写和语法"
 
-#: internal/mailui/compose.go:503
+#: internal/mailui/compose.go:576
 msgid "Translate into %s"
 msgstr "翻译成%s"
 
-#: internal/mailui/compose.go:520
+#: internal/mailui/compose.go:593
 msgid "Write a line of what to say, then Draft."
 msgstr "写一行要说的话，然后点“起草”。"
 
-#: internal/mailui/compose.go:539
+#: internal/mailui/compose.go:612
 msgid "Write something first, or Draft it."
 msgstr "请先写点什么，或让助手起草。"
 
-#: internal/mailui/compose.go:556
+#: internal/mailui/compose.go:629
 msgid "The assistant is writing…"
 msgstr "助手正在写…"
 
-#: internal/mailui/compose.go:578
+#: internal/mailui/compose.go:651
 msgid "The assistant could not write it"
 msgstr "助手无法写出"
 
-#: internal/mailui/compose.go:586
+#: internal/mailui/compose.go:659
 msgid "Written by the assistant: read it before you send."
 msgstr "由助手撰写：发送前请读一遍。"
 
@@ -9835,121 +9845,129 @@ msgstr "无法读取此邮件：%v"
 msgid "Could not mark it read: %v"
 msgstr "无法标为已读：%v"
 
-#: internal/mailui/reader.go:190
+#: internal/mailui/reader.go:187
+msgid "Continue writing"
+msgstr "继续写"
+
+#: internal/mailui/reader.go:204
 msgid "Reply all"
 msgstr "全部回复"
 
-#: internal/mailui/reader.go:191
+#: internal/mailui/reader.go:205
 msgid "Forward"
 msgstr "转发"
 
-#: internal/mailui/reader.go:203
+#: internal/mailui/reader.go:217
 msgid "E archive · # delete · S star · U unread"
 msgstr "E 归档 · # 删除 · S 星标 · U 未读"
 
-#: internal/mailui/reader.go:250
+#: internal/mailui/reader.go:264
 msgid "%d check ▸"
 msgid_plural "%d checks ▸"
 msgstr[0] "%d 项检查 ▸"
 
-#: internal/mailui/reader.go:252
+#: internal/mailui/reader.go:266
 msgid "Hide the checks"
 msgstr "隐藏检查"
 
-#: internal/mailui/reader.go:256
+#: internal/mailui/reader.go:270
 msgid "Move to Spam"
 msgstr "移到垃圾邮件"
 
-#: internal/mailui/reader.go:259
+#: internal/mailui/reader.go:273
 #: internal/shell/launcher.go:379
 msgid "Ask the assistant"
 msgstr "询问助理"
 
-#: internal/mailui/reader.go:282
+#: internal/mailui/reader.go:296
 msgid "THE ASSISTANT"
 msgstr "助手"
 
-#: internal/mailui/reader.go:301
+#: internal/mailui/reader.go:315
 msgid "SUMMARY · ASSISTANT"
 msgstr "摘要 · 助手"
 
-#: internal/mailui/reader.go:313
+#: internal/mailui/reader.go:327
 msgid "Summarize"
 msgstr "总结"
 
-#: internal/mailui/reader.go:316
+#: internal/mailui/reader.go:330
 msgid "Reply ideas"
 msgstr "回复建议"
 
-#: internal/mailui/reader.go:318
+#: internal/mailui/reader.go:332
 msgid "Thinking of replies…"
 msgstr "正在想回复…"
 
-#: internal/mailui/reader.go:360
+#: internal/mailui/reader.go:374
 msgid "Thinking…"
 msgstr "正在思考…"
 
-#: internal/mailui/reader.go:436
-#: internal/mailui/window.go:775
+#: internal/mailui/reader.go:450
+#: internal/mailui/window.go:779
 msgid "Loading…"
 msgstr "正在加载…"
 
-#: internal/mailui/reader.go:456
-#: internal/mailui/window.go:872
+#: internal/mailui/reader.go:470
+#: internal/mailui/window.go:876
 msgid "me"
 msgstr "我"
 
-#: internal/mailui/reader.go:468
+#: internal/mailui/reader.go:482
 msgid "to %s"
 msgstr "发给 %s"
 
-#: internal/mailui/reader.go:491
+#: internal/mailui/reader.go:505
 msgid "Show quoted text"
 msgstr "显示引用内容"
 
-#: internal/mailui/reader.go:493
+#: internal/mailui/reader.go:507
 msgid "Hide quoted text"
 msgstr "隐藏引用内容"
 
-#: internal/mailui/reader.go:498
+#: internal/mailui/reader.go:512
 msgid "Open in browser"
 msgstr "在浏览器中打开"
 
-#: internal/mailui/reader.go:500
+#: internal/mailui/reader.go:514
 msgid "Shown here as text. The browser shows it as sent, and may load its remote images, which tell the sender you opened it."
 msgstr "这里以文本显示。浏览器会按原样显示，可能加载远程图片，从而让发件人知道你打开了它。"
 
-#: internal/mailui/reader.go:538
+#: internal/mailui/reader.go:552
 #: internal/shell/commands.go:162
 #: internal/shell/commands.go:164
 msgid "Open %s"
 msgstr "打开%s"
 
-#: internal/mailui/reader.go:575
+#: internal/mailui/reader.go:589
 #: ui/gpg.ui:652
 #: ui/gpg.ui:896
 msgid "Save…"
 msgstr "保存…"
 
-#: internal/mailui/reader.go:586
+#: internal/mailui/reader.go:600
 msgid "%d bytes"
 msgstr "%d 字节"
 
-#: internal/mailui/reader.go:625
+#: internal/mailui/reader.go:639
 msgid "Could not open %s: %v"
 msgstr "无法打开 %s：%v"
 
-#: internal/mailui/reader.go:653
+#: internal/mailui/reader.go:667
 msgid "Could not open it in the browser: %v"
 msgstr "无法在浏览器中打开：%v"
 
-#: internal/mailui/reader.go:661
+#: internal/mailui/reader.go:675
 msgid "Save the attachment"
 msgstr "保存附件"
 
-#: internal/mailui/reader.go:680
+#: internal/mailui/reader.go:694
 msgid "Could not save %s: %v"
 msgstr "无法保存 %s：%v"
+
+#: internal/mailui/reader.go:744
+msgid "Could not open the draft: %v"
+msgstr "无法打开草稿：%v"
 
 #: internal/mailui/welcome.go:178
 msgid "ADDRESS"
@@ -10282,87 +10300,87 @@ msgstr "已发送"
 msgid "Spam"
 msgstr "垃圾邮件"
 
-#: internal/mailui/window.go:720
+#: internal/mailui/window.go:724
 msgid "Nothing found"
 msgstr "未找到"
 
-#: internal/mailui/window.go:722
+#: internal/mailui/window.go:726
 msgid "Fetching your mail…"
 msgstr "正在获取邮件…"
 
-#: internal/mailui/window.go:724
+#: internal/mailui/window.go:728
 msgid "Nothing waits for your reply"
 msgstr "没有等你回复的邮件"
 
-#: internal/mailui/window.go:726
+#: internal/mailui/window.go:730
 msgid "No starred conversation"
 msgstr "没有加星标的会话"
 
-#: internal/mailui/window.go:728
+#: internal/mailui/window.go:732
 msgid "All read"
 msgstr "全部已读"
 
-#: internal/mailui/window.go:730
+#: internal/mailui/window.go:734
 msgid "No mail here"
 msgstr "这里没有邮件"
 
-#: internal/mailui/window.go:780
+#: internal/mailui/window.go:784
 #: ui/mail.ui:209
 msgid "Load older"
 msgstr "加载更早的邮件"
 
-#: internal/mailui/window.go:782
+#: internal/mailui/window.go:786
 msgid "Could not load older mail: %v"
 msgstr "无法加载更早的邮件：%v"
 
-#: internal/mailui/window.go:900
-#: internal/mailui/window.go:903
+#: internal/mailui/window.go:904
+#: internal/mailui/window.go:907
 msgid "SUSPICIOUS"
 msgstr "可疑"
 
-#: internal/mailui/window.go:948
+#: internal/mailui/window.go:952
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1月2日"
 
-#: internal/mailui/window.go:1002
+#: internal/mailui/window.go:1006
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "按 Enter 让助手搜索这句话。"
 
-#: internal/mailui/window.go:1043
+#: internal/mailui/window.go:1047
 msgid "Searching the server…"
 msgstr "正在搜索服务器…"
 
-#: internal/mailui/window.go:1067
+#: internal/mailui/window.go:1071
 msgid "The server's search failed: %s"
 msgstr "服务器搜索失败：%s"
 
-#: internal/mailui/window.go:1178
+#: internal/mailui/window.go:1182
 #: internal/termui/agents.go:48
 msgid "IDLE"
 msgstr "空闲"
 
-#: internal/mailui/window.go:1181
+#: internal/mailui/window.go:1185
 msgid "NO ACCOUNT"
 msgstr "没有账户"
 
-#: internal/mailui/window.go:1183
+#: internal/mailui/window.go:1187
 msgid "SYNCING"
 msgstr "同步中"
 
-#: internal/mailui/window.go:1185
+#: internal/mailui/window.go:1189
 msgid "OFFLINE"
 msgstr "离线"
 
-#: internal/mailui/window.go:1187
+#: internal/mailui/window.go:1191
 msgid "%d OFFLINE"
 msgstr "%d 个离线"
 
-#: internal/mailui/window.go:1196
+#: internal/mailui/window.go:1200
 msgid "%s MSG · %d UNREAD"
 msgstr "%s 封 · %d 未读"
 
-#: internal/mailui/window.go:1197
+#: internal/mailui/window.go:1201
 msgid "Messages kept from the inboxes, and how many are unread"
 msgstr "从收件箱保存的邮件，以及其中未读的数量"
 
