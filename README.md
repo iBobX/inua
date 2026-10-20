@@ -138,6 +138,10 @@ Settings → About shows the version, checks for a new release on demand, upgrad
 The companions the sample config uses (a terminal, a file manager,
 screenshot tools …) are in [docs/design.md](docs/design.md#packages).
 
+On Ubuntu Desktop, GNOME can go once you log in to Inua: what to remove,
+what to keep, and what to check before `apt autoremove` are in
+[docs/removing-gnome.md](docs/removing-gnome.md).
+
 From source:
 
 ```sh
@@ -270,7 +274,7 @@ Actions builds the Linux releases with GoReleaser (`.goreleaser.yaml`);
 
 Documentation: [the shell in detail](docs/features.md), [light apps](docs/apps.md), [workshop](docs/workshop.md), [MCP tools](docs/mcp.md),
 [design](docs/design.md), [architecture](docs/architecture.md),
-[toolkit choice](docs/toolkit.md), [start-up time](docs/performance.md), [workarounds](docs/workarounds.md), [setup](config/README.md).
+[toolkit choice](docs/toolkit.md), [start-up time](docs/performance.md), [workarounds](docs/workarounds.md), [setup](config/README.md), [removing GNOME](docs/removing-gnome.md).
 
 ## Credits
 
