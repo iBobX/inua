@@ -151,6 +151,7 @@ func (s *shellUI) toggleControl() {
 
 func (s *shellUI) openControl() {
 	s.closeClipboard()
+	s.closePasswords()
 	c := &s.control
 	if c.open {
 		return

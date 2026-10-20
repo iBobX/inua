@@ -80,7 +80,7 @@ the view uses the tricky parts of puregotk only through `gtkx`.
 | `internal/vm`, `internal/vmui`, `cmd/inua-vm`, `ui/vm.blp` | The Windows guest (docs/inua-vm.md): the toolkit-free configuration, the Linux platform checks with their remedies, the resource profile, the lifecycle states and the Docker (Dockur) backend; the manager window as an app of its own, one page per stage, and its command line (`--doctor`, `--status [--json]`, `--start`, `--stop`) | Done, tested (an injected runner and secret store; a fake platform root) |
 | `ui/` | Blueprint layouts, generated `.ui`, `style.css`, colour themes, Phosphor icons; embedded as `ui.FS` | Done |
 | `design/` | `ui.md`: the look and the interaction rules the layouts and `style.css` follow | Record |
-| `internal/upgrade` | `inua upgrade`: the newest release's tag (from where `releases/latest` redirects), its archive checked against `checksums.txt`, the programs, launchers and icons staged next to their targets and then renamed into place | Done, tested |
+| `internal/upgrade` | `inua upgrade`: the newest release's tag (from where `releases/latest` redirects), its archive checked against `checksums.txt`, the programs, inua-term's engine (`../lib/inua` beside them), launchers and icons staged next to their targets and then renamed into place | Done, tested |
 | `cmd/inua-shell` | The shell | Done |
 | `cmd/inua` | Command line: `call`, `show`, `hypr`, `config check|path|hyprland|apply`, `init`, `upgrade` | Done |
 | `config/` | Samples (`hypr/hyprland.conf`, `hypr/inua.conf`, `inua/config.toml`, `inua/style.css`), the login session and greetd template, Fcitx themes ([README](../config/README.md)) | Done; greetd + tuigreet recommended, GDM and SDDM supported |

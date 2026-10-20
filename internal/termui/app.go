@@ -75,7 +75,12 @@ type App struct {
 	restartWait glib.SourceFunc
 	guide       *guide
 	nerd        nerdInfo
-	brands      brands
+	// quick is set for the quick mode's window (quick.go), quickTerm its
+	// pane and program.
+	quick     bool
+	quickTerm quickTerm
+	paneDrag  paneDrag
+	brands    brands
 
 	onCloseOK, onCloseCancel func(gtk.Button)
 
@@ -95,6 +100,10 @@ type App struct {
 	onOverviewKey              func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onActive                   func(uintptr, uintptr, uintptr)
 	onWindowKey                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onFree                     glib.SourceFunc
+	// gone are the panes and windows closed whose callbacks are yet to
+	// be freed.
+	gone []gone
 }
 
 // Register makes inua-term an appui app, "term".
@@ -121,6 +130,9 @@ func (a *App) Prepare(*appui.Ctx) {
 func (a *App) Theme() string { return a.set.Look.Theme }
 
 func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
+	if a.quick {
+		return a.buildQuick(c)
+	}
 	a.c = c
 	a.info, a.tiles, a.live = map[int]host.PaneInfo{}, map[int]*tile{}, map[int]*termPane{}
 	a.win = &gtk.ApplicationWindow{}
@@ -134,6 +146,8 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui.Close()
 	a.win.SetTitle(i18n.T("Terminal"))
 	a.buildTiling()
+	a.startPaneDrag()
+	a.onFree = func(uintptr) bool { return a.freeGone() }
 	a.onClose = func(gtk.Window) bool {
 		a.closeWindow()
 		return false
@@ -262,7 +276,7 @@ func (a *App) event(m host.Message) {
 			if p := a.paneFor(m.Pane); p != nil {
 				p.feedSize(m.Cols, m.Rows)
 			}
-			if m.Title == "" && m.Dir == "" && m.Code == nil && m.Clipboard == nil {
+			if m.Title == "" && m.Dir == "" && m.Git == nil && m.Code == nil && m.Clipboard == nil {
 				return
 			}
 		}
@@ -270,7 +284,7 @@ func (a *App) event(m host.Message) {
 	}
 }
 
-// paneEvent is a pane's title, folder, exit or clipboard write.
+// paneEvent is a pane's title, folder, checkout, exit or clipboard write.
 func (a *App) paneEvent(m host.Message) {
 	info, ok := a.info[m.Pane]
 	if !ok {
@@ -281,6 +295,12 @@ func (a *App) paneEvent(m host.Message) {
 	}
 	if m.Dir != "" {
 		info.Dir = m.Dir
+	}
+	if m.Git != nil {
+		info.Git = m.Git
+		if m.Git.Root == "" {
+			info.Git = nil
+		}
 	}
 	if m.Code != nil {
 		info.Exited, info.Code = true, *m.Code
@@ -381,8 +401,8 @@ func (a *App) ThemeChanged() {
 // terminals' colours.
 func (a *App) schemeChanged() {
 	sc := a.scheme()
-	for _, t := range a.tiles {
-		t.pane.setScheme(sc, a.c.Colors["warn"])
+	for _, p := range a.panes() {
+		p.setScheme(sc, a.c.Colors["warn"])
 	}
 	colors := a.colors()
 	a.ask("colors", func(c *host.Client) error { return c.SetColors(colors) })

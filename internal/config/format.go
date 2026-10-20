@@ -15,7 +15,7 @@ import (
 func Format(c Config) string {
 	return fmt.Sprintf(template,
 		q(c.Language),
-		c.Bar.Enable, q(c.Bar.Density), c.Bar.EmptyTransparency, c.Bar.WindowTransparency, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray,
+		c.Bar.Enable, q(c.Bar.Density), c.Bar.EmptyTransparency, c.Bar.WindowTransparency, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray, c.Bar.Pass,
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
@@ -215,6 +215,11 @@ title = %t
 
 # Show tray (StatusNotifierItem) icons.
 tray = %t
+
+# Show a button that searches the password store (the one the Pass app
+# uses) and copies a password, a user name or a one-time code. Shown only
+# when there is a store. `+"`inua call pass toggle`"+` opens it too.
+pass = %t
 
 [launcher]
 # What `+"`inua call launcher toggle`"+` opens: "apps" or "windows".

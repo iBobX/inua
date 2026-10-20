@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
+	"codeberg.org/puregotk/puregotk/v4/gobject/types"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
@@ -70,23 +71,32 @@ func (p *termPane) pasteFrom(primary bool) {
 
 // imageMime is the image type the clipboard offers, PNG first, when it
 // offers no text (a browser's image comes with its HTML, which is not
-// what a terminal wants either); "" for none.
+// what a terminal wants either); "" for none. The formats are asked one
+// by one: their list is NULL for a clipboard that offers no MIME type,
+// and the bindings crash on it.
 func imageMime(f *gdk.ContentFormats) string {
-	var n uint
-	mimes := f.GetMimeTypes(&n)
-	image := ""
-	for _, m := range mimes {
-		switch {
-		case strings.HasPrefix(m, "text/plain"):
+	if f.ContainGtype(types.GType(gobject.TypeStringVal)) {
+		return ""
+	}
+	for _, m := range textMimes {
+		if f.ContainMimeType(m) {
 			return ""
-		case m == "image/png":
-			image = m
-		case strings.HasPrefix(m, "image/") && image == "":
-			image = m
 		}
 	}
-	return image
+	for _, m := range imageMimes {
+		if f.ContainMimeType(m) {
+			return m
+		}
+	}
+	return ""
 }
+
+// textMimes are the clipboard's names for text; imageMimes the images a
+// terminal pastes as files, the first offered taken.
+var (
+	textMimes  = []string{"text/plain;charset=utf-8", "text/plain", "UTF8_STRING", "STRING", "TEXT"}
+	imageMimes = []string{"image/png", "image/jpeg", "image/webp", "image/gif", "image/avif", "image/bmp", "image/tiff"}
+)
 
 // pasteImage saves the clipboard's image to a file and pastes its path:
 // for programs that take images as files. (An agent that reads the
@@ -224,7 +234,6 @@ func oneLine(text string) string {
 // as one line, or Cancel (Escape).
 func (p *termPane) showSheet(text string, primary bool) {
 	p.hideSheet()
-	p.sheetCbs = nil
 	ls := lines(text)
 	sheet := gtk.NewBox(gtk.OrientationVerticalValue, 10)
 	sheet.AddCssClass("term-sheet")
@@ -267,24 +276,27 @@ func (p *termPane) showSheet(text string, primary bool) {
 	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	buttons.SetHalign(gtk.AlignEndValue)
 	buttons.SetMarginTop(6)
-	button := func(label, class string, do func()) *gtk.Button {
+	// The buttons' callbacks are the pane's, the same each time: a
+	// callback made anew for each sheet would never be freed.
+	button := func(label, class string, cb *func(gtk.Button)) *gtk.Button {
 		b := gtk.NewButtonWithLabel(label)
 		b.AddCssClass(class)
-		cb := func(gtk.Button) { do() }
-		p.sheetCbs = append(p.sheetCbs, &cb)
-		b.ConnectClicked(p.sheetCbs[len(p.sheetCbs)-1])
+		b.ConnectClicked(cb)
 		buttons.Append(&b.Widget)
 		return b
 	}
-	button(i18n.T("Cancel"), "outlined", p.hideSheet)
-	button(i18n.T("Paste as one line"), "outlined", func() {
+	p.onSheetCancel = func(gtk.Button) { p.hideSheet() }
+	p.onSheetOneLine = func(gtk.Button) {
 		p.hideSheet()
 		p.paste(oneLine(text), primary, true)
-	})
-	ok := button(i18n.T("Paste"), "suggested-action", func() {
+	}
+	p.onSheetPaste = func(gtk.Button) {
 		p.hideSheet()
 		p.paste(text, primary, true)
-	})
+	}
+	button(i18n.T("Cancel"), "outlined", &p.onSheetCancel)
+	button(i18n.T("Paste as one line"), "outlined", &p.onSheetOneLine)
+	ok := button(i18n.T("Paste"), "suggested-action", &p.onSheetPaste)
 	sheet.Append(&buttons.Widget)
 
 	keys := gtk.NewEventControllerKey()

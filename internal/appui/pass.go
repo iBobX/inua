@@ -11,6 +11,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
+	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/pass"
@@ -23,6 +24,9 @@ import (
 
 // masked stands for a hidden value.
 const passMasked = "••••••••••"
+
+// passResultsShown is how many of the search's results are listed.
+const passResultsShown = 60
 
 // The forms of the detail column.
 const (
@@ -39,9 +43,11 @@ type passApp struct {
 	store    pass.Store
 	keyring  string // inua-keyring's folder, not renamed or moved
 	entries  []string
-	category string // the chosen category; "" for the top level
-	picked   bool   // a category is chosen
-	selected string // the open entry's name; "" for none
+	category string   // the chosen category; "" for the top level
+	picked   bool     // a category is chosen
+	selected string   // the open entry's name; "" for none
+	found    []string // what the search finds, best first
+	cursor   int      // the result Enter opens
 
 	// The open entry, decrypted; gen drops a decryption that comes back
 	// after another entry was opened.
@@ -59,11 +65,14 @@ type passApp struct {
 	editNew  bool   // the editor writes a new entry, named in the dialog
 	newName  string
 	busy     bool // a pass command runs
-	clip     secretClip
+	clip     gtkx.SecretClip
 	filling  bool
 
-	categoryList, entryList, fields, skeleton gtk.Box
-	keyringInfo                               gtk.Box
+	categoryList, entryList, fields, skeleton  gtk.Box
+	keyringInfo, columns, resultsCard, results gtk.Box
+	resultsScroll                              gtk.ScrolledWindow
+	resultsNote, entriesTitle                  gtk.Label
+	overlay                                    gtk.Overlay
 	// The open entry's keyring item ("login/3") and the apps trusted with
 	// it, as listed; "" for an entry that is not inua-keyring's.
 	keyringItem                    string
@@ -93,6 +102,9 @@ type passApp struct {
 
 	onButton       func(gtk.Button)
 	onFilter       func(gtk.SearchEntry)
+	onFilterGo     func(gtk.SearchEntry)
+	onFilterKey    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	onColumnsClick func(gtk.GestureClick, int32, float64, float64)
 	onStore        func(uintptr, uintptr, uintptr)
 	onFormChanged  func(uintptr, uintptr)
 	onFormActivate func(gtk.Entry)
@@ -122,7 +134,9 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 		"edit_title": &a.editTitle, "edit_error": &a.editError, "spinner": &a.spinner,
 		"new_entry": &a.newEntry, "move_entry": &a.moveEntry, "edit_entry": &a.editEntry, "delete_entry": &a.deleteEntry,
 		"filter": &a.filter, "detail": &a.detail, "editor": &a.editor,
-		"add_store": &addStore, "edit_cancel": &editCancel, "edit_save": &editSave, "retry": &retry,
+		"overlay": &a.overlay, "results_card": &a.resultsCard, "results": &a.results,
+		"results_scroll": &a.resultsScroll, "results_note": &a.resultsNote, "entries_title": &a.entriesTitle,
+		"columns": &a.columns, "add_store": &addStore, "edit_cancel": &editCancel, "edit_save": &editSave, "retry": &retry,
 		"pass_dialog": &a.dlg, "dialog_title": &a.dlgTitle, "dialog_text": &a.dlgText,
 		"dialog_error": &a.dlgError, "dialog_path": &a.dlgPath, "dialog_preview": &a.dlgPreview,
 		"dialog_ok": &a.dlgOK, "dialog_cancel": &dlgCancel,
@@ -136,7 +150,40 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	ui.Close()
 
 	a.onButton = func(b gtk.Button) { a.button(b.GetName()) }
-	a.onFilter = func(gtk.SearchEntry) { a.showEntries() }
+	a.onFilter = func(gtk.SearchEntry) { a.showResults() }
+	a.onFilterGo = func(gtk.SearchEntry) {
+		if a.cursor < len(a.found) && a.resultsCard.GetVisible() {
+			a.openFound(a.found[a.cursor])
+		}
+	}
+	a.onFilterKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		switch keyval {
+		case 0xff52: // Up
+			a.moveCursor(-1)
+		case 0xff54: // Down
+			a.moveCursor(1)
+		case 0xff1b: // Escape
+			if a.filter.GetText() == "" {
+				return false
+			}
+			a.filter.SetText("")
+		default:
+			return false
+		}
+		return true
+	}
+	// A click beside the results, but in the search, puts them away.
+	a.onColumnsClick = func(_ gtk.GestureClick, _ int32, x, y float64) {
+		var r graphene.Rect
+		if !a.resultsCard.GetVisible() || !a.filter.ComputeBounds(&a.columns.Widget, &r) {
+			return
+		}
+		fx, fy := float64(r.GetX()), float64(r.GetY())
+		if x < fx || y < fy || x >= fx+float64(r.GetWidth()) || y >= fy+float64(r.GetHeight()) {
+			a.filter.SetText("")
+			a.resultsCard.SetVisible(false)
+		}
+	}
 	a.onStore = func(uintptr, uintptr, uintptr) {
 		if i := int(a.storeMenu.GetSelected()); !a.filling && i < len(a.stores) && a.stores[i] != a.store.Dir {
 			a.useStore(a.stores[i])
@@ -191,6 +238,16 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 		b.ConnectClicked(&a.onButton)
 	}
 	a.filter.ConnectSearchChanged(&a.onFilter)
+	a.filter.ConnectActivate(&a.onFilterGo)
+	a.filter.SetKeyCaptureWidget(&a.win.Widget)
+	filterKeys := gtk.NewEventControllerKey()
+	filterKeys.SetPropagationPhase(gtk.PhaseCaptureValue)
+	filterKeys.ConnectKeyPressed(&a.onFilterKey)
+	a.filter.AddController(&filterKeys.EventController)
+	columnsClick := gtk.NewGestureClick()
+	columnsClick.SetPropagationPhase(gtk.PhaseCaptureValue)
+	columnsClick.ConnectPressed(&a.onColumnsClick)
+	a.columns.AddController(&columnsClick.EventController)
 	gtkx.ConnectNotify(&a.storeMenu, "selected", &a.onStore)
 	gtkx.ConnectChanged(&a.dlgPath, &a.onFormChanged)
 	a.dlgPath.ConnectActivate(&a.onFormActivate)
@@ -373,30 +430,112 @@ func (a *passApp) showCategories() {
 	a.newEntry.SetSensitive(a.store.Dir != "")
 }
 
-// showEntries lists the chosen category's entries, or, while the filter
-// holds text, the entries of every category that match it.
+// showEntries lists the chosen category's entries, under its name.
 func (a *passApp) showEntries() {
 	gtkx.Clear(&a.entryList)
-	q := strings.ToLower(strings.TrimSpace(a.filter.GetText()))
+	a.entriesTitle.SetText("")
+	if a.picked {
+		a.entriesTitle.SetText(a.categoryName(a.category))
+	}
 	for _, e := range a.entries {
 		cat, sub := pass.Split(e)
-		// The entry's own name, then where it is: its folders in the
-		// category, and the category too while searching.
+		if !a.picked || cat != a.category {
+			continue
+		}
+		// The entry's own name, then its folders in the category.
 		folder, name := "", sub
 		if i := strings.LastIndexByte(sub, '/'); i >= 0 {
 			folder, name = sub[:i], sub[i+1:]
-		}
-		switch {
-		case q != "" && strings.Contains(strings.ToLower(e), q):
-			folder = strings.Trim(pass.Join(a.categoryName(cat), folder), "/")
-		case q == "" && a.picked && cat == a.category:
-		default:
-			continue
 		}
 		item := indexItem("entry:"+e, &passEntryRow(e, name, folder).Widget, e == a.selected, &a.onButton)
 		item.AddCssClass("pass-entry")
 		gtkx.Append(&a.entryList, &item.Widget)
 	}
+}
+
+// showResults lists what the search finds in every category (pass.Search),
+// under the search and over the columns; the first is the one Enter
+// opens, Up and Down move it.
+func (a *passApp) showResults() {
+	gtkx.Clear(&a.results)
+	q := a.filter.GetText()
+	a.found, a.cursor = pass.Search(a.entries, q), 0
+	if strings.TrimSpace(q) == "" {
+		a.resultsCard.SetVisible(false)
+		return
+	}
+	shown := a.found
+	if len(shown) > passResultsShown {
+		shown = shown[:passResultsShown]
+	}
+	for i, e := range shown {
+		cat, sub := pass.Split(e)
+		folder, name := "", sub
+		if j := strings.LastIndexByte(sub, '/'); j >= 0 {
+			folder, name = sub[:j], sub[j+1:]
+		}
+		folder = strings.Trim(pass.Join(a.categoryName(cat), folder), "/")
+		item := indexItem("found:"+e, &passEntryRow(e, name, folder).Widget, i == 0, &a.onButton)
+		item.AddCssClass("pass-entry")
+		item.SetFocusable(false) // the keys stay in the search
+		gtkx.Append(&a.results, &item.Widget)
+	}
+	switch n := len(a.found) - len(shown); {
+	case len(a.found) == 0:
+		a.resultsNote.SetText(i18n.T("Nothing matches. Each word is looked for in the whole path."))
+	case n > 0:
+		a.resultsNote.SetText(i18n.Nf("And %d more: another word narrows them.", "And %d more: another word narrows them.", n, n))
+	}
+	a.resultsNote.SetVisible(len(a.found) == 0 || len(a.found) > len(shown))
+	a.resultsScroll.SetVisible(len(shown) > 0)
+	a.resultsScroll.GetVadjustment().SetValue(0)
+	var r graphene.Rect
+	if a.filter.ComputeBounds(&a.overlay.Widget, &r) {
+		a.resultsCard.SetMarginStart(int32(r.GetX()))
+		a.resultsCard.SetMarginTop(int32(r.GetY() + r.GetHeight() + 6))
+	}
+	a.resultsCard.SetVisible(true)
+}
+
+// moveCursor moves the result Enter opens by d, keeping it in sight.
+func (a *passApp) moveCursor(d int) {
+	n := min(len(a.found), passResultsShown)
+	if n == 0 || !a.resultsCard.GetVisible() {
+		return
+	}
+	a.cursor = (a.cursor + d + n) % n
+	markSelected(&a.results, "found:"+a.found[a.cursor])
+	i := 0
+	for c := a.results.GetFirstChild(); c != nil; i++ {
+		if i == a.cursor {
+			var r graphene.Rect
+			if c.ComputeBounds(&a.results.Widget, &r) {
+				adj := a.resultsScroll.GetVadjustment()
+				y, h, top := float64(r.GetY()), float64(r.GetHeight()), adj.GetValue()
+				switch page := adj.GetPageSize(); {
+				case y < top:
+					adj.SetValue(y)
+				case y+h > top+page:
+					adj.SetValue(y + h - page)
+				}
+			}
+		}
+		next := c.GetNextSibling()
+		c.Unref()
+		c = next
+	}
+}
+
+// openFound opens a result where it is: its category chosen, the entry
+// open; the search is put away.
+func (a *passApp) openFound(name string) {
+	a.filter.SetText("")
+	a.resultsCard.SetVisible(false)
+	a.picked = true
+	a.category, _ = pass.Split(name)
+	a.showCategories()
+	a.showEntries()
+	a.openEntry(name)
 }
 
 // markSelected moves the selection to the list's item of that name in
@@ -551,6 +690,12 @@ func (a *passApp) showFields() {
 	} else {
 		a.otpEntry.SetTooltipText(i18n.T("Add a one-time code"))
 	}
+	// The last part of its path is, as pass users name entries, its user.
+	if cat, _ := pass.Split(a.selected); cat != a.keyring {
+		if u := pass.Username(a.selected); u != "" && !slices.ContainsFunc(e.Fields, func(f pass.Field) bool { return f.Value == u }) {
+			a.addRow("user", i18n.T("USERNAME"), u, false)
+		}
+	}
 	a.addRow("password", i18n.T("PASSWORD"), e.Password, true)
 	if e.OTP != "" {
 		if a.otp != nil {
@@ -658,6 +803,8 @@ func (a *passApp) button(name string) {
 		}
 	case "entry":
 		a.openEntry(arg)
+	case "found":
+		a.openFound(arg)
 	case "untrust":
 		i, _ := strconv.Atoi(arg)
 		if i < 0 || i >= len(a.trustedHere) || a.keyringItem == "" {
@@ -707,8 +854,8 @@ func (a *passApp) button(name string) {
 	}
 }
 
-// copySecret copies a value as a secret (secretClip).
-func (a *passApp) copySecret(value string) { a.clip.copy(&a.win.Widget, value) }
+// copySecret copies a value as a secret (gtkx.SecretClip).
+func (a *passApp) copySecret(value string) { a.clip.Copy(value) }
 
 // --- the editor ---
 

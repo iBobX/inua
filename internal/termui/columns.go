@@ -41,6 +41,8 @@ type columns struct {
 	// filling is set while the list is made, so selecting a row then
 	// does not show it.
 	filling bool
+	// finder is the foot of column 1: the agents waiting and idle.
+	finder finder
 	// drag is a workspace's row being dragged to its new place, rowMenu
 	// the rows' menu.
 	drag    wsDrag
@@ -51,9 +53,11 @@ type columns struct {
 	onMenu         func(gtk.Button)
 	onNewWorkspace func(gtk.Button)
 	onNewSession   func(gtk.Button)
-	// clicks are the session heads' and pane rows' callbacks, kept for
-	// as long as their buttons.
-	clicks []*func(gtk.Button)
+	// clickAt is what each session head and pane row of column 2 shows,
+	// by its button: the two click callbacks are the same for all (one
+	// made for each row would never be freed).
+	clickAt                  map[uintptr]dropSpot
+	onHeadClick, onPaneClick func(gtk.Button)
 	// lastHead is the session head clicked last, and when: a second
 	// click on it soon after renames it (headClicked).
 	lastHead   int
@@ -113,6 +117,7 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 	c.list.ConnectRowActivated(&c.onRow)
 	c.startDrag(a)
 	c.startMenu(a)
+	c.finder.build(a, ui)
 	c.onFind = func(uintptr, uintptr) { c.update(a) }
 	gtkx.ConnectChanged(c.find, &c.onFind)
 	c.onMenu = func(gtk.Button) {
@@ -123,6 +128,28 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 		a.palette(p)
 	}
 	c.menu.ConnectClicked(&c.onMenu)
+	// A session head or pane row clicked: what it stands for, by its
+	// button (makeSessions).
+	clicked := func(b gtk.Button) (ws int, spot dropSpot, ok bool) {
+		spot, ok = c.clickAt[b.GoPointer()]
+		if !ok || a.state == nil {
+			return 0, spot, false
+		}
+		if _, w := a.state.Model.Session(spot.session); w != nil {
+			return w.ID, spot, true
+		}
+		return 0, spot, false
+	}
+	c.onHeadClick = func(b gtk.Button) {
+		if ws, spot, ok := clicked(b); ok {
+			c.headClicked(a, ws, spot.session)
+		}
+	}
+	c.onPaneClick = func(b gtk.Button) {
+		if ws, spot, ok := clicked(b); ok {
+			a.showPane(ws, spot.session, spot.pane)
+		}
+	}
 	c.onNewWorkspace = func(gtk.Button) { a.newWorkspace() }
 	c.newWorkspace.ConnectClicked(&c.onNewWorkspace)
 	c.onNewSession = func(gtk.Button) { a.newSession() }
@@ -149,6 +176,7 @@ func (c *columns) update(a *App) {
 	}
 	c.fillWorkspaces(a)
 	c.fillSessions(a)
+	c.finder.update(a)
 }
 
 // The rows stay while the lists keep their shape (the same workspaces,
@@ -316,16 +344,12 @@ func (c *columns) makeSessions(a *App, w *model.Workspace) {
 	for child := c.sessions.GetFirstChild(); child != nil; child = c.sessions.GetFirstChild() {
 		c.sessions.Remove(child)
 	}
-	c.clicks = c.clicks[:0]
+	c.clickAt = map[uintptr]dropSpot{}
 	c.times = c.times[:0]
+	a.paneDrag.lit, a.paneDrag.spots = nil, map[uintptr]dropSpot{}
 	c.heads, c.paneRows = map[int]*sessionHead{}, map[int]*paneRowWidgets{}
 	if w == nil {
 		return
-	}
-	click := func(b *gtk.Button, do func()) {
-		f := func(gtk.Button) { do() }
-		c.clicks = append(c.clicks, &f)
-		b.ConnectClicked(c.clicks[len(c.clicks)-1])
 	}
 	for _, s := range w.Sessions {
 		section := gtk.NewBox(gtk.OrientationVerticalValue, 0)
@@ -347,15 +371,18 @@ func (c *columns) makeSessions(a *App, w *model.Workspace) {
 		h.badge = newBadge()
 		hb.Append(&h.badge.Widget)
 		h.button.SetChild(&hb.Widget)
-		ws, sid := w.ID, s.ID
-		click(h.button, func() { c.headClicked(a, ws, sid) })
+		c.clickAt[h.button.GoPointer()] = dropSpot{s.ID, 0}
+		h.button.ConnectClicked(&c.onHeadClick)
+		a.dropOn(&h.button.Widget, s.ID, 0)
 		section.Append(&h.button.Widget)
 		c.heads[s.ID] = h
 		for _, id := range s.Tree.Panes() {
 			r := makePaneRow()
 			c.paneRows[id] = r
 			c.times = append(c.times, timed{r.right, id})
-			click(r.button, func() { a.showPane(ws, sid, id) })
+			c.clickAt[r.button.GoPointer()] = dropSpot{s.ID, id}
+			r.button.ConnectClicked(&c.onPaneClick)
+			a.dropOn(&r.button.Widget, s.ID, id)
 			section.Append(&r.button.Widget)
 		}
 		c.sessions.Append(&section.Widget)

@@ -44,7 +44,7 @@ type settings struct {
 	swatchNames           []string               // the themes the swatches show
 	themeTrash, iconTrash gtk.Button             // for the user's theme or icon set in use
 
-	bgEnable, title, tray, tpAccel, notifyOn, critFocus, noteHistory             gtk.Switch
+	bgEnable, title, tray, barPass, tpAccel, notifyOn, critFocus, noteHistory    gtk.Switch
 	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                            gtk.Switch
 	clipEnable, clipBar, clipPaste                                               gtk.Switch
 	dockSize, dockPosition, barDensity                                           gtk.DropDown
@@ -127,6 +127,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			c.Bar.Title = on
 		case "tray":
 			c.Bar.Tray = on
+		case "bar_pass":
+			c.Bar.Pass = on
 		case "bar_enable":
 			c.Bar.Enable = on
 		case "dock_enable":
@@ -369,6 +371,7 @@ func (s *shellUI) openSettings() {
 	ui.Get("bg_enable", &st.bgEnable)
 	ui.Get("title", &st.title)
 	ui.Get("tray", &st.tray)
+	ui.Get("bar_pass", &st.barPass)
 	ui.Get("bg_image", &st.bgImage)
 	ui.Get("bg_color", &st.bgColor)
 	ui.Get("clock", &st.clock)
@@ -467,7 +470,7 @@ func (s *shellUI) openSettings() {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste, &st.displays.lidOff} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.barPass, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste, &st.displays.lidOff} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &themeAdd, &st.themeTrash, &themeFolder, &iconAdd, &st.iconTrash, &iconFolder, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
@@ -623,6 +626,7 @@ func (s *shellUI) showSettings() {
 	st.bgEnable.SetActive(c.Background.Enable)
 	st.title.SetActive(c.Bar.Title)
 	st.tray.SetActive(c.Bar.Tray)
+	st.barPass.SetActive(c.Bar.Pass)
 	setEntry(&st.bgImage, c.Background.Image)
 	setEntry(&st.bgColor, c.Background.Color)
 	setEntry(&st.clock, c.Bar.Clock)

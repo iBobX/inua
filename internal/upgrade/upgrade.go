@@ -1,9 +1,9 @@
 // Package upgrade finds inua's newest release on GitHub and installs it in
 // place of the running programs, the way scripts/install.sh does: the
 // archive for this machine, checked against the release's checksums, its
-// programs into the directory inua runs from and the light apps' launchers
-// and icons into the data directory. The login session and the
-// configuration are left alone.
+// programs into the directory inua runs from, inua-term's engine into
+// ../lib/inua beside it, and the light apps' launchers and icons into the
+// data directory. The login session and the configuration are left alone.
 package upgrade
 
 import (
@@ -216,7 +216,8 @@ type file struct {
 }
 
 // Install puts a release archive's programs (its top-level files named
-// inua*) in binDir and the light apps' launchers and icons
+// inua*) in binDir, inua-term's engine (lib/inua/*.so) in binDir/../lib/inua
+// where inua-term looks for it, and the light apps' launchers and icons
 // (config/apps/*.desktop, *.svg) under dataDir, as install.sh does. It
 // writes everything next to its target first and then renames each into
 // place, so a failure part way leaves the old programs, and running ones
@@ -304,6 +305,8 @@ func unpack(archive []byte, binDir, dataDir string) ([]file, error) {
 		switch {
 		case dir == "" && strings.HasPrefix(name, "inua"):
 			f = file{dir: binDir, name: name, mode: 0o755}
+		case dir == "lib/inua/" && strings.HasSuffix(name, ".so"):
+			f = file{dir: filepath.Join(filepath.Dir(binDir), "lib", "inua"), name: name, mode: 0o644}
 		case dir == "config/apps/" && strings.HasSuffix(name, ".desktop"):
 			f = file{dir: filepath.Join(dataDir, "applications"), name: name, mode: 0o644}
 		case dir == "config/apps/" && strings.HasSuffix(name, ".svg"):

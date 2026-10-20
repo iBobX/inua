@@ -31,6 +31,7 @@ type bar struct {
 	title       gtk.Label
 	clock       gtk.Label
 	clipboard   gtk.Button
+	passwords   gtk.Button
 	notes       gtk.Button
 	notesIcon   gtk.Image
 	unread      gtk.Box
@@ -129,6 +130,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	ui.Get("clock", &b.clock)
 	ui.Get("notes", &b.notes)
 	ui.Get("clipboard", &b.clipboard)
+	ui.Get("passwords", &b.passwords)
 	ui.Get("rec", &b.rec)
 	ui.Get("rec_time", &b.recTime)
 	ui.Get("clock_button", &b.clockButton)
@@ -149,6 +151,11 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b.notes.ConnectClicked(&s.onNotesButton)
 	b.clipboard.ConnectClicked(&s.onClipboardButton)
 	b.clipboard.SetVisible(s.cfg.Clipboard.Enable && s.cfg.Clipboard.Bar)
+	b.passwords.ConnectClicked(&s.onPasswordsButton)
+	b.passwords.SetVisible(s.cfg.Bar.Pass && s.passwords.hasStore)
+	if s.passwords.open {
+		b.passwords.AddCssClass("open")
+	}
 	b.rec.ConnectClicked(&s.onRecButton)
 	b.clockButton.ConnectClicked(&s.onClockButton)
 	s.showNotesButton(b)
@@ -374,7 +381,7 @@ func (b *bar) endButtons() (names []string, rects []shell.Rect) {
 	for _, c := range []struct {
 		name string
 		btn  *gtk.Button
-	}{{"clipboard", &b.clipboard}, {"notes", &b.notes}, {"status", &b.status}} {
+	}{{"passwords", &b.passwords}, {"clipboard", &b.clipboard}, {"notes", &b.notes}, {"status", &b.status}} {
 		var r graphene.Rect
 		if c.btn.IsVisible() && c.btn.ComputeBounds(&b.win.Widget, &r) {
 			f := *(*[4]float32)(unsafe.Pointer(&r)) // x, y, width, height; see rect
@@ -386,7 +393,8 @@ func (b *bar) endButtons() (names []string, rects []shell.Rect) {
 }
 
 // endReach names the toggle button at the bar's end whose reach a point in
-// the bar's window is in ("clipboard", "notes", "status"; "" for none), and
+// the bar's window is in ("passwords", "clipboard", "notes", "status"; ""
+// for none), and
 // whether it is on the button itself, which takes its own clicks. The
 // reaches cover the gaps between them and run up to the screen's edges, so
 // the pointer thrown at the top or the corner lands on one (shell.BarReach).

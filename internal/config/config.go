@@ -62,6 +62,9 @@ type Bar struct {
 	Workspaces string `toml:"workspaces"`
 	Title      bool   `toml:"title"`
 	Tray       bool   `toml:"tray"`
+	// Pass shows a button that searches the password store (the Pass
+	// app's) and copies from it, when there is a store.
+	Pass bool `toml:"pass"`
 }
 
 type Launcher struct {
@@ -171,7 +174,7 @@ type Shortcut struct {
 // ShortcutActions are the actions a shortcut can run besides "exec"; the
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
-	"launcher", "windows", "overview", "control", "notifications", "clipboard", "focus", "settings", "restart", "lock",
+	"launcher", "windows", "overview", "control", "notifications", "clipboard", "pass", "focus", "settings", "restart", "lock",
 	"shot-area", "shot-area-silent", "shot-screen", "shot-window", "shot-record", "color",
 }
 
@@ -694,6 +697,7 @@ func Default() Config {
 			Workspaces:         "monitor",
 			Title:              true,
 			Tray:               true,
+			Pass:               true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
 		Overview: Overview{MRU: false, PerMonitor: true},

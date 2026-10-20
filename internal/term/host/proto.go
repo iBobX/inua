@@ -54,6 +54,7 @@ type Message struct {
 	CellH int      `json:"cell_h,omitempty"`
 	Title string   `json:"title,omitempty"`
 	Code  *int     `json:"code,omitempty"` // event "exit"
+	Git   *Git     `json:"git,omitempty"`  // event: the pane's checkout, the zero Git for none
 	// Clipboard is text the program put on the clipboard (OSC 52), or on
 	// the primary selection when Primary; for the attached windows to set.
 	Clipboard *string `json:"clipboard,omitempty"`
@@ -109,6 +110,7 @@ const (
 	OpZoom     = "zoom"     // the focused pane to the whole session, and back
 	OpPreset   = "preset"   // the next preset, or Name's
 	OpRatio    = "ratio"    // the split at Path to Ratio
+	OpMove     = "move"     // Pane (the focused one when 0) to session To, beside From (its focused one when 0)
 )
 
 // PaneInfo is what the host knows of a pane.
@@ -135,6 +137,7 @@ type PaneInfo struct {
 	Since     int64  `json:"since,omitempty"`
 	Ask       string `json:"ask,omitempty"`
 	Code      int    `json:"code"`
+	Git       *Git   `json:"git,omitempty"` // the checkout the folder is in
 }
 
 // Message types.
@@ -151,7 +154,7 @@ const (
 	MsgShell   = "shell"   // client: the shell new panes start, Argv[0]; none for $SHELL
 	MsgQuit    = "quit"    // client: end the host, its sessions kept for the next
 	MsgClose   = "close"   // client: end the pane's program and forget it
-	MsgEvent   = "event"   // host: Title, Dir or Code changed for Pane, or Clipboard set
+	MsgEvent   = "event"   // host: Title, Dir, Git or Code changed for Pane, or Clipboard set
 	// The workspaces and sessions; each change sends every client a
 	// "state" event.
 	MsgState        = "state"         // client: the State; host: the State changed

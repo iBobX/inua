@@ -9,6 +9,7 @@ with their panes, and the shown session's terminals, tiled.
 inua-term                        open the window (the last workspace shown)
 inua-term --workspace DIR        open or show the workspace for a folder
 inua-term -e COMMAND [ARGS…]     run a command in a session of its own ("Commands")
+inua-term --quick [-e COMMAND …] a terminal for a moment (below)
 inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
@@ -18,6 +19,15 @@ inua-term integration remove claude|codex|all
 It is in the app drawer, under Tools. It can be the desktop's terminal:
 Settings → Default Apps writes `xdg-terminals.list`, and its desktop
 entry takes `-e` as xdg-terminal-exec expects.
+
+**Quick mode.** `inua-term --quick` (Quick Terminal in the drawer) is a
+terminal for a moment: one window, your shell in the folder it was
+started from, and nothing else: no columns, no workspace or session, no
+host, nothing remembered. The shell ending closes the window, and the
+window closing ends the shell. With `-e`, it runs the command in place of
+the shell. Each start is a window of its own. Its keys are the pane's
+alone: copy, paste, search, copy mode and the font's size; every other
+key goes to the program.
 
 ## The first start
 
@@ -70,7 +80,10 @@ from it, or at `$INUA_VT_LIB`.
   works, hollow when quiet. Drag a workspace to put it in another place;
   its menu (a right click, or the Menu key) renames it or closes it,
   after asking, since every program in it quits.
-  The search finds workspaces by name, folder or pane title.
+  The search finds workspaces by name, folder or pane title. At its
+  foot, as Warcraft's idle worker, the finder counts the agents waiting
+  for you (a square in warn) and those done or idle (hollow); a click on
+  it, or Ctrl+`, goes to the next: waiting, then done, then idle.
 - **Sessions** (column 2): at its top, the shown workspace's name and
   the new session button; then its sessions, each a section of its
   panes under a head with the same square and a badge counting the
@@ -79,11 +92,18 @@ from it, or at `$INUA_VT_LIB`.
   asks. A shell shows the command running in it. An agent's mark takes
   its own colour (Claude Code's orange, Gemini's blue…) while it runs.
 - **Terminals** (column 3): the shown session's panes, tiled, each with a
-  head (state, mark, title, folder). Drag a gap to resize, drag a head
-  onto another pane to swap them. A pane closes when its program ends
-  (`exit`, or the command of `inua-term -e` done), the others taking its
-  room; a session closes with its last pane, a workspace with its last
-  session, and the window with the last of all.
+  head (state, mark, title, folder). In a git checkout, the folder's
+  place shows its name and branch (a linked worktree's with a fork for
+  a mark), read from the checkout's files when the shell changes folder
+  and at each prompt; a narrow pane shows the branch alone, or neither.
+  Drag a gap to resize; drag a head
+  onto another pane to swap them, or onto a session's head or a pane's
+  row in column 2 to move the pane to that session, beside its focused
+  pane or that one. When the layout changes, the panes slide to their
+  new places, the programs resized once they are there. A pane closes
+  when its program ends (`exit`, or the command of `inua-term -e` done),
+  the others taking its room; a session closes with its last pane, a
+  workspace with its last session, and the window with the last of all.
 
 A window narrower than 1040 px folds column 2, narrower than 720 px
 column 1 as well; Ctrl+Shift+S and Ctrl+Shift+B show them anyway.
@@ -140,6 +160,7 @@ inua-term report --state done
 When an agent waits for you or finishes in a pane you are not looking at,
 a notification says so; its *Show* brings the window to that pane.
 Ctrl+Shift+J goes to the next agent that needs you, in any workspace;
+Ctrl+` (the finder) to the next that needs you or is idle;
 Ctrl+Shift+A lists every agent.
 
 ## What it remembers
@@ -189,6 +210,7 @@ it kept at that version's defaults moved to these.
 | Alt+1…8 / Alt+9 | Session 1…8 / the last session |
 | Ctrl+Shift+1…9 | Workspace 1…9 |
 | Ctrl+Shift+J / Ctrl+Shift+A | Next agent that needs you / every agent |
+| Ctrl+` | Next agent that needs you or is idle |
 | Ctrl+Shift+B / Ctrl+Shift+S | Fold the workspaces / the sessions |
 | Ctrl+Shift+C / Ctrl+Shift+V | Copy / paste |
 | Shift+Insert, middle click | Paste the primary selection |

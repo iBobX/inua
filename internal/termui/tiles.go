@@ -19,8 +19,9 @@ import (
 
 // Column 3 is the shown session's panes and nothing else: tiles laid out
 // by the session's split tree, 8 px apart and from the edges, each a
-// 32 px head (state, kind, title, folder) over its terminal. The focused
-// tile's border is the accent; the gaps drag to resize.
+// 32 px head (state, kind, title, folder or checkout) over its
+// terminal. The focused tile's border is the accent; the gaps drag to
+// resize.
 
 // gap is the space between tiles and around them.
 const gap = 8
@@ -34,10 +35,41 @@ type tile struct {
 	title *gtk.Label
 	dir   *gtk.Label
 	state *gtk.Label
+	head  *gtk.Box // the handle that drags the pane (panedrag.go)
 	pane  *termPane
-
-	onHeadDragEnd func(gtk.GestureDrag, float64, float64)
+	// In a checkout, it shows in the folder's place: its name, the
+	// branch's mark and the branch, as much of it as the head has room
+	// for (fitGit).
+	git       *gtk.Box
+	gitName   *gtk.Label
+	gitIcon   *gtk.Image
+	gitBranch *gtk.Label
+	gitNeed   [2]int // the tile's width for the whole checkout, for the branch alone
+	gitShown  gitFit
+	width     int // where it was put last
 }
+
+// gitFit is how much of the checkout a head shows.
+type gitFit int
+
+const (
+	gitNone   gitFit = iota
+	gitBranch        // the mark and the branch
+	gitAll           // the name too
+)
+
+// What a head needs around its title and checkout (ui/style.css's
+// .term-head padding and the tile's border; the head's spacing), the
+// title's room kept before the checkout shows, and the longest name and
+// branch shown whole.
+const (
+	headChrome     = 2*12 + 2
+	headSpacing    = 9
+	gitSpacing     = 5
+	titleRoom      = 160
+	gitNameChars   = 20
+	gitBranchChars = 28
+)
 
 // tiling is column 3's layout: the tree laid out (a copy while a gap is
 // dragged), and the drag.
@@ -47,11 +79,13 @@ type tiling struct {
 	zoom     int
 	dragging *layout.Divider
 	dragFrom float64
-	// rects is where each tile was put last, as the layout puts it.
+	// rects is where each tile was put last.
 	rects map[int]layout.Rect
-	// session is the session laid out; anim a zoom on its way.
+	// session is the session laid out; anim a zoom on its way, fit the
+	// tiles on their way to a new layout.
 	session int
 	anim    zoomAnim
+	fit     fitAnim
 	ticking bool
 
 	onMeasure                            gtk.CustomMeasureFunc
@@ -71,7 +105,15 @@ type zoomAnim struct {
 	start time.Time
 }
 
-// zoomTime is how long a zoom takes.
+// fitAnim is the tiles going to the places a new layout gives them (a
+// swap, a split, a pane gone, a preset): each from where it was, a new
+// one fading in where it lands.
+type fitAnim struct {
+	from  map[int]layout.Rect // nil for none
+	start time.Time
+}
+
+// zoomTime is how long a zoom takes, and a fit.
 const zoomTime = 220 * time.Millisecond
 
 func (a *App) buildTiling() {
@@ -85,8 +127,11 @@ func (a *App) buildTiling() {
 		if t.anim.id != 0 && time.Since(t.anim.start) >= zoomTime {
 			a.endZoom()
 		}
+		if t.fit.from != nil && time.Since(t.fit.start) >= zoomTime {
+			a.endFit()
+		}
 		a.tilesW.QueueAllocate()
-		t.ticking = t.anim.id != 0
+		t.ticking = t.anim.id != 0 || t.fit.from != nil
 		return t.ticking
 	}
 	t.layout = gtk.NewCustomLayout(&t.onMode, &t.onMeasure, &t.onAllocate)
@@ -200,6 +245,15 @@ func (a *App) allocateTiles(w, h int) {
 		zoom = 0
 	} else if zoom != 0 {
 		rects = map[int]layout.Rect{zoom: r}
+	} else if t.fit.from != nil {
+		p := easeOut(float64(time.Since(t.fit.start)) / float64(zoomTime))
+		for id, to := range rects {
+			if from, ok := t.fit.from[id]; ok {
+				rects[id] = lerp(from, to, p)
+			} else if tl := a.tiles[id]; tl != nil {
+				tl.box.SetOpacity(p)
+			}
+		}
 	}
 	t.rects = rects
 	for id, tl := range a.tiles {
@@ -214,6 +268,14 @@ func (a *App) allocateTiles(w, h int) {
 		}
 		rect := gdk.Rectangle{X: int32(rr.X), Y: int32(rr.Y), Width: int32(math.Max(rr.W, 1)), Height: int32(math.Max(rr.H, 1))}
 		tl.box.SizeAllocate((*gtk.Allocation)(unsafe.Pointer(&rect)), -1)
+		tl.width = int(rect.Width)
+		if tl.gitFor(tl.width) != tl.gitShown {
+			gtkx.Post(func() { // not during the layout
+				if a.tiles[id] == tl {
+					tl.fitGit()
+				}
+			})
+		}
 	}
 }
 
@@ -224,6 +286,7 @@ func (a *App) allocateTiles(w, h int) {
 func (a *App) startZoom(from, to int) {
 	t := &a.tiling
 	a.endZoom()
+	a.endFit()
 	if !gtk.SettingsGetDefault().GetPropertyGtkEnableAnimations() {
 		return
 	}
@@ -272,6 +335,57 @@ func (a *App) endZoom() {
 	a.tilesW.QueueAllocate()
 }
 
+// startFit animates the tiles to the places tree gives them, from where
+// they are, when any moves; their grids keep their sizes on the way.
+func (a *App) startFit(tree *layout.Node) {
+	t := &a.tiling
+	to := layout.Rects(tree, a.area(), gap)
+	moved := false
+	for id, r := range to {
+		if f, ok := t.rects[id]; ok && math.Max(math.Max(math.Abs(f.X-r.X), math.Abs(f.Y-r.Y)), math.Max(math.Abs(f.W-r.W), math.Abs(f.H-r.H))) > 0.5 {
+			moved = true
+		}
+	}
+	if !moved || !gtk.SettingsGetDefault().GetPropertyGtkEnableAnimations() {
+		return
+	}
+	from := map[int]layout.Rect{}
+	for id, r := range t.rects {
+		from[id] = r
+	}
+	a.endFit()
+	t.fit = fitAnim{from: from, start: time.Now()}
+	for id := range from {
+		if tl := a.tiles[id]; tl != nil {
+			tl.pane.sizeHeld = true
+		}
+	}
+	if !t.ticking {
+		t.ticking = true
+		glibTimeout(16, &t.onAnim)
+	}
+}
+
+// endFit ends the tiles' way to a new layout where it goes: each grid
+// takes its tile's size (allocated anew: see endZoom).
+func (a *App) endFit() {
+	t := &a.tiling
+	if t.fit.from == nil {
+		return
+	}
+	for id := range t.fit.from {
+		if tl := a.tiles[id]; tl != nil {
+			tl.pane.sizeHeld = false
+			tl.pane.widget.QueueAllocate()
+		}
+	}
+	for _, tl := range a.tiles {
+		tl.box.SetOpacity(1)
+	}
+	t.fit = fitAnim{}
+	a.tilesW.QueueAllocate()
+}
+
 // easeOut slows to a stop: x from 0 to 1 (clamped), cubic.
 func easeOut(x float64) float64 {
 	x = min(max(x, 0), 1)
@@ -293,15 +407,20 @@ func (a *App) syncTiles() {
 		for _, id := range s.Tree.Panes() {
 			want[id] = true
 		}
-		if s.ID == a.tiling.session && s.Zoom != a.tiling.zoom {
-			a.startZoom(a.tiling.zoom, s.Zoom)
-		} else if s.ID != a.tiling.session {
+		switch {
+		case s.ID != a.tiling.session:
 			a.endZoom()
+			a.endFit()
+		case s.Zoom != a.tiling.zoom:
+			a.startZoom(a.tiling.zoom, s.Zoom)
+		case s.Zoom == 0 && a.tiling.dragging == nil:
+			a.startFit(s.Tree)
 		}
 		a.tiling.session = s.ID
 		a.tiling.tree, a.tiling.zoom = s.Tree.Clone(), s.Zoom
 	} else {
 		a.endZoom()
+		a.endFit()
 		a.tiling.session, a.tiling.tree, a.tiling.zoom = 0, nil, 0
 	}
 	for id := range a.tiles {
@@ -367,31 +486,30 @@ func (a *App) addTile(id int) error {
 	t.dir.AddCssClass("term-head-dir")
 	t.dir.SetEllipsize(1) // start
 	head.Append(&t.dir.Widget)
+	t.git = gtk.NewBox(gtk.OrientationHorizontalValue, gitSpacing)
+	t.git.AddCssClass("term-head-git")
+	t.git.SetVisible(false)
+	t.gitName = gtk.NewLabel("")
+	t.gitName.AddCssClass("term-head-dir")
+	t.gitName.SetEllipsize(3) // end
+	t.gitName.SetMaxWidthChars(gitNameChars)
+	t.git.Append(&t.gitName.Widget)
+	t.gitIcon = gtk.NewImageFromIconName("term-git-branch-symbolic")
+	t.gitIcon.SetPixelSize(12)
+	t.git.Append(&t.gitIcon.Widget)
+	t.gitBranch = gtk.NewLabel("")
+	t.gitBranch.AddCssClass("term-head-branch")
+	t.gitBranch.SetEllipsize(3) // end
+	t.gitBranch.SetMaxWidthChars(gitBranchChars)
+	t.git.Append(&t.gitBranch.Widget)
+	head.Append(&t.git.Widget)
 	t.state = gtk.NewLabel("")
 	t.state.AddCssClass("term-state")
 	head.Append(&t.state.Widget)
 	t.box.Append(&head.Widget)
 	t.box.Append(&p.root.Widget)
-	// The head is the handle: dropped on another pane, the two swap.
-	drag := gtk.NewGestureDrag()
-	t.onHeadDragEnd = func(g gtk.GestureDrag, dx, dy float64) {
-		var x, y float64
-		g.GetStartPoint(&x, &y)
-		r, ok := a.tiling.rects[id]
-		if !ok {
-			return
-		}
-		px, py := r.X+x+dx, r.Y+y+dy
-		for other, o := range a.tiling.rects {
-			if other != id && px >= o.X && px < o.X+o.W && py >= o.Y && py < o.Y+o.H {
-				a.layoutOp(host.OpSwap, host.Message{From: id, Pane: other})
-				return
-			}
-		}
-	}
-	drag.ConnectDragEnd(&t.onHeadDragEnd)
-	head.AddController(&drag.EventController)
-	head.SetCursorFromName("grab")
+	t.head = head
+	a.dragHead(head, id)
 	t.box.SetParent(&a.tilesW.Widget)
 	a.tiles[id] = t
 	a.mu.Lock()
@@ -417,15 +535,130 @@ func (a *App) dropTile(id int) {
 	}
 	t.pane.close()
 	t.box.Unparent()
+	a.freeLater(t.pane.callbacks())
+}
+
+// The bindings turn each Go callback GTK calls into one of a few thousand
+// the process has, and free none themselves: a pane's dozens, made anew
+// for each tile, ran them out after some forty switches of session. A
+// closed pane's are freed a second on, when an event or a clipboard read
+// under way as it closed is over; so are the settings window's.
+
+// gone are the callbacks of a pane or window closed, waiting to be freed.
+type gone struct {
+	cbs []any
+	at  time.Time
+}
+
+// freeLater frees the callbacks of a pane or window closed in a second.
+func (a *App) freeLater(cbs []any) {
+	a.gone = append(a.gone, gone{cbs, time.Now()})
+	if len(a.gone) == 1 {
+		glibTimeout(1000, &a.onFree)
+	}
+}
+
+// freeGone frees the callbacks of what closed a second ago or more; true
+// while others wait.
+func (a *App) freeGone() bool {
+	keep := a.gone[:0]
+	for _, g := range a.gone {
+		if time.Since(g.at) < time.Second {
+			keep = append(keep, g)
+			continue
+		}
+		for _, cb := range g.cbs {
+			glib.UnrefCallback(cb) // one never connected: nothing to free
+		}
+	}
+	clear(a.gone[len(keep):])
+	a.gone = keep
+	return len(a.gone) > 0
 }
 
 // update writes a pane's head.
 func (t *tile) update(a *App, info host.PaneInfo) {
-	t.title.SetText(paneTitle(info))
+	title := paneTitle(info)
+	t.title.SetText(title)
 	t.dir.SetText(shortDir(info.Dir))
 	t.icon.SetFromIconName(iconOf(info))
 	a.brand(t.icon, info)
 	paint(t.mark, t.state, lookOf(info))
+	if r, ok := a.tiling.rects[t.id]; ok && t.width == 0 {
+		t.width = int(r.W)
+	}
+	t.showGit(info.Git, title)
+}
+
+// showGit writes the checkout in the head, in the folder's place, and
+// what it needs to show whole or in part.
+func (t *tile) showGit(g *host.Git, title string) {
+	t.dir.SetVisible(g == nil)
+	if g == nil {
+		t.gitNeed = [2]int{}
+		t.fitGit()
+		return
+	}
+	name := baseName(g.Root)
+	t.gitName.SetText(name)
+	t.gitBranch.SetText(g.Branch)
+	icon, tip := "term-git-branch-symbolic", i18n.Tf("%s\nBranch %s", shortDir(g.Root), g.Branch)
+	if g.Worktree {
+		icon, tip = "term-git-worktree-symbolic", i18n.Tf("%s, a worktree of %s\nBranch %s", shortDir(g.Root), shortDir(g.Repo), g.Branch)
+	}
+	t.gitIcon.SetFromIconName(icon)
+	t.git.SetTooltipText(tip)
+	// Measured from the text: a hidden widget measures nothing.
+	fixed := headChrome + 4*headSpacing + natural(&t.mark.Widget) + natural(&t.icon.Widget) + natural(&t.state.Widget) +
+		min(textWidth(&t.title.Widget, title), titleRoom)
+	branch := 12 + gitSpacing + textWidth(&t.gitBranch.Widget, clip(g.Branch, gitBranchChars))
+	t.gitNeed = [2]int{fixed + textWidth(&t.gitName.Widget, clip(name, gitNameChars)) + gitSpacing + branch, fixed + branch}
+	t.fitGit()
+}
+
+// gitFor is how much of the checkout a tile width wide shows.
+func (t *tile) gitFor(width int) gitFit {
+	switch {
+	case t.gitNeed[0] == 0:
+		return gitNone
+	case width >= t.gitNeed[0]:
+		return gitAll
+	case width >= t.gitNeed[1]:
+		return gitBranch
+	}
+	return gitNone
+}
+
+// fitGit shows as much of the checkout as the tile has room for.
+func (t *tile) fitGit() {
+	f := t.gitFor(t.width)
+	t.gitShown = f
+	t.git.SetVisible(f != gitNone)
+	t.gitName.SetVisible(f == gitAll)
+}
+
+// natural is a widget's natural width.
+func natural(w *gtk.Widget) int {
+	var minimum, nat, minBase, natBase int32
+	w.Measure(gtk.OrientationHorizontalValue, -1, &minimum, &nat, &minBase, &natBase)
+	return int(nat)
+}
+
+// textWidth is the width of text in a widget's font.
+func textWidth(w *gtk.Widget, text string) int {
+	l := w.CreatePangoLayout(text)
+	var x, y int32
+	l.GetPixelSize(&x, &y)
+	l.Unref()
+	return int(x)
+}
+
+// clip is text as a label n characters at most shows it.
+func clip(text string, n int) string {
+	if r := []rune(text); len(r) > n {
+		return string(r[:n-1]) + "…"
+	}
+	return text
 }
 
 // focusPane tells the host which pane has the focus, when the user moved

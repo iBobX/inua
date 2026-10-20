@@ -931,6 +931,36 @@ ApplicationWindow settings {
                       valign: center;
                     }
                   }
+
+                  Separator {}
+
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("Passwords");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("Search the password store and copy from it, when there is one");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch bar_pass {
+                      name: "bar_pass";
+                      valign: center;
+                    }
+                  }
                 }
               }
 

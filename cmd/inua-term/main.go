@@ -47,14 +47,24 @@ func main() {
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory instead of the embedded copy")
 	runHost := flag.Bool("host", false, "run the terminal host (the window starts it when needed)")
 	workspace := flag.String("workspace", "", "open or show the workspace for this folder")
+	quick := flag.Bool("quick", false, "open a terminal for a moment: one window, one shell, no workspace or session, nothing kept")
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-term [--workspace DIR] [-e COMMAND ARGS…]")
+		fmt.Fprintln(os.Stderr, "       inua-term --quick [-e COMMAND ARGS…]")
 		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration …")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 	if *runHost {
 		os.Exit(serveHost())
+	}
+	if *quick {
+		if _, err := unix.IoctlGetTermios(2, unix.TCGETS); err != nil {
+			logTo("term.log")
+		}
+		termui.QuickCommand = command
+		termui.RegisterQuick()
+		os.Exit(appui.Run("term-quick", flag.Args(), *uiDir))
 	}
 	if len(command) > 0 || *workspace != "" {
 		// The host shows it; the window, opened or raised, follows.

@@ -168,6 +168,7 @@ func (a *App) openSettings() {
 	pr.win.AddController(&keys.EventController)
 	pr.onClose = func(gtk.Window) bool {
 		a.prefs = nil
+		a.freeLater(append(pr.cbs, &pr.onKey, &pr.onClose))
 		return false
 	}
 	pr.win.ConnectCloseRequest(&pr.onClose)

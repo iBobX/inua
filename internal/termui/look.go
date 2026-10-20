@@ -12,6 +12,18 @@ import (
 // Ctrl+- and Ctrl+0 change it in this window), the cursor and its blink,
 // copying on select, scrollback.
 
+// panes are the window's panes: its tiles', or a quick window's one.
+func (a *App) panes() []*termPane {
+	var ps []*termPane
+	for _, t := range a.tiles {
+		ps = append(ps, t.pane)
+	}
+	if p := a.quickTerm.pane; p != nil {
+		ps = append(ps, p)
+	}
+	return ps
+}
+
 // fontSteps is how far Ctrl+= and Ctrl+- go each time, in points.
 const fontStep = 1
 
@@ -69,8 +81,8 @@ func (a *App) zoomFont(dir int) {
 		a.fontStep += float64(dir * fontStep)
 	}
 	font := a.look().Font
-	for _, t := range a.tiles {
-		t.pane.setFont(font)
+	for _, p := range a.panes() {
+		p.setFont(font)
 	}
 }
 

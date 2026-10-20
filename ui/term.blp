@@ -130,6 +130,40 @@ ApplicationWindow term {
             selection-mode: single;
           }
         }
+
+        // The agents that need you and those idle, as Warcraft's idle
+        // worker: a click (or Ctrl+`) goes to the next one.
+        Button finder {
+          styles ["plain", "term-finder"]
+          visible: false;
+          halign: start;
+
+          Box {
+            spacing: 10;
+
+            Box finder_waiting {
+              spacing: 6;
+
+              Box {
+                styles ["mark", "s-warn"]
+                valign: center;
+              }
+
+              Label finder_waiting_count {}
+            }
+
+            Box finder_idle {
+              spacing: 6;
+
+              Box {
+                styles ["mark"]
+                valign: center;
+              }
+
+              Label finder_idle_count {}
+            }
+          }
+        }
       }
 
       // Column 2: the shown workspace's sessions, each a section of its

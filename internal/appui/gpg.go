@@ -35,7 +35,7 @@ type gpgApp struct {
 	encFiles, decFiles []string
 	encOut, decOut     string // the armored message, the decrypted text
 	busy               bool
-	clip               secretClip
+	clip               gtkx.SecretClip
 	autoBlock          string   // the block pasted that was decrypted on its own
 	clipBlock          string   // the encrypted message the clipboard holds
 	impData            []byte   // the key data shown before importing
@@ -882,7 +882,7 @@ func (a *gpgApp) button(name string) {
 		clip.Unref()
 		a.encResultStatus.SetText(i18n.T("Copied"))
 	case "dec-copy":
-		a.clip.copy(&a.win.Widget, a.decOut)
+		a.clip.Copy(a.decOut)
 		a.decStatus.SetText(i18n.T("Copied; taken off the clipboard in 45 seconds"))
 	case "enc-save":
 		a.saveAs("enc-save", "message.asc")

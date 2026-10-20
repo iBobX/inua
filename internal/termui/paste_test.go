@@ -3,6 +3,8 @@ package termui
 import (
 	"slices"
 	"testing"
+
+	"codeberg.org/puregotk/puregotk/v4/gdk"
 )
 
 func TestLines(t *testing.T) {
@@ -38,6 +40,26 @@ func TestQuotePaths(t *testing.T) {
 	} {
 		if got := quotePaths(c.in); got != c.want {
 			t.Errorf("quotePaths(%q) = %s, want %s", c.in, got, c.want)
+		}
+	}
+}
+
+// The image a clipboard offers, asked of formats with no MIME type at all
+// too: their list is NULL, which once crashed the window on Ctrl+Shift+V.
+func TestImageMime(t *testing.T) {
+	for _, c := range []struct {
+		mimes []string
+		want  string
+	}{
+		{nil, ""},
+		{[]string{"image/jpeg", "image/png"}, "image/png"},
+		{[]string{"image/webp"}, "image/webp"},
+		{[]string{"image/png", "text/plain;charset=utf-8"}, ""},
+		{[]string{"text/html", "image/png", "UTF8_STRING"}, ""},
+	} {
+		f := gdk.NewContentFormats(c.mimes, uint32(len(c.mimes)))
+		if got := imageMime(f); got != c.want {
+			t.Errorf("imageMime(%q) = %q, want %q", c.mimes, got, c.want)
 		}
 	}
 }
