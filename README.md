@@ -35,7 +35,7 @@ and a settings window, in one calm visual language. It works with
 | **Assistant** | An agent that answers questions about this computer and does things on it (windows, Wi-Fi, volume, Focus, notifications, Tailscale …), asking before it changes anything; on [Mister Morph](https://github.com/quailyquaily/mistermorph), with your own models and keys, and fallbacks between them. It stays running with the desktop and can serve as an [endpoint for other Consoles](docs/apps.md#console-endpoint). Its tools come from inua's [MCP server](docs/apps.md#mcp-inuas-tools-for-the-assistant-and-for-agents), which AI agents such as Claude Code can use too, through `inua mcp` ([the tools](docs/mcp.md)). |
 | **Files** | A file manager to replace Nautilus, keyboard first: one or two panes, list or grid, filter by typing, jump to folders used before, search, details; drives and USB sticks through UDisks2 (mount, unlock, eject), network shares through GVfs, the freedesktop trash, undo; `inua-files`, see [docs/files.md](docs/files.md). |
 | **Viewer** | Images, PDFs, Markdown and plain text: steps through the files of a folder, zooms, shows the details; `inua-viewer`, see [docs/apps.md](docs/apps.md#viewer). |
-| **Virtual machines** | Machines of your own, each one a folder with a `machine.toml`: a list of machines on the left and the chosen machine's page on the right, the host checks with their fixes, the console while it installs, then Start, Stop and Connect. Eight templates, from Windows in Docker (Dockur) to Linux, FreeBSD, Android and a system of your own; Dockur is the backend this build runs; `inua-vm`, see [docs/apps.md](docs/apps.md#virtual-machines). |
+| **Virtual machines** | Machines of your own, each one a folder with a `machine.toml`: a list of machines on the left and the chosen machine's page on the right, the host checks with their fixes, the console while it installs, then Start, Stop and Connect. Eight templates, from Windows in Docker (Dockur) to Linux, FreeBSD, Android and a system of your own; QEMU runs Linux, FreeBSD and custom systems, Dockur runs Windows, and Android (Waydroid) is still to come; `inua-vm`, see [docs/apps.md](docs/apps.md#virtual-machines). |
 | **Remote Desktop** | This desktop shared with your other devices through Sunshine, and other machines' desktops shown here with the keyboard and mouse sent to them, over Moonlight's protocol: found on the local network or the tailnet, paired once with a PIN, decoded by the graphics card; `inua-remote`, see [docs/remote-desktop.md](docs/remote-desktop.md). |
 | **Mobile Link** | Your phone and this computer together, over KDE Connect's protocol (KDE Connect, GSConnect and Valent devices): the clipboard both ways, files and links shared, the phone's notifications and battery here, this computer's players driven and its pointer and keyboard used from the phone, and commands run from it; found on the local network or the tailnet; `inua-connect`, see [docs/mobile-link.md](docs/mobile-link.md). |
 | **Light apps** | Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music (a player in Winamp's spirit, with an equalizer and a spectrum) and Video. |
@@ -81,13 +81,14 @@ system with every boot field open. Removing a guest keeps its disk and its
 password — deleting the installation, or the machine with its folder, is its
 own, confirmed action.
 
-Docker (Dockur) is the backend this build runs, for Windows; the QEMU
-backend (Linux, FreeBSD, custom systems) and the Waydroid backend (Android)
-are the following steps, so a machine of those kinds is stored, listed and
-described, and its page says this build has no backend for it yet. For a
-Windows guest there is no ISO to prepare: the container fetches Windows' own
-installation media and installs it unattended, which is what takes tens of
-minutes.
+QEMU runs Linux, FreeBSD and custom systems, from an install image you
+choose or download (from the distributions' own list, osinfo-db), a disk or
+a kernel, and can hold a guest at its first instruction for gdb; Docker
+(Dockur) runs Windows. The Waydroid backend (Android) is a following step:
+an Android machine is stored, listed and described, and its page says this
+build has no backend for it yet. For a Windows guest there is no ISO to
+prepare: the container fetches Windows' own installation media and installs
+it unattended, which is what takes tens of minutes.
 
 `inua-vm --list` names the machines, one per line; `inua-vm --doctor
 [--json]` prints what this host provides and which machines there are, and
