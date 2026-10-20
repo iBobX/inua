@@ -257,8 +257,8 @@ sorting, which is off until turned on. *Use AI in Mail* (Mail's Settings
 → AI) turns every bit of it off, and then nothing of your mail goes to a
 model.
 
-The right panel opens from ✦ in the conversation's bar (the sidebar
-makes room when it was shown, and comes back when the panel closes):
+The right panel opens from ✦ in the conversation's bar (in a window too
+narrow for both, the sidebar makes room, and comes back when it closes):
 *Sum it up* and *Suggest replies*, a line of what to reply, then *Is it
 safe?*: each check's finding for the newest message not yours, and AI's
 judgment when asked (*Ask AI*). A reply it writes goes into the quick

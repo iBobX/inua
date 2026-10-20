@@ -17,13 +17,21 @@ import (
 // conversation, to read and send), and its judgment of a message the
 // phishing checks doubt.
 
+// The panel's width (ui/mail.blp's mail-assist-panel), and the least the
+// reader keeps beside it before the sidebar makes room.
+const (
+	assistWidth = 320
+	readerRoom  = 560
+)
+
 // toggleAssist opens or closes the panel.
-// The sidebar makes room for it, and comes back when it closes.
+// In a window too narrow for both, the sidebar makes room for it, and
+// comes back when it closes.
 func (w *window) toggleAssist() {
 	w.assistOpen = !w.assistOpen
 	w.assistReveal.SetRevealChild(w.assistOpen)
 	switch {
-	case w.assistOpen && w.indexCol.GetVisible():
+	case w.assistOpen && w.indexCol.GetVisible() && int(w.readerStack.GetWidth())-assistWidth < readerRoom:
 		w.setSidebar(false)
 		w.sidebarForPanel = true
 	case !w.assistOpen && w.sidebarForPanel:
