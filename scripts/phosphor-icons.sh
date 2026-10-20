@@ -319,6 +319,7 @@ mail-move                             folder-simple
 mail-reply-all                        arrow-bend-double-up-left
 mail-forward                          arrow-bend-up-right
 mail-mark-junk                        prohibit
+sidebar-show                          sidebar-simple
 disk-choose                           cursor-click
 disk-locate                           crosshair
 LIST

@@ -24,49 +24,20 @@ ApplicationWindow mail {
 
       child: Box {
         // ── the index ──────────────────────────────────────────────────
-        Box {
+        Box index_col {
           styles ["index", "mail-index"]
           orientation: vertical;
           width-request: 236;
           hexpand: false;
 
-          // What waits: the unread, and the conversations to answer and
-          // today's (Go fills it); the settings, and writing a message.
+          // Hiding the index, as Apple Mail does.
           Box {
             styles ["mail-index-head"]
-            spacing: 6;
 
-            Box {
-              orientation: vertical;
-              hexpand: true;
-              valign: center;
-              spacing: 2;
-
-              Label head_title {
-                styles ["mail-head-title"]
-                xalign: 0;
-                ellipsize: end;
-              }
-
-              Label head_sub {
-                styles ["mail-head-sub"]
-                xalign: 0;
-                ellipsize: end;
-              }
-            }
-
-            Button settings_button {
-              styles ["outlined", "mail-head-button"]
-              icon-name: "emblem-system-symbolic";
-              tooltip-text: _("Settings (Ctrl+,)");
-              valign: center;
-            }
-
-            Button compose {
-              styles ["suggested-action", "mail-head-button", "mail-compose-button"]
-              icon-name: "document-edit-symbolic";
-              tooltip-text: _("Write a message (C)");
-              valign: center;
+            Button sidebar_hide {
+              styles ["mail-tool"]
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Hide the sidebar (F9)");
             }
           }
 
@@ -83,7 +54,7 @@ ApplicationWindow mail {
             }
           }
 
-          // The sync, in words; Go fills it.
+          // The sync, in words (Go fills it), and the settings.
           Box {
             styles ["mail-index-foot"]
             spacing: 8;
@@ -99,6 +70,13 @@ ApplicationWindow mail {
               hexpand: true;
               ellipsize: end;
             }
+
+            Button settings_button {
+              styles ["outlined", "mail-head-button"]
+              icon-name: "emblem-system-symbolic";
+              tooltip-text: _("Settings (Ctrl+,)");
+              valign: center;
+            }
           }
         }
 
@@ -109,9 +87,32 @@ ApplicationWindow mail {
           width-request: 380;
           hexpand: false;
 
-          SearchEntry search {
-            styles ["mail-search"]
-            placeholder-text: _("Search, or ask in a sentence");
+          // The search, and writing a message; the sidebar's toggle
+          // when it is hidden.
+          Box {
+            styles ["mail-list-head"]
+            spacing: 8;
+
+            Button sidebar_show {
+              styles ["mail-tool"]
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Show the sidebar (F9)");
+              visible: false;
+              valign: center;
+            }
+
+            SearchEntry search {
+              styles ["mail-search"]
+              placeholder-text: _("Search, or ask in a sentence");
+              hexpand: true;
+            }
+
+            Button compose {
+              styles ["suggested-action", "mail-head-button", "mail-compose-button"]
+              icon-name: "document-edit-symbolic";
+              tooltip-text: _("Write a message (C)");
+              valign: center;
+            }
           }
 
           Label search_note {

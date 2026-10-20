@@ -18,8 +18,8 @@ inua-mail --check FILE.eml    the phishing checks on a message
 
 ```
 ┌──────────────────┬──────────────────────────┬───────────────────────────────┐
-│ 3 unread  [⚙][✎] │ ⌕ Search, or ask…        │ ↩ ↩↩ ↪          ▣ 🗑 ⊘ ▭ ☆ ✉ ⋯ │
-│ 1 to answer      │ ALL UNREAD FILES REPLY   │───────────────────────────────│
+│ ▯                │ ⌕ Search, or ask…   [✎]  │ ↩ ↩↩ ↪          ▣ 🗑 ⊘ ▭ ☆ ✉ ⋯ │
+│                  │ ALL UNREAD FILES REPLY   │───────────────────────────────│
 │ All inboxes   3  │ ■ Ana Souza       18:06  │ The Q3 report                 │
 │ Needs reply   1  │   The Q3 report       3  │ (✦ Summarize) (✦ Reply ideas) │
 │ Starred          │   Thanks! Can you send…  │ (A) Ana Souza  ana@studio.dev │
@@ -27,15 +27,16 @@ inua-mail --check FILE.eml    the phishing checks on a message
 │ Inbox         3  │ □ Hetzner Online   Sun   │ Thanks! Can you send the …    │
 │ Drafts · Sent    │   Your invoice R0021455  │ [PDF q3-draft.pdf · Save…]    │
 │ 1 more folder    │   FILE                   │ ┌ Reply to Ana…             ┐ │
-│ ■ Up to date     │                          │ └───────────────────────────┘ │
+│ ■ Up to date [⚙] │                          │ └───────────────────────────┘ │
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
 
-- **The head** says what waits: the unread, then how many conversations
-  to answer and how many came today. ⚙ opens the settings; ✎ writes a
-  message (`c`).
+- **The sidebar's toggle** at the top left hides the index (`F9`), as
+  Apple Mail's does; while it is hidden, the toggle sits beside the
+  search. ✎ beside the search writes a message (`c`).
 - **The foot** says how the sync is, in words: up to date, when it last
-  checked, checking, or which accounts cannot connect.
+  checked, checking, or which accounts cannot connect; ⚙ opens the
+  settings.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours); *Starred*; *Unsent* when
   drafts are kept; then each account in a panel of its own: its photo
@@ -85,7 +86,7 @@ or `Ctrl+F` searches, `c` composes; on a conversation `r` replies, `a`
 replies to all, `f` forwards, `e` archives, `#` or Delete moves it to
 the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
 stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
-move, `Ctrl+,` opens the settings. In the composer and the quick reply,
+move, `F9` hides or shows the sidebar, `Ctrl+,` opens the settings. In the composer and the quick reply,
 `Ctrl+Enter` sends.
 
 The window's title counts the unread.

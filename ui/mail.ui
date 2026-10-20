@@ -24,7 +24,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <property name="child">
               <object class="GtkBox">
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="index_col">
                     <style>
                       <class name="index"/>
                       <class name="mail-index"/>
@@ -37,54 +37,13 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <style>
                           <class name="mail-index-head"/>
                         </style>
-                        <property name="spacing">6</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="orientation">1</property>
-                            <property name="hexpand">true</property>
-                            <property name="valign">3</property>
-                            <property name="spacing">2</property>
-                            <child>
-                              <object class="GtkLabel" id="head_title">
-                                <style>
-                                  <class name="mail-head-title"/>
-                                </style>
-                                <property name="xalign">0</property>
-                                <property name="ellipsize">3</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="head_sub">
-                                <style>
-                                  <class name="mail-head-sub"/>
-                                </style>
-                                <property name="xalign">0</property>
-                                <property name="ellipsize">3</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="settings_button">
+                          <object class="GtkButton" id="sidebar_hide">
                             <style>
-                              <class name="outlined"/>
-                              <class name="mail-head-button"/>
+                              <class name="mail-tool"/>
                             </style>
-                            <property name="icon-name">emblem-system-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Settings (Ctrl+,)</property>
-                            <property name="valign">3</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="compose">
-                            <style>
-                              <class name="suggested-action"/>
-                              <class name="mail-head-button"/>
-                              <class name="mail-compose-button"/>
-                            </style>
-                            <property name="icon-name">document-edit-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Write a message (C)</property>
-                            <property name="valign">3</property>
+                            <property name="icon-name">sidebar-show-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Hide the sidebar (F9)</property>
                           </object>
                         </child>
                       </object>
@@ -130,6 +89,17 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <property name="ellipsize">3</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="settings_button">
+                            <style>
+                              <class name="outlined"/>
+                              <class name="mail-head-button"/>
+                            </style>
+                            <property name="icon-name">emblem-system-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Settings (Ctrl+,)</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -143,11 +113,43 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <property name="width-request">380</property>
                     <property name="hexpand">false</property>
                     <child>
-                      <object class="GtkSearchEntry" id="search">
+                      <object class="GtkBox">
                         <style>
-                          <class name="mail-search"/>
+                          <class name="mail-list-head"/>
                         </style>
-                        <property name="placeholder-text" translatable="yes">Search, or ask in a sentence</property>
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkButton" id="sidebar_show">
+                            <style>
+                              <class name="mail-tool"/>
+                            </style>
+                            <property name="icon-name">sidebar-show-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Show the sidebar (F9)</property>
+                            <property name="visible">false</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSearchEntry" id="search">
+                            <style>
+                              <class name="mail-search"/>
+                            </style>
+                            <property name="placeholder-text" translatable="yes">Search, or ask in a sentence</property>
+                            <property name="hexpand">true</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="compose">
+                            <style>
+                              <class name="suggested-action"/>
+                              <class name="mail-head-button"/>
+                              <class name="mail-compose-button"/>
+                            </style>
+                            <property name="icon-name">document-edit-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Write a message (C)</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>

@@ -66,12 +66,13 @@ type window struct {
 
 	top                                     gtk.Stack
 	side, filters, reader, welcomeBox       gtk.Box
-	readerBar                               gtk.Box
+	readerBar, indexCol                     gtk.Box
 	statusMark, undoBar                     gtk.Box
 	undoText                                gtk.Label
 	undoBtn                                 gtk.Button
-	statusState, headTitle, headSub         gtk.Label
+	statusState                             gtk.Label
 	compose, settingsButton                 gtk.Button
+	sidebarHide, sidebarShow                gtk.Button
 	search                                  gtk.SearchEntry
 	searchNote, listEmpty, listError, older gtk.Label
 	readerEmpty                             gtk.Label
@@ -161,7 +162,8 @@ func openWindow(c *appui.Ctx) *window {
 		"side": &w.side, "filters": &w.filters, "reader": &w.reader,
 		"compose": &w.compose, "settings_button": &w.settingsButton, "older": &w.older,
 		"top": &w.top, "welcome": &w.welcomeBox, "status_mark": &w.statusMark,
-		"status_state": &w.statusState, "head_title": &w.headTitle, "head_sub": &w.headSub, "reader_bar": &w.readerBar,
+		"status_state": &w.statusState, "reader_bar": &w.readerBar, "index_col": &w.indexCol,
+		"sidebar_hide": &w.sidebarHide, "sidebar_show": &w.sidebarShow,
 		"undo_bar": &w.undoBar, "undo_text": &w.undoText, "undo": &w.undoBtn,
 		"search": &w.search, "search_note": &w.searchNote, "list_empty": &w.listEmpty, "list_error": &w.listError,
 		"reader_empty": &w.readerEmpty, "list_stack": &w.listStack, "reader_stack": &w.readerStack,
@@ -184,6 +186,8 @@ func openWindow(c *appui.Ctx) *window {
 
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
 	w.h.click(&w.settingsButton, func() { w.showSettings("") })
+	w.h.click(&w.sidebarHide, w.toggleSidebar)
+	w.h.click(&w.sidebarShow, w.toggleSidebar)
 	w.h.notify(w.listScroll.GetVadjustment(), "value", w.nearEnd)
 	w.h.click(&w.undoBtn, w.undo)
 	w.h.searched(&w.search, w.searchChanged)
@@ -1209,6 +1213,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 	switch {
 	case ctrl && (keyval == uint32(gdk.KEY_f) || keyval == uint32(gdk.KEY_k)), keyval == uint32(gdk.KEY_slash):
 		w.search.GrabFocus()
+	case keyval == uint32(gdk.KEY_F9):
+		w.toggleSidebar()
 	case ctrl && keyval == uint32(gdk.KEY_comma):
 		w.showSettings("")
 	case ctrl:
@@ -1323,32 +1329,17 @@ func (w *window) drawStatus() {
 	}
 	if unread > 0 {
 		w.win.SetTitle(i18n.Tf("Mail · %d unread", unread))
-		w.headTitle.SetText(i18n.Nf("%d unread", "%d unread", unread, unread))
 	} else {
 		w.win.SetTitle(i18n.T("Mail"))
-		w.headTitle.SetText(i18n.T("All read"))
 	}
-	// What waits besides: the conversations to answer, and today's mail.
-	var sub []string
-	if n := len(w.conversations(view{kind: viewReply})); n > 0 {
-		sub = append(sub, i18n.Nf("%d to answer", "%d to answer", n, n))
-	}
-	today := 0
-	y, m, d := time.Now().Date()
-	for _, x := range w.accts {
-		for _, it := range x.s.Items(x.s.Role(mail.RoleInbox)) {
-			if yy, mm, dd := it.Date.Local().Date(); yy == y && mm == m && dd == d {
-				today++
-			}
-		}
-	}
-	if today > 0 {
-		sub = append(sub, i18n.Nf("%d today", "%d today", today, today))
-	}
-	if len(sub) == 0 {
-		sub = append(sub, i18n.Time(time.Now(), "Monday, January 2"))
-	}
-	w.headSub.SetText(strings.Join(sub, " · "))
+}
+
+// toggleSidebar hides the index, or shows it again; its toggle moves to
+// the list's head while it is hidden.
+func (w *window) toggleSidebar() {
+	shown := !w.indexCol.GetVisible()
+	w.indexCol.SetVisible(shown)
+	w.sidebarShow.SetVisible(!shown)
 }
 
 // ago says how long ago a time was, in the status's words.

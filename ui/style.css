@@ -3212,15 +3212,8 @@ window.disk button.destructive-action:hover { background: mix(@danger, @t0, 0.14
    section 5). The accent marks unread and the selection only; danger only
    a suspicious message; the assistant's words sit over a hairline, never
    in a box. */
-/* The index's head: what waits, the settings, and writing a message. */
-window.mail .mail-index-head { padding: 20px 14px 10px 22px; }
-window.mail .mail-head-title {
-  font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: @t0;
-}
-window.mail .mail-head-sub { font-size: 12px; color: @t2; }
+/* The index's head: the sidebar's toggle, level with the search. */
+window.mail .mail-index-head { min-height: 36px; margin: 18px 14px 8px 16px; }
 window.mail button.mail-head-button {
   min-height: 32px;
   min-width: 32px;
@@ -3328,7 +3321,8 @@ window.mail .mail-links { margin-top: 2px; }
 
 /* The middle column. */
 window.mail .mail-list { border-right: 1px solid alpha(@line, 0.7); }
-window.mail entry.mail-search { margin: 18px 14px 8px; }
+window.mail .mail-list-head { margin: 18px 14px 8px; }
+window.mail .mail-list-head button.mail-head-button { min-height: 34px; min-width: 34px; }
 window.mail .mail-search-note { margin: 0 16px 8px; }
 window.mail .mail-filters { margin: 2px 16px 0; padding-bottom: 8px; border-bottom: 1px solid alpha(@line, 0.55); }
 window.mail button.mail-filter {

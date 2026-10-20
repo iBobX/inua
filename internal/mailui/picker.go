@@ -148,6 +148,7 @@ func (w *window) showKeys() {
 		{"Z", i18n.T("Undo the last archive, delete or move")},
 		{"Ctrl+Enter", i18n.T("Send (in a reply or the composer)")},
 		{"Esc", i18n.T("Leave the search or the reply field")},
+		{"F9", i18n.T("Hide or show the sidebar")},
 		{"Ctrl+,", i18n.T("Settings")},
 		{"?", i18n.T("These keys")},
 	}
