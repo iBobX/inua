@@ -2,9 +2,12 @@ package mail
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
+	"net/http"
 	"slices"
 	"strings"
 	"sync"
@@ -82,6 +85,50 @@ func (s *Session) signIn() (Auth, error) {
 	a := Auth{User: s.Acc.User(), Password: pw}
 	s.auth = &a
 	return a, nil
+}
+
+// Picture asks the provider for the address of the account's photo, for
+// one whose sign-in did not give it: Google leaves it out of the ID token
+// of some Workspace accounts, and says it in the profile the token reads.
+// "" when there is no photo, or no way to ask.
+func (s *Session) Picture(ctx context.Context) (string, error) {
+	if s.ep.UserInfo == "" {
+		return "", nil
+	}
+	s.mu.Lock()
+	a, err := s.signIn()
+	s.mu.Unlock()
+	if err != nil || a.Tokens == nil {
+		return "", err
+	}
+	access, err := a.Tokens.Access(ctx)
+	if err != nil {
+		return "", err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.ep.UserInfo, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+access)
+	req.Header.Set("Accept", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("the profile: %s", resp.Status)
+	}
+	var profile struct {
+		Picture string `json:"picture"`
+	}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&profile); err != nil {
+		return "", fmt.Errorf("the profile: %w", err)
+	}
+	if !strings.HasPrefix(profile.Picture, "https://") {
+		return "", nil
+	}
+	return profile.Picture, nil
 }
 
 // Do runs f on the connection, connecting first when there is none, and

@@ -1,6 +1,7 @@
 package mailui
 
 import (
+	"log"
 	"strings"
 	"unicode"
 
@@ -51,6 +52,34 @@ func (w *window) avatarWidget(x *acct) *gtk.Widget {
 	l.SetSizeRequest(avatarSize, avatarSize)
 	l.SetValign(gtk.AlignCenterValue)
 	return &l.Widget
+}
+
+// findPicture asks the provider, once, for the photo of an account whose
+// sign-in did not give one (some Google Workspace accounts), and keeps its
+// address in the settings, from where the index fetches it.
+func (w *window) findPicture(x *acct) {
+	if x.s.Acc.Picture != "" || x.askedPicture {
+		return
+	}
+	x.askedPicture = true
+	go func() {
+		pic, err := x.s.Picture(w.ctx)
+		if err != nil || pic == "" {
+			return
+		}
+		gtkx.Post(func() {
+			x.s.Acc.Picture = pic
+			for i := range w.settings.Accounts {
+				if w.settings.Accounts[i].ID == x.s.Acc.ID {
+					w.settings.Accounts[i].Picture = pic
+				}
+			}
+			if err := w.settings.Save(mail.SettingsPath()); err != nil {
+				log.Printf("mail: keeping %s's photo: %v", x.s.Acc.ID, err)
+			}
+			w.drawSide()
+		})
+	}()
 }
 
 // initial is a name's first letter or digit, upper case.

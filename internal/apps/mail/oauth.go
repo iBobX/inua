@@ -22,6 +22,7 @@ import (
 // Endpoint is a provider's OAuth pages and what inua asks it for.
 type Endpoint struct {
 	AuthURL, TokenURL string
+	UserInfo          string // where the account's profile is read with its token; "" for none
 	Scopes            []string
 	Extra             url.Values // more for the authorization page
 	Client            OAuthClient
@@ -56,6 +57,7 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 		return Endpoint{
 			AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL: "https://oauth2.googleapis.com/token",
+			UserInfo: "https://openidconnect.googleapis.com/v1/userinfo",
 			Scopes:   []string{"https://mail.google.com/", "openid", "email", "profile"},
 			Extra:    url.Values{"access_type": {"offline"}, "prompt": {"consent"}},
 			Client:   c,

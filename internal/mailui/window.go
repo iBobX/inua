@@ -53,16 +53,17 @@ const (
 
 // acct is an account's session and how it is doing.
 type acct struct {
-	s       *mail.Session
-	boxes   []mail.Mailbox
-	state   string    // what is wrong, in words; "" when fine
-	detail  string    // the error itself, shown on hover
-	busy    bool      // connecting or syncing the first time
-	syncing int       // syncs running
-	last    time.Time // the last sync that ended well
-	more    bool      // its other folders are shown
-	synced  map[string]bool
-	stop    context.CancelFunc // its IDLE
+	s            *mail.Session
+	boxes        []mail.Mailbox
+	state        string    // what is wrong, in words; "" when fine
+	detail       string    // the error itself, shown on hover
+	busy         bool      // connecting or syncing the first time
+	syncing      int       // syncs running
+	last         time.Time // the last sync that ended well
+	more         bool      // its other folders are shown
+	askedPicture bool      // its provider was asked for the photo its sign-in did not give
+	synced       map[string]bool
+	stop         context.CancelFunc // its IDLE
 }
 
 // window is Mail's window.
@@ -336,6 +337,7 @@ func (w *window) connect(x *acct) {
 		gtkx.Post(func() {
 			x.boxes, x.state, x.detail = boxes, "", ""
 			w.drawSide()
+			w.findPicture(x)
 		})
 		inbox := x.s.Role(mail.RoleInbox)
 		_, err = x.s.Sync(w.ctx, inbox)

@@ -1124,3 +1124,38 @@ func TestShownHost(t *testing.T) {
 		t.Error("site")
 	}
 }
+
+// A Google account whose sign-in gave no photo (some Workspace accounts):
+// the profile, read with the account's token, gives it.
+func TestPictureFromProfile(t *testing.T) {
+	p := newProvider(t)
+	pic := "https://lh3.googleusercontent.com/a/photo=s96-c"
+	profile := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer a2" {
+			http.Error(w, "no", http.StatusUnauthorized)
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]string{"sub": "1", "picture": pic})
+	}))
+	t.Cleanup(profile.Close)
+	acc := Account{ID: "ws", Address: "me@example.org", Provider: Google}
+	s := NewSession(acc, Settings{}, StoreAt(t.TempDir()), SecretsAt(filepath.Join(t.TempDir(), "s.json")))
+	t.Cleanup(s.Close)
+	s.ep = p.endpoint()
+	s.ep.UserInfo = profile.URL
+	s.UseAuth(Auth{User: acc.Address, Tokens: NewTokens(s.ep, "r1", nil)})
+	got, err := s.Picture(context.Background())
+	if err != nil || got != pic {
+		t.Fatalf("picture %q, %v", got, err)
+	}
+	// None given, or not an https address: no photo.
+	pic = "http://example.org/p.png"
+	if got, err := s.Picture(context.Background()); err != nil || got != "" {
+		t.Fatalf("plain http picture %q, %v", got, err)
+	}
+	// A provider with no profile to read: nothing asked.
+	s.ep.UserInfo = ""
+	if got, err := s.Picture(context.Background()); err != nil || got != "" {
+		t.Fatalf("no profile %q, %v", got, err)
+	}
+}
