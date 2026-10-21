@@ -735,19 +735,6 @@ func boxName(b mail.Mailbox) string {
 	return name
 }
 
-// accountName is what the index calls an account: its domain's first
-// name (STUDIO for ana@studio.dev), or its ID for a mail provider's
-// address (ana-gmail).
-func accountName(a mail.Account) string {
-	_, domain, _ := strings.Cut(a.Address, "@")
-	d, _, _ := strings.Cut(domain, ".")
-	switch d {
-	case "gmail", "googlemail", "outlook", "hotmail", "live", "icloud", "me", "fastmail", "yahoo", "proton", "protonmail", "qq", "163":
-		return a.ID
-	}
-	return d
-}
-
 // setView shows a view: its conversations from the cache, then synced.
 func (w *window) setView(v view) {
 	if v == w.view {
@@ -1043,15 +1030,22 @@ type convRow struct {
 	star                      gtk.Button
 	clip                      gtk.Image // with files
 	who, when, subject, count gtk.Label
-	snippet, tag, accountL    gtk.Label
-	foot                      gtk.Box
+	snippet, tag              gtk.Label // tag: SUSPICIOUS, from the phishing checks
+	badge                     gtk.Box   // the account's photo or initial, where accounts mix
+	badgeImg                  gtk.Image
+	badgeL                    gtk.Label
 	read                      gtk.Button // the hover action that changes with the row
 	item                      uintptr
 	ptrs                      []uintptr
 }
 
-// rowFace is the side of a row's initial.
-const rowFace = 34
+// rowFace is the side of a row's initial, rowBadge of the account's photo
+// at its corner.
+const (
+	rowFace     = 34
+	rowBadge    = 14
+	rowBadgeOut = 4 // how far the badge reaches past the initial
+)
 
 // relist shows the rows again, as the settings now say.
 func (w *window) relist() {
@@ -1067,7 +1061,7 @@ func (w *window) setupRow(item uintptr) {
 	// (to click; always there when starred), files. Then the sender's
 	// initial, then a column whose lines all start at one edge: who and
 	// when, the subject, the preview, the tags.
-	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	r.box.AddCssClass("mail-row")
 	// Three places of one size, kept when a mark is not there, the
 	// gutter at the row's middle: the star is always in the middle.
@@ -1099,8 +1093,30 @@ func (w *window) setupRow(item uintptr) {
 	r.face.AddCssClass("mail-sender-mark")
 	r.face.AddCssClass("mail-row-face")
 	r.face.SetSizeRequest(rowFace, rowFace)
+	// Where accounts mix, the account's photo or initial at the
+	// initial's corner.
+	// The face has a corner of room for it, past the initial's circle.
+	face := gtk.NewOverlay()
+	face.SetValign(gtk.AlignStartValue)
+	face.SetSizeRequest(rowFace+rowBadgeOut, rowFace+rowBadgeOut)
+	r.face.SetHalign(gtk.AlignStartValue)
 	r.face.SetValign(gtk.AlignStartValue)
-	gtkx.Append(&r.box, &r.face.Widget)
+	face.SetChild(&r.face.Widget)
+	r.badge = *gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	r.badge.AddCssClass("mail-row-badge")
+	r.badge.SetHalign(gtk.AlignEndValue)
+	r.badge.SetValign(gtk.AlignEndValue)
+	r.badge.SetCanTarget(false)
+	r.badge.SetOverflow(gtk.OverflowHiddenValue)
+	r.badgeImg = *gtk.NewImage()
+	r.badgeImg.SetPixelSize(rowBadge)
+	gtkx.Append(&r.badge, &r.badgeImg.Widget)
+	r.badgeL = *gtk.NewLabel("")
+	r.badgeL.AddCssClass("mail-monogram")
+	r.badgeL.SetSizeRequest(rowBadge, rowBadge)
+	gtkx.Append(&r.badge, &r.badgeL.Widget)
+	face.AddOverlay(&r.badge.Widget)
+	gtkx.Append(&r.box, &face.Widget)
 	col := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 	col.SetHexpand(true)
 	top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -1142,14 +1158,10 @@ func (w *window) setupRow(item uintptr) {
 	r.snippet = *label("mail-snippet", true)
 	r.snippet.SetWrapMode(2) // word_char
 	gtkx.Append(col, &r.snippet.Widget)
-	r.foot = *gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	r.tag = *label("mail-tag", false)
-	gtkx.Append(&r.foot, &r.tag.Widget)
-	r.accountL = *label("mail-row-account", false)
-	r.accountL.SetHexpand(true)
-	r.accountL.SetXalign(1)
-	gtkx.Append(&r.foot, &r.accountL.Widget)
-	gtkx.Append(col, &r.foot.Widget)
+	r.tag.AddCssClass("suspicious")
+	r.tag.SetText(i18n.T("SUSPICIOUS"))
+	gtkx.Append(col, &r.tag.Widget)
 	gtkx.Append(&r.box, &col.Widget)
 	li.SetChild(&r.box.Widget)
 	r.box.Unref()
@@ -1234,21 +1246,8 @@ func (w *window) fillRow(r *convRow) {
 	unread := c.Unread() > 0
 	setClass(&r.box.Widget, "unread", unread)
 	setClass(&r.mark.Widget, "on", unread)
-	t := c.Tag()
-	if w.lastMine(c) && t == mail.TagReply {
-		t = mail.TagWait
-	}
-	tag := ""
-	switch t {
-	case mail.TagReply, mail.TagWait:
-		tag = t.Mark() // the marks to act on; the rest are filters
-	}
-	if j := w.judgment(latest.Key()); j != nil && j.Verdict == mail.Suspicious {
-		tag = i18n.T("SUSPICIOUS")
-	}
-	r.tag.SetText(tag)
-	setClass(&r.tag.Widget, "suspicious", tag == i18n.T("SUSPICIOUS"))
-	r.tag.SetVisible(tag != "")
+	j := w.judgment(latest.Key())
+	r.tag.SetVisible(j != nil && j.Verdict == mail.Suspicious)
 	// Hidden in its place, which stays.
 	if c.Attach() {
 		r.clip.SetOpacity(1)
@@ -1273,15 +1272,21 @@ func (w *window) fillRow(r *convRow) {
 		r.read.SetIconName("mail-unread-symbolic")
 		r.read.SetTooltipText(i18n.T("Mark as unread (U)"))
 	}
-	acc := ""
+	var x *acct
 	if w.view.kind != viewBox && len(w.accts) > 1 {
-		if x := w.acct(latest.Account); x != nil {
-			acc = accountName(x.s.Acc)
-		}
+		x = w.acct(latest.Account)
 	}
-	r.accountL.SetText(acc)
-	r.accountL.SetVisible(acc != "")
-	r.foot.SetVisible(tag != "" || acc != "")
+	r.badge.SetVisible(x != nil)
+	if x != nil {
+		tex := w.avatars[x.s.Acc.ID]
+		if tex != nil {
+			r.badgeImg.SetFromPaintable(tex)
+		} else {
+			r.badgeL.SetText(initial(x.s.Acc.DisplayName()))
+		}
+		r.badgeImg.SetVisible(tex != nil)
+		r.badgeL.SetVisible(tex == nil)
+	}
 	r.box.GetParent().SetTooltipText(latest.From.String())
 }
 

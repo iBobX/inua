@@ -3511,7 +3511,7 @@ window.mail .mail-row { padding: 11px 16px 11px 6px; }
    one above the other in places of one size. The star shows while the
    pointer is on the row, and always, filled, when starred; files always
    when there are some. */
-window.mail .mail-row-gutter { min-width: 20px; margin-right: -4px; }
+window.mail .mail-row-gutter { min-width: 20px; }
 window.mail .mail-row .mark { border-radius: 1px; border-color: transparent; }
 window.mail .mail-row .mark.on { background: @accent; border-color: @accent; }
 window.mail button.image-button.mail-row-star {
@@ -3536,6 +3536,16 @@ window.mail .mail-row-clip { color: @t2; }
    together beside it. */
 window.mail .mail-row-face { font-size: 14px; margin-top: 1px; }
 window.mail .mail-row.unread .mail-row-face { background: alpha(@accent, 0.22); }
+/* The account at the initial's corner where accounts mix: its photo or
+   initial, ringed in the window's ground so it reads cut out of the
+   initial, in every theme. */
+window.mail .mail-row-badge {
+  border: 2px solid @app;
+  border-radius: 5px;
+  background: @app;
+}
+window.mail .mail-row-badge image { border-radius: 3px; }
+window.mail .mail-row-badge .mail-monogram { border-radius: 3px; font-size: 8px; }
 window.mail .mail-who { font-size: 13.5px; color: @t1; }
 window.mail .mail-row.unread .mail-who { color: @t0; font-weight: 600; }
 window.mail .mail-when, window.mail .mail-n {
@@ -3547,7 +3557,7 @@ window.mail .mail-when, window.mail .mail-n {
 window.mail .mail-subject-line { font-size: 13px; color: @t1; }
 window.mail .mail-row.unread .mail-subject-line { color: @t0; }
 window.mail .mail-snippet { font-size: 12.5px; color: @t2; }
-window.mail .mail-tag, window.mail .mail-clip, window.mail .mail-row-account {
+window.mail .mail-tag, window.mail .mail-clip {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
   font-size: 9.5px;
   font-weight: 500;

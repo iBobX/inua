@@ -23,7 +23,7 @@ inua-mail --check FILE.eml    the phishing checks on a message
 │ All inboxes   3  │ ■ A Ana Souza     18:06  │ The Q3 report                 │
 │ Needs reply   1  │ ★   The Q3 report     3  │ (✦ Summarize) (✦ Reply ideas) │
 │ Starred          │ ▤   Thanks! Can you se…  │ (A) Ana Souza  ana@studio.dev │
-│ ┌ A Ana Souza    │     REPLY                │     to me, Ben    Tue 18:06   │
+│ ┌ A Ana Souza    │     before Friday.       │     to me, Ben    Tue 18:06   │
 │ Inbox         3  │   H Hetzner Online  Sun  │ Thanks! Can you send the …    │
 │ Drafts · Sent    │     Your invoice R00214  │ [PDF q3-draft.pdf · Save…]    │
 │ 1 more folder    │ ▤   Thanks for your o…   │ ┌ Reply to Ana…             ┐ │
@@ -53,11 +53,11 @@ inua-mail --check FILE.eml    the phishing checks on a message
   edge a column of marks, one above the other (the square for unread;
   the star, filled when starred and shown on hover otherwise, a click
   stars or unstars; ▤ when files are attached), then the initial of who
-  wrote, and beside it, each line starting at one edge, who wrote
-  and when, the subject and how many messages, the text in one to three
-  lines (Settings → Reading → *Preview*, two at first), and a mark for
-  what to act on: REPLY (someone asks you something), WAITING (you wrote
-  last), SUSPICIOUS (the phishing checks).
+  wrote (where accounts mix, as in *All inboxes*, the account's photo or
+  initial at its corner), and beside it, each line starting at one edge,
+  who wrote and when, the subject and how many messages, the text in one
+  to three lines (Settings → Reading → *Preview*, two at first), and
+  SUSPICIOUS under a message the phishing checks doubt.
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
   while the list has unread mail, marks every conversation of the view
   read, on the server too. A mailbox fetched the first time shows the

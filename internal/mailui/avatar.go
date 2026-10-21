@@ -43,6 +43,7 @@ func (w *window) avatarWidget(x *acct) *gtk.Widget {
 				tex := rgbaTexture(px)
 				w.avatars[id] = tex
 				w.drawSide()
+				w.relist() // the rows' badges
 			})
 		}()
 	}
