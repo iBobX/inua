@@ -589,10 +589,14 @@ func (s *shellUI) passwordsRow(id, key, value string, secret bool) {
 	v.SetSelectable(shown)
 	v.SetFocusable(false)
 	if id == "otp" && p.otp != nil {
-		// The code, and beside it the seconds it stays.
-		line := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+		// The code, and beside it the seconds it stays. The code is one
+		// line: wrapping, a label beside another gets only its least
+		// width, and the code broke at its space.
+		line := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 		p.otpCode = v
 		v.AddCssClass("otp")
+		v.SetWrap(false)
+		v.SetEllipsize(pango.EllipsizeNoneValue)
 		gtkx.Append(line, &v.Widget)
 		p.otpLeft = gtk.NewLabel("")
 		p.otpLeft.AddCssClass("readout")
