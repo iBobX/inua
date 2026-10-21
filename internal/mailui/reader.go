@@ -28,6 +28,10 @@ import (
 // read from the server; the messages not read are marked read.
 func (w *window) openConversation(c *mail.Conversation) {
 	w.open, w.openID, w.actErr = c, c.ID, ""
+	if w.unsent {
+		w.unsent = false
+		w.drawSide()
+	}
 	w.dropWebs(func(k mail.Key) bool {
 		return slices.ContainsFunc(c.Messages, func(m mail.Item) bool { return m.Key() == k })
 	})

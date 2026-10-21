@@ -133,6 +133,7 @@ type window struct {
 	markAll         *gtk.Button               // marks the list read; shown while it has unread mail
 	sidebarForPanel bool                      // the panel hid the sidebar
 	assistOpen      bool                      // the assistant's panel is open
+	unsent          bool                      // the reader shows the drafts on this computer
 	panelBtns       []uintptr
 	panelSum        *gtk.Label           // the summary as it comes
 	quickBuf        *gtk.TextBuffer      // the quick reply's text, for the assistant to write into
@@ -513,7 +514,7 @@ func (w *window) drawSide() {
 	w.sideItem(i18n.T("Needs reply"), len(w.conversations(view{kind: viewReply})), view{kind: viewReply})
 	w.sideItem(i18n.T("Starred"), 0, view{kind: viewStarred})
 	if ds, _ := w.drafts.List(); len(ds) > 0 {
-		btn := w.sideButton(i18n.T("Unsent"), len(ds), false)
+		btn := w.sideButton(i18n.T("Unsent"), len(ds), w.unsent)
 		w.sideBtns = append(w.sideBtns, w.h.click(btn, w.showUnsent))
 	}
 	for _, x := range w.accts {
@@ -599,7 +600,7 @@ func (w *window) drawSide() {
 func (w *window) sideItem(title string, n int, v view) { w.sideItemIn(&w.side, title, n, v) }
 
 func (w *window) sideItemIn(parent *gtk.Box, title string, n int, v view) {
-	btn := w.sideButtonIn(parent, title, n, v == w.view)
+	btn := w.sideButtonIn(parent, title, n, v == w.view && !w.unsent)
 	w.sideBtns = append(w.sideBtns, w.h.click(btn, func() { w.setView(v) }))
 }
 
@@ -674,7 +675,14 @@ func accountName(a mail.Account) string {
 // setView shows a view: its conversations from the cache, then synced.
 func (w *window) setView(v view) {
 	if v == w.view {
+		if w.unsent {
+			w.leaveUnsent()
+			w.drawSide()
+		}
 		return
+	}
+	if w.unsent {
+		w.leaveUnsent()
 	}
 	w.view = v
 	w.found, w.asked = nil, ""

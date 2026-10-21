@@ -400,6 +400,9 @@ func (c *composer) close() {
 	c.w.h.forget(c.ptrs)
 	c.w.composers = slices.DeleteFunc(c.w.composers, func(x *composer) bool { return x == c })
 	c.w.drawSide() // Unsent
+	if c.w.unsent {
+		c.w.showUnsent() // the draft as it was left, or gone when sent
+	}
 }
 
 // --- files ---

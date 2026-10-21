@@ -40,7 +40,8 @@ inua-mail --check FILE.eml    the phishing checks on a message
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours: only the assistant's sorting
   tags REPLY, so it is empty with sorting off); *Starred*; *Unsent* when
-  drafts are kept; then each account in a panel of its own: its photo
+  drafts are kept (the drafts in the reader, a click on one opens it);
+  then each account in a panel of its own: its photo
   (a Google account's) or initial, its name and address, then its
   mailboxes in the same order for every account (Inbox, Drafts, Sent,
   Archive, Spam, Trash), the others behind *N more folders*. A click on

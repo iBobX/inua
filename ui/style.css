@@ -3807,7 +3807,18 @@ window.mail .mail-keys {
   font-size: 10.5px;
   color: alpha(@t2, 0.8);
 }
-window.mail .mail-unsent { padding: 10px 0; border-bottom: 1px solid alpha(@line, 0.4); }
+window.mail .mail-unsent { padding: 4px 0; border-bottom: 1px solid alpha(@line, 0.4); }
+/* A draft: a click opens it. */
+window.mail button.mail-unsent-open {
+  min-height: 0;
+  padding: 6px 8px;
+  margin-left: -8px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+}
+window.mail button.mail-unsent-open:hover { background: alpha(@accent, 0.07); }
 
 /* The welcome: adding an account in the window's place. A column of
    steps, the address typed at a prompt, the ways to sign in as rows, and

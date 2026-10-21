@@ -455,7 +455,8 @@ func removeAcct(l []*acct, x *acct) []*acct {
 }
 
 // showUnsent lists the drafts kept on this computer in the reader, to
-// open or discard.
+// open (a click on one) or discard; Unsent is the index's item chosen
+// while they show.
 func (w *window) showUnsent() {
 	ds, err := w.drafts.List()
 	w.open, w.openID = nil, ""
@@ -463,8 +464,13 @@ func (w *window) showUnsent() {
 	w.h.forget(w.readerBtns)
 	w.readerBtns = nil
 	w.lastDrawn = ""
+	gtkx.Clear(&w.readerBar) // the actions of the conversation that was open
 	gtkx.Clear(&w.reader)
 	w.readerStack.SetVisibleChildName("read")
+	if !w.unsent {
+		w.unsent = true
+		w.drawSide()
+	}
 	t := gtk.NewLabel(i18n.T("Unsent"))
 	t.AddCssClass("mail-read-subject")
 	t.SetXalign(0)
@@ -477,8 +483,11 @@ func (w *window) showUnsent() {
 	for _, d := range ds {
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 		row.AddCssClass("mail-unsent")
+		open := gtk.NewButton()
+		open.AddCssClass("mail-unsent-open")
+		open.SetHexpand(true)
+		open.SetTooltipText(i18n.T("Open"))
 		texts := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-		texts.SetHexpand(true)
 		subject := d.Subject
 		if subject == "" {
 			subject = i18n.T("(no subject)")
@@ -497,10 +506,8 @@ func (w *window) showUnsent() {
 		meta.SetXalign(0)
 		meta.SetEllipsize(3)
 		gtkx.Append(texts, &meta.Widget)
-		gtkx.Append(row, &texts.Widget)
+		open.SetChild(&texts.Widget)
 		dd := d
-		open := gtk.NewButtonWithLabel(i18n.T("Open"))
-		open.AddCssClass("outlined")
 		w.readerBtns = append(w.readerBtns, w.h.click(open, func() { w.newComposer(dd, nil); w.showUnsent() }))
 		gtkx.Append(row, &open.Widget)
 		discard := gtk.NewButtonWithLabel(i18n.T("Discard"))
@@ -518,6 +525,15 @@ func (w *window) showUnsent() {
 		l.AddCssClass("sub")
 		l.SetXalign(0)
 		gtkx.Append(&w.reader, &l.Widget)
+	}
+}
+
+// leaveUnsent ends the drafts' page: the reader is empty until a
+// conversation opens.
+func (w *window) leaveUnsent() {
+	w.unsent = false
+	if w.open == nil {
+		w.readerStack.SetVisibleChildName("empty")
 	}
 }
 
