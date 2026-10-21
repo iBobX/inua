@@ -36,6 +36,25 @@ jobs:
           mkdir _site
           cp -r website/. _site/
           cp scripts/install.sh _site/install.sh
+      # Says what is wrong with the token or the account, before wrangler's
+      # bare "Authentication error"; only yes or no, never a value.
+      - name: Token
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          api() { curl -s -H "Authorization: Bearer $TOKEN" "https://api.cloudflare.com/client/v4$1"; }
+          [ -n "$TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN is empty"; exit 1; }
+          [[ "$ACCOUNT" =~ ^[0-9a-f]{32}$ ]] || { echo "::error::CLOUDFLARE_ACCOUNT_ID is not 32 hex characters (an account ID; spaces or a line break in it?)"; exit 1; }
+          user=$(api /user/tokens/verify | jq -r '.result.status // empty')
+          own=$(api "/accounts/$ACCOUNT/tokens/verify" | jq -r '.result.status // empty')
+          echo "user token active: ${user:-no}; account token active: ${own:-no}"
+          [ "$user" = active ] || [ "$own" = active ] || { echo "::error::Cloudflare does not take the token (wrong, expired, or not active)"; exit 1; }
+          seen=$(api "/accounts?per_page=50" | jq --arg a "$ACCOUNT" '[.result[]?.id] | index($a) != null')
+          echo "token sees the account: $seen"
+          scripts=$(api "/accounts/$ACCOUNT/workers/scripts" | jq -r '.success')
+          echo "token can list the account's Workers: $scripts"
+          [ "$scripts" = true ] || { echo "::error::the token cannot use this account's Workers: give it Account → Workers Scripts → Edit for this account, or check CLOUDFLARE_ACCOUNT_ID"; exit 1; }
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
