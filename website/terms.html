@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inua — Terms of Use</title>
+<meta name="description" content="The terms for using inua, inua Mail and this website: free, open-source software under the Apache License 2.0, provided as is.">
+<link rel="canonical" href="https://inua.lyric.im/terms.html">
+<meta name="theme-color" content="#F2EDE2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<script>
+/* The colourway before the first paint, as on the other pages: the one
+   chosen there, else the system's light or dark. */
+(function () {
+  var r = document.documentElement, w = new URLSearchParams(location.search).get("way"), s;
+  try { s = localStorage.getItem("inua-way"); } catch (e) {}
+  var ways = /^(washi|aojashin|yoru|suimen|rinko|bunko|denko)$/;
+  r.dataset.way = ways.test(w) ? w : ways.test(s) ? s : matchMedia("(prefers-color-scheme: dark)").matches ? "yoru" : "washi";
+  r.dataset.tone = /^(washi|aojashin)$/.test(r.dataset.way) ? "light" : "dark";
+})();
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="col">
+    <a class="name" href="index.html">inua</a>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="intro col">
+    <div class="label">Terms</div>
+    <h1>Terms of Use</h1>
+    <p class="updated">Effective October 21, 2026</p>
+    <p>These terms cover your use of inua, the desktop shell and its apps (including inua Mail), and of this website, inua.lyric.im. By installing or using inua, you agree to them. If you do not agree, do not use inua.</p>
+  </div>
+
+  <section class="col">
+    <h2>The software and its license</h2>
+    <p>inua is free, open-source software, developed by Lyric and its contributors at <a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a>. It is licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>. The license gives you the right to use, copy, change and share inua; where these terms and the license differ on the use of the code, the license applies.</p>
+    <p>inua is free of charge. There is no account to create with us, and nothing to pay.</p>
+  </section>
+
+  <section class="col">
+    <h2>Services you connect</h2>
+    <p>inua works with services run by others, which you choose and connect yourself: mail providers such as Google and Microsoft, AI providers such as OpenAI, Anthropic or Google, and services such as Tailscale. When you use them through inua:</p>
+    <ul>
+      <li>Your use of each service is governed by your own agreement with its provider, including their terms, policies and limits. For a Google account, that includes the <a href="https://policies.google.com/terms">Google Terms of Service</a>.</li>
+      <li>You are responsible for the accounts, passwords and API keys you enter, and for any cost a provider charges you, such as an AI provider’s charges for the requests you make.</li>
+      <li>inua is not made, endorsed or supported by these providers, and we are not responsible for their services, their availability or what they do with the data you send them.</li>
+    </ul>
+    <p>How inua handles your data is described in the <a href="privacy.html">Privacy Policy</a>.</p>
+  </section>
+
+  <section class="col">
+    <h2>Using inua Mail</h2>
+    <p>inua Mail acts on your mail only as you tell it to: it sends the messages you write, and archives, deletes or moves the messages you choose. Messages you delete may be removed from your provider’s servers. Keep backups of mail you cannot afford to lose.</p>
+    <p>You agree not to use inua Mail to send spam or unsolicited bulk mail, to break the law, to infringe others’ rights, or to get around the limits and rules of your mail provider.</p>
+  </section>
+
+  <section class="col">
+    <h2>AI features</h2>
+    <p>Summaries, suggested replies, drafts and other assistant features are produced by the AI service you set up, and can be wrong or incomplete. Read what they write before you rely on it or send it. A phishing check is a second opinion, not a guarantee that a message is safe.</p>
+  </section>
+
+  <section class="col">
+    <h2>No warranty</h2>
+    <p>inua is provided “as is” and “as available”, without warranties or conditions of any kind, express or implied, including those of merchantability, fitness for a particular purpose and non-infringement, as set out in the Apache License 2.0. We do not promise that inua will be free of errors, work without interruption, or keep your data from being lost.</p>
+  </section>
+
+  <section class="col">
+    <h2>Limitation of liability</h2>
+    <p>To the fullest extent the law allows, the inua project, its developers and its contributors are not liable for any damages arising from your use of inua or this website, or from being unable to use them, including lost data, lost mail or lost profits, even if told such damages were possible. Some places do not allow these limits; there, they apply as far as the law allows.</p>
+  </section>
+
+  <section class="col">
+    <h2>Names and logos</h2>
+    <p>The name inua and its logo identify this project. You may use them to refer to inua, but not in a way that suggests that the project made or endorses something it did not. Other names and logos, such as Gmail and Google, belong to their owners.</p>
+  </section>
+
+  <section class="col">
+    <h2>This website</h2>
+    <p>The website describes inua and is provided for information. You may link to it freely. Its text and pictures may change at any time.</p>
+  </section>
+
+  <section class="col">
+    <h2>Changes</h2>
+    <p>We may change these terms. The new version will be published on this page with a new date, and the history of every change is kept in the project’s repository. Continuing to use inua after a change means you accept the new terms.</p>
+  </section>
+
+  <section class="col">
+    <h2>Contact</h2>
+    <p>For questions about these terms, open an issue at <a href="https://github.com/lyricat/inua/issues">github.com/lyricat/inua/issues</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="col">
+    <span>inua</span>
+    <span class="foot-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

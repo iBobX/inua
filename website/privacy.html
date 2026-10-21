@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inua — Privacy Policy</title>
+<meta name="description" content="How inua and inua Mail handle your data: everything stays on your computer, nothing is sent to us, and mail reaches an AI service only when you set one up and ask.">
+<link rel="canonical" href="https://inua.lyric.im/privacy.html">
+<meta name="theme-color" content="#F2EDE2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<script>
+/* The colourway before the first paint, as on the other pages: the one
+   chosen there, else the system's light or dark. */
+(function () {
+  var r = document.documentElement, w = new URLSearchParams(location.search).get("way"), s;
+  try { s = localStorage.getItem("inua-way"); } catch (e) {}
+  var ways = /^(washi|aojashin|yoru|suimen|rinko|bunko|denko)$/;
+  r.dataset.way = ways.test(w) ? w : ways.test(s) ? s : matchMedia("(prefers-color-scheme: dark)").matches ? "yoru" : "washi";
+  r.dataset.tone = /^(washi|aojashin)$/.test(r.dataset.way) ? "light" : "dark";
+})();
+</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="col">
+    <a class="name" href="index.html">inua</a>
+  </div>
+</header>
+
+<main class="legal">
+  <div class="intro col">
+    <div class="label">Privacy</div>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Effective October 21, 2026</p>
+    <p>inua is a desktop shell and a set of apps for Linux, including inua Mail. It is free, open-source software (Apache License 2.0) that runs on your own computer. This policy explains what inua does with your data, and in particular what inua Mail does with the data of a Google account you connect to it.</p>
+    <p>In short: <strong>your data stays on your computer.</strong> inua has no servers that receive your data, no accounts with us, no analytics, no advertising and no tracking. The only places your data goes are the services you connect inua to yourself, and you choose each of them.</p>
+  </div>
+
+  <section class="col">
+    <h2>Who we are</h2>
+    <p>inua is developed by Lyric and its contributors as an open-source project at <a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a>. In this policy, “we” means the inua project. You can read every line of the code that handles your data in that repository.</p>
+  </section>
+
+  <section class="col">
+    <h2>inua Mail and your Google account</h2>
+    <p>When you add a Gmail or Google Workspace account to inua Mail, you sign in on Google’s own page in your browser, and Google asks whether you allow inua Mail to access your account. inua Mail asks for these permissions:</p>
+    <ul>
+      <li><strong>Read, compose, send and manage your mail</strong> (<code>https://mail.google.com/</code>), so that inua Mail can show your mailboxes and conversations, keep them in sync, send the messages you write, and carry out what you ask of it, such as archiving, deleting, starring, moving or marking messages read.</li>
+      <li><strong>Your email address, name and profile picture</strong> (<code>openid</code>, <code>email</code>, <code>profile</code>), so that inua Mail can name the account and show its picture in the sidebar.</li>
+    </ul>
+
+    <h3>How the data is used</h3>
+    <p>inua Mail uses your Google data only to provide the features of a mail app that you can see and use: reading, searching, writing, sending and organising your own mail. It connects directly from your computer to Google’s servers (<code>imap.gmail.com</code> and <code>smtp.gmail.com</code>). Your mail never passes through a server of ours.</p>
+
+    <h3>What is kept, and where</h3>
+    <p>Everything inua Mail keeps is stored on your computer, in your own user folders:</p>
+    <ul>
+      <li><strong>A copy of your messages</strong>, so they open quickly and while you are offline: in <code>~/.cache/inua/mail/</code>. It is a cache of what is on Google’s servers and can be deleted at any time.</li>
+      <li><strong>Your profile picture</strong>, downloaded from Google: in the same cache folder.</li>
+      <li><strong>Drafts</strong> you have not sent yet: in <code>~/.local/share/inua/mail/drafts/</code>.</li>
+      <li><strong>Your account’s settings</strong> (its name, address and servers, never a password or token): in <code>~/.config/inua/mail.toml</code>.</li>
+      <li><strong>The sign-in token</strong> Google issues to inua Mail (a refresh token), so that you do not have to sign in every time: in your desktop’s keyring (the Secret Service, such as inua-keyring or GNOME Keyring), or, when no keyring is running, in a file only your user can read.</li>
+    </ul>
+    <p>Suggestions of people to write to come from the addresses in your own messages; inua Mail does not use Google’s Contacts.</p>
+
+    <h3>Sharing</h3>
+    <p>We do not receive, sell, rent or share your Google data, and we do not use it for advertising. No person at the inua project can read it. Your Google data is not used to develop, improve or train AI or machine-learning models, by us or for us.</p>
+    <p>The one exception, under your control, is the assistant described below: when you set it up and ask it for something, the part of your mail that the request needs is sent to the AI service <em>you</em> chose.</p>
+
+    <h3>Google API Services User Data Policy</h3>
+    <p>inua Mail’s use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+  </section>
+
+  <section class="col">
+    <h2>The assistant in inua Mail</h2>
+    <p>inua Mail can summarise a conversation, suggest replies, draft or polish a message, search with a sentence, give a second opinion on a message that looks like phishing, summarise an attachment, and, if you turn it on, sort new mail by what it asks of you. These features use an AI service, and <strong>none of them works until you set one up</strong>:</p>
+    <ul>
+      <li>You choose the provider (for example OpenAI, Anthropic, Google Gemini, or a model running on your own computer) and enter your own API key in Settings. inua does not include, run or pay for an AI service, and has no access to your key or your requests.</li>
+      <li>Requests go directly from your computer to that provider, under your agreement with them. Their privacy policy and terms apply to what they receive; check whether they keep or train on the data sent to their API. A model on your own computer keeps everything local.</li>
+      <li>Each feature sends only what it needs, and only when you ask: for a summary, the messages of that conversation (their senders, dates and text, without quoted replies and signatures); for a draft, your instruction, the conversation and a few of your own sent messages as examples of your style; for a search, only the sentence you typed; for a phishing check, the message’s headers, links and the start of its text; for an attachment, the file’s text.</li>
+      <li>Sorting is the only feature that runs by itself, on new mail in your inbox. It is off until you turn it on, and sends the sender, recipients, subject and the first lines of each new message.</li>
+      <li>You can turn the assistant off for inua Mail in its settings, and remove your key at any time.</li>
+    </ul>
+    <p>Summaries and sorting results are kept on your computer, with the rest of the cache.</p>
+  </section>
+
+  <section class="col">
+    <h2>Other connections inua makes</h2>
+    <p>Apart from the services you connect yourself (mail accounts, an AI provider), inua contacts these services, from your computer, for the features that need them:</p>
+    <ul>
+      <li><strong>Updates</strong>: release builds check GitHub (<code>github.com/lyricat/inua</code>) for a new release about once a day. This can be turned off in Settings.</li>
+      <li><strong>Remote images in mail</strong>: images that a message loads from the internet are only fetched when you allow it, as fetching them can tell the sender that you opened the message.</li>
+      <li><strong>Weather</strong>: the places you search for and add are sent to Open-Meteo.</li>
+      <li><strong>Stocks</strong>: the symbols you follow are sent to Yahoo Finance.</li>
+      <li><strong>Currency conversion</strong> in the launcher: exchange rates come from Frankfurter and Coinbase.</li>
+      <li><strong>Web search</strong> in the launcher opens the search engine you chose in your browser.</li>
+    </ul>
+    <p>Mobile Link and Remote Desktop connect only to devices you pair or share with, on your own network. Each of these services has its own privacy policy.</p>
+  </section>
+
+  <section class="col">
+    <h2>This website</h2>
+    <p>inua.lyric.im has no analytics, no cookies and no tracking. It loads its typefaces from Google Fonts, which receives your IP address as any web server does. The colourway and language you pick are remembered in your browser’s local storage and never leave it.</p>
+  </section>
+
+  <section class="col">
+    <h2>Your choices</h2>
+    <ul>
+      <li><strong>Remove an account</strong> in inua Mail’s settings: its cached mail, its picture and its sign-in token are deleted from your computer.</li>
+      <li><strong>Revoke inua Mail’s access</strong> to your Google account at any time at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. inua Mail then cannot read or send your mail until you sign in again.</li>
+      <li><strong>Delete the cache</strong> (<code>~/.cache/inua/mail/</code>) whenever you like; inua Mail downloads what it needs again.</li>
+      <li><strong>Uninstall inua</strong> and delete the folders above to remove everything it kept.</li>
+    </ul>
+    <p>Because we hold no data about you, there is nothing for us to export or delete on our side.</p>
+  </section>
+
+  <section class="col">
+    <h2>Children</h2>
+    <p>inua is a general-purpose desktop for computers and is not directed at children under 13. We do not knowingly collect data from anyone, children included.</p>
+  </section>
+
+  <section class="col">
+    <h2>Changes</h2>
+    <p>If this policy changes, the new version will be published on this page with a new date, and the history of every change is kept in the project’s repository. If a change affects how inua Mail uses Google data, we will say so in the release notes before it takes effect.</p>
+  </section>
+
+  <section class="col">
+    <h2>Contact</h2>
+    <p>For questions about this policy or about your data, open an issue at <a href="https://github.com/lyricat/inua/issues">github.com/lyricat/inua/issues</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="col">
+    <span>inua</span>
+    <span class="foot-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
