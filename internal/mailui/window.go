@@ -57,7 +57,6 @@ type acct struct {
 	boxes   []mail.Mailbox
 	state   string    // what is wrong, in words; "" when fine
 	detail  string    // the error itself, shown on hover
-	signIn  bool      // the state is that it must sign in again
 	busy    bool      // connecting or syncing the first time
 	syncing int       // syncs running
 	last    time.Time // the last sync that ended well
@@ -335,7 +334,7 @@ func (w *window) connect(x *acct) {
 			return
 		}
 		gtkx.Post(func() {
-			x.boxes, x.state, x.detail, x.signIn = boxes, "", "", false
+			x.boxes, x.state, x.detail = boxes, "", ""
 			w.drawSide()
 		})
 		inbox := x.s.Role(mail.RoleInbox)
@@ -438,11 +437,11 @@ func (w *window) failed(x *acct, err error) {
 	case errors.Is(err, context.Canceled):
 		return
 	case errors.Is(err, mail.ErrSignInAgain), errors.Is(err, mail.ErrAuth):
-		x.state, x.signIn = i18n.T("Signed out"), true
+		x.state = i18n.T("Signed out")
 	case errors.Is(err, mail.ErrNoClient):
-		x.state, x.signIn = err.Error(), false
+		x.state = err.Error()
 	default:
-		x.state, x.signIn = offline(err), false
+		x.state = offline(err)
 	}
 	x.detail = err.Error()
 	w.drawSide()
@@ -581,14 +580,14 @@ func (w *window) drawSide() {
 			l.SetWrapMode(2) // word_char
 			l.SetHexpand(true)
 			gtkx.Append(st, &l.Widget)
-			if x.signIn {
-				b := gtk.NewButtonWithLabel(i18n.T("Sign in"))
-				b.AddCssClass("outlined")
-				b.AddCssClass("mail-sign-in")
-				b.SetValign(gtk.AlignCenterValue)
-				w.sideBtns = append(w.sideBtns, w.h.click(b, func() { acc := xx.s.Acc; w.showWelcome(acc.Provider, &acc) }))
-				gtkx.Append(st, &b.Widget)
-			}
+			// Signing in again, whatever kept it offline: it connects
+			// anew, with a new sign-in when the old one ended.
+			b := gtk.NewButtonWithLabel(i18n.T("Sign in"))
+			b.AddCssClass("outlined")
+			b.AddCssClass("mail-sign-in")
+			b.SetValign(gtk.AlignCenterValue)
+			w.sideBtns = append(w.sideBtns, w.h.click(b, func() { acc := xx.s.Acc; w.showWelcome(acc.Provider, &acc) }))
+			gtkx.Append(st, &b.Widget)
 			gtkx.Append(panel, &st.Widget)
 		} else if x.busy && len(x.boxes) == 0 {
 			l := gtk.NewLabel(i18n.T("Connecting…"))

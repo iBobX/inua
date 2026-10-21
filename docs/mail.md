@@ -48,7 +48,7 @@ inua-mail --check FILE.eml    the phishing checks on a message
   the account's head opens its settings. An account that cannot connect
   says why under its name in a few words (offline: server not found,
   connection refused, no network …; the error itself on hover), with
-  *Sign in* when its sign-in ended.
+  *Sign in* beside it to connect anew.
 - **The list**: a conversation once, by its newest message: at its left
   edge a column of marks, one above the other (the square for unread;
   the star, filled when starred and shown on hover otherwise, a click
