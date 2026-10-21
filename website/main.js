@@ -60,11 +60,15 @@
     root.classList.remove("i18n-wait");
     // A page's own title and description: <body data-page="apps"> uses
     // apps_title and apps_desc.
+    // A string the language lacks is the English one, else stays as the
+    // page has it (a cached i18n.js older than the page).
+    const say = (key, now) => T[key] ?? I18N.en[key] ?? now;
     const page = document.body.dataset.page ? document.body.dataset.page + "_" : "";
-    document.title = T[page + "title"];
-    document.querySelector('meta[name="description"]').content = T[page + "desc"];
-    document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = T[el.dataset.i18n]; });
-    document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", T[el.dataset.i18nAria]));
+    const desc = document.querySelector('meta[name="description"]');
+    document.title = say(page + "title", document.title);
+    desc.content = say(page + "desc", desc.content);
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = say(el.dataset.i18n, el.innerHTML); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", say(el.dataset.i18nAria, el.getAttribute("aria-label"))));
     if (FONTS[lang] && !document.getElementById("font-" + lang)) {
       const l = document.createElement("link");
       l.id = "font-" + lang; l.rel = "stylesheet";
