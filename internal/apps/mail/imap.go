@@ -295,7 +295,7 @@ func (c *Conn) reselect(name string) error {
 }
 
 // headerFields are the header fields the index keeps, beyond the envelope.
-var headerFields = []string{"References", "List-Unsubscribe", "List-Id", "Precedence", "Auto-Submitted"}
+var headerFields = []string{"References", "List-Unsubscribe", "List-Id", "Precedence", "Auto-Submitted", "Authentication-Results"}
 
 // SyncResult says what a sync changed.
 type SyncResult struct {
@@ -440,6 +440,8 @@ func (c *Conn) envelopes(set imap.NumSet, above uint32) ([]Envelope, error) {
 		if a := strings.ToLower(strings.TrimSpace(h.Get("Auto-Submitted"))); a != "" && a != "no" {
 			e.Auto = true
 		}
+		// The first is the user's provider's: the ones below came with the mail.
+		e.Verified = Verified(h.Get("Authentication-Results"), Domain(e.From.Addr))
 		var text *imap.BodyStructureSinglePart
 		var path []int
 		if m.BodyStructure != nil {

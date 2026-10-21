@@ -128,6 +128,8 @@ type window struct {
 	avatars         map[string]*gdk.Texture // accounts' photos, by ID
 	textCSS         *gtk.CssProvider        // messages' text at the size chosen (reading.go)
 	avatarAsked     map[string]bool
+	bimi            map[string]*gdk.Texture // domains' BIMI logos
+	bimiAsked       map[string]bool
 	loadingOlder    bool                      // older mail is being fetched
 	settingsWin     *settingsWin              // the settings, while open
 	flipped         map[mail.Key]bool         // messages shown not as the settings say: text for formatted, or formatted for text
@@ -176,6 +178,7 @@ func openWindow(c *appui.Ctx) *window {
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
 		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{}, avatars: map[string]*gdk.Texture{}, avatarAsked: map[string]bool{},
+		bimi: map[string]*gdk.Texture{}, bimiAsked: map[string]bool{},
 		flipped: map[mail.Key]bool{}, picsOK: map[mail.Key]bool{}, blocks: map[mail.Key][]mail.Block{}, pics: map[string]*pic{}, webs: map[mail.Key]*webMsg{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
@@ -1241,7 +1244,15 @@ func (w *window) fillRow(r *convRow) {
 	if len(people) > 0 {
 		face = people[0]
 	}
-	w.setFace(&r.face, face)
+	// The face's message, for its proof (BIMI): the newest from it.
+	verified := false
+	for i := len(c.Messages) - 1; i >= 0; i-- {
+		if strings.EqualFold(c.Messages[i].From.Addr, face.Addr) {
+			verified = w.verified(c.Messages[i])
+			break
+		}
+	}
+	w.setFace(&r.face, face, verified)
 	unread := c.Unread() > 0
 	setClass(&r.box.Widget, "unread", unread)
 	setClass(&r.mark.Widget, "on", unread)

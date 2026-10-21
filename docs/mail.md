@@ -58,9 +58,13 @@ inua-mail --check FILE.eml    the phishing checks on a message
   who wrote and when, the subject and how many messages, the text in one
   to three lines (Settings → Reading → *Preview*, two at first), and
   SUSPICIOUS under a message the phishing checks doubt. A face is the
-  photo of one of your own accounts, else the logo of the service the
+  photo of one of your own accounts; else, for a message your provider
+  found passing DMARC for the sender's domain, the logo that domain
+  publishes for BIMI (`default._bimi.<domain>`, when its DMARC policy
+  quarantines or rejects; kept a week in `~/.cache/inua/mail/bimi/`; its
+  VMC certificate is not checked); else the logo of the service the
   address is at, on the brand's own colours (GitHub, Google, Spotify… the
-  logos Pass draws; not for a mailbox anyone can have, as gmail.com),
+  logos Pass draws; not for a mailbox anyone can have, as gmail.com);
   else the initial, on a round mark in one of six tones of the theme, the
   same for an address each time.
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end

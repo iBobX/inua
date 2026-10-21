@@ -80,6 +80,7 @@ type Envelope struct {
 	Attach     bool      `json:"at,omitempty"` // it has attachments
 	Bulk       bool      `json:"b,omitempty"`  // List-Unsubscribe, List-Id or Precedence: bulk/list
 	Auto       bool      `json:"au,omitempty"` // Auto-Submitted other than no
+	Verified   bool      `json:"vf,omitempty"` // DMARC passed for its From's domain (BIMI's logo may show)
 	Tag        Tag       `json:"t,omitempty"`  // the sorting's (7.2)
 	TagByUser  bool      `json:"tu,omitempty"` // the user set it
 }

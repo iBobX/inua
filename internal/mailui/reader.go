@@ -495,7 +495,7 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 	date.AddCssClass("mail-date")
 	date.SetValign(gtk.AlignStartValue)
 	if open {
-		gtkx.Append(hb, w.senderMark(it.From, 34))
+		gtkx.Append(hb, w.senderMark(it.From, 34, w.verified(it)))
 		who := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 		who.SetHexpand(true)
 		top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -517,7 +517,7 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 		gtkx.Append(who, &to.Widget)
 		gtkx.Append(hb, &who.Widget)
 	} else {
-		gtkx.Append(hb, w.senderMark(it.From, 24))
+		gtkx.Append(hb, w.senderMark(it.From, 24, w.verified(it)))
 		from := gtk.NewLabel(it.From.Short())
 		from.AddCssClass("mail-from")
 		from.SetValign(gtk.AlignCenterValue)

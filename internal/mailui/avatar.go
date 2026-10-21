@@ -7,6 +7,7 @@ import (
 	"unicode"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gdkpixbuf"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/mail"
@@ -86,8 +87,9 @@ func (w *window) findPicture(x *acct) {
 }
 
 // face is a sender on a round mark: the photo of one of the user's own
-// accounts, else the logo of the service the address is at, on its
-// colours, else the name's initial in the tone of the address (mail.Face).
+// accounts, else the domain's BIMI logo for a message proven to come from
+// it, else the logo of the service the address is at, on its colours,
+// else the name's initial in the tone of the address (mail.Face).
 type face struct {
 	box     gtk.Box
 	initial gtk.Label
@@ -116,8 +118,9 @@ func newFace(size int32) *face {
 	return f
 }
 
-// setFace draws a on f.
-func (w *window) setFace(f *face, a mail.Address) {
+// setFace draws a on f; verified, a message from a proven to come from
+// its domain, may show the domain's BIMI logo.
+func (w *window) setFace(f *face, a mail.Address, verified bool) {
 	icon, tone := mail.Face(a)
 	if t := "tone-" + strconv.Itoa(tone); t != f.tone {
 		if f.tone != "" {
@@ -127,8 +130,11 @@ func (w *window) setFace(f *face, a mail.Address) {
 		f.tone = t
 	}
 	photo := w.photoOf(a.Addr)
+	if photo == nil && verified {
+		photo = w.bimiLogo(mail.Domain(a.Addr))
+	}
 	if photo != nil {
-		icon = "" // a photo, not the drawn logo
+		icon = "" // a photo or the brand's own logo, not the drawn one
 	}
 	brand := ""
 	if icon != "" {
@@ -164,10 +170,47 @@ func (w *window) setFace(f *face, a mail.Address) {
 }
 
 // senderMark is a sender's face, made for a reader that is drawn anew.
-func (w *window) senderMark(a mail.Address, size int32) *gtk.Widget {
+func (w *window) senderMark(a mail.Address, size int32, verified bool) *gtk.Widget {
 	f := newFace(size)
-	w.setFace(f, a)
+	w.setFace(f, a, verified)
 	return &f.box.Widget
+}
+
+// verified says whether a message is proven to come from its sender's
+// domain: as the index keeps it, else from the message read (one kept
+// from before the index did).
+func (w *window) verified(it mail.Item) bool {
+	if it.Verified {
+		return true
+	}
+	rd := w.reading[it.Key()]
+	return rd != nil && rd.m != nil && mail.Verified(rd.m.Authentication, mail.Domain(rd.m.From.Addr))
+}
+
+// bimiLogo is a domain's BIMI logo, nil while it is asked for or when
+// there is none; asked once a run, drawn at three times a face's size.
+func (w *window) bimiLogo(domain string) *gdk.Texture {
+	if tex := w.bimi[domain]; tex != nil || domain == "" || w.bimiAsked[domain] {
+		return tex
+	}
+	w.bimiAsked[domain] = true
+	go func() {
+		path, err := w.store.BrandLogo(w.ctx, domain)
+		if err != nil || path == "" {
+			return
+		}
+		px, err := gdkpixbuf.NewPixbufFromFileAtScale(path, rowFace*3, rowFace*3, true)
+		if err != nil {
+			return
+		}
+		gtkx.Post(func() {
+			w.bimi[domain] = gdk.NewTextureForPixbuf(px)
+			w.relist()
+			w.lastDrawn = ""
+			w.drawReader()
+		})
+	}()
+	return nil
 }
 
 // brandStyle gives the services' faces their own colours, for the theme
