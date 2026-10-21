@@ -102,3 +102,6 @@ require (
 // GTK through puregotk, patched to bind each function on its first call
 // (third_party/puregotk/INUA.md).
 replace codeberg.org/puregotk/puregotk => ./third_party/puregotk
+
+// go-imap reading Gmail's opaque message parts (third_party/go-imap/INUA.md).
+replace github.com/emersion/go-imap/v2 => ./third_party/go-imap
