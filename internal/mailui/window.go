@@ -953,15 +953,17 @@ func (w *window) loadOlder() {
 // --- rows ---
 
 type convRow struct {
-	box                          gtk.Box
-	face                         gtk.Label // the sender's initial, as the reader shows them
-	mark                         gtk.Box
-	who, when, subject, count    gtk.Label
-	snippet, tag, clip, accountL gtk.Label
-	read, star                   gtk.Button // the hover actions that change with the row
-	starred                      gtk.Image
-	item                         uintptr
-	ptrs                         []uintptr
+	box                       gtk.Box
+	face                      gtk.Label // the sender's initial, as the reader shows them
+	mark                      gtk.Box   // unread
+	star                      gtk.Button
+	clip                      gtk.Image // with files
+	who, when, subject, count gtk.Label
+	snippet, tag, accountL    gtk.Label
+	foot                      gtk.Box
+	read                      gtk.Button // the hover action that changes with the row
+	item                      uintptr
+	ptrs                      []uintptr
 }
 
 // rowFace is the side of a row's initial.
@@ -977,10 +979,38 @@ func (w *window) relist() {
 func (w *window) setupRow(item uintptr) {
 	li := gtk.ListItemNewFromInternalPtr(item)
 	r := &convRow{item: item}
-	// The sender's initial, then a column whose lines all start at one
-	// edge: who and when, the subject, the preview, the marks.
+	// A gutter of the row's marks, one above the other: unread, the star
+	// (to click; always there when starred), files. Then the sender's
+	// initial, then a column whose lines all start at one edge: who and
+	// when, the subject, the preview, the tags.
 	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	r.box.AddCssClass("mail-row")
+	// Three places of one size, kept when a mark is not there, the
+	// gutter at the row's middle: the star is always in the middle.
+	gutter := gtk.NewBox(gtk.OrientationVerticalValue, 4)
+	gutter.AddCssClass("mail-row-gutter")
+	gutter.SetHomogeneous(true)
+	gutter.SetValign(gtk.AlignCenterValue)
+	r.mark = *gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+	r.mark.AddCssClass("mark")
+	r.mark.SetHalign(gtk.AlignCenterValue)
+	r.mark.SetValign(gtk.AlignCenterValue)
+	gtkx.Append(gutter, &r.mark.Widget)
+	r.star = *gtk.NewButtonFromIconName("mail-starred-symbolic")
+	r.star.AddCssClass("mail-row-star")
+	r.star.SetFocusOnClick(false)
+	r.ptrs = append(r.ptrs, w.h.click(&r.star, func() {
+		if c := w.rowConv(r); c != nil {
+			w.starConv(c)
+		}
+	}))
+	gtkx.Append(gutter, &r.star.Widget)
+	r.clip = *gtk.NewImageFromIconName("mail-attachment-symbolic")
+	r.clip.AddCssClass("mail-row-clip")
+	r.clip.SetPixelSize(14)
+	r.clip.SetValign(gtk.AlignCenterValue)
+	gtkx.Append(gutter, &r.clip.Widget)
+	gtkx.Append(&r.box, &gutter.Widget)
 	r.face = *gtk.NewLabel("")
 	r.face.AddCssClass("mail-sender-mark")
 	r.face.AddCssClass("mail-row-face")
@@ -992,10 +1022,6 @@ func (w *window) setupRow(item uintptr) {
 	top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	r.who = *label("mail-who", true)
 	gtkx.Append(top, &r.who.Widget)
-	r.mark = *gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-	r.mark.AddCssClass("mark")
-	r.mark.SetValign(gtk.AlignCenterValue)
-	gtkx.Append(top, &r.mark.Widget)
 	r.when = *label("mail-when", false)
 	gtkx.Append(top, &r.when.Widget)
 	// The actions a pointer over the row shows, in the time's place.
@@ -1021,7 +1047,6 @@ func (w *window) setupRow(item uintptr) {
 	act("mail-archive-symbolic", i18n.T("Archive (E)"), w.archiveConv)
 	act("user-trash-symbolic", i18n.T("Delete (D)"), w.trashConv)
 	r.read = *act("mail-read-symbolic", "", w.toggleRead)
-	r.star = *act("mail-starred-symbolic", "", w.starConv)
 	over.AddOverlay(&acts.Widget)
 	gtkx.Append(col, &over.Widget)
 	mid := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
@@ -1033,21 +1058,14 @@ func (w *window) setupRow(item uintptr) {
 	r.snippet = *label("mail-snippet", true)
 	r.snippet.SetWrapMode(2) // word_char
 	gtkx.Append(col, &r.snippet.Widget)
-	foot := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	r.foot = *gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	r.tag = *label("mail-tag", false)
-	gtkx.Append(foot, &r.tag.Widget)
-	r.clip = *label("mail-clip", false)
-	r.clip.SetText(i18n.T("FILE"))
-	gtkx.Append(foot, &r.clip.Widget)
-	r.starred = *gtk.NewImageFromIconName("mail-starred-symbolic")
-	r.starred.AddCssClass("mail-row-starred")
-	r.starred.SetPixelSize(11)
-	gtkx.Append(foot, &r.starred.Widget)
+	gtkx.Append(&r.foot, &r.tag.Widget)
 	r.accountL = *label("mail-row-account", false)
 	r.accountL.SetHexpand(true)
 	r.accountL.SetXalign(1)
-	gtkx.Append(foot, &r.accountL.Widget)
-	gtkx.Append(col, &foot.Widget)
+	gtkx.Append(&r.foot, &r.accountL.Widget)
+	gtkx.Append(col, &r.foot.Widget)
 	gtkx.Append(&r.box, &col.Widget)
 	li.SetChild(&r.box.Widget)
 	r.box.Unref()
@@ -1147,13 +1165,21 @@ func (w *window) fillRow(r *convRow) {
 	r.tag.SetText(tag)
 	setClass(&r.tag.Widget, "suspicious", tag == i18n.T("SUSPICIOUS"))
 	r.tag.SetVisible(tag != "")
-	r.clip.SetVisible(c.Attach())
+	// Hidden in its place, which stays.
+	if c.Attach() {
+		r.clip.SetOpacity(1)
+		r.clip.SetTooltipText(i18n.T("With files attached"))
+	} else {
+		r.clip.SetOpacity(0)
+		r.clip.SetTooltipText("")
+	}
 	starred := c.Starred()
-	r.starred.SetVisible(starred)
 	setClass(&r.star.Widget, "on", starred)
 	if starred {
+		r.star.SetIconName("mail-starred-fill-symbolic")
 		r.star.SetTooltipText(i18n.T("Unstar (S)"))
 	} else {
+		r.star.SetIconName("mail-starred-symbolic")
 		r.star.SetTooltipText(i18n.T("Star (S)"))
 	}
 	if unread {
@@ -1171,6 +1197,7 @@ func (w *window) fillRow(r *convRow) {
 	}
 	r.accountL.SetText(acc)
 	r.accountL.SetVisible(acc != "")
+	r.foot.SetVisible(tag != "" || acc != "")
 	r.box.GetParent().SetTooltipText(latest.From.String())
 }
 

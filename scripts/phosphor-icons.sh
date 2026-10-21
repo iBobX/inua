@@ -29,10 +29,14 @@ mkdir -p "$dest"
 find "$dest" -maxdepth 1 -name '*.svg' ! -name 'agent-*' -delete
 cp "$src/LICENSE" "$dest/LICENSE"
 
-# freedesktop name (without -symbolic)   Phosphor name
+# freedesktop name (without -symbolic)   Phosphor name; WEIGHT/NAME takes
+# that weight's icon in every set (a filled mark beside its outline)
 while read -r name icon; do
 	case "$name" in '' | '#'*) continue ;; esac
-	cp "$src/assets/$weight/$icon$suffix.svg" "$dest/$name-symbolic.svg"
+	case "$icon" in
+	*/*) cp "$src/assets/$icon.svg" "$dest/$name-symbolic.svg" ;;
+	*) cp "$src/assets/$weight/$icon$suffix.svg" "$dest/$name-symbolic.svg" ;;
+	esac
 done <<'LIST'
 # virtual machines (inua-vm): the mark of each system it can run, and the
 # window's own placeholder. Phosphor has no FreeBSD logo: a sailboat stands in
@@ -320,6 +324,8 @@ disk-cache                            broom
 # Mail: a conversation's actions
 mail-archive                          archive
 mail-starred                          star
+mail-starred-fill                     fill/star-fill
+mail-attachment                       file
 mail-unread                           envelope-simple
 mail-read                             envelope-simple-open
 mail-reply                            arrow-bend-up-left

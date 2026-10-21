@@ -3501,9 +3501,32 @@ window.mail listview.mail-conversations > row {
 }
 window.mail listview.mail-conversations > row:hover { background: alpha(@accent, 0.05); }
 window.mail listview.mail-conversations > row:selected { background: alpha(@accent, 0.09); color: @t0; }
-window.mail .mail-row { padding: 11px 16px 11px 16px; }
+window.mail .mail-row { padding: 11px 16px 11px 6px; }
+/* The gutter at a row's left, at its middle: unread, the star, files,
+   one above the other in places of one size. The star shows while the
+   pointer is on the row, and always, filled, when starred; files always
+   when there are some. */
+window.mail .mail-row-gutter { min-width: 20px; margin-right: -4px; }
 window.mail .mail-row .mark { border-radius: 1px; border-color: transparent; }
 window.mail .mail-row .mark.on { background: @accent; border-color: @accent; }
+window.mail button.image-button.mail-row-star {
+  min-height: 20px;
+  min-width: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+  color: @t2;
+  opacity: 0;
+  transition: opacity 90ms ease-out;
+}
+window.mail button.image-button.mail-row-star image { -gtk-icon-size: 14px; }
+window.mail listview.mail-conversations > row:hover button.mail-row-star { opacity: 1; }
+window.mail button.mail-row-star:hover { color: @t0; background: alpha(@accent, 0.1); }
+window.mail button.mail-row-star.on { opacity: 1; color: @warn; }
+window.mail button.mail-row-star.on:hover { color: @warn; }
+window.mail .mail-row-clip { color: @t2; }
 /* The sender's initial, as the reader shows senders; a row's lines start
    together beside it. */
 window.mail .mail-row-face { font-size: 14px; margin-top: 1px; }
@@ -3543,8 +3566,6 @@ window.mail button.image-button.mail-row-act {
   color: @t2;
 }
 window.mail button.mail-row-act:hover { color: @t0; background: alpha(@accent, 0.1); }
-window.mail button.mail-row-act.on { color: @accent; }
-window.mail .mail-row-starred { color: @t2; }
 /* The undo bar: what was just done, and taking it back. */
 window.mail .mail-undo {
   margin: 0 12px 12px;

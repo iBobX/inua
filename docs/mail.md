@@ -20,13 +20,13 @@ inua-mail --check FILE.eml    the phishing checks on a message
 ┌──────────────────┬──────────────────────────┬───────────────────────────────┐
 │ ▯                │ ⌕ Search, or ask…   [✎]  │ ↩ ↩↩ ↪          ▣ 🗑 ⊘ ▭ ☆ ✉ ⋯ │
 │                  │ ALL UNREAD FILES REPLY   │───────────────────────────────│
-│ All inboxes   3  │ ■ Ana Souza       18:06  │ The Q3 report                 │
-│ Needs reply   1  │   The Q3 report       3  │ (✦ Summarize) (✦ Reply ideas) │
-│ Starred          │   Thanks! Can you send…  │ (A) Ana Souza  ana@studio.dev │
-│ ┌ A Ana Souza    │   REPLY  FILE            │     to me, Ben    Tue 18:06   │
-│ Inbox         3  │ □ Hetzner Online   Sun   │ Thanks! Can you send the …    │
-│ Drafts · Sent    │   Your invoice R0021455  │ [PDF q3-draft.pdf · Save…]    │
-│ 1 more folder    │   FILE                   │ ┌ Reply to Ana…             ┐ │
+│ All inboxes   3  │ ■ A Ana Souza     18:06  │ The Q3 report                 │
+│ Needs reply   1  │ ★   The Q3 report     3  │ (✦ Summarize) (✦ Reply ideas) │
+│ Starred          │ ▤   Thanks! Can you se…  │ (A) Ana Souza  ana@studio.dev │
+│ ┌ A Ana Souza    │     REPLY                │     to me, Ben    Tue 18:06   │
+│ Inbox         3  │   H Hetzner Online  Sun  │ Thanks! Can you send the …    │
+│ Drafts · Sent    │     Your invoice R00214  │ [PDF q3-draft.pdf · Save…]    │
+│ 1 more folder    │ ▤   Thanks for your o…   │ ┌ Reply to Ana…             ┐ │
 │ ■ Up to date [⚙] │                          │ └───────────────────────────┘ │
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
@@ -46,13 +46,15 @@ inua-mail --check FILE.eml    the phishing checks on a message
   Archive, Spam, Trash), the others behind *N more folders*. A click on
   the account's head opens its settings. An account that cannot connect
   says so under its name, with *Sign in* when its sign-in ended.
-- **The list**: a conversation once, by its newest message: the initial
-  of who wrote, and beside it, each line starting at one edge, who wrote
+- **The list**: a conversation once, by its newest message: at its left
+  edge a column of marks, one above the other (the square for unread;
+  the star, filled when starred and shown on hover otherwise, a click
+  stars or unstars; ▤ when files are attached), then the initial of who
+  wrote, and beside it, each line starting at one edge, who wrote
   and when, the subject and how many messages, the text in one to three
   lines (Settings → Reading → *Preview*, two at first), and a mark for
   what to act on: REPLY (someone asks you something), WAITING (you wrote
-  last), SUSPICIOUS (the phishing checks), FILE. The square by the time
-  is unread.
+  last), SUSPICIOUS (the phishing checks).
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
   while the list has unread mail, marks every conversation of the view
   read, on the server too. A mailbox fetched the first time shows the
@@ -81,7 +83,7 @@ cancelled event says so. Google's, Outlook's (Windows zone names) and
 other calendars' invitations are read.
 
 **Acting on a conversation.** A pointer over a row shows its actions in
-place of the time: archive, delete, read or unread, star. Archiving,
+place of the time: archive, delete, read or unread. Archiving,
 deleting and moving take the conversation out of the list at once, with
 an *Undo* bar for a few seconds (`z`); the server is told when the bar
 goes, so an undo never reaches it. The next conversation opens in its
