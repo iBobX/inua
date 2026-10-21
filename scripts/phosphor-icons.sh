@@ -333,6 +333,12 @@ mail-move                             folder-simple
 mail-reply-all                        arrow-bend-double-up-left
 mail-forward                          arrow-bend-up-right
 mail-mark-junk                        prohibit
+mail-inbox                            tray
+mail-drafts                           note-pencil
+mail-sent                             paper-plane-tilt
+mail-folder                           folder-simple
+mail-all-inboxes                      stack
+mail-outbox                           tray-arrow-up
 sidebar-show                          sidebar-simple
 disk-choose                           cursor-click
 disk-locate                           crosshair

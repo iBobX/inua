@@ -104,7 +104,7 @@ msgstr "日"
 #: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
-#: internal/mailui/window.go:1272
+#: internal/mailui/window.go:1317
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:350
 #: ui/calendar.ui:127
@@ -1136,7 +1136,7 @@ msgstr "プロジェクトの履歴、ブランチ、stash です。プッシュ
 #: internal/filesui/sidebar.go:54
 #: internal/filesui/tabs.go:94
 #: internal/filesui/window.go:274
-#: internal/mailui/window.go:681
+#: internal/mailui/window.go:726
 msgid "Trash"
 msgstr "ゴミ箱"
 
@@ -1336,35 +1336,35 @@ msgstr "件名："
 msgid "To:"
 msgstr "宛先："
 
-#: internal/apps/mail/oauth.go:54
+#: internal/apps/mail/oauth.go:55
 msgid "Google sign-in needs a client ID and its secret: this build has none. Add your own under Your own OAuth client (docs/mail.md), or add the account as IMAP with an app password."
 msgstr "Google でのサインインにはクライアント ID とシークレットが必要ですが、このビルドにはありません。「独自の OAuth クライアント」で追加するか（docs/mail.md）、アプリ パスワードで IMAP アカウントとして追加してください。"
 
-#: internal/apps/mail/oauth.go:70
+#: internal/apps/mail/oauth.go:72
 msgid "Microsoft sign-in needs a client ID: this build has none. Add your own under Your own OAuth client (docs/mail.md)."
 msgstr "Microsoft でのサインインにはクライアント ID が必要ですが、このビルドにはありません。「独自の OAuth クライアント」で追加してください（docs/mail.md）。"
 
-#: internal/apps/mail/oauth.go:100
+#: internal/apps/mail/oauth.go:102
 msgid "the client's secret is not in the keyring: type it again under Your own OAuth client"
 msgstr "クライアント シークレットがキーリングにありません：「独自の OAuth クライアント」でもう一度入力してください"
 
-#: internal/apps/mail/oauth.go:171
+#: internal/apps/mail/oauth.go:173
 msgid "the sign-in page answered for another request"
 msgstr "サインイン ページが別の要求に応答しました"
 
-#: internal/apps/mail/oauth.go:175
+#: internal/apps/mail/oauth.go:177
 msgid "the sign-in page gave no code"
 msgstr "サインイン ページがコードを返しませんでした"
 
-#: internal/apps/mail/oauth.go:192
+#: internal/apps/mail/oauth.go:194
 msgid "Signed in"
 msgstr "サインインしました"
 
-#: internal/apps/mail/oauth.go:192
+#: internal/apps/mail/oauth.go:194
 msgid "You can close this tab and go back to Mail."
 msgstr "このタブを閉じてメールに戻ってください。"
 
-#: internal/apps/mail/oauth.go:194
+#: internal/apps/mail/oauth.go:196
 msgid "Not signed in"
 msgstr "サインインしていません"
 
@@ -1574,7 +1574,7 @@ msgid "online"
 msgstr "オンライン"
 
 #: internal/apps/tailscale/status.go:168
-#: internal/mailui/window.go:1613
+#: internal/mailui/window.go:1658
 msgid "just now"
 msgstr "たった今"
 
@@ -1625,7 +1625,7 @@ msgstr "承認待ち"
 #: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
-#: internal/mailui/window.go:594
+#: internal/mailui/window.go:606
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:128
 #: internal/shell/wifi.go:38
@@ -2829,7 +2829,7 @@ msgid "Search for a symbol to add it."
 msgstr "シンボルを検索して追加する。"
 
 #: internal/appui/stocks.go:281
-#: internal/mailui/window.go:862
+#: internal/mailui/window.go:907
 msgid "Loading %s…"
 msgstr "%sをロード中..."
 
@@ -5211,7 +5211,7 @@ msgstr "アーカイブは「%s」に作られます。"
 
 #: internal/filesui/archive.go:79
 #: internal/mailui/picker.go:142
-#: internal/mailui/window.go:677
+#: internal/mailui/window.go:722
 msgid "Archive"
 msgstr "アーカイブ"
 
@@ -5741,7 +5741,7 @@ msgstr "ファイルのサイズ"
 
 #: internal/filesui/details.go:55
 #: internal/mailui/picker.go:137
-#: internal/mailui/window.go:1582
+#: internal/mailui/window.go:1627
 msgid "Search"
 msgstr "検索"
 
@@ -9787,13 +9787,13 @@ msgid "Mail forgets it on this computer: its sign-in and the mail it kept. The m
 msgstr "このコンピューター上のサインイン情報と保存したメールを消します。サーバー上のメールは残ります。"
 
 #: internal/mailui/actions.go:474
-#: internal/mailui/window.go:538
+#: internal/mailui/window.go:550
 msgid "Unsent"
 msgstr "未送信"
 
 #: internal/mailui/actions.go:493
 #: internal/mailui/reader.go:198
-#: internal/mailui/window.go:1165
+#: internal/mailui/window.go:1210
 msgid "(no subject)"
 msgstr "（件名なし）"
 
@@ -9825,7 +9825,7 @@ msgid_plural "%s and %d more messages"
 msgstr[0] "%s ほか %d 件"
 
 #: internal/mailui/app.go:23
-#: internal/mailui/window.go:1543
+#: internal/mailui/window.go:1588
 #: ui/mail.ui:14
 #: config/apps/io.github.lyricat.Inua.Mail.desktop:3
 msgid "Mail"
@@ -9869,7 +9869,7 @@ msgid "The assistant gave no search."
 msgstr "アシスタントから検索がありませんでした。"
 
 #: internal/mailui/assist.go:265
-#: internal/mailui/window.go:1390
+#: internal/mailui/window.go:1435
 msgid "Searched for %s"
 msgstr "%s を検索しました"
 
@@ -9961,7 +9961,7 @@ msgstr "%s に翻訳"
 #: internal/mailui/compose_ai.go:133
 #: internal/mailui/formatted.go:192
 #: internal/mailui/settings.go:415
-#: internal/mailui/window.go:1572
+#: internal/mailui/window.go:1617
 msgid "Not saved: %v"
 msgstr "保存されていません：%v"
 
@@ -10240,7 +10240,7 @@ msgid "Forward (F)"
 msgstr "転送 (F)"
 
 #: internal/mailui/reader.go:267
-#: internal/mailui/window.go:1086
+#: internal/mailui/window.go:1131
 msgid "Archive (E)"
 msgstr "アーカイブ (E)"
 
@@ -10257,17 +10257,17 @@ msgid "Move to a folder (V)"
 msgstr "フォルダへ移動 (V)"
 
 #: internal/mailui/reader.go:274
-#: internal/mailui/window.go:1222
+#: internal/mailui/window.go:1267
 msgid "Star (S)"
 msgstr "スターを付ける (S)"
 
 #: internal/mailui/reader.go:277
-#: internal/mailui/window.go:1219
+#: internal/mailui/window.go:1264
 msgid "Unstar (S)"
 msgstr "スターを外す (S)"
 
 #: internal/mailui/reader.go:279
-#: internal/mailui/window.go:1229
+#: internal/mailui/window.go:1274
 msgid "Mark as unread (U)"
 msgstr "未読にする (U)"
 
@@ -10305,7 +10305,7 @@ msgid "Fold or unfold"
 msgstr "折りたたむ／広げる"
 
 #: internal/mailui/reader.go:555
-#: internal/mailui/window.go:1159
+#: internal/mailui/window.go:1204
 msgid "me"
 msgstr "自分"
 
@@ -10905,7 +10905,7 @@ msgid "Enter signs in · Esc goes back"
 msgstr "Enter でサインイン · Esc で戻る"
 
 #: internal/mailui/welcome.go:600
-#: internal/mailui/window.go:585
+#: internal/mailui/window.go:598
 msgid "Sign in"
 msgstr "サインイン"
 
@@ -11001,7 +11001,7 @@ msgid "With messages not read"
 msgstr "未読のメッセージがある"
 
 #: internal/mailui/window.go:231
-#: internal/mailui/window.go:1210
+#: internal/mailui/window.go:1255
 msgid "With files attached"
 msgstr "ファイルが添付されている"
 
@@ -11017,186 +11017,186 @@ msgstr "すべて既読"
 msgid "Mark every conversation here as read"
 msgstr "ここの会話をすべて既読にする"
 
-#: internal/mailui/window.go:441
+#: internal/mailui/window.go:442
 msgid "Signed out"
 msgstr "サインアウト済み"
 
-#: internal/mailui/window.go:460
+#: internal/mailui/window.go:461
 msgid "Offline: server not found"
 msgstr "{'es': 'Sin conexión: no se encuentra el servidor', 'fr': 'Hors ligne : serveur introuvable', 'ja': 'オフライン：サーバーが見つかりません', 'ko': '오프라인: 서버를 찾을 수 없음', 'zh_CN': '离线：找不到服务器', 'zh_TW': '離線：找不到伺服器'}"
 
-#: internal/mailui/window.go:462
+#: internal/mailui/window.go:463
 msgid "Offline: connection refused"
 msgstr "{'es': 'Sin conexión: conexión rechazada', 'fr': 'Hors ligne : connexion refusée', 'ja': 'オフライン：接続が拒否されました', 'ko': '오프라인: 연결이 거부됨', 'zh_CN': '离线：连接被拒绝', 'zh_TW': '離線：連線被拒絕'}"
 
-#: internal/mailui/window.go:464
+#: internal/mailui/window.go:465
 msgid "Offline: no network"
 msgstr "{'es': 'Sin conexión: no hay red', 'fr': 'Hors ligne : pas de réseau', 'ja': 'オフライン：ネットワークがありません', 'ko': '오프라인: 네트워크 없음', 'zh_CN': '离线：没有网络', 'zh_TW': '離線：沒有網路'}"
 
-#: internal/mailui/window.go:466
+#: internal/mailui/window.go:467
 msgid "Offline: certificate not trusted"
 msgstr "{'es': 'Sin conexión: certificado no fiable', 'fr': 'Hors ligne : certificat non reconnu', 'ja': 'オフライン：証明書を信頼できません', 'ko': '오프라인: 신뢰할 수 없는 인증서', 'zh_CN': '离线：证书不受信任', 'zh_TW': '離線：憑證不受信任'}"
 
-#: internal/mailui/window.go:468
+#: internal/mailui/window.go:469
 msgid "Offline: no answer from the server"
 msgstr "{'es': 'Sin conexión: el servidor no responde', 'fr': 'Hors ligne : le serveur ne répond pas', 'ja': 'オフライン：サーバーが応答しません', 'ko': '오프라인: 서버가 응답하지 않음', 'zh_CN': '离线：服务器无响应', 'zh_TW': '離線：伺服器無回應'}"
 
-#: internal/mailui/window.go:470
+#: internal/mailui/window.go:471
 msgid "Offline: connection dropped"
 msgstr "{'es': 'Sin conexión: se cortó la conexión', 'fr': 'Hors ligne : connexion interrompue', 'ja': 'オフライン：接続が切れました', 'ko': '오프라인: 연결이 끊김', 'zh_CN': '离线：连接已断开', 'zh_TW': '離線：連線已中斷'}"
 
-#: internal/mailui/window.go:472
+#: internal/mailui/window.go:473
 #: internal/shell/status.go:47
 msgid "Offline"
 msgstr "オフライン"
 
-#: internal/mailui/window.go:520
-#: internal/mailui/window.go:1518
+#: internal/mailui/window.go:532
+#: internal/mailui/window.go:1563
 msgid "No account yet"
 msgstr "アカウントはまだありません"
 
-#: internal/mailui/window.go:534
+#: internal/mailui/window.go:546
 msgid "All inboxes"
 msgstr "すべての受信トレイ"
 
-#: internal/mailui/window.go:535
+#: internal/mailui/window.go:547
 msgid "Needs reply"
 msgstr "返信が必要"
 
-#: internal/mailui/window.go:536
+#: internal/mailui/window.go:548
 msgid "Starred"
 msgstr "スター付き"
 
-#: internal/mailui/window.go:548
+#: internal/mailui/window.go:560
 msgid "This account's settings"
 msgstr "このアカウントの設定"
 
-#: internal/mailui/window.go:618
+#: internal/mailui/window.go:630
 msgid "%d more folder"
 msgid_plural "%d more folders"
 msgstr[0] "ほかに %d フォルダー"
 
-#: internal/mailui/window.go:620
+#: internal/mailui/window.go:632
 msgid "Fewer folders"
 msgstr "フォルダを減らす"
 
-#: internal/mailui/window.go:671
+#: internal/mailui/window.go:716
 msgid "Inbox"
 msgstr "受信トレイ"
 
-#: internal/mailui/window.go:673
+#: internal/mailui/window.go:718
 msgid "Drafts"
 msgstr "下書き"
 
-#: internal/mailui/window.go:675
+#: internal/mailui/window.go:720
 msgid "Sent"
 msgstr "送信済み"
 
-#: internal/mailui/window.go:679
+#: internal/mailui/window.go:724
 msgid "Spam"
 msgstr "迷惑メール"
 
-#: internal/mailui/window.go:895
+#: internal/mailui/window.go:940
 msgid "your mail"
 msgstr "メール"
 
-#: internal/mailui/window.go:908
+#: internal/mailui/window.go:953
 msgid "Nothing found"
 msgstr "見つかりません"
 
-#: internal/mailui/window.go:910
+#: internal/mailui/window.go:955
 msgid "Fetching your mail…"
 msgstr "メールを取得しています…"
 
-#: internal/mailui/window.go:912
+#: internal/mailui/window.go:957
 msgid "Nothing waits for your reply"
 msgstr "返信待ちのものはありません"
 
-#: internal/mailui/window.go:914
+#: internal/mailui/window.go:959
 msgid "No starred conversation"
 msgstr "スター付きの会話はありません"
 
-#: internal/mailui/window.go:916
+#: internal/mailui/window.go:961
 msgid "All read"
 msgstr "すべて既読"
 
-#: internal/mailui/window.go:918
+#: internal/mailui/window.go:963
 msgid "Inbox empty. Nothing waits for you."
 msgstr "受信トレイは空です。待っているものはありません。"
 
-#: internal/mailui/window.go:920
+#: internal/mailui/window.go:965
 msgid "No mail here"
 msgstr "メールはありません"
 
-#: internal/mailui/window.go:985
+#: internal/mailui/window.go:1030
 msgid "Could not load older mail: %v"
 msgstr "古いメールを読み込めません：%v"
 
-#: internal/mailui/window.go:1087
+#: internal/mailui/window.go:1132
 msgid "Delete (D)"
 msgstr "削除 (D)"
 
-#: internal/mailui/window.go:1202
-#: internal/mailui/window.go:1205
+#: internal/mailui/window.go:1247
+#: internal/mailui/window.go:1250
 msgid "SUSPICIOUS"
 msgstr "疑わしい"
 
-#: internal/mailui/window.go:1226
+#: internal/mailui/window.go:1271
 msgid "Mark as read"
 msgstr "既読にする"
 
-#: internal/mailui/window.go:1274
+#: internal/mailui/window.go:1319
 #: internal/shell/notify.go:30
 msgid "Jan 2"
 msgstr "1月2日"
 
-#: internal/mailui/window.go:1328
+#: internal/mailui/window.go:1373
 msgid "Press Enter to ask the assistant to search for this."
 msgstr "Enter でアシスタントにこの内容の検索を頼みます。"
 
-#: internal/mailui/window.go:1369
+#: internal/mailui/window.go:1414
 msgid "Searching the server…"
 msgstr "サーバーを検索しています…"
 
-#: internal/mailui/window.go:1393
+#: internal/mailui/window.go:1438
 msgid "The server's search failed: %s"
 msgstr "サーバーの検索に失敗しました：%s"
 
-#: internal/mailui/window.go:1515
+#: internal/mailui/window.go:1560
 msgid "Up to date"
 msgstr "最新です"
 
-#: internal/mailui/window.go:1520
+#: internal/mailui/window.go:1565
 msgid "Checking for mail…"
 msgstr "メールを確認しています…"
 
-#: internal/mailui/window.go:1524
+#: internal/mailui/window.go:1569
 msgid "Offline: trying again soon"
 msgstr "オフライン：まもなく再試行します"
 
-#: internal/mailui/window.go:1526
+#: internal/mailui/window.go:1571
 msgid "%d account cannot connect"
 msgid_plural "%d accounts cannot connect"
 msgstr[0] "%d 件のアカウントに接続できません"
 
-#: internal/mailui/window.go:1528
+#: internal/mailui/window.go:1573
 msgid "Checked %s"
 msgstr "%sに確認"
 
-#: internal/mailui/window.go:1533
+#: internal/mailui/window.go:1578
 msgid "Last checked at %s"
 msgstr "最終確認 %s"
 
-#: internal/mailui/window.go:1541
+#: internal/mailui/window.go:1586
 msgid "Mail · %d unread"
 msgstr "メール · 未読 %d"
 
-#: internal/mailui/window.go:1580
+#: internal/mailui/window.go:1625
 #: ui/mail.ui:141
 msgid "Search, or ask in a sentence"
 msgstr "検索、または文章で尋ねる"
 
-#: internal/mailui/window.go:1616
+#: internal/mailui/window.go:1661
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d 分前"

@@ -543,11 +543,11 @@ func (w *window) drawSide() {
 			}
 		}
 	}
-	w.sideItem(i18n.T("All inboxes"), unread, view{kind: viewInboxes})
-	w.sideItem(i18n.T("Needs reply"), len(w.conversations(view{kind: viewReply})), view{kind: viewReply})
-	w.sideItem(i18n.T("Starred"), 0, view{kind: viewStarred})
+	w.sideItem(i18n.T("All inboxes"), "mail-all-inboxes-symbolic", unread, view{kind: viewInboxes})
+	w.sideItem(i18n.T("Needs reply"), "mail-reply-symbolic", len(w.conversations(view{kind: viewReply})), view{kind: viewReply})
+	w.sideItem(i18n.T("Starred"), "mail-starred-symbolic", 0, view{kind: viewStarred})
 	if ds, _ := w.drafts.List(); len(ds) > 0 {
-		btn := w.sideButton(i18n.T("Unsent"), len(ds), w.unsent)
+		btn := w.sideButton(i18n.T("Unsent"), "mail-outbox-symbolic", len(ds), w.unsent)
 		w.sideBtns = append(w.sideBtns, w.h.click(btn, w.showUnsent))
 	}
 	for _, x := range w.accts {
@@ -624,14 +624,18 @@ func (w *window) drawSide() {
 			if b.Role != mail.RoleSent && b.Role != mail.RoleTrash && b.Role != mail.RoleJunk && b.Role != mail.RoleArchive {
 				n = b.Unread
 			}
-			w.sideItemIn(panel, boxName(b), n, view{kind: viewBox, account: x.s.Acc.ID, mailbox: b.Name})
+			w.sideItemIn(panel, boxName(b), boxIcon(b), n, view{kind: viewBox, account: x.s.Acc.ID, mailbox: b.Name})
 		}
 		if others > 0 {
 			label := i18n.Nf("%d more folder", "%d more folders", others, others)
 			if x.more {
 				label = i18n.T("Fewer folders")
 			}
-			more := w.sideButtonIn(panel, label, 0, false)
+			icon := "pan-down-symbolic"
+			if x.more {
+				icon = "pan-up-symbolic"
+			}
+			more := w.sideButtonIn(panel, label, icon, 0, false)
 			more.AddCssClass("mail-more")
 			w.sideBtns = append(w.sideBtns, w.h.click(more, func() { xx.more = !xx.more; w.drawSide() }))
 		}
@@ -640,25 +644,34 @@ func (w *window) drawSide() {
 }
 
 // sideItem adds a view's button to the index.
-func (w *window) sideItem(title string, n int, v view) { w.sideItemIn(&w.side, title, n, v) }
+func (w *window) sideItem(title, icon string, n int, v view) {
+	w.sideItemIn(&w.side, title, icon, n, v)
+}
 
-func (w *window) sideItemIn(parent *gtk.Box, title string, n int, v view) {
-	btn := w.sideButtonIn(parent, title, n, v == w.view && !w.unsent)
+// sideItemIn adds a view's button, with its icon, to parent.
+func (w *window) sideItemIn(parent *gtk.Box, title, icon string, n int, v view) {
+	btn := w.sideButtonIn(parent, title, icon, n, v == w.view && !w.unsent)
 	w.sideBtns = append(w.sideBtns, w.h.click(btn, func() { w.setView(v) }))
 }
 
-func (w *window) sideButton(title string, n int, current bool) *gtk.Button {
-	return w.sideButtonIn(&w.side, title, n, current)
+func (w *window) sideButton(title, icon string, n int, current bool) *gtk.Button {
+	return w.sideButtonIn(&w.side, title, icon, n, current)
 }
 
-func (w *window) sideButtonIn(parent *gtk.Box, title string, n int, current bool) *gtk.Button {
+func (w *window) sideButtonIn(parent *gtk.Box, title, icon string, n int, current bool) *gtk.Button {
 	btn := gtk.NewButton()
 	btn.AddCssClass("index-item")
 	btn.AddCssClass("mail-box")
 	if current {
 		btn.AddCssClass("selected")
 	}
-	box := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	box := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
+	if icon != "" {
+		img := gtk.NewImageFromIconName(icon)
+		img.AddCssClass("mail-box-icon")
+		img.SetPixelSize(16)
+		gtkx.Append(box, &img.Widget)
+	}
 	l := gtk.NewLabel(title)
 	l.AddCssClass("title")
 	l.SetXalign(0)
@@ -673,6 +686,26 @@ func (w *window) sideButtonIn(parent *gtk.Box, title string, n int, current bool
 	btn.SetChild(&box.Widget)
 	gtkx.Append(parent, &btn.Widget)
 	return btn
+}
+
+// boxIcon is a mailbox's icon in the index, by its role; the icons of
+// archiving, spam and deleting are those of their actions.
+func boxIcon(b mail.Mailbox) string {
+	switch b.Role {
+	case mail.RoleInbox:
+		return "mail-inbox-symbolic"
+	case mail.RoleDrafts:
+		return "mail-drafts-symbolic"
+	case mail.RoleSent:
+		return "mail-sent-symbolic"
+	case mail.RoleArchive:
+		return "mail-archive-symbolic"
+	case mail.RoleJunk:
+		return "mail-mark-junk-symbolic"
+	case mail.RoleTrash:
+		return "user-trash-symbolic"
+	}
+	return "mail-folder-symbolic"
 }
 
 // boxName is a mailbox's name in the index: its role's, else its own,

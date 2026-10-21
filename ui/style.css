@@ -3418,6 +3418,10 @@ window.mail .mail-monogram {
   font-weight: 600;
 }
 window.mail .mail-acct button.index-item.mail-box { padding-left: 12px; }
+/* A mailbox's icon, by its role: quiet, and the text's colour when chosen. */
+window.mail .mail-box-icon { color: @t2; }
+window.mail button.index-item.mail-box:hover .mail-box-icon { color: @t1; }
+window.mail button.index-item.mail-box.selected .mail-box-icon { color: @t0; }
 window.mail .mail-acct .mail-account-state { margin: 0 8px 6px 12px; }
 window.mail .mail-count {
   font-family: "Geist Mono", "IBM Plex Mono", monospace;

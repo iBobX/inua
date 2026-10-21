@@ -37,12 +37,12 @@ inua-mail --check FILE.eml    the phishing checks on a message
 - **The foot** says how the sync is, in words: up to date, when it last
   checked, checking, or which accounts cannot connect, each one's error
   on hover; ⚙ opens the settings.
-- **The index**: *All inboxes*; *Needs reply* (conversations tagged
-  REPLY whose newest message is not yours: only the assistant's sorting
-  tags REPLY, so it is empty with sorting off); *Starred*; *Unsent* when
-  drafts are kept (the drafts in the reader, a click on one opens it);
-  then each account in a panel of its own: its photo
-  (a Google account's) or initial, its name and address, then its
+- **The index**, each item with its icon: *All inboxes*; *Needs reply*
+  (conversations tagged REPLY whose newest message is not yours: only
+  the assistant's sorting tags REPLY, so it is empty with sorting off);
+  *Starred*; *Unsent* when drafts are kept (the drafts in the reader, a
+  click on one opens it); then each account in a panel of its own: its
+  photo (a Google account's) or initial, its name and address, then its
   mailboxes in the same order for every account (Inbox, Drafts, Sent,
   Archive, Spam, Trash), the others behind *N more folders*. A click on
   the account's head opens its settings. An account that cannot connect
