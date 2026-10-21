@@ -494,8 +494,19 @@ func (w *window) quit() {
 	w.closed = true
 	w.cancel()
 	w.ai.close()
-	for _, x := range w.accts {
-		x.s.Close()
+	// The connections are logged out, but the window does not wait for a
+	// sync under way (a first one can take a minute): a second at most,
+	// then the process ends and they close with it.
+	done := make(chan struct{})
+	go func() {
+		for _, x := range w.accts {
+			x.s.Close()
+		}
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
 	}
 	for _, c := range slices.Clone(w.composers) {
 		c.save()
