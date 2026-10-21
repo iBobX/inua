@@ -170,6 +170,12 @@ func (s *Store) Raw(account, mailbox string, uid uint32) ([]byte, bool) {
 	return b, err == nil
 }
 
+// HasRaw says whether a message is kept.
+func (s *Store) HasRaw(account, mailbox string, uid uint32) bool {
+	_, err := os.Stat(filepath.Join(s.box(account, mailbox), strconv.FormatUint(uint64(uid), 10)+".eml"))
+	return err == nil
+}
+
 // SaveRaw keeps a message.
 func (s *Store) SaveRaw(account, mailbox string, uid uint32, raw []byte) error {
 	dir := s.box(account, mailbox)

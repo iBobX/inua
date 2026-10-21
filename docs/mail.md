@@ -242,6 +242,12 @@ when the window is not in front. Reading, starring, archiving and
 deleting change the list at once and the server after; when the server
 refuses, the change goes back and the conversation says why.
 
+Messages are read on a third connection of their own, so opening one
+never waits for a sync, and a conversation's messages come in one
+request. After each sync of an inbox, its 20 newest messages not kept
+yet (none over 2 MB) are fetched ahead, so they open at once; like
+opening, this does not mark them read.
+
 The cache can be deleted at any time; drafts are not in it
 (`~/.local/share/inua/mail/drafts/`).
 

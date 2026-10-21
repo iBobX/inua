@@ -27,9 +27,14 @@ type Session struct {
 	store   *Store
 	secrets *Secrets
 
-	mu   sync.Mutex // the connection, one command at a time
-	conn *Conn
+	amu  sync.Mutex // the sign-in, which every connection reads
 	auth *Auth
+
+	mu   sync.Mutex // the connection that syncs and acts, one command at a time
+	conn *Conn
+
+	rmu   sync.Mutex // the connection that reads messages: opening one never waits for a sync
+	rconn *Conn
 
 	bmu   sync.Mutex // the mailboxes: never held across a command, so the window never waits for the network
 	boxes []Mailbox
@@ -50,11 +55,13 @@ func NewSession(acc Account, settings Settings, store *Store, secrets *Secrets) 
 
 // UseAuth signs in with auth instead of the keyring's, for tests and for
 // checking a new account before it is saved.
-func (s *Session) UseAuth(a Auth) { s.mu.Lock(); s.auth = &a; s.mu.Unlock() }
+func (s *Session) UseAuth(a Auth) { s.amu.Lock(); s.auth = &a; s.amu.Unlock() }
 
 // signIn is how the account signs in: the password or the refresh token
-// from the keyring.
+// from the keyring, read once.
 func (s *Session) signIn() (Auth, error) {
+	s.amu.Lock()
+	defer s.amu.Unlock()
 	if s.auth != nil {
 		return *s.auth, nil
 	}
@@ -95,9 +102,7 @@ func (s *Session) Picture(ctx context.Context) (string, error) {
 	if s.ep.UserInfo == "" {
 		return "", nil
 	}
-	s.mu.Lock()
 	a, err := s.signIn()
-	s.mu.Unlock()
 	if err != nil || a.Tokens == nil {
 		return "", err
 	}
@@ -131,13 +136,19 @@ func (s *Session) Picture(ctx context.Context) (string, error) {
 	return profile.Picture, nil
 }
 
-// Do runs f on the connection, connecting first when there is none, and
-// once more on a new connection when the old one had dropped.
+// Do runs f on the connection that syncs and acts, connecting first when
+// there is none, and once more on a new connection when the old one had
+// dropped.
 func (s *Session) Do(ctx context.Context, f func(*Conn) error) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	return s.on(ctx, &s.mu, &s.conn, f)
+}
+
+// on runs f on a connection, under its lock.
+func (s *Session) on(ctx context.Context, mu *sync.Mutex, conn **Conn, f func(*Conn) error) error {
+	mu.Lock()
+	defer mu.Unlock()
 	for try := 0; ; try++ {
-		if s.conn == nil {
+		if *conn == nil {
 			a, err := s.signIn()
 			if err != nil {
 				return err
@@ -146,18 +157,20 @@ func (s *Session) Do(ctx context.Context, f func(*Conn) error) error {
 			c, err := Dial(ctx, addr, a, nil)
 			if err != nil {
 				if errors.Is(err, ErrAuth) || errors.Is(err, ErrSignInAgain) {
+					s.amu.Lock()
 					s.auth = nil // the keyring may hold a new one next time
+					s.amu.Unlock()
 				}
 				return err
 			}
-			s.conn = c
+			*conn = c
 		}
-		err := f(s.conn)
-		if err == nil || try > 0 || !dropped(s.conn, err) {
+		err := f(*conn)
+		if err == nil || try > 0 || !dropped(*conn, err) {
 			return err
 		}
-		s.conn.c.Close()
-		s.conn = nil
+		(*conn).c.Close()
+		*conn = nil
 	}
 }
 
@@ -175,11 +188,16 @@ func dropped(c *Conn, err error) bool {
 
 // Close ends the connection.
 func (s *Session) Close() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.conn != nil {
-		s.conn.Close()
-		s.conn = nil
+	for _, l := range []struct {
+		mu   *sync.Mutex
+		conn **Conn
+	}{{&s.rmu, &s.rconn}, {&s.mu, &s.conn}} {
+		l.mu.Lock()
+		if *l.conn != nil {
+			(*l.conn).Close()
+			*l.conn = nil
+		}
+		l.mu.Unlock()
 	}
 }
 
@@ -339,19 +357,95 @@ func (x *Index) copy() *Index {
 
 // Message reads a message: from the cache, else from the server, kept.
 func (s *Session) Message(ctx context.Context, mailbox string, uid uint32) (*Message, error) {
-	raw, ok := s.store.Raw(s.Acc.ID, mailbox, uid)
-	if !ok {
-		err := s.Do(ctx, func(c *Conn) error {
-			var err error
-			raw, err = c.Fetch(mailbox, uid)
+	r := s.Messages(ctx, mailbox, []uint32{uid})[0]
+	return r.Message, r.Err
+}
+
+// Read is a message read, or why it could not be.
+type Read struct {
+	UID     uint32
+	Message *Message
+	Err     error
+}
+
+// Messages reads messages of a mailbox, one Read for each UID: those kept
+// at once, the rest in one command on the reading connection, so opening
+// a conversation never waits for a sync, and they are kept.
+func (s *Session) Messages(ctx context.Context, mailbox string, uids []uint32) []Read {
+	raws := map[uint32][]byte{}
+	var missing []uint32
+	for _, u := range uids {
+		if raw, ok := s.store.Raw(s.Acc.ID, mailbox, u); ok {
+			raws[u] = raw
+		} else {
+			missing = append(missing, u)
+		}
+	}
+	var err error
+	if len(missing) > 0 {
+		err = s.on(ctx, &s.rmu, &s.rconn, func(c *Conn) error {
+			got, err := c.FetchMany(mailbox, missing)
+			for u, raw := range got {
+				raws[u] = raw
+				s.store.SaveRaw(s.Acc.ID, mailbox, u, raw)
+			}
 			return err
 		})
-		if err != nil {
-			return nil, err
-		}
-		s.store.SaveRaw(s.Acc.ID, mailbox, uid, raw)
 	}
-	return Parse(raw)
+	out := make([]Read, len(uids))
+	for i, u := range uids {
+		out[i].UID = u
+		raw, ok := raws[u]
+		switch {
+		case ok:
+			out[i].Message, out[i].Err = Parse(raw)
+		case err != nil:
+			out[i].Err = err
+		default:
+			out[i].Err = ErrNotFound
+		}
+	}
+	return out
+}
+
+// PrefetchCount and PrefetchMax bound what Prefetch keeps ahead: the
+// newest messages, and none larger (a big attachment waits until it is
+// opened).
+const (
+	PrefetchCount = 20
+	PrefetchMax   = 2 << 20
+)
+
+// Prefetch keeps a mailbox's newest messages before they are opened:
+// those of the newest PrefetchCount not kept yet and not larger than
+// PrefetchMax, in one command on the connection that syncs, after it.
+// Peeked, so none is marked read. It says how many it fetched.
+func (s *Session) Prefetch(ctx context.Context, mailbox string) (int, error) {
+	s.imu.Lock()
+	x := s.index(mailbox)
+	all := make([]Envelope, len(x.Messages))
+	copy(all, x.Messages)
+	s.imu.Unlock()
+	slices.SortFunc(all, func(a, b Envelope) int { return int(int64(b.UID) - int64(a.UID)) })
+	var missing []uint32
+	for i := 0; i < len(all) && i < PrefetchCount; i++ {
+		if all[i].Size <= PrefetchMax && !s.store.HasRaw(s.Acc.ID, mailbox, all[i].UID) {
+			missing = append(missing, all[i].UID)
+		}
+	}
+	if len(missing) == 0 {
+		return 0, nil
+	}
+	n := 0
+	err := s.Do(ctx, func(c *Conn) error {
+		got, err := c.FetchMany(mailbox, missing)
+		for u, raw := range got {
+			s.store.SaveRaw(s.Acc.ID, mailbox, u, raw)
+			n++
+		}
+		return err
+	})
+	return n, err
 }
 
 // Raw is a message as it came, for Open in browser and saving.
@@ -597,9 +691,7 @@ func (s *Session) Answer(ctx context.Context, inv *Invite, answer string) error 
 // SendBuilt sends a built message: SMTP, then a copy in Sent unless the
 // server keeps one itself.
 func (s *Session) SendBuilt(ctx context.Context, b Built) error {
-	s.mu.Lock()
 	a, err := s.signIn()
-	s.mu.Unlock()
 	if err != nil {
 		return err
 	}
@@ -700,9 +792,7 @@ func (s *Session) Answered(ctx context.Context, messageID string) {
 func (s *Session) Watch(ctx context.Context, changed func()) {
 	wait := 5 * time.Second
 	for ctx.Err() == nil {
-		s.mu.Lock()
 		a, err := s.signIn()
-		s.mu.Unlock()
 		if err != nil {
 			return
 		}

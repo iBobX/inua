@@ -19,6 +19,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -33,8 +34,26 @@ import (
 // --- a test IMAP server ---
 
 type testServer struct {
-	addr string
-	user *imapmemserver.User
+	addr   string
+	user   *imapmemserver.User
+	bodies atomic.Int32 // FETCH commands that asked for whole messages
+}
+
+// counting counts a session's FETCH commands for whole messages; the
+// memory server's session is IMAP4rev2, which the server asks of it.
+type counting struct {
+	imapserver.SessionIMAP4rev2
+	n *atomic.Int32
+}
+
+func (c counting) Fetch(w *imapserver.FetchWriter, set imap.NumSet, options *imap.FetchOptions) error {
+	for _, sec := range options.BodySection {
+		if sec.Specifier == imap.PartSpecifierNone && len(sec.Part) == 0 && sec.Partial == nil {
+			c.n.Add(1)
+			break
+		}
+	}
+	return c.SessionIMAP4rev2.Fetch(w, set, options)
 }
 
 func newIMAP(t *testing.T, boxes ...string) *testServer {
@@ -47,9 +66,10 @@ func newIMAP(t *testing.T, boxes ...string) *testServer {
 		}
 	}
 	mem.AddUser(user)
+	ts := &testServer{user: user}
 	srv := imapserver.New(&imapserver.Options{
 		NewSession: func(*imapserver.Conn) (imapserver.Session, *imapserver.GreetingData, error) {
-			return mem.NewSession(), nil, nil
+			return counting{mem.NewSession().(imapserver.SessionIMAP4rev2), &ts.bodies}, nil, nil
 		},
 		InsecureAuth: true,
 		Caps:         imap.CapSet{imap.CapIMAP4rev1: {}, imap.CapIMAP4rev2: {}},
@@ -66,7 +86,8 @@ func newIMAP(t *testing.T, boxes ...string) *testServer {
 		return imapclient.DialInsecure(addr, opts)
 	}
 	t.Cleanup(func() { DialIMAP = old })
-	return &testServer{addr: ln.Addr().String(), user: user}
+	ts.addr = ln.Addr().String()
+	return ts
 }
 
 type nopLogger struct{}
@@ -1157,5 +1178,96 @@ func TestPictureFromProfile(t *testing.T) {
 	s.ep.UserInfo = ""
 	if got, err := s.Picture(context.Background()); err != nil || got != "" {
 		t.Fatalf("no profile %q, %v", got, err)
+	}
+}
+
+// A conversation's messages are read in one command, on a connection of
+// their own: reading never waits for a command the session is busy with.
+func TestMessagesTogether(t *testing.T) {
+	srv := newIMAP(t)
+	for i := range 3 {
+		srv.put(t, "INBOX", msg(fmt.Sprintf("m%d@x", i), "Ben <ben@x.org>", fmt.Sprintf("Part %d", i), "Text."))
+	}
+	ctx := context.Background()
+	s := srv.session(t)
+	if _, err := s.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	var uids []uint32
+	for _, it := range s.Items("INBOX") {
+		uids = append(uids, it.UID)
+	}
+	// The connection that syncs is busy until the messages are read.
+	busy, done := make(chan struct{}), make(chan struct{})
+	go s.Do(ctx, func(*Conn) error { close(busy); <-done; return nil })
+	<-busy
+	before := srv.bodies.Load()
+	read := make(chan []Read, 1)
+	go func() { read <- s.Messages(ctx, "INBOX", append(uids, 999)) }()
+	var reads []Read
+	select {
+	case reads = <-read:
+	case <-time.After(5 * time.Second):
+		t.Fatal("reading waited for the busy connection")
+	}
+	close(done)
+	if n := srv.bodies.Load() - before; n != 1 {
+		t.Fatalf("%d FETCH commands for 3 messages", n)
+	}
+	for _, r := range reads[:3] {
+		if r.Err != nil || r.Message == nil || r.Message.Text == "" {
+			t.Fatalf("read %+v", r)
+		}
+	}
+	if !errors.Is(reads[3].Err, ErrNotFound) {
+		t.Fatalf("a message not there: %v", reads[3].Err)
+	}
+	// Kept: read again, nothing is asked.
+	before = srv.bodies.Load()
+	s.Messages(ctx, "INBOX", uids)
+	if srv.bodies.Load() != before {
+		t.Fatal("kept messages fetched again")
+	}
+}
+
+// Prefetch keeps the newest messages, not a large one, without marking
+// any read, and asks nothing once they are kept.
+func TestPrefetch(t *testing.T) {
+	srv := newIMAP(t)
+	for i := range PrefetchCount + 3 {
+		srv.put(t, "INBOX", msg(fmt.Sprintf("p%d@x", i), "Ben <ben@x.org>", fmt.Sprintf("Note %d", i), "Text."))
+	}
+	srv.put(t, "INBOX", msg("big@x", "Ben <ben@x.org>", "Big", strings.Repeat("x", PrefetchMax+1)))
+	ctx := context.Background()
+	s := srv.session(t)
+	if _, err := s.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	items := s.Items("INBOX")
+	slices.SortFunc(items, func(a, b Item) int { return int(int64(b.UID) - int64(a.UID)) })
+	before := srv.bodies.Load()
+	n, err := s.Prefetch(ctx, "INBOX")
+	if err != nil || n != PrefetchCount-1 { // the newest but the big one
+		t.Fatalf("prefetched %d, %v", n, err)
+	}
+	if srv.bodies.Load()-before != 1 {
+		t.Fatal("prefetch took more than one command")
+	}
+	for i, it := range items {
+		kept := s.store.HasRaw(s.Acc.ID, "INBOX", it.UID)
+		if want := i > 0 && i < PrefetchCount; kept != want {
+			t.Fatalf("message %d (%s): kept %v", i, it.Subject, kept)
+		}
+	}
+	if n, _ := s.Prefetch(ctx, "INBOX"); n != 0 {
+		t.Fatalf("prefetched again: %d", n)
+	}
+	// None marked read, here or on the server.
+	other := srv.session(t)
+	other.Sync(ctx, "INBOX")
+	for _, it := range other.Items("INBOX") {
+		if it.Has(Seen) {
+			t.Fatalf("%s marked read", it.Subject)
+		}
 	}
 }

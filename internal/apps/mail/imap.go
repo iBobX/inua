@@ -651,22 +651,28 @@ func snippetOf(b []byte, part *imap.BodyStructureSinglePart) string {
 	return Snippet(cleanText(text), 200)
 }
 
-// Fetch reads a whole message without marking it seen.
-func (c *Conn) Fetch(mailbox string, uid uint32) ([]byte, error) {
+// FetchMany fetches whole messages by UID in one command, peeked (none is
+// marked read); one the server no longer has is left out.
+func (c *Conn) FetchMany(mailbox string, uids []uint32) (map[uint32][]byte, error) {
 	if err := c.selectBox(mailbox); err != nil {
 		return nil, err
 	}
+	set := make([]imap.UID, len(uids))
+	for i, u := range uids {
+		set[i] = imap.UID(u)
+	}
 	sec := &imap.FetchItemBodySection{Peek: true}
-	msgs, err := c.c.Fetch(imap.UIDSetNum(imap.UID(uid)), &imap.FetchOptions{UID: true, BodySection: []*imap.FetchItemBodySection{sec}}).Collect()
+	msgs, err := c.c.Fetch(imap.UIDSetNum(set...), &imap.FetchOptions{UID: true, BodySection: []*imap.FetchItemBodySection{sec}}).Collect()
 	if err != nil {
 		return nil, err
 	}
+	out := make(map[uint32][]byte, len(msgs))
 	for _, m := range msgs {
-		if uint32(m.UID) == uid {
-			return m.FindBodySection(sec), nil
+		if raw := m.FindBodySection(sec); raw != nil {
+			out[uint32(m.UID)] = raw
 		}
 	}
-	return nil, ErrNotFound
+	return out, nil
 }
 
 // SetFlag adds or removes a flag on messages.

@@ -354,6 +354,9 @@ func (w *window) connect(x *acct) {
 			w.refresh()
 			w.sortNew(x, nil) // all not sorted yet: the cache may hold some from before
 		})
+		if err == nil {
+			x.s.Prefetch(w.ctx, inbox) // the newest, ahead of their opening; none is marked read
+		}
 		if sent := x.s.Role(mail.RoleSent); sent != "" {
 			if _, err := x.s.Sync(w.ctx, sent); err == nil {
 				gtkx.Post(func() { x.synced[sent] = true; w.refresh() })
@@ -383,6 +386,9 @@ func (w *window) newMail(x *acct) {
 	gtkx.Post(func() { x.syncing--; w.drawStatus() })
 	if err != nil {
 		return
+	}
+	if len(res.New) > 0 {
+		x.s.Prefetch(w.ctx, inbox)
 	}
 	gtkx.Post(func() {
 		x.last = time.Now()

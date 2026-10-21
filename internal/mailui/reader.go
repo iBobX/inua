@@ -44,39 +44,55 @@ func (w *window) openConversation(c *mail.Conversation) {
 	w.drawReader()
 }
 
-// load reads a message of the open conversation, unless it is read.
-func (w *window) load(it mail.Item) {
-	k := it.Key()
-	if rd := w.reading[k]; rd != nil && (rd.m != nil || rd.loading) {
-		return
-	}
-	x := w.acct(it.Account)
-	if x == nil {
-		return
-	}
-	rd := &reading{loading: true}
-	w.reading[k] = rd
-	go func() {
-		m, err := x.s.Message(w.ctx, it.Mailbox, it.UID)
-		var j mail.Judgment
-		if err == nil && !w.mine(m.From.Addr) {
-			j = mail.Judge(m, w.knownSender)
+// load reads the conversation's messages not read yet: those of one
+// account's mailbox together, in one command (kept ones at once).
+func (w *window) load(c *mail.Conversation) {
+	type box struct{ account, mailbox string }
+	groups := map[box][]uint32{}
+	for _, it := range c.Messages {
+		k := it.Key()
+		if rd := w.reading[k]; rd != nil && (rd.m != nil || rd.loading) {
+			continue
 		}
-		gtkx.Post(func() {
-			rd.loading = false
-			if err != nil {
-				rd.err = i18n.Tf("Could not read this message: %v", err)
-			} else {
-				rd.m, rd.judged = m, j
+		if w.acct(it.Account) == nil {
+			continue
+		}
+		w.reading[k] = &reading{loading: true}
+		b := box{it.Account, it.Mailbox}
+		groups[b] = append(groups[b], it.UID)
+	}
+	for b, uids := range groups {
+		x := w.acct(b.account)
+		go func() {
+			reads := x.s.Messages(w.ctx, b.mailbox, uids)
+			judged := make([]mail.Judgment, len(reads))
+			for i, r := range reads {
+				if r.Err == nil && !w.mine(r.Message.From.Addr) {
+					judged[i] = mail.Judge(r.Message, w.knownSender)
+				}
 			}
-			if w.open != nil && w.open.ID == w.openID {
-				w.drawReader()
-			}
-			for _, r := range w.rows {
-				w.fillRow(r) // a suspicious mark
-			}
-		})
-	}()
+			gtkx.Post(func() {
+				for i, r := range reads {
+					rd := w.reading[mail.Key{Account: b.account, Mailbox: b.mailbox, UID: r.UID}]
+					if rd == nil {
+						continue
+					}
+					rd.loading = false
+					if r.Err != nil {
+						rd.err = i18n.Tf("Could not read this message: %v", r.Err)
+					} else {
+						rd.m, rd.judged = r.Message, judged[i]
+					}
+				}
+				if w.open != nil && w.open.ID == w.openID {
+					w.drawReader()
+				}
+				for _, r := range w.rows {
+					w.fillRow(r) // a suspicious mark
+				}
+			})
+		}()
+	}
 }
 
 // knownSender says whether the user has written to an address, from the
@@ -175,9 +191,7 @@ func (w *window) drawReader() {
 	if c == nil {
 		return
 	}
-	for _, m := range c.Messages {
-		w.load(m) // one that joined it since it opened (a reply sent, new mail)
-	}
+	w.load(c) // and one that joined it since it opened (a reply sent, new mail)
 	if sig := w.signature(); sig == w.lastDrawn {
 		return
 	} else {
