@@ -54,7 +54,8 @@ ApplicationWindow mail {
             }
           }
 
-          // The sync, in words (Go fills it), and the settings.
+          // The sync, in words (Go fills it; what is wrong on hover), and
+          // the settings.
           Box {
             styles ["mail-index-foot"]
             spacing: 8;
@@ -64,11 +65,17 @@ ApplicationWindow mail {
               valign: center;
             }
 
+            // Its text never widens the index: two lines at most, the
+            // whole of it on hover.
             Label status_state {
               styles ["mail-status"]
               xalign: 0;
               hexpand: true;
+              wrap: true;
+              wrap-mode: word_char;
+              lines: 2;
               ellipsize: end;
+              max-width-chars: 1;
             }
 
             Button settings_button {

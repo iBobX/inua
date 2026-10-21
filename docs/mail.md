@@ -35,8 +35,8 @@ inua-mail --check FILE.eml    the phishing checks on a message
   Apple Mail's does; while it is hidden, the toggle sits beside the
   search. ✎ beside the search writes a message (`c`).
 - **The foot** says how the sync is, in words: up to date, when it last
-  checked, checking, or which accounts cannot connect; ⚙ opens the
-  settings.
+  checked, checking, or which accounts cannot connect, each one's error
+  on hover; ⚙ opens the settings.
 - **The index**: *All inboxes*; *Needs reply* (conversations tagged
   REPLY whose newest message is not yours: only the assistant's sorting
   tags REPLY, so it is empty with sorting off); *Starred*; *Unsent* when
@@ -46,7 +46,9 @@ inua-mail --check FILE.eml    the phishing checks on a message
   mailboxes in the same order for every account (Inbox, Drafts, Sent,
   Archive, Spam, Trash), the others behind *N more folders*. A click on
   the account's head opens its settings. An account that cannot connect
-  says so under its name, with *Sign in* when its sign-in ended.
+  says why under its name in a few words (offline: server not found,
+  connection refused, no network …; the error itself on hover), with
+  *Sign in* when its sign-in ended.
 - **The list**: a conversation once, by its newest message: at its left
   edge a column of marks, one above the other (the square for unread;
   the star, filled when starred and shown on hover otherwise, a click

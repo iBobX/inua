@@ -2,12 +2,16 @@ package mailui
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net"
 	"os"
 	"slices"
 	"strings"
+	"syscall"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -52,6 +56,7 @@ type acct struct {
 	s       *mail.Session
 	boxes   []mail.Mailbox
 	state   string    // what is wrong, in words; "" when fine
+	detail  string    // the error itself, shown on hover
 	signIn  bool      // the state is that it must sign in again
 	busy    bool      // connecting or syncing the first time
 	syncing int       // syncs running
@@ -330,7 +335,7 @@ func (w *window) connect(x *acct) {
 			return
 		}
 		gtkx.Post(func() {
-			x.boxes, x.state, x.signIn = boxes, "", false
+			x.boxes, x.state, x.detail, x.signIn = boxes, "", "", false
 			w.drawSide()
 		})
 		inbox := x.s.Role(mail.RoleInbox)
@@ -437,18 +442,34 @@ func (w *window) failed(x *acct, err error) {
 	case errors.Is(err, mail.ErrNoClient):
 		x.state, x.signIn = err.Error(), false
 	default:
-		x.state = i18n.Tf("Offline: %v", shortErr(err))
+		x.state, x.signIn = offline(err), false
 	}
+	x.detail = err.Error()
 	w.drawSide()
 	w.refresh()
 }
 
-func shortErr(err error) string {
-	s := err.Error()
-	if i := strings.LastIndex(s, ": "); i > 0 && len(s) > 80 {
-		s = s[i+2:]
+// offline says in a few words why an account cannot connect; the error
+// itself is shown on hover.
+func offline(err error) string {
+	var dns *net.DNSError
+	var cert *tls.CertificateVerificationError
+	var nerr net.Error
+	switch {
+	case errors.As(err, &dns):
+		return i18n.T("Offline: server not found")
+	case errors.Is(err, syscall.ECONNREFUSED):
+		return i18n.T("Offline: connection refused")
+	case errors.Is(err, syscall.ENETUNREACH), errors.Is(err, syscall.EHOSTUNREACH):
+		return i18n.T("Offline: no network")
+	case errors.As(err, &cert):
+		return i18n.T("Offline: certificate not trusted")
+	case errors.Is(err, context.DeadlineExceeded), errors.As(err, &nerr) && nerr.Timeout():
+		return i18n.T("Offline: no answer from the server")
+	case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF), errors.Is(err, syscall.ECONNRESET):
+		return i18n.T("Offline: connection dropped")
 	}
-	return s
+	return i18n.T("Offline")
 }
 
 // counted updates a mailbox's unread count from its index.
@@ -545,16 +566,26 @@ func (w *window) drawSide() {
 		w.sideBtns = append(w.sideBtns, w.h.click(head, func() { w.showSettings(xx.s.Acc.ID) }))
 		gtkx.Append(panel, &head.Widget)
 		if x.state != "" {
-			st := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+			// What is wrong in words, the error itself on hover.
+			st := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 			st.AddCssClass("mail-account-state")
+			st.SetTooltipText(x.detail)
+			mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
+			mark.AddCssClass("mark")
+			mark.AddCssClass("down")
+			mark.SetValign(gtk.AlignCenterValue)
+			gtkx.Append(st, &mark.Widget)
 			l := gtk.NewLabel(x.state)
 			l.SetXalign(0)
 			l.SetWrap(true)
+			l.SetWrapMode(2) // word_char
 			l.SetHexpand(true)
 			gtkx.Append(st, &l.Widget)
 			if x.signIn {
 				b := gtk.NewButtonWithLabel(i18n.T("Sign in"))
-				b.AddCssClass("mail-plain")
+				b.AddCssClass("outlined")
+				b.AddCssClass("mail-sign-in")
+				b.SetValign(gtk.AlignCenterValue)
 				w.sideBtns = append(w.sideBtns, w.h.click(b, func() { acc := xx.s.Acc; w.showWelcome(acc.Provider, &acc) }))
 				gtkx.Append(st, &b.Widget)
 			}
@@ -1465,10 +1496,12 @@ func (w *window) drawStatus() {
 	syncing, down := 0, 0
 	var last time.Time
 	unread := 0
+	var why []string // each account down: who, what is wrong, the error
 	for _, x := range w.accts {
 		syncing += x.syncing
 		if x.state != "" {
 			down++
+			why = append(why, x.s.Acc.DisplayName()+" <"+x.s.Acc.Address+">\n"+x.state+"\n"+x.detail)
 		}
 		if x.last.After(last) {
 			last = x.last
@@ -1485,18 +1518,23 @@ func (w *window) drawStatus() {
 		state, class = i18n.T("No account yet"), "off"
 	case syncing > 0:
 		state, class = i18n.T("Checking for mail…"), "busy"
+	case down == 1 && len(w.accts) == 1:
+		state, class = w.accts[0].state, "down"
 	case down == len(w.accts):
-		state, class = i18n.T("Offline: trying again soon"), "warn"
+		state, class = i18n.T("Offline: trying again soon"), "down"
 	case down > 0:
-		state, class = i18n.Nf("%d account cannot connect", "%d accounts cannot connect", down, down), "warn"
+		state, class = i18n.Nf("%d account cannot connect", "%d accounts cannot connect", down, down), "down"
 	case !last.IsZero() && time.Since(last) >= time.Minute:
 		state = i18n.Tf("Checked %s", ago(last))
 	}
 	w.statusState.SetText(state)
+	tip := why
 	if !last.IsZero() {
-		w.statusState.SetTooltipText(i18n.Tf("Last checked at %s", last.Format("15:04:05")))
+		tip = append(tip, i18n.Tf("Last checked at %s", last.Format("15:04:05")))
 	}
-	for _, c := range []string{"on", "off", "busy", "warn"} {
+	w.statusState.SetTooltipText(strings.Join(tip, "\n\n"))
+	w.statusMark.SetTooltipText(strings.Join(tip, "\n\n"))
+	for _, c := range []string{"on", "off", "busy", "down"} {
 		setClass(&w.statusMark.Widget, c, c == class)
 	}
 	if unread > 0 {
