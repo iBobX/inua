@@ -93,6 +93,7 @@ type pane struct {
 	boundInfo   map[string]entryInfo // the details last put in the model, by name
 	flashing    bool                 // the status line says something for a moment
 	selectFirst bool                 // once the folder is read, its first item, if nothing else
+	reveal      bool                 // the next fill scrolls to what it selects (see loaded)
 }
 
 // row is the widgets of a list row, a grid cell or a column's row.
@@ -498,7 +499,7 @@ func (p *pane) load(sel []string) {
 				return
 			}
 			p.free = free
-			p.loaded(es, err, sel)
+			p.loaded(es, err, sel, true)
 		})
 	}()
 	reload := func() {
@@ -543,17 +544,22 @@ func (p *pane) reload() {
 			files.Sort(es, order)
 			gtkx.Post(func() {
 				if gen == p.gen {
-					p.loaded(es, err, sel)
+					p.loaded(es, err, sel, false)
 				}
 			})
 		}()
 	}
 }
 
-func (p *pane) loaded(es []files.Entry, err error, sel []string) {
+// loaded shows the folder as read, selecting sel; reveal scrolls to it,
+// for a selection that is new (the folder came from, files pasted), not
+// for a reload: one runs each time the folder changes, many times while a
+// file is copied in, and must leave the view where the user put it.
+func (p *pane) loaded(es []files.Entry, err error, sel []string, reveal bool) {
 	p.err = err
 	p.all, p.dirs, p.trash = es, nil, nil
 	p.w.app.counts.forget(p.dir)
+	p.reveal = reveal
 	p.refill(sel, true)
 	if p.selectFirst {
 		p.selectFirst = false
@@ -565,8 +571,11 @@ func (p *pane) loaded(es []files.Entry, err error, sel []string) {
 
 // refill computes what is shown (hidden files, the filter) and puts it in
 // the model, changing only the part that changed so the view keeps its
-// place; then selects sel by name, or the filter's best match.
+// place; then selects sel by name, or the filter's best match. It scrolls
+// to sel when the whole model is new, or when loaded asks it to.
 func (p *pane) refill(sel []string, keepPlace bool) {
+	reveal := !keepPlace || p.reveal
+	p.reveal = false
 	hidden := p.fv.Order.ShowsHidden || p.mode != inFolder
 	var best int
 	if p.filter != "" {
@@ -613,7 +622,7 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 			p.sel.SelectItem(uint32(best), true)
 			p.scrollTo(uint32(best))
 		case len(sel) > 0:
-			p.selectNames(sel)
+			p.selectNames(sel, reveal)
 		}
 	}
 	if !parts {
@@ -877,8 +886,8 @@ func (p *pane) selectedNames() []string {
 	return out
 }
 
-// selectNames selects the entries named, and brings the first in view.
-func (p *pane) selectNames(names []string) {
+// selectNames selects the entries named; reveal brings the first in view.
+func (p *pane) selectNames(names []string, reveal bool) {
 	want := map[string]bool{}
 	for _, n := range names {
 		want[n] = true
@@ -896,8 +905,23 @@ func (p *pane) selectNames(names []string) {
 	p.sel.SetSelection(bs, mask)
 	bs.Unref()
 	mask.Unref()
-	if first >= 0 {
-		p.scrollTo(uint32(first))
+	if reveal && first >= 0 {
+		// After a frame: rows the model just got are laid out then, and the
+		// view scrolls only as far as it must, not at all when the item is
+		// in sight. Asked at once, it cannot tell, and puts the item at the
+		// top of the view (a paste moved the list under the user).
+		pos, fill, laid := uint32(first), p.fills, false
+		p.w.app.h.eachFrame(p.view(), func() bool {
+			if fill != p.fills {
+				return false // filled again since
+			}
+			if !laid {
+				laid = true
+				return true
+			}
+			p.scrollTo(pos)
+			return false
+		})
 	}
 }
 

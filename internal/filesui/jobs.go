@@ -222,7 +222,7 @@ func (p *pane) reloadSelecting(names []string) {
 		files.Sort(es, order)
 		gtkx.Post(func() {
 			if gen == p.gen {
-				p.loaded(es, err, names)
+				p.loaded(es, err, names, true)
 				p.focus()
 			}
 		})
