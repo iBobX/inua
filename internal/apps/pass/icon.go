@@ -75,14 +75,14 @@ func Icon(name string) string {
 		category = parts[0]
 	}
 	for _, p := range []string{leaf, folder} {
-		if icon := brandOf(p); icon != "" {
+		if icon := Brand(p); icon != "" {
 			return icon
 		}
 		if icon := kindOf(p); icon != "" {
 			return icon
 		}
 	}
-	return brandOf(category)
+	return Brand(category)
 }
 
 // words splits a part of a name into its words, in lower case:
@@ -93,7 +93,9 @@ func words(part string) []string {
 	})
 }
 
-func brandOf(part string) string {
+// Brand is the Phosphor logo of the service a word of part names:
+// "github" of "work-github.com"; "" when none does.
+func Brand(part string) string {
 	for _, w := range words(part) {
 		if icon, ok := brands[w]; ok {
 			return icon

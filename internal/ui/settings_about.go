@@ -33,7 +33,9 @@ type aboutSettings struct {
 	card                          *shell.Card
 	cardCodes                     cardCodes
 	cardView                      *gtk.Widget  // the card, drawn smaller
-	cardTex                       *gdk.Texture // the card drawn at twice its size, the page shows smaller
+	cardTex                       *gdk.Texture // the card drawn at the screen's pixels, as the page shows it
+	cardTexScale                  float64      // the scale cardTex is drawn at
+	cardTexAsked                  bool         // a drawing at a new scale is on its way
 	cardColors                    map[string]string
 	cardNote                      *gtk.Label // what Copy or Save did, under the card
 	fetching                      bool

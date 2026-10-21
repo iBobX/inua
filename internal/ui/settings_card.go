@@ -35,8 +35,8 @@ import (
 // Settings → About's system manifest: the card shell.Card says, drawn as a
 // slip the ship prints of itself (the slip, a status stamp, a line to
 // share), in the theme's colours. One drawing makes the page's card and
-// the image: the page shows it at cardView's scale, Copy image and Save
-// render it at twice its size.
+// the image: the page shows it at cardView's scale, drawn at the screen's
+// pixels (cardScale); Copy image and Save render it at twice its size.
 
 // The card's size, as shared: 16:9, whole in a post.
 const cardW, cardH = 1200, 675
@@ -136,11 +136,39 @@ func (s *shellUI) showCard() {
 	if a.cardView == nil {
 		gtkx.Clear(&a.fetch)
 		a.cardView = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: func(w *gtk.Widget, sn *gtk.Snapshot) {
-			// The image Copy image makes, at twice the card's size, shown
-			// smaller: the card's small text drawn at the page's size, a
-			// few pixels high, loses the tops of its glyphs.
+			// An image drawn at the screen's own pixels, one to one: the
+			// card's small text drawn straight into the page loses the tops
+			// of its glyphs. Drawn again, out of the frame, when the scale
+			// changes.
+			want := cardScale(w)
+			if a.card != nil && math.Abs(want-a.cardTexScale) > 0.005 && !a.cardTexAsked {
+				a.cardTexAsked = true
+				gtkx.Post(func() {
+					a.cardTexAsked = false
+					if s.settings.win == nil || a.cardView == nil {
+						return
+					}
+					if tex := s.cardTexture(cardScale(a.cardView)); tex != nil {
+						s.dropCardTexture()
+						a.cardTex, a.cardTexScale = tex, cardScale(a.cardView)
+						a.cardView.QueueDraw()
+					}
+				})
+			}
 			if a.cardTex != nil {
-				sn.AppendScaledTexture(a.cardTex, gsk.ScalingFilterTrilinearValue, cardRect(0, 0, float32(w.GetWidth()), float32(w.GetHeight())))
+				r := cardRect(0, 0, float32(w.GetWidth()), float32(w.GetHeight()))
+				filter := gsk.ScalingFilterTrilinearValue
+				px := cardPixels(w)
+				if exact := float64(w.GetWidth()) * px / cardW; exact >= 1 && math.Abs(exact-a.cardTexScale) <= 0.005 {
+					// One to one: the image's pixels on the screen's, its
+					// corner moved onto one, unblurred. (Smaller, on a
+					// screen of fewer pixels, it is shown scaled down.)
+					x, y := cardOrigin(w)
+					r = cardRect(float32((math.Round(x*px)-x*px)/px), float32((math.Round(y*px)-y*px)/px),
+						float32(float64(a.cardTex.GetWidth())/px), float32(float64(a.cardTex.GetHeight())/px))
+					filter = gsk.ScalingFilterLinearValue
+				}
+				sn.AppendScaledTexture(a.cardTex, filter, r)
 			}
 		}})
 		a.cardView.SetSizeRequest(int32(cardW*cardView), int32(cardH*cardView))
@@ -160,16 +188,7 @@ func (s *shellUI) showCard() {
 	} else if a.cardNote.GetText() == i18n.T("Reading…") {
 		a.cardNote.SetText("")
 	}
-	s.dropCardTexture() // a new reading: drawn again
-	if a.card != nil {
-		// Out of the frame: the renderer draws one thing at a time.
-		gtkx.Post(func() {
-			if s.settings.win != nil && a.cardView != nil && a.cardTex == nil {
-				a.cardTex = s.cardTexture(2)
-				a.cardView.QueueDraw()
-			}
-		})
-	}
+	s.dropCardTexture() // a new reading: drawn again, at the next frame
 	a.cardView.QueueDraw()
 }
 
@@ -180,6 +199,45 @@ func (s *shellUI) dropCardTexture() {
 		a.cardTex.Unref()
 		a.cardTex = nil
 	}
+	a.cardTexScale = 0
+}
+
+// cardScale is the scale the card is drawn at for the page: the screen's
+// pixels across the view, by the card's; at least 1, below which its
+// small text loses the tops of its glyphs, and the image is shown smaller.
+func cardScale(view *gtk.Widget) float64 {
+	px := max(cardPixels(view), 1)
+	w := float64(view.GetWidth())
+	if w <= 0 {
+		w = cardW * cardView
+	}
+	return max(w*px/cardW, 1)
+}
+
+// cardPixels is the screen's pixels per point where view is; 0 before it
+// is on one.
+func cardPixels(view *gtk.Widget) float64 {
+	if n := view.GetNative(); n != nil {
+		if sf := n.GetSurface(); sf != nil {
+			return sf.GetScale()
+		}
+	}
+	return 0
+}
+
+// cardOrigin is where view's corner is on its window's surface, in points.
+func cardOrigin(view *gtk.Widget) (float64, float64) {
+	n := view.GetNative()
+	if n == nil {
+		return 0, 0
+	}
+	var at, out graphene.Point
+	if !view.ComputePoint(gtk.WidgetNewFromInternalPtr(n.GoPointer()), &at, &out) {
+		return 0, 0
+	}
+	var sx, sy float64
+	n.GetSurfaceTransform(&sx, &sy)
+	return float64(out.X) + sx, float64(out.Y) + sy
 }
 
 // cardTexture draws the card at scale into an image; nil when the

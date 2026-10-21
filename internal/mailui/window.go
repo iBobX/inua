@@ -1031,8 +1031,8 @@ func (w *window) loadOlder() {
 
 type convRow struct {
 	box                       gtk.Box
-	face                      gtk.Label // the sender's initial, as the reader shows them
-	mark                      gtk.Box   // unread
+	face                      face    // the sender, as the reader shows them
+	mark                      gtk.Box // unread
 	star                      gtk.Button
 	clip                      gtk.Image // with files
 	who, when, subject, count gtk.Label
@@ -1045,12 +1045,12 @@ type convRow struct {
 	ptrs                      []uintptr
 }
 
-// rowFace is the side of a row's initial, rowBadge of the account's photo
+// rowFace is the side of a row's face, rowBadge of the account's photo
 // at its corner.
 const (
 	rowFace     = 34
 	rowBadge    = 14
-	rowBadgeOut = 4 // how far the badge reaches past the initial
+	rowBadgeOut = 4 // how far the badge reaches past the face
 )
 
 // relist shows the rows again, as the settings now say.
@@ -1095,19 +1095,15 @@ func (w *window) setupRow(item uintptr) {
 	r.clip.SetValign(gtk.AlignCenterValue)
 	gtkx.Append(gutter, &r.clip.Widget)
 	gtkx.Append(&r.box, &gutter.Widget)
-	r.face = *gtk.NewLabel("")
-	r.face.AddCssClass("mail-sender-mark")
-	r.face.AddCssClass("mail-row-face")
-	r.face.SetSizeRequest(rowFace, rowFace)
-	// Where accounts mix, the account's photo or initial at the
-	// initial's corner.
-	// The face has a corner of room for it, past the initial's circle.
-	face := gtk.NewOverlay()
-	face.SetValign(gtk.AlignStartValue)
-	face.SetSizeRequest(rowFace+rowBadgeOut, rowFace+rowBadgeOut)
-	r.face.SetHalign(gtk.AlignStartValue)
-	r.face.SetValign(gtk.AlignStartValue)
-	face.SetChild(&r.face.Widget)
+	r.face = *newFace(rowFace)
+	r.face.box.AddCssClass("mail-row-face")
+	// Where accounts mix, the account's photo or initial at the face's
+	// corner; the face has a corner of room for it, past its circle.
+	corner := gtk.NewOverlay()
+	corner.SetValign(gtk.AlignStartValue)
+	corner.SetSizeRequest(rowFace+rowBadgeOut, rowFace+rowBadgeOut)
+	r.face.box.SetHalign(gtk.AlignStartValue)
+	corner.SetChild(&r.face.box.Widget)
 	r.badge = *gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	r.badge.AddCssClass("mail-row-badge")
 	r.badge.SetHalign(gtk.AlignEndValue)
@@ -1121,8 +1117,8 @@ func (w *window) setupRow(item uintptr) {
 	r.badgeL.AddCssClass("mail-monogram")
 	r.badgeL.SetSizeRequest(rowBadge, rowBadge)
 	gtkx.Append(&r.badge, &r.badgeL.Widget)
-	face.AddOverlay(&r.badge.Widget)
-	gtkx.Append(&r.box, &face.Widget)
+	corner.AddOverlay(&r.badge.Widget)
+	gtkx.Append(&r.box, &corner.Widget)
 	col := gtk.NewBox(gtk.OrientationVerticalValue, 2)
 	col.SetHexpand(true)
 	top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -1244,11 +1240,7 @@ func (w *window) fillRow(r *convRow) {
 	if len(people) > 0 {
 		face = people[0]
 	}
-	name := face.Name
-	if name == "" {
-		name = face.Addr
-	}
-	r.face.SetText(initial(name))
+	w.setFace(&r.face, face)
 	unread := c.Unread() > 0
 	setClass(&r.box.Widget, "unread", unread)
 	setClass(&r.mark.Widget, "on", unread)
