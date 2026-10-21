@@ -1,0 +1,44 @@
+# Publishes website/ to Cloudflare (inua.one) on every push to master that
+# changes it, with scripts/install.sh as /install.sh: a Worker named inua
+# with only static assets, no script, so its requests are free and outside
+# the Workers quota.
+#
+# In this repository's secrets: CLOUDFLARE_API_TOKEN (a token with Account
+# → Workers Scripts → Edit) and CLOUDFLARE_ACCOUNT_ID. The first run makes
+# the Worker; then, once, in Cloudflare: inua.one as its custom domain
+# (Workers & Pages → inua → Settings → Domains & Routes), and a redirect
+# rule from www.inua.one to inua.one.
+name: Website
+
+on:
+  push:
+    branches: [master]
+    paths: ["website/**", "scripts/install.sh", ".github/workflows/website.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://inua.one
+    steps:
+      - uses: actions/checkout@v4
+      - name: Site
+        run: |
+          mkdir _site
+          cp -r website/. _site/
+          cp scripts/install.sh _site/install.sh
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.42.0"
+          command: deploy --name=inua --assets=_site --compatibility-date=2025-10-01
