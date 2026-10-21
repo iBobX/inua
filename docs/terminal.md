@@ -194,12 +194,14 @@ The keys are Ghostty's on Linux, a workspace standing for Ghostty's
 window, a session for its tab and a pane for its split; inua-term's own
 actions are Ctrl+Shift chords. Everything else goes to the program.
 Ctrl+Shift+/ shows them all, Ctrl+Shift+P finds any action by name, and
-the settings change them. They work in a workspace without panes too. A `term.toml` of the first version has the keys
-it kept at that version's defaults moved to these.
+the settings change them. They work in a workspace without panes too. A `term.toml` of an older version has the keys it
+kept at that version's defaults moved to these: the first version's to
+Ghostty's, and the second's Ctrl+Shift+T and Ctrl+Shift+N (new session,
+new workspace) to Ctrl+Shift+N for a new session.
 
 | Keys | Action |
 |---|---|
-| Ctrl+Shift+T / Ctrl+Shift+N | New session / new workspace |
+| Ctrl+Shift+N | New session (a new workspace: its + button, or the palette) |
 | Ctrl+Shift+O / Ctrl+Shift+E | Split right / down |
 | Ctrl+Shift+W | Close the pane (asks if its agent is working) |
 | Ctrl+Alt+←↑→↓ | Focus the pane in that direction |

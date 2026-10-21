@@ -23,7 +23,7 @@ import (
 
 // Version is the settings' version: a file of an older one is brought up
 // to it as it loads.
-const Version = 2
+const Version = 3
 
 // Settings is the file's content.
 type Settings struct {
@@ -82,11 +82,13 @@ type Remember struct {
 // Actions are the keys' actions, in the order the settings show them,
 // with their chords by default: Ghostty's where Ghostty has the action (a
 // window of Ghostty's is a workspace here, a tab a session, a split a
-// pane), Ctrl+Shift chords for the rest. A chord names its modifiers in
-// the order ctrl, shift, alt, super.
+// pane), Ctrl+Shift chords for the rest; but a new session is Ctrl+Shift+N,
+// the one made most, and a new workspace has none (its button, the
+// palette). A chord names its modifiers in the order ctrl, shift, alt,
+// super.
 var Actions = []struct{ Name, Keys, Label string }{
-	{"new_session", "ctrl+shift+t", i18n.M("New session in this workspace")},
-	{"new_workspace", "ctrl+shift+n", i18n.M("New workspace")},
+	{"new_session", "ctrl+shift+n", i18n.M("New session in this workspace")},
+	{"new_workspace", "", i18n.M("New workspace")},
 	{"split_right", "ctrl+shift+o", i18n.M("Split right")},
 	{"split_down", "ctrl+shift+e", i18n.M("Split down")},
 	{"close_pane", "ctrl+shift+w", i18n.M("Close pane")},
@@ -122,6 +124,10 @@ var firstKeys = map[string]string{
 	"previous_session": "ctrl+shift+bracketleft", "next_session": "ctrl+shift+bracketright",
 	"settings": "ctrl+shift+comma",
 }
+
+// secondKeys are the second version's default chords that are not the
+// defaults now: Ghostty's tab and window.
+var secondKeys = map[string]string{"new_session": "ctrl+shift+t", "new_workspace": "ctrl+shift+n"}
 
 // Default is the settings without a file.
 func Default() Settings {
@@ -174,14 +180,22 @@ func Load(path string) (Settings, []string, error) {
 	if err != nil {
 		return Default(), nil, fmt.Errorf("%s: %w", path, err)
 	}
+	d := Default()
 	if s.Version < 2 {
 		// The keys the file kept at the first version's defaults take
 		// the new ones, Ghostty's.
-		d := Default()
 		for name, old := range firstKeys {
 			if s.Keys[name] == old {
 				s.Keys[name] = d.Keys[name]
 			}
+		}
+	}
+	if s.Version < 3 {
+		// A new session moves to Ctrl+Shift+N when the file kept both at
+		// the second version's: one the user had changed keeps its chord,
+		// and the other with it, so no two share one.
+		if s.Keys["new_session"] == secondKeys["new_session"] && s.Keys["new_workspace"] == secondKeys["new_workspace"] {
+			s.Keys["new_session"], s.Keys["new_workspace"] = d.Keys["new_session"], d.Keys["new_workspace"]
 		}
 	}
 	s.Version = Version

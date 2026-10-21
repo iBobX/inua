@@ -88,6 +88,32 @@ settings = "ctrl+shift+comma"
 	}
 }
 
+// A file of the second version: a new session moves to Ctrl+Shift+N and a
+// new workspace loses its chord, when both kept their defaults; a file
+// that changed either keeps both.
+func TestSecondVersion(t *testing.T) {
+	dir := t.TempDir()
+	for _, c := range []struct {
+		keys               string
+		session, workspace string
+	}{
+		{"new_session = \"ctrl+shift+t\"\nnew_workspace = \"ctrl+shift+n\"", "ctrl+shift+n", ""},
+		{"", "ctrl+shift+n", ""}, // no keys: the defaults
+		{"new_session = \"ctrl+shift+y\"\nnew_workspace = \"ctrl+shift+n\"", "ctrl+shift+y", "ctrl+shift+n"},
+		{"new_session = \"\"\nnew_workspace = \"ctrl+shift+n\"", "", "ctrl+shift+n"},
+	} {
+		path := filepath.Join(dir, "term.toml")
+		os.WriteFile(path, []byte("version = 2\n[keys]\n"+c.keys+"\n"), 0o600)
+		s, w, err := Load(path)
+		if err != nil || len(w) > 0 {
+			t.Fatalf("load: %v %q", err, w)
+		}
+		if s.Version != Version || s.Keys["new_session"] != c.session || s.Keys["new_workspace"] != c.workspace {
+			t.Errorf("%q: session %q, workspace %q", c.keys, s.Keys["new_session"], s.Keys["new_workspace"])
+		}
+	}
+}
+
 func TestShells(t *testing.T) {
 	dir := t.TempDir()
 	bin := filepath.Join(dir, "usr", "bin")
