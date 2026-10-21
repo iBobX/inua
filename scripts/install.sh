@@ -1,7 +1,7 @@
 #!/bin/sh
 # Install or update inua from its latest release on GitHub:
 #
-#   curl -fsSL https://inua.lyric.im/install.sh | sh
+#   curl -fsSL https://inua.one/install.sh | sh
 #
 # It puts the programs in ~/.local/bin and the light apps' launchers in
 # ~/.local/share, checks the packages inua needs, writes your configuration

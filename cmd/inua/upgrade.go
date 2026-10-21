@@ -89,7 +89,7 @@ func cmdUpgrade(args []string) error {
 	programs, err := upgrade.Install(archive, binDir, data)
 	if errors.Is(err, fs.ErrPermission) {
 		return fmt.Errorf("cannot write to %s, where inua is installed (%w); "+
-			"install the release in ~/.local instead with: curl -fsSL https://inua.lyric.im/install.sh | sh", binDir, err)
+			"install the release in ~/.local instead with: curl -fsSL https://inua.one/install.sh | sh", binDir, err)
 	}
 	if err != nil {
 		return err

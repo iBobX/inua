@@ -116,7 +116,7 @@ missing and which packages provide it.
 ## Install
 
 ```sh
-curl -fsSL https://inua.lyric.im/install.sh | sh
+curl -fsSL https://inua.one/install.sh | sh
 ```
 
 Then log out and pick **Inua** at the login screen. The script installs the

@@ -64,7 +64,7 @@ which reads your default Hyprland config (no `--config`).
 | GDM | `make install-session DM=gdm` | After choosing your user, pick Inua from the gear menu |
 | SDDM | `make install-session DM=sddm` | Pick Inua from the session menu |
 
-The install script (`curl -fsSL https://inua.lyric.im/install.sh | sh`)
+The install script (`curl -fsSL https://inua.one/install.sh | sh`)
 finds the login manager systemd starts. With greetd it installs the greetd
 config; with another it only registers the Inua session, after asking
 whether to switch to greetd + tuigreet (default no; yes installs both,
