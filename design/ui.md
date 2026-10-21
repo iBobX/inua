@@ -95,6 +95,12 @@ square, filled with `mix(t0, accent, 0.68)`, 1 px corners.
 In a layout a mark is an **empty `Box`**, never a `Label`: an empty label
 is as tall as a line of text, so the "square" draws as a bar.
 
+The one place colours leave the tokens is a service's face in Mail: its
+logo on the brand's own colour (`internal/apps/mail/brands.go`, from
+Simple Icons), white or black on it, and on a dark theme a brand near
+black on white instead (GitHub). The rules are made for the theme in use
+(`mail.BrandCSS`), not written in `ui/style.css`.
+
 ```blueprint
 Box {
   styles ["mark"]

@@ -59,10 +59,10 @@ inua-mail --check FILE.eml    the phishing checks on a message
   to three lines (Settings → Reading → *Preview*, two at first), and
   SUSPICIOUS under a message the phishing checks doubt. A face is the
   photo of one of your own accounts, else the logo of the service the
-  address is at (GitHub, Google, Spotify… the logos Pass draws; not for a
-  mailbox anyone can have, as gmail.com), else the initial; on a round
-  mark in one of six tones of the theme, the same for an address each
-  time.
+  address is at, on the brand's own colours (GitHub, Google, Spotify… the
+  logos Pass draws; not for a mailbox anyone can have, as gmail.com),
+  else the initial, on a round mark in one of six tones of the theme, the
+  same for an address each time.
   ALL, UNREAD, FILES and REPLY filter it; *MARK READ*, at the row's end
   while the list has unread mail, marks every conversation of the view
   read, on the server too. A mailbox fetched the first time shows the

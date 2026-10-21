@@ -86,14 +86,15 @@ func (w *window) findPicture(x *acct) {
 }
 
 // face is a sender on a round mark: the photo of one of the user's own
-// accounts, else the logo of the service the address is at, else the
-// name's initial; the mark in the tone of the address (mail.Face).
+// accounts, else the logo of the service the address is at, on its
+// colours, else the name's initial in the tone of the address (mail.Face).
 type face struct {
 	box     gtk.Box
 	initial gtk.Label
 	logo    gtk.Image
 	size    int32
 	tone    string
+	brand   string // its brand-… class, "" for none
 }
 
 func newFace(size int32) *face {
@@ -126,6 +127,23 @@ func (w *window) setFace(f *face, a mail.Address) {
 		f.tone = t
 	}
 	photo := w.photoOf(a.Addr)
+	if photo != nil {
+		icon = "" // a photo, not the drawn logo
+	}
+	brand := ""
+	if icon != "" {
+		brand = "brand-" + icon
+	}
+	if brand != f.brand {
+		if f.brand != "" {
+			f.box.RemoveCssClass(f.brand)
+		}
+		if brand != "" {
+			f.box.AddCssClass(brand)
+		}
+		f.brand = brand
+	}
+	setClass(&f.box.Widget, "brand", brand != "")
 	setClass(&f.box.Widget, "photo", photo != nil)
 	switch {
 	case photo != nil:
@@ -150,6 +168,14 @@ func (w *window) senderMark(a mail.Address, size int32) *gtk.Widget {
 	f := newFace(size)
 	w.setFace(f, a)
 	return &f.box.Widget
+}
+
+// brandStyle gives the services' faces their own colours, for the theme
+// as light or dark as it is.
+func (w *window) brandStyle() {
+	css := gtk.NewCssProvider()
+	css.LoadFromString(mail.BrandCSS(mail.Dark(w.c.Colors["app"])))
+	gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), css, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
 }
 
 // photoOf is the photo of the user's own account at addr, nil when there

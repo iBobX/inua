@@ -219,6 +219,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.h.enter(&w.search, w.searchEntered)
 	w.h.key(&w.win.Widget, false, w.key)
 	w.h.close(&w.win.Window, func() bool { w.quit(); return false })
+	w.brandStyle()
 
 	for _, f := range []struct {
 		f    filter
