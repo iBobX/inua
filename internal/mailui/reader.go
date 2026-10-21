@@ -233,14 +233,30 @@ func (w *window) tool(box *gtk.Box, icon, tip string, f func()) *gtk.Button {
 	return b
 }
 
+// loaded counts the conversation's messages read so far.
+func (w *window) loaded(c *mail.Conversation) int {
+	n := 0
+	for _, m := range c.Messages {
+		if rd := w.reading[m.Key()]; rd != nil && rd.m != nil {
+			n++
+		}
+	}
+	return n
+}
+
 // drawBar fills the bar over the conversation: answering it on the left,
 // filing it on the right, and a menu of the rest; a draft's own on a
 // draft.
 func (w *window) drawBar(c *mail.Conversation) {
 	bar := &w.readerBar
 	gtkx.Clear(bar)
+	// What answers or takes the messages' text waits for them: its
+	// buttons are off while they load.
+	read := w.loaded(c)
 	if w.isDraft(c.Latest()) {
 		b := gtk.NewButtonWithLabel(i18n.T("Continue writing"))
+		rd := w.reading[c.Latest().Key()]
+		b.SetSensitive(rd != nil && rd.m != nil)
 		b.AddCssClass("suggested-action")
 		b.AddCssClass("mail-bar-button")
 		w.readerBtns = append(w.readerBtns, w.h.click(b, w.continueDraft))
@@ -256,9 +272,9 @@ func (w *window) drawBar(c *mail.Conversation) {
 		}
 		return
 	}
-	w.tool(bar, "mail-reply-symbolic", i18n.T("Reply (R)"), func() { w.reply(false) })
-	w.tool(bar, "mail-reply-all-symbolic", i18n.T("Reply all (A)"), func() { w.reply(true) })
-	w.tool(bar, "mail-forward-symbolic", i18n.T("Forward (F)"), w.forward)
+	w.tool(bar, "mail-reply-symbolic", i18n.T("Reply (R)"), func() { w.reply(false) }).SetSensitive(read > 0)
+	w.tool(bar, "mail-reply-all-symbolic", i18n.T("Reply all (A)"), func() { w.reply(true) }).SetSensitive(read > 0)
+	w.tool(bar, "mail-forward-symbolic", i18n.T("Forward (F)"), w.forward).SetSensitive(read > 0)
 	gap := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
 	gap.SetHexpand(true)
 	gtkx.Append(bar, &gap.Widget)
@@ -853,9 +869,7 @@ func (w *window) continueDraft() {
 	rd := w.reading[it.Key()]
 	x := w.acct(it.Account)
 	if rd == nil || rd.m == nil || x == nil {
-		w.actErr = i18n.T("The message is still loading.")
-		w.drawReader()
-		return
+		return // its button is off until the draft is read
 	}
 	d, err := mail.DraftOf(rd.m, x.s.Acc, it.UID, w.drafts.Dir)
 	if err != nil {

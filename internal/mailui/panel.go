@@ -149,8 +149,11 @@ func (w *window) panelActions(c *mail.Conversation, draft bool) {
 	if sum != nil && sum.text != "" {
 		label = i18n.T("Sum it up again")
 	}
+	// A summary takes every message, replies the newest read: off while
+	// they load.
+	read := w.loaded(c)
 	b := w.panelAction(row, label, func() { w.summarize(c) })
-	b.SetSensitive(sum == nil || !sum.busy)
+	b.SetSensitive((sum == nil || !sum.busy) && read == len(c.Messages))
 	q := w.quick[c.ID]
 	idle := q == nil || q.state == ""
 	if !draft {
@@ -160,7 +163,7 @@ func (w *window) panelActions(c *mail.Conversation, draft bool) {
 			label = i18n.T("Other replies")
 		}
 		b := w.panelAction(row, label, func() { w.askIdeas(c) })
-		b.SetSensitive((ideas == nil || !ideas.busy) && idle)
+		b.SetSensitive((ideas == nil || !ideas.busy) && idle && read > 0)
 	}
 	gtkx.Append(box, &row.Widget)
 	gtkx.Append(&w.assist, &box.Widget)

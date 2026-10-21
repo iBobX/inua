@@ -132,10 +132,7 @@ func summaryKey(c *mail.Conversation, lang string) string {
 func (w *window) summarize(c *mail.Conversation) {
 	msgs := w.said(c)
 	if len(msgs) < len(c.Messages) {
-		w.actErr = i18n.T("The messages are still loading.")
-		w.lastDrawn = ""
-		w.drawReader()
-		return
+		return // its button is off until they are all read
 	}
 	a := &aiText{busy: true}
 	w.sumState[c.ID] = a

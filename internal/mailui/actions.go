@@ -378,10 +378,7 @@ func (w *window) answering() (*mail.Message, mail.Item) {
 			return rd.m, it
 		}
 	}
-	if last == nil {
-		w.actErr = i18n.T("The message is still loading.")
-		w.drawReader()
-	}
+	// None read yet: nothing to answer, its buttons are off until one is.
 	return last, lastIt
 }
 

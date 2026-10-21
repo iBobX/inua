@@ -3622,7 +3622,10 @@ window.mail button.mail-tool:hover, window.mail menubutton.mail-tool > button:ho
   color: @t0;
 }
 window.mail button.mail-tool.on { color: @accent; }
+/* Off while the messages they need load (reply, forward). */
+window.mail button.mail-tool:disabled { color: alpha(@t2, 0.5); border-color: alpha(@line, 0.35); }
 window.mail button.mail-bar-button { min-height: 30px; padding: 0 14px; }
+window.mail button.mail-bar-button:disabled { opacity: 0.45; }
 window.mail .mail-reader { padding: 26px 40px 48px; }
 window.mail .mail-reader-empty { margin: 32px; }
 window.mail .mail-read-subject {
