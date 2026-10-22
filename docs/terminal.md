@@ -299,8 +299,16 @@ screen: it is a web app in the theme's colours.
   alternate screen (Claude Code's fullscreen mode, vim, less) scrolls
   itself, and gets the wheel.
 - The theme, the terminals' colours, the font, the cursor and the key row
-  follow inua-term's settings, or the phone's own (Overview → Settings),
+  follow inua-term's settings, or the device's own (Overview → Settings),
   kept in its browser.
+- **On a tablet or a computer** (a window 720 px wide and 500 px tall or
+  more; a phone on its side keeps the phone's layout), the lists stay in
+  a column at the left with the tabs under them and the open pane beside
+  them, as in the inua-term window; the back button closes the pane. The
+  text is 13 px there. A keyboard of the device's own types into the pane
+  once it is clicked, or once the keyboard button is pressed on an iPad;
+  a computer has no key row unless it is turned on in Settings. Ctrl and
+  the wheel, or a trackpad's pinch, change the text size.
 
 The page asks nothing of the internet: xterm.js and the fonts come with
 inua (`scripts/term-web.sh`). Over plain `http://`, an iPhone adds it

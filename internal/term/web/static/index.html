@@ -62,8 +62,9 @@
        so a row shows no box: its icon and text go on the head's edge,
        and its tint, when it has one (pressed, waiting, chosen), reaches
        --out past it.
-     - In columns side by side (720 px and wider, as the inua-term window
-       keeps its first column), the list keeps a selected row beside what
+     - In columns side by side (a tablet or a computer: 720 px and wider,
+       500 px and taller, as the inua-term window keeps its first column),
+       the list keeps a selected row beside what
        it shows: the desktop's rule, the row's box on the head's edge, its
        icon and text inside. */
   .scroll { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; padding:8px 16px 16px; }
@@ -72,7 +73,7 @@
      border), folded; none in columns. */
   .scroll { --out:10px; }
   .scroll .row { --out:11px; }
-  @media (min-width:720px) { .scroll, .scroll .row { --out:0px; } }
+  @media (min-width:720px) and (min-height:500px) { .scroll, .scroll .row { --out:0px; } }
   /* Sections as the window's sessions: a mark, a mono label, a hairline. */
   .section { display:flex; align-items:center; gap:8px; min-height:40px; margin:10px 0 6px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
   .section .label { font:600 11px var(--mono); letter-spacing:.12em; color:var(--t2); text-transform:uppercase; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -200,6 +201,28 @@
   .segmented button:last-child { border-radius:0 2px 2px 0; }
   .segmented button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
   nav .badge { position:absolute; top:5px; left:calc(50% + 10px); }
+
+  /* A tablet or a computer (wide and tall enough; a phone on its side is
+     not): the lists in a column at the left with the tabs under them, the
+     open pane beside them, as the inua-term window. */
+  @media (min-width:720px) and (min-height:500px) {
+    #app { display:grid; grid-template-columns:clamp(280px, 30vw, 360px) minmax(0, 1fr); grid-template-rows:minmax(0, 1fr) auto; }
+    #app > .tab { grid-column:1; grid-row:1; min-width:0; border-right:1px solid var(--line); }
+    #app > nav { grid-column:1; grid-row:2; border-right:1px solid var(--line); }
+    #app > #tab-term { grid-column:2; grid-row:1 / 3; border-right:0; }
+    /* The list's notice says it once. */
+    #tab-term .notice { display:none !important; }
+  }
+  .row, .line.go, button { cursor:pointer; }
+  /* A mouse: the hover of design/ui.md, lighter than a press. */
+  @media (hover:hover) {
+    .row:not(.current):hover { border-color:color-mix(in srgb, var(--accent) 20%, transparent); background:color-mix(in srgb, var(--accent) 6%, transparent); }
+    .line.go:hover { background:color-mix(in srgb, var(--accent) 6%, transparent); }
+    button.plain:hover { background:color-mix(in srgb, var(--accent) 9%, transparent); }
+    .barbtn:hover, #keys button:hover, #panel .grid button:hover, .num button:hover { border-color:color-mix(in srgb, var(--accent) 38%, transparent); background:color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+    #chips button:not(.on):hover, .segmented button:not(.on):hover { background:color-mix(in srgb, var(--accent) 6%, transparent); color:var(--t0); }
+    nav button:not(.on):hover, #panel .ptabs button:not(.on):hover { color:var(--t1); }
+  }
 </style>
 </head>
 <body>
@@ -280,6 +303,11 @@ for (const e of document.querySelectorAll("[data-t]")) e.textContent = T(e.datas
 for (const e of document.querySelectorAll("[data-ta]")) e.setAttribute("aria-label", T(e.dataset.ta));
 document.documentElement.lang = INUA.lang || "en";
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+// A tablet or a computer: the lists and the pane side by side (the
+// style's columns). A touch screen: the keyboard on the screen.
+const wideQuery = matchMedia("(min-width:720px) and (min-height:500px)");
+let wide = wideQuery.matches;
+const touchScreen = matchMedia("(pointer: coarse)").matches;
 
 // ---- The look: the theme's tokens and the terminals' scheme ----
 
@@ -291,7 +319,7 @@ const pref = {
   font: store.get("tfont") || "",
   cursor: store.get("cursor") || "block",
   blink: store.get("blink") !== "0",
-  keys: store.get("keys") !== "0",
+  keys: store.get("keys") ? store.get("keys") !== "0" : touchScreen,  // a computer has the keys
 };
 function setPref(k, v) { pref[k] = v; store.set({ font: "tfont" }[k] || k, typeof v === "boolean" ? (v ? "1" : "0") : v); applyLook(); }
 const lookReady = fetch("/look.json?t=" + token).then(r => r.json()).then(l => { look = l; applyLook(); }).catch(() => {});
@@ -401,7 +429,7 @@ function setState(s) {
   if (restore) {
     const id = restore;
     restore = 0;
-    if (tab === "term" && paneMap.has(id)) open(id);
+    if (seen("term") && paneMap.has(id)) open(id);
   }
 }
 let restore = +query.get("pane") || +store.get("pane") || 0;
@@ -479,19 +507,26 @@ function paneRow(p, where) {
 
 let tab = null;
 let from = store.get("from") || "agents";  // the list the terminal was opened from
+// Whether a page shows: the open one; in columns, the terminal always and
+// the list it was opened from beside it.
+function seen(name) {
+  if (wide) return name === "term" || name === (tab === "term" ? from : tab);
+  return name === tab;
+}
 function show(name) {
   if (name === "term" && tab && tab !== "term") { from = tab; store.set("from", from); }
   tab = name;
-  for (const t of document.querySelectorAll(".tab")) t.classList.toggle("shown", t.id === "tab-" + name);
-  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
+  const list = tab === "term" ? from : tab;
+  for (const t of document.querySelectorAll(".tab")) t.classList.toggle("shown", seen(t.id.slice(4)));
+  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === list);
   store.set("tab", name);
   if (name === "over") renderOver();
-  if (name === "term" && term) requestAnimationFrame(() => { fitPane(); term.refresh(0, term.rows - 1); });
+  if (seen("term") && term) requestAnimationFrame(() => { fitPane(); term.refresh(0, term.rows - 1); });
   viewport();
 }
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => {
-  if (b.dataset.tab === "ws" && tab === "ws") wsOpen = null;  // a second tap goes to the top
-  if (b.dataset.tab === "over" && tab === "over") overPage = null;
+  if (b.dataset.tab === "ws" && seen("ws")) wsOpen = null;  // a second tap goes to the top
+  if (b.dataset.tab === "over" && seen("over")) overPage = null;
   show(b.dataset.tab); render();
 };
 
@@ -562,11 +597,13 @@ function renderWS() {
   }
 }
 $("wsback").onclick = () => { wsOpen = null; renderWS(); };
-// Back: the pane goes back to the desktop, and the list shows again.
+// Back (in columns, Close): the pane goes back to the desktop, and the
+// list shows again.
 $("termback").addEventListener("pointerdown", e => e.preventDefault());
 $("termback").onclick = () => {
   if (cur) leave(cur);
   cur = null;
+  store.set("pane", "");
   if (term) { term.dispose(); term = null; }
   showPanel(false);
   show(from === "term" ? "agents" : from);
@@ -578,7 +615,7 @@ $("overback").onclick = () => { overPage = null; renderOver(); $("over").scrollT
 
 let sys = null, rtt = 0;
 async function poll() {
-  if (tab === "over" && !overPage && !document.hidden) {
+  if (seen("over") && !overPage && !document.hidden) {
     try { sys = await (await fetch("/sys.json?t=" + token)).json(); } catch (e) {}
     if (connected) { const t0 = performance.now(); await request({ type: "list" }); rtt = performance.now() - t0; }
     renderOver();
@@ -603,7 +640,7 @@ function line(label, value, opts = {}) {
 }
 let overPage = null;
 function renderOver() {
-  if (tab !== "over") return;
+  if (!seen("over")) return;
   const box = $("over"), top = box.scrollTop;
   box.textContent = "";
   $("overback").hidden = !overPage;
@@ -703,19 +740,20 @@ function renderSettings(box) {
   const step = d => { fontSize = Math.max(7, Math.min(20, fontSize + d / 2)); store.set("font", fontSize); renderOver(); };
   minus.onclick = () => step(-1); plus.onclick = () => step(1);
   num.append(minus, el("span", "", Tf("%s PX", fontSize)), plus);
-  box.append(line(T("Text size"), num, { sub: T("Panes are fitted to the phone at this size; pinching changes it too.") }));
+  box.append(line(T("Text size"), num, { sub: T("Panes are fitted to this screen at this size; pinching changes it too.") }));
   box.append(line(T("Cursor"), segmented([["block", T("BLOCK")], ["bar", T("BAR")], ["underline", T("UNDERLINE")]], pref.cursor, v => setPref("cursor", v))));
   box.append(line(T("Cursor blinks"), toggle(pref.blink, v => setPref("blink", v))));
 
-  box.append(section(T("This phone"), ""));
-  box.append(line(T("Keys above the keyboard"), toggle(pref.keys, v => setPref("keys", v)), { sub: T("Esc, Tab, Ctrl, the arrows and the rest a phone lacks.") }));
+  box.append(section(T("This device"), ""));
+  box.append(line(T("Keys above the keyboard"), toggle(pref.keys, v => setPref("keys", v)), { sub: T("Esc, Tab, Ctrl, the arrows and the rest a touch keyboard lacks.") }));
 }
 
 // ---- The terminal ----
 
 let cur = null, term = null, st = {};
-// The text size the panes are fitted at, changed by pinching.
-let fontSize = +store.get("font") || 10;
+// The text size the panes are fitted at, changed by pinching: 10 px on a
+// phone (about 62 columns upright), 13 beside the lists.
+let fontSize = +store.get("font") || (wide ? 13 : 10);
 
 
 function renderTerm() {
@@ -851,7 +889,7 @@ function fitSize() {
 
 // The pane at the phone's size.
 function fitPane() {
-  if (!term || !cur || tab !== "term" || document.hidden) return;
+  if (!term || !cur || !seen("term") || document.hidden) return;
   const size = fitSize();
   if (!size) return;
   // Only asked for: the terminal here takes the size when the host's
@@ -1032,8 +1070,19 @@ function fling(v) {
   glide = requestAnimationFrame(step);
 }
 
-// A mouse press focuses xterm's input too: not on a phone's screen.
-wrap.addEventListener("mousedown", e => { if (matchMedia("(pointer: coarse)").matches) e.preventDefault(); }, { capture: true });
+// A press focuses xterm's input: a mouse's or a trackpad's (a tablet's
+// keyboard types then), not a finger's.
+let pointer = "mouse";
+wrap.addEventListener("pointerdown", e => { pointer = e.pointerType; }, { capture: true });
+wrap.addEventListener("mousedown", e => { if (pointer === "touch") e.preventDefault(); }, { capture: true });
+// Ctrl and the wheel, or a trackpad's pinch: the text size, as pinching.
+wrap.addEventListener("wheel", e => {
+  if (!e.ctrlKey || !term) return;
+  e.preventDefault();
+  fontSize = Math.max(7, Math.min(20, fontSize + (e.deltaY < 0 ? 0.5 : -0.5)));
+  store.set("font", fontSize);
+  fitPane();
+}, { passive: false, capture: true });
 wrap.addEventListener("touchstart", e => {
   stopGlide();
   if (!term) return;
@@ -1208,7 +1257,7 @@ function showKeyboard(up) {
   if (up) { showPanel(false); term.focus(); } else term.blur();
 }
 for (const id of ["kbtoggle", "paneltoggle"]) $(id).addEventListener("pointerdown", e => e.preventDefault());
-$("kbtoggle").onclick = () => showKeyboard(!keyboard);
+$("kbtoggle").onclick = () => showKeyboard(!typingHere());
 $("paneltoggle").onclick = () => {
   if (panelOpen) { showPanel(false); return; }
   showKeyboard(false);
@@ -1217,18 +1266,26 @@ $("paneltoggle").onclick = () => {
 
 // ---- The visible area ----
 
-// The keyboard: iOS lays it over the page without resizing it, Android
-// resizes the page. Either way the visible area is what the page gets,
-// and the keyboard is up while that area is well short of the tallest
-// seen in this orientation. The terminal is fitted to what is left.
+// The keyboard on the screen: iOS lays it over the page without resizing
+// it, Android resizes the page. Either way the visible area is what the
+// page gets, and the keyboard is up while the terminal takes the typing
+// and that area is well short of the tallest seen in this orientation.
+// The terminal is fitted to what is left. A keyboard of its own (a
+// computer's, a tablet's) takes no room: the terminal takes the typing.
 let tallest = 0, orientation = "", keyboard = false;
+const typingHere = () => !!term && !!term.textarea && document.activeElement === term.textarea;
 function viewport() {
   const vv = window.visualViewport, h = vv ? vv.height : innerHeight;
   const o = screen.width > screen.height ? "landscape" : "portrait";
-  if (o !== orientation) { orientation = o; tallest = 0; }
+  const turned = o !== orientation;
+  if (turned) { orientation = o; tallest = 0; }
   tallest = Math.max(tallest, h);
-  keyboard = h < tallest * 0.8;
-  $("kbtoggle").classList.toggle("on", keyboard);
+  const was = keyboard;
+  keyboard = touchScreen && typingHere() && h < tallest * 0.8;
+  // Folded by its own key: the terminal lets the typing go too, so the
+  // button says the keyboard is down.
+  if (was && !keyboard && !turned && typingHere()) term.blur();
+  $("kbtoggle").classList.toggle("on", typingHere());
   if (keyboard) {
     // Its height, for the panel; and the keyboard up closes the panel.
     keyboardHeight = Math.round(tallest - h);
@@ -1237,8 +1294,11 @@ function viewport() {
   }
   $("app").style.height = h + "px";
   $("app").style.top = (vv ? vv.offsetTop : 0) + "px";
-  // The terminal is a page of its own: no tabs under it.
-  $("nav").classList.toggle("hidden", tab === "term");
+  // On a phone the terminal is a page of its own: no tabs under it.
+  $("nav").classList.toggle("hidden", !wide && tab === "term");
+  // In columns, Back closes the pane.
+  $("termback").querySelector(".icon").style.setProperty("--i", `url(/icons/${wide ? "window-close" : "go-previous"}-symbolic.svg)`);
+  $("termback").setAttribute("aria-label", wide ? T("Close") : T("Back"));
   $("app").classList.toggle("typing", keyboard || panelOpen);
 
   if (!keyboard) window.scrollTo(0, 0);
@@ -1250,7 +1310,9 @@ addEventListener("orientationchange", () => setTimeout(viewport, 300));
 // iOS does not always say when the keyboard folds: look again after.
 document.addEventListener("focusout", () => setTimeout(viewport, 350));
 document.addEventListener("focusin", () => setTimeout(viewport, 350));
-setInterval(() => tab !== "term" && render(), 30000);  // the "3m" ago
+setInterval(() => (wide || tab !== "term") && render(), 30000);  // the "3m" ago
+// A tablet turned, a window made narrow: the other layout.
+wideQuery.addEventListener("change", () => { wide = wideQuery.matches; show(tab); render(); });
 
 show(query.get("tab") || store.get("tab") || "agents");
 connect();
