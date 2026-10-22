@@ -676,7 +676,9 @@ button.drawer-app:hover image { transform: translateY(-2px); }
 .dock box:drop(active), .dock button:drop(active) { box-shadow: none; outline: none; border-color: transparent; }
 separator.dock-sep { margin: 6px 4px 8px; background: alpha(@line, 0.9); min-width: 1px; }
 .dock.dock-side separator.dock-sep { margin: 4px 6px; min-width: 0; min-height: 1px; }
-.dock-edge { background: transparent; }
+/* All but transparent: GTK presents no frame with nothing to draw, and an
+   autohidden dock that is only its edge would never be shown. */
+.dock-edge { background: alpha(@line, 0.01); }
 
 /* --- tray menus ------------------------------------------------------ */
 

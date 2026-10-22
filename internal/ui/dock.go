@@ -39,6 +39,7 @@ import (
 // goes; dockLaunchMS how long a started app's icon bounces at most.
 const (
 	dockHideMS   = 500
+	dockEdge     = 3 // px of a hidden dock along the screen edge
 	dockLaunchMS = 6000
 )
 
@@ -149,7 +150,7 @@ func (s *shellUI) newDock(b *bar) *dock {
 			d.island.AddCssClass("dock-right")
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
 		}
-		d.edge.Widget.SetSizeRequest(3, -1)
+		d.edge.Widget.SetSizeRequest(dockEdge, -1)
 		d.island.AddCssClass("dock-side")
 	} else {
 		d.root.SetOrientation(gtk.OrientationVerticalValue)
@@ -167,10 +168,17 @@ func (s *shellUI) newDock(b *bar) *dock {
 			}
 			d.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
 		}
-		d.edge.Widget.SetSizeRequest(-1, 3)
+		d.edge.Widget.SetSizeRequest(-1, dockEdge)
 	}
-	if position == "top" || position == "left" {
+	switch position {
+	case "top", "left":
 		d.root.ReorderChildAfter(&d.edge.Widget, &gtk.Widget{})
+	// The window takes the whole dock as it starts to show (fitDock): the
+	// dock keeps to its screen edge, so it slides out of it.
+	case "right":
+		d.root.SetHalign(gtk.AlignEndValue)
+	default:
+		d.root.SetValign(gtk.AlignEndValue)
 	}
 	drop := gtk.NewDropTarget(types.GType(gobject.TypeStringVal), gdk.ActionMoveValue)
 	drop.ConnectMotion(&s.onDockDropMotion)
@@ -203,6 +211,7 @@ func (s *shellUI) newDock(b *bar) *dock {
 		motion.ConnectEnter(&s.onDockEnter)
 		motion.ConnectLeave(&s.onDockLeave)
 		d.win.AddController(&motion.EventController)
+		gtkx.ConnectNotify(&d.reveal, "child-revealed", &s.onDockRevealed)
 	} else {
 		layershell.AutoExclusiveZone(w)
 	}
@@ -321,6 +330,37 @@ func (s *shellUI) renderDock(b *bar) {
 		if db := d.buttons[it.Key]; db != nil {
 			s.updateDockButton(db, it)
 		}
+	}
+	fitDock(d)
+}
+
+// fitDock sizes an autohiding dock's surface. Hidden, the dock is only its
+// edge, as long as the dock: a surface of no length is never shown, and
+// the pointer could not reach it. A mapped layer surface follows its
+// window's default size rather than its content (see bar.go), so the
+// default size is the whole dock while it shows and the edge once hidden.
+func fitDock(d *dock) {
+	if !d.hide {
+		return
+	}
+	along, across := gtk.OrientationHorizontalValue, gtk.OrientationVerticalValue
+	if d.vertical {
+		along, across = across, along
+	}
+	var least, length int32
+	d.island.Measure(along, -1, &least, &length, nil, nil)
+	depth := int32(dockEdge)
+	if d.reveal.GetRevealChild() || d.reveal.GetChildRevealed() {
+		var island int32
+		d.island.Measure(across, -1, &least, &island, nil, nil)
+		depth += island
+	}
+	if d.vertical {
+		d.edge.SetSizeRequest(dockEdge, length)
+		d.win.SetDefaultSize(depth, length)
+	} else {
+		d.edge.SetSizeRequest(length, dockEdge)
+		d.win.SetDefaultSize(length, depth)
 	}
 }
 
@@ -598,6 +638,7 @@ func (s *shellUI) bindDockHandlers() {
 		if d := s.dockOf(c.GetWidget()); d != nil {
 			d.hover = true
 			d.reveal.SetRevealChild(true)
+			fitDock(d)
 		}
 	}
 	s.onDockLeave = func(c gtk.EventControllerMotion) {
@@ -611,6 +652,13 @@ func (s *shellUI) bindDockHandlers() {
 		clear(s.dockState.launching)
 		s.renderDocks()
 		return false
+	}
+	s.onDockRevealed = func(obj, _, _ uintptr) {
+		for _, b := range s.bars {
+			if d := b.dock; d != nil && d.reveal.GoPointer() == obj {
+				fitDock(d) // closed: back to the edge
+			}
+		}
 	}
 	s.onDockHide = func(gen uintptr) bool {
 		for _, b := range s.bars {
@@ -626,6 +674,7 @@ func (s *shellUI) bindDockHandlers() {
 // has been and gone.
 func (s *shellUI) showDock(d *dock) {
 	d.reveal.SetRevealChild(true)
+	fitDock(d)
 }
 
 func (s *shellUI) dockOf(w *gtk.Widget) *dock {

@@ -268,6 +268,7 @@ type shellUI struct {
 	onDockEnter            func(gtk.EventControllerMotion, float64, float64)
 	onDockLeave            func(gtk.EventControllerMotion)
 	onDockHide             glib.SourceFunc
+	onDockRevealed         func(uintptr, uintptr, uintptr)
 	onDockLaunched         glib.SourceFunc
 	onDockDragBegin        func(gtk.DragSource, uintptr)
 	onDockDragEnd          func(gtk.DragSource, uintptr, bool)
