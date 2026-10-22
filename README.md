@@ -1,6 +1,15 @@
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="design/logo/inua-mark-light.svg">
+    <img src="design/logo/inua-mark.svg" alt="The inua mark: a triquetra in a ring" width="96" height="96">
+  </picture>
+</p>
+
 # inua
 
 A quiet desktop shell, written in Go and GTK4.
+[inua.one](https://inua.one), with [the apps](https://inua.one/apps) and
+[the light apps](https://inua.one/light-apps).
 
 Your compositor manages windows; inua gives you the rest of a desktop around
 them: a bar, a launcher, a control center, notifications, a dock, a wallpaper
