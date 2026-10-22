@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
@@ -32,10 +31,7 @@ type aboutSettings struct {
 	fetchCopy, cardImage, cardSav gtk.Button
 	card                          *shell.Card
 	cardCodes                     cardCodes
-	cardView                      *gtk.Widget  // the card, drawn smaller
-	cardTex                       *gdk.Texture // the card drawn at the screen's pixels, as the page shows it
-	cardTexScale                  float64      // the scale cardTex is drawn at
-	cardTexAsked                  bool         // a drawing at a new scale is on its way
+	cardView                      *gtk.Widget // the card, drawn smaller
 	cardColors                    map[string]string
 	cardNote                      *gtk.Label // what Copy or Save did, under the card
 	fetching                      bool
@@ -68,7 +64,6 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 	if a.cardView != nil {
 		gtkx.ForgetCanvas(a.cardView) // the old window's card
 	}
-	s.dropCardTexture()
 	a.card, a.cardView, a.cardNote = nil, nil, nil // a new window: the old one's widgets are gone
 	a.check.ConnectClicked(&s.onSettingsButton)
 	a.upgrade.ConnectClicked(&s.onSettingsButton)

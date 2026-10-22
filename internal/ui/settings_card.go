@@ -17,7 +17,6 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
-	"codeberg.org/puregotk/puregotk/v4/gsk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 	"github.com/makiuchi-d/gozxing"
@@ -35,8 +34,8 @@ import (
 // Settings → About's system manifest: the card shell.Card says, drawn as a
 // slip the ship prints of itself (the slip, a status stamp, a line to
 // share), in the theme's colours. One drawing makes the page's card and
-// the image: the page shows it at cardView's scale, drawn at the screen's
-// pixels (cardScale); Copy image and Save render it at twice its size.
+// the image: the page draws it at cardView's scale, Copy image and Save
+// render it at twice its size.
 
 // The card's size, as shared: 16:9, whole in a post.
 const cardW, cardH = 1200, 675
@@ -136,39 +135,13 @@ func (s *shellUI) showCard() {
 	if a.cardView == nil {
 		gtkx.Clear(&a.fetch)
 		a.cardView = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: func(w *gtk.Widget, sn *gtk.Snapshot) {
-			// An image drawn at the screen's own pixels, one to one: the
-			// card's small text drawn straight into the page loses the tops
-			// of its glyphs. Drawn again, out of the frame, when the scale
-			// changes.
-			want := cardScale(w)
-			if a.card != nil && math.Abs(want-a.cardTexScale) > 0.005 && !a.cardTexAsked {
-				a.cardTexAsked = true
-				gtkx.Post(func() {
-					a.cardTexAsked = false
-					if s.settings.win == nil || a.cardView == nil {
-						return
-					}
-					if tex := s.cardTexture(cardScale(a.cardView)); tex != nil {
-						s.dropCardTexture()
-						a.cardTex, a.cardTexScale = tex, cardScale(a.cardView)
-						a.cardView.QueueDraw()
-					}
-				})
-			}
-			if a.cardTex != nil {
-				r := cardRect(0, 0, float32(w.GetWidth()), float32(w.GetHeight()))
-				filter := gsk.ScalingFilterTrilinearValue
-				px := cardPixels(w)
-				if exact := float64(w.GetWidth()) * px / cardW; exact >= 1 && math.Abs(exact-a.cardTexScale) <= 0.005 {
-					// One to one: the image's pixels on the screen's, its
-					// corner moved onto one, unblurred. (Smaller, on a
-					// screen of fewer pixels, it is shown scaled down.)
-					x, y := cardOrigin(w)
-					r = cardRect(float32((math.Round(x*px)-x*px)/px), float32((math.Round(y*px)-y*px)/px),
-						float32(float64(a.cardTex.GetWidth())/px), float32(float64(a.cardTex.GetHeight())/px))
-					filter = gsk.ScalingFilterLinearValue
-				}
-				sn.AppendScaledTexture(a.cardTex, filter, r)
+			// Drawn straight into the page, as its own text is: an image of
+			// the card, even one to one, comes out blurred at a fractional
+			// scale. Its text is set at the size it shows at (cardPen.text).
+			if a.card != nil {
+				k := float32(w.GetWidth()) / cardW
+				sn.Scale(k, k)
+				drawCard(w, sn, a.card, a.cardCodes, a.cardColors, k)
 			}
 		}})
 		a.cardView.SetSizeRequest(int32(cardW*cardView), int32(cardH*cardView))
@@ -188,56 +161,7 @@ func (s *shellUI) showCard() {
 	} else if a.cardNote.GetText() == i18n.T("Reading…") {
 		a.cardNote.SetText("")
 	}
-	s.dropCardTexture() // a new reading: drawn again, at the next frame
-	a.cardView.QueueDraw()
-}
-
-// dropCardTexture lets the page's image of the card go.
-func (s *shellUI) dropCardTexture() {
-	a := &s.settings.about
-	if a.cardTex != nil {
-		a.cardTex.Unref()
-		a.cardTex = nil
-	}
-	a.cardTexScale = 0
-}
-
-// cardScale is the scale the card is drawn at for the page: the screen's
-// pixels across the view, by the card's; at least 1, below which its
-// small text loses the tops of its glyphs, and the image is shown smaller.
-func cardScale(view *gtk.Widget) float64 {
-	px := max(cardPixels(view), 1)
-	w := float64(view.GetWidth())
-	if w <= 0 {
-		w = cardW * cardView
-	}
-	return max(w*px/cardW, 1)
-}
-
-// cardPixels is the screen's pixels per point where view is; 0 before it
-// is on one.
-func cardPixels(view *gtk.Widget) float64 {
-	if n := view.GetNative(); n != nil {
-		if sf := n.GetSurface(); sf != nil {
-			return sf.GetScale()
-		}
-	}
-	return 0
-}
-
-// cardOrigin is where view's corner is on its window's surface, in points.
-func cardOrigin(view *gtk.Widget) (float64, float64) {
-	n := view.GetNative()
-	if n == nil {
-		return 0, 0
-	}
-	var at, out graphene.Point
-	if !view.ComputePoint(gtk.WidgetNewFromInternalPtr(n.GoPointer()), &at, &out) {
-		return 0, 0
-	}
-	var sx, sy float64
-	n.GetSurfaceTransform(&sx, &sy)
-	return float64(out.X) + sx, float64(out.Y) + sy
+	a.cardView.QueueDraw() // a new reading
 }
 
 // cardTexture draws the card at scale into an image; nil when the
@@ -253,7 +177,7 @@ func (s *shellUI) cardTexture(scale float64) *gdk.Texture {
 	}
 	sn := gtk.NewSnapshot()
 	sn.Scale(float32(scale), float32(scale))
-	drawCard(a.cardView, sn, a.card, a.cardCodes, a.cardColors)
+	drawCard(a.cardView, sn, a.card, a.cardCodes, a.cardColors, float32(scale))
 	node := sn.FreeToNode()
 	if node == nil {
 		return nil
@@ -389,6 +313,7 @@ type cardPen struct {
 	w      *gtk.Widget
 	s      *gtk.Snapshot
 	colors map[string]string
+	scale  float32 // what the snapshot is scaled by, for text
 }
 
 func (p cardPen) color(token string, alpha float32) gdk.RGBA {
@@ -426,11 +351,15 @@ const (
 )
 
 // text draws a run with its top at y, aligned on x; width > 0 wraps it.
-// It returns its size.
+// It returns its size. The run is set at the size it is drawn at, the
+// snapshot's scale undone: small text set at the card's size and scaled
+// down loses the tops of its glyphs.
 func (p cardPen) text(x, y float32, str string, f cardFont, token string, align int, width float32) (float32, float32) {
+	k := p.scale
+	px := f.px * float64(k)
 	l := p.w.CreatePangoLayout("")
 	desc := pango.FontDescriptionFromString(f.family)
-	desc.SetAbsoluteSize(f.px * float64(pango.SCALE))
+	desc.SetAbsoluteSize(px * float64(pango.SCALE))
 	if f.weight != 0 {
 		desc.SetWeight(f.weight)
 	}
@@ -438,30 +367,32 @@ func (p cardPen) text(x, y float32, str string, f cardFont, token string, align 
 	desc.Free()
 	if f.track != 0 {
 		// letter_spacing is in 1024ths of a point; a point is 4/3 pixels.
-		spacing := int(f.track * f.px * 0.75 * 1024)
+		spacing := int(f.track * px * 0.75 * 1024)
 		l.SetMarkup(fmt.Sprintf(`<span letter_spacing="%d">%s</span>`, spacing, html.EscapeString(str)), -1)
 	} else {
 		l.SetText(str, -1)
 	}
 	if width > 0 {
-		l.SetWidth(int32(width * float32(pango.SCALE)))
+		l.SetWidth(int32(width * k * float32(pango.SCALE)))
 		l.SetWrap(pango.WrapWordValue)
 	}
-	var lw, lh int32
-	l.GetPixelSize(&lw, &lh)
+	var pw, ph int32
+	l.GetPixelSize(&pw, &ph)
+	lw, lh := float32(pw)/k, float32(ph)/k
 	switch align {
 	case cardRight:
-		x -= float32(lw)
+		x -= lw
 	case cardCenter:
-		x -= float32(lw) / 2
+		x -= lw / 2
 	}
 	c := p.color(token, 1)
 	p.s.Save()
 	p.s.Translate(&graphene.Point{X: x, Y: y})
+	p.s.Scale(1/k, 1/k)
 	p.s.AppendLayout(l, &c)
 	p.s.Restore()
 	l.Unref()
-	return float32(lw), float32(lh)
+	return lw, lh
 }
 
 // hexRGBA is a theme colour, "#rrggbb"; grey when it is missing.
@@ -476,8 +407,8 @@ func hexRGBA(hex string) gdk.RGBA {
 
 // drawCard draws the manifest at 1200×675: the slip on the left, the
 // stamp over it, the line to share and the theme's colours on the right.
-func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, colors map[string]string) {
-	p := cardPen{w: w, s: s, colors: colors}
+func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, colors map[string]string, scale float32) {
+	p := cardPen{w: w, s: s, colors: colors, scale: scale}
 	// The ground: the bar's deeper dark in a dark theme, the window's own
 	// ground in a light one, where the bar stays dark and the text would
 	// not show on it.
@@ -696,7 +627,7 @@ func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, co
 
 // measure is a run's size, drawn nowhere.
 func measure(p cardPen, str string, f cardFont, width ...float32) (float32, float32) {
-	off := cardPen{w: p.w, s: gtk.NewSnapshot(), colors: p.colors}
+	off := cardPen{w: p.w, s: gtk.NewSnapshot(), colors: p.colors, scale: p.scale}
 	wid := float32(0)
 	if len(width) > 0 {
 		wid = width[0]
