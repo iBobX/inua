@@ -630,8 +630,6 @@ func (s *shellUI) ensureBannerWindow() {
 		layershell.SetKeyboardMode(w, layershell.KeyboardNone)
 		layershell.SetAnchor(w, layershell.EdgeTop, true)
 		layershell.SetAnchor(w, layershell.EdgeRight, true)
-		layershell.SetMargin(w, layershell.EdgeTop, 6) // below the bar's exclusive zone
-		layershell.SetMargin(w, layershell.EdgeRight, 6)
 	} else {
 		nt.bwin.SetTitle(i18n.T("inua notifications"))
 	}

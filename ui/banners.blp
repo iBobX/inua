@@ -1,5 +1,8 @@
 // Banners: new notifications, newest on top, in a layer surface at the top
-// right that is only as big as they are. Go adds each in a revealer.
+// right that is only as big as they are. Go adds each in a revealer. The
+// margins are the room for the cards' shadow (.note.banner), which the
+// window would cut at its edges; the top and right ones also set the
+// banners' place below the bar.
 using Gtk 4.0;
 
 ApplicationWindow banners {
@@ -9,5 +12,9 @@ ApplicationWindow banners {
     orientation: vertical;
     spacing: 8;
     width-request: 360;
+    margin-top: 6;
+    margin-end: 6;
+    margin-start: 24;
+    margin-bottom: 32;
   }
 }
