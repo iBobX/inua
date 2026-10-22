@@ -362,10 +362,11 @@ func (c *Ctx) followConfig() {
 
 // loadIcons draws the apps' own icons from the Phosphor set inua ships
 // (ui/icons), with the user's set over them when style.icons names one;
-// "system" still means Phosphor here. The apps write the set as an icon
-// theme of their own, which inherits Adwaita for any icon the set lacks:
-// inheriting the desktop's theme made every start read that theme's
-// chain, a quarter of a second for a large one such as Numix-Circle.
+// "system" and an installed theme still mean Phosphor here. The apps
+// write the set as an icon theme of their own, which inherits Adwaita for
+// any icon the set lacks: inheriting the desktop's theme made every start
+// read that theme's chain, a quarter of a second for a large one such as
+// Numix-Circle.
 // What shows the desktop's icons (Files' files and apps) looks them up in
 // DesktopIcons.
 func (c *Ctx) loadIcons() {
@@ -399,9 +400,13 @@ func (c *Ctx) loadIcons() {
 	c.iconTheme = name
 }
 
-// DesktopIcons is the desktop's icon theme: the XDG settings portal's,
-// else GTK's, else Adwaita.
+// DesktopIcons is the icon theme of apps and files: style.app_icons when
+// it names one, else the desktop's, the XDG settings portal's, else
+// GTK's, else Adwaita.
 func (c *Ctx) DesktopIcons() string {
+	if name := c.config().Style.AppIcons; name != "system" && name != "" {
+		return name
+	}
 	if c.desktop == "" {
 		c.desktop = cmp.Or(desktopIconTheme(), c.gtkIcons, "Adwaita")
 		if strings.HasPrefix(c.desktop, "inua-") {

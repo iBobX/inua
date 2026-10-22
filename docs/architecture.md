@@ -339,10 +339,15 @@ how errors are shown, is in [design/ui.md](../design/ui.md); in short:
 - Icons: Phosphor's regular icons (`ui/icons`, MIT), written as an icon
   theme for the shell's process that inherits the system's; app and tray
   icons stay the system's. inua's apps write one that inherits Adwaita,
-  set before they start (docs/performance.md). `style.icons = "system"` uses the system theme
-  throughout. A user's set, `icons/<name>/` beside `config.toml`, is
-  copied over the Phosphor icons into an icon theme of its own name
-  (`shell.IconTheme`), in the shell and in inua's apps.
+  set before they start (docs/performance.md). `style.icons = "system"`
+  uses the system theme in the shell, and an installed theme's name
+  (`config.IconThemes`) that theme; the apps keep Phosphor for both. A
+  user's set, `icons/<name>/` beside `config.toml`, is copied over the
+  Phosphor icons into an icon theme of its own name (`shell.IconTheme`),
+  in the shell and in inua's apps. `style.app_icons` naming an installed
+  theme takes app icons from it: in the shell from a `GtkIconTheme` of
+  its own (`appIcons`, apart from the shell's icons), in Files with the
+  files' icons (`DesktopIcons`); the tray's stay each app's.
 - Text size: `style.text_scale` (80 to 150 percent, the Appearance page's
   "Text size") multiplies the `font-size` pixel values of `ui/style.css` as
   it loads (`shell.ScaleText`), in the shell and in inua's apps; icons,

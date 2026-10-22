@@ -17,8 +17,13 @@ import (
 // ui/icons in an icon theme of inua's own, which inherits the system's,
 // so app icons (and any icon the set lacks) still come from it. A user's
 // set goes over the Phosphor icons in a theme named after it, so changing
-// sets changes the theme's name and GTK loads it afresh. The icon theme
-// in GtkSettings belongs to this process: other apps keep theirs.
+// sets changes the theme's name and GTK loads it afresh; an installed
+// theme is used as it is. The icon theme in GtkSettings belongs to this
+// process: other apps keep theirs.
+//
+// style.app_icons naming a theme gives app icons a GtkIconTheme of their
+// own (appIcons), whatever the shell's icons are: a theme inheriting it
+// could not keep the two apart, the first theme in the chain having both.
 
 // iconThemeName names inua's icon theme.
 const iconThemeName = "inua-phosphor"
@@ -27,6 +32,10 @@ type icons struct {
 	system string // the system's icon theme, read before inua set its own
 	dir    string // the directory holding inua's themes, once on the search path
 }
+
+// appIcons is the theme app icons come from when style.app_icons names
+// one, nil for the system's (the default theme's chain). Main thread only.
+var appIcons *gtk.IconTheme
 
 // loadIcons switches the icon theme to follow style.icons. GTK redraws
 // every icon on its own when the theme changes.
@@ -38,7 +47,9 @@ func (s *shellUI) loadIcons() {
 	}
 	want := ic.system
 	overlay := s.cfg.IconSetDir()
-	if s.cfg.Style.Icons != "system" {
+	if theme := s.cfg.IconThemeName(); theme != "" {
+		want = theme
+	} else if s.cfg.Style.Icons != "system" {
 		name := iconThemeName
 		if overlay != "" {
 			name = "inua-icons-" + s.cfg.Style.Icons
@@ -59,6 +70,27 @@ func (s *shellUI) loadIcons() {
 		setStringProperty(settings, "gtk-icon-theme-name", want)
 		log.Printf("icons: %s", want)
 	}
+	loadAppIcons(s.cfg.Style.AppIcons)
+}
+
+// loadAppIcons makes app icons follow style.app_icons.
+func loadAppIcons(name string) {
+	if name == "system" || name == "" {
+		if appIcons != nil {
+			appIcons.Unref()
+			appIcons = nil
+		}
+		return
+	}
+	if appIcons != nil {
+		if appIcons.GetThemeName() == name {
+			return
+		}
+		appIcons.Unref()
+	}
+	appIcons = gtk.NewIconTheme()
+	appIcons.SetThemeName(name)
+	log.Printf("icons: apps from %s", name)
 }
 
 // writeIconTheme writes an icon theme of the built-in icons, with the

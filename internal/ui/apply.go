@@ -174,6 +174,14 @@ func (s *shellUI) applyConfig(c config.Config) {
 	if old.Style != c.Style {
 		s.loadStyles()
 	}
+	if old.Style.AppIcons != c.Style.AppIcons {
+		for _, b := range s.bars {
+			if b.dock != nil {
+				b.dock.shown = "" // its buttons again, with the icons
+			}
+		}
+		s.renderDocks()
+	}
 	if old.Bar.EmptyTransparency != c.Bar.EmptyTransparency || old.Bar.WindowTransparency != c.Bar.WindowTransparency {
 		s.loadBarStyle()
 	}

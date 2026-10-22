@@ -263,7 +263,7 @@ ApplicationWindow settings {
 
                   Label {
                     styles ["section-meta"]
-                    label:  _("The bar, control center, launcher and settings");
+                    label:  _("The shell's own, and those of apps and files");
                     hexpand: true;
                     xalign: 0;
                     ellipsize: end;
@@ -290,7 +290,7 @@ ApplicationWindow settings {
                       }
                       Label {
                         styles ["sub"]
-                        label:  _("App icons always come from the system");
+                        label:  _("Built in, the system's, an installed theme or one of yours");
                         xalign: 0;
                         wrap: true;
                       }
@@ -303,6 +303,41 @@ ApplicationWindow settings {
                       model: StringList {
                         strings [
                           _("Phosphor"),
+                          _("System theme"),
+                        ]
+                      };
+                    }
+                  }
+
+                  // Go adds the installed icon themes.
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+
+                      Label {
+                        styles ["title"]
+                        label:  _("App icons");
+                        xalign: 0;
+                      }
+                      Label {
+                        styles ["sub"]
+                        label:  _("The dock, launcher, notifications and files");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown app_icons {
+                      name: "app_icons";
+                      valign: center;
+
+                      model: StringList {
+                        strings [
                           _("System theme"),
                         ]
                       };

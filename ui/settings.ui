@@ -358,7 +358,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <style>
                                           <class name="section-meta"/>
                                         </style>
-                                        <property name="label" translatable="yes">The bar, control center, launcher and settings</property>
+                                        <property name="label" translatable="yes">The shell's own, and those of apps and files</property>
                                         <property name="hexpand">true</property>
                                         <property name="xalign">0</property>
                                         <property name="ellipsize">3</property>
@@ -397,7 +397,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label" translatable="yes">App icons always come from the system</property>
+                                                <property name="label" translatable="yes">Built in, the system's, an installed theme or one of yours</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -412,6 +412,53 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                               <object class="GtkStringList">
                                                 <items>
                                                   <item translatable="yes">Phosphor</item>
+                                                  <item translatable="yes">System theme</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="title"/>
+                                                </style>
+                                                <property name="label" translatable="yes">App icons</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">The dock, launcher, notifications and files</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="app_icons">
+                                            <property name="name">app_icons</property>
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
                                                   <item translatable="yes">System theme</item>
                                                 </items>
                                               </object>

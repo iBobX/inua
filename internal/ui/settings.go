@@ -51,12 +51,13 @@ type settings struct {
 	dockPinned                                                                   gtk.Box
 	bgImage, bgColor, clock, terminal, lock, screenshot                          gtk.Entry
 	clipSensitive                                                                gtk.Entry
-	bgFit, ws, launchMode, swap, caps, icons, banner                             gtk.DropDown
+	bgFit, ws, launchMode, swap, caps, icons, appIcons, banner                   gtk.DropDown
 	clipLimit                                                                    gtk.DropDown
 	clipLimits                                                                   []int // clipLimit's choices
 	textScale                                                                    gtk.DropDown
 	textScales                                                                   []int    // textScale's choices
 	iconSets                                                                     []string // icons' choices
+	appIconSets                                                                  []string // appIcons' choices
 	tpSpeed, clipOpacity, barEmptyTransparency, barWindowTransparency            gtk.Scale
 	clipOpacityVal, clipStats, barEmptyTransparencyVal, barWindowTransparencyVal gtk.Label
 	clipClear, clipReveal                                                        gtk.Button
@@ -205,6 +206,8 @@ func (s *shellUI) bindSettingsHandlers() {
 			}
 		case "icons":
 			c.Style.Icons = pick(s.settings.iconSets, i, c.Style.Icons)
+		case "app_icons":
+			c.Style.AppIcons = pick(s.settings.appIconSets, i, c.Style.AppIcons)
 		case "text_scale":
 			if i >= 0 && i < len(s.settings.textScales) {
 				c.Style.TextScale = s.settings.textScales[i]
@@ -395,10 +398,11 @@ func (s *shellUI) openSettings() {
 	ui.Get("bar_window_transparency_val", &st.barWindowTransparencyVal)
 	ui.Get("launch_mode", &st.launchMode)
 	ui.Get("icons", &st.icons)
+	ui.Get("app_icons", &st.appIcons)
 	ui.Get("language", &st.language)
 	ui.Get("text_scale", &st.textScale)
 	st.textScales = nil // a new dropdown, without its choices
-	st.iconSets = nil
+	st.iconSets, st.appIconSets = nil, nil
 	ui.Get("lang_restart_row", &st.langRestartRow)
 	ui.Get("lang_restart", &st.langRestart)
 	ui.Get("banner", &st.banner)
@@ -477,7 +481,7 @@ func (s *shellUI) openSettings() {
 		st.entries[e.GoPointer()] = e
 		gtkx.ConnectChanged(e, &s.onSettingsEntry)
 	}
-	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.barDensity, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.textScale, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
+	for _, d := range []*gtk.DropDown{&st.bgFit, &st.ws, &st.barDensity, &st.launchMode, &st.swap, &st.caps, &st.icons, &st.appIcons, &st.textScale, &st.language, &st.banner, &st.dockSize, &st.dockPosition, &st.clipLimit} {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
@@ -706,19 +710,35 @@ func (s *shellUI) showSettings() {
 
 // showTextScale offers the usual text sizes, and the one in the file if it
 // is another.
-// showIconSets offers the built-in icon sets and the user's.
+// showIconSets offers the built-in icon sets, the user's and the
+// installed icon themes for the shell's icons, and the installed themes
+// for app icons.
 func (s *shellUI) showIconSets() {
 	st := &s.settings
 	sets := s.cfg.IconSetNames()
+	names := slices.Clone(sets)
+	names[0], names[1] = i18n.T("Phosphor"), i18n.T("System theme") // config.IconSets
+	apps, appNames := []string{"system"}, []string{i18n.T("System theme")}
+	for _, t := range config.IconThemes() {
+		if !slices.Contains(sets, t.Name) { // a set of the user's of its name wins
+			sets, names = append(sets, t.Name), append(names, t.Title)
+		}
+		apps, appNames = append(apps, t.Name), append(appNames, t.Title)
+	}
 	if !slices.Equal(sets, st.iconSets) {
-		names := slices.Clone(sets)
-		names[0], names[1] = i18n.T("Phosphor"), i18n.T("System theme") // config.IconSets
 		list := gtk.NewStringList(names)
 		st.icons.SetModel(list)
 		list.Unref()
 		st.iconSets = sets
 	}
+	if !slices.Equal(apps, st.appIconSets) {
+		list := gtk.NewStringList(appNames)
+		st.appIcons.SetModel(list)
+		list.Unref()
+		st.appIconSets = apps
+	}
 	st.icons.SetSelected(uint32(max(0, slices.Index(sets, s.cfg.Style.Icons))))
+	st.appIcons.SetSelected(uint32(max(0, slices.Index(apps, s.cfg.Style.AppIcons))))
 }
 
 func (s *shellUI) showTextScale() {

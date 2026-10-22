@@ -93,8 +93,26 @@ func (c Config) ThemeCSS(name string, builtin func(name string) string) string {
 }
 
 // IconSetDir is the folder of style.icons when it is a set of the user's,
-// "" for a built-in set.
-func (c Config) IconSetDir() string { return c.IconSetPath(c.Style.Icons) }
+// "" for a built-in set or an installed icon theme.
+func (c Config) IconSetDir() string {
+	path := c.IconSetPath(c.Style.Icons)
+	if path == "" {
+		return ""
+	}
+	if _, err := os.Stat(path); err != nil {
+		return ""
+	}
+	return path
+}
+
+// IconThemeName is the installed icon theme style.icons names, "" for a
+// set of inua's or of the user's.
+func (c Config) IconThemeName() string {
+	if slices.Contains(IconSets, c.Style.Icons) || c.IconSetDir() != "" {
+		return ""
+	}
+	return c.Style.Icons
+}
 
 // Installing themes and icon sets: the settings window copies a file or a
 // folder the user picks into the config directory.

@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gio"
+	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/convert"
@@ -392,6 +394,30 @@ func setIcon(img *gtk.Image, name string) {
 	if strings.HasPrefix(name, "/") {
 		img.SetFromFile(name)
 		return
+	}
+	if appIcons != nil {
+		// The chosen theme's file for it, which the image draws at its
+		// own size and scale; the largest, so that one drawn of a fixed
+		// size is only ever scaled down.
+		for _, n := range []string{name, strings.ToLower(name)} {
+			if n == "" || !appIcons.HasIcon(n) {
+				continue
+			}
+			p := appIcons.LookupIcon(n, nil, 256, 1, gtk.TextDirLtrValue, 0)
+			if p == nil {
+				continue
+			}
+			file := p.GetFile()
+			p.Unref()
+			if file == nil {
+				continue
+			}
+			icon := gio.NewFileIcon(file)
+			(&gobject.Object{Ptr: file.Ptr}).Unref() // GetFile gave a reference
+			img.SetFromGicon(icon)
+			icon.Unref()
+			return
+		}
 	}
 	theme := gtk.IconThemeGetForDisplay(gdk.DisplayGetDefault())
 	defer theme.Unref()

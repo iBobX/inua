@@ -132,9 +132,13 @@ type Style struct {
 	// CSS is a stylesheet loaded after the built-in style, relative to the
 	// config directory. Ignored if the file does not exist.
 	CSS string `toml:"css"`
-	// Icons is the icon set of the shell's own icons, one of IconSets or a
-	// set of the user's (IconSetNames).
+	// Icons is the icon set of the shell's own icons, one of IconSets, a
+	// set of the user's (IconSetNames) or an installed icon theme
+	// (IconThemes); a set of the user's wins over a theme of its name.
 	Icons string `toml:"icons"`
+	// AppIcons is where the icons of apps and files come from: "system",
+	// the system's icon theme, or an installed icon theme (IconThemes).
+	AppIcons string `toml:"app_icons"`
 	// EdgeGaps leaves a small gap between the screen edges and the bar and
 	// dock; off puts them flush against the edges.
 	EdgeGaps bool `toml:"edge_gaps"`
@@ -669,8 +673,8 @@ func (d Displays) WithoutMonitor(output string) []Monitor {
 var Fits = []string{"cover", "contain", "tile", "center"}
 
 // IconSets are the shell's icon sets: "phosphor", Phosphor's regular icons
-// (ui/icons), or "system", the system's icon theme. App icons always come
-// from the system's. Sets of the user's follow them (IconSetNames).
+// (ui/icons), or "system", the system's icon theme. Sets of the user's
+// follow them (IconSetNames); an installed icon theme can be named too.
 var IconSets = []string{"phosphor", "system"}
 
 // TextScales are the text sizes, in percent, the settings window offers.
@@ -705,7 +709,7 @@ func Default() Config {
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", EdgeGaps: true, TextScale: 100},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", AppIcons: "system", EdgeGaps: true, TextScale: 100},
 		Background: Background{Enable: true, Fit: "cover"},
 		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
@@ -829,7 +833,14 @@ func (c *Config) validate() []string {
 	})
 	oneOf("language", &c.Language, d.Language, Languages...)
 	oneOf("style.theme", &c.Style.Theme, d.Style.Theme, c.ThemeNames()...)
-	oneOf("style.icons", &c.Style.Icons, d.Style.Icons, c.IconSetNames()...)
+	if sets := c.IconSetNames(); !slices.Contains(sets, c.Style.Icons) && !IsIconTheme(c.Style.Icons) {
+		w = append(w, fmt.Sprintf("style.icons = %q: want %s or an installed icon theme; using %q", c.Style.Icons, strings.Join(sets, " or "), d.Style.Icons))
+		c.Style.Icons = d.Style.Icons
+	}
+	if c.Style.AppIcons != "system" && !IsIconTheme(c.Style.AppIcons) {
+		w = append(w, fmt.Sprintf("style.app_icons = %q: want \"system\" or an installed icon theme; using %q", c.Style.AppIcons, d.Style.AppIcons))
+		c.Style.AppIcons = d.Style.AppIcons
+	}
 	if c.Style.TextScale < 80 || c.Style.TextScale > 150 {
 		w = append(w, fmt.Sprintf("style.text_scale = %d: want 80 to 150; using %d", c.Style.TextScale, d.Style.TextScale))
 		c.Style.TextScale = d.Style.TextScale

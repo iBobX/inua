@@ -139,12 +139,17 @@ theme = "yoru"
 # Icons of the bar, control center, launcher and settings:
 #   "phosphor"  Phosphor's line icons, built in (the default)
 #   "system"    the system's icon theme
-# or a set of your own: a folder icons/NAME/ next to this file, with SVGs
-# named like the built-in ones (NAME-symbolic.svg); icons it lacks stay
-# Phosphor's (icons/phosphor-bold, from inua init, is one). Draw them in
-# one colour: it follows the theme.
-# App icons in the launcher and the tray always come from the system's.
+# or an installed icon theme, by its folder's name ("Papirus", in
+# /usr/share/icons or ~/.local/share/icons), or a set of your own: a folder
+# icons/NAME/ next to this file, with SVGs named like the built-in ones
+# (NAME-symbolic.svg); icons it lacks stay Phosphor's (icons/phosphor-bold,
+# from inua init, is one). Draw them in one colour: it follows the theme.
 icons = "phosphor"
+
+# Icons of apps (dock, launcher, drawer, notifications) and of files in
+# Files: "system", the system's icon theme (the default), or an installed
+# icon theme, by its folder's name. The tray's come from each app.
+app_icons = "system"
 
 # A small gap between the screen edges and the bar and dock. false puts
 # them flush against the edges.
