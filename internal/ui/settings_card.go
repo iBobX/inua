@@ -17,6 +17,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/graphene"
+	"codeberg.org/puregotk/puregotk/v4/gsk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 	"github.com/makiuchi-d/gozxing"
@@ -333,6 +334,22 @@ func (p cardPen) fill(token string, alpha, x, y, w, h float32) {
 	p.s.AppendColor(&c, cardRect(x, y, w, h))
 }
 
+// cardMark is inua's mark as a path, parsed the first time it is drawn.
+var cardMark *gsk.Path
+
+// mark draws inua's mark in a square of size at (x, y).
+func (p cardPen) mark(token string, x, y, size float32) {
+	if cardMark == nil {
+		cardMark = gsk.PathParse(shell.CardMark)
+	}
+	c := p.color(token, 1)
+	p.s.Save()
+	p.s.Translate(&graphene.Point{X: x, Y: y})
+	p.s.Scale(size/100, size/100)
+	p.s.AppendFill(cardMark, gsk.FillRuleEvenOddValue, &c)
+	p.s.Restore()
+}
+
 // line is a hairline across, at y.
 func (p cardPen) line(token string, x, y, w float32) { p.fill(token, 1, x, y, w, 1) }
 
@@ -450,8 +467,8 @@ func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, co
 
 	x0, x1 := float32(sx+30), float32(sx+sw-30)
 	y := float32(sy + 26)
-	p.fill("accent", 1, x0, y+5, 8, 8)
-	p.text(x0+18, y, i18n.T("INUA // SYSTEM MANIFEST"), cardFont{family: cardMono, px: 12.5, weight: pango.WeightSemiboldValue, track: 0.28}, "t0", cardLeft, 0)
+	p.mark("accent", x0, y-4, 24)
+	p.text(x0+34, y, i18n.T("INUA // SYSTEM MANIFEST"), cardFont{family: cardMono, px: 12.5, weight: pango.WeightSemiboldValue, track: 0.28}, "t0", cardLeft, 0)
 	y += 24
 	small := cardFont{family: cardMono, px: 11, track: 0.1}
 	p.text(x0, y, "NO. "+c.Serial, small, "t2", cardLeft, 0)

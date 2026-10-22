@@ -16,24 +16,7 @@ import (
 // its: inua's mark on the left, the card's facts on the right, a label and
 // a value a line, the theme's colours under them.
 
-// cardLogo is inua's mark (website/favicon.svg), the stroke cut out of
-// its rounded square, two pixels a cell.
-var cardLogo = []string{
-	"  ▄▄████████████████████▄▄  ",
-	" ██████████████████████████ ",
-	"███████████████████▀▀▀██████",
-	"███████████████████   ██████",
-	"███████▀      ▀████   ██████",
-	"██████    ▄▄   ▀███   ██████",
-	"██████   ███    ███   ██████",
-	"██████   ███    ███   ██████",
-	"██████   ███▄         ██████",
-	"██████   ████▄▄     ▄███████",
-	"██████   ███████████████████",
-	"██████▄▄████████████████████",
-	" ██████████████████████████ ",
-	"  ▀▀████████████████████▀▀  ",
-}
+// cardLogo, the mark, is in cardlogo.go, drawn by design/logo/build.py.
 
 // cardValueWidth is the most columns a value takes; a longer one is cut.
 const cardValueWidth = 48
@@ -199,13 +182,14 @@ func (c Card) Terminal(ink CardInk, ground bool) string {
 	for i := range max(len(cardLogo), len(info)) {
 		mark := strings.Repeat(" ", logoW)
 		if i < len(cardLogo) {
-			mark = paint("accent", cardLogo[i])
+			mark = cardLogo[i]
 		}
 		if i >= len(info) {
-			b.WriteString(strings.TrimRight(mark, " ") + "\n")
+			// below the facts, the mark's line ends where the mark does
+			b.WriteString(paint("accent", strings.TrimRight(mark, " ")) + "\n")
 			continue
 		}
-		b.WriteString(mark + "   " + info[i].text + "\n")
+		b.WriteString(paint("accent", mark) + "   " + info[i].text + "\n")
 	}
 	if groundEsc == "" {
 		return b.String()

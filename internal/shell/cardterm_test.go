@@ -33,7 +33,7 @@ func TestCardTerminal(t *testing.T) {
 	}
 	lines := strings.Split(strings.TrimSuffix(plain, "\n"), "\n")
 	for i, mark := range cardLogo {
-		if !strings.HasPrefix(lines[i], mark) {
+		if !strings.HasPrefix(lines[i], strings.TrimRight(mark, " ")) {
 			t.Errorf("line %d without the mark: %q", i, lines[i])
 		}
 	}
@@ -73,9 +73,14 @@ func TestCardTerminal(t *testing.T) {
 	if strings.Contains(coloured, "\x1b[48;2;238;242;248m") || !strings.Contains(coloured, "\x1b[48;2;17;34;51m   ") {
 		t.Error("the panel colour as ground, or no swatch")
 	}
+	// The same text, but for the swatches, only coloured: blank beside the
+	// mark once the colours are gone.
 	stripped := strings.Split(ansi.ReplaceAllString(coloured, ""), "\n")
-	if strings.Join(stripped[:len(lines)], "\n") != strings.Join(lines, "\n") {
-		t.Errorf("coloured differs from plain:\n%s", ansi.ReplaceAllString(coloured, ""))
+	for i := range lines {
+		if strings.TrimRight(stripped[i], " ") != strings.TrimRight(lines[i], " ") {
+			t.Errorf("coloured differs from plain at line %d:\n%s", i, ansi.ReplaceAllString(coloured, ""))
+			break
+		}
 	}
 }
 
