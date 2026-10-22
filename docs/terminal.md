@@ -14,6 +14,7 @@ inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
                                  take out the hooks an earlier inua-term added
+inua-term serve [--tailscale]    the terminals in a phone's browser (below)
 ```
 
 It is in the app drawer, under Tools. It can be the desktop's terminal:
@@ -57,6 +58,13 @@ it again finds them, their recent output replayed. The window is a client
 of the host over `$XDG_RUNTIME_DIR/inua/term.sock` (this user only); the
 host keeps the workspaces, sessions and layouts, so every window shows
 the same.
+
+A pane has one size, and the screen that looked at it last gives it:
+the window gives its tiles' sizes; a phone opening a pane (see *On a
+phone*) fits it to the phone, and leaving it, or going, gives the pane
+the size the window asked for again. A client attaching to a pane gets
+the host's snapshot of it at its size, rewrapped as the host's engine
+keeps it, or the pane's recent output as it came.
 
 The terminal engine is [libghostty-vt](https://github.com/ghostty-org/ghostty),
 Ghostty's terminal core, as a library: the screen, the scrollback, the
@@ -250,6 +258,50 @@ commands and what never to keep, and the keys by action (`""` frees one
 for the program). The theme, the colours and the shell take hold at
 once; the icons and the text size follow inua's `config.toml`.
 
+## On a phone
+
+`inua-term serve` shows the terminals in a browser, a phone's over
+Tailscale:
+
+```
+inua-term serve                  on this computer only (127.0.0.1:7681)
+inua-term serve --tailscale      on this computer's Tailscale address
+inua-term serve --addr HOST:PORT on another address
+inua-term serve --new-token      a new token: links with the old one stop working
+```
+
+It prints the page's link, with its token; every request carries it,
+and it is kept in the keyring (inua-keyring), so the link stays the
+same. The page is a client of the host, as the window is, and starts the
+host when none runs. Open the link on the phone, or add it to the home
+screen: it is a web app in the theme's colours.
+
+- **Agents**: every agent by its state (needs you, working, done, idle),
+  with where it runs; **Workspaces**: the workspaces, then a workspace's
+  sessions and their panes; **Overview**: this computer, the agents in
+  numbers, the connection, and the settings.
+- **A pane** fills the screen at the phone's size: columns at the text
+  size (10 px, about 62 columns on a phone held upright; pinch to change
+  it), rows to the keyboard. At its foot, the session's panes with a
+  back button, and a row of the keys a phone lacks (Esc, Tab, Ctrl, ^C,
+  Page Up and Down, the arrows, Shift+Enter, Shift+Tab). The keyboard
+  comes up with its button only; the button beside it opens a panel of
+  more keys in the keyboard's place (Ctrl and Alt combinations, Home,
+  End, symbols, F1–F12) and, in its Info tab, what the pane's connection
+  says.
+- Scrolling goes as a phone's lists do: the finger moves the history by
+  the pixel, a swipe glides on, and the ends stretch. A program on the
+  alternate screen (Claude Code's fullscreen mode, vim, less) scrolls
+  itself, and gets the wheel.
+- The theme, the terminals' colours, the font, the cursor and the key row
+  follow inua-term's settings, or the phone's own (Overview → Settings),
+  kept in its browser.
+
+The page asks nothing of the internet: xterm.js and the fonts come with
+inua (`scripts/term-web.sh`). Over plain `http://`, an iPhone adds it
+to the home screen as an app; Android installs one only over HTTPS
+(`tailscale serve` can give the address one).
+
 ## Not yet
 
 - Images in the terminal (the kitty graphics protocol, sixel).
@@ -257,4 +309,3 @@ once; the icons and the text size follow inua's `config.toml`.
   has it).
 - Reading the clipboard through OSC 52, allowed per workspace, and
   notifications turned off per workspace.
-- A client in the browser: nothing in the host stands in its way.
