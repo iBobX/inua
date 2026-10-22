@@ -1,6 +1,7 @@
 package mailui
 
 import (
+	"context"
 	"log"
 	"strconv"
 	"strings"
@@ -87,9 +88,10 @@ func (w *window) findPicture(x *acct) {
 }
 
 // face is a sender on a round mark: the photo of one of the user's own
-// accounts, else the domain's BIMI logo for a message proven to come from
-// it, else the logo of the service the address is at, on its colours,
-// else the name's initial in the tone of the address (mail.Face).
+// accounts, else, for a message proven to come from its domain, the
+// domain's BIMI logo or its site's icon, else the logo of the service the
+// address is at, on its colours, else the name's initial in the tone of
+// the address (mail.Face).
 type face struct {
 	box     gtk.Box
 	initial gtk.Label
@@ -119,7 +121,7 @@ func newFace(size int32) *face {
 }
 
 // setFace draws a on f; verified, a message from a proven to come from
-// its domain, may show the domain's BIMI logo.
+// its domain, may show the domain's BIMI logo or its site's icon.
 func (w *window) setFace(f *face, a mail.Address, verified bool) {
 	icon, tone := mail.Face(a)
 	if t := "tone-" + strconv.Itoa(tone); t != f.tone {
@@ -130,8 +132,15 @@ func (w *window) setFace(f *face, a mail.Address, verified bool) {
 		f.tone = t
 	}
 	photo := w.photoOf(a.Addr)
+	// A site's icon is made for a browser's tab, not a round face: drawn
+	// smaller, on white, where a photo or a BIMI logo fills the face.
+	site := false
 	if photo == nil && verified {
-		photo = w.bimiLogo(mail.Domain(a.Addr))
+		domain := mail.Domain(a.Addr)
+		if photo = w.bimiLogo(domain); photo == nil {
+			photo = w.siteIcon(domain)
+			site = photo != nil
+		}
 	}
 	if photo != nil {
 		icon = "" // a photo or the brand's own logo, not the drawn one
@@ -150,8 +159,18 @@ func (w *window) setFace(f *face, a mail.Address, verified bool) {
 		f.brand = brand
 	}
 	setClass(&f.box.Widget, "brand", brand != "")
-	setClass(&f.box.Widget, "photo", photo != nil)
+	setClass(&f.box.Widget, "photo", photo != nil && !site)
+	setClass(&f.box.Widget, "site", site)
 	switch {
+	case site:
+		f.logo.SetFromPaintable(photo)
+		// As much room each side, in whole pixels: half a pixel, at a
+		// fractional scale, drew it to one side.
+		px := f.size * 5 / 8
+		if (f.size-px)%2 != 0 {
+			px++
+		}
+		f.logo.SetPixelSize(px)
 	case photo != nil:
 		f.logo.SetFromPaintable(photo)
 		f.logo.SetPixelSize(f.size)
@@ -188,14 +207,28 @@ func (w *window) verified(it mail.Item) bool {
 }
 
 // bimiLogo is a domain's BIMI logo, nil while it is asked for or when
-// there is none; asked once a run, drawn at three times a face's size.
+// there is none.
 func (w *window) bimiLogo(domain string) *gdk.Texture {
-	if tex := w.bimi[domain]; tex != nil || domain == "" || w.bimiAsked[domain] {
+	return w.domainLogo(w.bimi, w.bimiAsked, domain, w.store.BrandLogo)
+}
+
+// siteIcon is the icon of a domain's site, nil while it is asked for or
+// when there is none: most senders have no BIMI logo.
+func (w *window) siteIcon(domain string) *gdk.Texture {
+	return w.domainLogo(w.site, w.siteAsked, domain, w.store.SiteIcon)
+}
+
+// domainLogo is a domain's logo from fetch, kept in have; nil while it is
+// asked for or when there is none. Asked once a run, drawn at three times
+// a face's size; the list and the reader are drawn again when it comes.
+func (w *window) domainLogo(have map[string]*gdk.Texture, asked map[string]bool, domain string,
+	fetch func(context.Context, string) (string, error)) *gdk.Texture {
+	if tex := have[domain]; tex != nil || domain == "" || asked[domain] {
 		return tex
 	}
-	w.bimiAsked[domain] = true
+	asked[domain] = true
 	go func() {
-		path, err := w.store.BrandLogo(w.ctx, domain)
+		path, err := fetch(w.ctx, domain)
 		if err != nil || path == "" {
 			return
 		}
@@ -204,7 +237,7 @@ func (w *window) bimiLogo(domain string) *gdk.Texture {
 			return
 		}
 		gtkx.Post(func() {
-			w.bimi[domain] = gdk.NewTextureForPixbuf(px)
+			have[domain] = gdk.NewTextureForPixbuf(px)
 			w.relist()
 			w.lastDrawn = ""
 			w.drawReader()

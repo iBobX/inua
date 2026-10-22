@@ -62,7 +62,14 @@ inua-mail --check FILE.eml    the phishing checks on a message
   found passing DMARC for the sender's domain, the logo that domain
   publishes for BIMI (`default._bimi.<domain>`, when its DMARC policy
   quarantines or rejects; kept a week in `~/.cache/inua/mail/bimi/`; its
-  VMC certificate is not checked); else the logo of the service the
+  VMC certificate is not checked), or, as most domains publish none, the
+  icon of its site (the sender's organisational domain: the icons its
+  home page names, the largest, else `/apple-touch-icon.png`, else
+  `/favicon.ico`; 32 pixels at least; kept a month in
+  `~/.cache/inua/mail/site/`, a site without one asked again after a
+  week; drawn smaller, on white, as it is made for a browser's tab; mail
+  indexed before the provider's DMARC result was kept has it read at a
+  sync); else the logo of the service the
   address is at, on the brand's own colours (GitHub, Google, Spotify… the
   logos Pass draws; not for a mailbox anyone can have, as gmail.com);
   else the initial, on a round mark in one of six tones of the theme, the

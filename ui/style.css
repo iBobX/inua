@@ -3712,6 +3712,9 @@ window.mail .mail-sender-mark.tone-4 { background: alpha(mix(@accent, @danger, 0
 window.mail .mail-sender-mark.tone-5 { background: alpha(mix(@ok, @warn, 0.5), 0.2); color: mix(@ok, @warn, 0.5); }
 window.mail .mail-sender-mark image { color: inherit; }
 window.mail .mail-sender-mark.photo { background: none; }
+/* A site's icon, made for a light browser tab: on white whatever the
+   theme, as a service's logo is on its brand's colour. */
+window.mail .mail-sender-mark.site { background: #ffffff; }
 window.mail .mail-message.folded .mail-sender-mark { font-size: 11px; }
 window.mail .mail-from { font-size: 14px; font-weight: 600; color: @t0; }
 window.mail .mail-from-addr { font-size: 12.5px; color: @t2; }

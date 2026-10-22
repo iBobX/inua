@@ -130,6 +130,8 @@ type window struct {
 	avatarAsked     map[string]bool
 	bimi            map[string]*gdk.Texture // domains' BIMI logos
 	bimiAsked       map[string]bool
+	site            map[string]*gdk.Texture // domains' sites' icons
+	siteAsked       map[string]bool
 	loadingOlder    bool                      // older mail is being fetched
 	settingsWin     *settingsWin              // the settings, while open
 	flipped         map[mail.Key]bool         // messages shown not as the settings say: text for formatted, or formatted for text
@@ -179,6 +181,7 @@ func openWindow(c *appui.Ctx) *window {
 		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
 		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{}, avatars: map[string]*gdk.Texture{}, avatarAsked: map[string]bool{},
 		bimi: map[string]*gdk.Texture{}, bimiAsked: map[string]bool{},
+		site: map[string]*gdk.Texture{}, siteAsked: map[string]bool{},
 		flipped: map[mail.Key]bool{}, picsOK: map[mail.Key]bool{}, blocks: map[mail.Key][]mail.Block{}, pics: map[string]*pic{}, webs: map[mail.Key]*webMsg{},
 		filterBtns: map[filter]*gtk.Button{},
 	}
