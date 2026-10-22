@@ -8,7 +8,9 @@
 //	inua call shell    state|close|restart|snapshot DIR|tray-menu N
 //
 // `shell restart` re-executes the binary in place (same PID and log), picking
-// up a rebuilt binary; bind it to a key in hyprland.conf.
+// up a rebuilt binary; bind it to a key in hyprland.conf. Started with the
+// standard error discarded, as by Hyprland, it logs to
+// $XDG_STATE_HOME/inua/shell.log.
 //
 // Settings are read from -config (default ~/.config/inua/config.toml; see
 // config/inua/config.toml in the repository) at start, and again on restart.
@@ -27,6 +29,7 @@ import (
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/logfile"
 	"github.com/lyricat/inua/internal/ui"
 )
 
@@ -40,6 +43,9 @@ func main() {
 	configPath := flag.String("config", config.DefaultPath(), "settings file (missing: defaults)")
 	flag.Parse()
 	log.SetFlags(log.Ltime | log.Lmicroseconds)
+	if logfile.Discarded() { // started by Hyprland: keep a crash's trace
+		logfile.To("shell.log")
+	}
 	desktop.ReapInherited()
 	// A broken settings file never keeps the shell from starting: problems
 	// are logged (and shown by `inua config check`) and defaults fill in.

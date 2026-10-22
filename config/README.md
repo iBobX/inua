@@ -181,6 +181,15 @@ References: [tuigreet options](https://manpages.ubuntu.com/manpages/stonking/man
 [greetd config](https://manpages.debian.org/testing/greetd/greetd.5.en.html),
 [Debian's default greetd config](https://sources.debian.org/src/greetd/0.10.3-4/config.toml/).
 
+## Logs
+
+Started by Hyprland, whose programs write their standard error to
+`/dev/null`, `inua-shell` writes its log, a crash's trace and GTK's warnings
+to `~/.local/state/inua/shell.log` (`$XDG_STATE_HOME`); the terminal's go to
+`term.log` and `term-host.log` there. A log over 1 MB is kept as `NAME.1`
+and begun again. Started from a terminal or with its standard error
+redirected, the shell writes there instead.
+
 ## Shortcuts
 
 The sample's shortcuts (`$mod` is Super in `hyprland.conf`):
