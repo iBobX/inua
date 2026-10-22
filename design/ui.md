@@ -147,6 +147,25 @@ A light app is one of these: a window of its own with an index and pages
 (Remote Desktop, Mobile Link, Clock, Stocks), or a single page with text
 tabs (GPG, Tailscale). They follow `docs/performance.md` for start-up.
 
+### Top bar panels
+
+What a top bar button opens (the notification center, the clipboard
+history, passwords, the control center, the agenda) is a card below the
+bar, over a full-screen backdrop that closes it on a click.
+
+- **A drop shadow.** Every such card casts `0 8px 28px` at 32% black
+  (`.center .card`), and a notification banner a lighter one. It is the
+  one place a shadow is allowed: a surface floating over windows, not a
+  control. Nothing may clip it: a `GtkScrolledWindow` around the card
+  does, and so do the edges of a window only as big as the card; scroll
+  inside the card, and give such a window margins as wide as the shadow.
+- **Full height slides in from the side.** A card that runs from the bar
+  to the screen's foot (the notification center, the clipboard history)
+  is in a `GtkRevealer` that slides in from the right edge when it opens
+  and back out however it closes (`revealMS`); the window goes once it is
+  out. The control center and the agenda, as tall as their content,
+  slide down from the bar the same way.
+
 ## Controls
 
 All controls are 34 px tall where they sit in a row, framed by a 1 px
