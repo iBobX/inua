@@ -3212,6 +3212,7 @@ msgstr "컴퓨터"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
+#: internal/shell/cardterm.go:130
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "모델"
@@ -3240,6 +3241,7 @@ msgid "System"
 msgstr "시스템"
 
 #: internal/appui/sysmon.go:969
+#: internal/shell/cardterm.go:153
 msgid "Kernel"
 msgstr "커널"
 
@@ -11449,59 +11451,62 @@ msgstr "%s의 연결을 허용할까요?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "코드 없이 페어링하거나 이 컴퓨터를 사용하려고 합니다."
 
-#: internal/shell/card.go:79
+#: internal/shell/card.go:80
 #: ui/settings.ui:5074
 #: ui/settings.ui:5355
 msgid "This computer"
 msgstr "이 컴퓨터"
 
-#: internal/shell/card.go:98
+#: internal/shell/card.go:99
 msgid "%s package"
 msgid_plural "%s packages"
 msgstr[0] "%s개 패키지"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "DISK %d%%"
 msgstr "디스크 %d%%"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "The disk is nearly full."
 msgstr "디스크가 거의 가득 찼습니다."
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "MEMORY %d%%"
 msgstr "메모리 %d%%"
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "Memory is running short."
 msgstr "메모리가 부족합니다."
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "BATTERY %.0f%%"
 msgstr "배터리 %.0f%%"
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "The battery is running low."
 msgstr "배터리가 부족합니다."
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "NOMINAL"
 msgstr "정상"
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "All systems nominal."
 msgstr "모든 시스템 정상."
 
-#: internal/shell/card.go:179
+#: internal/shell/card.go:180
+#: internal/shell/cardterm.go:146
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "메모리"
 
-#: internal/shell/card.go:182
+#: internal/shell/card.go:183
+#: internal/shell/cardterm.go:147
 msgid "Disk"
 msgstr "디스크"
 
-#: internal/shell/card.go:192
+#: internal/shell/card.go:193
+#: internal/shell/cardterm.go:157
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11509,13 +11514,30 @@ msgstr "디스크"
 msgid "Screen"
 msgstr "화면"
 
-#: internal/shell/card.go:194
+#: internal/shell/card.go:195
+#: internal/shell/cardterm.go:159
 msgid "Theme"
 msgstr "테마"
 
-#: internal/shell/card.go:195
+#: internal/shell/card.go:196
+#: internal/shell/cardterm.go:160
 msgid "Uptime"
 msgstr "가동 시간"
+
+#: internal/shell/cardterm.go:112
+#: internal/ui/settings_card.go:454
+msgid "INUA // SYSTEM MANIFEST"
+msgstr "INUA // 시스템 매니페스트"
+
+#: internal/shell/cardterm.go:133
+#: internal/ui/settings_card.go:492
+msgid "%d thr"
+msgstr "%d 스레드"
+
+#: internal/shell/cardterm.go:153
+#: internal/ui/settings.go:524
+msgid "Desktop"
+msgstr "데스크톱"
 
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
@@ -13323,10 +13345,6 @@ msgstr "다시 시작하지 못함: %s"
 msgid "Connections"
 msgstr "연결"
 
-#: internal/ui/settings.go:524
-msgid "Desktop"
-msgstr "데스크톱"
-
 #: internal/ui/settings.go:720
 #: ui/settings.ui:414
 msgid "Phosphor"
@@ -13850,10 +13868,6 @@ msgstr "카드 저장"
 msgid "Saved as %s"
 msgstr "%s(으)로 저장했습니다"
 
-#: internal/ui/settings_card.go:454
-msgid "INUA // SYSTEM MANIFEST"
-msgstr "INUA // 시스템 매니페스트"
-
 #: internal/ui/settings_card.go:485
 msgid "[UNIT]"
 msgstr "[본체]"
@@ -13861,10 +13875,6 @@ msgstr "[본체]"
 #: internal/ui/settings_card.go:488
 msgid "[SILICON]"
 msgstr "[실리콘]"
-
-#: internal/ui/settings_card.go:492
-msgid "%d thr"
-msgstr "%d 스레드"
 
 #: internal/ui/settings_card.go:511
 msgid "[STACK]"

@@ -3212,6 +3212,7 @@ msgstr "コンピュータ"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
+#: internal/shell/cardterm.go:130
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "モデル"
@@ -3240,6 +3241,7 @@ msgid "System"
 msgstr "システム"
 
 #: internal/appui/sysmon.go:969
+#: internal/shell/cardterm.go:153
 msgid "Kernel"
 msgstr "カーネル"
 
@@ -11449,59 +11451,62 @@ msgstr "%s の接続を許可しますか?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "コードなしでペアリング、またはこのコンピュータの使用を求めています。"
 
-#: internal/shell/card.go:79
+#: internal/shell/card.go:80
 #: ui/settings.ui:5074
 #: ui/settings.ui:5355
 msgid "This computer"
 msgstr "このコンピュータ"
 
-#: internal/shell/card.go:98
+#: internal/shell/card.go:99
 msgid "%s package"
 msgid_plural "%s packages"
 msgstr[0] "%s パッケージ"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "DISK %d%%"
 msgstr "ディスク %d%%"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "The disk is nearly full."
 msgstr "ディスクがほぼいっぱいです。"
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "MEMORY %d%%"
 msgstr "メモリ %d%%"
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "Memory is running short."
 msgstr "メモリが不足しています。"
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "BATTERY %.0f%%"
 msgstr "バッテリー %.0f%%"
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "The battery is running low."
 msgstr "バッテリー残量が少なくなっています。"
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "NOMINAL"
 msgstr "正常"
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "All systems nominal."
 msgstr "全システム正常。"
 
-#: internal/shell/card.go:179
+#: internal/shell/card.go:180
+#: internal/shell/cardterm.go:146
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "メモリ"
 
-#: internal/shell/card.go:182
+#: internal/shell/card.go:183
+#: internal/shell/cardterm.go:147
 msgid "Disk"
 msgstr "ディスク"
 
-#: internal/shell/card.go:192
+#: internal/shell/card.go:193
+#: internal/shell/cardterm.go:157
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11509,13 +11514,30 @@ msgstr "ディスク"
 msgid "Screen"
 msgstr "スクリーン"
 
-#: internal/shell/card.go:194
+#: internal/shell/card.go:195
+#: internal/shell/cardterm.go:159
 msgid "Theme"
 msgstr "テーマ"
 
-#: internal/shell/card.go:195
+#: internal/shell/card.go:196
+#: internal/shell/cardterm.go:160
 msgid "Uptime"
 msgstr "稼働時間"
+
+#: internal/shell/cardterm.go:112
+#: internal/ui/settings_card.go:454
+msgid "INUA // SYSTEM MANIFEST"
+msgstr "INUA // システム・マニフェスト"
+
+#: internal/shell/cardterm.go:133
+#: internal/ui/settings_card.go:492
+msgid "%d thr"
+msgstr "%d スレッド"
+
+#: internal/shell/cardterm.go:153
+#: internal/ui/settings.go:524
+msgid "Desktop"
+msgstr "デスクトップ"
 
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
@@ -13323,10 +13345,6 @@ msgstr "再起動できませんでした: %s"
 msgid "Connections"
 msgstr "接続"
 
-#: internal/ui/settings.go:524
-msgid "Desktop"
-msgstr "デスクトップ"
-
 #: internal/ui/settings.go:720
 #: ui/settings.ui:414
 msgid "Phosphor"
@@ -13850,10 +13868,6 @@ msgstr "カードを保存"
 msgid "Saved as %s"
 msgstr "%s として保存しました"
 
-#: internal/ui/settings_card.go:454
-msgid "INUA // SYSTEM MANIFEST"
-msgstr "INUA // システム・マニフェスト"
-
 #: internal/ui/settings_card.go:485
 msgid "[UNIT]"
 msgstr "[本体]"
@@ -13861,10 +13875,6 @@ msgstr "[本体]"
 #: internal/ui/settings_card.go:488
 msgid "[SILICON]"
 msgstr "[シリコン]"
-
-#: internal/ui/settings_card.go:492
-msgid "%d thr"
-msgstr "%d スレッド"
 
 #: internal/ui/settings_card.go:511
 msgid "[STACK]"

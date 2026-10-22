@@ -132,6 +132,14 @@ it: no user or host name, no paths. It is read from `/proc`, `/sys` and
 clipboard as a PNG (2400×1350), *Copy text* as Markdown, *Save…* writes
 the PNG to a file.
 
+`inua fetch` prints the same card in a terminal, as neofetch and its kind
+do: inua's mark on the left, the facts on the right, the theme's colours
+under them. The mark, the labels and the stamp take the theme's accent and
+the values the terminal's own colour, so it reads on a dark terminal or a
+light one; `-ground` puts it on the theme's own ground, as on the page,
+and `-theme NAME` takes another theme's colours. `-markdown` prints what
+*Copy text* copies, `-json` the card's fields.
+
 Default Apps chooses what opens links (the web browser), mailto: links,
 folders (the file manager), audio, video, pictures, PDFs and plain text,
 from the installed apps that open them, inua's own among them; the

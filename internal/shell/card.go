@@ -35,8 +35,9 @@ type Card struct {
 }
 
 // CardLayer is one layer of the software: its name and version; Note is
-// what it adds ("2,390 packages").
-type CardLayer struct{ Name, Version, Note string }
+// what it adds ("2,390 packages"). Kind is which layer it is: "kernel",
+// "os", "wm" or "inua".
+type CardLayer struct{ Name, Version, Note, Kind string }
 
 // CardScreen is a display: its size, its rate and scale.
 type CardScreen struct {
@@ -86,7 +87,7 @@ func NewCard(s system.SysInfo, wm, inua string, screens []CardScreen, bat system
 	}
 	if s.Kernel != "" {
 		k, _, _ := strings.Cut(s.Kernel, "-") // "6.8.0" of "6.8.0-138-generic"
-		c.Stack = append(c.Stack, CardLayer{Name: "Linux", Version: k})
+		c.Stack = append(c.Stack, CardLayer{Name: "Linux", Version: k, Kind: "kernel"})
 	}
 	if s.OS != "" {
 		pkgs := 0
@@ -97,14 +98,14 @@ func NewCard(s system.SysInfo, wm, inua string, screens []CardScreen, bat system
 		if pkgs > 0 {
 			note = i18n.Nf("%s package", "%s packages", pkgs, groupDigits(pkgs))
 		}
-		c.Stack = append(c.Stack, CardLayer{Name: s.OS, Note: note})
+		c.Stack = append(c.Stack, CardLayer{Name: s.OS, Note: note, Kind: "os"})
 	}
 	if name, version, ok := strings.Cut(wm, " "); ok {
-		c.Stack = append(c.Stack, CardLayer{Name: name, Version: version})
+		c.Stack = append(c.Stack, CardLayer{Name: name, Version: version, Kind: "wm"})
 	} else if wm != "" {
-		c.Stack = append(c.Stack, CardLayer{Name: wm})
+		c.Stack = append(c.Stack, CardLayer{Name: wm, Kind: "wm"})
 	}
-	c.Stack = append(c.Stack, CardLayer{Name: "inua", Version: inua})
+	c.Stack = append(c.Stack, CardLayer{Name: "inua", Version: inua, Kind: "inua"})
 	c.Serial = CardSerial(inua, s.Model+"|"+s.CPU)
 	c.Status = CardState(s.Memory, s.Disk, bat)
 	return c

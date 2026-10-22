@@ -174,7 +174,7 @@ the login session. What ends up where:
 | | Installed to | |
 | --- | --- | --- |
 | `inua-shell` | `~/.local/bin` | The shell |
-| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check`, `inua upgrade` |
+| `inua` | `~/.local/bin` | The command line: `inua call …`, `inua init`, `inua config check`, `inua upgrade`, `inua fetch` |
 | `inua-apps` | `~/.local/bin` | The light apps (`inua-apps clock`) |
 | `inua-games` | `~/.local/bin` | The light games (`inua-games minesweeper`) |
 | `inua-pinentry` | `~/.local/bin` | gpg's passphrase prompt, asking in inua's dialog |

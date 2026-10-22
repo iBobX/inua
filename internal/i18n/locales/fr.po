@@ -3231,6 +3231,7 @@ msgstr "ORDINATEUR"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
+#: internal/shell/cardterm.go:130
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "Modèle"
@@ -3259,6 +3260,7 @@ msgid "System"
 msgstr "Système"
 
 #: internal/appui/sysmon.go:969
+#: internal/shell/cardterm.go:153
 msgid "Kernel"
 msgstr "Noyau"
 
@@ -11514,60 +11516,63 @@ msgstr "Laisser %s se connecter ?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "Il demande à s’associer ou à utiliser cet ordinateur sans code."
 
-#: internal/shell/card.go:79
+#: internal/shell/card.go:80
 #: ui/settings.ui:5074
 #: ui/settings.ui:5355
 msgid "This computer"
 msgstr "Cet ordinateur"
 
-#: internal/shell/card.go:98
+#: internal/shell/card.go:99
 msgid "%s package"
 msgid_plural "%s packages"
 msgstr[0] "%s paquet"
 msgstr[1] "%s paquets"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "DISK %d%%"
 msgstr "DISQUE %d%%"
 
-#: internal/shell/card.go:136
+#: internal/shell/card.go:137
 msgid "The disk is nearly full."
 msgstr "Le disque est presque plein."
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "MEMORY %d%%"
 msgstr "MÉMOIRE %d%%"
 
-#: internal/shell/card.go:138
+#: internal/shell/card.go:139
 msgid "Memory is running short."
 msgstr "La mémoire vient à manquer."
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "BATTERY %.0f%%"
 msgstr "BATTERIE %.0f%%"
 
-#: internal/shell/card.go:140
+#: internal/shell/card.go:141
 msgid "The battery is running low."
 msgstr "La batterie est faible."
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "NOMINAL"
 msgstr "NOMINAL"
 
-#: internal/shell/card.go:142
+#: internal/shell/card.go:143
 msgid "All systems nominal."
 msgstr "Tous les systèmes sont nominaux."
 
-#: internal/shell/card.go:179
+#: internal/shell/card.go:180
+#: internal/shell/cardterm.go:146
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "Mémoire"
 
-#: internal/shell/card.go:182
+#: internal/shell/card.go:183
+#: internal/shell/cardterm.go:147
 msgid "Disk"
 msgstr "Disque"
 
-#: internal/shell/card.go:192
+#: internal/shell/card.go:193
+#: internal/shell/cardterm.go:157
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11575,13 +11580,30 @@ msgstr "Disque"
 msgid "Screen"
 msgstr "Écran"
 
-#: internal/shell/card.go:194
+#: internal/shell/card.go:195
+#: internal/shell/cardterm.go:159
 msgid "Theme"
 msgstr "Thème"
 
-#: internal/shell/card.go:195
+#: internal/shell/card.go:196
+#: internal/shell/cardterm.go:160
 msgid "Uptime"
 msgstr "Allumé depuis"
+
+#: internal/shell/cardterm.go:112
+#: internal/ui/settings_card.go:454
+msgid "INUA // SYSTEM MANIFEST"
+msgstr "INUA // MANIFESTE SYSTÈME"
+
+#: internal/shell/cardterm.go:133
+#: internal/ui/settings_card.go:492
+msgid "%d thr"
+msgstr "%d threads"
+
+#: internal/shell/cardterm.go:153
+#: internal/ui/settings.go:524
+msgid "Desktop"
+msgstr "Bureau"
 
 #: internal/shell/commands.go:27
 msgid "Lock Screen"
@@ -13405,10 +13427,6 @@ msgstr "Non redémarré : %s"
 msgid "Connections"
 msgstr "Connexions"
 
-#: internal/ui/settings.go:524
-msgid "Desktop"
-msgstr "Bureau"
-
 #: internal/ui/settings.go:720
 #: ui/settings.ui:414
 msgid "Phosphor"
@@ -13934,10 +13952,6 @@ msgstr "Enregistrer la carte"
 msgid "Saved as %s"
 msgstr "Enregistré sous %s"
 
-#: internal/ui/settings_card.go:454
-msgid "INUA // SYSTEM MANIFEST"
-msgstr "INUA // MANIFESTE SYSTÈME"
-
 #: internal/ui/settings_card.go:485
 msgid "[UNIT]"
 msgstr "[UNITÉ]"
@@ -13945,10 +13959,6 @@ msgstr "[UNITÉ]"
 #: internal/ui/settings_card.go:488
 msgid "[SILICON]"
 msgstr "[SILICIUM]"
-
-#: internal/ui/settings_card.go:492
-msgid "%d thr"
-msgstr "%d threads"
 
 #: internal/ui/settings_card.go:511
 msgid "[STACK]"

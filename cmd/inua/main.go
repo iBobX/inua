@@ -13,6 +13,7 @@
 //	inua mcp                                         inua as an MCP server on stdio, for an AI agent
 //	inua upgrade [-check] [-force] [-version vX.Y.Z] install the latest release
 //	inua terminal [command [args...]]               open the default terminal, running command
+//	inua fetch [-theme NAME] [-ground] [-markdown | -json] [-no-color]  this computer's card, as Settings → About shows it
 //
 // The instance name defaults to $INUA_INSTANCE, else "default".
 package main
@@ -77,6 +78,8 @@ func main() {
 		err = cmdUpgrade(os.Args[2:])
 	case "terminal":
 		err = cmdTerminal(os.Args[2:])
+	case "fetch":
+		err = cmdFetch(os.Args[2:])
 	case "version", "--version", "-v":
 		fmt.Println("inua", version)
 	default:
@@ -105,6 +108,7 @@ func usage() {
   inua upgrade [-check] [-force] [-version vX.Y.Z]
   inua clipboard capture [history-path]
   inua terminal [command [args...]]
+  inua fetch [-theme NAME] [-ground] [-markdown | -json] [-no-color]
   inua version`)
 	os.Exit(2)
 }
