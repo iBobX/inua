@@ -93,9 +93,6 @@ func TestKeyring(t *testing.T) {
 	if v, _ := k.Get("job"); v != "" {
 		t.Errorf("removed: %q", v)
 	}
-	if w := k.Where(); w != "the keyring, in pass (inua-keyring)" {
-		t.Errorf("where: %q", w)
-	}
 	if token, err := k.ServeToken(false); err != nil || token != "" {
 		t.Fatalf("missing endpoint token: %v", err)
 	}

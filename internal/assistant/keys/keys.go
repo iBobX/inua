@@ -139,22 +139,6 @@ func (k *Keys) migrate(c *keyring.Client) error {
 	return nil
 }
 
-// Where says where keys go, for the settings page.
-func (k *Keys) Where() string {
-	c, done, err := k.service()
-	switch {
-	case err != nil:
-		return "the keyring (" + err.Error() + ")"
-	case c == nil:
-		return strings.Replace(k.file, os.Getenv("HOME"), "~", 1) + ", readable only by you"
-	}
-	defer done()
-	if c.Ours() {
-		return "the keyring, in pass (inua-keyring)"
-	}
-	return "the keyring (Secret Service)"
-}
-
 // Saved lists the profiles with a saved key, with when it was saved, by
 // profile. Nothing is decrypted: no passphrase is asked.
 func (k *Keys) Saved() (map[string]uint64, error) {

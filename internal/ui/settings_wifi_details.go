@@ -94,7 +94,9 @@ func (s *shellUI) fillWifiDetails(current *system.WifiNetwork) {
 		if i > 0 {
 			gtkx.Append(d.rows, &gtk.NewSeparator(gtk.OrientationHorizontalValue).Widget)
 		}
-		gtkx.Append(d.rows, &detailRow(r[0], r[1]).Widget)
+		row := detailRow(r[0], r[1])
+		row.AddCssClass("compact") // a dialog's rows, closer than the page's
+		gtkx.Append(d.rows, &row.Widget)
 	}
 }
 

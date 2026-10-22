@@ -33,7 +33,6 @@ type aiSettings struct {
 	profile, decision             gtk.DropDown
 	route                         gtk.Label
 	list                          gtk.Box
-	keysNote                      gtk.Label
 	cards                         []*aiCard
 	detail                        gtk.Revealer // the panel beside the page: the open profile's settings
 	panel                         sidePanel
@@ -117,7 +116,6 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	var closeDetail gtk.Button
 	ui.Get("ai_detail_close", &closeDetail)
 	closeDetail.ConnectClicked(&s.onSettingsButton)
-	ui.Get("ai_keys_note", &a.keysNote)
 	ui.Get("ai_serve_listen", &a.listen)
 	ui.Get("ai_serve_enable", &a.serve)
 	a.serve.ConnectStateSet(&s.onSettingsSwitch)
@@ -153,7 +151,6 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	if a.keys == nil {
 		a.keys = keys.New()
 	}
-	a.keysNote.SetText(i18n.Tf("Keys typed here are kept in %s", a.keys.Where()))
 	a.refreshSaved()
 }
 

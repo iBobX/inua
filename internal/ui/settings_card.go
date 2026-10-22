@@ -578,16 +578,12 @@ func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, co
 	}
 	y += 8
 	section(i18n.T("[STACK]"))
-	for i, l := range c.Stack {
-		token := "t0"
-		if i == len(c.Stack)-1 {
-			token = "accent" // inua, on top
-		}
+	for _, l := range c.Stack {
 		name := l.Name
 		if l.Note != "" {
 			name += " · " + l.Note
 		}
-		pair(name, l.Version, token, token)
+		pair(name, l.Version, "t0", "t0")
 	}
 	if len(c.Screens) > 0 {
 		y += 8
@@ -600,9 +596,8 @@ func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, co
 	y += 4
 	p.line("line", x0, y, x1-x0)
 	y += 8
-	p.text(x0, y+4, i18n.T("UPTIME"), cardFont{family: cardMono, px: 12.5, weight: pango.WeightSemiboldValue, track: 0.2}, "t0", cardLeft, 0)
-	p.text(x1, y, c.Uptime, cardFont{family: cardMono, px: 20, weight: pango.WeightSemiboldValue}, "t0", cardRight, 0)
-	y += 30
+	pair(i18n.T("UPTIME"), c.Uptime, "t2", "t0")
+	y += 2
 	p.line("line", x0, y, x1-x0)
 
 	// The codes, on a label stuck at the slip's foot, an asset tag: dark on
