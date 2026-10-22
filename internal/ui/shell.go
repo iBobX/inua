@@ -463,7 +463,10 @@ func (s *shellUI) restartClock() {
 }
 
 func (s *shellUI) bindHandlers() {
-	s.onMonitorsChanged = func(uintptr, uint32, uint32, uint32, uintptr) { s.syncBars() }
+	s.onMonitorsChanged = func(_ uintptr, _, removed, added uint32, _ uintptr) {
+		log.Printf("monitors: %d removed, %d added", removed, added)
+		s.syncBars()
+	}
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		if b := s.barOf(c.GetWidget()); b != nil {
 			end, _ := b.endReach(x, y)

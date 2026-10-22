@@ -84,6 +84,7 @@ func (s *shellUI) syncBars() {
 			// Before 1.2 there is no ::monitor to cover a monitor that
 			// came while locked; without this it has no password field.
 			if !l.ending && !layershell.AtLeast(1, 2) && !l.covers(mon) {
+				log.Printf("lock: a monitor came while locked")
 				s.buildLockSurface(mon)
 			} else {
 				mon.Unref()
@@ -96,7 +97,7 @@ func (s *shellUI) syncBars() {
 	}
 	for key, b := range s.bars {
 		if !seen[key] {
-			log.Printf("bar: removed %q", b.connector())
+			log.Printf("bar: removed %q (locked: %v)", b.connector(), s.lock.held())
 			s.dropBar(b)
 		}
 	}

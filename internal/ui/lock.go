@@ -102,6 +102,7 @@ func (s *shellUI) lockScreen() error {
 	s.closePasswords()
 	l := &s.lock
 	if l.ending { // the last lock is still being let go
+		log.Printf("lock: asked while the last lock ends; locking after it")
 		l.relock = true
 		return nil
 	}
@@ -133,6 +134,7 @@ func (s *shellUI) lockScreen() error {
 	s.markLocked(true)
 	go lockKeyring()
 	l.locking, l.failures, l.notBefore = true, 0, time.Time{}
+	log.Printf("lock: locking")
 	if !layershell.Lock(l.inst) {
 		// ::failed has already run, or will.
 		return errors.New(i18n.T("could not take the session lock"))
@@ -167,6 +169,7 @@ func lockKeyring() {
 // unlock`, which only the user's own processes can reach.
 func (s *shellUI) unlockScreen() {
 	if s.lock.inst != 0 && (s.lock.locked || s.lock.locking) {
+		log.Printf("lock: unlocking without a password (inua call)")
 		layershell.Unlock(s.lock.inst)
 	}
 }
@@ -186,6 +189,7 @@ func (l *locker) forget(gone func(*gdk.Monitor) bool) {
 		if !gone(sf.mon) {
 			return false
 		}
+		log.Printf("lock: lock screen on %q dropped", sf.mon.GetConnector())
 		sf.mon.Unref()
 		return true
 	})
@@ -194,6 +198,7 @@ func (l *locker) forget(gone func(*gdk.Monitor) bool) {
 func (s *shellUI) lockEnded() {
 	l := &s.lock
 	relock := l.relock
+	log.Printf("lock: ended; %d lock screens let go", len(l.surfaces))
 	l.locking, l.locked, l.checking, l.ending, l.relock = false, false, false, false, false
 	l.forget(func(*gdk.Monitor) bool { return true })
 	l.refs.Release()
@@ -289,6 +294,7 @@ func (s *shellUI) tryUnlock(password string) {
 			}
 			switch {
 			case err == nil:
+				log.Printf("lock: password accepted")
 				l.failures = 0
 				layershell.Unlock(l.inst)
 				return
