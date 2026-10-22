@@ -266,6 +266,9 @@ Phosphor's regular icons (MIT), copied by `scripts/phosphor-icons.sh` into
 only when Phosphor has nothing fitting. Files and other apps' icons come
 from the desktop's icon theme; everything else from the Phosphor set.
 
+The inua logo, its app icons and the favicons are in `design/logo/`,
+drawn by `design/logo/build.py`; see `design/logo/README.md`.
+
 ## Words
 
 All text the user reads is translatable (`docs/i18n.md`). Plain words:
