@@ -1,0 +1,1260 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="inua-term">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<title>inua-term</title>
+<link rel="stylesheet" href="/vendor/xterm.css">
+<style>
+  /* inua's fonts, the Latin subsets (scripts/term-web.sh); a font the
+     phone has comes first. */
+  @font-face { font-family:"Geist Mono"; font-weight:400; src:local("Geist Mono"), url(/vendor/geist-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"Geist Mono"; font-weight:600; src:local("Geist Mono SemiBold"), url(/vendor/geist-mono-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family:"IBM Plex Sans"; font-weight:400; src:local("IBM Plex Sans"), url(/vendor/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"IBM Plex Sans"; font-weight:600; src:local("IBM Plex Sans SemiBold"), url(/vendor/ibm-plex-sans-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family:"IBM Plex Mono"; font-weight:400; src:local("IBM Plex Mono"), url(/vendor/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"IBM Plex Mono"; font-weight:600; src:local("IBM Plex Mono SemiBold"), url(/vendor/ibm-plex-mono-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family:"JetBrains Mono"; font-weight:400; src:local("JetBrains Mono"), url(/vendor/jetbrains-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"JetBrains Mono"; font-weight:600; src:local("JetBrains Mono SemiBold"), url(/vendor/jetbrains-mono-latin-600-normal.woff2) format("woff2"); }
+  /* inua's tokens (design/ui.md), yoru's until the host's theme arrives. */
+  :root {
+    --app:#0B1012; --panel:#0D1315; --surface:#121A1C; --surface2:#172124;
+    --t0:#E7E4DA; --t1:#B3B6AF; --t2:#7F8F8C; --line:#243134;
+    --accent:#9FC3C9; --primary:#E7E4DA; --danger:#E0694F; --ok:#7FB89E; --warn:#D9A441;
+    --sans:"Zen Kaku Gothic New", "Noto Sans CJK JP", system-ui, sans-serif;
+    --title:"IBM Plex Sans", "Zen Kaku Gothic New", system-ui, sans-serif;
+    --mono:"Geist Mono", "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  [hidden] { display:none !important; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; height:100%; background:var(--app); color:var(--t0); font:14px var(--sans); overscroll-behavior:none; }
+  #app { position:fixed; left:0; right:0; top:0; height:100%; display:flex; flex-direction:column; }
+  .tab { flex:1; display:none; flex-direction:column; min-height:0; }
+  .tab.shown { display:flex; }
+  .icon { width:18px; height:18px; background:currentColor; -webkit-mask:var(--i) center/contain no-repeat; mask:var(--i) center/contain no-repeat; flex:none; }
+  button { font:inherit; color:inherit; background:none; border:0; padding:0; touch-action:manipulation; }
+
+  /* A page's head: one line, as the window's column heads: the title
+     (IBM Plex Sans 15 px) and a mono readout at the end. */
+  header { display:grid; grid-template-columns:36px 1fr 36px; align-items:center; gap:8px; height:calc(env(safe-area-inset-top) + 44px); padding:env(safe-area-inset-top) 8px 0; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
+  header .h1 { grid-column:2; min-width:0; text-align:center; font:15px var(--title); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  header button.plain { grid-column:1; grid-row:1; }
+  #tab-term { padding-top:env(safe-area-inset-top); }
+  /* Room above the phone's gesture bar, while neither the keyboard nor
+     the panel is there to take it. */
+  #tab-term { padding-bottom:max(env(safe-area-inset-bottom), 12px); }
+  #app.typing #tab-term { padding-bottom:0; }
+  button.plain { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--t1); border-radius:2px; flex:none; }
+  button.plain:active { background:color-mix(in srgb, var(--accent) 9%, transparent); }
+
+  /* A notice: a hairline in warn, no fill (the connection's state). */
+  .notice { margin:8px 16px 0; padding:6px 10px; border:1px solid var(--warn); border-radius:2px; color:var(--warn); font:11px var(--mono); letter-spacing:.06em; }
+
+  /* Every page keeps one edge, 16 px in, a group's head on it. Where the
+     rows go:
+     - Folded to one column (a phone), nothing stays selected in a list,
+       so a row shows no box: its icon and text go on the head's edge,
+       and its tint, when it has one (pressed, waiting, chosen), reaches
+       --out past it.
+     - In columns side by side (720 px and wider, as the inua-term window
+       keeps its first column), the list keeps a selected row beside what
+       it shows: the desktop's rule, the row's box on the head's edge, its
+       icon and text inside. */
+  .scroll { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; padding:8px 16px 16px; }
+  .scroll > .section:first-child { margin-top:0; }
+  /* How far a row's box reaches past the edge: its padding (and its
+     border), folded; none in columns. */
+  .scroll { --out:10px; }
+  .scroll .row { --out:11px; }
+  @media (min-width:720px) { .scroll, .scroll .row { --out:0px; } }
+  /* Sections as the window's sessions: a mark, a mono label, a hairline. */
+  .section { display:flex; align-items:center; gap:8px; min-height:40px; margin:10px 0 6px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+  .section .label { font:600 11px var(--mono); letter-spacing:.12em; color:var(--t2); text-transform:uppercase; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .mark { width:7px; height:7px; border:1px solid var(--t2); border-radius:1px; flex:none; }
+  .mark.s-on { border-color:var(--accent); background:var(--accent); }
+  .mark.s-warn { border-color:var(--warn); background:var(--warn); }
+  .mark.s-ok { border-color:var(--ok); background:var(--ok); }
+  .badge { padding:1px 5px; border-radius:2px; background:color-mix(in srgb, var(--warn) 12%, transparent); color:var(--warn); font:11px var(--mono); flex:none; }
+
+  /* A pane's row, as the window's: the kind box, the title, the state. */
+  .row { display:flex; align-items:center; gap:10px; min-height:52px; margin:0 calc(-1 * var(--out)) 2px; padding:7px 10px; border:1px solid transparent; border-radius:2px; transition:background 180ms ease-out, border-color 180ms ease-out; }
+  .row:active { border-color:color-mix(in srgb, var(--accent) 20%, transparent); background:color-mix(in srgb, var(--accent) 6%, transparent); }
+  .row.current { border-color:color-mix(in srgb, var(--accent) 30%, transparent); background:color-mix(in srgb, var(--surface) 90%, var(--primary)); }
+  .row.blocked { border-color:color-mix(in srgb, var(--warn) 30%, transparent); background:color-mix(in srgb, var(--warn) 5%, transparent); }
+  .kind { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:1px solid color-mix(in srgb, var(--line) 90%, transparent); border-radius:3px; background:color-mix(in srgb, var(--surface) 60%, transparent); color:var(--t1); flex:none; }
+  .row.current .kind { border-color:color-mix(in srgb, var(--accent) 45%, transparent); color:var(--accent); }
+  .row .t { flex:1; min-width:0; }
+  .row .t > div { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .title { font:14px var(--title); color:var(--t1); }
+  .row.current .title, .ws .title { color:var(--t0); }
+  .meta { display:flex; gap:8px; align-items:baseline; margin-top:3px; }
+  .state { font:10.5px var(--mono); letter-spacing:.06em; color:var(--t2); flex:none; }
+  .state.s-on { color:var(--accent); } .state.s-warn { color:var(--warn); } .state.s-ok { color:var(--ok); }
+  .dir { font:11px var(--mono); color:var(--t2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+  .ask { font:11px var(--sans); color:var(--warn); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+  .when { font:11px var(--mono); color:var(--t2); flex:none; }
+  .ws .title { font-size:15px; }
+  .chev { color:var(--t2); }
+  .empty { color:var(--t2); padding:40px 0; }
+
+  /* The open pane: its session's panes as one segmented row. */
+  /* The panes of the open pane's session, above the keys; the back
+     button stays at the left whichever is chosen. */
+  #panesbar { display:flex; align-items:center; padding:6px 8px 0; border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
+  #panesbar[hidden] { display:none; }
+  #termback { margin:0; }
+  #chips { display:flex; overflow-x:auto; flex:1; min-width:0; height:36px; border:1px solid var(--line); border-radius:2px; scrollbar-width:none; }
+  #chips::-webkit-scrollbar { display:none; }
+  #chips button { display:flex; align-items:center; gap:6px; min-height:34px; padding:0 12px; font:12.5px var(--title); color:var(--t1); white-space:nowrap; flex:none; }
+  #chips button + button { border-left:1px solid var(--line); }
+  #chips button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
+  #termwrap { flex:1; overflow:hidden; min-height:0; position:relative; touch-action:none; }
+  #termwrap[hidden] { display:none; }
+  #term { position:absolute; left:8px; top:6px; }
+  #bottom { position:absolute; right:8px; bottom:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--line); border-radius:2px; color:var(--t1); }
+  /* The keys a phone's keyboard lacks, as keycaps. */
+  #keybar { display:flex; align-items:center; border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
+  #keys { display:flex; gap:4px; padding:6px 0; margin-left:8px; overflow-x:auto; flex:1; min-width:0; scrollbar-width:none; }
+  .barbtn { width:36px; height:36px; margin-right:8px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); flex:none; }
+  #kbtoggle { margin-right:4px; }
+  .barbtn { position:relative; z-index:1; transition:box-shadow 150ms ease-out; }
+  /* What scrolls under a fixed button is lower: the button casts a
+     shadow on it, on the side it went under. */
+  .barbtn.over-left { box-shadow:-14px 0 14px -6px rgba(0,0,0,.85); }
+  .barbtn.over-right { box-shadow:14px 0 14px -6px rgba(0,0,0,.85); }
+  .barbtn:active { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+  .barbtn.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); border-color:color-mix(in srgb, var(--accent) 38%, transparent); }
+  /* The key panel, in the keyboard's place: the keys a phone's keyboard
+     lacks, in groups, as keycaps. */
+  #panel { flex:none; overflow-y:auto; padding:2px 8px max(env(safe-area-inset-bottom), 10px); background:var(--panel); border-top:1px solid var(--line); scrollbar-width:none; }
+  #panel::-webkit-scrollbar { display:none; }
+  /* Text tabs over a hairline, the current one underlined in the accent. */
+  #panel .ptabs { display:flex; gap:8px; margin:0 -8px 2px; padding:0 8px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+  #panel .ptabs button { flex:none; height:auto; padding:10px 8px 9px; border:0; border-radius:0; background:transparent; color:var(--t2); font:600 11px var(--mono); letter-spacing:.14em; transition:color 160ms ease-out, box-shadow 160ms ease-out; }
+  #panel .ptabs button.on { color:var(--t0); box-shadow:inset 0 -2px var(--accent); background:transparent; }
+  #pinfo .line { margin:0; padding:6px 0; }
+  #pinfo { --out:0px; }
+  #pinfo .line .label { color:var(--t1); }
+  #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
+  #panel .grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; }
+  #panel button { height:40px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:12px var(--mono); }
+  #panel button:active { border-color:color-mix(in srgb, var(--accent) 38%, transparent); background:color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+  #panel button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
+  #keys::-webkit-scrollbar { display:none; }
+  #keybar[hidden] { display:none; }
+  #keys button { min-width:36px; height:36px; padding:0 6px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:11.5px var(--mono); flex:none; }
+  #keys button:active { border-color:color-mix(in srgb, var(--accent) 38%, transparent); background:color-mix(in srgb, var(--accent) 6%, var(--surface)); }
+  #keys button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
+
+  /* The tabs: the panel's ground, a hairline above, the accent on the
+     current one. */
+  nav { display:flex; background:var(--panel); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); flex:none; }
+  nav.hidden { display:none; }
+  nav button { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:9px 0 7px; color:var(--t2); position:relative; }
+  nav button span.k { font:9px var(--mono); letter-spacing:.12em; text-transform:uppercase; }
+  nav button.on { color:var(--accent); }
+  /* Overview: the settings language, rows of a label and a readout. */
+  .who { font:600 13px var(--mono); color:var(--t0); margin:14px 0 6px; }
+  .sysline { display:flex; flex-wrap:wrap; gap:6px 14px; font:11px var(--mono); color:var(--t2); }
+  .sysline span { display:flex; align-items:center; gap:5px; }
+  .sysline .icon { width:13px; height:13px; }
+  .line { position:relative; display:flex; align-items:center; gap:12px; min-height:44px; margin:0 calc(-1 * var(--out)); padding:6px 10px; border-radius:2px; }
+  /* The hairline between rows on the content's edge. */
+  .line + .line::before { content:""; position:absolute; top:0; left:var(--out); right:var(--out); border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+  .line .label { flex:1; min-width:0; font:13px var(--sans); color:var(--t1); }
+  .line .label.mono { font:11px var(--mono); letter-spacing:.06em; }
+  .line .label .sub { display:block; font-size:12px; color:var(--t2); margin-top:2px; }
+  .line .readout { font:12px var(--mono); color:var(--t1); font-variant-numeric:tabular-nums; text-align:right; }
+  .line.go:active { background:color-mix(in srgb, var(--accent) 6%, transparent); }
+
+  /* A number: the digits in mono, − and + as cells behind hairlines. */
+  .num { display:flex; height:34px; border:1px solid var(--line); border-radius:2px; background:var(--surface); flex:none; }
+  .num button { width:34px; color:var(--t1); font:15px var(--mono); }
+  .num span { min-width:56px; display:flex; align-items:center; justify-content:center; border-left:1px solid var(--line); border-right:1px solid var(--line); font:12px var(--mono); color:var(--t0); }
+  /* A switch: 36 × 18, 2 px corners, a tint off and the accent on. */
+  /* The square switch, as the settings': off is the accent tinted into
+     the panel, on is the accent; the knob is the paper with a hairline. */
+  .switch { width:40px; height:22px; padding:2px; border-radius:2px; background:color-mix(in srgb, var(--panel) 86%, var(--accent)); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent); position:relative; flex:none; transition:background 120ms ease-out; }
+  .switch::after { content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:2px; background:var(--surface); box-shadow:0 0 0 1px color-mix(in srgb, var(--t0) 18%, transparent), 0 1px 2px color-mix(in srgb, var(--t0) 12%, transparent); transition:left 120ms ease-out; }
+  .switch.on { background:var(--accent); box-shadow:none; }
+  .switch.on::after { left:21px; }
+  .line.column { flex-wrap:wrap; }
+  .line.column .label { flex-basis:100%; }
+  .choice .label { color:var(--t0); }
+  .choice.chosen { background:color-mix(in srgb, var(--surface) 90%, var(--primary)); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
+  .choice.chosen::before, .choice.chosen + .line::before { display:none; }
+  .swatch { display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; flex:none; }
+  .swatch span { width:12px; height:22px; }
+  /* Segmented: the options in one hairline frame, the chosen one tinted. */
+  /* Toggle buttons joined in a row, as the settings' (°C/°F): the
+     chosen one tinted, ringed in the accent, its text at full strength. */
+  .segmented { display:flex; flex:none; max-width:100%; }
+  .segmented button { min-height:32px; padding:0 11px; border:1px solid var(--line); border-left-width:0; font:12px var(--mono); color:var(--t1); background:transparent; white-space:nowrap; }
+  .segmented button:first-child { border-left-width:1px; border-radius:2px 0 0 2px; }
+  .segmented button:last-child { border-radius:0 2px 2px 0; }
+  .segmented button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
+  nav .badge { position:absolute; top:5px; left:calc(50% + 10px); }
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="tab" id="tab-agents">
+    <header><div class="h1" data-t="Agents">Agents</div></header>
+    <div class="notice" hidden></div>
+    <div class="scroll" id="agents"></div>
+  </section>
+
+  <section class="tab" id="tab-ws">
+    <header>
+      <button class="plain" id="wsback" hidden data-ta="Workspaces"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
+      <div class="h1" id="wstitle">Workspaces</div>
+    </header>
+    <div class="notice" hidden></div>
+    <div class="scroll" id="ws"></div>
+  </section>
+
+  <section class="tab" id="tab-term">
+    <div class="notice" hidden></div>
+    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button></div>
+    <div id="panesbar">
+      <button id="termback" class="barbtn" data-ta="Back"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
+      <div id="chips"></div>
+    </div>
+    <div id="keybar">
+      <div id="keys"></div>
+      <button id="kbtoggle" class="barbtn" data-ta="Keyboard"><span class="icon" style="--i:url(/icons/input-keyboard-symbolic.svg)"></span></button>
+      <button id="paneltoggle" class="barbtn" data-ta="Key panel"><span class="icon" style="--i:url(/icons/view-app-grid-symbolic.svg)"></span></button>
+    </div>
+    <div id="panel" hidden>
+      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="info" data-t="INFO">INFO</button></div>
+      <div id="pkeys"></div>
+      <div id="pinfo" hidden></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-over">
+    <header>
+      <button class="plain" id="overback" hidden data-ta="Overview"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
+      <div class="h1" id="overtitle">Overview</div>
+    </header>
+    <div class="notice" hidden></div>
+    <div class="scroll" id="over"></div>
+  </section>
+
+  <nav id="nav">
+    <button data-tab="agents"><span class="icon" style="--i:url(/icons/preferences-system-notifications-symbolic.svg)"></span><span class="k" data-t="Agents">Agents</span><span class="badge" id="badge" hidden></span></button>
+    <button data-tab="ws"><span class="icon" style="--i:url(/icons/folder-symbolic.svg)"></span><span class="k" data-t="Workspaces">Workspaces</span></button>
+    <button data-tab="over"><span class="icon" style="--i:url(/icons/inua-benchmark-symbolic.svg)"></span><span class="k" data-t="Overview">Overview</span></button>
+  </nav>
+</div>
+
+<script src="/vendor/xterm.js"></script>
+<script src="/vendor/addon-webgl.js"></script>
+<script src="/vendor/addon-unicode-graphemes.js"></script>
+<script>/*INUA*/</script>
+<script>
+"use strict";
+// What the server put in: the text in the user's language (keyed by the
+// English, as internal/i18n), the forms by number, and the home folder.
+const INUA = window.INUA || { strings: {}, one: {}, many: {}, home: "" };
+const T = s => INUA.strings[s] || s;
+// Tf fills %s and %d in order, or %[n]d by number, as Go's Sprintf.
+const Tf = (s, ...a) => { let i = 0; return T(s).replace(/%(?:\[(\d+)\])?[sd]/g, (m, n) => String(a[n ? n - 1 : i++])); };
+const Nf = (one, many, n, ...a) => Tf(n === 1 ? (INUA.one[one] || one) : (INUA.many[one] || many), ...a);
+const query = new URLSearchParams(location.search);
+const token = query.get("t");
+const enc = new TextEncoder(), dec = new TextDecoder();
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const icon = name => { const i = el("span", "icon"); i.style.setProperty("--i", `url(/icons/${name}-symbolic.svg)`); return i; };
+// The manifest carries the token: a web app on the home screen starts
+// with it.
+{ const m = el("link"); m.rel = "manifest"; m.href = "/manifest.webmanifest?t=" + encodeURIComponent(token); document.head.append(m); }
+for (const e of document.querySelectorAll("[data-t]")) e.textContent = T(e.dataset.t);
+for (const e of document.querySelectorAll("[data-ta]")) e.setAttribute("aria-label", T(e.dataset.ta));
+document.documentElement.lang = INUA.lang || "en";
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+
+// ---- The look: the theme's tokens and the terminals' scheme ----
+
+let look = { theme: "", scheme: "", font: "", themes: [], schemes: [] };
+// The phone's own choices; "" follows inua-term on the computer.
+const pref = {
+  theme: store.get("theme") || "",
+  scheme: store.get("scheme") || "",  // "theme": the theme's colours
+  font: store.get("tfont") || "",
+  cursor: store.get("cursor") || "block",
+  blink: store.get("blink") !== "0",
+  keys: store.get("keys") !== "0",
+};
+function setPref(k, v) { pref[k] = v; store.set({ font: "tfont" }[k] || k, typeof v === "boolean" ? (v ? "1" : "0") : v); applyLook(); }
+const lookReady = fetch("/look.json?t=" + token).then(r => r.json()).then(l => { look = l; applyLook(); }).catch(() => {});
+const css = name => getComputedStyle(document.documentElement).getPropertyValue("--" + name).trim();
+const themeOf = name => look.themes.find(t => t.name === name);
+function currentTheme() { return themeOf(pref.theme || look.theme) || look.themes[0]; }
+function currentScheme() {
+  const name = pref.scheme === "" ? look.scheme : pref.scheme === "theme" ? "" : pref.scheme;
+  return look.schemes.find(s => s.name === name) || null;
+}
+function termFont() { return `"${pref.font || look.font || "Geist Mono"}", ` + css("mono"); }
+function termTheme() {
+  const s = currentScheme();
+  if (!s) return { background: css("app"), foreground: css("t0"), cursor: css("t0"), cursorAccent: css("app") };
+  const names = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
+  const t = { background: s.bg, foreground: s.fg, cursor: s.cursor, cursorAccent: s.bg };
+  s.palette.forEach((c, i) => { t[i < 8 ? names[i] : "bright" + names[i - 8][0].toUpperCase() + names[i - 8].slice(1)] = c; });
+  return t;
+}
+function applyLook() {
+  const t = currentTheme();
+  if (t) for (const [k, v] of Object.entries(t.tokens)) document.documentElement.style.setProperty("--" + k, v);
+  let meta = document.querySelector("meta[name=theme-color]");
+  if (!meta) { meta = el("meta"); meta.name = "theme-color"; document.head.append(meta); }
+  meta.content = css("app");
+  fitSoon();  // the key row shown or hidden, a font of another width
+  if (term) {
+    term.options.theme = termTheme();
+    term.options.cursorStyle = pref.cursor;
+    term.options.cursorBlink = pref.blink;
+    $("termwrap").style.background = termTheme().background;
+    const family = termFont();
+    if (term.options.fontFamily !== family) {
+      document.fonts.load(`12px ${family}`).catch(() => {}).then(() => { term.options.fontFamily = family; fitPane(); });
+    }
+  }
+  render();
+}
+
+// ---- The host connection ----
+
+let ws, nextID = 1, pending = new Map(), received = 0, connected = false, since = 0;
+// Whether the host makes snapshots: a pane attached at the phone's size
+// comes as the host's engine has it, rewrapped, not as its raw output.
+let snapshots = false;
+let model = { workspaces: [] }, paneMap = new Map();
+
+function send(kind, payload) {
+  if (!ws || ws.readyState !== 1) return;
+  const b = new Uint8Array(1 + payload.length);
+  b[0] = kind; b.set(payload, 1);
+  ws.send(b);
+}
+function request(m) {
+  m.id = nextID++;
+  send(0, enc.encode(JSON.stringify(m)));
+  return new Promise(res => pending.set(m.id, res));
+}
+function input(s) {
+  if (!cur) return;
+  const bytes = enc.encode(s), b = new Uint8Array(4 + bytes.length);
+  new DataView(b.buffer).setUint32(0, cur, true);
+  b.set(bytes, 4);
+  send(2, b);
+}
+// The connection's state, as a notice at the top of each page.
+function status(text) {
+  for (const n of document.querySelectorAll(".notice")) { n.textContent = text; n.hidden = !text; }
+}
+
+function connect() {
+  status(T("CONNECTING…"));
+  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws?t=" + token);
+  ws.binaryType = "arraybuffer";
+  ws.onmessage = ev => {
+    received += ev.data.byteLength;
+    const b = new Uint8Array(ev.data);
+    if (b[0] === 1) return output(new DataView(ev.data).getUint32(1, true), b.subarray(5));
+    if (b[0] !== 0) return;
+    const m = JSON.parse(dec.decode(b.subarray(1)));
+    if (m.type === "welcome") { snapshots = !!m.snapshot; return welcome(); }
+    if (m.type === "reply") { const r = pending.get(m.id); pending.delete(m.id); return r && r(m); }
+    if (m.type === "state" && m.state) return setState(m.state);
+    if (m.type === "event" && m.pane === cur && term && m.cols && m.rows) {
+      if (m.cols !== term.cols || m.rows !== term.rows) term.resize(m.cols, m.rows);
+      panToBottom();
+    }
+  };
+  ws.onclose = () => {
+    connected = false; status(T("OFFLINE · RECONNECTING")); setTimeout(connect, 1000); };
+}
+
+async function welcome() {
+  status("");
+  connected = true; since = Date.now();
+  const again = cur;  // a reconnect: attach again
+  const r = await request({ type: "state" });
+  if (r.state) setState(r.state);
+  if (again) open(again, true);
+}
+
+function setState(s) {
+  model = s.model || { workspaces: [] };
+  paneMap = new Map((s.panes || []).map(p => [p.id, p]));
+  render();
+  // The first state after a reload: the pane that was open, open again.
+  if (restore) {
+    const id = restore;
+    restore = 0;
+    if (tab === "term" && paneMap.has(id)) open(id);
+  }
+}
+let restore = +query.get("pane") || +store.get("pane") || 0;
+
+// ---- What the model says ----
+
+function treePanes(n, out = []) {
+  if (!n) return out;
+  if (n.pane) out.push(n.pane);
+  treePanes(n.a, out); treePanes(n.b, out);
+  return out;
+}
+function sessionPanes(s) { return treePanes(s.tree).map(id => paneMap.get(id)).filter(p => p && !p.exited); }
+function where(id) {
+  for (const w of model.workspaces) for (const s of w.sessions || [])
+    if (treePanes(s.tree).includes(id)) return { w, s };
+  return null;
+}
+function sessionName(w, s) { return s.name || Tf("Session %d", (w.sessions || []).indexOf(s) + 1); }
+function wsName(w) {
+  const base = (w.dir || "").split("/").filter(Boolean).pop() || T("Workspace");
+  // A name of emoji alone says little on a phone: the folder's beside it.
+  if (!w.name) return base;
+  return /[\p{L}\p{N}]/u.test(w.name) ? w.name : w.name + " " + base;
+}
+function home(dir) {
+  dir = dir || "";
+  return INUA.home && (dir === INUA.home || dir.startsWith(INUA.home + "/")) ? "~" + dir.slice(INUA.home.length) : dir;
+}
+function paneTitle(p) { return p.title || p.command || home(p.dir) || T("Shell"); }
+function ago(ms) {
+  if (!ms) return "";
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  return s < 60 ? T("now") : s < 3600 ? Tf("%dm", Math.floor(s / 60)) : s < 86400 ? Tf("%dh", Math.floor(s / 3600)) : Tf("%dd", Math.floor(s / 86400));
+}
+// The window's words and marks for an agent's state (internal/termui).
+const looks = { working: [T("WORKING"), "s-on"], blocked: [T("NEEDS YOU"), "s-warn"], done: [T("DONE"), "s-ok"], idle: [T("IDLE"), ""] };
+function lookOf(p) {
+  if (p.restored) return [T("RESTORED"), ""];
+  return looks[p.state] || (p.agent ? looks.idle : ["", ""]);
+}
+function sum(panes) {
+  if (panes.some(p => p.state === "blocked")) return "s-warn";
+  if (panes.some(p => p.state === "working")) return "s-on";
+  return "";
+}
+
+function paneRow(p, where) {
+  const [word, cls] = lookOf(p);
+  const row = el("div", "row" + (p.state === "blocked" ? " blocked" : "") + (p.id === cur ? " current" : ""));
+  const kind = el("div", "kind");
+  const mark = icon(p.icon || "agent-shell");
+  if (p.color) mark.style.color = p.color;
+  kind.append(mark);
+  row.append(kind);
+  const t = el("div", "t");
+  t.append(el("div", "title", paneTitle(p)));
+  const meta = el("div", "meta");
+  if (word) meta.append(el("span", "state " + cls, word));
+  if (p.state === "blocked" && p.ask) meta.append(el("span", "ask", p.ask));
+  else {
+    // Where it is, in the agents' list; a shell's command or folder when
+    // its title is not that already. An agent's command is its mark.
+    const line = where || (p.agent ? "" : [p.command, home(p.dir)].find(x => x && x !== paneTitle(p)) || "");
+    if (line) meta.append(el("span", "dir", line));
+  }
+  if (meta.childNodes.length) t.append(meta);
+  row.append(t);
+  if (p.agent && p.since) row.append(el("span", "when", ago(p.since)));
+  row.onclick = () => open(p.id);
+  return row;
+}
+
+// ---- The tabs ----
+
+let tab = null;
+let from = store.get("from") || "agents";  // the list the terminal was opened from
+function show(name) {
+  if (name === "term" && tab && tab !== "term") { from = tab; store.set("from", from); }
+  tab = name;
+  for (const t of document.querySelectorAll(".tab")) t.classList.toggle("shown", t.id === "tab-" + name);
+  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
+  store.set("tab", name);
+  if (name === "over") renderOver();
+  if (name === "term" && term) requestAnimationFrame(() => { fitPane(); term.refresh(0, term.rows - 1); });
+  viewport();
+}
+for (const b of document.querySelectorAll("nav button")) b.onclick = () => {
+  if (b.dataset.tab === "ws" && tab === "ws") wsOpen = null;  // a second tap goes to the top
+  if (b.dataset.tab === "over" && tab === "over") overPage = null;
+  show(b.dataset.tab); render();
+};
+
+function render() {
+  renderAgents(); renderWS(); renderTerm(); renderOver();
+  const n = [...paneMap.values()].filter(p => p.state === "blocked" && !p.exited).length;
+  $("badge").hidden = !n; $("badge").textContent = n;
+}
+
+function section(label, cls, count) {
+  const head = el("div", "section");
+  head.append(el("div", "mark " + (cls || "")), el("span", "label", label));
+  if (count) head.append(el("span", "badge", count));
+  return head;
+}
+
+function renderAgents() {
+  const box = $("agents"); box.textContent = "";
+  const agents = [...paneMap.values()].filter(p => p.agent && !p.exited);
+  const waiting = agents.filter(p => p.state === "blocked").length;
+  if (!agents.length) { box.append(el("div", "empty", T("No agent is running."))); return; }
+  for (const st of ["blocked", "working", "done", "idle"]) {
+    const these = agents.filter(p => (p.state || "idle") === st).sort((a, b) => (b.since || 0) - (a.since || 0));
+    if (!these.length) continue;
+    const [word, cls] = looks[st];
+    box.append(section(word, cls, st === "blocked" ? these.length : 0));
+    for (const p of these) {
+      const at = where(p.id);
+      box.append(paneRow(p, at ? wsName(at.w) + " › " + sessionName(at.w, at.s) : ""));
+    }
+  }
+}
+
+let wsOpen = null;
+function renderWS() {
+  const box = $("ws"); box.textContent = "";
+  const w = wsOpen && model.workspaces.find(w => w.id === wsOpen);
+  $("wsback").hidden = !w;
+  $("wstitle").textContent = w ? wsName(w) : T("Workspaces");
+  if (!w) {
+    wsOpen = null;
+    for (const w of model.workspaces) {
+      const panes = (w.sessions || []).flatMap(sessionPanes);
+      if (!panes.length) continue;
+      const row = el("div", "row ws");
+      row.append(el("div", "mark " + sum(panes)));
+      const t = el("div", "t");
+      t.append(el("div", "title", wsName(w)));
+      const n = (w.sessions || []).length;
+      const meta = el("div", "meta");
+      meta.append(el("span", "dir", `${home(w.dir)} · ${Nf("%d session", "%d sessions", n, n)} · ${Nf("%d pane", "%d panes", panes.length, panes.length)}`));
+      t.append(meta);
+      row.append(t);
+      const waiting = panes.filter(p => p.state === "blocked").length;
+      if (waiting) row.append(el("span", "badge", waiting));
+      const chev = icon("go-next"); chev.classList.add("chev");
+      row.append(chev);
+      row.onclick = () => { wsOpen = w.id; renderWS(); $("ws").scrollTop = 0; };
+      box.append(row);
+    }
+    return;
+  }
+  for (const s of w.sessions || []) {
+    const panes = sessionPanes(s);
+    if (!panes.length) continue;
+    box.append(section(sessionName(w, s), sum(panes), panes.filter(p => p.state === "blocked").length));
+    for (const p of panes) box.append(paneRow(p));
+  }
+}
+$("wsback").onclick = () => { wsOpen = null; renderWS(); };
+// Back: the pane goes back to the desktop, and the list shows again.
+$("termback").addEventListener("pointerdown", e => e.preventDefault());
+$("termback").onclick = () => {
+  if (cur) leave(cur);
+  cur = null;
+  if (term) { term.dispose(); term = null; }
+  showPanel(false);
+  show(from === "term" ? "agents" : from);
+  render();
+};
+$("overback").onclick = () => { overPage = null; renderOver(); $("over").scrollTop = 0; };
+
+// ---- The overview: this computer, the agents, the link, the settings ----
+
+let sys = null, rtt = 0;
+async function poll() {
+  if (tab === "over" && !overPage && !document.hidden) {
+    try { sys = await (await fetch("/sys.json?t=" + token)).json(); } catch (e) {}
+    if (connected) { const t0 = performance.now(); await request({ type: "list" }); rtt = performance.now() - t0; }
+    renderOver();
+  }
+  setTimeout(poll, 2000);
+}
+// A count of bytes, as the readouts say them.
+function bytes(n) { return n >= 1 << 20 ? Tf("%s MB", (n / (1 << 20)).toFixed(1)) : Tf("%d KB", Math.max(1, Math.round(n / 1024))); }
+function uptime(sec) {
+  const m = Math.floor(sec / 60);
+  return m >= 1440 ? Tf("%dd %dh", Math.floor(m / 1440), Math.floor(m / 60) % 24) : m >= 60 ? Tf("%dh %dm", Math.floor(m / 60), m % 60) : Tf("%dm", m);
+}
+function line(label, value, opts = {}) {
+  const l = el("div", "line" + (opts.go ? " go" : "") + (opts.column ? " column" : ""));
+  if (opts.mark != null) l.append(el("div", "mark " + opts.mark));
+  const lab = el("div", "label" + (opts.mono ? " mono" : ""), label);
+  if (opts.sub) lab.append(el("span", "sub", opts.sub));
+  l.append(lab);
+  if (value instanceof Node) l.append(value); else l.append(el("span", "readout", value));
+  if (opts.go) { const c = icon("go-next"); c.classList.add("chev"); l.append(c); l.onclick = opts.go; }
+  return l;
+}
+let overPage = null;
+function renderOver() {
+  if (tab !== "over") return;
+  const box = $("over"), top = box.scrollTop;
+  box.textContent = "";
+  $("overback").hidden = !overPage;
+  $("overtitle").textContent = overPage ? T("Settings") : T("Overview");
+  if (overPage) { renderSettings(box); box.scrollTop = top; return; }
+
+  box.append(section(T("This computer"), ""));
+  if (sys) {
+    box.append(el("div", "who", sys.who));
+    const sl = el("div", "sysline");
+    const item = (name, text) => { const s = el("span"); s.append(icon(name), el("span", "", text)); sl.append(s); };
+    sl.append(el("span", "", sys.shell));
+    if (sys.cpu >= 0) item("term-cpu", sys.cpu.toFixed(0) + "%");
+    if (sys.memory >= 0) item("term-memory", sys.memory.toFixed(0) + "%");
+    if (sys.uptime) item("term-uptime", uptime(sys.uptime));
+    box.append(sl);
+  } else box.append(el("div", "empty", T("Asking…")));
+
+  const panes = [...paneMap.values()].filter(p => !p.exited);
+  const count = st => panes.filter(p => p.agent && (p.state || "idle") === st).length;
+  box.append(section(T("Agents"), sum(panes)));
+  const toAgents = () => { show("agents"); render(); };
+  for (const st of ["blocked", "working", "done", "idle"]) {
+    const [word, cls] = looks[st];
+    box.append(line(word, String(count(st)), { mark: cls, go: toAgents, mono: true }));
+  }
+  const spaces = model.workspaces.filter(w => (w.sessions || []).some(s => sessionPanes(s).length));
+  const nsessions = spaces.reduce((n, w) => n + (w.sessions || []).length, 0);
+  box.append(line(T("Workspaces"), `${spaces.length} · ${Nf("%d session", "%d sessions", nsessions, nsessions)} · ${Nf("%d pane", "%d panes", panes.length, panes.length)}`,
+    { go: () => { wsOpen = null; show("ws"); render(); } }));
+
+  box.append(section(T("Connection"), connected ? "s-on" : "s-warn"));
+  box.append(line(T("Host"), connected ? T("CONNECTED") : T("OFFLINE"), { sub: location.host }));
+  if (connected) {
+    box.append(line(T("Round trip"), rtt ? Tf("%d MS", Math.round(rtt)) : "…"));
+    box.append(line(T("Received"), bytes(received),
+      { sub: Tf("since %s", new Date(since).toLocaleTimeString(INUA.lang || [], { hour: "2-digit", minute: "2-digit" })) }));
+  }
+
+  box.append(section(T("Settings"), ""));
+  const t = currentTheme(), sc = currentScheme();
+  box.append(line(T("Settings"), "", { go: () => { overPage = "settings"; renderOver(); $("over").scrollTop = 0; },
+    sub: `${t ? t.label : ""} · ${sc ? sc.label : T("the theme's colours")} · ${Tf("%s px", fontSize)}` }));
+}
+
+// Settings: a page under the overview. Everything here is this phone's
+// own, kept in its browser; "As inua-term" follows the computer.
+function choice(label, sub, chosen, onpick, swatch) {
+  const l = el("div", "line go choice" + (chosen ? " chosen" : ""));
+  l.append(el("div", "mark " + (chosen ? "s-on" : "")));
+  const lab = el("div", "label", label);
+  if (sub) lab.append(el("span", "sub", sub));
+  l.append(lab);
+  if (swatch) {
+    const sw = el("div", "swatch");
+    for (const c of swatch) { const d = el("span"); d.style.background = c; sw.append(d); }
+    l.append(sw);
+  }
+  l.onclick = onpick;
+  return l;
+}
+function segmented(options, value, onpick) {
+  const g = el("div", "segmented");
+  for (const [v, label] of options) {
+    const b = el("button", v === value ? "on" : "", label);
+    b.onclick = () => onpick(v);
+    g.append(b);
+  }
+  return g;
+}
+function toggle(on, onflip) {
+  const sw = el("button", "switch" + (on ? " on" : ""));
+  sw.onclick = () => onflip(!on);
+  return sw;
+}
+function renderSettings(box) {
+  const inuaTheme = themeOf(look.theme);
+  box.append(section(T("Theme"), ""));
+  box.append(choice(T("As inua-term"), inuaTheme ? inuaTheme.label : look.theme, pref.theme === "", () => setPref("theme", "")));
+  for (const t of look.themes) {
+    const k = t.tokens;
+    box.append(choice(t.label, t.brief, pref.theme === t.name, () => setPref("theme", t.name), [k.app, k.surface, k.t0, k.accent, k.warn]));
+  }
+
+  box.append(section(T("Terminal colours"), ""));
+  const inuaScheme = look.schemes.find(s => s.name === look.scheme);
+  box.append(choice(T("As inua-term"), inuaScheme ? inuaScheme.label : T("the theme's"), pref.scheme === "", () => setPref("scheme", "")));
+  box.append(choice(T("The theme's"), T("The window theme's ground and text"), pref.scheme === "theme", () => setPref("scheme", "theme")));
+  for (const s of look.schemes)
+    box.append(choice(s.label, s.brief, pref.scheme === s.name, () => setPref("scheme", s.name), [s.bg, ...s.palette.slice(1, 7), s.fg]));
+
+  box.append(section(T("Terminal"), ""));
+  box.append(line(T("Font"), segmented([["", T("AS INUA-TERM")], ["Geist Mono", "GEIST"], ["IBM Plex Mono", "PLEX"], ["JetBrains Mono", "JETBRAINS"]],
+    pref.font, v => setPref("font", v)), { column: true }));
+  const num = el("div", "num");
+  const minus = el("button", "", "−"), plus = el("button", "", "+");
+  const step = d => { fontSize = Math.max(7, Math.min(20, fontSize + d / 2)); store.set("font", fontSize); renderOver(); };
+  minus.onclick = () => step(-1); plus.onclick = () => step(1);
+  num.append(minus, el("span", "", Tf("%s PX", fontSize)), plus);
+  box.append(line(T("Text size"), num, { sub: T("Panes are fitted to the phone at this size; pinching changes it too.") }));
+  box.append(line(T("Cursor"), segmented([["block", T("BLOCK")], ["bar", T("BAR")], ["underline", T("UNDERLINE")]], pref.cursor, v => setPref("cursor", v))));
+  box.append(line(T("Cursor blinks"), toggle(pref.blink, v => setPref("blink", v))));
+
+  box.append(section(T("This phone"), ""));
+  box.append(line(T("Keys above the keyboard"), toggle(pref.keys, v => setPref("keys", v)), { sub: T("Esc, Tab, Ctrl, the arrows and the rest a phone lacks.") }));
+}
+
+// ---- The terminal ----
+
+let cur = null, term = null, st = {};
+// The text size the panes are fitted at, changed by pinching.
+let fontSize = +store.get("font") || 10;
+
+
+function renderTerm() {
+  const box = $("chips"); box.textContent = "";
+  $("termwrap").hidden = !cur;
+  $("keybar").hidden = !cur || !pref.keys;
+  if (!cur || !pref.keys) showPanel(false);
+  const empty = $("tab-term").querySelector(".empty");
+  if (!cur) {
+    if (!empty) $("tab-term").insertBefore(el("div", "empty scroll", T("No pane is open. Choose one in Agents or Workspaces.")), $("termwrap"));
+    return;
+  }
+  if (empty) empty.remove();
+  const at = where(cur);
+  if (!at) return;
+  for (const q of sessionPanes(at.s)) {
+    const b = el("button", q.id === cur ? "on" : "");
+    b.append(el("div", "mark " + lookOf(q)[1]), el("span", "", q.agent_name || paneTitle(q)));
+    b.onclick = () => open(q.id);
+    box.append(b);
+  }
+}
+
+async function open(id, again) {
+  const p = paneMap.get(id);
+  if (!p) return;
+  if (cur && cur !== id) leave(cur);
+  const fresh = cur !== id || again || !term;
+  cur = id;
+  show("term");
+  render();
+  if (!fresh) return;
+  store.set("pane", id);
+  await lookReady;
+  const family = termFont();
+  try { await document.fonts.load(`12px ${family}`); } catch (e) {}
+  if (cur !== id) return;  // another was chosen meanwhile
+  if (term) term.dispose();
+  term = new Terminal({ cols: p.cols || 80, rows: p.rows || 24, scrollback: 10000, fontFamily: family, fontSize,
+    theme: termTheme(), cursorStyle: pref.cursor, cursorBlink: pref.blink, allowProposedApi: true });
+  term.open($("term"));
+  $("termwrap").style.background = termTheme().background;
+  st.renderer = "dom";
+  try { const gl = new WebglAddon.WebglAddon(); gl.onContextLoss(() => { gl.dispose(); st.renderer = "dom"; }); term.loadAddon(gl); st.renderer = "webgl"; } catch (e) {}
+  // Widths as Ghostty (the host's engine) and the programs count them:
+  // a grapheme is one character, so an emoji with its variation selector
+  // (✔️ ⚠️), a skin tone or a joined family takes two columns. Unicode 11
+  // gave ✔️ one and a family six, and every line holding one came out
+  // shifted.
+  try { term.loadAddon(new UnicodeGraphemesAddon.UnicodeGraphemesAddon()); } catch (e) {}
+  quiet(term);
+  term.onData(d => input(typed(d)));
+  term.onBinary(d => input(d));
+  term.onScroll(atBottom);
+  term.onRender(drawn);
+  term.onWriteParsed(atBottom);
+  Object.assign(st, { t0: performance.now(), bytes: 0, first: 0, drawn: 0, replay: 0, kind: snapshots ? "snapshot" : "replay" });
+  // Its replay comes before the reply, drawn at the size it was written
+  // for; the phone's size is asked for after it.
+  if (snapshots) {
+    // The phone's size first, then the pane as it is at that size.
+    const size = fitSize();
+    if (size && (size.cols !== p.cols || size.rows !== p.rows)) {
+      await request({ type: "resize", pane: id, ...size });
+      if (cur !== id) return;
+      term.resize(size.cols, size.rows);
+    }
+    request({ type: "attach", pane: id, snapshot: true }).then(() => { if (cur === id) { panToBottom(); measure(); } });
+    return;
+  }
+  request({ type: "attach", pane: id }).then(() => { if (cur === id) fitPane(); });
+}
+
+function output(pane, bytes) {
+  if (pane !== cur || !term) return;
+  st.bytes += bytes.length;
+  if (!st.first) {
+    st.first = performance.now(); st.replay = bytes.length;
+    term.write(bytes, () => { st.drawn = performance.now(); term.scrollToBottom(); panToBottom(); info(); });
+  } else term.write(bytes);
+}
+
+// The host's engine answers the program's queries (which terminal, which
+// modes, where the cursor is, which colours). The page's must not: the
+// queries come again in every replay, and its answers went to the program
+// as typed input ("1;2c2026;2$y…" at a shell's prompt). So xterm takes
+// them and says nothing.
+function quiet(t) {
+  const none = () => true;
+  for (const id of [
+    { final: "c" }, { prefix: ">", final: "c" }, { prefix: "=", final: "c" },  // device attributes
+    { final: "n" }, { prefix: "?", final: "n" },                                // status, cursor position
+    { intermediates: "$", final: "p" }, { prefix: "?", intermediates: "$", final: "p" },  // modes
+    { final: "t" },                                                             // window reports
+    { prefix: ">", final: "q" },                                                // version
+    { prefix: "?", final: "u" },                                                // keyboard flags
+  ]) t.parser.registerCsiHandler(id, none);
+  t.parser.registerDcsHandler({ intermediates: "$", final: "q" }, none);       // settings
+  t.parser.registerDcsHandler({ intermediates: "+", final: "q" }, none);       // termcap
+  // Colour queries ("?"); setting a colour goes on as before.
+  for (const n of [4, 10, 11, 12, 17, 19]) t.parser.registerOscHandler(n, data => data.includes("?"));
+}
+
+// The info tab: this pane here, in words.
+function info() {
+  if (!term || !panelOpen || panelTab !== "info") return;
+  const box = $("pinfo");
+  box.textContent = "";
+  box.append(
+    line(T("Size"), `${term.cols}×${term.rows}`, { sub: T("Columns × rows: the pane fitted to this screen at the text size.") }),
+    line(T("Text size"), Tf("%s PX", term.options.fontSize), { sub: T("Pinch, or Settings in Overview, to change it.") }),
+    line(T("First load"), st.first ? `${bytes(st.replay)} · ${st.drawn ? Tf("%d MS", Math.round(st.drawn - st.t0)) : "…"}` : "…",
+      { sub: st.kind === "snapshot"
+        ? T("The pane's screen and history as the computer has them, and how long they took to arrive and draw.")
+        : T("The pane's recent output as it came, and how long it took to arrive and draw.") }),
+    line(T("Received"), bytes(st.bytes), { sub: T("Everything from this pane since it opened here.") }),
+    line(T("Drawing"), st.renderer === "webgl" ? T("WEBGL") : T("PLAIN"), { sub: st.renderer === "webgl" ? T("Drawn by the graphics chip: the fast way.") : T("Drawn by the browser's page: slower, used when WebGL is missing.") }),
+  );
+}
+setInterval(info, 1000);
+
+// The phone's size: as many cells as fit at the text size.
+function fitSize() {
+  term.options.fontSize = fontSize;
+  const c = cellSize();
+  if (!c.w || !c.h) return null;
+  return {
+    cols: Math.max(20, Math.floor((wrap.clientWidth - 2 * padX) / c.w)),
+    rows: Math.max(4, Math.floor((wrap.clientHeight - 2 * padY) / c.h)),
+    cell_w: Math.round(c.w * devicePixelRatio), cell_h: Math.round(c.h * devicePixelRatio),
+  };
+}
+
+// The pane at the phone's size.
+function fitPane() {
+  if (!term || !cur || tab !== "term" || document.hidden) return;
+  const size = fitSize();
+  if (!size) return;
+  // Only asked for: the terminal here takes the size when the host's
+  // event says so, between the output for the old size and the new.
+  if (size.cols !== term.cols || size.rows !== term.rows) request({ type: "resize", pane: cur, ...size });
+  pan.x = 0;
+  panToBottom();
+  measure();
+}
+let fitTimer = 0;
+function fitSoon() { clearTimeout(fitTimer); fitTimer = setTimeout(fitPane, 120); }
+
+// Leaving a pane: the host gives it the size the desktop asked for.
+function leave(id) {
+  request({ type: "detach", pane: id });
+}
+// Away from the page (another app, the screen off), the pane is let go;
+// back, it is fitted and drawn again from a snapshot.
+document.addEventListener("visibilitychange", () => {
+  if (!cur) return;
+  if (document.hidden) leave(cur);
+  else open(cur, true);
+});
+
+// ---- Touch: scroll, pan, pinch ----
+
+// Scrolling as iOS lists do: the finger moves the text by the pixel,
+// whole lines go to the terminal's history and the rest of a line is a
+// slide of the drawn screen; a swipe glides on, slowing as iOS does;
+// past either end the text stretches and springs back. The sizes are
+// measured when they change, never during a move.
+//
+// The slide waits for xterm to draw the lines scrolled to (waitDraw):
+// set at once, it moved the old lines a frame before the new were drawn,
+// and the view blinked.
+const wrap = $("termwrap");
+const padX = 8, padY = 6;  // #term's place in #termwrap
+let pan = { x: 0, y: 0 }, acc = 0, geo = { cw: 0, ch: 0, sw: 0, sh: 0, ww: 0, wh: 0 };
+let off = 0;               // the slide within a line, px; > 0 shows what is above
+let over = 0, rawOver = 0; // the stretch past an end as drawn, and as moved
+let waitDraw = false;
+function screenEl() { return term.element.querySelector(".xterm-screen"); }
+function cellSize() { const s = screenEl(); return { w: s.clientWidth / term.cols, h: s.clientHeight / term.rows }; }
+function measure() {
+  if (!term || !term.element) return;
+  const s = screenEl();
+  geo = { cw: s.clientWidth / term.cols, ch: s.clientHeight / term.rows, sw: s.clientWidth, sh: s.clientHeight, ww: wrap.clientWidth - 2 * padX, wh: wrap.clientHeight - 2 * padY };
+}
+function place() {
+  if (waitDraw) return;
+  $("term").style.transform = `translate(${-pan.x}px, ${off + over - pan.y}px)`;
+}
+// xterm has drawn: the slide for those lines can show.
+function drawn() { if (waitDraw) { waitDraw = false; place(); } }
+function clampPan() {
+  if (!term || !term.element) return;
+  measure();
+  const maxX = Math.max(0, geo.sw - geo.ww), maxY = Math.max(0, geo.sh - geo.wh);
+  pan.x = Math.min(maxX, Math.max(0, pan.x));
+  pan.y = maxY ? Math.min(maxY, Math.max(0, pan.y)) : 0;
+  place();
+}
+// Short of room, show the bottom: the prompt and what the agent asks are there.
+function panToBottom() { pan.y = 1e9; acc = off = over = rawOver = 0; waitDraw = false; clampPan(); }
+
+// lines > 0 goes back in the history.
+function scrollLines(lines) {
+  if (!lines || !term) return;
+  if (term.buffer.active.type === "normal") { term.scrollLines(-lines); return; }
+  // A full-screen program: the wheel when it tracks the mouse, else the arrows.
+  const n = Math.min(Math.abs(lines), 20);
+  if (term.modes.mouseTrackingMode !== "none") input(`\x1b[<${lines > 0 ? 64 : 65};1;1M`.repeat(n));
+  else input((lines > 0 ? arrow("A") : arrow("B")).repeat(n));
+}
+function atBottom() {
+  if (!term) return;
+  const b = term.buffer.active;
+  $("bottom").hidden = b.type !== "normal" || b.viewportY >= b.baseY;
+}
+$("bottom").onclick = () => { term.scrollToBottom(); panToBottom(); };
+
+// The stretch past an end, as iOS gives it: the farther, the stiffer.
+function rubber(x) { const d = geo.wh || 600; return Math.sign(x) * (1 - 1 / (Math.abs(x) * 0.55 / d + 1)) * d; }
+function unrubber(y) { const d = geo.wh || 600; const r = Math.min(0.95, Math.abs(y) / d); return Math.sign(y) * (1 / (1 - r) - 1) * d / 0.55; }
+
+// Vertical movement by dy pixels (down: back in the history): first the
+// pan of a terminal taller than the screen, then the history. False when
+// it ran into an end.
+function move(dy) {
+  const maxY = Math.max(0, geo.sh - geo.wh);
+  if (maxY && !rawOver && ((dy < 0 && pan.y < maxY) || (dy > 0 && pan.y > 0))) {
+    pan.y = Math.min(maxY, Math.max(0, pan.y - dy));
+    place();
+    return true;
+  }
+  const b = term.buffer.active;
+  if (b.type !== "normal") {
+    // A full-screen program scrolls itself, a line at a time.
+    acc += dy;
+    const lines = Math.trunc(acc / geo.ch);
+    if (lines) { acc -= lines * geo.ch; scrollLines(lines); }
+    return true;
+  }
+  if (rawOver) {
+    // Stretched: undo the stretch first.
+    const n = rawOver + dy;
+    if (Math.sign(n) === Math.sign(rawOver)) { rawOver = n; over = rubber(n); place(); return true; }
+    dy = n; rawOver = over = 0;
+  }
+  off += dy;
+  const lines = Math.trunc(off / geo.ch);
+  if (lines) {
+    const y = b.viewportY;
+    term.scrollLines(-lines);
+    const moved = y - term.buffer.active.viewportY;
+    off -= moved * geo.ch;
+    if (moved) { waitDraw = true; setTimeout(drawn, 50); }
+  }
+  // Nothing above the oldest line or below the newest: the rest stretches.
+  const top = term.buffer.active.viewportY <= 0, bottom = term.buffer.active.viewportY >= term.buffer.active.baseY;
+  if ((off > 0 && top) || (off < 0 && bottom)) {
+    rawOver += off; off = 0; over = rubber(rawOver);
+    place();
+    return false;
+  }
+  place();
+  return true;
+}
+
+let touch = null, glide = 0;
+function stopGlide() { cancelAnimationFrame(glide); glide = 0; }
+
+// Back from a stretch, or out and back when a glide hits an end with
+// speed v (px per ms): a critically damped spring, no wobble.
+function spring(v) {
+  stopGlide();
+  let x = over, at = performance.now();
+  const w = 0.018;
+  const step = now => {
+    const dt = Math.min(32, now - at); at = now;
+    v += (-w * w * x - 2 * w * v) * dt;
+    x += v * dt;
+    if (Math.abs(x) < 0.5 && Math.abs(v) < 0.02) { over = rawOver = 0; place(); glide = 0; return; }
+    over = x; rawOver = unrubber(x);
+    place();
+    glide = requestAnimationFrame(step);
+  };
+  glide = requestAnimationFrame(step);
+}
+
+// At rest the text sits on a line: what is left of one slides home.
+function settle() {
+  if (!off || !geo.ch) return;
+  const target = Math.abs(off) > geo.ch / 2 ? Math.sign(off) * geo.ch : 0;
+  let left = target - off, at = performance.now();
+  const step = now => {
+    const dt = now - at; at = now;
+    const d = left * Math.min(1, dt / 60);  // eases out
+    left -= d;
+    const ok = move(d);
+    if (!ok && over) { spring(0); return; }
+    if (Math.abs(left) < 0.5) { if (left) move(left); glide = 0; return; }
+    glide = requestAnimationFrame(step);
+  };
+  glide = requestAnimationFrame(step);
+}
+
+// A swipe glides on at speed v, slowing by iOS's rate (0.998 a ms).
+function fling(v) {
+  let speed = Math.max(-8, Math.min(8, v)), at = performance.now();
+  const step = now => {
+    const dt = Math.min(32, now - at); at = now;
+    speed *= Math.pow(0.998, dt);
+    if (Math.abs(speed) < 0.02) { glide = 0; settle(); return; }
+    if (!move(speed * dt)) { spring(speed); return; }
+    glide = requestAnimationFrame(step);
+  };
+  glide = requestAnimationFrame(step);
+}
+
+// A mouse press focuses xterm's input too: not on a phone's screen.
+wrap.addEventListener("mousedown", e => { if (matchMedia("(pointer: coarse)").matches) e.preventDefault(); }, { capture: true });
+wrap.addEventListener("touchstart", e => {
+  stopGlide();
+  if (!term) return;
+  measure();
+  rawOver = over ? unrubber(over) : 0;  // caught mid-spring: hold the stretch
+  if (e.touches.length === 2) {
+    const [a, b] = e.touches;
+    touch = { pinch: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), size: term.options.fontSize };
+    return;
+  }
+  const t = e.touches[0];
+  touch = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, axis: null, samples: [] };
+}, { passive: true, capture: true });
+
+wrap.addEventListener("touchmove", e => {
+  if (!touch || !term) return;
+  e.preventDefault(); e.stopPropagation();
+  if (touch.pinch) {
+    if (e.touches.length !== 2) return;
+    const [a, b] = e.touches;
+    term.options.fontSize = Math.max(7, Math.min(20, Math.round(touch.size * Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) / touch.pinch * 2) / 2));
+    clampPan();
+    return;
+  }
+  const t = e.touches[0];
+  if (!touch.axis) {
+    const dx = t.clientX - touch.x0, dy = t.clientY - touch.y0;
+    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    touch.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+  }
+  if (touch.axis === "x") {
+    pan.x -= t.clientX - touch.x;
+    pan.x = Math.min(Math.max(0, geo.sw - geo.ww), Math.max(0, pan.x));
+    place();
+  } else {
+    // Moved here, in the touch's own event, not in a frame callback of
+    // ours: xterm draws the lines in this same frame.
+    move(t.clientY - touch.y);
+    touch.samples.push([e.timeStamp, t.clientY]);
+    if (touch.samples.length > 8) touch.samples.shift();
+  }
+  touch.x = t.clientX; touch.y = t.clientY;
+}, { passive: false, capture: true });
+
+wrap.addEventListener("touchend", e => {
+  if (!touch || e.touches.length) return;
+  const last = touch;
+  touch = null;
+  if (last.pinch) {
+    fontSize = term.options.fontSize;
+    store.set("font", fontSize);
+    fitPane();
+    return;
+  }
+  if (!last.axis) { e.preventDefault(); e.stopPropagation(); return; }  // a tap: the keyboard stays where it is
+  e.preventDefault();
+  if (last.axis !== "y") return;
+  if (over) { spring(0); return; }
+  // The speed over the last moments of the swipe, in px per ms; a finger
+  // that stopped before lifting does not glide.
+  const sm = last.samples.filter(s => e.timeStamp - s[0] < 100);
+  const v = sm.length > 1 ? (sm[sm.length - 1][1] - sm[0][1]) / Math.max(1, sm[sm.length - 1][0] - sm[0][0]) : 0;
+  if (Math.abs(v) < 0.15) { acc = 0; settle(); return; }
+  fling(v);
+}, { passive: false, capture: true });
+
+// ---- The keys a phone keyboard lacks: a row above it, and a panel in
+// its place ----
+
+const arrow = k => (term && term.modes.applicationCursorKeysMode ? "\x1bO" : "\x1b[") + k;
+const homeKey = () => (term && term.modes.applicationCursorKeysMode ? "\x1bOH" : "\x1b[H");
+const endKey = () => (term && term.modes.applicationCursorKeysMode ? "\x1bOF" : "\x1b[F");
+
+// Ctrl and Alt hold for the next key, from the keyboard or the panel.
+const mods = { ctrl: false, alt: false };
+function setMod(m, on) {
+  mods[m] = on;
+  for (const b of document.querySelectorAll(`[data-mod=${m}]`)) b.classList.toggle("on", on);
+}
+function typed(d) {
+  if (mods.ctrl && d.length === 1) {
+    const c = d.toUpperCase().charCodeAt(0);
+    if (c >= 64 && c < 96) d = String.fromCharCode(c - 64);
+    else if (d === " ") d = "\0";
+  }
+  if (mods.alt) d = "\x1b" + d;
+  setMod("ctrl", false); setMod("alt", false);
+  return d;
+}
+
+// A key: its label and what it sends; a modifier has none.
+const K = (label, send) => ({ label, send });
+const M = (label, mod) => ({ label, mod });
+const row = [
+  K("ESC", () => "\x1b"), K("TAB", () => "\t"), M("CTRL", "ctrl"), K("^C", () => "\x03"),
+  K("PGUP", () => "\x1b[5~"), K("PGDN", () => "\x1b[6~"),
+  K("←", () => arrow("D")), K("↑", () => arrow("A")), K("↓", () => arrow("B")), K("→", () => arrow("C")),
+  K("⇧⏎", () => "\x1b[13;2u"), K("⇧TAB", () => "\x1b[Z"),
+];
+const ctrlKey = c => K("^" + c, () => String.fromCharCode(c.charCodeAt(0) - 64));
+const fn = ["\x1bOP", "\x1bOQ", "\x1bOR", "\x1bOS", "\x1b[15~", "\x1b[17~", "\x1b[18~", "\x1b[19~", "\x1b[20~", "\x1b[21~", "\x1b[23~", "\x1b[24~"];
+const panelGroups = [
+  [T("Basic"), [M("CTRL", "ctrl"), M("ALT", "alt"), K("ESC", () => "\x1b"), K("TAB", () => "\t"), K("⇧TAB", () => "\x1b[Z"), K("⏎", () => "\r"),
+    K("⇧⏎", () => "\x1b[13;2u"), K("INS", () => "\x1b[2~"), K("DEL", () => "\x1b[3~"), K("⌫", () => "\x7f"), K("SPACE", () => " "), K("ESC ESC", () => "\x1b\x1b")]],
+  [T("Move"), [K("←", () => arrow("D")), K("↑", () => arrow("A")), K("↓", () => arrow("B")), K("→", () => arrow("C")), K("HOME", homeKey), K("END", endKey),
+    K("PGUP", () => "\x1b[5~"), K("PGDN", () => "\x1b[6~"), K("^HOME", () => "\x1b[1;5H"), K("^END", () => "\x1b[1;5F")]],
+  [T("Control"), ["C", "D", "Z", "L", "R", "A", "E", "U", "W", "K", "O", "G"].map(ctrlKey)],
+  [T("Symbols"), [..."|\\~`/-_=+:;'\"!@#$%^&*()[]{}<>?"].map(c => K(c, () => c))],
+  [T("Function"), fn.map((seq, i) => K("F" + (i + 1), () => seq))],
+];
+
+function keyButton(k) {
+  const b = el("button", "", k.label);
+  // The keys keep the focus where it is: the keyboard stays up, or down.
+  b.addEventListener("pointerdown", e => e.preventDefault());
+  if (k.mod) { b.dataset.mod = k.mod; b.onclick = () => setMod(k.mod, !mods[k.mod]); }
+  else b.onclick = () => input(typed(k.send()));
+  return b;
+}
+for (const k of row) $("keys").append(keyButton(k));
+for (const [name, keys] of panelGroups) {
+  $("pkeys").append(el("div", "kicker", name));
+  const g = el("div", "grid");
+  for (const k of keys) g.append(keyButton(k));
+  $("pkeys").append(g);
+}
+// A row that scrolls under a fixed button: the button's shadow while
+// something is under it.
+function shade(row, button, side) {
+  const f = () => {
+    const under = side === "left"
+      ? row.scrollLeft + row.clientWidth < row.scrollWidth - 1  // more to the right, under a button there
+      : row.scrollLeft > 1;                                     // scrolled under a button on the left
+    button.classList.toggle(side === "left" ? "over-left" : "over-right", under);
+  };
+  row.addEventListener("scroll", f, { passive: true });
+  new ResizeObserver(f).observe(row);
+  new MutationObserver(f).observe(row, { childList: true });
+  f();
+}
+shade($("keys"), $("kbtoggle"), "left");
+shade($("chips"), $("termback"), "right");
+
+// The panel's tabs: the keys, and what this pane's connection says.
+let panelTab = "keys";
+for (const b of document.querySelectorAll(".ptabs button")) {
+  b.addEventListener("pointerdown", e => e.preventDefault());
+  b.onclick = () => {
+    panelTab = b.dataset.p;
+    for (const o of document.querySelectorAll(".ptabs button")) o.classList.toggle("on", o === b);
+    $("pkeys").hidden = panelTab !== "keys";
+    $("pinfo").hidden = panelTab !== "info";
+    info();
+  };
+}
+
+// The keyboard comes up only from its button: a tap on the terminal does
+// not bring it (it covered the screen at every touch). The panel takes
+// the keyboard's place, at its height; one shows at a time.
+let panelOpen = false, keyboardHeight = +store.get("kbh") || 290;
+function showPanel(open) {
+  if (open === panelOpen) return;
+  panelOpen = open;
+  $("panel").hidden = !open;
+  $("panel").style.height = keyboardHeight + "px";
+  if (open) info();
+  $("paneltoggle").classList.toggle("on", open);
+  viewport();
+}
+function showKeyboard(up) {
+  if (!term) return;
+  if (up) { showPanel(false); term.focus(); } else term.blur();
+}
+for (const id of ["kbtoggle", "paneltoggle"]) $(id).addEventListener("pointerdown", e => e.preventDefault());
+$("kbtoggle").onclick = () => showKeyboard(!keyboard);
+$("paneltoggle").onclick = () => {
+  if (panelOpen) { showPanel(false); return; }
+  showKeyboard(false);
+  showPanel(true);
+};
+
+// ---- The visible area ----
+
+// The keyboard: iOS lays it over the page without resizing it, Android
+// resizes the page. Either way the visible area is what the page gets,
+// and the keyboard is up while that area is well short of the tallest
+// seen in this orientation. The terminal is fitted to what is left.
+let tallest = 0, orientation = "", keyboard = false;
+function viewport() {
+  const vv = window.visualViewport, h = vv ? vv.height : innerHeight;
+  const o = screen.width > screen.height ? "landscape" : "portrait";
+  if (o !== orientation) { orientation = o; tallest = 0; }
+  tallest = Math.max(tallest, h);
+  keyboard = h < tallest * 0.8;
+  $("kbtoggle").classList.toggle("on", keyboard);
+  if (keyboard) {
+    // Its height, for the panel; and the keyboard up closes the panel.
+    keyboardHeight = Math.round(tallest - h);
+    store.set("kbh", keyboardHeight);
+    if (panelOpen) showPanel(false);
+  }
+  $("app").style.height = h + "px";
+  $("app").style.top = (vv ? vv.offsetTop : 0) + "px";
+  // The terminal is a page of its own: no tabs under it.
+  $("nav").classList.toggle("hidden", tab === "term");
+  $("app").classList.toggle("typing", keyboard || panelOpen);
+
+  if (!keyboard) window.scrollTo(0, 0);
+  fitSoon();
+}
+if (window.visualViewport) { visualViewport.addEventListener("resize", viewport); visualViewport.addEventListener("scroll", viewport); }
+addEventListener("resize", viewport);
+addEventListener("orientationchange", () => setTimeout(viewport, 300));
+// iOS does not always say when the keyboard folds: look again after.
+document.addEventListener("focusout", () => setTimeout(viewport, 350));
+document.addEventListener("focusin", () => setTimeout(viewport, 350));
+setInterval(() => tab !== "term" && render(), 30000);  // the "3m" ago
+
+show(query.get("tab") || store.get("tab") || "agents");
+connect();
+poll();
+</script>
+</body>
+</html>

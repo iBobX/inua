@@ -1,0 +1,97 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"flag"
+	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"net/url"
+	"os"
+	"time"
+
+	"github.com/lyricat/inua/internal/config"
+	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/host"
+	"github.com/lyricat/inua/internal/term/web"
+)
+
+// serve shows the host's terminals in a browser (internal/term/web): on
+// this computer only, unless told an address; with --tailscale, on this
+// computer's Tailscale address, for a phone on the tailnet.
+func serve(args []string) int {
+	fs := flag.NewFlagSet("serve", flag.ExitOnError)
+	addr := fs.String("addr", "127.0.0.1:7681", "where to listen")
+	tailnet := fs.Bool("tailscale", false, "listen on this computer's Tailscale address (port from --addr)")
+	renew := fs.Bool("new-token", false, "make a new token: links with the old one stop working")
+	fs.Usage = func() {
+		fmt.Fprintln(os.Stderr, "usage: inua-term serve [--addr HOST:PORT] [--tailscale] [--new-token]")
+		fs.PrintDefaults()
+	}
+	fs.Parse(args)
+	if cfg, _, err := config.Load(config.DefaultPath()); err == nil {
+		i18n.Init(cfg.Language)
+	}
+	listen := *addr
+	if *tailnet {
+		ip, err := tailscaleIP()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+			return 1
+		}
+		_, port, _ := net.SplitHostPort(*addr)
+		listen = net.JoinHostPort(ip, port)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	token, err := web.Token(ctx, *renew)
+	cancel()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		return 1
+	}
+	// The host, started if it is not running: the page finds it there.
+	c, err := host.Connect(nil, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "inua-term serve: the terminal host: %v\n", err)
+		return 1
+	}
+	c.Close()
+	ln, err := net.Listen("tcp", listen)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		return 1
+	}
+	s := &web.Server{Socket: host.SocketPath(), Token: token}
+	fmt.Printf("http://%s/?t=%s\n", ln.Addr(), url.QueryEscape(token))
+	log.Printf("inua-term serve: on %s", ln.Addr())
+	if err := http.Serve(ln, s.Handler()); err != nil && !errors.Is(err, net.ErrClosed) {
+		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		return 1
+	}
+	return 0
+}
+
+// tailscaleNet is Tailscale's range of addresses (100.64.0.0/10).
+var tailscaleNet = &net.IPNet{IP: net.IPv4(100, 64, 0, 0), Mask: net.CIDRMask(10, 32)}
+
+// tailscaleIP is this computer's Tailscale IPv4 address.
+func tailscaleIP() (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagUp == 0 {
+			continue
+		}
+		addrs, _ := iface.Addrs()
+		for _, a := range addrs {
+			if n, ok := a.(*net.IPNet); ok && n.IP.To4() != nil && tailscaleNet.Contains(n.IP) {
+				return n.IP.String(), nil
+			}
+		}
+	}
+	return "", errors.New("no Tailscale address: is Tailscale up?")
+}

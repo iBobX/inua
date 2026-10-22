@@ -42,9 +42,9 @@ func Dial(path string, onOutput func(pane int, b []byte), onEvent func(Message))
 		conn.Close()
 		return nil, err
 	}
-	kind, payload, err := readFrame(conn)
+	kind, payload, err := ReadFrame(conn)
 	var m Message
-	if err == nil && (kind != frameControl || json.Unmarshal(payload, &m) != nil) {
+	if err == nil && (kind != FrameControl || json.Unmarshal(payload, &m) != nil) {
 		err = errors.New("host: no welcome")
 	}
 	if err == nil && m.Type != MsgWelcome {
@@ -65,11 +65,11 @@ func (c *Client) read() {
 	for {
 		var kind byte
 		var payload []byte
-		if kind, payload, err = readFrame(c.conn); err != nil {
+		if kind, payload, err = ReadFrame(c.conn); err != nil {
 			break
 		}
 		switch kind {
-		case frameOutput:
+		case FrameOutput:
 			id, b, e := splitPane(payload)
 			if e != nil {
 				err = e
@@ -79,7 +79,7 @@ func (c *Client) read() {
 				c.onOutput(id, b)
 			}
 			continue
-		case frameControl:
+		case FrameControl:
 			var m Message
 			if e := json.Unmarshal(payload, &m); e != nil {
 				err = e
@@ -225,7 +225,7 @@ func (c *Client) ClosePane(pane int) error {
 func (c *Client) Input(pane int, b []byte) error {
 	c.wmu.Lock()
 	defer c.wmu.Unlock()
-	return writeFrame(c.conn, frameInput, paneBytes(pane, b)...)
+	return WriteFrame(c.conn, FrameInput, paneBytes(pane, b)...)
 }
 
 // State is the workspaces, sessions and panes now; afterwards each

@@ -34,6 +34,8 @@ func main() {
 			os.Exit(agents(os.Args[2:]))
 		case "integration":
 			os.Exit(integration(os.Args[2:]))
+		case "serve":
+			os.Exit(serve(os.Args[2:]))
 		}
 	}
 	// -e runs the rest as a command, as terminals do (xdg-terminal-exec).
@@ -52,7 +54,7 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-term [--workspace DIR] [-e COMMAND ARGS…]")
 		fmt.Fprintln(os.Stderr, "       inua-term --quick [-e COMMAND ARGS…]")
-		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration …")
+		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration|serve …")
 		flag.PrintDefaults()
 	}
 	flag.Parse()

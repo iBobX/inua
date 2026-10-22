@@ -221,9 +221,9 @@ func (h *Host) serveConn(conn net.Conn) {
 	c := &client{conn: conn, out: make(chan [][]byte, queueLen)}
 	defer h.drop(c)
 	// The first message is hello, with our version.
-	kind, payload, err := readFrame(conn)
+	kind, payload, err := ReadFrame(conn)
 	var hello Message
-	if err != nil || kind != frameControl || json.Unmarshal(payload, &hello) != nil || hello.Type != MsgHello {
+	if err != nil || kind != FrameControl || json.Unmarshal(payload, &hello) != nil || hello.Type != MsgHello {
 		return
 	}
 	if hello.Version != Version {
@@ -242,18 +242,18 @@ func (h *Host) serveConn(conn net.Conn) {
 	h.mu.Unlock()
 	go c.write()
 	for {
-		kind, payload, err := readFrame(conn)
+		kind, payload, err := ReadFrame(conn)
 		if err != nil {
 			return
 		}
 		switch kind {
-		case frameControl:
+		case FrameControl:
 			var m Message
 			if err := json.Unmarshal(payload, &m); err != nil {
 				return
 			}
 			h.handle(c, m)
-		case frameInput:
+		case FrameInput:
 			id, b, err := splitPane(payload)
 			if err != nil {
 				return
@@ -273,7 +273,7 @@ func (h *Host) serveConn(conn net.Conn) {
 func (c *client) write() {
 	defer c.conn.Close()
 	for f := range c.out {
-		if err := writeFrame(c.conn, f[0][0], f[1:]...); err != nil {
+		if err := WriteFrame(c.conn, f[0][0], f[1:]...); err != nil {
 			c.close()
 			return
 		}
@@ -299,7 +299,7 @@ func (c *client) send(kind byte, payload ...[]byte) {
 func (c *client) message(m Message) {
 	b, err := json.Marshal(m)
 	if err == nil {
-		c.send(frameControl, b)
+		c.send(FrameControl, b)
 	}
 }
 
@@ -610,7 +610,7 @@ func (p *pane) output(b []byte, limit int) {
 		p.replay = append(p.replay[:0], p.replay[over:]...)
 	}
 	for c := range p.attached {
-		c.send(frameOutput, paneBytes(p.id, b)...)
+		c.send(FrameOutput, paneBytes(p.id, b)...)
 	}
 	if p.term == nil {
 		return
@@ -694,7 +694,7 @@ func (p *pane) attach(c *client, snapshot bool) {
 		b = append([]byte(nil), p.replay...)
 	}
 	if len(b) > 0 {
-		c.send(frameOutput, paneBytes(p.id, b)...)
+		c.send(FrameOutput, paneBytes(p.id, b)...)
 	}
 	p.attached[c] = true
 	c.message(Message{Type: MsgEvent, Pane: p.id, Title: p.title, Dir: p.folder(), Git: &p.git})

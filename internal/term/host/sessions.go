@@ -59,7 +59,7 @@ func (h *Host) tell(m Message) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	for c := range h.clients {
-		c.send(frameControl, b)
+		c.send(FrameControl, b)
 	}
 }
 

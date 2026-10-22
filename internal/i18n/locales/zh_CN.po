@@ -669,6 +669,7 @@ msgstr "Cursor 会重新下载其扩展。"
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
+#: internal/term/web/strings.go:32
 msgid "Cursor"
 msgstr "Cursor"
 
@@ -2603,6 +2604,7 @@ msgstr "新路径。换个名字即重命名；放到另一个类别下的路径
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
+#: internal/term/web/strings.go:50
 msgid "Move"
 msgstr "移动"
 
@@ -3589,6 +3591,7 @@ msgstr "状态"
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
+#: internal/term/web/strings.go:30
 msgid "Connection"
 msgstr "连接"
 
@@ -4814,6 +4817,7 @@ msgid "Opens folders"
 msgstr "打开文件夹"
 
 #: internal/desktop/defaults.go:39
+#: internal/term/web/strings.go:68
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4867,6 +4871,7 @@ msgid "Disk Usage"
 msgstr "磁盘用量"
 
 #: internal/diskui/details.go:47
+#: internal/term/web/strings.go:66
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -4930,6 +4935,7 @@ msgstr "这是什么"
 
 #: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
+#: internal/term/web/strings.go:22
 #: internal/vmui/window.go:1914
 msgid "Asking…"
 msgstr "正在询问……"
@@ -9213,6 +9219,7 @@ msgid "The game could not open to the network: %v"
 msgstr "无法向网络开放游戏：%v"
 
 #: internal/gamesui/fortune_host.go:90
+#: internal/term/web/strings.go:43
 msgid "Host"
 msgstr "主机"
 
@@ -9252,6 +9259,7 @@ msgstr "返回菜单"
 #: internal/gamesui/fortune_menu.go:109
 #: internal/mailui/welcome.go:494
 #: internal/mailui/welcome.go:598
+#: internal/term/web/strings.go:25
 #: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4375
@@ -9576,6 +9584,7 @@ msgstr "聚焦或关闭"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:298
 #: internal/term/settings/settings.go:113
+#: internal/term/web/strings.go:64
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10559,6 +10568,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "关闭：会话保持未读，直到你手动标记（U）。"
 
 #: internal/mailui/settings.go:508
+#: internal/term/web/strings.go:70
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "文字大小"
@@ -11452,6 +11462,7 @@ msgid "It asks to pair or to use this computer without a code."
 msgstr "它请求在没有代码的情况下配对或使用此电脑。"
 
 #: internal/shell/card.go:80
+#: internal/term/web/strings.go:76
 #: ui/settings.ui:5074
 #: ui/settings.ui:5355
 msgid "This computer"
@@ -11516,6 +11527,7 @@ msgstr "屏幕"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:159
+#: internal/term/web/strings.go:75
 msgid "Theme"
 msgstr "主题"
 
@@ -11728,6 +11740,7 @@ msgid "Go to Workspace %s"
 msgstr "转到工作区%s"
 
 #: internal/shell/commands.go:74
+#: internal/term/web/strings.go:82
 msgid "Workspace"
 msgstr "工作区"
 
@@ -11891,14 +11904,17 @@ msgid "%s · workspace %s"
 msgstr "%[1]s·工作空间%[2]s"
 
 #: internal/shell/notify.go:16
+#: internal/term/web/strings.go:84
 msgid "now"
 msgstr "现在"
 
 #: internal/shell/notify.go:18
+#: internal/term/web/strings.go:15
 msgid "%dm"
 msgstr "%dm"
 
 #: internal/shell/notify.go:20
+#: internal/term/web/strings.go:13
 msgid "%dh"
 msgstr "%dh"
 
@@ -12177,29 +12193,281 @@ msgstr "字体缩小"
 msgid "Font size as set"
 msgstr "恢复设定的字号"
 
-#: internal/termui/agents.go:37
-msgid "EXITED %d"
-msgstr "已退出 %d"
+#: internal/term/web/look.go:87
+msgid "your own"
+msgstr "自定义"
 
-#: internal/termui/agents.go:39
-msgid "RESTORED"
-msgstr "已恢复"
+#: internal/term/web/strings.go:9
+msgid "%d KB"
+msgstr "%d KB"
 
-#: internal/termui/agents.go:43
-msgid "WORKING"
-msgstr "工作中"
+#: internal/term/web/strings.go:10
+msgid "%d MS"
+msgstr "%d 毫秒"
 
-#: internal/termui/agents.go:45
-msgid "NEEDS YOU"
-msgstr "需要你"
+#: internal/term/web/strings.go:11
+msgid "%dd"
+msgstr "%d天"
 
+#: internal/term/web/strings.go:12
+msgid "%dd %dh"
+msgstr "%d天 %d小时"
+
+#: internal/term/web/strings.go:14
+msgid "%dh %dm"
+msgstr "%d小时 %d分"
+
+#: internal/term/web/strings.go:16
+msgid "%s MB"
+msgstr "%s MB"
+
+#: internal/term/web/strings.go:17
+msgid "%s PX"
+msgstr "%s PX"
+
+#: internal/term/web/strings.go:18
+msgid "%s px"
+msgstr "%s px"
+
+#: internal/term/web/strings.go:19
+msgid "AS INUA-TERM"
+msgstr "同 INUA-TERM"
+
+#: internal/term/web/strings.go:20
+#: internal/termui/agents.go:328
+msgid "Agents"
+msgstr "智能体"
+
+#: internal/term/web/strings.go:21
+msgid "As inua-term"
+msgstr "与 inua-term 相同"
+
+#: internal/term/web/strings.go:23
+msgid "BAR"
+msgstr "竖线"
+
+#: internal/term/web/strings.go:24
+msgid "BLOCK"
+msgstr "方块"
+
+#: internal/term/web/strings.go:26
+msgid "Basic"
+msgstr "基本"
+
+#: internal/term/web/strings.go:27
+msgid "CONNECTED"
+msgstr "已连接"
+
+#: internal/term/web/strings.go:28
+msgid "CONNECTING…"
+msgstr "正在连接…"
+
+#: internal/term/web/strings.go:29
+msgid "Columns × rows: the pane fitted to this screen at the text size."
+msgstr "列 × 行：按文字大小适配此屏幕的窗格。"
+
+#: internal/term/web/strings.go:31
+msgid "Control"
+msgstr "Ctrl 组合"
+
+#: internal/term/web/strings.go:33
+msgid "Cursor blinks"
+msgstr "光标闪烁"
+
+#: internal/term/web/strings.go:34
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "已完成"
 
+#: internal/term/web/strings.go:35
+msgid "Drawing"
+msgstr "绘制"
+
+#: internal/term/web/strings.go:36
+msgid "Drawn by the browser's page: slower, used when WebGL is missing."
+msgstr "由浏览器页面绘制：较慢，在没有 WebGL 时使用。"
+
+#: internal/term/web/strings.go:37
+msgid "Drawn by the graphics chip: the fast way."
+msgstr "由显卡绘制：快速的方式。"
+
+#: internal/term/web/strings.go:38
+msgid "Esc, Tab, Ctrl, the arrows and the rest a phone lacks."
+msgstr "Esc、Tab、Ctrl、方向键等手机没有的键。"
+
+#: internal/term/web/strings.go:39
+msgid "Everything from this pane since it opened here."
+msgstr "此窗格在这里打开后收到的全部内容。"
+
+#: internal/term/web/strings.go:40
+msgid "First load"
+msgstr "首次加载"
+
+#: internal/term/web/strings.go:41
+#: internal/termui/prefs.go:85
+msgid "Font"
+msgstr "字体"
+
+#: internal/term/web/strings.go:42
+msgid "Function"
+msgstr "功能键"
+
+#: internal/term/web/strings.go:44
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "空闲"
+
+#: internal/term/web/strings.go:45
+msgid "INFO"
+msgstr "信息"
+
+#: internal/term/web/strings.go:46
+#: internal/termui/prefs.go:142
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "密钥"
+
+#: internal/term/web/strings.go:47
+msgid "Key panel"
+msgstr "按键面板"
+
+#: internal/term/web/strings.go:48
+#: ui/settings.ui:5676
+msgid "Keyboard"
+msgstr "键盘"
+
+#: internal/term/web/strings.go:49
+msgid "Keys above the keyboard"
+msgstr "键盘上方的按键"
+
+#: internal/term/web/strings.go:51
+#: internal/termui/agents.go:45
+msgid "NEEDS YOU"
+msgstr "需要你"
+
+#: internal/term/web/strings.go:52
+msgid "No agent is running."
+msgstr "没有正在运行的智能体。"
+
+#: internal/term/web/strings.go:53
+msgid "No pane is open. Choose one in Agents or Workspaces."
+msgstr "没有打开的窗格。请在智能体或工作区中选择一个。"
+
+#: internal/term/web/strings.go:54
+msgid "OFFLINE"
+msgstr "离线"
+
+#: internal/term/web/strings.go:55
+msgid "OFFLINE · RECONNECTING"
+msgstr "离线 · 正在重新连接"
+
+#: internal/term/web/strings.go:56
+msgid "Overview"
+msgstr "概览"
+
+#: internal/term/web/strings.go:57
+msgid "PLAIN"
+msgstr "普通"
+
+#: internal/term/web/strings.go:58
+msgid "Panes are fitted to the phone at this size; pinching changes it too."
+msgstr "窗格按此大小适配手机；双指缩放也可更改。"
+
+#: internal/term/web/strings.go:59
+msgid "Pinch, or Settings in Overview, to change it."
+msgstr "双指缩放，或在概览的设置中更改。"
+
+#: internal/term/web/strings.go:60
+#: internal/termui/agents.go:39
+msgid "RESTORED"
+msgstr "已恢复"
+
+#: internal/term/web/strings.go:61
+msgid "Received"
+msgstr "已接收"
+
+#: internal/term/web/strings.go:62
+msgid "Round trip"
+msgstr "往返"
+
+#: internal/term/web/strings.go:63
+msgid "Session %d"
+msgstr "会话 %d"
+
+#: internal/term/web/strings.go:65
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "Shell"
+
+#: internal/term/web/strings.go:67
+msgid "Symbols"
+msgstr "符号"
+
+#: internal/term/web/strings.go:69
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "终端颜色"
+
+#: internal/term/web/strings.go:71
+msgid "The pane's recent output as it came, and how long it took to arrive and draw."
+msgstr "窗格最近的原始输出，以及到达并绘制所用的时间。"
+
+#: internal/term/web/strings.go:72
+msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
+msgstr "电脑上窗格的屏幕和历史，以及到达并绘制所用的时间。"
+
+#: internal/term/web/strings.go:73
+msgid "The theme's"
+msgstr "主题的颜色"
+
+#: internal/term/web/strings.go:74
+msgid "The window theme's ground and text"
+msgstr "窗口主题的背景和文字"
+
+#: internal/term/web/strings.go:77
+msgid "This phone"
+msgstr "这部手机"
+
+#: internal/term/web/strings.go:78
+msgid "To the bottom"
+msgstr "到底部"
+
+#: internal/term/web/strings.go:79
+msgid "UNDERLINE"
+msgstr "下划线"
+
+#: internal/term/web/strings.go:80
+msgid "WEBGL"
+msgstr "WEBGL"
+
+#: internal/term/web/strings.go:81
+#: internal/termui/agents.go:43
+msgid "WORKING"
+msgstr "工作中"
+
+#: internal/term/web/strings.go:83
+#: ui/settings.ui:1265
+msgid "Workspaces"
+msgstr "工作区"
+
+#: internal/term/web/strings.go:85
+#: internal/ui/settings_keyring.go:640
+#: internal/ui/settings_keyring.go:674
+msgid "since %s"
+msgstr "自 %s 起"
+
+#: internal/term/web/strings.go:86
+msgid "the theme's"
+msgstr "主题的颜色"
+
+#: internal/term/web/strings.go:87
+msgid "the theme's colours"
+msgstr "主题的颜色"
+
+#: internal/termui/agents.go:37
+msgid "EXITED %d"
+msgstr "已退出 %d"
 
 #: internal/termui/agents.go:182
 msgid "Agents that need you"
@@ -12218,10 +12486,6 @@ msgstr[0] "%d 个智能体空闲"
 #: internal/termui/agents.go:296
 msgid "%s goes to the next"
 msgstr "%s 前往下一个"
-
-#: internal/termui/agents.go:328
-msgid "Agents"
-msgstr "智能体"
 
 #: internal/termui/agents.go:335
 msgid "No agent runs in any workspace."
@@ -12279,11 +12543,6 @@ msgstr "你的 shell"
 #: internal/termui/guide.go:79
 msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
 msgstr "每个新窗格启动的 shell。inua-term 会标记 bash、zsh 和 fish 的提示符，因此重启后窗格的最后一条命令会回来；其他 shell 照常运行。"
-
-#: internal/termui/guide.go:86
-#: internal/termui/prefs.go:73
-msgid "Terminal colours"
-msgstr "终端颜色"
 
 #: internal/termui/guide.go:87
 msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
@@ -12411,10 +12670,6 @@ msgid "TEXT"
 msgstr "文本"
 
 #: internal/termui/prefs.go:85
-msgid "Font"
-msgstr "字体"
-
-#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "等宽字体；CJK 由 Pango 补全"
 
@@ -12487,10 +12742,6 @@ msgid "Below the shell: used when the terminal host starts again"
 msgstr "shell 以下各项：终端主机再次启动时生效"
 
 #: internal/termui/prefs.go:120
-msgid "Shell"
-msgstr "Shell"
-
-#: internal/termui/prefs.go:120
 msgid "What new panes start; the panes open already keep theirs"
 msgstr "新窗格启动的程序；已打开的窗格保持原样"
 
@@ -12528,11 +12779,6 @@ msgstr "从不保留"
 #: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "匹配这些模式的命令，用逗号分隔"
-
-#: internal/termui/prefs.go:142
-#: ui/gpg.ui:1042
-msgid "KEYS"
-msgstr "密钥"
 
 #: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
@@ -14256,11 +14502,6 @@ msgstr "没有与“%s”匹配的受信任应用。"
 #: internal/ui/settings_keyring.go:616
 msgid "%s reads “%s”"
 msgstr "%s 读取“%s”"
-
-#: internal/ui/settings_keyring.go:640
-#: internal/ui/settings_keyring.go:674
-msgid "since %s"
-msgstr "自 %s 起"
 
 #: internal/ui/settings_keyring.go:683
 msgid "Stop allowing it: its programs are asked about again"
@@ -16599,10 +16840,6 @@ msgstr "有窗口的工作区的透明度"
 msgid "strftime: %a weekday, %b month, %-d day, %H:%M time"
 msgstr "strftime: %a 工作日、%b 月份、%-d 日期、%H:%M 时间"
 
-#: ui/settings.ui:1265
-msgid "Workspaces"
-msgstr "工作区"
-
 #: ui/settings.ui:1274
 msgid "Which workspaces each bar shows"
 msgstr "每个条显示哪些工作区"
@@ -17280,10 +17517,6 @@ msgstr "合上盖子时关闭内置显示器"
 #: ui/settings.ui:5635
 msgid "Its windows move to the other display. Open the lid to use both."
 msgstr "它的窗口会移到另一台显示器。打开盖子即可同时使用两台。"
-
-#: ui/settings.ui:5676
-msgid "Keyboard"
-msgstr "键盘"
 
 #: ui/settings.ui:5724
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"

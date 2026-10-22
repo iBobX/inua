@@ -327,7 +327,7 @@ func TestVersion(t *testing.T) {
 	}
 	defer conn.Close()
 	writeMessage(conn, Message{Type: MsgHello, Version: Version + 1})
-	_, payload, err := readFrame(conn)
+	_, payload, err := ReadFrame(conn)
 	var m Message
 	if err != nil || json.Unmarshal(payload, &m) != nil || m.Type == MsgWelcome || m.Error == "" {
 		t.Errorf("another version was welcomed: %+v, %v", m, err)

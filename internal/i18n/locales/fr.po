@@ -672,6 +672,7 @@ msgstr "Cursor retélécharge ses extensions."
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
+#: internal/term/web/strings.go:32
 msgid "Cursor"
 msgstr "Cursor"
 
@@ -2617,6 +2618,7 @@ msgstr "Son nouveau chemin. Un autre nom la renomme ; un chemin sous une autre c
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
+#: internal/term/web/strings.go:50
 msgid "Move"
 msgstr "Déplacer"
 
@@ -3610,6 +3612,7 @@ msgstr "Statut"
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
+#: internal/term/web/strings.go:30
 msgid "Connection"
 msgstr "Connexion"
 
@@ -4835,6 +4838,7 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
+#: internal/term/web/strings.go:68
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4888,6 +4892,7 @@ msgid "Disk Usage"
 msgstr "Utilisation du disque"
 
 #: internal/diskui/details.go:47
+#: internal/term/web/strings.go:66
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -4952,6 +4957,7 @@ msgstr "Ce que c’est"
 
 #: internal/diskui/details.go:246
 #: internal/remoteui/window.go:721
+#: internal/term/web/strings.go:22
 #: internal/vmui/window.go:1914
 msgid "Asking…"
 msgstr "Interrogation…"
@@ -9263,6 +9269,7 @@ msgid "The game could not open to the network: %v"
 msgstr "Impossible d'ouvrir la partie au réseau : %v"
 
 #: internal/gamesui/fortune_host.go:90
+#: internal/term/web/strings.go:43
 msgid "Host"
 msgstr "Hôte"
 
@@ -9302,6 +9309,7 @@ msgstr "Quitter vers le menu"
 #: internal/gamesui/fortune_menu.go:109
 #: internal/mailui/welcome.go:494
 #: internal/mailui/welcome.go:598
+#: internal/term/web/strings.go:25
 #: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4375
@@ -9627,6 +9635,7 @@ msgstr "Mise au point activée ou désactivée"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:298
 #: internal/term/settings/settings.go:113
+#: internal/term/web/strings.go:64
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10616,6 +10625,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "Désactivé : une conversation reste non lue jusqu’à ce que vous la marquiez (U)."
 
 #: internal/mailui/settings.go:508
+#: internal/term/web/strings.go:70
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "Taille du texte"
@@ -11517,6 +11527,7 @@ msgid "It asks to pair or to use this computer without a code."
 msgstr "Il demande à s’associer ou à utiliser cet ordinateur sans code."
 
 #: internal/shell/card.go:80
+#: internal/term/web/strings.go:76
 #: ui/settings.ui:5074
 #: ui/settings.ui:5355
 msgid "This computer"
@@ -11582,6 +11593,7 @@ msgstr "Écran"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:159
+#: internal/term/web/strings.go:75
 msgid "Theme"
 msgstr "Thème"
 
@@ -11794,6 +11806,7 @@ msgid "Go to Workspace %s"
 msgstr "Accédez à l’espace de travail %s"
 
 #: internal/shell/commands.go:74
+#: internal/term/web/strings.go:82
 msgid "Workspace"
 msgstr "Espace de travail"
 
@@ -11959,14 +11972,17 @@ msgid "%s · workspace %s"
 msgstr "%[1]s · espace de travail %[2]s"
 
 #: internal/shell/notify.go:16
+#: internal/term/web/strings.go:84
 msgid "now"
 msgstr "maintenant"
 
 #: internal/shell/notify.go:18
+#: internal/term/web/strings.go:15
 msgid "%dm"
 msgstr "%dm"
 
 #: internal/shell/notify.go:20
+#: internal/term/web/strings.go:13
 msgid "%dh"
 msgstr "%dh"
 
@@ -12245,29 +12261,281 @@ msgstr "Police plus petite"
 msgid "Font size as set"
 msgstr "Taille de police réglée"
 
-#: internal/termui/agents.go:37
-msgid "EXITED %d"
-msgstr "TERMINÉ %d"
+#: internal/term/web/look.go:87
+msgid "your own"
+msgstr "le vôtre"
 
-#: internal/termui/agents.go:39
-msgid "RESTORED"
-msgstr "RESTAURÉ"
+#: internal/term/web/strings.go:9
+msgid "%d KB"
+msgstr "%d KB"
 
-#: internal/termui/agents.go:43
-msgid "WORKING"
-msgstr "AU TRAVAIL"
+#: internal/term/web/strings.go:10
+msgid "%d MS"
+msgstr "%d MS"
 
-#: internal/termui/agents.go:45
-msgid "NEEDS YOU"
-msgstr "VOUS ATTEND"
+#: internal/term/web/strings.go:11
+msgid "%dd"
+msgstr "%dj"
 
+#: internal/term/web/strings.go:12
+msgid "%dd %dh"
+msgstr "%dj %dh"
+
+#: internal/term/web/strings.go:14
+msgid "%dh %dm"
+msgstr "%dh %dmin"
+
+#: internal/term/web/strings.go:16
+msgid "%s MB"
+msgstr "%s MB"
+
+#: internal/term/web/strings.go:17
+msgid "%s PX"
+msgstr "%s PX"
+
+#: internal/term/web/strings.go:18
+msgid "%s px"
+msgstr "%s px"
+
+#: internal/term/web/strings.go:19
+msgid "AS INUA-TERM"
+msgstr "COMME INUA-TERM"
+
+#: internal/term/web/strings.go:20
+#: internal/termui/agents.go:328
+msgid "Agents"
+msgstr "Agents"
+
+#: internal/term/web/strings.go:21
+msgid "As inua-term"
+msgstr "Comme inua-term"
+
+#: internal/term/web/strings.go:23
+msgid "BAR"
+msgstr "BARRE"
+
+#: internal/term/web/strings.go:24
+msgid "BLOCK"
+msgstr "BLOC"
+
+#: internal/term/web/strings.go:26
+msgid "Basic"
+msgstr "De base"
+
+#: internal/term/web/strings.go:27
+msgid "CONNECTED"
+msgstr "CONNECTÉ"
+
+#: internal/term/web/strings.go:28
+msgid "CONNECTING…"
+msgstr "CONNEXION…"
+
+#: internal/term/web/strings.go:29
+msgid "Columns × rows: the pane fitted to this screen at the text size."
+msgstr "Colonnes × lignes : le panneau ajusté à cet écran à la taille du texte."
+
+#: internal/term/web/strings.go:31
+msgid "Control"
+msgstr "Contrôle"
+
+#: internal/term/web/strings.go:33
+msgid "Cursor blinks"
+msgstr "Le curseur clignote"
+
+#: internal/term/web/strings.go:34
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "TERMINÉ"
 
+#: internal/term/web/strings.go:35
+msgid "Drawing"
+msgstr "Rendu"
+
+#: internal/term/web/strings.go:36
+msgid "Drawn by the browser's page: slower, used when WebGL is missing."
+msgstr "Rendu par la page du navigateur : plus lent, utilisé sans WebGL."
+
+#: internal/term/web/strings.go:37
+msgid "Drawn by the graphics chip: the fast way."
+msgstr "Rendu par la puce graphique : la voie rapide."
+
+#: internal/term/web/strings.go:38
+msgid "Esc, Tab, Ctrl, the arrows and the rest a phone lacks."
+msgstr "Échap, Tab, Ctrl, les flèches et le reste qui manque au téléphone."
+
+#: internal/term/web/strings.go:39
+msgid "Everything from this pane since it opened here."
+msgstr "Tout ce que ce panneau a envoyé depuis son ouverture ici."
+
+#: internal/term/web/strings.go:40
+msgid "First load"
+msgstr "Premier chargement"
+
+#: internal/term/web/strings.go:41
+#: internal/termui/prefs.go:85
+msgid "Font"
+msgstr "Police"
+
+#: internal/term/web/strings.go:42
+msgid "Function"
+msgstr "Fonction"
+
+#: internal/term/web/strings.go:44
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "INACTIF"
+
+#: internal/term/web/strings.go:45
+msgid "INFO"
+msgstr "INFOS"
+
+#: internal/term/web/strings.go:46
+#: internal/termui/prefs.go:142
+#: ui/gpg.ui:1042
+msgid "KEYS"
+msgstr "CLÉS"
+
+#: internal/term/web/strings.go:47
+msgid "Key panel"
+msgstr "Panneau de touches"
+
+#: internal/term/web/strings.go:48
+#: ui/settings.ui:5676
+msgid "Keyboard"
+msgstr "Clavier"
+
+#: internal/term/web/strings.go:49
+msgid "Keys above the keyboard"
+msgstr "Touches au-dessus du clavier"
+
+#: internal/term/web/strings.go:51
+#: internal/termui/agents.go:45
+msgid "NEEDS YOU"
+msgstr "VOUS ATTEND"
+
+#: internal/term/web/strings.go:52
+msgid "No agent is running."
+msgstr "Aucun agent ne tourne."
+
+#: internal/term/web/strings.go:53
+msgid "No pane is open. Choose one in Agents or Workspaces."
+msgstr "Aucun panneau ouvert. Choisissez-en un dans Agents ou Espaces de travail."
+
+#: internal/term/web/strings.go:54
+msgid "OFFLINE"
+msgstr "HORS LIGNE"
+
+#: internal/term/web/strings.go:55
+msgid "OFFLINE · RECONNECTING"
+msgstr "HORS LIGNE · RECONNEXION"
+
+#: internal/term/web/strings.go:56
+msgid "Overview"
+msgstr "Aperçu"
+
+#: internal/term/web/strings.go:57
+msgid "PLAIN"
+msgstr "SIMPLE"
+
+#: internal/term/web/strings.go:58
+msgid "Panes are fitted to the phone at this size; pinching changes it too."
+msgstr "Les panneaux sont ajustés au téléphone à cette taille ; pincer la change aussi."
+
+#: internal/term/web/strings.go:59
+msgid "Pinch, or Settings in Overview, to change it."
+msgstr "Pincez, ou passez par Paramètres dans Aperçu, pour la changer."
+
+#: internal/term/web/strings.go:60
+#: internal/termui/agents.go:39
+msgid "RESTORED"
+msgstr "RESTAURÉ"
+
+#: internal/term/web/strings.go:61
+msgid "Received"
+msgstr "Reçu"
+
+#: internal/term/web/strings.go:62
+msgid "Round trip"
+msgstr "Aller-retour"
+
+#: internal/term/web/strings.go:63
+msgid "Session %d"
+msgstr "Session %d"
+
+#: internal/term/web/strings.go:65
+#: internal/termui/prefs.go:120
+msgid "Shell"
+msgstr "Shell"
+
+#: internal/term/web/strings.go:67
+msgid "Symbols"
+msgstr "Symboles"
+
+#: internal/term/web/strings.go:69
+#: internal/termui/guide.go:86
+#: internal/termui/prefs.go:73
+msgid "Terminal colours"
+msgstr "Couleurs du terminal"
+
+#: internal/term/web/strings.go:71
+msgid "The pane's recent output as it came, and how long it took to arrive and draw."
+msgstr "La sortie récente du panneau telle qu'elle est venue, et le temps qu'elle a mis à arriver et s'afficher."
+
+#: internal/term/web/strings.go:72
+msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
+msgstr "L'écran et l'historique du panneau tels que l'ordinateur les a, et le temps qu'ils ont mis à arriver et s'afficher."
+
+#: internal/term/web/strings.go:73
+msgid "The theme's"
+msgstr "Ceux du thème"
+
+#: internal/term/web/strings.go:74
+msgid "The window theme's ground and text"
+msgstr "Le fond et le texte du thème de la fenêtre"
+
+#: internal/term/web/strings.go:77
+msgid "This phone"
+msgstr "Ce téléphone"
+
+#: internal/term/web/strings.go:78
+msgid "To the bottom"
+msgstr "Tout en bas"
+
+#: internal/term/web/strings.go:79
+msgid "UNDERLINE"
+msgstr "SOULIGNÉ"
+
+#: internal/term/web/strings.go:80
+msgid "WEBGL"
+msgstr "WEBGL"
+
+#: internal/term/web/strings.go:81
+#: internal/termui/agents.go:43
+msgid "WORKING"
+msgstr "AU TRAVAIL"
+
+#: internal/term/web/strings.go:83
+#: ui/settings.ui:1265
+msgid "Workspaces"
+msgstr "Espaces de travail"
+
+#: internal/term/web/strings.go:85
+#: internal/ui/settings_keyring.go:640
+#: internal/ui/settings_keyring.go:674
+msgid "since %s"
+msgstr "depuis %s"
+
+#: internal/term/web/strings.go:86
+msgid "the theme's"
+msgstr "ceux du thème"
+
+#: internal/term/web/strings.go:87
+msgid "the theme's colours"
+msgstr "les couleurs du thème"
+
+#: internal/termui/agents.go:37
+msgid "EXITED %d"
+msgstr "TERMINÉ %d"
 
 #: internal/termui/agents.go:182
 msgid "Agents that need you"
@@ -12288,10 +12556,6 @@ msgstr[1] "%d agents sont inactifs"
 #: internal/termui/agents.go:296
 msgid "%s goes to the next"
 msgstr "%s passe au suivant"
-
-#: internal/termui/agents.go:328
-msgid "Agents"
-msgstr "Agents"
 
 #: internal/termui/agents.go:335
 msgid "No agent runs in any workspace."
@@ -12349,11 +12613,6 @@ msgstr "Votre shell"
 #: internal/termui/guide.go:79
 msgid "The shell every new pane starts. inua-term marks the prompts of bash, zsh and fish, so a pane's last command comes back after a restart; other shells run as they are."
 msgstr "Le shell que lance chaque nouveau panneau. inua-term marque les invites de bash, zsh et fish : la dernière commande d'un panneau revient après un redémarrage ; les autres shells tournent tels quels."
-
-#: internal/termui/guide.go:86
-#: internal/termui/prefs.go:73
-msgid "Terminal colours"
-msgstr "Couleurs du terminal"
 
 #: internal/termui/guide.go:87
 msgid "The colours programs draw with: the window theme's, so the terminal matches the rest of inua, or a classic scheme of its own."
@@ -12483,10 +12742,6 @@ msgid "TEXT"
 msgstr "TEXTE"
 
 #: internal/termui/prefs.go:85
-msgid "Font"
-msgstr "Police"
-
-#: internal/termui/prefs.go:85
 msgid "A monospace family; Pango falls back for CJK"
 msgstr "Une famille à chasse fixe ; Pango complète le CJK"
 
@@ -12559,10 +12814,6 @@ msgid "Below the shell: used when the terminal host starts again"
 msgstr "Sous le shell : pris en compte au prochain démarrage de l'hôte du terminal"
 
 #: internal/termui/prefs.go:120
-msgid "Shell"
-msgstr "Shell"
-
-#: internal/termui/prefs.go:120
 msgid "What new panes start; the panes open already keep theirs"
 msgstr "Ce que lancent les nouveaux panneaux ; ceux déjà ouverts gardent le leur"
 
@@ -12600,11 +12851,6 @@ msgstr "Ne jamais garder"
 #: internal/termui/prefs.go:140
 msgid "Commands matching these patterns, comma-separated"
 msgstr "Les commandes qui correspondent à ces motifs, séparés par des virgules"
-
-#: internal/termui/prefs.go:142
-#: ui/gpg.ui:1042
-msgid "KEYS"
-msgstr "CLÉS"
 
 #: internal/termui/prefs.go:142
 msgid "Click a key, then press the new one; Backspace frees it"
@@ -14345,11 +14591,6 @@ msgstr "Aucune app de confiance ne correspond à « %s »."
 #: internal/ui/settings_keyring.go:616
 msgid "%s reads “%s”"
 msgstr "%s lit « %s »"
-
-#: internal/ui/settings_keyring.go:640
-#: internal/ui/settings_keyring.go:674
-msgid "since %s"
-msgstr "depuis %s"
 
 #: internal/ui/settings_keyring.go:683
 msgid "Stop allowing it: its programs are asked about again"
@@ -16693,10 +16934,6 @@ msgstr "Transparence sur un espace de travail avec des fenêtres"
 msgid "strftime: %a weekday, %b month, %-d day, %H:%M time"
 msgstr "strftime : jour de la semaine %a, mois %b, jour %-d, heure %H : %M"
 
-#: ui/settings.ui:1265
-msgid "Workspaces"
-msgstr "Espaces de travail"
-
 #: ui/settings.ui:1274
 msgid "Which workspaces each bar shows"
 msgstr "Quels espaces de travail chaque barre affiche"
@@ -17374,10 +17611,6 @@ msgstr "Rabattre l’écran éteint l’écran intégré"
 #: ui/settings.ui:5635
 msgid "Its windows move to the other display. Open the lid to use both."
 msgstr "Ses fenêtres passent sur l’autre écran. Relevez-le pour utiliser les deux."
-
-#: ui/settings.ui:5676
-msgid "Keyboard"
-msgstr "Clavier"
 
 #: ui/settings.ui:5724
 msgid "<span alpha='55%'>[</span>KEYS<span alpha='55%'>]</span>"

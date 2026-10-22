@@ -23,9 +23,9 @@ const Version = 1
 // Frames on the socket: a u32 length (of what follows), a u8 kind, then
 // the payload. Little-endian.
 const (
-	frameControl byte = 0 // a JSON message
-	frameOutput  byte = 1 // host to client: u32 pane, then the program's bytes
-	frameInput   byte = 2 // client to host: u32 pane, then the bytes typed
+	FrameControl byte = 0 // a JSON message
+	FrameOutput  byte = 1 // host to client: u32 pane, then the program's bytes
+	FrameInput   byte = 2 // client to host: u32 pane, then the bytes typed
 )
 
 // maxFrame bounds a frame, so a broken peer cannot make the other side
@@ -185,7 +185,9 @@ func SocketPath() string {
 	return filepath.Join(dir, "inua", "term.sock")
 }
 
-func writeFrame(w io.Writer, kind byte, payload ...[]byte) error {
+// WriteFrame writes a frame: its kind, then the payload's parts. A
+// client that relays frames (inua-term serve's) uses it with ReadFrame.
+func WriteFrame(w io.Writer, kind byte, payload ...[]byte) error {
 	n := 1
 	for _, p := range payload {
 		n += len(p)
@@ -204,7 +206,8 @@ func writeFrame(w io.Writer, kind byte, payload ...[]byte) error {
 	return err
 }
 
-func readFrame(r io.Reader) (kind byte, payload []byte, err error) {
+// ReadFrame reads a frame: its kind, and the payload.
+func ReadFrame(r io.Reader) (kind byte, payload []byte, err error) {
 	var head [5]byte
 	if _, err := io.ReadFull(r, head[:]); err != nil {
 		return 0, nil, err
@@ -225,7 +228,7 @@ func writeMessage(w io.Writer, m Message) error {
 	if err != nil {
 		return err
 	}
-	return writeFrame(w, frameControl, b)
+	return WriteFrame(w, FrameControl, b)
 }
 
 func paneBytes(pane int, b []byte) [][]byte {

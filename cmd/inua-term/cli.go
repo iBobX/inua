@@ -15,7 +15,7 @@ import (
 )
 
 // The commands inua-term takes besides the window and the host: report,
-// agents, integration.
+// agents, integration (and serve, in serve.go).
 
 // report tells the host what the agent in this pane does. Run from an
 // agent's hooks (--hook claude, --hook codex), it reads what the agent
