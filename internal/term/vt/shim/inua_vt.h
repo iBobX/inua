@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define INUA_VT_ABI 17
+#define INUA_VT_ABI 18
 
 typedef struct inua_vt inua_vt;
 
@@ -80,6 +80,14 @@ int inua_vt_resize(inua_vt *t, uint16_t cols, uint16_t rows);
  * joined when unwrap is set. *out is freed with inua_vt_free_bytes. */
 int inua_vt_text(inua_vt *t, int unwrap, uint8_t **out, size_t *len);
 void inua_vt_free_bytes(uint8_t *p, size_t len);
+
+/* The terminal as the bytes that draw it again in a terminal of the same
+ * size: its modes, the active screen's rows with the scrollback before
+ * them, a line each, as many rows as it has (so the screen starts where
+ * it does here), the scrolling region, the keyboard's modes and the
+ * cursor. For a client attaching in place of the program's output since
+ * it started. *out freed with inua_vt_free_bytes. */
+int inua_vt_snapshot(inua_vt *t, uint8_t **out, size_t *len);
 
 /* Borrowed until the next call that changes the terminal; len 0 for none. */
 int inua_vt_title(inua_vt *t, const uint8_t **ptr, size_t *len);

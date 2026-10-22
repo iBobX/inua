@@ -43,6 +43,9 @@ type Message struct {
 	// Sizes, in a welcome: the host tells its clients each size a pane
 	// takes, in the output's order (an older host does not).
 	Sizes bool `json:"sizes,omitempty"`
+	// Snapshot, in an attach: the pane as it is now, drawn again at its
+	// size, in place of its replay; in a welcome: the host makes them.
+	Snapshot bool `json:"snapshot,omitempty"`
 
 	Pane  int      `json:"pane,omitempty"`
 	Argv  []string `json:"argv,omitempty"`   // create
@@ -147,7 +150,7 @@ const (
 	MsgReply   = "reply"   // host: to request ID; Error, or what it asked
 	MsgList    = "list"    // client: the panes
 	MsgCreate  = "create"  // client: a pane running Argv in Dir; reply Pane
-	MsgAttach  = "attach"  // client: the pane's replay, then its output
+	MsgAttach  = "attach"  // client: the pane's replay (or Snapshot), then its output
 	MsgDetach  = "detach"  // client: no more of the pane's output
 	MsgResize  = "resize"  // client: Cols × Rows, CellW × CellH
 	MsgColors  = "colors"  // client: the Colors programs are told, for every pane

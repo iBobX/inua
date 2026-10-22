@@ -2,6 +2,7 @@ package vt
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -768,5 +769,64 @@ func TestPaths(t *testing.T) {
 		if !found {
 			t.Errorf("%s is not looked in: %q", want, paths)
 		}
+	}
+}
+
+// A snapshot written to a new terminal of the same size draws it again:
+// the scrollback, the screen where it starts, the cursor and the modes.
+func TestSnapshot(t *testing.T) {
+	cases := []struct {
+		name, out string
+	}{
+		{"scrollback", "\x1b[31mred\x1b[0m\r\n" + strings.Repeat("line\r\n", 9) + "$ ls"},
+		// Cleared below the scrollback: the prompt on the screen's first
+		// row, blank rows under it.
+		{"cleared", strings.Repeat("old\r\n", 8) + "\x1b[H\x1b[2J$ "},
+		{"wrapped", "0123456789012345678901234\r\nnext"},
+		// A full-screen program: the alternate screen, the mouse, a
+		// scrolling region and the cursor inside it.
+		{"alternate", "shell\r\n\x1b[?1049h\x1b[?1000h\x1b[?1006h\x1b[Htop\x1b[2;3r\x1b[3;5Hmid"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			src := newTerm(t, 20, 4)
+			src.Write([]byte(c.out))
+			snap, err := src.Snapshot()
+			if err != nil {
+				t.Fatal(err)
+			}
+			dst := newTerm(t, 20, 4)
+			dst.Write(snap)
+			want, _ := src.Text(false)
+			got, _ := dst.Text(false)
+			if got != want {
+				t.Errorf("text %q, want %q (snapshot %q)", got, want, snap)
+			}
+			sf, _ := src.Frame(true)
+			df, _ := dst.Frame(true)
+			if a, b := text(sf), text(df); fmt.Sprint(a) != fmt.Sprint(b) {
+				t.Errorf("screen %v, want %v", b, a)
+			}
+			if df.Cursor.X != sf.Cursor.X || df.Cursor.Y != sf.Cursor.Y {
+				t.Errorf("cursor %d,%d, want %d,%d", df.Cursor.X, df.Cursor.Y, sf.Cursor.X, sf.Cursor.Y)
+			}
+			if df.Alt != sf.Alt || df.Mouse != sf.Mouse || df.Scroll.Total != sf.Scroll.Total {
+				t.Errorf("alt %v mouse %v rows %d, want %v %v %d", df.Alt, df.Mouse, df.Scroll.Total, sf.Alt, sf.Mouse, sf.Scroll.Total)
+			}
+		})
+	}
+	// The scrolling region came along: a line feed at its foot scrolls
+	// it alone.
+	src := newTerm(t, 20, 4)
+	src.Write([]byte("\x1b[?1049h\x1b[Htop\x1b[4;1Hfoot\x1b[2;3r\x1b[3;1H"))
+	snap, _ := src.Snapshot()
+	dst := newTerm(t, 20, 4)
+	dst.Write(snap)
+	src.Write([]byte("\nx"))
+	dst.Write([]byte("\nx"))
+	sf, _ := src.Frame(true)
+	df, _ := dst.Frame(true)
+	if a, b := text(sf), text(df); fmt.Sprint(a) != fmt.Sprint(b) {
+		t.Errorf("after a line feed in the region: %v, want %v", b, a)
 	}
 }

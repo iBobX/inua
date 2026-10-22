@@ -214,7 +214,7 @@ func (h *Host) serveConn(conn net.Conn) {
 		writeMessage(conn, Message{Type: MsgReply, Error: fmt.Sprintf("protocol %d, the host speaks %d", hello.Version, Version)})
 		return
 	}
-	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version, Sizes: true}); err != nil {
+	if err := writeMessage(conn, Message{Type: MsgWelcome, Version: Version, Sizes: true, Snapshot: true}); err != nil {
 		return
 	}
 	h.mu.Lock()
@@ -381,7 +381,7 @@ func (h *Host) handle(c *client, m Message) {
 		}
 		switch m.Type {
 		case MsgAttach:
-			p.attach(c) // the replay goes out before this reply
+			p.attach(c, m.Snapshot) // the replay goes out before this reply
 		case MsgDetach:
 			p.mu.Lock()
 			delete(p.attached, c)
@@ -650,15 +650,30 @@ func (p *pane) folder() string {
 
 // attach sends the replay and then everything after it, with nothing in
 // between lost or sent twice.
-func (p *pane) attach(c *client) {
+func (p *pane) attach(c *client, snapshot bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	// Its size first: the client's engine takes it before the replay.
 	if p.cols > 0 && p.rows > 0 {
 		c.message(Message{Type: MsgEvent, Pane: p.id, Cols: p.cols, Rows: p.rows})
 	}
-	if len(p.replay) > 0 {
-		c.send(frameOutput, paneBytes(p.id, append([]byte(nil), p.replay...))...)
+	// A snapshot is the screen and the scrollback as the engine has them,
+	// rewrapped at every resize: the replay is the output as it came, for
+	// whatever size each part was meant for, and draws only as it did if
+	// the size never changed.
+	var b []byte
+	if snapshot && p.term != nil {
+		var err error
+		if b, err = p.term.Snapshot(); err != nil {
+			log.Printf("host: pane %d: snapshot: %v", p.id, err)
+			b = nil
+		}
+	}
+	if b == nil {
+		b = append([]byte(nil), p.replay...)
+	}
+	if len(b) > 0 {
+		c.send(frameOutput, paneBytes(p.id, b)...)
 	}
 	p.attached[c] = true
 	c.message(Message{Type: MsgEvent, Pane: p.id, Title: p.title, Dir: p.folder(), Git: &p.git})

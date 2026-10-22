@@ -901,3 +901,53 @@ func TestSwapDroppedAndResume(t *testing.T) {
 		}
 	}
 }
+
+// A client attaching with a snapshot gets the pane as the engine has it,
+// rewrapped at its size, where the replay is the output as it came.
+func TestSnapshotAttach(t *testing.T) {
+	if err := vt.Load(); err != nil {
+		t.Skip(err)
+	}
+	_, path := startHost(t)
+	w1 := newWatcher()
+	c1 := dial(t, path, w1)
+	line := strings.Repeat("0123456789", 6)
+	id, err := c1.Create([]string{"sh", "-c", "echo " + line + "; read x"}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c1.Attach(id)
+	w1.waitFor(t, "the line", func() bool { return strings.Contains(w1.text(id), line) })
+	if err := c1.Resize(id, 20, 24, 0, 0); err != nil {
+		t.Fatal(err)
+	}
+
+	w2 := newWatcher()
+	c2 := dial(t, path, w2)
+	if !c2.TellsSnapshots() {
+		t.Fatal("the host does not say it makes snapshots")
+	}
+	if err := c2.AttachSnapshot(id); err != nil {
+		t.Fatal(err)
+	}
+	// Drawn again in a terminal of the pane's size, it is the line in
+	// three rows of 20.
+	term, err := vt.New(20, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer term.Close()
+	term.Write([]byte(w2.text(id)))
+	got, _ := term.Text(false)
+	if want := line[:20] + "\n" + line[20:40] + "\n" + line[40:]; !strings.HasPrefix(got, want) {
+		t.Errorf("drawn from the snapshot: %q, want it to begin %q", got, want)
+	}
+
+	// Without asking, the replay as before.
+	w3 := newWatcher()
+	c3 := dial(t, path, w3)
+	c3.Attach(id)
+	if !strings.Contains(w3.text(id), line) {
+		t.Errorf("the replay: %q", w3.text(id))
+	}
+}

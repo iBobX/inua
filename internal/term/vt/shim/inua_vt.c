@@ -3,6 +3,7 @@
 #include <ghostty/vt.h>
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 
 /* A growing byte buffer, allocated through libghostty. */
@@ -651,6 +652,89 @@ int inua_vt_text(inua_vt *t, int unwrap, uint8_t **out, size_t *len) {
   r = ghostty_formatter_format_alloc(f, NULL, out, len);
   ghostty_formatter_free(f);
   return r;
+}
+
+/* The formatter's VT output with these extras, in a buffer of
+ * libghostty's. */
+static GhosttyResult format_vt(inua_vt *t, GhosttyFormatterTerminalExtra extra, uint8_t **out, size_t *len) {
+  GhosttyFormatterTerminalOptions opts = GHOSTTY_INIT_SIZED(GhosttyFormatterTerminalOptions);
+  opts.emit = GHOSTTY_FORMATTER_FORMAT_VT;
+  opts.extra = extra;
+  GhosttyFormatter f;
+  GhosttyResult r = ghostty_formatter_terminal_new(NULL, &f, t->term, opts);
+  if (r != GHOSTTY_SUCCESS) return r;
+  r = ghostty_formatter_format_alloc(f, NULL, out, len);
+  ghostty_formatter_free(f);
+  return r;
+}
+
+int inua_vt_snapshot(inua_vt *t, uint8_t **out, size_t *len) {
+  *out = NULL;
+  *len = 0;
+  /* The modes, then every row as a line of its own: the formatter
+   * writes a row's end as \r\n, and the blank rows at the end not at
+   * all. */
+  GhosttyFormatterTerminalExtra plain = GHOSTTY_INIT_SIZED(GhosttyFormatterTerminalExtra);
+  plain.modes = true;
+  plain.screen = (GhosttyFormatterScreenExtra)GHOSTTY_INIT_SIZED(GhosttyFormatterScreenExtra);
+  /* The same with the state that comes after the rows: the scrolling
+   * region, the keyboard's modes, the character sets, the style. */
+  GhosttyFormatterTerminalExtra full = plain;
+  full.scrolling_region = true;
+  full.keyboard = true;
+  full.screen.style = true;
+  full.screen.kitty_keyboard = true;
+  full.screen.charsets = true;
+  uint8_t *a = NULL, *b = NULL;
+  size_t alen = 0, blen = 0;
+  GhosttyResult r = format_vt(t, plain, &a, &alen);
+  if (r == GHOSTTY_SUCCESS) r = format_vt(t, full, &b, &blen);
+  if (r != GHOSTTY_SUCCESS) {
+    if (a) ghostty_free(NULL, a, alen);
+    if (b) ghostty_free(NULL, b, blen);
+    return r;
+  }
+  /* The rows written, and the rows the screen has with its scrollback:
+   * as many line ends again put the last row where it is here, and
+   * where the screen starts. */
+  size_t written = 0, total = 0;
+  bool any = false;
+  for (size_t i = 0; i < alen; i++) {
+    if (a[i] == '\n' && i > 0 && a[i - 1] == '\r') written++;
+    else if (a[i] != '\r') any = true;
+  }
+  if (any) written++;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_TOTAL_ROWS, &total);
+  uint16_t cx = 0, cy = 0;
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_CURSOR_X, &cx);
+  ghostty_terminal_get(t->term, GHOSTTY_TERMINAL_DATA_CURSOR_Y, &cy);
+
+  buf o = {0};
+  buf_put(&o, a, alen);
+  for (size_t i = written ? written : 1; i < total; i++) buf_put(&o, (const uint8_t *)"\r\n", 2);
+  /* What the second pass wrote after the first: the state after the
+   * rows, set once they are there. Should the second not begin with the
+   * first, the state is left out. */
+  if (blen >= alen && memcmp(a, b, alen) == 0) buf_put(&o, b + alen, blen - alen);
+  char cup[24];
+  int n = snprintf(cup, sizeof cup, "\x1b[%u;%uH", (unsigned)cy + 1, (unsigned)cx + 1);
+  buf_put(&o, (const uint8_t *)cup, (size_t)n);
+  ghostty_free(NULL, a, alen);
+  ghostty_free(NULL, b, blen);
+  if (o.failed) {
+    buf_free(&o);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  uint8_t *p = ghostty_alloc(NULL, o.len);
+  if (p == NULL) {
+    buf_free(&o);
+    return GHOSTTY_OUT_OF_MEMORY;
+  }
+  memcpy(p, o.p, o.len);
+  *out = p;
+  *len = o.len;
+  buf_free(&o);
+  return GHOSTTY_SUCCESS;
 }
 
 void inua_vt_free_bytes(uint8_t *p, size_t len) { ghostty_free(NULL, p, len); }

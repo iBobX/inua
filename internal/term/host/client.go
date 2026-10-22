@@ -28,6 +28,8 @@ type Client struct {
 	done     chan struct{}
 	// sizes is set when the host tells each size a pane takes.
 	sizes bool
+	// snapshots is set when the host makes snapshots.
+	snapshots bool
 }
 
 // Dial connects to the host at path; onOutput and onEvent may be nil.
@@ -52,7 +54,7 @@ func Dial(path string, onOutput func(pane int, b []byte), onEvent func(Message))
 		conn.Close()
 		return nil, err
 	}
-	c := &Client{conn: conn, pending: map[int]chan Message{}, onOutput: onOutput, onEvent: onEvent, done: make(chan struct{}), sizes: m.Sizes}
+	c := &Client{conn: conn, pending: map[int]chan Message{}, onOutput: onOutput, onEvent: onEvent, done: make(chan struct{}), sizes: m.Sizes, snapshots: m.Snapshot}
 	go c.read()
 	return c, nil
 }
@@ -162,6 +164,17 @@ func (c *Client) Attach(pane int) error {
 	_, err := c.call(Message{Type: MsgAttach, Pane: pane})
 	return err
 }
+
+// AttachSnapshot is Attach with the pane as it is now, drawn again at its
+// size, in place of its replay; on a host that makes none
+// (TellsSnapshots), the replay.
+func (c *Client) AttachSnapshot(pane int) error {
+	_, err := c.call(Message{Type: MsgAttach, Pane: pane, Snapshot: true})
+	return err
+}
+
+// TellsSnapshots reports whether the host makes snapshots.
+func (c *Client) TellsSnapshots() bool { return c.snapshots }
 
 // Detach stops a pane's output.
 func (c *Client) Detach(pane int) error {

@@ -23,7 +23,7 @@ import (
 )
 
 // abi is the shim's INUA_VT_ABI this package is written for.
-const abi = 17
+const abi = 18
 
 // Library is the shim's file name.
 const Library = "libinua-vt.so"
@@ -38,6 +38,7 @@ var lib struct {
 	write       func(t uintptr, data *byte, n uintptr)
 	resize      func(t uintptr, cols, rows uint16) int32
 	text        func(t uintptr, unwrap int32, out **byte, n *uintptr) int32
+	snapshot    func(t uintptr, out **byte, n *uintptr) int32
 	freeBytes   func(p *byte, n uintptr)
 	title       func(t uintptr, p **byte, n *uintptr) int32
 	pwd         func(t uintptr, p **byte, n *uintptr) int32
@@ -118,6 +119,7 @@ func Load() error {
 		purego.RegisterLibFunc(&lib.write, h, "inua_vt_write")
 		purego.RegisterLibFunc(&lib.resize, h, "inua_vt_resize")
 		purego.RegisterLibFunc(&lib.text, h, "inua_vt_text")
+		purego.RegisterLibFunc(&lib.snapshot, h, "inua_vt_snapshot")
 		purego.RegisterLibFunc(&lib.freeBytes, h, "inua_vt_free_bytes")
 		purego.RegisterLibFunc(&lib.title, h, "inua_vt_title")
 		purego.RegisterLibFunc(&lib.pwd, h, "inua_vt_pwd")
@@ -433,6 +435,24 @@ func (t *Terminal) Text(unwrap bool) (string, error) {
 	s := string(unsafe.Slice(p, n))
 	lib.freeBytes(p, n)
 	return s, nil
+}
+
+// Snapshot is the terminal as the bytes that draw it again in a terminal
+// of the same size: its modes, the scrollback and the screen, the
+// scrolling region, the keyboard's modes and the cursor. A client
+// attaching takes it in place of the program's output since it started.
+func (t *Terminal) Snapshot() ([]byte, error) {
+	var p *byte
+	var n uintptr
+	if err := result("snapshot", lib.snapshot(t.h, &p, &n)); err != nil {
+		return nil, err
+	}
+	if p == nil {
+		return nil, nil
+	}
+	b := append([]byte(nil), unsafe.Slice(p, n)...)
+	lib.freeBytes(p, n)
+	return b, nil
 }
 
 // Title is the title the program set (OSC 0 or 2), "" for none.
