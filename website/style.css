@@ -51,8 +51,13 @@ a:hover { border-color: var(--t0); }
 
 header.top { padding: 40px 0 0; }
 header.top .col { display: flex; justify-content: space-between; align-items: center; }
-.name { display: inline-flex; align-items: center; gap: 10px; font: 400 15px/1 var(--mono); letter-spacing: 0.06em; color: var(--t0); border: 0; }
-.name .mark { width: 20px; height: 20px; background: currentColor; -webkit-mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; }
+.name { display: inline-flex; align-items: center; gap: 14px; font: 400 17px/1 var(--mono); letter-spacing: 0.06em; color: var(--t0); border: 0; }
+.name .mark { width: 34px; height: 34px; background: currentColor; -webkit-mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; }
+/* The hollow ribbons need two device pixels a line: on HiDPI screens the
+   mark as drawn, on others the solid one. */
+@media (min-resolution: 2dppx) {
+  .name .mark { -webkit-mask-image: url(img/logo/inua-mark.svg); mask-image: url(img/logo/inua-mark.svg); }
+}
 
 .intro { padding: clamp(96px, 20vh, 220px) 0 0; }
 h1 {
@@ -257,6 +262,8 @@ h1, h2 { text-wrap: balance; }
   body { font-size: 15.5px; line-height: 1.75; }
   .col { width: calc(100% - 40px); }
   header.top { padding-top: 22px; }
+  .name { gap: 12px; }
+  .name .mark { width: 28px; height: 28px; }
   .intro { padding-top: 64px; }
   h1 { margin: 20px 0 22px; }
   .links { margin-top: 24px; gap: 8px 22px; }
