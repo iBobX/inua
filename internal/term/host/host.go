@@ -13,6 +13,7 @@ import (
 	"slices"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/lyricat/inua/internal/term/agent"
@@ -100,6 +101,12 @@ type pane struct {
 	exited   bool
 	code     int
 	attached map[*client]bool
+	// wants are the sizes the clients asked for. A pane has one size: the
+	// last asked for, by whichever screen looked at it last (a phone
+	// opening it takes it to the phone's size); when that client lets go
+	// (detaches, or goes), the pane takes the size the last of the others
+	// asked for (back to the desktop's).
+	wants map[*client]want
 	// lastRun is the command that ran last; pending a restored command
 	// put back at the prompt once the shell takes input; restored is set
 	// until the user types.
@@ -108,6 +115,15 @@ type pane struct {
 	restored bool
 	agent    paneAgent
 }
+
+// want is a size a client asked for, and when: seq orders the asks.
+type want struct {
+	cols, rows, cellW, cellH int
+	seq                      uint64
+}
+
+// wantSeq orders the clients' asks for sizes, across panes.
+var wantSeq atomic.Uint64
 
 // client is a connection to the host.
 type client struct {
@@ -327,6 +343,7 @@ func (h *Host) drop(c *client) {
 		p.mu.Lock()
 		delete(p.attached, c)
 		p.mu.Unlock()
+		p.letGo(c)
 	}
 	c.close()
 }
@@ -386,11 +403,15 @@ func (h *Host) handle(c *client, m Message) {
 			p.mu.Lock()
 			delete(p.attached, c)
 			p.mu.Unlock()
+			p.letGo(c)
 		case MsgResize:
 			if err := p.resize(m.Cols, m.Rows, m.CellW, m.CellH); err != nil {
 				fail(err)
 				return
 			}
+			p.mu.Lock()
+			p.wants[c] = want{m.Cols, m.Rows, m.CellW, m.CellH, wantSeq.Add(1)}
+			p.mu.Unlock()
 		case MsgClose:
 			last := h.closePane(p)
 			h.forgetPane(p.id)
@@ -470,7 +491,7 @@ func (h *Host) start(argv []string, dir string, env []string, cols, rows, cellW,
 	if err != nil {
 		return 0, err
 	}
-	p := &pane{id: id, host: h, argv: argv, dir: dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, answers: make(chan []byte, answersLen)}
+	p := &pane{id: id, host: h, argv: argv, dir: dir, pty: pt, cols: cols, rows: rows, attached: map[*client]bool{}, wants: map[*client]want{}, answers: make(chan []byte, answersLen)}
 	p.git = readGit(dir)
 	if t, err := vt.New(cols, rows); err == nil {
 		p.term = t
@@ -680,6 +701,29 @@ func (p *pane) attach(c *client, snapshot bool) {
 	if p.exited {
 		code := p.code
 		c.message(Message{Type: MsgEvent, Pane: p.id, Code: &code})
+	}
+}
+
+// letGo forgets the size a client asked for; when it was the pane's, the
+// pane takes the size the last of the others asked for.
+func (p *pane) letGo(c *client) {
+	p.mu.Lock()
+	w, ok := p.wants[c]
+	delete(p.wants, c)
+	var back want
+	for _, o := range p.wants {
+		if o.seq > back.seq {
+			back = o
+		}
+	}
+	// Its size, unless another asked after it.
+	current := ok && w.seq > back.seq
+	p.mu.Unlock()
+	if !current || back.seq == 0 || (back.cols == w.cols && back.rows == w.rows) {
+		return
+	}
+	if err := p.resize(back.cols, back.rows, back.cellW, back.cellH); err != nil {
+		log.Printf("host: pane %d back to %dx%d: %v", p.id, back.cols, back.rows, err)
 	}
 }
 

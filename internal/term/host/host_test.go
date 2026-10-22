@@ -951,3 +951,50 @@ func TestSnapshotAttach(t *testing.T) {
 		t.Errorf("the replay: %q", w3.text(id))
 	}
 }
+
+// A pane takes the size the last client asked for; when that client
+// detaches or goes, the size the last of the others asked for.
+func TestSizeLastLooked(t *testing.T) {
+	_, path := startHost(t)
+	desk := dial(t, path, newWatcher())
+	id, err := desk.Create([]string{"sh", "-c", "read x"}, "", nil, 80, 24)
+	if err != nil {
+		t.Fatal(err)
+	}
+	size := func() (int, int) {
+		panes, _ := desk.List()
+		return panes[0].Cols, panes[0].Rows
+	}
+	want := func(what string, cols, rows int) {
+		t.Helper()
+		if c, r := size(); c != cols || r != rows {
+			t.Errorf("%s: %dx%d, want %dx%d", what, c, r, cols, rows)
+		}
+	}
+	desk.Attach(id)
+	desk.Resize(id, 100, 30, 0, 0)
+
+	phone := dial(t, path, newWatcher())
+	phone.Resize(id, 50, 40, 0, 0)
+	phone.Attach(id)
+	want("the phone looking", 50, 40)
+	phone.Detach(id)
+	want("the phone gone to another pane", 100, 30)
+
+	phone.Resize(id, 50, 40, 0, 0)
+	phone.Attach(id)
+	// The desktop asks again (its window resized): it is the last to.
+	desk.Resize(id, 120, 30, 0, 0)
+	want("the desktop asking again", 120, 30)
+	phone.Detach(id)
+	want("the phone letting go of a size no longer the pane's", 120, 30)
+
+	phone.Resize(id, 50, 40, 0, 0)
+	want("the phone looking again", 50, 40)
+	phone.Close()
+	deadline := time.Now().Add(5 * time.Second)
+	for c, r := size(); (c != 120 || r != 30) && time.Now().Before(deadline); c, r = size() {
+		time.Sleep(10 * time.Millisecond)
+	}
+	want("the phone's connection gone", 120, 30)
+}
