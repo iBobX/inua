@@ -47,7 +47,6 @@
 </script>
 </head>
 <body data-page="apps">
-
 <header class="top">
   <div class="col">
     <a class="name" href="/">inua</a>
@@ -66,17 +65,8 @@
     <div class="label" data-i18n="apps_label">Apps</div>
     <h1 data-i18n="apps_h1">Made for inua, not bound to it.</h1>
     <p data-i18n="apps_intro">Each app is a program of its own. In inua it takes the shell's colours and opens from the launcher and the dock; on another Wayland desktop, it opens all the same.</p>
-    <div class="links"><a href="/" data-i18n="apps_home">The shell</a><a href="/#install" data-i18n="install">Install</a><a href="https://github.com/lyricat/inua" data-i18n="source">Source</a></div>
+    <div class="links"><a href="/light-apps" data-i18n="light_label">Light apps</a><a href="/" data-i18n="apps_home">The shell</a><a href="/#install" data-i18n="install">Install</a><a href="https://github.com/lyricat/inua" data-i18n="source">Source</a></div>
   </div>
-
-  <!-- Five apps on a faint grid, at their own depths. -->
-  <figure class="stage rv" role="img" aria-label="Weather, Clock, Tailscale, Calendar and Color Picker side by side" data-i18n-aria="apps_aria">
-    <div class="st st-weather" data-depth="0.6"><span class="shot"><img class="l" src="img/apps/weather-washi.webp" alt="" width="440" height="720"><img class="d" src="img/apps/weather-yoru.webp" alt="" width="440" height="720"></span></div>
-    <div class="st st-calendar" data-depth="0.35"><span class="shot"><img class="l" src="img/apps/calendar-washi.webp" alt="" width="440" height="600"><img class="d" src="img/apps/calendar-yoru.webp" alt="" width="440" height="600"></span></div>
-    <div class="st st-tailscale" data-depth="0.8"><span class="shot"><img class="l" src="img/apps/tailscale-washi.webp" alt="" width="460" height="700"><img class="d" src="img/apps/tailscale-yoru.webp" alt="" width="460" height="700"></span></div>
-    <div class="st st-clock" data-depth="1.2"><span class="shot"><img class="l" src="img/apps/clock-washi.webp" alt="" width="440" height="640"><img class="d" src="img/apps/clock-yoru.webp" alt="" width="440" height="640"></span></div>
-    <div class="st st-color" data-depth="1.6"><span class="shot"><img class="l" src="img/apps/colorpicker-washi.webp" alt="" width="400" height="600"><img class="d" src="img/apps/colorpicker-yoru.webp" alt="" width="400" height="600"></span></div>
-  </figure>
 
   <section class="col rv">
     <div class="label" data-i18n="big_label">Apps</div>
@@ -104,110 +94,9 @@
   <section class="col rv">
     <div class="label" data-i18n="light_label">Light apps</div>
     <h2 data-i18n="light_h">Small windows that do one thing.</h2>
-    <p data-i18n="light_intro">Twelve of them, quick to open: <code>inua-apps clock</code>, <code>inua-apps weather</code> …</p>
+    <p data-i18n="light_more">Clock, Weather, Calculator and nine more have <a href="/light-apps">a page of their own</a>.</p>
   </section>
 
-  <section class="app col-wide rv">
-    <div class="app-text">
-      <div class="num">01</div>
-      <h2>Clock</h2>
-      <p data-i18n="clock_d">World clocks at a glance, alarms that ring even when Clock is closed, a stopwatch and a timer.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/clock-washi.webp" alt="Clock" width="440" height="640" loading="lazy"><img class="d" src="img/apps/clock-yoru.webp" alt="Clock" width="440" height="640" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide flip rv">
-    <div class="app-text">
-      <div class="num">02</div>
-      <h2>Weather</h2>
-      <p data-i18n="weather_d">The weather now, for the next 24 hours and the next seven days, for the places you keep. From Open-Meteo, with no account.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/weather-washi.webp" alt="Weather" width="440" height="720" loading="lazy"><img class="d" src="img/apps/weather-yoru.webp" alt="Weather" width="440" height="720" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app wide col-wide rv">
-    <div class="app-text">
-      <div class="num">03</div>
-      <h2>Stocks</h2>
-      <p data-i18n="stocks_d">A watchlist with a chart for each, from a day to five years.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/stocks-washi.webp" alt="Stocks" width="880" height="580" loading="lazy"><img class="d" src="img/apps/stocks-yoru.webp" alt="Stocks" width="880" height="580" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide rv">
-    <div class="app-text">
-      <div class="num">04</div>
-      <h2>Calculator</h2>
-      <p data-i18n="calc_d">Type or click; the answer is there as you go. Scientific keys when you want them.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/calculator-washi.webp" alt="Calculator" width="340" height="520" loading="lazy"><img class="d" src="img/apps/calculator-yoru.webp" alt="Calculator" width="340" height="520" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide flip rv">
-    <div class="app-text">
-      <div class="num">05</div>
-      <h2>Calendar</h2>
-      <p data-i18n="cal_d">The month with week numbers. Pick a day to see how far it is from today, its week and its day of the year.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/calendar-washi.webp" alt="Calendar" width="440" height="600" loading="lazy"><img class="d" src="img/apps/calendar-yoru.webp" alt="Calendar" width="440" height="600" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide rv">
-    <div class="app-text">
-      <div class="num">06</div>
-      <h2>Color Picker</h2>
-      <p data-i18n="color_d">Pick any colour on the screen with a loupe, then copy it as hex, RGB or HSL. The colours you picked stay at hand.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/colorpicker-washi.webp" alt="Color Picker" width="400" height="600" loading="lazy"><img class="d" src="img/apps/colorpicker-yoru.webp" alt="Color Picker" width="400" height="600" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide flip rv">
-    <div class="app-text">
-      <div class="num">07</div>
-      <h2>System Monitor</h2>
-      <p data-i18n="sysmon_d">Every core, memory, the GPU, network and disks with their last minute. Open any process to see what it uses, and end it gently, firmly, or with its children.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/sysmon-washi.webp" alt="System Monitor" width="460" height="680" loading="lazy"><img class="d" src="img/apps/sysmon-yoru.webp" alt="System Monitor" width="460" height="680" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide rv">
-    <div class="app-text">
-      <div class="num">08</div>
-      <h2>Tailscale</h2>
-      <p data-i18n="ts_d">Your tailnet's devices, online first, with their addresses one click away. Ping them, send them files, pick an exit node, and change this device's settings.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/tailscale-washi.webp" alt="Tailscale" width="460" height="700" loading="lazy"><img class="d" src="img/apps/tailscale-yoru.webp" alt="Tailscale" width="460" height="700" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="app col-wide rv">
-    <div class="app-text">
-      <div class="num">09</div>
-      <h2>Pass</h2>
-      <p data-i18n="pass_d">Your password store in three columns: categories, entries, and the one you open, with its one-time code and every value a click from the clipboard. When gpg needs your passphrase, inua asks in its own dialog, with the key, what it is for and who asked, and hides them in one click before you share your screen.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/pinentry-washi.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"><img class="d" src="img/apps/pinentry-yoru.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"></span></span></div>
-  </section>
-
-  <section class="col rv">
-    <dl class="parts">
-      <div><dt>GPG</dt><dd data-i18n="gpg_d">Encrypt, sign and decrypt, text or files, with your keyring.</dd></div>
-      <div><dt>Music</dt><dd data-i18n="music_d">A player in Winamp's spirit, with an equalizer and a spectrum.</dd></div>
-      <div><dt>Video</dt><dd data-i18n="video_d">A plain player that remembers where you left each video.</dd></div>
-      <div><dt data-i18n="games">Games</dt><dd><span data-i18n="games_d">Minesweeper, Space Pinball and Small Fortune, offline.</span> <code>inua-games</code></dd></div>
-      <div><dt>Workshop</dt><dd data-i18n="workshop_d">Your own light app, in any language, drawn in the shell's look.</dd></div>
-    </dl>
-  </section>
-
-  <section class="col rv">
-    <div class="label" data-i18n="open_label">Opening them</div>
-    <h2 data-i18n="open_h">Wherever you reach for them.</h2>
-    <dl class="parts">
-      <div><dt data-i18n="launcher">Launcher</dt><dd data-i18n="open_launcher">Type a few letters of the name.</dd></div>
-      <div><dt data-i18n="dock">Dock</dt><dd data-i18n="open_drawer">The drawer at the end of the dock holds them all.</dd></div>
-      <div><dt data-i18n="open_cmd">Command</dt><dd><code>inua-apps clock</code>, <code>inua-apps tailscale</code> …</dd></div>
-    </dl>
-    <p class="note" data-i18n="open_once">Each runs once: opening it again brings its window to you, on the workspace you are on.</p>
-  </section>
   <section class="col rv">
     <div class="label" data-i18n="out_label">Outside inua</div>
     <h2 data-i18n="out_h">On another desktop.</h2>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inua — light apps</title>
+<meta name="description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music and Video, small windows drawn like the shell.">
+<link rel="canonical" href="https://inua.one/light-apps">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="inua">
+<meta property="og:title" content="inua — light apps">
+<meta property="og:description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music and Video, small windows drawn like the shell.">
+<meta property="og:url" content="https://inua.one/light-apps">
+<meta property="og:image" content="https://inua.one/img/social/og-apps.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="inua's light apps: Calendar, Clock, Color Picker, Calculator and System Monitor">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="inua — light apps">
+<meta name="twitter:description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass, GPG, Music and Video, small windows drawn like the shell.">
+<meta name="twitter:image" content="https://inua.one/img/social/twitter-apps.png">
+<meta name="twitter:image:alt" content="inua's light apps: Calendar, Clock, Color Picker, Calculator and System Monitor">
+<meta name="theme-color" content="#F2EDE2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=20261022">
+<script>
+/* As on the home page: the colourway and the language before the first
+   paint, and light or dark (data-tone) for the screenshots. */
+(function () {
+  var r = document.documentElement, q = new URLSearchParams(location.search), w = q.get("way"), l = q.get("lang"), s = {};
+  try { s.w = localStorage.getItem("inua-way"); s.l = localStorage.getItem("inua-lang"); } catch (e) {}
+  var ways = /^(washi|aojashin|yoru|suimen|rinko|bunko|denko)$/;
+  r.dataset.way = ways.test(w) ? w : ways.test(s.w) ? s.w : matchMedia("(prefers-color-scheme: dark)").matches ? "yoru" : "washi";
+  r.dataset.tone = /^(washi|aojashin)$/.test(r.dataset.way) ? "light" : "dark";
+  var tags = l || s.l ? [l || s.l] : navigator.languages || [navigator.language];
+  for (var i = 0; i < tags.length; i++) {
+    var b = String(tags[i]).toLowerCase().split("-")[0];
+    if (b === "en") break;
+    if (/^(ja|zh|ko|kr|es|fr)$/.test(b)) { r.classList.add("i18n-wait"); break; }
+  }
+})();
+</script>
+</head>
+<body data-page="light">
+<header class="top">
+  <div class="col">
+    <a class="name" href="/">inua</a>
+    <div class="lang" id="lang">
+      <button class="lang-btn" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="langList" aria-label="Language">
+        <span id="langName">English</span>
+        <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <ul class="lang-list" id="langList" role="listbox" tabindex="-1" aria-label="Language"></ul>
+    </div>
+  </div>
+</header>
+
+<main class="apps">
+  <div class="intro col">
+    <div class="label" data-i18n="light_label">Light apps</div>
+    <h1 data-i18n="light_h">Small windows that do one thing.</h1>
+    <p data-i18n="light_intro">Twelve of them, quick to open: <code>inua-apps clock</code>, <code>inua-apps weather</code> …</p>
+    <div class="links"><a href="/apps" data-i18n="apps_label">Apps</a><a href="/" data-i18n="apps_home">The shell</a><a href="/#install" data-i18n="install">Install</a><a href="https://github.com/lyricat/inua" data-i18n="source">Source</a></div>
+  </div>
+
+  <!-- Five apps on a faint grid, at their own depths. -->
+  <figure class="stage rv" role="img" aria-label="Weather, Clock, Tailscale, Calendar and Color Picker side by side" data-i18n-aria="apps_aria">
+    <div class="st st-weather" data-depth="0.6"><span class="shot"><img class="l" src="img/apps/weather-washi.webp" alt="" width="440" height="720"><img class="d" src="img/apps/weather-yoru.webp" alt="" width="440" height="720"></span></div>
+    <div class="st st-calendar" data-depth="0.35"><span class="shot"><img class="l" src="img/apps/calendar-washi.webp" alt="" width="440" height="600"><img class="d" src="img/apps/calendar-yoru.webp" alt="" width="440" height="600"></span></div>
+    <div class="st st-tailscale" data-depth="0.8"><span class="shot"><img class="l" src="img/apps/tailscale-washi.webp" alt="" width="460" height="700"><img class="d" src="img/apps/tailscale-yoru.webp" alt="" width="460" height="700"></span></div>
+    <div class="st st-clock" data-depth="1.2"><span class="shot"><img class="l" src="img/apps/clock-washi.webp" alt="" width="440" height="640"><img class="d" src="img/apps/clock-yoru.webp" alt="" width="440" height="640"></span></div>
+    <div class="st st-color" data-depth="1.6"><span class="shot"><img class="l" src="img/apps/colorpicker-washi.webp" alt="" width="400" height="600"><img class="d" src="img/apps/colorpicker-yoru.webp" alt="" width="400" height="600"></span></div>
+  </figure>
+
+  <section class="app col-wide rv">
+    <div class="app-text">
+      <div class="num">01</div>
+      <h2>Clock</h2>
+      <p data-i18n="clock_d">World clocks at a glance, alarms that ring even when Clock is closed, a stopwatch and a timer.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/clock-washi.webp" alt="Clock" width="440" height="640" loading="lazy"><img class="d" src="img/apps/clock-yoru.webp" alt="Clock" width="440" height="640" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide flip rv">
+    <div class="app-text">
+      <div class="num">02</div>
+      <h2>Weather</h2>
+      <p data-i18n="weather_d">The weather now, for the next 24 hours and the next seven days, for the places you keep. From Open-Meteo, with no account.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/weather-washi.webp" alt="Weather" width="440" height="720" loading="lazy"><img class="d" src="img/apps/weather-yoru.webp" alt="Weather" width="440" height="720" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app wide col-wide rv">
+    <div class="app-text">
+      <div class="num">03</div>
+      <h2>Stocks</h2>
+      <p data-i18n="stocks_d">A watchlist with a chart for each, from a day to five years.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/stocks-washi.webp" alt="Stocks" width="880" height="580" loading="lazy"><img class="d" src="img/apps/stocks-yoru.webp" alt="Stocks" width="880" height="580" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide rv">
+    <div class="app-text">
+      <div class="num">04</div>
+      <h2>Calculator</h2>
+      <p data-i18n="calc_d">Type or click; the answer is there as you go. Scientific keys when you want them.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/calculator-washi.webp" alt="Calculator" width="340" height="520" loading="lazy"><img class="d" src="img/apps/calculator-yoru.webp" alt="Calculator" width="340" height="520" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide flip rv">
+    <div class="app-text">
+      <div class="num">05</div>
+      <h2>Calendar</h2>
+      <p data-i18n="cal_d">The month with week numbers. Pick a day to see how far it is from today, its week and its day of the year.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/calendar-washi.webp" alt="Calendar" width="440" height="600" loading="lazy"><img class="d" src="img/apps/calendar-yoru.webp" alt="Calendar" width="440" height="600" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide rv">
+    <div class="app-text">
+      <div class="num">06</div>
+      <h2>Color Picker</h2>
+      <p data-i18n="color_d">Pick any colour on the screen with a loupe, then copy it as hex, RGB or HSL. The colours you picked stay at hand.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/colorpicker-washi.webp" alt="Color Picker" width="400" height="600" loading="lazy"><img class="d" src="img/apps/colorpicker-yoru.webp" alt="Color Picker" width="400" height="600" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide flip rv">
+    <div class="app-text">
+      <div class="num">07</div>
+      <h2>System Monitor</h2>
+      <p data-i18n="sysmon_d">Every core, memory, the GPU, network and disks with their last minute. Open any process to see what it uses, and end it gently, firmly, or with its children.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/sysmon-washi.webp" alt="System Monitor" width="460" height="680" loading="lazy"><img class="d" src="img/apps/sysmon-yoru.webp" alt="System Monitor" width="460" height="680" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide rv">
+    <div class="app-text">
+      <div class="num">08</div>
+      <h2>Tailscale</h2>
+      <p data-i18n="ts_d">Your tailnet's devices, online first, with their addresses one click away. Ping them, send them files, pick an exit node, and change this device's settings.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/tailscale-washi.webp" alt="Tailscale" width="460" height="700" loading="lazy"><img class="d" src="img/apps/tailscale-yoru.webp" alt="Tailscale" width="460" height="700" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="app col-wide flip rv">
+    <div class="app-text">
+      <div class="num">09</div>
+      <h2>Pass</h2>
+      <p data-i18n="pass_d">Your password store in three columns: categories, entries, and the one you open, with its one-time code and every value a click from the clipboard. When gpg needs your passphrase, inua asks in its own dialog, with the key, what it is for and who asked, and hides them in one click before you share your screen.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/pinentry-washi.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"><img class="d" src="img/apps/pinentry-yoru.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="col rv">
+    <dl class="parts">
+      <div><dt>GPG</dt><dd data-i18n="gpg_d">Encrypt, sign and decrypt, text or files, with your keyring.</dd></div>
+      <div><dt>Music</dt><dd data-i18n="music_d">A player in Winamp's spirit, with an equalizer and a spectrum.</dd></div>
+      <div><dt>Video</dt><dd data-i18n="video_d">A plain player that remembers where you left each video.</dd></div>
+      <div><dt data-i18n="games">Games</dt><dd><span data-i18n="games_d">Minesweeper, Space Pinball and Small Fortune, offline.</span> <code>inua-games</code></dd></div>
+      <div><dt>Workshop</dt><dd data-i18n="workshop_d">Your own light app, in any language, drawn in the shell's look.</dd></div>
+    </dl>
+  </section>
+
+  <section class="col rv">
+    <div class="label" data-i18n="open_label">Opening them</div>
+    <h2 data-i18n="open_h">Wherever you reach for them.</h2>
+    <dl class="parts">
+      <div><dt data-i18n="launcher">Launcher</dt><dd data-i18n="open_launcher">Type a few letters of the name.</dd></div>
+      <div><dt data-i18n="dock">Dock</dt><dd data-i18n="open_drawer">The drawer at the end of the dock holds them all.</dd></div>
+      <div><dt data-i18n="open_cmd">Command</dt><dd><code>inua-apps clock</code>, <code>inua-apps tailscale</code> …</dd></div>
+      <div><dt data-i18n="open_else">Elsewhere</dt><dd data-i18n="open_else_d">From your own launcher, on another Wayland desktop.</dd></div>
+    </dl>
+    <p class="note" data-i18n="open_once">Each runs once: opening it again brings its window to you, on the workspace you are on.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="col">
+    <span>inua</span>
+    <span class="foot-links"><a href="/privacy" data-i18n="privacy">Privacy</a><a href="/terms" data-i18n="terms">Terms</a><a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a></span>
+  </div>
+</footer>
+
+<script src="i18n.js?v=20261022"></script>
+<script src="main.js?v=20261022"></script>
+</body>
+</html>
