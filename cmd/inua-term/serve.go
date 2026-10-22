@@ -16,6 +16,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/web"
+	"github.com/lyricat/inua/internal/term/webterm"
 )
 
 // serve shows the host's terminals in a browser (internal/term/web): on
@@ -36,7 +37,7 @@ func serve(args []string) int {
 	}
 	listen := *addr
 	if *tailnet {
-		ip, err := tailscaleIP()
+		ip, err := webterm.TailscaleIP()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
 			return 1
@@ -45,7 +46,7 @@ func serve(args []string) int {
 		listen = net.JoinHostPort(ip, port)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	token, err := web.Token(ctx, *renew)
+	token, err := webterm.Token(ctx, *renew)
 	cancel()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
@@ -71,27 +72,4 @@ func serve(args []string) int {
 		return 1
 	}
 	return 0
-}
-
-// tailscaleNet is Tailscale's range of addresses (100.64.0.0/10).
-var tailscaleNet = &net.IPNet{IP: net.IPv4(100, 64, 0, 0), Mask: net.CIDRMask(10, 32)}
-
-// tailscaleIP is this computer's Tailscale IPv4 address.
-func tailscaleIP() (string, error) {
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		return "", err
-	}
-	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 {
-			continue
-		}
-		addrs, _ := iface.Addrs()
-		for _, a := range addrs {
-			if n, ok := a.(*net.IPNet); ok && n.IP.To4() != nil && tailscaleNet.Contains(n.IP) {
-				return n.IP.String(), nil
-			}
-		}
-	}
-	return "", errors.New("no Tailscale address: is Tailscale up?")
 }

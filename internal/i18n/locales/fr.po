@@ -1738,6 +1738,7 @@ msgid "System Monitor"
 msgstr "Moniteur système"
 
 #: internal/appui/app.go:73
+#: internal/termui/prefsweb.go:64
 #: ui/control.ui:540
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
@@ -2588,7 +2589,8 @@ msgstr "Masquer"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:116
+#: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:881
@@ -2970,7 +2972,7 @@ msgid "NETWORK"
 msgstr "RÉSEAU"
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:508
+#: internal/ui/settings_card.go:525
 msgid "DISK"
 msgstr "DISQUE"
 
@@ -3233,7 +3235,7 @@ msgstr "ORDINATEUR"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
-#: internal/shell/cardterm.go:130
+#: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "Modèle"
@@ -3262,7 +3264,7 @@ msgid "System"
 msgstr "Système"
 
 #: internal/appui/sysmon.go:969
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 msgid "Kernel"
 msgstr "Noyau"
 
@@ -3655,7 +3657,7 @@ msgid "IN USE"
 msgstr "EN UTILISATION"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:281
+#: internal/termui/prefs.go:283
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3801,6 +3803,7 @@ msgstr "Lecture impossible : %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/termui/prefsweb.go:128
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
@@ -3970,7 +3973,7 @@ msgstr "Annuler"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:608
+#: internal/ui/settings_card.go:625
 msgid "OK"
 msgstr "D'accord"
 
@@ -4242,6 +4245,7 @@ msgstr "Les appareils avec KDE Connect, GSConnect ou Valent trouvent cet ordinat
 
 #: internal/connectui/window.go:384
 #: internal/remoteui/window.go:492
+#: internal/termui/prefsweb.go:164
 #: internal/vmui/window.go:1658
 #: internal/vmui/window.go:1757
 #: internal/vmui/window.go:1767
@@ -6335,6 +6339,7 @@ msgid "Text"
 msgstr "Texte"
 
 #: internal/filesui/renamemany.go:161
+#: internal/termui/prefsweb.go:79
 msgid "Where"
 msgstr "Où"
 
@@ -6498,7 +6503,7 @@ msgid "New file…"
 msgstr "Nouveau fichier…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:117
 #: internal/termui/paste.go:299
 msgid "Paste"
 msgstr "Coller"
@@ -9634,7 +9639,7 @@ msgstr "Mise au point activée ou désactivée"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:298
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:123
 #: internal/term/web/strings.go:64
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -11572,18 +11577,18 @@ msgid "All systems nominal."
 msgstr "Tous les systèmes sont nominaux."
 
 #: internal/shell/card.go:180
-#: internal/shell/cardterm.go:146
+#: internal/shell/cardterm.go:129
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "Mémoire"
 
 #: internal/shell/card.go:183
-#: internal/shell/cardterm.go:147
+#: internal/shell/cardterm.go:130
 msgid "Disk"
 msgstr "Disque"
 
 #: internal/shell/card.go:193
-#: internal/shell/cardterm.go:157
+#: internal/shell/cardterm.go:140
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11592,27 +11597,27 @@ msgid "Screen"
 msgstr "Écran"
 
 #: internal/shell/card.go:195
-#: internal/shell/cardterm.go:159
+#: internal/shell/cardterm.go:142
 #: internal/term/web/strings.go:75
 msgid "Theme"
 msgstr "Thème"
 
 #: internal/shell/card.go:196
-#: internal/shell/cardterm.go:160
+#: internal/shell/cardterm.go:143
 msgid "Uptime"
 msgstr "Allumé depuis"
 
-#: internal/shell/cardterm.go:112
-#: internal/ui/settings_card.go:454
+#: internal/shell/cardterm.go:95
+#: internal/ui/settings_card.go:471
 msgid "INUA // SYSTEM MANIFEST"
 msgstr "INUA // MANIFESTE SYSTÈME"
 
-#: internal/shell/cardterm.go:133
-#: internal/ui/settings_card.go:492
+#: internal/shell/cardterm.go:116
+#: internal/ui/settings_card.go:509
 msgid "%d thr"
 msgstr "%d threads"
 
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 #: internal/ui/settings.go:524
 msgid "Desktop"
 msgstr "Bureau"
@@ -12159,105 +12164,105 @@ msgstr "Tons terreux sur papier chaud"
 msgid "The classic, on cream"
 msgstr "Le classique, sur crème"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:100
 msgid "New session in this workspace"
 msgstr "Nouvelle session dans cet espace"
 
-#: internal/term/settings/settings.go:91
+#: internal/term/settings/settings.go:101
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "Nouvel espace de travail"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:102
 msgid "Split right"
 msgstr "Diviser à droite"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:103
 msgid "Split down"
 msgstr "Diviser vers le bas"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:104
 msgid "Close pane"
 msgstr "Fermer le panneau"
 
-#: internal/term/settings/settings.go:95
+#: internal/term/settings/settings.go:105
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "Échanger avec le panneau d’une direction (puis une flèche)"
 
-#: internal/term/settings/settings.go:96
+#: internal/term/settings/settings.go:106
 msgid "Zoom pane / back"
 msgstr "Agrandir le panneau / revenir"
 
-#: internal/term/settings/settings.go:97
+#: internal/term/settings/settings.go:107
 msgid "Equalize"
 msgstr "Égaliser"
 
-#: internal/term/settings/settings.go:98
+#: internal/term/settings/settings.go:108
 msgid "Next layout"
 msgstr "Disposition suivante"
 
-#: internal/term/settings/settings.go:99
+#: internal/term/settings/settings.go:109
 msgid "Previous session"
 msgstr "Session précédente"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:110
 msgid "Next session"
 msgstr "Session suivante"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:111
 msgid "Next agent that needs you"
 msgstr "Agent suivant qui a besoin de vous"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:112
 msgid "Next agent that needs you or is idle"
 msgstr "Agent suivant qui a besoin de vous ou est inactif"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:113
 msgid "Every agent"
 msgstr "Tous les agents"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:114
 msgid "Fold the workspaces"
 msgstr "Replier les espaces de travail"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:115
 msgid "Fold the sessions"
 msgstr "Replier les sessions"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:118
 msgid "Search the scrollback"
 msgstr "Chercher dans l’historique"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:119
 msgid "Copy mode"
 msgstr "Mode copie"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:120
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "Renommer la session"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:121
 msgid "Every action by name"
 msgstr "Toutes les actions par nom"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:122
 msgid "Show the keys"
 msgstr "Afficher les touches"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:124
 msgid "Restart the terminal host"
 msgstr "Redémarrer l'hôte du terminal"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:125
 msgid "Font larger"
 msgstr "Police plus grande"
 
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:126
 msgid "Font smaller"
 msgstr "Police plus petite"
 
-#: internal/term/settings/settings.go:117
+#: internal/term/settings/settings.go:127
 msgid "Font size as set"
 msgstr "Taille de police réglée"
 
@@ -12390,7 +12395,7 @@ msgid "INFO"
 msgstr "INFOS"
 
 #: internal/term/web/strings.go:46
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "CLÉS"
@@ -12852,26 +12857,78 @@ msgstr "Ne jamais garder"
 msgid "Commands matching these patterns, comma-separated"
 msgstr "Les commandes qui correspondent à ces motifs, séparés par des virgules"
 
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "Cliquez une touche, puis pressez la nouvelle ; Retour arrière la libère"
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:295
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "Appuyez sur les touches…"
 
-#: internal/termui/prefs.go:294
+#: internal/termui/prefs.go:296
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Échap annule ; Retour arrière libère les touches de l’action."
 
-#: internal/termui/prefs.go:316
+#: internal/termui/prefs.go:318
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "Une touche demande Ctrl, Alt ou Super : les autres sont aux programmes."
 
-#: internal/termui/prefs.go:327
+#: internal/termui/prefs.go:329
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s était à %s ; cette action n’a plus de touches."
+
+#: internal/termui/prefsweb.go:40
+msgid "WEB TERMINAL"
+msgstr "TERMINAL WEB"
+
+#: internal/termui/prefsweb.go:40
+msgid "The terminals in a browser, a phone's over Tailscale"
+msgstr "Les terminaux dans un navigateur, celui d'un téléphone par Tailscale"
+
+#: internal/termui/prefsweb.go:54
+msgid "Web Terminal"
+msgstr "Terminal web"
+
+#: internal/termui/prefsweb.go:54
+msgid "Serve the terminals to a browser; it starts again at login while on"
+msgstr "Sert les terminaux à un navigateur ; tant qu'il est activé, il redémarre à la connexion"
+
+#: internal/termui/prefsweb.go:58
+msgid "no address: is Tailscale up?"
+msgstr "pas d'adresse : Tailscale est-il lancé ?"
+
+#: internal/termui/prefsweb.go:63
+msgid "This computer only"
+msgstr "Cet ordinateur seulement"
+
+#: internal/termui/prefsweb.go:79
+msgid "Tailscale: on this computer's Tailscale address, for a phone on the tailnet"
+msgstr "Tailscale : à l'adresse Tailscale de cet ordinateur, pour un téléphone du tailnet"
+
+#: internal/termui/prefsweb.go:97
+msgid "New link"
+msgstr "Nouveau lien"
+
+#: internal/termui/prefsweb.go:103
+msgid "Link"
+msgstr "Lien"
+
+#: internal/termui/prefsweb.go:103
+msgid "Open it on the phone; New link stops the old one working"
+msgstr "Ouvrez-le sur le téléphone ; un nouveau lien rend l'ancien inutilisable"
+
+#: internal/termui/prefsweb.go:148
+msgid "No keyring to keep the link's token in: start inua-keyring."
+msgstr "Aucun trousseau où garder le jeton du lien : lancez inua-keyring."
+
+#: internal/termui/prefsweb.go:150
+msgid "This computer has no Tailscale address: is Tailscale up? (tailscale up)"
+msgstr "Cet ordinateur n'a pas d'adresse Tailscale : Tailscale est-il lancé ? (tailscale up)"
+
+#: internal/termui/prefsweb.go:152
+msgid "The Web Terminal did not start in time."
+msgstr "Le terminal web n'a pas démarré à temps."
 
 #: internal/termui/restart.go:31
 msgid "Restart the terminal host?"
@@ -13707,7 +13764,7 @@ msgstr "%.1f Ko"
 
 #: internal/ui/settings.go:891
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:286
+#: internal/ui/settings_card.go:287
 msgid "Not saved: %s"
 msgstr "Non sauvegardé : %s"
 
@@ -14163,70 +14220,70 @@ msgstr "Rien pour l’instant. Mettez l’appareil en mode d’association : sou
 msgid "Forget it?"
 msgstr "L’oublier ?"
 
-#: internal/ui/settings_card.go:160
 #: internal/ui/settings_card.go:161
+#: internal/ui/settings_card.go:162
 msgid "Reading…"
 msgstr "Lecture…"
 
-#: internal/ui/settings_card.go:210
-#: internal/ui/settings_card.go:236
-#: internal/ui/settings_card.go:243
+#: internal/ui/settings_card.go:211
+#: internal/ui/settings_card.go:237
+#: internal/ui/settings_card.go:244
 msgid "Not copied: %s"
 msgstr "Non copié : %s"
 
-#: internal/ui/settings_card.go:213
+#: internal/ui/settings_card.go:214
 msgid "Copied as text."
 msgstr "Copié en texte."
 
-#: internal/ui/settings_card.go:222
+#: internal/ui/settings_card.go:223
 msgid "the window cannot draw it now"
 msgstr "la fenêtre ne peut pas la dessiner maintenant"
 
-#: internal/ui/settings_card.go:226
+#: internal/ui/settings_card.go:227
 msgid "%s cannot be written"
 msgstr "%s ne peut pas être écrit"
 
-#: internal/ui/settings_card.go:246
+#: internal/ui/settings_card.go:247
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr "Copié en image : collez-la dans une discussion ou une publication."
 
-#: internal/ui/settings_card.go:259
+#: internal/ui/settings_card.go:260
 msgid "Save the card"
 msgstr "Enregistrer la carte"
 
-#: internal/ui/settings_card.go:289
+#: internal/ui/settings_card.go:290
 msgid "Saved as %s"
 msgstr "Enregistré sous %s"
 
-#: internal/ui/settings_card.go:485
+#: internal/ui/settings_card.go:502
 msgid "[UNIT]"
 msgstr "[UNITÉ]"
 
-#: internal/ui/settings_card.go:488
+#: internal/ui/settings_card.go:505
 msgid "[SILICON]"
 msgstr "[SILICIUM]"
 
-#: internal/ui/settings_card.go:511
+#: internal/ui/settings_card.go:528
 msgid "[STACK]"
 msgstr "[PILE]"
 
-#: internal/ui/settings_card.go:521
+#: internal/ui/settings_card.go:538
 msgid "[OPTICS]"
 msgstr "[OPTIQUE]"
 
-#: internal/ui/settings_card.go:530
+#: internal/ui/settings_card.go:547
 msgid "UPTIME"
 msgstr "EN SERVICE"
 
-#: internal/ui/settings_card.go:603
+#: internal/ui/settings_card.go:620
 msgid "[TRANSMISSION]"
 msgstr "[TRANSMISSION]"
 
-#: internal/ui/settings_card.go:610
+#: internal/ui/settings_card.go:627
 msgid "CHECK"
 msgstr "VÉRIFIER"
 
-#: internal/ui/settings_card.go:617
+#: internal/ui/settings_card.go:634
 msgid "Hyprland, with inua on top."
 msgstr "Hyprland, avec inua par-dessus."
 

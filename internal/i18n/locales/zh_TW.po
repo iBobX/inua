@@ -1733,6 +1733,7 @@ msgid "System Monitor"
 msgstr "系統監視器"
 
 #: internal/appui/app.go:73
+#: internal/termui/prefsweb.go:64
 #: ui/control.ui:540
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
@@ -2575,7 +2576,8 @@ msgstr "隱藏"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:116
+#: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:881
@@ -2953,7 +2955,7 @@ msgid "NETWORK"
 msgstr "網路"
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:508
+#: internal/ui/settings_card.go:525
 msgid "DISK"
 msgstr "磁碟"
 
@@ -3214,7 +3216,7 @@ msgstr "計算機"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
-#: internal/shell/cardterm.go:130
+#: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "模型"
@@ -3243,7 +3245,7 @@ msgid "System"
 msgstr "系統"
 
 #: internal/appui/sysmon.go:969
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 msgid "Kernel"
 msgstr "內核"
 
@@ -3634,7 +3636,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:281
+#: internal/termui/prefs.go:283
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3780,6 +3782,7 @@ msgstr "無法播放：%s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/termui/prefsweb.go:128
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
@@ -3949,7 +3952,7 @@ msgstr "取消"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:608
+#: internal/ui/settings_card.go:625
 msgid "OK"
 msgstr "好的"
 
@@ -4221,6 +4224,7 @@ msgstr "執行 KDE Connect、GSConnect 或 Valent 的裝置可在此網路和 ta
 
 #: internal/connectui/window.go:384
 #: internal/remoteui/window.go:492
+#: internal/termui/prefsweb.go:164
 #: internal/vmui/window.go:1658
 #: internal/vmui/window.go:1757
 #: internal/vmui/window.go:1767
@@ -6296,6 +6300,7 @@ msgid "Text"
 msgstr "文字"
 
 #: internal/filesui/renamemany.go:161
+#: internal/termui/prefsweb.go:79
 msgid "Where"
 msgstr "位置"
 
@@ -6457,7 +6462,7 @@ msgid "New file…"
 msgstr "新增檔案……"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:117
 #: internal/termui/paste.go:299
 msgid "Paste"
 msgstr "貼上"
@@ -9583,7 +9588,7 @@ msgstr "聚焦或關閉"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:298
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:123
 #: internal/term/web/strings.go:64
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -11506,18 +11511,18 @@ msgid "All systems nominal."
 msgstr "所有系統正常。"
 
 #: internal/shell/card.go:180
-#: internal/shell/cardterm.go:146
+#: internal/shell/cardterm.go:129
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "內存"
 
 #: internal/shell/card.go:183
-#: internal/shell/cardterm.go:147
+#: internal/shell/cardterm.go:130
 msgid "Disk"
 msgstr "磁碟"
 
 #: internal/shell/card.go:193
-#: internal/shell/cardterm.go:157
+#: internal/shell/cardterm.go:140
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11526,27 +11531,27 @@ msgid "Screen"
 msgstr "螢幕"
 
 #: internal/shell/card.go:195
-#: internal/shell/cardterm.go:159
+#: internal/shell/cardterm.go:142
 #: internal/term/web/strings.go:75
 msgid "Theme"
 msgstr "主題"
 
 #: internal/shell/card.go:196
-#: internal/shell/cardterm.go:160
+#: internal/shell/cardterm.go:143
 msgid "Uptime"
 msgstr "運行時間"
 
-#: internal/shell/cardterm.go:112
-#: internal/ui/settings_card.go:454
+#: internal/shell/cardterm.go:95
+#: internal/ui/settings_card.go:471
 msgid "INUA // SYSTEM MANIFEST"
 msgstr "INUA // 系統清單"
 
-#: internal/shell/cardterm.go:133
-#: internal/ui/settings_card.go:492
+#: internal/shell/cardterm.go:116
+#: internal/ui/settings_card.go:509
 msgid "%d thr"
 msgstr "%d 執行緒"
 
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 #: internal/ui/settings.go:524
 msgid "Desktop"
 msgstr "桌面"
@@ -12091,105 +12096,105 @@ msgstr "暖色紙面上的大地色調"
 msgid "The classic, on cream"
 msgstr "經典，米色底"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:100
 msgid "New session in this workspace"
 msgstr "在此工作區新增工作階段"
 
-#: internal/term/settings/settings.go:91
+#: internal/term/settings/settings.go:101
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "新增工作區"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:102
 msgid "Split right"
 msgstr "向右分割"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:103
 msgid "Split down"
 msgstr "向下分割"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:104
 msgid "Close pane"
 msgstr "關閉窗格"
 
-#: internal/term/settings/settings.go:95
+#: internal/term/settings/settings.go:105
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "與該方向的窗格交換（再按方向鍵）"
 
-#: internal/term/settings/settings.go:96
+#: internal/term/settings/settings.go:106
 msgid "Zoom pane / back"
 msgstr "放大窗格 / 還原"
 
-#: internal/term/settings/settings.go:97
+#: internal/term/settings/settings.go:107
 msgid "Equalize"
 msgstr "平均分配"
 
-#: internal/term/settings/settings.go:98
+#: internal/term/settings/settings.go:108
 msgid "Next layout"
 msgstr "下一種版面"
 
-#: internal/term/settings/settings.go:99
+#: internal/term/settings/settings.go:109
 msgid "Previous session"
 msgstr "上一個工作階段"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:110
 msgid "Next session"
 msgstr "下一個工作階段"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:111
 msgid "Next agent that needs you"
 msgstr "下一個需要你的代理"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:112
 msgid "Next agent that needs you or is idle"
 msgstr "下一個需要你或閒置的代理"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:113
 msgid "Every agent"
 msgstr "所有代理"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:114
 msgid "Fold the workspaces"
 msgstr "收合工作區"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:115
 msgid "Fold the sessions"
 msgstr "收合工作階段"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:118
 msgid "Search the scrollback"
 msgstr "搜尋捲動紀錄"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:119
 msgid "Copy mode"
 msgstr "複製模式"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:120
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "重新命名工作階段"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:121
 msgid "Every action by name"
 msgstr "依名稱列出所有動作"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:122
 msgid "Show the keys"
 msgstr "顯示按鍵"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:124
 msgid "Restart the terminal host"
 msgstr "重新啟動終端機主機"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:125
 msgid "Font larger"
 msgstr "字體放大"
 
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:126
 msgid "Font smaller"
 msgstr "字體縮小"
 
-#: internal/term/settings/settings.go:117
+#: internal/term/settings/settings.go:127
 msgid "Font size as set"
 msgstr "恢復設定的字級"
 
@@ -12322,7 +12327,7 @@ msgid "INFO"
 msgstr "資訊"
 
 #: internal/term/web/strings.go:46
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "金鑰"
@@ -12780,26 +12785,78 @@ msgstr "永不保留"
 msgid "Commands matching these patterns, comma-separated"
 msgstr "符合這些模式的命令，以逗號分隔"
 
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "點選一個按鍵，再按下新的按鍵；Backspace 清除"
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:295
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "按鍵…"
 
-#: internal/termui/prefs.go:294
+#: internal/termui/prefs.go:296
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape 取消；Backspace 清除此動作的按鍵。"
 
-#: internal/termui/prefs.go:316
+#: internal/termui/prefs.go:318
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "按鍵需搭配 Ctrl、Alt 或 Super：其餘按鍵屬於程式。"
 
-#: internal/termui/prefs.go:327
+#: internal/termui/prefs.go:329
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s 原屬於 %s；該動作現在沒有按鍵。"
+
+#: internal/termui/prefsweb.go:40
+msgid "WEB TERMINAL"
+msgstr "網頁終端機"
+
+#: internal/termui/prefsweb.go:40
+msgid "The terminals in a browser, a phone's over Tailscale"
+msgstr "在瀏覽器中使用終端機，手機可透過 Tailscale 連線"
+
+#: internal/termui/prefsweb.go:54
+msgid "Web Terminal"
+msgstr "網頁終端機"
+
+#: internal/termui/prefsweb.go:54
+msgid "Serve the terminals to a browser; it starts again at login while on"
+msgstr "向瀏覽器提供終端機；開啟時會在登入時再次啟動"
+
+#: internal/termui/prefsweb.go:58
+msgid "no address: is Tailscale up?"
+msgstr "無位址：Tailscale 是否已啟動？"
+
+#: internal/termui/prefsweb.go:63
+msgid "This computer only"
+msgstr "僅限這台電腦"
+
+#: internal/termui/prefsweb.go:79
+msgid "Tailscale: on this computer's Tailscale address, for a phone on the tailnet"
+msgstr "Tailscale：使用這台電腦的 Tailscale 位址，供 tailnet 上的手機連線"
+
+#: internal/termui/prefsweb.go:97
+msgid "New link"
+msgstr "新連結"
+
+#: internal/termui/prefsweb.go:103
+msgid "Link"
+msgstr "連結"
+
+#: internal/termui/prefsweb.go:103
+msgid "Open it on the phone; New link stops the old one working"
+msgstr "在手機上開啟；建立新連結後舊連結將失效"
+
+#: internal/termui/prefsweb.go:148
+msgid "No keyring to keep the link's token in: start inua-keyring."
+msgstr "沒有可保存連結權杖的金鑰圈：請啟動 inua-keyring。"
+
+#: internal/termui/prefsweb.go:150
+msgid "This computer has no Tailscale address: is Tailscale up? (tailscale up)"
+msgstr "這台電腦沒有 Tailscale 位址：Tailscale 是否已啟動？（tailscale up）"
+
+#: internal/termui/prefsweb.go:152
+msgid "The Web Terminal did not start in time."
+msgstr "網頁終端機未能及時啟動。"
 
 #: internal/termui/restart.go:31
 msgid "Restart the terminal host?"
@@ -13623,7 +13680,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:891
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:286
+#: internal/ui/settings_card.go:287
 msgid "Not saved: %s"
 msgstr "未儲存：%s"
 
@@ -14079,70 +14136,70 @@ msgstr "還沒有找到。讓裝置進入配對狀態:通常是按住它的藍�
 msgid "Forget it?"
 msgstr "確定忘記?"
 
-#: internal/ui/settings_card.go:160
 #: internal/ui/settings_card.go:161
+#: internal/ui/settings_card.go:162
 msgid "Reading…"
 msgstr "正在讀取…"
 
-#: internal/ui/settings_card.go:210
-#: internal/ui/settings_card.go:236
-#: internal/ui/settings_card.go:243
+#: internal/ui/settings_card.go:211
+#: internal/ui/settings_card.go:237
+#: internal/ui/settings_card.go:244
 msgid "Not copied: %s"
 msgstr "未複製:%s"
 
-#: internal/ui/settings_card.go:213
+#: internal/ui/settings_card.go:214
 msgid "Copied as text."
 msgstr "已複製為文字。"
 
-#: internal/ui/settings_card.go:222
+#: internal/ui/settings_card.go:223
 msgid "the window cannot draw it now"
 msgstr "視窗現在無法繪製"
 
-#: internal/ui/settings_card.go:226
+#: internal/ui/settings_card.go:227
 msgid "%s cannot be written"
 msgstr "無法寫入 %s"
 
-#: internal/ui/settings_card.go:246
+#: internal/ui/settings_card.go:247
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr "已複製為圖片：可貼到聊天或貼文中。"
 
-#: internal/ui/settings_card.go:259
+#: internal/ui/settings_card.go:260
 msgid "Save the card"
 msgstr "儲存卡片"
 
-#: internal/ui/settings_card.go:289
+#: internal/ui/settings_card.go:290
 msgid "Saved as %s"
 msgstr "已儲存為 %s"
 
-#: internal/ui/settings_card.go:485
+#: internal/ui/settings_card.go:502
 msgid "[UNIT]"
 msgstr "[主機]"
 
-#: internal/ui/settings_card.go:488
+#: internal/ui/settings_card.go:505
 msgid "[SILICON]"
 msgstr "[晶片]"
 
-#: internal/ui/settings_card.go:511
+#: internal/ui/settings_card.go:528
 msgid "[STACK]"
 msgstr "[軟體堆疊]"
 
-#: internal/ui/settings_card.go:521
+#: internal/ui/settings_card.go:538
 msgid "[OPTICS]"
 msgstr "[顯示]"
 
-#: internal/ui/settings_card.go:530
+#: internal/ui/settings_card.go:547
 msgid "UPTIME"
 msgstr "運行時間"
 
-#: internal/ui/settings_card.go:603
+#: internal/ui/settings_card.go:620
 msgid "[TRANSMISSION]"
 msgstr "[傳輸]"
 
-#: internal/ui/settings_card.go:610
+#: internal/ui/settings_card.go:627
 msgid "CHECK"
 msgstr "需檢查"
 
-#: internal/ui/settings_card.go:617
+#: internal/ui/settings_card.go:634
 msgid "Hyprland, with inua on top."
 msgstr "Hyprland，上面是 inua。"
 

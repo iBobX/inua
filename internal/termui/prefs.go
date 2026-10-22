@@ -139,6 +139,8 @@ func (a *App) openSettings() {
 	})
 	pr.row(sec, i18n.T("Never keep"), i18n.T("Commands matching these patterns, comma-separated"), &forget.Widget)
 
+	pr.webSection(page, s, save)
+
 	sec = pr.section(page, i18n.T("KEYS"), i18n.T("Click a key, then press the new one; Backspace frees it"))
 	for _, act := range settings.Actions {
 		b := gtk.NewButtonWithLabel("")

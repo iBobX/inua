@@ -35,6 +35,7 @@ type Settings struct {
 	Shell    Shell    `toml:"shell"`
 	Agents   Agents   `toml:"agents"`
 	Remember Remember `toml:"remember"`
+	Web      Web      `toml:"web"`
 	// Keys are inua-term's chords by action ("ctrl+shift+t"); "" turns
 	// one off.
 	Keys map[string]string `toml:"keys"`
@@ -77,6 +78,15 @@ type Agents struct {
 type Remember struct {
 	Commands bool     `toml:"commands"`
 	Forget   []string `toml:"forget"`
+}
+
+// Web is the Web Terminal (inua-term serve, internal/term/webterm): on,
+// started again at login; on this computer only, or on its Tailscale
+// address; at this port.
+type Web struct {
+	On        bool `toml:"on"`
+	Tailscale bool `toml:"tailscale"`
+	Port      int  `toml:"port"`
 }
 
 // Actions are the keys' actions, in the order the settings show them,
@@ -143,6 +153,7 @@ func Default() Settings {
 		Shell:    Shell{Integration: true},
 		Agents:   Agents{Notifications: true},
 		Remember: Remember{Commands: true, Forget: []string{"*password*", "*token=*", "*secret*"}},
+		Web:      Web{Port: 7681},
 		Keys:     keys,
 	}
 }
@@ -243,6 +254,10 @@ func (s *Settings) validate() []string {
 		w = append(w, fmt.Sprintf("terminal.scrollback = %d: want 0..1000000 lines; using %d", s.Terminal.Scrollback, d.Terminal.Scrollback))
 		s.Terminal.Scrollback = d.Terminal.Scrollback
 	}
+	if s.Web.Port < 1024 || s.Web.Port > 65535 {
+		w = append(w, fmt.Sprintf("web.port = %d: want 1024..65535; using %d", s.Web.Port, d.Web.Port))
+		s.Web.Port = d.Web.Port
+	}
 	if s.Terminal.Replay < 1 || s.Terminal.Replay > 64 {
 		w = append(w, fmt.Sprintf("terminal.replay = %d: want 1..64 MiB; using %d", s.Terminal.Replay, d.Terminal.Replay))
 		s.Terminal.Replay = d.Terminal.Replay
@@ -301,6 +316,11 @@ notifications = ` + fmt.Sprint(s.Agents.Notifications) + ` # when an agent needs
 [remember]
 commands = ` + fmt.Sprint(s.Remember.Commands) + ` # put each pane's last command back at its prompt, not run
 forget = ` + list(s.Remember.Forget) + ` # commands never kept
+
+[web]
+on = ` + fmt.Sprint(s.Web.On) + ` # the Web Terminal: the terminals in a browser, started again at login
+tailscale = ` + fmt.Sprint(s.Web.Tailscale) + ` # on this computer's Tailscale address, for a phone; else on this computer only
+port = ` + fmt.Sprint(s.Web.Port) + `
 
 [keys]
 # inua-term's chords; "" turns one off.

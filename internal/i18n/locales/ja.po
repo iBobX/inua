@@ -1733,6 +1733,7 @@ msgid "System Monitor"
 msgstr "システムモニター"
 
 #: internal/appui/app.go:73
+#: internal/termui/prefsweb.go:64
 #: ui/control.ui:540
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
@@ -2575,7 +2576,8 @@ msgstr "ヒデ"
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:116
+#: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:881
@@ -2953,7 +2955,7 @@ msgid "NETWORK"
 msgstr "ネットワーク"
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:508
+#: internal/ui/settings_card.go:525
 msgid "DISK"
 msgstr "ディスク"
 
@@ -3214,7 +3216,7 @@ msgstr "コンピュータ"
 
 #: internal/appui/sysmon.go:966
 #: internal/appui/sysmon.go:978
-#: internal/shell/cardterm.go:130
+#: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:461
 msgid "Model"
 msgstr "モデル"
@@ -3243,7 +3245,7 @@ msgid "System"
 msgstr "システム"
 
 #: internal/appui/sysmon.go:969
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 msgid "Kernel"
 msgstr "カーネル"
 
@@ -3634,7 +3636,7 @@ msgid "IN USE"
 msgstr "使用中"
 
 #: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:281
+#: internal/termui/prefs.go:283
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
 msgid "None"
@@ -3780,6 +3782,7 @@ msgstr "再生できません: %s"
 #: internal/shell/status.go:88
 #: internal/shell/status.go:107
 #: internal/shell/status.go:122
+#: internal/termui/prefsweb.go:128
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
@@ -3949,7 +3952,7 @@ msgstr "キャンセル"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:608
+#: internal/ui/settings_card.go:625
 msgid "OK"
 msgstr "わかりました"
 
@@ -4221,6 +4224,7 @@ msgstr "KDE Connect、GSConnect、Valent を使うデバイスは、このネッ
 
 #: internal/connectui/window.go:384
 #: internal/remoteui/window.go:492
+#: internal/termui/prefsweb.go:164
 #: internal/vmui/window.go:1658
 #: internal/vmui/window.go:1757
 #: internal/vmui/window.go:1767
@@ -6296,6 +6300,7 @@ msgid "Text"
 msgstr "テキスト"
 
 #: internal/filesui/renamemany.go:161
+#: internal/termui/prefsweb.go:79
 msgid "Where"
 msgstr "位置"
 
@@ -6457,7 +6462,7 @@ msgid "New file…"
 msgstr "新規ファイル…"
 
 #: internal/filesui/window.go:699
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:117
 #: internal/termui/paste.go:299
 msgid "Paste"
 msgstr "貼り付け"
@@ -9583,7 +9588,7 @@ msgstr "フォーカスのオンまたはオフ"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:298
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:123
 #: internal/term/web/strings.go:64
 #: ui/control.ui:62
 #: ui/settings.ui:30
@@ -11506,18 +11511,18 @@ msgid "All systems nominal."
 msgstr "全システム正常。"
 
 #: internal/shell/card.go:180
-#: internal/shell/cardterm.go:146
+#: internal/shell/cardterm.go:129
 #: ui/sysmon.ui:90
 msgid "Memory"
 msgstr "メモリ"
 
 #: internal/shell/card.go:183
-#: internal/shell/cardterm.go:147
+#: internal/shell/cardterm.go:130
 msgid "Disk"
 msgstr "ディスク"
 
 #: internal/shell/card.go:193
-#: internal/shell/cardterm.go:157
+#: internal/shell/cardterm.go:140
 #: internal/vmui/window.go:2546
 #: internal/vmui/window.go:2550
 #: ui/screenshot.ui:187
@@ -11526,27 +11531,27 @@ msgid "Screen"
 msgstr "スクリーン"
 
 #: internal/shell/card.go:195
-#: internal/shell/cardterm.go:159
+#: internal/shell/cardterm.go:142
 #: internal/term/web/strings.go:75
 msgid "Theme"
 msgstr "テーマ"
 
 #: internal/shell/card.go:196
-#: internal/shell/cardterm.go:160
+#: internal/shell/cardterm.go:143
 msgid "Uptime"
 msgstr "稼働時間"
 
-#: internal/shell/cardterm.go:112
-#: internal/ui/settings_card.go:454
+#: internal/shell/cardterm.go:95
+#: internal/ui/settings_card.go:471
 msgid "INUA // SYSTEM MANIFEST"
 msgstr "INUA // システム・マニフェスト"
 
-#: internal/shell/cardterm.go:133
-#: internal/ui/settings_card.go:492
+#: internal/shell/cardterm.go:116
+#: internal/ui/settings_card.go:509
 msgid "%d thr"
 msgstr "%d スレッド"
 
-#: internal/shell/cardterm.go:153
+#: internal/shell/cardterm.go:136
 #: internal/ui/settings.go:524
 msgid "Desktop"
 msgstr "デスクトップ"
@@ -12091,105 +12096,105 @@ msgstr "温かみのある紙に土の色合い"
 msgid "The classic, on cream"
 msgstr "定番、クリーム色の地で"
 
-#: internal/term/settings/settings.go:90
+#: internal/term/settings/settings.go:100
 msgid "New session in this workspace"
 msgstr "このワークスペースに新しいセッション"
 
-#: internal/term/settings/settings.go:91
+#: internal/term/settings/settings.go:101
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "新しいワークスペース"
 
-#: internal/term/settings/settings.go:92
+#: internal/term/settings/settings.go:102
 msgid "Split right"
 msgstr "右に分割"
 
-#: internal/term/settings/settings.go:93
+#: internal/term/settings/settings.go:103
 msgid "Split down"
 msgstr "下に分割"
 
-#: internal/term/settings/settings.go:94
+#: internal/term/settings/settings.go:104
 msgid "Close pane"
 msgstr "ペインを閉じる"
 
-#: internal/term/settings/settings.go:95
+#: internal/term/settings/settings.go:105
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "その方向のペインと入れ替える（続けて矢印）"
 
-#: internal/term/settings/settings.go:96
+#: internal/term/settings/settings.go:106
 msgid "Zoom pane / back"
 msgstr "ペインを最大化 / 戻す"
 
-#: internal/term/settings/settings.go:97
+#: internal/term/settings/settings.go:107
 msgid "Equalize"
 msgstr "均等にする"
 
-#: internal/term/settings/settings.go:98
+#: internal/term/settings/settings.go:108
 msgid "Next layout"
 msgstr "次のレイアウト"
 
-#: internal/term/settings/settings.go:99
+#: internal/term/settings/settings.go:109
 msgid "Previous session"
 msgstr "前のセッション"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:110
 msgid "Next session"
 msgstr "次のセッション"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:111
 msgid "Next agent that needs you"
 msgstr "応答を待つ次のエージェント"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:112
 msgid "Next agent that needs you or is idle"
 msgstr "対応待ちまたは待機中の次のエージェント"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:113
 msgid "Every agent"
 msgstr "すべてのエージェント"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:114
 msgid "Fold the workspaces"
 msgstr "ワークスペースを折りたたむ"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:115
 msgid "Fold the sessions"
 msgstr "セッションを折りたたむ"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:118
 msgid "Search the scrollback"
 msgstr "スクロールバックを検索"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:119
 msgid "Copy mode"
 msgstr "コピーモード"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:120
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "セッション名を変更"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:121
 msgid "Every action by name"
 msgstr "すべての操作を名前で"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:122
 msgid "Show the keys"
 msgstr "キー一覧を表示"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:124
 msgid "Restart the terminal host"
 msgstr "ターミナルホストを再起動"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:125
 msgid "Font larger"
 msgstr "文字を大きく"
 
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:126
 msgid "Font smaller"
 msgstr "文字を小さく"
 
-#: internal/term/settings/settings.go:117
+#: internal/term/settings/settings.go:127
 msgid "Font size as set"
 msgstr "設定どおりの文字サイズ"
 
@@ -12322,7 +12327,7 @@ msgid "INFO"
 msgstr "情報"
 
 #: internal/term/web/strings.go:46
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "鍵"
@@ -12780,26 +12785,78 @@ msgstr "記憶しない"
 msgid "Commands matching these patterns, comma-separated"
 msgstr "これらのパターンに一致するコマンド（カンマ区切り）"
 
-#: internal/termui/prefs.go:142
+#: internal/termui/prefs.go:144
 msgid "Click a key, then press the new one; Backspace frees it"
 msgstr "キーをクリックして新しいキーを押す。Backspace で解除"
 
-#: internal/termui/prefs.go:293
+#: internal/termui/prefs.go:295
 #: internal/ui/shortcuts.go:197
 msgid "Press keys…"
 msgstr "キーを押してください…"
 
-#: internal/termui/prefs.go:294
+#: internal/termui/prefs.go:296
 msgid "Escape cancels; Backspace frees the action's keys."
 msgstr "Escape で取り消し。Backspace でこの操作のキーを解除します。"
 
-#: internal/termui/prefs.go:316
+#: internal/termui/prefs.go:318
 msgid "A key needs Ctrl, Alt or Super with it: the others are the programs'."
 msgstr "キーには Ctrl、Alt、Super のいずれかが必要です。それ以外はプログラムのものです。"
 
-#: internal/termui/prefs.go:327
+#: internal/termui/prefs.go:329
 msgid "%s was %s's; that one has no keys now."
 msgstr "%s は %s のキーでした。そちらはキーなしになりました。"
+
+#: internal/termui/prefsweb.go:40
+msgid "WEB TERMINAL"
+msgstr "WEB ターミナル"
+
+#: internal/termui/prefsweb.go:40
+msgid "The terminals in a browser, a phone's over Tailscale"
+msgstr "ブラウザーで使うターミナル。電話からは Tailscale 経由で"
+
+#: internal/termui/prefsweb.go:54
+msgid "Web Terminal"
+msgstr "Web ターミナル"
+
+#: internal/termui/prefsweb.go:54
+msgid "Serve the terminals to a browser; it starts again at login while on"
+msgstr "ブラウザーにターミナルを提供します。オンの間はログイン時に再び起動します"
+
+#: internal/termui/prefsweb.go:58
+msgid "no address: is Tailscale up?"
+msgstr "アドレスなし：Tailscale は起動していますか？"
+
+#: internal/termui/prefsweb.go:63
+msgid "This computer only"
+msgstr "このコンピューターのみ"
+
+#: internal/termui/prefsweb.go:79
+msgid "Tailscale: on this computer's Tailscale address, for a phone on the tailnet"
+msgstr "Tailscale：このコンピューターの Tailscale アドレスで。tailnet 上の電話向け"
+
+#: internal/termui/prefsweb.go:97
+msgid "New link"
+msgstr "新しいリンク"
+
+#: internal/termui/prefsweb.go:103
+msgid "Link"
+msgstr "リンク"
+
+#: internal/termui/prefsweb.go:103
+msgid "Open it on the phone; New link stops the old one working"
+msgstr "電話で開きます。新しいリンクを作ると古いリンクは使えなくなります"
+
+#: internal/termui/prefsweb.go:148
+msgid "No keyring to keep the link's token in: start inua-keyring."
+msgstr "リンクのトークンを保存するキーリングがありません。inua-keyring を起動してください。"
+
+#: internal/termui/prefsweb.go:150
+msgid "This computer has no Tailscale address: is Tailscale up? (tailscale up)"
+msgstr "このコンピューターには Tailscale アドレスがありません。Tailscale は起動していますか？（tailscale up）"
+
+#: internal/termui/prefsweb.go:152
+msgid "The Web Terminal did not start in time."
+msgstr "Web ターミナルは時間内に起動しませんでした。"
 
 #: internal/termui/restart.go:31
 msgid "Restart the terminal host?"
@@ -13623,7 +13680,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:891
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:286
+#: internal/ui/settings_card.go:287
 msgid "Not saved: %s"
 msgstr "保存されていません: %s"
 
@@ -14079,70 +14136,70 @@ msgstr "まだ見つかりません。デバイスをペアリングできる状
 msgid "Forget it?"
 msgstr "削除しますか?"
 
-#: internal/ui/settings_card.go:160
 #: internal/ui/settings_card.go:161
+#: internal/ui/settings_card.go:162
 msgid "Reading…"
 msgstr "読み込み中…"
 
-#: internal/ui/settings_card.go:210
-#: internal/ui/settings_card.go:236
-#: internal/ui/settings_card.go:243
+#: internal/ui/settings_card.go:211
+#: internal/ui/settings_card.go:237
+#: internal/ui/settings_card.go:244
 msgid "Not copied: %s"
 msgstr "コピーできませんでした: %s"
 
-#: internal/ui/settings_card.go:213
+#: internal/ui/settings_card.go:214
 msgid "Copied as text."
 msgstr "テキストとしてコピーしました。"
 
-#: internal/ui/settings_card.go:222
+#: internal/ui/settings_card.go:223
 msgid "the window cannot draw it now"
 msgstr "ウィンドウが今は描画できません"
 
-#: internal/ui/settings_card.go:226
+#: internal/ui/settings_card.go:227
 msgid "%s cannot be written"
 msgstr "%s に書き込めません"
 
-#: internal/ui/settings_card.go:246
+#: internal/ui/settings_card.go:247
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr "画像としてコピーしました。チャットや投稿に貼り付けられます。"
 
-#: internal/ui/settings_card.go:259
+#: internal/ui/settings_card.go:260
 msgid "Save the card"
 msgstr "カードを保存"
 
-#: internal/ui/settings_card.go:289
+#: internal/ui/settings_card.go:290
 msgid "Saved as %s"
 msgstr "%s として保存しました"
 
-#: internal/ui/settings_card.go:485
+#: internal/ui/settings_card.go:502
 msgid "[UNIT]"
 msgstr "[本体]"
 
-#: internal/ui/settings_card.go:488
+#: internal/ui/settings_card.go:505
 msgid "[SILICON]"
 msgstr "[シリコン]"
 
-#: internal/ui/settings_card.go:511
+#: internal/ui/settings_card.go:528
 msgid "[STACK]"
 msgstr "[スタック]"
 
-#: internal/ui/settings_card.go:521
+#: internal/ui/settings_card.go:538
 msgid "[OPTICS]"
 msgstr "[ディスプレイ]"
 
-#: internal/ui/settings_card.go:530
+#: internal/ui/settings_card.go:547
 msgid "UPTIME"
 msgstr "稼働時間"
 
-#: internal/ui/settings_card.go:603
+#: internal/ui/settings_card.go:620
 msgid "[TRANSMISSION]"
 msgstr "[送信]"
 
-#: internal/ui/settings_card.go:610
+#: internal/ui/settings_card.go:627
 msgid "CHECK"
 msgstr "要確認"
 
-#: internal/ui/settings_card.go:617
+#: internal/ui/settings_card.go:634
 msgid "Hyprland, with inua on top."
 msgstr "Hyprland、その上に inua。"
 

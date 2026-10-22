@@ -18,6 +18,7 @@ func TestRoundTrip(t *testing.T) {
 	s.Shell.Program = "/usr/bin/fish"
 	s.Keys["zoom"] = ""
 	s.Keys["split_right"] = "ctrl+shift+backslash"
+	s.Web = Web{On: true, Tailscale: true, Port: 8080}
 	if err := Save(path, s); err != nil {
 		t.Fatal(err)
 	}
@@ -46,6 +47,8 @@ style = "beam"
 [keys]
 zoom = "Ctrl Shift Z"
 nothing = "ctrl+q"
+[web]
+port = 80
 [colors]
 x = 1
 `), 0o600)
@@ -53,10 +56,10 @@ x = 1
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.Font.Size != 11 || s.Cursor.Style != "block" || s.Keys["zoom"] != "ctrl+shift+return" || s.Keys["copy"] != "ctrl+shift+c" || s.Look.Scheme != "" {
+	if s.Font.Size != 11 || s.Cursor.Style != "block" || s.Keys["zoom"] != "ctrl+shift+return" || s.Keys["copy"] != "ctrl+shift+c" || s.Look.Scheme != "" || s.Web.Port != 7681 {
 		t.Errorf("defaults back: %+v", s)
 	}
-	if len(w) != 6 || !strings.Contains(strings.Join(w, "\n"), "unknown setting colors") {
+	if len(w) != 7 || !strings.Contains(strings.Join(w, "\n"), "unknown setting colors") {
 		t.Errorf("warnings %q", w)
 	}
 	os.WriteFile(path, []byte("[font"), 0o600)

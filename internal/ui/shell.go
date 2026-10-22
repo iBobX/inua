@@ -432,6 +432,7 @@ func (s *shellUI) start() {
 	s.startUpdates()
 	s.startSharing()
 	s.startConnect()
+	s.startWebTerm()
 	s.startSystem()
 	s.startAssistant()
 	s.startClipboardCapture()

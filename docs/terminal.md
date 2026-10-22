@@ -255,13 +255,18 @@ theme's), the font and its size, the cursor, copy on select, scrollback,
 the host's replay size, the shell new panes start (`shell.program`, `""`
 for `$SHELL`) and its integration, agents' notifications, remembering
 commands and what never to keep, and the keys by action (`""` frees one
-for the program). The theme, the colours and the shell take hold at
+for the program), and the Web Terminal (`[web]`: `on`, `tailscale`,
+`port`). The theme, the colours and the shell take hold at
 once; the icons and the text size follow inua's `config.toml`.
 
 ## On a phone
 
-`inua-term serve` shows the terminals in a browser, a phone's over
-Tailscale:
+The **Web Terminal** shows the terminals in a browser, a phone's over
+Tailscale. Turn it on in the settings (Ctrl+, → Web Terminal): it runs
+`inua-term serve` in a user service of its own (`inua-term-web.service`)
+and starts again at login while on; *Where* puts it on this computer
+only or on its Tailscale address, and the section gives its link to copy,
+or a new one. By hand:
 
 ```
 inua-term serve                  on this computer only (127.0.0.1:7681)
