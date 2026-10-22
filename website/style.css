@@ -83,6 +83,7 @@ dl.parts { margin: 0; border-top: 1px solid var(--line); }
 dl.parts > div { display: grid; grid-template-columns: 9.5em 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); }
 dl.parts dt { font: 400 11px/2.2 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--t0); }
 dl.parts dd { margin: 0; }
+dl.parts dd > code { white-space: nowrap; }
 
 ol.ideas { list-style: none; margin: 0; padding: 0; counter-reset: idea; }
 ol.ideas li { counter-increment: idea; display: grid; grid-template-columns: 3.2em 1fr; gap: 12px; margin: 0 0 30px; }

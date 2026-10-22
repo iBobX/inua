@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>inua — light apps</title>
-<meta name="description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Viewer and Pass, small windows drawn like the shell.">
+<title>inua — apps</title>
+<meta name="description" content="inua's apps: Files, Terminal, Mail, Viewer and more, and light apps from Clock to Music. Each is a program of its own and runs outside inua too.">
 <link rel="canonical" href="https://inua.one/apps">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="inua">
-<meta property="og:title" content="inua — light apps">
-<meta property="og:description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Viewer and Pass, small windows drawn like the shell.">
+<meta property="og:title" content="inua — apps">
+<meta property="og:description" content="inua's apps: Files, Terminal, Mail, Viewer and more, and light apps from Clock to Music. Each is a program of its own and runs outside inua too.">
 <meta property="og:url" content="https://inua.one/apps">
 <meta property="og:image" content="https://inua.one/img/social/og-apps.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="inua's light apps: Calendar, Clock, Color Picker, Calculator and System Monitor">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="inua — light apps">
-<meta name="twitter:description" content="inua's light apps: Clock, Weather, Stocks, Calculator, Calendar, Color Picker, System Monitor, Tailscale, Viewer and Pass, small windows drawn like the shell.">
+<meta name="twitter:title" content="inua — apps">
+<meta name="twitter:description" content="inua's apps: Files, Terminal, Mail, Viewer and more, and light apps from Clock to Music. Each is a program of its own and runs outside inua too.">
 <meta name="twitter:image" content="https://inua.one/img/social/twitter-apps.png">
 <meta name="twitter:image:alt" content="inua's light apps: Calendar, Clock, Color Picker, Calculator and System Monitor">
 <meta name="theme-color" content="#F2EDE2">
@@ -27,7 +27,7 @@
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="style.css?v=20261021">
+<link rel="stylesheet" href="style.css?v=20261022">
 <script>
 /* As on the home page: the colourway and the language before the first
    paint, and light or dark (data-tone) for the screenshots. */
@@ -63,9 +63,9 @@
 
 <main class="apps">
   <div class="intro col">
-    <div class="label" data-i18n="apps_label">Light apps</div>
-    <h1 data-i18n="apps_h1">Ten small apps, drawn like the shell.</h1>
-    <p data-i18n="apps_intro">Each is its own window in the launcher and the dock, in your colourway and with the shell's icons. They do one thing each, and they open in an instant.</p>
+    <div class="label" data-i18n="apps_label">Apps</div>
+    <h1 data-i18n="apps_h1">Made for inua, not bound to it.</h1>
+    <p data-i18n="apps_intro">Each app is a program of its own. In inua it takes the shell's colours and opens from the launcher and the dock; on another Wayland desktop, it opens all the same.</p>
     <div class="links"><a href="/" data-i18n="apps_home">The shell</a><a href="/#install" data-i18n="install">Install</a><a href="https://github.com/lyricat/inua" data-i18n="source">Source</a></div>
   </div>
 
@@ -77,6 +77,35 @@
     <div class="st st-clock" data-depth="1.2"><span class="shot"><img class="l" src="img/apps/clock-washi.webp" alt="" width="440" height="640"><img class="d" src="img/apps/clock-yoru.webp" alt="" width="440" height="640"></span></div>
     <div class="st st-color" data-depth="1.6"><span class="shot"><img class="l" src="img/apps/colorpicker-washi.webp" alt="" width="400" height="600"><img class="d" src="img/apps/colorpicker-yoru.webp" alt="" width="400" height="600"></span></div>
   </figure>
+
+  <section class="col rv">
+    <div class="label" data-i18n="big_label">Apps</div>
+    <h2 data-i18n="big_h">The ones you keep open.</h2>
+    <dl class="parts">
+      <div><dt>Files</dt><dd><span data-i18n="files_d">A file manager, keyboard first: one or two panes, drives, and remote disks through rclone.</span> <code>inua-files</code></dd></div>
+      <div><dt>Terminal</dt><dd><span data-i18n="term_d">Terminals for many agents at once, each one's state where you can see it.</span> <code>inua-term</code></dd></div>
+      <div><dt>Mail</dt><dd><span data-i18n="mail_d">Every account in one list. The assistant helps only when asked.</span> <code>inua-mail</code></dd></div>
+      <div><dt>Disk Usage</dt><dd><span data-i18n="disk_d">What fills a disk, and which of the folders developers and agents leave behind can go.</span> <code>inua-disk-usage</code></dd></div>
+      <div><dt>Remote Desktop</dt><dd><span data-i18n="remote_d">Other machines' desktops here, over Moonlight's protocol.</span> <code>inua-remote</code></dd></div>
+      <div><dt>Mobile Link</dt><dd><span data-i18n="connect_d">Your phone and this computer together, over KDE Connect's protocol.</span> <code>inua-connect</code></dd></div>
+      <div><dt data-i18n="vm">Virtual machines</dt><dd><span data-i18n="vm_d">Windows, Linux and FreeBSD guests, each one a folder.</span> <code>inua-vm</code></dd></div>
+    </dl>
+  </section>
+
+  <section class="app wide col-wide rv">
+    <div class="app-text">
+      <div class="num"></div>
+      <h2>Viewer</h2>
+      <p data-i18n="viewer_d">Images, PDFs, Markdown and plain text. Step through a folder with the next images already loaded, zoom and rotate, read a PDF page by page, or a README laid out with its tables and links.</p>
+    </div>
+    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/viewer-washi.webp" alt="Viewer" width="1100" height="760" loading="lazy"><img class="d" src="img/apps/viewer-yoru.webp" alt="Viewer" width="1100" height="760" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="col rv">
+    <div class="label" data-i18n="light_label">Light apps</div>
+    <h2 data-i18n="light_h">Small windows that do one thing.</h2>
+    <p data-i18n="light_intro">Twelve of them, quick to open: <code>inua-apps clock</code>, <code>inua-apps weather</code> …</p>
+  </section>
 
   <section class="app col-wide rv">
     <div class="app-text">
@@ -150,22 +179,23 @@
     <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/tailscale-washi.webp" alt="Tailscale" width="460" height="700" loading="lazy"><img class="d" src="img/apps/tailscale-yoru.webp" alt="Tailscale" width="460" height="700" loading="lazy"></span></span></div>
   </section>
 
-  <section class="app wide col-wide rv">
-    <div class="app-text">
-      <div class="num">09</div>
-      <h2>Viewer</h2>
-      <p data-i18n="viewer_d">Step through a folder of images with the next ones already loaded. Zoom, rotate, play animations, read a photo's details, or set it as your wallpaper.</p>
-    </div>
-    <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/viewer-washi.webp" alt="Viewer" width="1100" height="760" loading="lazy"><img class="d" src="img/apps/viewer-yoru.webp" alt="Viewer" width="1100" height="760" loading="lazy"></span></span></div>
-  </section>
-
   <section class="app col-wide rv">
     <div class="app-text">
-      <div class="num">10</div>
+      <div class="num">09</div>
       <h2>Pass</h2>
       <p data-i18n="pass_d">Your password store in three columns: categories, entries, and the one you open, with its one-time code and every value a click from the clipboard. When gpg needs your passphrase, inua asks in its own dialog, with the key, what it is for and who asked, and hides them in one click before you share your screen.</p>
     </div>
     <div class="app-art"><span class="win"><span class="frame"><span class="shot"><img class="l" src="img/apps/pinentry-washi.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"><img class="d" src="img/apps/pinentry-yoru.webp" alt="The passphrase dialog" width="378" height="564" loading="lazy"></span></span></div>
+  </section>
+
+  <section class="col rv">
+    <dl class="parts">
+      <div><dt>GPG</dt><dd data-i18n="gpg_d">Encrypt, sign and decrypt, text or files, with your keyring.</dd></div>
+      <div><dt>Music</dt><dd data-i18n="music_d">A player in Winamp's spirit, with an equalizer and a spectrum.</dd></div>
+      <div><dt>Video</dt><dd data-i18n="video_d">A plain player that remembers where you left each video.</dd></div>
+      <div><dt data-i18n="games">Games</dt><dd><span data-i18n="games_d">Minesweeper, Space Pinball and Small Fortune, offline.</span> <code>inua-games</code></dd></div>
+      <div><dt>Workshop</dt><dd data-i18n="workshop_d">Your own light app, in any language, drawn in the shell's look.</dd></div>
+    </dl>
   </section>
 
   <section class="col rv">
@@ -178,6 +208,12 @@
     </dl>
     <p class="note" data-i18n="open_once">Each runs once: opening it again brings its window to you, on the workspace you are on.</p>
   </section>
+  <section class="col rv">
+    <div class="label" data-i18n="out_label">Outside inua</div>
+    <h2 data-i18n="out_h">On another desktop.</h2>
+    <p data-i18n="out_p">They need a Wayland desktop with GTK 4, and start from your own launcher. Two things wait for the shell: Color Picker's pick from the screen, and sharing this desktop from Remote Desktop.</p>
+    <p class="note" data-i18n="out_install">The install puts them in your launcher; with <code>INUA_NO_SESSION=1</code> it leaves your login alone.</p>
+  </section>
 </main>
 
 <footer>
@@ -187,7 +223,7 @@
   </div>
 </footer>
 
-<script src="i18n.js?v=20261021"></script>
-<script src="main.js?v=20261021"></script>
+<script src="i18n.js?v=20261022"></script>
+<script src="main.js?v=20261022"></script>
 </body>
 </html>
