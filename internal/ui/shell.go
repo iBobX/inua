@@ -246,6 +246,7 @@ type shellUI struct {
 	onClipboardBackdrop    func(gtk.GestureClick, int32, float64, float64)
 	onClipboardKey         func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onClipboardTick        glib.SourceFunc
+	onClipboardGone        glib.SourceFunc
 	onPasswordsButton      func(gtk.Button)
 	onPasswordsSearch      func(gtk.SearchEntry)
 	onPasswordsActivate    func(gtk.SearchEntry)

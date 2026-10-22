@@ -29,6 +29,7 @@ import (
 type clipboardPanel struct {
 	open                             bool
 	win                              *gtk.ApplicationWindow
+	reveal                           *gtk.Revealer
 	backdrop, rows                   *gtk.Box
 	detailLayer                      *gtk.Fixed
 	detailCard                       *gtk.Box
@@ -40,7 +41,7 @@ type clipboardPanel struct {
 	filtered                         []clipboard.Entry
 	path, stamp, target, targetClass string
 	monitor                          string
-	timer                            uint32
+	timer, gone                      uint32 // gone: the window's removal once slid away
 	watcher                          *exec.Cmd
 }
 
@@ -133,6 +134,11 @@ func (s *shellUI) bindClipboardHandlers() {
 		}
 		return false
 	}
+	s.onClipboardGone = func(uintptr) bool {
+		s.clipboard.gone = 0
+		s.dropClipboardWindow()
+		return false
+	}
 	s.onClipboardTick = func(uintptr) bool {
 		if !s.clipboard.open {
 			return false
@@ -193,6 +199,7 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	s.closeCenter()
 	s.closeAgenda()
 	s.closePasswords()
+	s.dropClipboardWindow() // opened again while sliding away
 	c.target, c.targetClass = s.snap.ActiveToplevel, ""
 	for _, w := range s.snap.Toplevels {
 		if w.Address == c.target {
@@ -205,21 +212,22 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	c.backdrop = gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	c.backdrop.SetHexpand(true)
 	c.backdrop.SetVexpand(true)
-	// Match the notification center's right-hand rail. A scrolled viewport
-	// bounds both dimensions; widget size requests alone are only minima.
-	rail := gtk.NewScrolledWindow()
-	rail.SetPolicy(gtk.PolicyExternalValue, gtk.PolicyExternalValue)
-	rail.SetMinContentWidth(380)
-	rail.SetMaxContentWidth(380)
-	rail.SetPropagateNaturalWidth(false)
-	rail.SetPropagateNaturalHeight(false)
-	rail.SetHalign(gtk.AlignEndValue)
-	rail.SetVexpand(true)
-	rail.SetMarginTop(42)
-	rail.SetMarginBottom(6)
-	rail.SetMarginEnd(6)
+	// The notification center's right-hand rail, sliding in from the
+	// right as it does. The revealer clips only while it moves, so the
+	// card's shadow shows; the card is as wide as the center's because
+	// nothing in it asks for more (the rows scroll, the labels wrap).
+	c.reveal = gtk.NewRevealer()
+	c.reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
+	c.reveal.SetTransitionDuration(revealMS)
+	c.reveal.SetHalign(gtk.AlignEndValue)
+	c.reveal.SetHexpand(true)
+	c.reveal.SetVexpand(true)
+	c.reveal.SetMarginTop(42)
+	c.reveal.SetMarginBottom(6)
+	c.reveal.SetMarginEnd(6)
 	card := gtk.NewBox(gtk.OrientationVerticalValue, 12)
 	card.AddCssClass("clipboard-card")
+	card.SetSizeRequest(380, -1)
 	card.SetVexpand(true)
 	heading := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
@@ -286,10 +294,11 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	c.status.SetXalign(0)
 	c.status.SetWrap(true)
 	c.status.SetWrapMode(pango.WrapWordCharValue)
+	c.status.SetMaxWidthChars(40) // wraps within the card rather than widening it
 	gtkx.Append(card, &c.status.Widget)
-	rail.SetChild(&card.Widget)
+	c.reveal.SetChild(&card.Widget)
 	card.Unref()
-	gtkx.Append(c.backdrop, &rail.Widget)
+	gtkx.Append(c.backdrop, &c.reveal.Widget)
 	overlay := gtk.NewOverlay()
 	overlay.SetChild(&c.backdrop.Widget)
 	c.detailLayer = gtk.NewFixed()
@@ -340,6 +349,7 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	c.stamp = ""
 	s.refreshClipboard()
 	c.win.Present()
+	c.reveal.SetRevealChild(true) // after Present, so it slides in
 	c.search.GrabFocus()
 	c.timer = glib.TimeoutAdd(750, &s.onClipboardTick, 0)
 	for _, b := range s.bars {
@@ -357,12 +367,31 @@ func (s *shellUI) closeClipboard() {
 		glib.SourceRemove(c.timer)
 		c.timer = 0
 	}
-	c.win.Destroy()
-	c.win.Unref()
-	c.win = nil
+	// It slides away; the keyboard goes back at once, for a paste.
+	s.hideClipboardDetail()
+	if s.layer {
+		layershell.SetKeyboardMode(c.win.GoPointer(), layershell.KeyboardNone)
+	}
+	c.reveal.SetRevealChild(false)
+	c.gone = glib.TimeoutAdd(revealMS, &s.onClipboardGone, 0)
 	for _, b := range s.bars {
 		b.clipboard.RemoveCssClass("open")
 	}
+}
+
+// dropClipboardWindow removes the panel's window, closed and sliding away.
+func (s *shellUI) dropClipboardWindow() {
+	c := &s.clipboard
+	if c.gone != 0 {
+		glib.SourceRemove(c.gone)
+		c.gone = 0
+	}
+	if c.win == nil || c.open {
+		return
+	}
+	c.win.Destroy()
+	c.win.Unref()
+	c.win, c.reveal = nil, nil
 }
 
 func (s *shellUI) refreshClipboard() {
@@ -573,7 +602,7 @@ func (s *shellUI) pasteClipboard(entry clipboard.Entry, action string) {
 		if action == "copy" || (client != nil && target == "") {
 			return
 		}
-		time.Sleep(150 * time.Millisecond) // the panel's surface is gone
+		time.Sleep(150 * time.Millisecond) // the panel has let go of the keyboard
 		mods := "CTRL"
 		if slices.ContainsFunc(terminalClasses, func(t string) bool { return strings.Contains(class, t) }) {
 			mods = "CTRL SHIFT"
