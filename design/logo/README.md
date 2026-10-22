@@ -31,6 +31,7 @@ It also copies the favicons into `website/` and the logo files into
 | `inua-mark.svg`, `inua-mark-{256,512,1024,2048}.png` | the mark in ink, on a clear ground |
 | `inua-mark-light.svg`, `inua-mark-light-*.png` | the mark in light, for dark grounds |
 | `inua-mark-white.svg` | the mark in white |
+| `inua-mark-small.svg` | the mark with solid ribbons, for small sizes (the website's header) |
 | `inua-icon-{yoru,washi,blueprint}.svg` | the app icon, rounded square |
 | `inua-icon-{yoru,washi,blueprint}-{16…1024}.png` | the app icon at 16, 32, 48, 64, 128, 180, 192, 256, 512 and 1024 px |
 | `favicon.svg`, `favicon.ico` (16, 32, 48) | the browser icon, yoru |

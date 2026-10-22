@@ -51,7 +51,8 @@ a:hover { border-color: var(--t0); }
 
 header.top { padding: 40px 0 0; }
 header.top .col { display: flex; justify-content: space-between; align-items: center; }
-.name { font: 400 15px/1 var(--mono); letter-spacing: 0.06em; color: var(--t0); border: 0; }
+.name { display: inline-flex; align-items: center; gap: 10px; font: 400 15px/1 var(--mono); letter-spacing: 0.06em; color: var(--t0); border: 0; }
+.name .mark { width: 20px; height: 20px; background: currentColor; -webkit-mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; mask: url(img/logo/inua-mark-small.svg) center / contain no-repeat; }
 
 .intro { padding: clamp(96px, 20vh, 220px) 0 0; }
 h1 {

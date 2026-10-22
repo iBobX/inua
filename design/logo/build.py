@@ -344,6 +344,8 @@ def main():
     write('inua-mark.svg', svg_mark(m, INK))
     write('inua-mark-light.svg', svg_mark(m, LIGHT))
     write('inua-mark-white.svg', svg_mark(m, '#FFFFFF'))
+    # small, as the website's header shows it: solid ribbons
+    write('inua-mark-small.svg', svg_mark(marks[SOLID], INK))
     box = frame(m, 0.92)
     for px in MARK_SIZES:
         write(f'inua-mark-{px}.png', png(m, box, px, INK))
@@ -369,7 +371,7 @@ def main():
         os.makedirs(logo, exist_ok=True)
         for old in os.listdir(logo):
             os.remove(os.path.join(logo, old))
-        for f in ['inua-mark.svg', 'inua-mark-white.svg', 'inua-mark-1024.png', 'inua-icon-yoru.svg'] + \
+        for f in ['inua-mark.svg', 'inua-mark-small.svg', 'inua-mark-white.svg', 'inua-mark-1024.png', 'inua-icon-yoru.svg'] + \
                  [f"inua-icon-yoru-{px}.png" for px in (128, 256, 512, 1024)]:
             shutil.copy(os.path.join(HERE, f), os.path.join(logo, f))
     with open(GO, 'w') as f:
