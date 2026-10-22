@@ -20,12 +20,21 @@ func (p *termPane) trackMouse() {
 	motion := gtk.NewEventControllerMotion()
 	p.onMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		p.pointerX, p.pointerY = x, y
+		if !p.barDrag {
+			p.barHovered(p.inBar(x))
+		}
 		p.hoverLink(c.GetCurrentEventState()&gdk.ControlMaskValue != 0)
-		if p.reporting(0) {
+		if p.reporting(0) && !p.barDrag {
 			p.report(vt.MouseMotion, p.held(), 0)
 		}
 	}
+	p.onLeave = func(gtk.EventControllerMotion) {
+		if !p.barDrag {
+			p.barHovered(false)
+		}
+	}
 	motion.ConnectMotion(&p.onMotion)
+	motion.ConnectLeave(&p.onLeave)
 	p.widget.AddController(&motion.EventController)
 
 	raw := gtk.NewEventControllerLegacy()
@@ -44,6 +53,11 @@ func (p *termPane) trackMouse() {
 				p.openLink(p.hover.URI)
 				return true
 			}
+		}
+		// The scrollbar takes its own presses, from a program tracking the
+		// mouse too.
+		if p.barDrag || (kind == gdk.ButtonPressValue && p.inBar(p.pointerX)) {
+			return false
 		}
 		if !p.reporting(state) {
 			return false

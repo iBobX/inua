@@ -175,22 +175,113 @@ func (p *termPane) scrollBy(kind vt.ScrollKind, n int) {
 	p.update(false)
 }
 
-// drawScrollbar marks where the viewport is while it is away from the
-// bottom: a thin thumb at the right edge.
-func (p *termPane) drawScrollbar(w *gtk.Widget, s *gtk.Snapshot) {
-	sb := p.scroll
-	if sb.AtBottom() || sb.Total <= sb.Len || sb.Total == 0 {
+// The scrollbar, as GTK's overlay scrollbars: a thin thumb at the right
+// edge while the viewport is away from the bottom, wider over a faint
+// track while the pointer is on it (and shown then at the bottom too),
+// taken by a drag; a press on the track jumps there and drags on. It
+// takes the pointer barZone pixels from the edge, before a selection or a
+// program tracking the mouse.
+const (
+	barZone      = 12
+	barThin      = 3
+	barWide      = 8
+	barMinLength = 24
+)
+
+// hasBar says there is scrollback to scroll: not on the alternate screen.
+func (p *termPane) hasBar() bool {
+	return !p.alt && p.scroll.Total > p.scroll.Len
+}
+
+// inBar says x (the widget's) is on the scrollbar.
+func (p *termPane) inBar(x float64) bool {
+	return p.hasBar() && x >= float64(p.widget.GetWidth()-barZone)
+}
+
+// barHovered follows the pointer on and off the scrollbar.
+func (p *termPane) barHovered(on bool) {
+	if on == p.barHover {
 		return
 	}
-	h := float32(w.GetHeight() - 2*pad)
-	top := h * float32(sb.Offset) / float32(sb.Total)
-	length := max(h*float32(sb.Len)/float32(sb.Total), 24)
-	top = min(top, h-length)
+	p.barHover = on
+	switch {
+	case on:
+		p.widget.SetCursorFromName("default")
+	case p.hover != nil:
+		p.widget.SetCursorFromName("pointer")
+	default:
+		p.widget.SetCursorFromName("text")
+	}
+	p.widget.QueueDraw()
+}
+
+// barThumb is the track's height, and the thumb's top and length in it.
+func (p *termPane) barThumb() (track, top, length float32) {
+	sb := p.scroll
+	track = float32(p.widget.GetHeight() - 2*pad)
+	if sb.Total == 0 || track <= 0 {
+		return track, 0, 0
+	}
+	length = min(max(track*float32(sb.Len)/float32(sb.Total), barMinLength), track)
+	if room := sb.Total - sb.Len; room > 0 {
+		top = (track - length) * float32(sb.Offset) / float32(room)
+	}
+	return track, top, length
+}
+
+// barPress takes the scrollbar at y: by the thumb where it was pressed,
+// or by its middle after a jump there.
+func (p *termPane) barPress(y float64) {
+	p.stopGlide()
+	_, top, length := p.barThumb()
+	at := y - pad
+	if at >= float64(top) && at <= float64(top+length) {
+		p.barGrab = at - float64(top)
+	} else {
+		p.barGrab = float64(length) / 2
+	}
+	p.barDrag = true
+	p.barTo(y)
+	p.widget.QueueDraw()
+}
+
+// barTo scrolls so the thumb, as taken, is at y.
+func (p *termPane) barTo(y float64) {
+	track, _, length := p.barThumb()
+	room := float64(track - length)
+	sb := p.scroll
+	if room <= 0 || sb.Total <= sb.Len {
+		return
+	}
+	f := min(max((y-pad-p.barGrab)/room, 0), 1)
+	if d := int(math.Round(f*float64(sb.Total-sb.Len))) - sb.Offset; d != 0 {
+		p.scrollBy(vt.ScrollRows, d)
+	}
+}
+
+func (p *termPane) drawScrollbar(w *gtk.Widget, s *gtk.Snapshot) {
+	wide := p.barHover || p.barDrag
+	if !p.hasBar() || (p.scroll.AtBottom() && !wide) {
+		return
+	}
+	track, top, length := p.barThumb()
+	width := float32(barThin)
+	if wide {
+		width = barWide
+	}
+	s.Save()
+	s.Translate(&graphene.Point{X: float32(w.GetWidth()) - 2 - width, Y: pad})
+	if wide {
+		t := p.fg
+		t.Alpha = 0.08
+		s.AppendColor(&t, rect(0, 0, width, track))
+	}
 	c := p.fg
 	c.Alpha = 0.35
-	s.Save()
-	s.Translate(&graphene.Point{X: float32(w.GetWidth() - 5), Y: pad})
-	s.AppendColor(&c, rect(0, top, 3, length))
+	if p.barDrag {
+		c.Alpha = 0.55
+	}
+	s.AppendColor(&c, rect(0, top, width, length))
 	s.Restore()
 }
 

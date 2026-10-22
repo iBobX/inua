@@ -81,6 +81,10 @@ type termPane struct {
 	// held down for a program tracking the mouse, a bit per button.
 	pointerX, pointerY float64
 	buttons            int
+	// barHover is set while the pointer is over the scrollbar, barDrag
+	// while a drag moves it; barGrab is where in the thumb it was taken.
+	barHover, barDrag bool
+	barGrab           float64
 	// selecting is set while a drag selects; dragX, dragY is where it began.
 	selecting    bool
 	selected     bool // there is a selection, even of blank cells
@@ -126,6 +130,7 @@ type termPane struct {
 	onScroll                          func(gtk.EventControllerScroll, float64, float64) bool
 	onDecelerate                      func(gtk.EventControllerScroll, float64, float64)
 	onMotion                          func(gtk.EventControllerMotion, float64, float64)
+	onLeave                           func(gtk.EventControllerMotion)
 	onRaw                             func(gtk.EventControllerLegacy, uintptr) bool
 
 	onKey                                func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -219,6 +224,12 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 	p.onDragBegin = func(g gtk.GestureDrag, x, y float64) {
 		p.widget.GrabFocus()
 		p.hideSheet()
+		// The scrollbar's, before a program's or a selection.
+		if p.inBar(x) {
+			p.dragX, p.dragY = x, y
+			p.barPress(y)
+			return
+		}
 		// A program tracking the mouse gets it; Shift selects anyway.
 		if p.mouse && g.GetCurrentEventState()&gdk.ShiftMaskValue == 0 {
 			return
@@ -227,11 +238,21 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 		p.pointer(&g.EventController, vt.PointerPress, x, y)
 	}
 	p.onDragUpdate = func(g gtk.GestureDrag, dx, dy float64) {
+		if p.barDrag {
+			p.barTo(p.dragY + dy)
+			return
+		}
 		if p.selecting {
 			p.pointer(&g.EventController, vt.PointerDrag, p.dragX+dx, p.dragY+dy)
 		}
 	}
 	p.onDragEnd = func(g gtk.GestureDrag, dx, dy float64) {
+		if p.barDrag {
+			p.barDrag = false
+			p.barHovered(p.inBar(p.dragX + dx))
+			p.widget.QueueDraw()
+			return
+		}
 		if !p.selecting {
 			return
 		}
@@ -700,7 +721,7 @@ func (p *termPane) callbacks() []any {
 	return []any{
 		&p.onKey, &p.onKeyUp, &p.onCopyKey, &p.onCommit, &p.onPreedit,
 		&p.onFocusIn, &p.onFocusOut, &p.onDragBegin, &p.onDragUpdate, &p.onDragEnd,
-		&p.onMiddle, &p.onScroll, &p.onDecelerate, &p.onDrop, &p.onMotion, &p.onRaw,
+		&p.onMiddle, &p.onScroll, &p.onDecelerate, &p.onDrop, &p.onMotion, &p.onLeave, &p.onRaw,
 		&p.onGlide, &p.onFindChanged, &p.onFindKey, &p.onFindUp, &p.onFindDown,
 		&p.onFindClose, &p.onSheetKey, &p.onSheetCancel, &p.onSheetOneLine,
 		&p.onSheetPaste, &p.onText[0], &p.onText[1], &p.onFiles[0], &p.onFiles[1],
