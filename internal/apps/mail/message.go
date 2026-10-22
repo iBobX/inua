@@ -81,8 +81,12 @@ type Envelope struct {
 	Bulk       bool      `json:"b,omitempty"`  // List-Unsubscribe, List-Id or Precedence: bulk/list
 	Auto       bool      `json:"au,omitempty"` // Auto-Submitted other than no
 	Verified   bool      `json:"vf,omitempty"` // DMARC passed for its From's domain (BIMI's logo may show)
-	Tag        Tag       `json:"t,omitempty"`  // the sorting's (7.2)
-	TagByUser  bool      `json:"tu,omitempty"` // the user set it
+	// AuthRead says Verified was read from the provider's
+	// Authentication-Results: a message indexed before it was kept has it
+	// read at a sync (Conn.Sync).
+	AuthRead  bool `json:"ar,omitempty"`
+	Tag       Tag  `json:"t,omitempty"`  // the sorting's (7.2)
+	TagByUser bool `json:"tu,omitempty"` // the user set it
 }
 
 // Has says whether the message carries flag.

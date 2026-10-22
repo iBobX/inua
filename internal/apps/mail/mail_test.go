@@ -1271,3 +1271,41 @@ func TestPrefetch(t *testing.T) {
 		}
 	}
 }
+
+// Messages indexed before Verified was kept have the provider's
+// Authentication-Results read at a sync: a sender's other messages show
+// its logo too, not the one opened alone.
+func TestSyncReadsAuth(t *testing.T) {
+	s := newIMAP(t)
+	s.put(t, "INBOX", msg("a@github.com", "GitHub <noreply@github.com>", "Passed", "hi",
+		"Authentication-Results: mx.example.com; dmarc=pass (p=REJECT) header.from=github.com"))
+	s.put(t, "INBOX", msg("b@github.com", "GitHub <noreply@github.com>", "Failed", "hi",
+		"Authentication-Results: mx.example.com; dmarc=fail (p=REJECT) header.from=github.com"))
+	sess := s.session(t)
+	ctx := context.Background()
+	if _, err := sess.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	// As an index from before: neither read.
+	sess.imu.Lock()
+	x := sess.index("INBOX")
+	for i := range x.Messages {
+		x.Messages[i].Verified, x.Messages[i].AuthRead = false, false
+	}
+	sess.imu.Unlock()
+	if _, err := sess.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	sess.imu.Lock()
+	defer sess.imu.Unlock()
+	got := map[string]bool{}
+	for _, e := range sess.index("INBOX").Messages {
+		if !e.AuthRead {
+			t.Errorf("%s: not read", e.Subject)
+		}
+		got[e.Subject] = e.Verified
+	}
+	if !got["Passed"] || got["Failed"] {
+		t.Errorf("verified: %v", got)
+	}
+}

@@ -347,6 +347,11 @@ func (c *Conn) Sync(mailbox string, x *Index, first int) (SyncResult, error) {
 		if len(res.Gone) > 0 {
 			res.Changed = true
 		}
+		if n, err := c.readAuth(x); err != nil {
+			return res, err
+		} else if n > 0 {
+			res.Changed = true
+		}
 	}
 	// The new ones.
 	var set imap.NumSet
@@ -376,6 +381,40 @@ func (c *Conn) Sync(mailbox string, x *Index, first int) (SyncResult, error) {
 		res.Changed = true
 	}
 	return res, nil
+}
+
+// authBatch is how many messages a sync reads the provider's
+// Authentication-Results of, for those indexed before it was kept: the
+// newest first, the rest at the next syncs.
+const authBatch = 500
+
+// readAuth reads whether DMARC passed (Verified) for the messages of x
+// indexed before it was kept; it says how many it read.
+func (c *Conn) readAuth(x *Index) (int, error) {
+	var set imap.UIDSet
+	n := 0
+	for i := range x.Messages {
+		if e := &x.Messages[i]; !e.AuthRead && n < authBatch {
+			set.AddNum(imap.UID(e.UID))
+			n++
+		}
+	}
+	if n == 0 {
+		return 0, nil
+	}
+	hdr := &imap.FetchItemBodySection{Specifier: imap.PartSpecifierHeader, HeaderFields: []string{"Authentication-Results"}, Peek: true}
+	msgs, err := c.c.Fetch(set, &imap.FetchOptions{UID: true, BodySection: []*imap.FetchItemBodySection{hdr}}).Collect()
+	if err != nil {
+		return 0, err
+	}
+	for _, m := range msgs {
+		if e := x.Find(uint32(m.UID)); e != nil {
+			h := headerOf(m.FindBodySection(hdr))
+			e.Verified = Verified(h.Get("Authentication-Results"), Domain(e.From.Addr))
+			e.AuthRead = true
+		}
+	}
+	return n, nil
 }
 
 // Older fetches up to n messages older than the lowest known.
@@ -442,6 +481,7 @@ func (c *Conn) envelopes(set imap.NumSet, above uint32) ([]Envelope, error) {
 		}
 		// The first is the user's provider's: the ones below came with the mail.
 		e.Verified = Verified(h.Get("Authentication-Results"), Domain(e.From.Addr))
+		e.AuthRead = true
 		var text *imap.BodyStructureSinglePart
 		var path []int
 		if m.BodyStructure != nil {
