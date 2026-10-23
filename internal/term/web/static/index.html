@@ -55,18 +55,22 @@
   /* An action at the head's end (New workspace, New session). */
   header button.plain.act { grid-column:3; }
 
-  /* A question with a line to type (a folder, a name): a card over the
-     dimmed page, near its top, where a phone's keyboard leaves it in
-     view. The line's text is 16 px: smaller, an iPhone zooms in on it. */
-  #ask { position:fixed; inset:0; z-index:10; display:flex; justify-content:center; align-items:flex-start; padding:calc(env(safe-area-inset-top) + 56px) 16px 16px; background:color-mix(in srgb, var(--app) 60%, transparent); }
-  #ask form { width:100%; max-width:420px; margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
-  #ask .q { font:15px var(--title); color:var(--t0); margin-bottom:12px; }
-  #ask input { width:100%; height:40px; padding:0 10px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t0); font:16px var(--mono); outline:none; }
-  #ask input:focus { border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
-  #ask .err { min-height:18px; margin-top:6px; font:12px var(--sans); color:var(--danger); }
-  #ask .btns { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
-  #ask .btns button { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:2px; font:13px var(--sans); color:var(--t1); }
-  #ask .btns button.ok { border-color:var(--accent); background:var(--accent); color:var(--app); }
+  /* A question with a line to type (a folder, a name; gpg's passphrase):
+     a card over the dimmed page, near its top, where a phone's keyboard
+     leaves it in view. The line's text is 16 px: smaller, an iPhone
+     zooms in on it. */
+  .card-over { position:fixed; inset:0; z-index:10; display:flex; justify-content:center; align-items:flex-start; padding:calc(env(safe-area-inset-top) + 56px) 16px 16px; background:color-mix(in srgb, var(--app) 60%, transparent); }
+  #secret { z-index:11; }
+  .card-over form { width:100%; max-width:420px; margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  .card-over .q { font:15px var(--title); color:var(--t0); margin-bottom:12px; }
+  .card-over .desc { font:12.5px var(--sans); color:var(--t1); white-space:pre-line; overflow-wrap:anywhere; margin:-4px 0 12px; }
+  .card-over .prompt { font:11px var(--mono); letter-spacing:.06em; color:var(--t2); margin-bottom:6px; }
+  .card-over input { width:100%; height:40px; padding:0 10px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t0); font:16px var(--mono); outline:none; }
+  .card-over input:focus { border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
+  .card-over .err { min-height:18px; margin-top:6px; font:12px var(--sans); color:var(--danger); }
+  .card-over .btns { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+  .card-over .btns button { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:2px; font:13px var(--sans); color:var(--t1); }
+  .card-over .btns button.ok { border-color:var(--accent); background:var(--accent); color:var(--app); }
 
   /* A notice: a hairline in warn, no fill (the connection's state). */
   .notice { margin:8px 16px 0; padding:6px 10px; border:1px solid var(--warn); border-radius:2px; color:var(--warn); font:11px var(--mono); letter-spacing:.06em; }
@@ -298,12 +302,23 @@
   </nav>
 </div>
 
-<div id="ask" hidden>
+<div id="ask" class="card-over" hidden>
   <form>
     <div class="q"></div>
     <input autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
     <div class="err"></div>
     <div class="btns"><button type="button" class="cancel" data-t="Cancel">Cancel</button><button type="submit" class="ok"></button></div>
+  </form>
+</div>
+
+<div id="secret" class="card-over" hidden>
+  <form autocomplete="off">
+    <div class="q"></div>
+    <div class="desc"></div>
+    <div class="prompt"></div>
+    <input type="password" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+    <div class="err"></div>
+    <div class="btns"><button type="button" class="cancel"></button><button type="button" class="no"></button><button type="submit" class="ok"></button></div>
   </form>
 </div>
 
@@ -433,6 +448,8 @@ function connect() {
     if (m.type === "welcome") { snapshots = !!m.snapshot; return welcome(); }
     if (m.type === "reply") { const r = pending.get(m.id); pending.delete(m.id); return r && r(m); }
     if (m.type === "state" && m.state) return setState(m.state);
+    if (m.type === "secret" && m.secret) return secretAsked(m.secret);
+    if (m.type === "withdraw") return secretGone(m.asked);
     if (m.type === "event" && m.pane === cur && term && m.cols && m.rows) {
       if (m.cols !== term.cols || m.rows !== term.rows) term.resize(m.cols, m.rows);
       panToBottom();
@@ -443,6 +460,8 @@ function connect() {
 }
 
 async function welcome() {
+  // The host sends the questions waiting again, after its welcome.
+  secrets = []; showSecret();
   status("");
   connected = true; since = Date.now();
   const again = cur;  // a reconnect: attach again
@@ -727,6 +746,58 @@ function renameSession(w, s) {
     await fresh();
   });
 }
+// ---- What gpg asks (inua-pinentry, through the host) ----
+
+// The questions waiting, the first shown: a passphrase, a yes or no, or a
+// note. The desktop's dialog asks the same; the first answer wins, and
+// the host withdraws the question everywhere else.
+let secrets = [];
+function secretAsked(s) {
+  if (secrets.some(x => x.id === s.id)) return;
+  secrets.push(s);
+  if (secrets.length === 1) showSecret();
+}
+function secretGone(id) {
+  const first = secrets[0];
+  secrets = secrets.filter(s => s.id !== id);
+  if (first && first.id === id) showSecret();
+}
+let typingBefore = false;  // the terminal had the keyboard: it gets it back
+function showSecret() {
+  const box = $("secret"), f = box.querySelector("form"), line = f.querySelector("input");
+  line.value = "";
+  const s = secrets[0];
+  if (!s) {
+    if (!box.hidden && typingBefore && term) term.focus();
+    box.hidden = true;
+    return;
+  }
+  if (box.hidden) typingBefore = typingHere();
+  const pin = s.mode === "getpin";
+  f.querySelector(".q").textContent = s.title || T("gpg asks for your passphrase");
+  f.querySelector(".desc").textContent = s.desc || "";
+  f.querySelector(".prompt").textContent = pin ? s.prompt || "" : "";
+  f.querySelector(".err").textContent = s.error || "";
+  line.hidden = !pin;
+  const cancel = f.querySelector(".cancel"), no = f.querySelector(".no"), ok = f.querySelector(".ok");
+  ok.textContent = s.ok || T("OK");
+  cancel.textContent = s.cancel || T("Cancel");
+  cancel.hidden = s.mode === "message";
+  no.textContent = s.not_ok || T("No");
+  no.hidden = s.mode !== "confirm" || !s.not_ok;
+  const answer = (what, pin) => {
+    line.value = "";
+    request({ type: "answer", asked: s.id, answer: what, ...(pin != null ? { pin } : {}) });
+    secretGone(s.id);  // the host's withdraw says it again
+  };
+  cancel.onclick = () => answer("cancel");
+  no.onclick = () => answer("no");
+  f.onsubmit = e => { e.preventDefault(); answer("ok", pin ? line.value : null); };
+  line.onkeydown = e => { if (e.key === "Escape") answer("cancel"); };
+  box.hidden = false;
+  if (pin) line.focus(); else ok.focus();
+}
+
 // New pane: a shell beside the one open, in the same session.
 $("newpane").addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays
 $("newpane").onclick = async () => {

@@ -2,6 +2,7 @@ package ipc
 
 import (
 	"context"
+	"net"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -47,5 +48,36 @@ func TestRoundTrip(t *testing.T) {
 	// A second server on the same live socket must refuse to start.
 	if err := Serve(context.Background(), path, nil); err == nil || !strings.Contains(err.Error(), "another instance") {
 		t.Fatalf("second Serve: %v", err)
+	}
+}
+
+// A caller that stops waiting (inua-pinentry, its passphrase answered
+// elsewhere) ends the request's context: the handler gives it up.
+func TestCallerHangsUp(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "s.sock")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ln, err := net.Listen("unix", path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	given := make(chan struct{})
+	go ServeListener(ctx, ln, path, func(rctx context.Context, r Request) Response {
+		<-rctx.Done()
+		close(given)
+		return Response{Error: "cancelled"}
+	})
+	cctx, ccancel := context.WithCancel(context.Background())
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		ccancel()
+	}()
+	if _, err := Call(cctx, path, Request{Op: "call", Target: "password"}); err == nil {
+		t.Error("a call called off was answered")
+	}
+	select {
+	case <-given:
+	case <-time.After(5 * time.Second):
+		t.Fatal("the handler kept waiting for a caller gone")
 	}
 }

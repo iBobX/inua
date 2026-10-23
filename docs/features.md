@@ -194,6 +194,13 @@ shot, and shown again afterwards; the eye shows them during that capture
 if wanted. A screenshot taken by another program in one frame (`grim`
 bound to a key) cannot be seen coming: hide them first.
 
+Away from the desk, the web terminal on a phone (`inua-termd serve`,
+docs/terminal.md) is asked too: while its page is open, gpg's passphrase
+comes up there as well, with gpg's words for the key and who asks, and
+the first answer, the phone's or the desktop's, goes to gpg; the other
+closes. A new passphrase (asked twice) and inua-keyring's approvals are
+asked at the desk only.
+
 ## Clipboard history
 
 The clipboard button in the top bar (or a shortcut set for "Clipboard

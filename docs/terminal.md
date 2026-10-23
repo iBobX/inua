@@ -293,6 +293,11 @@ screen: it is a web app in the theme's colours.
   and in a workspace a new session; + beside a session's panes starts a
   shell beside the one open; each opens its shell. A session's pencil
   renames it.
+- **gpg's passphrase** (a deploy's, `pass`, a signed commit): while the
+  page is open, what inua-pinentry asks on the desktop comes up on it
+  too; the first answer, here or there, goes to gpg (docs/features.md).
+  The page must be open: a phone's browser in the background is not
+  woken.
 - **A pane** fills the screen at the phone's size: columns at the text
   size (10 px, about 62 columns on a phone held upright; pinch to change
   it), rows to the keyboard. At its foot, the session's panes with a

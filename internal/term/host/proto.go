@@ -85,6 +85,18 @@ type Message struct {
 
 	Panes  []PaneInfo `json:"panes,omitempty"`  // reply to list
 	Colors *Colors    `json:"colors,omitempty"` // colors
+
+	// Web, in a hello: the client is a web page (inua-termd serve's), one
+	// the passphrases gpg asks for are relayed to (secrets.go).
+	Web bool `json:"web,omitempty"`
+	// Secret is what gpg asks (secret: inua-pinentry's request; the
+	// host's event to the pages); Asked names one (answer, withdraw).
+	Secret *Secret `json:"secret,omitempty"`
+	Asked  int     `json:"asked,omitempty"`
+	// Answer is a page's: AnswerOK (with Pin for a passphrase), AnswerNo
+	// or AnswerCancel; Pin goes on in the reply to the secret.
+	Answer string  `json:"answer,omitempty"`
+	Pin    *string `json:"pin,omitempty"`
 }
 
 // Colors are the window's default colours, 0xRRGGBB: what programs are
@@ -174,6 +186,10 @@ const (
 	MsgActive       = "active"        // client: its window is the active one (Active) or not
 	MsgReport       = "report"        // client: an agent's state for Pane: Agent, AgentState, Title, Summary
 	MsgRun          = "run"           // client: a session running Argv in Dir, in the Commands workspace; shown
+	// What gpg asks, relayed to the web pages (secrets.go).
+	MsgSecret   = "secret"   // client: Secret for the pages; reply Pin, or Error; host: Secret to a page
+	MsgAnswer   = "answer"   // page: Answer (and Pin) for the secret Asked
+	MsgWithdraw = "withdraw" // host: the secret Asked is answered or given up
 )
 
 // SocketPath is the host's socket: $XDG_RUNTIME_DIR/inua/term.sock.

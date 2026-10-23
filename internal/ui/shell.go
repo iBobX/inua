@@ -318,9 +318,9 @@ func Run(opts Options) int {
 
 	go func() {
 		log.Printf("ipc: serving on %s", socketPath)
-		err := ipc.ServeListener(context.Background(), ln, socketPath, func(_ context.Context, req ipc.Request) ipc.Response {
+		err := ipc.ServeListener(context.Background(), ln, socketPath, func(ctx context.Context, req ipc.Request) ipc.Response {
 			if req.Op == "call" && req.Target == "password" {
-				return s.askPassword(req) // waits for the user, off the main loop
+				return s.askPassword(ctx, req) // waits for the user, off the main loop
 			}
 			resp, err := gtkx.Call(2*time.Second, func() ipc.Response { return s.request(req) })
 			if err != nil {

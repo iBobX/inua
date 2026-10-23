@@ -10,11 +10,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lyricat/inua/internal/rundir"
 	"net"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/lyricat/inua/internal/rundir"
 )
 
 type Request struct {
@@ -95,7 +96,16 @@ func serveConn(ctx context.Context, conn net.Conn, h HandlerFunc) {
 	if err != nil {
 		resp.Error = "bad request: " + err.Error()
 	} else {
-		resp = h(ctx, req)
+		// The request's context ends when the caller hangs up: a request
+		// waiting for the user (a passphrase) is given up then.
+		conn.SetReadDeadline(time.Time{})
+		rctx, cancel := context.WithCancel(ctx)
+		go func() {
+			conn.Read(make([]byte, 1))
+			cancel()
+		}()
+		resp = h(rctx, req)
+		cancel()
 	}
 	conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	json.NewEncoder(conn).Encode(resp)
@@ -114,6 +124,9 @@ func Call(ctx context.Context, path string, req Request) (Response, error) {
 		return Response{}, fmt.Errorf("no shell listening on %s: %w", path, err)
 	}
 	defer conn.Close()
+	// Called off, the connection closes: the shell gives the request up.
+	stop := context.AfterFunc(ctx, func() { conn.Close() })
+	defer stop()
 	if dl, ok := ctx.Deadline(); ok {
 		conn.SetDeadline(dl)
 	}

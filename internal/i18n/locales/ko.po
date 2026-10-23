@@ -63,6 +63,18 @@ msgstr "%s이(가) 비밀을 읽었습니다"
 msgid "“%s” · %s"
 msgstr "“%s” · %s"
 
+#: cmd/inua-pinentry/main.go:142
+msgid "%s asks for your passphrase"
+msgstr ""
+
+#: cmd/inua-pinentry/main.go:144
+msgid "%s asks"
+msgstr ""
+
+#: cmd/inua-pinentry/main.go:147
+msgid "inua-keyring asks for your passphrase, for %s"
+msgstr ""
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:323
@@ -2016,10 +2028,10 @@ msgstr "%s 생성"
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:380
-#: internal/ui/askpass.go:448
-#: internal/ui/askpass.go:452
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:390
+#: internal/ui/askpass.go:458
+#: internal/ui/askpass.go:462
+#: internal/ui/askpass.go:464
 #: internal/ui/settings_about.go:233
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
@@ -2186,7 +2198,7 @@ msgstr "삭제…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:480
-#: internal/ui/askpass.go:537
+#: internal/ui/askpass.go:547
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:857
 msgid "Copied"
@@ -2578,7 +2590,7 @@ msgstr "숨기기"
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:116
 #: internal/termui/prefsweb.go:90
-#: internal/ui/askpass.go:203
+#: internal/ui/askpass.go:213
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:860
 #: ui/disk.ui:697
@@ -2699,7 +2711,7 @@ msgid "None: an app reading it is asked about first."
 msgstr "없음: 읽으려는 앱은 먼저 묻습니다."
 
 #: internal/appui/pass.go:1190
-#: internal/ui/askpass.go:371
+#: internal/ui/askpass.go:381
 #: internal/ui/settings_keyring.go:624
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
@@ -3922,15 +3934,15 @@ msgstr "알 수 없는 블록 %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:29
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
-#: internal/ui/askpass.go:270
-#: internal/ui/askpass.go:412
-#: internal/ui/askpass.go:416
+#: internal/ui/askpass.go:280
+#: internal/ui/askpass.go:422
+#: internal/ui/askpass.go:426
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
@@ -3953,7 +3965,8 @@ msgid "Cancel"
 msgstr "취소"
 
 #: internal/appui/workshop.go:995
-#: internal/ui/askpass.go:269
+#: internal/term/web/strings.go:64
+#: internal/ui/askpass.go:279
 #: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "OK"
@@ -4155,7 +4168,7 @@ msgid "Don't"
 msgstr "거부"
 
 #: internal/assistantui/assistantui.go:489
-#: internal/ui/askpass.go:407
+#: internal/ui/askpass.go:417
 #: internal/ui/settings_bluetooth.go:407
 #: internal/workshop/session.go:406
 msgid "Allow"
@@ -4823,7 +4836,7 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:79
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4877,7 +4890,7 @@ msgid "Disk Usage"
 msgstr "디스크 사용량"
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:77
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -5361,7 +5374,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:71
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "이름 바꾸기"
@@ -5470,7 +5483,7 @@ msgstr[0] "… 그 외 %d개"
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
-#: internal/term/web/strings.go:26
+#: internal/term/web/strings.go:30
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
@@ -9594,7 +9607,7 @@ msgstr "포커스 온 또는 오프"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:75
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10578,7 +10591,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "끄면: 직접 표시(U)할 때까지 읽지 않음으로 남습니다."
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:81
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "텍스트 크기"
@@ -11242,7 +11255,7 @@ msgstr "이 컴퓨터에는 페어링할 신원이 없습니다: %v"
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:87
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11546,7 +11559,7 @@ msgstr "화면"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:86
 msgid "Theme"
 msgstr "테마"
 
@@ -11759,7 +11772,7 @@ msgid "Go to Workspace %s"
 msgstr "작업 공간 %s로 이동"
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:91
+#: internal/term/web/strings.go:93
 msgid "Workspace"
 msgstr "작업 공간"
 
@@ -11923,7 +11936,7 @@ msgid "%s · workspace %s"
 msgstr "%[1]s · 작업 공간 %[2]s"
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:93
+#: internal/term/web/strings.go:96
 msgid "now"
 msgstr "지금"
 
@@ -12193,7 +12206,7 @@ msgid "Copy mode"
 msgstr "복사 모드"
 
 #: internal/term/settings/settings.go:120
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:72
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
@@ -12279,15 +12292,15 @@ msgstr "막대"
 msgid "BLOCK"
 msgstr "블록"
 
-#: internal/term/web/strings.go:27
+#: internal/term/web/strings.go:26
 msgid "Basic"
 msgstr "기본"
 
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:27
 msgid "CONNECTED"
 msgstr "연결됨"
 
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:28
 msgid "CONNECTING…"
 msgstr "연결 중…"
 
@@ -12395,122 +12408,130 @@ msgid "New workspace, in the folder"
 msgstr ""
 
 #: internal/term/web/strings.go:59
+msgid "No"
+msgstr ""
+
+#: internal/term/web/strings.go:60
 msgid "No agent is running."
 msgstr "실행 중인 에이전트가 없습니다."
 
-#: internal/term/web/strings.go:60
+#: internal/term/web/strings.go:61
 msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr "열린 창이 없습니다. 에이전트나 작업공간에서 고르세요."
 
-#: internal/term/web/strings.go:61
+#: internal/term/web/strings.go:62
 msgid "OFFLINE"
 msgstr "오프라인"
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:63
 msgid "OFFLINE · RECONNECTING"
 msgstr "오프라인 · 다시 연결 중"
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:65
 msgid "Overview"
 msgstr "개요"
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:66
 msgid "PLAIN"
 msgstr "일반"
 
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:67
 msgid "Panes are fitted to this screen at this size; pinching changes it too."
 msgstr "창은 이 크기로 이 화면에 맞춰집니다. 핀치로도 바꿀 수 있습니다."
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:68
 msgid "Pinch, or Settings in Overview, to change it."
 msgstr "핀치하거나 개요의 설정에서 바꿉니다."
 
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:69
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "복원됨"
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:70
 msgid "Received"
 msgstr "받은 양"
 
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:73
 msgid "Round trip"
 msgstr "왕복"
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:74
 msgid "Session %d"
 msgstr "세션 %d"
 
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:76
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "셸"
 
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:78
 msgid "Symbols"
 msgstr "기호"
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:80
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr "터미널 색"
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:82
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr "창의 최근 출력 그대로, 그리고 도착해 그리기까지 걸린 시간."
 
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:83
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr "컴퓨터에 있는 그대로의 창 화면과 기록, 그리고 도착해 그리기까지 걸린 시간."
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:84
 msgid "The theme's"
 msgstr "테마 색"
 
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:85
 msgid "The window theme's ground and text"
 msgstr "창 테마의 바탕과 글자"
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:88
 msgid "This device"
 msgstr "이 기기"
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:89
 msgid "To the bottom"
 msgstr "맨 아래로"
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:90
 msgid "UNDERLINE"
 msgstr "밑줄"
 
-#: internal/term/web/strings.go:89
+#: internal/term/web/strings.go:91
 msgid "WEBGL"
 msgstr "WEBGL"
 
-#: internal/term/web/strings.go:90
+#: internal/term/web/strings.go:92
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "작업 중"
 
-#: internal/term/web/strings.go:92
+#: internal/term/web/strings.go:94
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr "작업공간"
 
-#: internal/term/web/strings.go:94
+#: internal/term/web/strings.go:95
+msgid "gpg asks for your passphrase"
+msgstr ""
+
+#: internal/term/web/strings.go:97
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "%s부터"
 
-#: internal/term/web/strings.go:95
+#: internal/term/web/strings.go:98
 msgid "the theme's"
 msgstr "테마 색"
 
-#: internal/term/web/strings.go:96
+#: internal/term/web/strings.go:99
 msgid "the theme's colours"
 msgstr "테마 색"
 
@@ -12992,197 +13013,197 @@ msgstr "알람 · %02d:%02d"
 msgid "Snooze"
 msgstr "다시 알림"
 
-#: internal/ui/askpass.go:72
+#: internal/ui/askpass.go:75
 msgid "password: want one JSON request"
 msgstr "비밀번호: 하나의 JSON 요청을 원합니다."
 
-#: internal/ui/askpass.go:114
+#: internal/ui/askpass.go:124
 msgid "not ok"
 msgstr "안 괜찮아"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Passphrase Required"
 msgstr "암호가 필요함"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Confirm"
 msgstr "확인하다"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Message"
 msgstr "메시지"
 
-#: internal/ui/askpass.go:231
+#: internal/ui/askpass.go:241
 msgid "Unlock OpenPGP Key"
 msgstr "OpenPGP 키 잠금 해제"
 
-#: internal/ui/askpass.go:247
+#: internal/ui/askpass.go:257
 msgid "Passphrase"
 msgstr "암호문"
 
-#: internal/ui/askpass.go:330
-#: internal/ui/askpass.go:333
+#: internal/ui/askpass.go:340
+#: internal/ui/askpass.go:343
 #: internal/workshop/session.go:406
 msgid "Let %s do this?"
 msgstr "%s이(가) 이 작업을 하도록 허용할까요?"
 
-#: internal/ui/askpass.go:331
+#: internal/ui/askpass.go:341
 msgid "The assistant needs this to answer you. Deny, and it will say it could not."
 msgstr "어시스턴트가 답하는 데 필요합니다. 거부하면 할 수 없었다고 말합니다."
 
-#: internal/ui/askpass.go:334
+#: internal/ui/askpass.go:344
 msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
 msgstr "AI 에이전트가 데스크톱에서 inua의 도구를 쓰려고 합니다. 한 번만, 또는 이 세션 동안 허용할 수 있습니다."
 
-#: internal/ui/askpass.go:336
+#: internal/ui/askpass.go:346
 msgid "Let programs at this path read every secret?"
 msgstr "이 경로의 프로그램이 모든 비밀을 읽도록 허용할까요?"
 
-#: internal/ui/askpass.go:337
+#: internal/ui/askpass.go:347
 msgid "Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust."
 msgstr "이 경로의 모든 프로그램은 바뀐 뒤에도 묻지 않고 모든 비밀을 읽습니다. 설정이나 inua keyring allow로 방금 추가했고 믿을 수 있는 위치일 때만 허용하세요."
 
-#: internal/ui/askpass.go:339
+#: internal/ui/askpass.go:349
 msgid "Trust the list of apps again?"
 msgstr "앱 목록을 다시 신뢰할까요?"
 
-#: internal/ui/askpass.go:340
+#: internal/ui/askpass.go:350
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] "비밀을 신뢰하는 앱 목록이 inua-keyring 밖에서 바뀌었습니다. 방금 설정에서 요청한 경우에만 다시 신뢰하세요. 앱 %d개가 묻지 않고 비밀을 읽게 됩니다."
 
-#: internal/ui/askpass.go:343
+#: internal/ui/askpass.go:353
 msgid "%s has changed since you allowed it"
 msgstr "%s이(가) 허용한 뒤로 바뀌었습니다"
 
-#: internal/ui/askpass.go:344
+#: internal/ui/askpass.go:354
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr "프로그램이 허용한 것과 다릅니다. 업데이트하지 않았다면 거부하세요."
 
-#: internal/ui/askpass.go:346
+#: internal/ui/askpass.go:356
 msgid "Allow %s to read a secret?"
 msgstr "%s이(가) 비밀을 읽도록 허용할까요?"
 
-#: internal/ui/askpass.go:347
+#: internal/ui/askpass.go:357
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr "아직 이 비밀에 대해 신뢰되지 않았습니다. ‘항상 허용’하면 이제부터 묻지 않고 읽을 수 있습니다."
 
-#: internal/ui/askpass.go:350
+#: internal/ui/askpass.go:360
 msgid "It can only be allowed once: %s."
 msgstr "한 번만 허용할 수 있습니다: %s."
 
-#: internal/ui/askpass.go:360
+#: internal/ui/askpass.go:370
 msgid "<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>경로<span alpha='55%'>]</span>"
 
-#: internal/ui/askpass.go:361
+#: internal/ui/askpass.go:371
 msgid "PATH"
 msgstr "경로"
 
-#: internal/ui/askpass.go:379
+#: internal/ui/askpass.go:389
 msgid "Changed since you allowed it"
 msgstr "허용한 뒤로 바뀜"
 
-#: internal/ui/askpass.go:382
+#: internal/ui/askpass.go:392
 msgid "%s · as %s"
 msgstr "%s · %s(으)로"
 
-#: internal/ui/askpass.go:401
+#: internal/ui/askpass.go:411
 #: internal/ui/settings_bluetooth.go:408
 msgid "Deny"
 msgstr "거부"
 
-#: internal/ui/askpass.go:402
-#: internal/ui/askpass.go:420
+#: internal/ui/askpass.go:412
+#: internal/ui/askpass.go:430
 msgid "Allow once"
 msgstr "한 번 허용"
 
-#: internal/ui/askpass.go:403
+#: internal/ui/askpass.go:413
 msgid "Always allow"
 msgstr "항상 허용"
 
-#: internal/ui/askpass.go:410
+#: internal/ui/askpass.go:420
 msgid "Allow for this session"
 msgstr "이 세션 동안 허용"
 
-#: internal/ui/askpass.go:413
+#: internal/ui/askpass.go:423
 msgid "Trust"
 msgstr "신뢰"
 
-#: internal/ui/askpass.go:417
+#: internal/ui/askpass.go:427
 msgid "Allow every secret"
 msgstr "모든 비밀 허용"
 
-#: internal/ui/askpass.go:436
+#: internal/ui/askpass.go:446
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr "inua-keyring이 %s에 비밀을 전달할 수 있도록 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:438
+#: internal/ui/askpass.go:448
 msgid "Enter the passphrase so %s can use this key."
 msgstr "%s이(가) 이 키를 사용할 수 있도록 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:440
+#: internal/ui/askpass.go:450
 msgid "Enter the passphrase to use this key."
 msgstr "이 키를 사용하려면 암호 문구를 입력하세요."
 
-#: internal/ui/askpass.go:452
+#: internal/ui/askpass.go:462
 msgid "%s · expired %s"
 msgstr "%s · %s 만료됨"
 
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:464
 msgid "%s · expires %s"
 msgstr "%s · %s 만료"
 
-#: internal/ui/askpass.go:469
+#: internal/ui/askpass.go:479
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr "대상"
 
-#: internal/ui/askpass.go:471
+#: internal/ui/askpass.go:481
 msgid "SECRET"
 msgstr "비밀"
 
-#: internal/ui/askpass.go:474
+#: internal/ui/askpass.go:484
 msgid "ACTION"
 msgstr "작업"
 
-#: internal/ui/askpass.go:556
+#: internal/ui/askpass.go:566
 msgid "Encryption subkey"
 msgstr "암호화 하위 키"
 
-#: internal/ui/askpass.go:558
+#: internal/ui/askpass.go:568
 msgid "Signing subkey"
 msgstr "서명 하위 키"
 
-#: internal/ui/askpass.go:560
+#: internal/ui/askpass.go:570
 msgid "Authentication subkey"
 msgstr "인증 하위 키"
 
-#: internal/ui/askpass.go:562
+#: internal/ui/askpass.go:572
 msgid "Subkey"
 msgstr "하위 키"
 
-#: internal/ui/askpass.go:564
+#: internal/ui/askpass.go:574
 msgid "Primary key"
 msgstr "기본 키"
 
-#: internal/ui/askpass.go:611
+#: internal/ui/askpass.go:621
 msgid "Show the private details (Ctrl+H)"
 msgstr "개인 정보 표시 (Ctrl+H)"
 
-#: internal/ui/askpass.go:614
+#: internal/ui/askpass.go:624
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "개인 정보 숨기기: 키 소유자, 지문, pass 항목 (Ctrl+H)"
 
-#: internal/ui/askpass.go:673
+#: internal/ui/askpass.go:683
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "화면을 녹화하거나 공유하는 동안 숨겨집니다."
 
-#: internal/ui/askpass.go:676
+#: internal/ui/askpass.go:686
 msgid "Hidden for the screenshot."
 msgstr "스크린샷을 위해 숨겨집니다."
 
-#: internal/ui/askpass.go:723
+#: internal/ui/askpass.go:733
 msgid "The passphrases do not match."
 msgstr "암호 문구가 일치하지 않습니다."
 

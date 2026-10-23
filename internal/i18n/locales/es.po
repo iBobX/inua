@@ -63,6 +63,18 @@ msgstr "%s leyó un secreto"
 msgid "“%s” · %s"
 msgstr "«%s» · %s"
 
+#: cmd/inua-pinentry/main.go:142
+msgid "%s asks for your passphrase"
+msgstr ""
+
+#: cmd/inua-pinentry/main.go:144
+msgid "%s asks"
+msgstr ""
+
+#: cmd/inua-pinentry/main.go:147
+msgid "inua-keyring asks for your passphrase, for %s"
+msgstr ""
+
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
 #: internal/ui/control.go:323
@@ -2021,10 +2033,10 @@ msgstr "creada el %s"
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:380
-#: internal/ui/askpass.go:448
-#: internal/ui/askpass.go:452
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:390
+#: internal/ui/askpass.go:458
+#: internal/ui/askpass.go:462
+#: internal/ui/askpass.go:464
 #: internal/ui/settings_about.go:233
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
@@ -2194,7 +2206,7 @@ msgstr "Eliminar…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:480
-#: internal/ui/askpass.go:537
+#: internal/ui/askpass.go:547
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:857
 msgid "Copied"
@@ -2591,7 +2603,7 @@ msgstr "Ocultar"
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:116
 #: internal/termui/prefsweb.go:90
-#: internal/ui/askpass.go:203
+#: internal/ui/askpass.go:213
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:860
 #: ui/disk.ui:697
@@ -2715,7 +2727,7 @@ msgid "None: an app reading it is asked about first."
 msgstr "Ninguna: por una app que lo lea se pregunta antes."
 
 #: internal/appui/pass.go:1190
-#: internal/ui/askpass.go:371
+#: internal/ui/askpass.go:381
 #: internal/ui/settings_keyring.go:624
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
@@ -3943,15 +3955,15 @@ msgstr "Bloque desconocido %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:29
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
-#: internal/ui/askpass.go:270
-#: internal/ui/askpass.go:412
-#: internal/ui/askpass.go:416
+#: internal/ui/askpass.go:280
+#: internal/ui/askpass.go:422
+#: internal/ui/askpass.go:426
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
@@ -3974,7 +3986,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: internal/appui/workshop.go:995
-#: internal/ui/askpass.go:269
+#: internal/term/web/strings.go:64
+#: internal/ui/askpass.go:279
 #: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "OK"
@@ -4176,7 +4189,7 @@ msgid "Don't"
 msgstr "No permitir"
 
 #: internal/assistantui/assistantui.go:489
-#: internal/ui/askpass.go:407
+#: internal/ui/askpass.go:417
 #: internal/ui/settings_bluetooth.go:407
 #: internal/workshop/session.go:406
 msgid "Allow"
@@ -4844,7 +4857,7 @@ msgid "Opens folders"
 msgstr "Abre carpetas"
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:79
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4898,7 +4911,7 @@ msgid "Disk Usage"
 msgstr "Uso del disco"
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:77
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -5389,7 +5402,7 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:71
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "Renombrar"
@@ -5500,7 +5513,7 @@ msgstr[1] "… y %d más"
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
-#: internal/term/web/strings.go:26
+#: internal/term/web/strings.go:30
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
@@ -9645,7 +9658,7 @@ msgstr "Enfoque activado o desactivado"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:75
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10635,7 +10648,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "Desactivado: una conversación sigue sin leer hasta que la marques (U)."
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:81
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "Tamaño del texto"
@@ -11307,7 +11320,7 @@ msgstr "Este ordenador no tiene identidad con la que emparejarse: %v"
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:87
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11612,7 +11625,7 @@ msgstr "Pantalla"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:86
 msgid "Theme"
 msgstr "Tema"
 
@@ -11825,7 +11838,7 @@ msgid "Go to Workspace %s"
 msgstr "Ir al espacio de trabajo %s"
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:91
+#: internal/term/web/strings.go:93
 msgid "Workspace"
 msgstr "Espacio de trabajo"
 
@@ -11991,7 +12004,7 @@ msgid "%s · workspace %s"
 msgstr "%[1]s · espacio de trabajo %[2]s"
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:93
+#: internal/term/web/strings.go:96
 msgid "now"
 msgstr "ahora"
 
@@ -12261,7 +12274,7 @@ msgid "Copy mode"
 msgstr "Modo de copia"
 
 #: internal/term/settings/settings.go:120
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:72
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "Renombrar la sesión"
@@ -12347,15 +12360,15 @@ msgstr "BARRA"
 msgid "BLOCK"
 msgstr "BLOQUE"
 
-#: internal/term/web/strings.go:27
+#: internal/term/web/strings.go:26
 msgid "Basic"
 msgstr "Básicas"
 
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:27
 msgid "CONNECTED"
 msgstr "CONECTADO"
 
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:28
 msgid "CONNECTING…"
 msgstr "CONECTANDO…"
 
@@ -12463,122 +12476,130 @@ msgid "New workspace, in the folder"
 msgstr ""
 
 #: internal/term/web/strings.go:59
+msgid "No"
+msgstr ""
+
+#: internal/term/web/strings.go:60
 msgid "No agent is running."
 msgstr "No hay ningún agente en marcha."
 
-#: internal/term/web/strings.go:60
+#: internal/term/web/strings.go:61
 msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr "No hay ningún panel abierto. Elige uno en Agentes o Espacios de trabajo."
 
-#: internal/term/web/strings.go:61
+#: internal/term/web/strings.go:62
 msgid "OFFLINE"
 msgstr "SIN CONEXIÓN"
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:63
 msgid "OFFLINE · RECONNECTING"
 msgstr "SIN CONEXIÓN · RECONECTANDO"
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:65
 msgid "Overview"
 msgstr "Resumen"
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:66
 msgid "PLAIN"
 msgstr "SIMPLE"
 
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:67
 msgid "Panes are fitted to this screen at this size; pinching changes it too."
 msgstr "Los paneles se ajustan a esta pantalla con este tamaño; pellizcar también lo cambia."
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:68
 msgid "Pinch, or Settings in Overview, to change it."
 msgstr "Pellizca, o usa Configuración en Resumen, para cambiarlo."
 
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:69
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "RESTAURADO"
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:70
 msgid "Received"
 msgstr "Recibido"
 
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:73
 msgid "Round trip"
 msgstr "Ida y vuelta"
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:74
 msgid "Session %d"
 msgstr "Sesión %d"
 
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:76
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "Shell"
 
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:78
 msgid "Symbols"
 msgstr "Símbolos"
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:80
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr "Colores del terminal"
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:82
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr "La salida reciente del panel tal como llegó, y cuánto tardó en llegar y dibujarse."
 
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:83
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr "La pantalla y el historial del panel tal como los tiene el ordenador, y cuánto tardaron en llegar y dibujarse."
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:84
 msgid "The theme's"
 msgstr "Los del tema"
 
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:85
 msgid "The window theme's ground and text"
 msgstr "El fondo y el texto del tema de la ventana"
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:88
 msgid "This device"
 msgstr "Este dispositivo"
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:89
 msgid "To the bottom"
 msgstr "Al final"
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:90
 msgid "UNDERLINE"
 msgstr "SUBRAYADO"
 
-#: internal/term/web/strings.go:89
+#: internal/term/web/strings.go:91
 msgid "WEBGL"
 msgstr "WEBGL"
 
-#: internal/term/web/strings.go:90
+#: internal/term/web/strings.go:92
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "TRABAJANDO"
 
-#: internal/term/web/strings.go:92
+#: internal/term/web/strings.go:94
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr "Espacios de trabajo"
 
-#: internal/term/web/strings.go:94
+#: internal/term/web/strings.go:95
+msgid "gpg asks for your passphrase"
+msgstr ""
+
+#: internal/term/web/strings.go:97
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "desde %s"
 
-#: internal/term/web/strings.go:95
+#: internal/term/web/strings.go:98
 msgid "the theme's"
 msgstr "los del tema"
 
-#: internal/term/web/strings.go:96
+#: internal/term/web/strings.go:99
 msgid "the theme's colours"
 msgstr "los colores del tema"
 
@@ -13067,198 +13088,198 @@ msgstr "Alarma · %02d:%02d"
 msgid "Snooze"
 msgstr "Posponer"
 
-#: internal/ui/askpass.go:72
+#: internal/ui/askpass.go:75
 msgid "password: want one JSON request"
 msgstr "contraseña: quiero una solicitud JSON"
 
-#: internal/ui/askpass.go:114
+#: internal/ui/askpass.go:124
 msgid "not ok"
 msgstr "no está bien"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Passphrase Required"
 msgstr "Frase de contraseña requerida"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: internal/ui/askpass.go:229
+#: internal/ui/askpass.go:239
 msgid "Message"
 msgstr "Mensaje"
 
-#: internal/ui/askpass.go:231
+#: internal/ui/askpass.go:241
 msgid "Unlock OpenPGP Key"
 msgstr "Desbloquear la clave OpenPGP"
 
-#: internal/ui/askpass.go:247
+#: internal/ui/askpass.go:257
 msgid "Passphrase"
 msgstr "Frase de contraseña"
 
-#: internal/ui/askpass.go:330
-#: internal/ui/askpass.go:333
+#: internal/ui/askpass.go:340
+#: internal/ui/askpass.go:343
 #: internal/workshop/session.go:406
 msgid "Let %s do this?"
 msgstr "¿Dejar que %s haga esto?"
 
-#: internal/ui/askpass.go:331
+#: internal/ui/askpass.go:341
 msgid "The assistant needs this to answer you. Deny, and it will say it could not."
 msgstr "El asistente lo necesita para responderte. Si lo deniegas, dirá que no pudo."
 
-#: internal/ui/askpass.go:334
+#: internal/ui/askpass.go:344
 msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
 msgstr "Un agente de IA pide usar las herramientas de inua en tu escritorio. Permítelo una vez o durante el resto de su sesión."
 
-#: internal/ui/askpass.go:336
+#: internal/ui/askpass.go:346
 msgid "Let programs at this path read every secret?"
 msgstr "¿Dejar que los programas de esta ruta lean todos los secretos?"
 
-#: internal/ui/askpass.go:337
+#: internal/ui/askpass.go:347
 msgid "Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust."
 msgstr "Cualquier programa de esta ruta leerá todos los secretos sin preguntar, incluso después de cambiar. Permítelo solo si acabas de añadirla en Configuración o con inua keyring allow, y solo para un lugar en el que confíes."
 
-#: internal/ui/askpass.go:339
+#: internal/ui/askpass.go:349
 msgid "Trust the list of apps again?"
 msgstr "¿Confiar de nuevo en la lista de apps?"
 
-#: internal/ui/askpass.go:340
+#: internal/ui/askpass.go:350
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] "La lista de apps de confianza para tus secretos se cambió fuera de inua-keyring. Confía de nuevo solo si acabas de pedirlo en Ajustes: deja que %d app lea secretos sin preguntar."
 msgstr[1] "La lista de apps de confianza para tus secretos se cambió fuera de inua-keyring. Confía de nuevo solo si acabas de pedirlo en Ajustes: deja que %d apps lean secretos sin preguntar."
 
-#: internal/ui/askpass.go:343
+#: internal/ui/askpass.go:353
 msgid "%s has changed since you allowed it"
 msgstr "%s cambió desde que lo permitiste"
 
-#: internal/ui/askpass.go:344
+#: internal/ui/askpass.go:354
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr "Su programa no es el que permitiste. Si no lo actualizaste, deniégalo."
 
-#: internal/ui/askpass.go:346
+#: internal/ui/askpass.go:356
 msgid "Allow %s to read a secret?"
 msgstr "¿Dejar que %s lea un secreto?"
 
-#: internal/ui/askpass.go:347
+#: internal/ui/askpass.go:357
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr "Aún no tiene la confianza para este secreto. «Permitir siempre» le deja leerlo desde ahora sin preguntar."
 
-#: internal/ui/askpass.go:350
+#: internal/ui/askpass.go:360
 msgid "It can only be allowed once: %s."
 msgstr "Solo se puede permitir una vez: %s."
 
-#: internal/ui/askpass.go:360
+#: internal/ui/askpass.go:370
 msgid "<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>RUTA<span alpha='55%'>]</span>"
 
-#: internal/ui/askpass.go:361
+#: internal/ui/askpass.go:371
 msgid "PATH"
 msgstr "RUTA"
 
-#: internal/ui/askpass.go:379
+#: internal/ui/askpass.go:389
 msgid "Changed since you allowed it"
 msgstr "Cambió desde que lo permitiste"
 
-#: internal/ui/askpass.go:382
+#: internal/ui/askpass.go:392
 msgid "%s · as %s"
 msgstr "%s · como %s"
 
-#: internal/ui/askpass.go:401
+#: internal/ui/askpass.go:411
 #: internal/ui/settings_bluetooth.go:408
 msgid "Deny"
 msgstr "Denegar"
 
-#: internal/ui/askpass.go:402
-#: internal/ui/askpass.go:420
+#: internal/ui/askpass.go:412
+#: internal/ui/askpass.go:430
 msgid "Allow once"
 msgstr "Permitir una vez"
 
-#: internal/ui/askpass.go:403
+#: internal/ui/askpass.go:413
 msgid "Always allow"
 msgstr "Permitir siempre"
 
-#: internal/ui/askpass.go:410
+#: internal/ui/askpass.go:420
 msgid "Allow for this session"
 msgstr "Permitir en esta sesión"
 
-#: internal/ui/askpass.go:413
+#: internal/ui/askpass.go:423
 msgid "Trust"
 msgstr "Confiar"
 
-#: internal/ui/askpass.go:417
+#: internal/ui/askpass.go:427
 msgid "Allow every secret"
 msgstr "Permitir todos los secretos"
 
-#: internal/ui/askpass.go:436
+#: internal/ui/askpass.go:446
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr "Introduce la frase de paso para que inua-keyring pueda dar a %s su secreto."
 
-#: internal/ui/askpass.go:438
+#: internal/ui/askpass.go:448
 msgid "Enter the passphrase so %s can use this key."
 msgstr "Introduce la frase de paso para que %s pueda usar esta clave."
 
-#: internal/ui/askpass.go:440
+#: internal/ui/askpass.go:450
 msgid "Enter the passphrase to use this key."
 msgstr "Introduce la frase de paso para usar esta clave."
 
-#: internal/ui/askpass.go:452
+#: internal/ui/askpass.go:462
 msgid "%s · expired %s"
 msgstr "%s · caducó el %s"
 
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:464
 msgid "%s · expires %s"
 msgstr "%s · caduca el %s"
 
-#: internal/ui/askpass.go:469
+#: internal/ui/askpass.go:479
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr "PARA"
 
-#: internal/ui/askpass.go:471
+#: internal/ui/askpass.go:481
 msgid "SECRET"
 msgstr "SECRETO"
 
-#: internal/ui/askpass.go:474
+#: internal/ui/askpass.go:484
 msgid "ACTION"
 msgstr "ACCIÓN"
 
-#: internal/ui/askpass.go:556
+#: internal/ui/askpass.go:566
 msgid "Encryption subkey"
 msgstr "Subclave de cifrado"
 
-#: internal/ui/askpass.go:558
+#: internal/ui/askpass.go:568
 msgid "Signing subkey"
 msgstr "Subclave de firma"
 
-#: internal/ui/askpass.go:560
+#: internal/ui/askpass.go:570
 msgid "Authentication subkey"
 msgstr "Subclave de autenticación"
 
-#: internal/ui/askpass.go:562
+#: internal/ui/askpass.go:572
 msgid "Subkey"
 msgstr "Subclave"
 
-#: internal/ui/askpass.go:564
+#: internal/ui/askpass.go:574
 msgid "Primary key"
 msgstr "Clave principal"
 
-#: internal/ui/askpass.go:611
+#: internal/ui/askpass.go:621
 msgid "Show the private details (Ctrl+H)"
 msgstr "Mostrar los datos privados (Ctrl+H)"
 
-#: internal/ui/askpass.go:614
+#: internal/ui/askpass.go:624
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "Ocultar los datos privados: el titular de la clave, su huella y la entrada de pass (Ctrl+H)"
 
-#: internal/ui/askpass.go:673
+#: internal/ui/askpass.go:683
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "Oculto mientras se graba o comparte la pantalla."
 
-#: internal/ui/askpass.go:676
+#: internal/ui/askpass.go:686
 msgid "Hidden for the screenshot."
 msgstr "Oculto para la captura de pantalla."
 
-#: internal/ui/askpass.go:723
+#: internal/ui/askpass.go:733
 msgid "The passphrases do not match."
 msgstr "Las frases de contraseña no coinciden."
 
