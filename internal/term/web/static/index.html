@@ -52,6 +52,21 @@
   #app.typing #tab-term { padding-bottom:0; }
   button.plain { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--t1); border-radius:2px; flex:none; }
   button.plain:active { background:color-mix(in srgb, var(--accent) 9%, transparent); }
+  /* An action at the head's end (New workspace, New session). */
+  header button.plain.act { grid-column:3; }
+
+  /* A question with a line to type (a folder, a name): a card over the
+     dimmed page, near its top, where a phone's keyboard leaves it in
+     view. The line's text is 16 px: smaller, an iPhone zooms in on it. */
+  #ask { position:fixed; inset:0; z-index:10; display:flex; justify-content:center; align-items:flex-start; padding:calc(env(safe-area-inset-top) + 56px) 16px 16px; background:color-mix(in srgb, var(--app) 60%, transparent); }
+  #ask form { width:100%; max-width:420px; margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  #ask .q { font:15px var(--title); color:var(--t0); margin-bottom:12px; }
+  #ask input { width:100%; height:40px; padding:0 10px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t0); font:16px var(--mono); outline:none; }
+  #ask input:focus { border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
+  #ask .err { min-height:18px; margin-top:6px; font:12px var(--sans); color:var(--danger); }
+  #ask .btns { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+  #ask .btns button { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:2px; font:13px var(--sans); color:var(--t1); }
+  #ask .btns button.ok { border-color:var(--accent); background:var(--accent); color:var(--app); }
 
   /* A notice: a hairline in warn, no fill (the connection's state). */
   .notice { margin:8px 16px 0; padding:6px 10px; border:1px solid var(--warn); border-radius:2px; color:var(--warn); font:11px var(--mono); letter-spacing:.06em; }
@@ -77,6 +92,9 @@
   /* Sections as the window's sessions: a mark, a mono label, a hairline. */
   .section { display:flex; align-items:center; gap:8px; min-height:40px; margin:10px 0 6px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
   .section .label { font:600 11px var(--mono); letter-spacing:.12em; color:var(--t2); text-transform:uppercase; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* A session's Rename, at its head's end. */
+  .section button.plain { width:32px; height:32px; margin-right:-8px; color:var(--t2); }
+  .section button.plain .icon { width:15px; height:15px; }
   .mark { width:7px; height:7px; border:1px solid var(--t2); border-radius:1px; flex:none; }
   .mark.s-on { border-color:var(--accent); background:var(--accent); }
   .mark.s-warn { border-color:var(--warn); background:var(--warn); }
@@ -110,6 +128,7 @@
   #panesbar { display:flex; align-items:center; padding:6px 8px 0; border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
   #panesbar[hidden] { display:none; }
   #termback { margin:0; }
+  #newpane { margin:0 0 0 8px; }
   #chips { display:flex; overflow-x:auto; flex:1; min-width:0; height:36px; border:1px solid var(--line); border-radius:2px; scrollbar-width:none; }
   #chips::-webkit-scrollbar { display:none; }
   #chips button { display:flex; align-items:center; gap:6px; min-height:34px; padding:0 12px; font:12.5px var(--title); color:var(--t1); white-space:nowrap; flex:none; }
@@ -237,6 +256,7 @@
     <header>
       <button class="plain" id="wsback" hidden data-ta="Workspaces"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div class="h1" id="wstitle">Workspaces</div>
+      <button class="plain act" id="wsadd" data-ta="New workspace"><span class="icon" style="--i:url(/icons/list-add-symbolic.svg)"></span></button>
     </header>
     <div class="notice" hidden></div>
     <div class="scroll" id="ws"></div>
@@ -248,6 +268,7 @@
     <div id="panesbar">
       <button id="termback" class="barbtn" data-ta="Back"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div id="chips"></div>
+      <button id="newpane" class="barbtn" data-ta="New pane"><span class="icon" style="--i:url(/icons/list-add-symbolic.svg)"></span></button>
     </div>
     <div id="keybar">
       <div id="keys"></div>
@@ -275,6 +296,15 @@
     <button data-tab="ws"><span class="icon" style="--i:url(/icons/folder-symbolic.svg)"></span><span class="k" data-t="Workspaces">Workspaces</span></button>
     <button data-tab="over"><span class="icon" style="--i:url(/icons/inua-benchmark-symbolic.svg)"></span><span class="k" data-t="Overview">Overview</span></button>
   </nav>
+</div>
+
+<div id="ask" hidden>
+  <form>
+    <div class="q"></div>
+    <input autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+    <div class="err"></div>
+    <div class="btns"><button type="button" class="cancel" data-t="Cancel">Cancel</button><button type="submit" class="ok"></button></div>
+  </form>
 </div>
 
 <script src="/vendor/xterm.js"></script>
@@ -422,7 +452,8 @@ async function welcome() {
 }
 
 function setState(s) {
-  model = s.model || { workspaces: [] };
+  model = s.model || {};
+  model.workspaces = model.workspaces || [];  // none yet comes as null
   paneMap = new Map((s.panes || []).map(p => [p.id, p]));
   render();
   // The first state after a reload: the pane that was open, open again.
@@ -566,6 +597,7 @@ function renderWS() {
   const w = wsOpen && model.workspaces.find(w => w.id === wsOpen);
   $("wsback").hidden = !w;
   $("wstitle").textContent = w ? wsName(w) : T("Workspaces");
+  $("wsadd").setAttribute("aria-label", w ? T("New session") : T("New workspace"));
   if (!w) {
     wsOpen = null;
     for (const w of model.workspaces) {
@@ -592,7 +624,13 @@ function renderWS() {
   for (const s of w.sessions || []) {
     const panes = sessionPanes(s);
     if (!panes.length) continue;
-    box.append(section(sessionName(w, s), sum(panes), panes.filter(p => p.state === "blocked").length));
+    const head = section(sessionName(w, s), sum(panes), panes.filter(p => p.state === "blocked").length);
+    const rename = el("button", "plain");
+    rename.append(icon("document-edit"));
+    rename.setAttribute("aria-label", T("Rename the session"));
+    rename.onclick = () => renameSession(w, s);
+    head.append(rename);
+    box.append(head);
     for (const p of panes) box.append(paneRow(p));
   }
 }
@@ -610,6 +648,96 @@ $("termback").onclick = () => {
   render();
 };
 $("overback").onclick = () => { overPage = null; renderOver(); $("over").scrollTop = 0; };
+
+// ---- New workspaces, sessions and panes; a session's name ----
+
+// ask asks for a line of text (a folder, a name) in a card over the
+// page; done gets it and gives back what went wrong, which keeps the card
+// open to try again.
+function ask(question, value, action, done) {
+  const box = $("ask"), f = box.querySelector("form"), line = f.querySelector("input"), err = f.querySelector(".err");
+  f.querySelector(".q").textContent = question;
+  f.querySelector(".ok").textContent = action;
+  line.value = value; err.textContent = "";
+  box.hidden = false;
+  line.focus(); line.setSelectionRange(value.length, value.length);
+  const close = () => { box.hidden = true; line.blur(); f.onsubmit = null; };
+  f.querySelector(".cancel").onclick = close;
+  box.onclick = e => { if (e.target === box) close(); };
+  line.onkeydown = e => { if (e.key === "Escape") close(); };
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const text = line.value.trim();
+    if (!text) return;
+    const problem = await done(text);
+    if (problem) err.textContent = problem; else close();
+  };
+}
+// oops says what went wrong for a moment, in the notice.
+function oops(text) {
+  status(text);
+  setTimeout(() => { if (connected) status(""); }, 4000);
+}
+// folder is a folder as typed, as the host takes it: ~ is the home
+// folder, and a relative one is in it.
+function folder(s) {
+  if (s === "~") return INUA.home;
+  if (s.startsWith("~/")) return INUA.home + s.slice(1);
+  return s.startsWith("/") ? s : INUA.home + "/" + s;
+}
+// fresh takes the host's state now: a reply comes before its state event.
+async function fresh() {
+  const r = await request({ type: "state" });
+  if (r.state) setState(r.state);
+}
+// openSession opens a session's pane with the focus.
+function openSession(id) {
+  for (const w of model.workspaces) for (const s of w.sessions || []) {
+    if (s.id !== id) continue;
+    const p = s.focus || treePanes(s.tree)[0];
+    if (p) open(p);
+    return;
+  }
+}
+// New workspace in the list (a folder; one there already is shown), New
+// session in a workspace's page; either opens its shell.
+$("wsadd").onclick = async () => {
+  const w = wsOpen && model.workspaces.find(w => w.id === wsOpen);
+  if (w) {
+    const r = await request({ type: "new_session", workspace: w.id });
+    if (r.error) return oops(r.error);
+    await fresh();
+    return openSession(r.session);
+  }
+  ask(T("New workspace, in the folder"), "~/", T("Create"), async text => {
+    const dir = folder(text).replace(/\/+$/, "") || "/";
+    const there = model.workspaces.find(w => w.dir === dir);
+    const r = await request({ type: "open", dir });
+    if (r.error) return r.error.replace(dir, home(dir));
+    await fresh();
+    const made = model.workspaces.find(w => w.id === r.workspace);
+    if (there || !made) { wsOpen = r.workspace; renderWS(); return; }
+    openSession(((made.sessions || [])[0] || {}).id);
+  });
+};
+function renameSession(w, s) {
+  ask(T("Rename the session"), sessionName(w, s), T("Rename"), async text => {
+    const r = await request({ type: "rename", session: s.id, name: text });
+    if (r.error) return r.error;
+    await fresh();
+  });
+}
+// New pane: a shell beside the one open, in the same session.
+$("newpane").addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays
+$("newpane").onclick = async () => {
+  const at = cur && where(cur);
+  if (!at) return;
+  await request({ type: "layout", session: at.s.id, op: "focus", pane: cur });
+  const r = await request({ type: "split", session: at.s.id, split: "right" });
+  if (r.error) return oops(r.error);
+  await fresh();
+  open(r.pane);
+};
 
 // ---- The overview: this computer, the agents, the link, the settings ----
 

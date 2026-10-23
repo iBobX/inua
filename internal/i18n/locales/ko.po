@@ -669,7 +669,7 @@ msgstr "Cursor가 확장을 다시 다운로드합니다."
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
-#: internal/term/web/strings.go:33
+#: internal/term/web/strings.go:35
 msgid "Cursor"
 msgstr "Cursor"
 
@@ -2559,7 +2559,7 @@ msgstr "메모"
 
 #: internal/appui/pass.go:740
 #: internal/mailui/formatted.go:184
-#: internal/term/host/agents.go:408
+#: internal/term/desktop/desktop_linux.go:42
 #: internal/ui/passwords.go:624
 #: internal/vmui/window.go:2570
 #: internal/vmui/window.go:2571
@@ -2606,7 +2606,7 @@ msgstr "새 경로. 다른 이름이면 이름이 바뀌고, 다른 카테고리
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
-#: internal/term/web/strings.go:51
+#: internal/term/web/strings.go:53
 msgid "Move"
 msgstr "이동"
 
@@ -2956,7 +2956,7 @@ msgid "NETWORK"
 msgstr "네트워크"
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:525
+#: internal/ui/settings_card.go:526
 msgid "DISK"
 msgstr "디스크"
 
@@ -3594,7 +3594,7 @@ msgstr "상태"
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
-#: internal/term/web/strings.go:31
+#: internal/term/web/strings.go:32
 msgid "Connection"
 msgstr "연결"
 
@@ -3922,6 +3922,7 @@ msgstr "알 수 없는 블록 %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
+#: internal/term/web/strings.go:28
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
@@ -3953,7 +3954,7 @@ msgstr "취소"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:623
+#: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "OK"
 
@@ -4822,7 +4823,7 @@ msgid "Opens folders"
 msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:77
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4876,7 +4877,7 @@ msgid "Disk Usage"
 msgstr "디스크 사용량"
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:75
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -5360,6 +5361,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/term/web/strings.go:69
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "이름 바꾸기"
@@ -9226,7 +9228,7 @@ msgid "The game could not open to the network: %v"
 msgstr "네트워크에 게임을 열 수 없습니다: %v"
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/term/web/strings.go:44
+#: internal/term/web/strings.go:46
 msgid "Host"
 msgstr "호스트"
 
@@ -9592,7 +9594,7 @@ msgstr "포커스 온 또는 오프"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:73
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10576,7 +10578,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "끄면: 직접 표시(U)할 때까지 읽지 않음으로 남습니다."
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:79
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "텍스트 크기"
@@ -11240,7 +11242,7 @@ msgstr "이 컴퓨터에는 페어링할 신원이 없습니다: %v"
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:85
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11544,7 +11546,7 @@ msgstr "화면"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:84
 msgid "Theme"
 msgstr "테마"
 
@@ -11554,12 +11556,12 @@ msgid "Uptime"
 msgstr "가동 시간"
 
 #: internal/shell/cardterm.go:95
-#: internal/ui/settings_card.go:471
+#: internal/ui/settings_card.go:472
 msgid "INUA // SYSTEM MANIFEST"
 msgstr "INUA // 시스템 매니페스트"
 
 #: internal/shell/cardterm.go:116
-#: internal/ui/settings_card.go:509
+#: internal/ui/settings_card.go:510
 msgid "%d thr"
 msgstr "%d 스레드"
 
@@ -11757,7 +11759,7 @@ msgid "Go to Workspace %s"
 msgstr "작업 공간 %s로 이동"
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:91
 msgid "Workspace"
 msgstr "작업 공간"
 
@@ -11921,7 +11923,7 @@ msgid "%s · workspace %s"
 msgstr "%[1]s · 작업 공간 %[2]s"
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:93
 msgid "now"
 msgstr "지금"
 
@@ -12051,13 +12053,21 @@ msgstr "연결되지 않음 (NetworkManager 사유 %d)."
 msgid "Not connected: %s"
 msgstr "연결되지 않음: %s"
 
-#: internal/term/host/agents.go:179
+#: internal/term/host/agents.go:168
 msgid "%s needs you"
 msgstr "%s이(가) 응답을 기다립니다"
 
-#: internal/term/host/agents.go:181
+#: internal/term/host/agents.go:170
 msgid "%s is done"
 msgstr "%s 작업 완료"
+
+#: internal/term/host/sessions.go:231
+msgid "No folder given."
+msgstr ""
+
+#: internal/term/host/sessions.go:234
+msgid "%s is not a folder."
+msgstr ""
 
 #: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
@@ -12113,6 +12123,7 @@ msgid "New session in this workspace"
 msgstr "이 작업 공간에 새 세션"
 
 #: internal/term/settings/settings.go:101
+#: internal/term/web/strings.go:57
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "새 작업 공간"
@@ -12182,6 +12193,7 @@ msgid "Copy mode"
 msgstr "복사 모드"
 
 #: internal/term/settings/settings.go:120
+#: internal/term/web/strings.go:70
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
@@ -12210,7 +12222,7 @@ msgstr "글자 작게"
 msgid "Font size as set"
 msgstr "설정한 글자 크기"
 
-#: internal/term/web/look.go:87
+#: internal/term/web/look.go:86
 msgid "your own"
 msgstr "직접 만든 테마"
 
@@ -12271,214 +12283,234 @@ msgstr "블록"
 msgid "Basic"
 msgstr "기본"
 
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:29
 msgid "CONNECTED"
 msgstr "연결됨"
 
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:30
 msgid "CONNECTING…"
 msgstr "연결 중…"
 
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:31
 msgid "Columns × rows: the pane fitted to this screen at the text size."
 msgstr "열 × 행: 텍스트 크기에 맞춰 이 화면에 맞춘 창."
 
-#: internal/term/web/strings.go:32
+#: internal/term/web/strings.go:33
 msgid "Control"
 msgstr "Ctrl 조합"
 
 #: internal/term/web/strings.go:34
+#: internal/vmui/window.go:1072
+#: ui/gpg.ui:1488
+#: ui/vm.ui:3331
+msgid "Create"
+msgstr "만들기"
+
+#: internal/term/web/strings.go:36
 msgid "Cursor blinks"
 msgstr "커서 깜박임"
 
-#: internal/term/web/strings.go:35
+#: internal/term/web/strings.go:37
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "완료"
 
-#: internal/term/web/strings.go:36
+#: internal/term/web/strings.go:38
 msgid "Drawing"
 msgstr "그리기"
 
-#: internal/term/web/strings.go:37
+#: internal/term/web/strings.go:39
 msgid "Drawn by the browser's page: slower, used when WebGL is missing."
 msgstr "브라우저 페이지가 그림: 더 느리며 WebGL이 없을 때 씁니다."
 
-#: internal/term/web/strings.go:38
+#: internal/term/web/strings.go:40
 msgid "Drawn by the graphics chip: the fast way."
 msgstr "그래픽 칩이 그림: 빠른 방법입니다."
 
-#: internal/term/web/strings.go:39
+#: internal/term/web/strings.go:41
 msgid "Esc, Tab, Ctrl, the arrows and the rest a touch keyboard lacks."
 msgstr "Esc, Tab, Ctrl, 화살표 등 터치 키보드에 없는 키."
 
-#: internal/term/web/strings.go:40
+#: internal/term/web/strings.go:42
 msgid "Everything from this pane since it opened here."
 msgstr "여기서 연 뒤로 이 창에서 받은 모든 것."
 
-#: internal/term/web/strings.go:41
+#: internal/term/web/strings.go:43
 msgid "First load"
 msgstr "처음 불러오기"
 
-#: internal/term/web/strings.go:42
+#: internal/term/web/strings.go:44
 #: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "글꼴"
 
-#: internal/term/web/strings.go:43
+#: internal/term/web/strings.go:45
 msgid "Function"
 msgstr "기능 키"
 
-#: internal/term/web/strings.go:45
+#: internal/term/web/strings.go:47
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "대기"
 
-#: internal/term/web/strings.go:46
+#: internal/term/web/strings.go:48
 msgid "INFO"
 msgstr "정보"
 
-#: internal/term/web/strings.go:47
+#: internal/term/web/strings.go:49
 #: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "키"
 
-#: internal/term/web/strings.go:48
+#: internal/term/web/strings.go:50
 msgid "Key panel"
 msgstr "키 패널"
 
-#: internal/term/web/strings.go:49
+#: internal/term/web/strings.go:51
 #: ui/settings.ui:5692
 msgid "Keyboard"
 msgstr "키보드"
 
-#: internal/term/web/strings.go:50
+#: internal/term/web/strings.go:52
 msgid "Keys above the keyboard"
 msgstr "키보드 위의 키"
 
-#: internal/term/web/strings.go:52
+#: internal/term/web/strings.go:54
 #: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "응답 필요"
 
-#: internal/term/web/strings.go:53
+#: internal/term/web/strings.go:55
+msgid "New pane"
+msgstr ""
+
+#: internal/term/web/strings.go:56
+#: internal/termui/columns.go:169
+msgid "New session"
+msgstr "새 세션"
+
+#: internal/term/web/strings.go:58
+msgid "New workspace, in the folder"
+msgstr ""
+
+#: internal/term/web/strings.go:59
 msgid "No agent is running."
 msgstr "실행 중인 에이전트가 없습니다."
 
-#: internal/term/web/strings.go:54
+#: internal/term/web/strings.go:60
 msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr "열린 창이 없습니다. 에이전트나 작업공간에서 고르세요."
 
-#: internal/term/web/strings.go:55
+#: internal/term/web/strings.go:61
 msgid "OFFLINE"
 msgstr "오프라인"
 
-#: internal/term/web/strings.go:56
+#: internal/term/web/strings.go:62
 msgid "OFFLINE · RECONNECTING"
 msgstr "오프라인 · 다시 연결 중"
 
-#: internal/term/web/strings.go:57
+#: internal/term/web/strings.go:63
 msgid "Overview"
 msgstr "개요"
 
-#: internal/term/web/strings.go:58
+#: internal/term/web/strings.go:64
 msgid "PLAIN"
 msgstr "일반"
 
-#: internal/term/web/strings.go:59
+#: internal/term/web/strings.go:65
 msgid "Panes are fitted to this screen at this size; pinching changes it too."
 msgstr "창은 이 크기로 이 화면에 맞춰집니다. 핀치로도 바꿀 수 있습니다."
 
-#: internal/term/web/strings.go:60
+#: internal/term/web/strings.go:66
 msgid "Pinch, or Settings in Overview, to change it."
 msgstr "핀치하거나 개요의 설정에서 바꿉니다."
 
-#: internal/term/web/strings.go:61
+#: internal/term/web/strings.go:67
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "복원됨"
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:68
 msgid "Received"
 msgstr "받은 양"
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:71
 msgid "Round trip"
 msgstr "왕복"
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:72
 msgid "Session %d"
 msgstr "세션 %d"
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:74
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "셸"
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:76
 msgid "Symbols"
 msgstr "기호"
 
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:78
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr "터미널 색"
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:80
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr "창의 최근 출력 그대로, 그리고 도착해 그리기까지 걸린 시간."
 
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:81
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr "컴퓨터에 있는 그대로의 창 화면과 기록, 그리고 도착해 그리기까지 걸린 시간."
 
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:82
 msgid "The theme's"
 msgstr "테마 색"
 
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:83
 msgid "The window theme's ground and text"
 msgstr "창 테마의 바탕과 글자"
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:86
 msgid "This device"
 msgstr "이 기기"
 
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:87
 msgid "To the bottom"
 msgstr "맨 아래로"
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:88
 msgid "UNDERLINE"
 msgstr "밑줄"
 
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:89
 msgid "WEBGL"
 msgstr "WEBGL"
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:90
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "작업 중"
 
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:92
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr "작업공간"
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:94
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "%s부터"
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:95
 msgid "the theme's"
 msgstr "테마 색"
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:96
 msgid "the theme's colours"
 msgstr "테마 색"
 
@@ -12508,27 +12540,27 @@ msgstr "%s(으)로 다음으로 이동"
 msgid "No agent runs in any workspace."
 msgstr "어느 작업 공간에서도 에이전트가 실행되고 있지 않습니다."
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "As inua (%s)"
 msgstr "inua와 같이 (%s)"
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "The window changes with inua's theme"
 msgstr "창이 inua의 테마를 따라 바뀝니다"
 
-#: internal/termui/choices.go:34
+#: internal/termui/choices.go:33
 msgid "A theme of your own"
 msgstr "직접 만든 테마"
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The window's theme"
 msgstr "창의 테마"
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The terminals take the window's colours"
 msgstr "터미널이 창의 색을 씁니다"
 
-#: internal/termui/choices.go:71
+#: internal/termui/choices.go:70
 msgid "Your login shell (%s)"
 msgstr "로그인 셸 (%s)"
 
@@ -12536,10 +12568,6 @@ msgstr "로그인 셸 (%s)"
 #: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "동작"
-
-#: internal/termui/columns.go:169
-msgid "New session"
-msgstr "새 세션"
 
 #: internal/termui/copymode.go:35
 msgid "COPY"
@@ -13692,7 +13720,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:900
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:287
+#: internal/ui/settings_card.go:288
 msgid "Not saved: %s"
 msgstr "저장되지 않음: %s"
 
@@ -14148,70 +14176,70 @@ msgstr "아직 찾지 못했습니다. 기기를 페어링 모드로 두세요. 
 msgid "Forget it?"
 msgstr "삭제할까요?"
 
-#: internal/ui/settings_card.go:161
 #: internal/ui/settings_card.go:162
+#: internal/ui/settings_card.go:163
 msgid "Reading…"
 msgstr "읽는 중…"
 
-#: internal/ui/settings_card.go:211
-#: internal/ui/settings_card.go:237
-#: internal/ui/settings_card.go:244
+#: internal/ui/settings_card.go:212
+#: internal/ui/settings_card.go:238
+#: internal/ui/settings_card.go:245
 msgid "Not copied: %s"
 msgstr "복사하지 못함: %s"
 
-#: internal/ui/settings_card.go:214
+#: internal/ui/settings_card.go:215
 msgid "Copied as text."
 msgstr "텍스트로 복사했습니다."
 
-#: internal/ui/settings_card.go:223
+#: internal/ui/settings_card.go:224
 msgid "the window cannot draw it now"
 msgstr "지금은 창에서 그릴 수 없습니다"
 
-#: internal/ui/settings_card.go:227
+#: internal/ui/settings_card.go:228
 msgid "%s cannot be written"
 msgstr "%s에 쓸 수 없습니다"
 
-#: internal/ui/settings_card.go:247
+#: internal/ui/settings_card.go:248
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr "이미지로 복사했습니다. 채팅이나 게시물에 붙여 넣으세요."
 
-#: internal/ui/settings_card.go:260
+#: internal/ui/settings_card.go:261
 msgid "Save the card"
 msgstr "카드 저장"
 
-#: internal/ui/settings_card.go:290
+#: internal/ui/settings_card.go:291
 msgid "Saved as %s"
 msgstr "%s(으)로 저장했습니다"
 
-#: internal/ui/settings_card.go:502
+#: internal/ui/settings_card.go:503
 msgid "[UNIT]"
 msgstr "[본체]"
 
-#: internal/ui/settings_card.go:505
+#: internal/ui/settings_card.go:506
 msgid "[SILICON]"
 msgstr "[실리콘]"
 
-#: internal/ui/settings_card.go:528
+#: internal/ui/settings_card.go:529
 msgid "[STACK]"
 msgstr "[스택]"
 
-#: internal/ui/settings_card.go:538
+#: internal/ui/settings_card.go:539
 msgid "[OPTICS]"
 msgstr "[디스플레이]"
 
-#: internal/ui/settings_card.go:547
+#: internal/ui/settings_card.go:548
 msgid "UPTIME"
 msgstr "가동 시간"
 
-#: internal/ui/settings_card.go:618
+#: internal/ui/settings_card.go:619
 msgid "[TRANSMISSION]"
 msgstr "[송신]"
 
-#: internal/ui/settings_card.go:625
+#: internal/ui/settings_card.go:626
 msgid "CHECK"
 msgstr "확인"
 
-#: internal/ui/settings_card.go:632
+#: internal/ui/settings_card.go:633
 msgid "Hyprland, with inua on top."
 msgstr "Hyprland, 그 위에 inua."
 
@@ -15161,12 +15189,6 @@ msgstr "권장: %d."
 #: internal/vmui/window.go:1065
 msgid "Creating…"
 msgstr "만드는 중…"
-
-#: internal/vmui/window.go:1072
-#: ui/gpg.ui:1488
-#: ui/vm.ui:3331
-msgid "Create"
-msgstr "만들기"
 
 #: internal/vmui/window.go:1075
 msgid "That name cannot be used: %v"

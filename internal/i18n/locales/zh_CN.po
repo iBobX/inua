@@ -669,7 +669,7 @@ msgstr "Cursor 会重新下载其扩展。"
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
-#: internal/term/web/strings.go:33
+#: internal/term/web/strings.go:35
 msgid "Cursor"
 msgstr "Cursor"
 
@@ -2559,7 +2559,7 @@ msgstr "备注"
 
 #: internal/appui/pass.go:740
 #: internal/mailui/formatted.go:184
-#: internal/term/host/agents.go:408
+#: internal/term/desktop/desktop_linux.go:42
 #: internal/ui/passwords.go:624
 #: internal/vmui/window.go:2570
 #: internal/vmui/window.go:2571
@@ -2606,7 +2606,7 @@ msgstr "新路径。换个名字即重命名；放到另一个类别下的路径
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
-#: internal/term/web/strings.go:51
+#: internal/term/web/strings.go:53
 msgid "Move"
 msgstr "移动"
 
@@ -2956,7 +2956,7 @@ msgid "NETWORK"
 msgstr "网络"
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:525
+#: internal/ui/settings_card.go:526
 msgid "DISK"
 msgstr "磁盘"
 
@@ -3594,7 +3594,7 @@ msgstr "状态"
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
-#: internal/term/web/strings.go:31
+#: internal/term/web/strings.go:32
 msgid "Connection"
 msgstr "连接"
 
@@ -3922,6 +3922,7 @@ msgstr "未知的组件 %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
+#: internal/term/web/strings.go:28
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
@@ -3953,7 +3954,7 @@ msgstr "取消"
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:623
+#: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "好的"
 
@@ -4822,7 +4823,7 @@ msgid "Opens folders"
 msgstr "打开文件夹"
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:77
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4876,7 +4877,7 @@ msgid "Disk Usage"
 msgstr "磁盘用量"
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:75
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -5360,6 +5361,7 @@ msgstr[0] "%d 项"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/term/web/strings.go:69
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "重命名"
@@ -9226,7 +9228,7 @@ msgid "The game could not open to the network: %v"
 msgstr "无法向网络开放游戏：%v"
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/term/web/strings.go:44
+#: internal/term/web/strings.go:46
 msgid "Host"
 msgstr "主机"
 
@@ -9592,7 +9594,7 @@ msgstr "聚焦或关闭"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:73
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10576,7 +10578,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "关闭：会话保持未读，直到你手动标记（U）。"
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:79
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "文字大小"
@@ -11240,7 +11242,7 @@ msgstr "这台电脑没有用于配对的身份：%v"
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:85
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11544,7 +11546,7 @@ msgstr "屏幕"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:84
 msgid "Theme"
 msgstr "主题"
 
@@ -11554,12 +11556,12 @@ msgid "Uptime"
 msgstr "运行时间"
 
 #: internal/shell/cardterm.go:95
-#: internal/ui/settings_card.go:471
+#: internal/ui/settings_card.go:472
 msgid "INUA // SYSTEM MANIFEST"
 msgstr "INUA // 系统清单"
 
 #: internal/shell/cardterm.go:116
-#: internal/ui/settings_card.go:509
+#: internal/ui/settings_card.go:510
 msgid "%d thr"
 msgstr "%d 线程"
 
@@ -11757,7 +11759,7 @@ msgid "Go to Workspace %s"
 msgstr "转到工作区%s"
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:91
 msgid "Workspace"
 msgstr "工作区"
 
@@ -11921,7 +11923,7 @@ msgid "%s · workspace %s"
 msgstr "%[1]s·工作空间%[2]s"
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:93
 msgid "now"
 msgstr "现在"
 
@@ -12051,13 +12053,21 @@ msgstr "未连接(NetworkManager 原因 %d)。"
 msgid "Not connected: %s"
 msgstr "未连接:%s"
 
-#: internal/term/host/agents.go:179
+#: internal/term/host/agents.go:168
 msgid "%s needs you"
 msgstr "%s 需要你"
 
-#: internal/term/host/agents.go:181
+#: internal/term/host/agents.go:170
 msgid "%s is done"
 msgstr "%s 已完成"
+
+#: internal/term/host/sessions.go:231
+msgid "No folder given."
+msgstr ""
+
+#: internal/term/host/sessions.go:234
+msgid "%s is not a folder."
+msgstr ""
 
 #: internal/term/host/sessions.go:278
 #: ui/connect.ui:850
@@ -12113,6 +12123,7 @@ msgid "New session in this workspace"
 msgstr "在此工作区新建会话"
 
 #: internal/term/settings/settings.go:101
+#: internal/term/web/strings.go:57
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "新建工作区"
@@ -12182,6 +12193,7 @@ msgid "Copy mode"
 msgstr "复制模式"
 
 #: internal/term/settings/settings.go:120
+#: internal/term/web/strings.go:70
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "重命名会话"
@@ -12210,7 +12222,7 @@ msgstr "字体缩小"
 msgid "Font size as set"
 msgstr "恢复设定的字号"
 
-#: internal/term/web/look.go:87
+#: internal/term/web/look.go:86
 msgid "your own"
 msgstr "自定义"
 
@@ -12271,214 +12283,234 @@ msgstr "方块"
 msgid "Basic"
 msgstr "基本"
 
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:29
 msgid "CONNECTED"
 msgstr "已连接"
 
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:30
 msgid "CONNECTING…"
 msgstr "正在连接…"
 
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:31
 msgid "Columns × rows: the pane fitted to this screen at the text size."
 msgstr "列 × 行：按文字大小适配此屏幕的窗格。"
 
-#: internal/term/web/strings.go:32
+#: internal/term/web/strings.go:33
 msgid "Control"
 msgstr "Ctrl 组合"
 
 #: internal/term/web/strings.go:34
+#: internal/vmui/window.go:1072
+#: ui/gpg.ui:1488
+#: ui/vm.ui:3331
+msgid "Create"
+msgstr "创建"
+
+#: internal/term/web/strings.go:36
 msgid "Cursor blinks"
 msgstr "光标闪烁"
 
-#: internal/term/web/strings.go:35
+#: internal/term/web/strings.go:37
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "已完成"
 
-#: internal/term/web/strings.go:36
+#: internal/term/web/strings.go:38
 msgid "Drawing"
 msgstr "绘制"
 
-#: internal/term/web/strings.go:37
+#: internal/term/web/strings.go:39
 msgid "Drawn by the browser's page: slower, used when WebGL is missing."
 msgstr "由浏览器页面绘制：较慢，在没有 WebGL 时使用。"
 
-#: internal/term/web/strings.go:38
+#: internal/term/web/strings.go:40
 msgid "Drawn by the graphics chip: the fast way."
 msgstr "由显卡绘制：快速的方式。"
 
-#: internal/term/web/strings.go:39
+#: internal/term/web/strings.go:41
 msgid "Esc, Tab, Ctrl, the arrows and the rest a touch keyboard lacks."
 msgstr "Esc、Tab、Ctrl、方向键等触屏键盘缺少的键。"
 
-#: internal/term/web/strings.go:40
+#: internal/term/web/strings.go:42
 msgid "Everything from this pane since it opened here."
 msgstr "此窗格在这里打开后收到的全部内容。"
 
-#: internal/term/web/strings.go:41
+#: internal/term/web/strings.go:43
 msgid "First load"
 msgstr "首次加载"
 
-#: internal/term/web/strings.go:42
+#: internal/term/web/strings.go:44
 #: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "字体"
 
-#: internal/term/web/strings.go:43
+#: internal/term/web/strings.go:45
 msgid "Function"
 msgstr "功能键"
 
-#: internal/term/web/strings.go:45
+#: internal/term/web/strings.go:47
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "空闲"
 
-#: internal/term/web/strings.go:46
+#: internal/term/web/strings.go:48
 msgid "INFO"
 msgstr "信息"
 
-#: internal/term/web/strings.go:47
+#: internal/term/web/strings.go:49
 #: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "密钥"
 
-#: internal/term/web/strings.go:48
+#: internal/term/web/strings.go:50
 msgid "Key panel"
 msgstr "按键面板"
 
-#: internal/term/web/strings.go:49
+#: internal/term/web/strings.go:51
 #: ui/settings.ui:5692
 msgid "Keyboard"
 msgstr "键盘"
 
-#: internal/term/web/strings.go:50
+#: internal/term/web/strings.go:52
 msgid "Keys above the keyboard"
 msgstr "键盘上方的按键"
 
-#: internal/term/web/strings.go:52
+#: internal/term/web/strings.go:54
 #: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "需要你"
 
-#: internal/term/web/strings.go:53
+#: internal/term/web/strings.go:55
+msgid "New pane"
+msgstr ""
+
+#: internal/term/web/strings.go:56
+#: internal/termui/columns.go:169
+msgid "New session"
+msgstr "新建会话"
+
+#: internal/term/web/strings.go:58
+msgid "New workspace, in the folder"
+msgstr ""
+
+#: internal/term/web/strings.go:59
 msgid "No agent is running."
 msgstr "没有正在运行的智能体。"
 
-#: internal/term/web/strings.go:54
+#: internal/term/web/strings.go:60
 msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr "没有打开的窗格。请在智能体或工作区中选择一个。"
 
-#: internal/term/web/strings.go:55
+#: internal/term/web/strings.go:61
 msgid "OFFLINE"
 msgstr "离线"
 
-#: internal/term/web/strings.go:56
+#: internal/term/web/strings.go:62
 msgid "OFFLINE · RECONNECTING"
 msgstr "离线 · 正在重新连接"
 
-#: internal/term/web/strings.go:57
+#: internal/term/web/strings.go:63
 msgid "Overview"
 msgstr "概览"
 
-#: internal/term/web/strings.go:58
+#: internal/term/web/strings.go:64
 msgid "PLAIN"
 msgstr "普通"
 
-#: internal/term/web/strings.go:59
+#: internal/term/web/strings.go:65
 msgid "Panes are fitted to this screen at this size; pinching changes it too."
 msgstr "窗格按此大小适配此屏幕；双指缩放也可更改。"
 
-#: internal/term/web/strings.go:60
+#: internal/term/web/strings.go:66
 msgid "Pinch, or Settings in Overview, to change it."
 msgstr "双指缩放，或在概览的设置中更改。"
 
-#: internal/term/web/strings.go:61
+#: internal/term/web/strings.go:67
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "已恢复"
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:68
 msgid "Received"
 msgstr "已接收"
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:71
 msgid "Round trip"
 msgstr "往返"
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:72
 msgid "Session %d"
 msgstr "会话 %d"
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:74
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "Shell"
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:76
 msgid "Symbols"
 msgstr "符号"
 
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:78
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr "终端颜色"
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:80
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr "窗格最近的原始输出，以及到达并绘制所用的时间。"
 
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:81
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr "电脑上窗格的屏幕和历史，以及到达并绘制所用的时间。"
 
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:82
 msgid "The theme's"
 msgstr "主题的颜色"
 
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:83
 msgid "The window theme's ground and text"
 msgstr "窗口主题的背景和文字"
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:86
 msgid "This device"
 msgstr "此设备"
 
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:87
 msgid "To the bottom"
 msgstr "到底部"
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:88
 msgid "UNDERLINE"
 msgstr "下划线"
 
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:89
 msgid "WEBGL"
 msgstr "WEBGL"
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:90
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "工作中"
 
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:92
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr "工作区"
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:94
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "自 %s 起"
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:95
 msgid "the theme's"
 msgstr "主题的颜色"
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:96
 msgid "the theme's colours"
 msgstr "主题的颜色"
 
@@ -12508,27 +12540,27 @@ msgstr "%s 前往下一个"
 msgid "No agent runs in any workspace."
 msgstr "没有工作区在运行智能体。"
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "As inua (%s)"
 msgstr "跟随 inua（%s）"
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "The window changes with inua's theme"
 msgstr "窗口随 inua 的主题变化"
 
-#: internal/termui/choices.go:34
+#: internal/termui/choices.go:33
 msgid "A theme of your own"
 msgstr "你自己的主题"
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The window's theme"
 msgstr "窗口的主题"
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The terminals take the window's colours"
 msgstr "终端使用窗口的颜色"
 
-#: internal/termui/choices.go:71
+#: internal/termui/choices.go:70
 msgid "Your login shell (%s)"
 msgstr "你的登录 shell（%s）"
 
@@ -12536,10 +12568,6 @@ msgstr "你的登录 shell（%s）"
 #: internal/termui/palette.go:98
 msgid "Actions"
 msgstr "操作"
-
-#: internal/termui/columns.go:169
-msgid "New session"
-msgstr "新建会话"
 
 #: internal/termui/copymode.go:35
 msgid "COPY"
@@ -13692,7 +13720,7 @@ msgstr "%.1f KB"
 
 #: internal/ui/settings.go:900
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:287
+#: internal/ui/settings_card.go:288
 msgid "Not saved: %s"
 msgstr "未保存：%s"
 
@@ -14148,70 +14176,70 @@ msgstr "还没有找到。让设备进入配对状态:通常是按住它的蓝�
 msgid "Forget it?"
 msgstr "确定忘记?"
 
-#: internal/ui/settings_card.go:161
 #: internal/ui/settings_card.go:162
+#: internal/ui/settings_card.go:163
 msgid "Reading…"
 msgstr "正在读取…"
 
-#: internal/ui/settings_card.go:211
-#: internal/ui/settings_card.go:237
-#: internal/ui/settings_card.go:244
+#: internal/ui/settings_card.go:212
+#: internal/ui/settings_card.go:238
+#: internal/ui/settings_card.go:245
 msgid "Not copied: %s"
 msgstr "未复制:%s"
 
-#: internal/ui/settings_card.go:214
+#: internal/ui/settings_card.go:215
 msgid "Copied as text."
 msgstr "已复制为文字。"
 
-#: internal/ui/settings_card.go:223
+#: internal/ui/settings_card.go:224
 msgid "the window cannot draw it now"
 msgstr "窗口现在无法绘制"
 
-#: internal/ui/settings_card.go:227
+#: internal/ui/settings_card.go:228
 msgid "%s cannot be written"
 msgstr "无法写入 %s"
 
-#: internal/ui/settings_card.go:247
+#: internal/ui/settings_card.go:248
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr "已复制为图片：可粘贴到聊天或帖子中。"
 
-#: internal/ui/settings_card.go:260
+#: internal/ui/settings_card.go:261
 msgid "Save the card"
 msgstr "保存卡片"
 
-#: internal/ui/settings_card.go:290
+#: internal/ui/settings_card.go:291
 msgid "Saved as %s"
 msgstr "已保存为 %s"
 
-#: internal/ui/settings_card.go:502
+#: internal/ui/settings_card.go:503
 msgid "[UNIT]"
 msgstr "[主机]"
 
-#: internal/ui/settings_card.go:505
+#: internal/ui/settings_card.go:506
 msgid "[SILICON]"
 msgstr "[芯片]"
 
-#: internal/ui/settings_card.go:528
+#: internal/ui/settings_card.go:529
 msgid "[STACK]"
 msgstr "[软件栈]"
 
-#: internal/ui/settings_card.go:538
+#: internal/ui/settings_card.go:539
 msgid "[OPTICS]"
 msgstr "[显示]"
 
-#: internal/ui/settings_card.go:547
+#: internal/ui/settings_card.go:548
 msgid "UPTIME"
 msgstr "运行时间"
 
-#: internal/ui/settings_card.go:618
+#: internal/ui/settings_card.go:619
 msgid "[TRANSMISSION]"
 msgstr "[传输]"
 
-#: internal/ui/settings_card.go:625
+#: internal/ui/settings_card.go:626
 msgid "CHECK"
 msgstr "需检查"
 
-#: internal/ui/settings_card.go:632
+#: internal/ui/settings_card.go:633
 msgid "Hyprland, with inua on top."
 msgstr "Hyprland，上面是 inua。"
 
@@ -15161,12 +15189,6 @@ msgstr "推荐：%d。"
 #: internal/vmui/window.go:1065
 msgid "Creating…"
 msgstr "正在创建…"
-
-#: internal/vmui/window.go:1072
-#: ui/gpg.ui:1488
-#: ui/vm.ui:3331
-msgid "Create"
-msgstr "创建"
 
 #: internal/vmui/window.go:1075
 msgid "That name cannot be used: %v"

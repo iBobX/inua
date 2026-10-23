@@ -670,7 +670,7 @@ msgstr ""
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
-#: internal/term/web/strings.go:33
+#: internal/term/web/strings.go:35
 msgid "Cursor"
 msgstr ""
 
@@ -2570,7 +2570,7 @@ msgstr ""
 
 #: internal/appui/pass.go:740
 #: internal/mailui/formatted.go:184
-#: internal/term/host/agents.go:408
+#: internal/term/desktop/desktop_linux.go:42
 #: internal/ui/passwords.go:624
 #: internal/vmui/window.go:2570
 #: internal/vmui/window.go:2571
@@ -2618,7 +2618,7 @@ msgstr ""
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
-#: internal/term/web/strings.go:51
+#: internal/term/web/strings.go:53
 msgid "Move"
 msgstr ""
 
@@ -2971,7 +2971,7 @@ msgid "NETWORK"
 msgstr ""
 
 #: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:525
+#: internal/ui/settings_card.go:526
 msgid "DISK"
 msgstr ""
 
@@ -3613,7 +3613,7 @@ msgstr ""
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
-#: internal/term/web/strings.go:31
+#: internal/term/web/strings.go:32
 msgid "Connection"
 msgstr ""
 
@@ -3941,6 +3941,7 @@ msgstr ""
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
+#: internal/term/web/strings.go:28
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
@@ -3972,7 +3973,7 @@ msgstr ""
 
 #: internal/appui/workshop.go:995
 #: internal/ui/askpass.go:269
-#: internal/ui/settings_card.go:623
+#: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr ""
 
@@ -4841,7 +4842,7 @@ msgid "Opens folders"
 msgstr ""
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:77
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4895,7 +4896,7 @@ msgid "Disk Usage"
 msgstr ""
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:75
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -5386,6 +5387,7 @@ msgstr[1] ""
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
+#: internal/term/web/strings.go:69
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr ""
@@ -9274,7 +9276,7 @@ msgid "The game could not open to the network: %v"
 msgstr ""
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/term/web/strings.go:44
+#: internal/term/web/strings.go:46
 msgid "Host"
 msgstr ""
 
@@ -9641,7 +9643,7 @@ msgstr ""
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:73
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10631,7 +10633,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr ""
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:79
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr ""
@@ -11303,7 +11305,7 @@ msgstr ""
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:85
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11608,7 +11610,7 @@ msgstr ""
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:84
 msgid "Theme"
 msgstr ""
 
@@ -11618,12 +11620,12 @@ msgid "Uptime"
 msgstr ""
 
 #: internal/shell/cardterm.go:95
-#: internal/ui/settings_card.go:471
+#: internal/ui/settings_card.go:472
 msgid "INUA // SYSTEM MANIFEST"
 msgstr ""
 
 #: internal/shell/cardterm.go:116
-#: internal/ui/settings_card.go:509
+#: internal/ui/settings_card.go:510
 msgid "%d thr"
 msgstr ""
 
@@ -11821,7 +11823,7 @@ msgid "Go to Workspace %s"
 msgstr ""
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:91
 msgid "Workspace"
 msgstr ""
 
@@ -11987,7 +11989,7 @@ msgid "%s · workspace %s"
 msgstr ""
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:93
 msgid "now"
 msgstr ""
 
@@ -12117,12 +12119,20 @@ msgstr ""
 msgid "Not connected: %s"
 msgstr ""
 
-#: internal/term/host/agents.go:179
+#: internal/term/host/agents.go:168
 msgid "%s needs you"
 msgstr ""
 
-#: internal/term/host/agents.go:181
+#: internal/term/host/agents.go:170
 msgid "%s is done"
+msgstr ""
+
+#: internal/term/host/sessions.go:231
+msgid "No folder given."
+msgstr ""
+
+#: internal/term/host/sessions.go:234
+msgid "%s is not a folder."
 msgstr ""
 
 #: internal/term/host/sessions.go:278
@@ -12179,6 +12189,7 @@ msgid "New session in this workspace"
 msgstr ""
 
 #: internal/term/settings/settings.go:101
+#: internal/term/web/strings.go:57
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr ""
@@ -12248,6 +12259,7 @@ msgid "Copy mode"
 msgstr ""
 
 #: internal/term/settings/settings.go:120
+#: internal/term/web/strings.go:70
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr ""
@@ -12276,7 +12288,7 @@ msgstr ""
 msgid "Font size as set"
 msgstr ""
 
-#: internal/term/web/look.go:87
+#: internal/term/web/look.go:86
 msgid "your own"
 msgstr ""
 
@@ -12337,214 +12349,234 @@ msgstr ""
 msgid "Basic"
 msgstr ""
 
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:29
 msgid "CONNECTED"
 msgstr ""
 
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:30
 msgid "CONNECTING…"
 msgstr ""
 
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:31
 msgid "Columns × rows: the pane fitted to this screen at the text size."
 msgstr ""
 
-#: internal/term/web/strings.go:32
+#: internal/term/web/strings.go:33
 msgid "Control"
 msgstr ""
 
 #: internal/term/web/strings.go:34
+#: internal/vmui/window.go:1072
+#: ui/gpg.ui:1488
+#: ui/vm.ui:3331
+msgid "Create"
+msgstr ""
+
+#: internal/term/web/strings.go:36
 msgid "Cursor blinks"
 msgstr ""
 
-#: internal/term/web/strings.go:35
+#: internal/term/web/strings.go:37
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr ""
 
-#: internal/term/web/strings.go:36
+#: internal/term/web/strings.go:38
 msgid "Drawing"
 msgstr ""
 
-#: internal/term/web/strings.go:37
+#: internal/term/web/strings.go:39
 msgid "Drawn by the browser's page: slower, used when WebGL is missing."
 msgstr ""
 
-#: internal/term/web/strings.go:38
+#: internal/term/web/strings.go:40
 msgid "Drawn by the graphics chip: the fast way."
 msgstr ""
 
-#: internal/term/web/strings.go:39
+#: internal/term/web/strings.go:41
 msgid "Esc, Tab, Ctrl, the arrows and the rest a touch keyboard lacks."
 msgstr ""
 
-#: internal/term/web/strings.go:40
+#: internal/term/web/strings.go:42
 msgid "Everything from this pane since it opened here."
 msgstr ""
 
-#: internal/term/web/strings.go:41
+#: internal/term/web/strings.go:43
 msgid "First load"
 msgstr ""
 
-#: internal/term/web/strings.go:42
+#: internal/term/web/strings.go:44
 #: internal/termui/prefs.go:85
 msgid "Font"
 msgstr ""
 
-#: internal/term/web/strings.go:43
+#: internal/term/web/strings.go:45
 msgid "Function"
 msgstr ""
 
-#: internal/term/web/strings.go:45
+#: internal/term/web/strings.go:47
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr ""
 
-#: internal/term/web/strings.go:46
+#: internal/term/web/strings.go:48
 msgid "INFO"
 msgstr ""
 
-#: internal/term/web/strings.go:47
+#: internal/term/web/strings.go:49
 #: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr ""
 
-#: internal/term/web/strings.go:48
+#: internal/term/web/strings.go:50
 msgid "Key panel"
 msgstr ""
 
-#: internal/term/web/strings.go:49
+#: internal/term/web/strings.go:51
 #: ui/settings.ui:5692
 msgid "Keyboard"
 msgstr ""
 
-#: internal/term/web/strings.go:50
+#: internal/term/web/strings.go:52
 msgid "Keys above the keyboard"
 msgstr ""
 
-#: internal/term/web/strings.go:52
+#: internal/term/web/strings.go:54
 #: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr ""
 
-#: internal/term/web/strings.go:53
-msgid "No agent is running."
-msgstr ""
-
-#: internal/term/web/strings.go:54
-msgid "No pane is open. Choose one in Agents or Workspaces."
-msgstr ""
-
 #: internal/term/web/strings.go:55
-msgid "OFFLINE"
+msgid "New pane"
 msgstr ""
 
 #: internal/term/web/strings.go:56
-msgid "OFFLINE · RECONNECTING"
-msgstr ""
-
-#: internal/term/web/strings.go:57
-msgid "Overview"
+#: internal/termui/columns.go:169
+msgid "New session"
 msgstr ""
 
 #: internal/term/web/strings.go:58
-msgid "PLAIN"
+msgid "New workspace, in the folder"
 msgstr ""
 
 #: internal/term/web/strings.go:59
-msgid "Panes are fitted to this screen at this size; pinching changes it too."
+msgid "No agent is running."
 msgstr ""
 
 #: internal/term/web/strings.go:60
-msgid "Pinch, or Settings in Overview, to change it."
+msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr ""
 
 #: internal/term/web/strings.go:61
+msgid "OFFLINE"
+msgstr ""
+
+#: internal/term/web/strings.go:62
+msgid "OFFLINE · RECONNECTING"
+msgstr ""
+
+#: internal/term/web/strings.go:63
+msgid "Overview"
+msgstr ""
+
+#: internal/term/web/strings.go:64
+msgid "PLAIN"
+msgstr ""
+
+#: internal/term/web/strings.go:65
+msgid "Panes are fitted to this screen at this size; pinching changes it too."
+msgstr ""
+
+#: internal/term/web/strings.go:66
+msgid "Pinch, or Settings in Overview, to change it."
+msgstr ""
+
+#: internal/term/web/strings.go:67
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr ""
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:68
 msgid "Received"
 msgstr ""
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:71
 msgid "Round trip"
 msgstr ""
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:72
 msgid "Session %d"
 msgstr ""
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:74
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr ""
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:76
 msgid "Symbols"
 msgstr ""
 
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:78
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr ""
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:80
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr ""
 
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:81
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr ""
 
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:82
 msgid "The theme's"
 msgstr ""
 
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:83
 msgid "The window theme's ground and text"
 msgstr ""
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:86
 msgid "This device"
 msgstr ""
 
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:87
 msgid "To the bottom"
 msgstr ""
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:88
 msgid "UNDERLINE"
 msgstr ""
 
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:89
 msgid "WEBGL"
 msgstr ""
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:90
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr ""
 
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:92
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr ""
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:94
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr ""
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:95
 msgid "the theme's"
 msgstr ""
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:96
 msgid "the theme's colours"
 msgstr ""
 
@@ -12576,37 +12608,33 @@ msgstr ""
 msgid "No agent runs in any workspace."
 msgstr ""
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "As inua (%s)"
 msgstr ""
 
-#: internal/termui/choices.go:32
+#: internal/termui/choices.go:31
 msgid "The window changes with inua's theme"
 msgstr ""
 
-#: internal/termui/choices.go:34
+#: internal/termui/choices.go:33
 msgid "A theme of your own"
 msgstr ""
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The window's theme"
 msgstr ""
 
-#: internal/termui/choices.go:59
+#: internal/termui/choices.go:58
 msgid "The terminals take the window's colours"
 msgstr ""
 
-#: internal/termui/choices.go:71
+#: internal/termui/choices.go:70
 msgid "Your login shell (%s)"
 msgstr ""
 
 #: internal/termui/columns.go:167
 #: internal/termui/palette.go:98
 msgid "Actions"
-msgstr ""
-
-#: internal/termui/columns.go:169
-msgid "New session"
 msgstr ""
 
 #: internal/termui/copymode.go:35
@@ -13774,7 +13802,7 @@ msgstr ""
 
 #: internal/ui/settings.go:900
 #: internal/ui/settings_apps.go:168
-#: internal/ui/settings_card.go:287
+#: internal/ui/settings_card.go:288
 msgid "Not saved: %s"
 msgstr ""
 
@@ -14230,70 +14258,70 @@ msgstr ""
 msgid "Forget it?"
 msgstr ""
 
-#: internal/ui/settings_card.go:161
 #: internal/ui/settings_card.go:162
+#: internal/ui/settings_card.go:163
 msgid "Reading…"
 msgstr ""
 
-#: internal/ui/settings_card.go:211
-#: internal/ui/settings_card.go:237
-#: internal/ui/settings_card.go:244
+#: internal/ui/settings_card.go:212
+#: internal/ui/settings_card.go:238
+#: internal/ui/settings_card.go:245
 msgid "Not copied: %s"
 msgstr ""
 
-#: internal/ui/settings_card.go:214
+#: internal/ui/settings_card.go:215
 msgid "Copied as text."
 msgstr ""
 
-#: internal/ui/settings_card.go:223
+#: internal/ui/settings_card.go:224
 msgid "the window cannot draw it now"
 msgstr ""
 
-#: internal/ui/settings_card.go:227
+#: internal/ui/settings_card.go:228
 msgid "%s cannot be written"
 msgstr ""
 
-#: internal/ui/settings_card.go:247
+#: internal/ui/settings_card.go:248
 msgid "Copied as an image: paste it in a chat or a post."
 msgstr ""
 
-#: internal/ui/settings_card.go:260
+#: internal/ui/settings_card.go:261
 msgid "Save the card"
 msgstr ""
 
-#: internal/ui/settings_card.go:290
+#: internal/ui/settings_card.go:291
 msgid "Saved as %s"
 msgstr ""
 
-#: internal/ui/settings_card.go:502
+#: internal/ui/settings_card.go:503
 msgid "[UNIT]"
 msgstr ""
 
-#: internal/ui/settings_card.go:505
+#: internal/ui/settings_card.go:506
 msgid "[SILICON]"
 msgstr ""
 
-#: internal/ui/settings_card.go:528
+#: internal/ui/settings_card.go:529
 msgid "[STACK]"
 msgstr ""
 
-#: internal/ui/settings_card.go:538
+#: internal/ui/settings_card.go:539
 msgid "[OPTICS]"
 msgstr ""
 
-#: internal/ui/settings_card.go:547
+#: internal/ui/settings_card.go:548
 msgid "UPTIME"
 msgstr ""
 
-#: internal/ui/settings_card.go:618
+#: internal/ui/settings_card.go:619
 msgid "[TRANSMISSION]"
 msgstr ""
 
-#: internal/ui/settings_card.go:625
+#: internal/ui/settings_card.go:626
 msgid "CHECK"
 msgstr ""
 
-#: internal/ui/settings_card.go:632
+#: internal/ui/settings_card.go:633
 msgid "Hyprland, with inua on top."
 msgstr ""
 
@@ -15247,12 +15275,6 @@ msgstr ""
 
 #: internal/vmui/window.go:1065
 msgid "Creating…"
-msgstr ""
-
-#: internal/vmui/window.go:1072
-#: ui/gpg.ui:1488
-#: ui/vm.ui:3331
-msgid "Create"
 msgstr ""
 
 #: internal/vmui/window.go:1075

@@ -288,6 +288,11 @@ screen: it is a web app in the theme's colours.
   with where it runs; **Workspaces**: the workspaces, then a workspace's
   sessions and their panes; **Overview**: this computer, the agents in
   numbers, the connection, and the settings.
+- **New ones**: + at the head of Workspaces makes a workspace for a
+  folder (typed, `~/` for the home folder; one there already is shown),
+  and in a workspace a new session; + beside a session's panes starts a
+  shell beside the one open; each opens its shell. A session's pencil
+  renames it.
 - **A pane** fills the screen at the phone's size: columns at the text
   size (10 px, about 62 columns on a phone held upright; pinch to change
   it), rows to the keyboard. At its foot, the session's panes with a
