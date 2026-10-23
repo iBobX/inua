@@ -10,7 +10,6 @@ import (
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
-	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/term/scheme"
 	"github.com/lyricat/inua/internal/term/settings"
 	"github.com/lyricat/inua/ui"
@@ -79,7 +78,7 @@ func readLook() look {
 	cfg, set := settingsNow()
 	l := look{Theme: windowTheme(cfg, set), Scheme: set.Look.Scheme, Font: set.Font.Family}
 	for _, name := range cfg.ThemeNames() {
-		t := theme{Name: name, Label: name, Tokens: shell.ThemeColors(cfg.ThemeCSS(name, readUI))}
+		t := theme{Name: name, Label: name, Tokens: config.ThemeColors(cfg.ThemeCSS(name, readUI))}
 		if k, ok := themeKanji[name]; ok {
 			t.Label = k + " " + strings.ToUpper(name[:1]) + name[1:]
 		}
@@ -102,7 +101,7 @@ func readLook() look {
 // themeColors are the window theme's ground and accent, as 0xRRGGBB.
 func themeColors() (app, accent uint32) {
 	cfg, set := settingsNow()
-	c := shell.ThemeColors(cfg.ThemeCSS(windowTheme(cfg, set), readUI))
+	c := config.ThemeColors(cfg.ThemeCSS(windowTheme(cfg, set), readUI))
 	return parseHex(c["app"], 0x0b1012), parseHex(c["accent"], 0x9fc3c9)
 }
 

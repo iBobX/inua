@@ -213,3 +213,14 @@ func TestInstallIconSet(t *testing.T) {
 		t.Errorf("phosphor: err = %v, want an unusable name", err)
 	}
 }
+
+func TestThemeColors(t *testing.T) {
+	css, err := os.ReadFile("../../ui/themes/yoru.css")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := ThemeColors(string(css))
+	if c["app"] != "#0B1012" || c["field"] != "#44504E" || c["accent"] != "#9FC3C9" {
+		t.Errorf("yoru: %v", c)
+	}
+}

@@ -7,21 +7,8 @@ import (
 	"image/color"
 	"image/png"
 	"net/url"
-	"regexp"
 	"strconv"
 )
-
-var defineColor = regexp.MustCompile(`@define-color\s+([\w-]+)\s+(#[0-9a-fA-F]{6})\s*;`)
-
-// ThemeColors reads the colour tokens of a theme file (ui/themes/*.css):
-// name → "#rrggbb".
-func ThemeColors(css string) map[string]string {
-	colors := map[string]string{}
-	for _, m := range defineColor.FindAllStringSubmatch(css, -1) {
-		colors[m[1]] = m[2]
-	}
-	return colors
-}
 
 // Wallpaper describes what the background windows show.
 type Wallpaper struct {
