@@ -756,6 +756,47 @@ window.settings { background: @app; font-size: 14px; }
 /* A group's kicker over its first page: room above it, its first letter
    over the rows' icons (7 px of padding and the border's 1). */
 .settings .index .index-group { margin: 16px 0 6px 8px; }
+/* A library (design/ui.md): what the user runs or connects to as tiles on
+   the panel, the chosen one's page in a panel beside it. */
+.settings .library { background: @panel; border-right: 1px solid alpha(@line, 0.7); }
+.settings .library-head { padding: 22px 22px 10px; }
+.settings .library-title,
+.settings .panel-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 20px; color: @t0; }
+.settings .library scrolledwindow,
+.settings .library viewport { background: transparent; }
+.settings .library .library-kicker { margin: 14px 22px 8px; }
+.settings button.library-new image { color: @t2; }
+.settings button.outlined.library-icon-button { min-width: 34px; padding: 0; }
+.settings .library-tiles { padding: 0 22px 8px; background: transparent; }
+.settings .library-tiles flowboxchild {
+  padding: 0;
+  border: 1px solid alpha(@line, 0.7);
+  border-radius: 4px;
+  background: @surface;
+  color: @t1;
+  transition: background 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
+}
+.settings .library-tiles flowboxchild:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
+.settings .library-tiles flowboxchild:selected {
+  border-color: alpha(@accent, 0.3);
+  background: mix(@surface, @primary, 0.1);
+  color: @t0;
+}
+.settings .library-tile { min-width: 168px; padding: 14px 14px 12px; }
+.settings .library-tile-top { margin-bottom: 14px; }
+.settings .library-tile-name { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 15px; }
+.settings .library-tile-sub { margin-top: 2px; font-size: 12px; color: @t2; }
+.settings .library-tiles flowboxchild:selected .library-tile-sub { color: @t1; }
+.settings .library-tile-icon { color: @t2; transition: color 180ms ease-out; }
+.settings .library-tiles flowboxchild:hover .library-tile-icon { color: @t1; }
+.settings .library-tiles flowboxchild:selected .library-tile-icon { color: @accent; }
+.settings .library-tile .mark.on { background: @accent; border-color: @accent; }
+.settings .library-empty-mark { color: @t2; }
+.settings .library-empty-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 17px; color: @t0; }
+/* The panel's head: the chosen one's name and what it is doing, its mark
+   filled while it runs. */
+.settings .panel-head { padding: 22px 32px 16px; border-bottom: 1px solid alpha(@line, 0.55); }
+.settings .panel-head .mark.on { background: @accent; border-color: @accent; }
 .settings .status {
   min-height: 16px;
   padding: 14px 22px 18px;
@@ -2805,50 +2846,12 @@ window.video.video-loaded .video-empty { opacity: 0; }
 
 /* --- Virtual machines (inua-vm) ------------------------------------- */
 
-/* The settings language, in two parts: the machines as tiles in a library
-   on the panel, and the chosen one's page in a panel at the right, in
-   sections and rows. Only what is particular to it is here. Its pages sit
-   on a stack whose switcher is hidden: Go picks the page from the
-   machine's state. */
+/* The settings language: the machines in the library, the chosen one's
+   page in the panel (the library's look is with the index's, above). Only
+   what is particular to it is here. Its pages sit on a stack whose switcher
+   is hidden: Go picks the page from the machine's state. */
 
-.vmpage .vm-library { background: @panel; border-right: 1px solid alpha(@line, 0.7); }
-.vmpage .vm-library-head { padding: 22px 22px 10px; }
-.vmpage .vm-library scrolledwindow,
-.vmpage .vm-library viewport { background: transparent; }
-.vmpage .vm-kicker { margin: 14px 22px 8px; }
-.vmpage button.vm-new image { color: @t2; }
-
-/* A tile: a card on the panel, chosen as an index item is. */
-.vmpage .vm-tiles { padding: 0 22px 8px; background: transparent; }
-.vmpage .vm-tiles flowboxchild {
-  padding: 0;
-  border: 1px solid alpha(@line, 0.7);
-  border-radius: 4px;
-  background: @surface;
-  color: @t1;
-  transition: background 180ms ease-out, border-color 180ms ease-out, color 180ms ease-out;
-}
-.vmpage .vm-tiles flowboxchild:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); color: @t0; }
-.vmpage .vm-tiles flowboxchild:selected {
-  border-color: alpha(@accent, 0.3);
-  background: mix(@surface, @primary, 0.1);
-  color: @t0;
-}
-.vmpage .vm-tile { min-width: 168px; padding: 14px 14px 12px; }
-.vmpage .vm-tile-top { margin-bottom: 14px; }
-.vmpage .vm-tile-name { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 15px; }
-.vmpage .vm-tile .mark.on { background: @accent; border-color: @accent; }
-.vmpage .vm-row-sub { margin-top: 2px; font-size: 12px; color: @t2; }
-.vmpage .vm-tiles flowboxchild:selected .vm-row-sub { color: @t1; }
 .vmpage .vm-os-mark { color: @t2; transition: color 180ms ease-out; }
-.vmpage .vm-tiles flowboxchild:hover .vm-os-mark { color: @t1; }
-.vmpage .vm-tiles flowboxchild:selected .vm-os-mark { color: @accent; }
-
-/* The panel's head: the machine's name and what it is doing, its mark
-   filled while it is up. */
-.vmpage .vm-head { padding: 22px 32px 16px; border-bottom: 1px solid alpha(@line, 0.55); }
-.vmpage .vm-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 20px; color: @t0; }
-.vmpage .vm-head .mark.on { background: @accent; border-color: @accent; }
 
 /* A control in a section's head is smaller than a row's. */
 .vmpage .section-head button.outlined { min-height: 26px; padding: 0 10px; font-size: 12px; }
@@ -2963,13 +2966,13 @@ window.vm-dialog button.destructive-action {
 }
 window.vm-dialog button.destructive-action:hover { background: mix(@danger, @t0, 0.14); }
 
-/* Remote Desktop (inua-remote): the settings look, its index holding This
-   computer and the machines; a stream in a window of its own. */
-window.remote .remote-index { padding: 0 14px; }
-window.remote .remote-kicker { margin: 14px 8px 6px; }
-window.remote button.index-item { min-height: 44px; padding: 4px 10px; }
-window.remote button.remote-find { min-height: 24px; min-width: 24px; padding: 0; margin-top: 8px; color: @t2; }
-window.remote button.remote-find:hover { color: @t0; }
+/* Remote Desktop (inua-remote): a library (with the index's, above) of
+   This computer and the machines, the chosen one's page in its panel; a
+   machine added in a dialog; a stream in a window of its own. */
+window.remote .library-none { margin: 0 22px 8px; }
+window.remote-dialog { background: @app; }
+window.remote-dialog .page { padding: 22px 24px 20px; }
+window.remote-dialog .remote-dialog-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 18px; color: @t0; }
 window.remote .remote-command { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11.5px; }
 window.remote .remote-error { color: @danger; }
 window.remote .remote-pin { padding: 14px 16px; border: 1px solid alpha(@accent, 0.4); border-radius: 3px; background: alpha(@accent, 0.06); }

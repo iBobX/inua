@@ -61,10 +61,8 @@ type VMManager interface {
 
 // machineRow is one tile of the library: what a repaint updates.
 type machineRow struct {
-	name  string
-	mark  gtk.Box // filled while the machine is up
-	title gtk.Label
-	sub   gtk.Label
+	name string
+	tile appui.LibraryTile
 }
 
 // templateRow is one way a system runs, in the New machine dialog.
@@ -359,15 +357,8 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 		if v.filling {
 			return
 		}
-		for i := int32(0); ; i++ {
-			tile := box.GetChildAtIndex(i)
-			if tile == nil {
-				return
-			}
-			if tile.IsSelected() && tile.GetName() != "" {
-				v.choose(tile.GetName())
-				return
-			}
+		if name := appui.SelectedTile(&box); name != "" {
+			v.choose(name)
 		}
 	}
 	v.machineList.ConnectSelectedChildrenChanged(&v.onTileSelect)
@@ -609,8 +600,8 @@ func (v *vmWindow) hasFault(name string) bool {
 func (v *vmWindow) rebuildFaultRows() {
 	v.faultList.RemoveAll()
 	for _, fault := range v.faults {
-		tile, _, _, _ := libraryTile("dialog-warning-symbolic", fault.Name, i18n.T("Does not load"))
-		v.faultList.Append(&tile.Widget)
+		tile := appui.NewLibraryTile(fault.Name, "dialog-warning-symbolic", fault.Name, i18n.T("Does not load"), false)
+		v.faultList.Append(&tile.Child.Widget)
 	}
 }
 
@@ -643,8 +634,8 @@ func (v *vmWindow) rebuildRows() {
 	v.machineList.RemoveAll()
 	v.rows = nil
 	for _, x := range v.views {
-		tile, built := v.buildTile(x)
-		v.machineList.Append(&tile.Widget)
+		built := v.buildTile(x)
+		v.machineList.Append(&built.tile.Child.Widget)
 		v.rows = append(v.rows, built)
 	}
 	v.selectRow()
@@ -657,61 +648,19 @@ func (v *vmWindow) updateRows() {
 			break
 		}
 		x := v.views[i]
-		v.rows[i].title.SetText(x.Name)
-		v.rows[i].sub.SetText(vmListSub(x))
-		if x.State == vm.StateRunning {
-			v.rows[i].mark.AddCssClass("on")
-		} else {
-			v.rows[i].mark.RemoveCssClass("on")
-		}
+		v.rows[i].tile.Title.SetText(x.Name)
+		v.rows[i].tile.Sub.SetText(vmListSub(x))
+		v.rows[i].tile.SetOn(x.State == vm.StateRunning)
 	}
 }
 
 // buildTile is one machine in the library: its system's mark with its own
 // mark beside it, filled while it is up, then its name, and what it is and is
 // doing under it.
-func (v *vmWindow) buildTile(x MachineView) (gtk.FlowBoxChild, machineRow) {
-	tile, top, title, sub := libraryTile(vmOSIcon(x.Machine.OS), x.Name, vmListSub(x))
-	mark := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-	mark.AddCssClass("mark")
-	mark.SetHalign(gtk.AlignEndValue)
-	mark.SetValign(gtk.AlignStartValue)
-	mark.SetHexpand(true)
-	if x.State == vm.StateRunning {
-		mark.AddCssClass("on")
-	}
-	gtkx.Append(top, &mark.Widget)
-	return tile, machineRow{name: x.Name, mark: *mark, title: title, sub: sub}
-}
-
-// libraryTile is a tile of the library: an icon in its top row, a name and a
-// line under it.
-func libraryTile(icon, name, line string) (gtk.FlowBoxChild, *gtk.Box, gtk.Label, gtk.Label) {
-	box := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-	box.AddCssClass("vm-tile")
-	top := gtk.NewBox(gtk.OrientationHorizontalValue, 0)
-	top.AddCssClass("vm-tile-top")
-	img := gtk.NewImageFromIconName(icon)
-	img.AddCssClass("vm-os-mark")
-	img.SetPixelSize(32)
-	gtkx.Append(top, &img.Widget)
-	gtkx.Append(box, &top.Widget)
-
-	title := gtk.NewLabel(name)
-	title.AddCssClass("vm-tile-name")
-	title.SetXalign(0)
-	title.SetEllipsize(pango.EllipsizeEndValue)
-	sub := gtk.NewLabel(line)
-	sub.AddCssClass("vm-row-sub")
-	sub.SetXalign(0)
-	sub.SetEllipsize(pango.EllipsizeEndValue)
-	gtkx.Append(box, &title.Widget)
-	gtkx.Append(box, &sub.Widget)
-
-	tile := gtk.NewFlowBoxChild()
-	tile.SetName(name)
-	tile.SetChild(&box.Widget)
-	return *tile, top, *title, *sub
+func (v *vmWindow) buildTile(x MachineView) machineRow {
+	tile := appui.NewLibraryTile(x.Name, vmOSIcon(x.Machine.OS), x.Name, vmListSub(x), true)
+	tile.SetOn(x.State == vm.StateRunning)
+	return machineRow{name: x.Name, tile: tile}
 }
 
 // selectRow marks the chosen machine in the library, in whichever group

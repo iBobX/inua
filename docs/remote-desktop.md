@@ -23,22 +23,30 @@ inua-remote --status           whether it is shared, what sharing needs, the
 ## The window
 
 ```
-┌──────────────────┬───────────────────────────────────────────────┐
-│ Remote Desktop   │ ▌[DESK]                                       │
-│ THIS COMPUTER    │  Paired, and ready.          Forget  Connect  │
-│ ▣ Sharing   Off  │  192.168.1.20:47989                           │
-│ MACHINES       ↻ │ ▌[STREAM]                    for every machine│
-│ ▣ Desk   Paired  │  Resolution             This monitor's  ▾     │
-│ ▣ Work   tailnet │  Frames a second        60              ▾     │
-│ + Add a machine… │  Bitrate                20 − +                │
-└──────────────────┴───────────────────────────────────────────────┘
+┌──────────────────────────────────────────┬───────────────────────────────┐
+│ Remote Desktop            [↻] [+ Add a…] │ □ desk                        │
+│ THIS COMPUTER                            │   192.168.1.20:47989          │
+│ ┌──────────┐                             │ ─────────────────────────────│
+│ │ ▣      □ │                             │ ▌[CONNECTION]                 │
+│ │ my-pc    │                             │  Paired, and ready.  Connect  │
+│ │ Not shar…│                             │ ▌[STREAM]   for every machine │
+│ └──────────┘                             │  Resolution  This monitor's ▾ │
+│ MACHINES                                 │  Frames a second       60  ▾  │
+│ ┌──────────┐ ┌──────────┐                │  Bitrate           20 − +     │
+│ │ ▣      ■ │ │ ▣      □ │                │                               │
+│ │ desk     │ │ work     │                │                               │
+│ │ Connected│ │ tailnet  │                │                               │
+│ └──────────┘ └──────────┘                │                               │
+└──────────────────────────────────────────┴───────────────────────────────┘
 ```
 
-The index lists **This computer** (sharing), then the machines: those
-saved, then those found sharing their desktop, on the local network (they
-announce themselves, mDNS `_nvstream._tcp`) or on the tailnet (each online
-peer is asked; ↻ looks again). *Add a machine…* takes an address: a name,
-an IP address, either with `:port`.
+A library (`design/ui.md`): **This computer** (sharing) as a tile, then
+the machines: those saved, then those found sharing their desktop, on the
+local network (they announce themselves, mDNS `_nvstream._tcp`) or on the
+tailnet (each online peer is asked; ↻ looks again). A tile's mark is filled
+while this computer shares, or while a machine is connected. The chosen
+one's page is in the panel at the right. *Add a machine…* asks in a
+dialog for an address: a name, an IP address, either with `:port`.
 
 What goes wrong is said where it happened, in red under it: sharing and
 the virtual screen in *Sharing*, a PIN in *Waiting to pair* (the section

@@ -28,12 +28,12 @@ ApplicationWindow vm {
   Box {
     // ── the library: the machines, one a tile ──
     Box {
-      styles ["vm-library"]
+      styles ["library"]
       orientation: vertical;
       hexpand: true;
 
       Box {
-        styles ["vm-library-head"]
+        styles ["library-head"]
         spacing: 12;
 
         Box {
@@ -43,7 +43,7 @@ ApplicationWindow vm {
           spacing: 2;
 
           Label {
-            styles ["vm-title"]
+            styles ["library-title"]
             label: _("Virtual machines");
             xalign: 0;
           }
@@ -57,7 +57,7 @@ ApplicationWindow vm {
         }
 
         Button vm_new {
-          styles ["outlined", "vm-new"]
+          styles ["outlined", "library-new"]
           name: "new_machine";
           valign: center;
 
@@ -83,7 +83,7 @@ ApplicationWindow vm {
           orientation: vertical;
 
           Label vm_machines_kicker {
-            styles ["kicker", "vm-kicker"]
+            styles ["kicker", "library-kicker"]
             label: _("MACHINES");
             xalign: 0;
           }
@@ -91,7 +91,7 @@ ApplicationWindow vm {
           // Go appends a tile per machine: its system's mark, its mark filled
           // while it is up, its name, and what it is and is doing.
           FlowBox vm_machines {
-            styles ["vm-tiles"]
+            styles ["library-tiles"]
             selection-mode: single;
             activate-on-single-click: true;
             homogeneous: true;
@@ -104,14 +104,14 @@ ApplicationWindow vm {
 
           // Folders under the store that do not load as a machine.
           Label vm_fault_heading {
-            styles ["kicker", "vm-kicker"]
+            styles ["kicker", "library-kicker"]
             label: _("NEEDS RECOVERY");
             xalign: 0;
             visible: false;
           }
 
           FlowBox vm_faults {
-            styles ["vm-tiles"]
+            styles ["library-tiles"]
             selection-mode: single;
             activate-on-single-click: true;
             homogeneous: true;
@@ -135,13 +135,13 @@ ApplicationWindow vm {
             visible: false;
 
             Image {
-              styles ["vm-empty-mark"]
+              styles ["library-empty-mark"]
               icon-name: "vm-machine-symbolic";
               pixel-size: 48;
             }
 
             Label {
-              styles ["vm-empty-title"]
+              styles ["library-empty-title"]
               label: _("No machines yet");
             }
 
@@ -167,13 +167,13 @@ ApplicationWindow vm {
 
     // ── the panel: the chosen machine's page ──
     Box vm_panel {
-      styles ["vm-panel"]
+      styles ["library-panel"]
       orientation: vertical;
       width-request: 520;
       hexpand: false;
 
       Box vm_head {
-        styles ["vm-head"]
+        styles ["panel-head"]
         spacing: 12;
 
         // Filled while the machine is up, hollow when it is not.
@@ -189,7 +189,7 @@ ApplicationWindow vm {
           spacing: 2;
 
           Label vm_title {
-            styles ["vm-title"]
+            styles ["panel-title"]
             xalign: 0;
             ellipsize: end;
           }

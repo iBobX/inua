@@ -19,14 +19,14 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <child>
           <object class="GtkBox">
             <style>
-              <class name="vm-library"/>
+              <class name="library"/>
             </style>
             <property name="orientation">1</property>
             <property name="hexpand">true</property>
             <child>
               <object class="GtkBox">
                 <style>
-                  <class name="vm-library-head"/>
+                  <class name="library-head"/>
                 </style>
                 <property name="spacing">12</property>
                 <child>
@@ -38,7 +38,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <child>
                       <object class="GtkLabel">
                         <style>
-                          <class name="vm-title"/>
+                          <class name="library-title"/>
                         </style>
                         <property name="label" translatable="yes">Virtual machines</property>
                         <property name="xalign">0</property>
@@ -60,7 +60,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <object class="GtkButton" id="vm_new">
                     <style>
                       <class name="outlined"/>
-                      <class name="vm-new"/>
+                      <class name="library-new"/>
                     </style>
                     <property name="name">new_machine</property>
                     <property name="valign">3</property>
@@ -94,7 +94,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                       <object class="GtkLabel" id="vm_machines_kicker">
                         <style>
                           <class name="kicker"/>
-                          <class name="vm-kicker"/>
+                          <class name="library-kicker"/>
                         </style>
                         <property name="label" translatable="yes">MACHINES</property>
                         <property name="xalign">0</property>
@@ -103,7 +103,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <child>
                       <object class="GtkFlowBox" id="vm_machines">
                         <style>
-                          <class name="vm-tiles"/>
+                          <class name="library-tiles"/>
                         </style>
                         <property name="selection-mode">1</property>
                         <property name="activate-on-single-click">true</property>
@@ -119,7 +119,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                       <object class="GtkLabel" id="vm_fault_heading">
                         <style>
                           <class name="kicker"/>
-                          <class name="vm-kicker"/>
+                          <class name="library-kicker"/>
                         </style>
                         <property name="label" translatable="yes">NEEDS RECOVERY</property>
                         <property name="xalign">0</property>
@@ -129,7 +129,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <child>
                       <object class="GtkFlowBox" id="vm_faults">
                         <style>
-                          <class name="vm-tiles"/>
+                          <class name="library-tiles"/>
                         </style>
                         <property name="selection-mode">1</property>
                         <property name="activate-on-single-click">true</property>
@@ -155,7 +155,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <child>
                           <object class="GtkImage">
                             <style>
-                              <class name="vm-empty-mark"/>
+                              <class name="library-empty-mark"/>
                             </style>
                             <property name="icon-name">vm-machine-symbolic</property>
                             <property name="pixel-size">48</property>
@@ -164,7 +164,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <child>
                           <object class="GtkLabel">
                             <style>
-                              <class name="vm-empty-title"/>
+                              <class name="library-empty-title"/>
                             </style>
                             <property name="label" translatable="yes">No machines yet</property>
                           </object>
@@ -202,7 +202,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
         <child>
           <object class="GtkBox" id="vm_panel">
             <style>
-              <class name="vm-panel"/>
+              <class name="library-panel"/>
             </style>
             <property name="orientation">1</property>
             <property name="width-request">520</property>
@@ -210,7 +210,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
             <child>
               <object class="GtkBox" id="vm_head">
                 <style>
-                  <class name="vm-head"/>
+                  <class name="panel-head"/>
                 </style>
                 <property name="spacing">12</property>
                 <child>
@@ -230,7 +230,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     <child>
                       <object class="GtkLabel" id="vm_title">
                         <style>
-                          <class name="vm-title"/>
+                          <class name="panel-title"/>
                         </style>
                         <property name="xalign">0</property>
                         <property name="ellipsize">3</property>

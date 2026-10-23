@@ -1,265 +1,382 @@
 // Remote Desktop: this computer's sharing, and the machines to connect
-// to. The index on the left lists This computer, then the machines (saved,
-// and those found sharing on the local network or the tailnet); the page
-// beside it is the one chosen. A stream opens in a window of its own.
+// to. The library shows This computer, then the machines (saved, and those
+// found sharing on the local network or the tailnet), each a tile; the
+// chosen one's page is in the panel at the right. A machine is added by its
+// address in a dialog (add_dialog, at the end). A stream opens in a window
+// of its own.
 //
 //   sharing — share this desktop: the switch, what it needs, the devices
 //             waiting to pair (their PIN typed here) and those paired
 //   machine — a machine: pair with it (a PIN to type there), connect,
 //             forget it; the stream's settings
-//   add     — a machine by its address
 using Gtk 4.0;
 
 ApplicationWindow remote {
   styles ["settings", "remote"]
   title: _("Remote Desktop");
-  default-width: 900;
-  default-height: 640;
+  default-width: 1120;
+  default-height: 720;
 
   Box {
-    // ── the index ──────────────────────────────────────────────────────
+    // ── the library: this computer, then the machines, one a tile ──
     Box {
-      styles ["index"]
+      styles ["library"]
       orientation: vertical;
-      width-request: 250;
-      hexpand: false;
+      hexpand: true;
 
-      Label {
-        styles ["index-title"]
-        label: _("Remote Desktop");
-        xalign: 0;
+      Box {
+        styles ["library-head"]
+        spacing: 8;
+
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+          spacing: 2;
+
+          Label {
+            styles ["library-title"]
+            label: _("Remote Desktop");
+            xalign: 0;
+          }
+
+          Label {
+            styles ["sub"]
+            label: _("See and control your other computers, or share this one.");
+            xalign: 0;
+            wrap: true;
+          }
+        }
+
+        Button side_find {
+          styles ["outlined", "library-icon-button"]
+          name: "side_find";
+          icon-name: "view-refresh-symbolic";
+          tooltip-text: _("Look for machines sharing their desktop");
+          valign: center;
+        }
+
+        Button side_add {
+          styles ["outlined", "library-new"]
+          name: "side_add";
+          valign: center;
+
+          Box {
+            spacing: 8;
+
+            Image {
+              icon-name: "list-add-symbolic";
+            }
+
+            Label {
+              label: _("Add a machine…");
+            }
+          }
+        }
       }
 
       ScrolledWindow {
         hscrollbar-policy: never;
-        propagate-natural-width: false;
         vexpand: true;
 
         Box {
-          styles ["remote-index"]
           orientation: vertical;
-          spacing: 2;
 
           Label {
-            styles ["kicker", "remote-kicker"]
+            styles ["kicker", "library-kicker"]
             label: _("THIS COMPUTER");
             xalign: 0;
           }
 
-          Button side_sharing {
-            styles ["index-item"]
-            name: "side_sharing";
-
-            Box {
-              spacing: 10;
-
-              Image {
-                styles ["index-icon"]
-                icon-name: "remote-sharing-symbolic";
-              }
-
-              Box {
-                orientation: vertical;
-                hexpand: true;
-
-                Label {
-                  styles ["title"]
-                  label: _("Sharing");
-                  xalign: 0;
-                }
-
-                Label side_sharing_sub {
-                  styles ["sub"]
-                  xalign: 0;
-                  ellipsize: end;
-                }
-              }
-            }
+          // Go puts this computer's tile here: its name, whether it shares.
+          FlowBox side_this {
+            styles ["library-tiles"]
+            selection-mode: single;
+            activate-on-single-click: true;
+            homogeneous: true;
+            min-children-per-line: 1;
+            max-children-per-line: 8;
+            column-spacing: 12;
+            row-spacing: 12;
+            valign: start;
           }
 
-          Box {
-            spacing: 6;
-
-            Label {
-              styles ["kicker", "remote-kicker"]
-              label: _("MACHINES");
-              xalign: 0;
-              hexpand: true;
-            }
-
-            Button side_find {
-              styles ["plain", "remote-find"]
-              name: "side_find";
-              icon-name: "view-refresh-symbolic";
-              tooltip-text: _("Look for machines sharing their desktop");
-              valign: center;
-            }
+          Label {
+            styles ["kicker", "library-kicker"]
+            label: _("MACHINES");
+            xalign: 0;
           }
 
           // Saved machines, then those found; Go fills it.
-          Box side_machines {
-            orientation: vertical;
-            spacing: 2;
+          FlowBox side_machines {
+            styles ["library-tiles"]
+            selection-mode: single;
+            activate-on-single-click: true;
+            homogeneous: true;
+            min-children-per-line: 1;
+            max-children-per-line: 8;
+            column-spacing: 12;
+            row-spacing: 12;
+            valign: start;
           }
 
-          Button side_add {
-            styles ["index-item"]
-            name: "side_add";
-
-            Box {
-              spacing: 10;
-
-              Image {
-                styles ["index-icon"]
-                icon-name: "list-add-symbolic";
-              }
-
-              Label {
-                styles ["title"]
-                label: _("Add a machine…");
-                xalign: 0;
-              }
-            }
+          Label side_none {
+            styles ["sub", "library-none"]
+            label: _("None found yet. Add one by its address, or look again.");
+            xalign: 0;
+            wrap: true;
+            visible: false;
           }
         }
       }
     }
 
-    // ── the pages ──────────────────────────────────────────────────────
-    Stack pages {
-      hexpand: true;
-      hhomogeneous: false;
-      transition-type: crossfade;
-      transition-duration: 120;
+    // ── the panel: the chosen one's page ──
+    Box {
+      styles ["library-panel"]
+      orientation: vertical;
+      width-request: 520;
+      hexpand: false;
 
-      StackPage {
-        name: "sharing";
+      Box {
+        styles ["panel-head"]
+        spacing: 12;
 
-        child: ScrolledWindow {
-          hscrollbar-policy: never;
+        // Filled while this computer shares, or while a machine is connected.
+        Box panel_mark {
+          styles ["mark"]
+          valign: center;
+        }
 
-          Box {
-            styles ["page"]
-            orientation: vertical;
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+          spacing: 2;
+
+          Label panel_title {
+            styles ["panel-title"]
+            xalign: 0;
+            ellipsize: end;
+          }
+
+          Label panel_sub {
+            styles ["sub"]
+            xalign: 0;
+            ellipsize: end;
+            selectable: true;
+          }
+        }
+      }
+
+      Stack pages {
+        vexpand: true;
+        hhomogeneous: false;
+        transition-type: crossfade;
+        transition-duration: 120;
+
+        StackPage {
+          name: "sharing";
+
+          child: ScrolledWindow {
+            hscrollbar-policy: never;
 
             Box {
-              styles ["section"]
+              styles ["page"]
               orientation: vertical;
 
               Box {
-                styles ["section-head"]
-                spacing: 10;
+                styles ["section"]
+                orientation: vertical;
 
                 Box {
-                  styles ["mark"]
-                  valign: center;
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    label: _("[SHARING]");
+                    hexpand: true;
+                    xalign: 0;
+                  }
                 }
 
-                Label {
-                  styles ["section-label"]
-                  label: _("[SHARING]");
-                  hexpand: true;
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Share this desktop");
+                        xalign: 0;
+                      }
+
+                      Label sharing_desc {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Switch sharing_switch {
+                      name: "sharing_switch";
+                      valign: center;
+                    }
+                  }
+
+                  // A screen for a computer without a monitor, chosen by its
+                  // user: Off, or its size.
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Virtual screen");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("While no monitor is connected, this computer shows a screen of this size, to share.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown sharing_virtual {
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          _("Off"),
+                          "1280 × 720",
+                          "1920 × 1080",
+                          "2560 × 1440",
+                          "3840 × 2160",
+                        ]
+                      };
+                    }
+                  }
+
+                  // What sharing needs that is not there, and how to get it.
+                  Box sharing_need {
+                    styles ["row"]
+                    orientation: vertical;
+                    spacing: 6;
+                    visible: false;
+
+                    Label sharing_need_text {
+                      styles ["label"]
+                      xalign: 0;
+                      wrap: true;
+                    }
+
+                    Label sharing_need_fix {
+                      styles ["sub", "remote-command"]
+                      xalign: 0;
+                      wrap: true;
+                      selectable: true;
+                    }
+                  }
+
+                  // Why sharing or the virtual screen did not change.
+                  Label sharing_error {
+                    styles ["row", "sub", "remote-error"]
+                    xalign: 0;
+                    wrap: true;
+                    selectable: true;
+                    visible: false;
+                  }
+                }
+              }
+
+              Box sharing_pending_section {
+                styles ["section"]
+                orientation: vertical;
+                visible: false;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    label: _("[WAITING TO PAIR]");
+                    hexpand: true;
+                    xalign: 0;
+                  }
+                }
+
+                // A row for each device waiting: its PIN typed here.
+                Box sharing_pending {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+
+                // Why a pairing failed: it stays once the device stops waiting.
+                Label pending_error {
+                  styles ["row", "sub", "remote-error"]
                   xalign: 0;
+                  wrap: true;
+                  selectable: true;
+                  visible: false;
                 }
               }
 
               Box {
-                styles ["section-body"]
+                styles ["section"]
                 orientation: vertical;
 
                 Box {
-                  styles ["row"]
-                  spacing: 12;
+                  styles ["section-head"]
+                  spacing: 10;
 
                   Box {
-                    orientation: vertical;
-                    hexpand: true;
+                    styles ["mark"]
                     valign: center;
-                    spacing: 2;
-
-                    Label {
-                      styles ["label"]
-                      label: _("Share this desktop");
-                      xalign: 0;
-                    }
-
-                    Label sharing_desc {
-                      styles ["sub"]
-                      xalign: 0;
-                      wrap: true;
-                    }
                   }
 
-                  Switch sharing_switch {
-                    name: "sharing_switch";
-                    valign: center;
+                  Label {
+                    styles ["section-label"]
+                    label: _("[PAIRED DEVICES]");
+                    hexpand: true;
+                    xalign: 0;
                   }
                 }
 
-                // A screen for a computer without a monitor, chosen by its
-                // user: Off, or its size.
-                Box {
-                  styles ["row"]
-                  spacing: 12;
-
-                  Box {
-                    orientation: vertical;
-                    hexpand: true;
-                    valign: center;
-                    spacing: 2;
-
-                    Label {
-                      styles ["label"]
-                      label: _("Virtual screen");
-                      xalign: 0;
-                    }
-
-                    Label {
-                      styles ["sub"]
-                      label: _("While no monitor is connected, this computer shows a screen of this size, to share.");
-                      xalign: 0;
-                      wrap: true;
-                    }
-                  }
-
-                  DropDown sharing_virtual {
-                    valign: center;
-
-                    model: StringList {
-                      strings [
-                        _("Off"),
-                        "1280 × 720",
-                        "1920 × 1080",
-                        "2560 × 1440",
-                        "3840 × 2160",
-                      ]
-                    };
-                  }
-                }
-
-                // What sharing needs that is not there, and how to get it.
-                Box sharing_need {
-                  styles ["row"]
+                Box sharing_clients {
+                  styles ["section-body"]
                   orientation: vertical;
-                  spacing: 6;
-                  visible: false;
-
-                  Label sharing_need_text {
-                    styles ["label"]
-                    xalign: 0;
-                    wrap: true;
-                  }
-
-                  Label sharing_need_fix {
-                    styles ["sub", "remote-command"]
-                    xalign: 0;
-                    wrap: true;
-                    selectable: true;
-                  }
                 }
 
-                // Why sharing or the virtual screen did not change.
-                Label sharing_error {
+                Label clients_error {
                   styles ["row", "sub", "remote-error"]
                   xalign: 0;
                   wrap: true;
@@ -268,472 +385,380 @@ ApplicationWindow remote {
                 }
               }
             }
+          };
+        }
 
-            Box sharing_pending_section {
-              styles ["section"]
-              orientation: vertical;
-              visible: false;
+        StackPage {
+          name: "machine";
 
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[WAITING TO PAIR]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-              }
-
-              // A row for each device waiting: its PIN typed here.
-              Box sharing_pending {
-                styles ["section-body"]
-                orientation: vertical;
-              }
-
-              // Why a pairing failed: it stays once the device stops waiting.
-              Label pending_error {
-                styles ["row", "sub", "remote-error"]
-                xalign: 0;
-                wrap: true;
-                selectable: true;
-                visible: false;
-              }
-            }
+          child: ScrolledWindow {
+            hscrollbar-policy: never;
 
             Box {
-              styles ["section"]
+              styles ["page"]
               orientation: vertical;
 
               Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[PAIRED DEVICES]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-              }
-
-              Box sharing_clients {
-                styles ["section-body"]
-                orientation: vertical;
-              }
-
-              Label clients_error {
-                styles ["row", "sub", "remote-error"]
-                xalign: 0;
-                wrap: true;
-                selectable: true;
-                visible: false;
-              }
-            }
-          }
-        };
-      }
-
-      StackPage {
-        name: "machine";
-
-        child: ScrolledWindow {
-          hscrollbar-policy: never;
-
-          Box {
-            styles ["page"]
-            orientation: vertical;
-
-            Box {
-              styles ["section"]
-              orientation: vertical;
-
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label machine_title {
-                  styles ["section-label"]
-                  hexpand: true;
-                  xalign: 0;
-                  ellipsize: end;
-                }
-              }
-
-              Box {
-                styles ["section-body"]
+                styles ["section"]
                 orientation: vertical;
 
                 Box {
-                  styles ["row"]
-                  spacing: 8;
+                  styles ["section-head"]
+                  spacing: 10;
 
                   Box {
-                    orientation: vertical;
-                    hexpand: true;
+                    styles ["mark"]
                     valign: center;
-                    spacing: 2;
+                  }
 
-                    Label machine_state {
+                  Label {
+                    styles ["section-label"]
+                    label: _("[CONNECTION]");
+                    hexpand: true;
+                    xalign: 0;
+                  }
+                }
+
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 8;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label machine_state {
+                        styles ["label"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button machine_forget {
+                      styles ["outlined"]
+                      name: "machine_forget";
+                      label: _("Forget");
+                      valign: center;
+                    }
+
+                    Button machine_quit {
+                      styles ["outlined"]
+                      name: "machine_quit";
+                      label: _("End its session");
+                      tooltip-text: _("Ends what is streaming there, for every device");
+                      valign: center;
+                    }
+
+                    Button machine_pair {
+                      styles ["outlined"]
+                      name: "machine_pair";
+                      label: _("Pair");
+                      valign: center;
+                    }
+
+                    Button machine_connect {
+                      styles ["suggested-action"]
+                      name: "machine_connect";
+                      label: _("Connect");
+                      valign: center;
+                    }
+                  }
+
+                  // While pairing: the PIN to type on the machine.
+                  Box machine_pin_box {
+                    styles ["row", "remote-pin"]
+                    orientation: vertical;
+                    spacing: 6;
+                    visible: false;
+
+                    Label machine_pin_text {
                       styles ["label"]
                       xalign: 0;
                       wrap: true;
                     }
 
-                    Label machine_addr {
-                      styles ["sub"]
+                    Label machine_pin {
+                      styles ["remote-pin-digits"]
                       xalign: 0;
                       selectable: true;
                     }
                   }
 
-                  Button machine_forget {
-                    styles ["outlined"]
-                    name: "machine_forget";
-                    label: _("Forget");
-                    valign: center;
-                  }
-
-                  Button machine_quit {
-                    styles ["outlined"]
-                    name: "machine_quit";
-                    label: _("End its session");
-                    tooltip-text: _("Ends what is streaming there, for every device");
-                    valign: center;
-                  }
-
-                  Button machine_pair {
-                    styles ["outlined"]
-                    name: "machine_pair";
-                    label: _("Pair");
-                    valign: center;
-                  }
-
-                  Button machine_connect {
-                    styles ["suggested-action"]
-                    name: "machine_connect";
-                    label: _("Connect");
-                    valign: center;
-                  }
-                }
-
-                // While pairing: the PIN to type on the machine.
-                Box machine_pin_box {
-                  styles ["row", "remote-pin"]
-                  orientation: vertical;
-                  spacing: 6;
-                  visible: false;
-
-                  Label machine_pin_text {
-                    styles ["label"]
+                  // What went wrong with this machine: pairing, connecting,
+                  // ending its session.
+                  Label machine_error {
+                    styles ["row", "sub", "remote-error"]
                     xalign: 0;
                     wrap: true;
-                  }
-
-                  Label machine_pin {
-                    styles ["remote-pin-digits"]
-                    xalign: 0;
                     selectable: true;
+                    visible: false;
                   }
                 }
-
-                // What went wrong with this machine: pairing, connecting,
-                // ending its session.
-                Label machine_error {
-                  styles ["row", "sub", "remote-error"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
-                }
-              }
-            }
-
-            Box {
-              styles ["section"]
-              orientation: vertical;
-
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[STREAM]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-
-                Label {
-                  styles ["section-meta"]
-                  label: _("for every machine");
-                }
               }
 
               Box {
-                styles ["section-body"]
+                styles ["section"]
                 orientation: vertical;
 
                 Box {
-                  styles ["row"]
-                  spacing: 12;
+                  styles ["section-head"]
+                  spacing: 10;
 
                   Box {
-                    orientation: vertical;
-                    hexpand: true;
+                    styles ["mark"]
                     valign: center;
-                    spacing: 2;
-
-                    Label {
-                      styles ["label"]
-                      label: _("Resolution");
-                      xalign: 0;
-                    }
-
-                    Label {
-                      styles ["sub"]
-                      label: _("The machine shows its desktop at this size.");
-                      xalign: 0;
-                      wrap: true;
-                    }
                   }
-
-                  DropDown stream_size {
-                    valign: center;
-
-                    model: StringList {
-                      strings [
-                        _("This monitor's"),
-                        "1280 × 720",
-                        "1920 × 1080",
-                        "2560 × 1440",
-                        "3840 × 2160",
-                      ]
-                    };
-                  }
-                }
-
-                Box {
-                  styles ["row"]
-                  spacing: 12;
 
                   Label {
-                    styles ["label"]
-                    label: _("Frames a second");
+                    styles ["section-label"]
+                    label: _("[STREAM]");
                     hexpand: true;
                     xalign: 0;
                   }
 
-                  DropDown stream_fps {
-                    valign: center;
-
-                    model: StringList {
-                      strings [
-                        "30",
-                        "60",
-                        "90",
-                        "120",
-                      ]
-                    };
-                  }
-                }
-
-                Box {
-                  styles ["row"]
-                  spacing: 12;
-
-                  Box {
-                    orientation: vertical;
-                    hexpand: true;
-                    valign: center;
-                    spacing: 2;
-
-                    Label {
-                      styles ["label"]
-                      label: _("Bitrate");
-                      xalign: 0;
-                    }
-
-                    Label {
-                      styles ["sub"]
-                      label: _("Megabits a second: more is sharper, and needs a faster network.");
-                      xalign: 0;
-                      wrap: true;
-                    }
-                  }
-
-                  SpinButton stream_bitrate {
-                    valign: center;
-                    digits: 0;
-
-                    adjustment: Adjustment {
-                      lower: 2;
-                      upper: 150;
-                      step-increment: 1;
-                      page-increment: 10;
-                    };
-                  }
-                }
-
-                Box {
-                  styles ["row"]
-                  spacing: 12;
-
-                  Box {
-                    orientation: vertical;
-                    hexpand: true;
-                    valign: center;
-                    spacing: 2;
-
-                    Label {
-                      styles ["label"]
-                      label: _("Codec");
-                      xalign: 0;
-                    }
-
-                    Label stream_codec_note {
-                      styles ["sub"]
-                      xalign: 0;
-                      wrap: true;
-                    }
-                  }
-
-                  DropDown stream_codec {
-                    valign: center;
-
-                    model: StringList {
-                      strings [
-                        "H.264",
-                        "HEVC",
-                        "AV1",
-                      ]
-                    };
-                  }
-                }
-
-                Box {
-                  styles ["row"]
-                  spacing: 12;
-
                   Label {
-                    styles ["label"]
-                    label: _("Play the sound on the machine too");
-                    hexpand: true;
-                    xalign: 0;
-                  }
-
-                  Switch stream_host_audio {
-                    name: "stream_host_audio";
-                    valign: center;
+                    styles ["section-meta"]
+                    label: _("for every machine");
                   }
                 }
 
-                Label stream_error {
-                  styles ["row", "sub", "remote-error"]
-                  xalign: 0;
-                  wrap: true;
-                  selectable: true;
-                  visible: false;
+                Box {
+                  styles ["section-body"]
+                  orientation: vertical;
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Resolution");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("The machine shows its desktop at this size.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown stream_size {
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          _("This monitor's"),
+                          "1280 × 720",
+                          "1920 × 1080",
+                          "2560 × 1440",
+                          "3840 × 2160",
+                        ]
+                      };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Frames a second");
+                      hexpand: true;
+                      xalign: 0;
+                    }
+
+                    DropDown stream_fps {
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "30",
+                          "60",
+                          "90",
+                          "120",
+                        ]
+                      };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Bitrate");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("Megabits a second: more is sharper, and needs a faster network.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    SpinButton stream_bitrate {
+                      valign: center;
+                      digits: 0;
+
+                      adjustment: Adjustment {
+                        lower: 2;
+                        upper: 150;
+                        step-increment: 1;
+                        page-increment: 10;
+                      };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Codec");
+                        xalign: 0;
+                      }
+
+                      Label stream_codec_note {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    DropDown stream_codec {
+                      valign: center;
+
+                      model: StringList {
+                        strings [
+                          "H.264",
+                          "HEVC",
+                          "AV1",
+                        ]
+                      };
+                    }
+                  }
+
+                  Box {
+                    styles ["row"]
+                    spacing: 12;
+
+                    Label {
+                      styles ["label"]
+                      label: _("Play the sound on the machine too");
+                      hexpand: true;
+                      xalign: 0;
+                    }
+
+                    Switch stream_host_audio {
+                      name: "stream_host_audio";
+                      valign: center;
+                    }
+                  }
+
+                  Label stream_error {
+                    styles ["row", "sub", "remote-error"]
+                    xalign: 0;
+                    wrap: true;
+                    selectable: true;
+                    visible: false;
+                  }
                 }
               }
             }
-          }
-        };
+          };
+        }
+
+      }
+    }
+  }
+}
+
+// Add a machine, by its address, over the window. Go keeps the dialog and
+// shows it again for the next one.
+Window add_dialog {
+  styles ["app", "settings", "remote", "remote-dialog"]
+  title: _("Add a machine");
+  modal: true;
+  hide-on-close: true;
+  resizable: false;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 10;
+    width-request: 440;
+
+    Label {
+      styles ["remote-dialog-title"]
+      label: _("Add a machine");
+      xalign: 0;
+    }
+
+    Label {
+      styles ["sub"]
+      label: _("Its address on the network: a name, an IP address, or either with :port.");
+      xalign: 0;
+      wrap: true;
+    }
+
+    Entry add_addr {
+      placeholder-text: "desk.local, 192.168.1.20, desk.tail1234.ts.net";
+      margin-top: 4;
+    }
+
+    Label add_error {
+      styles ["sub", "remote-error"]
+      xalign: 0;
+      wrap: true;
+      visible: false;
+    }
+
+    Box {
+      spacing: 8;
+      margin-top: 8;
+      halign: end;
+
+      Button add_cancel {
+        styles ["outlined"]
+        name: "add_cancel";
+        label: _("Cancel");
       }
 
-      StackPage {
-        name: "add";
-
-        child: ScrolledWindow {
-          hscrollbar-policy: never;
-
-          Box {
-            styles ["page"]
-            orientation: vertical;
-
-            Box {
-              styles ["section"]
-              orientation: vertical;
-
-              Box {
-                styles ["section-head"]
-                spacing: 10;
-
-                Box {
-                  styles ["mark"]
-                  valign: center;
-                }
-
-                Label {
-                  styles ["section-label"]
-                  label: _("[ADD A MACHINE]");
-                  hexpand: true;
-                  xalign: 0;
-                }
-              }
-
-              Box {
-                styles ["section-body"]
-                orientation: vertical;
-
-                Box {
-                  styles ["field"]
-                  orientation: vertical;
-                  spacing: 6;
-
-                  Label {
-                    styles ["label"]
-                    label: _("Its address on the network: a name, an IP address, or either with :port.");
-                    xalign: 0;
-                    wrap: true;
-                  }
-
-                  Box {
-                    spacing: 8;
-
-                    Entry add_addr {
-                      hexpand: true;
-                      placeholder-text: "desk.local, 192.168.1.20, desk.tail1234.ts.net";
-                    }
-
-                    Button add_ok {
-                      styles ["suggested-action"]
-                      name: "add_ok";
-                      label: _("Add");
-                    }
-                  }
-
-                  Label add_error {
-                    styles ["sub", "remote-error"]
-                    xalign: 0;
-                    wrap: true;
-                  }
-                }
-              }
-            }
-          }
-        };
+      Button add_ok {
+        styles ["suggested-action"]
+        name: "add_ok";
+        label: _("Add");
       }
     }
   }

@@ -228,12 +228,12 @@ msgstr "僅在 %s 顯示金鑰 %s 時才配對。"
 #: internal/apps/connect/service.go:250
 #: internal/connectui/window.go:425
 #: internal/connectui/window.go:434
-#: internal/remoteui/window.go:554
-#: internal/remoteui/window.go:748
+#: internal/remoteui/window.go:618
+#: internal/remoteui/window.go:813
 #: internal/ui/settings_bluetooth.go:336
 #: internal/ui/settings_bluetooth.go:404
 #: internal/ui/settings_bluetooth.go:410
-#: ui/remote.ui:593
+#: ui/remote.ui:635
 msgid "Pair"
 msgstr "配對"
 
@@ -257,7 +257,7 @@ msgstr "正在配對……"
 
 #: internal/apps/connect/service.go:509
 #: internal/apps/tailscale/status.go:265
-#: internal/remoteui/window.go:285
+#: internal/remoteui/window.go:331
 #: internal/shell/bluetooth.go:52
 msgid "Connected"
 msgstr "已連接"
@@ -267,7 +267,7 @@ msgid "Away"
 msgstr "不在線"
 
 #: internal/apps/connect/service.go:513
-#: internal/remoteui/window.go:280
+#: internal/remoteui/window.go:326
 msgid "Not paired"
 msgstr "未配對"
 
@@ -312,9 +312,9 @@ msgstr "來自 %s 的檔案"
 #: internal/shell/wifi.go:62
 #: internal/ui/record.go:163
 #: internal/ui/system_ipc.go:241
-#: internal/vmui/window.go:2617
-#: internal/vmui/window.go:2618
-#: internal/vmui/window.go:2629
+#: internal/vmui/window.go:2566
+#: internal/vmui/window.go:2567
+#: internal/vmui/window.go:2578
 #: ui/vm.ui:1816
 #: ui/vm.ui:2147
 #: ui/vm.ui:2878
@@ -1631,7 +1631,7 @@ msgstr "等待批准"
 #: internal/shell/status.go:128
 #: internal/shell/wifi.go:38
 #: internal/shell/wifi.go:49
-#: internal/vmui/window.go:2673
+#: internal/vmui/window.go:2622
 msgid "Connecting…"
 msgstr "正在連線…"
 
@@ -1686,7 +1686,7 @@ msgstr "雷暴"
 
 #: internal/apps/weather/weather.go:214
 #: internal/appui/sysmon.go:1082
-#: internal/vmui/window.go:2255
+#: internal/vmui/window.go:2204
 msgid "Unknown"
 msgstr "未知"
 
@@ -1776,10 +1776,10 @@ msgstr "影片"
 #: internal/filesui/cards.go:435
 #: internal/mailui/actions.go:216
 #: internal/ui/clipboard.go:489
-#: internal/vmui/window.go:1916
-#: internal/vmui/window.go:1922
-#: internal/vmui/window.go:1935
-#: internal/vmui/window.go:1947
+#: internal/vmui/window.go:1865
+#: internal/vmui/window.go:1871
+#: internal/vmui/window.go:1884
+#: internal/vmui/window.go:1896
 #: ui/clock.ui:231
 #: ui/gpg.ui:1572
 #: ui/pass.ui:263
@@ -1946,7 +1946,7 @@ msgstr "結束於 %s"
 #: internal/appui/clock.go:581
 #: internal/appui/sysmon.go:870
 #: internal/appui/sysmon.go:870
-#: internal/vmui/window.go:2377
+#: internal/vmui/window.go:2326
 msgid "Resume"
 msgstr "繼續"
 
@@ -2188,7 +2188,7 @@ msgstr "刪除…"
 #: internal/mailui/welcome.go:480
 #: internal/ui/askpass.go:537
 #: internal/viewerui/app.go:548
-#: internal/vmui/window.go:908
+#: internal/vmui/window.go:857
 msgid "Copied"
 msgstr "已複製"
 
@@ -2561,8 +2561,8 @@ msgstr "備註"
 #: internal/mailui/formatted.go:184
 #: internal/term/host/agents.go:408
 #: internal/ui/passwords.go:624
-#: internal/vmui/window.go:2621
-#: internal/vmui/window.go:2622
+#: internal/vmui/window.go:2570
+#: internal/vmui/window.go:2571
 msgid "Show"
 msgstr "顯示"
 
@@ -2580,7 +2580,7 @@ msgstr "隱藏"
 #: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:203
 #: internal/ui/passwords.go:627
-#: internal/vmui/window.go:911
+#: internal/vmui/window.go:860
 #: ui/disk.ui:697
 #: ui/gpg.ui:661
 #: ui/gpg.ui:907
@@ -2709,7 +2709,7 @@ msgstr "Flatpak：%s"
 #: internal/ui/settings_keyring.go:469
 #: internal/ui/settings_keyring.go:477
 #: internal/ui/settings_keyring.go:629
-#: internal/vmui/window.go:1525
+#: internal/vmui/window.go:1474
 msgid "%s · %s"
 msgstr "%s · %s"
 
@@ -2721,7 +2721,7 @@ msgstr "%s · %s"
 #: internal/ui/settings_ai.go:546
 #: internal/ui/settings_keyring.go:645
 #: internal/ui/settings_keyring.go:679
-#: internal/vmui/window.go:1896
+#: internal/vmui/window.go:1845
 #: ui/stocks.ui:292
 msgid "Remove"
 msgstr "移除"
@@ -2794,7 +2794,7 @@ msgstr "替換"
 #: internal/appui/workshop_manager.go:88
 #: ui/connect.ui:966
 #: ui/pass.ui:871
-#: ui/remote.ui:1011
+#: ui/remote.ui:1053
 msgid "Add"
 msgstr "新增"
 
@@ -3086,7 +3086,6 @@ msgid "Private"
 msgstr "私人"
 
 #: internal/appui/sysmon.go:789
-#: internal/remoteui/window.go:489
 msgid "Shared"
 msgstr "分享"
 
@@ -3778,7 +3777,6 @@ msgstr "無法播放：%s"
 #: internal/appui/video.go:529
 #: internal/connectui/window.go:387
 #: internal/mailui/settings.go:563
-#: internal/remoteui/window.go:495
 #: internal/shell/notify.go:44
 #: internal/shell/status.go:73
 #: internal/shell/status.go:88
@@ -3789,7 +3787,7 @@ msgstr "無法播放：%s"
 #: internal/ui/settings_displays.go:294
 #: internal/ui/settings_displays.go:412
 #: internal/ui/settings_wifi.go:285
-#: ui/remote.ui:308
+#: ui/remote.ui:359
 #: ui/settings.ui:5785
 msgid "Off"
 msgstr "關閉"
@@ -3923,7 +3921,7 @@ msgstr "未知的元件 %q"
 #: internal/games/fortunenet/texts.go:76
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
-#: internal/remoteui/window.go:746
+#: internal/remoteui/window.go:811
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
@@ -3948,6 +3946,7 @@ msgstr "未知的元件 %q"
 #: ui/pass.ui:631
 #: ui/pass.ui:862
 #: ui/polkit.ui:733
+#: ui/remote.ui:1044
 #: ui/vm.ui:3300
 msgid "Cancel"
 msgstr "取消"
@@ -4225,13 +4224,13 @@ msgid "Devices running KDE Connect, GSConnect or Valent find this computer on th
 msgstr "執行 KDE Connect、GSConnect 或 Valent 的裝置可在此網路和 tailnet 上找到這台電腦並與之配對。"
 
 #: internal/connectui/window.go:384
-#: internal/remoteui/window.go:492
+#: internal/remoteui/window.go:269
 #: internal/termui/prefsweb.go:164
-#: internal/vmui/window.go:1753
-#: internal/vmui/window.go:1856
-#: internal/vmui/window.go:1866
-#: internal/vmui/window.go:1868
-#: internal/vmui/window.go:1884
+#: internal/vmui/window.go:1702
+#: internal/vmui/window.go:1805
+#: internal/vmui/window.go:1815
+#: internal/vmui/window.go:1817
+#: internal/vmui/window.go:1833
 msgid "Starting…"
 msgstr "正在啟動……"
 
@@ -4260,7 +4259,7 @@ msgid "Accept on %s if it shows this key:"
 msgstr "如果 %s 顯示此金鑰，請在其上接受："
 
 #: internal/connectui/window.go:432
-#: internal/remoteui/window.go:597
+#: internal/remoteui/window.go:661
 msgid "Unpair"
 msgstr "取消配對"
 
@@ -4907,7 +4906,7 @@ msgstr "有一部分無法讀取。"
 #: internal/ui/lock.go:278
 #: internal/ui/polkit.go:294
 #: internal/ui/settings_about.go:190
-#: internal/vmui/window.go:1991
+#: internal/vmui/window.go:1940
 msgid "Checking…"
 msgstr "正在檢查中…"
 
@@ -4940,9 +4939,9 @@ msgid "What it is"
 msgstr "這是什麼"
 
 #: internal/diskui/details.go:246
-#: internal/remoteui/window.go:721
+#: internal/remoteui/window.go:786
 #: internal/term/web/strings.go:22
-#: internal/vmui/window.go:2013
+#: internal/vmui/window.go:1962
 msgid "Asking…"
 msgstr "正在詢問……"
 
@@ -4974,11 +4973,11 @@ msgid "Cannot open it in Files: %v"
 msgstr "無法在「檔案」中開啟：%v"
 
 #: internal/diskui/details.go:458
-#: internal/vmui/window.go:1911
-#: internal/vmui/window.go:1917
-#: internal/vmui/window.go:1923
-#: internal/vmui/window.go:1936
-#: internal/vmui/window.go:1948
+#: internal/vmui/window.go:1860
+#: internal/vmui/window.go:1866
+#: internal/vmui/window.go:1872
+#: internal/vmui/window.go:1885
+#: internal/vmui/window.go:1897
 msgid "Deleting…"
 msgstr "正在刪除…"
 
@@ -5143,7 +5142,7 @@ msgid "Not scanned"
 msgstr "未掃描"
 
 #: internal/diskui/window.go:797
-#: internal/vmui/window.go:1446
+#: internal/vmui/window.go:1395
 msgid "Other"
 msgstr "其他"
 
@@ -5949,9 +5948,9 @@ msgstr "正在連線 %s……"
 #: internal/ui/settings_bluetooth.go:340
 #: internal/ui/settings_wifi.go:414
 #: internal/ui/settings_wifi.go:439
-#: internal/vmui/window.go:2619
-#: internal/vmui/window.go:2619
-#: ui/remote.ui:603
+#: internal/vmui/window.go:2568
+#: internal/vmui/window.go:2568
+#: ui/remote.ui:645
 #: ui/vm.ui:2833
 msgid "Connect"
 msgstr "連線"
@@ -6001,7 +6000,7 @@ msgstr "%s 已中斷連線。"
 #: internal/ui/settings_ai.go:494
 #: internal/ui/settings_bluetooth.go:346
 #: internal/ui/settings_wifi.go:420
-#: ui/remote.ui:572
+#: ui/remote.ui:614
 msgid "Forget"
 msgstr "刪除金鑰"
 
@@ -11214,7 +11213,7 @@ msgstr[0] "%d 分鐘前"
 
 #: internal/remoteui/app.go:20
 #: ui/remote.ui:14
-#: ui/remote.ui:32
+#: ui/remote.ui:43
 #: config/apps/io.github.lyricat.Inua.Remote.desktop:3
 msgid "Remote Desktop"
 msgstr "遠端桌面"
@@ -11235,179 +11234,195 @@ msgstr "%s 結束了工作階段。"
 msgid "%s cannot show its screen: no monitor is connected, or its desktop session is not running. A computer without a monitor can share a virtual screen (Remote Desktop, Sharing)."
 msgstr "%s 無法顯示其螢幕：沒有連接顯示器，或其桌面工作階段未在執行。沒有顯示器的電腦可以分享虛擬螢幕（遠端桌面，分享）。"
 
-#: internal/remoteui/window.go:127
+#: internal/remoteui/window.go:134
 msgid "This computer has no identity to pair with: %v"
 msgstr "這台電腦沒有用於配對的身分：%v"
 
-#: internal/remoteui/window.go:282
+#: internal/remoteui/window.go:173
+#: internal/shell/card.go:80
+#: internal/term/web/strings.go:77
+#: ui/settings.ui:5074
+#: ui/settings.ui:5355
+msgid "This computer"
+msgstr "這台電腦"
+
+#: internal/remoteui/window.go:264
+msgid "Not sharing"
+msgstr ""
+
+#: internal/remoteui/window.go:267
+msgid "Sharing its desktop"
+msgstr ""
+
+#: internal/remoteui/window.go:328
 msgid "Paired"
 msgstr "已配對"
 
-#: internal/remoteui/window.go:293
+#: internal/remoteui/window.go:340
 msgid "Found on this network"
 msgstr "在此網路上找到"
 
-#: internal/remoteui/window.go:295
+#: internal/remoteui/window.go:342
 msgid "Found on the tailnet"
 msgstr "在 tailnet 上找到"
 
-#: internal/remoteui/window.go:410
+#: internal/remoteui/window.go:474
 msgid "Sharing did not start: %v"
 msgstr "分享沒有啟動：%v"
 
-#: internal/remoteui/window.go:446
+#: internal/remoteui/window.go:510
 msgid "The virtual screen did not change: %v"
 msgstr "虛擬螢幕未變更：%v"
 
-#: internal/remoteui/window.go:455
+#: internal/remoteui/window.go:519
 msgid "The settings were not saved: %v"
 msgstr "設定未儲存：%v"
 
-#: internal/remoteui/window.go:490
+#: internal/remoteui/window.go:556
 msgid "Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here."
 msgstr "其他裝置在此網路和 tailnet 上會看到這台電腦名為 %s。裝置只需配對一次，在這裡輸入 PIN。"
 
-#: internal/remoteui/window.go:493
+#: internal/remoteui/window.go:558
 msgid "Sunshine is starting."
 msgstr "Sunshine 正在啟動。"
 
-#: internal/remoteui/window.go:496
+#: internal/remoteui/window.go:560
 msgid "Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."
 msgstr "讓你的其他裝置用 Moonlight 或遠端桌面檢視並控制此桌面。"
 
-#: internal/remoteui/window.go:507
+#: internal/remoteui/window.go:571
 msgid "Sharing needs Sunshine, which is not installed."
 msgstr "分享需要 Sunshine，但它沒有安裝。"
 
-#: internal/remoteui/window.go:508
+#: internal/remoteui/window.go:572
 msgid "Install the package for your system from github.com/LizardByte/Sunshine/releases (Ubuntu: sudo apt install ./sunshine_…_amd64.deb)."
 msgstr "從 github.com/LizardByte/Sunshine/releases 安裝適合你系統的套件（Ubuntu：sudo apt install ./sunshine_…_amd64.deb）。"
 
-#: internal/remoteui/window.go:510
+#: internal/remoteui/window.go:574
 msgid "The other device's keyboard and mouse cannot reach this desktop: /dev/uinput is not yours."
 msgstr "另一台裝置的鍵盤和滑鼠無法操作此桌面：你沒有 /dev/uinput 的權限。"
 
-#: internal/remoteui/window.go:513
+#: internal/remoteui/window.go:577
 msgid "Sharing needs a graphical session to show."
 msgstr "分享需要一個圖形工作階段。"
 
-#: internal/remoteui/window.go:538
+#: internal/remoteui/window.go:602
 msgid "A device"
 msgstr "一台裝置"
 
-#: internal/remoteui/window.go:542
+#: internal/remoteui/window.go:606
 msgid "at %s: type the PIN it shows"
 msgstr "來自 %s：輸入它顯示的 PIN"
 
-#: internal/remoteui/window.go:569
+#: internal/remoteui/window.go:633
 msgid "No device is paired yet."
 msgstr "還沒有已配對的裝置。"
 
-#: internal/remoteui/window.go:574
+#: internal/remoteui/window.go:638
 msgid "The paired devices show while sharing is on."
 msgstr "分享開啟時會顯示已配對的裝置。"
 
-#: internal/remoteui/window.go:589
+#: internal/remoteui/window.go:653
 msgid "Paired twice, so it cannot connect: unpair each, then pair it again."
 msgstr "重複配對，因此無法連線：請逐一取消配對，再重新配對。"
 
-#: internal/remoteui/window.go:619
+#: internal/remoteui/window.go:683
 msgid "A PIN is four digits."
 msgstr "PIN 是四位數字。"
 
-#: internal/remoteui/window.go:631
+#: internal/remoteui/window.go:695
 msgid "That is not the PIN %s shows."
 msgstr "這不是 %s 顯示的 PIN。"
 
-#: internal/remoteui/window.go:633
+#: internal/remoteui/window.go:697
 msgid "%s was paired here before, as %s, and a device paired twice is refused. Its old pairing is removed: pair again from %s."
 msgstr "%s 之前已在此配對，名稱為 %s，而重複配對的裝置會被拒絕。舊的配對已移除：請從 %s 重新配對。"
 
-#: internal/remoteui/window.go:636
+#: internal/remoteui/window.go:700
 msgid "%s was not paired: %v"
 msgstr "%s 未能配對：%v"
 
-#: internal/remoteui/window.go:657
+#: internal/remoteui/window.go:721
 msgid "%s was not unpaired: %v"
 msgstr "%s 未能取消配對：%v"
 
-#: internal/remoteui/window.go:724
+#: internal/remoteui/window.go:789
 msgid "Connected: its desktop is in a window of its own."
 msgstr "已連線：它的桌面在獨立的視窗中。"
 
-#: internal/remoteui/window.go:727
+#: internal/remoteui/window.go:792
 msgid "It does not answer: it is off, or not sharing its desktop."
 msgstr "沒有回應：它已關機，或沒有分享桌面。"
 
-#: internal/remoteui/window.go:729
+#: internal/remoteui/window.go:794
 msgid "It shares with Nvidia's GameStream, which Remote Desktop does not speak."
 msgstr "它透過 Nvidia 的 GameStream 分享，遠端桌面不支援。"
 
-#: internal/remoteui/window.go:731
+#: internal/remoteui/window.go:796
 msgid "It has forgotten this computer: pair again."
 msgstr "它已忘記這台電腦：請重新配對。"
 
-#: internal/remoteui/window.go:733
+#: internal/remoteui/window.go:798
 msgid "Not paired: pair once, with a PIN typed on it."
 msgstr "未配對：在它上面輸入 PIN，配對一次即可。"
 
-#: internal/remoteui/window.go:735
+#: internal/remoteui/window.go:800
 msgid "Paired. Its desktop is being streamed; connecting joins in."
 msgstr "已配對。它的桌面正在串流，連線即可加入。"
 
-#: internal/remoteui/window.go:737
+#: internal/remoteui/window.go:802
 msgid "Paired, and ready."
 msgstr "已配對，可以連線。"
 
-#: internal/remoteui/window.go:775
+#: internal/remoteui/window.go:840
 msgid "On %s, open Remote Desktop → Sharing (or Sunshine's PIN page) and type:"
 msgstr "在 %s 上開啟遠端桌面 → 分享（或 Sunshine 的 PIN 頁面），然後輸入："
 
-#: internal/remoteui/window.go:798
+#: internal/remoteui/window.go:863
 msgid "Paired, but not saved, so not kept after this window: %v"
 msgstr "已配對，但未儲存，關閉此視窗後不會保留：%v"
 
-#: internal/remoteui/window.go:802
+#: internal/remoteui/window.go:867
 msgid "The PIN typed there was not this one. Pair again."
 msgstr "那邊輸入的 PIN 不是這個。請重新配對。"
 
-#: internal/remoteui/window.go:804
+#: internal/remoteui/window.go:869
 msgid "%s took the PIN, then refused this computer: it had this computer paired already, perhaps under another name, and refuses a computer paired twice. If it shares with inua, it has removed the old pairing: pair again. Otherwise unpair this computer there first."
 msgstr "%s 接受了 PIN，隨後拒絕了這台電腦：它已配對過這台電腦（可能用的是別的名稱），並會拒絕重複配對的電腦。如果對方以 inua 分享，它已移除舊的配對：請重新配對。否則請先在對方那邊取消這台電腦的配對。"
 
-#: internal/remoteui/window.go:807
+#: internal/remoteui/window.go:872
 msgid "Pairing failed: %v"
 msgstr "配對失敗：%v"
 
-#: internal/remoteui/window.go:822
+#: internal/remoteui/window.go:887
 msgid "Its session did not end: %v"
 msgstr "它的工作階段未能結束：%v"
 
-#: internal/remoteui/window.go:835
+#: internal/remoteui/window.go:900
 msgid "Not forgotten: the list of machines was not saved: %v"
 msgstr "未移除：機器清單未能儲存：%v"
 
-#: internal/remoteui/window.go:871
+#: internal/remoteui/window.go:936
 msgid "Nothing shares a desktop at %s: %v"
 msgstr "%s 上沒有分享的桌面：%v"
 
-#: internal/remoteui/window.go:876
+#: internal/remoteui/window.go:941
 msgid "Added, but not saved, so not kept after this window: %v"
 msgstr "已新增，但未儲存，關閉此視窗後不會保留：%v"
 
-#: internal/remoteui/window.go:941
+#: internal/remoteui/window.go:1007
 msgid "This computer cannot decode it: choose another."
 msgstr "這台電腦無法解碼：請選擇其他的。"
 
-#: internal/remoteui/window.go:943
+#: internal/remoteui/window.go:1009
 msgid "Decoded by the processor here: slower than the graphics card."
 msgstr "這裡由處理器解碼：比顯示卡慢。"
 
-#: internal/remoteui/window.go:945
+#: internal/remoteui/window.go:1011
 msgid "Decoded by the graphics card here. HEVC and AV1 look better than H.264 at the same bitrate."
 msgstr "這裡由顯示卡解碼。相同位元率下，HEVC 和 AV1 比 H.264 更清晰。"
 
-#: internal/remoteui/window.go:972
+#: internal/remoteui/window.go:1038
 msgid "The connection ended: %v"
 msgstr "連線已結束：%v"
 
@@ -11470,13 +11485,6 @@ msgstr "允許 %s 連線?"
 msgid "It asks to pair or to use this computer without a code."
 msgstr "它要求在沒有代碼的情況下配對或使用這台電腦。"
 
-#: internal/shell/card.go:80
-#: internal/term/web/strings.go:77
-#: ui/settings.ui:5074
-#: ui/settings.ui:5355
-msgid "This computer"
-msgstr "這台電腦"
-
 #: internal/shell/card.go:99
 msgid "%s package"
 msgid_plural "%s packages"
@@ -11527,8 +11535,8 @@ msgstr "磁碟"
 
 #: internal/shell/card.go:193
 #: internal/shell/cardterm.go:140
-#: internal/vmui/window.go:2622
-#: internal/vmui/window.go:2626
+#: internal/vmui/window.go:2571
+#: internal/vmui/window.go:2575
 #: ui/screenshot.ui:187
 #: ui/shotdrawer.ui:146
 msgid "Screen"
@@ -14282,7 +14290,7 @@ msgid "Preferred"
 msgstr "建議"
 
 #: internal/ui/settings_displays.go:245
-#: ui/remote.ui:718
+#: ui/remote.ui:760
 msgid "Resolution"
 msgstr "解析度"
 
@@ -15006,7 +15014,7 @@ msgid "Could not open the link"
 msgstr "無法開啟連結"
 
 #: internal/vmui/app.go:22
-#: internal/vmui/window.go:2218
+#: internal/vmui/window.go:2167
 #: ui/vm.ui:14
 #: ui/vm.ui:43
 #: config/apps/io.github.lyricat.Inua.VM.desktop:3
@@ -15077,610 +15085,610 @@ msgstr "尚未選擇"
 msgid "The assistant could not be started: %v"
 msgstr "無法啟動助手：%v"
 
-#: internal/vmui/window.go:612
+#: internal/vmui/window.go:603
 msgid "Does not load"
 msgstr "無法載入"
 
-#: internal/vmui/window.go:780
+#: internal/vmui/window.go:729
 msgid "Does not load as a machine"
 msgstr "無法作為機器載入"
 
-#: internal/vmui/window.go:790
+#: internal/vmui/window.go:739
 #: ui/vm.ui:445
 msgid "No backend for this machine"
 msgstr "此虛擬機沒有可用後端"
 
-#: internal/vmui/window.go:791
+#: internal/vmui/window.go:740
 msgid "This machine needs the %s backend, which this build does not have."
 msgstr "此虛擬機需要 %s 後端，而此版本沒有。"
 
-#: internal/vmui/window.go:839
+#: internal/vmui/window.go:788
 msgid "Turn the debugger on to hold the guest for gdb."
 msgstr "打開除錯器即可把客體停住，接上 gdb。"
 
-#: internal/vmui/window.go:933
+#: internal/vmui/window.go:882
 msgid "Accelerated"
 msgstr "已加速"
 
-#: internal/vmui/window.go:937
+#: internal/vmui/window.go:886
 msgid "Emulated (slow): this machine asks for emulation"
 msgstr "模擬（較慢）：此虛擬機要求模擬"
 
-#: internal/vmui/window.go:939
+#: internal/vmui/window.go:888
 msgid "Emulated (slow): the guest is built for another architecture"
 msgstr "模擬（較慢）：客體是為另一種架構建置的"
 
-#: internal/vmui/window.go:941
+#: internal/vmui/window.go:890
 msgid "Emulated (slow): this host has no /dev/kvm"
 msgstr "模擬（較慢）：此主機沒有 /dev/kvm"
 
-#: internal/vmui/window.go:943
+#: internal/vmui/window.go:892
 msgid "Emulated (slow): your user may not open /dev/kvm"
 msgstr "模擬（較慢）：你的使用者不能開啟 /dev/kvm"
 
-#: internal/vmui/window.go:945
+#: internal/vmui/window.go:894
 msgid "Emulated (slow)"
 msgstr "模擬（較慢）"
 
-#: internal/vmui/window.go:956
+#: internal/vmui/window.go:905
 msgid "2D: Windows has no accelerated driver here"
 msgstr "2D：Windows 在此沒有加速驅動"
 
-#: internal/vmui/window.go:960
+#: internal/vmui/window.go:909
 msgid "3D (OpenGL, through the host's GPU)"
 msgstr "3D（OpenGL，經主機的 GPU）"
 
-#: internal/vmui/window.go:962
+#: internal/vmui/window.go:911
 msgid "3D (Vulkan, through the host's GPU)"
 msgstr "3D（Vulkan，經主機的 GPU）"
 
-#: internal/vmui/window.go:964
+#: internal/vmui/window.go:913
 msgid "2D"
 msgstr "2D"
 
-#: internal/vmui/window.go:1047
-#: internal/vmui/window.go:1049
-#: internal/vmui/window.go:2761
-#: internal/vmui/window.go:2763
+#: internal/vmui/window.go:996
+#: internal/vmui/window.go:998
+#: internal/vmui/window.go:2710
+#: internal/vmui/window.go:2712
 msgid "Recommended: %d GiB."
 msgstr "建議：%d GiB。"
 
-#: internal/vmui/window.go:1048
-#: internal/vmui/window.go:2762
+#: internal/vmui/window.go:997
+#: internal/vmui/window.go:2711
 msgid "Recommended: %d."
 msgstr "建議：%d。"
 
-#: internal/vmui/window.go:1116
+#: internal/vmui/window.go:1065
 msgid "Creating…"
 msgstr "正在建立…"
 
-#: internal/vmui/window.go:1123
+#: internal/vmui/window.go:1072
 #: ui/gpg.ui:1488
 #: ui/vm.ui:3331
 msgid "Create"
 msgstr "建立"
 
-#: internal/vmui/window.go:1126
+#: internal/vmui/window.go:1075
 msgid "That name cannot be used: %v"
 msgstr "無法使用該名稱：%v"
 
-#: internal/vmui/window.go:1152
+#: internal/vmui/window.go:1101
 msgid "%d thing to fix"
 msgid_plural "%d things to fix"
 msgstr[0] "%d 項待解決"
 
-#: internal/vmui/window.go:1207
+#: internal/vmui/window.go:1156
 msgid "Fix"
 msgstr "修復"
 
-#: internal/vmui/window.go:1209
+#: internal/vmui/window.go:1158
 msgid "Add me to %s"
 msgstr "將我加入 %s 群組"
 
-#: internal/vmui/window.go:1240
+#: internal/vmui/window.go:1189
 msgid "Operating system"
 msgstr "作業系統"
 
-#: internal/vmui/window.go:1242
+#: internal/vmui/window.go:1191
 msgid "Hardware virtualization (KVM)"
 msgstr "硬體虛擬化 (KVM)"
 
-#: internal/vmui/window.go:1244
+#: internal/vmui/window.go:1193
 msgid "Docker"
 msgstr "Docker"
 
-#: internal/vmui/window.go:1246
+#: internal/vmui/window.go:1195
 msgid "Docker Compose v2"
 msgstr "Docker Compose v2"
 
-#: internal/vmui/window.go:1248
+#: internal/vmui/window.go:1197
 msgid "FreeRDP"
 msgstr "FreeRDP"
 
-#: internal/vmui/window.go:1250
+#: internal/vmui/window.go:1199
 msgid "Browser opener"
 msgstr "瀏覽器開啟程式"
 
-#: internal/vmui/window.go:1252
+#: internal/vmui/window.go:1201
 msgid "Disk space"
 msgstr "磁碟空間"
 
-#: internal/vmui/window.go:1254
+#: internal/vmui/window.go:1203
 msgid "Network device (TUN)"
 msgstr "網路裝置 (TUN)"
 
-#: internal/vmui/window.go:1256
+#: internal/vmui/window.go:1205
 #: ui/settings.ui:3929
 msgid "Secret Service"
 msgstr "Secret Service"
 
-#: internal/vmui/window.go:1260
+#: internal/vmui/window.go:1209
 msgid "UEFI firmware"
 msgstr "UEFI 韌體"
 
-#: internal/vmui/window.go:1264
+#: internal/vmui/window.go:1213
 msgid "Binder (the kernel's Android support)"
 msgstr "Binder（核心的 Android 支援）"
 
-#: internal/vmui/window.go:1278
+#: internal/vmui/window.go:1227
 msgid "Your user may not use Docker's socket. Joining the docker group would let anything running as you control this machine as root, so Inua will not do it for you: run the command below yourself if you accept that, or use rootless Docker or Podman instead."
 msgstr "你的使用者無法使用 Docker 的通訊端。加入 docker 群組會讓以你身分執行的任何程式以 root 身分控制這台電腦，因此 Inua 不會替你這麼做：若你接受這一點，請自行執行下方的指令，或改用無 root 的 Docker 或 Podman。"
 
-#: internal/vmui/window.go:1282
+#: internal/vmui/window.go:1231
 msgid "Not installed on this system."
 msgstr "此系統上未安裝。"
 
-#: internal/vmui/window.go:1284
+#: internal/vmui/window.go:1233
 msgid "Installed, but your user may not use it."
 msgstr "已安裝，但你的使用者無權使用。"
 
-#: internal/vmui/window.go:1286
+#: internal/vmui/window.go:1235
 msgid "Installed, but not running."
 msgstr "已安裝，但未執行。"
 
-#: internal/vmui/window.go:1288
+#: internal/vmui/window.go:1237
 msgid "This Linux distribution is not supported."
 msgstr "不支援此 Linux 發行版。"
 
-#: internal/vmui/window.go:1290
+#: internal/vmui/window.go:1239
 msgid "Could not be checked."
 msgstr "無法檢查。"
 
-#: internal/vmui/window.go:1321
+#: internal/vmui/window.go:1270
 msgid "Choose an install image below first."
 msgstr "請先在下方選擇一個安裝映像。"
 
-#: internal/vmui/window.go:1323
+#: internal/vmui/window.go:1272
 msgid "Installs from the files the earlier attempt left."
 msgstr "用上次嘗試留下的檔案安裝。"
 
-#: internal/vmui/window.go:1362
+#: internal/vmui/window.go:1311
 msgid "%s of %s downloaded"
 msgstr "已下載 %s / %s"
 
-#: internal/vmui/window.go:1366
+#: internal/vmui/window.go:1315
 msgid "%s downloaded"
 msgstr "已下載 %s"
 
-#: internal/vmui/window.go:1389
+#: internal/vmui/window.go:1338
 msgid "Every architecture"
 msgstr "所有架構"
 
-#: internal/vmui/window.go:1438
+#: internal/vmui/window.go:1387
 msgid "Every platform"
 msgstr "所有平台"
 
-#: internal/vmui/window.go:1440
+#: internal/vmui/window.go:1389
 msgid "Linux"
 msgstr "Linux"
 
-#: internal/vmui/window.go:1442
+#: internal/vmui/window.go:1391
 msgid "BSD"
 msgstr "BSD"
 
-#: internal/vmui/window.go:1444
+#: internal/vmui/window.go:1393
 #: ui/settings.ui:2030
 msgid "Windows"
 msgstr "視窗"
 
-#: internal/vmui/window.go:1497
-#: internal/vmui/window.go:2345
+#: internal/vmui/window.go:1446
+#: internal/vmui/window.go:2294
 msgid "Live image"
 msgstr "Live 映像"
 
-#: internal/vmui/window.go:1499
-#: internal/vmui/window.go:2347
+#: internal/vmui/window.go:1448
+#: internal/vmui/window.go:2296
 msgid "Installer"
 msgstr "安裝來源"
 
-#: internal/vmui/window.go:1508
+#: internal/vmui/window.go:1457
 msgid "%d installer"
 msgid_plural "%d installers"
 msgstr[0] "%d 個安裝程式"
 
-#: internal/vmui/window.go:1511
+#: internal/vmui/window.go:1460
 msgid "%d live image"
 msgid_plural "%d live images"
 msgstr[0] "%d 個 Live 映像"
 
-#: internal/vmui/window.go:1514
+#: internal/vmui/window.go:1463
 msgid "newest %s"
 msgstr "最新 %s"
 
-#: internal/vmui/window.go:1517
-#: internal/vmui/window.go:1526
+#: internal/vmui/window.go:1466
+#: internal/vmui/window.go:1475
 msgid "%d install image"
 msgid_plural "%d install images"
 msgstr[0] "%d 個安裝映像"
 
-#: internal/vmui/window.go:1525
+#: internal/vmui/window.go:1474
 msgid "%d system"
 msgid_plural "%d systems"
 msgstr[0] "%d 個系統"
 
-#: internal/vmui/window.go:1749
+#: internal/vmui/window.go:1698
 msgid "The system is installing; this takes a while."
 msgstr "正在安裝系統，需要一些時間。"
 
-#: internal/vmui/window.go:1751
-#: internal/vmui/window.go:1814
-#: internal/vmui/window.go:1886
-#: internal/vmui/window.go:1888
-#: internal/vmui/window.go:1890
-#: internal/vmui/window.go:1892
+#: internal/vmui/window.go:1700
+#: internal/vmui/window.go:1763
+#: internal/vmui/window.go:1835
+#: internal/vmui/window.go:1837
+#: internal/vmui/window.go:1839
+#: internal/vmui/window.go:1841
 msgid "Stopping…"
 msgstr "正在停止…"
 
-#: internal/vmui/window.go:1755
+#: internal/vmui/window.go:1704
 msgid "The installation is paused. Continue to resume."
 msgstr "安裝已暫停。繼續即可恢復。"
 
-#: internal/vmui/window.go:1816
+#: internal/vmui/window.go:1765
 msgid "The system is starting; ready in a minute or two."
 msgstr "系統正在啟動，一兩分鐘後可用。"
 
-#: internal/vmui/window.go:1853
+#: internal/vmui/window.go:1802
 msgid "Applying…"
 msgstr "正在套用…"
 
-#: internal/vmui/window.go:1894
+#: internal/vmui/window.go:1843
 msgid "Remove the container?"
 msgstr "移除容器？"
 
-#: internal/vmui/window.go:1895
+#: internal/vmui/window.go:1844
 #: ui/vm.ui:2602
 msgid "Its container and settings go. The disk and its password stay, so installing again starts from them."
 msgstr "它的容器與設定會被刪除。磁碟及其密碼會保留，再次安裝時從它們開始。"
 
-#: internal/vmui/window.go:1897
-#: internal/vmui/window.go:1904
+#: internal/vmui/window.go:1846
+#: internal/vmui/window.go:1853
 msgid "Removing…"
 msgstr "正在移除…"
 
-#: internal/vmui/window.go:1901
+#: internal/vmui/window.go:1850
 msgid "Abandon the installation?"
 msgstr "放棄安裝？"
 
-#: internal/vmui/window.go:1902
+#: internal/vmui/window.go:1851
 msgid "The container is removed. Downloaded files stay, so a new installation does not fetch them again."
 msgstr "將移除容器。已下載的檔案會保留，再次安裝時無須重新下載。"
 
-#: internal/vmui/window.go:1903
+#: internal/vmui/window.go:1852
 msgid "Abandon"
 msgstr "放棄"
 
-#: internal/vmui/window.go:1908
+#: internal/vmui/window.go:1857
 msgid "Start the installation over?"
 msgstr "重新開始安裝？"
 
-#: internal/vmui/window.go:1909
+#: internal/vmui/window.go:1858
 msgid "The unfinished disk is deleted for good; the machine stays, to install again."
 msgstr "未完成的磁碟將被永久刪除；機器會保留，可以重新安裝。"
 
-#: internal/vmui/window.go:1910
-#: internal/vmui/window.go:2655
+#: internal/vmui/window.go:1859
+#: internal/vmui/window.go:2604
 msgid "Start over"
 msgstr "重新開始"
 
-#: internal/vmui/window.go:1914
+#: internal/vmui/window.go:1863
 msgid "Delete this machine's disk?"
 msgstr "刪除這台機器的磁碟？"
 
-#: internal/vmui/window.go:1915
+#: internal/vmui/window.go:1864
 msgid "The installed system and its files are deleted for good. The machine stays, to install again."
 msgstr "已安裝的系統及其檔案將被永久刪除。機器會保留，可以重新安裝。"
 
-#: internal/vmui/window.go:1920
+#: internal/vmui/window.go:1869
 msgid "Delete the files from the earlier attempt?"
 msgstr "刪除上次嘗試留下的檔案？"
 
-#: internal/vmui/window.go:1921
+#: internal/vmui/window.go:1870
 msgid "The downloaded files and the unfinished disk are deleted for good."
 msgstr "已下載的檔案與未完成的磁碟將被永久刪除。"
 
-#: internal/vmui/window.go:1933
+#: internal/vmui/window.go:1882
 msgid "Delete this machine?"
 msgstr "刪除這台機器？"
 
-#: internal/vmui/window.go:1934
+#: internal/vmui/window.go:1883
 msgid "The machine, its disk and all its files are deleted for good. This cannot be undone."
 msgstr "這台機器、它的磁碟及所有檔案將被永久刪除。此動作無法復原。"
 
-#: internal/vmui/window.go:1945
+#: internal/vmui/window.go:1894
 msgid "Delete this folder?"
 msgstr "刪除這個資料夾？"
 
-#: internal/vmui/window.go:1946
+#: internal/vmui/window.go:1895
 msgid "It does not load as a machine. Everything inside it is deleted for good."
 msgstr "它無法作為機器載入。其中的所有內容將被永久刪除。"
 
-#: internal/vmui/window.go:1979
+#: internal/vmui/window.go:1928
 msgid "Request sent to the assistant window."
 msgstr "已將要求傳送至助理視窗。"
 
-#: internal/vmui/window.go:1997
+#: internal/vmui/window.go:1946
 #: ui/vm.ui:935
 #: ui/vm.ui:957
 msgid "Check again"
 msgstr "重新檢查"
 
-#: internal/vmui/window.go:2025
+#: internal/vmui/window.go:1974
 msgid "The fix did not work: %v"
 msgstr "修復失敗：%v"
 
-#: internal/vmui/window.go:2030
+#: internal/vmui/window.go:1979
 msgid "Done. Log out and back in for it to take effect."
 msgstr "完成。請登出並重新登入以使變更生效。"
 
-#: internal/vmui/window.go:2033
+#: internal/vmui/window.go:1982
 msgid "Done."
 msgstr "完成。"
 
-#: internal/vmui/window.go:2151
+#: internal/vmui/window.go:2100
 msgid "Log out to finish"
 msgstr "登出以完成"
 
-#: internal/vmui/window.go:2152
+#: internal/vmui/window.go:2101
 msgid "The change takes effect the next time you log in."
 msgstr "此變更將在你下次登入時生效。"
 
-#: internal/vmui/window.go:2194
+#: internal/vmui/window.go:2143
 msgid "This system is missing something the guest needs"
 msgstr "此系統缺少客體需要的東西"
 
-#: internal/vmui/window.go:2197
+#: internal/vmui/window.go:2146
 msgid "Files from a previous attempt are still here"
 msgstr "上次安裝留下的檔案還在"
 
-#: internal/vmui/window.go:2199
+#: internal/vmui/window.go:2148
 msgid "Not installed yet"
 msgstr "尚未安裝"
 
-#: internal/vmui/window.go:2202
-#: internal/vmui/window.go:2210
-#: internal/vmui/window.go:2243
+#: internal/vmui/window.go:2151
+#: internal/vmui/window.go:2159
+#: internal/vmui/window.go:2192
 msgid "Stopping"
 msgstr "正在停止"
 
-#: internal/vmui/window.go:2205
-#: internal/vmui/window.go:2245
+#: internal/vmui/window.go:2154
+#: internal/vmui/window.go:2194
 msgid "Installing"
 msgstr "正在安裝"
 
-#: internal/vmui/window.go:2207
-#: internal/vmui/window.go:2247
+#: internal/vmui/window.go:2156
+#: internal/vmui/window.go:2196
 msgid "Installation paused"
 msgstr "安裝已暫停"
 
-#: internal/vmui/window.go:2212
-#: internal/vmui/window.go:2249
+#: internal/vmui/window.go:2161
+#: internal/vmui/window.go:2198
 msgid "Starting"
 msgstr "正在啟動"
 
-#: internal/vmui/window.go:2214
-#: internal/vmui/window.go:2251
+#: internal/vmui/window.go:2163
+#: internal/vmui/window.go:2200
 msgid "Running"
 msgstr "執行中"
 
-#: internal/vmui/window.go:2216
-#: internal/vmui/window.go:2253
+#: internal/vmui/window.go:2165
+#: internal/vmui/window.go:2202
 msgid "Stopped"
 msgstr "已停止"
 
-#: internal/vmui/window.go:2224
+#: internal/vmui/window.go:2173
 msgid "%s · no backend in this build"
 msgstr "%s · 此版本沒有後端"
 
-#: internal/vmui/window.go:2233
+#: internal/vmui/window.go:2182
 msgid "Working"
 msgstr "處理中"
 
-#: internal/vmui/window.go:2237
+#: internal/vmui/window.go:2186
 msgid "Needs the host"
 msgstr "需要主機支援"
 
-#: internal/vmui/window.go:2239
+#: internal/vmui/window.go:2188
 msgid "Not installed"
 msgstr "未安裝"
 
-#: internal/vmui/window.go:2272
+#: internal/vmui/window.go:2221
 msgid "Custom"
 msgstr ""
 
-#: internal/vmui/window.go:2301
+#: internal/vmui/window.go:2250
 msgid "Downloads about 8 GB and installs Windows; takes 30+ minutes. Windows needs a licence."
 msgstr "下載約 8 GB 並安裝 Windows，需要 30 分鐘以上。Windows 需要授權。"
 
-#: internal/vmui/window.go:2303
+#: internal/vmui/window.go:2252
 msgid "The guest installs from its own media, as it would on a real machine."
 msgstr "客體像在真機上一樣，從自己的安裝媒體安裝。"
 
-#: internal/vmui/window.go:2312
+#: internal/vmui/window.go:2261
 msgid "inua's own list"
 msgstr "inua 自帶的清單"
 
-#: internal/vmui/window.go:2321
+#: internal/vmui/window.go:2270
 msgid "Installs from %s."
 msgstr "從 %s 安裝。"
 
-#: internal/vmui/window.go:2324
+#: internal/vmui/window.go:2273
 msgid "osinfo-db is not installed, so this is inua's short built-in list."
 msgstr "未安裝 osinfo-db，因此這是 inua 的簡短內建清單。"
 
-#: internal/vmui/window.go:2326
+#: internal/vmui/window.go:2275
 msgid "Choose an install image to download; the machine boots it as a disc."
 msgstr "選擇要下載的安裝映像；虛擬機器會將其當作光碟啟動。"
 
-#: internal/vmui/window.go:2359
-#: internal/vmui/window.go:2393
+#: internal/vmui/window.go:2308
+#: internal/vmui/window.go:2342
 msgid "Already in the cache"
 msgstr "已在快取中"
 
-#: internal/vmui/window.go:2363
+#: internal/vmui/window.go:2312
 msgid "Unfinished download"
 msgstr "未完成的下載"
 
-#: internal/vmui/window.go:2373
+#: internal/vmui/window.go:2322
 msgid "Retry"
 msgstr "重試"
 
-#: internal/vmui/window.go:2375
+#: internal/vmui/window.go:2324
 msgid "Use this image"
 msgstr "使用此映像"
 
-#: internal/vmui/window.go:2379
+#: internal/vmui/window.go:2328
 msgid "Download"
 msgstr "下載"
 
-#: internal/vmui/window.go:2389
+#: internal/vmui/window.go:2338
 msgid "Checksum verified"
 msgstr "總和檢查碼已驗證"
 
-#: internal/vmui/window.go:2391
+#: internal/vmui/window.go:2340
 msgid "No published checksum"
 msgstr "沒有已發佈的總和檢查碼"
 
-#: internal/vmui/window.go:2414
-#: internal/vmui/window.go:2416
+#: internal/vmui/window.go:2363
+#: internal/vmui/window.go:2365
 msgid "In a container, with %s"
 msgstr ""
 
-#: internal/vmui/window.go:2418
+#: internal/vmui/window.go:2367
 msgid "In a virtual machine, with %s"
 msgstr ""
 
-#: internal/vmui/window.go:2427
+#: internal/vmui/window.go:2376
 msgid "Downloads and installs Windows 11 for you; you reach it over Remote Desktop."
 msgstr ""
 
-#: internal/vmui/window.go:2429
+#: internal/vmui/window.go:2378
 msgid "Boots your own Windows 11 ISO, with the virtio drivers."
 msgstr ""
 
-#: internal/vmui/window.go:2431
+#: internal/vmui/window.go:2380
 msgid "Boots the install image you pick next, with 3D where the guest has a driver."
 msgstr ""
 
-#: internal/vmui/window.go:2433
+#: internal/vmui/window.go:2382
 msgid "Android beside your apps, with the host's display and GPU."
 msgstr ""
 
-#: internal/vmui/window.go:2435
+#: internal/vmui/window.go:2384
 msgid "Your own system: an ISO, a disk or a kernel, on any architecture."
 msgstr "你自己的系統：ISO、磁碟或核心，可用任意架構。"
 
-#: internal/vmui/window.go:2540
+#: internal/vmui/window.go:2489
 msgid "It did not work: %s"
 msgstr "未成功：%s"
 
-#: internal/vmui/window.go:2617
-#: internal/vmui/window.go:2621
-#: internal/vmui/window.go:2625
+#: internal/vmui/window.go:2566
+#: internal/vmui/window.go:2570
+#: internal/vmui/window.go:2574
 #: ui/vm.ui:1794
 #: ui/vm.ui:2125
 msgid "Watch the installation"
 msgstr "查看安裝過程"
 
-#: internal/vmui/window.go:2617
+#: internal/vmui/window.go:2566
 msgid "The installer's screen, in your browser."
 msgstr "在瀏覽器中查看安裝程式的畫面。"
 
-#: internal/vmui/window.go:2618
+#: internal/vmui/window.go:2567
 #: ui/vm.ui:2856
 msgid "Web console"
 msgstr "網頁主控台"
 
-#: internal/vmui/window.go:2618
+#: internal/vmui/window.go:2567
 msgid "The guest's screen, in your browser, until Remote Desktop is ready."
 msgstr "在遠端桌面就緒之前，在瀏覽器中查看客體機的畫面。"
 
-#: internal/vmui/window.go:2619
+#: internal/vmui/window.go:2568
 msgid "Windows' desktop in a window of its own, on this screen."
 msgstr "在本螢幕上以獨立視窗顯示 Windows 桌面。"
 
-#: internal/vmui/window.go:2621
+#: internal/vmui/window.go:2570
 msgid "The installer's screen, in a window of its own."
 msgstr "在獨立視窗中查看安裝程式的畫面。"
 
-#: internal/vmui/window.go:2622
+#: internal/vmui/window.go:2571
 msgid "The guest's screen, in a window of its own."
 msgstr "在獨立視窗中查看客體機的畫面。"
 
-#: internal/vmui/window.go:2625
+#: internal/vmui/window.go:2574
 msgid "QEMU shows the installer in a window of its own."
 msgstr "QEMU 會在獨立視窗中顯示安裝程式。"
 
-#: internal/vmui/window.go:2626
+#: internal/vmui/window.go:2575
 msgid "QEMU shows the guest in a window of its own."
 msgstr "QEMU 會在獨立視窗中顯示客體機。"
 
-#: internal/vmui/window.go:2629
+#: internal/vmui/window.go:2578
 msgid "Serial console"
 msgstr "序列埠主控台"
 
-#: internal/vmui/window.go:2629
+#: internal/vmui/window.go:2578
 msgid "What the system prints, on its own serial console."
 msgstr "系統在自己的序列主控台上輸出的內容。"
 
-#: internal/vmui/window.go:2649
+#: internal/vmui/window.go:2598
 msgid "Abandon the installation"
 msgstr "放棄安裝"
 
-#: internal/vmui/window.go:2650
+#: internal/vmui/window.go:2599
 msgid "Removes the container so you can start over. Downloaded files stay."
 msgstr "移除容器，以便從頭開始。已下載的檔案會保留。"
 
-#: internal/vmui/window.go:2652
+#: internal/vmui/window.go:2601
 msgid "Abandon…"
 msgstr "放棄…"
 
-#: internal/vmui/window.go:2656
+#: internal/vmui/window.go:2605
 msgid "Deletes the unfinished disk; the machine stays, to install again."
 msgstr "刪除未完成的磁碟；機器會保留，可以重新安裝。"
 
-#: internal/vmui/window.go:2658
+#: internal/vmui/window.go:2607
 #: ui/vm.ui:1950
 msgid "Start over…"
 msgstr "重新開始…"
 
-#: internal/vmui/window.go:2670
-#: internal/vmui/window.go:2676
+#: internal/vmui/window.go:2619
+#: internal/vmui/window.go:2625
 msgid "Opening…"
 msgstr "正在開啟…"
 
-#: internal/vmui/window.go:2697
+#: internal/vmui/window.go:2646
 msgid "Start inua-keyring, or install a Secret Service."
 msgstr "啟動 inua-keyring，或安裝一個 Secret Service。"
 
-#: internal/vmui/window.go:2699
+#: internal/vmui/window.go:2648
 msgid "This manager needs NixOS, Ubuntu or Debian."
 msgstr "此管理器需要 NixOS、Ubuntu 或 Debian。"
 
-#: internal/vmui/window.go:2744
+#: internal/vmui/window.go:2693
 msgid "Turn on virtualization (Intel VT-x or AMD-V) in the firmware settings."
 msgstr "請在韌體設定中開啟虛擬化（Intel VT-x 或 AMD-V）。"
 
-#: internal/vmui/window.go:2750
+#: internal/vmui/window.go:2699
 msgid "Add %s to your NixOS configuration."
 msgstr "把 %s 加入你的 NixOS 設定。"
 
@@ -15835,7 +15843,7 @@ msgid "Colours you pick show here."
 msgstr "您選擇的顏色顯示在這裡。"
 
 #: ui/connect.ui:54
-#: ui/remote.ui:54
+#: ui/remote.ui:111
 msgid "THIS COMPUTER"
 msgstr "這台電腦"
 
@@ -16534,97 +16542,106 @@ msgstr "另一用戶"
 msgid "Authenticate"
 msgstr "驗證"
 
-#: ui/remote.ui:84
-msgid "Sharing"
-msgstr "分享"
+#: ui/remote.ui:52
+msgid "See and control your other computers, or share this one."
+msgstr ""
 
-#: ui/remote.ui:112
+#: ui/remote.ui:67
+msgid "Look for machines sharing their desktop"
+msgstr "尋找正在分享桌面的機器"
+
+#: ui/remote.ui:89
+msgid "Add a machine…"
+msgstr "新增一台機器……"
+
+#: ui/remote.ui:136
 #: ui/vm.ui:99
 msgid "MACHINES"
 msgstr "機器"
 
-#: ui/remote.ui:125
-msgid "Look for machines sharing their desktop"
-msgstr "尋找正在分享桌面的機器"
+#: ui/remote.ui:161
+msgid "None found yet. Add one by its address, or look again."
+msgstr ""
 
-#: ui/remote.ui:159
-msgid "Add a machine…"
-msgstr "新增一台機器……"
-
-#: ui/remote.ui:216
+#: ui/remote.ui:267
 msgid "[SHARING]"
 msgstr "[分享]"
 
-#: ui/remote.ui:246
+#: ui/remote.ui:297
 msgid "Share this desktop"
 msgstr "分享此桌面"
 
-#: ui/remote.ui:286
+#: ui/remote.ui:337
 msgid "Virtual screen"
 msgstr "虛擬螢幕"
 
-#: ui/remote.ui:295
+#: ui/remote.ui:346
 msgid "While no monitor is connected, this computer shows a screen of this size, to share."
 msgstr "未連接顯示器時，這台電腦會顯示此尺寸的螢幕以供分享。"
 
-#: ui/remote.ui:393
+#: ui/remote.ui:444
 msgid "[WAITING TO PAIR]"
 msgstr "[等待配對]"
 
-#: ui/remote.ui:448
+#: ui/remote.ui:499
 msgid "[PAIRED DEVICES]"
 msgstr "[已配對裝置]"
 
-#: ui/remote.ui:582
+#: ui/remote.ui:572
+msgid "[CONNECTION]"
+msgstr ""
+
+#: ui/remote.ui:624
 msgid "End its session"
 msgstr "結束它的工作階段"
 
-#: ui/remote.ui:583
+#: ui/remote.ui:625
 msgid "Ends what is streaming there, for every device"
 msgstr "結束那裡正在串流的內容，對所有裝置都生效"
 
-#: ui/remote.ui:680
+#: ui/remote.ui:722
 msgid "[STREAM]"
 msgstr "[串流]"
 
-#: ui/remote.ui:690
+#: ui/remote.ui:732
 msgid "for every machine"
 msgstr "對所有機器生效"
 
-#: ui/remote.ui:727
+#: ui/remote.ui:769
 msgid "The machine shows its desktop at this size."
 msgstr "那台機器以此尺寸顯示桌面。"
 
-#: ui/remote.ui:740
+#: ui/remote.ui:782
 #: ui/settings.ui:1288
 msgid "This monitor's"
 msgstr "該顯示器的"
 
-#: ui/remote.ui:763
+#: ui/remote.ui:805
 msgid "Frames a second"
 msgstr "每秒影格數"
 
-#: ui/remote.ui:802
+#: ui/remote.ui:844
 msgid "Bitrate"
 msgstr "位元率"
 
-#: ui/remote.ui:811
+#: ui/remote.ui:853
 msgid "Megabits a second: more is sharper, and needs a faster network."
 msgstr "每秒百萬位元：越高越清晰，也需要更快的網路。"
 
-#: ui/remote.ui:851
+#: ui/remote.ui:893
 msgid "Codec"
 msgstr "編解碼器"
 
-#: ui/remote.ui:893
+#: ui/remote.ui:935
 msgid "Play the sound on the machine too"
 msgstr "在那台機器上也播放聲音"
 
-#: ui/remote.ui:966
-msgid "[ADD A MACHINE]"
-msgstr "[新增機器]"
+#: ui/remote.ui:985
+#: ui/remote.ui:1002
+msgid "Add a machine"
+msgstr ""
 
-#: ui/remote.ui:991
+#: ui/remote.ui:1011
 msgid "Its address on the network: a name, an IP address, or either with :port."
 msgstr "它在網路上的位址：名稱、IP 位址，或加上 :連接埠。"
 
