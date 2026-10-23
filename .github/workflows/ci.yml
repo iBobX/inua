@@ -69,4 +69,4 @@ jobs:
       - name: Build the engine
         run: make term-engine
       - name: Tests with the engine
-        run: CGO_ENABLED=1 go test -race ./internal/term/... ./internal/termui ./cmd/inua-term
+        run: CGO_ENABLED=1 go test -race ./internal/term/... ./internal/termui ./cmd/inua-term ./cmd/inua-termd

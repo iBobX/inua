@@ -14,7 +14,8 @@ inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
                                  take out the hooks an earlier inua-term added
-inua-term serve [--tailscale]    the terminals in a phone's browser (below)
+inua-termd                       the terminal host (below; the window starts it)
+inua-termd serve [--tailscale]   the terminals in a phone's browser (below)
 ```
 
 It is in the app drawer, under Tools. It can be the desktop's terminal:
@@ -51,8 +52,10 @@ choice is in the settings after.
 
 ## How it works
 
-The terminals belong to a **host**, `inua-term --host`, which the window
-starts when none runs and which ends with its last pane. Closing the
+The terminals belong to a **host**, `inua-termd`, which the window
+starts when none runs and which ends with its last pane. It is a program
+of its own, with no GTK and no desktop needed: on a computer without
+one, `inua-termd serve` still shows its terminals to a phone. Closing the
 window, or the window crashing, leaves every program running; opening
 it again finds them, their recent output replayed. The window is a client
 of the host over `$XDG_RUNTIME_DIR/inua/term.sock` (this user only); the
@@ -263,16 +266,16 @@ once; the icons and the text size follow inua's `config.toml`.
 
 The **Web Terminal** shows the terminals in a browser, a phone's over
 Tailscale. Turn it on in the settings (Ctrl+, → Web Terminal): it runs
-`inua-term serve` in a user service of its own (`inua-term-web.service`)
+`inua-termd serve` in a user service of its own (`inua-term-web.service`)
 and starts again at login while on; *Where* puts it on this computer
 only or on its Tailscale address, and the section gives its link to copy,
 or a new one. By hand:
 
 ```
-inua-term serve                  on this computer only (127.0.0.1:7681)
-inua-term serve --tailscale      on this computer's Tailscale address
-inua-term serve --addr HOST:PORT on another address
-inua-term serve --new-token      a new token: links with the old one stop working
+inua-termd serve                  on this computer only (127.0.0.1:7681)
+inua-termd serve --tailscale      on this computer's Tailscale address
+inua-termd serve --addr HOST:PORT on another address
+inua-termd serve --new-token      a new token: links with the old one stop working
 ```
 
 It prints the page's link, with its token; every request carries it,

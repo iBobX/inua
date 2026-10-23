@@ -449,7 +449,7 @@ func (h *Host) showPane(id int) {
 			return
 		}
 	}
-	if exe, err := os.Executable(); err == nil {
+	if exe, err := Program("inua-term"); err == nil {
 		cmd := exec.Command(exe)
 		if err := cmd.Start(); err == nil {
 			go cmd.Wait()

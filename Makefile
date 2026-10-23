@@ -6,8 +6,8 @@
 #                  text), bin/inua-games (light games),
 #                  bin/inua-pinentry (gpg's prompt), bin/inua-assistant (the
 #                  assistant), bin/inua-keyring (the Secret Service kept in
-#                  pass), bin/inua-term (the terminal) and bin/inua-mail
-#                  (mail)
+#                  pass), bin/inua-term (the terminal), bin/inua-termd (its
+#                  host) and bin/inua-mail (mail)
 #   make term-engine
 #                  build bin/libinua-vt.so, inua-term's engine (libghostty-vt
 #                  at its pinned commit; needs git and Zig 0.16)
@@ -62,6 +62,7 @@ build:
 	go build -o bin/inua-assistant ./cmd/inua-assistant
 	go build -o bin/inua-keyring ./cmd/inua-keyring
 	go build -o bin/inua-term ./cmd/inua-term
+	go build -o bin/inua-termd ./cmd/inua-termd
 
 term-engine:
 	scripts/libghostty.sh
@@ -103,7 +104,7 @@ run: build
 DATA_HOME ?= $(or $(XDG_DATA_HOME),$(HOME)/.local/share)
 
 install: build
-	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-disk-usage bin/inua-mail bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term
+	install -Dm755 -t "$(PREFIX)/bin" bin/inua-shell bin/inua bin/inua-apps bin/inua-files bin/inua-viewer bin/inua-vm bin/inua-remote bin/inua-connect bin/inua-disk-usage bin/inua-mail bin/inua-games bin/inua-pinentry bin/inua-assistant bin/inua-keyring bin/inua-term bin/inua-termd
 	# inua-term's engine, when built (make term-engine)
 	if [ -f bin/libinua-vt.so ]; then install -Dm644 -t "$(PREFIX)/lib/inua" bin/libinua-vt.so; fi
 	install -Dm644 -t "$(DATA_HOME)/applications" config/apps/*.desktop

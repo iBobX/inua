@@ -110,6 +110,9 @@ func cmdUpgrade(args []string) error {
 				// Stopping it would end the sessions apps hold with it,
 				// and libsecret does not open a new one.
 				fmt.Println("  inua-keyring, until you log in again")
+			case "inua-termd":
+				// Its terminals end with it: the user chooses when.
+				fmt.Println("  inua-termd, until you restart the terminal host (Ctrl+Shift+P in inua-term)")
 			default:
 				fmt.Printf("  %s, until you close it\n", name)
 			}
