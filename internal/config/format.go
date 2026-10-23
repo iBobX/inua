@@ -21,6 +21,7 @@ func Format(c Config) string {
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
 		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.AppIcons), c.Style.EdgeGaps, c.Style.TextScale, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
+		c.Background.Generate,
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Displays.LidOff, monitors(c.Displays.Monitors),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
@@ -319,6 +320,10 @@ fit = %s
 
 # Colour around and behind the picture, "#rrggbb". Empty: the theme's ground.
 color = %s
+
+# Let inua draw the wallpaper for your theme, in place of the image: a
+# sunset, the cosmos, a cat watching the moon, contours … another each day.
+generate = %t
 
 [input]
 # Keyboard and touchpad settings for Hyprland. inua writes them to

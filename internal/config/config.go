@@ -159,6 +159,9 @@ type Background struct {
 	// Color shows around and behind the image: "#rrggbb", or empty for the
 	// theme's ground.
 	Color string `toml:"color"`
+	// Generate lets inua draw the wallpaper for the theme, another picture
+	// each day (internal/wallgen), in place of Image.
+	Generate bool `toml:"generate"`
 }
 
 // Shortcut is a keyboard shortcut set in inua's settings window. Written

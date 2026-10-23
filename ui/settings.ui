@@ -767,58 +767,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                     <child>
                                       <object class="GtkBox">
                                         <style>
-                                          <class name="field"/>
-                                        </style>
-                                        <property name="orientation">1</property>
-                                        <property name="spacing">6</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Image</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="spacing">8</property>
-                                            <child>
-                                              <object class="GtkEntry" id="bg_image">
-                                                <property name="name">bg_image</property>
-                                                <property name="hexpand">true</property>
-                                                <property name="placeholder-text" translatable="yes">none: a fine texture</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkButton" id="bg_choose">
-                                                <style>
-                                                  <class name="outlined"/>
-                                                </style>
-                                                <property name="name">bg_choose</property>
-                                                <property name="label" translatable="yes">Choose…</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkButton" id="bg_clear">
-                                                <style>
-                                                  <class name="plain"/>
-                                                </style>
-                                                <property name="name">bg_clear</property>
-                                                <property name="icon-name">edit-clear-symbolic</property>
-                                                <property name="tooltip-text" translatable="yes">No image</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSeparator"></object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <style>
                                           <class name="row"/>
                                         </style>
                                         <property name="spacing">16</property>
@@ -832,7 +780,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label" translatable="yes">Fit</property>
+                                                <property name="label" translatable="yes">Let inua draw it</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -841,7 +789,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="sub"/>
                                                 </style>
-                                                <property name="label" translatable="yes">How the picture fills each monitor</property>
+                                                <property name="label" translatable="yes">A new picture each day, drawn for your theme: a sunset, the cosmos, a cat watching the moon …</property>
                                                 <property name="xalign">0</property>
                                                 <property name="wrap">true</property>
                                               </object>
@@ -849,62 +797,162 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkDropDown" id="bg_fit">
-                                            <property name="name">bg_fit</property>
+                                          <object class="GtkSwitch" id="bg_generate">
+                                            <property name="name">bg_generate</property>
                                             <property name="valign">3</property>
-                                            <property name="model">
-                                              <object class="GtkStringList">
-                                                <items>
-                                                  <item translatable="yes">Cover: fill, cropping</item>
-                                                  <item translatable="yes">Contain: show it all</item>
-                                                  <item translatable="yes">Tile: repeat</item>
-                                                  <item translatable="yes">Center: actual size</item>
-                                                </items>
-                                              </object>
-                                            </property>
                                           </object>
                                         </child>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkSeparator"></object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <style>
-                                          <class name="field"/>
-                                        </style>
+                                      <object class="GtkBox" id="bg_own">
                                         <property name="orientation">1</property>
-                                        <property name="spacing">6</property>
                                         <child>
-                                          <object class="GtkLabel">
+                                          <object class="GtkSeparator"></object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
                                             <style>
-                                              <class name="label"/>
+                                              <class name="field"/>
                                             </style>
-                                            <property name="label" translatable="yes">Colour</property>
-                                            <property name="xalign">0</property>
+                                            <property name="orientation">1</property>
+                                            <property name="spacing">6</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Image</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="spacing">8</property>
+                                                <child>
+                                                  <object class="GtkEntry" id="bg_image">
+                                                    <property name="name">bg_image</property>
+                                                    <property name="hexpand">true</property>
+                                                    <property name="placeholder-text" translatable="yes">none: a fine texture</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkButton" id="bg_choose">
+                                                    <style>
+                                                      <class name="outlined"/>
+                                                    </style>
+                                                    <property name="name">bg_choose</property>
+                                                    <property name="label" translatable="yes">Choose…</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkButton" id="bg_clear">
+                                                    <style>
+                                                      <class name="plain"/>
+                                                    </style>
+                                                    <property name="name">bg_clear</property>
+                                                    <property name="icon-name">edit-clear-symbolic</property>
+                                                    <property name="tooltip-text" translatable="yes">No image</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry" id="bg_color">
-                                            <property name="name">bg_color</property>
+                                          <object class="GtkSeparator"></object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
                                             <style>
-                                              <class name="mono-entry"/>
+                                              <class name="row"/>
                                             </style>
-                                            <property name="halign">1</property>
-                                            <property name="width-chars">10</property>
-                                            <property name="max-length">7</property>
-                                            <property name="placeholder-text" translatable="yes">theme</property>
+                                            <property name="spacing">16</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="orientation">1</property>
+                                                <property name="hexpand">true</property>
+                                                <property name="valign">3</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="title"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">Fit</property>
+                                                    <property name="xalign">0</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <style>
+                                                      <class name="sub"/>
+                                                    </style>
+                                                    <property name="label" translatable="yes">How the picture fills each monitor</property>
+                                                    <property name="xalign">0</property>
+                                                    <property name="wrap">true</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkDropDown" id="bg_fit">
+                                                <property name="name">bg_fit</property>
+                                                <property name="valign">3</property>
+                                                <property name="model">
+                                                  <object class="GtkStringList">
+                                                    <items>
+                                                      <item translatable="yes">Cover: fill, cropping</item>
+                                                      <item translatable="yes">Contain: show it all</item>
+                                                      <item translatable="yes">Tile: repeat</item>
+                                                      <item translatable="yes">Center: actual size</item>
+                                                    </items>
+                                                  </object>
+                                                </property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkLabel">
+                                          <object class="GtkSeparator"></object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
                                             <style>
-                                              <class name="sub"/>
+                                              <class name="field"/>
                                             </style>
-                                            <property name="label" translatable="yes">#rrggbb, shown around the image. Empty: the theme's ground</property>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
+                                            <property name="orientation">1</property>
+                                            <property name="spacing">6</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Colour</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkEntry" id="bg_color">
+                                                <property name="name">bg_color</property>
+                                                <style>
+                                                  <class name="mono-entry"/>
+                                                </style>
+                                                <property name="halign">1</property>
+                                                <property name="width-chars">10</property>
+                                                <property name="max-length">7</property>
+                                                <property name="placeholder-text" translatable="yes">theme</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">#rrggbb, shown around the image. Empty: the theme's ground</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>

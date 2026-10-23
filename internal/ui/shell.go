@@ -468,6 +468,9 @@ func (s *shellUI) bindHandlers() {
 	s.onMonitorsChanged = func(_ uintptr, _, removed, added uint32, _ uintptr) {
 		log.Printf("monitors: %d removed, %d added", removed, added)
 		s.syncBars()
+		if s.cfg.Background.Generate {
+			s.loadWallpaper() // drawn for the largest monitor, which may be another
+		}
 	}
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		if b := s.barOf(c.GetWidget()); b != nil {

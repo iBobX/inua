@@ -426,4 +426,16 @@ Phosphor icons, and matching Fcitx 5 themes.
 
 ## Wallpaper
 
-An image placed your way, or the theme's ground with a fine texture.
+An image placed your way, the theme's ground with a fine texture, or, with
+*Let inua draw it* (`background.generate`), a picture inua draws for your
+theme, another each day.
+
+The pictures are made by code, not shipped as files (`internal/wallgen`):
+scenes in their own colours (a sunset over the sea, the cosmos, a cat
+watching the moon), at dusk under a dark theme and in daylight under a
+light one, and patterns in the theme's (contours, dunes, aurora, dots),
+taking turns day by day, each time round in another variation. A picture
+is drawn once for the largest monitor, off the main thread, and kept in
+`~/.cache/inua/wallpapers` under a name that says what it shows; the next
+day, or a change of theme or monitor, draws it again, and the texture shows
+meanwhile.

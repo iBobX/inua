@@ -44,7 +44,9 @@ type settings struct {
 	swatchNames           []string               // the themes the swatches show
 	themeTrash, iconTrash gtk.Button             // for the user's theme or icon set in use
 
-	bgEnable, title, tray, barPass, tpAccel, notifyOn, critFocus, noteHistory    gtk.Switch
+	bgEnable, bgGenerate, title, tray, barPass, tpAccel, notifyOn, critFocus     gtk.Switch
+	noteHistory                                                                  gtk.Switch
+	bgOwn                                                                        gtk.Box // the image's rows, hidden while inua draws
 	barOn, dockOn, dockHide, dockDrawer, dockFlushBar                            gtk.Switch
 	clipEnable, clipBar, clipPaste                                               gtk.Switch
 	dockSize, dockPosition, barDensity                                           gtk.DropDown
@@ -127,6 +129,8 @@ func (s *shellUI) bindSettingsHandlers() {
 		switch sw.GetName() {
 		case "bg_enable":
 			c.Background.Enable = on
+		case "bg_generate":
+			c.Background.Generate = on
 		case "title":
 			c.Bar.Title = on
 		case "tray":
@@ -455,6 +459,8 @@ func (s *shellUI) openSettings() {
 	var choose, clearImage gtk.Button
 	ui.Get("bg_choose", &choose)
 	ui.Get("bg_clear", &clearImage)
+	ui.Get("bg_generate", &st.bgGenerate)
+	ui.Get("bg_own", &st.bgOwn)
 	var themeAdd, themeFolder, iconAdd, iconFolder gtk.Button
 	ui.Get("theme_add", &themeAdd)
 	ui.Get("theme_trash", &st.themeTrash)
@@ -485,7 +491,7 @@ func (s *shellUI) openSettings() {
 		st.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.title, &st.tray, &st.barPass, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste, &st.displays.lidOff} {
+	for _, sw := range []*gtk.Switch{&st.bgEnable, &st.bgGenerate, &st.title, &st.tray, &st.barPass, &st.tpAccel, &st.notifyOn, &st.critFocus, &st.noteHistory, &st.barOn, &st.dockOn, &st.dockHide, &st.dockDrawer, &st.dockFlushBar, &st.clipEnable, &st.clipBar, &st.clipPaste, &st.displays.lidOff} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, b := range []*gtk.Button{&choose, &clearImage, &themeAdd, &st.themeTrash, &themeFolder, &iconAdd, &st.iconTrash, &iconFolder, &st.kbReset, &st.tpReset, &st.langRestart, &st.clipClear, &st.clipReveal} {
@@ -663,6 +669,8 @@ func (s *shellUI) showSettings() {
 	st.themeTrash.SetSensitive(c.IsCustomTheme(s.theme()))
 	st.iconTrash.SetSensitive(c.IconSetDir() != "")
 	st.bgEnable.SetActive(c.Background.Enable)
+	st.bgGenerate.SetActive(c.Background.Generate)
+	st.bgOwn.SetVisible(!c.Background.Generate)
 	st.title.SetActive(c.Bar.Title)
 	st.tray.SetActive(c.Bar.Tray)
 	st.barPass.SetActive(c.Bar.Pass)
