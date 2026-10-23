@@ -311,6 +311,10 @@ screen: it is a web app in the theme's colours.
   the pixel, a swipe glides on, and the ends stretch. A program on the
   alternate screen (Claude Code's fullscreen mode, vim, less) scrolls
   itself, and gets the wheel.
+- **Selecting**: a finger held still selects the word under it, and
+  moving it, still held, takes the selection on; lifted, a bar offers
+  Copy and Select all. A tap lets the selection go. The keyboard stays as
+  it was.
 - The theme, the terminals' colours, the font, the cursor and the key row
   follow inua-term's settings, or the device's own (Overview → Settings),
   kept in its browser.

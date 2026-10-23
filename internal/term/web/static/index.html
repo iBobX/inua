@@ -138,7 +138,12 @@
   #chips button { display:flex; align-items:center; gap:6px; min-height:34px; padding:0 12px; font:12.5px var(--title); color:var(--t1); white-space:nowrap; flex:none; }
   #chips button + button { border-left:1px solid var(--line); }
   #chips button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
-  #termwrap { flex:1; overflow:hidden; min-height:0; position:relative; touch-action:none; }
+  #termwrap { flex:1; overflow:hidden; min-height:0; position:relative; touch-action:none; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+  /* A selection made by touch: what to do with it, at the pane's top. */
+  #selbar { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:2; display:flex; border:1px solid var(--line); border-radius:2px; background:var(--surface); box-shadow:0 4px 14px rgba(0,0,0,.35); }
+  #selbar button { display:flex; align-items:center; min-height:36px; padding:0 14px; font:12.5px var(--title); color:var(--t0); white-space:nowrap; }
+  #selbar button + button { border-left:1px solid var(--line); }
+  #selbar button.plain { width:36px; padding:0; justify-content:center; color:var(--t1); }
   #termwrap[hidden] { display:none; }
   #term { position:absolute; left:8px; top:6px; }
   #bottom { position:absolute; right:8px; bottom:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--line); border-radius:2px; color:var(--t1); }
@@ -268,7 +273,7 @@
 
   <section class="tab" id="tab-term">
     <div class="notice" hidden></div>
-    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button></div>
+    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button><div id="selbar" hidden><button id="selcopy" data-t="Copy">Copy</button><button id="selall" data-t="Select all">Select all</button><button id="selclose" class="plain" data-ta="Close"><span class="icon" style="--i:url(/icons/window-close-symbolic.svg)"></span></button></div></div>
     <div id="panesbar">
       <button id="termback" class="barbtn" data-ta="Back"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div id="chips"></div>
@@ -1283,6 +1288,8 @@ wrap.addEventListener("wheel", e => {
   fitPane();
 }, { passive: false, capture: true });
 wrap.addEventListener("touchstart", e => {
+  if (touch) clearTimeout(touch.hold);
+  if (e.target.closest("button")) { touch = null; return; }  // #bottom, the selection's bar
   stopGlide();
   if (!term) return;
   measure();
@@ -1294,11 +1301,14 @@ wrap.addEventListener("touchstart", e => {
   }
   const t = e.touches[0];
   touch = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, axis: null, samples: [] };
+  const here = touch;
+  here.hold = setTimeout(() => holdSelect(here), 450);  // held still: a selection
 }, { passive: true, capture: true });
 
 wrap.addEventListener("touchmove", e => {
   if (!touch || !term) return;
   e.preventDefault(); e.stopPropagation();
+  if (touch.select) { extendSelect(e.touches[0]); return; }
   if (touch.pinch) {
     if (e.touches.length !== 2) return;
     const [a, b] = e.touches;
@@ -1310,6 +1320,7 @@ wrap.addEventListener("touchmove", e => {
   if (!touch.axis) {
     const dx = t.clientX - touch.x0, dy = t.clientY - touch.y0;
     if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    clearTimeout(touch.hold);
     touch.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
   }
   if (touch.axis === "x") {
@@ -1330,6 +1341,13 @@ wrap.addEventListener("touchend", e => {
   if (!touch || e.touches.length) return;
   const last = touch;
   touch = null;
+  clearTimeout(last.hold);
+  if (last.select) {
+    e.preventDefault(); e.stopPropagation();
+    $("selbar").hidden = !term.hasSelection();
+    return;
+  }
+  if (!last.axis && !$("selbar").hidden) { e.preventDefault(); e.stopPropagation(); clearSelect(); return; }  // a tap lets the selection go
   if (last.pinch) {
     fontSize = term.options.fontSize;
     store.set("font", fontSize);
@@ -1347,6 +1365,72 @@ wrap.addEventListener("touchend", e => {
   if (Math.abs(v) < 0.15) { acc = 0; settle(); return; }
   fling(v);
 }, { passive: false, capture: true });
+
+// ---- Selecting by touch ----
+
+// A finger held still selects the word under it, and moving it, still
+// held, takes the selection on; lifted, a bar offers Copy. A long press
+// is no right click: xterm would put its input under the finger and the
+// keyboard would come up.
+wrap.addEventListener("contextmenu", e => { if (pointer === "touch") { e.preventDefault(); e.stopPropagation(); } }, { capture: true });
+// cellAt is the buffer's cell under a point, kept to the screen.
+function cellAt(x, y) {
+  const r = screenEl().getBoundingClientRect();
+  const col = Math.min(term.cols - 1, Math.max(0, Math.floor((x - r.left) / geo.cw)));
+  const row = Math.min(term.rows - 1, Math.max(0, Math.floor((y - r.top) / geo.ch)));
+  return (row + term.buffer.active.viewportY) * term.cols + col;
+}
+// A word ends at a space, a quote or a bracket.
+const apart = c => /^[\s"'`()[\]{}<>|│]?$/.test(c);
+function wordAt(at) {
+  const cols = term.cols, row = Math.floor(at / cols), line = term.buffer.active.getLine(row);
+  // A wide character's second cell is part of it.
+  const blank = x => { const c = line.getCell(x); return !c || (c.getWidth() !== 0 && apart(c.getChars().trim() ? c.getChars() : "")); };
+  let a = at % cols, b = a;
+  if (!line || blank(a)) return [at, at];
+  while (a > 0 && !blank(a - 1)) a--;
+  while (b < cols - 1 && !blank(b + 1)) b++;
+  return [row * cols + a, row * cols + b];
+}
+function selectRange(lo, hi) { term.select(lo % term.cols, Math.floor(lo / term.cols), hi - lo + 1); }
+function holdSelect(t) {
+  if (touch !== t || t.axis || !term) return;
+  const [a, b] = wordAt(cellAt(t.x0, t.y0));
+  t.select = { a, b };
+  selectRange(a, b);
+  $("selbar").hidden = true;
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+function extendSelect(p) {
+  const at = cellAt(p.clientX, p.clientY), { a, b } = touch.select;
+  selectRange(Math.min(a, at), Math.max(b, at));
+}
+function clearSelect() { if (term) term.clearSelection(); $("selbar").hidden = true; }
+// copyText puts text on the clipboard: the browser's clipboard over
+// HTTPS, else the copy command, which plain HTTP still allows.
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const was = typingHere();
+  const t = el("textarea");
+  t.value = text; t.readOnly = true;  // read only: no keyboard
+  t.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+  document.body.append(t);
+  t.select(); t.setSelectionRange(0, text.length);
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) {}
+  t.remove();
+  if (was) term.focus();
+  return ok;
+}
+for (const id of ["selcopy", "selall", "selclose"]) $(id).addEventListener("pointerdown", e => e.preventDefault());
+$("selcopy").onclick = async () => {
+  if (!term || !term.hasSelection()) return clearSelect();
+  const ok = await copyText(term.getSelection());
+  $("selcopy").textContent = ok ? T("Copied") : T("Not copied");
+  setTimeout(() => { $("selcopy").textContent = T("Copy"); clearSelect(); }, 700);
+};
+$("selall").onclick = () => term && term.selectAll();
+$("selclose").onclick = clearSelect;
 
 // ---- The keys a phone keyboard lacks: a row above it, and a panel in
 // its place ----
