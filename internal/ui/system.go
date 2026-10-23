@@ -75,6 +75,26 @@ func logErr(what string, err error) {
 	}
 }
 
+// volumeStep is one notch of the scroll on the bar's status button, the
+// volume keys' 5%.
+const volumeStep = 0.05
+
+// stepVolume lowers (n > 0) or raises the output volume n notches, as the
+// volume keys do; setting also unmutes.
+func (s *shellUI) stepVolume(n int) {
+	a := s.sys.Audio
+	if !a.Available {
+		return
+	}
+	base := a.Volume
+	if time.Now().Before(s.volUntil) { // a burst of notches builds on the
+		base = s.volHeld // values it asked for, not the service's last word
+	}
+	v := max(0, min(base-float64(n)*volumeStep, 1))
+	s.volHeld, s.volUntil = v, time.Now().Add(600*time.Millisecond)
+	s.svc.volume.Set(v)
+}
+
 // tailscaleApp is the Tailscale light app's desktop entry.
 const tailscaleApp = "io.github.lyricat.Inua.Tailscale"
 

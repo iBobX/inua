@@ -10,7 +10,8 @@ shows the month under it), the tray, the clipboard history, a bell for
 notifications and the status button for the control center. The clock and
 the buttons at the end reach up to the screen's top edge and across the
 gaps between them, and the status button into the corner, so the pointer
-thrown at the edge lands on one. One per monitor.
+thrown at the edge lands on one. Scrolling on the status button adjusts
+the volume, 5% a notch, as the volume keys do. One per monitor.
 
 ## Launcher
 

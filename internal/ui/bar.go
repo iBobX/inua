@@ -171,6 +171,12 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	click := gtk.NewGestureClick()
 	click.ConnectReleased(&s.onBarReleased)
 	b.win.AddController(&click.EventController)
+
+	// Scrolling on the status button adjusts the volume, like the
+	// volume keys do.
+	scroll := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollDiscreteValue)
+	scroll.ConnectScroll(&s.onStatusScroll)
+	b.status.AddController(&scroll.EventController)
 	if s.control.open && !s.control.closing {
 		b.status.AddCssClass("open")
 	}
