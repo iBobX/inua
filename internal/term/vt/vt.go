@@ -1,8 +1,8 @@
 // Package vt is inua-term's terminal engine: a program's output in, the
 // screen out. It is libghostty-vt at a pinned commit, linked with inua's
-// shim into libinua-vt.so (scripts/libghostty.sh) and loaded with purego
-// on first use, so inua builds without cgo. Only the shim's calls are
-// used; see shim/inua_vt.h.
+// shim into libinua-vt.so (libinua-vt.dylib on macOS;
+// scripts/libghostty.sh), and loaded with purego on first use, so inua
+// builds without cgo. Only the shim's calls are used; see shim/inua_vt.h.
 //
 // A Terminal is not safe for concurrent use; its owner serializes calls.
 package vt
@@ -24,9 +24,6 @@ import (
 
 // abi is the shim's INUA_VT_ABI this package is written for.
 const abi = 18
-
-// Library is the shim's file name.
-const Library = "libinua-vt.so"
 
 var lib struct {
 	once sync.Once
@@ -68,7 +65,7 @@ var lib struct {
 	paste       func(t uintptr, data *byte, n uintptr, primary, force uint32, out **byte, outN *uintptr) int32
 }
 
-// ErrMissing is returned when libinua-vt.so is not found.
+// ErrMissing is returned when the Library is not found.
 var ErrMissing = errors.New("vt: " + Library + " not found (scripts/libghostty.sh builds it)")
 
 // Paths are where the library is looked for, in order: $INUA_VT_LIB,

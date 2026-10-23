@@ -28,7 +28,7 @@ func serve(args []string) int {
 	tailnet := fs.Bool("tailscale", false, "listen on this computer's Tailscale address (port from --addr)")
 	renew := fs.Bool("new-token", false, "make a new token: links with the old one stop working")
 	fs.Usage = func() {
-		fmt.Fprintln(os.Stderr, "usage: inua-term serve [--addr HOST:PORT] [--tailscale] [--new-token]")
+		fmt.Fprintln(os.Stderr, "usage: inua-termd serve [--addr HOST:PORT] [--tailscale] [--new-token]")
 		fs.PrintDefaults()
 	}
 	fs.Parse(args)
@@ -39,7 +39,7 @@ func serve(args []string) int {
 	if *tailnet {
 		ip, err := webterm.TailscaleIP()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+			fmt.Fprintf(os.Stderr, "inua-termd serve: %v\n", err)
 			return 1
 		}
 		_, port, _ := net.SplitHostPort(*addr)
@@ -49,26 +49,26 @@ func serve(args []string) int {
 	token, err := webterm.Token(ctx, *renew)
 	cancel()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		fmt.Fprintf(os.Stderr, "inua-termd serve: %v\n", err)
 		return 1
 	}
 	// The host, started if it is not running: the page finds it there.
 	c, err := host.Connect(nil, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "inua-term serve: the terminal host: %v\n", err)
+		fmt.Fprintf(os.Stderr, "inua-termd serve: the terminal host: %v\n", err)
 		return 1
 	}
 	c.Close()
 	ln, err := net.Listen("tcp", listen)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		fmt.Fprintf(os.Stderr, "inua-termd serve: %v\n", err)
 		return 1
 	}
 	s := &web.Server{Socket: host.SocketPath(), Token: token}
 	fmt.Printf("http://%s/?t=%s\n", ln.Addr(), url.QueryEscape(token))
-	log.Printf("inua-term serve: on %s", ln.Addr())
+	log.Printf("inua-termd serve: on %s", ln.Addr())
 	if err := http.Serve(ln, s.Handler()); err != nil && !errors.Is(err, net.ErrClosed) {
-		fmt.Fprintf(os.Stderr, "inua-term serve: %v\n", err)
+		fmt.Fprintf(os.Stderr, "inua-termd serve: %v\n", err)
 		return 1
 	}
 	return 0

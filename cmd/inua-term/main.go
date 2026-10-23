@@ -1,6 +1,6 @@
-// Command inua-term is inua's terminal (docs/feat/inua-term.md): a window
-// that is a client of the terminal host. inua-term --host runs the host,
-// which the window starts by itself when none runs.
+// Command inua-term is inua's terminal (docs/terminal.md): a window that
+// is a client of the terminal host, inua-termd, which the window starts by
+// itself when none runs.
 package main
 
 import (
@@ -8,20 +8,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 
 	"golang.org/x/sys/unix"
 
 	"github.com/lyricat/inua/internal/appui"
-	"github.com/lyricat/inua/internal/config"
-	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/logfile"
-	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/host"
-	"github.com/lyricat/inua/internal/term/settings"
-	"github.com/lyricat/inua/internal/term/shellint"
 	"github.com/lyricat/inua/internal/termui"
 )
 
@@ -34,8 +27,6 @@ func main() {
 			os.Exit(agents(os.Args[2:]))
 		case "integration":
 			os.Exit(integration(os.Args[2:]))
-		case "serve":
-			os.Exit(serve(os.Args[2:]))
 		}
 	}
 	// -e runs the rest as a command, as terminals do (xdg-terminal-exec).
@@ -48,19 +39,15 @@ func main() {
 		}
 	}
 	uiDir := flag.String("ui-dir", "", "read layouts and styles from this directory instead of the embedded copy")
-	runHost := flag.Bool("host", false, "run the terminal host (the window starts it when needed)")
 	workspace := flag.String("workspace", "", "open or show the workspace for this folder")
 	quick := flag.Bool("quick", false, "open a terminal for a moment: one window, one shell, no workspace or session, nothing kept")
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "usage: inua-term [--workspace DIR] [-e COMMAND ARGS…]")
 		fmt.Fprintln(os.Stderr, "       inua-term --quick [-e COMMAND ARGS…]")
-		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration|serve …")
+		fmt.Fprintln(os.Stderr, "       inua-term report|agents|integration …")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
-	if *runHost {
-		os.Exit(serveHost())
-	}
 	if *quick {
 		if _, err := unix.IoctlGetTermios(2, unix.TCGETS); err != nil {
 			logfile.To("term.log")
@@ -83,58 +70,6 @@ func main() {
 	code := appui.Run("term", flag.Args(), *uiDir)
 	log.Printf("inua-term %d: ended (%d)", os.Getpid(), code)
 	os.Exit(code)
-}
-
-// serveHost runs the host until its last pane is closed, logging to
-// $XDG_STATE_HOME/inua/term-host.log.
-func serveHost() int {
-	logfile.To("term-host.log")
-	h, err := host.Listen(host.SocketPath())
-	if err != nil {
-		log.Printf("inua-term: %v", err)
-		return 1
-	}
-	h.ExitWhenEmpty = true
-	if cfg, _, err := config.Load(config.DefaultPath()); err == nil {
-		i18n.Init(cfg.Language) // the notifications', the Commands workspace's
-	}
-	set, warnings, err := settings.Load(settings.Path())
-	if err != nil {
-		log.Printf("inua-term: %v", err)
-	}
-	for _, w := range warnings {
-		log.Printf("inua-term: %s: %s", settings.Path(), w)
-	}
-	h.SetReplayLimit(set.Terminal.Replay << 20)
-	if set.Shell.Integration {
-		if err := shellint.Install(shellint.Dir()); err != nil {
-			log.Printf("inua-term: no shell integration: %v", err)
-		} else {
-			h.ShellDir = shellint.Dir()
-		}
-	}
-	h.SetShell(set.Shell.Program)
-	known, errs := agent.Load(agent.Dir())
-	for _, err := range errs {
-		log.Printf("inua-term: agents: %v", err)
-	}
-	h.Agents, h.Notify = known, set.Agents.Notifications
-	if err := h.Remember(host.StatePath(), set.Remember.Forget, set.Remember.Commands); err != nil {
-		log.Printf("inua-term: remembering: %v", err)
-	}
-	// Ending the session (a logout, a shutdown) keeps the sessions first.
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT)
-	go func() {
-		<-sig
-		h.Close()
-	}()
-	log.Printf("inua-term: host on %s", host.SocketPath())
-	if err := h.Serve(); err != nil {
-		log.Printf("inua-term: %v", err)
-		return 1
-	}
-	return 0
 }
 
 // show has the host show a command run in a session of its own, or the

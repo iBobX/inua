@@ -25,6 +25,7 @@ import (
 	"github.com/makiuchi-d/gozxing/qrcode"
 	qrdecoder "github.com/makiuchi-d/gozxing/qrcode/decoder"
 
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/shell"
@@ -73,7 +74,7 @@ func (s *shellUI) fetchSystem() {
 	bat := s.sys.Bat
 	css := s.cfg.ThemeCSS(s.theme(), s.readUI)
 	theme := shell.ThemeTitle(css, s.theme())
-	colors := shell.ThemeColors(css)
+	colors := config.ThemeColors(css)
 	go func() {
 		info := system.ReadSysInfo("/")
 		wm := "Hyprland"

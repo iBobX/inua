@@ -112,7 +112,7 @@ func (s *shellUI) loadWallpaper() {
 
 // shellThemeColors reads a theme's colour tokens.
 func shellThemeColors(s *shellUI, name string) map[string]string {
-	return shell.ThemeColors(s.cfg.ThemeCSS(name, s.readUI))
+	return config.ThemeColors(s.cfg.ThemeCSS(name, s.readUI))
 }
 
 func writeTile(field string) (string, error) {

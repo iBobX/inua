@@ -80,6 +80,10 @@ builds:
     id: inua-term
     main: ./cmd/inua-term
     binary: inua-term
+  - <<: *build
+    id: inua-termd
+    main: ./cmd/inua-termd
+    binary: inua-termd
 
 archives:
   - formats: [tar.gz]

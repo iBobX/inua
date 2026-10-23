@@ -35,7 +35,7 @@ Each has its own page; in short:
   `inua-files -default` makes it the desktop's file manager.
 - **Terminal** — workspaces of terminals for running many agents at once,
   with each agent's state in view and sessions that come back after a
-  reboot. `inua-term serve` opens it to a phone over Tailscale.
+  reboot. `inua-termd serve` opens it to a phone over Tailscale.
 - **Mail** — every account in three columns: mailboxes, conversations,
   the conversation. Gmail and Outlook sign in through the browser (OAuth),
   others with IMAP and a password. New mail arrives over IDLE; HTML shows

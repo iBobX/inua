@@ -10,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
@@ -193,11 +192,10 @@ func running(p *pane) string {
 	if err != nil || fg == p.pty.Pid() || fg <= 0 {
 		return ""
 	}
-	b, err := os.ReadFile("/proc/" + strconv.Itoa(fg) + "/cmdline")
-	if err != nil || len(b) == 0 {
+	args := procArgs(fg)
+	if len(args) == 0 {
 		return ""
 	}
-	args := strings.Split(strings.TrimRight(string(b), "\x00"), "\x00")
 	for i, a := range args {
 		if a == "" || strings.ContainsAny(a, " \t\n'\"\\$`*?[]{}()<>|&;#~") {
 			args[i] = "'" + strings.ReplaceAll(a, "'", `'\''`) + "'"

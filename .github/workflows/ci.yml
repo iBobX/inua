@@ -69,4 +69,24 @@ jobs:
       - name: Build the engine
         run: make term-engine
       - name: Tests with the engine
-        run: CGO_ENABLED=1 go test -race ./internal/term/... ./internal/termui ./cmd/inua-term
+        run: CGO_ENABLED=1 go test -race ./internal/term/... ./internal/termui ./cmd/inua-term ./cmd/inua-termd
+
+  # inua-termd on a Mac: the engine built there, the host and the web
+  # page tested on macOS (docs/terminal.md, "On macOS").
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+      - name: Build the engine
+        run: scripts/libghostty.sh
+      - name: Build inua-termd
+        run: go build -o bin/inua-termd ./cmd/inua-termd
+      - name: The host's tests
+        run: go test ./cmd/inua-termd ./internal/term/agent ./internal/term/host ./internal/term/layout ./internal/term/model ./internal/term/pty ./internal/term/settings ./internal/term/shellint ./internal/term/vt ./internal/term/web ./internal/term/webterm

@@ -59,10 +59,9 @@ type Host struct {
 	// none. Notify posts notifications for agents that need the user.
 	Agents *agent.Set
 	Notify bool
-	// Raise brings a window up after a notification's Show; nil runs
-	// inua-term again, which raises the one open or opens one.
-	Raise func()
-	notes notifier
+	// Desktop posts the notifications and brings a window up after one's
+	// Show; nil, as on a computer with no desktop, posts none.
+	Desktop Desktop
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string

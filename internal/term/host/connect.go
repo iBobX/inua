@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"syscall"
 	"time"
 )
 
-// Connect reaches the host on its socket, starting one (`inua-term
-// --host`, this program) when none runs: in a session of its own, so it
-// outlives the client.
+// Connect reaches the host on its socket, starting one (inua-termd) when
+// none runs: in a session of its own, so it outlives the client.
 func Connect(onOutput func(pane int, b []byte), onEvent func(Message)) (*Client, error) {
 	path := SocketPath()
 	if c, err := Dial(path, onOutput, onEvent); err == nil {
@@ -32,7 +32,7 @@ func Connect(onOutput func(pane int, b []byte), onEvent func(Message)) (*Client,
 }
 
 func startHostProcess() error {
-	exe, err := os.Executable()
+	exe, err := Program("inua-termd")
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func startHostProcess() error {
 		return err
 	}
 	defer null.Close()
-	cmd := exec.Command(exe, "--host")
+	cmd := exec.Command(exe)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = null, null, null
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
@@ -49,4 +49,21 @@ func startHostProcess() error {
 	}
 	go cmd.Wait() // reaped if it ends while this one runs
 	return nil
+}
+
+// Program finds one of inua-term's programs (inua-term, inua-termd): this
+// one when it is name, the one beside it (an install, a build's bin/),
+// else the one on PATH.
+func Program(name string) (string, error) {
+	self, err := os.Executable()
+	if err == nil {
+		if filepath.Base(self) == name {
+			return self, nil
+		}
+		p := filepath.Join(filepath.Dir(self), name)
+		if fi, err := os.Stat(p); err == nil && fi.Mode().IsRegular() {
+			return p, nil
+		}
+	}
+	return exec.LookPath(name)
 }
