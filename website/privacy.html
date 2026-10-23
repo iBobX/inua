@@ -38,7 +38,7 @@
   <div class="intro col">
     <div class="label">Privacy</div>
     <h1>Privacy Policy</h1>
-    <p class="updated">Effective October 21, 2026</p>
+    <p class="updated">Effective October 23, 2026</p>
     <p>inua is a desktop shell and a set of apps for Linux, including inua Mail. It is free, open-source software (Apache License 2.0) that runs on your own computer. This policy explains what inua does with your data, and in particular what inua Mail does with the data of a Google account you connect to it.</p>
     <p>In short: <strong>your data stays on your computer.</strong> inua has no servers that receive your data, no accounts with us, no analytics, no advertising and no tracking. The only places your data goes are the services you connect inua to yourself, and you choose each of them.</p>
   </div>
@@ -70,6 +70,17 @@
     </ul>
     <p>Suggestions of people to write to come from the addresses in your own messages; inua Mail does not use Google’s Contacts.</p>
 
+    <h3>How your data is protected</h3>
+    <ul>
+      <li><strong>Encrypted in transit.</strong> inua Mail reaches Google only over encrypted connections: IMAP over TLS (<code>imap.gmail.com</code>, port 993), SMTP over TLS (<code>smtp.gmail.com</code>, port 465), and HTTPS to sign in and renew its access. It never falls back to an unencrypted connection: if one cannot be made, nothing is sent.</li>
+      <li><strong>The sign-in token, encrypted at rest.</strong> The refresh token is kept in your desktop’s keyring, which encrypts it: inua-keyring with your GPG key, GNOME Keyring with your login password. It is never written to a settings file or a log. Only when no keyring is running does inua Mail keep it in a file that only your user account can read (<code>~/.local/share/inua/mail-secrets.json</code>, permissions 0600); that file is not encrypted, so running a keyring is recommended.</li>
+      <li><strong>Readable by your user account only.</strong> The folders that hold your cached mail and drafts are created so that only your user account can open them (permissions 0700, their files 0600); other users of the computer cannot read them. A file is written whole and then moved into place, so a half-written copy is never left behind.</li>
+      <li><strong>Encryption of the disk.</strong> The cached copy of your mail is protected by these permissions, not encrypted by inua Mail. To protect it if your computer is lost or stolen, use full-disk encryption (such as LUKS, offered by Linux installers).</li>
+      <li><strong>Nowhere else.</strong> There is no server of ours, no backup and no copy anywhere but your computer. inua Mail’s log records its connections and errors, not the content of your messages.</li>
+      <li><strong>Removed with the account.</strong> Removing an account in inua Mail deletes its cached mail, its picture and its sign-in token from your computer; revoking access at Google stops inua Mail at once.</li>
+      <li><strong>Open to review.</strong> All the code that handles your data is public at <a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a>. Security problems can be reported at <a href="https://github.com/lyricat/inua/issues">github.com/lyricat/inua/issues</a>.</li>
+    </ul>
+
     <h3>Sharing</h3>
     <p>We do not receive, sell, rent or share your Google data, and we do not use it for advertising. No person at the inua project can read it. Your Google data is not used to develop, improve or train AI or machine-learning models, by us or for us.</p>
     <p>The one exception, under your control, is the assistant described below: when you set it up and ask it for something, the part of your mail that the request needs is sent to the AI service <em>you</em> chose.</p>
@@ -98,6 +109,7 @@
       <li><strong>Updates</strong>: release builds check GitHub (<code>github.com/lyricat/inua</code>) for a new release about once a day. This can be turned off in Settings.</li>
       <li><strong>Remote images in mail</strong>: images that a message loads from the internet are only fetched when you allow it, as fetching them can tell the sender that you opened the message.</li>
       <li><strong>Brand logos in mail (BIMI)</strong>: for a message your provider found to really come from its sender’s domain (DMARC), inua Mail asks DNS whether that domain publishes a logo, and fetches it from the address the domain gives, once per domain and kept a week. This tells the domain’s server that someone received its mail, not who or which message.</li>
+      <li><strong>Sender icons in mail</strong>: for a message your provider found to really come from its sender’s domain (DMARC) and whose domain publishes no BIMI logo, inua Mail fetches the icon of the sender’s website (from its home page, <code>/apple-touch-icon.png</code> or <code>/favicon.ico</code>), once per site and kept a month. As with a BIMI logo, this tells the site’s server that someone received its mail, not who or which message.</li>
       <li><strong>Weather</strong>: the places you search for and add are sent to Open-Meteo.</li>
       <li><strong>Stocks</strong>: the symbols you follow are sent to Yahoo Finance.</li>
       <li><strong>Currency conversion</strong> in the launcher: exchange rates come from Frankfurter and Coinbase.</li>
