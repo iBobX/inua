@@ -53,7 +53,7 @@ func isoService(t *testing.T, media ...vm.ISOMedia) (*vmService, vm.Store, strin
 // aQEMUMachine is a machine that installs from an image, on disk.
 func aQEMUMachine(t *testing.T, store vm.Store, name string) vm.Machine {
 	t.Helper()
-	m := fromTemplate(t, "fedora", name, vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
+	m := fromTemplate(t, "linux", name, vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
 	write(t, store, m, false)
 	return m
 }

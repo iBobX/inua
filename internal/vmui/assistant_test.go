@@ -12,7 +12,7 @@ import (
 // host, with two checks failing and two passing.
 func assistantView(t *testing.T) MachineView {
 	t.Helper()
-	m := fromTemplate(t, "fedora", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
+	m := fromTemplate(t, "linux", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
 	m.Boot.Arch = vm.ArchAarch64
 	return MachineView{
 		Name:         m.Name,

@@ -144,8 +144,16 @@ carry `.settings`):
 ### Light apps
 
 A light app is one of these: a window of its own with an index and pages
-(Remote Desktop, Mobile Link, Clock, Stocks), or a single page with text
-tabs (GPG, Tailscale). They follow `docs/performance.md` for start-up.
+(Remote Desktop, Mobile Link, Clock, Stocks), a single page with text
+tabs (GPG, Tailscale), or a library with a panel (Virtual machines).
+
+A **library** shows things the user runs as tiles on `panel`: a card
+(`surface`, a `line` border, 4 px corners) with its icon and a mark at the
+top (filled while it runs), then its name and a sub line; hover and
+selected as an index item. The chosen one's page is a panel at the right
+(`app`, about 520 px), with a head and sections as a page. New is a
+button in the library's head and asks in a dialog, never in the panel. With nothing yet, the library says so and the panel is
+hidden. They follow `docs/performance.md` for start-up.
 
 ### Top bar panels
 

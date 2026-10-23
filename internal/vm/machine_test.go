@@ -51,7 +51,7 @@ func TestMachineRoundTrip(t *testing.T) {
 
 func TestMachineProblems(t *testing.T) {
 	base := func() Machine {
-		tmpl, _ := TemplateByID("ubuntu")
+		tmpl, _ := TemplateByID("linux")
 		return tmpl.Machine("ubuntu", Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 64})
 	}
 	for _, tc := range []struct {
@@ -118,17 +118,25 @@ func TestMachineProblems(t *testing.T) {
 
 // Every template has to make a machine the window can offer as it stands: a
 // template that needs a person to fill a field first is a bug in the template.
+// New machine asks for a system and the way it runs, so each pair is one
+// template.
 func TestTemplatesAreValid(t *testing.T) {
 	templates := Templates()
-	if len(templates) != 8 {
-		t.Fatalf("templates = %d, want the guide's eight", len(templates))
+	if len(templates) != 6 {
+		t.Fatalf("templates = %d, want the guide's six", len(templates))
 	}
 	seen := map[string]bool{}
+	ways := map[[2]string]string{}
 	for _, tmpl := range templates {
 		if seen[tmpl.ID] {
 			t.Errorf("two templates with the id %q", tmpl.ID)
 		}
 		seen[tmpl.ID] = true
+		way := [2]string{string(tmpl.OS), string(tmpl.Backend)}
+		if other, dup := ways[way]; dup {
+			t.Errorf("%s and %s are both %s on %s", other, tmpl.ID, tmpl.OS, tmpl.Backend)
+		}
+		ways[way] = tmpl.ID
 		if tmpl.Name == "" {
 			t.Errorf("%s: no name to start from", tmpl.ID)
 		}
@@ -328,7 +336,7 @@ func TestStoreDeleteFaultRefusesSymlinkFolder(t *testing.T) {
 func TestUniqueName(t *testing.T) {
 	root := t.TempDir()
 	store := Store{Root: filepath.Join(root, "vm"), Runtime: filepath.Join(root, "run")}
-	tmpl, _ := TemplateByID("ubuntu")
+	tmpl, _ := TemplateByID("linux")
 	for _, name := range []string{"ubuntu", "ubuntu-2", "ubuntu-3"} {
 		m := tmpl.Machine(name, Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 64})
 		if err := store.Save(m); err != nil {
