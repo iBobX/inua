@@ -548,13 +548,11 @@ func drawCard(w *gtk.Widget, s *gtk.Snapshot, c *shell.Card, codes cardCodes, co
 	y += 2
 	p.line("line", x0, y, x1-x0)
 
-	// The codes, on a label stuck at the slip's foot, an asset tag: dark on
-	// light whatever the theme, with the quiet margins scanners need (four
-	// modules round the QR code, ten at the barcode's ends).
-	paper, ink := "t0", "app"
-	if luma(colors["app"]) > luma(colors["t0"]) {
-		paper, ink = "app", "t0" // a light theme: its ground is the light one
-	}
+	// The codes, at the slip's foot in the slip's own colours (light on dark
+	// under a dark theme, which phone cameras read too), with the quiet
+	// margins scanners need (four modules round the QR code, ten at the
+	// barcode's ends).
+	paper, ink := "panel", "t0"
 	foot := float32(sy + sh - 22)
 	const qmod, quiet = 3, 12 // 4 modules of 3
 	labelH := float32(99)
