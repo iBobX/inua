@@ -425,6 +425,10 @@ func (s *shellUI) dockItem(key string) (shell.DockItem, bool) {
 }
 
 func (s *shellUI) launchApp(e *desktop.Entry) {
+	if strings.HasPrefix(e.ID, "inua:") {
+		s.drawerShellApp(e.ID)
+		return
+	}
 	if err := desktop.LaunchWith(e, s.cfg.TerminalCommand()); err != nil {
 		log.Printf("dock: %s: %v", e.ID, err)
 	}
@@ -442,7 +446,9 @@ func (s *shellUI) showDockMenu(btn *gtk.Widget, it shell.DockItem) {
 		menu.Append(label, "dock."+action)
 	}
 	if it.Entry != nil {
-		add(i18n.T("New Window"), "new")
+		if !strings.HasPrefix(it.Entry.ID, "inua:") { // the shell's tools have one window
+			add(i18n.T("New Window"), "new")
+		}
 		if it.Pinned {
 			add(i18n.T("Remove from Dock"), "unpin")
 		} else {

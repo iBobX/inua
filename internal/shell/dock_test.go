@@ -91,12 +91,18 @@ func TestDockSkipsFcitxWindows(t *testing.T) {
 }
 
 // The shell's own windows (Settings and its dialogs) show as Settings,
-// with its icon, instead of an icon named after the class.
+// with its icon and entry, so it can be kept in the dock; kept, its
+// windows join its item.
 func TestDockShellWindows(t *testing.T) {
 	snap := hypr.Snapshot{Toplevels: []hypr.Toplevel{dockWin("0x1", AppID, 0)}}
 	got := Dock(nil, NewAppIndex(nil), snap, nil)
-	if len(got) != 1 || got[0].Name != "Settings" || got[0].Icon != "io.github.lyricat.Inua.Settings" || got[0].Entry != nil {
+	if len(got) != 1 || got[0].Name != "Settings" || got[0].Icon != "io.github.lyricat.Inua.Settings" ||
+		got[0].Entry == nil || got[0].Key != "inua:settings" {
 		t.Errorf("Dock() = %+v", got)
+	}
+	got = Dock([]string{"inua:settings", "inua:nothing"}, NewAppIndex(nil), snap, nil)
+	if len(got) != 1 || !got[0].Pinned || got[0].Name != "Settings" || len(got[0].Windows) != 1 {
+		t.Errorf("Dock(pinned) = %+v", got)
 	}
 }
 

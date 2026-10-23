@@ -134,13 +134,16 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Top
 	}
 	for _, id := range pinned {
 		e := apps.ByID(id)
+		if strings.HasPrefix(id, "inua:") {
+			e = ShellApp(id)
+		}
 		if e == nil {
 			continue
 		}
 		if _, dup := at[e.ID]; dup {
 			continue
 		}
-		add(DockItem{Key: e.ID, Name: e.Name, Icon: e.Icon, Entry: e, Pinned: true})
+		add(DockItem{Key: e.ID, Name: dockName(e), Icon: e.Icon, Entry: e, Pinned: true})
 	}
 	for _, t := range snap.Toplevels {
 		if t.Class == "" {
@@ -150,12 +153,12 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Top
 		if isFcitxWindow(t.Class, entry) || (skip != nil && skip(t)) {
 			continue
 		}
-		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
 		if t.Class == AppID { // the shell's own windows: Settings and its dialogs
-			item.Name, item.Icon = i18n.T(ShellApps[0].Name), ShellApps[0].Icon
+			entry = ShellApps[0]
 		}
+		key, item := t.Class, DockItem{Key: t.Class, Name: cmpOr(t.Title, t.Class), Icon: t.Class}
 		if entry != nil {
-			key, item = entry.ID, DockItem{Key: entry.ID, Name: entry.Name, Icon: entry.Icon, Entry: entry}
+			key, item = entry.ID, DockItem{Key: entry.ID, Name: dockName(entry), Icon: entry.Icon, Entry: entry}
 		}
 		j, ok := at[key]
 		if !ok {
@@ -175,6 +178,14 @@ func Dock(pinned []string, apps AppIndex, snap hypr.Snapshot, skip func(hypr.Top
 		})
 	}
 	return items
+}
+
+// dockName is an entry's name; the shell's own are translated here.
+func dockName(e *desktop.Entry) string {
+	if strings.HasPrefix(e.ID, "inua:") {
+		return i18n.T(e.Name)
+	}
+	return e.Name
 }
 
 // isFcitxWindow tells the input method's candidate popup by its class:
@@ -300,6 +311,14 @@ var ShellApps = []*desktop.Entry{
 	{ID: "inua:screenshot", Name: i18n.M("Screenshot"), Comment: i18n.M("Capture an area, a window or a screen"), Icon: "io.github.lyricat.Inua.Screenshot"},
 }
 
+// ShellApp is the shell's tool with an "inua:" ID (nil: none).
+func ShellApp(id string) *desktop.Entry {
+	if i := slices.IndexFunc(ShellApps, func(e *desktop.Entry) bool { return e.ID == id }); i >= 0 {
+		return ShellApps[i]
+	}
+	return nil
+}
+
 // WorkshopApp is the Workshop light app, which ends the workshop drawer.
 const WorkshopApp = "io.github.lyricat.Inua.Workshop"
 
@@ -352,8 +371,7 @@ func LightAppSections(apps AppIndex) []AppGroup {
 		for _, id := range g.IDs {
 			e := apps.ByID(strings.ToLower(id))
 			if strings.HasPrefix(id, "inua:") {
-				i := slices.IndexFunc(ShellApps, func(e *desktop.Entry) bool { return e.ID == id })
-				e = ShellApps[i]
+				e = ShellApp(id)
 			}
 			if e != nil {
 				es = append(es, e)
