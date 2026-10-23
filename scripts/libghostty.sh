@@ -1,12 +1,13 @@
 #!/bin/sh
-# Build libinua-vt.so: libghostty-vt at the pinned Ghostty commit, linked
-# with inua's shim (internal/term/vt/shim), exporting only inua_vt_*.
-# inua-term loads it with purego. Releases build it in CI; locally:
+# Build libinua-vt.so (libinua-vt.dylib for macOS): libghostty-vt at the
+# pinned Ghostty commit, linked with inua's shim (internal/term/vt/shim),
+# exporting only inua_vt_*. inua-term loads it with purego. Releases build
+# it in CI; locally:
 #
 #   scripts/libghostty.sh [OUT_DIR]        (default: bin/)
 #
 # ZIG_TARGET builds it for another machine (aarch64-linux-gnu,
-# x86_64-linux-gnu), as the releases do.
+# x86_64-linux-gnu, aarch64-macos, x86_64-macos), as the releases do.
 #
 # Needs git and Zig 0.16 ($ZIG, else zig-0.16, else zig). The Ghostty
 # checkout is kept in $GHOSTTY_SRC (default: $XDG_CACHE_HOME/inua/ghostty)
@@ -78,9 +79,25 @@ END {
 }' "$src/include/ghostty/vt/key/event.h" "$src/src/input/keycodes.zig" > "$tmp/inua_keymap.inc"
 [ -s "$tmp/inua_keymap.inc" ] || { echo "libghostty.sh: no keycodes found in Ghostty's table" >&2; exit 1; }
 mkdir -p "$out"
+# macOS (a macos target, or built on a Mac): a dylib. Zig's Mach-O linker
+# takes no list of exports, so libghostty-vt's own symbols are exported
+# too; harmless there, where each library's symbols are looked up in it
+# alone (two-level namespaces). Elsewhere a shared object exporting
+# inua_vt_* alone, by a version script.
+case "${target:-$(uname -s)}" in
+*macos* | Darwin)
+	lib=libinua-vt.dylib
+	link="-Wl,-install_name,@rpath/$lib"
+	;;
+*)
+	lib=libinua-vt.so
+	link="-Wl,--version-script=$tmp/exports.map -Wl,-s -Wl,-soname,$lib"
+	;;
+esac
+# shellcheck disable=SC2086 # $link is several options
 "$zig" cc ${target:+-target $target} -shared -fPIC -O2 -std=c11 -Wall -Werror \
 	-I "$src/zig-out/include" -I "$shim" -I "$tmp" \
-	-o "$tmp/libinua-vt.so" "$shim/inua_vt.c" "$src/zig-out/lib/libghostty-vt.a" \
-	-Wl,--version-script="$tmp/exports.map" -Wl,-s -Wl,-soname,libinua-vt.so
-mv "$tmp/libinua-vt.so" "$out/libinua-vt.so"
-echo "$out/libinua-vt.so: ghostty $GHOSTTY_COMMIT, sha256 $(sha256sum "$out/libinua-vt.so" | cut -d' ' -f1)"
+	-o "$tmp/$lib" "$shim/inua_vt.c" "$src/zig-out/lib/libghostty-vt.a" $link
+mv "$tmp/$lib" "$out/$lib"
+sum=$( (sha256sum "$out/$lib" 2>/dev/null || shasum -a 256 "$out/$lib") | cut -d' ' -f1)
+echo "$out/$lib: ghostty $GHOSTTY_COMMIT, sha256 $sum"

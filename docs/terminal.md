@@ -279,8 +279,8 @@ inua-termd serve --new-token      a new token: links with the old one stop worki
 ```
 
 It prints the page's link, with its token; every request carries it,
-and it is kept in the keyring (inua-keyring), so the link stays the
-same. The page is a client of the host, as the window is, and starts the
+and it is kept in the keyring (inua-keyring; the login keychain on a
+Mac), so the link stays the same. The page is a client of the host, as the window is, and starts the
 host when none runs. Open the link on the phone, or add it to the home
 screen: it is a web app in the theme's colours.
 
@@ -317,6 +317,27 @@ The page asks nothing of the internet: xterm.js and the fonts come with
 inua (`scripts/term-web.sh`). Over plain `http://`, an iPhone adds it
 to the home screen as an app; Android installs one only over HTTPS
 (`tailscale serve` can give the address one).
+
+## On macOS
+
+The host runs on a Mac too, for the page: `inua-termd serve` (with
+`--tailscale` for a phone on the tailnet) starts it when none runs, and
+the phone or a browser shows its terminals. The window, inua-term, is
+GTK on Linux and is not on a Mac. From source, on the Mac:
+
+```
+scripts/libghostty.sh                  bin/libinua-vt.dylib (Zig 0.16)
+go build -o bin/inua-termd ./cmd/inua-termd
+bin/inua-termd serve --tailscale
+```
+
+`ZIG_TARGET=aarch64-macos` (or `x86_64-macos`) builds the engine on
+Linux as well. The page's token is kept in the login keychain; an agent
+that needs you posts a notification of the Mac's own (through
+osascript), which opens nothing when clicked. The computer's CPU and
+memory are not read yet: the page leaves them out. There is no service
+to start it at login yet: it runs while its terminal, or `nohup`, keeps
+it.
 
 ## Not yet
 

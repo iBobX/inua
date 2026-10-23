@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -42,16 +44,24 @@ func TestStart(t *testing.T) {
 		t.Errorf("exit %d, %v", code, err)
 	}
 	lines := strings.Split(strings.TrimSpace(got), "\n")
-	if len(lines) != 4 || lines[0] != "30 100" || lines[1] != dir || lines[2] != "xterm-256color" || !strings.HasPrefix(lines[3], "/dev/pts/") {
+	real, _ := filepath.EvalSymlinks(dir) // macOS's temporary folders are behind /var → /private/var
+	tty := "/dev/pts/"
+	if runtime.GOOS == "darwin" {
+		tty = "/dev/ttys"
+	}
+	if len(lines) != 4 || lines[0] != "30 100" || (lines[1] != dir && lines[1] != real) || lines[2] != "xterm-256color" || !strings.HasPrefix(lines[3], tty) {
 		t.Errorf("output %q", got)
 	}
 	p.Close()
 }
 
 // The terminal controls its program and what it runs, not a process that
-// left it (setsid) nor one outside.
+// left it (setsid) nor one outside. The one that leaves is this test
+// binary again, TestHelperDetach: macOS has no setsid command.
 func TestControls(t *testing.T) {
-	p, err := Start([]string{"sh", "-c", "sleep 5 & setsid sleep 5 & echo $! ready; read x"}, t.TempDir(), nil, 80, 24)
+	left := filepath.Join(t.TempDir(), "left")
+	p, err := Start([]string{"sh", "-c", `sleep 5 & "$0" -test.run=TestHelperDetach -test.count=1 & echo $! ready; read x`, os.Args[0]},
+		t.TempDir(), append(os.Environ(), "INUA_PTY_DETACH="+left), 80, 24)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +76,14 @@ func TestControls(t *testing.T) {
 		out += string(buf[:n])
 	}
 	detached, _ := strconv.Atoi(strings.Fields(out)[0])
-	time.Sleep(100 * time.Millisecond) // setsid has run
+	for deadline := time.Now().Add(5 * time.Second); ; time.Sleep(10 * time.Millisecond) {
+		if _, err := os.Stat(left); err == nil {
+			break // setsid has run
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("the helper did not leave the terminal")
+		}
+	}
 	if !p.Controls(p.Pid()) {
 		t.Error("not its program's terminal")
 	}
@@ -77,6 +94,20 @@ func TestControls(t *testing.T) {
 		t.Error("the terminal of a process outside")
 	}
 	syscall.Kill(detached, syscall.SIGKILL)
+}
+
+// TestHelperDetach leaves its terminal for TestControls, says so in the
+// file INUA_PTY_DETACH, and waits to be killed.
+func TestHelperDetach(t *testing.T) {
+	left := os.Getenv("INUA_PTY_DETACH")
+	if left == "" {
+		t.Skip("run by TestControls")
+	}
+	if _, err := syscall.Setsid(); err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(left, nil, 0o644)
+	time.Sleep(5 * time.Second)
 }
 
 // The program sees the new size (and gets SIGWINCH).
@@ -162,9 +193,8 @@ func TestInterruptHelper(t *testing.T) {
 	}
 	defer p.Close()
 	// Ctrl+C once sleep runs: before, the shell would take it itself.
-	comm := "/proc/" + strconv.Itoa(p.Pid()) + "/comm"
 	for deadline := time.Now().Add(5 * time.Second); ; time.Sleep(10 * time.Millisecond) {
-		if b, _ := os.ReadFile(comm); strings.TrimSpace(string(b)) == "sleep" {
+		if procName(p.Pid()) == "sleep" {
 			break
 		}
 		if time.Now().After(deadline) {
@@ -209,4 +239,15 @@ func TestCloseWhileReading(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("the program did not get SIGHUP")
 	}
+}
+
+// procName is a process's program name: from /proc on Linux, from ps
+// elsewhere.
+func procName(pid int) string {
+	if runtime.GOOS == "linux" {
+		b, _ := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/comm")
+		return strings.TrimSpace(string(b))
+	}
+	out, _ := exec.Command("ps", "-o", "comm=", "-p", strconv.Itoa(pid)).Output()
+	return filepath.Base(strings.TrimSpace(string(out)))
 }
