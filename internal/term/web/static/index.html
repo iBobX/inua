@@ -170,6 +170,15 @@
   #pinfo .line { margin:0; padding:6px 0; }
   #pinfo { --out:0px; }
   #pinfo .line .label { color:var(--t1); }
+  /* Snippets: a keycap of its text, which types it, and ⏎ beside it,
+     which sends it; yours with a delete. */
+  #psnips .snip { display:flex; gap:6px; margin-top:6px; }
+  #psnips .snip button { height:40px; flex:none; }
+  #psnips .snip .say { flex:1; min-width:0; padding:0 12px; text-align:left; font:13px var(--sans); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #psnips .snip .send, #psnips .snip .del { width:44px; display:flex; align-items:center; justify-content:center; }
+  #psnips .snip .send { font:17px var(--mono); color:var(--t1); }
+  #psnips .snip .icon { width:15px; height:15px; }
+  #psnips .add { width:100%; margin-top:10px; font:12.5px var(--sans); color:var(--t1); }
   #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
   #panel .grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; }
   #panel button { height:40px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:12px var(--mono); }
@@ -285,8 +294,9 @@
       <button id="paneltoggle" class="barbtn" data-ta="Key panel"><span class="icon" style="--i:url(/icons/view-app-grid-symbolic.svg)"></span></button>
     </div>
     <div id="panel" hidden>
-      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="info" data-t="INFO">INFO</button></div>
+      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="snips" data-t="SNIPPETS">SNIPPETS</button><button data-p="info" data-t="INFO">INFO</button></div>
       <div id="pkeys"></div>
+      <div id="psnips" hidden></div>
       <div id="pinfo" hidden></div>
     </div>
   </section>
@@ -1492,6 +1502,44 @@ for (const [name, keys] of panelGroups) {
   for (const k of keys) g.append(keyButton(k));
   $("pkeys").append(g);
 }
+// Snippets: what is typed often, to an agent above all. The built-in
+// ones, then the device's own, kept in its browser. A snippet's keycap
+// types it; ⏎ beside it sends it.
+const builtinSnippets = [T("Sure, please do it."), T("Wait, let me think."), T("Continue."), T("Yes."), T("No."), T("Explain it first, before you change anything.")];
+let snippets = [];
+try { snippets = JSON.parse(store.get("snippets") || "[]"); } catch (e) {}
+function renderSnippets() {
+  const box = $("psnips"); box.textContent = "";
+  const button = (cls, text, onclick) => {
+    const b = el("button", cls, text);
+    b.addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays as it is
+    b.onclick = onclick;
+    return b;
+  };
+  const row = (text, i) => {
+    const r = el("div", "snip");
+    const send = button("send", "⏎", () => input(text + "\r"));
+    send.setAttribute("aria-label", T("Send"));
+    r.append(button("say", text, () => input(text)), send);
+    if (i != null) {
+      const del = button("del", null, () => { snippets.splice(i, 1); saveSnippets(); });
+      del.append(icon("user-trash"));
+      del.setAttribute("aria-label", T("Delete"));
+      r.append(del);
+    }
+    return r;
+  };
+  box.append(el("div", "kicker", T("Built in")));
+  for (const t of builtinSnippets) box.append(row(t));
+  if (snippets.length) {
+    box.append(el("div", "kicker", T("Yours")));
+    snippets.forEach((t, i) => box.append(row(t, i)));
+  }
+  box.append(button("add", T("Add a snippet"), () => ask(T("New snippet"), "", T("Save"), text => { snippets.push(text); saveSnippets(); })));
+}
+function saveSnippets() { store.set("snippets", JSON.stringify(snippets)); renderSnippets(); }
+renderSnippets();
+
 // A row that scrolls under a fixed button: the button's shadow while
 // something is under it.
 function shade(row, button, side) {
@@ -1518,6 +1566,7 @@ for (const b of document.querySelectorAll(".ptabs button")) {
     for (const o of document.querySelectorAll(".ptabs button")) o.classList.toggle("on", o === b);
     $("pkeys").hidden = panelTab !== "keys";
     $("pinfo").hidden = panelTab !== "info";
+    $("psnips").hidden = panelTab !== "snips";
     info();
   };
 }

@@ -380,6 +380,7 @@ msgid "Part of the system, or one of your main folders?"
 msgstr "Fait partie du système, ou l'un de vos dossiers principaux ?"
 
 #: internal/apps/disk/decide.go:71
+#: internal/term/web/strings.go:70
 msgid "No."
 msgstr "Non."
 
@@ -398,6 +399,7 @@ msgstr "Pouvez-vous le supprimer ?"
 
 #: internal/apps/disk/decide.go:87
 #: internal/apps/mail/check.go:129
+#: internal/term/web/strings.go:111
 msgid "Yes."
 msgstr "Oui."
 
@@ -684,7 +686,7 @@ msgstr "Cursor retélécharge ses extensions."
 
 #: internal/apps/disk/rules.go:165
 #: internal/apps/disk/rules.go:167
-#: internal/term/web/strings.go:37
+#: internal/term/web/strings.go:40
 msgid "Cursor"
 msgstr "Cursor"
 
@@ -1792,6 +1794,7 @@ msgstr "Vidéo"
 #: internal/diskui/details.go:528
 #: internal/filesui/cards.go:435
 #: internal/mailui/actions.go:216
+#: internal/term/web/strings.go:43
 #: internal/ui/clipboard.go:489
 #: internal/vmui/window.go:1865
 #: internal/vmui/window.go:1871
@@ -2206,7 +2209,7 @@ msgstr "Supprimer…"
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
 #: internal/mailui/welcome.go:480
-#: internal/term/web/strings.go:34
+#: internal/term/web/strings.go:37
 #: internal/ui/askpass.go:547
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:857
@@ -2603,7 +2606,7 @@ msgstr "Masquer"
 #: internal/diskui/details.go:581
 #: internal/filesui/window.go:729
 #: internal/term/settings/settings.go:116
-#: internal/term/web/strings.go:35
+#: internal/term/web/strings.go:38
 #: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:213
 #: internal/ui/passwords.go:627
@@ -2634,7 +2637,7 @@ msgstr "Son nouveau chemin. Un autre nom la renomme ; un chemin sous une autre c
 
 #: internal/appui/pass.go:932
 #: internal/appui/pass.go:936
-#: internal/term/web/strings.go:55
+#: internal/term/web/strings.go:60
 msgid "Move"
 msgstr "Déplacer"
 
@@ -3629,7 +3632,7 @@ msgstr "Statut"
 
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:568
-#: internal/term/web/strings.go:32
+#: internal/term/web/strings.go:34
 msgid "Connection"
 msgstr "Connexion"
 
@@ -3957,7 +3960,7 @@ msgstr "Bloc inconnu %q"
 #: internal/gamesui/fortune_host.go:236
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
-#: internal/term/web/strings.go:29
+#: internal/term/web/strings.go:31
 #: internal/termui/keys.go:273
 #: internal/termui/keys.go:401
 #: internal/termui/paste.go:297
@@ -3988,7 +3991,7 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: internal/appui/workshop.go:995
-#: internal/term/web/strings.go:67
+#: internal/term/web/strings.go:74
 #: internal/ui/askpass.go:279
 #: internal/ui/settings_card.go:624
 msgid "OK"
@@ -3997,6 +4000,7 @@ msgstr "D'accord"
 #: internal/appui/workshop_blocks.go:438
 #: internal/mailui/settings.go:645
 #: internal/mailui/welcome.go:823
+#: internal/term/web/strings.go:85
 #: internal/ui/settings_ai.go:493
 #: ui/clock.ui:252
 #: ui/connect.ui:420
@@ -4859,7 +4863,7 @@ msgid "Opens folders"
 msgstr "Ouvre les dossiers"
 
 #: internal/desktop/defaults.go:39
-#: internal/term/web/strings.go:83
+#: internal/term/web/strings.go:94
 #: internal/termui/app.go:111
 #: internal/termui/app.go:147
 #: internal/termui/app.go:342
@@ -4913,7 +4917,7 @@ msgid "Disk Usage"
 msgstr "Utilisation du disque"
 
 #: internal/diskui/details.go:47
-#: internal/term/web/strings.go:81
+#: internal/term/web/strings.go:91
 #: internal/termui/prefs.go:89
 #: internal/viewerui/app.go:795
 #: internal/viewerui/app.go:813
@@ -4978,7 +4982,7 @@ msgstr "Ce que c’est"
 
 #: internal/diskui/details.go:246
 #: internal/remoteui/window.go:786
-#: internal/term/web/strings.go:22
+#: internal/term/web/strings.go:23
 #: internal/vmui/window.go:1962
 msgid "Asking…"
 msgstr "Interrogation…"
@@ -5404,7 +5408,7 @@ msgstr[1] "%d éléments"
 #: internal/filesui/cards.go:368
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
-#: internal/term/web/strings.go:74
+#: internal/term/web/strings.go:81
 #: internal/termui/keys.go:403
 msgid "Rename"
 msgstr "Renommer"
@@ -5515,7 +5519,7 @@ msgstr[1] "… et %d de plus"
 #: internal/filesui/cards.go:516
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
-#: internal/term/web/strings.go:30
+#: internal/term/web/strings.go:32
 #: internal/termui/keys.go:275
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:130
@@ -9293,7 +9297,7 @@ msgid "The game could not open to the network: %v"
 msgstr "Impossible d'ouvrir la partie au réseau : %v"
 
 #: internal/gamesui/fortune_host.go:90
-#: internal/term/web/strings.go:48
+#: internal/term/web/strings.go:53
 msgid "Host"
 msgstr "Hôte"
 
@@ -9333,7 +9337,7 @@ msgstr "Quitter vers le menu"
 #: internal/gamesui/fortune_menu.go:109
 #: internal/mailui/welcome.go:494
 #: internal/mailui/welcome.go:598
-#: internal/term/web/strings.go:25
+#: internal/term/web/strings.go:26
 #: internal/termui/guide.go:111
 #: ui/gpg.ui:633
 #: ui/settings.ui:4391
@@ -9660,7 +9664,7 @@ msgstr "Mise au point activée ou désactivée"
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:309
 #: internal/term/settings/settings.go:123
-#: internal/term/web/strings.go:79
+#: internal/term/web/strings.go:89
 #: ui/control.ui:62
 #: ui/settings.ui:30
 msgid "Settings"
@@ -10025,6 +10029,7 @@ msgstr "Envoi…"
 
 #: internal/mailui/compose.go:560
 #: internal/mailui/quick.go:137
+#: internal/term/web/strings.go:87
 #: ui/connect.ui:663
 #: ui/connectreply.ui:58
 #: ui/mail-compose.ui:237
@@ -10079,6 +10084,7 @@ msgid "Show AI's suggestion again"
 msgstr "Revoir la suggestion de l’IA"
 
 #: internal/mailui/compose_ai.go:227
+#: internal/term/web/strings.go:112
 msgid "Yours"
 msgstr "Le vôtre"
 
@@ -10650,7 +10656,7 @@ msgid "Off: a conversation stays unread until you mark it (U)."
 msgstr "Désactivé : une conversation reste non lue jusqu’à ce que vous la marquiez (U)."
 
 #: internal/mailui/settings.go:508
-#: internal/term/web/strings.go:85
+#: internal/term/web/strings.go:96
 #: ui/settings.ui:299
 msgid "Text size"
 msgstr "Taille du texte"
@@ -11322,7 +11328,7 @@ msgstr "Cet ordinateur n'a pas d'identité pour s'appairer : %v"
 
 #: internal/remoteui/window.go:173
 #: internal/shell/card.go:80
-#: internal/term/web/strings.go:91
+#: internal/term/web/strings.go:102
 #: ui/settings.ui:5090
 #: ui/settings.ui:5371
 msgid "This computer"
@@ -11627,7 +11633,7 @@ msgstr "Écran"
 
 #: internal/shell/card.go:195
 #: internal/shell/cardterm.go:142
-#: internal/term/web/strings.go:90
+#: internal/term/web/strings.go:101
 msgid "Theme"
 msgstr "Thème"
 
@@ -11840,7 +11846,7 @@ msgid "Go to Workspace %s"
 msgstr "Accédez à l’espace de travail %s"
 
 #: internal/shell/commands.go:74
-#: internal/term/web/strings.go:97
+#: internal/term/web/strings.go:109
 msgid "Workspace"
 msgstr "Espace de travail"
 
@@ -12006,7 +12012,7 @@ msgid "%s · workspace %s"
 msgstr "%[1]s · espace de travail %[2]s"
 
 #: internal/shell/notify.go:16
-#: internal/term/web/strings.go:100
+#: internal/term/web/strings.go:114
 msgid "now"
 msgstr "maintenant"
 
@@ -12206,7 +12212,7 @@ msgid "New session in this workspace"
 msgstr "Nouvelle session dans cet espace"
 
 #: internal/term/settings/settings.go:101
-#: internal/term/web/strings.go:59
+#: internal/term/web/strings.go:65
 #: internal/termui/columns.go:168
 msgid "New workspace"
 msgstr "Nouvel espace de travail"
@@ -12276,7 +12282,7 @@ msgid "Copy mode"
 msgstr "Mode copie"
 
 #: internal/term/settings/settings.go:120
-#: internal/term/web/strings.go:75
+#: internal/term/web/strings.go:82
 #: internal/termui/keys.go:375
 msgid "Rename the session"
 msgstr "Renommer la session"
@@ -12346,270 +12352,302 @@ msgid "AS INUA-TERM"
 msgstr "COMME INUA-TERM"
 
 #: internal/term/web/strings.go:20
+msgid "Add a snippet"
+msgstr ""
+
+#: internal/term/web/strings.go:21
 #: internal/termui/agents.go:328
 msgid "Agents"
 msgstr "Agents"
 
-#: internal/term/web/strings.go:21
+#: internal/term/web/strings.go:22
 msgid "As inua-term"
 msgstr "Comme inua-term"
 
-#: internal/term/web/strings.go:23
+#: internal/term/web/strings.go:24
 msgid "BAR"
 msgstr "BARRE"
 
-#: internal/term/web/strings.go:24
+#: internal/term/web/strings.go:25
 msgid "BLOCK"
 msgstr "BLOC"
 
-#: internal/term/web/strings.go:26
+#: internal/term/web/strings.go:27
 msgid "Basic"
 msgstr "De base"
 
-#: internal/term/web/strings.go:27
+#: internal/term/web/strings.go:28
+msgid "Built in"
+msgstr ""
+
+#: internal/term/web/strings.go:29
 msgid "CONNECTED"
 msgstr "CONNECTÉ"
 
-#: internal/term/web/strings.go:28
+#: internal/term/web/strings.go:30
 msgid "CONNECTING…"
 msgstr "CONNEXION…"
 
-#: internal/term/web/strings.go:31
+#: internal/term/web/strings.go:33
 msgid "Columns × rows: the pane fitted to this screen at the text size."
 msgstr "Colonnes × lignes : le panneau ajusté à cet écran à la taille du texte."
 
-#: internal/term/web/strings.go:33
+#: internal/term/web/strings.go:35
+msgid "Continue."
+msgstr ""
+
+#: internal/term/web/strings.go:36
 msgid "Control"
 msgstr "Contrôle"
 
-#: internal/term/web/strings.go:36
+#: internal/term/web/strings.go:39
 #: internal/vmui/window.go:1072
 #: ui/gpg.ui:1488
 #: ui/vm.ui:3331
 msgid "Create"
 msgstr "Créer"
 
-#: internal/term/web/strings.go:38
+#: internal/term/web/strings.go:41
 msgid "Cursor blinks"
 msgstr "Le curseur clignote"
 
-#: internal/term/web/strings.go:39
+#: internal/term/web/strings.go:42
 #: internal/termui/agents.go:47
 msgid "DONE"
 msgstr "TERMINÉ"
 
-#: internal/term/web/strings.go:40
+#: internal/term/web/strings.go:44
 msgid "Drawing"
 msgstr "Rendu"
 
-#: internal/term/web/strings.go:41
+#: internal/term/web/strings.go:45
 msgid "Drawn by the browser's page: slower, used when WebGL is missing."
 msgstr "Rendu par la page du navigateur : plus lent, utilisé sans WebGL."
 
-#: internal/term/web/strings.go:42
+#: internal/term/web/strings.go:46
 msgid "Drawn by the graphics chip: the fast way."
 msgstr "Rendu par la puce graphique : la voie rapide."
 
-#: internal/term/web/strings.go:43
+#: internal/term/web/strings.go:47
 msgid "Esc, Tab, Ctrl, the arrows and the rest a touch keyboard lacks."
 msgstr "Échap, Tab, Ctrl, les flèches et le reste qui manque à un clavier tactile."
 
-#: internal/term/web/strings.go:44
+#: internal/term/web/strings.go:48
 msgid "Everything from this pane since it opened here."
 msgstr "Tout ce que ce panneau a envoyé depuis son ouverture ici."
 
-#: internal/term/web/strings.go:45
+#: internal/term/web/strings.go:49
+msgid "Explain it first, before you change anything."
+msgstr ""
+
+#: internal/term/web/strings.go:50
 msgid "First load"
 msgstr "Premier chargement"
 
-#: internal/term/web/strings.go:46
+#: internal/term/web/strings.go:51
 #: internal/termui/prefs.go:85
 msgid "Font"
 msgstr "Police"
 
-#: internal/term/web/strings.go:47
+#: internal/term/web/strings.go:52
 msgid "Function"
 msgstr "Fonction"
 
-#: internal/term/web/strings.go:49
+#: internal/term/web/strings.go:54
 #: internal/termui/agents.go:49
 msgid "IDLE"
 msgstr "INACTIF"
 
-#: internal/term/web/strings.go:50
+#: internal/term/web/strings.go:55
 msgid "INFO"
 msgstr "INFOS"
 
-#: internal/term/web/strings.go:51
+#: internal/term/web/strings.go:56
 #: internal/termui/prefs.go:144
 #: ui/gpg.ui:1042
 msgid "KEYS"
 msgstr "CLÉS"
 
-#: internal/term/web/strings.go:52
+#: internal/term/web/strings.go:57
 msgid "Key panel"
 msgstr "Panneau de touches"
 
-#: internal/term/web/strings.go:53
+#: internal/term/web/strings.go:58
 #: ui/settings.ui:5692
 msgid "Keyboard"
 msgstr "Clavier"
 
-#: internal/term/web/strings.go:54
+#: internal/term/web/strings.go:59
 msgid "Keys above the keyboard"
 msgstr "Touches au-dessus du clavier"
 
-#: internal/term/web/strings.go:56
+#: internal/term/web/strings.go:61
 #: internal/termui/agents.go:45
 msgid "NEEDS YOU"
 msgstr "VOUS ATTEND"
 
-#: internal/term/web/strings.go:57
+#: internal/term/web/strings.go:62
 msgid "New pane"
 msgstr ""
 
-#: internal/term/web/strings.go:58
+#: internal/term/web/strings.go:63
 #: internal/termui/columns.go:169
 msgid "New session"
 msgstr "Nouvelle session"
 
-#: internal/term/web/strings.go:60
+#: internal/term/web/strings.go:64
+msgid "New snippet"
+msgstr ""
+
+#: internal/term/web/strings.go:66
 msgid "New workspace, in the folder"
 msgstr ""
 
-#: internal/term/web/strings.go:61
+#: internal/term/web/strings.go:67
 msgid "No"
 msgstr ""
 
-#: internal/term/web/strings.go:62
+#: internal/term/web/strings.go:68
 msgid "No agent is running."
 msgstr "Aucun agent ne tourne."
 
-#: internal/term/web/strings.go:63
+#: internal/term/web/strings.go:69
 msgid "No pane is open. Choose one in Agents or Workspaces."
 msgstr "Aucun panneau ouvert. Choisissez-en un dans Agents ou Espaces de travail."
 
-#: internal/term/web/strings.go:64
+#: internal/term/web/strings.go:71
 msgid "Not copied"
 msgstr ""
 
-#: internal/term/web/strings.go:65
+#: internal/term/web/strings.go:72
 msgid "OFFLINE"
 msgstr "HORS LIGNE"
 
-#: internal/term/web/strings.go:66
+#: internal/term/web/strings.go:73
 msgid "OFFLINE · RECONNECTING"
 msgstr "HORS LIGNE · RECONNEXION"
 
-#: internal/term/web/strings.go:68
+#: internal/term/web/strings.go:75
 msgid "Overview"
 msgstr "Aperçu"
 
-#: internal/term/web/strings.go:69
+#: internal/term/web/strings.go:76
 msgid "PLAIN"
 msgstr "SIMPLE"
 
-#: internal/term/web/strings.go:70
+#: internal/term/web/strings.go:77
 msgid "Panes are fitted to this screen at this size; pinching changes it too."
 msgstr "Les volets sont ajustés à cet écran à cette taille ; pincer la change aussi."
 
-#: internal/term/web/strings.go:71
+#: internal/term/web/strings.go:78
 msgid "Pinch, or Settings in Overview, to change it."
 msgstr "Pincez, ou passez par Paramètres dans Aperçu, pour la changer."
 
-#: internal/term/web/strings.go:72
+#: internal/term/web/strings.go:79
 #: internal/termui/agents.go:39
 msgid "RESTORED"
 msgstr "RESTAURÉ"
 
-#: internal/term/web/strings.go:73
+#: internal/term/web/strings.go:80
 msgid "Received"
 msgstr "Reçu"
 
-#: internal/term/web/strings.go:76
+#: internal/term/web/strings.go:83
 msgid "Round trip"
 msgstr "Aller-retour"
 
-#: internal/term/web/strings.go:77
+#: internal/term/web/strings.go:84
+msgid "SNIPPETS"
+msgstr ""
+
+#: internal/term/web/strings.go:86
 msgid "Select all"
 msgstr ""
 
-#: internal/term/web/strings.go:78
+#: internal/term/web/strings.go:88
 msgid "Session %d"
 msgstr "Session %d"
 
-#: internal/term/web/strings.go:80
+#: internal/term/web/strings.go:90
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "Shell"
 
-#: internal/term/web/strings.go:82
+#: internal/term/web/strings.go:92
+msgid "Sure, please do it."
+msgstr ""
+
+#: internal/term/web/strings.go:93
 msgid "Symbols"
 msgstr "Symboles"
 
-#: internal/term/web/strings.go:84
+#: internal/term/web/strings.go:95
 #: internal/termui/guide.go:86
 #: internal/termui/prefs.go:73
 msgid "Terminal colours"
 msgstr "Couleurs du terminal"
 
-#: internal/term/web/strings.go:86
+#: internal/term/web/strings.go:97
 msgid "The pane's recent output as it came, and how long it took to arrive and draw."
 msgstr "La sortie récente du panneau telle qu'elle est venue, et le temps qu'elle a mis à arriver et s'afficher."
 
-#: internal/term/web/strings.go:87
+#: internal/term/web/strings.go:98
 msgid "The pane's screen and history as the computer has them, and how long they took to arrive and draw."
 msgstr "L'écran et l'historique du panneau tels que l'ordinateur les a, et le temps qu'ils ont mis à arriver et s'afficher."
 
-#: internal/term/web/strings.go:88
+#: internal/term/web/strings.go:99
 msgid "The theme's"
 msgstr "Ceux du thème"
 
-#: internal/term/web/strings.go:89
+#: internal/term/web/strings.go:100
 msgid "The window theme's ground and text"
 msgstr "Le fond et le texte du thème de la fenêtre"
 
-#: internal/term/web/strings.go:92
+#: internal/term/web/strings.go:103
 msgid "This device"
 msgstr "Cet appareil"
 
-#: internal/term/web/strings.go:93
+#: internal/term/web/strings.go:104
 msgid "To the bottom"
 msgstr "Tout en bas"
 
-#: internal/term/web/strings.go:94
+#: internal/term/web/strings.go:105
 msgid "UNDERLINE"
 msgstr "SOULIGNÉ"
 
-#: internal/term/web/strings.go:95
+#: internal/term/web/strings.go:106
 msgid "WEBGL"
 msgstr "WEBGL"
 
-#: internal/term/web/strings.go:96
+#: internal/term/web/strings.go:107
 #: internal/termui/agents.go:43
 msgid "WORKING"
 msgstr "AU TRAVAIL"
 
-#: internal/term/web/strings.go:98
+#: internal/term/web/strings.go:108
+msgid "Wait, let me think."
+msgstr ""
+
+#: internal/term/web/strings.go:110
 #: ui/settings.ui:1281
 msgid "Workspaces"
 msgstr "Espaces de travail"
 
-#: internal/term/web/strings.go:99
+#: internal/term/web/strings.go:113
 msgid "gpg asks for your passphrase"
 msgstr ""
 
-#: internal/term/web/strings.go:101
+#: internal/term/web/strings.go:115
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
 msgid "since %s"
 msgstr "depuis %s"
 
-#: internal/term/web/strings.go:102
+#: internal/term/web/strings.go:116
 msgid "the theme's"
 msgstr "ceux du thème"
 
-#: internal/term/web/strings.go:103
+#: internal/term/web/strings.go:117
 msgid "the theme's colours"
 msgstr "les couleurs du thème"
 
