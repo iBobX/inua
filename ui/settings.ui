@@ -737,50 +737,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <style>
                                                   <class name="title"/>
                                                 </style>
-                                                <property name="label" translatable="yes">Draw the wallpaper</property>
-                                                <property name="xalign">0</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <style>
-                                                  <class name="sub"/>
-                                                </style>
-                                                <property name="label" translatable="yes">Off leaves the background to another program</property>
-                                                <property name="xalign">0</property>
-                                                <property name="wrap">true</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkSwitch" id="bg_enable">
-                                            <property name="name">bg_enable</property>
-                                            <property name="valign">3</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSeparator"></object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <style>
-                                          <class name="row"/>
-                                        </style>
-                                        <property name="spacing">16</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="orientation">1</property>
-                                            <property name="hexpand">true</property>
-                                            <property name="valign">3</property>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <style>
-                                                  <class name="title"/>
-                                                </style>
-                                                <property name="label" translatable="yes">Let inua draw it</property>
+                                                <property name="label" translatable="yes">inua draws the wallpaper</property>
                                                 <property name="xalign">0</property>
                                               </object>
                                             </child>
@@ -794,6 +751,17 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                                 <property name="wrap">true</property>
                                               </object>
                                             </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="bg_another">
+                                            <style>
+                                              <class name="plain"/>
+                                            </style>
+                                            <property name="name">bg_another</property>
+                                            <property name="valign">3</property>
+                                            <property name="icon-name">media-playlist-shuffle-symbolic</property>
+                                            <property name="tooltip-text" translatable="yes">Draw another</property>
                                           </object>
                                         </child>
                                         <child>

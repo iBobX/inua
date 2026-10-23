@@ -1,10 +1,10 @@
 package ui
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -17,10 +17,12 @@ import (
 // picture (wallgen.OfDay) for the theme, at the largest monitor's size, off
 // the main thread. It is kept in pictureDir under a name that says what was
 // drawn (wallgen.Key), so a later start shows the file without drawing it
-// again; at midnight the next day's is drawn.
+// again; at midnight the next day's is drawn. Another (the settings' shuffle
+// button) is kept for the rest of the day in the file pick.
 
-// picturePath is the file of the day's picture, or "" while it is being
-// drawn; loadWallpaper runs again when it is done.
+// picturePath is the file of the day's picture; while it is being drawn the
+// one shown before, or "" for none. loadWallpaper runs again when it is
+// done.
 func (s *shellUI) picturePath() string {
 	s.nextPicture()
 	p, err := wallgen.NewPalette(shellThemeColors(s, s.theme()))
@@ -32,16 +34,17 @@ func (s *shellUI) picturePath() string {
 	if w == 0 {
 		return ""
 	}
-	name, seed := wallgen.OfDay(time.Now())
-	key := wallgen.Key(name, w, h, p, seed)
 	dir := pictureDir()
+	name, seed := todaysPicture(dir, time.Now())
+	key := wallgen.Key(name, w, h, p, seed)
 	path := filepath.Join(dir, key+".png")
 	if _, err := os.Stat(path); err == nil {
 		go prunePictures(dir, path)
+		s.styles.shown = path
 		return path
 	}
 	if s.styles.drawing == key {
-		return ""
+		return s.shownPicture()
 	}
 	s.styles.drawing = key
 	go func() {
@@ -59,7 +62,45 @@ func (s *shellUI) picturePath() string {
 			s.loadWallpaper() // shows it, unless the settings moved on meanwhile
 		})
 	}()
-	return ""
+	return s.shownPicture()
+}
+
+// shownPicture is the picture inua drew last shown, while it is kept.
+func (s *shellUI) shownPicture() string {
+	if _, err := os.Stat(s.styles.shown); s.styles.shown == "" || err != nil {
+		return ""
+	}
+	return s.styles.shown
+}
+
+// anotherPicture draws another picture in place of the one shown, for the
+// rest of the day.
+func (s *shellUI) anotherPicture() {
+	dir := pictureDir()
+	now := time.Now()
+	name, _ := todaysPicture(dir, now)
+	name, seed := wallgen.Another(name)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		log.Printf("wallpaper: %v", err)
+	}
+	line := fmt.Sprintf("%s %s %d\n", now.Format(time.DateOnly), name, seed)
+	if err := os.WriteFile(filepath.Join(dir, "pick"), []byte(line), 0o644); err != nil {
+		log.Printf("wallpaper: %v", err)
+	}
+	s.loadWallpaper()
+}
+
+// todaysPicture is the picture of now's day: the one picked in its place
+// that day, or the day's own (wallgen.OfDay).
+func todaysPicture(dir string, now time.Time) (string, uint64) {
+	if b, err := os.ReadFile(filepath.Join(dir, "pick")); err == nil {
+		var day, name string
+		var seed uint64
+		if _, err := fmt.Sscan(string(b), &day, &name, &seed); err == nil && day == now.Format(time.DateOnly) {
+			return name, seed
+		}
+	}
+	return wallgen.OfDay(now)
 }
 
 // nextPicture loads the wallpaper again just after midnight, for the next
@@ -110,11 +151,11 @@ func drawPicture(dir, path, name string, w, h int, p wallgen.Palette, seed uint6
 }
 
 // prunePictures removes the pictures kept but for keep, the one shown: only
-// it is worth its room. One being drawn is left to finish.
+// it is worth its room. One being drawn (.png.part) is left to finish.
 func prunePictures(dir, keep string) {
-	old, _ := filepath.Glob(filepath.Join(dir, "*"))
+	old, _ := filepath.Glob(filepath.Join(dir, "*.png"))
 	for _, f := range old {
-		if f != keep && !strings.HasSuffix(f, ".part") {
+		if f != keep {
 			os.Remove(f)
 		}
 	}

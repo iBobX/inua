@@ -427,8 +427,9 @@ Phosphor icons, and matching Fcitx 5 themes.
 ## Wallpaper
 
 An image placed your way, the theme's ground with a fine texture, or, with
-*Let inua draw it* (`background.generate`), a picture inua draws for your
-theme, another each day.
+*inua draws the wallpaper* (`background.generate`, the default), a picture
+inua draws for your theme, another each day; the shuffle button beside it
+draws another for the rest of the day.
 
 The pictures are made by code, not shipped as files (`internal/wallgen`):
 scenes in their own colours (a sunset over the sea, the cosmos, a cat

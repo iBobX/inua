@@ -30,6 +30,7 @@ type styles struct {
 	swatches  *gtk.CssProvider // the settings window's theme swatches
 	bar       *gtk.CssProvider // per-workspace bar background transparency
 	drawing   string           // the picture inua is drawing, by its key (picturePath)
+	shown     string           // the file of the picture inua drew last shown
 	midnight  *time.Timer      // draws the next day's picture (nextPicture)
 }
 

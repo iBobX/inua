@@ -66,6 +66,17 @@ func TestOfDay(t *testing.T) {
 	}
 }
 
+// Another picture is never the one shown.
+func TestAnother(t *testing.T) {
+	for _, r := range recipes {
+		for range 20 {
+			if n, _ := Another(r.name); n == r.name {
+				t.Fatalf("after %s, %s again", r.name, n)
+			}
+		}
+	}
+}
+
 func TestDrawRefuses(t *testing.T) {
 	p := testPalette(t)
 	if _, err := Draw("nothing", 10, 10, p, 0); err == nil {

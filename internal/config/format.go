@@ -321,7 +321,7 @@ fit = %s
 # Colour around and behind the picture, "#rrggbb". Empty: the theme's ground.
 color = %s
 
-# Let inua draw the wallpaper for your theme, in place of the image: a
+# inua draws the wallpaper for your theme, in place of the image: a
 # sunset, the cosmos, a cat watching the moon, contours … another each day.
 generate = %t
 

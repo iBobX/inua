@@ -5,9 +5,31 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/lyricat/inua/internal/wallgen"
 )
+
+// Another picture picked stands for the day's own until the day is over.
+func TestPickedPictureLastsTheDay(t *testing.T) {
+	dir := t.TempDir()
+	day := time.Date(2026, 10, 23, 9, 0, 0, 0, time.Local)
+	own, ownSeed := wallgen.OfDay(day)
+	if n, s := todaysPicture(dir, day); n != own || s != ownSeed {
+		t.Fatalf("without a pick: %s/%d, want the day's %s/%d", n, s, own, ownSeed)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "pick"), []byte("2026-10-23 cat 42\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if n, s := todaysPicture(dir, day.Add(14*time.Hour)); n != "cat" || s != 42 {
+		t.Errorf("late that day: %s/%d, want cat/42", n, s)
+	}
+	next := day.AddDate(0, 0, 1)
+	want, wantSeed := wallgen.OfDay(next)
+	if n, s := todaysPicture(dir, next); n != want || s != wantSeed {
+		t.Errorf("the next day: %s/%d, want its own %s/%d", n, s, want, wantSeed)
+	}
+}
 
 // A built-in picture is drawn to its file whole, at its size; the pictures
 // kept from before go when another is shown, but not one being drawn.
@@ -36,7 +58,8 @@ func TestPictureIsDrawnAndKeptAlone(t *testing.T) {
 
 	old := filepath.Join(dir, "old.png")
 	drawing := filepath.Join(dir, "next.png.part")
-	for _, f := range []string{old, drawing} {
+	pick := filepath.Join(dir, "pick")
+	for _, f := range []string{old, drawing, pick} {
 		if err := os.WriteFile(f, nil, 0o644); err != nil {
 			t.Fatal(err)
 		}
@@ -45,7 +68,7 @@ func TestPictureIsDrawnAndKeptAlone(t *testing.T) {
 	if _, err := os.Stat(old); !os.IsNotExist(err) {
 		t.Error("the picture from before was kept")
 	}
-	for _, f := range []string{path, drawing} {
+	for _, f := range []string{path, drawing, pick} {
 		if _, err := os.Stat(f); err != nil {
 			t.Errorf("%s went: %v", filepath.Base(f), err)
 		}

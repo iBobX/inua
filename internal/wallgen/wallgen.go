@@ -12,6 +12,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"math/rand/v2"
 	"runtime"
 	"slices"
 	"strconv"
@@ -72,6 +73,16 @@ func OfDay(t time.Time) (name string, seed uint64) {
 	day := time.Date(y, m, d, 0, 0, 0, 0, time.UTC).Unix() / 86400
 	n := int64(len(recipes))
 	return recipes[day%n].name, uint64(day / n)
+}
+
+// Another is a picture chosen at random, of another recipe than name.
+func Another(name string) (string, uint64) {
+	i := slices.IndexFunc(recipes, func(r recipe) bool { return r.name == name })
+	j := rand.IntN(len(recipes) - 1)
+	if i >= 0 && j >= i {
+		j++
+	}
+	return recipes[j].name, rand.Uint64()
 }
 
 // Draw makes the picture name, in its variation seed, at w×h pixels.
