@@ -2,18 +2,10 @@ package pty
 
 import (
 	"os/signal"
-	"sync"
-	"syscall"
 	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
-
-// jobSignals are the signals a terminal's programs must get as usual:
-// Ctrl+C, Ctrl+\, Ctrl+Z and the job-control stops.
-var jobSignals = []syscall.Signal{syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTSTP, syscall.SIGTTIN, syscall.SIGTTOU}
-
-var defaultOnce sync.Once
 
 // defaultSignals sets those this process inherited as ignored (started in
 // the background by a non-interactive shell, say) back to the default.

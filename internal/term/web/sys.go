@@ -59,7 +59,7 @@ func (s *sampler) read() sysInfo {
 		Who:    cmp.Or(name, "?") + "@" + cmp.Or(hostname, "localhost"),
 		Shell:  filepath.Base(cmp.Or(set.Shell.Program, os.Getenv("SHELL"), "sh")),
 		Memory: -1,
-		Uptime: sysmon.Uptime().Seconds(),
+		Uptime: uptime().Seconds(),
 	}
 	s.mu.Lock()
 	info.CPU = s.cpu

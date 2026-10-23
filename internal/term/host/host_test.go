@@ -14,9 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/godbus/dbus/v5"
-
-	"github.com/lyricat/inua/internal/dbustest"
 	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/layout"
 	"github.com/lyricat/inua/internal/term/shellint"
@@ -698,32 +695,29 @@ read answer
 	wait("the shell again", func(p PaneInfo) bool { return p.Agent == "" })
 }
 
-// fakeNotes is a notification server on a private bus.
-type fakeNotes struct {
-	mu    sync.Mutex
-	calls [][]any
+// fakeDesktop takes the host's notifications and raises.
+type fakeDesktop struct {
+	mu     sync.Mutex
+	notes  [][2]string
+	shows  []func()
+	raised chan struct{}
 }
 
-func (f *fakeNotes) Notify(app string, replaces uint32, icon, summary, body string, actions []string, hints map[string]dbus.Variant, timeout int32) (uint32, *dbus.Error) {
+func (f *fakeDesktop) Notify(summary, body string, show func()) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.calls = append(f.calls, []any{summary, body, actions})
-	return uint32(len(f.calls)), nil
+	f.notes = append(f.notes, [2]string{summary, body})
+	f.shows = append(f.shows, show)
+	return nil
 }
+
+func (f *fakeDesktop) Raise() { f.raised <- struct{}{} }
 
 // A blocked agent in a pane nobody looks at posts a notification; its
 // Show brings the pane up.
 func TestNotify(t *testing.T) {
 	if err := vt.Load(); err != nil {
 		t.Skip(err)
-	}
-	addr := dbustest.Start(t)
-	t.Setenv("DBUS_SESSION_BUS_ADDRESS", addr)
-	server := dbustest.Conn(t, addr)
-	notes := &fakeNotes{}
-	server.Export(notes, "/org/freedesktop/Notifications", "org.freedesktop.Notifications")
-	if r, err := server.RequestName("org.freedesktop.Notifications", dbus.NameFlagDoNotQueue); err != nil || r != dbus.RequestNameReplyPrimaryOwner {
-		t.Fatalf("name: %v %v", r, err)
 	}
 	bin := t.TempDir()
 	os.WriteFile(filepath.Join(bin, "codex"), []byte("#!/bin/sh\nprintf 'Allow command?\\n  $ rm -rf x\\n'\nread x\n"), 0o755)
@@ -733,8 +727,8 @@ func TestNotify(t *testing.T) {
 	h.ExitWhenEmpty = false
 	h.Agents, _ = agent.Load("")
 	h.Notify = true
-	raised := make(chan struct{}, 1)
-	h.Raise = func() { raised <- struct{}{} }
+	desk := &fakeDesktop{raised: make(chan struct{}, 1)}
+	h.Desktop = desk
 	c := dial(t, path, newWatcher())
 	ws, _ := c.Open(t.TempDir(), "")
 	st, _ := c.State()
@@ -745,9 +739,9 @@ func TestNotify(t *testing.T) {
 	c.Input(id, []byte("codex\n"))
 	deadline := time.Now().Add(6 * time.Second)
 	for {
-		notes.mu.Lock()
-		n := len(notes.calls)
-		notes.mu.Unlock()
+		desk.mu.Lock()
+		n := len(desk.notes)
+		desk.mu.Unlock()
 		if n > 0 {
 			break
 		}
@@ -756,16 +750,16 @@ func TestNotify(t *testing.T) {
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
-	notes.mu.Lock()
-	got := notes.calls[0]
-	notes.mu.Unlock()
-	if got[0] != "Codex needs you" || got[1] != "Allow command?" {
+	desk.mu.Lock()
+	got, show := desk.notes[0], desk.shows[0]
+	desk.mu.Unlock()
+	if got != [2]string{"Codex needs you", "Allow command?"} {
 		t.Errorf("notification %q", got)
 	}
 	// Show: the pane's session comes up, and a window.
-	server.Emit("/org/freedesktop/Notifications", "org.freedesktop.Notifications.ActionInvoked", uint32(1), "default")
+	show()
 	select {
-	case <-raised:
+	case <-desk.raised:
 	case <-time.After(5 * time.Second):
 		t.Fatal("no window raised")
 	}

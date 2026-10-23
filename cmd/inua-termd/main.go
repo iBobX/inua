@@ -17,6 +17,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/logfile"
 	"github.com/lyricat/inua/internal/term/agent"
+	"github.com/lyricat/inua/internal/term/desktop"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/settings"
 	"github.com/lyricat/inua/internal/term/shellint"
@@ -69,7 +70,7 @@ func serveHost() int {
 	for _, err := range errs {
 		log.Printf("inua-termd: agents: %v", err)
 	}
-	h.Agents, h.Notify = known, set.Agents.Notifications
+	h.Agents, h.Notify, h.Desktop = known, set.Agents.Notifications, desktop.New()
 	if err := h.Remember(host.StatePath(), set.Remember.Forget, set.Remember.Commands); err != nil {
 		log.Printf("inua-termd: remembering: %v", err)
 	}

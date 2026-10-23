@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 // maxLog is how large a log grows before it is kept as NAME.1 and begun
@@ -36,7 +38,7 @@ func To(name string) {
 		return
 	}
 	log.SetOutput(f)
-	if err := syscall.Dup3(int(f.Fd()), 2, 0); err != nil {
+	if err := unix.Dup2(int(f.Fd()), 2); err != nil {
 		log.Printf("%s: the standard error stays: %v", filepath.Base(os.Args[0]), err)
 	}
 	log.Printf("%s %d: started", filepath.Base(os.Args[0]), os.Getpid())
