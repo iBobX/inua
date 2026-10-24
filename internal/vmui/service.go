@@ -2,6 +2,8 @@ package vmui
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/godbus/dbus/v5"
@@ -1068,13 +1070,54 @@ func openSpice(socket string) error {
 	if err != nil {
 		return errors.New("remote-viewer (virt-viewer) is not installed")
 	}
-	cmd := exec.Command(bin, "spice+unix://"+socket)
+	uri, err := spiceURI(socket)
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(bin, uri)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 	go cmd.Wait()
 	return nil
+}
+
+// spiceURI is remote-viewer's address for a SPICE socket. remote-viewer takes
+// the path from the URI as it stands: a space breaks the URI, and an escaped
+// one is not unescaped. A path with either gets a symbolic link of a plain
+// name, beside the machines' runtime directories, which remote-viewer reaches
+// the socket through.
+func spiceURI(socket string) (string, error) {
+	if uriSafePath(socket) {
+		return "spice+unix://" + socket, nil
+	}
+	dir := filepath.Dir(filepath.Dir(socket))
+	sum := sha256.Sum256([]byte(socket))
+	link := filepath.Join(dir, "spice-"+hex.EncodeToString(sum[:6])+".sock")
+	if !uriSafePath(link) {
+		return "", fmt.Errorf("remote-viewer cannot reach %s: its path has characters a URI cannot hold", socket)
+	}
+	if target, err := os.Readlink(link); err != nil || target != socket {
+		_ = os.Remove(link)
+		if err := os.Symlink(socket, link); err != nil {
+			return "", err
+		}
+	}
+	return "spice+unix://" + link, nil
+}
+
+// uriSafePath reports whether a path can stand in a URI as it is.
+func uriSafePath(path string) bool {
+	for _, r := range path {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
+		case strings.ContainsRune("/._-+~", r):
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 // rdpDisplay is the monitor FreeRDP's window appears on: its logical size and

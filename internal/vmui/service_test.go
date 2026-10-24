@@ -458,3 +458,30 @@ func TestStatusTextReportsMachinesAndChecks(t *testing.T) {
 		t.Errorf("an empty report = %q", got)
 	}
 }
+
+// remote-viewer cannot take a socket path with a space, which a machine named
+// "ubuntu 2604" has: it is reached through a link of a plain name instead.
+func TestSpiceURIAvoidsSpaces(t *testing.T) {
+	runtime := t.TempDir()
+	plain := filepath.Join(runtime, "ubuntu", "spice.sock")
+	if got, err := spiceURI(plain); err != nil || got != "spice+unix://"+plain {
+		t.Errorf("plain path: %q, %v", got, err)
+	}
+
+	socket := filepath.Join(runtime, "ubuntu 2604", "spice.sock")
+	got, err := spiceURI(socket)
+	if err != nil {
+		t.Fatal(err)
+	}
+	link, ok := strings.CutPrefix(got, "spice+unix://")
+	if !ok || !uriSafePath(link) || filepath.Dir(link) != runtime {
+		t.Fatalf("uri = %q", got)
+	}
+	if target, err := os.Readlink(link); err != nil || target != socket {
+		t.Errorf("link points at %q (%v), want %q", target, err, socket)
+	}
+	// Asked again, the same link serves.
+	if again, err := spiceURI(socket); err != nil || again != got {
+		t.Errorf("again: %q, %v", again, err)
+	}
+}
