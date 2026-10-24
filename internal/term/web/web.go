@@ -20,6 +20,7 @@ import (
 	"os"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 
@@ -179,6 +180,14 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+// A page gone without a word (a phone's browser in the background, its
+// network lost) answers no ping: after pongWait its connection, and the
+// host's, end.
+const (
+	pingEvery = 20 * time.Second
+	pongWait  = 50 * time.Second
+)
+
 // bridge relays a WebSocket and a connection to the host: the bridge says
 // hello, then each binary message is a frame (its kind, then its
 // payload) one way, and each frame a message the other. The page sends
@@ -201,6 +210,24 @@ func (s *Server) bridge(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("inua-termd serve: %s connected", r.RemoteAddr)
 	defer log.Printf("inua-termd serve: %s gone", r.RemoteAddr)
+	ws.SetReadDeadline(time.Now().Add(pongWait))
+	ws.SetPongHandler(func(string) error { return ws.SetReadDeadline(time.Now().Add(pongWait)) })
+	stop := make(chan struct{})
+	defer close(stop)
+	go func() {
+		t := time.NewTicker(pingEvery)
+		defer t.Stop()
+		for {
+			select {
+			case <-stop:
+				return
+			case <-t.C:
+				if ws.WriteControl(websocket.PingMessage, nil, time.Now().Add(5*time.Second)) != nil {
+					return
+				}
+			}
+		}
+	}()
 	go func() {
 		defer ws.Close()
 		for {
@@ -218,6 +245,7 @@ func (s *Server) bridge(w http.ResponseWriter, r *http.Request) {
 		if err != nil || len(msg) < 1 {
 			return
 		}
+		ws.SetReadDeadline(time.Now().Add(pongWait))
 		if msg[0] != host.FrameControl && msg[0] != host.FrameInput {
 			return
 		}

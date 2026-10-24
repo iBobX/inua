@@ -454,11 +454,25 @@ function status(text) {
   for (const n of document.querySelectorAll(".notice")) { n.textContent = text; n.hidden = !text; }
 }
 
+// A phone's browser drops a page's connection while it is in the
+// background, often saying nothing, and its network may not be back yet
+// when the page is: a connection that does not open in a few seconds is
+// tried again, one silent while the page shows is checked with a ping,
+// and coming back to the page checks it at once.
+let heard = 0, retryTimer = 0, retries = 0, pinging = 0;
 function connect() {
+  clearTimeout(retryTimer);
+  if (ws) { ws.onclose = ws.onmessage = ws.onopen = null; try { ws.close(); } catch (e) {} }
+  connected = false;
+  for (const [id, r] of pending) r({ error: "offline" });  // the old connection's questions get no answer
+  pending.clear();
   status(T("CONNECTING…"));
-  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws?t=" + token);
-  ws.binaryType = "arraybuffer";
-  ws.onmessage = ev => {
+  const sock = ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws?t=" + token);
+  sock.binaryType = "arraybuffer";
+  retryTimer = setTimeout(() => { if (ws === sock && sock.readyState !== 1) connect(); }, 5000);
+  sock.onopen = () => { clearTimeout(retryTimer); heard = Date.now(); };
+  sock.onmessage = ev => {
+    heard = Date.now();
     received += ev.data.byteLength;
     const b = new Uint8Array(ev.data);
     if (b[0] === 1) return output(new DataView(ev.data).getUint32(1, true), b.subarray(5));
@@ -474,11 +488,28 @@ function connect() {
       panToBottom();
     }
   };
-  ws.onclose = () => {
-    connected = false; status(T("OFFLINE · RECONNECTING")); setTimeout(connect, 1000); };
+  sock.onclose = () => {
+    if (ws !== sock) return;
+    connected = false;
+    status(T("OFFLINE · RECONNECTING"));
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(connect, Math.min(1000 * 2 ** retries++, 5000));
+  };
 }
+// alive checks the connection: a ping the host answers, else a new one.
+async function alive(wait) {
+  if (!ws || ws.readyState !== 1) return connect();
+  if (pinging) return;
+  pinging = setTimeout(() => { pinging = 0; connect(); }, wait);
+  await request({ type: "list" });
+  clearTimeout(pinging); pinging = 0;
+}
+setInterval(() => { if (!document.hidden && connected && Date.now() - heard > 10000) alive(5000); }, 5000);
+addEventListener("online", () => alive(3000));
+addEventListener("pageshow", e => { if (e.persisted) alive(3000); });
 
 async function welcome() {
+  retries = 0;
   // The host sends the questions waiting again, after its welcome.
   secrets = []; showSecret();
   status("");
@@ -1129,6 +1160,7 @@ function leave(id) {
 // Away from the page (another app, the screen off), the pane is let go;
 // back, it is fitted and drawn again from a snapshot.
 document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) alive(3000);  // back: is the connection still there?
   if (!cur) return;
   if (document.hidden) leave(cur);
   else open(cur, true);
