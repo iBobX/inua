@@ -211,3 +211,10 @@ func PlayIcon(playing bool) string {
 	}
 	return "media-playback-start-symbolic"
 }
+
+// VolumeChanged reports whether an audio update is a change the user made
+// (the volume or the mute), which the volume indicator shows; audio
+// coming or going is not.
+func VolumeChanged(old, new system.AudioState) bool {
+	return old.Available && new.Available && (old.Volume != new.Volume || old.Muted != new.Muted)
+}

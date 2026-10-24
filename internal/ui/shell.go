@@ -101,6 +101,7 @@ type shellUI struct {
 	settings  settings
 	wifi      wifiState // the networks, while a list shows them
 	tray      tray
+	osd       osd
 	sys       shell.System
 	svc       services
 
@@ -230,6 +231,8 @@ type shellUI struct {
 	onNoteClicked          func(gtk.GestureClick, int32, float64, float64)
 	onNotesSave            glib.SourceFunc
 	onBannerTick           glib.SourceFunc
+	onOSDHide              glib.SourceFunc
+	onOSDGone              glib.SourceFunc
 	onBannerGone           glib.SourceFunc
 	onBannerEnter          func(gtk.EventControllerMotion, float64, float64)
 	onBannerLeave          func(gtk.EventControllerMotion)
@@ -400,6 +403,7 @@ func (s *shellUI) start() {
 		g.SetState(gtk.EventSequenceClaimedValue)
 	}
 	s.bindControlHandlers()
+	s.bindOSDHandlers()
 	s.bindAgendaHandlers()
 	s.bindShotHandlers()
 	s.bindShotDrawerHandlers()

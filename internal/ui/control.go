@@ -160,6 +160,7 @@ func (s *shellUI) openControl() {
 	}
 	s.closeCenter()
 	s.closeAgenda()
+	s.hideVolume() // the slider shows the volume now
 	s.buildControl()
 	c.open = true
 	s.applyControl()

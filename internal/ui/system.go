@@ -53,7 +53,11 @@ func (s *shellUI) startSystem() {
 
 func (s *shellUI) update(f func(*shell.System)) {
 	gtkx.Post(func() {
+		audio := s.sys.Audio
 		f(&s.sys)
+		if shell.VolumeChanged(audio, s.sys.Audio) {
+			s.showVolume(s.sys.Audio)
+		}
 		for _, b := range s.bars {
 			b.setStatus(&s.sys)
 		}

@@ -1,0 +1,40 @@
+// The volume indicator: a card at the foot of the screen for a moment
+// after the volume changes, over the windows, taking no input. The margins
+// are the room for the card's shadow, which the window would cut.
+using Gtk 4.0;
+
+ApplicationWindow osd {
+  styles ["osd"]
+
+  Revealer reveal {
+    transition-type: crossfade;
+
+    Box card {
+      styles ["osd-card"]
+      spacing: 12;
+      width-request: 260;
+      margin-top: 32;
+      margin-start: 32;
+      margin-end: 32;
+      margin-bottom: 32;
+
+      Image icon {
+        pixel-size: 18;
+        valign: center;
+      }
+
+      LevelBar level {
+        hexpand: true;
+        valign: center;
+        min-value: 0;
+        max-value: 1;
+      }
+
+      Label value {
+        styles ["readout"]
+        width-chars: 5;
+        xalign: 1;
+      }
+    }
+  }
+}
