@@ -2,7 +2,6 @@ package ui
 
 import (
 	"bytes"
-	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -171,9 +170,11 @@ type voiceSettings struct {
 	// one thing to do about it.
 	state, detail               gtk.Label
 	install, site, start, setup gtk.Button
-	// installing is set while InstallVoxtype runs; progress says where.
-	installing bool
-	progress   string
+	// busy is set while voxtype installs, changes model or gets its other
+	// engines: busyTitle says which, progress where it is.
+	busy                bool
+	busyTitle, progress string
+	pick                voxtypePicker
 	// The model (voxtype's) or the profile (the AI's), and how the words
 	// reach the window.
 	modelRow          gtk.Box
@@ -218,13 +219,7 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 			s.changeSettings(c)
 			return false // let the switch move
 		}
-		s.onVoiceSetup = func(gtk.Button) {
-			if s.cfg.Voice.Engine == "ai" {
-				s.showSettingsPage("ai")
-				return
-			}
-			s.voiceSetupModel()
-		}
+		s.onVoiceSetup = func(gtk.Button) { s.showSettingsPage("ai") }
 		s.onVoiceInstall = func(gtk.Button) { s.voiceInstall() }
 		s.onVoiceSite = func(gtk.Button) {
 			if err := desktop.Spawn([]string{"xdg-open", voxtypeSite}, ""); err != nil {
@@ -302,8 +297,9 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 	gtkx.Append(body, &row.Widget)
 	row, title, model := titledRow()
 	v.modelRow, v.modelTitle, v.model = *row, *title, *model
-	v.setup = button(row, i18n.T("Change"), &s.onVoiceSetup) // voxtype's setup, or Settings → AI
+	v.setup = button(row, i18n.T("Change"), &s.onVoiceSetup) // Settings → AI
 	gtkx.Append(body, &row.Widget)
+	s.buildVoxtypePicker(body, button)
 	row, typing := displayRow(i18n.T("Typing"), " ")
 	v.typingRow, v.typing = *row, *typing
 	gtkx.Append(body, &row.Widget)
@@ -376,8 +372,8 @@ func (s *shellUI) showVoice() {
 	st.engineDrop.SetSelected(uint32(max(0, slices.Index(config.VoiceEngines, s.cfg.Voice.Engine))))
 	var title, detail string
 	switch {
-	case st.installing:
-		title, detail = i18n.T("Installing voxtype…"), st.progress
+	case st.busy:
+		title, detail = st.busyTitle, st.progress
 	case v.Status == system.VoiceNoProfile:
 		title = i18n.T("No profile turns speech into text")
 		detail = i18n.T("Turn on Voice for a profile in Settings → AI, and choose it for Voice input")
@@ -385,7 +381,7 @@ func (s *shellUI) showVoice() {
 		title, detail = i18n.T("pw-cat is not installed"), i18n.T("Dictation records with PipeWire's pw-cat (pipewire-bin)")
 	case v.Status == system.VoiceMissing:
 		title = i18n.T("voxtype is not installed")
-		detail = i18n.Tf("Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with an English speech model (Change picks another)", system.VoxtypeVersion)
+		detail = i18n.Tf("Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with a speech model for your language; others are a choice away", system.VoxtypeVersion)
 	case v.Status == system.VoiceStopped:
 		title, detail = i18n.T("The daemon is not running"), i18n.T("voxtype is installed; its user service is stopped")
 	case !v.Available:
@@ -403,20 +399,17 @@ func (s *shellUI) showVoice() {
 	}
 	st.state.SetText(title)
 	st.detail.SetText(detail)
-	voxtype := !ai && !st.installing
+	voxtype := !ai && !st.busy
 	st.install.SetVisible(voxtype && v.Status == system.VoiceMissing)
 	st.site.SetVisible(voxtype && v.Status == system.VoiceMissing)
 	st.start.SetVisible(voxtype && v.Status == system.VoiceStopped)
 	st.aiSettings.SetVisible(ai && v.Status == system.VoiceNoProfile)
-	st.engineDrop.SetSensitive(!st.installing)
+	st.engineDrop.SetSensitive(!st.busy)
 
-	st.modelRow.SetVisible(v.Available)
-	st.modelTitle.SetText(i18n.T("Model"))
-	st.model.SetText(cmp.Or(v.Model, i18n.T("Unknown")))
-	if ai {
-		st.modelTitle.SetText(i18n.T("Profile"))
-		st.model.SetText(i18n.Tf("%s; the recording goes to its provider", v.Model))
-	}
+	st.modelRow.SetVisible(ai && v.Available) // the profile; voxtype's model is the picker's
+	st.modelTitle.SetText(i18n.T("Profile"))
+	st.model.SetText(i18n.Tf("%s; the recording goes to its provider", v.Model))
+	s.showVoxtypePicker(!ai && v.Available)
 	st.typingRow.SetVisible(v.Available)
 	if _, err := exec.LookPath("wtype"); err == nil {
 		st.typing.SetText(i18n.T("wtype types the words into the window"))
@@ -459,21 +452,24 @@ func voiceStateText(v system.VoiceState) string {
 // on the page; the poll shows it come up.
 func (s *shellUI) voiceInstall() {
 	st := &s.settings.voice
-	if st.installing {
+	if st.busy {
 		return
 	}
-	st.installing, st.progress = true, i18n.T("Downloading…")
+	st.busy, st.busyTitle, st.progress = true, i18n.T("Installing voxtype…"), i18n.T("Downloading…")
 	st.setStatus("")
 	s.showVoice()
+	lang := i18n.Lang()
 	go func() {
-		err := system.InstallVoxtype(context.Background(), func(step system.VoxtypeStep, done float64) {
+		err := system.InstallVoxtype(context.Background(), lang, func(step system.VoxtypeStep, done float64) {
 			var text string
-			switch step {
-			case system.VoxtypeDownloading:
+			switch {
+			case step == system.VoxtypeDownloading:
 				text = i18n.Tf("Downloading voxtype %s… %s", system.VoxtypeVersion, shell.Percent(done))
-			case system.VoxtypeModel:
-				text = i18n.T("Downloading its speech model…")
-			case system.VoxtypeService:
+			case step == system.VoxtypeModelDownloading && done >= 0:
+				text = i18n.Tf("Downloading a speech model… %s", shell.Percent(done))
+			case step == system.VoxtypeModelDownloading:
+				text = i18n.T("Downloading a speech model…")
+			case step == system.VoxtypeService:
 				text = i18n.T("Starting its service…")
 			}
 			gtkx.Post(func() {
@@ -482,7 +478,7 @@ func (s *shellUI) voiceInstall() {
 			})
 		})
 		gtkx.Post(func() {
-			st.installing = false
+			st.busy, st.pick.loaded = false, false
 			if err != nil {
 				st.setStatus(i18n.Tf("voxtype was not installed: %s", err.Error()))
 			}
@@ -506,15 +502,6 @@ func (s *shellUI) voiceStartDaemon() {
 			}
 		})
 	}()
-}
-
-// voiceSetupModel opens voxtype's interactive model setup in a terminal.
-func (s *shellUI) voiceSetupModel() {
-	st := &s.settings.voice
-	term, dashE := desktop.Terminal(s.cfg.TerminalCommand())
-	if err := system.SetupModelCommand(term, dashE).Start(); err != nil {
-		st.setStatus(i18n.Tf("Could not start voxtype's setup: %s", err.Error()))
-	}
 }
 
 // dictationTyper puts dictation's words into the focused window: typed by

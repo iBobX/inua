@@ -161,6 +161,10 @@ type shellUI struct {
 	onVoiceAI              func(gtk.Button)
 	onVoiceEngine          func(uintptr, uintptr, uintptr)
 	onVoiceShow            func(uintptr, uintptr, uintptr)
+	onVoxtypeEngine        func(uintptr, uintptr, uintptr)
+	onVoxtypeModel         func(uintptr, uintptr, uintptr)
+	onVoxtypeUse           func(gtk.Button)
+	onVoxtypeMore          func(gtk.Button)
 	onVoiceStart           func(gtk.Button)
 	onDisplaySwitch        func(gtk.Switch, bool) bool
 	onDisplayButton        func(gtk.Button)

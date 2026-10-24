@@ -21,30 +21,33 @@ import (
 const VoxtypeVersion = "1.1.1"
 
 // voxtypeSums are the release's Linux binaries that InstallVoxtype may
-// choose, by variant, with their SHA-256.
+// choose, by variant, with their SHA-256. The ONNX builds have every
+// engine (Whisper, SenseVoice, Paraformer, Parakeet, Moonshine …) and need
+// nothing more; a processor without AVX2 has the Whisper-only baseline.
 var voxtypeSums = map[string]string{
-	"x86_64-avx512":   "6a23ccf9da9e6c6eaff4b23086cea4f97cab53b12526ec88200344d597dea305",
-	"x86_64-avx2":     "3462262980e5a75391ffdeb7d3b63f9f638d6261df042f04f9119dfb7aab7770",
-	"x86_64-baseline": "cc051aac0870e21d7378edbcde3ceff10238af12a11650ab897d0ad9195225af",
-	"aarch64-cpu":     "f29bdbf6c3c2535ebe8be3abb6ded7d6c0ac9b16392ea3b5ba231e06a7b05687",
+	"x86_64-onnx-avx512": "3f60acd56ed7360dc42ba330119b7cb18da4825aabaef883c0fcd5f7ecf5660f",
+	"x86_64-onnx-avx2":   "683683ef66de6616e415efa7f7893873d7f8d5bfe4b2b05ce3cf3e467d4733d5",
+	"x86_64-baseline":    "cc051aac0870e21d7378edbcde3ceff10238af12a11650ab897d0ad9195225af",
+	"aarch64-onnx":       "e038613888a1d05164b01d4a992666ab08967f415f72e3adb0cea033166d1418",
 }
 
 // voxtypeReleases is where the release's files are; a test serves its own.
 var voxtypeReleases = "https://github.com/peteonrails/voxtype/releases/download"
 
-// voxtypeVariant is the build for this machine: the widest vector
-// instructions the processor has, or "" when there is none for it.
+// voxtypeVariant is the build for this machine: with every engine, for
+// the widest vector instructions the processor has; "" when there is none
+// for it.
 func voxtypeVariant() string {
 	switch runtime.GOARCH {
 	case "arm64":
-		return "aarch64-cpu"
+		return "aarch64-onnx"
 	case "amd64":
 		flags := cpuFlags()
 		switch {
 		case flags["avx512f"]:
-			return "x86_64-avx512"
+			return "x86_64-onnx-avx512"
 		case flags["avx2"]:
-			return "x86_64-avx2"
+			return "x86_64-onnx-avx2"
 		}
 		return "x86_64-baseline"
 	}
@@ -79,16 +82,17 @@ func voxtypeInstallPath() string {
 type VoxtypeStep int
 
 const (
-	VoxtypeDownloading VoxtypeStep = iota // the program; Done is the share so far
-	VoxtypeModel                          // its speech model
-	VoxtypeService                        // its user service, started
+	VoxtypeDownloading      VoxtypeStep = iota // the program; Done is the share so far
+	VoxtypeModelDownloading                    // its speech model; done as for the program
+	VoxtypeService                             // its user service, started
 )
 
 // InstallVoxtype downloads voxtype's release for this machine into
 // ~/.local/bin, refuses it unless its checksum is the one carried here,
-// then has it download its default model and set up and start its user
-// service. progress hears each step, from the goroutine it runs on.
-func InstallVoxtype(ctx context.Context, progress func(step VoxtypeStep, done float64)) error {
+// then has it download a model for lang (VoxtypeStartModel) and use it,
+// and sets up and starts its user service. progress hears each step, with
+// its share done (< 0 not known), from the goroutine it runs on.
+func InstallVoxtype(ctx context.Context, lang string, progress func(step VoxtypeStep, done float64)) error {
 	variant := voxtypeVariant()
 	sum, ok := voxtypeSums[variant]
 	if !ok {
@@ -103,8 +107,11 @@ func InstallVoxtype(ctx context.Context, progress func(step VoxtypeStep, done fl
 	if err := fetchChecked(ctx, url, dest, sum, func(f float64) { progress(VoxtypeDownloading, f) }); err != nil {
 		return err
 	}
-	progress(VoxtypeModel, 0)
-	if err := runStep(ctx, dest, "setup", "--download"); err != nil {
+	progress(VoxtypeModelDownloading, -1)
+	_, arg := VoxtypeStartModel(lang, strings.Contains(variant, "onnx"))
+	if err := downloadModel(ctx, dest, arg, func(_ string, pct float64) {
+		progress(VoxtypeModelDownloading, max(pct, -100)/100)
+	}); err != nil {
 		return fmt.Errorf("the model: %w", err)
 	}
 	progress(VoxtypeService, 0)

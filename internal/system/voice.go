@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"slices"
 	"strings"
 	"time"
 )
@@ -166,15 +165,4 @@ func (v *Voice) StartDaemon() error {
 		return err
 	}
 	return nil
-}
-
-// SetupModelCommand is the command line that opens voxtype's interactive
-// model setup, which lists and downloads its models, in the terminal the
-// settings give; the view runs it.
-func SetupModelCommand(term []string, dashE bool) *exec.Cmd {
-	args := slices.Clone(term[1:])
-	if dashE {
-		args = append(args, "-e")
-	}
-	return exec.Command(term[0], append(args, VoxtypePath(), "setup", "model")...)
 }

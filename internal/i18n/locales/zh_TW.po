@@ -1699,7 +1699,6 @@ msgstr "雷暴"
 
 #: internal/apps/weather/weather.go:214
 #: internal/appui/sysmon.go:1082
-#: internal/ui/voice.go:415
 #: internal/vmui/window.go:2335
 msgid "Unknown"
 msgstr "未知"
@@ -1907,7 +1906,7 @@ msgstr "編輯"
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
 #: internal/termui/guide.go:161
-#: internal/ui/voice.go:300
+#: internal/ui/voice.go:295
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:684
@@ -3236,7 +3235,6 @@ msgstr "計算機"
 #: internal/appui/sysmon.go:978
 #: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:494
-#: internal/ui/voice.go:414
 msgid "Model"
 msgstr "模型"
 
@@ -3317,6 +3315,7 @@ msgid "Installed"
 msgstr "已安裝"
 
 #: internal/appui/sysmon.go:994
+#: internal/ui/voice_models.go:181
 msgid "In use"
 msgstr "使用中"
 
@@ -4078,7 +4077,7 @@ msgid "Replace the installed %s?"
 msgstr "取代已安裝的 %s？"
 
 #: internal/appui/workshop_manager.go:154
-#: internal/ui/voice.go:299
+#: internal/ui/voice.go:294
 #: ui/vm.ui:1279
 msgid "Install"
 msgstr "安裝"
@@ -9690,7 +9689,7 @@ msgid "Pick a colour"
 msgstr "選擇顏色"
 
 #: internal/hyprconf/keys.go:40
-#: internal/ui/voice.go:277
+#: internal/ui/voice.go:272
 #: ui/bar.ui:164
 #: ui/settings.ui:6242
 msgid "Dictation"
@@ -10972,7 +10971,7 @@ msgid "User name"
 msgstr "使用者名稱"
 
 #: internal/mailui/welcome.go:589
-#: internal/ui/voice.go:305
+#: internal/ui/voice.go:300
 msgid "Change"
 msgstr "變更"
 
@@ -11045,7 +11044,7 @@ msgid "Fetching your mail"
 msgstr "正在取得你的郵件"
 
 #: internal/mailui/welcome.go:726
-#: internal/ui/voice.go:455
+#: internal/ui/voice.go:448
 msgid "Ready"
 msgstr "就緒"
 
@@ -14699,7 +14698,7 @@ msgid "the dialog could not be shown"
 msgstr "無法顯示對話框"
 
 #: internal/ui/settings_keyring.go:383
-#: internal/ui/voice.go:392
+#: internal/ui/voice.go:388
 msgid "Looking…"
 msgstr "正在查看…"
 
@@ -15039,192 +15038,286 @@ msgstr "inua無法升級"
 msgid "Could not upgrade: %s"
 msgstr "無法升級:%s"
 
-#: internal/ui/voice.go:157
+#: internal/ui/voice.go:156
 msgid "Dictation did not work"
 msgstr ""
 
-#: internal/ui/voice.go:188
+#: internal/ui/voice.go:189
 msgid "Under the window you type in"
 msgstr ""
 
-#: internal/ui/voice.go:188
+#: internal/ui/voice.go:189
 msgid "In the screen's corner"
 msgstr ""
 
-#: internal/ui/voice.go:188
+#: internal/ui/voice.go:189
 msgid "In the bar only"
 msgstr ""
 
-#: internal/ui/voice.go:193
+#: internal/ui/voice.go:194
 msgid "voxtype, on this machine"
 msgstr ""
 
-#: internal/ui/voice.go:193
+#: internal/ui/voice.go:194
 msgid "An AI profile (Voice input in Settings → AI)"
 msgstr ""
 
-#: internal/ui/voice.go:276
+#: internal/ui/voice.go:271
 msgid "DICTATION"
 msgstr ""
 
-#: internal/ui/voice.go:276
+#: internal/ui/voice.go:271
 msgid "Talk, and the words are typed where you are"
 msgstr ""
 
-#: internal/ui/voice.go:277
+#: internal/ui/voice.go:272
 msgid "A microphone in the bar, and a shortcut to talk"
 msgstr ""
 
-#: internal/ui/voice.go:278
+#: internal/ui/voice.go:273
 msgid "Push to talk"
 msgstr ""
 
-#: internal/ui/voice.go:278
+#: internal/ui/voice.go:273
 msgid "The shortcut records while it is held; off, it starts and stops"
 msgstr ""
 
-#: internal/ui/voice.go:279
+#: internal/ui/voice.go:274
 msgid "Show it"
 msgstr ""
 
-#: internal/ui/voice.go:279
+#: internal/ui/voice.go:274
 msgid "A card with the waveform, then the words; the bar's microphone shows it too"
 msgstr ""
 
-#: internal/ui/voice.go:288
+#: internal/ui/voice.go:283
 msgid "ENGINE"
 msgstr ""
 
-#: internal/ui/voice.go:288
+#: internal/ui/voice.go:283
 msgid "What turns your speech into text"
 msgstr ""
 
-#: internal/ui/voice.go:290
+#: internal/ui/voice.go:285
 msgid "Engine"
 msgstr ""
 
-#: internal/ui/voice.go:290
+#: internal/ui/voice.go:285
 msgid "voxtype keeps the recording on this machine; an AI profile sends it to its provider"
 msgstr ""
 
-#: internal/ui/voice.go:298
+#: internal/ui/voice.go:293
 msgid "voxtype.io"
 msgstr ""
 
-#: internal/ui/voice.go:301
+#: internal/ui/voice.go:296
 msgid "AI Settings"
 msgstr ""
 
-#: internal/ui/voice.go:307
+#: internal/ui/voice.go:303
 msgid "Typing"
 msgstr ""
 
-#: internal/ui/voice.go:380
-msgid "Installing voxtype…"
-msgstr ""
-
-#: internal/ui/voice.go:382
+#: internal/ui/voice.go:378
 msgid "No profile turns speech into text"
 msgstr ""
 
-#: internal/ui/voice.go:383
+#: internal/ui/voice.go:379
 msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
 msgstr ""
 
-#: internal/ui/voice.go:385
+#: internal/ui/voice.go:381
 msgid "pw-cat is not installed"
 msgstr ""
 
-#: internal/ui/voice.go:385
+#: internal/ui/voice.go:381
 msgid "Dictation records with PipeWire's pw-cat (pipewire-bin)"
 msgstr ""
 
-#: internal/ui/voice.go:387
+#: internal/ui/voice.go:383
 msgid "voxtype is not installed"
 msgstr ""
 
-#: internal/ui/voice.go:388
-msgid "Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with an English speech model (Change picks another)"
+#: internal/ui/voice.go:384
+msgid "Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with a speech model for your language; others are a choice away"
 msgstr ""
 
-#: internal/ui/voice.go:390
+#: internal/ui/voice.go:386
 msgid "The daemon is not running"
 msgstr ""
 
-#: internal/ui/voice.go:390
+#: internal/ui/voice.go:386
 msgid "voxtype is installed; its user service is stopped"
 msgstr ""
 
-#: internal/ui/voice.go:397
+#: internal/ui/voice.go:393
 msgid "Click the microphone in the bar, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:399
+#: internal/ui/voice.go:395
 msgid "Click the microphone in the bar, or hold %s, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:401
+#: internal/ui/voice.go:397
 msgid "Click the microphone in the bar, or press %s, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:417
+#: internal/ui/voice.go:410
 msgid "Profile"
 msgstr ""
 
-#: internal/ui/voice.go:418
+#: internal/ui/voice.go:411
 msgid "%s; the recording goes to its provider"
 msgstr ""
 
-#: internal/ui/voice.go:422
+#: internal/ui/voice.go:415
 msgid "wtype types the words into the window"
 msgstr ""
 
-#: internal/ui/voice.go:424
+#: internal/ui/voice.go:417
 msgid "The words are pasted through the clipboard; with wtype installed, they are typed"
 msgstr ""
 
-#: internal/ui/voice.go:451
+#: internal/ui/voice.go:444
 msgid "Listening"
 msgstr ""
 
-#: internal/ui/voice.go:453
+#: internal/ui/voice.go:446
 msgid "Transcribing"
 msgstr ""
 
-#: internal/ui/voice.go:465
+#: internal/ui/voice.go:458
+msgid "Installing voxtype…"
+msgstr ""
+
+#: internal/ui/voice.go:458
 msgid "Downloading…"
 msgstr ""
 
-#: internal/ui/voice.go:473
+#: internal/ui/voice.go:467
+#: internal/ui/voice_models.go:235
 msgid "Downloading voxtype %s… %s"
 msgstr ""
 
-#: internal/ui/voice.go:475
-msgid "Downloading its speech model…"
+#: internal/ui/voice.go:469
+msgid "Downloading a speech model… %s"
 msgstr ""
 
-#: internal/ui/voice.go:477
+#: internal/ui/voice.go:471
+msgid "Downloading a speech model…"
+msgstr ""
+
+#: internal/ui/voice.go:473
 msgid "Starting its service…"
 msgstr ""
 
-#: internal/ui/voice.go:487
+#: internal/ui/voice.go:483
 msgid "voxtype was not installed: %s"
 msgstr ""
 
-#: internal/ui/voice.go:505
+#: internal/ui/voice.go:501
 msgid "voxtype did not start: %s"
 msgstr ""
 
-#: internal/ui/voice.go:516
-msgid "Could not start voxtype's setup: %s"
-msgstr ""
-
-#: internal/ui/voice.go:549
+#: internal/ui/voice.go:536
 msgid "dictation types with wtype, which is not installed"
 msgstr ""
 
-#: internal/ui/voice.go:559
+#: internal/ui/voice.go:546
 msgid "no window has the focus to type into"
+msgstr ""
+
+#: internal/ui/voice_models.go:40
+msgid "OpenAI's open Whisper, run here: many languages; the .en models English alone"
+msgstr ""
+
+#: internal/ui/voice_models.go:41
+msgid "NVIDIA's Parakeet: English (v2), or 25 European languages (v3)"
+msgstr ""
+
+#: internal/ui/voice_models.go:42
+msgid "Small and quick: English, and base-zh, base-ja, tiny-ko, tiny-ar for those languages"
+msgstr ""
+
+#: internal/ui/voice_models.go:43
+msgid "Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"
+msgstr ""
+
+#: internal/ui/voice_models.go:44
+msgid "Alibaba's Paraformer: Chinese (zh) or English (en)"
+msgstr ""
+
+#: internal/ui/voice_models.go:45
+msgid "Dolphin: Eastern languages"
+msgstr ""
+
+#: internal/ui/voice_models.go:46
+msgid "Meta's Omnilingual: more than 1,600 languages"
+msgstr ""
+
+#: internal/ui/voice_models.go:47
+msgid "Cohere's Transcribe"
+msgstr ""
+
+#: internal/ui/voice_models.go:48
+msgid "Whisper on Intel's processors and NPUs (OpenVINO)"
+msgstr ""
+
+#: internal/ui/voice_models.go:68
+msgid "Speech model"
+msgstr ""
+
+#: internal/ui/voice_models.go:78
+#: internal/ui/voice_models.go:183
+msgid "Use"
+msgstr ""
+
+#: internal/ui/voice_models.go:80
+msgid "More engines"
+msgstr ""
+
+#: internal/ui/voice_models.go:80
+msgid "SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's build for them (about 46 MB); your models stay"
+msgstr ""
+
+#: internal/ui/voice_models.go:82
+msgid "Get them"
+msgstr ""
+
+#: internal/ui/voice_models.go:140
+msgid "%s (in use)"
+msgstr ""
+
+#: internal/ui/voice_models.go:142
+msgid "%s (downloaded)"
+msgstr ""
+
+#: internal/ui/voice_models.go:185
+msgid "Download and use"
+msgstr ""
+
+#: internal/ui/voice_models.go:198
+msgid "Getting %s…"
+msgstr ""
+
+#: internal/ui/voice_models.go:203
+msgid "Downloading %s…"
+msgstr ""
+
+#: internal/ui/voice_models.go:205
+msgid "Downloading %s… %s"
+msgstr ""
+
+#: internal/ui/voice_models.go:215
+msgid "%s is not in use: %s"
+msgstr ""
+
+#: internal/ui/voice_models.go:229
+msgid "Getting voxtype's other engines…"
+msgstr ""
+
+#: internal/ui/voice_models.go:242
+msgid "voxtype's other engines did not come: %s"
 msgstr ""
 
 #: internal/viewerui/app.go:36

@@ -135,11 +135,16 @@ Two engines turn the speech into text (`[voice] engine`):
 - **voxtype** (the default), the [voxtype](https://voxtype.io) daemon,
   on this machine; the recording never leaves it. When voxtype is not
   installed, the page's **Install** downloads its release for this
-  processor (version pinned in inua) from GitHub into `~/.local/bin`,
-  refuses it unless its SHA-256 is the one inua carries, then has it
-  download its English speech model and set up and start its user
-  service. **Change** opens voxtype's own setup to pick another model;
-  **Start** starts a stopped daemon. voxtype types the words itself.
+  processor (version pinned in inua) from GitHub into `~/.local/bin`:
+  the build with every engine (Whisper, SenseVoice, Paraformer, Parakeet,
+  Moonshine …), or Whisper's alone on a processor without AVX2. It
+  refuses the file unless its SHA-256 is the one inua carries, then has
+  voxtype download a model for the language in use (SenseVoice for
+  Chinese, Japanese and Korean; Whisper otherwise) and set up and start
+  its user service. **Speech model** picks the engine and the model,
+  downloading it with its progress shown; a Whisper-only voxtype offers
+  **More engines**, the fuller build in its place. **Start** starts a
+  stopped daemon. voxtype types the words itself.
 - **An AI profile** (`engine = "ai"`): the shell records the microphone
   (pw-cat) and `inua-assistant --transcribe` turns it into text with the
   profile chosen for Voice input in Settings → AI, whose provider gets
