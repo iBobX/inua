@@ -26,113 +26,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <object class="GtkBox">
                     <style>
                       <class name="term-col-head"/>
-                    </style>
-                    <property name="spacing">8</property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="orientation">1</property>
-                        <property name="hexpand">true</property>
-                        <property name="valign">3</property>
-                        <property name="spacing">2</property>
-                        <child>
-                          <object class="GtkLabel" id="nerd_who">
-                            <style>
-                              <class name="term-nerd-who"/>
-                            </style>
-                            <property name="xalign">0</property>
-                            <property name="ellipsize">3</property>
-                            <property name="max-width-chars">1</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <style>
-                              <class name="term-nerd-sys"/>
-                            </style>
-                            <property name="spacing">8</property>
-                            <child>
-                              <object class="GtkLabel" id="nerd_shell">
-                                <property name="xalign">0</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="nerd_cpu_box">
-                                <property name="spacing">3</property>
-                                <property name="visible">false</property>
-                                <property name="tooltip-text" translatable="yes">CPU in use</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">term-cpu-symbolic</property>
-                                    <property name="pixel-size">12</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="nerd_cpu">
-                                    <property name="xalign">0</property>
-                                    <property name="width-chars">4</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="nerd_mem_box">
-                                <property name="spacing">3</property>
-                                <property name="visible">false</property>
-                                <property name="tooltip-text" translatable="yes">Memory in use</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">term-memory-symbolic</property>
-                                    <property name="pixel-size">12</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="nerd_mem">
-                                    <property name="xalign">0</property>
-                                    <property name="width-chars">4</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="nerd_up_box">
-                                <property name="spacing">3</property>
-                                <property name="visible">false</property>
-                                <property name="tooltip-text" translatable="yes">Up since the computer started</property>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="icon-name">term-uptime-symbolic</property>
-                                    <property name="pixel-size">12</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="nerd_up">
-                                    <property name="xalign">0</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="ellipsize">3</property>
-                                    <property name="max-width-chars">1</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="menu">
-                        <style>
-                          <class name="plain"/>
-                          <class name="term-head-button"/>
-                        </style>
-                        <property name="icon-name">open-menu-symbolic</property>
-                        <property name="valign">3</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <style>
                       <class name="term-find-row"/>
                     </style>
                     <property name="spacing">6</property>
@@ -153,6 +46,16 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           <class name="term-head-button"/>
                         </style>
                         <property name="icon-name">list-add-symbolic</property>
+                        <property name="valign">3</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="menu">
+                        <style>
+                          <class name="plain"/>
+                          <class name="term-head-button"/>
+                        </style>
+                        <property name="icon-name">open-menu-symbolic</property>
                         <property name="valign">3</property>
                       </object>
                     </child>

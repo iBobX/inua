@@ -33,7 +33,6 @@ const fontStep = 1
 func (a *App) useSettings(s settings.Settings) {
 	a.set, a.keymap = s, keymapOf(s.Keys)
 	a.cols.tips(a)
-	a.updateNerd()
 	l := a.look()
 	for _, t := range a.tiles {
 		t.pane.look = l

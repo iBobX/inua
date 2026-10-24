@@ -209,10 +209,6 @@
   nav button span.k { font:9px var(--mono); letter-spacing:.12em; text-transform:uppercase; }
   nav button.on { color:var(--accent); }
   /* Overview: the settings language, rows of a label and a readout. */
-  .who { font:600 13px var(--mono); color:var(--t0); margin:14px 0 6px; }
-  .sysline { display:flex; flex-wrap:wrap; gap:6px 14px; font:11px var(--mono); color:var(--t2); }
-  .sysline span { display:flex; align-items:center; gap:5px; }
-  .sysline .icon { width:13px; height:13px; }
   .line { position:relative; display:flex; align-items:center; gap:12px; min-height:44px; margin:0 calc(-1 * var(--out)); padding:6px 10px; border-radius:2px; }
   /* The hairline between rows on the content's edge. */
   .line + .line::before { content:""; position:absolute; top:0; left:var(--out); right:var(--out); border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
@@ -876,12 +872,11 @@ $("newpane").onclick = async () => {
   open(r.pane);
 };
 
-// ---- The overview: this computer, the agents, the link, the settings ----
+// ---- The overview: the agents, the link, the settings ----
 
-let sys = null, rtt = 0;
+let rtt = 0;
 async function poll() {
   if (seen("over") && !overPage && !document.hidden) {
-    try { sys = await (await fetch("/sys.json?t=" + token)).json(); } catch (e) {}
     if (connected) { const t0 = performance.now(); await request({ type: "list" }); rtt = performance.now() - t0; }
     renderOver();
   }
@@ -889,10 +884,6 @@ async function poll() {
 }
 // A count of bytes, as the readouts say them.
 function bytes(n) { return n >= 1 << 20 ? Tf("%s MB", (n / (1 << 20)).toFixed(1)) : Tf("%d KB", Math.max(1, Math.round(n / 1024))); }
-function uptime(sec) {
-  const m = Math.floor(sec / 60);
-  return m >= 1440 ? Tf("%dd %dh", Math.floor(m / 1440), Math.floor(m / 60) % 24) : m >= 60 ? Tf("%dh %dm", Math.floor(m / 60), m % 60) : Tf("%dm", m);
-}
 function line(label, value, opts = {}) {
   const l = el("div", "line" + (opts.go ? " go" : "") + (opts.column ? " column" : ""));
   if (opts.mark != null) l.append(el("div", "mark " + opts.mark));
@@ -911,18 +902,6 @@ function renderOver() {
   $("overback").hidden = !overPage;
   $("overtitle").textContent = overPage ? T("Settings") : T("Overview");
   if (overPage) { renderSettings(box); box.scrollTop = top; return; }
-
-  box.append(section(T("This computer"), ""));
-  if (sys) {
-    box.append(el("div", "who", sys.who));
-    const sl = el("div", "sysline");
-    const item = (name, text) => { const s = el("span"); s.append(icon(name), el("span", "", text)); sl.append(s); };
-    sl.append(el("span", "", sys.shell));
-    if (sys.cpu >= 0) item("term-cpu", sys.cpu.toFixed(0) + "%");
-    if (sys.memory >= 0) item("term-memory", sys.memory.toFixed(0) + "%");
-    if (sys.uptime) item("term-uptime", uptime(sys.uptime));
-    box.append(sl);
-  } else box.append(el("div", "empty", T("Asking…")));
 
   const panes = [...paneMap.values()].filter(p => !p.exited);
   const count = st => panes.filter(p => p.agent && (p.state || "idle") === st).length;

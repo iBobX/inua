@@ -299,11 +299,8 @@ remote-machine                        desktop
 view-refresh                          arrow-clockwise
 # inua-term: a shell or a program that is no agent
 agent-shell                           terminal
-# inua-term: the actions, from column 1's head, and its readings
+# inua-term: the actions, from column 1's head
 open-menu                             list
-term-cpu                              cpu
-term-memory                           memory
-term-uptime                           clock
 # inua-term: a pane's checkout, in its head: a branch, a linked worktree's
 term-git-branch                       git-branch
 term-git-worktree                     git-fork

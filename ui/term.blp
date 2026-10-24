@@ -10,103 +10,17 @@ ApplicationWindow term {
   // The sheets (actions, agents, keys, renaming) over the whole window.
   Overlay sheets {
     Box {
-      // Column 1: the workspaces, under who and where this is.
+      // Column 1: the workspaces.
       Box workspaces_col {
         styles ["index", "term-col1"]
         orientation: vertical;
         hexpand: false;
         width-request: 232;
 
+        // Finding a workspace, a new one and the menu, as tall as column 2's
+        // head.
         Box {
-          styles ["term-col-head"]
-          spacing: 8;
-
-          Box {
-            orientation: vertical;
-            hexpand: true;
-            valign: center;
-            spacing: 2;
-
-            // A label asks for no more room than one character: the column
-            // keeps its width whatever it says.
-            Label nerd_who {
-              styles ["term-nerd-who"]
-              xalign: 0;
-              ellipsize: end;
-              max-width-chars: 1;
-            }
-
-            // The shell new panes start, then the readings, each in a place of
-            // its own width: changing, they move nothing.
-            Box {
-              styles ["term-nerd-sys"]
-              spacing: 8;
-
-              Label nerd_shell {
-                xalign: 0;
-              }
-
-              Box nerd_cpu_box {
-                spacing: 3;
-                visible: false;
-                tooltip-text: _("CPU in use");
-
-                Image {
-                  icon-name: "term-cpu-symbolic";
-                  pixel-size: 12;
-                }
-
-                Label nerd_cpu {
-                  xalign: 0;
-                  width-chars: 4;
-                }
-              }
-
-              Box nerd_mem_box {
-                spacing: 3;
-                visible: false;
-                tooltip-text: _("Memory in use");
-
-                Image {
-                  icon-name: "term-memory-symbolic";
-                  pixel-size: 12;
-                }
-
-                Label nerd_mem {
-                  xalign: 0;
-                  width-chars: 4;
-                }
-              }
-
-              Box nerd_up_box {
-                spacing: 3;
-                visible: false;
-                tooltip-text: _("Up since the computer started");
-
-                Image {
-                  icon-name: "term-uptime-symbolic";
-                  pixel-size: 12;
-                }
-
-                Label nerd_up {
-                  xalign: 0;
-                  hexpand: true;
-                  ellipsize: end;
-                  max-width-chars: 1;
-                }
-              }
-            }
-          }
-
-          Button menu {
-            styles ["plain", "term-head-button"]
-            icon-name: "open-menu-symbolic";
-            valign: center;
-          }
-        }
-
-        Box {
-          styles ["term-find-row"]
+          styles ["term-col-head", "term-find-row"]
           spacing: 6;
 
           SearchEntry find {
@@ -118,6 +32,12 @@ ApplicationWindow term {
           Button new_workspace {
             styles ["plain", "term-head-button"]
             icon-name: "list-add-symbolic";
+            valign: center;
+          }
+
+          Button menu {
+            styles ["plain", "term-head-button"]
+            icon-name: "open-menu-symbolic";
             valign: center;
           }
         }

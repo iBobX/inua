@@ -95,17 +95,6 @@ func (a *App) buildColumns(ui *gtkx.Builder) {
 	ui.Get("new_workspace", c.newWorkspace)
 	ui.Get("new_session", c.newSession)
 	ui.Get("sessions_title", c.title)
-	n := &a.nerd
-	n.who, n.shell, n.cpu, n.mem, n.up = &gtk.Label{}, &gtk.Label{}, &gtk.Label{}, &gtk.Label{}, &gtk.Label{}
-	n.cpuBox, n.memBox, n.upBox = &gtk.Box{}, &gtk.Box{}, &gtk.Box{}
-	ui.Get("nerd_who", n.who)
-	ui.Get("nerd_shell", n.shell)
-	ui.Get("nerd_cpu", n.cpu)
-	ui.Get("nerd_mem", n.mem)
-	ui.Get("nerd_up", n.up)
-	ui.Get("nerd_cpu_box", n.cpuBox)
-	ui.Get("nerd_mem_box", n.memBox)
-	ui.Get("nerd_up_box", n.upBox)
 	c.tips(a)
 	c.onRow = func(_ gtk.ListBox, row uintptr) {
 		i := int(gtk.ListBoxRowNewFromInternalPtr(row).GetIndex())

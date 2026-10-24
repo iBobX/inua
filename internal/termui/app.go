@@ -74,7 +74,6 @@ type App struct {
 	restarting  bool
 	restartWait glib.SourceFunc
 	guide       *guide
-	nerd        nerdInfo
 	// quick is set for the quick mode's window (quick.go), quickTerm its
 	// pane and program.
 	quick     bool
@@ -162,7 +161,6 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		a.ask("active", func(c *host.Client) error { return c.SetActive(active) })
 	}
 	gtkx.ConnectNotify(a.win, "is-active", &a.onActive)
-	a.startNerd()
 	if a.firstRun {
 		// The shell is chosen before the first pane starts.
 		a.openGuide(a.start)

@@ -82,10 +82,9 @@ from it, or at `$INUA_VT_LIB`.
 
 ## The window
 
-- **Workspaces** (column 1): at its top, where this is (`user@host`,
-  then the shell new panes start, how busy the CPU is, the memory in
-  use and the uptime) beside the menu button, which opens the actions
-  as Ctrl+Shift+P does, then the search with the new workspace button. Each
+- **Workspaces** (column 1): at its top, the search, then the new
+  workspace button and the menu button, which opens the actions as
+  Ctrl+Shift+P does. Each
   workspace is a name, its folder, and what its agents add up to: a
   square filled in warn while one waits for you, in the accent while one
   works, hollow when quiet. Drag a workspace to put it in another place;
@@ -290,8 +289,7 @@ screen: it is a web app in the theme's colours.
 
 - **Agents**: every agent by its state (needs you, working, done, idle),
   with where it runs; **Workspaces**: the workspaces, then a workspace's
-  sessions and their panes; **Overview**: this computer, the agents in
-  numbers, the connection, and the settings.
+  sessions and their panes; **Overview**: the agents in numbers, the connection, and the settings.
 - **New ones**: + at the head of Workspaces makes a workspace for a
   folder (typed, `~/` for the home folder; one there already is shown),
   and in a workspace a new session; + beside a session's panes starts a
@@ -356,8 +354,7 @@ bin/inua-termd serve --tailscale
 Linux as well. The page's token is kept in the login keychain, or in a file
 when the keychain is locked (over SSH); an agent
 that needs you posts a notification of the Mac's own (through
-osascript), which opens nothing when clicked. The computer's CPU and
-memory are not read yet: the page leaves them out. There is no service
+osascript), which opens nothing when clicked. There is no service
 to start it at login yet: it runs while its terminal, or `nohup`, keeps
 it.
 

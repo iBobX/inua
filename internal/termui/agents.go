@@ -302,7 +302,6 @@ func (f *finder) update(a *App) {
 // shows any.
 func (a *App) startTicks() {
 	a.onTick = func(uintptr) bool {
-		a.updateNerd()
 		if a.state == nil {
 			return true
 		}

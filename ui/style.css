@@ -3135,7 +3135,6 @@ window.term .term-find button.plain { min-height: 28px; min-width: 28px; padding
 window.term .term-find button.plain:hover { background: alpha(@accent, 0.09); }
 /* inua-term's window: the two index columns, then the tiles. */
 window.term .term-col1, window.term .term-col2 { background: @panel; }
-window.term .term-find-row { margin: 0 14px 10px; }
 window.term .term-find-row entry { margin: 0; } /* not the settings index's */
 window.term .term-find-entry { min-height: 34px; }
 window.term .term-col1 list row { min-height: 40px; padding: 6px 12px 6px 13px; }
@@ -3162,20 +3161,9 @@ window.term .mark { border-radius: 1px; border: 1px solid @t2; background: trans
 window.term .mark.s-on { border-color: @accent; background: @accent; }
 window.term .mark.s-warn { border-color: @warn; background: @warn; }
 window.term .mark.s-ok { border-color: @ok; background: @ok; }
-/* Each column's head: who and where over the workspaces, the shown
-   workspace's name over its sessions; the new buttons at the right. */
+/* Each column's head: finding a workspace over the workspaces, the shown
+   workspace's name over its sessions; the buttons at the right. */
 window.term .term-col-head { min-height: 40px; padding: 12px 14px 10px; }
-window.term .term-nerd-who {
-  font-family: "Geist Mono", "IBM Plex Mono", monospace;
-  font-size: 13px;
-  font-weight: 600;
-  color: @t0;
-}
-window.term .term-nerd-sys {
-  font-family: "Geist Mono", "IBM Plex Mono", monospace;
-  font-size: 11px;
-  color: @t2;
-}
 window.term .term-col-title { font-family: "IBM Plex Sans", "Zen Kaku Gothic New", sans-serif; font-size: 15px; color: @t0; }
 window.term button.term-head-button { min-width: 34px; min-height: 34px; padding: 0; color: @t1; background: transparent; border: none; }
 window.term button.term-head-button:hover { background: alpha(@accent, 0.09); color: @t0; }

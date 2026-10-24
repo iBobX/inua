@@ -19,7 +19,6 @@ import (
 	"net/url"
 	"os"
 	"regexp"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -38,9 +37,6 @@ type Server struct {
 	Socket string
 	// Token is what every request carries (t=…); without it, nothing.
 	Token string
-
-	sysOnce sync.Once
-	sys     *sampler
 }
 
 // Handler is the server's routes.
@@ -55,7 +51,6 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/icon-192.png", s.appIcon(192))
 	mux.HandleFunc("/icon-512.png", s.appIcon(512))
 	mux.HandleFunc("/look.json", s.withToken(s.look))
-	mux.HandleFunc("/sys.json", s.withToken(s.sysInfo))
 	mux.HandleFunc("/manifest.webmanifest", s.withToken(s.manifest))
 	mux.HandleFunc("/ws", s.withToken(s.bridge))
 	return mux
@@ -157,13 +152,6 @@ func (s *Server) look(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 	json.NewEncoder(w).Encode(readLook())
-}
-
-func (s *Server) sysInfo(w http.ResponseWriter, r *http.Request) {
-	s.sysOnce.Do(func() { s.sys = newSampler() })
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "no-store")
-	json.NewEncoder(w).Encode(s.sys.read())
 }
 
 var upgrader = websocket.Upgrader{

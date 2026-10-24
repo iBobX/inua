@@ -141,12 +141,12 @@ func get(t *testing.T, url string) *http.Response {
 // Without the token, nothing but the page's fixed files.
 func TestToken(t *testing.T) {
 	s := server(t)
-	for _, path := range []string{"/", "/?t=wrong", "/look.json", "/sys.json", "/manifest.webmanifest", "/ws"} {
+	for _, path := range []string{"/", "/?t=wrong", "/look.json", "/manifest.webmanifest", "/ws"} {
 		if r := get(t, s.URL+path); r.StatusCode != http.StatusForbidden {
 			t.Errorf("%s: %d, want 403", path, r.StatusCode)
 		}
 	}
-	for _, path := range []string{"/?t=secret", "/look.json?t=secret", "/sys.json?t=secret", "/manifest.webmanifest?t=secret", "/vendor/xterm.js", "/icons/agent-shell-symbolic.svg"} {
+	for _, path := range []string{"/?t=secret", "/look.json?t=secret", "/manifest.webmanifest?t=secret", "/vendor/xterm.js", "/icons/agent-shell-symbolic.svg"} {
 		if r := get(t, s.URL+path); r.StatusCode != http.StatusOK {
 			t.Errorf("%s: %d, want 200", path, r.StatusCode)
 		}
