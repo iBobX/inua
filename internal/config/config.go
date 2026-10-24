@@ -204,8 +204,8 @@ var ShortcutActions = []string{
 	"shot-area", "shot-area-silent", "shot-screen", "shot-window", "shot-record", "color", "voice",
 }
 
-// Voice is the voice input, on top of the voxtype daemon: a shortcut
-// holds to talk, and the transcription is pasted into the focused window.
+// Voice is dictation, on top of the voxtype daemon: a shortcut holds to
+// talk, and the transcription is typed into the focused window.
 type Voice struct {
 	// Enable shows the microphone in the bar and offers the shortcut;
 	// off, no key reaches the daemon.
@@ -215,10 +215,10 @@ type Voice struct {
 	PushToTalk bool `toml:"push_to_talk"`
 }
 
-// VoiceKeys are the voice input's shortcut until another is set.
+// VoiceKeys are dictation's shortcut until another is set.
 const VoiceKeys = "SUPER+SHIFT+V"
 
-// AddVoiceShortcut gives the voice input its shortcut when it is on and no
+// AddVoiceShortcut gives dictation its shortcut when it is on and no
 // shortcut names it; one kept with no keys is the user's choice of none.
 func (c *Config) AddVoiceShortcut() {
 	if c.Voice.Enable && !slices.ContainsFunc(c.Shortcuts, func(s Shortcut) bool { return s.Action == "voice" }) {

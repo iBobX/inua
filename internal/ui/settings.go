@@ -521,9 +521,8 @@ var settingsGroups = []struct {
 	pages []string
 }{
 	{i18n.M("Connections"), []string{"wifi", "bluetooth"}},
-	{i18n.M("Devices"), []string{"displays", "keyboard", "mouse"}},
+	{i18n.M("Devices"), []string{"displays", "keyboard", "mouse", "voice"}},
 	{i18n.M("Desktop"), []string{"appearance", "bar", "launcher", "notifications", "shortcuts"}},
-	{i18n.M("Input"), []string{"voice"}},
 	{i18n.M("Apps"), []string{"apps", "ai", "clipboard", "keyring"}},
 	{i18n.M("System"), []string{"power", "about"}},
 }

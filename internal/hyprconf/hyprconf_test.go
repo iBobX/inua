@@ -208,6 +208,27 @@ func TestRenderShortcuts(t *testing.T) {
 	}
 }
 
+// Dictation's keys are bound only while it is on: held to talk, or
+// pressed to start and stop.
+func TestRenderDictation(t *testing.T) {
+	c := config.Default()
+	c.Shortcuts = []config.Shortcut{{Action: "voice", Keys: "SUPER+SHIFT+V"}}
+	if got := Render(c, Devices{}); strings.Contains(got, "voice") || !strings.Contains(got, "unbind = SUPER SHIFT, V\n") {
+		t.Errorf("off:\n%s", got)
+	}
+	c.Voice.Enable = true
+	got := Render(c, Devices{})
+	for _, want := range []string{"bind = SUPER SHIFT, V, exec, inua call voice start\n", "bindr = SUPER SHIFT, V, exec, inua call voice stop\n"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("push to talk: missing %q", want)
+		}
+	}
+	c.Voice.PushToTalk = false
+	if got := Render(c, Devices{}); !strings.Contains(got, "bind = SUPER SHIFT, V, exec, inua call voice toggle\n") {
+		t.Errorf("toggle:\n%s", got)
+	}
+}
+
 func TestRenderLockRestore(t *testing.T) {
 	if got := Render(config.Default(), Devices{}); !strings.Contains(got, "allow_session_lock_restore = true") {
 		t.Errorf("inua.conf does not let the lock screen take the lock back:\n%s", got)

@@ -3,6 +3,7 @@ package system
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -16,10 +17,17 @@ import (
 // settings.
 type VoiceState struct {
 	Available bool // voxtype is installed and the daemon answers
-	Status    string
-	Model     string // the loaded model, as the daemon reports it
-	Error     string // why it is not available, in a word
+	// Status is VoiceMissing or VoiceStopped when it is not available,
+	// else the daemon's own: "idle", "recording", "transcribing" …
+	Status string
+	Model  string // the loaded model, as the daemon reports it
 }
+
+// Why voice input is not available.
+const (
+	VoiceMissing = "missing" // voxtype is not installed
+	VoiceStopped = "stopped" // installed, its daemon not running
+)
 
 // Voice follows voxtype: the daemon's state file for what it is doing, and
 // its CLI to start and stop recordings. When voxtype is not there, every
@@ -81,9 +89,9 @@ func (v *Voice) poll() VoiceState {
 	data, err := os.ReadFile(v.statePath)
 	if err != nil {
 		if _, err := exec.LookPath("voxtype"); err != nil {
-			return VoiceState{Status: "unavailable", Error: "voxtype is not installed"}
+			return VoiceState{Status: VoiceMissing}
 		}
-		return VoiceState{Status: "stopped", Error: "the daemon is not running"}
+		return VoiceState{Status: VoiceStopped}
 	}
 	st := strings.TrimSpace(string(data))
 	if st == "" {
@@ -126,6 +134,21 @@ func (v *Voice) record(what string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	return exec.CommandContext(ctx, "voxtype", "record", what).Run()
+}
+
+// StartDaemon starts voxtype's user service, with its error when it does
+// not start.
+func (v *Voice) StartDaemon() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	out, err := exec.CommandContext(ctx, "systemctl", "--user", "start", "voxtype.service").CombinedOutput()
+	if err != nil {
+		if msg := strings.TrimSpace(string(out)); msg != "" {
+			return errors.New(msg)
+		}
+		return err
+	}
+	return nil
 }
 
 // SetupModelCommand is the command line that opens voxtype's interactive

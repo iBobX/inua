@@ -289,8 +289,8 @@ msgstr "%d%%，正在充電"
 
 #: internal/apps/connect/service.go:519
 #: internal/ui/settings.go:292
-#: internal/ui/settings.go:688
-#: internal/ui/settings.go:760
+#: internal/ui/settings.go:687
+#: internal/ui/settings.go:759
 #: internal/ui/settings_displays.go:441
 msgid "%d%%"
 msgstr "%d%%"
@@ -1622,7 +1622,7 @@ msgid "Disconnected"
 msgstr "已斷開連接"
 
 #: internal/apps/tailscale/status.go:269
-#: internal/shell/status.go:150
+#: internal/shell/status.go:152
 msgid "Logged out"
 msgstr "已註銷"
 
@@ -1636,7 +1636,7 @@ msgstr "等待批准"
 #: internal/filesui/remotesetup.go:418
 #: internal/mailui/window.go:619
 #: internal/shell/bluetooth.go:38
-#: internal/shell/status.go:154
+#: internal/shell/status.go:156
 #: internal/shell/wifi.go:38
 #: internal/shell/wifi.go:49
 #: internal/vmui/window.go:2761
@@ -1644,7 +1644,7 @@ msgid "Connecting…"
 msgstr "正在連線…"
 
 #: internal/apps/tailscale/status.go:275
-#: internal/shell/status.go:142
+#: internal/shell/status.go:144
 msgid "Not running"
 msgstr "未運行"
 
@@ -1694,7 +1694,7 @@ msgstr "雷暴"
 
 #: internal/apps/weather/weather.go:214
 #: internal/appui/sysmon.go:1082
-#: internal/ui/voice.go:205
+#: internal/ui/voice.go:274
 #: internal/vmui/window.go:2335
 msgid "Unknown"
 msgstr "未知"
@@ -1902,6 +1902,7 @@ msgstr "編輯"
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
 #: internal/termui/guide.go:161
+#: internal/ui/voice.go:180
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:684
@@ -2509,8 +2510,8 @@ msgid "Top level"
 msgstr "頂層"
 
 #: internal/appui/pass.go:417
-#: internal/ui/settings.go:785
-#: internal/ui/settings.go:812
+#: internal/ui/settings.go:784
+#: internal/ui/settings.go:811
 msgid "%d entry"
 msgid_plural "%d entries"
 msgstr[0] "%d 筆"
@@ -2833,7 +2834,7 @@ msgstr "含 QR 碼的圖片"
 
 #: internal/appui/pass_otp.go:340
 #: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:922
+#: internal/ui/settings.go:921
 msgid "Images"
 msgstr "影像"
 
@@ -3070,7 +3071,6 @@ msgid "User"
 msgstr "用戶"
 
 #: internal/appui/sysmon.go:785
-#: internal/ui/voice.go:145
 msgid "State"
 msgstr "狀態"
 
@@ -3231,7 +3231,7 @@ msgstr "計算機"
 #: internal/appui/sysmon.go:978
 #: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:494
-#: internal/ui/voice.go:148
+#: internal/ui/voice.go:182
 msgid "Model"
 msgstr "模型"
 
@@ -3254,7 +3254,7 @@ msgstr "名稱"
 #: internal/appui/tailscale.go:525
 #: internal/appui/tailscale.go:566
 #: internal/diskui/window.go:329
-#: internal/ui/settings.go:528
+#: internal/ui/settings.go:527
 #: ui/vm.ui:2977
 msgid "System"
 msgstr "系統"
@@ -3492,9 +3492,9 @@ msgid "Tailscale is not running."
 msgstr "Tailscale沒有運行。"
 
 #: internal/appui/tailscale.go:347
-#: internal/shell/status.go:95
-#: internal/shell/status.go:112
-#: internal/shell/status.go:127
+#: internal/shell/status.go:97
+#: internal/shell/status.go:114
+#: internal/shell/status.go:129
 msgid "Unavailable"
 msgstr "無法使用"
 
@@ -3793,10 +3793,10 @@ msgstr "無法播放：%s"
 #: internal/connectui/window.go:387
 #: internal/mailui/settings.go:563
 #: internal/shell/notify.go:44
-#: internal/shell/status.go:99
-#: internal/shell/status.go:114
-#: internal/shell/status.go:133
-#: internal/shell/status.go:148
+#: internal/shell/status.go:101
+#: internal/shell/status.go:116
+#: internal/shell/status.go:135
+#: internal/shell/status.go:150
 #: internal/termui/prefsweb.go:128
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
@@ -4172,12 +4172,8 @@ msgid "Voice input records with pw-cat, from PipeWire (pipewire-bin on Debian an
 msgstr ""
 
 #: internal/assistantui/assistantui.go:527
-#: internal/hyprconf/keys.go:40
-#: internal/shell/status.go:46
 #: internal/ui/settings_ai.go:727
-#: internal/ui/voice.go:140
 #: ui/assistant.ui:193
-#: ui/bar.ui:164
 msgid "Voice input"
 msgstr ""
 
@@ -9688,6 +9684,13 @@ msgstr "錄製畫面（再次：停止）"
 msgid "Pick a colour"
 msgstr "選擇顏色"
 
+#: internal/hyprconf/keys.go:40
+#: internal/ui/voice.go:171
+#: ui/bar.ui:164
+#: ui/settings.ui:6242
+msgid "Dictation"
+msgstr ""
+
 #: internal/i18n/time.go:8
 msgid "February"
 msgstr "二月"
@@ -10964,6 +10967,7 @@ msgid "User name"
 msgstr "使用者名稱"
 
 #: internal/mailui/welcome.go:589
+#: internal/ui/voice.go:184
 msgid "Change"
 msgstr "變更"
 
@@ -11036,7 +11040,7 @@ msgid "Fetching your mail"
 msgstr "正在取得你的郵件"
 
 #: internal/mailui/welcome.go:726
-#: internal/ui/voice.go:221
+#: internal/ui/voice.go:304
 msgid "Ready"
 msgstr "就緒"
 
@@ -11114,7 +11118,7 @@ msgid "Offline: connection dropped"
 msgstr "{'es': 'Sin conexión: se cortó la conexión', 'fr': 'Hors ligne : connexion interrompue', 'ja': 'オフライン：接続が切れました', 'ko': '오프라인: 연결이 끊김', 'zh_CN': '离线：连接已断开', 'zh_TW': '離線：連線已中斷'}"
 
 #: internal/mailui/window.go:486
-#: internal/shell/status.go:73
+#: internal/shell/status.go:75
 msgid "Offline"
 msgstr "離線"
 
@@ -11498,7 +11502,7 @@ msgid "Connected, battery %d%%"
 msgstr "已連線,電量 %d%%"
 
 #: internal/shell/bluetooth.go:54
-#: internal/shell/status.go:105
+#: internal/shell/status.go:107
 msgid "Not connected"
 msgstr "未連接"
 
@@ -12009,7 +12013,7 @@ msgid "Balanced"
 msgstr "平衡"
 
 #: internal/shell/power.go:14
-#: internal/shell/status.go:131
+#: internal/shell/status.go:133
 msgid "Performance"
 msgstr "性能"
 
@@ -12034,49 +12038,57 @@ msgid "Do nothing"
 msgstr "不執行任何動作"
 
 #: internal/shell/status.go:40
-msgid "Voice input is not available"
+msgid "Dictation: voxtype is not installed. Click to set it up"
 msgstr ""
 
 #: internal/shell/status.go:42
-msgid "Listening…"
+msgid "Dictation: voxtype is not running. Click to start it"
 msgstr ""
 
 #: internal/shell/status.go:44
+msgid "Listening… Click to stop"
+msgstr ""
+
+#: internal/shell/status.go:46
 #: ui/assistant.ui:172
 msgid "Transcribing…"
 msgstr ""
 
-#: internal/shell/status.go:97
+#: internal/shell/status.go:48
+msgid "Dictation: click and talk"
+msgstr ""
+
+#: internal/shell/status.go:99
 #: internal/ui/settings_wifi.go:283
 msgid "No Wi-Fi device"
 msgstr "無Wi-Fi設備"
 
-#: internal/shell/status.go:118
+#: internal/shell/status.go:120
 msgid "%d devices"
 msgstr "%d裝置"
 
-#: internal/shell/status.go:120
-#: internal/shell/status.go:129
+#: internal/shell/status.go:122
+#: internal/shell/status.go:131
 msgid "On"
 msgstr "開啟"
 
-#: internal/shell/status.go:144
+#: internal/shell/status.go:146
 msgid "via %s"
 msgstr "通過 %s"
 
-#: internal/shell/status.go:146
+#: internal/shell/status.go:148
 msgid "%d online"
 msgstr "%d在線"
 
-#: internal/shell/status.go:152
+#: internal/shell/status.go:154
 msgid "Needs approval"
 msgstr "需要批准"
 
-#: internal/shell/status.go:212
+#: internal/shell/status.go:214
 msgid "Fully charged"
 msgstr "充滿電"
 
-#: internal/shell/status.go:214
+#: internal/shell/status.go:216
 msgid "%.0f%% · Charging"
 msgstr "%.0f%%·充電中"
 
@@ -13473,7 +13485,7 @@ msgid "Quit (%d windows)"
 msgstr "退出(%d視窗)"
 
 #: internal/ui/drawer.go:212
-#: internal/ui/settings.go:527
+#: internal/ui/settings.go:526
 #: ui/settings.ui:2045
 msgid "Apps"
 msgstr "應用程式"
@@ -13821,7 +13833,7 @@ msgid "Not restarted: %s"
 msgstr "未重新啟動：%s"
 
 #: internal/ui/settings.go:299
-#: internal/ui/settings.go:690
+#: internal/ui/settings.go:689
 msgid "%d px"
 msgstr "%d 像素"
 
@@ -13829,79 +13841,75 @@ msgstr "%d 像素"
 msgid "Connections"
 msgstr "連線"
 
-#: internal/ui/settings.go:526
-msgid "Input"
-msgstr ""
-
-#: internal/ui/settings.go:725
+#: internal/ui/settings.go:724
 #: ui/settings.ui:516
 msgid "Phosphor"
 msgstr "Phosphor"
 
+#: internal/ui/settings.go:724
 #: internal/ui/settings.go:725
-#: internal/ui/settings.go:726
 #: ui/settings.ui:517
 #: ui/settings.ui:564
 msgid "System theme"
 msgstr "系統主題"
 
-#: internal/ui/settings.go:811
+#: internal/ui/settings.go:810
 msgid "%s (%s, %s) · %s"
 msgstr "%s(%s,%s)· %s"
 
-#: internal/ui/settings.go:813
+#: internal/ui/settings.go:812
 msgid "%d text"
 msgid_plural "%d texts"
 msgstr[0] "%d 段文字"
 
-#: internal/ui/settings.go:814
+#: internal/ui/settings.go:813
 msgid "%d image"
 msgid_plural "%d images"
 msgstr[0] "%d 張圖片"
 
-#: internal/ui/settings.go:815
+#: internal/ui/settings.go:814
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: internal/ui/settings.go:894
+#: internal/ui/settings.go:893
 #: internal/ui/settings_apps.go:168
 #: internal/ui/settings_card.go:288
 msgid "Not saved: %s"
 msgstr "未儲存：%s"
 
-#: internal/ui/settings.go:920
+#: internal/ui/settings.go:919
 msgid "Choose a wallpaper"
 msgstr "選擇壁紙"
 
-#: internal/ui/settings.go:962
+#: internal/ui/settings.go:961
 msgid "Off: another notification daemon can show them"
 msgstr "關閉：另一個通知守護程式可以顯示它們"
 
-#: internal/ui/settings.go:964
+#: internal/ui/settings.go:963
 msgid "Banners, then the notification center (the bell in the bar, or Super+N)"
 msgstr "先顯示橫幅，再存入通知中心（頂欄鈴鐺或 Super+N）"
 
-#: internal/ui/settings.go:966
+#: internal/ui/settings.go:965
 msgid "Waiting: another notification daemon is running"
 msgstr "等待：另一個通知守護程式正在執行"
 
-#: internal/ui/settings.go:984
+#: internal/ui/settings.go:983
 msgid "Nothing pinned"
 msgstr "尚未釘選應用程式"
 
-#: internal/ui/settings.go:1000
+#: internal/ui/settings.go:999
 msgid "%s (not installed)"
 msgstr "%s(未安裝)"
 
-#: internal/ui/settings.go:1013
+#: internal/ui/settings.go:1012
 msgid "Move earlier"
 msgstr "向前移動"
 
-#: internal/ui/settings.go:1014
+#: internal/ui/settings.go:1013
 msgid "Move later"
 msgstr "向後移動"
 
-#: internal/ui/settings.go:1015
+#: internal/ui/settings.go:1014
 msgid "Remove from the dock"
 msgstr "從 Dock 移除"
 
@@ -14073,7 +14081,6 @@ msgid "Decision"
 msgstr "決定"
 
 #: internal/ui/settings_ai.go:517
-#: ui/settings.ui:6242
 msgid "Voice"
 msgstr ""
 
@@ -15026,63 +15033,83 @@ msgstr "inua無法升級"
 msgid "Could not upgrade: %s"
 msgstr "無法升級:%s"
 
-#: internal/ui/voice.go:139
-msgid "VOICE"
+#: internal/ui/voice.go:170
+msgid "DICTATION"
 msgstr ""
 
-#: internal/ui/voice.go:139
+#: internal/ui/voice.go:170
 msgid "Talk, and the words are typed where you are"
 msgstr ""
 
-#: internal/ui/voice.go:140
-msgid "A microphone in the bar; a shortcut holds to talk"
+#: internal/ui/voice.go:171
+msgid "A microphone in the bar, and a shortcut to talk"
 msgstr ""
 
-#: internal/ui/voice.go:141
+#: internal/ui/voice.go:172
 msgid "Push to talk"
 msgstr ""
 
-#: internal/ui/voice.go:141
-msgid "The shortcut records while it is held"
+#: internal/ui/voice.go:172
+msgid "The shortcut records while it is held; off, it starts and stops"
 msgstr ""
 
-#: internal/ui/voice.go:144
+#: internal/ui/voice.go:175
 msgid "ENGINE"
 msgstr ""
 
-#: internal/ui/voice.go:144
-msgid "The voxtype daemon does the listening"
+#: internal/ui/voice.go:175
+msgid "voxtype listens and turns speech into text on this machine"
 msgstr ""
 
-#: internal/ui/voice.go:151
-msgid "Models"
+#: internal/ui/voice.go:179
+msgid "voxtype.io"
 msgstr ""
 
-#: internal/ui/voice.go:151
-msgid "voxtype's setup lists and downloads them"
+#: internal/ui/voice.go:253
+msgid "voxtype is not installed"
 msgstr ""
 
-#: internal/ui/voice.go:155
-msgid "Open voxtype"
+#: internal/ui/voice.go:253
+msgid "Install it from its site, then turn on its daemon"
 msgstr ""
 
-#: internal/ui/voice.go:166
-msgid "Voxtype is not installed, or its daemon is not running."
+#: internal/ui/voice.go:255
+msgid "The daemon is not running"
 msgstr ""
 
-#: internal/ui/voice.go:215
-msgid "Not available"
+#: internal/ui/voice.go:255
+msgid "voxtype is installed; its user service is stopped"
 msgstr ""
 
-#: internal/ui/voice.go:217
+#: internal/ui/voice.go:257
+msgid "Looking for voxtype…"
+msgstr ""
+
+#: internal/ui/voice.go:262
+msgid "Click the microphone in the bar, and talk"
+msgstr ""
+
+#: internal/ui/voice.go:264
+msgid "Click the microphone in the bar, or hold %s, and talk"
+msgstr ""
+
+#: internal/ui/voice.go:266
+msgid "Click the microphone in the bar, or press %s, and talk"
+msgstr ""
+
+#: internal/ui/voice.go:300
 msgid "Listening"
 msgstr ""
 
-#: internal/ui/voice.go:219
+#: internal/ui/voice.go:302
 msgid "Transcribing"
 msgstr ""
 
-#: internal/ui/voice.go:229
+#: internal/ui/voice.go:318
+msgid "voxtype did not start: %s"
+msgstr ""
+
+#: internal/ui/voice.go:329
 msgid "Could not start voxtype's setup: %s"
 msgstr ""
 

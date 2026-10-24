@@ -4456,14 +4456,14 @@ ApplicationWindow settings {
 
       StackPage {
         name: "voice";
-        title:  _("Voice");
+        title:  _("Dictation");
 
         child: Overlay {
           child: ScrolledWindow scroll_voice {
             hscrollbar-policy: never;
 
-            // The voice input's enable, its shortcut's push-to-talk, the
-            // daemon's state and its models: laid out by voice.go.
+            // Dictation: on or off, push to talk, and voxtype's state or
+            // what is missing: laid out by voice.go.
             Box voice_page {
               styles ["page"]
               orientation: vertical;
