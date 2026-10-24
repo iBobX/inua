@@ -97,6 +97,27 @@ restarts. Focus keeps banners quiet. Cleared notifications slide away.
 the last 500 that came, dismissed ones too, for the assistant, agents and
 workshop apps allowed to read them; turning it off clears it.
 
+## On-screen display
+
+A card shows for a moment at the corner of the focused monitor when the
+volume, the brightness, Wi-Fi or Bluetooth changes, wherever the change
+came from: the keys, the wheel on the bar's status button, the control
+center, a network coming or going. It takes no input, and stays away
+while the control center, which has the sliders, is open.
+
+`[osd]` in `~/.config/inua/config.toml` turns it off, or moves it:
+
+```toml
+[osd]
+enable = true
+# top-center (the default), top-left, top-right,
+# bottom-center, bottom-left or bottom-right
+position = "bottom-center"
+```
+
+A new position takes effect at once. Without layer shell the card stays
+out of the way rather than raising itself over the windows.
+
 ## Dock
 
 Pinned apps and running ones, with marks that grow and change colour as
@@ -256,7 +277,7 @@ when there is a password store), a shortcut set for "Search passwords",
 or `inua call pass toggle|open|close` opens a search through the store
 the Pass app uses, in the clipboard history's card. Each word typed is
 looked for in the entry's whole path, in any order: `google abc` finds
-`corp/google.com/abc@corp.com`. Up and Down choose, Enter or a click opens
+`corp/google.com/abc`. Up and Down choose, Enter or a click opens
 an entry: its user (the last part of its path), password, one-time code,
 fields and notes, each with a copy button; Enter copies the password. A
 copy closes the panel, is marked as a password manager's, and is cleared
