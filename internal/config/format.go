@@ -19,6 +19,7 @@ func Format(c Config) string {
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
+		c.Osd.Enable, q(c.Osd.Position),
 		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.AppIcons), c.Style.EdgeGaps, c.Style.TextScale, c.Style.Transparency, c.Style.Radius, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		c.Background.Generate,
@@ -254,6 +255,15 @@ copy = %t
 # Where screen recordings are saved (Record in the screenshot tool; needs
 # wf-recorder).
 recordings = %s
+
+[osd]
+# The on-screen display: the card that shows for a moment when the
+# volume, the brightness, Wi-Fi or Bluetooth changes, wherever the change
+# came from (the keys, the wheel on the bar, the control center).
+enable = %t
+# Where the card anchors on the focused monitor: top-center, top-left,
+# top-right, bottom-center, bottom-left or bottom-right.
+position = %s
 
 [style]
 # Colour theme:

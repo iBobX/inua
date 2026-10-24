@@ -38,6 +38,7 @@ type Config struct {
 	Keyring    Keyring    `toml:"keyring"`
 	MCP        MCP        `toml:"mcp"`
 	Screenshot Screenshot `toml:"screenshot"`
+	Osd        Osd        `toml:"osd"`
 	Clipboard  Clipboard  `toml:"clipboard"`
 	Shortcuts  []Shortcut `toml:"shortcuts"`
 
@@ -121,6 +122,20 @@ type Screenshot struct {
 	Copy       bool   `toml:"copy"`
 	Recordings string `toml:"recordings"`
 }
+
+// Osd is the on-screen display: the card that answers a change to the
+// volume, the brightness, Wi-Fi or Bluetooth, wherever it came from.
+type Osd struct {
+	// Enable shows the display at all. Off, nothing shows.
+	Enable bool `toml:"enable"`
+	// Position is where the card anchors on the focused monitor, one of
+	// OsdPositions.
+	Position string `toml:"position"`
+}
+
+// OsdPositions are the positions the settings window offers, and the
+// values [osd] position accepts.
+var OsdPositions = []string{"top-center", "top-left", "top-right", "bottom-center", "bottom-left", "bottom-right"}
 
 type Style struct {
 	// Theme is the colour theme, one of Themes or a theme of the user's
@@ -717,6 +732,7 @@ func Default() Config {
 		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
+		Osd:        Osd{Enable: true, Position: "bottom-center"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
 		Shortcuts: []Shortcut{
