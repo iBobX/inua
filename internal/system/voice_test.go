@@ -16,6 +16,7 @@ func TestVoice(t *testing.T) {
 	asked := filepath.Join(dir, "asked")
 	os.Mkdir(bin, 0o755)
 	t.Setenv("PATH", bin)
+	t.Setenv("HOME", dir) // no ~/.local/bin/voxtype
 	state := filepath.Join(dir, "state")
 	v := NewVoice(state)
 

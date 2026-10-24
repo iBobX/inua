@@ -27,6 +27,9 @@ type VoiceState struct {
 const (
 	VoiceMissing = "missing" // voxtype is not installed
 	VoiceStopped = "stopped" // installed, its daemon not running
+	// VoiceNoProfile is the AI engine (Dictation) with no profile for
+	// voice input.
+	VoiceNoProfile = "no-profile"
 )
 
 // Voice follows voxtype: the daemon's state file for what it is doing, and
@@ -47,6 +50,20 @@ func NewVoice(statePath string) *Voice {
 		statePath = filepath.Join(dir, "voxtype", "state")
 	}
 	return &Voice{statePath: statePath}
+}
+
+// VoxtypePath is the voxtype program: on PATH, else where InstallVoxtype
+// puts it (~/.local/bin, which a session's PATH may lack); "" for none.
+func VoxtypePath() string {
+	if p, err := exec.LookPath("voxtype"); err == nil {
+		return p
+	}
+	if p := voxtypeInstallPath(); p != "" {
+		if info, err := os.Stat(p); err == nil && info.Mode().IsRegular() && info.Mode()&0o111 != 0 {
+			return p
+		}
+	}
+	return ""
 }
 
 // voicePoll is how often Run reads the state file: often enough for the
@@ -88,7 +105,7 @@ func (v *Voice) Run(ctx context.Context, onChange func(VoiceState)) {
 func (v *Voice) poll() VoiceState {
 	data, err := os.ReadFile(v.statePath)
 	if err != nil {
-		if _, err := exec.LookPath("voxtype"); err != nil {
+		if VoxtypePath() == "" {
 			return VoiceState{Status: VoiceMissing}
 		}
 		return VoiceState{Status: VoiceStopped}
@@ -105,7 +122,7 @@ func (v *Voice) poll() VoiceState {
 func loadedModel(ctx context.Context) string {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, "voxtype", "status", "--format", "json", "--extended").Output()
+	out, err := exec.CommandContext(ctx, VoxtypePath(), "status", "--format", "json", "--extended").Output()
 	if err != nil {
 		return ""
 	}
@@ -133,7 +150,7 @@ func (v *Voice) Cancel() error { return v.record("cancel") }
 func (v *Voice) record(what string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	return exec.CommandContext(ctx, "voxtype", "record", what).Run()
+	return exec.CommandContext(ctx, VoxtypePath(), "record", what).Run()
 }
 
 // StartDaemon starts voxtype's user service, with its error when it does
@@ -159,5 +176,5 @@ func SetupModelCommand(term []string, dashE bool) *exec.Cmd {
 	if dashE {
 		args = append(args, "-e")
 	}
-	return exec.Command(term[0], append(args, "voxtype", "setup", "model")...)
+	return exec.Command(term[0], append(args, VoxtypePath(), "setup", "model")...)
 }
