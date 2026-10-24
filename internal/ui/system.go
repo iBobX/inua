@@ -80,19 +80,23 @@ func logErr(what string, err error) {
 const volumeStep = 0.05
 
 // stepVolume lowers (n > 0) or raises the output volume n notches, as the
-// volume keys do; setting also unmutes.
+// volume keys do; setting also unmutes. A burst of notches builds on the
+// values it asked for, not on the service's state, which lags behind.
 func (s *shellUI) stepVolume(n int) {
 	a := s.sys.Audio
 	if !a.Available {
 		return
 	}
 	base := a.Volume
-	if time.Now().Before(s.volUntil) { // a burst of notches builds on the
-		base = s.volHeld // values it asked for, not the service's last word
+	if v, held := s.svc.volume.Held(); held {
+		base = v
 	}
 	v := max(0, min(base-float64(n)*volumeStep, 1))
-	s.volHeld, s.volUntil = v, time.Now().Add(600*time.Millisecond)
 	s.svc.volume.Set(v)
+	if c := &s.control; c.open { // held, the slider no longer follows the service
+		c.volume.SetValue(v * 100)
+		c.volValue.SetText(shell.Percent(v))
+	}
 }
 
 // tailscaleApp is the Tailscale light app's desktop entry.

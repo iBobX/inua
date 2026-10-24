@@ -71,19 +71,13 @@ type control struct {
 	askingHibernate bool
 	armed           string // the action waiting for its second click
 	armGen          uintptr
-
-	// A slider the user moved recently is not reset from service updates,
-	// which lag behind the drag.
-	heldUntil map[string]time.Time
 }
 
 func (s *shellUI) bindControlHandlers() {
 	s.onControlButton = func(b gtk.Button) { s.controlAction(b.GetName()) }
 	s.onSlider = func(r gtk.Range, _ gtk.ScrollType, v float64) bool {
 		v = max(0, min(v, 100))
-		name := r.GetName()
-		s.control.heldUntil[name] = time.Now().Add(600 * time.Millisecond)
-		switch name {
+		switch r.GetName() {
 		case "volume":
 			s.svc.volume.Set(v / 100)
 			s.control.volValue.SetText(shell.Percent(v / 100))
@@ -168,7 +162,6 @@ func (s *shellUI) openControl() {
 	s.closeAgenda()
 	s.buildControl()
 	c.open = true
-	c.heldUntil = map[string]time.Time{}
 	s.applyControl()
 	s.applyBrightness()
 	c.win.Present()
@@ -351,7 +344,7 @@ func (s *shellUI) applyControl() {
 	c.mute.SetSensitive(a.Available)
 	setOn(&c.mute, a.Muted)
 	c.volIcon.SetFromIconName(shell.VolumeIcon(a))
-	if time.Now().After(c.heldUntil["volume"]) {
+	if _, held := s.svc.volume.Held(); !held { // a drag or a scroll the service has not caught up with
 		c.volume.SetValue(a.Volume * 100)
 		c.volValue.SetText(shell.VolumeText(a))
 	}
@@ -386,7 +379,10 @@ func (s *shellUI) applyControl() {
 // without any event to listen to, so the control center polls while open.
 func (s *shellUI) applyBrightness() {
 	c := &s.control
-	if s.svc.backlight == nil || time.Now().Before(c.heldUntil["brightness"]) {
+	if s.svc.backlight == nil {
+		return
+	}
+	if _, held := s.svc.brightness.Held(); held {
 		return
 	}
 	if p, err := s.svc.backlight.Percent(); err == nil {

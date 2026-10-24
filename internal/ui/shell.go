@@ -103,9 +103,6 @@ type shellUI struct {
 	tray      tray
 	sys       shell.System
 	svc       services
-	volScroll float64   // scroll steps on the status button not yet applied to the volume
-	volHeld   float64   // the volume the last scroll notch asked for
-	volUntil  time.Time // while set, the next notch builds on volHeld, not the service's state
 
 	// Long-lived signal handlers, shared by all widgets (see package gtkx).
 	onMonitorsChanged      func(uintptr, uint32, uint32, uint32, uintptr)
@@ -133,7 +130,7 @@ type shellUI struct {
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
-	onStatusScroll         func(gtk.EventControllerScroll, float64, float64) bool
+	onBarScroll            func(gtk.EventControllerScroll, float64, float64) bool
 	onSlider               func(gtk.Range, gtk.ScrollType, float64) bool
 	onBackdropPressed      func(gtk.GestureClick, int32, float64, float64)
 	onControlKey           func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -514,16 +511,14 @@ func (s *shellUI) bindHandlers() {
 		}
 	}
 
-	s.onStatusScroll = func(_ gtk.EventControllerScroll, _, dy float64) bool {
-		if dy == 0 {
+	// The wheel in the status button's reach, which the motion handler
+	// marks as hovered, adjusts the volume.
+	s.onBarScroll = func(c gtk.EventControllerScroll, _, dy float64) bool {
+		b := s.barOf(c.GetWidget())
+		if b == nil || dy == 0 || !b.status.HasCssClass("hover") {
 			return false
 		}
-		s.volScroll += dy
-		steps := int(s.volScroll)
-		s.volScroll -= float64(steps)
-		if steps != 0 {
-			s.stepVolume(steps)
-		}
+		s.stepVolume(int(dy))
 		return true
 	}
 
