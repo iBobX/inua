@@ -114,14 +114,15 @@ ApplicationWindow bar {
         }
       }
 
-      // The voice input's microphone: what the voxtype daemon is doing.
-      // A click toggles a recording; hidden while voice input is off.
+      // Dictation's microphone: what the voxtype daemon is doing. A click
+      // toggles a recording, or opens the settings when voxtype is not
+      // ready; hidden while dictation is off.
       Button voice {
         styles ["voice"]
         name: "voice";
         focusable: false;
         visible: false;
-        tooltip-text: _("Voice input");
+        tooltip-text: _("Dictation");
 
         Image voice_icon {
           icon-name: "audio-input-microphone-symbolic";

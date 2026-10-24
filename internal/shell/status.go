@@ -36,14 +36,16 @@ func VoiceIcon(v system.VoiceState) string {
 // VoiceTooltip is what the microphone's hover says.
 func VoiceTooltip(v system.VoiceState) string {
 	switch {
+	case v.Status == system.VoiceMissing:
+		return i18n.T("Dictation: voxtype is not installed. Click to set it up")
 	case !v.Available:
-		return i18n.T("Voice input is not available")
+		return i18n.T("Dictation: voxtype is not running. Click to start it")
 	case v.Status == "recording":
-		return i18n.T("Listening…")
+		return i18n.T("Listening… Click to stop")
 	case v.Status == "transcribing":
 		return i18n.T("Transcribing…")
 	}
-	return i18n.T("Voice input")
+	return i18n.T("Dictation: click and talk")
 }
 
 // NetIcon is the bar's network icon.

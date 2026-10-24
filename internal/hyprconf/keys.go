@@ -37,7 +37,7 @@ var Actions = []Action{
 	{ID: "shot-window", Label: i18n.M("The focused window, at once"), Shot: true},
 	{ID: "shot-record", Label: i18n.M("Record the screen (again: stop)"), Shot: true},
 	{ID: "color", Label: i18n.M("Pick a colour"), Shot: true},
-	{ID: "voice", Label: i18n.M("Voice input")},
+	{ID: "voice", Label: i18n.M("Dictation")},
 }
 
 // Command is the shell command behind an action.
@@ -83,10 +83,14 @@ func Command(c config.Config, action string) string {
 	return ""
 }
 
-// ShortcutCommand is what a shortcut runs.
+// ShortcutCommand is what a shortcut runs; "" for none, as for dictation
+// while it is off, so its keys are left free.
 func ShortcutCommand(c config.Config, sc config.Shortcut) string {
-	if sc.Action == "exec" {
+	switch {
+	case sc.Action == "exec":
 		return sc.Command
+	case sc.Action == "voice" && !c.Voice.Enable:
+		return ""
 	}
 	return Command(c, sc.Action)
 }

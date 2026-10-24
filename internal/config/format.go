@@ -458,9 +458,9 @@ drawer = %t
 pinned = %s
 
 [voice]
-# Voice input, on top of the voxtype daemon (https://voxtype.io): hold the
-# voice shortcut and talk; the transcription is pasted into the focused
-# window. false turns the microphone and its shortcut off.
+# Dictation (Settings → Dictation): talk, and voxtype (https://voxtype.io)
+# types the words into the focused window. true shows a microphone in the
+# bar and binds Super+Shift+V; false turns both off.
 enable = %t
 
 # true: the shortcut's key press starts the recording and its release ends

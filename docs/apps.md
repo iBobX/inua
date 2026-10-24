@@ -91,7 +91,8 @@ click it again, then puts the words in the question to read over and
 send. ✕ or Escape drops the recording; it stops by itself after five
 minutes. The recording goes to that profile's provider, and only after
 you click the microphone. A connected Console's microphone uses the same
-profile.
+profile. Typing by voice into any other window is Dictation (Settings →
+Dictation, through voxtype; see docs/features.md).
 
 ### Console endpoint
 

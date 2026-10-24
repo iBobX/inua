@@ -19,14 +19,14 @@ func TestVoice(t *testing.T) {
 	state := filepath.Join(dir, "state")
 	v := NewVoice(state)
 
-	if st := v.poll(); st.Available || st.Status != "unavailable" {
+	if st := v.poll(); st.Available || st.Status != VoiceMissing {
 		t.Fatalf("no voxtype: %+v", st)
 	}
 	script := "#!/bin/sh\necho >>" + asked + "\necho '{\"model\": \"small-int8\"}'\n"
 	if err := os.WriteFile(filepath.Join(bin, "voxtype"), []byte(script), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if st := v.poll(); st.Available || st.Status != "stopped" {
+	if st := v.poll(); st.Available || st.Status != VoiceStopped {
 		t.Fatalf("no daemon: %+v", st)
 	}
 
@@ -56,5 +56,18 @@ func TestVoice(t *testing.T) {
 	}
 	if b, _ := os.ReadFile(asked); len(b) != 1 {
 		t.Errorf("the model was asked %d times, want once", len(b))
+	}
+}
+
+// Starting the daemon passes systemctl's own words back.
+func TestStartDaemon(t *testing.T) {
+	bin := t.TempDir()
+	t.Setenv("PATH", bin)
+	script := "#!/bin/sh\necho 'Failed to start voxtype.service: Unit voxtype.service not found.' >&2\nexit 5\n"
+	if err := os.WriteFile(filepath.Join(bin, "systemctl"), []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := NewVoice(filepath.Join(bin, "state")).StartDaemon(); err == nil || err.Error() != "Failed to start voxtype.service: Unit voxtype.service not found." {
+		t.Errorf("got %v", err)
 	}
 }
