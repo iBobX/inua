@@ -1,8 +1,8 @@
 // The assistant (cmd/inua-assistant): who answers (a profile to switch
-// to, when there are several), the conversation (your
-// questions, a line for each thing it does, a card when it asks first, its
-// answers as they arrive) and the question field. Go fills the
-// conversation (internal/assistantui).
+// to, when there are several), the conversation (your questions, a line
+// for each thing it does, a card when it asks first, its answers as they
+// arrive) and the question field, with the microphone for voice input. Go
+// fills the conversation (internal/assistantui).
 using Gtk 4.0;
 
 ApplicationWindow assistant {
@@ -90,16 +90,76 @@ ApplicationWindow assistant {
 
     Box {
       styles ["as-composer"]
+      orientation: vertical;
       spacing: 8;
 
-      Entry question {
-        hexpand: true;
-        placeholder-text:  _("Ask, or tell me what to do");
+      Box {
+        spacing: 8;
+
+        Entry question {
+          hexpand: true;
+          placeholder-text:  _("Ask, or tell me what to do");
+        }
+
+        // Voice input, in the question's place while it records (a red
+        // mark, the time so far, the waveform) and while it is transcribed.
+        Box voice_box {
+          styles ["as-voice"]
+          hexpand: true;
+          spacing: 10;
+          visible: false;
+
+          Box voice_mark {
+            styles ["rec-mark"]
+            valign: center;
+          }
+
+          Label voice_time {
+            styles ["as-voice-time"]
+          }
+
+          // The waveform, drawn by Go: how loud, the newest at the right.
+          Box voice_wave {
+            hexpand: true;
+            valign: center;
+          }
+
+          Label voice_state {
+            styles ["sub"]
+            hexpand: true;
+            xalign: 0;
+            visible: false;
+            label:  _("Transcribing…");
+          }
+
+          Button voice_discard {
+            styles ["plain"]
+            icon-name: "window-close-symbolic";
+            tooltip-text:  _("Discard the recording");
+            valign: center;
+          }
+        }
+
+        // The microphone, when a profile transcribes; Stop while it records.
+        Button voice {
+          styles ["as-voice-button"]
+          icon-name: "audio-input-microphone-symbolic";
+          tooltip-text:  _("Voice input");
+          visible: false;
+        }
+
+        Button send {
+          styles ["suggested-action"]
+          label:  _("Ask");
+        }
       }
 
-      Button send {
-        styles ["suggested-action"]
-        label:  _("Ask");
+      Label voice_error {
+        styles ["as-voice-error"]
+        xalign: 0;
+        wrap: true;
+        selectable: true;
+        visible: false;
       }
     }
   }

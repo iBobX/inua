@@ -2,11 +2,16 @@ package assistant
 
 import (
 	"context"
+	_ "embed"
 	"errors"
 	"fmt"
+	"regexp"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"github.com/quailyquaily/mistermorph/llm"
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desk"
@@ -16,10 +21,23 @@ import (
 // does, but as inua uses the profile: through the agent and the decision
 // route, not with bare model calls.
 const (
-	BenchText   = "text_reply"   // a short answer
-	BenchTools  = "tool_calling" // the agent calls a tool
-	BenchChoice = "quick_choice" // a choice from a list (Choose)
+	BenchText   = "text_reply"    // a short answer
+	BenchTools  = "tool_calling"  // the agent calls a tool
+	BenchChoice = "quick_choice"  // a choice from a list (Choose)
+	BenchVoice  = "transcription" // a spoken sentence to text (Transcribe)
 )
+
+// speechSample is "The quick brown fox jumps over the lazy dog." spoken by
+// espeak-ng, Mister Morph's sample for the same benchmark (Apache-2.0):
+// 3.7 seconds of 16 kHz mono MP3. Synthetic speech is heard imperfectly,
+// so four of speechWords are enough.
+//
+//go:embed speech_sample.mp3
+var speechSample []byte
+
+var speechWords = []string{"quick", "brown", "fox", "jumps", "lazy", "dog"}
+
+var wordRe = regexp.MustCompile(`[a-z]+`)
 
 // BenchResult is how one benchmark went.
 type BenchResult struct {
@@ -32,7 +50,8 @@ type BenchResult struct {
 }
 
 // BenchTests are the benchmarks a profile runs: the chat ones when it
-// chats, the quick choice when it makes them.
+// chats, the quick choice when it makes them, the transcription when it
+// turns speech into text.
 func BenchTests(p Profile) []string {
 	var ids []string
 	if p.Can(config.AbilityText) {
@@ -40,6 +59,9 @@ func BenchTests(p Profile) []string {
 	}
 	if p.Can(config.AbilityDecision) {
 		ids = append(ids, BenchChoice)
+	}
+	if p.Can(config.AbilityTranscription) {
+		ids = append(ids, BenchVoice)
 	}
 	return ids
 }
@@ -72,9 +94,14 @@ func Benchmark(ctx context.Context, set Settings, name string, each func(BenchRe
 			return "pong", nil
 		},
 	}
-	a, err := New(one, []desk.Tool{ping}, nil)
-	if err != nil {
-		return err
+	// Transcription alone needs no agent: Mister Morph would not run one
+	// on a profile that only transcribes.
+	var a *Assistant
+	if p.Can(config.AbilityText) || p.Can(config.AbilityDecision) {
+		var err error
+		if a, err = New(one, []desk.Tool{ping}, nil); err != nil {
+			return err
+		}
 	}
 	for _, id := range BenchTests(p) {
 		tctx, cancel := context.WithTimeout(ctx, benchTimeout)
@@ -118,6 +145,25 @@ func Benchmark(ctx context.Context, set Settings, name string, each func(BenchRe
 				r.Error, r.Raw = "picked the wrong option", options[i]
 			default:
 				r.OK, r.Detail, r.Raw = true, "picked "+options[i], options[i]
+			}
+		case BenchVoice:
+			text, err := transcribe(tctx, p, llm.AudioInput{Filename: "sample.mp3", MIMEType: "audio/mpeg", Data: speechSample}, "en")
+			r.Raw = text
+			heard := 0
+			for _, w := range wordRe.FindAllString(strings.ToLower(text), -1) {
+				if slices.Contains(speechWords, w) {
+					heard++
+				}
+			}
+			switch {
+			case err != nil:
+				r.Error = err.Error()
+			case text == "":
+				r.Error = "the transcript is empty"
+			case heard < 4:
+				r.Error = fmt.Sprintf("the transcript is not the sentence spoken (%d of %d words)", heard, len(speechWords))
+			default:
+				r.OK, r.Detail = true, summary(text)
 			}
 		}
 		r.Millis = time.Since(start).Milliseconds()

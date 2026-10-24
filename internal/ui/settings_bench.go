@@ -75,6 +75,8 @@ func benchNames(id string) (name, ok, failed string) {
 		return i18n.T("Tool calling"), i18n.T("The model can call tools"), i18n.T("The model did not call the tool")
 	case "quick_choice":
 		return i18n.T("Quick choice (decision route)"), i18n.T("The model picks from a list"), i18n.T("The model did not pick the right option")
+	case "transcription":
+		return i18n.T("Transcription (voice input)"), i18n.T("The model turns speech into text"), i18n.T("The model did not turn speech into text")
 	}
 	return id, "", ""
 }

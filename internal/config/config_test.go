@@ -570,6 +570,52 @@ model = "gpt-5.2"
 	}
 }
 
+// Voice input goes to a profile with the "transcription" ability, of a
+// provider that transcribes; "" is the first such profile.
+func TestAssistantTranscription(t *testing.T) {
+	c, w, err := Load(write(t, `[assistant]
+profile = "chat"
+transcription = "claude"
+
+[[assistant.profiles]]
+name = "chat"
+provider = "openai"
+model = "gpt-5.2"
+
+[[assistant.profiles]]
+name = "claude"
+provider = "anthropic"
+model = "claude-sonnet-5-5"
+abilities = ["text", "transcription"]
+
+[[assistant.profiles]]
+name = "ears"
+provider = "groq"
+model = "whisper-large-v3-turbo"
+abilities = ["transcription"]
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := c.Assistant
+	claude, _ := a.ProfileNamed("claude")
+	ears, _ := a.ProfileNamed("ears")
+	chat, _ := a.ProfileNamed("chat")
+	if claude.Can(AbilityTranscription) || !ears.Can(AbilityTranscription) || ears.Can(AbilityText) || chat.Can(AbilityTranscription) {
+		t.Errorf("abilities: claude %v, ears %v, chat %v", claude.Can(AbilityTranscription), ears.Can(AbilityTranscription), chat.Can(AbilityTranscription))
+	}
+	if a.Transcription != "" || a.TranscriptionProfile() != "ears" || len(w) != 1 {
+		t.Errorf("transcription %q (%q), warnings %q", a.Transcription, a.TranscriptionProfile(), w)
+	}
+	if got := WithAbility(nil, AbilityTranscription, true); fmt.Sprint(got) != "[text decision transcription]" {
+		t.Errorf("with transcription: %q", got)
+	}
+	a.Profiles = a.Profiles[:2]
+	if got := a.TranscriptionProfile(); got != "" {
+		t.Errorf("none transcribes: %q", got)
+	}
+}
+
 // The language is one of Languages, each with its catalog; another is
 // reported and falls back to the environment's.
 func TestLanguage(t *testing.T) {

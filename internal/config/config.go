@@ -223,6 +223,10 @@ type Assistant struct {
 	// "" for the one that answers, or, when it makes none, the first that
 	// does.
 	Decision string `toml:"decision"`
+	// Transcription names the profile that turns voice input into text:
+	// Mister Morph's transcription route; "" for the first profile that
+	// does, voice input being off when none does.
+	Transcription string `toml:"transcription"`
 	// Tools are Mister Morph's built-in tools to add to inua's.
 	Tools []string `toml:"tools"`
 	// AskBeforeChanges makes the assistant ask before changing anything;
@@ -249,30 +253,36 @@ type AIProfile struct {
 	// model's default.
 	Reasoning string `toml:"reasoning"`
 	// Abilities are what the profile is for (AIAbilities): answering
-	// (AbilityText), quick choices (AbilityDecision); none for both.
+	// (AbilityText), quick choices (AbilityDecision), voice input
+	// (AbilityTranscription); none for the first two.
 	Abilities []string `toml:"abilities"`
 }
 
 // What a profile is for, as Mister Morph's abilities: "text" answers
 // questions, running the agent; "decision" makes quick choices from a
 // list (Mister Morph's Evaluate), and a profile with it but not "text"
-// only makes those; "image" makes pictures, which inua does not ask for
-// but keeps.
+// only makes those; "transcription" turns speech into text, for voice
+// input; "image" makes pictures, which inua does not ask for but keeps.
 const (
-	AbilityText     = "text"
-	AbilityDecision = "decision"
-	AbilityImage    = "image"
+	AbilityText          = "text"
+	AbilityDecision      = "decision"
+	AbilityTranscription = "transcription"
+	AbilityImage         = "image"
 )
 
 // AIAbilities are the abilities a profile may list.
-var AIAbilities = []string{AbilityText, AbilityDecision, AbilityImage}
+var AIAbilities = []string{AbilityText, AbilityDecision, AbilityTranscription, AbilityImage}
 
 // Can reports whether the profile is for ability; one listing none is for
-// answering and quick choices, and one of a provider that only makes
-// those (DecisionOnly) is for them alone.
+// answering and quick choices, one of a provider that only makes those
+// (DecisionOnly) is for them alone, and only one of a provider that
+// transcribes (Transcribes) turns speech into text.
 func (p AIProfile) Can(ability string) bool {
-	if DecisionOnly(p.Provider) {
+	switch {
+	case DecisionOnly(p.Provider):
 		return ability == AbilityDecision
+	case ability == AbilityTranscription && !Transcribes(p.Provider):
+		return false
 	}
 	return CanDo(p.Abilities, ability)
 }
@@ -344,6 +354,23 @@ var AIProviders = []struct{ ID, Name string }{
 // DecisionOnly reports whether provider only makes quick choices, never
 // chats: TypeSafe, which Mister Morph asks only on the decision route.
 func DecisionOnly(provider string) bool { return provider == "typesafe" }
+
+// TranscriptionEndpoints are the providers that turn speech into text, with
+// OpenAI's /audio/transcriptions, and their own endpoints: "" where the
+// profile's must say ("*_compatible", a server such as whisper.cpp's or
+// Speaches).
+var TranscriptionEndpoints = map[string]string{
+	"openai":                     "https://api.openai.com/v1",
+	"groq":                       "https://api.groq.com/openai/v1",
+	"openai_chat_compatible":     "",
+	"openai_response_compatible": "",
+}
+
+// Transcribes reports whether provider can turn speech into text.
+func Transcribes(provider string) bool {
+	_, ok := TranscriptionEndpoints[provider]
+	return ok
+}
 
 // AIProviderIDs lists AIProviders' IDs.
 func AIProviderIDs() []string {
@@ -443,6 +470,16 @@ func (a *Assistant) validate(d Assistant) []string {
 	if len(a.Fallback) == 0 {
 		a.Fallback = nil // as a file with "fallback = []" reads
 	}
+	if a.Transcription != "" {
+		switch p, ok := a.ProfileNamed(a.Transcription); {
+		case !ok:
+			w = append(w, fmt.Sprintf("assistant.transcription %q: no such profile; using the first that transcribes", a.Transcription))
+			a.Transcription = ""
+		case !p.Can(AbilityTranscription):
+			w = append(w, fmt.Sprintf(`assistant.transcription %q: does not have the "transcription" ability (with OpenAI, Groq or a compatible server); using the first that transcribes`, a.Transcription))
+			a.Transcription = ""
+		}
+	}
 	if a.Decision != "" {
 		switch p, ok := a.ProfileNamed(a.Decision); {
 		case !ok:
@@ -467,6 +504,20 @@ func (a Assistant) DecisionProfile() string {
 	}
 	for _, p := range a.Profiles {
 		if p.Can(AbilityDecision) {
+			return p.Name
+		}
+	}
+	return ""
+}
+
+// TranscriptionProfile is the profile that turns voice input into text:
+// Transcription, else the first that does; "" for none, voice input off.
+func (a Assistant) TranscriptionProfile() string {
+	if a.Transcription != "" {
+		return a.Transcription
+	}
+	for _, p := range a.Profiles {
+		if p.Can(AbilityTranscription) {
 			return p.Name
 		}
 	}

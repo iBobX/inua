@@ -30,8 +30,8 @@ import (
 // aiSettings are the AI page's controls.
 type aiSettings struct {
 	enable, ask, web, files, bash gtk.Switch
-	profile, decision             gtk.DropDown
-	route                         gtk.Label
+	profile, decision, ears       gtk.DropDown
+	route, earsNote               gtk.Label
 	list                          gtk.Box
 	cards                         []*aiCard
 	detail                        gtk.Revealer // the panel beside the page: the open profile's settings
@@ -42,7 +42,7 @@ type aiSettings struct {
 	detailStack                   gtk.Stack
 	open                          int          // the profile the panel shows; -1 for none
 	bench                         *benchDialog // the Benchmark dialog, while open
-	names, choosers               []string     // the drop-downs' profiles: the one that answers, the one for quick choices
+	names, choosers, listeners    []string     // the drop-downs' profiles: the one that answers, the one for quick choices, for voice input
 	listen, endpoint, token       gtk.Entry
 	serve                         gtk.Switch
 	serveNote                     gtk.Label
@@ -75,14 +75,15 @@ type aiCard struct {
 	provider, reasoning             *gtk.DropDown
 	fallback                        *gtk.Switch
 	fallbackRow                     *gtk.Box
+	endpointRow                     *gtk.Box // shown where the provider needs it, or one is set
 	up, down, remove, save, forget  *gtk.Button
 	provider2                       string // the provider shown after inua's, one it does not list
 
 	// Abilities as Mister Morph's Console shows them: a chip each, and
 	// what the ones on let the profile do.
-	chat, decision         *gtk.ToggleButton
-	chatMark, decisionMark *gtk.Image
-	abilities              *gtk.Label
+	chat, decision, voice             *gtk.ToggleButton
+	chatMark, decisionMark, voiceMark *gtk.Image
+	abilities                         *gtk.Label
 
 	// The provider's models: listed in a popover from the button beside
 	// the model, searched as you type.
@@ -106,6 +107,8 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	ui.Get("ai_bash", &a.bash)
 	ui.Get("ai_profile", &a.profile)
 	ui.Get("ai_decision", &a.decision)
+	ui.Get("ai_transcription", &a.ears)
+	ui.Get("ai_transcription_note", &a.earsNote)
 	ui.Get("ai_route", &a.route)
 	ui.Get("ai_profiles", &a.list)
 	ui.Get("ai_detail", &a.detail)
@@ -143,11 +146,11 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	for _, sw := range []*gtk.Switch{&a.enable, &a.ask, &a.web, &a.files, &a.bash} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
-	for _, d := range []*gtk.DropDown{&a.profile, &a.decision} {
+	for _, d := range []*gtk.DropDown{&a.profile, &a.decision, &a.ears} {
 		s.settings.drops[d.GoPointer()] = d
 		gtkx.ConnectNotify(d, "selected", &s.onSettingsDrop)
 	}
-	a.cards, a.names, a.choosers, a.open, a.shown = nil, nil, nil, -1, -1
+	a.cards, a.names, a.choosers, a.listeners, a.open, a.shown = nil, nil, nil, nil, -1, -1
 	if a.keys == nil {
 		a.keys = keys.New()
 	}
@@ -258,6 +261,24 @@ func (s *shellUI) showAISettings() {
 	}
 	a.profile.SetSelected(uint32(max(0, slices.Index(names, c.Profile))))
 	a.decision.SetSelected(uint32(slices.Index(choosers, c.Decision) + 1)) // 0: none
+	listeners := aiListeners(c)
+	if !slices.Equal(listeners, a.listeners) || a.listeners == nil {
+		items := listeners
+		if len(items) == 0 {
+			items = []string{i18n.T("None")}
+		}
+		list := gtk.NewStringList(items)
+		a.ears.SetModel(list)
+		list.Unref()
+		a.listeners = append([]string{}, listeners...)
+	}
+	a.ears.SetSensitive(len(listeners) > 0)
+	a.ears.SetSelected(uint32(max(0, slices.Index(listeners, c.TranscriptionProfile()))))
+	if len(listeners) == 0 {
+		a.earsNote.SetText(i18n.T("Turn on Voice for a profile of OpenAI, Groq or a compatible server, with a speech-to-text model, for the assistant window's microphone"))
+	} else {
+		a.earsNote.SetText(i18n.T("The profile that turns what you say to the assistant window's microphone into text"))
+	}
 	if len(c.Fallback) > 0 {
 		a.route.SetText(i18n.Tf("Then, when it fails: %s", strings.Join(c.Fallback, ", ")))
 	} else {
@@ -327,6 +348,17 @@ func aiNames(c config.Assistant) (answer, choose []string) {
 		}
 	}
 	return answer, choose
+}
+
+// aiListeners are the profiles that transcribe voice input.
+func aiListeners(c config.Assistant) []string {
+	var names []string
+	for _, p := range c.Profiles {
+		if p.Can(config.AbilityTranscription) {
+			names = append(names, p.Name)
+		}
+	}
+	return names
 }
 
 // buildAICards makes n empty cards; fillAICard sets them.
@@ -438,7 +470,7 @@ func (s *shellUI) buildAICards(n int) {
 		card.key = entry("key", i18n.T("Paste a key, then Save"))
 		card.key.SetVisibility(false)
 		card.key.AddCssClass("mono-entry")
-		field := func(label string, w *gtk.Widget) {
+		field := func(label string, w *gtk.Widget) *gtk.Box {
 			f := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 			l := gtk.NewLabel(label)
 			l.AddCssClass("label")
@@ -446,6 +478,7 @@ func (s *shellUI) buildAICards(n int) {
 			gtkx.Append(f, &l.Widget)
 			f.Append(w)
 			gtkx.Append(card.page, &f.Widget)
+			return f // the page owns it
 		}
 		field(i18n.T("Name"), &card.name.Widget)
 		field(i18n.T("Provider"), &card.provider.Widget)
@@ -461,7 +494,7 @@ func (s *shellUI) buildAICards(n int) {
 		field(i18n.T("Model"), &modelRow.Widget)
 		modelRow.Unref()
 		field(i18n.T("Reasoning"), &card.reasoning.Widget)
-		field(i18n.T("Endpoint"), &card.endpoint.Widget)
+		card.endpointRow = field(i18n.T("Endpoint"), &card.endpoint.Widget)
 		abilities := gtk.NewBox(gtk.OrientationVerticalValue, 6)
 		chips := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 		chip := func(ability, label string) (*gtk.ToggleButton, *gtk.Image) {
@@ -481,6 +514,7 @@ func (s *shellUI) buildAICards(n int) {
 		}
 		card.chat, card.chatMark = chip(config.AbilityText, i18n.T("Chat"))
 		card.decision, card.decisionMark = chip(config.AbilityDecision, i18n.T("Decision"))
+		card.voice, card.voiceMark = chip(config.AbilityTranscription, i18n.T("Voice"))
 		gtkx.Append(abilities, &chips.Widget)
 		card.abilities = gtk.NewLabel("")
 		card.abilities.AddCssClass("sub")
@@ -552,12 +586,16 @@ func (s *shellUI) buildAICards(n int) {
 		for _, o := range []interface{ Unref() }{card.row, card.rowMark, &card.title, card.rowMeta, card.rowRole, card.page,
 			&card.state, card.name, card.model, card.endpoint, card.key, card.provider, card.reasoning, card.fallback,
 			card.fallbackRow, card.up, card.down, card.remove, card.bench, card.save, card.forget, card.listModels,
-			card.chat, card.decision, card.chatMark, card.decisionMark, card.abilities, keyRow, abilities} {
+			card.chat, card.decision, card.voice, card.chatMark, card.decisionMark, card.voiceMark, card.abilities, keyRow, abilities} {
 			o.Unref()
 		}
 		a.cards = append(a.cards, card)
 	}
 }
+
+// needsEndpoint reports whether provider's profiles must say their
+// server's address: the compatible ones.
+func needsEndpoint(provider string) bool { return strings.HasSuffix(provider, "_compatible") }
 
 // aiProviderNames are config.AIProviders as the drop-down shows them.
 func aiProviderNames() []string {
@@ -582,6 +620,13 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	setEntry(card.name, p.Name)
 	setEntry(card.model, p.Model)
 	setEntry(card.endpoint, p.Endpoint)
+	// A provider of its own API needs no endpoint; one set (a proxy) shows.
+	card.endpointRow.SetVisible(needsEndpoint(p.Provider) || p.Endpoint != "")
+	if needsEndpoint(p.Provider) {
+		card.endpoint.SetPlaceholderText(i18n.T("the server's address: http://127.0.0.1:11434/v1"))
+	} else {
+		card.endpoint.SetPlaceholderText(i18n.T("the provider's own"))
+	}
 	// A provider inua does not list shows after its own, kept as it is.
 	known := slices.Index(config.AIProviderIDs(), p.Provider)
 	extra := ""
@@ -600,16 +645,24 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	}
 	card.provider.SetSelected(uint32(known))
 	card.reasoning.SetSelected(uint32(max(0, slices.Index(config.ReasoningEfforts, p.Reasoning))))
-	text, choose := p.Can(config.AbilityText), p.Can(config.AbilityDecision)
+	text, choose, listen := p.Can(config.AbilityText), p.Can(config.AbilityDecision), p.Can(config.AbilityTranscription)
 	card.chat.SetActive(text)
 	card.decision.SetActive(choose)
+	card.voice.SetActive(listen)
 	card.chatMark.SetVisible(text)
 	card.decisionMark.SetVisible(choose)
-	// The one that answers keeps chatting; a profile keeps one of the two;
-	// TypeSafe only makes quick choices.
+	card.voiceMark.SetVisible(listen)
+	// The one that answers keeps chatting; a profile keeps one of them;
+	// TypeSafe only makes quick choices; only some providers transcribe.
 	only := config.DecisionOnly(p.Provider)
-	card.chat.SetSensitive(!only && p.Name != c.Profile && (!text || choose))
-	card.decision.SetSensitive(!only && (!choose || text))
+	card.chat.SetSensitive(!only && p.Name != c.Profile && (!text || choose || listen))
+	card.decision.SetSensitive(!only && (!choose || text || listen))
+	card.voice.SetSensitive(config.Transcribes(p.Provider) && (!listen || text || choose))
+	if config.Transcribes(p.Provider) {
+		card.voice.SetTooltipText(i18n.T("Turns voice input into text, with a speech-to-text model (gpt-4o-mini-transcribe, whisper-large-v3-turbo …)"))
+	} else {
+		card.voice.SetTooltipText(i18n.T("Only OpenAI, Groq and the OpenAI-compatible servers transcribe speech"))
+	}
 	switch {
 	case only:
 		card.chat.SetTooltipText(i18n.T("This provider makes quick choices only"))
@@ -624,7 +677,7 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	} else {
 		card.listModels.SetTooltipText(i18n.T("List the provider's models"))
 	}
-	card.abilities.SetText(abilitySummary(text, choose))
+	card.abilities.SetText(abilitySummary(text, choose, listen))
 	card.fallback.SetActive(slices.Contains(c.Fallback, p.Name))
 	card.fallbackRow.SetVisible(p.Name != c.Profile && text)
 	card.up.SetSensitive(i > 0)
@@ -640,6 +693,9 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	}
 	if p.Name == c.DecisionProfile() {
 		role += i18n.T("Makes the quick choices. ")
+	}
+	if p.Name == c.TranscriptionProfile() {
+		role += i18n.T("Transcribes voice input. ")
 	}
 	var key string
 	switch {
@@ -666,6 +722,9 @@ func (s *shellUI) fillAICard(card *aiCard, i int, p config.AIProfile, saved map[
 	}
 	if p.Name == c.DecisionProfile() {
 		roles = append(roles, i18n.T("Quick choices"))
+	}
+	if p.Name == c.TranscriptionProfile() {
+		roles = append(roles, i18n.T("Voice input"))
 	}
 	if missing {
 		roles = append(roles, i18n.T("No key"))
@@ -726,6 +785,9 @@ func (s *shellUI) aiEntryChanged(name, text string, c *config.Config) bool {
 		if a.Decision == old {
 			a.Decision = text
 		}
+		if a.Transcription == old {
+			a.Transcription = text
+		}
 		a.Fallback = slices.Clone(a.Fallback)
 		for j, f := range a.Fallback {
 			if f == old {
@@ -771,6 +833,12 @@ func (s *shellUI) aiDrop(name string, i int, c *config.Config) {
 		}
 		return
 	}
+	if name == "ai_transcription" {
+		if listeners := aiListeners(*a); i >= 0 && i < len(listeners) {
+			a.Transcription = listeners[i]
+		}
+		return
+	}
 	if name == "ai_decision" {
 		switch {
 		case i == 0:
@@ -795,7 +863,13 @@ func (s *shellUI) aiDrop(name string, i int, c *config.Config) {
 		if config.DecisionOnly(id) && p.Name == a.Profile {
 			return // the one that answers chats
 		}
+		if id != p.Provider && !needsEndpoint(id) {
+			p.Endpoint = "" // the last server's, not this provider's
+		}
 		p.Provider = id
+		if !p.Can(config.AbilityTranscription) && a.Transcription == p.Name {
+			a.Transcription = ""
+		}
 		if config.DecisionOnly(id) {
 			p.Abilities = []string{config.AbilityDecision}
 			a.Fallback = slices.DeleteFunc(slices.Clone(a.Fallback), func(f string) bool { return f == p.Name })
@@ -836,7 +910,7 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 			return false
 		}
 		switch field {
-		case "text", "decision":
+		case "text", "decision", "transcription":
 			a.Profiles = slices.Clone(a.Profiles)
 			p := &a.Profiles[i]
 			if field == "text" && !on && p.Name == a.Profile {
@@ -848,6 +922,9 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 			}
 			if !p.Can(config.AbilityDecision) && a.Decision == p.Name {
 				a.Decision = ""
+			}
+			if !p.Can(config.AbilityTranscription) && a.Transcription == p.Name {
+				a.Transcription = ""
 			}
 			return true
 		case "fallback":
@@ -1023,6 +1100,9 @@ func (s *shellUI) aiButton(name string) bool {
 		if a.Decision == p.Name {
 			a.Decision = ""
 		}
+		if a.Transcription == p.Name {
+			a.Transcription = ""
+		}
 		s.keysDo(i18n.T("key not removed"), func(k *keys.Keys) error { return k.Set(p.Name, "") })
 	case "keysave", "keyforget":
 		key := ""
@@ -1042,16 +1122,24 @@ func (s *shellUI) aiButton(name string) bool {
 }
 
 // abilitySummary says what a profile with these abilities does.
-func abilitySummary(chat, decision bool) string {
+func abilitySummary(chat, decision, voice bool) string {
+	var s string
 	switch {
 	case chat && decision:
-		return i18n.T("Chats and runs tasks with inua's tools. Also makes quick choices from a list, as the games' AI players do.")
+		s = i18n.T("Chats and runs tasks with inua's tools. Also makes quick choices from a list, as the games' AI players do.")
 	case chat:
-		return i18n.T("Chats and runs tasks with inua's tools. The games' AI players do not use it.")
+		s = i18n.T("Chats and runs tasks with inua's tools. The games' AI players do not use it.")
 	case decision:
-		return i18n.T("Makes only quick choices from a list (yes or no, one of a few), as the games' AI players do. It cannot chat or run tasks.")
+		s = i18n.T("Makes only quick choices from a list (yes or no, one of a few), as the games' AI players do. It cannot chat or run tasks.")
+	case voice:
+		return i18n.T("Only turns voice input into text, for the assistant window's microphone. It cannot chat or run tasks.")
+	default:
+		return i18n.T("Neither chats nor makes quick choices: inua does not use it.")
 	}
-	return i18n.T("Neither chats nor makes quick choices: inua does not use it.")
+	if voice {
+		s += " " + i18n.T("Also turns voice input into text.")
+	}
+	return s
 }
 
 // buildAIModelsPop makes the popover of card's model button.
@@ -1110,6 +1198,11 @@ func (s *shellUI) listAIModels(card *aiCard, p config.AIProfile) {
 		gtkx.Post(func() {
 			if !slices.Contains(s.settings.ai.cards, card) {
 				return // the page was rebuilt
+			}
+			// The keyring's question took the focus, and the popover
+			// closed with it: open it again for the answer.
+			if !card.pop.GetVisible() && card.listModels.GetMapped() {
+				card.pop.Popup()
 			}
 			switch {
 			case errors.Is(err, models.ErrNoList):

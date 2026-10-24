@@ -40,7 +40,12 @@ type Profile struct {
 
 // Can reports whether the profile is for ability (config.AbilityText,
 // config.AbilityDecision).
-func (p Profile) Can(ability string) bool { return config.CanDo(p.Abilities, ability) }
+func (p Profile) Can(ability string) bool {
+	if ability == config.AbilityTranscription && !config.Transcribes(p.Provider) {
+		return false
+	}
+	return config.CanDo(p.Abilities, ability)
+}
 
 // Settings are what the runtime needs, resolved from config.toml, the
 // saved keys and the environment.
@@ -48,6 +53,7 @@ type Settings struct {
 	Profiles         []Profile // the first answers; all have a key
 	Fallback         []string  // profiles tried in turn when it fails
 	Decision         string    // the profile for quick choices (Choose); "" for none
+	Transcription    string    // the profile for voice input (Transcribe); "" for none
 	Missing          []string  // profiles left out for want of a key
 	Tools            []string  // Mister Morph's built-ins to add
 	AskBeforeChanges bool
@@ -124,6 +130,11 @@ func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error)
 		s.Decision = want
 	} else if i := slices.IndexFunc(s.Profiles, decides); i >= 0 {
 		s.Decision = s.Profiles[i].Name
+	}
+	if want := c.TranscriptionProfile(); slices.ContainsFunc(s.Profiles, func(p Profile) bool {
+		return p.Name == want && p.Can(config.AbilityTranscription)
+	}) {
+		s.Transcription = want
 	}
 	return s, nil
 }
@@ -262,6 +273,9 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 			}
 		}
 		routes["decision"] = map[string]any{"profile": set.Decision, "fallback_profiles": fallback}
+	}
+	if set.Transcription != "" { // for Console's microphone
+		routes["transcription"] = set.Transcription
 	}
 	cfg.Set("llm.routes", routes)
 	cfg.Set("file_state_dir", stateDir)

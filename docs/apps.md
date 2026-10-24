@@ -73,12 +73,25 @@ only by you; never to `config.toml`.
 
 One profile answers first; those marked **Fallback** take over in order
 when it fails. The window's drop-down switches profile for a
-conversation. Each profile has two abilities: **Chat** (answers and runs
-tasks) and **Decision** (picks from a list, as the games' AI players do).
+conversation. Each profile has three abilities: **Chat** (answers and
+runs tasks), **Decision** (picks from a list, as the games' AI players
+do) and **Voice** (turns speech into text; OpenAI, Groq or a compatible
+server, with a speech-to-text model such as `gpt-4o-mini-transcribe` or
+`whisper-large-v3-turbo`).
 **Benchmark** tries a profile alone, test by test, and shows what the
 model answered.
 
 What the tools read is sent to the provider answering.
+
+### Voice input
+
+With a Voice profile (**Voice input with**), the microphone beside
+**Ask** records what you say (through `pw-cat`, PipeWire's) until you
+click it again, then puts the words in the question to read over and
+send. ✕ or Escape drops the recording; it stops by itself after five
+minutes. The recording goes to that profile's provider, and only after
+you click the microphone. A connected Console's microphone uses the same
+profile.
 
 ### Console endpoint
 

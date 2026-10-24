@@ -1,7 +1,7 @@
 // Package assistantui is the assistant's window, a light app of its own
 // (cmd/inua-assistant) so that only it links Mister Morph: the
 // conversation, a line for each tool, approval cards, the answer as it
-// streams. internal/assistant does the rest.
+// streams, voice input. internal/assistant does the rest.
 package assistantui
 
 import (
@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"maps"
+	"math"
 	"os"
 	"slices"
 	"strings"
@@ -20,12 +21,14 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
+	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/assistant"
 	"github.com/lyricat/inua/internal/assistant/keys"
+	"github.com/lyricat/inua/internal/assistant/record"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -63,6 +66,17 @@ type view struct {
 	question   gtk.Entry
 	send       gtk.Button
 
+	// Voice input: the microphone, and in the question's place the
+	// recording, then its transcription.
+	voice, voiceDiscard          gtk.Button
+	voiceBox, voiceMark, voWave  gtk.Box
+	voiceTime, voiceState, voErr gtk.Label
+	wave                         *gtk.Widget      // the waveform
+	levels                       []float64        // how loud, a sample each tick, newest last
+	rec                          *record.Recorder // while it records or is transcribed
+	transcribing                 bool
+	voiceCancel                  context.CancelFunc
+
 	as        *assistant.Assistant
 	stamp     string   // config.toml's and the keys' times when as was made
 	names     []string // the profile drop-down's
@@ -80,6 +94,8 @@ type view struct {
 	nextCard  int
 
 	onSend, onReset, onCard, onSuggestion func(gtk.Button)
+	onVoice, onVoiceDiscard               func(gtk.Button)
+	onVoiceTick                           glib.SourceFunc
 	onSettings                            func(gtk.Button)
 	onProfile, onActive                   func(uintptr, uintptr, uintptr)
 	onActivate                            func(gtk.Entry)
@@ -111,7 +127,19 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui.Get("question", &v.question)
 	ui.Get("send", &v.send)
 	ui.Get("reset", &reset)
+	ui.Get("voice", &v.voice)
+	ui.Get("voice_discard", &v.voiceDiscard)
+	ui.Get("voice_box", &v.voiceBox)
+	ui.Get("voice_mark", &v.voiceMark)
+	ui.Get("voice_time", &v.voiceTime)
+	ui.Get("voice_state", &v.voiceState)
+	ui.Get("voice_wave", &v.voWave)
+	ui.Get("voice_error", &v.voErr)
 	ui.Close()
+	v.wave = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: v.snapshotWave, Min: waveHeight})
+	v.wave.AddCssClass("as-voice-wave")
+	v.wave.SetHexpand(true)
+	v.voWave.Append(v.wave)
 
 	v.onSend = func(gtk.Button) {
 		if v.running {
@@ -157,7 +185,19 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 			ch <- verb == "allow"
 		}
 	}
+	v.onVoice = func(gtk.Button) {
+		if v.rec == nil {
+			v.startVoice()
+		} else if !v.transcribing {
+			v.stopVoice()
+		}
+	}
+	v.onVoiceDiscard = func(gtk.Button) { v.dropVoice() }
 	v.onKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		if keyval == 0xff1b && v.rec != nil { // Escape drops the recording first
+			v.dropVoice()
+			return true
+		}
 		if keyval == 0xff1b && v.running { // Escape stops the answer
 			v.cancel()
 			return true
@@ -170,6 +210,7 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		v.ask(q)
 	}
 	v.onClose = func(gtk.Window) bool {
+		v.dropVoice()
 		if v.enabled || v.reloading {
 			win.SetVisible(false)
 			return true
@@ -177,6 +218,10 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 		return false
 	}
 	v.onShutdown = func(gio.Application) {
+		if v.rec != nil && !v.transcribing {
+			v.rec.Cancel() // before the program ends
+		}
+		v.dropVoice()
 		v.closed = true
 		if v.cancel != nil {
 			v.cancel()
@@ -193,6 +238,8 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	c.App.AddAction(background)
 	background.Unref()
 	v.send.ConnectClicked(&v.onSend)
+	v.voice.ConnectClicked(&v.onVoice)
+	v.voiceDiscard.ConnectClicked(&v.onVoiceDiscard)
 	settings.ConnectClicked(&v.onSettings)
 	openSettings.ConnectClicked(&v.onSettings)
 	gtkx.ConnectNotify(&v.profile, "selected", &v.onProfile)
@@ -272,6 +319,8 @@ func (v *view) setUp() {
 		v.send.SetSensitive(false)
 		v.profile.SetVisible(false)
 		v.model.SetText("")
+		v.dropVoice()
+		v.voice.SetVisible(false)
 	}
 	if !cfg.Assistant.Enable {
 		say(i18n.T("The assistant is turned off. Turn it on in Settings → AI."))
@@ -314,6 +363,11 @@ func (v *view) setUp() {
 	list.Unref()
 	v.profile.SetSelected(0)
 	v.profile.SetVisible(len(v.names) > 1)
+	v.voice.SetVisible(v.as.Transcribes() || v.rec != nil)
+	if v.rec == nil {
+		v.voice.SetSensitive(record.Available())
+		v.voice.SetTooltipText(voiceTip())
+	}
 	if set.ServeListen != "" {
 		ctx, cancel := context.WithCancel(v.ctx)
 		v.apiCancel = cancel
@@ -447,6 +501,7 @@ func (v *view) ask(q string) {
 			v.running = false
 			v.cancel()
 			v.send.SetLabel(i18n.T("Ask"))
+			v.send.SetSensitive(v.rec == nil)
 			v.profile.SetSensitive(true)
 			switch {
 			case errors.Is(err, context.Canceled):
@@ -462,6 +517,179 @@ func (v *view) ask(q string) {
 			v.question.GrabFocus()
 		})
 	}()
+}
+
+// voiceTip is the microphone's tooltip: what it does, or what it needs.
+func voiceTip() string {
+	if !record.Available() {
+		return i18n.T("Voice input records with pw-cat, from PipeWire (pipewire-bin on Debian and Ubuntu, pipewire on Arch, pipewire-utils on Fedora)")
+	}
+	return i18n.T("Voice input")
+}
+
+// startVoice starts recording, in the question's place.
+func (v *view) startVoice() {
+	v.voErr.SetVisible(false)
+	r, err := record.Start()
+	if err != nil {
+		v.voiceError(i18n.Tf("Cannot record: %s", err.Error()))
+		return
+	}
+	v.rec, v.transcribing = r, false
+	v.question.SetVisible(false)
+	v.voiceBox.SetVisible(true)
+	v.voiceBox.RemoveCssClass("transcribing")
+	for _, w := range []*gtk.Widget{&v.voiceMark.Widget, &v.voiceTime.Widget, &v.voWave.Widget} {
+		w.SetVisible(true)
+	}
+	v.voiceState.SetVisible(false)
+	v.voiceTime.SetText("0:00")
+	v.levels = v.levels[:0]
+	v.wave.QueueDraw()
+	v.voice.SetIconName("media-playback-stop-symbolic")
+	v.voice.SetTooltipText(i18n.T("Stop and transcribe"))
+	v.voice.AddCssClass("as-recording")
+	if !v.running { // Stop for the answer meanwhile
+		v.send.SetSensitive(false)
+	}
+	v.voice.GrabFocus()
+	v.onVoiceTick = func(uintptr) bool {
+		if v.closed || v.rec != r || v.transcribing {
+			return false
+		}
+		n := int(r.Length().Seconds())
+		v.voiceTime.SetText(fmt.Sprintf("%d:%02d", n/60, n%60))
+		if len(v.levels) >= maxLevels {
+			v.levels = append(v.levels[:0], v.levels[len(v.levels)-maxLevels/2:]...)
+		}
+		v.levels = append(v.levels, r.Level())
+		v.wave.QueueDraw()
+		if r.Full() { // five minutes, or the microphone went away
+			v.stopVoice()
+			return false
+		}
+		return true
+	}
+	glib.TimeoutAdd(waveTick, &v.onVoiceTick, 0)
+}
+
+// The waveform: a bar for each tick's level, newest at the right, as many
+// as fit; the oldest scroll off to the left.
+const (
+	waveTick   = 50 // ms
+	waveBar    = 2  // px
+	waveStep   = 4  // px, a bar and its gap
+	waveHeight = 20 // px
+	maxLevels  = 2048
+)
+
+// snapshotWave draws the levels in the waveform's colour, each a bar
+// centred on the middle line, a pixel tall when silent.
+func (v *view) snapshotWave(w *gtk.Widget, s *gtk.Snapshot) {
+	var c gdk.RGBA
+	w.GetColor(&c)
+	width, h := float32(w.GetWidth()), float32(w.GetHeight())
+	levels := v.levels[max(0, len(v.levels)-int(width/waveStep)):]
+	x := width - float32(len(levels))*waveStep
+	for _, l := range levels {
+		bh := max(1, float32(math.Round(l*float64(h))))
+		var r graphene.Rect
+		r.Init(x, float32(math.Round(float64(h-bh)/2)), waveBar, bh)
+		s.AppendColor(&c, &r)
+		x += waveStep
+	}
+}
+
+// stopVoice ends the recording and has it transcribed; the words go into
+// the question, to read over before asking.
+func (v *view) stopVoice() {
+	r, as := v.rec, v.as
+	if r == nil || v.transcribing {
+		return
+	}
+	v.transcribing = true
+	for _, w := range []*gtk.Widget{&v.voiceMark.Widget, &v.voiceTime.Widget, &v.voWave.Widget} {
+		w.SetVisible(false)
+	}
+	v.voiceState.SetVisible(true)
+	v.voiceBox.AddCssClass("transcribing")
+	v.voice.SetSensitive(false)
+	ctx, cancel := context.WithCancel(v.ctx)
+	v.voiceCancel = cancel
+	go func() {
+		defer cancel()
+		wav, err := r.Stop()
+		text := ""
+		switch {
+		case err != nil:
+			err = errors.New(i18n.Tf("Cannot record: %s", err.Error()))
+		case as == nil:
+			err = errors.New(i18n.T("The assistant is not set up."))
+		default:
+			if text, err = as.Transcribe(ctx, wav, "voice.wav"); err != nil {
+				log.Printf("assistant: transcribe: %v", err)
+				err = errors.New(i18n.Tf("Cannot transcribe: %s", err.Error()))
+			}
+		}
+		gtkx.Post(func() {
+			if v.closed || v.rec != r || ctx.Err() != nil {
+				return // dropped meanwhile
+			}
+			v.endVoice()
+			switch {
+			case err != nil:
+				v.voiceError(err.Error())
+			case text == "":
+				v.voiceError(i18n.T("No speech was heard."))
+			default:
+				q := v.question.GetText()
+				if q != "" && !strings.HasSuffix(q, " ") {
+					q += " "
+				}
+				v.question.SetText(q + text)
+				v.question.GrabFocus()
+				v.question.SetPosition(-1)
+			}
+		})
+	}()
+}
+
+// dropVoice drops the recording, or its transcription.
+func (v *view) dropVoice() {
+	r := v.rec
+	if r == nil {
+		return
+	}
+	if v.transcribing {
+		v.voiceCancel()
+	} else {
+		go r.Cancel()
+	}
+	v.endVoice()
+	if !v.closed {
+		v.question.GrabFocus()
+	}
+}
+
+// endVoice puts the question back in its place.
+func (v *view) endVoice() {
+	v.rec, v.transcribing, v.voiceCancel = nil, false, nil
+	if v.closed {
+		return
+	}
+	v.voiceBox.SetVisible(false)
+	v.question.SetVisible(true)
+	v.voice.RemoveCssClass("as-recording")
+	v.voice.SetIconName("audio-input-microphone-symbolic")
+	v.voice.SetSensitive(record.Available())
+	v.voice.SetTooltipText(voiceTip())
+	v.send.SetSensitive(v.as != nil && !v.reloading)
+}
+
+// voiceError says why voice input did not work, under the question.
+func (v *view) voiceError(msg string) {
+	v.voErr.SetText(msg)
+	v.voErr.SetVisible(true)
 }
 
 // approve shows a card and waits for Allow or Deny.

@@ -27,7 +27,7 @@ func Format(c Config) string {
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
 		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
-		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision),
+		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision), q(c.Assistant.Transcription),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
 		q(c.Keyring.Folder), c.Keyring.Notify, q(c.Keyring.Untrusted), c.Keyring.LockAfter,
@@ -463,6 +463,12 @@ fallback = %s
 # or, when it makes none, the first profile that does.
 decision = %s
 
+# The profile that turns voice input (the assistant window's microphone)
+# into text, with OpenAI, Groq or a compatible server: Mister Morph's
+# transcription route; "" for the first profile with the "transcription"
+# ability. None, and the window has no microphone.
+transcription = %s
+
 # Mister Morph's built-in tools to add to inua's: "web_search", "url_fetch",
 # and, asking before each use, "read_file" and "bash".
 tools = %s
@@ -486,7 +492,10 @@ serve_listen = %s
 # quick choices only), the model, an endpoint ("" for the provider's
 # own), the reasoning effort ("minimal" to "high"; "" for the model's
 # default), and what it is for: abilities "text" answers,
-# "decision" makes quick choices (it alone: only those); [] for both.
+# "decision" makes quick choices (it alone: only those), "transcription"
+# turns voice input into text (OpenAI, Groq and the compatible servers;
+# a speech-to-text model such as "gpt-4o-mini-transcribe" or
+# "whisper-large-v3-turbo"); [] for the first two.
 # Another provider of Mister Morph's is kept as it is. The API key is
 # typed in the settings window (AI) and kept in the keyring (the Secret
 # Service; inua-keyring keeps it in pass), or without one in

@@ -95,6 +95,8 @@ media-playback-start                  play
 media-playback-pause                  pause
 media-skip-backward                   skip-back
 media-skip-forward                    skip-forward
+# the assistant's voice input
+audio-input-microphone                microphone
 # control center buttons and tiles
 system-lock-screen                    lock
 dialog-password                       key

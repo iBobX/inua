@@ -1730,6 +1730,37 @@ ApplicationWindow settings {
 
                         Label {
                           styles ["title"]
+                          label:  _("Voice input with");
+                          xalign: 0;
+                        }
+
+                        Label ai_transcription_note {
+                          styles ["sub"]
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown ai_transcription {
+                        name: "ai_transcription";
+                        valign: center;
+                      }
+                    }
+
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
                           label:  _("Ask before changes");
                           xalign: 0;
                         }
