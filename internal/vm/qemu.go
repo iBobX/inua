@@ -50,6 +50,12 @@ const (
 	// minutes, which is what QEMU's own default powerdown grace allows.
 	qemuShutdownGrace = 90 * time.Second
 
+	// qemuInstallShutdownGrace is that wait while the install image is still
+	// attached. Installers commonly ignore the power button (Ubuntu's live
+	// server installer does), and stopping one abandons the installation
+	// anyway, so the user is not kept waiting the full grace for nothing.
+	qemuInstallShutdownGrace = 10 * time.Second
+
 	// qmpDeadline is how long one monitor command may take before the caller is
 	// told the machine is not answering.
 	qmpDeadline = 5 * time.Second
@@ -557,7 +563,7 @@ func (b *QEMUBackend) stopQEMU(ctx context.Context, m Machine) error {
 // QEMU exiting does: it removes its own sockets. The wait ends at whichever
 // comes first, the context or the shutdown grace.
 func (b *QEMUBackend) waitForExit(ctx context.Context, m Machine) bool {
-	deadline := time.Now().Add(b.shutdownGrace())
+	deadline := time.Now().Add(b.shutdownGrace(m))
 	for {
 		if _, err := os.Stat(b.QMPPath(m)); errors.Is(err, os.ErrNotExist) {
 			return true
@@ -573,11 +579,15 @@ func (b *QEMUBackend) waitForExit(ctx context.Context, m Machine) bool {
 	}
 }
 
-func (b *QEMUBackend) shutdownGrace() time.Duration {
-	if b.ShutdownBy <= 0 {
-		return qemuShutdownGrace
+func (b *QEMUBackend) shutdownGrace(m Machine) time.Duration {
+	grace := b.ShutdownBy
+	if grace <= 0 {
+		grace = qemuShutdownGrace
 	}
-	return b.ShutdownBy
+	if strings.TrimSpace(m.Boot.ISO) != "" {
+		grace = min(grace, qemuInstallShutdownGrace)
+	}
+	return grace
 }
 
 // Display is how a running machine is seen: the viewer, and where it is.

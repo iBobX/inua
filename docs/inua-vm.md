@@ -166,7 +166,8 @@ ISO.
   `my fedora` is `inua-vm-my\x20fedora`), so a machine keeps running with the window
   closed and stops with the session. The state comes from QMP
   (`query-status`), Stop sends `system_powerdown` and, after a timeout,
-  `quit`.
+  `quit`: 90 seconds, or 10 while the install image is attached, since
+  installers often ignore the power button.
 - No Docker and no `docker` group: only `/dev/kvm`, whose group remedy
   #18 already has. Without KVM, or for another architecture, QEMU emulates
   (TCG): slower, and the window says so.

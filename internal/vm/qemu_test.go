@@ -931,6 +931,25 @@ func TestQEMUStopQuitsWhenTheGuestDoesNotShutDown(t *testing.T) {
 	}
 }
 
+// An installer often ignores the power button, so while the install image is
+// attached Stop waits only a short while before QEMU is told to quit.
+func TestQEMUStopWaitsLessWhileInstalling(t *testing.T) {
+	b, m, _ := newQEMUTestBackend(t, nil)
+	b.ShutdownBy = 0
+	m.Boot.ISO = ""
+	if got := b.shutdownGrace(m); got != qemuShutdownGrace {
+		t.Errorf("installed: grace = %v, want %v", got, qemuShutdownGrace)
+	}
+	m.Boot.ISO = "/srv/ubuntu.iso"
+	if got := b.shutdownGrace(m); got != qemuInstallShutdownGrace {
+		t.Errorf("installing: grace = %v, want %v", got, qemuInstallShutdownGrace)
+	}
+	b.ShutdownBy = time.Second
+	if got := b.shutdownGrace(m); got != time.Second {
+		t.Errorf("installing, shorter grace set: grace = %v, want 1s", got)
+	}
+}
+
 // countCalls is how often the runner was asked for one program.
 func countCalls(r *fakeRunner, program string) int {
 	n := 0
