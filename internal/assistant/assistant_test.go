@@ -325,3 +325,26 @@ func TestProfiles(t *testing.T) {
 		t.Error("no such profile")
 	}
 }
+
+// An assistant with tools may plan: the model is offered plan_create with
+// them, and not without them.
+func TestPlanTool(t *testing.T) {
+	for _, tools := range [][]string{{"url_fetch"}, nil} {
+		model := &fakeModel{t: t, replies: []reply{{final: "hi"}}}
+		srv := newModelServer(t, model)
+		a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv + "/v1", APIKey: "test"}},
+			Tools: tools, StateDir: t.TempDir(), CacheDir: t.TempDir(), MaxSteps: 2}, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := a.Ask(context.Background(), "hello", Events{}); err != nil {
+			t.Fatal(err)
+		}
+		model.mu.Lock()
+		sent, _ := json.Marshal(model.got)
+		model.mu.Unlock()
+		if has := bytes.Contains(sent, []byte(`"plan_create"`)); has != (tools != nil) {
+			t.Errorf("tools %v: plan_create offered %v", tools, has)
+		}
+	}
+}

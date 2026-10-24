@@ -266,6 +266,9 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 	cfg.Set("llm.routes", routes)
 	cfg.Set("file_state_dir", stateDir)
 	cfg.Set("file_cache_dir", cacheDir)
+	// Mister Morph registers plan_create only when it is turned on (off by
+	// default since v0.3.61), whatever the tools listed.
+	cfg.Set("tools.plan_create.enabled", len(set.Tools) > 0)
 	if set.MaxSteps > 0 {
 		cfg.Set("max_steps", set.MaxSteps)
 	}
