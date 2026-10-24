@@ -38,6 +38,7 @@ type Config struct {
 	Keyring    Keyring    `toml:"keyring"`
 	MCP        MCP        `toml:"mcp"`
 	Screenshot Screenshot `toml:"screenshot"`
+	OSD        OSD        `toml:"osd"`
 	Clipboard  Clipboard  `toml:"clipboard"`
 	Shortcuts  []Shortcut `toml:"shortcuts"`
 
@@ -121,6 +122,19 @@ type Screenshot struct {
 	Copy       bool   `toml:"copy"`
 	Recordings string `toml:"recordings"`
 }
+
+// OSD is the on-screen display: the card that answers a change to the
+// volume, the brightness, Wi-Fi or Bluetooth, wherever it came from.
+type OSD struct {
+	// Enable shows the display at all. Off, nothing shows.
+	Enable bool `toml:"enable"`
+	// Position is where the card anchors on the focused monitor, one of
+	// OSDPositions.
+	Position string `toml:"position"`
+}
+
+// OSDPositions are the values [osd] position accepts.
+var OSDPositions = []string{"top-center", "top-left", "top-right", "bottom-center", "bottom-left", "bottom-right"}
 
 type Style struct {
 	// Theme is the colour theme, one of Themes or a theme of the user's
@@ -768,6 +782,7 @@ func Default() Config {
 		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
+		OSD:        OSD{Enable: true, Position: "bottom-center"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
 		Shortcuts: []Shortcut{
@@ -980,6 +995,10 @@ func (c *Config) validate() []string {
 		}
 		return bad != ""
 	})
+	if !slices.Contains(OSDPositions, c.OSD.Position) {
+		w = append(w, fmt.Sprintf("osd.position = %q: want top-center, top-left, top-right, bottom-center, bottom-left or bottom-right; using %q", c.OSD.Position, d.OSD.Position))
+		c.OSD.Position = d.OSD.Position
+	}
 	if !slices.Contains(DockPositions, c.Dock.Position) {
 		w = append(w, fmt.Sprintf("dock.position = %q: want bottom, top, left or right; using %q", c.Dock.Position, d.Dock.Position))
 		c.Dock.Position = d.Dock.Position

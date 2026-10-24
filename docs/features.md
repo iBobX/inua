@@ -97,6 +97,28 @@ restarts. Focus keeps banners quiet. Cleared notifications slide away.
 the last 500 that came, dismissed ones too, for the assistant, agents and
 workshop apps allowed to read them; turning it off clears it.
 
+## On-screen display
+
+A card shows for a moment on the focused monitor when the volume or the
+brightness changes, when Wi-Fi or Bluetooth is turned on or off, and when
+it joins a Wi-Fi network or a Bluetooth device, wherever the change came
+from: the keys, the wheel on the bar's status button, the control center,
+`inua call`. It takes no input, and stays away while the control center,
+which has the sliders, is open.
+
+`[osd]` in `~/.config/inua/config.toml` turns it off, or moves it:
+
+```toml
+[osd]
+enable = true
+# bottom-center (the default), bottom-left, bottom-right,
+# top-center, top-left or top-right
+position = "bottom-center"
+```
+
+A new position takes effect at once. Without layer shell the card stays
+out of the way rather than raising itself over the windows.
+
 ## Dock
 
 Pinned apps and running ones, with marks that grow and change colour as

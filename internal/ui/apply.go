@@ -215,6 +215,9 @@ func (s *shellUI) applyConfig(c config.Config) {
 	if old.Bar.Clock != c.Bar.Clock {
 		s.restartClock()
 	}
+	if old.OSD != c.OSD {
+		s.reanchorOSD() // the position the settings now ask for
+	}
 	s.applyLauncherWeb()
 	s.overview.st.SetMRU(c.Overview.MRU)
 	s.renderOverview()
