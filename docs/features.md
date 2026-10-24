@@ -119,6 +119,25 @@ position = "bottom-center"
 A new position takes effect at once. Without layer shell the card stays
 out of the way rather than raising itself over the windows.
 
+## Voice input
+
+Dictation into whichever window has the focus, through the
+[voxtype](https://voxtype.io) daemon, which listens, turns speech into text
+on this machine and types it. Turned on in Settings → Voice (or `[voice]
+enable` in config.toml), a microphone shows in the bar: a click starts a
+recording and another ends it. While it records the icon breathes in the
+accent; an hourglass while the words are turned into text; a slashed
+microphone when voxtype is not installed or its daemon is not running.
+Super+Shift+V records while it is held, or starts and stops a recording
+with `push_to_talk = false`. `inua call voice start|stop|toggle|cancel`
+drives it from scripts. The settings page shows the daemon's state and
+model, and opens voxtype's own setup in a terminal to choose and download
+models. Off, inua does not read the daemon at all.
+
+This is apart from the assistant's microphone (see the assistant in
+docs/apps.md), which sends a recording to a transcription profile and
+puts the words into the question.
+
 ## Dock
 
 Pinned apps and running ones, with marks that grow and change colour as

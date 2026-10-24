@@ -20,6 +20,8 @@ type services struct {
 	audio     *system.Audio
 	backlight *system.Backlight // nil without a panel backlight
 	ts        *system.Tailscale
+	voice     *system.Voice
+	voiceStop context.CancelFunc // while voice input is on (followVoice)
 
 	volume     *shell.Setter
 	brightness *shell.Setter
@@ -36,6 +38,7 @@ func (s *shellUI) startSystem() {
 	v.media = system.NewMedia(system.SessionBus)
 	v.audio = system.NewAudio()
 	v.ts = system.NewTailscale("")
+	v.voice = system.NewVoice("")
 	v.volume = shell.NewSetter(func(f float64) { logErr("volume", v.audio.SetVolume(f)) })
 	if b, err := system.FindBacklight(system.BacklightDir, system.SystemBus); err == nil {
 		v.backlight = b
@@ -52,6 +55,7 @@ func (s *shellUI) startSystem() {
 	go v.media.Run(ctx, func(st system.MediaState) { s.update(func(x *shell.System) { x.Media = st }) })
 	go v.audio.Run(ctx, func(st system.AudioState) { s.update(func(x *shell.System) { x.Audio = st }) })
 	go system.NewBattery(system.SystemBus).Run(ctx, func(st system.BatteryState) { s.update(func(x *shell.System) { x.Bat = st }) })
+	s.followVoice()
 }
 
 func (s *shellUI) update(f func(*shell.System)) {
@@ -64,6 +68,7 @@ func (s *shellUI) update(f func(*shell.System)) {
 		for _, b := range s.bars {
 			b.setStatus(&s.sys)
 		}
+		s.applyVoiceState() // the bars' microphones, the settings page
 		if s.control.open {
 			s.applyControl()
 		}

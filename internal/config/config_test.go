@@ -451,6 +451,29 @@ func TestDockPosition(t *testing.T) {
 	}
 }
 
+func TestVoiceShortcut(t *testing.T) {
+	keys := func(toml string) (string, bool) {
+		c, _, err := Load(write(t, toml))
+		if err != nil {
+			t.Fatal(err)
+		}
+		i := slices.IndexFunc(c.Shortcuts, func(s Shortcut) bool { return s.Action == "voice" })
+		if i < 0 {
+			return "", false
+		}
+		return c.Shortcuts[i].Keys, true
+	}
+	if k, ok := keys("[voice]\nenable = false\n"); ok {
+		t.Errorf("off: %q", k)
+	}
+	if k, ok := keys("[voice]\nenable = true\n"); !ok || k != VoiceKeys {
+		t.Errorf("on: %q %v", k, ok)
+	}
+	if k, ok := keys("[voice]\nenable = true\n[[shortcuts]]\naction = \"voice\"\nkeys = \"\"\n"); !ok || k != "" {
+		t.Errorf("turned off: %q %v", k, ok)
+	}
+}
+
 func TestOSDPosition(t *testing.T) {
 	c, w, err := Load(write(t, "[osd]\nposition = \"top-right\"\n"))
 	if err != nil || len(w) != 0 || c.OSD.Position != "top-right" || !c.OSD.Enable {

@@ -95,8 +95,10 @@ media-playback-start                  play
 media-playback-pause                  pause
 media-skip-backward                   skip-back
 media-skip-forward                    skip-forward
-# the assistant's voice input
+# voice input: the assistant's, and the bar's (voxtype's state)
 audio-input-microphone                microphone
+microphone-slash                      microphone-slash
+hourglass                             hourglass
 # control center buttons and tiles
 system-lock-screen                    lock
 dialog-password                       key

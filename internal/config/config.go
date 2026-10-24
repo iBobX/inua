@@ -34,6 +34,7 @@ type Config struct {
 	Displays   Displays   `toml:"displays"`
 	Notify     Notify     `toml:"notifications"`
 	Dock       Dock       `toml:"dock"`
+	Voice      Voice      `toml:"voice"`
 	Assistant  Assistant  `toml:"assistant"`
 	Keyring    Keyring    `toml:"keyring"`
 	MCP        MCP        `toml:"mcp"`
@@ -200,7 +201,29 @@ type Shortcut struct {
 // commands behind them are in internal/hyprconf.
 var ShortcutActions = []string{
 	"launcher", "windows", "overview", "control", "notifications", "clipboard", "pass", "focus", "settings", "restart", "lock",
-	"shot-area", "shot-area-silent", "shot-screen", "shot-window", "shot-record", "color",
+	"shot-area", "shot-area-silent", "shot-screen", "shot-window", "shot-record", "color", "voice",
+}
+
+// Voice is the voice input, on top of the voxtype daemon: a shortcut
+// holds to talk, and the transcription is pasted into the focused window.
+type Voice struct {
+	// Enable shows the microphone in the bar and offers the shortcut;
+	// off, no key reaches the daemon.
+	Enable bool `toml:"enable"`
+	// PushToTalk binds the shortcut's key press to start and its release
+	// to stop; off, the shortcut toggles a recording.
+	PushToTalk bool `toml:"push_to_talk"`
+}
+
+// VoiceKeys are the voice input's shortcut until another is set.
+const VoiceKeys = "SUPER+SHIFT+V"
+
+// AddVoiceShortcut gives the voice input its shortcut when it is on and no
+// shortcut names it; one kept with no keys is the user's choice of none.
+func (c *Config) AddVoiceShortcut() {
+	if c.Voice.Enable && !slices.ContainsFunc(c.Shortcuts, func(s Shortcut) bool { return s.Action == "voice" }) {
+		c.Shortcuts = append(c.Shortcuts, Shortcut{Action: "voice", Keys: VoiceKeys})
+	}
 }
 
 // renamedActions are actions that became others; a config naming one is
@@ -785,6 +808,7 @@ func Default() Config {
 		OSD:        OSD{Enable: true, Position: "bottom-center"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
+		Voice:      Voice{Enable: false, PushToTalk: true},
 		Shortcuts: []Shortcut{
 			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
 			{Action: "shot-area", Keys: "CTRL+Print", Replaces: []string{"CTRL+Print"}},
@@ -840,6 +864,7 @@ func Load(path string) (Config, []string, error) {
 		warnings = append(warnings, fmt.Sprintf("unknown setting %s", k))
 	}
 	warnings = append(warnings, c.validate()...)
+	c.AddVoiceShortcut() // voice input turned on in the file
 	return c, warnings, nil
 }
 
