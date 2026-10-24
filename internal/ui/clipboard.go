@@ -564,7 +564,8 @@ func (s *shellUI) hideClipboardDetail() {
 
 // terminalClasses are app classes that paste with Ctrl+Shift+V, as
 // Ctrl+V means something else in a terminal.
-var terminalClasses = []string{"kitty", "alacritty", "foot", "wezterm", "ghostty", "terminal", "konsole", "xterm"}
+var terminalClasses = []string{"kitty", "alacritty", "foot", "wezterm", "ghostty", "terminal", "konsole", "xterm",
+	"inua-term", "inua.term", "tilix", "urxvt"}
 
 // pasteClipboard puts entry on the clipboard (action "copy", "paste", or
 // "path" for an image's file name) and, unless it is "copy", pastes it into

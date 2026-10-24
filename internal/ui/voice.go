@@ -16,9 +16,11 @@ import (
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/clipboard"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/hyprconf"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
@@ -126,7 +128,10 @@ func (s *shellUI) followVoice() {
 	}
 	var e dictationEngine = v.voice
 	if s.cfg.Voice.Engine == "ai" {
-		e = &system.Dictation{Profile: profile, Assistant: "inua-assistant", Type: s.typeDictation,
+		t := dictationTyper{history: s.clipboard.path,
+			hypr:  func() hyprNow { return hyprNow{s.client, s.hyprLua} },
+			heard: func(text string) { gtkx.Post(func() { s.dictationHeard(text) }) }}
+		e = &system.Dictation{Profile: profile, Assistant: "inua-assistant", Type: t.typeText,
 			Failed: func(err error) { gtkx.Post(func() { s.dictationFailed(err) }) }}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -512,16 +517,34 @@ func (s *shellUI) voiceSetupModel() {
 	}
 }
 
-// typeDictation puts dictation's words into the focused window: typed by
+// dictationTyper puts dictation's words into the focused window: typed by
 // wtype when there is one; else pasted, as the clipboard history pastes
-// (Ctrl+V, Ctrl+Shift+V in a terminal), and the clipboard's text put back.
-// It runs on the engine's goroutine.
-func (s *shellUI) typeDictation(text string) error {
-	gtkx.Post(func() { s.dictationHeard(text) })
+// (Ctrl+V, Ctrl+Shift+V in a terminal), and the clipboard's text put back,
+// neither copy kept in the history. Made on the main thread, typeText runs
+// on the engine's goroutine.
+type dictationTyper struct {
+	history string         // the clipboard history's file
+	hypr    func() hyprNow // read on the main thread, when it types
+	heard   func(text string)
+}
+
+// hyprNow is the shell's Hyprland client (nil without Hyprland) and
+// whether it takes 0.55's Lua dispatchers, both known only after start-up.
+type hyprNow struct {
+	client *hypr.Client
+	lua    bool
+}
+
+func (t dictationTyper) typeText(text string) error {
+	t.heard(text)
 	if _, err := exec.LookPath("wtype"); err == nil {
 		return exec.Command("wtype", "--", text).Run()
 	}
-	client, lua := s.client, s.hyprLua
+	h, err := gtkx.Call(time.Second, t.hypr)
+	if err != nil {
+		return err
+	}
+	client, lua := h.client, h.lua
 	if client == nil {
 		return errors.New(i18n.T("dictation types with wtype, which is not installed"))
 	}
@@ -536,9 +559,13 @@ func (s *shellUI) typeDictation(text string) error {
 		return errors.New(i18n.T("no window has the focus to type into"))
 	}
 	old, hadText := exec.Command("wl-paste", "--no-newline", "--type", "text/plain").Output()
-	copyText := func(t []byte) error {
+	copyText := func(b []byte) error {
+		// Not into the clipboard history: its capture skips the next one.
+		if t.history != "" {
+			clipboard.SkipFirst(t.history)
+		}
 		cmd := exec.Command("wl-copy", "--type", "text/plain;charset=utf-8")
-		cmd.Stdin = bytes.NewReader(t)
+		cmd.Stdin = bytes.NewReader(b)
 		// wl-copy's daemon must not inherit a pipe waited on by Cmd.Run.
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 		return cmd.Run()
