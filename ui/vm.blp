@@ -2,7 +2,8 @@
 // as tiles in its library and the chosen machine's page in a panel at the
 // right; Go switches between the pages as the machine's state changes. With
 // no machine yet the library says so and the panel is hidden. New machine
-// asks in a dialog of its own (vm_new_dialog, at the end).
+// asks in a dialog of its own (vm_new_dialog, at the end), and the install
+// images to download in another (vm_iso_dialog).
 //
 //   fault        — a folder that does not load as a machine
 //   unavailable  — this build has no backend for the machine's kind
@@ -938,7 +939,8 @@ ApplicationWindow vm {
                 }
               }
 
-              // The media a QEMU machine installs from: osinfo-db's catalog, a row per system.
+              // The image a QEMU machine installs from: a file of the user's, or one
+              // downloaded from osinfo-db's catalog in vm_iso_dialog.
               Box vm_setup_media {
                 styles ["section"]
                 orientation: vertical;
@@ -959,26 +961,52 @@ ApplicationWindow vm {
                     hexpand: true;
                     xalign: 0;
                   }
-
-                  Label vm_media_source {
-                    styles ["section-meta"]
-                    xalign: 1;
-                  }
                 }
 
                 Box {
-                  styles ["section-body"]
+                  styles ["section-body", "rows"]
                   orientation: vertical;
 
-                  Label vm_media_note {
-                    styles ["sub", "vm-media-note"]
-                    xalign: 0;
-                    wrap: true;
-                    wrap-mode: word_char;
+                  Box {
+                    styles ["row"]
+                    spacing: 16;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Install image");
+                        xalign: 0;
+                      }
+
+                      Label vm_media_note {
+                        styles ["sub"]
+                        xalign: 0;
+                        wrap: true;
+                        wrap-mode: word_char;
+                      }
+                    }
+
+                    Button vm_iso_choose {
+                      styles ["outlined"]
+                      name: "iso_choose";
+                      label: _("Choose file…");
+                      valign: center;
+                    }
+
+                    Button vm_iso_browse {
+                      styles ["outlined"]
+                      name: "iso_browse";
+                      label: _("Download…");
+                      valign: center;
+                    }
                   }
 
-                  // The download in flight, above the list, so starting one does not
-                  // put its progress two hundred rows away.
+                  // The download in flight: the dialog closes when one starts.
                   Box vm_media_progress {
                     styles ["row"]
                     spacing: 16;
@@ -1007,86 +1035,6 @@ ApplicationWindow vm {
                       label: _("Stop");
                       valign: center;
                     }
-                  }
-
-                  Box vm_media_filters {
-                    styles ["vm-media-filters"]
-                    orientation: vertical;
-                    spacing: 8;
-
-                    Entry vm_iso_search {
-                      hexpand: true;
-                      placeholder-text: _("Search systems and images");
-                    }
-
-                    Box {
-                      spacing: 8;
-
-                      DropDown vm_iso_platform {
-                        styles ["vm-iso-filter"]
-                        valign: center;
-                        tooltip-text: _("Which platform to show");
-                      }
-
-                      DropDown vm_iso_arch {
-                        styles ["vm-iso-filter"]
-                        valign: center;
-                        tooltip-text: _("Which architecture to show");
-                      }
-
-                      Box {
-                        hexpand: true;
-                      }
-
-                      Label {
-                        styles ["sub"]
-                        label: _("Prerelease");
-                        valign: center;
-                      }
-
-                      Switch vm_iso_prerelease {
-                        valign: center;
-                        tooltip-text: _("Also show prerelease and development systems");
-                      }
-
-                      Label {
-                        styles ["sub", "vm-switch-label"]
-                        label: _("Ended");
-                        valign: center;
-                      }
-
-                      Switch vm_iso_eol {
-                        valign: center;
-                        tooltip-text: _("Also show systems past their support date");
-                      }
-                    }
-                  }
-
-                  Label vm_media_count {
-                    styles ["sub", "vm-media-count"]
-                    xalign: 0;
-                  }
-
-                  Label {
-                    styles ["kicker", "vm-media-group"]
-                    label: _("RECOMMENDED");
-                    xalign: 0;
-                  }
-
-                  Box vm_media_recommended {
-                    styles ["vm-media-rows"]
-                    orientation: vertical;
-                  }
-
-                  Label {
-                    styles ["kicker", "vm-media-group"]
-                    label: _("ALL SYSTEMS");
-                    xalign: 0;
-                  }
-
-                  Box vm_media_rows {
-                    styles ["vm-media-rows"]
-                    orientation: vertical;
                   }
                 }
 
@@ -1355,6 +1303,40 @@ ApplicationWindow vm {
                       styles ["suggested-action"]
                       name: "prov_start";
                       label: _("Continue");
+                      valign: center;
+                    }
+                  }
+
+                  // A QEMU machine's installation ends when its image is taken out.
+                  Box vm_prov_done_row {
+                    styles ["row"]
+                    spacing: 16;
+                    visible: false;
+
+                    Box {
+                      orientation: vertical;
+                      hexpand: true;
+                      valign: center;
+                      spacing: 2;
+
+                      Label {
+                        styles ["label"]
+                        label: _("Finish the installation");
+                        xalign: 0;
+                      }
+
+                      Label {
+                        styles ["sub"]
+                        label: _("Takes the install image out, so the machine starts from its own disk.");
+                        xalign: 0;
+                        wrap: true;
+                      }
+                    }
+
+                    Button vm_prov_done {
+                      styles ["outlined"]
+                      name: "prov_done";
+                      label: _("Finish");
                       valign: center;
                     }
                   }
@@ -2355,6 +2337,150 @@ Window vm_new_dialog {
         label: _("Create");
         valign: center;
         visible: false;
+      }
+    }
+  }
+}
+
+// The install images osinfo-db publishes, for the chosen QEMU machine: the
+// filters, then the systems, each opening onto its own images. Taking one
+// closes it; the download goes on in the setup page's [IMAGE] section.
+Window vm_iso_dialog {
+  styles ["app", "settings", "vm-dialog", "vm-iso-dialog"]
+  title: _("Download an install image");
+  modal: true;
+  hide-on-close: true;
+  default-width: 600;
+  default-height: 720;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 10;
+
+    Box {
+      spacing: 10;
+
+      Label {
+        styles ["vm-dialog-title"]
+        label: _("Download an install image");
+        hexpand: true;
+        xalign: 0;
+      }
+
+      Label vm_media_source {
+        styles ["sub"]
+        valign: center;
+        xalign: 1;
+      }
+    }
+
+    Label vm_iso_dialog_note {
+      styles ["sub"]
+      xalign: 0;
+      wrap: true;
+      wrap-mode: word_char;
+    }
+
+    Box vm_media_filters {
+      styles ["vm-media-filters"]
+      orientation: vertical;
+      spacing: 8;
+
+      Entry vm_iso_search {
+        hexpand: true;
+        placeholder-text: _("Search systems and images");
+      }
+
+      Box {
+        spacing: 8;
+
+        DropDown vm_iso_platform {
+          styles ["vm-iso-filter"]
+          valign: center;
+          tooltip-text: _("Which platform to show");
+        }
+
+        DropDown vm_iso_arch {
+          styles ["vm-iso-filter"]
+          valign: center;
+          tooltip-text: _("Which architecture to show");
+        }
+
+        Box {
+          hexpand: true;
+        }
+
+        Label {
+          styles ["sub"]
+          label: _("Prerelease");
+          valign: center;
+        }
+
+        Switch vm_iso_prerelease {
+          valign: center;
+          tooltip-text: _("Also show prerelease and development systems");
+        }
+
+        Label {
+          styles ["sub", "vm-switch-label"]
+          label: _("Ended");
+          valign: center;
+        }
+
+        Switch vm_iso_eol {
+          valign: center;
+          tooltip-text: _("Also show systems past their support date");
+        }
+      }
+    }
+
+    Label vm_media_count {
+      styles ["sub", "vm-media-count"]
+      xalign: 0;
+    }
+
+    ScrolledWindow {
+      vexpand: true;
+      hscrollbar-policy: never;
+
+      Box {
+        orientation: vertical;
+
+        Label {
+          styles ["kicker", "vm-media-group"]
+          label: _("RECOMMENDED");
+          xalign: 0;
+        }
+
+        Box vm_media_recommended {
+          styles ["vm-media-rows"]
+          orientation: vertical;
+        }
+
+        Label {
+          styles ["kicker", "vm-media-group"]
+          label: _("ALL SYSTEMS");
+          xalign: 0;
+        }
+
+        Box vm_media_rows {
+          styles ["vm-media-rows"]
+          orientation: vertical;
+        }
+      }
+    }
+
+    Box {
+      spacing: 8;
+      margin-top: 8;
+      halign: end;
+
+      Button vm_iso_close {
+        styles ["outlined"]
+        name: "iso_close";
+        label: _("Close");
+        valign: center;
       }
     }
   }

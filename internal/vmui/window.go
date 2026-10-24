@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"path"
 	"slices"
 	"strings"
@@ -46,6 +47,7 @@ type VMManager interface {
 	Save(vm.Machine) error
 	Install(vm.Machine) error
 	FetchISO(name string, media vm.ISOMedia) error
+	SetISO(name, path string) error
 	CancelISO(name string)
 	SetISOFilters(vm.ISOFilters)
 	Start(name string) error
@@ -172,11 +174,21 @@ type vmWindow struct {
 	setupRemoveData, setupDelete gtk.Button
 	setupNote                    gtk.Label
 
-	// the install images of the machine being set up: the list, the transfer
-	// in flight, and the buttons the rows are built with
+	// the install image of the machine being set up: the file it installs
+	// from, the transfer in flight, and the dialog that lists what osinfo-db
+	// offers, with the buttons its rows are built with
 	setupMedia      gtk.Box
-	mediaSource     gtk.Label
 	mediaNote       gtk.Label
+	isoChoose       gtk.Button
+	isoBrowse       gtk.Button
+	isoFile         *gtk.FileDialog // the file chooser while it is open
+	onISOFile       gio.AsyncReadyCallback
+	isoDialog       gtk.Window
+	isoDialogNote   gtk.Label
+	isoClose        gtk.Button
+	onISOClose      func(gtk.Window) bool
+	onISOKey        func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
+	mediaSource     gtk.Label
 	mediaRec        gtk.Box
 	mediaRows       gtk.Box
 	mediaProgress   gtk.Box
@@ -196,13 +208,13 @@ type vmWindow struct {
 	isoEOL       gtk.Switch
 	mediaCount   gtk.Label
 
-	isoFilter      vm.ISOFilters   // what the controls say
-	isoSystems     []ISOSystemRow  // the systems as they were built
-	isoRecommended []ISOSystemRow  // the recommended ones, as they were built
-	isoOpen        map[string]bool // the systems the user opened
-	isoArchs       []string        // the architecture families the catalog holds
-	isoRevealer    map[string]gtk.Revealer
-	isoMark        map[string]gtk.Image
+	isoFilter      vm.ISOFilters             // what the controls say
+	isoSystems     []ISOSystemRow            // the systems as they were built
+	isoRecommended []ISOSystemRow            // the recommended ones, as they were built
+	isoOpen        map[string]bool           // the systems the user opened
+	isoArchs       []string                  // the architecture families the catalog holds
+	isoRevealer    map[string][]gtk.Revealer // a system's, in each list it is in
+	isoMark        map[string][]gtk.Image
 
 	// provisioning
 	progress                        gtk.ProgressBar
@@ -212,6 +224,8 @@ type vmWindow struct {
 	provStopRow, provStartRow       gtk.Box
 	provRemoveRow, provDeleteRow    gtk.Box
 	provRemoveTitle, provRemoveNote gtk.Label
+	provDoneRow                     gtk.Box
+	provDone                        gtk.Button
 
 	// stopped
 	readySummary                      gtk.Label
@@ -308,6 +322,9 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 		"vm_media_filters": &v.mediaFilters, "vm_iso_search": &v.isoSearch, "vm_iso_platform": &v.isoPlatform,
 		"vm_iso_arch": &v.isoArch, "vm_iso_prerelease": &v.isoPre, "vm_iso_eol": &v.isoEOL,
 		"vm_media_count": &v.mediaCount, "vm_media_error": &v.mediaError,
+		"vm_iso_choose": &v.isoChoose, "vm_iso_browse": &v.isoBrowse, "vm_iso_dialog": &v.isoDialog,
+		"vm_iso_dialog_note": &v.isoDialogNote, "vm_iso_close": &v.isoClose,
+		"vm_prov_done_row": &v.provDoneRow, "vm_prov_done": &v.provDone,
 		"vm_progress": &v.progress, "vm_progress_meta": &v.progressMeta, "vm_progress_text": &v.progressText,
 		"vm_prov_watch_row": &v.provWatchRow, "vm_prov_watch_title": &v.provWatchTitle,
 		"vm_prov_watch_note": &v.provWatchNote, "vm_console": &v.console,
@@ -335,8 +352,8 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 	builder.Close()
 
 	v.isoOpen = map[string]bool{}
-	v.isoRevealer = map[string]gtk.Revealer{}
-	v.isoMark = map[string]gtk.Image{}
+	v.isoRevealer = map[string][]gtk.Revealer{}
+	v.isoMark = map[string][]gtk.Image{}
 	// The list opens on the guide's own list: the architecture this build runs.
 	v.isoFilter = vm.ISOFilters{ArchFamily: vm.HostArchFamily()}
 	manager.SetISOFilters(v.isoFilter)
@@ -346,7 +363,8 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 		&v.connect, &v.consoleReady, &v.stop, &v.remove, &v.removeData, &v.delete, &v.setupRemoveData,
 		&v.setupDelete, &v.bootConsole, &v.bootStop, &v.newButton, &v.emptyNew, &v.createButton, &v.newCancel, &v.newNext, &v.newBack,
 		&v.consoleBack, &v.consoleCopy, &v.consoleStart, &v.consoleStop,
-		&v.assistantAsk, &v.assistantRecheck, &v.isoCancel, &v.faultDelete} {
+		&v.assistantAsk, &v.assistantRecheck, &v.isoCancel, &v.faultDelete,
+		&v.isoChoose, &v.isoBrowse, &v.isoClose, &v.provDone} {
 		b.ConnectClicked(&v.onClick)
 	}
 	v.onSpin = func(gtk.SpinButton) { v.edited() }
@@ -388,6 +406,21 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 	v.newDialog.AddController(&newKeys.EventController)
 	v.onNameSubmit = func(_ gtk.Entry) { v.newStep("resources") }
 	v.nameEntry.ConnectActivate(&v.onNameSubmit)
+	v.isoDialog.SetTransientFor(&v.win.Window)
+	v.isoDialog.SetDestroyWithParent(true)
+	v.onISOClose = func(gtk.Window) bool { return false } // hide-on-close keeps it for the next one
+	v.isoDialog.ConnectCloseRequest(&v.onISOClose)
+	v.onISOKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		if keyval == uint32(gdk.KEY_Escape) {
+			v.isoDialog.SetVisible(false)
+			return true
+		}
+		return false
+	}
+	isoKeys := gtk.NewEventControllerKey()
+	isoKeys.ConnectKeyPressed(&v.onISOKey)
+	v.isoDialog.AddController(&isoKeys.EventController)
+	v.onISOFile = func(_, result, _ uintptr) { v.isoFileChosen(result) }
 	// The download list's controls: every one of them hands the window's own
 	// filter to the service and paints again.
 	v.onISOSearch = func(_ gtk.Entry) { v.applyISOFilters() }
@@ -525,6 +558,7 @@ func (v *vmWindow) choose(name string) {
 	}
 	v.stopSerial()
 	v.consoleOpen = false
+	v.isoDialog.SetVisible(false) // it lists the images of the machine it was opened for
 	v.setSelected(name)
 	v.lastPage = ""
 	v.setupFilled, v.readyFilled = false, false
@@ -704,6 +738,8 @@ func (v *vmWindow) paint() {
 	if changed {
 		if page == string(vm.PageSetup) {
 			v.setupFilled = false
+		} else {
+			v.isoDialog.SetVisible(false)
 		}
 		if page == string(vm.PageStopped) {
 			v.readyFilled = false
@@ -1267,7 +1303,7 @@ func (v *vmWindow) showSetup(s MachineView) {
 		strings.TrimSpace(s.Machine.Boot.Kernel) == ""
 	switch {
 	case needsImage:
-		v.setupNote.SetText(i18n.T("Choose an install image below first."))
+		v.setupNote.SetText(i18n.T("Choose an install image first."))
 	case s.Leftovers:
 		v.setupNote.SetText(i18n.T("Installs from the files the earlier attempt left."))
 	default:
@@ -1293,16 +1329,20 @@ type isoTarget struct {
 }
 
 // showSetupMedia fills the install-image section of the setup page: what the
-// machine installs from, the list to choose from, and the download in flight.
-// A machine whose backend fetches its own media has no such section.
+// machine installs from, the buttons that choose it, and the download in
+// flight; and the download dialog while it is open. A machine whose backend
+// fetches its own media has no such section.
 func (v *vmWindow) showSetupMedia(s MachineView) {
 	if s.ISO == nil {
 		v.setupMedia.SetVisible(false)
+		v.isoDialog.SetVisible(false)
 		return
 	}
 	v.setupMedia.SetVisible(true)
-	v.mediaSource.SetText(isoSourceText(s.ISO.Source))
 	v.mediaNote.SetText(vmMediaNote(s))
+	idle := !s.Busy && !v.operationBusy && !s.ISO.Downloading
+	v.isoChoose.SetSensitive(idle && v.isoFile == nil)
+	v.isoBrowse.SetSensitive(idle)
 
 	if s.ISO.Downloading {
 		v.mediaProgress.SetVisible(true)
@@ -1318,9 +1358,86 @@ func (v *vmWindow) showSetupMedia(s MachineView) {
 	} else {
 		v.mediaProgress.SetVisible(false)
 	}
-	v.showISOFilters(s.ISO)
-	v.mediaCount.SetText(isoCountText(s.ISO.SystemsCount, s.ISO.MediaCount))
-	v.fillISOSystems(s.ISO.Recommended, s.ISO.Systems)
+	if !idle {
+		v.isoDialog.SetVisible(false)
+	}
+	// The list is the window's slowest thing to build: it is built for the
+	// dialog that shows it, not for every repaint of the page.
+	if v.isoDialog.GetVisible() {
+		v.showISODialog(s.ISO)
+	}
+}
+
+// showISODialog fills the download dialog: where the list comes from, the
+// filters, the count and the systems.
+func (v *vmWindow) showISODialog(iso *ISOView) {
+	v.mediaSource.SetText(isoSourceText(iso.Source))
+	v.isoDialogNote.SetText(isoDialogNote(iso.Source))
+	v.showISOFilters(iso)
+	v.mediaCount.SetText(isoCountText(iso.SystemsCount, iso.MediaCount))
+	v.fillISOSystems(iso.Recommended, iso.Systems)
+}
+
+// openISODialog shows the download dialog over the window, filled before its
+// first frame.
+func (v *vmWindow) openISODialog() {
+	s := v.viewOf(v.selectedName())
+	if s.ISO == nil {
+		return
+	}
+	v.isoDialog.SetVisible(true)
+	v.showISODialog(s.ISO)
+	v.isoDialog.Present()
+	v.isoSearch.GrabFocus()
+}
+
+// chooseISO asks for an image file of the user's own.
+func (v *vmWindow) chooseISO() {
+	if v.isoFile != nil {
+		return
+	}
+	d := gtk.NewFileDialog()
+	d.SetTitle(i18n.T("Choose an install image"))
+	filter := gtk.NewFileFilter()
+	filter.SetName(i18n.T("Disc images"))
+	for _, suffix := range []string{"iso", "img"} {
+		filter.AddSuffix(suffix)
+	}
+	d.SetDefaultFilter(filter)
+	filter.Unref()
+	if dir := vm.ExpandPath("~/Downloads"); isDir(dir) {
+		f := gio.FileNewForPath(dir)
+		d.SetInitialFolder(f)
+		(&gobject.Object{Ptr: f.GoPointer()}).Unref()
+	}
+	v.isoFile = d
+	v.isoChoose.SetSensitive(false)
+	d.Open(&v.win.Window, nil, &v.onISOFile, 0)
+}
+
+// isDir says whether path is a folder that is there.
+func isDir(path string) bool {
+	fi, err := os.Stat(path)
+	return err == nil && fi.IsDir()
+}
+
+// isoFileChosen makes the chosen file the machine's install image.
+func (v *vmWindow) isoFileChosen(result uintptr) {
+	d := v.isoFile
+	v.isoFile = nil
+	if d == nil {
+		return
+	}
+	defer d.Unref()
+	file, err := d.OpenFinish(&gio.AsyncResultBase{Ptr: result})
+	if err != nil || file == nil {
+		v.paint() // cancelled: the button comes back
+		return
+	}
+	path := file.GetPath()
+	(&gobject.Object{Ptr: file.GoPointer()}).Unref()
+	name := v.selectedName()
+	v.run(func() error { return v.manager.SetISO(name, path) }, &v.mediaError, nil, "")
 }
 
 // ── the download list ───────────────────────────────────────────────────────
@@ -1486,6 +1603,8 @@ func (v *vmWindow) fillISOSystems(recommended, systems []ISOSystemRow) {
 	v.isoRecommended = append(v.isoRecommended[:0], recommended...)
 	v.isoSystems = append(v.isoSystems[:0], systems...)
 	v.isoButtons = nil
+	clear(v.isoRevealer)
+	clear(v.isoMark)
 	fill := func(box *gtk.Box, list []ISOSystemRow) {
 		gtkx.Clear(box)
 		for _, s := range list {
@@ -1555,7 +1674,7 @@ func (v *vmWindow) buildISOSystem(s ISOSystemRow) *gtk.Box {
 	}
 	gtkx.Append(headBox, &chevron.Widget)
 	head.SetChild(&headBox.Widget)
-	v.isoMark[s.System.OSID] = *chevron
+	v.isoMark[s.System.OSID] = append(v.isoMark[s.System.OSID], *chevron)
 	gtkx.Append(box, &head.Widget)
 
 	revealer := gtk.NewRevealer()
@@ -1567,7 +1686,7 @@ func (v *vmWindow) buildISOSystem(s ISOSystemRow) *gtk.Box {
 		gtkx.Append(body, &v.isoMediaRow(r).Widget)
 	}
 	revealer.SetChild(&body.Widget)
-	v.isoRevealer[s.System.OSID] = *revealer
+	v.isoRevealer[s.System.OSID] = append(v.isoRevealer[s.System.OSID], *revealer)
 	gtkx.Append(box, &revealer.Widget)
 	return box
 }
@@ -1617,17 +1736,18 @@ func (v *vmWindow) isoMediaRow(r ISORow) *gtk.Box {
 }
 
 // openISOSystem opens or closes one system's media. The media rows are built
-// with the system, so this is only the revealer and the chevron.
+// with the system, so this is only the revealers and the chevrons: a
+// recommended system is in both lists, and opens in both.
 func (v *vmWindow) openISOSystem(id string, open bool) {
 	v.isoOpen[id] = open
-	if r, ok := v.isoRevealer[id]; ok {
+	for _, r := range v.isoRevealer[id] {
 		r.SetRevealChild(open)
 	}
-	if m, ok := v.isoMark[id]; ok {
-		name := "pan-end-symbolic"
-		if open {
-			name = "pan-down-symbolic"
-		}
+	name := "pan-end-symbolic"
+	if open {
+		name = "pan-down-symbolic"
+	}
+	for _, m := range v.isoMark[id] {
 		m.SetFromIconName(name)
 	}
 	if !open {
@@ -1723,6 +1843,8 @@ func (v *vmWindow) showProvisioning(s MachineView) {
 	v.console.SetSensitive(idle && up)
 	v.provRemove.SetSensitive(idle)
 	v.provDelete.SetSensitive(idle)
+	v.provDoneRow.SetVisible(s.Machine.Backend == vm.BackendQEMU && strings.TrimSpace(s.Machine.Boot.ISO) != "")
+	v.provDone.SetSensitive(idle)
 }
 
 // showStopped fills the page shown when the guest is installed and off: start
@@ -1803,10 +1925,19 @@ func (v *vmWindow) clicked(b gtk.Button) {
 	case "install":
 		m := v.setupMachine()
 		v.run(func() error { return v.manager.Install(m) }, &v.setupError, &v.install, i18n.T("Starting…"))
+	case "iso_choose":
+		v.chooseISO()
+	case "iso_browse":
+		v.openISODialog()
+	case "iso_close":
+		v.isoDialog.SetVisible(false)
 	case "iso_fetch":
 		if media, ok := v.isoMediaOf(b); ok {
+			v.isoDialog.SetVisible(false)
 			v.fetchISO(media)
 		}
+	case "prov_done":
+		v.run(func() error { return v.manager.SetISO(name, "") }, &v.provError, &v.provDone, i18n.T("Finishing…"))
 	case "iso_cancel":
 		// Stopping is a cancellation, not an operation: it only reaches the
 		// goroutine that is downloading, so the window keeps painting.
@@ -2267,12 +2398,20 @@ func isoSourceText(source string) string {
 // installs from, or what to do while there is nothing yet.
 func vmMediaNote(s MachineView) string {
 	if iso := strings.TrimSpace(s.Machine.Boot.ISO); iso != "" {
+		if home, err := os.UserHomeDir(); err == nil && strings.HasPrefix(iso, home+"/") {
+			iso = "~" + strings.TrimPrefix(iso, home)
+		}
 		return i18n.Tf("Installs from %s.", iso)
 	}
-	if s.ISO != nil && s.ISO.Source == vm.ISOSourceBuiltin {
+	return i18n.T("A file of your own, or one to download; the machine boots it as a disc.")
+}
+
+// isoDialogNote is the sentence under the download dialog's title.
+func isoDialogNote(source string) string {
+	if source == vm.ISOSourceBuiltin {
 		return i18n.T("osinfo-db is not installed, so this is inua's short built-in list.")
 	}
-	return i18n.T("Choose an install image to download; the machine boots it as a disc.")
+	return i18n.T("Pick a system, then one of its images. It is downloaded once and becomes this machine's install image.")
 }
 
 // isoMediaTitle is a medium's own line: the system, and the variant when the

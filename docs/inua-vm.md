@@ -86,7 +86,7 @@ cpus = 4
 disk_gib = 40
 
 [boot]                  # qemu
-iso = "~/Downloads/Fedora-Workstation-Live-x86_64-41.iso"   # install media, until installed
+iso = "~/Downloads/Fedora-Workstation-Live-x86_64-41.iso"   # install media, until Finish takes it out
 disk = "disk.qcow2"
 kernel = ""             # a kernel to boot directly: a custom OS
 initrd = ""
@@ -315,7 +315,9 @@ memory, CPU cores and disk, set to what suits this computer, and Create. The pan
 library is the chosen machine's page: its name
 and state in the head, with a mark filled while it is up, then the page for
 its stage: prerequisites with their fixes, setup (resources, install, the
-install images), the installation running or paused, starting, stopped
+install image: a file of the user's, or one downloaded from osinfo-db's
+list in a dialog of its own), the installation running or paused (a QEMU
+machine's ends with **Finish**, which takes its image out), starting, stopped
 (start, resources, removal) and running. How a guest is seen decides the
 rows that show it: Windows in a container through Remote Desktop with a web
 console besides, a QEMU guest in a SPICE viewer, in QEMU's own window or on

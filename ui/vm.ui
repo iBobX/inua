@@ -1330,31 +1330,68 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                         <property name="xalign">0</property>
                                       </object>
                                     </child>
-                                    <child>
-                                      <object class="GtkLabel" id="vm_media_source">
-                                        <style>
-                                          <class name="section-meta"/>
-                                        </style>
-                                        <property name="xalign">1</property>
-                                      </object>
-                                    </child>
                                   </object>
                                 </child>
                                 <child>
                                   <object class="GtkBox">
                                     <style>
                                       <class name="section-body"/>
+                                      <class name="rows"/>
                                     </style>
                                     <property name="orientation">1</property>
                                     <child>
-                                      <object class="GtkLabel" id="vm_media_note">
+                                      <object class="GtkBox">
                                         <style>
-                                          <class name="sub"/>
-                                          <class name="vm-media-note"/>
+                                          <class name="row"/>
                                         </style>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                        <property name="wrap-mode">2</property>
+                                        <property name="spacing">16</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Install image</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="vm_media_note">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                                <property name="wrap-mode">2</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="vm_iso_choose">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">iso_choose</property>
+                                            <property name="label" translatable="yes">Choose file…</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="vm_iso_browse">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">iso_browse</property>
+                                            <property name="label" translatable="yes">Download…</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                     <child>
@@ -1397,125 +1434,6 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             <property name="valign">3</property>
                                           </object>
                                         </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="vm_media_filters">
-                                        <style>
-                                          <class name="vm-media-filters"/>
-                                        </style>
-                                        <property name="orientation">1</property>
-                                        <property name="spacing">8</property>
-                                        <child>
-                                          <object class="GtkEntry" id="vm_iso_search">
-                                            <property name="hexpand">true</property>
-                                            <property name="placeholder-text" translatable="yes">Search systems and images</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="spacing">8</property>
-                                            <child>
-                                              <object class="GtkDropDown" id="vm_iso_platform">
-                                                <style>
-                                                  <class name="vm-iso-filter"/>
-                                                </style>
-                                                <property name="valign">3</property>
-                                                <property name="tooltip-text" translatable="yes">Which platform to show</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkDropDown" id="vm_iso_arch">
-                                                <style>
-                                                  <class name="vm-iso-filter"/>
-                                                </style>
-                                                <property name="valign">3</property>
-                                                <property name="tooltip-text" translatable="yes">Which architecture to show</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkBox">
-                                                <property name="hexpand">true</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <style>
-                                                  <class name="sub"/>
-                                                </style>
-                                                <property name="label" translatable="yes">Prerelease</property>
-                                                <property name="valign">3</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkSwitch" id="vm_iso_prerelease">
-                                                <property name="valign">3</property>
-                                                <property name="tooltip-text" translatable="yes">Also show prerelease and development systems</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <style>
-                                                  <class name="sub"/>
-                                                  <class name="vm-switch-label"/>
-                                                </style>
-                                                <property name="label" translatable="yes">Ended</property>
-                                                <property name="valign">3</property>
-                                              </object>
-                                            </child>
-                                            <child>
-                                              <object class="GtkSwitch" id="vm_iso_eol">
-                                                <property name="valign">3</property>
-                                                <property name="tooltip-text" translatable="yes">Also show systems past their support date</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="vm_media_count">
-                                        <style>
-                                          <class name="sub"/>
-                                          <class name="vm-media-count"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <style>
-                                          <class name="kicker"/>
-                                          <class name="vm-media-group"/>
-                                        </style>
-                                        <property name="label" translatable="yes">RECOMMENDED</property>
-                                        <property name="xalign">0</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="vm_media_recommended">
-                                        <style>
-                                          <class name="vm-media-rows"/>
-                                        </style>
-                                        <property name="orientation">1</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <style>
-                                          <class name="kicker"/>
-                                          <class name="vm-media-group"/>
-                                        </style>
-                                        <property name="label" translatable="yes">ALL SYSTEMS</property>
-                                        <property name="xalign">0</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="vm_media_rows">
-                                        <style>
-                                          <class name="vm-media-rows"/>
-                                        </style>
-                                        <property name="orientation">1</property>
                                       </object>
                                     </child>
                                   </object>
@@ -1904,6 +1822,52 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                             </style>
                                             <property name="name">prov_start</property>
                                             <property name="label" translatable="yes">Continue</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="vm_prov_done_row">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">16</property>
+                                        <property name="visible">false</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Finish the installation</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Takes the install image out, so the machine starts from its own disk.</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="vm_prov_done">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">prov_done</property>
+                                            <property name="label" translatable="yes">Finish</property>
                                             <property name="valign">3</property>
                                           </object>
                                         </child>
@@ -3331,6 +3295,209 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                 <property name="label" translatable="yes">Create</property>
                 <property name="valign">3</property>
                 <property name="visible">false</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="vm_iso_dialog">
+    <style>
+      <class name="app"/>
+      <class name="settings"/>
+      <class name="vm-dialog"/>
+      <class name="vm-iso-dialog"/>
+    </style>
+    <property name="title" translatable="yes">Download an install image</property>
+    <property name="modal">true</property>
+    <property name="hide-on-close">true</property>
+    <property name="default-width">600</property>
+    <property name="default-height">720</property>
+    <child>
+      <object class="GtkBox">
+        <style>
+          <class name="page"/>
+        </style>
+        <property name="orientation">1</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkLabel">
+                <style>
+                  <class name="vm-dialog-title"/>
+                </style>
+                <property name="label" translatable="yes">Download an install image</property>
+                <property name="hexpand">true</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="vm_media_source">
+                <style>
+                  <class name="sub"/>
+                </style>
+                <property name="valign">3</property>
+                <property name="xalign">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="vm_iso_dialog_note">
+            <style>
+              <class name="sub"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="wrap-mode">2</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="vm_media_filters">
+            <style>
+              <class name="vm-media-filters"/>
+            </style>
+            <property name="orientation">1</property>
+            <property name="spacing">8</property>
+            <child>
+              <object class="GtkEntry" id="vm_iso_search">
+                <property name="hexpand">true</property>
+                <property name="placeholder-text" translatable="yes">Search systems and images</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkDropDown" id="vm_iso_platform">
+                    <style>
+                      <class name="vm-iso-filter"/>
+                    </style>
+                    <property name="valign">3</property>
+                    <property name="tooltip-text" translatable="yes">Which platform to show</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkDropDown" id="vm_iso_arch">
+                    <style>
+                      <class name="vm-iso-filter"/>
+                    </style>
+                    <property name="valign">3</property>
+                    <property name="tooltip-text" translatable="yes">Which architecture to show</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="hexpand">true</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="sub"/>
+                    </style>
+                    <property name="label" translatable="yes">Prerelease</property>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="vm_iso_prerelease">
+                    <property name="valign">3</property>
+                    <property name="tooltip-text" translatable="yes">Also show prerelease and development systems</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="sub"/>
+                      <class name="vm-switch-label"/>
+                    </style>
+                    <property name="label" translatable="yes">Ended</property>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="vm_iso_eol">
+                    <property name="valign">3</property>
+                    <property name="tooltip-text" translatable="yes">Also show systems past their support date</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="vm_media_count">
+            <style>
+              <class name="sub"/>
+              <class name="vm-media-count"/>
+            </style>
+            <property name="xalign">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="vexpand">true</property>
+            <property name="hscrollbar-policy">2</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">1</property>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="kicker"/>
+                      <class name="vm-media-group"/>
+                    </style>
+                    <property name="label" translatable="yes">RECOMMENDED</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="vm_media_recommended">
+                    <style>
+                      <class name="vm-media-rows"/>
+                    </style>
+                    <property name="orientation">1</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="kicker"/>
+                      <class name="vm-media-group"/>
+                    </style>
+                    <property name="label" translatable="yes">ALL SYSTEMS</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="vm_media_rows">
+                    <style>
+                      <class name="vm-media-rows"/>
+                    </style>
+                    <property name="orientation">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <property name="margin-top">8</property>
+            <property name="halign">2</property>
+            <child>
+              <object class="GtkButton" id="vm_iso_close">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">iso_close</property>
+                <property name="label" translatable="yes">Close</property>
+                <property name="valign">3</property>
               </object>
             </child>
           </object>

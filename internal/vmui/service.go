@@ -485,8 +485,13 @@ func (s *vmService) view(m vm.Machine) MachineView {
 	s.mu.Unlock()
 	// Installed is the guest's own files *and* the backend's project: a removal
 	// that kept the disk leaves the files, and its Install makes the project
-	// again - so that machine is set up, not stopped.
+	// again - so that machine is set up, not stopped. A QEMU machine's disk is
+	// both, and it is installed once its install image is taken out: until
+	// then the installer is what it boots.
 	installed := o.prepared && o.guest
+	if m.Backend == vm.BackendQEMU {
+		installed = o.prepared && strings.TrimSpace(m.Boot.ISO) == ""
+	}
 	v := MachineView{
 		Name: m.Name, Machine: m, Problems: m.Problems(),
 		State: o.state, Prepared: o.prepared, Installed: installed, Leftovers: o.guest,
@@ -1460,6 +1465,31 @@ func (s *vmService) FetchISO(name string, media vm.ISOMedia) error {
 	}
 	// The image is this machine's install media now. Writing the definition
 	// leaves the disk and the start to the install flow the window already has.
+	m.Boot.ISO = path
+	return s.store.Save(m)
+}
+
+// SetISO makes a file the install image of a QEMU machine, or with an empty
+// path takes the image out: what ends its installation. Only the definition
+// is written - the disk is made by Install, as for a downloaded image - and a
+// running guest keeps the disc it booted with until it stops.
+func (s *vmService) SetISO(name, path string) error {
+	m, err := s.store.Load(name)
+	if err != nil {
+		return err
+	}
+	if m.Backend != vm.BackendQEMU {
+		return fmt.Errorf("%s does not install from an image", name)
+	}
+	if path != "" {
+		fi, err := os.Stat(vm.ExpandPath(path))
+		if err != nil {
+			return err
+		}
+		if !fi.Mode().IsRegular() {
+			return fmt.Errorf("%s is not a file", path)
+		}
+	}
 	m.Boot.ISO = path
 	return s.store.Save(m)
 }

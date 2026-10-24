@@ -2947,26 +2947,25 @@ window.video.video-loaded .video-empty { opacity: 0; }
   font-size: 12px;
 }
 
-/* The install images: a note, the filters, a count, then the systems, each
-   opening onto its own images. */
-.vmpage .vm-media-note { padding: 12px 0 4px; }
-.vmpage .vm-media-filters { padding: 8px 0 4px; }
-.vmpage .vm-iso-filter { min-width: 150px; }
-.vmpage .vm-switch-label { margin-left: 10px; }
-.vmpage .vm-media-count { padding: 6px 0 2px; }
-.vmpage .vm-media-group { margin: 14px 0 4px; }
-.vmpage .vm-media-rows .row { min-height: 0; padding: 8px 0; }
-.vmpage .vm-media-error { font-size: 12px; color: @danger; }
-.vmpage button.vm-iso-system-head {
+/* The install images' dialog: a note, the filters, a count, then the systems,
+   each opening onto its own images. */
+.vm-iso-dialog .vm-media-filters { padding: 4px 0; }
+.vm-iso-dialog .vm-iso-filter { min-width: 150px; }
+.vm-iso-dialog .vm-switch-label { margin-left: 10px; }
+.vm-iso-dialog .vm-media-count { padding: 6px 0 2px; }
+.vm-iso-dialog .vm-media-group { margin: 14px 0 4px; }
+.vm-iso-dialog .vm-media-rows .row { min-height: 0; padding: 8px 0; }
+.vm-iso-dialog .vm-media-error { font-size: 12px; color: @danger; }
+.vm-iso-dialog button.vm-iso-system-head {
   min-height: 0;
   padding: 6px 8px;
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
 }
-.vmpage button.vm-iso-system-head:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); }
-.vmpage .vm-iso-chevron { color: @t2; }
-.vmpage .vm-iso-media { margin-left: 34px; padding-left: 12px; border-left: 1px solid alpha(@line, 0.55); }
+.vm-iso-dialog button.vm-iso-system-head:hover { border-color: alpha(@accent, 0.2); background: alpha(@accent, 0.06); }
+.vm-iso-dialog .vm-iso-chevron { color: @t2; }
+.vm-iso-dialog .vm-iso-media { margin-left: 34px; padding-left: 12px; border-left: 1px solid alpha(@line, 0.55); }
 
 /* The question before removing a container or deleting a machine. */
 window.vm-dialog { background: @app; }

@@ -182,6 +182,8 @@ the rebuild path that ignores it is what moves the scroll.
    directly?
 3. **How many categories?** The variant ids are precise but numerous; hand-named
    buckets ("Desktop", "Server", "Minimal") read better and cost i18n strings.
-4. **A page of its own?** The guide's page set (setup → provisioning → running)
-   has no "choose an image" page. Does the list stay inside the machine's setup
-   page, or become a step of New machine (template → image → name)?
+4. **A page of its own?** Answered (2026-10-24): the list is a dialog of its own,
+   `vm_iso_dialog`, opened by **Download…** in the setup page's `[IMAGE]` row,
+   beside **Choose file…** for an image the user already has. Taking an image
+   closes the dialog; the transfer and its Stop stay on the page. The dialog's
+   rows are built only while it is open.

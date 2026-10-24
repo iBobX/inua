@@ -292,7 +292,7 @@ func (b *QEMUBackend) Command(m Machine) ([]string, error) {
 	args = append(args, "-drive", "file="+qemuOpt(b.diskPath(m))+",if=virtio")
 
 	// Install media, while there is any: the guest stops needing it by
-	// installing itself, and the machine's field is cleared then.
+	// installing itself, and the window's Finish clears the field then.
 	if iso := strings.TrimSpace(m.Boot.ISO); iso != "" {
 		// -cdrom is a drive's options underneath (file=…,media=cdrom), so
 		// its path is quoted as one.

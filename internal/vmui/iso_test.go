@@ -511,3 +511,58 @@ func TestFetchISOVerifiesAPublishedChecksum(t *testing.T) {
 		t.Errorf("the verified image is gone: %v", err)
 	}
 }
+
+// A QEMU machine with a disk is still installing while its image is in: it is
+// the installer that boots. Finishing takes the image out, and the machine is
+// installed from then on; a file of the user's own is the image the same way a
+// downloaded one is, and a file that is not there is refused.
+func TestQEMUInstallEndsWhenTheImageIsTakenOut(t *testing.T) {
+	s, store, backend := testService(t)
+	s.backends[vm.BackendQEMU] = backend
+	// A host QEMU runs on: its program, systemd-run, room, firmware and viewer.
+	bin := t.TempDir()
+	if err := os.WriteFile(filepath.Join(bin, vm.QEMUProgram(vm.ArchX8664)), []byte("#!/bin/sh\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin)
+	present := vm.Capability{Available: true}
+	s.platform.SystemdRun, s.platform.Disk, s.platform.Firmware, s.platform.SPICEViewer = present, present, present, present
+	m := aQEMUMachine(t, store, "fedora")
+
+	if err := s.SetISO(m.Name, filepath.Join(t.TempDir(), "missing.iso")); err == nil {
+		t.Error("SetISO accepted a file that is not there")
+	}
+	iso := filepath.Join(t.TempDir(), "fedora.iso")
+	if err := os.WriteFile(iso, []byte("disc"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.SetISO(m.Name, iso); err != nil {
+		t.Fatalf("SetISO: %v", err)
+	}
+	if got, _ := store.Load(m.Name); got.Boot.ISO != iso {
+		t.Fatalf("boot.iso = %q, want %q", got.Boot.ISO, iso)
+	}
+	if len(backend.calls) != 0 {
+		t.Errorf("choosing an image called the backend: %v", backend.calls)
+	}
+
+	backend.prepared, backend.state = true, vm.StateStopped
+	if v := s.Refresh(m.Name); v.Installed || v.Page != vm.PageProvisioning {
+		t.Errorf("disk and image: installed=%t page=%s, want the installation, paused", v.Installed, v.Page)
+	}
+	if err := s.SetISO(m.Name, ""); err != nil {
+		t.Fatalf("finish: %v", err)
+	}
+	if got, _ := store.Load(m.Name); got.Boot.ISO != "" {
+		t.Errorf("finishing left boot.iso = %q", got.Boot.ISO)
+	}
+	if v := s.Refresh(m.Name); !v.Installed || v.Page != vm.PageStopped {
+		t.Errorf("disk, no image: installed=%t page=%s, want installed and stopped", v.Installed, v.Page)
+	}
+
+	win := vm.DockurTemplate("windows")
+	write(t, store, win, false)
+	if err := s.SetISO(win.Name, iso); err == nil {
+		t.Error("SetISO gave an install image to a machine that does not boot one")
+	}
+}
