@@ -144,6 +144,10 @@
   #selbar button { display:flex; align-items:center; min-height:36px; padding:0 14px; font:12.5px var(--title); color:var(--t0); white-space:nowrap; }
   #selbar button + button { border-left:1px solid var(--line); }
   #selbar button.plain { width:36px; padding:0; justify-content:center; color:var(--t1); }
+  /* The selection's ends, to drag: a drop in the accent under each, as a
+     phone's own selection has; the touch area is larger than the drop. */
+  .selhandle { position:absolute; z-index:2; width:44px; height:44px; margin-left:-22px; display:flex; justify-content:center; touch-action:none; }
+  .selhandle::after { content:""; width:16px; height:16px; margin-top:2px; background:var(--accent); border-radius:0 50% 50% 50%; transform:rotate(45deg); }
   #termwrap[hidden] { display:none; }
   #term { position:absolute; left:8px; top:6px; }
   #bottom { position:absolute; right:8px; bottom:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--line); border-radius:2px; color:var(--t1); }
@@ -282,7 +286,7 @@
 
   <section class="tab" id="tab-term">
     <div class="notice" hidden></div>
-    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button><div id="selbar" hidden><button id="selcopy" data-t="Copy">Copy</button><button id="selall" data-t="Select all">Select all</button><button id="selclose" class="plain" data-ta="Close"><span class="icon" style="--i:url(/icons/window-close-symbolic.svg)"></span></button></div></div>
+    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button><div class="selhandle" id="selA" hidden></div><div class="selhandle" id="selB" hidden></div><div id="selbar" hidden><button id="selcopy" data-t="Copy">Copy</button><button id="selall" data-t="Select all">Select all</button><button id="selclose" class="plain" data-ta="Close"><span class="icon" style="--i:url(/icons/window-close-symbolic.svg)"></span></button></div></div>
     <div id="panesbar">
       <button id="termback" class="barbtn" data-ta="Back"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div id="chips"></div>
@@ -1023,6 +1027,8 @@ async function open(id, again) {
   term.onBinary(d => input(d));
   term.onScroll(atBottom);
   term.onRender(drawn);
+  term.onRender(placeHandles);
+  term.onSelectionChange(() => { if (!term.hasSelection()) { selRange = null; $("selbar").hidden = true; } placeHandles(); });
   term.onWriteParsed(atBottom);
   Object.assign(st, { t0: performance.now(), bytes: 0, first: 0, drawn: 0, replay: 0, kind: snapshots ? "snapshot" : "replay" });
   // Its replay comes before the reply, drawn at the size it was written
@@ -1155,6 +1161,7 @@ function measure() {
 function place() {
   if (waitDraw) return;
   $("term").style.transform = `translate(${-pan.x}px, ${off + over - pan.y}px)`;
+  placeHandles();
 }
 // xterm has drawn: the slide for those lines can show.
 function drawn() { if (waitDraw) { waitDraw = false; place(); } }
@@ -1300,6 +1307,16 @@ wrap.addEventListener("wheel", e => {
 wrap.addEventListener("touchstart", e => {
   if (touch) clearTimeout(touch.hold);
   if (e.target.closest("button")) { touch = null; return; }  // #bottom, the selection's bar
+  const handle = e.target.closest(".selhandle");
+  if (handle && selRange && term) {
+    measure();
+    // The finger's way from the cell its drop stands for, kept as it moves.
+    const t = e.touches[0], hr = handle.getBoundingClientRect();
+    const cx = hr.left + hr.width / 2 + (handle.id === "selA" ? 0.5 : -0.5) * geo.cw, cy = hr.top - geo.ch / 2;
+    touch = { handle: handle.id, dx: cx - t.clientX, dy: cy - t.clientY };
+    $("selbar").hidden = true;
+    return;
+  }
   stopGlide();
   if (!term) return;
   measure();
@@ -1318,6 +1335,7 @@ wrap.addEventListener("touchstart", e => {
 wrap.addEventListener("touchmove", e => {
   if (!touch || !term) return;
   e.preventDefault(); e.stopPropagation();
+  if (touch.handle) { dragHandle(e.touches[0]); return; }
   if (touch.select) { extendSelect(e.touches[0]); return; }
   if (touch.pinch) {
     if (e.touches.length !== 2) return;
@@ -1352,9 +1370,10 @@ wrap.addEventListener("touchend", e => {
   const last = touch;
   touch = null;
   clearTimeout(last.hold);
-  if (last.select) {
+  if (last.select || last.handle) {
     e.preventDefault(); e.stopPropagation();
     $("selbar").hidden = !term.hasSelection();
+    placeHandles();
     return;
   }
   if (!last.axis && !$("selbar").hidden) { e.preventDefault(); e.stopPropagation(); clearSelect(); return; }  // a tap lets the selection go
@@ -1377,6 +1396,16 @@ wrap.addEventListener("touchend", e => {
 }, { passive: false, capture: true });
 
 // ---- Selecting by touch ----
+
+// Android may call a long press off (touchcancel) once it is held: the
+// selection made so far stays, with its bar and drops.
+wrap.addEventListener("touchcancel", () => {
+  if (!touch) return;
+  const last = touch;
+  touch = null;
+  clearTimeout(last.hold);
+  if ((last.select || last.handle) && term) { $("selbar").hidden = !term.hasSelection(); placeHandles(); }
+}, { capture: true });
 
 // A finger held still selects the word under it, and moving it, still
 // held, takes the selection on; lifted, a bar offers Copy. A long press
@@ -1402,7 +1431,45 @@ function wordAt(at) {
   while (b < cols - 1 && !blank(b + 1)) b++;
   return [row * cols + a, row * cols + b];
 }
-function selectRange(lo, hi) { term.select(lo % term.cols, Math.floor(lo / term.cols), hi - lo + 1); }
+// selRange is the selection made by touch, as buffer cells (row × cols + col).
+let selRange = null;
+function selectRange(lo, hi) {
+  selRange = { a: lo, b: hi };
+  term.select(lo % term.cols, Math.floor(lo / term.cols), hi - lo + 1);
+  placeHandles();
+}
+// placeHandles puts a drop under the selection's first and last cells,
+// while they are on the screen.
+function placeHandles() {
+  const show = (id, at, end) => {
+    const h = $(id), b = term && term.buffer.active;
+    const row = at == null ? -1 : Math.floor(at / term.cols) - b.viewportY;
+    h.hidden = at == null || row < 0 || row >= term.rows || !!touch && touch.select;
+    if (h.hidden) return;
+    const r = screenEl().getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    h.style.left = (r.left - w.left + (at % term.cols + (end ? 1 : 0)) * geo.cw) + "px";
+    h.style.top = (r.top - w.top + (row + 1) * geo.ch) + "px";
+  };
+  const r = term && term.hasSelection() ? selRange : null;
+  show("selA", r && r.a, false);
+  show("selB", r && r.b, true);
+  // The bar above the selection's first line, else under its last drop.
+  const bar = $("selbar");
+  if (!r || bar.hidden) return;
+  const s = screenEl().getBoundingClientRect(), w = wrap.getBoundingClientRect(), b = term.buffer.active;
+  const first = Math.floor(r.a / term.cols) - b.viewportY, last = Math.floor(r.b / term.cols) - b.viewportY;
+  let top = s.top - w.top + first * geo.ch - bar.offsetHeight - 8;
+  if (top < 4) top = s.top - w.top + (last + 1) * geo.ch + 48;
+  bar.style.top = Math.max(4, Math.min(top, wrap.clientHeight - bar.offsetHeight - 4)) + "px";
+}
+// A drop dragged: its end of the selection follows the finger, at the
+// way from it the touch began with (the drop is under its line).
+function dragHandle(p) {
+  const at = cellAt(p.clientX + touch.dx, p.clientY + touch.dy);
+  const other = touch.handle === "selA" ? selRange.b : selRange.a;
+  if ((touch.handle === "selA") !== (at <= other)) touch.handle = touch.handle === "selA" ? "selB" : "selA";  // crossed over
+  selectRange(Math.min(at, other), Math.max(at, other));
+}
 function holdSelect(t) {
   if (touch !== t || t.axis || !term) return;
   const [a, b] = wordAt(cellAt(t.x0, t.y0));
@@ -1415,7 +1482,7 @@ function extendSelect(p) {
   const at = cellAt(p.clientX, p.clientY), { a, b } = touch.select;
   selectRange(Math.min(a, at), Math.max(b, at));
 }
-function clearSelect() { if (term) term.clearSelection(); $("selbar").hidden = true; }
+function clearSelect() { if (term) term.clearSelection(); selRange = null; $("selbar").hidden = true; placeHandles(); }
 // copyText puts text on the clipboard: the browser's clipboard over
 // HTTPS, else the copy command, which plain HTTP still allows.
 async function copyText(text) {
