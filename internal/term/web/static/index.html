@@ -1054,6 +1054,7 @@ async function open(id, again) {
   // shifted.
   try { term.loadAddon(new UnicodeGraphemesAddon.UnicodeGraphemesAddon()); } catch (e) {}
   quiet(term);
+  if (touchScreen) softKeyboard(term);
   term.onData(d => input(typed(d)));
   term.onBinary(d => input(d));
   term.onScroll(atBottom);
@@ -1427,6 +1428,48 @@ wrap.addEventListener("touchend", e => {
   fling(v);
 }, { passive: false, capture: true });
 
+// ---- A phone's keyboard ----
+
+// A phone's keyboard edits the text it believes is in xterm's input
+// field: a suggestion picked replaces the word typed, autocorrect fixes
+// one, a backspace deletes into one. xterm.js sends only what is added,
+// so the old word stayed in the terminal with the new after it. Here the
+// field is read after each change and compared with what was sent: what
+// went is deleted (a backspace each), what came is typed. Enter, the key
+// row and a hardware keyboard's keys go on as before (xterm's keydown).
+function softKeyboard(t) {
+  const field = t.textarea;
+  let sent = "", composing = false;
+  const chars = s => Array.from(s);
+  const sync = () => {
+    const was = chars(sent), now = chars(field.value.replace(/[\r\n]/g, ""));
+    let same = 0;
+    while (same < was.length && same < now.length && was[same] === now[same]) same++;
+    const gone = was.length - same, come = now.slice(same).join("");
+    sent = now.join("");
+    if (gone) input("\x7f".repeat(gone));
+    if (come) input(typed(come));
+  };
+  // A fresh field: after Enter, and when the pane's line changed some
+  // other way (the key row), so what is replaced later is in the line.
+  softReset = () => { if (!composing) { field.value = ""; sent = ""; } };
+  // Ahead of xterm's own listeners on the field (it is inside t.element).
+  const own = e => e.stopImmediatePropagation();
+  t.element.addEventListener("compositionstart", e => { own(e); composing = true; }, true);
+  t.element.addEventListener("compositionupdate", own, true);
+  t.element.addEventListener("compositionend", e => { own(e); composing = false; sync(); }, true);
+  t.element.addEventListener("input", e => { own(e); sync(); }, true);
+  t.element.addEventListener("keydown", e => {
+    // The keyboard composing (229): xterm would read the field itself.
+    if (e.keyCode === 229 || e.isComposing) { e.stopImmediatePropagation(); return; }
+    // Backspace with text in the field: the field deletes it, and sync
+    // sends the backspace; xterm would send another.
+    if (e.key === "Backspace" && field.value) { e.stopImmediatePropagation(); return; }
+    if (e.key === "Enter") setTimeout(softReset);
+  }, true);
+}
+let softReset = () => {};
+
 // ---- Selecting by touch ----
 
 // Android may call a long press off (touchcancel) once it is held: the
@@ -1591,7 +1634,7 @@ function keyButton(k) {
   // The keys keep the focus where it is: the keyboard stays up, or down.
   b.addEventListener("pointerdown", e => e.preventDefault());
   if (k.mod) { b.dataset.mod = k.mod; b.onclick = () => setMod(k.mod, !mods[k.mod]); }
-  else b.onclick = () => input(typed(k.send()));
+  else b.onclick = () => { input(typed(k.send())); softReset(); };
   return b;
 }
 for (const k of row) $("keys").append(keyButton(k));
@@ -1617,9 +1660,9 @@ function renderSnippets() {
   };
   const row = (text, i) => {
     const r = el("div", "snip");
-    const send = button("send", "⏎", () => input(text + "\r"));
+    const send = button("send", "⏎", () => { input(text + "\r"); softReset(); });
     send.setAttribute("aria-label", T("Send"));
-    r.append(button("say", text, () => input(text)), send);
+    r.append(button("say", text, () => { input(text); softReset(); }), send);
     if (i != null) {
       const del = button("del", null, () => { snippets.splice(i, 1); saveSnippets(); });
       del.append(icon("user-trash"));
