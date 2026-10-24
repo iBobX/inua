@@ -72,7 +72,16 @@
   .card-over .btns button { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:2px; font:13px var(--sans); color:var(--t1); }
   .card-over .btns button.ok { border-color:var(--accent); background:var(--accent); color:var(--app); }
 
-  /* A notice: a hairline in warn, no fill (the connection's state). */
+  /* While the page connects: the whole page blurred under a veil, the
+     state in the middle, a mark pulsing; connected, it fades out. */
+  #veil { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; gap:10px; background:color-mix(in srgb, var(--app) 45%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); opacity:1; transition:opacity 320ms ease-out; }
+  #veil.gone { opacity:0; visibility:hidden; pointer-events:none; transition:opacity 320ms ease-out, visibility 0s 320ms; }
+  #veil .mark { border-color:var(--accent); background:var(--accent); animation:pulse 1.2s ease-in-out infinite; }
+  #veil .label { font:600 11px var(--mono); letter-spacing:.14em; color:var(--t1); }
+  @keyframes pulse { 50% { opacity:.25; } }
+  @media (prefers-reduced-motion:reduce) { #veil, #veil.gone { transition:none; } #veil .mark { animation:none; } }
+
+  /* A notice: a hairline in warn, no fill (a moment's message). */
   .notice { margin:8px 16px 0; padding:6px 10px; border:1px solid var(--warn); border-radius:2px; color:var(--warn); font:11px var(--mono); letter-spacing:.06em; }
 
   /* Every page keeps one edge, 16 px in, a group's head on it. Where the
@@ -319,6 +328,8 @@
   </nav>
 </div>
 
+<div id="veil"><div class="mark"></div><span class="label" data-t="CONNECTING…">CONNECTING…</span></div>
+
 <div id="ask" class="card-over" hidden>
   <form>
     <div class="q"></div>
@@ -448,6 +459,12 @@ function input(s) {
   send(2, b);
 }
 // The connection's state, as a notice at the top of each page.
+// veil covers the page while it connects, saying how it goes; "" fades
+// it out.
+function veil(text) {
+  if (text) $("veil").querySelector(".label").textContent = text;
+  $("veil").classList.toggle("gone", !text);
+}
 function status(text) {
   for (const n of document.querySelectorAll(".notice")) { n.textContent = text; n.hidden = !text; }
 }
@@ -464,7 +481,7 @@ function connect() {
   connected = false;
   for (const [id, r] of pending) r({ error: "offline" });  // the old connection's questions get no answer
   pending.clear();
-  status(T("CONNECTING…"));
+  veil(T("CONNECTING…"));
   const sock = ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws?t=" + token);
   sock.binaryType = "arraybuffer";
   retryTimer = setTimeout(() => { if (ws === sock && sock.readyState !== 1) connect(); }, 5000);
@@ -489,7 +506,7 @@ function connect() {
   sock.onclose = () => {
     if (ws !== sock) return;
     connected = false;
-    status(T("OFFLINE · RECONNECTING"));
+    veil(T("OFFLINE · RECONNECTING"));
     clearTimeout(retryTimer);
     retryTimer = setTimeout(connect, Math.min(1000 * 2 ** retries++, 5000));
   };
@@ -510,6 +527,7 @@ async function welcome() {
   retries = 0;
   // The host sends the questions waiting again, after its welcome.
   secrets = []; showSecret();
+  veil("");
   status("");
   connected = true; since = Date.now();
   const again = cur;  // a reconnect: attach again
