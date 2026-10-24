@@ -147,4 +147,3 @@ func TailscaleIP() (string, error) {
 	}
 	return "", ErrNoTailscale
 }
-
