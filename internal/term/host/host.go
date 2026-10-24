@@ -59,10 +59,9 @@ type Host struct {
 	// none. Notify posts notifications for agents that need the user.
 	Agents *agent.Set
 	Notify bool
-	// Raise brings a window up after a notification's Show; nil runs
-	// inua-term again, which raises the one open or opens one.
-	Raise func()
-	notes notifier
+	// Desktop posts the notifications and brings a window up after one's
+	// Show; nil, as on a computer with no desktop, posts none.
+	Desktop Desktop
 	// Remembering: the file, the forget patterns, whether commands are
 	// kept, and the save waiting.
 	saveFile     string
@@ -75,8 +74,11 @@ type Host struct {
 	waitIDs int
 	next    int
 	clients map[*client]bool
-	closed  bool
-	done    chan struct{}
+	// asked are the secrets gpg asks the web pages, by their IDs.
+	asked     map[int]*asked
+	secretIDs int
+	closed    bool
+	done      chan struct{}
 }
 
 // pane is a program on a PTY, with the host's own engine for its state.
@@ -129,6 +131,7 @@ var wantSeq atomic.Uint64
 type client struct {
 	conn   net.Conn
 	active bool          // its window is the active one
+	web    bool          // a web page (inua-termd serve's)
 	out    chan [][]byte // frames: kind byte first, then payload parts
 	// mu guards out's closing: a frame is not sent to a closed queue.
 	mu     sync.Mutex
@@ -156,7 +159,7 @@ func Listen(path string) (*Host, error) {
 	}
 	return &Host{
 		ln: ln, path: path, replayLimit: ReplayLimit,
-		panes: map[int]*pane{}, clients: map[*client]bool{}, done: make(chan struct{}),
+		panes: map[int]*pane{}, clients: map[*client]bool{}, asked: map[int]*asked{}, done: make(chan struct{}),
 	}, nil
 }
 
@@ -238,9 +241,13 @@ func (h *Host) serveConn(conn net.Conn) {
 		h.mu.Unlock()
 		return
 	}
+	c.web = hello.Web
 	h.clients[c] = true
 	h.mu.Unlock()
 	go c.write()
+	if c.web {
+		h.secretsFor(c)
+	}
 	for {
 		kind, payload, err := ReadFrame(conn)
 		if err != nil {
@@ -332,6 +339,7 @@ func (c *client) closeLocked(conn bool) {
 
 // drop forgets a client that went away.
 func (h *Host) drop(c *client) {
+	h.withdrawFrom(c)
 	h.mu.Lock()
 	delete(h.clients, c)
 	panes := make([]*pane, 0, len(h.panes))
@@ -355,7 +363,7 @@ func (h *Host) pane(id int) *pane {
 }
 
 func (h *Host) handle(c *client, m Message) {
-	if h.handleSessions(c, m) {
+	if h.handleSessions(c, m) || h.handleSecrets(c, m) {
 		return
 	}
 	reply := Message{Type: MsgReply, ID: m.ID}

@@ -40,7 +40,9 @@ type VMManager interface {
 	RefreshAll() []MachineView
 	// Templates are what a new machine can be made from.
 	Templates() []vm.Template
-	Create(templateID, name string) (vm.Machine, error)
+	// Recommended is what suits this computer, for a new machine.
+	Recommended() vm.Profile
+	Create(templateID, name string, p vm.Profile) (vm.Machine, error)
 	Save(vm.Machine) error
 	Install(vm.Machine) error
 	FetchISO(name string, media vm.ISOMedia) error
@@ -57,27 +59,27 @@ type VMManager interface {
 	Fix(vm.Remedy) (done string, relogin bool, err error)
 }
 
-// machineRow is one row of the machine list: what a repaint updates.
+// machineRow is one tile of the library: what a repaint updates.
 type machineRow struct {
-	name  string
-	title gtk.Label
-	sub   gtk.Label
+	name string
+	tile appui.LibraryTile
 }
 
-// templateRow is one row of the new-machine page.
+// templateRow is one way a system runs, in the New machine dialog.
 type templateRow struct {
-	id    string
-	title gtk.Label
-	sub   gtk.Label
+	id  string
+	os  vm.OS
+	row gtk.ListBoxRow
 }
 
-// vmWindow is the manager: the machines in the index, the chosen one's page
-// beside it, and the page that makes a new one.
+// vmWindow is the manager: the machines as tiles in the library, the chosen
+// one's page in the panel beside it, and the page that makes a new one.
 type vmWindow struct {
 	win     *gtk.ApplicationWindow
 	manager VMManager
 	c       *appui.Ctx // the app, for a notification the window raises
 
+	panel gtk.Box
 	head  gtk.Box
 	mark  gtk.Box // filled while the chosen machine is up
 	title gtk.Label
@@ -85,17 +87,32 @@ type vmWindow struct {
 
 	stack gtk.Stack
 
-	machineList    gtk.ListBox
+	machineList    gtk.FlowBox
 	machinesKicker gtk.Label
-	faultList      gtk.ListBox
+	faultList      gtk.FlowBox
 	faultHeading   gtk.Label
+	libraryEmpty   gtk.Box
 	newButton      gtk.Button
 	emptyNew       gtk.Button
 	views          []MachineView
 	rows           []machineRow
 	faults         []vm.Fault
 
-	// a new machine
+	// a new machine, asked in a dialog over the window
+	newDialog    gtk.Window
+	newSteps     gtk.Stack // "what", then "resources"
+	newNext      gtk.Button
+	newBack      gtk.Button
+	createNote   gtk.Label
+	newMemory    gtk.SpinButton
+	newCPUs      gtk.SpinButton
+	newDisk      gtk.SpinButton
+	newMemorySub gtk.Label
+	newCPUsSub   gtk.Label
+	newDiskSub   gtk.Label
+	newSystems   gtk.Box
+	systems      []gtk.ToggleButton // one a system, named by it
+	onSystem     func(gtk.ToggleButton)
 	templateList gtk.ListBox
 	templateRows []templateRow
 	nameEntry    gtk.Entry
@@ -104,7 +121,8 @@ type vmWindow struct {
 	createError  gtk.Label
 	templateID   string
 	templateName string // the template's own suggested name, to know a name was typed
-	newOpen      bool
+	onNewClose   func(gtk.Window) bool
+	onNewKey     func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 
 	// the page of a machine whose backend this build does not have
 	naNote gtk.Label
@@ -248,7 +266,7 @@ type vmWindow struct {
 	onClose      func(gtk.Window) bool
 	onClick      func(gtk.Button)
 	onSpin       func(gtk.SpinButton)
-	onRowSelect  func(gtk.ListBox, uintptr)
+	onTileSelect func(gtk.FlowBox)
 	onTemplate   func(gtk.ListBox, uintptr)
 	onNameSubmit func(gtk.Entry)
 }
@@ -260,9 +278,12 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 	builder := c.Load("vm.ui")
 	builder.Get("vm", v.win)
 	for id, w := range map[string]gobject.Ptr{
-		"vm_head": &v.head, "vm_mark": &v.mark, "vm_machines_kicker": &v.machinesKicker, "vm_title": &v.title, "vm_sub": &v.sub, "vm_stack": &v.stack,
+		"vm_panel": &v.panel, "vm_library_empty": &v.libraryEmpty, "vm_head": &v.head, "vm_mark": &v.mark, "vm_machines_kicker": &v.machinesKicker, "vm_title": &v.title, "vm_sub": &v.sub, "vm_stack": &v.stack,
 		"vm_machines": &v.machineList, "vm_fault_heading": &v.faultHeading, "vm_faults": &v.faultList,
-		"vm_new": &v.newButton, "vm_empty_new": &v.emptyNew,
+		"vm_new": &v.newButton, "vm_empty_new": &v.emptyNew, "vm_new_dialog": &v.newDialog, "vm_new_systems": &v.newSystems,
+		"vm_new_steps": &v.newSteps, "vm_new_next": &v.newNext, "vm_new_back": &v.newBack, "vm_create_note": &v.createNote,
+		"vm_new_memory": &v.newMemory, "vm_new_cpus": &v.newCPUs, "vm_new_disk": &v.newDisk,
+		"vm_new_memory_sub": &v.newMemorySub, "vm_new_cpus_sub": &v.newCPUsSub, "vm_new_disk_sub": &v.newDiskSub,
 		"vm_templates": &v.templateList, "vm_new_name": &v.nameEntry, "vm_create": &v.createButton,
 		"vm_new_cancel": &v.newCancel, "vm_create_error": &v.createError,
 		"vm_na_note":    &v.naNote,
@@ -323,7 +344,7 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 	for _, b := range []*gtk.Button{&v.accept, &v.install,
 		&v.console, &v.provStart, &v.provStop, &v.provRemove, &v.provDelete, &v.readySave, &v.start,
 		&v.connect, &v.consoleReady, &v.stop, &v.remove, &v.removeData, &v.delete, &v.setupRemoveData,
-		&v.setupDelete, &v.bootConsole, &v.bootStop, &v.newButton, &v.emptyNew, &v.createButton, &v.newCancel,
+		&v.setupDelete, &v.bootConsole, &v.bootStop, &v.newButton, &v.emptyNew, &v.createButton, &v.newCancel, &v.newNext, &v.newBack,
 		&v.consoleBack, &v.consoleCopy, &v.consoleStart, &v.consoleStop,
 		&v.assistantAsk, &v.assistantRecheck, &v.isoCancel, &v.faultDelete} {
 		b.ConnectClicked(&v.onClick)
@@ -332,20 +353,18 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 	for _, sb := range []*gtk.SpinButton{&v.memory, &v.cpus, &v.disk, &v.readyMemory, &v.readyCPUs} {
 		sb.ConnectValueChanged(&v.onSpin)
 	}
-	v.onRowSelect = func(_ gtk.ListBox, ptr uintptr) {
-		if ptr == 0 || v.filling {
+	v.onTileSelect = func(box gtk.FlowBox) {
+		if v.filling {
 			return
 		}
-		row := gtk.ListBoxRowNewFromInternalPtr(ptr)
-		if row == nil || row.GetName() == "" {
-			return
+		if name := appui.SelectedTile(&box); name != "" {
+			v.choose(name)
 		}
-		v.choose(row.GetName())
 	}
-	v.machineList.ConnectRowSelected(&v.onRowSelect)
-	v.faultList.ConnectRowSelected(&v.onRowSelect)
+	v.machineList.ConnectSelectedChildrenChanged(&v.onTileSelect)
+	v.faultList.ConnectSelectedChildrenChanged(&v.onTileSelect)
 	v.onTemplate = func(_ gtk.ListBox, ptr uintptr) {
-		if ptr == 0 {
+		if ptr == 0 || v.filling {
 			return
 		}
 		if row := gtk.ListBoxRowNewFromInternalPtr(ptr); row != nil {
@@ -353,7 +372,21 @@ func openWindow(c *appui.Ctx, manager VMManager) *vmWindow {
 		}
 	}
 	v.templateList.ConnectRowSelected(&v.onTemplate)
-	v.onNameSubmit = func(_ gtk.Entry) { v.createMachine() }
+	v.newDialog.SetTransientFor(&v.win.Window)
+	v.newDialog.SetDestroyWithParent(true)
+	v.onNewClose = func(gtk.Window) bool { return false } // hide-on-close keeps it for the next one
+	v.newDialog.ConnectCloseRequest(&v.onNewClose)
+	v.onNewKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		if keyval == uint32(gdk.KEY_Escape) {
+			v.closeNew()
+			return true
+		}
+		return false
+	}
+	newKeys := gtk.NewEventControllerKey()
+	newKeys.ConnectKeyPressed(&v.onNewKey)
+	v.newDialog.AddController(&newKeys.EventController)
+	v.onNameSubmit = func(_ gtk.Entry) { v.newStep("resources") }
 	v.nameEntry.ConnectActivate(&v.onNameSubmit)
 	// The download list's controls: every one of them hands the window's own
 	// filter to the service and paints again.
@@ -487,12 +520,11 @@ func (v *vmWindow) setSelected(name string) {
 // choose shows a machine's page, reading its backend now rather than waiting
 // for the next tick: the user just asked for it.
 func (v *vmWindow) choose(name string) {
-	if v.selectedName() == name && !v.newOpen {
+	if v.selectedName() == name {
 		return
 	}
 	v.stopSerial()
 	v.consoleOpen = false
-	v.newOpen = false
 	v.setSelected(name)
 	v.lastPage = ""
 	v.setupFilled, v.readyFilled = false, false
@@ -528,9 +560,9 @@ func (v *vmWindow) paintAll(views []MachineView) {
 	selected := v.selectedName()
 	if !v.has(selected) && !v.hasFault(selected) {
 		selected = ""
-		if len(views) > 0 && !v.newOpen {
+		if len(views) > 0 {
 			selected = views[0].Name
-		} else if len(v.faults) > 0 && !v.newOpen {
+		} else if len(v.faults) > 0 {
 			selected = v.faults[0].Name
 		}
 		v.lastPage, v.setupFilled, v.readyFilled = "", false, false
@@ -563,37 +595,13 @@ func (v *vmWindow) hasFault(name string) bool {
 	return false
 }
 
-// rebuildFaultRows lists the folders that do not load as a machine, each with
-// what is wrong with it under its name.
+// rebuildFaultRows lists the folders that do not load as a machine, each a
+// tile with what is wrong with it under its name.
 func (v *vmWindow) rebuildFaultRows() {
-	for {
-		row := v.faultList.GetRowAtIndex(0)
-		if row == nil {
-			break
-		}
-		v.faultList.Remove(&row.Widget)
-	}
+	v.faultList.RemoveAll()
 	for _, fault := range v.faults {
-		box := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
-		mark := gtk.NewImageFromIconName("dialog-warning-symbolic")
-		mark.AddCssClass("index-icon")
-		mark.SetValign(gtk.AlignCenterValue)
-		gtkx.Append(box, &mark.Widget)
-		text := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-		text.SetHexpand(true)
-		text.SetValign(gtk.AlignCenterValue)
-		title := gtk.NewLabel(fault.Name)
-		title.SetXalign(0)
-		sub := gtk.NewLabel(i18n.T("Does not load"))
-		sub.AddCssClass("vm-row-sub")
-		sub.SetXalign(0)
-		gtkx.Append(text, &title.Widget)
-		gtkx.Append(text, &sub.Widget)
-		gtkx.Append(box, &text.Widget)
-		row := gtk.NewListBoxRow()
-		row.SetName(fault.Name)
-		row.SetChild(&box.Widget)
-		v.faultList.Append(&row.Widget)
+		tile := appui.NewLibraryTile(fault.Name, "dialog-warning-symbolic", fault.Name, i18n.T("Does not load"), false)
+		v.faultList.Append(&tile.Child.Widget)
 	}
 }
 
@@ -606,7 +614,7 @@ func (v *vmWindow) viewOf(name string) MachineView {
 	return MachineView{Name: name}
 }
 
-// rebuildRows makes a row per machine, and only when the machines themselves
+// rebuildRows makes a tile per machine, and only when the machines themselves
 // changed: a plain repaint updates the labels in place, which is what the
 // watch does every two seconds.
 func (v *vmWindow) rebuildRows() {
@@ -623,65 +631,40 @@ func (v *vmWindow) rebuildRows() {
 		v.updateRows()
 		return
 	}
-	for {
-		row := v.machineList.GetRowAtIndex(0)
-		if row == nil {
-			break
-		}
-		v.machineList.Remove(&row.Widget)
-	}
+	v.machineList.RemoveAll()
 	v.rows = nil
 	for _, x := range v.views {
-		row, built := v.buildRow(x)
-		v.machineList.Append(&row.Widget)
+		built := v.buildTile(x)
+		v.machineList.Append(&built.tile.Child.Widget)
 		v.rows = append(v.rows, built)
 	}
 	v.selectRow()
 }
 
-// updateRows brings the rows' labels up to date.
+// updateRows brings the tiles' labels and marks up to date.
 func (v *vmWindow) updateRows() {
 	for i := range v.rows {
 		if i >= len(v.views) {
 			break
 		}
 		x := v.views[i]
-		v.rows[i].title.SetText(x.Name)
-		v.rows[i].sub.SetText(vmListSub(x))
+		v.rows[i].tile.Title.SetText(x.Name)
+		v.rows[i].tile.Sub.SetText(vmListSub(x))
+		v.rows[i].tile.SetOn(x.State == vm.StateRunning)
 	}
 }
 
-// buildRow is one machine in the list: its system's mark, its name, and what
-// it is and is doing under it.
-func (v *vmWindow) buildRow(x MachineView) (gtk.ListBoxRow, machineRow) {
-	box := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
-	mark := gtk.NewImageFromIconName(vmOSIcon(x.Machine.OS))
-	mark.AddCssClass("vm-os-mark")
-	mark.SetValign(gtk.AlignCenterValue)
-	gtkx.Append(box, &mark.Widget)
-
-	text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-	text.SetHexpand(true)
-	text.SetValign(gtk.AlignCenterValue)
-	title := gtk.NewLabel(x.Name)
-	title.AddCssClass("vm-row-name")
-	title.SetXalign(0)
-	sub := gtk.NewLabel(vmListSub(x))
-	sub.AddCssClass("vm-row-sub")
-	sub.SetXalign(0)
-	sub.SetEllipsize(pango.EllipsizeEndValue)
-	gtkx.Append(text, &title.Widget)
-	gtkx.Append(text, &sub.Widget)
-	gtkx.Append(box, &text.Widget)
-
-	row := gtk.NewListBoxRow()
-	row.SetName(x.Name)
-	row.SetChild(&box.Widget)
-	return *row, machineRow{name: x.Name, title: *title, sub: *sub}
+// buildTile is one machine in the library: its system's mark with its own
+// mark beside it, filled while it is up, then its name, and what it is and is
+// doing under it.
+func (v *vmWindow) buildTile(x MachineView) machineRow {
+	tile := appui.NewLibraryTile(x.Name, vmOSIcon(x.Machine.OS), x.Name, vmListSub(x), true)
+	tile.SetOn(x.State == vm.StateRunning)
+	return machineRow{name: x.Name, tile: tile}
 }
 
-// selectRow marks the chosen machine in the index, in whichever list holds
-// it, and nothing while a new machine is being made. It runs while filling,
+// selectRow marks the chosen machine in the library, in whichever group
+// holds it. It runs while filling,
 // so marking a row does not read as the user choosing it.
 func (v *vmWindow) selectRow() {
 	v.filling = true
@@ -689,21 +672,21 @@ func (v *vmWindow) selectRow() {
 	name := v.selectedName()
 	v.machineList.UnselectAll()
 	v.faultList.UnselectAll()
-	if v.newOpen || name == "" {
+	if name == "" {
 		return
 	}
 	for i, r := range v.rows {
 		if r.name == name {
-			if row := v.machineList.GetRowAtIndex(int32(i)); row != nil {
-				v.machineList.SelectRow(row)
+			if tile := v.machineList.GetChildAtIndex(int32(i)); tile != nil {
+				v.machineList.SelectChild(tile)
 			}
 			return
 		}
 	}
 	for i, f := range v.faults {
 		if f.Name == name {
-			if row := v.faultList.GetRowAtIndex(int32(i)); row != nil {
-				v.faultList.SelectRow(row)
+			if tile := v.faultList.GetChildAtIndex(int32(i)); tile != nil {
+				v.faultList.SelectChild(tile)
 			}
 			return
 		}
@@ -716,7 +699,6 @@ func (v *vmWindow) paint() {
 	if v.closed || v.win == nil {
 		return
 	}
-	v.newButton.SetSensitive(!v.newOpen)
 	page, view := v.pageOf()
 	changed := page != v.lastPage
 	if changed {
@@ -728,23 +710,20 @@ func (v *vmWindow) paint() {
 		}
 		v.lastPage = page
 	}
-	if view.State == vm.StateRunning && !v.newOpen && page != "fault" {
+	if view.State == vm.StateRunning && page != "fault" {
 		v.mark.AddCssClass("on")
 	} else {
 		v.mark.RemoveCssClass("on")
 	}
-	v.stack.SetVisibleChildName(page)
-	v.head.SetVisible(page != "empty")
-	v.mark.SetVisible(page != "new")
+	v.panel.SetVisible(page != "empty")
+	if page != "empty" {
+		v.stack.SetVisibleChildName(page)
+	}
 	v.machinesKicker.SetVisible(len(v.views) > 0)
+	empty := len(v.views) == 0 && len(v.faults) == 0
+	v.libraryEmpty.SetVisible(empty)
+	v.newButton.SetVisible(!empty) // the empty library has its own
 	switch page {
-	case "new":
-		v.title.SetText(i18n.T("New machine"))
-		v.sub.SetText(i18n.T("Pick what the new machine runs, and name it."))
-		v.newCancel.SetVisible(len(v.views) > 0 || len(v.faults) > 0)
-	case "empty":
-		v.title.SetText(i18n.T("Virtual machines"))
-		v.sub.SetText(i18n.T("Machines keep running with this window closed."))
 	case "fault":
 		v.title.SetText(view.Name)
 		v.sub.SetText(i18n.T("Does not load as a machine"))
@@ -934,54 +913,109 @@ func vmGraphicsText(m vm.Machine) string {
 	return i18n.T("2D")
 }
 
-// fillTemplates fills the new-machine page, once: the templates do not change
-// while the window is open.
+// fillTemplates fills the New machine dialog, once: a choice per system,
+// and a row per way one runs, of which the chosen system's show. The
+// templates do not change while the window is open.
 func (v *vmWindow) fillTemplates() {
 	templates := v.manager.Templates()
-	v.templateRows = nil
+	v.templateRows, v.systems = nil, nil
+	v.onSystem = func(b gtk.ToggleButton) {
+		if b.GetActive() && !v.filling {
+			v.chooseSystem(vm.OS(b.GetName()))
+		}
+	}
 	for _, t := range templates {
-		box := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
-		mark := gtk.NewImageFromIconName(vmOSIcon(t.OS))
-		mark.AddCssClass("vm-os-mark")
-		mark.SetValign(gtk.AlignCenterValue)
-		gtkx.Append(box, &mark.Widget)
+		if !slices.ContainsFunc(v.systems, func(b gtk.ToggleButton) bool { return b.GetName() == string(t.OS) }) {
+			b := gtk.NewToggleButton()
+			b.AddCssClass("vm-system")
+			b.SetName(string(t.OS))
+			line := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
+			line.SetHalign(gtk.AlignCenterValue)
+			mark := gtk.NewImageFromIconName(vmOSIcon(t.OS))
+			mark.AddCssClass("vm-os-mark")
+			gtkx.Append(line, &mark.Widget)
+			gtkx.Append(line, &gtk.NewLabel(vmOSText(t.OS)).Widget)
+			b.SetChild(&line.Widget)
+			if len(v.systems) > 0 {
+				b.SetGroup(&v.systems[0])
+			}
+			b.ConnectToggled(&v.onSystem)
+			gtkx.Append(&v.newSystems, &b.Widget)
+			v.systems = append(v.systems, *b)
+		}
 
 		text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-		text.SetHexpand(true)
 		text.SetValign(gtk.AlignCenterValue)
-		title := gtk.NewLabel(vmTemplateName(t))
+		title := gtk.NewLabel(vmWayName(t))
 		title.AddCssClass("vm-row-name")
 		title.SetXalign(0)
 		sub := gtk.NewLabel(vmTemplateText(t))
 		sub.AddCssClass("vm-template-sub")
 		sub.SetXalign(0)
 		sub.SetWrap(true)
+		sub.SetMaxWidthChars(60) // the dialog keeps its width whichever system is chosen
 		gtkx.Append(text, &title.Widget)
 		gtkx.Append(text, &sub.Widget)
-		gtkx.Append(box, &text.Widget)
 
 		row := gtk.NewListBoxRow()
 		row.SetName(t.ID)
-		row.SetChild(&box.Widget)
+		row.SetChild(&text.Widget)
 		v.templateList.Append(&row.Widget)
-		v.templateRows = append(v.templateRows, templateRow{id: t.ID, title: *title, sub: *sub})
+		v.templateRows = append(v.templateRows, templateRow{id: t.ID, os: t.OS, row: *row})
 	}
 	if len(templates) > 0 {
 		v.chooseTemplate(templates[0].ID)
 	}
 }
 
-// showNew opens the new-machine page.
+// chooseSystem shows the ways a system runs, and picks its first unless one
+// of its own is picked already.
+func (v *vmWindow) chooseSystem(os vm.OS) {
+	if t, ok := vm.TemplateByID(v.templateID); ok && t.OS == os {
+		return
+	}
+	for _, r := range v.templateRows {
+		if r.os == os {
+			v.chooseTemplate(r.id)
+			return
+		}
+	}
+}
+
+// showNew asks for a new machine in its dialog, from its first step, the
+// name ready to type over and the resources what suits this computer.
 func (v *vmWindow) showNew() {
-	v.stopSerial()
-	v.consoleOpen = false
-	v.newOpen = true
 	v.createError.SetVisible(false)
 	if v.templateID == "" && len(v.templateRows) > 0 {
 		v.chooseTemplate(v.templateRows[0].id)
 	}
-	v.selectRow()
-	v.paint()
+	r := v.manager.Recommended()
+	v.newMemory.SetValue(float64(gibOf(r.MemoryMiB)))
+	v.newCPUs.SetValue(float64(r.CPUs))
+	v.newDisk.SetValue(float64(r.DiskGiB))
+	v.newMemorySub.SetText(i18n.Tf("Recommended: %d GiB.", gibOf(r.MemoryMiB)))
+	v.newCPUsSub.SetText(i18n.Tf("Recommended: %d.", r.CPUs))
+	v.newDiskSub.SetText(i18n.Tf("Recommended: %d GiB.", r.DiskGiB))
+	v.newStep("what")
+	v.newDialog.Present()
+	v.nameEntry.GrabFocus()
+}
+
+// newStep shows a step of the New machine dialog with its buttons: Cancel
+// and Next on the first, Back and Create on the second.
+func (v *vmWindow) newStep(step string) {
+	resources := step == "resources"
+	v.newSteps.SetVisibleChildName(step)
+	v.newCancel.SetVisible(!resources)
+	v.newNext.SetVisible(!resources)
+	v.newBack.SetVisible(resources)
+	v.createButton.SetVisible(resources)
+	v.createNote.SetVisible(resources)
+	if resources {
+		v.createButton.GrabFocus()
+	} else {
+		v.nameEntry.GrabFocus()
+	}
 }
 
 // chooseTemplate picks the template a new machine starts from, and offers the
@@ -992,13 +1026,20 @@ func (v *vmWindow) chooseTemplate(id string) {
 		return
 	}
 	v.templateID = id
-	for i, r := range v.templateRows {
+	v.filling = true
+	for i := range v.templateRows {
+		r := &v.templateRows[i]
+		r.row.SetVisible(r.os == t.OS)
 		if r.id == id {
-			if row := v.templateList.GetRowAtIndex(int32(i)); row != nil {
-				v.templateList.SelectRow(row)
-			}
+			v.templateList.SelectRow(&r.row)
 		}
 	}
+	for i := range v.systems {
+		if b := &v.systems[i]; b.GetName() == string(t.OS) {
+			b.SetActive(true)
+		}
+	}
+	v.filling = false
 	v.createError.SetVisible(false)
 	if want := t.Name; v.nameEntry.GetText() == "" || v.nameEntry.GetText() == v.templateName {
 		v.nameEntry.SetText(want)
@@ -1016,23 +1057,26 @@ func (v *vmWindow) createMachine() {
 	if id == "" {
 		return
 	}
+	p := vm.Profile{MemoryMiB: int(v.newMemory.GetValueAsInt()) * 1024, CPUs: int(v.newCPUs.GetValueAsInt()),
+		DiskGiB: int(v.newDisk.GetValueAsInt())}
 	v.operationBusy = true
 	v.createError.SetVisible(false)
 	v.createButton.SetSensitive(false)
 	v.createButton.SetLabel(i18n.T("Creating…"))
 	go func() {
-		m, err := v.manager.Create(id, name)
+		m, err := v.manager.Create(id, name, p)
 		views := v.manager.Machines()
 		gtkx.Post(func() {
 			v.operationBusy = false
 			v.createButton.SetSensitive(true)
 			v.createButton.SetLabel(i18n.T("Create"))
 			if err != nil {
+				v.newStep("what") // where the name is
 				v.createError.SetText(i18n.Tf("That name cannot be used: %v", err))
 				v.createError.SetVisible(true)
 				return
 			}
-			v.newOpen = false
+			v.newDialog.SetVisible(false)
 			v.nameEntry.SetText("")
 			v.templateName = ""
 			v.chooseTemplate(v.templateID)
@@ -1745,6 +1789,10 @@ func (v *vmWindow) clicked(b gtk.Button) {
 		v.showNew()
 	case "new_cancel":
 		v.closeNew()
+	case "new_next":
+		v.newStep("resources")
+	case "new_back":
+		v.newStep("what")
 	case "create_machine":
 		v.createMachine()
 	case "accept":
@@ -2170,7 +2218,7 @@ func vmOSText(os vm.OS) string {
 	case vm.OSAndroid:
 		return "Android"
 	case vm.OSCustom:
-		return i18n.T("Custom system")
+		return i18n.T("Custom")
 	}
 	return string(os)
 }
@@ -2307,45 +2355,31 @@ func isoBytesText(n int64) string {
 	return fmt.Sprintf("%.0f KiB", float64(n)/(1<<10))
 }
 
-// vmTemplateName is a template's title: the system it installs. The two
-// Windows templates differ by how they install it, which their own line says.
-func vmTemplateName(t vm.Template) string {
-	switch t.ID {
-	case "windows-dockur", "windows-qemu":
-		return "Windows 11"
-	case "ubuntu":
-		return "Ubuntu"
-	case "fedora":
-		return "Fedora"
-	case "arch":
-		return "Arch Linux"
-	case "freebsd":
-		return "FreeBSD"
-	case "android":
-		return "Android"
-	case "custom":
-		return i18n.T("Custom system")
+// vmWayName is how a template's system runs: the backend, said as what it
+// is. The backends' names are their own.
+func vmWayName(t vm.Template) string {
+	switch t.Backend {
+	case vm.BackendDockur:
+		return i18n.Tf("In a container, with %s", "Dockur")
+	case vm.BackendWaydroid:
+		return i18n.Tf("In a container, with %s", "Waydroid")
+	case vm.BackendQEMU:
+		return i18n.Tf("In a virtual machine, with %s", "QEMU")
 	}
-	return vmOSText(t.OS)
+	return vmBackendText(t.Backend)
 }
 
-// vmTemplateText says what a template gives, in one line.
+// vmTemplateText says what a way of running a system gives, in one line.
 func vmTemplateText(t vm.Template) string {
 	switch t.ID {
 	case "windows-dockur":
-		return i18n.T("Windows 11, installed for you in a container.")
+		return i18n.T("Downloads and installs Windows 11 for you; you reach it over Remote Desktop.")
 	case "windows-qemu":
-		return i18n.T("Windows 11 from your own ISO, with the virtio drivers.")
-	case "ubuntu":
-		return i18n.T("Ubuntu, booted with QEMU from its ISO.")
-	case "fedora":
-		return i18n.T("Fedora, booted with QEMU from its ISO.")
-	case "arch":
-		return i18n.T("Arch Linux, booted with QEMU from its ISO.")
-	case "freebsd":
-		return i18n.T("FreeBSD, booted with QEMU from its ISO.")
+		return i18n.T("Boots your own Windows 11 ISO, with the virtio drivers.")
+	case "linux", "freebsd":
+		return i18n.T("Boots the install image you pick next, with 3D where the guest has a driver.")
 	case "android":
-		return i18n.T("Android in Waydroid, with the host's display and GPU.")
+		return i18n.T("Android beside your apps, with the host's display and GPU.")
 	case "custom":
 		return i18n.T("Your own system: an ISO, a disk or a kernel, on any architecture.")
 	}
@@ -2393,9 +2427,6 @@ type actionErr struct {
 
 // pageOf is the page the window shows, and the machine it is about.
 func (v *vmWindow) pageOf() (string, MachineView) {
-	if v.newOpen {
-		return "new", MachineView{}
-	}
 	name := v.selectedName()
 	switch {
 	case name == "":
@@ -2471,8 +2502,6 @@ func (v *vmWindow) focusMain(page string) {
 	switch page {
 	case "empty":
 		main = &v.emptyNew
-	case "new":
-		main = &v.createButton
 	case string(vm.PagePrereq):
 		if len(v.fixButtons) > 0 {
 			main = &v.fixButtons[0].btn
@@ -2488,10 +2517,6 @@ func (v *vmWindow) focusMain(page string) {
 		main = &v.start
 	case string(vm.PageRunning):
 		main = &v.connect
-	}
-	if page == "new" {
-		v.nameEntry.GrabFocus()
-		return
 	}
 	if main == nil || !main.GetVisible() || !main.GetSensitive() || !main.GrabFocus() {
 		v.win.SetFocus(nil)
@@ -2601,11 +2626,9 @@ func (v *vmWindow) watch(name string, b *gtk.Button, errAt *gtk.Label, web bool)
 	}
 }
 
-// closeNew leaves the new-machine page for the machine chosen before it.
+// closeNew puts the new-machine dialog away, keeping it for the next one.
 func (v *vmWindow) closeNew() {
-	v.newOpen = false
-	v.lastPage = ""
-	v.paintAll(v.views)
+	v.newDialog.SetVisible(false)
 }
 
 // vmCheckHint is what to do about a failed check that inua does not fix

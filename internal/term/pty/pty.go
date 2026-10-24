@@ -1,16 +1,15 @@
 // Package pty starts programs on pseudo-terminals, in pure Go: /dev/ptmx
-// and the terminal ioctls through golang.org/x/sys/unix, no cgo.
+// and the terminal ioctls through golang.org/x/sys/unix, no cgo. What
+// differs between Linux and macOS (opening a terminal, telling whose
+// terminal it is) is in pty_linux.go and pty_darwin.go.
 package pty
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-	"strconv"
-	"strings"
 	"syscall"
 
 	"golang.org/x/sys/unix"
@@ -55,38 +54,7 @@ func Start(argv []string, dir string, env []string, cols, rows int) (*PTY, error
 		master.Close()
 		return nil, fmt.Errorf("pty: %s: %w", argv[0], err)
 	}
-	return &PTY{master: master, cmd: cmd, dev: st.Rdev}, nil
-}
-
-// open makes a master and its slave.
-func open() (master, slave *os.File, err error) {
-	fd, err := unix.Open("/dev/ptmx", unix.O_RDWR|unix.O_NOCTTY|unix.O_CLOEXEC, 0)
-	if err != nil {
-		return nil, nil, fmt.Errorf("pty: /dev/ptmx: %w", err)
-	}
-	if err := unix.IoctlSetPointerInt(fd, unix.TIOCSPTLCK, 0); err != nil { // unlockpt
-		unix.Close(fd)
-		return nil, nil, fmt.Errorf("pty: unlock: %w", err)
-	}
-	n, err := unix.IoctlGetUint32(fd, unix.TIOCGPTN) // ptsname
-	if err != nil {
-		unix.Close(fd)
-		return nil, nil, fmt.Errorf("pty: number: %w", err)
-	}
-	name := "/dev/pts/" + strconv.Itoa(int(n))
-	sfd, err := unix.Open(name, unix.O_RDWR|unix.O_NOCTTY|unix.O_CLOEXEC, 0)
-	if err != nil {
-		unix.Close(fd)
-		return nil, nil, fmt.Errorf("pty: %s: %w", name, err)
-	}
-	// Non-blocking, the master goes through Go's poller: Close then ends
-	// a Read waiting on it, and the program gets its SIGHUP at once.
-	if err := unix.SetNonblock(fd, true); err != nil {
-		unix.Close(fd)
-		unix.Close(sfd)
-		return nil, nil, fmt.Errorf("pty: %w", err)
-	}
-	return os.NewFile(uintptr(fd), "/dev/ptmx"), os.NewFile(uintptr(sfd), name), nil
+	return &PTY{master: master, cmd: cmd, dev: uint64(st.Rdev)}, nil
 }
 
 func setSize(f *os.File, cols, rows int) error {
@@ -114,33 +82,6 @@ func (p *PTY) Write(b []byte) (int, error) { return p.master.Write(b) }
 // Resize changes the terminal's size; the program gets SIGWINCH.
 func (p *PTY) Resize(cols, rows int) error { return setSize(p.master, cols, rows) }
 
-// Controls says the terminal is process pid's controlling terminal: pid
-// runs in the terminal, not merely started from it (a daemon that left
-// it has none).
-func (p *PTY) Controls(pid int) bool {
-	b, err := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/stat")
-	if err != nil {
-		return false
-	}
-	// pid (comm) state ppid pgrp session tty_nr …; comm may hold spaces.
-	i := bytes.LastIndexByte(b, ')')
-	if i < 0 {
-		return false
-	}
-	f := strings.Fields(string(b[i+1:]))
-	if len(f) < 5 {
-		return false
-	}
-	tty, err := strconv.ParseUint(f[4], 10, 32)
-	if err != nil || tty == 0 {
-		return false
-	}
-	// tty_nr is the kernel's encoding: minor's low byte, the major, then
-	// the rest of the minor.
-	major, minor := uint32(tty>>8&0xfff), uint32(tty&0xff|tty>>12&0xfff00)
-	return major == unix.Major(p.dev) && minor == unix.Minor(p.dev)
-}
-
 // Pid is the program's process.
 func (p *PTY) Pid() int { return p.cmd.Process.Pid }
 
@@ -153,7 +94,7 @@ func (p *PTY) Foreground() (int, error) {
 // Echoing reports whether the terminal echoes what is typed; off while a
 // program reads a password.
 func (p *PTY) Echoing() (bool, error) {
-	t, err := unix.IoctlGetTermios(int(p.master.Fd()), unix.TCGETS)
+	t, err := unix.IoctlGetTermios(int(p.master.Fd()), getTermios)
 	if err != nil {
 		return false, err
 	}

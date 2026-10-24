@@ -567,9 +567,17 @@ func (s *vmService) RefreshAll() []MachineView {
 // Templates are what a new machine can be made from.
 func (s *vmService) Templates() []vm.Template { return vm.Templates() }
 
-// Create writes a new machine from a template. It makes nothing and starts
-// nothing: which page the machine shows follows from what is on disk.
-func (s *vmService) Create(templateID, name string) (vm.Machine, error) {
+// Recommended is what suits this computer, for a new machine.
+func (s *vmService) Recommended() vm.Profile {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return vm.RecommendProfile(s.host)
+}
+
+// Create writes a new machine from a template, with the resources asked for
+// (below a minimum, the template's own). It makes nothing and starts nothing:
+// which page the machine shows follows from what is on disk.
+func (s *vmService) Create(templateID, name string, p vm.Profile) (vm.Machine, error) {
 	t, ok := vm.TemplateByID(templateID)
 	if !ok {
 		return vm.Machine{}, fmt.Errorf("there is no %q template", templateID)
@@ -582,7 +590,7 @@ func (s *vmService) Create(templateID, name string) (vm.Machine, error) {
 	if err != nil {
 		return vm.Machine{}, err
 	}
-	m := t.Machine(unique, vm.RecommendProfile(s.host))
+	m := t.Machine(unique, p)
 	if err := s.store.Save(m); err != nil {
 		return vm.Machine{}, err
 	}

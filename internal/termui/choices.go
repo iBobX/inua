@@ -10,7 +10,6 @@ import (
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
-	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/term/scheme"
 	"github.com/lyricat/inua/internal/term/settings"
 )
@@ -51,7 +50,7 @@ func themeColors(c *appui.Ctx, name string) map[string]string {
 		cfg = config.Default()
 	}
 	name = cmp.Or(name, cfg.Style.Theme, "yoru")
-	return shell.ThemeColors(cfg.ThemeCSS(name, c.ReadUI))
+	return config.ThemeColors(cfg.ThemeCSS(name, c.ReadUI))
 }
 
 // schemeChoices are the terminals' colour schemes, after the theme's.

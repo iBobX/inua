@@ -14,8 +14,8 @@ import (
 	"github.com/lyricat/inua/internal/term/host"
 )
 
-// The commands inua-term takes besides the window and the host: report,
-// agents, integration (and serve, in serve.go).
+// The commands inua-term takes besides the window: report, agents,
+// integration. The host and serve are inua-termd's.
 
 // report tells the host what the agent in this pane does. Run from an
 // agent's hooks (--hook claude, --hook codex), it reads what the agent

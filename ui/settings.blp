@@ -538,126 +538,139 @@ ApplicationWindow settings {
 
                       Label {
                         styles ["title"]
-                        label:  _("Draw the wallpaper");
+                        label:  _("inua draws the wallpaper");
                         xalign: 0;
                       }
                       Label {
                         styles ["sub"]
-                        label:  _("Off leaves the background to another program");
+                        label:  _("A new picture each day, drawn for your theme: a sunset, the cosmos, a cat watching the moon …");
                         xalign: 0;
                         wrap: true;
                       }
                     }
 
-                    Switch bg_enable {
-                      name: "bg_enable";
+                    Button bg_another {
+                      styles ["plain"]
+                      name: "bg_another";
+                      valign: center;
+                      icon-name: "media-playlist-shuffle-symbolic";
+                      tooltip-text:  _("Draw another");
+                    }
+
+                    Switch bg_generate {
+                      name: "bg_generate";
                       valign: center;
                     }
                   }
 
-                  Separator {}
-
-                  Box {
-                    styles ["field"]
+                  // The image and how it shows, hidden while inua draws.
+                  Box bg_own {
                     orientation: vertical;
-                    spacing: 6;
 
-                    Label {
-                      styles ["label"]
-                      label:  _("Image");
-                      xalign: 0;
-                    }
+                    Separator {}
 
                     Box {
-                      spacing: 8;
-
-                      Entry bg_image {
-                        name: "bg_image";
-                        hexpand: true;
-                        placeholder-text:  _("none: a fine texture");
-                      }
-
-                      Button bg_choose {
-                        styles ["outlined"]
-                        name: "bg_choose";
-                        label:  _("Choose…");
-                      }
-
-                      Button bg_clear {
-                        styles ["plain"]
-                        name: "bg_clear";
-                        icon-name: "edit-clear-symbolic";
-                        tooltip-text:  _("No image");
-                      }
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
+                      styles ["field"]
                       orientation: vertical;
-                      hexpand: true;
-                      valign: center;
+                      spacing: 6;
 
                       Label {
-                        styles ["title"]
-                        label:  _("Fit");
+                        styles ["label"]
+                        label:  _("Image");
                         xalign: 0;
                       }
+
+                      Box {
+                        spacing: 8;
+
+                        Entry bg_image {
+                          name: "bg_image";
+                          hexpand: true;
+                          placeholder-text:  _("none: a fine texture");
+                        }
+
+                        Button bg_choose {
+                          styles ["outlined"]
+                          name: "bg_choose";
+                          label:  _("Choose…");
+                        }
+
+                        Button bg_clear {
+                          styles ["plain"]
+                          name: "bg_clear";
+                          icon-name: "edit-clear-symbolic";
+                          tooltip-text:  _("No image");
+                        }
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("Fit");
+                          xalign: 0;
+                        }
+                        Label {
+                          styles ["sub"]
+                          label:  _("How the picture fills each monitor");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      DropDown bg_fit {
+                        name: "bg_fit";
+                        valign: center;
+
+                        model: StringList {
+                          strings [
+                            _("Cover: fill, cropping"),
+                            _("Contain: show it all"),
+                            _("Tile: repeat"),
+                            _("Center: actual size"),
+                          ]
+                        };
+                      }
+                    }
+
+                    Separator {}
+
+                    Box {
+                      styles ["field"]
+                      orientation: vertical;
+                      spacing: 6;
+
+                      Label {
+                        styles ["label"]
+                        label:  _("Colour");
+                        xalign: 0;
+                      }
+
+                      Entry bg_color {
+                        name: "bg_color";
+                        styles ["mono-entry"]
+                        halign: start;
+                        width-chars: 10;
+                        max-length: 7;
+                        placeholder-text:  _("theme");
+                      }
+
                       Label {
                         styles ["sub"]
-                        label:  _("How the picture fills each monitor");
+                        label:  _("#rrggbb, shown around the image. Empty: the theme's ground");
                         xalign: 0;
                         wrap: true;
                       }
-                    }
-
-                    DropDown bg_fit {
-                      name: "bg_fit";
-                      valign: center;
-
-                      model: StringList {
-                        strings [
-                          _("Cover: fill, cropping"),
-                          _("Contain: show it all"),
-                          _("Tile: repeat"),
-                          _("Center: actual size"),
-                        ]
-                      };
-                    }
-                  }
-
-                  Separator {}
-
-                  Box {
-                    styles ["field"]
-                    orientation: vertical;
-                    spacing: 6;
-
-                    Label {
-                      styles ["label"]
-                      label:  _("Colour");
-                      xalign: 0;
-                    }
-
-                    Entry bg_color {
-                      name: "bg_color";
-                      styles ["mono-entry"]
-                      halign: start;
-                      width-chars: 10;
-                      max-length: 7;
-                      placeholder-text:  _("theme");
-                    }
-
-                    Label {
-                      styles ["sub"]
-                      label:  _("#rrggbb, shown around the image. Empty: the theme's ground");
-                      xalign: 0;
-                      wrap: true;
                     }
                   }
                 }

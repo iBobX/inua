@@ -228,10 +228,10 @@ func (h *Host) handleSessions(c *client, m Message) bool {
 // none.
 func (h *Host) open(dir, name string) (int, error) {
 	if dir == "" {
-		return 0, errors.New("no folder")
+		return 0, errors.New(i18n.T("No folder given."))
 	}
 	if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
-		return 0, fmt.Errorf("%s is not a folder", dir)
+		return 0, errors.New(i18n.Tf("%s is not a folder.", dir))
 	}
 	h.mu.Lock()
 	w := h.m.ByDir(dir)

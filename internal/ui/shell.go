@@ -322,9 +322,9 @@ func Run(opts Options) int {
 
 	go func() {
 		log.Printf("ipc: serving on %s", socketPath)
-		err := ipc.ServeListener(context.Background(), ln, socketPath, func(_ context.Context, req ipc.Request) ipc.Response {
+		err := ipc.ServeListener(context.Background(), ln, socketPath, func(ctx context.Context, req ipc.Request) ipc.Response {
 			if req.Op == "call" && req.Target == "password" {
-				return s.askPassword(req) // waits for the user, off the main loop
+				return s.askPassword(ctx, req) // waits for the user, off the main loop
 			}
 			resp, err := gtkx.Call(2*time.Second, func() ipc.Response { return s.request(req) })
 			if err != nil {
@@ -473,6 +473,9 @@ func (s *shellUI) bindHandlers() {
 	s.onMonitorsChanged = func(_ uintptr, _, removed, added uint32, _ uintptr) {
 		log.Printf("monitors: %d removed, %d added", removed, added)
 		s.syncBars()
+		if s.cfg.Background.Generate {
+			s.loadWallpaper() // drawn for the largest monitor, which may be another
+		}
 	}
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
 		if b := s.barOf(c.GetWidget()); b != nil {

@@ -330,7 +330,7 @@ func (c *Ctx) loadStyle() {
 		theme = t.theme() // an app with a look of its own
 	}
 	themeCSS := cfg.ThemeCSS(theme, c.ReadUI)
-	c.Colors = shell.ThemeColors(themeCSS)
+	c.Colors = config.ThemeColors(themeCSS)
 	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
 	if p := cfg.CSSPath(); p != "" {
 		if b, err := os.ReadFile(p); err == nil {

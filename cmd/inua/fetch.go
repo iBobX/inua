@@ -72,7 +72,7 @@ func cmdFetch(args []string) error {
 	}
 	var ink shell.CardInk
 	if !*plain && os.Getenv("NO_COLOR") == "" && isTerminal(os.Stdout) {
-		ink = shell.ANSIInk(shell.ThemeColors(css))
+		ink = shell.ANSIInk(config.ThemeColors(css))
 	}
 	fmt.Print(card.Terminal(ink, *ground))
 	return nil

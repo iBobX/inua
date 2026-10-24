@@ -146,6 +146,28 @@ func (c *Client) call(m Message) (Message, error) {
 	return r, nil
 }
 
+// AskSecret asks the web pages open what gpg asks (secrets.go), and
+// waits: the answer (AnswerOK with the passphrase, AnswerNo or
+// AnswerCancel), or "" when no page is open to ask. Closing the client
+// takes the question back.
+func (c *Client) AskSecret(s Secret) (answer, pin string, err error) {
+	r, err := c.call(Message{Type: MsgSecret, Secret: &s})
+	switch {
+	case r.Error == ErrNoPage:
+		return "", "", nil
+	case r.Error == ErrCancelled:
+		return AnswerCancel, "", nil
+	case r.Error == ErrNotOK:
+		return AnswerNo, "", nil
+	case err != nil:
+		return "", "", err
+	}
+	if r.Pin != nil {
+		pin = *r.Pin
+	}
+	return AnswerOK, pin, nil
+}
+
 // Create starts argv in dir on a new pane of cols × rows.
 func (c *Client) Create(argv []string, dir string, env []string, cols, rows int) (int, error) {
 	r, err := c.call(Message{Type: MsgCreate, Argv: argv, Dir: dir, Env: env, Cols: cols, Rows: rows})

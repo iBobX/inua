@@ -159,6 +159,9 @@ type Background struct {
 	// Color shows around and behind the image: "#rrggbb", or empty for the
 	// theme's ground.
 	Color string `toml:"color"`
+	// Generate lets inua draw the wallpaper for the theme, another picture
+	// each day (internal/wallgen), in place of Image.
+	Generate bool `toml:"generate"`
 }
 
 // Shortcut is a keyboard shortcut set in inua's settings window. Written
@@ -710,7 +713,7 @@ func Default() Config {
 			Screenshot: "inua call screenshot area",
 		},
 		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", AppIcons: "system", EdgeGaps: true, TextScale: 100},
-		Background: Background{Enable: true, Fit: "cover"},
+		Background: Background{Enable: true, Fit: "cover", Generate: true},
 		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},

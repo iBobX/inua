@@ -14,7 +14,8 @@ inua-term agents [--json]        the agents in every pane
 inua-term report …               an agent telling inua-term what it does (below)
 inua-term integration remove claude|codex|all
                                  take out the hooks an earlier inua-term added
-inua-term serve [--tailscale]    the terminals in a phone's browser (below)
+inua-termd                       the terminal host (below; the window starts it)
+inua-termd serve [--tailscale]   the terminals in a phone's browser (below)
 ```
 
 It is in the app drawer, under Tools. It can be the desktop's terminal:
@@ -51,8 +52,10 @@ choice is in the settings after.
 
 ## How it works
 
-The terminals belong to a **host**, `inua-term --host`, which the window
-starts when none runs and which ends with its last pane. Closing the
+The terminals belong to a **host**, `inua-termd`, which the window
+starts when none runs and which ends with its last pane. It is a program
+of its own, with no GTK and no desktop needed: on a computer without
+one, `inua-termd serve` still shows its terminals to a phone. Closing the
 window, or the window crashing, leaves every program running; opening
 it again finds them, their recent output replayed. The window is a client
 of the host over `$XDG_RUNTIME_DIR/inua/term.sock` (this user only); the
@@ -263,21 +266,21 @@ once; the icons and the text size follow inua's `config.toml`.
 
 The **Web Terminal** shows the terminals in a browser, a phone's over
 Tailscale. Turn it on in the settings (Ctrl+, → Web Terminal): it runs
-`inua-term serve` in a user service of its own (`inua-term-web.service`)
+`inua-termd serve` in a user service of its own (`inua-term-web.service`)
 and starts again at login while on; *Where* puts it on this computer
 only or on its Tailscale address, and the section gives its link to copy,
 or a new one. By hand:
 
 ```
-inua-term serve                  on this computer only (127.0.0.1:7681)
-inua-term serve --tailscale      on this computer's Tailscale address
-inua-term serve --addr HOST:PORT on another address
-inua-term serve --new-token      a new token: links with the old one stop working
+inua-termd serve                  on this computer only (127.0.0.1:7681)
+inua-termd serve --tailscale      on this computer's Tailscale address
+inua-termd serve --addr HOST:PORT on another address
+inua-termd serve --new-token      a new token: links with the old one stop working
 ```
 
 It prints the page's link, with its token; every request carries it,
-and it is kept in the keyring (inua-keyring), so the link stays the
-same. The page is a client of the host, as the window is, and starts the
+and it is kept in the keyring (inua-keyring; the login keychain on a
+Mac), so the link stays the same. The page is a client of the host, as the window is, and starts the
 host when none runs. Open the link on the phone, or add it to the home
 screen: it is a web app in the theme's colours.
 
@@ -285,6 +288,16 @@ screen: it is a web app in the theme's colours.
   with where it runs; **Workspaces**: the workspaces, then a workspace's
   sessions and their panes; **Overview**: this computer, the agents in
   numbers, the connection, and the settings.
+- **New ones**: + at the head of Workspaces makes a workspace for a
+  folder (typed, `~/` for the home folder; one there already is shown),
+  and in a workspace a new session; + beside a session's panes starts a
+  shell beside the one open; each opens its shell. A session's pencil
+  renames it.
+- **gpg's passphrase** (a deploy's, `pass`, a signed commit): while the
+  page is open, what inua-pinentry asks on the desktop comes up on it
+  too; the first answer, here or there, goes to gpg (docs/features.md).
+  The page must be open: a phone's browser in the background is not
+  woken.
 - **A pane** fills the screen at the phone's size: columns at the text
   size (10 px, about 62 columns on a phone held upright; pinch to change
   it), rows to the keyboard. At its foot, the session's panes with a
@@ -292,12 +305,19 @@ screen: it is a web app in the theme's colours.
   Page Up and Down, the arrows, Shift+Enter, Shift+Tab). The keyboard
   comes up with its button only; the button beside it opens a panel of
   more keys in the keyboard's place (Ctrl and Alt combinations, Home,
-  End, symbols, F1–F12) and, in its Info tab, what the pane's connection
-  says.
+  End, symbols, F1–F12); its Snippets tab has replies typed often ("Sure,
+  please do it.", "Wait, let me think." …) and your own, added there and
+  kept in the browser: a snippet's key types it, ⏎ beside it sends it.
+  Its Info tab says what the pane's connection says.
 - Scrolling goes as a phone's lists do: the finger moves the history by
   the pixel, a swipe glides on, and the ends stretch. A program on the
   alternate screen (Claude Code's fullscreen mode, vim, less) scrolls
   itself, and gets the wheel.
+- **Selecting**: a finger held still selects the word under it, and
+  moving it, still held, takes the selection on. Lifted, a drop under
+  each end of the selection moves that end when dragged, and a bar beside
+  it offers Copy and Select all. A tap lets the selection go. The
+  keyboard stays as it was.
 - The theme, the terminals' colours, the font, the cursor and the key row
   follow inua-term's settings, or the device's own (Overview → Settings),
   kept in its browser.
@@ -314,6 +334,27 @@ The page asks nothing of the internet: xterm.js and the fonts come with
 inua (`scripts/term-web.sh`). Over plain `http://`, an iPhone adds it
 to the home screen as an app; Android installs one only over HTTPS
 (`tailscale serve` can give the address one).
+
+## On macOS
+
+The host runs on a Mac too, for the page: `inua-termd serve` (with
+`--tailscale` for a phone on the tailnet) starts it when none runs, and
+the phone or a browser shows its terminals. The window, inua-term, is
+GTK on Linux and is not on a Mac. From source, on the Mac:
+
+```
+scripts/libghostty.sh                  bin/libinua-vt.dylib (Zig 0.16)
+go build -o bin/inua-termd ./cmd/inua-termd
+bin/inua-termd serve --tailscale
+```
+
+`ZIG_TARGET=aarch64-macos` (or `x86_64-macos`) builds the engine on
+Linux as well. The page's token is kept in the login keychain; an agent
+that needs you posts a notification of the Mac's own (through
+osascript), which opens nothing when clicked. The computer's CPU and
+memory are not read yet: the page leaves them out. There is no service
+to start it at login yet: it runs while its terminal, or `nohup`, keeps
+it.
 
 ## Not yet
 

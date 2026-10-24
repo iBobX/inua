@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
@@ -21,15 +22,19 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 )
 
-// window is Remote Desktop's window: the index of This computer and the
-// machines, and the chosen one's page.
+// window is Remote Desktop's window: a library of This computer and the
+// machines, the chosen one's page in a panel beside it, and a dialog to add
+// a machine.
 type window struct {
 	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
-	sideSharing, sideFind, sideAdd                          gtk.Button
-	sideSharingSub                                          gtk.Label
-	sideMachines                                            gtk.Box
+	sideFind, sideAdd                                       gtk.Button
+	sideThis, sideMachines                                  gtk.FlowBox
+	sideNone                                                gtk.Label
+	thisTile                                                appui.LibraryTile
+	panelMark                                               gtk.Box
+	panelTitle, panelSub                                    gtk.Label
 	sharingError, pendingError, clientsError                gtk.Label // each error where it happened
 	machineError, streamError                               gtk.Label
 	pages                                                   gtk.Stack
@@ -38,7 +43,7 @@ type window struct {
 	sharingVirtual                                          gtk.DropDown
 	sharingNeed, sharingPendingSection, sharingPending      gtk.Box
 	sharingClients                                          gtk.Box
-	machineTitle, machineState, machineAddr                 gtk.Label
+	machineState                                            gtk.Label
 	machinePinText, machinePin                              gtk.Label
 	machineForget, machineQuit, machinePair, machineConnect gtk.Button
 	machinePinBox                                           gtk.Box
@@ -46,8 +51,9 @@ type window struct {
 	streamBitrate                                           gtk.SpinButton
 	streamHostAudio                                         gtk.Switch
 	streamCodecNote                                         gtk.Label
+	addDialog                                               gtk.Window
 	addAddr                                                 gtk.Entry
-	addOK                                                   gtk.Button
+	addOK, addCancel                                        gtk.Button
 	addError                                                gtk.Label
 
 	settings *remotedesk.Settings
@@ -57,7 +63,7 @@ type window struct {
 	idErr    string // why there is no identity: every machine's page says it
 
 	found    []remotedesk.Candidate
-	selected string // "sharing", "add", or a machine's address
+	selected string // "sharing", or a machine's address
 	info     map[string]machineInfo
 	errs     map[string]string  // what went wrong with each machine, by address
 	pairing  context.CancelFunc // while pairing with the machine selected
@@ -66,11 +72,10 @@ type window struct {
 	cancel   context.CancelFunc
 
 	// Rows made in Go, by their button.
-	machineRows map[uintptr]string            // → address
 	pendingRows map[uintptr]pendingRow        // → device waiting, and its PIN entry
 	clientRows  map[uintptr]remotedesk.Client // → paired device
-	sideButtons map[string]*gtk.Button        // by address, to mark the selected
 	loading     bool                          // filling the stream settings: not a change
+	marking     bool                          // selecting the chosen tile: not the user's choice
 
 	onClick    func(gtk.Button)
 	onSwitch   func(gtk.Switch, bool) bool
@@ -79,6 +84,8 @@ type window struct {
 	onVirtual  func(uintptr, uintptr, uintptr)
 	onClose    func(gtk.Window) bool
 	onAddEnter func(gtk.Entry)
+	onTile     func(gtk.FlowBox)
+	onAddKey   func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 }
 
 type pendingRow struct {
@@ -97,20 +104,20 @@ func openWindow(c *appui.Ctx) *window {
 	w := &window{
 		c: c, win: &gtk.ApplicationWindow{}, settings: remotedesk.LoadSettings(), sharing: remotedesk.NewSharing(),
 		info: map[string]machineInfo{}, errs: map[string]string{}, streams: map[string]*stream{}, selected: "sharing",
-		machineRows: map[uintptr]string{}, pendingRows: map[uintptr]pendingRow{}, clientRows: map[uintptr]remotedesk.Client{},
-		sideButtons: map[string]*gtk.Button{},
+		pendingRows: map[uintptr]pendingRow{}, clientRows: map[uintptr]remotedesk.Client{},
 	}
 	b := c.Load("remote.ui")
 	b.Get("remote", w.win)
 	for name, ptr := range map[string]gobject.Ptr{
-		"side_sharing": &w.sideSharing, "side_find": &w.sideFind, "side_add": &w.sideAdd,
-		"side_sharing_sub": &w.sideSharingSub, "side_machines": &w.sideMachines, "pages": &w.pages,
+		"side_find": &w.sideFind, "side_add": &w.sideAdd, "side_this": &w.sideThis, "side_none": &w.sideNone,
+		"side_machines": &w.sideMachines, "pages": &w.pages, "panel_mark": &w.panelMark,
+		"panel_title": &w.panelTitle, "panel_sub": &w.panelSub, "add_dialog": &w.addDialog, "add_cancel": &w.addCancel,
 		"sharing_error": &w.sharingError, "pending_error": &w.pendingError, "clients_error": &w.clientsError,
 		"machine_error": &w.machineError, "stream_error": &w.streamError,
 		"sharing_desc": &w.sharingDesc, "sharing_need_text": &w.sharingNeedText, "sharing_need_fix": &w.sharingNeedFix,
 		"sharing_switch": &w.sharingSwitch, "sharing_need": &w.sharingNeed, "sharing_pending_section": &w.sharingPendingSection,
 		"sharing_pending": &w.sharingPending, "sharing_clients": &w.sharingClients, "sharing_virtual": &w.sharingVirtual,
-		"machine_title": &w.machineTitle, "machine_state": &w.machineState, "machine_addr": &w.machineAddr,
+		"machine_state":    &w.machineState,
 		"machine_pin_text": &w.machinePinText, "machine_pin": &w.machinePin, "machine_forget": &w.machineForget,
 		"machine_quit": &w.machineQuit, "machine_pair": &w.machinePair, "machine_connect": &w.machineConnect,
 		"machine_pin_box": &w.machinePinBox, "stream_size": &w.streamSize, "stream_fps": &w.streamFPS,
@@ -132,8 +139,8 @@ func openWindow(c *appui.Ctx) *window {
 	}
 
 	w.onClick = func(b gtk.Button) { w.clicked(b) }
-	for _, btn := range []*gtk.Button{&w.sideSharing, &w.sideFind, &w.sideAdd, &w.machineForget, &w.machineQuit,
-		&w.machinePair, &w.machineConnect, &w.addOK} {
+	for _, btn := range []*gtk.Button{&w.sideFind, &w.sideAdd, &w.machineForget, &w.machineQuit,
+		&w.machinePair, &w.machineConnect, &w.addOK, &w.addCancel} {
 		btn.ConnectClicked(&w.onClick)
 	}
 	w.onSwitch = func(s gtk.Switch, on bool) bool { return w.switched(s, on) }
@@ -149,6 +156,29 @@ func openWindow(c *appui.Ctx) *window {
 	gtkx.ConnectNotify(&w.sharingVirtual, "selected", &w.onVirtual)
 	w.onAddEnter = func(gtk.Entry) { w.add() }
 	w.addAddr.ConnectActivate(&w.onAddEnter)
+	w.addDialog.SetTransientFor(&w.win.Window)
+	w.addDialog.SetDestroyWithParent(true)
+	w.onAddKey = func(_ gtk.EventControllerKey, keyval, _ uint32, _ gdk.ModifierType) bool {
+		if keyval == uint32(gdk.KEY_Escape) {
+			w.addDialog.SetVisible(false)
+			return true
+		}
+		return false
+	}
+	addKeys := gtk.NewEventControllerKey()
+	addKeys.ConnectKeyPressed(&w.onAddKey)
+	w.addDialog.AddController(&addKeys.EventController)
+
+	host, _ := os.Hostname()
+	w.thisTile = appui.NewLibraryTile("sharing", "remote-sharing-symbolic", cmpOr(host, i18n.T("This computer")), "", true)
+	w.sideThis.Append(&w.thisTile.Child.Widget)
+	w.onTile = func(box gtk.FlowBox) {
+		if name := appui.SelectedTile(&box); name != "" && !w.marking {
+			w.choose(name)
+		}
+	}
+	w.sideThis.ConnectSelectedChildrenChanged(&w.onTile)
+	w.sideMachines.ConnectSelectedChildrenChanged(&w.onTile)
 	w.onClose = func(gtk.Window) bool {
 		w.closed = true
 		w.cancel()
@@ -215,6 +245,43 @@ func (w *window) background(f func() error, done func(error)) {
 	}()
 }
 
+// refreshThis keeps This computer's tile current while another page shows:
+// whether it shares, and nothing more.
+func (w *window) refreshThis(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	st := w.sharing.Status(ctx)
+	gtkx.Post(func() {
+		if !w.closed {
+			w.showThis(st)
+		}
+	})
+}
+
+// showThis says on This computer's tile, and in the panel's head while its
+// page shows, whether it shares.
+func (w *window) showThis(st remotedesk.Status) {
+	state := i18n.T("Not sharing")
+	switch {
+	case st.Running:
+		state = i18n.T("Sharing its desktop")
+	case w.sharing.On():
+		state = i18n.T("Starting…")
+	}
+	w.thisTile.Sub.SetText(state)
+	w.thisTile.SetOn(st.Running)
+	if w.selected == "sharing" {
+		w.showThisHead()
+	}
+}
+
+// showThisHead puts This computer in the panel's head, as its tile says it.
+func (w *window) showThisHead() {
+	w.panelTitle.SetText(w.thisTile.Title.GetText())
+	w.panelSub.SetText(w.thisTile.Sub.GetText())
+	setClass(&w.panelMark.Widget, "on", w.thisTile.Mark.HasCssClass("on"))
+}
+
 // watch keeps the sharing page current (devices waiting to pair come and
 // go) and the machine selected's state.
 func (w *window) watch(ctx context.Context) {
@@ -225,7 +292,8 @@ func (w *window) watch(ctx context.Context) {
 		gtkx.Call(time.Second, func() bool { page = w.selected; return true })
 		if page == "sharing" {
 			w.refreshSharing(ctx)
-		} else if page != "add" {
+		} else {
+			w.refreshThis(ctx)
 			w.ask(ctx, page)
 		}
 		select {
@@ -236,42 +304,20 @@ func (w *window) watch(ctx context.Context) {
 	}
 }
 
-// --- the index ---
+// --- the library ---
 
-// fillSide lists the machines: the saved ones, then those found and not
-// saved.
+// fillSide makes the machines' tiles: the saved ones, then those found and
+// not saved, each marked while it is connected.
 func (w *window) fillSide() {
-	gtkx.Clear(&w.sideMachines)
-	w.machineRows = map[uintptr]string{}
-	w.sideButtons = map[string]*gtk.Button{}
+	w.sideMachines.RemoveAll()
 	saved := map[string]bool{}
-	row := func(name, sub, addr string) {
-		b := gtk.NewButton()
-		b.AddCssClass("index-item")
-		b.SetName("machine")
-		box := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
-		img := gtk.NewImageFromIconName("remote-machine-symbolic")
-		img.AddCssClass("index-icon")
-		gtkx.Append(box, &img.Widget)
-		text := gtk.NewBox(gtk.OrientationVerticalValue, 0)
-		text.SetHexpand(true)
-		t := gtk.NewLabel(name)
-		t.AddCssClass("title")
-		t.SetXalign(0)
-		t.SetEllipsize(3) // end
-		gtkx.Append(text, &t.Widget)
-		s := gtk.NewLabel(sub)
-		s.AddCssClass("sub")
-		s.SetXalign(0)
-		s.SetEllipsize(3)
-		gtkx.Append(text, &s.Widget)
-		gtkx.Append(box, &text.Widget)
-		b.SetChild(&box.Widget)
-		b.ConnectClicked(&w.onClick)
-		w.machineRows[b.GoPointer()] = addr
-		w.sideButtons[addr] = b
-		gtkx.Append(&w.sideMachines, &b.Widget)
+	tile := func(name, sub, addr string) {
+		t := appui.NewLibraryTile(addr, "remote-machine-symbolic", name, sub, true)
+		_, on := w.streams[addr]
+		t.SetOn(on)
+		w.sideMachines.Append(&t.Child.Widget)
 	}
+	n := 0
 	for _, m := range w.settings.Machines {
 		saved[m.Addr] = true
 		if m.ID != "" {
@@ -284,7 +330,8 @@ func (w *window) fillSide() {
 		if _, on := w.streams[m.Addr]; on {
 			sub = i18n.T("Connected")
 		}
-		row(remotedesk.Label(m), sub, m.Addr)
+		tile(remotedesk.Label(m), sub, m.Addr)
+		n++
 	}
 	for _, f := range w.found {
 		if saved[f.Addr] || f.ID != "" && saved["id:"+f.ID] {
@@ -294,17 +341,41 @@ func (w *window) fillSide() {
 		if f.Tailnet {
 			sub = i18n.T("Found on the tailnet")
 		}
-		row(f.Name, sub, f.Addr)
+		tile(f.Name, sub, f.Addr)
+		n++
 	}
+	w.sideMachines.SetVisible(n > 0)
+	w.sideNone.SetVisible(n == 0)
 	w.markSide()
 }
 
+// markSide selects the chosen one's tile, in whichever group holds it.
 func (w *window) markSide() {
-	setClass(&w.sideSharing.Widget, "selected", w.selected == "sharing")
-	setClass(&w.sideAdd.Widget, "selected", w.selected == "add")
-	for addr, b := range w.sideButtons {
-		setClass(&b.Widget, "selected", addr == w.selected)
+	w.marking = true
+	defer func() { w.marking = false }()
+	w.sideThis.UnselectAll()
+	w.sideMachines.UnselectAll()
+	if w.selected == "sharing" {
+		w.sideThis.SelectChild(&w.thisTile.Child)
+		return
 	}
+	for i := int32(0); ; i++ {
+		t := w.sideMachines.GetChildAtIndex(i)
+		if t == nil {
+			return
+		}
+		if t.GetName() == w.selected {
+			w.sideMachines.SelectChild(t)
+			return
+		}
+	}
+}
+
+// showAdd asks for a machine's address in the add dialog.
+func (w *window) showAdd() {
+	say(&w.addError, "")
+	w.addDialog.Present()
+	w.addAddr.GrabFocus()
 }
 
 // find looks for machines sharing their desktop, on the local network
@@ -327,7 +398,7 @@ func (w *window) find() {
 	})
 }
 
-// choose shows a page: "sharing", "add", or a machine's, by its address.
+// choose shows a page: "sharing", or a machine's, by its address.
 func (w *window) choose(page string) {
 	if w.pairing != nil && page != w.selected {
 		w.pairing()
@@ -337,12 +408,9 @@ func (w *window) choose(page string) {
 	switch page {
 	case "sharing":
 		w.pages.SetVisibleChildName("sharing")
+		w.showThisHead()
 		w.showSharing(remotedesk.Status{}, nil, nil, nil, false)
 		go w.refreshSharing(context.Background())
-	case "add":
-		w.pages.SetVisibleChildName("add")
-		w.addError.SetText("")
-		w.addAddr.GrabFocus()
 	default:
 		w.pages.SetVisibleChildName("machine")
 		w.machinePinBox.SetVisible(false)
@@ -354,16 +422,12 @@ func (w *window) choose(page string) {
 
 func (w *window) clicked(b gtk.Button) {
 	switch b.GetName() {
-	case "side_sharing":
-		w.choose("sharing")
 	case "side_add":
-		w.choose("add")
+		w.showAdd()
+	case "add_cancel":
+		w.addDialog.SetVisible(false)
 	case "side_find":
 		w.find()
-	case "machine":
-		if addr, ok := w.machineRows[b.GoPointer()]; ok {
-			w.choose(addr)
-		}
 	case "machine_connect":
 		w.connect()
 	case "machine_pair":
@@ -484,15 +548,15 @@ func (w *window) refreshSharing(ctx context.Context) {
 func (w *window) showSharing(st remotedesk.Status, pending []remotedesk.Pairing, clients []remotedesk.Client, twice []string, known bool) {
 	on := w.sharing.On()
 	name, _ := os.Hostname()
+	if known {
+		w.showThis(st)
+	}
 	switch {
 	case st.Running:
-		w.sideSharingSub.SetText(i18n.T("Shared"))
 		w.sharingDesc.SetText(i18n.Tf("Other devices see this computer as %s, on this network and the tailnet. A device pairs once, with a PIN typed here.", name))
 	case on:
-		w.sideSharingSub.SetText(i18n.T("Starting…"))
 		w.sharingDesc.SetText(i18n.T("Sunshine is starting."))
 	default:
-		w.sideSharingSub.SetText(i18n.T("Off"))
 		w.sharingDesc.SetText(i18n.T("Lets your other devices see and control this desktop, with Moonlight or Remote Desktop."))
 	}
 	w.loading = true
@@ -714,9 +778,10 @@ func (w *window) ask(ctx context.Context, addr string) {
 func (w *window) showMachine() {
 	m, saved := w.machine()
 	mi := w.info[m.Addr]
-	w.machineTitle.SetText("[" + strings.ToUpper(remotedesk.Label(m)) + "]")
-	w.machineAddr.SetText(m.Addr)
 	_, streaming := w.streams[m.Addr]
+	w.panelTitle.SetText(remotedesk.Label(m))
+	w.panelSub.SetText(m.Addr)
+	setClass(&w.panelMark.Widget, "on", streaming)
 	paired := m.Paired() && (!mi.asked || mi.err != nil || mi.info.Paired())
 	state := i18n.T("Asking…")
 	switch {
@@ -849,7 +914,7 @@ func (w *window) forget() {
 func (w *window) add() {
 	addr := strings.TrimSpace(w.addAddr.GetText())
 	if w.id == nil {
-		w.addError.SetText(w.idErr)
+		say(&w.addError, w.idErr)
 	}
 	if addr == "" || w.id == nil {
 		return
@@ -868,15 +933,16 @@ func (w *window) add() {
 	}, func(err error) {
 		w.addOK.SetSensitive(true)
 		if err != nil {
-			w.addError.SetText(i18n.Tf("Nothing shares a desktop at %s: %v", addr, err))
+			say(&w.addError, i18n.Tf("Nothing shares a desktop at %s: %v", addr, err))
 			return
 		}
 		w.settings.Keep(remotedesk.Machine{Name: info.Hostname, Addr: addr, ID: info.UniqueID})
 		if err := w.settings.Save(); err != nil {
-			w.addError.SetText(i18n.Tf("Added, but not saved, so not kept after this window: %v", err))
+			say(&w.addError, i18n.Tf("Added, but not saved, so not kept after this window: %v", err))
 			return
 		}
 		w.addAddr.SetText("")
+		w.addDialog.SetVisible(false)
 		w.fillSide()
 		w.choose(addr)
 	})

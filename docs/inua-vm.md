@@ -104,9 +104,12 @@ gpu = "virgl"           # virgl (3D, OpenGL) | venus (3D, Vulkan; QEMU 9.2 and n
 enabled = true          # the backend's way, below
 ```
 
-Templates fill it per OS (`internal/vm/templates.go`): Windows 11 (Dockur,
-or QEMU with the user's ISO and the virtio drivers), Ubuntu, Fedora, Arch,
-FreeBSD, Android (Waydroid), and "Custom" with every boot field open.
+Templates fill it per system and the way it runs
+(`internal/vm/templates.go`): Windows 11 (Dockur, or QEMU with the user's
+ISO and the virtio drivers), Linux and FreeBSD (QEMU), Android (Waydroid),
+and "Custom" (QEMU) with every boot field open. A Linux distribution is not
+a template: its machine is the same, and its install image is picked on the
+setup page.
 `Config.Validate` checks it as #18's does, and the window shows a
 machine's problems in its words.
 
@@ -303,10 +306,13 @@ custom OS has no seamless mode until it implements one of these ways.
 
 ## The window
 
-In the settings language (`design/ui.md`): the index holds the machines
-one a row (the OS's mark, the name, OS · state), the folders that do not
-load under NEEDS RECOVERY, and **New machine…** at its foot, which picks a
-template and a name. The page beside it is the chosen machine's: its name
+A library with a panel (`design/ui.md`): the library holds the machines
+as tiles (the OS's mark, a mark filled while it is up, the name, OS ·
+state), the folders that do not load under NEEDS RECOVERY, and **New
+machine…** in its head. New machine asks in a dialog, in two steps: the
+system, how it runs (only the ways that system has) and a name; then its
+memory, CPU cores and disk, set to what suits this computer, and Create. The panel beside the
+library is the chosen machine's page: its name
 and state in the head, with a mark filled while it is up, then the page for
 its stage: prerequisites with their fixes, setup (resources, install, the
 install images), the installation running or paused, starting, stopped

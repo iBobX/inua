@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/calc"
@@ -19,7 +20,8 @@ import (
 // on =. After =, a number starts a new expression and an operator goes on
 // from the answer. Each answer goes into the history (calc-history.json),
 // listed in a panel at the right that History slides in; an entry
-// recalls its result into the expression.
+// recalls its result into the expression. Ctrl+C copies the result,
+// Ctrl+V types what is on the clipboard.
 type calcApp struct {
 	expr, result     gtk.Label
 	sci, deg         gtk.ToggleButton
@@ -38,6 +40,7 @@ type calcApp struct {
 	onKeyPress       func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onSci, onDegrees func(gtk.ToggleButton)
 	onHistory        func(gtk.ToggleButton)
+	onClipText       gio.AsyncReadyCallback
 }
 
 // calcHistory is the history's file in the apps' data.
@@ -134,6 +137,14 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 	a.deg.ConnectToggled(&a.onDegrees)
 	a.sci.SetCanFocus(false)
 	a.deg.SetCanFocus(false)
+	a.onClipText = func(_, result, _ uintptr) {
+		clip := a.expr.GetClipboard()
+		text, err := clip.ReadTextFinish(&gio.AsyncResultBase{Ptr: result})
+		clip.Unref()
+		if in, ok := calc.Pasted(text); err == nil && ok {
+			a.input(in)
+		}
+	}
 	keys := gtk.NewEventControllerKey()
 	keys.SetPropagationPhase(gtk.PhaseCaptureValue) // before a focused button takes Enter
 	keys.ConnectKeyPressed(&a.onKeyPress)
@@ -147,7 +158,17 @@ func (a *calcApp) themeChanged() {}
 // typed turns a key press into input.
 func (a *calcApp) typed(keyval uint32, state gdk.ModifierType) bool {
 	if state&gdk.ControlMaskValue != 0 {
-		return false
+		switch gdk.KeyvalToLower(keyval) {
+		case 'c':
+			a.copy()
+		case 'v':
+			clip := a.expr.GetClipboard()
+			clip.ReadTextAsync(nil, &a.onClipText, 0)
+			clip.Unref()
+		default:
+			return false
+		}
+		return true
 	}
 	switch keyval {
 	case 0xff0d, 0xff8d: // Return, KP_Enter
@@ -170,6 +191,24 @@ func (a *calcApp) typed(keyval uint32, state gdk.ModifierType) bool {
 	}
 	a.input(in)
 	return true
+}
+
+// copy puts the result on the clipboard: the answer, or the value of what
+// is typed; the expression when it has none yet.
+func (a *calcApp) copy() {
+	text := a.answer
+	if !a.answered {
+		text = a.text
+		if v, err := calc.Eval(a.text, a.deg.GetActive()); err == nil {
+			text = calc.Format(v)
+		}
+	}
+	if text == "" {
+		return
+	}
+	clip := a.expr.GetClipboard()
+	clip.SetText(text)
+	clip.Unref()
 }
 
 // input takes one key's input.

@@ -35,9 +35,9 @@ func newQEMUTestBackend(t *testing.T, opts *QEMUOptions) (*QEMUBackend, Machine,
 	// The runtime directory holds sockets: socktest gives one whose paths fit
 	// in sun_path whatever TMPDIR says.
 	store := Store{Root: filepath.Join(root, "vm"), Runtime: testutil.Dir(t)}
-	tmpl, ok := TemplateByID("ubuntu")
+	tmpl, ok := TemplateByID("linux")
 	if !ok {
-		t.Fatal("no ubuntu template")
+		t.Fatal("no linux template")
 	}
 	m := tmpl.Machine("ubuntu", Profile{MemoryMiB: 4096, CPUs: 4, DiskGiB: 40})
 	firmware := filepath.Join(root, "OVMF_CODE.fd")

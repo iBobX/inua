@@ -3,21 +3,9 @@ package shell
 import (
 	"bytes"
 	"image/png"
-	"os"
 	"strings"
 	"testing"
 )
-
-func TestThemeColors(t *testing.T) {
-	css, err := os.ReadFile("../../ui/themes/yoru.css")
-	if err != nil {
-		t.Fatal(err)
-	}
-	c := ThemeColors(string(css))
-	if c["app"] != "#0B1012" || c["field"] != "#44504E" || c["accent"] != "#9FC3C9" {
-		t.Errorf("yoru: %v", c)
-	}
-}
 
 func TestWallpaperCSS(t *testing.T) {
 	img := Wallpaper{Image: "/home/u/Pictures/my wall\"paper.png", Fit: "contain", Color: "#102030"}.CSS()

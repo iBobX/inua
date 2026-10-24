@@ -1,10 +1,10 @@
-// Virtual machines: manages machines, one folder each. The window lists them
-// in its index and shows the chosen machine's page beside it; Go switches
-// between the pages as the machine's state changes.
+// Virtual machines: manages machines, one folder each. The window shows them
+// as tiles in its library and the chosen machine's page in a panel at the
+// right; Go switches between the pages as the machine's state changes. With
+// no machine yet the library says so and the panel is hidden. New machine
+// asks in a dialog of its own (vm_new_dialog, at the end).
 //
 //   fault        — a folder that does not load as a machine
-//   empty        — no machine yet; New makes one from a template
-//   new          — naming a machine and picking its template
 //   unavailable  — this build has no backend for the machine's kind
 //   console      — only a serial console: its debugger and its output
 //   prereq       — some host requirement is missing; shows what and why
@@ -22,91 +22,158 @@ using Gtk 4.0;
 ApplicationWindow vm {
   styles ["settings", "vmpage"]
   title: _("Virtual machines");
-  default-width: 960;
+  default-width: 1120;
   default-height: 720;
 
   Box {
-    // ── the index: the machines, one a row ──
+    // ── the library: the machines, one a tile ──
     Box {
-      styles ["index"]
+      styles ["library"]
       orientation: vertical;
-      width-request: 264;
-      hexpand: false;
+      hexpand: true;
 
-      Label {
-        styles ["index-title"]
-        label: _("Virtual machines");
-        xalign: 0;
+      Box {
+        styles ["library-head"]
+        spacing: 12;
+
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+          spacing: 2;
+
+          Label {
+            styles ["library-title"]
+            label: _("Virtual machines");
+            xalign: 0;
+          }
+
+          Label {
+            styles ["sub"]
+            label: _("Machines keep running with this window closed.");
+            xalign: 0;
+            wrap: true;
+          }
+        }
+
+        Button vm_new {
+          styles ["outlined", "library-new"]
+          name: "new_machine";
+          valign: center;
+
+          Box {
+            spacing: 8;
+
+            Image {
+              icon-name: "list-add-symbolic";
+            }
+
+            Label {
+              label: _("New machine…");
+            }
+          }
+        }
       }
 
       ScrolledWindow {
         hscrollbar-policy: never;
-        propagate-natural-width: false;
         vexpand: true;
 
         Box {
           orientation: vertical;
 
           Label vm_machines_kicker {
-            styles ["kicker", "vm-kicker"]
+            styles ["kicker", "library-kicker"]
             label: _("MACHINES");
             xalign: 0;
           }
 
-          // Go appends a row per machine: its system's mark, its name, and what it
-          // is and is doing.
-          ListBox vm_machines {
-            styles ["vm-machines"]
+          // Go appends a tile per machine: its system's mark, its mark filled
+          // while it is up, its name, and what it is and is doing.
+          FlowBox vm_machines {
+            styles ["library-tiles"]
             selection-mode: single;
             activate-on-single-click: true;
+            homogeneous: true;
+            min-children-per-line: 1;
+            max-children-per-line: 8;
+            column-spacing: 12;
+            row-spacing: 12;
+            valign: start;
           }
 
           // Folders under the store that do not load as a machine.
           Label vm_fault_heading {
-            styles ["kicker", "vm-kicker"]
+            styles ["kicker", "library-kicker"]
             label: _("NEEDS RECOVERY");
             xalign: 0;
             visible: false;
           }
 
-          ListBox vm_faults {
-            styles ["vm-machines"]
+          FlowBox vm_faults {
+            styles ["library-tiles"]
             selection-mode: single;
             activate-on-single-click: true;
+            homogeneous: true;
+            min-children-per-line: 1;
+            max-children-per-line: 8;
+            column-spacing: 12;
+            row-spacing: 12;
+            valign: start;
             visible: false;
           }
 
-          Button vm_new {
-            styles ["index-item", "vm-new"]
-            name: "new_machine";
+          // Nothing made yet; the panel is hidden until New opens it.
+          Box vm_library_empty {
+            orientation: vertical;
+            vexpand: true;
+            valign: center;
+            halign: center;
+            spacing: 8;
+            margin-start: 32;
+            margin-end: 32;
+            visible: false;
 
-            Box {
-              spacing: 10;
+            Image {
+              styles ["library-empty-mark"]
+              icon-name: "vm-machine-symbolic";
+              pixel-size: 48;
+            }
 
-              Image {
-                styles ["index-icon"]
-                icon-name: "list-add-symbolic";
-              }
+            Label {
+              styles ["library-empty-title"]
+              label: _("No machines yet");
+            }
 
-              Label {
-                styles ["title"]
-                label: _("New machine…");
-                xalign: 0;
-              }
+            Label {
+              styles ["sub"]
+              label: _("A machine runs Windows, Linux, FreeBSD, Android or a system of your own, in a window on this desktop.");
+              justify: center;
+              wrap: true;
+              max-width-chars: 48;
+            }
+
+            Button vm_empty_new {
+              styles ["suggested-action"]
+              name: "new_machine";
+              label: _("New machine…");
+              halign: center;
+              margin-top: 8;
             }
           }
         }
       }
     }
 
-    // ── the machine's page ──
-    Box {
+    // ── the panel: the chosen machine's page ──
+    Box vm_panel {
+      styles ["library-panel"]
       orientation: vertical;
-      hexpand: true;
+      width-request: 520;
+      hexpand: false;
 
-      // Hidden while there is no machine: the empty page says so itself.
       Box vm_head {
-        styles ["vm-head"]
+        styles ["panel-head"]
         spacing: 12;
 
         // Filled while the machine is up, hollow when it is not.
@@ -122,8 +189,7 @@ ApplicationWindow vm {
           spacing: 2;
 
           Label vm_title {
-            styles ["vm-title"]
-            label: _("Virtual machines");
+            styles ["panel-title"]
             xalign: 0;
             ellipsize: end;
           }
@@ -242,198 +308,6 @@ ApplicationWindow vm {
                 }
 
                 Label vm_fault_action_error {
-                  styles ["sub", "vm-error"]
-                  xalign: 0;
-                  wrap: true;
-                  wrap-mode: word_char;
-                  selectable: true;
-                  visible: false;
-                }
-              }
-            }
-          };
-        }
-
-        // ── PAGE: empty ── nothing made yet
-        StackPage {
-          name: "empty";
-          child: Box {
-            orientation: vertical;
-            valign: center;
-            halign: center;
-            spacing: 8;
-            margin-start: 32;
-            margin-end: 32;
-
-            Image {
-              styles ["vm-empty-mark"]
-              icon-name: "vm-machine-symbolic";
-              pixel-size: 48;
-            }
-
-            Label {
-              styles ["vm-empty-title"]
-              label: _("No machines yet");
-            }
-
-            Label {
-              styles ["sub"]
-              label: _("A machine runs Windows, Linux, FreeBSD, Android or a system of your own, in a window on this desktop.");
-              justify: center;
-              wrap: true;
-            }
-
-            Button vm_empty_new {
-              styles ["suggested-action"]
-              name: "new_machine";
-              label: _("New machine…");
-              halign: center;
-              margin-top: 8;
-            }
-          };
-        }
-
-        // ── PAGE: new ── what the new machine runs, and its name
-        StackPage {
-          name: "new";
-          child: ScrolledWindow {
-            hscrollbar-policy: never;
-
-            Box {
-              styles ["page"]
-              orientation: vertical;
-
-              Box {
-                styles ["section"]
-                orientation: vertical;
-
-                Box {
-                  styles ["section-head"]
-                  spacing: 10;
-
-                  Box {
-                    styles ["mark"]
-                    valign: center;
-                  }
-
-                  Label {
-                    styles ["section-label"]
-                    label: _("[SYSTEM]");
-                    hexpand: true;
-                    xalign: 0;
-                  }
-                }
-
-                Box {
-                  styles ["section-body"]
-                  orientation: vertical;
-
-                  // Go appends one row per template.
-                  ListBox vm_templates {
-                    styles ["vm-templates"]
-                    selection-mode: single;
-                    activate-on-single-click: true;
-                  }
-                }
-              }
-
-              Box {
-                styles ["section"]
-                orientation: vertical;
-
-                Box {
-                  styles ["section-head"]
-                  spacing: 10;
-
-                  Box {
-                    styles ["mark"]
-                    valign: center;
-                  }
-
-                  Label {
-                    styles ["section-label"]
-                    label: _("[NAME]");
-                    hexpand: true;
-                    xalign: 0;
-                  }
-                }
-
-                Box {
-                  styles ["section-body", "rows"]
-                  orientation: vertical;
-
-                  Box {
-                    styles ["row"]
-                    spacing: 16;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-                      spacing: 2;
-
-                      Label {
-                        styles ["label"]
-                        label: _("Machine name");
-                        xalign: 0;
-                      }
-
-                      Label vm_new_note {
-                        styles ["sub"]
-                        label: _("Its folder is named after it.");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Entry vm_new_name {
-                      placeholder-text: _("windows");
-                      width-chars: 18;
-                      valign: center;
-                    }
-                  }
-
-                  Box {
-                    styles ["row"]
-                    spacing: 8;
-
-                    Box {
-                      orientation: vertical;
-                      hexpand: true;
-                      valign: center;
-                      spacing: 2;
-
-                      Label {
-                        styles ["label"]
-                        label: _("Create the machine");
-                        xalign: 0;
-                      }
-
-                      Label vm_create_note {
-                        styles ["sub"]
-                        label: _("Writes the machine's definition. Nothing is installed or started yet.");
-                        xalign: 0;
-                        wrap: true;
-                      }
-                    }
-
-                    Button vm_new_cancel {
-                      styles ["outlined"]
-                      name: "new_cancel";
-                      label: _("Cancel");
-                      valign: center;
-                    }
-
-                    Button vm_create {
-                      styles ["suggested-action"]
-                      name: "create_machine";
-                      label: _("Create");
-                      valign: center;
-                    }
-                  }
-                }
-
-                Label vm_create_error {
                   styles ["sub", "vm-error"]
                   xalign: 0;
                   wrap: true;
@@ -2198,6 +2072,289 @@ ApplicationWindow vm {
             }
           };
         }
+      }
+    }
+  }
+}
+
+// New machine, over the window, in two steps: what it is (the system, how it
+// runs, its name), then what it gets (memory, CPU cores, disk). Go keeps the
+// dialog and shows it again for the next one.
+Window vm_new_dialog {
+  styles ["app", "settings", "vm-dialog"]
+  title: _("New machine");
+  modal: true;
+  hide-on-close: true;
+  resizable: false;
+
+  Box {
+    styles ["page"]
+    orientation: vertical;
+    spacing: 10;
+    width-request: 480;
+
+    Label {
+      styles ["vm-dialog-title"]
+      label: _("New machine");
+      xalign: 0;
+    }
+
+    Stack vm_new_steps {
+      vhomogeneous: false;
+      interpolate-size: true;
+      transition-type: crossfade;
+
+      StackPage {
+        name: "what";
+        child: Box {
+          orientation: vertical;
+          spacing: 10;
+
+          Label {
+            styles ["sub"]
+            label: _("Pick the system, how it runs, and a name.");
+            xalign: 0;
+            wrap: true;
+          }
+
+          Label {
+            styles ["label"]
+            label: _("System");
+            xalign: 0;
+            margin-top: 8;
+          }
+
+          // Go appends a choice per system, its mark before its name.
+          Box vm_new_systems {
+            spacing: 6;
+            homogeneous: true;
+          }
+
+          Label {
+            styles ["label"]
+            label: _("How it runs");
+            xalign: 0;
+            margin-top: 8;
+          }
+
+          // Go appends a row per template, and shows those of the chosen system.
+          ListBox vm_templates {
+            styles ["vm-templates"]
+            selection-mode: single;
+            activate-on-single-click: true;
+          }
+
+          Box {
+            styles ["field"]
+            orientation: vertical;
+            spacing: 6;
+            margin-top: 6;
+
+            Label {
+              styles ["label"]
+              label: _("Machine name");
+              xalign: 0;
+            }
+
+            Entry vm_new_name {
+              placeholder-text: _("windows");
+            }
+
+            Label vm_new_note {
+              styles ["sub"]
+              label: _("Its folder is named after it.");
+              xalign: 0;
+              wrap: true;
+            }
+          }
+
+          Label vm_create_error {
+            styles ["sub", "vm-error"]
+            xalign: 0;
+            wrap: true;
+            wrap-mode: word_char;
+            selectable: true;
+            visible: false;
+          }
+        };
+      }
+
+      StackPage {
+        name: "resources";
+        child: Box {
+          orientation: vertical;
+
+          Label {
+            styles ["sub"]
+            label: _("What it gets from this computer. Memory and CPU cores can change later.");
+            xalign: 0;
+            wrap: true;
+            margin-bottom: 8;
+          }
+
+          Box {
+            styles ["rows"]
+            orientation: vertical;
+
+        Box {
+          styles ["row"]
+          spacing: 16;
+
+          Box {
+            orientation: vertical;
+            hexpand: true;
+            valign: center;
+            spacing: 2;
+
+            Label {
+              styles ["label"]
+              label: _("Memory (GiB)");
+              xalign: 0;
+            }
+
+            Label vm_new_memory_sub {
+              styles ["sub"]
+              xalign: 0;
+            }
+          }
+
+          SpinButton vm_new_memory {
+            adjustment: Adjustment {
+              lower: 2;
+              upper: 256;
+              step-increment: 1;
+              page-increment: 4;
+              value: 8;
+            };
+            numeric: true;
+            width-chars: 4;
+            valign: center;
+          }
+        }
+
+        Box {
+          styles ["row"]
+          spacing: 16;
+
+          Box {
+            orientation: vertical;
+            hexpand: true;
+            valign: center;
+            spacing: 2;
+
+            Label {
+              styles ["label"]
+              label: _("CPU cores");
+              xalign: 0;
+            }
+
+            Label vm_new_cpus_sub {
+              styles ["sub"]
+              xalign: 0;
+            }
+          }
+
+          SpinButton vm_new_cpus {
+            adjustment: Adjustment {
+              lower: 1;
+              upper: 256;
+              step-increment: 1;
+              page-increment: 2;
+              value: 4;
+            };
+            numeric: true;
+            width-chars: 4;
+            valign: center;
+          }
+        }
+
+        Box {
+          styles ["row"]
+          spacing: 16;
+
+          Box {
+            orientation: vertical;
+            hexpand: true;
+            valign: center;
+            spacing: 2;
+
+            Label {
+              styles ["label"]
+              label: _("Disk size (GiB)");
+              xalign: 0;
+            }
+
+            Label vm_new_disk_sub {
+              styles ["sub"]
+              xalign: 0;
+            }
+          }
+
+          SpinButton vm_new_disk {
+            adjustment: Adjustment {
+              lower: 8;
+              upper: 2048;
+              step-increment: 8;
+              page-increment: 64;
+              value: 64;
+            };
+            numeric: true;
+            width-chars: 4;
+            valign: center;
+          }
+        }
+          }
+        };
+      }
+    }
+
+    Box {
+      spacing: 8;
+      margin-top: 8;
+
+      Label vm_create_note {
+        styles ["sub"]
+        label: _("Writes the machine's definition. Nothing is installed or started yet.");
+        hexpand: true;
+        xalign: 0;
+        wrap: true;
+        visible: false;
+      }
+
+      // Holds the buttons at the end while the note is hidden.
+      Box {
+        hexpand: true;
+        visible: bind vm_create_note.visible inverted;
+      }
+
+      Button vm_new_cancel {
+        styles ["outlined"]
+        name: "new_cancel";
+        label: _("Cancel");
+        valign: center;
+      }
+
+      Button vm_new_back {
+        styles ["outlined"]
+        name: "new_back";
+        label: _("Back");
+        valign: center;
+        visible: false;
+      }
+
+      Button vm_new_next {
+        styles ["suggested-action"]
+        name: "new_next";
+        label: _("Next");
+        valign: center;
+      }
+
+      Button vm_create {
+        styles ["suggested-action"]
+        name: "create_machine";
+        label: _("Create");
+        valign: center;
+        visible: false;
       }
     }
   }

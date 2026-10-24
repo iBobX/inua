@@ -1,23 +1,12 @@
 package host
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"log"
-	"net"
-	"os"
-	"os/exec"
-	"regexp"
-	"strconv"
 	"strings"
-	"sync"
 	"time"
 
-	"github.com/godbus/dbus/v5"
-	"golang.org/x/sys/unix"
-
-	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/agent"
 	"github.com/lyricat/inua/internal/term/vt"
@@ -329,99 +318,32 @@ func (h *Host) looking(id int) bool {
 	return active && s != nil && s.Focus == id
 }
 
-// procArgs is a process's argument list.
-func procArgs(pid int) []string {
-	b, err := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/cmdline")
-	if err != nil || len(b) == 0 {
-		return nil
-	}
-	return strings.Split(strings.TrimRight(string(b), "\x00"), "\x00")
-}
-
-// procEnv is one variable of a process's environment.
-func procEnv(pid int, key string) string {
-	b, err := os.ReadFile("/proc/" + strconv.Itoa(pid) + "/environ")
-	if err != nil {
-		return ""
-	}
-	for _, e := range strings.Split(string(b), "\x00") {
-		if v, ok := strings.CutPrefix(e, key+"="); ok {
-			return v
-		}
-	}
-	return ""
-}
-
 // note is a notification about a pane.
 type note struct {
 	pane          int
 	summary, body string
 }
 
-// notifier posts notifications through any notification server; Show
-// brings the window to the pane.
-type notifier struct {
-	once sync.Once
-	conn *dbus.Conn
-	mu   sync.Mutex
-	live map[uint32]int // notification to pane
+// Desktop is what the host asks of the desktop it runs on
+// (internal/term/desktop).
+type Desktop interface {
+	// Notify posts a notification; show runs when its Show is taken.
+	Notify(summary, body string, show func()) error
+	// Raise brings inua-term's window up: the one open, else a new one.
+	Raise()
 }
 
 func (h *Host) notify(n note) {
-	if !h.Notify {
+	if !h.Notify || h.Desktop == nil {
 		return
 	}
-	nf := &h.notes
-	nf.once.Do(func() {
-		conn, err := dbus.ConnectSessionBus()
-		if err != nil {
-			log.Printf("host: notifications: %v", err)
-			return
-		}
-		nf.conn, nf.live = conn, map[uint32]int{}
-		conn.AddMatchSignal(dbus.WithMatchInterface("org.freedesktop.Notifications"), dbus.WithMatchObjectPath("/org/freedesktop/Notifications"))
-		sigs := make(chan *dbus.Signal, 16)
-		conn.Signal(sigs)
-		go func() {
-			for s := range sigs {
-				if s.Name != "org.freedesktop.Notifications.ActionInvoked" || len(s.Body) < 1 {
-					continue
-				}
-				id, _ := s.Body[0].(uint32)
-				nf.mu.Lock()
-				pane, ok := nf.live[id]
-				nf.mu.Unlock()
-				if ok {
-					h.showPane(pane)
-				}
-			}
-		}()
-	})
-	if nf.conn == nil {
-		return
-	}
-	summary, body := n.summary, n.body
-	var id uint32
-	err := nf.conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications").Call(
-		"org.freedesktop.Notifications.Notify", 0,
-		"inua-term", uint32(0), "utilities-terminal", summary, body,
-		[]string{"default", i18n.T("Show")}, map[string]dbus.Variant{"desktop-entry": dbus.MakeVariant(appID)}, int32(-1),
-	).Store(&id)
-	if err != nil {
+	if err := h.Desktop.Notify(n.summary, n.body, func() { h.showPane(n.pane) }); err != nil {
 		log.Printf("host: notify: %v", err)
-		return
 	}
-	nf.mu.Lock()
-	nf.live[id] = n.pane
-	nf.mu.Unlock()
 }
 
-// appID is the window's: its desktop entry and its Hyprland class.
-const appID = "io.github.lyricat.Inua.Term"
-
 // showPane shows a pane's session with the pane focused, and brings a
-// window up: the one open, focused on its own workspace, else a new one
-// (inua-term again).
+// window up.
 func (h *Host) showPane(id int) {
 	h.mu.Lock()
 	s, w := h.m.PaneSession(id)
@@ -435,44 +357,7 @@ func (h *Host) showPane(id int) {
 	}
 	h.publish()
 	h.seen(id)
-	if h.Raise != nil {
-		h.Raise()
-		return
+	if h.Desktop != nil {
+		h.Desktop.Raise()
 	}
-	// Started again, the window would come to the workspace shown, as
-	// it does from the dock; from a notification it is gone to instead.
-	if paths, err := hypr.PathsFromEnv(); err == nil {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		err = hypr.NewClient(paths).Focus(ctx, "class:^("+regexp.QuoteMeta(appID)+")$")
-		cancel()
-		if err == nil {
-			return
-		}
-	}
-	if exe, err := os.Executable(); err == nil {
-		cmd := exec.Command(exe)
-		if err := cmd.Start(); err == nil {
-			go cmd.Wait()
-		}
-	}
-}
-
-// peerPid is the process at the other end of a Unix socket, 0 when it
-// cannot be told.
-func peerPid(conn net.Conn) int {
-	uc, ok := conn.(*net.UnixConn)
-	if !ok {
-		return 0
-	}
-	raw, err := uc.SyscallConn()
-	if err != nil {
-		return 0
-	}
-	pid := 0
-	raw.Control(func(fd uintptr) {
-		if cred, err := unix.GetsockoptUcred(int(fd), unix.SOL_SOCKET, unix.SO_PEERCRED); err == nil {
-			pid = int(cred.Pid)
-		}
-	})
-	return pid
 }

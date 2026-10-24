@@ -195,12 +195,12 @@ func (s *Server) bridge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	hello, _ := json.Marshal(host.Message{Type: host.MsgHello, Version: host.Version})
+	hello, _ := json.Marshal(host.Message{Type: host.MsgHello, Version: host.Version, Web: true})
 	if host.WriteFrame(conn, host.FrameControl, hello) != nil {
 		return
 	}
-	log.Printf("inua-term serve: %s connected", r.RemoteAddr)
-	defer log.Printf("inua-term serve: %s gone", r.RemoteAddr)
+	log.Printf("inua-termd serve: %s connected", r.RemoteAddr)
+	defer log.Printf("inua-termd serve: %s gone", r.RemoteAddr)
 	go func() {
 		defer ws.Close()
 		for {

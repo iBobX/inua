@@ -52,6 +52,25 @@
   #app.typing #tab-term { padding-bottom:0; }
   button.plain { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--t1); border-radius:2px; flex:none; }
   button.plain:active { background:color-mix(in srgb, var(--accent) 9%, transparent); }
+  /* An action at the head's end (New workspace, New session). */
+  header button.plain.act { grid-column:3; }
+
+  /* A question with a line to type (a folder, a name; gpg's passphrase):
+     a card over the dimmed page, near its top, where a phone's keyboard
+     leaves it in view. The line's text is 16 px: smaller, an iPhone
+     zooms in on it. */
+  .card-over { position:fixed; inset:0; z-index:10; display:flex; justify-content:center; align-items:flex-start; padding:calc(env(safe-area-inset-top) + 56px) 16px 16px; background:color-mix(in srgb, var(--app) 60%, transparent); }
+  #secret { z-index:11; }
+  .card-over form { width:100%; max-width:420px; margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  .card-over .q { font:15px var(--title); color:var(--t0); margin-bottom:12px; }
+  .card-over .desc { font:12.5px var(--sans); color:var(--t1); white-space:pre-line; overflow-wrap:anywhere; margin:-4px 0 12px; }
+  .card-over .prompt { font:11px var(--mono); letter-spacing:.06em; color:var(--t2); margin-bottom:6px; }
+  .card-over input { width:100%; height:40px; padding:0 10px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t0); font:16px var(--mono); outline:none; }
+  .card-over input:focus { border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
+  .card-over .err { min-height:18px; margin-top:6px; font:12px var(--sans); color:var(--danger); }
+  .card-over .btns { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+  .card-over .btns button { min-height:36px; padding:0 14px; border:1px solid var(--line); border-radius:2px; font:13px var(--sans); color:var(--t1); }
+  .card-over .btns button.ok { border-color:var(--accent); background:var(--accent); color:var(--app); }
 
   /* A notice: a hairline in warn, no fill (the connection's state). */
   .notice { margin:8px 16px 0; padding:6px 10px; border:1px solid var(--warn); border-radius:2px; color:var(--warn); font:11px var(--mono); letter-spacing:.06em; }
@@ -77,6 +96,9 @@
   /* Sections as the window's sessions: a mark, a mono label, a hairline. */
   .section { display:flex; align-items:center; gap:8px; min-height:40px; margin:10px 0 6px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
   .section .label { font:600 11px var(--mono); letter-spacing:.12em; color:var(--t2); text-transform:uppercase; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* A session's Rename, at its head's end. */
+  .section button.plain { width:32px; height:32px; margin-right:-8px; color:var(--t2); }
+  .section button.plain .icon { width:15px; height:15px; }
   .mark { width:7px; height:7px; border:1px solid var(--t2); border-radius:1px; flex:none; }
   .mark.s-on { border-color:var(--accent); background:var(--accent); }
   .mark.s-warn { border-color:var(--warn); background:var(--warn); }
@@ -110,12 +132,22 @@
   #panesbar { display:flex; align-items:center; padding:6px 8px 0; border-top:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
   #panesbar[hidden] { display:none; }
   #termback { margin:0; }
+  #newpane { margin:0 0 0 8px; }
   #chips { display:flex; overflow-x:auto; flex:1; min-width:0; height:36px; border:1px solid var(--line); border-radius:2px; scrollbar-width:none; }
   #chips::-webkit-scrollbar { display:none; }
   #chips button { display:flex; align-items:center; gap:6px; min-height:34px; padding:0 12px; font:12.5px var(--title); color:var(--t1); white-space:nowrap; flex:none; }
   #chips button + button { border-left:1px solid var(--line); }
   #chips button.on { background:color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--t0); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 38%, transparent); }
-  #termwrap { flex:1; overflow:hidden; min-height:0; position:relative; touch-action:none; }
+  #termwrap { flex:1; overflow:hidden; min-height:0; position:relative; touch-action:none; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+  /* A selection made by touch: what to do with it, at the pane's top. */
+  #selbar { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:2; display:flex; border:1px solid var(--line); border-radius:2px; background:var(--surface); box-shadow:0 4px 14px rgba(0,0,0,.35); }
+  #selbar button { display:flex; align-items:center; min-height:36px; padding:0 14px; font:12.5px var(--title); color:var(--t0); white-space:nowrap; }
+  #selbar button + button { border-left:1px solid var(--line); }
+  #selbar button.plain { width:36px; padding:0; justify-content:center; color:var(--t1); }
+  /* The selection's ends, to drag: a drop in the accent under each, as a
+     phone's own selection has; the touch area is larger than the drop. */
+  .selhandle { position:absolute; z-index:2; width:44px; height:44px; margin-left:-22px; display:flex; justify-content:center; touch-action:none; }
+  .selhandle::after { content:""; width:16px; height:16px; margin-top:2px; background:var(--accent); border-radius:0 50% 50% 50%; transform:rotate(45deg); }
   #termwrap[hidden] { display:none; }
   #term { position:absolute; left:8px; top:6px; }
   #bottom { position:absolute; right:8px; bottom:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--surface); border:1px solid var(--line); border-radius:2px; color:var(--t1); }
@@ -142,6 +174,15 @@
   #pinfo .line { margin:0; padding:6px 0; }
   #pinfo { --out:0px; }
   #pinfo .line .label { color:var(--t1); }
+  /* Snippets: a keycap of its text, which types it, and ⏎ beside it,
+     which sends it; yours with a delete. */
+  #psnips .snip { display:flex; gap:6px; margin-top:6px; }
+  #psnips .snip button { height:40px; flex:none; }
+  #psnips .snip .say { flex:1; min-width:0; padding:0 12px; text-align:left; font:13px var(--sans); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #psnips .snip .send, #psnips .snip .del { width:44px; display:flex; align-items:center; justify-content:center; }
+  #psnips .snip .send { font:17px var(--mono); color:var(--t1); }
+  #psnips .snip .icon { width:15px; height:15px; }
+  #psnips .add { width:100%; margin-top:10px; font:12.5px var(--sans); color:var(--t1); }
   #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
   #panel .grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; }
   #panel button { height:40px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:12px var(--mono); }
@@ -237,6 +278,7 @@
     <header>
       <button class="plain" id="wsback" hidden data-ta="Workspaces"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div class="h1" id="wstitle">Workspaces</div>
+      <button class="plain act" id="wsadd" data-ta="New workspace"><span class="icon" style="--i:url(/icons/list-add-symbolic.svg)"></span></button>
     </header>
     <div class="notice" hidden></div>
     <div class="scroll" id="ws"></div>
@@ -244,10 +286,11 @@
 
   <section class="tab" id="tab-term">
     <div class="notice" hidden></div>
-    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button></div>
+    <div id="termwrap"><div id="term"></div><button id="bottom" hidden data-ta="To the bottom"><span class="icon" style="--i:url(/icons/pan-down-symbolic.svg)"></span></button><div class="selhandle" id="selA" hidden></div><div class="selhandle" id="selB" hidden></div><div id="selbar" hidden><button id="selcopy" data-t="Copy">Copy</button><button id="selall" data-t="Select all">Select all</button><button id="selclose" class="plain" data-ta="Close"><span class="icon" style="--i:url(/icons/window-close-symbolic.svg)"></span></button></div></div>
     <div id="panesbar">
       <button id="termback" class="barbtn" data-ta="Back"><span class="icon" style="--i:url(/icons/go-previous-symbolic.svg)"></span></button>
       <div id="chips"></div>
+      <button id="newpane" class="barbtn" data-ta="New pane"><span class="icon" style="--i:url(/icons/list-add-symbolic.svg)"></span></button>
     </div>
     <div id="keybar">
       <div id="keys"></div>
@@ -255,8 +298,9 @@
       <button id="paneltoggle" class="barbtn" data-ta="Key panel"><span class="icon" style="--i:url(/icons/view-app-grid-symbolic.svg)"></span></button>
     </div>
     <div id="panel" hidden>
-      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="info" data-t="INFO">INFO</button></div>
+      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="snips" data-t="SNIPPETS">SNIPPETS</button><button data-p="info" data-t="INFO">INFO</button></div>
       <div id="pkeys"></div>
+      <div id="psnips" hidden></div>
       <div id="pinfo" hidden></div>
     </div>
   </section>
@@ -275,6 +319,26 @@
     <button data-tab="ws"><span class="icon" style="--i:url(/icons/folder-symbolic.svg)"></span><span class="k" data-t="Workspaces">Workspaces</span></button>
     <button data-tab="over"><span class="icon" style="--i:url(/icons/inua-benchmark-symbolic.svg)"></span><span class="k" data-t="Overview">Overview</span></button>
   </nav>
+</div>
+
+<div id="ask" class="card-over" hidden>
+  <form>
+    <div class="q"></div>
+    <input autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+    <div class="err"></div>
+    <div class="btns"><button type="button" class="cancel" data-t="Cancel">Cancel</button><button type="submit" class="ok"></button></div>
+  </form>
+</div>
+
+<div id="secret" class="card-over" hidden>
+  <form autocomplete="off">
+    <div class="q"></div>
+    <div class="desc"></div>
+    <div class="prompt"></div>
+    <input type="password" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+    <div class="err"></div>
+    <div class="btns"><button type="button" class="cancel"></button><button type="button" class="no"></button><button type="submit" class="ok"></button></div>
+  </form>
 </div>
 
 <script src="/vendor/xterm.js"></script>
@@ -403,6 +467,8 @@ function connect() {
     if (m.type === "welcome") { snapshots = !!m.snapshot; return welcome(); }
     if (m.type === "reply") { const r = pending.get(m.id); pending.delete(m.id); return r && r(m); }
     if (m.type === "state" && m.state) return setState(m.state);
+    if (m.type === "secret" && m.secret) return secretAsked(m.secret);
+    if (m.type === "withdraw") return secretGone(m.asked);
     if (m.type === "event" && m.pane === cur && term && m.cols && m.rows) {
       if (m.cols !== term.cols || m.rows !== term.rows) term.resize(m.cols, m.rows);
       panToBottom();
@@ -413,6 +479,8 @@ function connect() {
 }
 
 async function welcome() {
+  // The host sends the questions waiting again, after its welcome.
+  secrets = []; showSecret();
   status("");
   connected = true; since = Date.now();
   const again = cur;  // a reconnect: attach again
@@ -422,7 +490,8 @@ async function welcome() {
 }
 
 function setState(s) {
-  model = s.model || { workspaces: [] };
+  model = s.model || {};
+  model.workspaces = model.workspaces || [];  // none yet comes as null
   paneMap = new Map((s.panes || []).map(p => [p.id, p]));
   render();
   // The first state after a reload: the pane that was open, open again.
@@ -566,6 +635,7 @@ function renderWS() {
   const w = wsOpen && model.workspaces.find(w => w.id === wsOpen);
   $("wsback").hidden = !w;
   $("wstitle").textContent = w ? wsName(w) : T("Workspaces");
+  $("wsadd").setAttribute("aria-label", w ? T("New session") : T("New workspace"));
   if (!w) {
     wsOpen = null;
     for (const w of model.workspaces) {
@@ -592,7 +662,13 @@ function renderWS() {
   for (const s of w.sessions || []) {
     const panes = sessionPanes(s);
     if (!panes.length) continue;
-    box.append(section(sessionName(w, s), sum(panes), panes.filter(p => p.state === "blocked").length));
+    const head = section(sessionName(w, s), sum(panes), panes.filter(p => p.state === "blocked").length);
+    const rename = el("button", "plain");
+    rename.append(icon("document-edit"));
+    rename.setAttribute("aria-label", T("Rename the session"));
+    rename.onclick = () => renameSession(w, s);
+    head.append(rename);
+    box.append(head);
     for (const p of panes) box.append(paneRow(p));
   }
 }
@@ -610,6 +686,148 @@ $("termback").onclick = () => {
   render();
 };
 $("overback").onclick = () => { overPage = null; renderOver(); $("over").scrollTop = 0; };
+
+// ---- New workspaces, sessions and panes; a session's name ----
+
+// ask asks for a line of text (a folder, a name) in a card over the
+// page; done gets it and gives back what went wrong, which keeps the card
+// open to try again.
+function ask(question, value, action, done) {
+  const box = $("ask"), f = box.querySelector("form"), line = f.querySelector("input"), err = f.querySelector(".err");
+  f.querySelector(".q").textContent = question;
+  f.querySelector(".ok").textContent = action;
+  line.value = value; err.textContent = "";
+  box.hidden = false;
+  line.focus(); line.setSelectionRange(value.length, value.length);
+  const close = () => { box.hidden = true; line.blur(); f.onsubmit = null; };
+  f.querySelector(".cancel").onclick = close;
+  box.onclick = e => { if (e.target === box) close(); };
+  line.onkeydown = e => { if (e.key === "Escape") close(); };
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const text = line.value.trim();
+    if (!text) return;
+    const problem = await done(text);
+    if (problem) err.textContent = problem; else close();
+  };
+}
+// oops says what went wrong for a moment, in the notice.
+function oops(text) {
+  status(text);
+  setTimeout(() => { if (connected) status(""); }, 4000);
+}
+// folder is a folder as typed, as the host takes it: ~ is the home
+// folder, and a relative one is in it.
+function folder(s) {
+  if (s === "~") return INUA.home;
+  if (s.startsWith("~/")) return INUA.home + s.slice(1);
+  return s.startsWith("/") ? s : INUA.home + "/" + s;
+}
+// fresh takes the host's state now: a reply comes before its state event.
+async function fresh() {
+  const r = await request({ type: "state" });
+  if (r.state) setState(r.state);
+}
+// openSession opens a session's pane with the focus.
+function openSession(id) {
+  for (const w of model.workspaces) for (const s of w.sessions || []) {
+    if (s.id !== id) continue;
+    const p = s.focus || treePanes(s.tree)[0];
+    if (p) open(p);
+    return;
+  }
+}
+// New workspace in the list (a folder; one there already is shown), New
+// session in a workspace's page; either opens its shell.
+$("wsadd").onclick = async () => {
+  const w = wsOpen && model.workspaces.find(w => w.id === wsOpen);
+  if (w) {
+    const r = await request({ type: "new_session", workspace: w.id });
+    if (r.error) return oops(r.error);
+    await fresh();
+    return openSession(r.session);
+  }
+  ask(T("New workspace, in the folder"), "~/", T("Create"), async text => {
+    const dir = folder(text).replace(/\/+$/, "") || "/";
+    const there = model.workspaces.find(w => w.dir === dir);
+    const r = await request({ type: "open", dir });
+    if (r.error) return r.error.replace(dir, home(dir));
+    await fresh();
+    const made = model.workspaces.find(w => w.id === r.workspace);
+    if (there || !made) { wsOpen = r.workspace; renderWS(); return; }
+    openSession(((made.sessions || [])[0] || {}).id);
+  });
+};
+function renameSession(w, s) {
+  ask(T("Rename the session"), sessionName(w, s), T("Rename"), async text => {
+    const r = await request({ type: "rename", session: s.id, name: text });
+    if (r.error) return r.error;
+    await fresh();
+  });
+}
+// ---- What gpg asks (inua-pinentry, through the host) ----
+
+// The questions waiting, the first shown: a passphrase, a yes or no, or a
+// note. The desktop's dialog asks the same; the first answer wins, and
+// the host withdraws the question everywhere else.
+let secrets = [];
+function secretAsked(s) {
+  if (secrets.some(x => x.id === s.id)) return;
+  secrets.push(s);
+  if (secrets.length === 1) showSecret();
+}
+function secretGone(id) {
+  const first = secrets[0];
+  secrets = secrets.filter(s => s.id !== id);
+  if (first && first.id === id) showSecret();
+}
+let typingBefore = false;  // the terminal had the keyboard: it gets it back
+function showSecret() {
+  const box = $("secret"), f = box.querySelector("form"), line = f.querySelector("input");
+  line.value = "";
+  const s = secrets[0];
+  if (!s) {
+    if (!box.hidden && typingBefore && term) term.focus();
+    box.hidden = true;
+    return;
+  }
+  if (box.hidden) typingBefore = typingHere();
+  const pin = s.mode === "getpin";
+  f.querySelector(".q").textContent = s.title || T("gpg asks for your passphrase");
+  f.querySelector(".desc").textContent = s.desc || "";
+  f.querySelector(".prompt").textContent = pin ? s.prompt || "" : "";
+  f.querySelector(".err").textContent = s.error || "";
+  line.hidden = !pin;
+  const cancel = f.querySelector(".cancel"), no = f.querySelector(".no"), ok = f.querySelector(".ok");
+  ok.textContent = s.ok || T("OK");
+  cancel.textContent = s.cancel || T("Cancel");
+  cancel.hidden = s.mode === "message";
+  no.textContent = s.not_ok || T("No");
+  no.hidden = s.mode !== "confirm" || !s.not_ok;
+  const answer = (what, pin) => {
+    line.value = "";
+    request({ type: "answer", asked: s.id, answer: what, ...(pin != null ? { pin } : {}) });
+    secretGone(s.id);  // the host's withdraw says it again
+  };
+  cancel.onclick = () => answer("cancel");
+  no.onclick = () => answer("no");
+  f.onsubmit = e => { e.preventDefault(); answer("ok", pin ? line.value : null); };
+  line.onkeydown = e => { if (e.key === "Escape") answer("cancel"); };
+  box.hidden = false;
+  if (pin) line.focus(); else ok.focus();
+}
+
+// New pane: a shell beside the one open, in the same session.
+$("newpane").addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays
+$("newpane").onclick = async () => {
+  const at = cur && where(cur);
+  if (!at) return;
+  await request({ type: "layout", session: at.s.id, op: "focus", pane: cur });
+  const r = await request({ type: "split", session: at.s.id, split: "right" });
+  if (r.error) return oops(r.error);
+  await fresh();
+  open(r.pane);
+};
 
 // ---- The overview: this computer, the agents, the link, the settings ----
 
@@ -809,6 +1027,8 @@ async function open(id, again) {
   term.onBinary(d => input(d));
   term.onScroll(atBottom);
   term.onRender(drawn);
+  term.onRender(placeHandles);
+  term.onSelectionChange(() => { if (!term.hasSelection()) { selRange = null; $("selbar").hidden = true; } placeHandles(); });
   term.onWriteParsed(atBottom);
   Object.assign(st, { t0: performance.now(), bytes: 0, first: 0, drawn: 0, replay: 0, kind: snapshots ? "snapshot" : "replay" });
   // Its replay comes before the reply, drawn at the size it was written
@@ -941,6 +1161,7 @@ function measure() {
 function place() {
   if (waitDraw) return;
   $("term").style.transform = `translate(${-pan.x}px, ${off + over - pan.y}px)`;
+  placeHandles();
 }
 // xterm has drawn: the slide for those lines can show.
 function drawn() { if (waitDraw) { waitDraw = false; place(); } }
@@ -1084,6 +1305,18 @@ wrap.addEventListener("wheel", e => {
   fitPane();
 }, { passive: false, capture: true });
 wrap.addEventListener("touchstart", e => {
+  if (touch) clearTimeout(touch.hold);
+  if (e.target.closest("button")) { touch = null; return; }  // #bottom, the selection's bar
+  const handle = e.target.closest(".selhandle");
+  if (handle && selRange && term) {
+    measure();
+    // The finger's way from the cell its drop stands for, kept as it moves.
+    const t = e.touches[0], hr = handle.getBoundingClientRect();
+    const cx = hr.left + hr.width / 2 + (handle.id === "selA" ? 0.5 : -0.5) * geo.cw, cy = hr.top - geo.ch / 2;
+    touch = { handle: handle.id, dx: cx - t.clientX, dy: cy - t.clientY };
+    $("selbar").hidden = true;
+    return;
+  }
   stopGlide();
   if (!term) return;
   measure();
@@ -1095,11 +1328,15 @@ wrap.addEventListener("touchstart", e => {
   }
   const t = e.touches[0];
   touch = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, axis: null, samples: [] };
+  const here = touch;
+  here.hold = setTimeout(() => holdSelect(here), 450);  // held still: a selection
 }, { passive: true, capture: true });
 
 wrap.addEventListener("touchmove", e => {
   if (!touch || !term) return;
   e.preventDefault(); e.stopPropagation();
+  if (touch.handle) { dragHandle(e.touches[0]); return; }
+  if (touch.select) { extendSelect(e.touches[0]); return; }
   if (touch.pinch) {
     if (e.touches.length !== 2) return;
     const [a, b] = e.touches;
@@ -1111,6 +1348,7 @@ wrap.addEventListener("touchmove", e => {
   if (!touch.axis) {
     const dx = t.clientX - touch.x0, dy = t.clientY - touch.y0;
     if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    clearTimeout(touch.hold);
     touch.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
   }
   if (touch.axis === "x") {
@@ -1131,6 +1369,14 @@ wrap.addEventListener("touchend", e => {
   if (!touch || e.touches.length) return;
   const last = touch;
   touch = null;
+  clearTimeout(last.hold);
+  if (last.select || last.handle) {
+    e.preventDefault(); e.stopPropagation();
+    $("selbar").hidden = !term.hasSelection();
+    placeHandles();
+    return;
+  }
+  if (!last.axis && !$("selbar").hidden) { e.preventDefault(); e.stopPropagation(); clearSelect(); return; }  // a tap lets the selection go
   if (last.pinch) {
     fontSize = term.options.fontSize;
     store.set("font", fontSize);
@@ -1148,6 +1394,120 @@ wrap.addEventListener("touchend", e => {
   if (Math.abs(v) < 0.15) { acc = 0; settle(); return; }
   fling(v);
 }, { passive: false, capture: true });
+
+// ---- Selecting by touch ----
+
+// Android may call a long press off (touchcancel) once it is held: the
+// selection made so far stays, with its bar and drops.
+wrap.addEventListener("touchcancel", () => {
+  if (!touch) return;
+  const last = touch;
+  touch = null;
+  clearTimeout(last.hold);
+  if ((last.select || last.handle) && term) { $("selbar").hidden = !term.hasSelection(); placeHandles(); }
+}, { capture: true });
+
+// A finger held still selects the word under it, and moving it, still
+// held, takes the selection on; lifted, a bar offers Copy. A long press
+// is no right click: xterm would put its input under the finger and the
+// keyboard would come up.
+wrap.addEventListener("contextmenu", e => { if (pointer === "touch") { e.preventDefault(); e.stopPropagation(); } }, { capture: true });
+// cellAt is the buffer's cell under a point, kept to the screen.
+function cellAt(x, y) {
+  const r = screenEl().getBoundingClientRect();
+  const col = Math.min(term.cols - 1, Math.max(0, Math.floor((x - r.left) / geo.cw)));
+  const row = Math.min(term.rows - 1, Math.max(0, Math.floor((y - r.top) / geo.ch)));
+  return (row + term.buffer.active.viewportY) * term.cols + col;
+}
+// A word ends at a space, a quote or a bracket.
+const apart = c => /^[\s"'`()[\]{}<>|│]?$/.test(c);
+function wordAt(at) {
+  const cols = term.cols, row = Math.floor(at / cols), line = term.buffer.active.getLine(row);
+  // A wide character's second cell is part of it.
+  const blank = x => { const c = line.getCell(x); return !c || (c.getWidth() !== 0 && apart(c.getChars().trim() ? c.getChars() : "")); };
+  let a = at % cols, b = a;
+  if (!line || blank(a)) return [at, at];
+  while (a > 0 && !blank(a - 1)) a--;
+  while (b < cols - 1 && !blank(b + 1)) b++;
+  return [row * cols + a, row * cols + b];
+}
+// selRange is the selection made by touch, as buffer cells (row × cols + col).
+let selRange = null;
+function selectRange(lo, hi) {
+  selRange = { a: lo, b: hi };
+  term.select(lo % term.cols, Math.floor(lo / term.cols), hi - lo + 1);
+  placeHandles();
+}
+// placeHandles puts a drop under the selection's first and last cells,
+// while they are on the screen.
+function placeHandles() {
+  const show = (id, at, end) => {
+    const h = $(id), b = term && term.buffer.active;
+    const row = at == null ? -1 : Math.floor(at / term.cols) - b.viewportY;
+    h.hidden = at == null || row < 0 || row >= term.rows || !!touch && touch.select;
+    if (h.hidden) return;
+    const r = screenEl().getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    h.style.left = (r.left - w.left + (at % term.cols + (end ? 1 : 0)) * geo.cw) + "px";
+    h.style.top = (r.top - w.top + (row + 1) * geo.ch) + "px";
+  };
+  const r = term && term.hasSelection() ? selRange : null;
+  show("selA", r && r.a, false);
+  show("selB", r && r.b, true);
+  // The bar above the selection's first line, else under its last drop.
+  const bar = $("selbar");
+  if (!r || bar.hidden) return;
+  const s = screenEl().getBoundingClientRect(), w = wrap.getBoundingClientRect(), b = term.buffer.active;
+  const first = Math.floor(r.a / term.cols) - b.viewportY, last = Math.floor(r.b / term.cols) - b.viewportY;
+  let top = s.top - w.top + first * geo.ch - bar.offsetHeight - 8;
+  if (top < 4) top = s.top - w.top + (last + 1) * geo.ch + 48;
+  bar.style.top = Math.max(4, Math.min(top, wrap.clientHeight - bar.offsetHeight - 4)) + "px";
+}
+// A drop dragged: its end of the selection follows the finger, at the
+// way from it the touch began with (the drop is under its line).
+function dragHandle(p) {
+  const at = cellAt(p.clientX + touch.dx, p.clientY + touch.dy);
+  const other = touch.handle === "selA" ? selRange.b : selRange.a;
+  if ((touch.handle === "selA") !== (at <= other)) touch.handle = touch.handle === "selA" ? "selB" : "selA";  // crossed over
+  selectRange(Math.min(at, other), Math.max(at, other));
+}
+function holdSelect(t) {
+  if (touch !== t || t.axis || !term) return;
+  const [a, b] = wordAt(cellAt(t.x0, t.y0));
+  t.select = { a, b };
+  selectRange(a, b);
+  $("selbar").hidden = true;
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+function extendSelect(p) {
+  const at = cellAt(p.clientX, p.clientY), { a, b } = touch.select;
+  selectRange(Math.min(a, at), Math.max(b, at));
+}
+function clearSelect() { if (term) term.clearSelection(); selRange = null; $("selbar").hidden = true; placeHandles(); }
+// copyText puts text on the clipboard: the browser's clipboard over
+// HTTPS, else the copy command, which plain HTTP still allows.
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const was = typingHere();
+  const t = el("textarea");
+  t.value = text; t.readOnly = true;  // read only: no keyboard
+  t.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+  document.body.append(t);
+  t.select(); t.setSelectionRange(0, text.length);
+  let ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) {}
+  t.remove();
+  if (was) term.focus();
+  return ok;
+}
+for (const id of ["selcopy", "selall", "selclose"]) $(id).addEventListener("pointerdown", e => e.preventDefault());
+$("selcopy").onclick = async () => {
+  if (!term || !term.hasSelection()) return clearSelect();
+  const ok = await copyText(term.getSelection());
+  $("selcopy").textContent = ok ? T("Copied") : T("Not copied");
+  setTimeout(() => { $("selcopy").textContent = T("Copy"); clearSelect(); }, 700);
+};
+$("selall").onclick = () => term && term.selectAll();
+$("selclose").onclick = clearSelect;
 
 // ---- The keys a phone keyboard lacks: a row above it, and a panel in
 // its place ----
@@ -1209,6 +1569,44 @@ for (const [name, keys] of panelGroups) {
   for (const k of keys) g.append(keyButton(k));
   $("pkeys").append(g);
 }
+// Snippets: what is typed often, to an agent above all. The built-in
+// ones, then the device's own, kept in its browser. A snippet's keycap
+// types it; ⏎ beside it sends it.
+const builtinSnippets = [T("Sure, please do it."), T("Wait, let me think."), T("Continue."), T("Yes."), T("No."), T("Explain it first, before you change anything.")];
+let snippets = [];
+try { snippets = JSON.parse(store.get("snippets") || "[]"); } catch (e) {}
+function renderSnippets() {
+  const box = $("psnips"); box.textContent = "";
+  const button = (cls, text, onclick) => {
+    const b = el("button", cls, text);
+    b.addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays as it is
+    b.onclick = onclick;
+    return b;
+  };
+  const row = (text, i) => {
+    const r = el("div", "snip");
+    const send = button("send", "⏎", () => input(text + "\r"));
+    send.setAttribute("aria-label", T("Send"));
+    r.append(button("say", text, () => input(text)), send);
+    if (i != null) {
+      const del = button("del", null, () => { snippets.splice(i, 1); saveSnippets(); });
+      del.append(icon("user-trash"));
+      del.setAttribute("aria-label", T("Delete"));
+      r.append(del);
+    }
+    return r;
+  };
+  box.append(el("div", "kicker", T("Built in")));
+  for (const t of builtinSnippets) box.append(row(t));
+  if (snippets.length) {
+    box.append(el("div", "kicker", T("Yours")));
+    snippets.forEach((t, i) => box.append(row(t, i)));
+  }
+  box.append(button("add", T("Add a snippet"), () => ask(T("New snippet"), "", T("Save"), text => { snippets.push(text); saveSnippets(); })));
+}
+function saveSnippets() { store.set("snippets", JSON.stringify(snippets)); renderSnippets(); }
+renderSnippets();
+
 // A row that scrolls under a fixed button: the button's shadow while
 // something is under it.
 function shade(row, button, side) {
@@ -1235,6 +1633,7 @@ for (const b of document.querySelectorAll(".ptabs button")) {
     for (const o of document.querySelectorAll(".ptabs button")) o.classList.toggle("on", o === b);
     $("pkeys").hidden = panelTab !== "keys";
     $("pinfo").hidden = panelTab !== "info";
+    $("psnips").hidden = panelTab !== "snips";
     info();
   };
 }

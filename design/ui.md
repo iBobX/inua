@@ -144,8 +144,21 @@ carry `.settings`):
 ### Light apps
 
 A light app is one of these: a window of its own with an index and pages
-(Remote Desktop, Mobile Link, Clock, Stocks), or a single page with text
-tabs (GPG, Tailscale). They follow `docs/performance.md` for start-up.
+(Mobile Link, Clock, Stocks), a single page with text tabs (GPG,
+Tailscale), or a library with a panel (Virtual machines, Remote Desktop).
+
+A **library** shows what the user runs or connects to as tiles on
+`panel`: a card (`surface`, a `line` border, 4 px corners) with its icon
+and a mark at the top (filled while it runs or is connected), then its
+name and a sub line; hover and selected as an index item. The chosen one's
+page is a panel at the right (`app`, about 520 px), with a head (its mark,
+name and state) and sections as a page. New or Add is a button in the
+library's head and asks in a dialog, never in the panel. With nothing yet,
+the library says so and the panel is hidden. The layout is the app's
+Blueprint in the `library` classes (`.library`, `.library-tiles`,
+`.library-panel`, `.panel-head`); the tiles are `appui.NewLibraryTile`.
+
+They follow `docs/performance.md` for start-up.
 
 ### Top bar panels
 
@@ -202,7 +215,8 @@ selectable (so it can be copied), and hidden while there is none:
 - a section's error under that section's rows;
 - an action on an item (a machine, a device) on that item's page, kept
   per item, so moving to another item and back still shows it;
-- a form's error under the form (Remote Desktop's *Add a machine*).
+- a form's error under the form, in its dialog (Remote Desktop's *Add a
+  machine*).
 
 It is cleared when the user tries again. A message that would vanish with
 its row (a device that stopped waiting to pair) stays in its section until

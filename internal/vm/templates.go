@@ -10,20 +10,21 @@ import (
 // what a fresh machine of it looks like. The IDs are stable, so the window
 // words each one in the user's language.
 type Template struct {
-	ID      string // "windows-dockur", "windows-qemu", "ubuntu", …
+	ID      string // "windows-dockur", "windows-qemu", "linux", …
 	OS      OS
 	Backend BackendKind
 	Name    string // the name a new machine of this template starts with
 }
 
-// Templates are the machines the window offers, in the order it shows them.
+// Templates are the machines the window offers, in the order it shows them:
+// one for each system and the way it runs. A Linux distribution is not a
+// template of its own: its machine is the same, and its install image is
+// picked once the machine is made.
 func Templates() []Template {
 	return []Template{
 		{ID: "windows-dockur", OS: OSWindows, Backend: BackendDockur, Name: "windows"},
 		{ID: "windows-qemu", OS: OSWindows, Backend: BackendQEMU, Name: "windows"},
-		{ID: "ubuntu", OS: OSLinux, Backend: BackendQEMU, Name: "ubuntu"},
-		{ID: "fedora", OS: OSLinux, Backend: BackendQEMU, Name: "fedora"},
-		{ID: "arch", OS: OSLinux, Backend: BackendQEMU, Name: "arch"},
+		{ID: "linux", OS: OSLinux, Backend: BackendQEMU, Name: "linux"},
 		{ID: "freebsd", OS: OSFreeBSD, Backend: BackendQEMU, Name: "freebsd"},
 		{ID: "android", OS: OSAndroid, Backend: BackendWaydroid, Name: "android"},
 		{ID: "custom", OS: OSCustom, Backend: BackendQEMU, Name: "custom"},

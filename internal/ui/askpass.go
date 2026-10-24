@@ -2,6 +2,7 @@ package ui
 
 import (
 	"cmp"
+	"context"
 	"encoding/json"
 	"log"
 	"strings"
@@ -65,8 +66,10 @@ type passDialog struct {
 }
 
 // askPassword answers a `password` request, waiting for the user: it runs
-// on the request's goroutine, the dialog on the main loop.
-func (s *shellUI) askPassword(req ipc.Request) ipc.Response {
+// on the request's goroutine, the dialog on the main loop. The caller
+// gone (inua-pinentry had it answered on a phone, or gpg gave up), the
+// dialog closes.
+func (s *shellUI) askPassword(ctx context.Context, req ipc.Request) ipc.Response {
 	var q pinentry.Request
 	if len(req.Args) != 1 || json.Unmarshal([]byte(req.Args[0]), &q) != nil {
 		return ipc.Response{Error: i18n.T("password: want one JSON request")}
@@ -78,18 +81,25 @@ func (s *shellUI) askPassword(req ipc.Request) ipc.Response {
 		return ipc.Response{Error: "password: unknown mode " + req.Function}
 	}
 	p := &s.pass
-	p.slot <- struct{}{} // one at a time
+	select {
+	case p.slot <- struct{}{}: // one at a time
+	case <-ctx.Done():
+		return ipc.Response{Error: "cancelled"}
+	}
 	defer func() { <-p.slot }()
 	d := &passDialog{q: q, done: make(chan ipc.Response, 1)}
 	gtkx.Post(func() { s.openPass(d) })
+	var timeout <-chan time.Time
 	if q.Timeout > 0 {
-		select {
-		case r := <-d.done:
-			return r
-		case <-time.After(time.Duration(q.Timeout) * time.Second):
-			gtkx.Post(func() { s.finishPass(d, ipc.Response{Error: "cancelled"}) })
-		}
+		timeout = time.After(time.Duration(q.Timeout) * time.Second)
 	}
+	select {
+	case r := <-d.done:
+		return r
+	case <-timeout:
+	case <-ctx.Done():
+	}
+	gtkx.Post(func() { s.finishPass(d, ipc.Response{Error: "cancelled"}) })
 	return <-d.done
 }
 

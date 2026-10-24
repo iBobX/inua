@@ -213,7 +213,7 @@ func TestThePageFollowsWhatIsOnDisk(t *testing.T) {
 	s, store, backend := testService(t)
 	write(t, store, vm.DockurTemplate("installed"), true)
 	write(t, store, vm.DockurTemplate("leftover"), true)
-	write(t, store, fromTemplate(t, "fedora", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40}), false)
+	write(t, store, fromTemplate(t, "linux", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40}), false)
 
 	backend.prepared = true
 	installed := s.Refresh("installed")
@@ -246,16 +246,20 @@ func TestThePageFollowsWhatIsOnDisk(t *testing.T) {
 	}
 }
 
-// Making a machine writes its own file, from a template, under a name that is
-// nobody else's - and starts nothing.
+// Making a machine writes its own file, from a template and with the
+// resources asked for, under a name that is nobody else's - and starts nothing.
 func TestCreateWritesTheMachineAndStartsNothing(t *testing.T) {
 	s, store, backend := testService(t)
-	m, err := s.Create("ubuntu", "test")
+	p := vm.Profile{MemoryMiB: 6144, CPUs: 3, DiskGiB: 80}
+	m, err := s.Create("linux", "test", p)
 	if err != nil {
 		t.Fatalf("create: %v", err)
 	}
 	if m.OS != vm.OSLinux || m.Backend != vm.BackendQEMU {
 		t.Errorf("created %s/%s, want a Linux machine on QEMU", m.OS, m.Backend)
+	}
+	if saved, err := store.Load("test"); err != nil || saved.MemoryMiB != 6144 || saved.CPUs != 3 || saved.DiskGiB != 80 {
+		t.Errorf("saved %+v (%v), want the resources asked for", saved, err)
 	}
 	if _, err := os.Stat(store.File("test")); err != nil {
 		t.Errorf("the machine's file is not there: %v", err)
@@ -264,7 +268,7 @@ func TestCreateWritesTheMachineAndStartsNothing(t *testing.T) {
 		t.Errorf("making a machine called the backend: %v", backend.calls)
 	}
 	// The same name again is not the same folder.
-	again, err := s.Create("ubuntu", "test")
+	again, err := s.Create("linux", "test", p)
 	if err != nil {
 		t.Fatalf("create again: %v", err)
 	}
@@ -272,7 +276,7 @@ func TestCreateWritesTheMachineAndStartsNothing(t *testing.T) {
 		t.Errorf("a second machine took the name %q", again.Name)
 	}
 	// And a template that does not exist is refused.
-	if _, err := s.Create("no-such-template", "x"); err == nil {
+	if _, err := s.Create("no-such-template", "x", p); err == nil {
 		t.Error("Create accepted a template that does not exist")
 	}
 }
@@ -280,7 +284,7 @@ func TestCreateWritesTheMachineAndStartsNothing(t *testing.T) {
 func TestQEMUInstallRequiresInstallMedia(t *testing.T) {
 	s, store, _ := testService(t)
 	s.backends[vm.BackendQEMU] = vm.NewQEMUBackend(store, nil)
-	m := fromTemplate(t, "ubuntu", "ubuntu", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
+	m := fromTemplate(t, "linux", "ubuntu", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
 	if err := store.Save(m); err != nil {
 		t.Fatal(err)
 	}
@@ -377,7 +381,7 @@ func TestChecksFollowTheBackend(t *testing.T) {
 		{Name: "Disk", OK: true},
 		{Name: "TUN", OK: true},
 	}
-	fedora := fromTemplate(t, "fedora", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
+	fedora := fromTemplate(t, "linux", "fedora", vm.Profile{MemoryMiB: 4096, CPUs: 2, DiskGiB: 40})
 	bios := fromTemplate(t, "custom", "kernel", vm.Profile{MemoryMiB: 1024, CPUs: 1, DiskGiB: 4})
 	bios.Boot.Firmware, bios.Display.Kind = vm.FirmwareBIOS, vm.DisplaySerial
 	write(t, store, vm.DockurTemplate("windows"), false)

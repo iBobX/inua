@@ -12,156 +12,156 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
       <class name="remote"/>
     </style>
     <property name="title" translatable="yes">Remote Desktop</property>
-    <property name="default-width">900</property>
-    <property name="default-height">640</property>
+    <property name="default-width">1120</property>
+    <property name="default-height">720</property>
     <child>
       <object class="GtkBox">
         <child>
           <object class="GtkBox">
             <style>
-              <class name="index"/>
+              <class name="library"/>
             </style>
             <property name="orientation">1</property>
-            <property name="width-request">250</property>
-            <property name="hexpand">false</property>
+            <property name="hexpand">true</property>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkBox">
                 <style>
-                  <class name="index-title"/>
+                  <class name="library-head"/>
                 </style>
-                <property name="label" translatable="yes">Remote Desktop</property>
-                <property name="xalign">0</property>
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <property name="hexpand">true</property>
+                    <property name="valign">3</property>
+                    <property name="spacing">2</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="library-title"/>
+                        </style>
+                        <property name="label" translatable="yes">Remote Desktop</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="sub"/>
+                        </style>
+                        <property name="label" translatable="yes">See and control your other computers, or share this one.</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="side_find">
+                    <style>
+                      <class name="outlined"/>
+                      <class name="library-icon-button"/>
+                    </style>
+                    <property name="name">side_find</property>
+                    <property name="icon-name">view-refresh-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Look for machines sharing their desktop</property>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="side_add">
+                    <style>
+                      <class name="outlined"/>
+                      <class name="library-new"/>
+                    </style>
+                    <property name="name">side_add</property>
+                    <property name="valign">3</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon-name">list-add-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label" translatable="yes">Add a machine…</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="GtkScrolledWindow">
                 <property name="hscrollbar-policy">2</property>
-                <property name="propagate-natural-width">false</property>
                 <property name="vexpand">true</property>
                 <child>
                   <object class="GtkBox">
-                    <style>
-                      <class name="remote-index"/>
-                    </style>
                     <property name="orientation">1</property>
-                    <property name="spacing">2</property>
                     <child>
                       <object class="GtkLabel">
                         <style>
                           <class name="kicker"/>
-                          <class name="remote-kicker"/>
+                          <class name="library-kicker"/>
                         </style>
                         <property name="label" translatable="yes">THIS COMPUTER</property>
                         <property name="xalign">0</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="side_sharing">
+                      <object class="GtkFlowBox" id="side_this">
                         <style>
-                          <class name="index-item"/>
+                          <class name="library-tiles"/>
                         </style>
-                        <property name="name">side_sharing</property>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="spacing">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <style>
-                                  <class name="index-icon"/>
-                                </style>
-                                <property name="icon-name">remote-sharing-symbolic</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="orientation">1</property>
-                                <property name="hexpand">true</property>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="title"/>
-                                    </style>
-                                    <property name="label" translatable="yes">Sharing</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="side_sharing_sub">
-                                    <style>
-                                      <class name="sub"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="ellipsize">3</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <property name="selection-mode">1</property>
+                        <property name="activate-on-single-click">true</property>
+                        <property name="homogeneous">true</property>
+                        <property name="min-children-per-line">1</property>
+                        <property name="max-children-per-line">8</property>
+                        <property name="column-spacing">12</property>
+                        <property name="row-spacing">12</property>
+                        <property name="valign">1</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkBox">
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <style>
-                              <class name="kicker"/>
-                              <class name="remote-kicker"/>
-                            </style>
-                            <property name="label" translatable="yes">MACHINES</property>
-                            <property name="xalign">0</property>
-                            <property name="hexpand">true</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="side_find">
-                            <style>
-                              <class name="plain"/>
-                              <class name="remote-find"/>
-                            </style>
-                            <property name="name">side_find</property>
-                            <property name="icon-name">view-refresh-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Look for machines sharing their desktop</property>
-                            <property name="valign">3</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="side_machines">
-                        <property name="orientation">1</property>
-                        <property name="spacing">2</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="side_add">
+                      <object class="GtkLabel">
                         <style>
-                          <class name="index-item"/>
+                          <class name="kicker"/>
+                          <class name="library-kicker"/>
                         </style>
-                        <property name="name">side_add</property>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="spacing">10</property>
-                            <child>
-                              <object class="GtkImage">
-                                <style>
-                                  <class name="index-icon"/>
-                                </style>
-                                <property name="icon-name">list-add-symbolic</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <style>
-                                  <class name="title"/>
-                                </style>
-                                <property name="label" translatable="yes">Add a machine…</property>
-                                <property name="xalign">0</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <property name="label" translatable="yes">MACHINES</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="side_machines">
+                        <style>
+                          <class name="library-tiles"/>
+                        </style>
+                        <property name="selection-mode">1</property>
+                        <property name="activate-on-single-click">true</property>
+                        <property name="homogeneous">true</property>
+                        <property name="min-children-per-line">1</property>
+                        <property name="max-children-per-line">8</property>
+                        <property name="column-spacing">12</property>
+                        <property name="row-spacing">12</property>
+                        <property name="valign">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="side_none">
+                        <style>
+                          <class name="sub"/>
+                          <class name="library-none"/>
+                        </style>
+                        <property name="label" translatable="yes">None found yet. Add one by its address, or look again.</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">true</property>
+                        <property name="visible">false</property>
                       </object>
                     </child>
                   </object>
@@ -171,51 +171,302 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
           </object>
         </child>
         <child>
-          <object class="GtkStack" id="pages">
-            <property name="hexpand">true</property>
-            <property name="hhomogeneous">false</property>
-            <property name="transition-type">1</property>
-            <property name="transition-duration">120</property>
+          <object class="GtkBox">
+            <style>
+              <class name="library-panel"/>
+            </style>
+            <property name="orientation">1</property>
+            <property name="width-request">520</property>
+            <property name="hexpand">false</property>
             <child>
-              <object class="GtkStackPage">
-                <property name="name">sharing</property>
-                <property name="child">
-                  <object class="GtkScrolledWindow">
-                    <property name="hscrollbar-policy">2</property>
+              <object class="GtkBox">
+                <style>
+                  <class name="panel-head"/>
+                </style>
+                <property name="spacing">12</property>
+                <child>
+                  <object class="GtkBox" id="panel_mark">
+                    <style>
+                      <class name="mark"/>
+                    </style>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <property name="hexpand">true</property>
+                    <property name="valign">3</property>
+                    <property name="spacing">2</property>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkLabel" id="panel_title">
                         <style>
-                          <class name="page"/>
+                          <class name="panel-title"/>
                         </style>
-                        <property name="orientation">1</property>
+                        <property name="xalign">0</property>
+                        <property name="ellipsize">3</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="panel_sub">
+                        <style>
+                          <class name="sub"/>
+                        </style>
+                        <property name="xalign">0</property>
+                        <property name="ellipsize">3</property>
+                        <property name="selectable">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStack" id="pages">
+                <property name="vexpand">true</property>
+                <property name="hhomogeneous">false</property>
+                <property name="transition-type">1</property>
+                <property name="transition-duration">120</property>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">sharing</property>
+                    <property name="child">
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">2</property>
                         <child>
                           <object class="GtkBox">
                             <style>
-                              <class name="section"/>
+                              <class name="page"/>
                             </style>
                             <property name="orientation">1</property>
                             <child>
                               <object class="GtkBox">
                                 <style>
-                                  <class name="section-head"/>
+                                  <class name="section"/>
                                 </style>
-                                <property name="spacing">10</property>
+                                <property name="orientation">1</property>
                                 <child>
                                   <object class="GtkBox">
                                     <style>
-                                      <class name="mark"/>
+                                      <class name="section-head"/>
                                     </style>
-                                    <property name="valign">3</property>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="label" translatable="yes">[SHARING]</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel">
+                                  <object class="GtkBox">
                                     <style>
-                                      <class name="section-label"/>
+                                      <class name="section-body"/>
                                     </style>
-                                    <property name="label" translatable="yes">[SHARING]</property>
-                                    <property name="hexpand">true</property>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Share this desktop</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="sharing_desc">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="sharing_switch">
+                                            <property name="name">sharing_switch</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Virtual screen</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">While no monitor is connected, this computer shows a screen of this size, to share.</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="sharing_virtual">
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item translatable="yes">Off</item>
+                                                  <item>1280 × 720</item>
+                                                  <item>1920 × 1080</item>
+                                                  <item>2560 × 1440</item>
+                                                  <item>3840 × 2160</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="sharing_need">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="orientation">1</property>
+                                        <property name="spacing">6</property>
+                                        <property name="visible">false</property>
+                                        <child>
+                                          <object class="GtkLabel" id="sharing_need_text">
+                                            <style>
+                                              <class name="label"/>
+                                            </style>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="sharing_need_fix">
+                                            <style>
+                                              <class name="sub"/>
+                                              <class name="remote-command"/>
+                                            </style>
+                                            <property name="xalign">0</property>
+                                            <property name="wrap">true</property>
+                                            <property name="selectable">true</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="sharing_error">
+                                        <style>
+                                          <class name="row"/>
+                                          <class name="sub"/>
+                                          <class name="remote-error"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="visible">false</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="sharing_pending_section">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <property name="visible">false</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="label" translatable="yes">[WAITING TO PAIR]</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="sharing_pending">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="pending_error">
+                                    <style>
+                                      <class name="row"/>
+                                      <class name="sub"/>
+                                      <class name="remote-error"/>
+                                    </style>
                                     <property name="xalign">0</property>
+                                    <property name="wrap">true</property>
+                                    <property name="selectable">true</property>
+                                    <property name="visible">false</property>
                                   </object>
                                 </child>
                               </object>
@@ -223,132 +474,45 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             <child>
                               <object class="GtkBox">
                                 <style>
-                                  <class name="section-body"/>
+                                  <class name="section"/>
                                 </style>
                                 <property name="orientation">1</property>
                                 <child>
                                   <object class="GtkBox">
                                     <style>
-                                      <class name="row"/>
+                                      <class name="section-head"/>
                                     </style>
-                                    <property name="spacing">12</property>
+                                    <property name="spacing">10</property>
                                     <child>
                                       <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
                                         <property name="valign">3</property>
-                                        <property name="spacing">2</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Share this desktop</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="sharing_desc">
-                                            <style>
-                                              <class name="sub"/>
-                                            </style>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
-                                          </object>
-                                        </child>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkSwitch" id="sharing_switch">
-                                        <property name="name">sharing_switch</property>
-                                        <property name="valign">3</property>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="label" translatable="yes">[PAIRED DEVICES]</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="sharing_clients">
                                     <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="valign">3</property>
-                                        <property name="spacing">2</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Virtual screen</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="sub"/>
-                                            </style>
-                                            <property name="label" translatable="yes">While no monitor is connected, this computer shows a screen of this size, to share.</property>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkDropDown" id="sharing_virtual">
-                                        <property name="valign">3</property>
-                                        <property name="model">
-                                          <object class="GtkStringList">
-                                            <items>
-                                              <item translatable="yes">Off</item>
-                                              <item>1280 × 720</item>
-                                              <item>1920 × 1080</item>
-                                              <item>2560 × 1440</item>
-                                              <item>3840 × 2160</item>
-                                            </items>
-                                          </object>
-                                        </property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="sharing_need">
-                                    <style>
-                                      <class name="row"/>
+                                      <class name="section-body"/>
                                     </style>
                                     <property name="orientation">1</property>
-                                    <property name="spacing">6</property>
-                                    <property name="visible">false</property>
-                                    <child>
-                                      <object class="GtkLabel" id="sharing_need_text">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="sharing_need_fix">
-                                        <style>
-                                          <class name="sub"/>
-                                          <class name="remote-command"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                        <property name="selectable">true</property>
-                                      </object>
-                                    </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="sharing_error">
+                                  <object class="GtkLabel" id="clients_error">
                                     <style>
                                       <class name="row"/>
                                       <class name="sub"/>
@@ -364,187 +528,137 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                             </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkBox" id="sharing_pending_section">
-                            <style>
-                              <class name="section"/>
-                            </style>
-                            <property name="orientation">1</property>
-                            <property name="visible">false</property>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-head"/>
-                                </style>
-                                <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="section-label"/>
-                                    </style>
-                                    <property name="label" translatable="yes">[WAITING TO PAIR]</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="sharing_pending">
-                                <style>
-                                  <class name="section-body"/>
-                                </style>
-                                <property name="orientation">1</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="pending_error">
-                                <style>
-                                  <class name="row"/>
-                                  <class name="sub"/>
-                                  <class name="remote-error"/>
-                                </style>
-                                <property name="xalign">0</property>
-                                <property name="wrap">true</property>
-                                <property name="selectable">true</property>
-                                <property name="visible">false</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <style>
-                              <class name="section"/>
-                            </style>
-                            <property name="orientation">1</property>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-head"/>
-                                </style>
-                                <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="section-label"/>
-                                    </style>
-                                    <property name="label" translatable="yes">[PAIRED DEVICES]</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="sharing_clients">
-                                <style>
-                                  <class name="section-body"/>
-                                </style>
-                                <property name="orientation">1</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="clients_error">
-                                <style>
-                                  <class name="row"/>
-                                  <class name="sub"/>
-                                  <class name="remote-error"/>
-                                </style>
-                                <property name="xalign">0</property>
-                                <property name="wrap">true</property>
-                                <property name="selectable">true</property>
-                                <property name="visible">false</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">machine</property>
-                <property name="child">
-                  <object class="GtkScrolledWindow">
-                    <property name="hscrollbar-policy">2</property>
-                    <child>
-                      <object class="GtkBox">
-                        <style>
-                          <class name="page"/>
-                        </style>
-                        <property name="orientation">1</property>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">machine</property>
+                    <property name="child">
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">2</property>
                         <child>
                           <object class="GtkBox">
                             <style>
-                              <class name="section"/>
+                              <class name="page"/>
                             </style>
                             <property name="orientation">1</property>
                             <child>
                               <object class="GtkBox">
                                 <style>
-                                  <class name="section-head"/>
-                                </style>
-                                <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="machine_title">
-                                    <style>
-                                      <class name="section-label"/>
-                                    </style>
-                                    <property name="hexpand">true</property>
-                                    <property name="xalign">0</property>
-                                    <property name="ellipsize">3</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-body"/>
+                                  <class name="section"/>
                                 </style>
                                 <property name="orientation">1</property>
                                 <child>
                                   <object class="GtkBox">
                                     <style>
-                                      <class name="row"/>
+                                      <class name="section-head"/>
                                     </style>
-                                    <property name="spacing">8</property>
+                                    <property name="spacing">10</property>
                                     <child>
                                       <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
                                         <property name="valign">3</property>
-                                        <property name="spacing">2</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="label" translatable="yes">[CONNECTION]</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">8</property>
                                         <child>
-                                          <object class="GtkLabel" id="machine_state">
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel" id="machine_state">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="machine_forget">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">machine_forget</property>
+                                            <property name="label" translatable="yes">Forget</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="machine_quit">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">machine_quit</property>
+                                            <property name="label" translatable="yes">End its session</property>
+                                            <property name="tooltip-text" translatable="yes">Ends what is streaming there, for every device</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="machine_pair">
+                                            <style>
+                                              <class name="outlined"/>
+                                            </style>
+                                            <property name="name">machine_pair</property>
+                                            <property name="label" translatable="yes">Pair</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="machine_connect">
+                                            <style>
+                                              <class name="suggested-action"/>
+                                            </style>
+                                            <property name="name">machine_connect</property>
+                                            <property name="label" translatable="yes">Connect</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="machine_pin_box">
+                                        <style>
+                                          <class name="row"/>
+                                          <class name="remote-pin"/>
+                                        </style>
+                                        <property name="orientation">1</property>
+                                        <property name="spacing">6</property>
+                                        <property name="visible">false</property>
+                                        <child>
+                                          <object class="GtkLabel" id="machine_pin_text">
                                             <style>
                                               <class name="label"/>
                                             </style>
@@ -553,9 +667,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkLabel" id="machine_addr">
+                                          <object class="GtkLabel" id="machine_pin">
                                             <style>
-                                              <class name="sub"/>
+                                              <class name="remote-pin-digits"/>
                                             </style>
                                             <property name="xalign">0</property>
                                             <property name="selectable">true</property>
@@ -564,463 +678,284 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkButton" id="machine_forget">
+                                      <object class="GtkLabel" id="machine_error">
                                         <style>
-                                          <class name="outlined"/>
-                                        </style>
-                                        <property name="name">machine_forget</property>
-                                        <property name="label" translatable="yes">Forget</property>
-                                        <property name="valign">3</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="machine_quit">
-                                        <style>
-                                          <class name="outlined"/>
-                                        </style>
-                                        <property name="name">machine_quit</property>
-                                        <property name="label" translatable="yes">End its session</property>
-                                        <property name="tooltip-text" translatable="yes">Ends what is streaming there, for every device</property>
-                                        <property name="valign">3</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="machine_pair">
-                                        <style>
-                                          <class name="outlined"/>
-                                        </style>
-                                        <property name="name">machine_pair</property>
-                                        <property name="label" translatable="yes">Pair</property>
-                                        <property name="valign">3</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="machine_connect">
-                                        <style>
-                                          <class name="suggested-action"/>
-                                        </style>
-                                        <property name="name">machine_connect</property>
-                                        <property name="label" translatable="yes">Connect</property>
-                                        <property name="valign">3</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="machine_pin_box">
-                                    <style>
-                                      <class name="row"/>
-                                      <class name="remote-pin"/>
-                                    </style>
-                                    <property name="orientation">1</property>
-                                    <property name="spacing">6</property>
-                                    <property name="visible">false</property>
-                                    <child>
-                                      <object class="GtkLabel" id="machine_pin_text">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="machine_pin">
-                                        <style>
-                                          <class name="remote-pin-digits"/>
-                                        </style>
-                                        <property name="xalign">0</property>
-                                        <property name="selectable">true</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="machine_error">
-                                    <style>
-                                      <class name="row"/>
-                                      <class name="sub"/>
-                                      <class name="remote-error"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="wrap">true</property>
-                                    <property name="selectable">true</property>
-                                    <property name="visible">false</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <style>
-                              <class name="section"/>
-                            </style>
-                            <property name="orientation">1</property>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-head"/>
-                                </style>
-                                <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="section-label"/>
-                                    </style>
-                                    <property name="label" translatable="yes">[STREAM]</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="section-meta"/>
-                                    </style>
-                                    <property name="label" translatable="yes">for every machine</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-body"/>
-                                </style>
-                                <property name="orientation">1</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="valign">3</property>
-                                        <property name="spacing">2</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Resolution</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="sub"/>
-                                            </style>
-                                            <property name="label" translatable="yes">The machine shows its desktop at this size.</property>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkDropDown" id="stream_size">
-                                        <property name="valign">3</property>
-                                        <property name="model">
-                                          <object class="GtkStringList">
-                                            <items>
-                                              <item translatable="yes">This monitor's</item>
-                                              <item>1280 × 720</item>
-                                              <item>1920 × 1080</item>
-                                              <item>2560 × 1440</item>
-                                              <item>3840 × 2160</item>
-                                            </items>
-                                          </object>
-                                        </property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="label" translatable="yes">Frames a second</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="xalign">0</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkDropDown" id="stream_fps">
-                                        <property name="valign">3</property>
-                                        <property name="model">
-                                          <object class="GtkStringList">
-                                            <items>
-                                              <item>30</item>
-                                              <item>60</item>
-                                              <item>90</item>
-                                              <item>120</item>
-                                            </items>
-                                          </object>
-                                        </property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="valign">3</property>
-                                        <property name="spacing">2</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Bitrate</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="sub"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Megabits a second: more is sharper, and needs a faster network.</property>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="stream_bitrate">
-                                        <property name="valign">3</property>
-                                        <property name="digits">0</property>
-                                        <property name="adjustment">
-                                          <object class="GtkAdjustment">
-                                            <property name="lower">2</property>
-                                            <property name="upper">150</property>
-                                            <property name="step-increment">1</property>
-                                            <property name="page-increment">10</property>
-                                          </object>
-                                        </property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="orientation">1</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="valign">3</property>
-                                        <property name="spacing">2</property>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <style>
-                                              <class name="label"/>
-                                            </style>
-                                            <property name="label" translatable="yes">Codec</property>
-                                            <property name="xalign">0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel" id="stream_codec_note">
-                                            <style>
-                                              <class name="sub"/>
-                                            </style>
-                                            <property name="xalign">0</property>
-                                            <property name="wrap">true</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkDropDown" id="stream_codec">
-                                        <property name="valign">3</property>
-                                        <property name="model">
-                                          <object class="GtkStringList">
-                                            <items>
-                                              <item>H.264</item>
-                                              <item>HEVC</item>
-                                              <item>AV1</item>
-                                            </items>
-                                          </object>
-                                        </property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="row"/>
-                                    </style>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="label" translatable="yes">Play the sound on the machine too</property>
-                                        <property name="hexpand">true</property>
-                                        <property name="xalign">0</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSwitch" id="stream_host_audio">
-                                        <property name="name">stream_host_audio</property>
-                                        <property name="valign">3</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="stream_error">
-                                    <style>
-                                      <class name="row"/>
-                                      <class name="sub"/>
-                                      <class name="remote-error"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="wrap">true</property>
-                                    <property name="selectable">true</property>
-                                    <property name="visible">false</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStackPage">
-                <property name="name">add</property>
-                <property name="child">
-                  <object class="GtkScrolledWindow">
-                    <property name="hscrollbar-policy">2</property>
-                    <child>
-                      <object class="GtkBox">
-                        <style>
-                          <class name="page"/>
-                        </style>
-                        <property name="orientation">1</property>
-                        <child>
-                          <object class="GtkBox">
-                            <style>
-                              <class name="section"/>
-                            </style>
-                            <property name="orientation">1</property>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-head"/>
-                                </style>
-                                <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="mark"/>
-                                    </style>
-                                    <property name="valign">3</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <style>
-                                      <class name="section-label"/>
-                                    </style>
-                                    <property name="label" translatable="yes">[ADD A MACHINE]</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <style>
-                                  <class name="section-body"/>
-                                </style>
-                                <property name="orientation">1</property>
-                                <child>
-                                  <object class="GtkBox">
-                                    <style>
-                                      <class name="field"/>
-                                    </style>
-                                    <property name="orientation">1</property>
-                                    <property name="spacing">6</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <style>
-                                          <class name="label"/>
-                                        </style>
-                                        <property name="label" translatable="yes">Its address on the network: a name, an IP address, or either with :port.</property>
-                                        <property name="xalign">0</property>
-                                        <property name="wrap">true</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox">
-                                        <property name="spacing">8</property>
-                                        <child>
-                                          <object class="GtkEntry" id="add_addr">
-                                            <property name="hexpand">true</property>
-                                            <property name="placeholder-text">desk.local, 192.168.1.20, desk.tail1234.ts.net</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="add_ok">
-                                            <style>
-                                              <class name="suggested-action"/>
-                                            </style>
-                                            <property name="name">add_ok</property>
-                                            <property name="label" translatable="yes">Add</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="add_error">
-                                        <style>
+                                          <class name="row"/>
                                           <class name="sub"/>
                                           <class name="remote-error"/>
                                         </style>
                                         <property name="xalign">0</property>
                                         <property name="wrap">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="visible">false</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <style>
+                                  <class name="section"/>
+                                </style>
+                                <property name="orientation">1</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-head"/>
+                                    </style>
+                                    <property name="spacing">10</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="mark"/>
+                                        </style>
+                                        <property name="valign">3</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-label"/>
+                                        </style>
+                                        <property name="label" translatable="yes">[STREAM]</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <style>
+                                          <class name="section-meta"/>
+                                        </style>
+                                        <property name="label" translatable="yes">for every machine</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <style>
+                                      <class name="section-body"/>
+                                    </style>
+                                    <property name="orientation">1</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Resolution</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">The machine shows its desktop at this size.</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="stream_size">
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item translatable="yes">This monitor's</item>
+                                                  <item>1280 × 720</item>
+                                                  <item>1920 × 1080</item>
+                                                  <item>2560 × 1440</item>
+                                                  <item>3840 × 2160</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="label"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Frames a second</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="stream_fps">
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item>30</item>
+                                                  <item>60</item>
+                                                  <item>90</item>
+                                                  <item>120</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Bitrate</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Megabits a second: more is sharper, and needs a faster network.</property>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSpinButton" id="stream_bitrate">
+                                            <property name="valign">3</property>
+                                            <property name="digits">0</property>
+                                            <property name="adjustment">
+                                              <object class="GtkAdjustment">
+                                                <property name="lower">2</property>
+                                                <property name="upper">150</property>
+                                                <property name="step-increment">1</property>
+                                                <property name="page-increment">10</property>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="orientation">1</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="valign">3</property>
+                                            <property name="spacing">2</property>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <style>
+                                                  <class name="label"/>
+                                                </style>
+                                                <property name="label" translatable="yes">Codec</property>
+                                                <property name="xalign">0</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="stream_codec_note">
+                                                <style>
+                                                  <class name="sub"/>
+                                                </style>
+                                                <property name="xalign">0</property>
+                                                <property name="wrap">true</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkDropDown" id="stream_codec">
+                                            <property name="valign">3</property>
+                                            <property name="model">
+                                              <object class="GtkStringList">
+                                                <items>
+                                                  <item>H.264</item>
+                                                  <item>HEVC</item>
+                                                  <item>AV1</item>
+                                                </items>
+                                              </object>
+                                            </property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <style>
+                                          <class name="row"/>
+                                        </style>
+                                        <property name="spacing">12</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <style>
+                                              <class name="label"/>
+                                            </style>
+                                            <property name="label" translatable="yes">Play the sound on the machine too</property>
+                                            <property name="hexpand">true</property>
+                                            <property name="xalign">0</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSwitch" id="stream_host_audio">
+                                            <property name="name">stream_host_audio</property>
+                                            <property name="valign">3</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="stream_error">
+                                        <style>
+                                          <class name="row"/>
+                                          <class name="sub"/>
+                                          <class name="remote-error"/>
+                                        </style>
+                                        <property name="xalign">0</property>
+                                        <property name="wrap">true</property>
+                                        <property name="selectable">true</property>
+                                        <property name="visible">false</property>
                                       </object>
                                     </child>
                                   </object>
@@ -1030,9 +965,92 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                </property>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="add_dialog">
+    <style>
+      <class name="app"/>
+      <class name="settings"/>
+      <class name="remote"/>
+      <class name="remote-dialog"/>
+    </style>
+    <property name="title" translatable="yes">Add a machine</property>
+    <property name="modal">true</property>
+    <property name="hide-on-close">true</property>
+    <property name="resizable">false</property>
+    <child>
+      <object class="GtkBox">
+        <style>
+          <class name="page"/>
+        </style>
+        <property name="orientation">1</property>
+        <property name="spacing">10</property>
+        <property name="width-request">440</property>
+        <child>
+          <object class="GtkLabel">
+            <style>
+              <class name="remote-dialog-title"/>
+            </style>
+            <property name="label" translatable="yes">Add a machine</property>
+            <property name="xalign">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <style>
+              <class name="sub"/>
+            </style>
+            <property name="label" translatable="yes">Its address on the network: a name, an IP address, or either with :port.</property>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="add_addr">
+            <property name="placeholder-text">desk.local, 192.168.1.20, desk.tail1234.ts.net</property>
+            <property name="margin-top">4</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="add_error">
+            <style>
+              <class name="sub"/>
+              <class name="remote-error"/>
+            </style>
+            <property name="xalign">0</property>
+            <property name="wrap">true</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <property name="margin-top">8</property>
+            <property name="halign">2</property>
+            <child>
+              <object class="GtkButton" id="add_cancel">
+                <style>
+                  <class name="outlined"/>
+                </style>
+                <property name="name">add_cancel</property>
+                <property name="label" translatable="yes">Cancel</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="add_ok">
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <property name="name">add_ok</property>
+                <property name="label" translatable="yes">Add</property>
               </object>
             </child>
           </object>
