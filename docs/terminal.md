@@ -280,8 +280,12 @@ inua-termd serve --new-token      a new token: links with the old one stop worki
 
 It prints the page's link, with its token; every request carries it,
 and it is kept in the keyring (inua-keyring; the login keychain on a
-Mac), so the link stays the same. The page is a client of the host, as the window is, and starts the
-host when none runs. Open the link on the phone, or add it to the home
+Mac), so the link stays the same. Where the keyring cannot keep it (no
+desktop session; a Mac reached over SSH, its keychain locked), it is
+kept in `term-web-token` in inua's configuration folder (`~/.config/inua`,
+`~/Library/Application Support/inua` on a Mac), readable by you alone.
+The page is a client of the host, as the window is, and starts the host
+when none runs. Open the link on the phone, or add it to the home
 screen: it is a web app in the theme's colours.
 
 - **Agents**: every agent by its state (needs you, working, done, idle),
@@ -349,7 +353,8 @@ bin/inua-termd serve --tailscale
 ```
 
 `ZIG_TARGET=aarch64-macos` (or `x86_64-macos`) builds the engine on
-Linux as well. The page's token is kept in the login keychain; an agent
+Linux as well. The page's token is kept in the login keychain, or in a file
+when the keychain is locked (over SSH); an agent
 that needs you posts a notification of the Mac's own (through
 osascript), which opens nothing when clicked. The computer's CPU and
 memory are not read yet: the page leaves them out. There is no service

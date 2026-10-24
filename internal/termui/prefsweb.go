@@ -145,7 +145,7 @@ func webError(err error) string {
 	case err == nil:
 		return ""
 	case errors.Is(err, webterm.ErrNoKeyring):
-		return i18n.T("No keyring to keep the link's token in: start inua-keyring.")
+		return i18n.T("The link's token could be kept neither in the keyring nor in a file.")
 	case errors.Is(err, webterm.ErrNoTailscale):
 		return i18n.T("This computer has no Tailscale address: is Tailscale up? (tailscale up)")
 	case errors.Is(err, context.DeadlineExceeded):
