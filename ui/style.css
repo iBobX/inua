@@ -120,6 +120,9 @@ button.image-button { padding-left: 0; padding-right: 0; }
   border: none;
   padding: 0 6px 0 8px;
 }
+/* Flush against the screen's edges (style.edge_gaps off): square, whatever
+   style.radius is. */
+.bar.flush .island { border-radius: 0; }
 /* An empty workspace's islands: the glass taken twice, lighter. */
 .bar.empty .island { background: @glass_empty; }
 .bar.compact .clock { font-size: 11px; }

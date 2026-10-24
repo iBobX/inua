@@ -224,6 +224,11 @@ func (b *bar) setEdgeGap(gaps bool) {
 	b.island.SetMarginTop(topMargin)
 	b.island.SetMarginStart(margin)
 	b.island.SetMarginEnd(margin)
+	if gaps {
+		b.win.RemoveCssClass("flush")
+	} else {
+		b.win.AddCssClass("flush") // square against the screen's edges
+	}
 }
 
 // setDensity applies the selected bar spacing without rebuilding the surface.
