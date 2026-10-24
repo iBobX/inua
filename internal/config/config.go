@@ -52,9 +52,6 @@ type Bar struct {
 	Enable bool `toml:"enable"`
 	// Density is "default" or "compact"; compact reduces the bar's height and spacing.
 	Density string `toml:"density"`
-	// EmptyTransparency and WindowTransparency are background transparency percentages (0-80).
-	EmptyTransparency  int `toml:"empty_transparency"`
-	WindowTransparency int `toml:"window_transparency"`
 	// Clock is a strftime format (see Strftime).
 	Clock string `toml:"clock"`
 	// Workspaces is "monitor" (each bar shows its monitor's workspaces)
@@ -145,6 +142,13 @@ type Style struct {
 	// TextScale sizes the built-in style's text, 80 to 150 percent. Icons,
 	// spacing and the user's stylesheet keep their sizes.
 	TextScale int `toml:"text_scale"`
+	// Transparency is the floating surfaces' background transparency
+	// (the bar, launcher, panels, dock, notifications and the level
+	// indicator), 0 (opaque) to 80 percent.
+	Transparency int `toml:"transparency"`
+	// Radius is the corner radius of the same surfaces and the menus, 0
+	// (square) to 20 pixels; the dock's is half as much again.
+	Radius int `toml:"radius"`
 }
 
 type Background struct {
@@ -532,8 +536,6 @@ type Clipboard struct {
 	Enable bool `toml:"enable"`
 	// Bar shows a clipboard history button in the top bar.
 	Bar bool `toml:"bar"`
-	// Opacity is the panel's, 50 to 100 percent.
-	Opacity int `toml:"opacity"`
 	// Limit is how many entries the history keeps, 20 to 1000.
 	Limit int `toml:"limit"`
 	// PasteOnClick pastes a clicked entry into the window that was
@@ -696,15 +698,13 @@ func Default() Config {
 	return Config{
 		Language: "auto",
 		Bar: Bar{
-			Enable:             true,
-			Density:            "default",
-			EmptyTransparency:  30,
-			WindowTransparency: 15,
-			Clock:              "%a %b %-d  %H:%M",
-			Workspaces:         "monitor",
-			Title:              true,
-			Tray:               true,
-			Pass:               true,
+			Enable:     true,
+			Density:    "default",
+			Clock:      "%a %b %-d  %H:%M",
+			Workspaces: "monitor",
+			Title:      true,
+			Tray:       true,
+			Pass:       true,
 		},
 		Launcher: Launcher{Mode: "apps", Search: "https://www.google.com/search?q=%s", Quicklinks: slices.Clone(DefaultQuicklinks)},
 		Overview: Overview{MRU: false, PerMonitor: true},
@@ -712,12 +712,12 @@ func Default() Config {
 			Lock:       "inua call lock now",
 			Screenshot: "inua call screenshot area",
 		},
-		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", AppIcons: "system", EdgeGaps: true, TextScale: 100},
+		Style:      Style{Theme: "yoru", CSS: "style.css", Icons: "phosphor", AppIcons: "system", EdgeGaps: true, TextScale: 100, Transparency: 16, Radius: 4},
 		Background: Background{Enable: true, Fit: "cover", Generate: true},
 		Displays:   Displays{LidOff: true},
 		Notify:     Notify{Enable: true, Banner: 5, CriticalInFocus: true, Updates: true},
 		Screenshot: Screenshot{Folder: "~/Pictures/Screenshots", Copy: true, Recordings: "~/Videos/Screencasts"},
-		Clipboard:  Clipboard{Enable: true, Bar: true, Opacity: 84, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
+		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
 		Shortcuts: []Shortcut{
 			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
@@ -738,6 +738,10 @@ func DefaultPath() string {
 	}
 	return filepath.Join(dir, "inua", "config.toml")
 }
+
+// oldTransparency are the settings style.transparency replaced; a file
+// that still has them loads without a warning.
+var oldTransparency = []string{"bar.empty_transparency", "bar.window_transparency", "clipboard.opacity"}
 
 // Load reads the file at path over the defaults. A missing file gives the
 // defaults. The error is for a file that exists but cannot be read or
@@ -764,6 +768,9 @@ func Load(path string) (Config, []string, error) {
 		if k.String() == "assistant.profiles.api_key_env" {
 			continue // keys were once read from a variable; now only the keyring holds them
 		}
+		if slices.Contains(oldTransparency, k.String()) {
+			continue // style.transparency took their place
+		}
 		warnings = append(warnings, fmt.Sprintf("unknown setting %s", k))
 	}
 	warnings = append(warnings, c.validate()...)
@@ -783,16 +790,6 @@ func (c *Config) validate() []string {
 	}
 	oneOf("bar.workspaces", &c.Bar.Workspaces, d.Bar.Workspaces, "monitor", "all")
 	oneOf("bar.density", &c.Bar.Density, d.Bar.Density, "default", "compact")
-	for _, setting := range []struct {
-		name  string
-		value *int
-		def   int
-	}{{"bar.empty_transparency", &c.Bar.EmptyTransparency, d.Bar.EmptyTransparency}, {"bar.window_transparency", &c.Bar.WindowTransparency, d.Bar.WindowTransparency}} {
-		if *setting.value < 0 || *setting.value > 80 {
-			w = append(w, fmt.Sprintf("%s = %d: want 0..80; using %d", setting.name, *setting.value, setting.def))
-			*setting.value = setting.def
-		}
-	}
 	oneOf("launcher.mode", &c.Launcher.Mode, d.Launcher.Mode, "apps", "windows")
 	if !ValidSearchURL(c.Launcher.Search) {
 		w = append(w, fmt.Sprintf("launcher.search = %q: want a web address with %%s for the words; using %q", c.Launcher.Search, d.Launcher.Search))
@@ -848,6 +845,14 @@ func (c *Config) validate() []string {
 		w = append(w, fmt.Sprintf("style.text_scale = %d: want 80 to 150; using %d", c.Style.TextScale, d.Style.TextScale))
 		c.Style.TextScale = d.Style.TextScale
 	}
+	if c.Style.Transparency < 0 || c.Style.Transparency > 80 {
+		w = append(w, fmt.Sprintf("style.transparency = %d: want 0 to 80; using %d", c.Style.Transparency, d.Style.Transparency))
+		c.Style.Transparency = d.Style.Transparency
+	}
+	if c.Style.Radius < 0 || c.Style.Radius > 20 {
+		w = append(w, fmt.Sprintf("style.radius = %d: want 0 to 20; using %d", c.Style.Radius, d.Style.Radius))
+		c.Style.Radius = d.Style.Radius
+	}
 	oneOf("background.fit", &c.Background.Fit, d.Background.Fit, Fits...)
 	if !ValidColor(c.Background.Color) {
 		w = append(w, fmt.Sprintf("background.color = %q: want #rrggbb; using the theme's ground", c.Background.Color))
@@ -888,10 +893,6 @@ func (c *Config) validate() []string {
 	}
 	if c.Control.Lock == OldLockCommand {
 		c.Control.Lock = d.Control.Lock
-	}
-	if c.Clipboard.Opacity < 50 || c.Clipboard.Opacity > 100 {
-		w = append(w, fmt.Sprintf("clipboard.opacity = %d: want 50 to 100; using %d", c.Clipboard.Opacity, d.Clipboard.Opacity))
-		c.Clipboard.Opacity = d.Clipboard.Opacity
 	}
 	if c.Clipboard.Limit < 20 || c.Clipboard.Limit > 1000 {
 		w = append(w, fmt.Sprintf("clipboard.limit = %d: want 20 to 1000; using %d", c.Clipboard.Limit, d.Clipboard.Limit))

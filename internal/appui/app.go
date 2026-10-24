@@ -331,7 +331,7 @@ func (c *Ctx) loadStyle() {
 	}
 	themeCSS := cfg.ThemeCSS(theme, c.ReadUI)
 	c.Colors = config.ThemeColors(themeCSS)
-	c.css.LoadFromString(themeCSS + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale))
+	c.css.LoadFromString(themeCSS + shell.Glass(cfg.Style.Transparency) + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale) + shell.Corners(cfg.Style.Radius))
 	if p := cfg.CSSPath(); p != "" {
 		if b, err := os.ReadFile(p); err == nil {
 			c.userCSS.LoadFromString(string(b))

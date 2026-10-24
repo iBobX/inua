@@ -26,9 +26,7 @@ type styles struct {
 	base      *gtk.CssProvider // theme tokens + style.css
 	user      *gtk.CssProvider // style.css from the config directory
 	wallpaper *gtk.CssProvider // window.wallpaper
-	clipboard *gtk.CssProvider // clipboard card opacity
 	swatches  *gtk.CssProvider // the settings window's theme swatches
-	bar       *gtk.CssProvider // per-workspace bar background transparency
 	drawing   string           // the picture inua is drawing, by its key (picturePath)
 	shown     string           // the file of the picture inua drew last shown
 	midnight  *time.Timer      // draws the next day's picture (nextPicture)
@@ -47,8 +45,7 @@ func (s *shellUI) loadStyles() {
 		gtk.StyleContextAddProviderForDisplay(display, st.wallpaper, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION))
 		gtk.StyleContextAddProviderForDisplay(display, st.user, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
-	// The theme defines the colour tokens style.css uses.
-	st.base.LoadFromString(s.cfg.ThemeCSS(s.theme(), s.readUI) + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale))
+	s.loadBase()
 	user := ""
 	if path := s.cfg.CSSPath(); path != "" {
 		if css, err := os.ReadFile(path); err == nil {
@@ -60,33 +57,15 @@ func (s *shellUI) loadStyles() {
 	}
 	st.user.LoadFromString(user)
 	s.loadIcons()
-	s.loadClipboardStyle()
 	s.loadSwatchStyle()
-	s.loadBarStyle()
 }
 
-func (s *shellUI) loadBarStyle() {
-	st := &s.styles
-	if st.bar == nil {
-		st.bar = gtk.NewCssProvider()
-		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.bar, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION+1))
-	}
-	empty := 1 - float64(s.cfg.Bar.EmptyTransparency)/100
-	occupied := 1 - float64(s.cfg.Bar.WindowTransparency)/100
-	st.bar.LoadFromString(fmt.Sprintf(
-		".bar.empty .island { background: alpha(@app, %.2f); }\n.bar.occupied .island { background: alpha(@app, %.2f); }\n",
-		empty, occupied))
-}
-
-func (s *shellUI) loadClipboardStyle() {
-	st := &s.styles
-	if st.clipboard == nil {
-		st.clipboard = gtk.NewCssProvider()
-		gtk.StyleContextAddProviderForDisplay(gdk.DisplayGetDefault(), st.clipboard, uint32(gtk.STYLE_PROVIDER_PRIORITY_APPLICATION+1))
-	}
-	// The settings file checks the range (config.validate).
-	css := fmt.Sprintf(".clipboard-panel .clipboard-card { background: alpha(@app, %.2f); }\n", float64(s.cfg.Clipboard.Opacity)/100)
-	st.clipboard.LoadFromString(css)
+// loadBase loads the theme and the built-in style, with the surfaces'
+// transparency and corners, alone; a new transparency or radius needs no
+// more.
+func (s *shellUI) loadBase() {
+	// The theme defines the colour tokens style.css uses.
+	s.styles.base.LoadFromString(s.cfg.ThemeCSS(s.theme(), s.readUI) + shell.Glass(s.cfg.Style.Transparency) + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale) + shell.Corners(s.cfg.Style.Radius))
 }
 
 // loadWallpaper styles the wallpaper windows from the settings: the picture
@@ -179,8 +158,13 @@ func (s *shellUI) applyConfig(c config.Config) {
 	if old.Overview != c.Overview {
 		s.installOverviewKeys()
 	}
-	if old.Style != c.Style {
-		s.loadStyles()
+	if was, now := old.Style, c.Style; was != now {
+		was.Transparency, was.Radius = now.Transparency, now.Radius
+		if was == now {
+			s.loadBase()
+		} else {
+			s.loadStyles()
+		}
 	}
 	if old.Style.AppIcons != c.Style.AppIcons {
 		for _, b := range s.bars {
@@ -189,9 +173,6 @@ func (s *shellUI) applyConfig(c config.Config) {
 			}
 		}
 		s.renderDocks()
-	}
-	if old.Bar.EmptyTransparency != c.Bar.EmptyTransparency || old.Bar.WindowTransparency != c.Bar.WindowTransparency {
-		s.loadBarStyle()
 	}
 	if old.Style.Theme != c.Style.Theme || old.Background != c.Background || old.Dir != c.Dir {
 		s.loadWallpaper()
@@ -216,9 +197,6 @@ func (s *shellUI) applyConfig(c config.Config) {
 	}
 	if c.Bar.Pass && !old.Bar.Pass {
 		s.checkPasswordsStore() // one may have been made since
-	}
-	if old.Clipboard.Opacity != c.Clipboard.Opacity {
-		s.loadClipboardStyle()
 	}
 	if old.Clipboard.Enable != c.Clipboard.Enable {
 		if c.Clipboard.Enable {

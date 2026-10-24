@@ -15,17 +15,17 @@ import (
 func Format(c Config) string {
 	return fmt.Sprintf(template,
 		q(c.Language),
-		c.Bar.Enable, q(c.Bar.Density), c.Bar.EmptyTransparency, c.Bar.WindowTransparency, q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray, c.Bar.Pass,
+		c.Bar.Enable, q(c.Bar.Density), q(c.Bar.Clock), q(c.Bar.Workspaces), c.Bar.Title, c.Bar.Tray, c.Bar.Pass,
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
-		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.AppIcons), c.Style.EdgeGaps, c.Style.TextScale, q(c.Style.CSS),
+		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.AppIcons), c.Style.EdgeGaps, c.Style.TextScale, c.Style.Transparency, c.Style.Radius, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		c.Background.Generate,
 		kbOptionsLine(c.Input.KbOptions), touchpadSpeedLine(c.Input.TouchpadSpeed), q(c.Input.TouchpadAccel),
 		c.Displays.LidOff, monitors(c.Displays.Monitors),
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
-		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Opacity, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
+		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
@@ -196,11 +196,6 @@ enable = %t
 # Bar density: "default" or "compact". Compact saves vertical screen space.
 density = %s
 
-# Background transparency, from 0%% (opaque) to 80%% (more transparent).
-# Empty workspaces and workspaces with windows can be tuned separately.
-empty_transparency = %d
-window_transparency = %d
-
 # Clock, in strftime format: %%a %%A weekday, %%b %%B month, %%d %%e day, %%m month,
 # %%Y year, %%H %%I hour (24h/12h), %%M minute, %%S second, %%p AM/PM.
 # A '-' drops zero padding (%%-d, %%-H). With seconds, the clock ticks every
@@ -297,6 +292,16 @@ edge_gaps = %t
 # Size of the text in the shell and inua's apps, 80 to 150 percent. Icons,
 # spacing and the stylesheet below keep their sizes.
 text_scale = %d
+
+# Background transparency of the bar, the launcher, the panels, the dock,
+# notifications and the level indicator, from 0%% (opaque) to 80%%. An
+# empty workspace's bar is lighter. Menus, the settings window and the
+# lock screen keep theirs.
+transparency = %d
+
+# Corner radius of the same surfaces and the menus, 0 (square) to 20
+# pixels; the dock's is half as much again.
+radius = %d
 
 # Extra stylesheet loaded after the built-in one, relative to this file's
 # directory. Ignored if the file does not exist. See style.css next to this
@@ -403,9 +408,6 @@ enable = %t
 # Show the clipboard history button in the top bar; a shortcut set in
 # Shortcuts (Clipboard history) opens the panel too.
 bar = %t
-
-# The panel's opacity, 50 to 100 percent.
-opacity = %d
 
 # How many entries the history keeps, 20 to 1000; the oldest go first.
 limit = %d

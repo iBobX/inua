@@ -625,27 +625,71 @@ func TestTextScale(t *testing.T) {
 	}
 }
 
-// The clipboard history is kept by default; opacity and limit outside
-// their ranges are reported and fall back to the defaults.
+// The clipboard history is kept by default; a limit outside its range is
+// reported and falls back to the default.
 func TestClipboard(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.toml")
 	for _, c := range []struct {
-		file          string
-		enable        bool
-		opacity, keep int
-		warned        bool
+		file   string
+		enable bool
+		keep   int
+		warned bool
 	}{
-		{"", true, 84, 300, false},
-		{"[clipboard]\nenable = false\nopacity = 50\nlimit = 1000\n", false, 50, 1000, false},
-		{"[clipboard]\nopacity = 30\nlimit = 10\n", true, 84, 300, true},
+		{"", true, 300, false},
+		{"[clipboard]\nenable = false\nlimit = 1000\n", false, 1000, false},
+		{"[clipboard]\nlimit = 10\n", true, 300, true},
 	} {
 		if err := os.WriteFile(path, []byte(c.file), 0o644); err != nil {
 			t.Fatal(err)
 		}
 		cfg, warnings, err := Load(path)
 		got := cfg.Clipboard
-		if err != nil || got.Enable != c.enable || got.Opacity != c.opacity || got.Limit != c.keep || (len(warnings) > 0) != c.warned {
+		if err != nil || got.Enable != c.enable || got.Limit != c.keep || (len(warnings) > 0) != c.warned {
 			t.Errorf("%q: %+v %v %v", c.file, got, warnings, err)
+		}
+	}
+}
+
+// The surfaces are 16% transparent unless the file says otherwise; a value
+// outside 0 to 80 is reported and falls back to 16. The bar's and the
+// clipboard's own settings it replaced load without a warning.
+func TestTransparency(t *testing.T) {
+	for _, c := range []struct {
+		file         string
+		transparency int
+		warned       bool
+	}{
+		{"", 16, false},
+		{"[style]\ntransparency = 0\n", 0, false},
+		{"[style]\ntransparency = 80\n", 80, false},
+		{"[style]\ntransparency = 90\n", 16, true},
+		{"[style]\ntransparency = -1\n", 16, true},
+		{"[bar]\nempty_transparency = 30\nwindow_transparency = 15\n[clipboard]\nopacity = 84\n", 16, false},
+	} {
+		cfg, warnings, err := Load(write(t, c.file))
+		if err != nil || cfg.Style.Transparency != c.transparency || (len(warnings) > 0) != c.warned {
+			t.Errorf("%q: %d %v %v", c.file, cfg.Style.Transparency, warnings, err)
+		}
+	}
+}
+
+// The corners are 4px unless the file says otherwise; a radius outside 0
+// to 20 is reported and falls back to 4.
+func TestRadius(t *testing.T) {
+	for _, c := range []struct {
+		file   string
+		radius int
+		warned bool
+	}{
+		{"", 4, false},
+		{"[style]\nradius = 0\n", 0, false},
+		{"[style]\nradius = 20\n", 20, false},
+		{"[style]\nradius = 21\n", 4, true},
+		{"[style]\nradius = -1\n", 4, true},
+	} {
+		cfg, warnings, err := Load(write(t, c.file))
+		if err != nil || cfg.Style.Radius != c.radius || (len(warnings) > 0) != c.warned {
+			t.Errorf("%q: %d %v %v", c.file, cfg.Style.Radius, warnings, err)
 		}
 	}
 }

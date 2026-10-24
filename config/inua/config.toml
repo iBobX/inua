@@ -22,11 +22,6 @@ enable = true
 # Bar density: "default" or "compact". Compact saves vertical screen space.
 density = "default"
 
-# Background transparency, from 0% (opaque) to 80% (more transparent).
-# Empty workspaces and workspaces with windows can be tuned separately.
-empty_transparency = 30
-window_transparency = 15
-
 # Clock, in strftime format: %a %A weekday, %b %B month, %d %e day, %m month,
 # %Y year, %H %I hour (24h/12h), %M minute, %S second, %p AM/PM.
 # A '-' drops zero padding (%-d, %-H). With seconds, the clock ticks every
@@ -159,6 +154,16 @@ edge_gaps = true
 # spacing and the stylesheet below keep their sizes.
 text_scale = 100
 
+# Background transparency of the bar, the launcher, the panels, the dock,
+# notifications and the level indicator, from 0% (opaque) to 80%. An
+# empty workspace's bar is lighter. Menus, the settings window and the
+# lock screen keep theirs.
+transparency = 16
+
+# Corner radius of the same surfaces and the menus, 0 (square) to 20
+# pixels; the dock's is half as much again.
+radius = 4
+
 # Extra stylesheet loaded after the built-in one, relative to this file's
 # directory. Ignored if the file does not exist. See style.css next to this
 # file for the colors you can override.
@@ -264,9 +269,6 @@ enable = true
 # Show the clipboard history button in the top bar; a shortcut set in
 # Shortcuts (Clipboard history) opens the panel too.
 bar = true
-
-# The panel's opacity, 50 to 100 percent.
-opacity = 84
 
 # How many entries the history keeps, 20 to 1000; the oldest go first.
 limit = 300

@@ -111,16 +111,17 @@ button.image-button { padding-left: 0; padding-right: 0; }
 /* --- bar ------------------------------------------------------------- */
 
 .bar .island {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid alpha(@line, 0.9);
   border-radius: 4px;
   padding: 0 8px 0 12px;
 }
 .bar.compact .island {
-  background: alpha(@app, 0.84);
   border: none;
   padding: 0 6px 0 8px;
 }
+/* An empty workspace's islands: the glass taken twice, lighter. */
+.bar.empty .island { background: @glass_empty; }
 .bar.compact .clock { font-size: 11px; }
 .bar.compact .workspaces button.focused { min-width: 14px; }
 .bar.compact button.status,
@@ -204,7 +205,7 @@ button.image-button { padding-left: 0; padding-right: 0; }
 /* --- launcher -------------------------------------------------------- */
 
 .launcher {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid @line;
   border-radius: 4px;
 }
@@ -309,7 +310,7 @@ button.image-button { padding-left: 0; padding-right: 0; }
 /* Under the clock, in the control and notification centers' card. */
 .agenda .backdrop { background: alpha(@app, 0.18); }
 .agenda .card {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid @line;
   border-radius: 4px;
   padding: 14px 16px 16px;
@@ -355,7 +356,7 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 
 .control .backdrop { background: alpha(@app, 0.18); }
 .control .card {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid @line;
   border-radius: 4px;
   padding: 14px 16px 16px;
@@ -503,7 +504,7 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
   padding: 12px 14px;
   border: 1px solid @line;
   border-radius: 4px;
-  background: alpha(@app, 0.84);
+  background: @glass;
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
 .note.banner { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26); }
@@ -511,7 +512,7 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 /* The volume indicator: a card floating over the windows, like a banner;
    the level drawn as the control center's slider is, without the knob. */
 .osd-card {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid @line;
   border-radius: 4px;
   padding: 12px 16px;
@@ -558,7 +559,7 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 
 .center .backdrop, .clipboard-panel .backdrop { background: alpha(@app, 0.18); }
 .center .card, .clipboard-panel .clipboard-card {
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid @line;
   border-radius: 4px;
   padding: 14px 16px 16px;
@@ -597,7 +598,7 @@ button.link:hover { color: @t0; }
    running ones (the accent for the one in front). */
 .dock {
   padding: 3px 4px 2px;
-  background: alpha(@app, 0.84);
+  background: @glass;
   border: 1px solid alpha(@line, 0.9);
   border-radius: 6px;
 }
