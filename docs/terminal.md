@@ -311,7 +311,7 @@ screen: it is a web app in the theme's colours.
   more keys in the keyboard's place (Ctrl and Alt combinations, Home,
   End, symbols, F1–F12); its Snippets tab has replies typed often ("Sure,
   please do it.", "Wait, let me think." …) and your own, added there and
-  kept in the browser: a snippet's key types it, ⏎ beside it sends it.
+  kept in the browser: tapping a snippet sends it, with Enter.
   Its Info tab says what the pane's connection says.
 - Scrolling goes as a phone's lists do: the finger moves the history by
   the pixel, a swipe glides on, and the ends stretch. A program on the

@@ -174,13 +174,11 @@
   #pinfo .line { margin:0; padding:6px 0; }
   #pinfo { --out:0px; }
   #pinfo .line .label { color:var(--t1); }
-  /* Snippets: a keycap of its text, which types it, and ⏎ beside it,
-     which sends it; yours with a delete. */
+  /* Snippets: a keycap of its text, which sends it; yours with a delete. */
   #psnips .snip { display:flex; gap:6px; margin-top:6px; }
   #psnips .snip button { height:40px; flex:none; }
   #psnips .snip .say { flex:1; min-width:0; padding:0 12px; text-align:left; font:13px var(--sans); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  #psnips .snip .send, #psnips .snip .del { width:44px; display:flex; align-items:center; justify-content:center; }
-  #psnips .snip .send { font:17px var(--mono); color:var(--t1); }
+  #psnips .snip .del { width:44px; display:flex; align-items:center; justify-content:center; }
   #psnips .snip .icon { width:15px; height:15px; }
   #psnips .add { width:100%; margin-top:10px; font:12.5px var(--sans); color:var(--t1); }
   #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
@@ -1646,8 +1644,8 @@ for (const [name, keys] of panelGroups) {
 }
 // Snippets: what is typed often, to an agent above all. The built-in
 // ones, then the device's own, kept in its browser. A snippet's keycap
-// types it; ⏎ beside it sends it.
-const builtinSnippets = [T("Sure, please do it."), T("Wait, let me think."), T("Continue."), T("Yes."), T("No."), T("Explain it first, before you change anything.")];
+// sends it, with Enter.
+const builtinSnippets = [T("Sure, please do it."), T("Wait, let me think."), T("Continue."), T("Explain it first, before you change anything.")];
 let snippets = [];
 try { snippets = JSON.parse(store.get("snippets") || "[]"); } catch (e) {}
 function renderSnippets() {
@@ -1660,9 +1658,7 @@ function renderSnippets() {
   };
   const row = (text, i) => {
     const r = el("div", "snip");
-    const send = button("send", "⏎", () => { input(text + "\r"); softReset(); });
-    send.setAttribute("aria-label", T("Send"));
-    r.append(button("say", text, () => { input(text); softReset(); }), send);
+    r.append(button("say", text, () => { input(text + "\r"); softReset(); }));
     if (i != null) {
       const del = button("del", null, () => { snippets.splice(i, 1); saveSnippets(); });
       del.append(icon("user-trash"));
