@@ -451,6 +451,17 @@ func TestDockPosition(t *testing.T) {
 	}
 }
 
+func TestOSDPosition(t *testing.T) {
+	c, w, err := Load(write(t, "[osd]\nposition = \"top-right\"\n"))
+	if err != nil || len(w) != 0 || c.OSD.Position != "top-right" || !c.OSD.Enable {
+		t.Fatalf("top-right: %+v %v %v", c.OSD, w, err)
+	}
+	c, w, _ = Load(write(t, "[osd]\nposition = \"middle\"\n"))
+	if len(w) != 1 || c.OSD.Position != "bottom-center" {
+		t.Errorf("middle: %+v %v", c.OSD, w)
+	}
+}
+
 func TestAssistantProfiles(t *testing.T) {
 	c, w, err := Load(write(t, `[assistant]
 profile = "gone"

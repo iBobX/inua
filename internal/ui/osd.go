@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"slices"
+
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
@@ -30,12 +32,11 @@ type osd struct {
 	value gtk.Label
 	gen   uintptr // the latest showing; older timeouts do nothing
 
-	// seen is the system state the last checkOSD observed, and seenSet
-	// says whether it has observed one at all. Nothing reports the zero
-	// value, so a service's first report is not read as a change and no
-	// card pops at login.
-	seen    shell.System
-	seenSet bool
+	// seen is the system state the last checkOSD observed; wifi is the
+	// Wi-Fi network last shown, so a blip while connecting (no network,
+	// then the same one) shows nothing.
+	seen shell.System
+	wifi string
 }
 
 func (s *shellUI) bindOSDHandlers() {
@@ -86,12 +87,17 @@ func (s *shellUI) ensureOSD() {
 	o.win.SetVisible(false)
 }
 
-// placeOSD anchors the indicator's window where the settings put it. A
-// centred position anchors neither horizontal edge, so the card is
-// centred; anchoring left for it would hang it off to one side.
+// osdMargin keeps the card clear of the bar or the dock at the edge it
+// anchors to; it is over both, with no exclusive zone of its own.
+const osdMargin = 64
+
+// placeOSD anchors the indicator's window where [osd] position puts it.
+// A centred position anchors neither side, so the card is centred.
 func (s *shellUI) placeOSD(w uintptr) {
 	top, left, right := false, false, false
-	switch s.cfg.Osd.Position {
+	switch s.cfg.OSD.Position {
+	case "top-center":
+		top = true
 	case "top-left":
 		top, left = true, true
 	case "top-right":
@@ -105,6 +111,12 @@ func (s *shellUI) placeOSD(w uintptr) {
 	layershell.SetAnchor(w, layershell.EdgeBottom, !top)
 	layershell.SetAnchor(w, layershell.EdgeLeft, left)
 	layershell.SetAnchor(w, layershell.EdgeRight, right)
+	tm, bm := int32(0), int32(osdMargin)
+	if top {
+		tm, bm = osdMargin, 0
+	}
+	layershell.SetMargin(w, layershell.EdgeTop, tm)
+	layershell.SetMargin(w, layershell.EdgeBottom, bm)
 }
 
 // showVolume shows the volume a on the indicator.
@@ -127,7 +139,7 @@ func (s *shellUI) showBrightness(percent float64) {
 // and its readout. Nothing shows while the control center, which has the
 // sliders, is open, or when [osd] enable is off.
 func (s *shellUI) showLevel(icon string, bright, level float64, text string) {
-	if !s.cfg.Osd.Enable || s.control.open {
+	if !s.cfg.OSD.Enable || s.control.open {
 		return
 	}
 	s.ensureOSD()
@@ -135,8 +147,14 @@ func (s *shellUI) showLevel(icon string, bright, level float64, text string) {
 	o.icon.SetFromIconName(icon)
 	toggle(&o.icon.Widget, "bright-icon", bright >= 0)
 	brightLevel(&o.icon.Widget, bright)
-	o.level.SetValue(level)
-	o.level.SetSensitive(level >= 0)
+	// A card with no level (Wi-Fi, Bluetooth) is its word alone.
+	o.level.SetVisible(level >= 0)
+	o.level.SetValue(max(level, 0))
+	o.value.SetHexpand(level < 0)
+	o.value.SetXalign(1)
+	if level < 0 {
+		o.value.SetXalign(0)
+	}
 	o.value.SetText(text)
 	if !o.win.GetVisible() {
 		// Without layer shell the window is an ordinary toplevel, and
@@ -182,66 +200,47 @@ func (s *shellUI) reanchorOSD() {
 	s.placeOSD(o.win.GoPointer())
 }
 
-// osdWifi builds the card for a Wi-Fi or connection change.
-func osdWifi(n system.NetworkState, on bool) (icon, word string) {
-	switch {
-	case on && n.Name != "":
-		word = n.Name
-	case on:
-		word = i18n.T("Wi-Fi on")
-	default:
-		word = i18n.T("Wi-Fi off")
-	}
-	return shell.NetIcon(n), word
-}
-
-// osdBluetooth builds the card for a Bluetooth power or connection
-// change.
-func osdBluetooth(b system.BluetoothState) (icon, word string) {
-	switch {
-	case len(b.Connected) > 0:
-		word = b.Connected[0]
-	case b.Powered:
-		word = i18n.T("Bluetooth on")
-	default:
-		word = i18n.T("Bluetooth off")
-	}
-	icon = "bluetooth-active-symbolic"
-	if !b.Powered {
-		icon = "bluetooth-disabled-symbolic"
-	}
-	return icon, word
-}
-
 // checkOSD diffs the system state against what the last update saw and
-// shows the card for what changed. It runs in update, so every path to a
-// change passes here once. The first call only records the state: a
-// service reporting for the first time is not a change, and no card pops
-// at login.
+// shows a card for Wi-Fi or Bluetooth: turned on or off, or joined to a
+// network or a device. It runs in update, so every path to a change passes
+// here once. A service's first report (Available turning true, at login
+// or when it restarts) is not a change, nor are wired networks and VPNs,
+// nor a network or device going away, which the bar's icons show.
 func (s *shellUI) checkOSD(st *shell.System) {
 	o := &s.osd
-	if !o.seenSet {
-		o.seen, o.seenSet = *st, true
-		return
-	}
 	before := o.seen
 	o.seen = *st
-
-	if st.Net.WifiEnabled != before.Net.WifiEnabled ||
-		st.Net.Kind != before.Net.Kind || st.Net.Name != before.Net.Name {
-		icon, word := osdWifi(st.Net, st.Net.WifiEnabled)
-		s.showOSDCard(icon, word)
-		return
+	if n, b := st.Net, before.Net; n.Available && b.Available {
+		switch {
+		case n.WifiEnabled != b.WifiEnabled:
+			o.wifi = ""
+			if n.WifiEnabled {
+				s.showOSDCard("network-wireless-signal-excellent-symbolic", i18n.T("Wi-Fi on"))
+			} else {
+				s.showOSDCard("network-wireless-disabled-symbolic", i18n.T("Wi-Fi off"))
+			}
+		case n.Kind == "wifi" && n.Name != "" && n.Name != o.wifi:
+			o.wifi = n.Name
+			s.showOSDCard(shell.NetIcon(n), n.Name)
+		}
+	} else if n.Kind == "wifi" {
+		o.wifi = n.Name // already joined when it first reported
 	}
-	bt, btBefore := "", ""
-	if len(st.BT.Connected) > 0 {
-		bt = st.BT.Connected[0]
-	}
-	if len(before.BT.Connected) > 0 {
-		btBefore = before.BT.Connected[0]
-	}
-	if st.BT.Powered != before.BT.Powered || bt != btBefore {
-		icon, word := osdBluetooth(st.BT)
-		s.showOSDCard(icon, word)
+	if bt, b := st.BT, before.BT; bt.Available && b.Available {
+		switch {
+		case bt.Powered != b.Powered:
+			if bt.Powered {
+				s.showOSDCard("bluetooth-active-symbolic", i18n.T("Bluetooth on"))
+			} else {
+				s.showOSDCard("bluetooth-disabled-symbolic", i18n.T("Bluetooth off"))
+			}
+		default:
+			for _, name := range bt.Connected {
+				if !slices.Contains(b.Connected, name) {
+					s.showOSDCard("bluetooth-active-symbolic", name)
+					break
+				}
+			}
+		}
 	}
 }

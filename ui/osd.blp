@@ -1,6 +1,7 @@
-// The volume indicator: a card at the foot of the screen for a moment
-// after the volume changes, over the windows, taking no input. The margins
-// are the room for the card's shadow, which the window would cut.
+// The on-screen display: a card for a moment after the volume, the
+// brightness, Wi-Fi or Bluetooth changes, over the windows, taking no
+// input; a level and its readout, or a word alone (a network's name). The
+// margins are the room for the card's shadow, which the window would cut.
 using Gtk 4.0;
 
 ApplicationWindow osd {
@@ -33,6 +34,8 @@ ApplicationWindow osd {
       Label value {
         styles ["readout"]
         width-chars: 5;
+        max-width-chars: 28;
+        ellipsize: end;
         xalign: 1;
       }
     }

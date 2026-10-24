@@ -19,7 +19,7 @@ func Format(c Config) string {
 		q(c.Launcher.Mode), q(c.Launcher.Terminal), q(c.Launcher.Search), quicklinks(c.Launcher.Quicklinks), c.Overview.MRU, c.Overview.PerMonitor,
 		q(c.Control.Lock), q(c.Control.Screenshot),
 		q(c.Screenshot.Folder), c.Screenshot.Copy, q(c.Screenshot.Recordings),
-		c.Osd.Enable, q(c.Osd.Position),
+		c.OSD.Enable, q(c.OSD.Position),
 		q(c.Style.Theme), q(c.Style.Icons), q(c.Style.AppIcons), c.Style.EdgeGaps, c.Style.TextScale, c.Style.Transparency, c.Style.Radius, q(c.Style.CSS),
 		c.Background.Enable, q(c.Background.Image), q(c.Background.Fit), q(c.Background.Color),
 		c.Background.Generate,
