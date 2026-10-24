@@ -82,6 +82,7 @@ func (s *shellUI) applyVoiceState() {
 		toggle(&b.voice.Widget, "recording", st.Available && st.Status == "recording")
 		toggle(&b.voice.Widget, "transcribing", st.Available && st.Status == "transcribing")
 	}
+	s.dictationState(st)
 	s.showVoice()
 }
 
@@ -140,17 +141,15 @@ func (s *shellUI) followVoice() {
 	})
 }
 
-// dictationFailed says why a dictation came to nothing, as a notification:
-// the window it was for keeps the focus.
-func (s *shellUI) dictationFailed(err error) {
-	summary := i18n.T("Dictation did not work")
+// dictationNote says why a dictation came to nothing, as a notification.
+func (s *shellUI) dictationNote(err error) {
 	if s.notes.srv == nil {
 		log.Printf("dictation: %v", err)
 		return
 	}
 	s.postNote(notify.Notification{
 		ID: s.notes.srv.NewID(), App: "inua", Icon: "microphone-slash-symbolic",
-		Summary: summary, Body: notify.Markup(err.Error()), Urgency: notify.Normal, Time: time.Now(),
+		Summary: i18n.T("Dictation did not work"), Body: notify.Markup(err.Error()), Urgency: notify.Normal, Time: time.Now(),
 	})
 }
 
@@ -159,6 +158,8 @@ type voiceSettings struct {
 	page        gtk.Box
 	enable, ptt gtk.Switch
 	pttRow      gtk.Box
+	showRow     gtk.Box
+	showDrop    gtk.DropDown
 	engine      gtk.Box // the ENGINE section, while dictation is on
 	engineDrop  gtk.DropDown
 	// The daemon's row: what it is doing, or what is missing, with the
@@ -175,6 +176,11 @@ type voiceSettings struct {
 	typingRow         gtk.Box
 	typing, status    gtk.Label
 	aiSettings        gtk.Button
+}
+
+// voiceShowLabels name config.VoiceShows in the Show drop-down.
+func voiceShowLabels() []string {
+	return []string{i18n.T("Under the window you type in"), i18n.T("In the screen's corner"), i18n.T("In the bar only")}
 }
 
 // voiceEngineLabels name config.VoiceEngines in the Engine drop-down.
@@ -222,6 +228,15 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 		}
 		s.onVoiceStart = func(gtk.Button) { s.voiceStartDaemon() }
 		s.onVoiceAI = func(gtk.Button) { s.showSettingsPage("ai") }
+		s.onVoiceShow = func(uintptr, uintptr, uintptr) {
+			i := int(v.showDrop.GetSelected())
+			if s.settings.filling || i < 0 || i >= len(config.VoiceShows) || config.VoiceShows[i] == s.cfg.Voice.Show {
+				return
+			}
+			c := s.cfg
+			c.Voice.Show = config.VoiceShows[i]
+			s.changeSettings(c)
+		}
 		s.onVoiceEngine = func(uintptr, uintptr, uintptr) {
 			i := int(v.engineDrop.GetSelected())
 			if s.settings.filling || i < 0 || i >= len(config.VoiceEngines) || config.VoiceEngines[i] == s.cfg.Voice.Engine {
@@ -256,11 +271,18 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 	sec, body := displaySection(i18n.T("DICTATION"), i18n.T("Talk, and the words are typed where you are"))
 	v.enable, _ = sw(body, "voice_enable", i18n.T("Dictation"), i18n.T("A microphone in the bar, and a shortcut to talk"))
 	v.ptt, v.pttRow = sw(body, "voice_ptt", i18n.T("Push to talk"), i18n.T("The shortcut records while it is held; off, it starts and stops"))
+	row, _ := displayRow(i18n.T("Show it"), i18n.T("A card with the waveform, then the words; the bar's microphone shows it too"))
+	v.showRow = *row
+	v.showDrop = *gtk.NewDropDownFromStrings(voiceShowLabels())
+	v.showDrop.SetValign(gtk.AlignCenterValue)
+	gtkx.ConnectNotify(&v.showDrop, "selected", &s.onVoiceShow)
+	gtkx.Append(row, &v.showDrop.Widget)
+	gtkx.Append(body, &row.Widget)
 	gtkx.Append(&v.page, &sec.Widget)
 
 	sec, body = displaySection(i18n.T("ENGINE"), i18n.T("What turns your speech into text"))
 	v.engine = *sec
-	row, _ := displayRow(i18n.T("Engine"), i18n.T("voxtype keeps the recording on this machine; an AI profile sends it to its provider"))
+	row, _ = displayRow(i18n.T("Engine"), i18n.T("voxtype keeps the recording on this machine; an AI profile sends it to its provider"))
 	v.engineDrop = *gtk.NewDropDownFromStrings(voiceEngineLabels())
 	v.engineDrop.SetValign(gtk.AlignCenterValue)
 	gtkx.ConnectNotify(&v.engineDrop, "selected", &s.onVoiceEngine)
@@ -340,6 +362,8 @@ func (s *shellUI) showVoice() {
 	}
 	v, on, ai := s.sys.Voice, s.cfg.Voice.Enable, s.cfg.Voice.Engine == "ai"
 	st.pttRow.SetVisible(on)
+	st.showRow.SetVisible(on)
+	st.showDrop.SetSelected(uint32(max(0, slices.Index(config.VoiceShows, s.cfg.Voice.Show))))
 	st.engine.SetVisible(on)
 	if !on {
 		return
@@ -493,6 +517,7 @@ func (s *shellUI) voiceSetupModel() {
 // (Ctrl+V, Ctrl+Shift+V in a terminal), and the clipboard's text put back.
 // It runs on the engine's goroutine.
 func (s *shellUI) typeDictation(text string) error {
+	gtkx.Post(func() { s.dictationHeard(text) })
 	if _, err := exec.LookPath("wtype"); err == nil {
 		return exec.Command("wtype", "--", text).Run()
 	}

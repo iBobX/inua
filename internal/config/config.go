@@ -215,7 +215,15 @@ type Voice struct {
 	PushToTalk bool `toml:"push_to_talk"`
 	// Engine turns speech into text: one of VoiceEngines.
 	Engine string `toml:"engine"`
+	// Show is where a card shows the dictation as it goes: one of
+	// VoiceShows.
+	Show string `toml:"show"`
 }
+
+// VoiceShows are where dictation's card shows: at the foot of the focused
+// window, in the screen's corner, or not at all (the bar's microphone
+// alone).
+var VoiceShows = []string{"window", "corner", "off"}
 
 // VoiceEngines are dictation's engines: voxtype's daemon on this machine,
 // or the assistant's profile for voice input (Assistant.Transcription).
@@ -814,7 +822,7 @@ func Default() Config {
 		OSD:        OSD{Enable: true, Position: "bottom-center"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
-		Voice:      Voice{Enable: false, PushToTalk: true, Engine: "voxtype"},
+		Voice:      Voice{Enable: false, PushToTalk: true, Engine: "voxtype", Show: "window"},
 		Shortcuts: []Shortcut{
 			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
 			{Action: "shot-area", Keys: "CTRL+Print", Replaces: []string{"CTRL+Print"}},
@@ -1027,6 +1035,7 @@ func (c *Config) validate() []string {
 		return bad != ""
 	})
 	oneOf("voice.engine", &c.Voice.Engine, d.Voice.Engine, VoiceEngines...)
+	oneOf("voice.show", &c.Voice.Show, d.Voice.Show, VoiceShows...)
 	if !slices.Contains(OSDPositions, c.OSD.Position) {
 		w = append(w, fmt.Sprintf("osd.position = %q: want top-center, top-left, top-right, bottom-center, bottom-left or bottom-right; using %q", c.OSD.Position, d.OSD.Position))
 		c.OSD.Position = d.OSD.Position

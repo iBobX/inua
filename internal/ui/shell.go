@@ -102,6 +102,7 @@ type shellUI struct {
 	wifi      wifiState // the networks, while a list shows them
 	tray      tray
 	osd       osd
+	dictation dictationCard // dictation as it goes
 	sys       shell.System
 	svc       services
 
@@ -159,6 +160,7 @@ type shellUI struct {
 	onVoiceSite            func(gtk.Button)
 	onVoiceAI              func(gtk.Button)
 	onVoiceEngine          func(uintptr, uintptr, uintptr)
+	onVoiceShow            func(uintptr, uintptr, uintptr)
 	onVoiceStart           func(gtk.Button)
 	onDisplaySwitch        func(gtk.Switch, bool) bool
 	onDisplayButton        func(gtk.Button)

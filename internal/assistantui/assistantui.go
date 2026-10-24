@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"log"
 	"maps"
-	"math"
 	"os"
 	"slices"
 	"strings"
@@ -21,7 +20,6 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
-	"codeberg.org/puregotk/puregotk/v4/graphene"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
@@ -71,8 +69,7 @@ type view struct {
 	voice, voiceDiscard          gtk.Button
 	voiceBox, voiceMark, voWave  gtk.Box
 	voiceTime, voiceState, voErr gtk.Label
-	wave                         *gtk.Widget      // the waveform
-	levels                       []float64        // how loud, a sample each tick, newest last
+	wave                         *gtkx.Wave       // how loud, a sample each tick
 	rec                          *record.Recorder // while it records or is transcribed
 	transcribing                 bool
 	voiceCancel                  context.CancelFunc
@@ -136,10 +133,10 @@ func (v *view) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	ui.Get("voice_wave", &v.voWave)
 	ui.Get("voice_error", &v.voErr)
 	ui.Close()
-	v.wave = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: v.snapshotWave, Min: waveHeight})
-	v.wave.AddCssClass("as-voice-wave")
-	v.wave.SetHexpand(true)
-	v.voWave.Append(v.wave)
+	v.wave = gtkx.NewWave(waveHeight)
+	v.wave.Widget.AddCssClass("as-voice-wave")
+	v.wave.Widget.SetHexpand(true)
+	v.voWave.Append(v.wave.Widget)
 
 	v.onSend = func(gtk.Button) {
 		if v.running {
@@ -544,8 +541,7 @@ func (v *view) startVoice() {
 	}
 	v.voiceState.SetVisible(false)
 	v.voiceTime.SetText("0:00")
-	v.levels = v.levels[:0]
-	v.wave.QueueDraw()
+	v.wave.Clear()
 	v.voice.SetIconName("media-playback-stop-symbolic")
 	v.voice.SetTooltipText(i18n.T("Stop and transcribe"))
 	v.voice.AddCssClass("as-recording")
@@ -559,11 +555,7 @@ func (v *view) startVoice() {
 		}
 		n := int(r.Length().Seconds())
 		v.voiceTime.SetText(fmt.Sprintf("%d:%02d", n/60, n%60))
-		if len(v.levels) >= maxLevels {
-			v.levels = append(v.levels[:0], v.levels[len(v.levels)-maxLevels/2:]...)
-		}
-		v.levels = append(v.levels, r.Level())
-		v.wave.QueueDraw()
+		v.wave.Add(r.Level())
 		if r.Full() { // five minutes, or the microphone went away
 			v.stopVoice()
 			return false
@@ -573,32 +565,11 @@ func (v *view) startVoice() {
 	glib.TimeoutAdd(waveTick, &v.onVoiceTick, 0)
 }
 
-// The waveform: a bar for each tick's level, newest at the right, as many
-// as fit; the oldest scroll off to the left.
+// The waveform: a sample of the level each tick.
 const (
 	waveTick   = 50 // ms
-	waveBar    = 2  // px
-	waveStep   = 4  // px, a bar and its gap
 	waveHeight = 20 // px
-	maxLevels  = 2048
 )
-
-// snapshotWave draws the levels in the waveform's colour, each a bar
-// centred on the middle line, a pixel tall when silent.
-func (v *view) snapshotWave(w *gtk.Widget, s *gtk.Snapshot) {
-	var c gdk.RGBA
-	w.GetColor(&c)
-	width, h := float32(w.GetWidth()), float32(w.GetHeight())
-	levels := v.levels[max(0, len(v.levels)-int(width/waveStep)):]
-	x := width - float32(len(levels))*waveStep
-	for _, l := range levels {
-		bh := max(1, float32(math.Round(l*float64(h))))
-		var r graphene.Rect
-		r.Init(x, float32(math.Round(float64(h-bh)/2)), waveBar, bh)
-		s.AppendColor(&c, &r)
-		x += waveStep
-	}
-}
 
 // stopVoice ends the recording and has it transcribed; the words go into
 // the question, to read over before asking.

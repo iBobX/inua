@@ -1,0 +1,57 @@
+// Dictation's card: what a dictation is doing, at the foot of the focused
+// window or in the screen's corner (internal/ui/dictation.go). While it
+// listens, a red mark, the time and the waveform; then "Transcribing…";
+// then the words, or why there are none. Over the windows, it never takes
+// the keyboard; ✕ drops a recording. The margins are the room for the
+// card's shadow, which the window would cut.
+using Gtk 4.0;
+
+ApplicationWindow dictation {
+  styles ["osd", "dictation"]
+
+  Revealer reveal {
+    transition-type: crossfade;
+
+    Box card {
+      styles ["osd-card", "dictation-card"]
+      spacing: 10;
+      width-request: 300;
+      margin-top: 32;
+      margin-start: 32;
+      margin-end: 32;
+      margin-bottom: 32;
+
+      Box mark {
+        styles ["rec-mark"]
+        valign: center;
+      }
+
+      Label time {
+        styles ["dictation-time"]
+      }
+
+      // The waveform, drawn by Go (gtkx.Wave).
+      Box wave {
+        hexpand: true;
+        valign: center;
+      }
+
+      Label state {
+        styles ["dictation-state"]
+        hexpand: true;
+        xalign: 0;
+        wrap: true;
+        lines: 2;
+        ellipsize: end;
+        max-width-chars: 44;
+      }
+
+      Button cancel {
+        styles ["plain"]
+        icon-name: "window-close-symbolic";
+        tooltip-text: _("Drop the recording");
+        valign: center;
+      }
+    }
+  }
+}

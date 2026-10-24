@@ -28,7 +28,7 @@ func Format(c Config) string {
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
 		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
-		c.Voice.Enable, c.Voice.PushToTalk, q(c.Voice.Engine),
+		c.Voice.Enable, c.Voice.PushToTalk, q(c.Voice.Engine), q(c.Voice.Show),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision), q(c.Assistant.Transcription),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
@@ -472,6 +472,11 @@ push_to_talk = %t
 # the recording goes to its provider), typed in with wtype when there is
 # one, else pasted.
 engine = %s
+
+# Where a card shows the dictation as it goes (listening, the waveform,
+# then the words): "window", at the foot of the focused window; "corner",
+# the screen's bottom right; "off", the bar's microphone alone.
+show = %s
 
 [assistant]
 # The assistant (inua-assistant, the launcher's "Ask"): an agent with

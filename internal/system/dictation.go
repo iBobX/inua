@@ -112,14 +112,24 @@ func (d *Dictation) Stop() error {
 		if err == nil && text != "" && d.Type != nil {
 			err = d.Type(text)
 		}
+		if err != nil && !errors.Is(err, record.ErrEmpty) && ctx.Err() == nil && d.Failed != nil {
+			d.Failed(err) // before idle, so its card says why rather than going
+		}
 		d.mu.Lock()
 		d.set("idle")
 		d.mu.Unlock()
-		if err != nil && !errors.Is(err, record.ErrEmpty) && ctx.Err() == nil && d.Failed != nil {
-			d.Failed(err)
-		}
 	}()
 	return nil
+}
+
+// Level is how loud the microphone is while it records, 0 to 1.
+func (d *Dictation) Level() float64 {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.rec == nil {
+		return 0
+	}
+	return d.rec.Level()
 }
 
 // Toggle starts a recording, or ends it.

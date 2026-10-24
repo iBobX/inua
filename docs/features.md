@@ -145,7 +145,16 @@ Two engines turn the speech into text (`[voice] engine`):
   profile chosen for Voice input in Settings → AI, whose provider gets
   the recording. inua then types the words with `wtype`, or, without it,
   pastes them (Ctrl+V; Ctrl+Shift+V in a terminal) and puts the
-  clipboard's text back. Why one came to nothing shows as a notification.
+  clipboard's text back.
+
+While it listens the bar's microphone is red and pulsing, and a small
+card shows the dictation as it goes ([voice] show): a red mark, the time
+and the waveform (the AI engine's; voxtype's says "Listening…"), with ✕
+to drop it, then "Transcribing…", then the words for a moment, or why
+there are none. It sits at the foot of the window you type in (`show =
+"window"`, the default), or in the screen's bottom right corner
+(`"corner"`); `"off"` leaves the bar's microphone alone, and errors go to
+a notification. The card never takes the keyboard.
 
 When the engine is not ready, the microphone is slashed and a click opens
 Settings → Dictation, which says what is missing.

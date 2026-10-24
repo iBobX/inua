@@ -205,12 +205,13 @@ button.image-button { padding-left: 0; padding-right: 0; }
 /* Its panel is open: the selection style. */
 .bar button.passwords.open, .bar button.clipboard.open, .bar button.status.open, .bar button.notes.open, .bar button.clock-button.open { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
 
-/* The voice input's microphone. While it records the icon breathes
-   between its usual colour and the accent; while the words are turned
-   into text it pulses, as the recording mark does. */
-.bar button.voice.recording image { color: @accent; animation: voice-listen 1.4s ease-in-out infinite; }
+/* Dictation's microphone. While it listens it is red on a red ground,
+   pulsing, as the screen recorder's button is; while the words are turned
+   into text, the hourglass pulses. */
+.bar button.voice.recording { background: alpha(@danger, 0.12); }
+.bar button.voice.recording:hover { background: alpha(@danger, 0.18); }
+.bar button.voice.recording image { color: @danger; animation: rec-pulse 1.6s ease-in-out infinite; }
 .bar button.voice.transcribing image { animation: rec-pulse 0.9s ease-in-out infinite; }
-@keyframes voice-listen { 50% { color: mix(@accent, @t1, 0.55); } }
 
 /* --- launcher -------------------------------------------------------- */
 
@@ -529,6 +530,15 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
 }
 .osd-card image { color: @t1; }
+/* Dictation's card: the red mark and the time as the bar's recorder, the
+   waveform in red, then the state or the words heard. */
+.dictation-card .rec-mark { animation: rec-pulse 1.6s ease-in-out infinite; }
+.dictation-time { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; font-feature-settings: "tnum"; color: @t0; }
+.dictation-wave { color: @danger; }
+.dictation-state { color: @t1; }
+.dictation-state.heard { color: @t0; }
+.dictation-state.failed { color: @danger; }
+.dictation-card button.plain { min-width: 24px; min-height: 24px; }
 .osd-card levelbar trough { min-height: 2px; padding: 0; border: none; border-radius: 0; background: @line; }
 .osd-card levelbar block { min-height: 2px; border: none; border-radius: 0; }
 .osd-card levelbar block.filled { background: @accent; }
