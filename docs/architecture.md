@@ -160,7 +160,7 @@ Creating a window: take the `ApplicationWindow` from its `.ui` →
 | Control center | Overlay | All edges (full screen, zone -1) | Exclusive | `inua-control` | As the launcher; closes on a backdrop click or Esc; the card slides in a GtkRevealer |
 | Notification center | Overlay | All edges | Exclusive | `inua-center` | As the control center |
 | Banners | Overlay | Top, right | None | `inua-banners` | One window, shown while banners are up |
-| Volume indicator | Overlay | Bottom | None | `inua-osd` | Shown for a moment after the volume changes; takes no input |
+| Level indicator | Overlay | Bottom | None | `inua-osd` | Shown for a moment after the volume or the brightness changes; takes no input |
 
 The launcher rebuilds its window on every open because, in a nested
 Hyprland, GTK's GPU renderer hung the fourth time the same layer surface was

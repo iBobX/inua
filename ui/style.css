@@ -365,18 +365,18 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 
 /* The display icon brightens with the screen, and glows in the accent as
    it nears full. */
-.control .bright-icon { color: @t2; transition: color 160ms ease-out, -gtk-icon-shadow 160ms ease-out; }
-.control .bright-icon.lv0 { color: alpha(@t2, 0.55); -gtk-icon-shadow: none; }
-.control .bright-icon.lv1 { color: mix(@t2, @t0, 0.1); -gtk-icon-shadow: none; }
-.control .bright-icon.lv2 { color: mix(@t2, @t0, 0.2); -gtk-icon-shadow: none; }
-.control .bright-icon.lv3 { color: mix(@t2, @t0, 0.3); -gtk-icon-shadow: 0 0 5px alpha(@accent, 0.12); }
-.control .bright-icon.lv4 { color: mix(@t2, @t0, 0.4); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.20); }
-.control .bright-icon.lv5 { color: mix(@t2, @t0, 0.5); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.28); }
-.control .bright-icon.lv6 { color: mix(@t2, @t0, 0.6); -gtk-icon-shadow: 0 0 7px alpha(@accent, 0.36); }
-.control .bright-icon.lv7 { color: mix(@t2, @t0, 0.7); -gtk-icon-shadow: 0 0 8px alpha(@accent, 0.44); }
-.control .bright-icon.lv8 { color: mix(@t2, @t0, 0.8); -gtk-icon-shadow: 0 0 9px alpha(@accent, 0.52); }
-.control .bright-icon.lv9 { color: mix(@t2, @t0, 0.9); -gtk-icon-shadow: 0 0 10px alpha(@accent, 0.60); }
-.control .bright-icon.lv10 { color: mix(@t2, @t0, 1.0); -gtk-icon-shadow: 0 0 11px alpha(@accent, 0.68); }
+.bright-icon { color: @t2; transition: color 160ms ease-out, -gtk-icon-shadow 160ms ease-out; }
+.bright-icon.lv0 { color: alpha(@t2, 0.55); -gtk-icon-shadow: none; }
+.bright-icon.lv1 { color: mix(@t2, @t0, 0.1); -gtk-icon-shadow: none; }
+.bright-icon.lv2 { color: mix(@t2, @t0, 0.2); -gtk-icon-shadow: none; }
+.bright-icon.lv3 { color: mix(@t2, @t0, 0.3); -gtk-icon-shadow: 0 0 5px alpha(@accent, 0.12); }
+.bright-icon.lv4 { color: mix(@t2, @t0, 0.4); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.20); }
+.bright-icon.lv5 { color: mix(@t2, @t0, 0.5); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.28); }
+.bright-icon.lv6 { color: mix(@t2, @t0, 0.6); -gtk-icon-shadow: 0 0 7px alpha(@accent, 0.36); }
+.bright-icon.lv7 { color: mix(@t2, @t0, 0.7); -gtk-icon-shadow: 0 0 8px alpha(@accent, 0.44); }
+.bright-icon.lv8 { color: mix(@t2, @t0, 0.8); -gtk-icon-shadow: 0 0 9px alpha(@accent, 0.52); }
+.bright-icon.lv9 { color: mix(@t2, @t0, 0.9); -gtk-icon-shadow: 0 0 10px alpha(@accent, 0.60); }
+.bright-icon.lv10 { color: mix(@t2, @t0, 1.0); -gtk-icon-shadow: 0 0 11px alpha(@accent, 0.68); }
 
 /* Toggles: a tile with its icon, a status mark, a title and a mono value. */
 .control button.tile {

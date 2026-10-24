@@ -40,6 +40,9 @@ func (s *shellUI) startSystem() {
 	if b, err := system.FindBacklight(system.BacklightDir, system.SystemBus); err == nil {
 		v.backlight = b
 		v.brightness = shell.NewSetter(func(f float64) { logErr("brightness", b.SetPercent(f)) })
+		go func() {
+			logErr("backlight", b.Watch(ctx, func(p float64) { gtkx.Post(func() { s.showBrightness(p) }) }))
+		}()
 	}
 
 	go v.net.Run(ctx, func(st system.NetworkState) { s.update(func(x *shell.System) { x.Net = st }) })

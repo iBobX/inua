@@ -12,15 +12,15 @@ import (
 )
 
 const (
-	osdMS     = 1500 // how long the volume indicator stays after the last change
+	osdMS     = 1500 // how long the indicator stays after the last change
 	osdFadeMS = 200  // transition-duration of its revealer
 )
 
-// osd is the volume indicator, after the phones': whatever changes the
-// volume (the keys, the wheel on the bar, `inua system volume`), a card
+// osd is the volume and brightness indicator, after the phones': whatever
+// changes either (the keys, the wheel on the bar, `inua system`), a card
 // shows the level at the foot of the focused monitor for a moment. It
 // takes no input, and stays away while the control center, which has the
-// slider, is open.
+// sliders, is open.
 type osd struct {
 	win   *gtk.ApplicationWindow // built on first use, then kept
 	refs  gtkx.Scope
@@ -76,21 +76,36 @@ func (s *shellUI) ensureOSD() {
 	}
 }
 
-// showVolume shows the volume indicator with the level a, for osdMS from
-// now.
+// showVolume shows the volume a on the indicator.
 func (s *shellUI) showVolume(a system.AudioState) {
+	level := max(0, min(a.Volume, 1))
+	if a.Muted {
+		level = 0
+	}
+	s.showLevel(shell.VolumeIcon(a), -1, level, shell.VolumeText(a))
+}
+
+// showBrightness shows the screen's brightness, 0–100, on the indicator;
+// its icon brightens with the screen, as the control center's does.
+func (s *shellUI) showBrightness(percent float64) {
+	s.showLevel("display-brightness-symbolic", percent, percent/100, shell.Percent(percent/100))
+}
+
+// showLevel shows the indicator, for osdMS from now: an icon (brightened
+// to bright, 0–100, or not when bright is negative), a level from 0 to 1
+// and its readout. Nothing shows while the control center, which has the
+// sliders, is open.
+func (s *shellUI) showLevel(icon string, bright, level float64, text string) {
 	if s.control.open {
 		return
 	}
 	s.ensureOSD()
 	o := &s.osd
-	o.icon.SetFromIconName(shell.VolumeIcon(a))
-	level := max(0, min(a.Volume, 1))
-	if a.Muted {
-		level = 0
-	}
+	o.icon.SetFromIconName(icon)
+	toggle(&o.icon.Widget, "bright-icon", bright >= 0)
+	brightLevel(&o.icon.Widget, bright)
 	o.level.SetValue(level)
-	o.value.SetText(shell.VolumeText(a))
+	o.value.SetText(text)
 	if !o.win.GetVisible() {
 		if s.layer {
 			if mon := s.focusedMonitor(); mon != nil {
@@ -106,8 +121,8 @@ func (s *shellUI) showVolume(a system.AudioState) {
 	glib.TimeoutAdd(osdMS, &s.onOSDHide, o.gen)
 }
 
-// hideVolume puts the volume indicator away at once.
-func (s *shellUI) hideVolume() {
+// hideLevel puts the indicator away at once.
+func (s *shellUI) hideLevel() {
 	if o := &s.osd; o.win != nil {
 		o.gen++
 		o.win.SetVisible(false)

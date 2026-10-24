@@ -160,7 +160,7 @@ func (s *shellUI) openControl() {
 	}
 	s.closeCenter()
 	s.closeAgenda()
-	s.hideVolume() // the slider shows the volume now
+	s.hideLevel() // the sliders show the levels now
 	s.buildControl()
 	c.open = true
 	s.applyControl()
@@ -396,10 +396,18 @@ func (s *shellUI) applyBrightness() {
 // showBrightIcon brightens the display icon with the screen, in eleven
 // steps (style.css: .bright-icon.lv0 … lv10).
 func (s *shellUI) showBrightIcon(percent float64) {
-	c := &s.control
-	level := int(math.Round(max(0, min(percent, 100)) / 10))
+	brightLevel(&s.control.brightIcon.Widget, percent)
+}
+
+// brightLevel brightens a .bright-icon with the screen, 0–100, in eleven
+// steps (lv0–lv10); a negative percent takes the steps off.
+func brightLevel(w *gtk.Widget, percent float64) {
+	level := -1
+	if percent >= 0 {
+		level = int(math.Round(min(percent, 100) / 10))
+	}
 	for i := range 11 {
-		toggle(&c.brightIcon.Widget, fmt.Sprintf("lv%d", i), i == level)
+		toggle(w, fmt.Sprintf("lv%d", i), i == level)
 	}
 }
 
