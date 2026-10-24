@@ -10,7 +10,13 @@ shows the month under it), the tray, the clipboard history, a bell for
 notifications and the status button for the control center. The clock and
 the buttons at the end reach up to the screen's top edge and across the
 gaps between them, and the status button into the corner, so the pointer
-thrown at the edge lands on one. One per monitor.
+thrown at the edge lands on one. Scrolling on the status button, its
+reach as well, adjusts the volume 5% a notch. One per monitor.
+
+When the volume or the screen's brightness changes, by the keys, the
+wheel or `inua system`, a card at the foot of the screen shows the level
+for a moment, as phones do. It takes no clicks, and stays away while the
+control center is open.
 
 ## Launcher
 

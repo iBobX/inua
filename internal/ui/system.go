@@ -40,6 +40,9 @@ func (s *shellUI) startSystem() {
 	if b, err := system.FindBacklight(system.BacklightDir, system.SystemBus); err == nil {
 		v.backlight = b
 		v.brightness = shell.NewSetter(func(f float64) { logErr("brightness", b.SetPercent(f)) })
+		go func() {
+			logErr("backlight", b.Watch(ctx, func(p float64) { gtkx.Post(func() { s.showBrightness(p) }) }))
+		}()
 	}
 
 	go v.net.Run(ctx, func(st system.NetworkState) { s.update(func(x *shell.System) { x.Net = st }) })
@@ -53,7 +56,11 @@ func (s *shellUI) startSystem() {
 
 func (s *shellUI) update(f func(*shell.System)) {
 	gtkx.Post(func() {
+		audio := s.sys.Audio
 		f(&s.sys)
+		if shell.VolumeChanged(audio, s.sys.Audio) {
+			s.showVolume(s.sys.Audio)
+		}
 		for _, b := range s.bars {
 			b.setStatus(&s.sys)
 		}
@@ -72,6 +79,30 @@ func (s *shellUI) update(f func(*shell.System)) {
 func logErr(what string, err error) {
 	if err != nil {
 		log.Printf("%s: %v", what, err)
+	}
+}
+
+// volumeStep is one notch of the scroll on the bar's status button, the
+// volume keys' 5%.
+const volumeStep = 0.05
+
+// stepVolume lowers (n > 0) or raises the output volume n notches, as the
+// volume keys do; setting also unmutes. A burst of notches builds on the
+// values it asked for, not on the service's state, which lags behind.
+func (s *shellUI) stepVolume(n int) {
+	a := s.sys.Audio
+	if !a.Available {
+		return
+	}
+	base := a.Volume
+	if v, held := s.svc.volume.Held(); held {
+		base = v
+	}
+	v := max(0, min(base-float64(n)*volumeStep, 1))
+	s.svc.volume.Set(v)
+	if c := &s.control; c.open { // held, the slider no longer follows the service
+		c.volume.SetValue(v * 100)
+		c.volValue.SetText(shell.Percent(v))
 	}
 }
 

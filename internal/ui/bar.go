@@ -161,8 +161,9 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b.clockButton.ConnectClicked(&s.onClockButton)
 	s.showNotesButton(b)
 	// The buttons reach to the screen's edges: the bar's margin around and
-	// between them hovers and clicks as the button (endReach, clockReach),
-	// so the pointer thrown at the top or the corner lands on one.
+	// between them hovers, clicks and scrolls as the button (endReach,
+	// clockReach), so the pointer thrown at the top or the corner lands on
+	// one.
 	motion := gtk.NewEventControllerMotion()
 	motion.ConnectEnter(&s.onBarMotion)
 	motion.ConnectMotion(&s.onBarMotion)
@@ -171,6 +172,9 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	click := gtk.NewGestureClick()
 	click.ConnectReleased(&s.onBarReleased)
 	b.win.AddController(&click.EventController)
+	scroll := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollDiscreteValue)
+	scroll.ConnectScroll(&s.onBarScroll)
+	b.win.AddController(&scroll.EventController)
 	if s.control.open && !s.control.closing {
 		b.status.AddCssClass("open")
 	}

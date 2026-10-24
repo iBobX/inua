@@ -11,10 +11,10 @@
    Translucent surfaces get Hyprland's blur through layer rules (namespaces
    inua-bar, inua-control, inua-launcher). */
 
-window.bar, window.control, window.agenda, window.banners, window.center, window.dock-window, window.shot-drawer-win, window.drawer-overlay, window.clipboard-panel { background: transparent; }
+window.bar, window.control, window.agenda, window.banners, window.osd, window.center, window.dock-window, window.shot-drawer-win, window.drawer-overlay, window.clipboard-panel { background: transparent; }
 window.overview { background: transparent; }
 
-window.bar, window.launcher, window.control, window.agenda, window.banners, window.center, window.settings, window.screenshot, window.shot-drawer-win, window.lock, window.polkit, window.drawer-overlay, window.clipboard-panel, popover.menu {
+window.bar, window.launcher, window.control, window.agenda, window.banners, window.osd, window.center, window.settings, window.screenshot, window.shot-drawer-win, window.lock, window.polkit, window.drawer-overlay, window.clipboard-panel, popover.menu {
   font-family: "Zen Kaku Gothic New", "Noto Sans CJK JP", "Noto Sans CJK SC", sans-serif;
   font-size: 13px;
   color: @t0;
@@ -364,18 +364,18 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 
 /* The display icon brightens with the screen, and glows in the accent as
    it nears full. */
-.control .bright-icon { color: @t2; transition: color 160ms ease-out, -gtk-icon-shadow 160ms ease-out; }
-.control .bright-icon.lv0 { color: alpha(@t2, 0.55); -gtk-icon-shadow: none; }
-.control .bright-icon.lv1 { color: mix(@t2, @t0, 0.1); -gtk-icon-shadow: none; }
-.control .bright-icon.lv2 { color: mix(@t2, @t0, 0.2); -gtk-icon-shadow: none; }
-.control .bright-icon.lv3 { color: mix(@t2, @t0, 0.3); -gtk-icon-shadow: 0 0 5px alpha(@accent, 0.12); }
-.control .bright-icon.lv4 { color: mix(@t2, @t0, 0.4); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.20); }
-.control .bright-icon.lv5 { color: mix(@t2, @t0, 0.5); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.28); }
-.control .bright-icon.lv6 { color: mix(@t2, @t0, 0.6); -gtk-icon-shadow: 0 0 7px alpha(@accent, 0.36); }
-.control .bright-icon.lv7 { color: mix(@t2, @t0, 0.7); -gtk-icon-shadow: 0 0 8px alpha(@accent, 0.44); }
-.control .bright-icon.lv8 { color: mix(@t2, @t0, 0.8); -gtk-icon-shadow: 0 0 9px alpha(@accent, 0.52); }
-.control .bright-icon.lv9 { color: mix(@t2, @t0, 0.9); -gtk-icon-shadow: 0 0 10px alpha(@accent, 0.60); }
-.control .bright-icon.lv10 { color: mix(@t2, @t0, 1.0); -gtk-icon-shadow: 0 0 11px alpha(@accent, 0.68); }
+.bright-icon { color: @t2; transition: color 160ms ease-out, -gtk-icon-shadow 160ms ease-out; }
+.bright-icon.lv0 { color: alpha(@t2, 0.55); -gtk-icon-shadow: none; }
+.bright-icon.lv1 { color: mix(@t2, @t0, 0.1); -gtk-icon-shadow: none; }
+.bright-icon.lv2 { color: mix(@t2, @t0, 0.2); -gtk-icon-shadow: none; }
+.bright-icon.lv3 { color: mix(@t2, @t0, 0.3); -gtk-icon-shadow: 0 0 5px alpha(@accent, 0.12); }
+.bright-icon.lv4 { color: mix(@t2, @t0, 0.4); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.20); }
+.bright-icon.lv5 { color: mix(@t2, @t0, 0.5); -gtk-icon-shadow: 0 0 6px alpha(@accent, 0.28); }
+.bright-icon.lv6 { color: mix(@t2, @t0, 0.6); -gtk-icon-shadow: 0 0 7px alpha(@accent, 0.36); }
+.bright-icon.lv7 { color: mix(@t2, @t0, 0.7); -gtk-icon-shadow: 0 0 8px alpha(@accent, 0.44); }
+.bright-icon.lv8 { color: mix(@t2, @t0, 0.8); -gtk-icon-shadow: 0 0 9px alpha(@accent, 0.52); }
+.bright-icon.lv9 { color: mix(@t2, @t0, 0.9); -gtk-icon-shadow: 0 0 10px alpha(@accent, 0.60); }
+.bright-icon.lv10 { color: mix(@t2, @t0, 1.0); -gtk-icon-shadow: 0 0 11px alpha(@accent, 0.68); }
 
 /* Toggles: a tile with its icon, a status mark, a title and a mono value. */
 .control button.tile {
@@ -507,6 +507,21 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
   transition: background 120ms ease-out, border-color 120ms ease-out;
 }
 .note.banner { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26); }
+
+/* The volume indicator: a card floating over the windows, like a banner;
+   the level drawn as the control center's slider is, without the knob. */
+.osd-card {
+  background: alpha(@app, 0.84);
+  border: 1px solid @line;
+  border-radius: 4px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
+}
+.osd-card image { color: @t1; }
+.osd-card levelbar trough { min-height: 2px; padding: 0; border: none; border-radius: 0; background: @line; }
+.osd-card levelbar block { min-height: 2px; border: none; border-radius: 0; }
+.osd-card levelbar block.filled { background: @accent; }
+.osd-card levelbar block.empty { background: transparent; }
 /* On the center's card, notes are lifted a step onto the surface. */
 .center .note { background: alpha(@surface, 0.7); }
 /* Cleared: slides out to the right and fades, then its room closes. */

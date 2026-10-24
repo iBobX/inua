@@ -101,6 +101,7 @@ type shellUI struct {
 	settings  settings
 	wifi      wifiState // the networks, while a list shows them
 	tray      tray
+	osd       osd
 	sys       shell.System
 	svc       services
 
@@ -130,6 +131,7 @@ type shellUI struct {
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
+	onBarScroll            func(gtk.EventControllerScroll, float64, float64) bool
 	onSlider               func(gtk.Range, gtk.ScrollType, float64) bool
 	onBackdropPressed      func(gtk.GestureClick, int32, float64, float64)
 	onControlKey           func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -229,6 +231,8 @@ type shellUI struct {
 	onNoteClicked          func(gtk.GestureClick, int32, float64, float64)
 	onNotesSave            glib.SourceFunc
 	onBannerTick           glib.SourceFunc
+	onOSDHide              glib.SourceFunc
+	onOSDGone              glib.SourceFunc
 	onBannerGone           glib.SourceFunc
 	onBannerEnter          func(gtk.EventControllerMotion, float64, float64)
 	onBannerLeave          func(gtk.EventControllerMotion)
@@ -399,6 +403,7 @@ func (s *shellUI) start() {
 		g.SetState(gtk.EventSequenceClaimedValue)
 	}
 	s.bindControlHandlers()
+	s.bindOSDHandlers()
 	s.bindAgendaHandlers()
 	s.bindShotHandlers()
 	s.bindShotDrawerHandlers()
@@ -512,6 +517,18 @@ func (s *shellUI) bindHandlers() {
 			s.toggleAgenda()
 		}
 	}
+
+	// The wheel in the status button's reach, which the motion handler
+	// marks as hovered, adjusts the volume.
+	s.onBarScroll = func(c gtk.EventControllerScroll, _, dy float64) bool {
+		b := s.barOf(c.GetWidget())
+		if b == nil || dy == 0 || !b.status.HasCssClass("hover") {
+			return false
+		}
+		s.stepVolume(int(dy))
+		return true
+	}
+
 	// GDK lists a new monitor before it knows its name; the bar can only
 	// pick its workspaces once the name is there.
 	s.onConnector = func(mon, _, _ uintptr) {
