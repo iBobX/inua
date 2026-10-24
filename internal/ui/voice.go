@@ -56,9 +56,12 @@ func (s *shellUI) bindVoiceHandlers() {
 
 // applyVoiceState follows the daemon's state into the bars' microphones.
 func (s *shellUI) applyVoiceState() {
+	st := s.sys.Voice
 	for _, b := range s.bars {
-		b.voiceIcon.SetFromIconName(shell.VoiceIcon(s.sys.Voice))
-		b.voiceIcon.SetTooltipText(shell.VoiceTooltip(s.sys.Voice))
+		b.voiceIcon.SetFromIconName(shell.VoiceIcon(st))
+		b.voiceIcon.SetTooltipText(shell.VoiceTooltip(st))
+		toggle(&b.voice.Widget, "recording", st.Available && st.Status == "recording")
+		toggle(&b.voice.Widget, "transcribing", st.Available && st.Status == "transcribing")
 	}
 }
 
