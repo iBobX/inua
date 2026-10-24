@@ -72,7 +72,8 @@ offers the packages inua needs (apt, pacman, dnf or zypper), writes your
 configuration with `inua init` without replacing your files, and adds the
 Inua login session (sudo). Where inua would replace something you have —
 gpg's pinentry, gnome-keyring, another shell, the login manager — it asks
-first. `INUA_VERSION=v0.1.2` picks a release.
+first; on Debian and Ubuntu, inua's pinentry can also become the system's,
+through `update-alternatives`. `INUA_VERSION=v0.1.2` picks a release.
 
 `inua upgrade` updates in place; the shell also checks once a day and
 offers an **Upgrade** button.

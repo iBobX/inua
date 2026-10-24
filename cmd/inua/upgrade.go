@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"cmp"
 	"context"
 	"errors"
@@ -121,8 +122,31 @@ func cmdUpgrade(args []string) error {
 	if slices.Contains(programs, "inua-keyring") && !hadKeyring {
 		fmt.Println(keyringHint())
 	}
+	if slices.Contains(programs, "inua-pinentry") {
+		installed := filepath.Join(binDir, "inua-pinentry")
+		if stale(installed, systemPinentry) {
+			// The install script put a copy there with sudo; an upgrade has none.
+			fmt.Printf("The system's pinentry, %s, is the old version; update it with:\n  sudo install -m755 %s %s\n",
+				systemPinentry, installed, systemPinentry)
+		}
+	}
 	fmt.Println("To add the release's new sample settings, if any, run: inua init")
 	return nil
+}
+
+// systemPinentry is where the install script copies inua-pinentry when it is
+// made the system's pinentry with update-alternatives.
+const systemPinentry = "/usr/local/bin/inua-pinentry"
+
+// stale reports whether copy is there and differs from the program it was
+// made of.
+func stale(program, copy string) bool {
+	old, err := os.ReadFile(copy)
+	if err != nil {
+		return false
+	}
+	cur, err := os.ReadFile(program)
+	return err == nil && !bytes.Equal(old, cur)
 }
 
 // keyringHint says how to start using inua-keyring, which a release

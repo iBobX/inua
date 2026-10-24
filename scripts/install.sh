@@ -9,7 +9,9 @@
 # Inua login session. Where inua replaces something you have, it asks
 # first, and the answer defaults to yes for gpg's pinentry (inua-pinentry)
 # and the keyring apps keep secrets in (inua-keyring, in pass), and for
-# Omarchy's shell (Quickshell, with inua-shell); with no login manager it
+# Omarchy's shell (Quickshell, with inua-shell). With inua-pinentry chosen,
+# where update-alternatives keeps the system's pinentry (Debian, Ubuntu), it
+# offers to make it that too (sudo, yes). With no login manager it
 # offers greetd + tuigreet (yes), while GDM, SDDM, LightDM … are kept
 # unless you answer yes. Without a password store it
 # offers to make one with a GPG key of yours (yes), or with a new key
@@ -225,6 +227,24 @@ if PATH="$prefix/bin:$PATH" "$prefix/bin/inua" init; then
     done_ "configuration written (your own files are kept)"
 else
     note "inua init reported problems (above); fix them, then run: inua init"
+fi
+# When gpg-agent now asks with inua-pinentry, it can be the system's
+# pinentry too, where update-alternatives keeps one (Debian, Ubuntu): a copy
+# in /usr/local/bin, which later runs keep current. Without a shell running
+# it runs the usual pinentry, by its own name, so this is no loop.
+syspin=/usr/local/bin/inua-pinentry
+if grep -qs "^[[:space:]]*pinentry-program[[:space:]].*/inua-pinentry[[:space:]]*$" "${GNUPGHOME:-$HOME/.gnupg}/gpg-agent.conf" &&
+    have update-alternatives && update-alternatives --query pinentry >/dev/null 2>&1; then
+    if update-alternatives --query pinentry | grep -qx "Alternative: $syspin"; then
+        if ! cmp -s "$src/inua-pinentry" "$syspin"; then
+            say "updating the system's inua-pinentry (sudo)"
+            sudo install -m755 "$src/inua-pinentry" "$syspin" && done_ "updated $syspin"
+        fi
+    elif ask "Make inua-pinentry the system's pinentry too (sudo)?" y &&
+        sudo install -Dm755 "$src/inua-pinentry" "$syspin" &&
+        sudo update-alternatives --install /usr/bin/pinentry pinentry "$syspin" 100; then
+        done_ "inua-pinentry is the system's pinentry (update-alternatives --config pinentry to change it)"
+    fi
 fi
 # inua init leaves a Hyprland config of yours alone (an older Omarchy's
 # hyprland.conf, say); the Inua session does not start until it starts
