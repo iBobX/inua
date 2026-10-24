@@ -53,7 +53,7 @@ type Settings struct {
 	AskBeforeChanges bool
 	StateDir         string // Mister Morph's files; empty for inua's defaults
 	CacheDir         string
-	MaxSteps         int
+	MaxSteps         int // 0 for Mister Morph's default
 	ServeListen      string
 	ServeToken       string
 	// MCPServer is the command that serves inua's tools over MCP
@@ -266,8 +266,9 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 	cfg.Set("llm.routes", routes)
 	cfg.Set("file_state_dir", stateDir)
 	cfg.Set("file_cache_dir", cacheDir)
-	cfg.Set("max_steps", cmp.Or(set.MaxSteps, 24))
-	cfg.Set("tool_repeat_limit", 3)
+	if set.MaxSteps > 0 {
+		cfg.Set("max_steps", set.MaxSteps)
+	}
 	cfg.Set("server.listen", set.ServeListen)
 	cfg.Set("server.auth_token", set.ServeToken)
 	if len(set.MCPServer) > 0 {
