@@ -176,6 +176,7 @@ func (s *shellUI) applyConfig(c config.Config) {
 	}
 	if old.Voice != c.Voice {
 		s.setVoiceButton()
+		s.followVoice()
 		go s.applyHyprland() // the push-to-talk binds follow the settings
 	}
 	if old.Style.Theme != c.Style.Theme || old.Background != c.Background || old.Dir != c.Dir {

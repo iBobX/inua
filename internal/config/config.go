@@ -215,6 +215,17 @@ type Voice struct {
 	PushToTalk bool `toml:"push_to_talk"`
 }
 
+// VoiceKeys are the voice input's shortcut until another is set.
+const VoiceKeys = "SUPER+SHIFT+V"
+
+// AddVoiceShortcut gives the voice input its shortcut when it is on and no
+// shortcut names it; one kept with no keys is the user's choice of none.
+func (c *Config) AddVoiceShortcut() {
+	if c.Voice.Enable && !slices.ContainsFunc(c.Shortcuts, func(s Shortcut) bool { return s.Action == "voice" }) {
+		c.Shortcuts = append(c.Shortcuts, Shortcut{Action: "voice", Keys: VoiceKeys})
+	}
+}
+
 // renamedActions are actions that became others; a config naming one is
 // read as the new one.
 var renamedActions = map[string]string{
@@ -853,6 +864,7 @@ func Load(path string) (Config, []string, error) {
 		warnings = append(warnings, fmt.Sprintf("unknown setting %s", k))
 	}
 	warnings = append(warnings, c.validate()...)
+	c.AddVoiceShortcut() // voice input turned on in the file
 	return c, warnings, nil
 }
 

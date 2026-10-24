@@ -21,18 +21,16 @@ type System struct {
 	Voice system.VoiceState
 }
 
-// VoiceIcon is the bar's microphone: idle on, red while recording, the
+// VoiceIcon is the bar's microphone (in the accent while it records), the
 // hourglass while transcribing, and off when the daemon is not there.
 func VoiceIcon(v system.VoiceState) string {
 	switch {
 	case !v.Available:
 		return "microphone-slash-symbolic"
-	case v.Status == "recording":
-		return "microphone-symbolic"
 	case v.Status == "transcribing":
 		return "hourglass-symbolic"
 	}
-	return "microphone-symbolic"
+	return "audio-input-microphone-symbolic" // recording too, in the accent
 }
 
 // VoiceTooltip is what the microphone's hover says.
