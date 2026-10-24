@@ -213,7 +213,13 @@ type Voice struct {
 	// PushToTalk binds the shortcut's key press to start and its release
 	// to stop; off, the shortcut toggles a recording.
 	PushToTalk bool `toml:"push_to_talk"`
+	// Engine turns speech into text: one of VoiceEngines.
+	Engine string `toml:"engine"`
 }
+
+// VoiceEngines are dictation's engines: voxtype's daemon on this machine,
+// or the assistant's profile for voice input (Assistant.Transcription).
+var VoiceEngines = []string{"voxtype", "ai"}
 
 // VoiceKeys are dictation's shortcut until another is set.
 const VoiceKeys = "SUPER+SHIFT+V"
@@ -808,7 +814,7 @@ func Default() Config {
 		OSD:        OSD{Enable: true, Position: "bottom-center"},
 		Clipboard:  Clipboard{Enable: true, Bar: true, Limit: 300, PasteOnClick: true, SensitiveSources: slices.Clone(DefaultSensitiveSources)},
 		Dock:       Dock{Enable: true, Position: "bottom", Size: 36, Drawer: true, Pinned: []string{"firefox", "io.github.lyricat.Inua.Files", "kitty"}},
-		Voice:      Voice{Enable: false, PushToTalk: true},
+		Voice:      Voice{Enable: false, PushToTalk: true, Engine: "voxtype"},
 		Shortcuts: []Shortcut{
 			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
 			{Action: "shot-area", Keys: "CTRL+Print", Replaces: []string{"CTRL+Print"}},
@@ -1020,6 +1026,7 @@ func (c *Config) validate() []string {
 		}
 		return bad != ""
 	})
+	oneOf("voice.engine", &c.Voice.Engine, d.Voice.Engine, VoiceEngines...)
 	if !slices.Contains(OSDPositions, c.OSD.Position) {
 		w = append(w, fmt.Sprintf("osd.position = %q: want top-center, top-left, top-right, bottom-center, bottom-left or bottom-right; using %q", c.OSD.Position, d.OSD.Position))
 		c.OSD.Position = d.OSD.Position

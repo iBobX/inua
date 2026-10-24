@@ -36,8 +36,10 @@ func VoiceIcon(v system.VoiceState) string {
 // VoiceTooltip is what the microphone's hover says.
 func VoiceTooltip(v system.VoiceState) string {
 	switch {
+	case v.Status == system.VoiceNoProfile:
+		return i18n.T("Dictation: no AI profile turns speech into text. Click to set it up")
 	case v.Status == system.VoiceMissing:
-		return i18n.T("Dictation: voxtype is not installed. Click to set it up")
+		return i18n.T("Dictation: not installed. Click to set it up")
 	case !v.Available:
 		return i18n.T("Dictation: voxtype is not running. Click to start it")
 	case v.Status == "recording":

@@ -74,7 +74,8 @@ part shows "Unavailable" or hides. Ubuntu Desktop usually has the first five.
 | `login` | `/usr/sbin/unix_chkpwd`, which checks the password on inua's lock screen (it is always installed) |
 | `grim`, `wl-clipboard` | The screenshot tool: grim captures the screens, wl-copy puts shots on the clipboard |
 | `pipewire-bin` (`pw-play`, `pw-cat`) | The alarm and timer sound; the games' sound and the assistant's voice input (`pw-cat`) |
-| `voxtype` | Optional: dictation into any window (Settings → Dictation), from voxtype.io |
+| `voxtype` | Optional: dictation's engine on this machine (Settings → Dictation installs it into `~/.local/bin`, from its GitHub releases) |
+| `wtype` | Optional: dictation types its words with it; without it they are pasted through the clipboard |
 | `wf-recorder` | Recording the screen from the screenshot tool |
 | `libturbojpeg0` | Optional: Viewer decodes JPEG with it, several times faster, and at a smaller size for a quick first look; without it, Go decodes |
 | `libpoppler-glib8t64` | Viewer draws PDFs with it (loaded through purego when a PDF opens); without it, PDFs do not open |

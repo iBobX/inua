@@ -1,17 +1,28 @@
 package ui
 
 import (
+	"bytes"
 	"cmp"
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
+	"os"
+	"os/exec"
+	"slices"
+	"strings"
+	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desktop"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hyprconf"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
+	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/system"
 )
@@ -24,7 +35,7 @@ func (s *shellUI) voiceRequest(fn string) ipc.Response {
 	if !s.cfg.Voice.Enable {
 		return ipc.Response{Error: "dictation is off (Settings → Dictation)"}
 	}
-	v := s.svc.voice
+	v := s.svc.dictation
 	if v == nil {
 		return ipc.Response{Error: "dictation is not available"}
 	}
@@ -74,29 +85,72 @@ func (s *shellUI) applyVoiceState() {
 	s.showVoice()
 }
 
-// followVoice follows the voxtype daemon while dictation is on, and
-// stops reading its state when it is turned off.
+// dictationEngine turns speech into text: voxtype's daemon (system.Voice)
+// or the AI profile for voice input (system.Dictation).
+type dictationEngine interface {
+	Run(ctx context.Context, onChange func(system.VoiceState))
+	Start() error
+	Stop() error
+	Toggle() error
+	Cancel() error
+}
+
+// followVoice runs the engine dictation is set to while it is on, a new
+// one when the engine or the AI's profile changes, and none while it is
+// off, so nothing is read then.
 func (s *shellUI) followVoice() {
 	v := &s.svc
-	on := s.cfg.Voice.Enable
-	if on == (v.voiceStop != nil) {
+	var want, profile string
+	if s.cfg.Voice.Enable {
+		want = s.cfg.Voice.Engine
+		if want == "ai" {
+			if s.cfg.Assistant.Enable {
+				profile = s.cfg.Assistant.TranscriptionProfile()
+			}
+			want += ":" + profile
+		}
+	}
+	if want == v.voiceRun {
 		return
 	}
-	if !on {
+	if v.voiceStop != nil {
 		v.voiceStop()
-		v.voiceStop = nil
-		s.sys.Voice = system.VoiceState{}
+		v.voiceStop, v.dictation = nil, nil
+	}
+	v.voiceRun = want
+	s.sys.Voice = system.VoiceState{}
+	if want == "" {
 		s.applyVoiceState()
 		return
 	}
+	var e dictationEngine = v.voice
+	if s.cfg.Voice.Engine == "ai" {
+		e = &system.Dictation{Profile: profile, Assistant: "inua-assistant", Type: s.typeDictation,
+			Failed: func(err error) { gtkx.Post(func() { s.dictationFailed(err) }) }}
+	}
 	ctx, cancel := context.WithCancel(context.Background())
-	v.voiceStop = cancel
-	go v.voice.Run(ctx, func(st system.VoiceState) {
+	v.dictation, v.voiceStop = e, cancel
+	s.applyVoiceState()
+	go e.Run(ctx, func(st system.VoiceState) {
 		s.update(func(x *shell.System) {
-			if ctx.Err() == nil { // not a poll from before it was turned off
+			if ctx.Err() == nil { // not from an engine since stopped
 				x.Voice = st
 			}
 		})
+	})
+}
+
+// dictationFailed says why a dictation came to nothing, as a notification:
+// the window it was for keeps the focus.
+func (s *shellUI) dictationFailed(err error) {
+	summary := i18n.T("Dictation did not work")
+	if s.notes.srv == nil {
+		log.Printf("dictation: %v", err)
+		return
+	}
+	s.postNote(notify.Notification{
+		ID: s.notes.srv.NewID(), App: "inua", Icon: "microphone-slash-symbolic",
+		Summary: summary, Body: notify.Markup(err.Error()), Urgency: notify.Normal, Time: time.Now(),
 	})
 }
 
@@ -106,12 +160,26 @@ type voiceSettings struct {
 	enable, ptt gtk.Switch
 	pttRow      gtk.Box
 	engine      gtk.Box // the ENGINE section, while dictation is on
+	engineDrop  gtk.DropDown
 	// The daemon's row: what it is doing, or what is missing, with the
 	// one thing to do about it.
-	state, detail         gtk.Label
-	install, start, setup gtk.Button
-	modelRow              gtk.Box
-	model, status         gtk.Label
+	state, detail               gtk.Label
+	install, site, start, setup gtk.Button
+	// installing is set while InstallVoxtype runs; progress says where.
+	installing bool
+	progress   string
+	// The model (voxtype's) or the profile (the AI's), and how the words
+	// reach the window.
+	modelRow          gtk.Box
+	modelTitle, model gtk.Label
+	typingRow         gtk.Box
+	typing, status    gtk.Label
+	aiSettings        gtk.Button
+}
+
+// voiceEngineLabels name config.VoiceEngines in the Engine drop-down.
+func voiceEngineLabels() []string {
+	return []string{i18n.T("voxtype, on this machine"), i18n.T("An AI profile (Voice input in Settings → AI)")}
 }
 
 // voxtypeSite is where voxtype is installed from.
@@ -139,13 +207,31 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 			s.changeSettings(c)
 			return false // let the switch move
 		}
-		s.onVoiceSetup = func(gtk.Button) { s.voiceSetupModel() }
-		s.onVoiceInstall = func(gtk.Button) {
+		s.onVoiceSetup = func(gtk.Button) {
+			if s.cfg.Voice.Engine == "ai" {
+				s.showSettingsPage("ai")
+				return
+			}
+			s.voiceSetupModel()
+		}
+		s.onVoiceInstall = func(gtk.Button) { s.voiceInstall() }
+		s.onVoiceSite = func(gtk.Button) {
 			if err := desktop.Spawn([]string{"xdg-open", voxtypeSite}, ""); err != nil {
 				v.setStatus(err.Error())
 			}
 		}
 		s.onVoiceStart = func(gtk.Button) { s.voiceStartDaemon() }
+		s.onVoiceAI = func(gtk.Button) { s.showSettingsPage("ai") }
+		s.onVoiceEngine = func(uintptr, uintptr, uintptr) {
+			i := int(v.engineDrop.GetSelected())
+			if s.settings.filling || i < 0 || i >= len(config.VoiceEngines) || config.VoiceEngines[i] == s.cfg.Voice.Engine {
+				return
+			}
+			c := s.cfg
+			c.Voice.Engine = config.VoiceEngines[i]
+			v.setStatus("")
+			s.changeSettings(c)
+		}
 	}
 	sw := func(body *gtk.Box, name, title, sub string) (gtk.Switch, gtk.Box) {
 		row, _ := displayRow(title, sub)
@@ -172,16 +258,27 @@ func (s *shellUI) getVoiceSettings(ui *gtkx.Builder) {
 	v.ptt, v.pttRow = sw(body, "voice_ptt", i18n.T("Push to talk"), i18n.T("The shortcut records while it is held; off, it starts and stops"))
 	gtkx.Append(&v.page, &sec.Widget)
 
-	sec, body = displaySection(i18n.T("ENGINE"), i18n.T("voxtype listens and turns speech into text on this machine"))
+	sec, body = displaySection(i18n.T("ENGINE"), i18n.T("What turns your speech into text"))
 	v.engine = *sec
+	row, _ := displayRow(i18n.T("Engine"), i18n.T("voxtype keeps the recording on this machine; an AI profile sends it to its provider"))
+	v.engineDrop = *gtk.NewDropDownFromStrings(voiceEngineLabels())
+	v.engineDrop.SetValign(gtk.AlignCenterValue)
+	gtkx.ConnectNotify(&v.engineDrop, "selected", &s.onVoiceEngine)
+	gtkx.Append(row, &v.engineDrop.Widget)
+	gtkx.Append(body, &row.Widget)
 	row, state, detail := titledRow()
 	v.state, v.detail = *state, *detail
-	v.install = button(row, i18n.T("voxtype.io"), &s.onVoiceInstall)
+	v.site = button(row, i18n.T("voxtype.io"), &s.onVoiceSite)
+	v.install = button(row, i18n.T("Install"), &s.onVoiceInstall)
 	v.start = button(row, i18n.T("Start"), &s.onVoiceStart)
+	v.aiSettings = button(row, i18n.T("AI Settings"), &s.onVoiceAI)
 	gtkx.Append(body, &row.Widget)
-	row, model := displayRow(i18n.T("Model"), " ")
-	v.model, v.modelRow = *model, *row
-	v.setup = button(row, i18n.T("Change"), &s.onVoiceSetup) // voxtype's setup, in a terminal
+	row, title, model := titledRow()
+	v.modelRow, v.modelTitle, v.model = *row, *title, *model
+	v.setup = button(row, i18n.T("Change"), &s.onVoiceSetup) // voxtype's setup, or Settings → AI
+	gtkx.Append(body, &row.Widget)
+	row, typing := displayRow(i18n.T("Typing"), " ")
+	v.typingRow, v.typing = *row, *typing
 	gtkx.Append(body, &row.Widget)
 	v.status = *gtk.NewLabel("")
 	v.status.AddCssClass("row-error")
@@ -233,28 +330,37 @@ func (s *shellUI) setVoiceButton() {
 	}
 }
 
-// showVoice fills the page from the config and the daemon: push to talk
-// and the engine hidden while dictation is off; else the daemon's
-// state, or what is missing and the way to it.
+// showVoice fills the page from the config and the engine: push to talk
+// and the engine hidden while dictation is off; else what the engine is
+// doing, or what is missing and the one thing to do about it.
 func (s *shellUI) showVoice() {
 	st := &s.settings.voice
 	if s.settings.win == nil || st.page.GoPointer() == 0 {
 		return
 	}
-	v, on := s.sys.Voice, s.cfg.Voice.Enable
+	v, on, ai := s.sys.Voice, s.cfg.Voice.Enable, s.cfg.Voice.Engine == "ai"
 	st.pttRow.SetVisible(on)
 	st.engine.SetVisible(on)
 	if !on {
 		return
 	}
+	st.engineDrop.SetSelected(uint32(max(0, slices.Index(config.VoiceEngines, s.cfg.Voice.Engine))))
 	var title, detail string
 	switch {
+	case st.installing:
+		title, detail = i18n.T("Installing voxtype…"), st.progress
+	case v.Status == system.VoiceNoProfile:
+		title = i18n.T("No profile turns speech into text")
+		detail = i18n.T("Turn on Voice for a profile in Settings → AI, and choose it for Voice input")
+	case ai && v.Status == system.VoiceMissing:
+		title, detail = i18n.T("pw-cat is not installed"), i18n.T("Dictation records with PipeWire's pw-cat (pipewire-bin)")
 	case v.Status == system.VoiceMissing:
-		title, detail = i18n.T("voxtype is not installed"), i18n.T("Install it from its site, then turn on its daemon")
+		title = i18n.T("voxtype is not installed")
+		detail = i18n.Tf("Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with an English speech model (Change picks another)", system.VoxtypeVersion)
 	case v.Status == system.VoiceStopped:
 		title, detail = i18n.T("The daemon is not running"), i18n.T("voxtype is installed; its user service is stopped")
 	case !v.Available:
-		title, detail = i18n.T("Looking for voxtype…"), " "
+		title, detail = i18n.T("Looking…"), " "
 	default:
 		title = voiceStateText(v)
 		switch keys := s.voiceKeys(); {
@@ -268,10 +374,26 @@ func (s *shellUI) showVoice() {
 	}
 	st.state.SetText(title)
 	st.detail.SetText(detail)
-	st.install.SetVisible(v.Status == system.VoiceMissing)
-	st.start.SetVisible(v.Status == system.VoiceStopped)
+	voxtype := !ai && !st.installing
+	st.install.SetVisible(voxtype && v.Status == system.VoiceMissing)
+	st.site.SetVisible(voxtype && v.Status == system.VoiceMissing)
+	st.start.SetVisible(voxtype && v.Status == system.VoiceStopped)
+	st.aiSettings.SetVisible(ai && v.Status == system.VoiceNoProfile)
+	st.engineDrop.SetSensitive(!st.installing)
+
 	st.modelRow.SetVisible(v.Available)
+	st.modelTitle.SetText(i18n.T("Model"))
 	st.model.SetText(cmp.Or(v.Model, i18n.T("Unknown")))
+	if ai {
+		st.modelTitle.SetText(i18n.T("Profile"))
+		st.model.SetText(i18n.Tf("%s; the recording goes to its provider", v.Model))
+	}
+	st.typingRow.SetVisible(v.Available)
+	if _, err := exec.LookPath("wtype"); err == nil {
+		st.typing.SetText(i18n.T("wtype types the words into the window"))
+	} else {
+		st.typing.SetText(i18n.T("The words are pasted through the clipboard; with wtype installed, they are typed"))
+	}
 	if v.Available {
 		st.setStatus("")
 	}
@@ -304,6 +426,42 @@ func voiceStateText(v system.VoiceState) string {
 	return i18n.T("Ready")
 }
 
+// voiceInstall installs voxtype (system.InstallVoxtype), saying each step
+// on the page; the poll shows it come up.
+func (s *shellUI) voiceInstall() {
+	st := &s.settings.voice
+	if st.installing {
+		return
+	}
+	st.installing, st.progress = true, i18n.T("Downloading…")
+	st.setStatus("")
+	s.showVoice()
+	go func() {
+		err := system.InstallVoxtype(context.Background(), func(step system.VoxtypeStep, done float64) {
+			var text string
+			switch step {
+			case system.VoxtypeDownloading:
+				text = i18n.Tf("Downloading voxtype %s… %s", system.VoxtypeVersion, shell.Percent(done))
+			case system.VoxtypeModel:
+				text = i18n.T("Downloading its speech model…")
+			case system.VoxtypeService:
+				text = i18n.T("Starting its service…")
+			}
+			gtkx.Post(func() {
+				st.progress = text
+				s.showVoice()
+			})
+		})
+		gtkx.Post(func() {
+			st.installing = false
+			if err != nil {
+				st.setStatus(i18n.Tf("voxtype was not installed: %s", err.Error()))
+			}
+			s.showVoice()
+		})
+	}()
+}
+
 // voiceStartDaemon starts voxtype's user service; the poll shows it come
 // up, and its error shows under the row.
 func (s *shellUI) voiceStartDaemon() {
@@ -328,4 +486,53 @@ func (s *shellUI) voiceSetupModel() {
 	if err := system.SetupModelCommand(term, dashE).Start(); err != nil {
 		st.setStatus(i18n.Tf("Could not start voxtype's setup: %s", err.Error()))
 	}
+}
+
+// typeDictation puts dictation's words into the focused window: typed by
+// wtype when there is one; else pasted, as the clipboard history pastes
+// (Ctrl+V, Ctrl+Shift+V in a terminal), and the clipboard's text put back.
+// It runs on the engine's goroutine.
+func (s *shellUI) typeDictation(text string) error {
+	if _, err := exec.LookPath("wtype"); err == nil {
+		return exec.Command("wtype", "--", text).Run()
+	}
+	client, lua := s.client, s.hyprLua
+	if client == nil {
+		return errors.New(i18n.T("dictation types with wtype, which is not installed"))
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	reply, err := client.Request(ctx, "j/activewindow")
+	if err != nil {
+		return err
+	}
+	var w struct{ Address, Class string }
+	if json.Unmarshal(reply, &w) != nil || w.Address == "" {
+		return errors.New(i18n.T("no window has the focus to type into"))
+	}
+	old, hadText := exec.Command("wl-paste", "--no-newline", "--type", "text/plain").Output()
+	copyText := func(t []byte) error {
+		cmd := exec.Command("wl-copy", "--type", "text/plain;charset=utf-8")
+		cmd.Stdin = bytes.NewReader(t)
+		// wl-copy's daemon must not inherit a pipe waited on by Cmd.Run.
+		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
+		return cmd.Run()
+	}
+	if err := copyText([]byte(text)); err != nil {
+		return err
+	}
+	mods := "CTRL"
+	if class := strings.ToLower(w.Class); slices.ContainsFunc(terminalClasses, func(t string) bool { return strings.Contains(class, t) }) {
+		mods = "CTRL SHIFT"
+	}
+	if lua {
+		err = client.LuaDispatch(ctx, fmt.Sprintf(`hl.dsp.send_shortcut({ mods = %q, key = "V", window = %q })`, mods, "address:"+w.Address))
+	} else {
+		err = client.Dispatch(ctx, fmt.Sprintf("sendshortcut %s, V, address:%s", mods, w.Address))
+	}
+	if hadText == nil {
+		time.Sleep(400 * time.Millisecond) // the window has read the clipboard
+		copyText(old)
+	}
+	return err
 }

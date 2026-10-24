@@ -326,6 +326,12 @@ enable = false
 # it (push to talk). false: the shortcut toggles a recording on and off.
 push_to_talk = true
 
+# What turns speech into text: "voxtype", its daemon on this machine, or
+# "ai", the assistant's profile for voice input (assistant.transcription;
+# the recording goes to its provider), typed in with wtype when there is
+# one, else pasted.
+engine = "voxtype"
+
 [assistant]
 # The assistant (inua-assistant, the launcher's "Ask"): an agent with
 # inua's tools, run by Mister Morph. The shell starts it in the background;

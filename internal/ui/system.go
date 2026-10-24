@@ -21,7 +21,11 @@ type services struct {
 	backlight *system.Backlight // nil without a panel backlight
 	ts        *system.Tailscale
 	voice     *system.Voice
-	voiceStop context.CancelFunc // while voice input is on (followVoice)
+	// dictation is the engine followVoice runs (voice, or the AI's), its
+	// stop and what it is ("voxtype", "ai:PROFILE") while dictation is on.
+	dictation dictationEngine
+	voiceStop context.CancelFunc
+	voiceRun  string
 
 	volume     *shell.Setter
 	brightness *shell.Setter

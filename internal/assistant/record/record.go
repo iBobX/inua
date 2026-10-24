@@ -25,6 +25,9 @@ const MaxLength = 5 * time.Minute
 // ErrNoPwCat is a system without pw-cat.
 var ErrNoPwCat = errors.New("voice input records with pw-cat (PipeWire), which is not installed")
 
+// ErrEmpty is a recording stopped before pw-cat gave anything.
+var ErrEmpty = errors.New("nothing was recorded")
+
 // Available reports whether there is pw-cat to record with.
 func Available() bool {
 	_, err := exec.LookPath("pw-cat")
@@ -152,7 +155,7 @@ func (r *Recorder) Stop() ([]byte, error) {
 		if msg := strings.TrimSpace(r.stderr.String()); msg != "" {
 			return nil, errors.New("pw-cat: " + msg)
 		}
-		return nil, errors.New("nothing was recorded")
+		return nil, ErrEmpty
 	}
 	return WAV(r.pcm), nil
 }

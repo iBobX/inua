@@ -28,7 +28,7 @@ func Format(c Config) string {
 		c.Notify.Enable, c.Notify.Banner, c.Notify.CriticalInFocus, c.Notify.Updates, c.Notify.History,
 		c.Clipboard.Enable, c.Clipboard.Bar, c.Clipboard.Limit, c.Clipboard.PasteOnClick, list(c.Clipboard.SensitiveSources),
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
-		c.Voice.Enable, c.Voice.PushToTalk,
+		c.Voice.Enable, c.Voice.PushToTalk, q(c.Voice.Engine),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision), q(c.Assistant.Transcription),
 		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
@@ -466,6 +466,12 @@ enable = %t
 # true: the shortcut's key press starts the recording and its release ends
 # it (push to talk). false: the shortcut toggles a recording on and off.
 push_to_talk = %t
+
+# What turns speech into text: "voxtype", its daemon on this machine, or
+# "ai", the assistant's profile for voice input (assistant.transcription;
+# the recording goes to its provider), typed in with wtype when there is
+# one, else pasted.
+engine = %s
 
 [assistant]
 # The assistant (inua-assistant, the launcher's "Ask"): an agent with

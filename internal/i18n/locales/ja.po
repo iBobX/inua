@@ -6,6 +6,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: cmd/inua-assistant/answer.go:36
+#: cmd/inua-assistant/transcribe.go:40
 #: internal/assistantui/assistantui.go:326
 #: internal/diskui/details.go:332
 #: internal/mailui/assist.go:43
@@ -28,6 +29,10 @@ msgstr "%s の API キーがありません。先に入力して保存してく�
 #: internal/apps/disk/rules.go:175
 msgid "inua's assistant"
 msgstr "inua のアシスタント"
+
+#: cmd/inua-assistant/transcribe.go:49
+msgid "No profile turns speech into text. Turn on Voice for one in Settings → AI."
+msgstr ""
 
 #: cmd/inua-disk-usage/main.go:104
 msgid "%d files, %.1f s"
@@ -1622,7 +1627,7 @@ msgid "Disconnected"
 msgstr "切断された"
 
 #: internal/apps/tailscale/status.go:269
-#: internal/shell/status.go:152
+#: internal/shell/status.go:154
 msgid "Logged out"
 msgstr "ログアウトしました"
 
@@ -1636,7 +1641,7 @@ msgstr "承認待ち"
 #: internal/filesui/remotesetup.go:418
 #: internal/mailui/window.go:619
 #: internal/shell/bluetooth.go:38
-#: internal/shell/status.go:156
+#: internal/shell/status.go:158
 #: internal/shell/wifi.go:38
 #: internal/shell/wifi.go:49
 #: internal/vmui/window.go:2761
@@ -1644,7 +1649,7 @@ msgid "Connecting…"
 msgstr "接続中…"
 
 #: internal/apps/tailscale/status.go:275
-#: internal/shell/status.go:144
+#: internal/shell/status.go:146
 msgid "Not running"
 msgstr "稼働していない"
 
@@ -1694,7 +1699,7 @@ msgstr "雷雨"
 
 #: internal/apps/weather/weather.go:214
 #: internal/appui/sysmon.go:1082
-#: internal/ui/voice.go:274
+#: internal/ui/voice.go:386
 #: internal/vmui/window.go:2335
 msgid "Unknown"
 msgstr "不明"
@@ -1902,7 +1907,7 @@ msgstr "編集"
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
 #: internal/termui/guide.go:161
-#: internal/ui/voice.go:180
+#: internal/ui/voice.go:273
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:684
@@ -3231,7 +3236,7 @@ msgstr "コンピュータ"
 #: internal/appui/sysmon.go:978
 #: internal/shell/cardterm.go:113
 #: internal/ui/settings_ai.go:494
-#: internal/ui/voice.go:182
+#: internal/ui/voice.go:385
 msgid "Model"
 msgstr "モデル"
 
@@ -3492,9 +3497,9 @@ msgid "Tailscale is not running."
 msgstr "テールスケールは実行されていない。"
 
 #: internal/appui/tailscale.go:347
-#: internal/shell/status.go:97
-#: internal/shell/status.go:114
-#: internal/shell/status.go:129
+#: internal/shell/status.go:99
+#: internal/shell/status.go:116
+#: internal/shell/status.go:131
 msgid "Unavailable"
 msgstr "利用不可"
 
@@ -3793,10 +3798,10 @@ msgstr "再生できません: %s"
 #: internal/connectui/window.go:387
 #: internal/mailui/settings.go:563
 #: internal/shell/notify.go:44
-#: internal/shell/status.go:101
-#: internal/shell/status.go:116
-#: internal/shell/status.go:135
-#: internal/shell/status.go:150
+#: internal/shell/status.go:103
+#: internal/shell/status.go:118
+#: internal/shell/status.go:137
+#: internal/shell/status.go:152
 #: internal/termui/prefsweb.go:128
 #: internal/ui/settings_bluetooth.go:214
 #: internal/ui/settings_displays.go:294
@@ -4073,6 +4078,7 @@ msgid "Replace the installed %s?"
 msgstr "インストール済みの %s を置き換えますか？"
 
 #: internal/appui/workshop_manager.go:154
+#: internal/ui/voice.go:272
 #: ui/vm.ui:1279
 msgid "Install"
 msgstr "インストール"
@@ -9685,7 +9691,7 @@ msgid "Pick a colour"
 msgstr "色を選ぶ"
 
 #: internal/hyprconf/keys.go:40
-#: internal/ui/voice.go:171
+#: internal/ui/voice.go:257
 #: ui/bar.ui:164
 #: ui/settings.ui:6242
 msgid "Dictation"
@@ -10967,7 +10973,7 @@ msgid "User name"
 msgstr "ユーザー名"
 
 #: internal/mailui/welcome.go:589
-#: internal/ui/voice.go:184
+#: internal/ui/voice.go:278
 msgid "Change"
 msgstr "変更"
 
@@ -11040,7 +11046,7 @@ msgid "Fetching your mail"
 msgstr "メールを取得しています"
 
 #: internal/mailui/welcome.go:726
-#: internal/ui/voice.go:304
+#: internal/ui/voice.go:426
 msgid "Ready"
 msgstr "準備完了"
 
@@ -11118,7 +11124,7 @@ msgid "Offline: connection dropped"
 msgstr "{'es': 'Sin conexión: se cortó la conexión', 'fr': 'Hors ligne : connexion interrompue', 'ja': 'オフライン：接続が切れました', 'ko': '오프라인: 연결이 끊김', 'zh_CN': '离线：连接已断开', 'zh_TW': '離線：連線已中斷'}"
 
 #: internal/mailui/window.go:486
-#: internal/shell/status.go:75
+#: internal/shell/status.go:77
 msgid "Offline"
 msgstr "オフライン"
 
@@ -11502,7 +11508,7 @@ msgid "Connected, battery %d%%"
 msgstr "接続済み、バッテリー %d%%"
 
 #: internal/shell/bluetooth.go:54
-#: internal/shell/status.go:107
+#: internal/shell/status.go:109
 msgid "Not connected"
 msgstr "接続されていません"
 
@@ -12013,7 +12019,7 @@ msgid "Balanced"
 msgstr "バランス"
 
 #: internal/shell/power.go:14
-#: internal/shell/status.go:133
+#: internal/shell/status.go:135
 msgid "Performance"
 msgstr "パフォーマンス"
 
@@ -12038,57 +12044,61 @@ msgid "Do nothing"
 msgstr "何もしない"
 
 #: internal/shell/status.go:40
-msgid "Dictation: voxtype is not installed. Click to set it up"
+msgid "Dictation: no AI profile turns speech into text. Click to set it up"
 msgstr ""
 
 #: internal/shell/status.go:42
-msgid "Dictation: voxtype is not running. Click to start it"
+msgid "Dictation: not installed. Click to set it up"
 msgstr ""
 
 #: internal/shell/status.go:44
-msgid "Listening… Click to stop"
+msgid "Dictation: voxtype is not running. Click to start it"
 msgstr ""
 
 #: internal/shell/status.go:46
+msgid "Listening… Click to stop"
+msgstr ""
+
+#: internal/shell/status.go:48
 #: ui/assistant.ui:172
 msgid "Transcribing…"
 msgstr ""
 
-#: internal/shell/status.go:48
+#: internal/shell/status.go:50
 msgid "Dictation: click and talk"
 msgstr ""
 
-#: internal/shell/status.go:99
+#: internal/shell/status.go:101
 #: internal/ui/settings_wifi.go:283
 msgid "No Wi-Fi device"
 msgstr "Wi-Fiデバイスがありません"
 
-#: internal/shell/status.go:120
+#: internal/shell/status.go:122
 msgid "%d devices"
 msgstr "%dデバイス"
 
-#: internal/shell/status.go:122
-#: internal/shell/status.go:131
+#: internal/shell/status.go:124
+#: internal/shell/status.go:133
 msgid "On"
 msgstr "オン"
 
-#: internal/shell/status.go:146
+#: internal/shell/status.go:148
 msgid "via %s"
 msgstr "%s経由"
 
-#: internal/shell/status.go:148
+#: internal/shell/status.go:150
 msgid "%d online"
 msgstr "%d オンライン"
 
-#: internal/shell/status.go:154
+#: internal/shell/status.go:156
 msgid "Needs approval"
 msgstr "承認が必要"
 
-#: internal/shell/status.go:214
+#: internal/shell/status.go:216
 msgid "Fully charged"
 msgstr "フル充電"
 
-#: internal/shell/status.go:216
+#: internal/shell/status.go:218
 msgid "%.0f%% · Charging"
 msgstr "%.0f%% · 充電中"
 
@@ -14694,6 +14704,7 @@ msgid "the dialog could not be shown"
 msgstr "ダイアログを表示できませんでした"
 
 #: internal/ui/settings_keyring.go:383
+#: internal/ui/voice.go:363
 msgid "Looking…"
 msgstr "確認中…"
 
@@ -15033,84 +15044,172 @@ msgstr "inua をアップグレードできませんでした"
 msgid "Could not upgrade: %s"
 msgstr "アップグレードできませんでした: %s"
 
-#: internal/ui/voice.go:170
+#: internal/ui/voice.go:146
+msgid "Dictation did not work"
+msgstr ""
+
+#: internal/ui/voice.go:182
+msgid "voxtype, on this machine"
+msgstr ""
+
+#: internal/ui/voice.go:182
+msgid "An AI profile (Voice input in Settings → AI)"
+msgstr ""
+
+#: internal/ui/voice.go:256
 msgid "DICTATION"
 msgstr ""
 
-#: internal/ui/voice.go:170
+#: internal/ui/voice.go:256
 msgid "Talk, and the words are typed where you are"
 msgstr ""
 
-#: internal/ui/voice.go:171
+#: internal/ui/voice.go:257
 msgid "A microphone in the bar, and a shortcut to talk"
 msgstr ""
 
-#: internal/ui/voice.go:172
+#: internal/ui/voice.go:258
 msgid "Push to talk"
 msgstr ""
 
-#: internal/ui/voice.go:172
+#: internal/ui/voice.go:258
 msgid "The shortcut records while it is held; off, it starts and stops"
 msgstr ""
 
-#: internal/ui/voice.go:175
+#: internal/ui/voice.go:261
 msgid "ENGINE"
 msgstr ""
 
-#: internal/ui/voice.go:175
-msgid "voxtype listens and turns speech into text on this machine"
+#: internal/ui/voice.go:261
+msgid "What turns your speech into text"
 msgstr ""
 
-#: internal/ui/voice.go:179
+#: internal/ui/voice.go:263
+msgid "Engine"
+msgstr ""
+
+#: internal/ui/voice.go:263
+msgid "voxtype keeps the recording on this machine; an AI profile sends it to its provider"
+msgstr ""
+
+#: internal/ui/voice.go:271
 msgid "voxtype.io"
 msgstr ""
 
-#: internal/ui/voice.go:253
+#: internal/ui/voice.go:274
+msgid "AI Settings"
+msgstr ""
+
+#: internal/ui/voice.go:280
+msgid "Typing"
+msgstr ""
+
+#: internal/ui/voice.go:351
+msgid "Installing voxtype…"
+msgstr ""
+
+#: internal/ui/voice.go:353
+msgid "No profile turns speech into text"
+msgstr ""
+
+#: internal/ui/voice.go:354
+msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
+msgstr ""
+
+#: internal/ui/voice.go:356
+msgid "pw-cat is not installed"
+msgstr ""
+
+#: internal/ui/voice.go:356
+msgid "Dictation records with PipeWire's pw-cat (pipewire-bin)"
+msgstr ""
+
+#: internal/ui/voice.go:358
 msgid "voxtype is not installed"
 msgstr ""
 
-#: internal/ui/voice.go:253
-msgid "Install it from its site, then turn on its daemon"
+#: internal/ui/voice.go:359
+msgid "Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with an English speech model (Change picks another)"
 msgstr ""
 
-#: internal/ui/voice.go:255
+#: internal/ui/voice.go:361
 msgid "The daemon is not running"
 msgstr ""
 
-#: internal/ui/voice.go:255
+#: internal/ui/voice.go:361
 msgid "voxtype is installed; its user service is stopped"
 msgstr ""
 
-#: internal/ui/voice.go:257
-msgid "Looking for voxtype…"
-msgstr ""
-
-#: internal/ui/voice.go:262
+#: internal/ui/voice.go:368
 msgid "Click the microphone in the bar, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:264
+#: internal/ui/voice.go:370
 msgid "Click the microphone in the bar, or hold %s, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:266
+#: internal/ui/voice.go:372
 msgid "Click the microphone in the bar, or press %s, and talk"
 msgstr ""
 
-#: internal/ui/voice.go:300
+#: internal/ui/voice.go:388
+msgid "Profile"
+msgstr ""
+
+#: internal/ui/voice.go:389
+msgid "%s; the recording goes to its provider"
+msgstr ""
+
+#: internal/ui/voice.go:393
+msgid "wtype types the words into the window"
+msgstr ""
+
+#: internal/ui/voice.go:395
+msgid "The words are pasted through the clipboard; with wtype installed, they are typed"
+msgstr ""
+
+#: internal/ui/voice.go:422
 msgid "Listening"
 msgstr ""
 
-#: internal/ui/voice.go:302
+#: internal/ui/voice.go:424
 msgid "Transcribing"
 msgstr ""
 
-#: internal/ui/voice.go:318
+#: internal/ui/voice.go:436
+msgid "Downloading…"
+msgstr ""
+
+#: internal/ui/voice.go:444
+msgid "Downloading voxtype %s… %s"
+msgstr ""
+
+#: internal/ui/voice.go:446
+msgid "Downloading its speech model…"
+msgstr ""
+
+#: internal/ui/voice.go:448
+msgid "Starting its service…"
+msgstr ""
+
+#: internal/ui/voice.go:458
+msgid "voxtype was not installed: %s"
+msgstr ""
+
+#: internal/ui/voice.go:476
 msgid "voxtype did not start: %s"
 msgstr ""
 
-#: internal/ui/voice.go:329
+#: internal/ui/voice.go:487
 msgid "Could not start voxtype's setup: %s"
+msgstr ""
+
+#: internal/ui/voice.go:501
+msgid "dictation types with wtype, which is not installed"
+msgstr ""
+
+#: internal/ui/voice.go:511
+msgid "no window has the focus to type into"
 msgstr ""
 
 #: internal/viewerui/app.go:36

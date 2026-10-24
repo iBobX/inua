@@ -35,7 +35,13 @@ func (a *Assistant) Transcribes() bool { return a.set.Transcription != "" }
 // Transcribe returns the words spoken in audio, a recording in a format
 // the name says ("voice.wav").
 func (a *Assistant) Transcribe(ctx context.Context, audio []byte, name string) (string, error) {
-	p, ok := a.set.profile(a.set.Transcription)
+	return a.set.Transcribe(ctx, audio, name)
+}
+
+// Transcribe is Assistant.Transcribe from the settings alone, without an
+// agent: dictation's, from the shell (inua-assistant --transcribe).
+func (s Settings) Transcribe(ctx context.Context, audio []byte, name string) (string, error) {
+	p, ok := s.profile(s.Transcription)
 	if !ok {
 		return "", ErrNoTranscription
 	}

@@ -121,26 +121,37 @@ out of the way rather than raising itself over the windows.
 
 ## Dictation
 
-Talk, and the words are typed into whichever window has the focus,
-through the [voxtype](https://voxtype.io) daemon, which listens and turns
-speech into text on this machine. Settings → Dictation (`[voice] enable`
-in config.toml) turns it on: a microphone shows in the bar, and
-Super+Shift+V records while it is held, or starts and stops a recording
-with `push_to_talk = false`. A click on the microphone starts a recording
-and another ends it; it breathes in the accent while it records, and shows
-an hourglass while the words are turned into text.
-
-When voxtype is not installed, or its daemon is not running, the
-microphone is slashed and a click opens Settings → Dictation, which says
-which: a link to voxtype's site, or a button that starts its user service
-(`systemctl --user start voxtype`). Once it runs, the page shows its state
-and model, and opens voxtype's own setup in a terminal to choose and
-download models. Off, inua neither reads the daemon nor binds the keys.
+Talk, and the words are typed into whichever window has the focus.
+Settings → Dictation (`[voice] enable` in config.toml) turns it on: a
+microphone shows in the bar, and Super+Shift+V records while it is held,
+or starts and stops a recording with `push_to_talk = false`. A click on
+the microphone starts a recording and another ends it; it breathes in the
+accent while it records, and shows an hourglass while the words are
+turned into text. Off, inua neither listens for it nor binds the keys.
 `inua call voice start|stop|toggle|cancel` drives it from scripts.
 
-Dictation is apart from the assistant's microphone (Voice input in
-Settings → AI), which sends a recording to a transcription profile and
-puts the words into the question.
+Two engines turn the speech into text (`[voice] engine`):
+
+- **voxtype** (the default), the [voxtype](https://voxtype.io) daemon,
+  on this machine; the recording never leaves it. When voxtype is not
+  installed, the page's **Install** downloads its release for this
+  processor (version pinned in inua) from GitHub into `~/.local/bin`,
+  refuses it unless its SHA-256 is the one inua carries, then has it
+  download its English speech model and set up and start its user
+  service. **Change** opens voxtype's own setup to pick another model;
+  **Start** starts a stopped daemon. voxtype types the words itself.
+- **An AI profile** (`engine = "ai"`): the shell records the microphone
+  (pw-cat) and `inua-assistant --transcribe` turns it into text with the
+  profile chosen for Voice input in Settings → AI, whose provider gets
+  the recording. inua then types the words with `wtype`, or, without it,
+  pastes them (Ctrl+V; Ctrl+Shift+V in a terminal) and puts the
+  clipboard's text back. Why one came to nothing shows as a notification.
+
+When the engine is not ready, the microphone is slashed and a click opens
+Settings → Dictation, which says what is missing.
+
+Dictation is apart from the assistant's own microphone (Voice input,
+docs/apps.md), which puts the words into the question.
 
 ## Dock
 

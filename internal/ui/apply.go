@@ -174,9 +174,9 @@ func (s *shellUI) applyConfig(c config.Config) {
 		}
 		s.renderDocks()
 	}
+	s.followVoice() // dictation's engine: [voice], or the AI's profile
 	if old.Voice != c.Voice {
 		s.setVoiceButton()
-		s.followVoice()
 		s.showVoice()        // push to talk, the engine section
 		go s.applyHyprland() // the push-to-talk binds follow the settings
 	}

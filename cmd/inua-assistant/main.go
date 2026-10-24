@@ -29,7 +29,14 @@ func main() {
 	mcpServer := flag.Bool("mcp", false, "be inua's MCP server on stdio, for an AI agent (inua mcp)")
 	answerer := flag.Bool("answer", false, "answer questions on stdio, a JSON object a line, without tools (for the games)")
 	bench := flag.String("benchmark", "", "run a profile's benchmarks, a JSON object a line (for Settings → AI)")
+	transcribe := flag.Bool("transcribe", false, "print the words in the WAV recording on stdin, with the voice input profile (for dictation)")
 	flag.Parse()
+	if *transcribe {
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		code := runTranscribe(ctx)
+		stop()
+		os.Exit(code)
+	}
 	if *bench != "" {
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		code := runBenchmark(ctx, *bench)
