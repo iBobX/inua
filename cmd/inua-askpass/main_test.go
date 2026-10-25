@@ -94,17 +94,18 @@ func TestSudoCommand(t *testing.T) {
 	}
 }
 
-// Through Mister Morph, a command not approved says why in its helper's
-// words, which tell the assistant a declined command from a failed one.
+// Through Mister Morph, a command not approved says why in its words,
+// which tell the assistant a declined command from a failed one; a failure
+// says nothing more.
 func TestMorphMarker(t *testing.T) {
 	for _, tc := range []struct {
 		late bool
 		r    passask.Reply
 		want string
 	}{
-		{false, passask.Reply{Result: keyring.Cancelled}, "mistermorph: administrator approval was declined"},
-		{true, passask.Reply{Result: keyring.Failed}, "mistermorph: administrator approval timed out"},
-		{false, passask.Reply{Result: keyring.Failed, Err: errors.New("no shell")}, "mistermorph: the approval dialog failed: no shell"},
+		{false, passask.Reply{Result: keyring.Cancelled}, passask.ElevateDeclined},
+		{true, passask.Reply{Result: keyring.Failed}, passask.ElevateTimedOut},
+		{false, passask.Reply{Result: keyring.Failed, Err: errors.New("no shell")}, ""},
 	} {
 		if got := morphMarker(tc.late, tc.r); got != tc.want {
 			t.Errorf("%v %+v: %q", tc.late, tc.r, got)

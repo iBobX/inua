@@ -47,14 +47,14 @@ func (p Profile) Can(ability string) bool {
 	return config.CanDo(p.Abilities, ability)
 }
 
-// pinentryBeside is inua-pinentry beside the running program, "" when it
-// is not there.
-func pinentryBeside() string {
+// beside is a program of inua's (inua-askpass) beside the running one, ""
+// when it is not there.
+func beside(name string) string {
 	exe, err := os.Executable()
 	if err != nil {
 		return ""
 	}
-	p := filepath.Join(filepath.Dir(exe), "inua-pinentry")
+	p := filepath.Join(filepath.Dir(exe), name)
 	if _, err := os.Stat(p); err != nil {
 		return ""
 	}
@@ -72,6 +72,7 @@ type Settings struct {
 	Tools            []string  // Mister Morph's built-ins to add
 	AskBeforeChanges bool
 	Elevated         bool   // config.Assistant.ElevatedCommands
+	Askpass          string // what sudo asks an elevated command's password with: inua-askpass, "" for Mister Morph's helper
 	StateDir         string // Mister Morph's files; empty for inua's defaults
 	CacheDir         string
 	MaxSteps         int // 0 for Mister Morph's default
@@ -93,7 +94,7 @@ var keyless = []string{"openai_chat_compatible", "openai_response_compatible", "
 // Quick choices go to the profile for them, else to the first with a key
 // that makes them.
 func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error) {
-	s := Settings{Tools: c.Tools, AskBeforeChanges: c.AskBeforeChanges, Elevated: c.ElevatedCommands}
+	s := Settings{Tools: c.Tools, AskBeforeChanges: c.AskBeforeChanges, Elevated: c.ElevatedCommands, Askpass: beside("inua-askpass")}
 	if c.ServeEnable {
 		s.ServeListen = strings.TrimSpace(c.ServeListen)
 		if _, _, err := net.SplitHostPort(s.ServeListen); err != nil {
@@ -305,15 +306,17 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 	// Mister Morph registers plan_create only when it is turned on (off by
 	// default since v0.3.61), whatever the tools listed.
 	cfg.Set("tools.plan_create.enabled", len(set.Tools) > 0)
-	// A command as root, once approved in a dialog showing it: sudo starts
-	// this program for the password, which hands over to inua-askpass
-	// (inua-assistant's askpassInstead). The pinentry named here is the
-	// dialog Mister Morph checks for, and asks with when inua-askpass is
-	// not there.
+	// A command as root, once approved in a dialog showing it: sudo asks
+	// inua-askpass for the password, in the shell's dialog; without it,
+	// Mister Morph's helper asks with inua's pinentry, else the system's.
 	elevated := set.Elevated && slices.Contains(set.Tools, "bash")
 	cfg.Set("tools.bash.elevation.enabled", elevated)
-	if p := pinentryBeside(); elevated && p != "" {
-		cfg.Set("tools.bash.elevation.dialog", p)
+	switch {
+	case !elevated:
+	case set.Askpass != "":
+		cfg.Set("tools.bash.elevation.askpass", set.Askpass)
+	case beside("inua-pinentry") != "":
+		cfg.Set("tools.bash.elevation.dialog", beside("inua-pinentry"))
 	}
 	if set.MaxSteps > 0 {
 		cfg.Set("max_steps", set.MaxSteps)

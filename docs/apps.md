@@ -62,8 +62,8 @@ With **As administrator** (Settings → AI, under Run commands;
 `elevated_commands` in `[assistant]`, on by default), a shell command
 may run as root: Mister Morph runs it with `sudo -k -A`, and sudo's
 password is asked by `inua-askpass` in inua's dialog, which shows the
-exact command (the system's pinentry asks when `inua-askpass` is not
-installed). The password goes to sudo alone, never to the model.
+exact command (Mister Morph's own dialog, through inua's pinentry or the
+system's, asks when `inua-askpass` is not installed). The password goes to sudo alone, never to the model.
 Declined, or unanswered within two minutes, the command does not run.
 
 Ask from the launcher (`?` before the query, or its last row) or with

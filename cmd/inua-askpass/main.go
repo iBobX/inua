@@ -45,11 +45,11 @@ func main() {
 	if asker := os.Getppid(); asker > 1 {
 		q.App, q.Chain = proc.Name(asker), proc.Chain(proc.Parent(asker), 8)
 		if cmd, ok := sudoCommand(q.App, proc.Args(asker)); ok {
-			asRoot(&q, cmp.Or(os.Getenv(morphCommand), cmd))
+			asRoot(&q, cmp.Or(os.Getenv(passask.ElevateCommandEnv), cmd))
 		}
 	}
 	deadline := time.Now().Add(time.Hour) // the user takes their time
-	if s, err := strconv.ParseInt(os.Getenv(morphDeadline), 10, 64); err == nil && s > 0 {
+	if s, err := strconv.ParseInt(os.Getenv(passask.ElevateDeadlineEnv), 10, 64); err == nil && s > 0 {
 		deadline = time.Unix(s, 0)
 	}
 	ctx, cancel := context.WithDeadline(context.Background(), deadline)
@@ -61,10 +61,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, "inua-askpass:", r.Err)
 	}
 	if !ok {
-		// Mister Morph tells the assistant a declined command from a
-		// failed one by its helper's words.
-		if os.Getenv(morphAskpass) == "1" {
-			fmt.Fprintln(os.Stderr, morphMarker(late, r))
+		// Mister Morph (tools.bash.elevation.askpass) tells the assistant
+		// a declined command from a failed one by these lines.
+		if m := morphMarker(late, r); m != "" && os.Getenv(passask.ElevateCommandEnv) != "" {
+			fmt.Fprintln(os.Stderr, m)
 		}
 		os.Exit(1)
 	}
@@ -103,33 +103,17 @@ func question(prompt, kind string) (q pinentry.Request, yesNo bool) {
 	return q, yesNo
 }
 
-// Mister Morph's askpass helper's environment, which inua-assistant hands
-// on when it becomes inua-askpass: that it is one, the command and when
-// the approval gives up (Unix seconds).
-const (
-	morphAskpass  = "MISTERMORPH_ASKPASS"
-	morphCommand  = "MISTERMORPH_ELEVATE_COMMAND"
-	morphDeadline = "MISTERMORPH_ELEVATE_DEADLINE"
-)
-
-// morphMarker is what Mister Morph's helper writes when an approval did
-// not come: timed out (late), else declined.
+// morphMarker is the line telling Mister Morph why an approval did not
+// come: timed out (late) or declined; "" for a failure, which it reports
+// as such.
 func morphMarker(late bool, r passask.Reply) string {
-	if late {
-		return "mistermorph: administrator approval timed out"
-	}
-	if r.Result == keyring.Failed {
-		return "mistermorph: the approval dialog failed: " + errText(r.Err)
-	}
-	return "mistermorph: administrator approval was declined"
-}
-
-// errText is an error's words, "" for none.
-func errText(err error) string {
-	if err == nil {
+	switch {
+	case late:
+		return passask.ElevateTimedOut
+	case r.Result == keyring.Failed:
 		return ""
 	}
-	return err.Error()
+	return passask.ElevateDeclined
 }
 
 // sudoValued are sudo's options that take a value: -u USER, -g GROUP …

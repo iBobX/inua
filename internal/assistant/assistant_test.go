@@ -20,6 +20,7 @@ import (
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desk"
+	"github.com/lyricat/inua/internal/passask"
 )
 
 // fakeModel speaks the OpenAI chat API, replying from a script: each reply
@@ -389,6 +390,54 @@ func TestElevatedCommands(t *testing.T) {
 		}
 		if told := bytes.Contains(sent, []byte("administrator rights ]]")); told != c.want {
 			t.Errorf("elevated %v, tools %v: told %v", c.elevated, c.tools, told)
+		}
+	}
+}
+
+// With inua-askpass, sudo asks it for an elevated command's password
+// (tools.bash.elevation.askpass): no display or dialog is needed, and the
+// command and its deadline go with it.
+func TestElevatedAskpass(t *testing.T) {
+	bin := t.TempDir()
+	sudo := "#!/bin/sh\necho \"sudo $* askpass=$SUDO_ASKPASS command=$MISTERMORPH_ELEVATE_COMMAND\"\n"
+	askpass := filepath.Join(bin, "inua-askpass")
+	for name, script := range map[string]string{"sudo": sudo, "inua-askpass": "#!/bin/sh\nexit 1\n"} {
+		if err := os.WriteFile(filepath.Join(bin, name), []byte(script), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("DISPLAY", "")
+	t.Setenv("WAYLAND_DISPLAY", "")
+	model := &fakeModel{t: t, replies: []reply{{tool: "bash", args: `{"cmd":"whoami","elevated":true}`}, {final: "root"}}}
+	srv := newModelServer(t, model)
+	a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv + "/v1", APIKey: "test"}},
+		Tools: []string{"bash"}, Elevated: true, Askpass: askpass, StateDir: t.TempDir(), CacheDir: t.TempDir(), MaxSteps: 3}, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.Ask(context.Background(), "who is root?", Events{}); err != nil {
+		t.Fatal(err)
+	}
+	model.mu.Lock()
+	sent, _ := json.Marshal(model.got)
+	model.mu.Unlock()
+	if want := "askpass=" + askpass + " command=whoami"; !bytes.Contains(sent, []byte(want)) || !bytes.Contains(sent, []byte("sudo -k -A")) {
+		t.Errorf("ran %s, want sudo -k -A … %s", sent, want)
+	}
+}
+
+// inua-askpass speaks Mister Morph's contract without importing it: its
+// copies of the names and lines are Mister Morph's.
+func TestElevateContract(t *testing.T) {
+	for _, c := range [][2]string{
+		{passask.ElevateCommandEnv, integration.ElevateCommandEnv},
+		{passask.ElevateDeadlineEnv, integration.ElevateDeadlineEnv},
+		{passask.ElevateDeclined, integration.ElevateDeclinedMarker},
+		{passask.ElevateTimedOut, integration.ElevateTimedOutMarker},
+	} {
+		if c[0] != c[1] {
+			t.Errorf("inua %q, Mister Morph %q", c[0], c[1])
 		}
 	}
 }

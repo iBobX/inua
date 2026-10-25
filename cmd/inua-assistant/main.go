@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/godbus/dbus/v5"
@@ -24,11 +23,9 @@ import (
 )
 
 func main() {
-	// First: sudo starts this program for the password of a command run
-	// as administrator (Mister Morph's askpass). inua-askpass asks, in the
-	// shell's dialog showing the command; without it, Mister Morph's own
-	// dialog does, and exits.
-	askpassInstead()
+	// First: without inua-askpass beside it, sudo starts this program for
+	// the password of a command run as administrator (Mister Morph's
+	// askpass helper); then it shows the dialog and exits.
 	integration.RunAskpassIfRequested()
 	ask := flag.String("ask", "", "a question to ask")
 	background := flag.Bool("background", false, "start the assistant without showing its window")
@@ -109,22 +106,4 @@ func activateRunning(action string, params []dbus.Variant) bool {
 		return false
 	}
 	return true
-}
-
-// askpassInstead becomes inua-askpass, beside this program, when sudo
-// started this one as Mister Morph's askpass helper (MISTERMORPH_ASKPASS),
-// with its arguments and environment: the command and the deadline.
-func askpassInstead() {
-	if os.Getenv("MISTERMORPH_ASKPASS") != "1" {
-		return
-	}
-	exe, err := os.Executable()
-	if err != nil {
-		return
-	}
-	p := filepath.Join(filepath.Dir(exe), "inua-askpass")
-	if _, err := os.Stat(p); err == nil {
-		err = syscall.Exec(p, append([]string{p}, os.Args[1:]...), os.Environ())
-		fmt.Fprintln(os.Stderr, "inua-assistant: inua-askpass:", err)
-	}
 }

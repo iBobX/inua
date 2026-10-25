@@ -23,6 +23,17 @@ import (
 	"github.com/lyricat/inua/internal/term/host"
 )
 
+// Mister Morph's contract with an askpass program of the embedding
+// program's own (tools.bash.elevation.askpass; integration.Elevate*): the
+// command to approve and when to give up (Unix seconds) in the
+// environment, and a line on stderr when it was not approved.
+const (
+	ElevateCommandEnv  = "MISTERMORPH_ELEVATE_COMMAND"
+	ElevateDeadlineEnv = "MISTERMORPH_ELEVATE_DEADLINE"
+	ElevateDeclined    = "mistermorph: administrator approval was declined"
+	ElevateTimedOut    = "mistermorph: administrator approval timed out"
+)
+
 // Reply is how a question was answered: the answer, and the keyring's
 // word for it (keyring.Entered, Cancelled, Failed with Err).
 type Reply struct {
