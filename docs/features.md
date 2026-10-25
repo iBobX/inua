@@ -448,6 +448,29 @@ entry of inua-keyring's, the apps trusted with it and its last reads. With no in
 programs from reading secrets they were never given; a program running
 as you can still start a trusted one and take over what it does.
 
+## Portals
+
+What apps ask the desktop through `xdg-desktop-portal` can be answered by
+inua ([details](portals.md)), an interface at a time: `inua portals
+enable` turns them all on (`status`, `disable` and the interfaces' names
+too), for inua's sessions only.
+
+- **Settings**: the theme's light or dark, its accent, the icon theme and
+  the text size, so GTK, Qt, Firefox and Electron apps follow the theme.
+- **Notifications** in the center, with their app's name and icon.
+- **Inhibit**: an app playing a film holds off the idle timers; one
+  holding the session is named before Log out.
+- **Screenshots** and colours for apps, through the screenshot tool; and
+  what to share of the screen in a call: `SharePicker` makes the tool
+  xdg-desktop-portal-hyprland's picker.
+- **Files**: the [picker](picker.md) chooses files and folders for every
+  app, and Open With's list asks which app opens a file or a link.
+- **Secret**: inua-keyring keeps Flatpak apps' secrets.
+- **Access**, **Background**, **Wallpaper**: an app's questions (the
+  camera, the location) in the shell's dialog, an app left running
+  without a window asked about in a notification, and a picture an app
+  sets as the background.
+
 ## Workshop
 
 Light apps of your own, in any language: a folder with `app.toml` and a
