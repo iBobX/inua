@@ -29,25 +29,25 @@ import (
 
 // aiSettings are the AI page's controls.
 type aiSettings struct {
-	enable, ask, web, files, bash gtk.Switch
-	profile, decision, ears       gtk.DropDown
-	route, earsNote               gtk.Label
-	list                          gtk.Box
-	cards                         []*aiCard
-	detail                        gtk.Revealer // the panel beside the page: the open profile's settings
-	panel                         sidePanel
-	scroll                        gtk.ScrolledWindow // the page's
-	shown                         int                // the profile the panel showed last, its row kept in place as it closes
-	detailHead                    gtk.Label
-	detailStack                   gtk.Stack
-	open                          int          // the profile the panel shows; -1 for none
-	bench                         *benchDialog // the Benchmark dialog, while open
-	names, choosers, listeners    []string     // the drop-downs' profiles: the one that answers, the one for quick choices, for voice input
-	listen, endpoint, token       gtk.Entry
-	serve                         gtk.Switch
-	serveNote                     gtk.Label
-	tokenShow, tokenCopy, urlCopy gtk.Button
-	tokenBusy                     bool
+	enable, ask, web, files, bash, admin gtk.Switch
+	profile, decision, ears              gtk.DropDown
+	route, earsNote                      gtk.Label
+	list                                 gtk.Box
+	cards                                []*aiCard
+	detail                               gtk.Revealer // the panel beside the page: the open profile's settings
+	panel                                sidePanel
+	scroll                               gtk.ScrolledWindow // the page's
+	shown                                int                // the profile the panel showed last, its row kept in place as it closes
+	detailHead                           gtk.Label
+	detailStack                          gtk.Stack
+	open                                 int          // the profile the panel shows; -1 for none
+	bench                                *benchDialog // the Benchmark dialog, while open
+	names, choosers, listeners           []string     // the drop-downs' profiles: the one that answers, the one for quick choices, for voice input
+	listen, endpoint, token              gtk.Entry
+	serve                                gtk.Switch
+	serveNote                            gtk.Label
+	tokenShow, tokenCopy, urlCopy        gtk.Button
+	tokenBusy                            bool
 
 	mcpEnable  gtk.Switch // inua as an MCP server (docs/feat/mcp.md)
 	mcpPolicy  gtk.DropDown
@@ -105,6 +105,7 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	ui.Get("ai_web", &a.web)
 	ui.Get("ai_files", &a.files)
 	ui.Get("ai_bash", &a.bash)
+	ui.Get("ai_admin", &a.admin)
 	ui.Get("ai_profile", &a.profile)
 	ui.Get("ai_decision", &a.decision)
 	ui.Get("ai_transcription", &a.ears)
@@ -143,7 +144,7 @@ func (s *shellUI) getAISettings(ui *gtkx.Builder) {
 	var add gtk.Button
 	ui.Get("ai_add", &add)
 	add.ConnectClicked(&s.onSettingsButton)
-	for _, sw := range []*gtk.Switch{&a.enable, &a.ask, &a.web, &a.files, &a.bash} {
+	for _, sw := range []*gtk.Switch{&a.enable, &a.ask, &a.web, &a.files, &a.bash, &a.admin} {
 		sw.ConnectStateSet(&s.onSettingsSwitch)
 	}
 	for _, d := range []*gtk.DropDown{&a.profile, &a.decision, &a.ears} {
@@ -209,6 +210,8 @@ func (s *shellUI) showAISettings() {
 	a.web.SetActive(slices.Contains(c.Tools, "web_search"))
 	a.files.SetActive(slices.Contains(c.Tools, "read_file"))
 	a.bash.SetActive(slices.Contains(c.Tools, "bash"))
+	a.admin.SetActive(c.ElevatedCommands)
+	a.admin.SetSensitive(slices.Contains(c.Tools, "bash")) // a command as root is bash's
 	setEntry(&a.listen, c.ServeListen)
 	a.serve.SetActive(c.ServeEnable)
 	endpoint := ""
@@ -898,6 +901,8 @@ func (s *shellUI) aiSwitch(name string, on bool, c *config.Config) bool {
 		a.ServeEnable = on
 	case "ai_ask":
 		a.AskBeforeChanges = on
+	case "ai_admin":
+		a.ElevatedCommands = on
 	case "ai_web":
 		setTools(on, "web_search", "url_fetch")
 	case "ai_files":

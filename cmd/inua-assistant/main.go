@@ -15,6 +15,7 @@ import (
 	"syscall"
 
 	"github.com/godbus/dbus/v5"
+	"github.com/quailyquaily/mistermorph/integration"
 
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/assistant/keys"
@@ -22,6 +23,9 @@ import (
 )
 
 func main() {
+	// First: sudo starts this program as the dialog that approves an
+	// elevated command (askpass); then it shows the dialog and exits.
+	integration.RunAskpassIfRequested()
 	ask := flag.String("ask", "", "a question to ask")
 	background := flag.Bool("background", false, "start the assistant without showing its window")
 	serveToken := flag.Bool("serve-token", false, "print the Console token from the keyring, creating it if missing")

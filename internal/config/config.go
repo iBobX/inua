@@ -283,6 +283,10 @@ type Assistant struct {
 	// AskBeforeChanges makes the assistant ask before changing anything;
 	// power, ending processes and closing windows always ask.
 	AskBeforeChanges bool `toml:"ask_before_changes"`
+	// ElevatedCommands lets the "bash" tool run a command as root once the
+	// user approves it in a dialog that shows it (Mister Morph's elevated
+	// commands, through sudo); without "bash" it does nothing.
+	ElevatedCommands bool `toml:"elevated_commands"`
 	// ServeEnable controls the Console Runtime API independently of its address.
 	ServeEnable bool   `toml:"serve_enable"`
 	ServeListen string `toml:"serve_listen"`

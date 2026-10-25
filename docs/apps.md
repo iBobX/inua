@@ -58,6 +58,13 @@ Anything that changes the system waits for **Allow**; powering off, ending
 processes, closing windows, shell commands and reading files ask every
 time.
 
+With **As administrator** (Settings → AI, under Run commands;
+`elevated_commands` in `[assistant]`, off by default), a shell command
+may run as root: it asks first, and a dialog (inua's pinentry, or the
+system's) shows the exact command and takes your password, which goes
+to sudo alone, never to the model. Declined, or unanswered within two
+minutes, the command does not run.
+
 Ask from the launcher (`?` before the query, or its last row) or with
 `inua-assistant --ask "…"`. Questions go to the open window and keep its
 conversation; + starts a new one.

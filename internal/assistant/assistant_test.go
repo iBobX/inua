@@ -9,10 +9,14 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/quailyquaily/mistermorph/integration"
 
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/desk"
@@ -345,6 +349,43 @@ func TestPlanTool(t *testing.T) {
 		model.mu.Unlock()
 		if has := bytes.Contains(sent, []byte(`"plan_create"`)); has != (tools != nil) {
 			t.Errorf("tools %v: plan_create offered %v", tools, has)
+		}
+	}
+}
+
+// With elevated commands on, the bash tool offers to run a command as root
+// (after the dialog); off, or without bash, it does not.
+func TestElevatedCommands(t *testing.T) {
+	// A desktop session with sudo and a dialog, whatever machine runs it.
+	bin := t.TempDir()
+	for _, name := range []string{"sudo", "zenity"} {
+		if err := os.WriteFile(filepath.Join(bin, name), []byte("#!/bin/sh\nexit 1\n"), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
+	t.Setenv("WAYLAND_DISPLAY", "wayland-test")
+	integration.RunAskpassIfRequested() // as inua-assistant's main does
+	for _, c := range []struct {
+		elevated bool
+		tools    []string
+		want     bool
+	}{{true, []string{"bash"}, true}, {false, []string{"bash"}, false}, {true, []string{"url_fetch"}, false}} {
+		model := &fakeModel{t: t, replies: []reply{{final: "hi"}}}
+		srv := newModelServer(t, model)
+		a, err := New(Settings{Profiles: []Profile{{Name: "test", Provider: "openai_chat_compatible", Model: "gpt-4.1-mini", Endpoint: srv + "/v1", APIKey: "test"}},
+			Tools: c.tools, Elevated: c.elevated, StateDir: t.TempDir(), CacheDir: t.TempDir(), MaxSteps: 2}, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := a.Ask(context.Background(), "hello", Events{}); err != nil {
+			t.Fatal(err)
+		}
+		model.mu.Lock()
+		sent, _ := json.Marshal(model.got)
+		model.mu.Unlock()
+		if has := bytes.Contains(sent, []byte(`"elevated"`)); has != c.want {
+			t.Errorf("elevated %v, tools %v: offered %v", c.elevated, c.tools, has)
 		}
 	}
 }

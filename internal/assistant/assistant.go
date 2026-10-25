@@ -47,6 +47,20 @@ func (p Profile) Can(ability string) bool {
 	return config.CanDo(p.Abilities, ability)
 }
 
+// pinentryBeside is inua-pinentry beside the running program, "" when it
+// is not there.
+func pinentryBeside() string {
+	exe, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	p := filepath.Join(filepath.Dir(exe), "inua-pinentry")
+	if _, err := os.Stat(p); err != nil {
+		return ""
+	}
+	return p
+}
+
 // Settings are what the runtime needs, resolved from config.toml, the
 // saved keys and the environment.
 type Settings struct {
@@ -57,6 +71,7 @@ type Settings struct {
 	Missing          []string  // profiles left out for want of a key
 	Tools            []string  // Mister Morph's built-ins to add
 	AskBeforeChanges bool
+	Elevated         bool   // config.Assistant.ElevatedCommands
 	StateDir         string // Mister Morph's files; empty for inua's defaults
 	CacheDir         string
 	MaxSteps         int // 0 for Mister Morph's default
@@ -78,7 +93,7 @@ var keyless = []string{"openai_chat_compatible", "openai_response_compatible", "
 // Quick choices go to the profile for them, else to the first with a key
 // that makes them.
 func SettingsFrom(c config.Assistant, saved map[string]string) (Settings, error) {
-	s := Settings{Tools: c.Tools, AskBeforeChanges: c.AskBeforeChanges}
+	s := Settings{Tools: c.Tools, AskBeforeChanges: c.AskBeforeChanges, Elevated: c.ElevatedCommands}
 	if c.ServeEnable {
 		s.ServeListen = strings.TrimSpace(c.ServeListen)
 		if _, _, err := net.SplitHostPort(s.ServeListen); err != nil {
@@ -283,6 +298,13 @@ func New(set Settings, own []desk.Tool, approve Approver) (*Assistant, error) {
 	// Mister Morph registers plan_create only when it is turned on (off by
 	// default since v0.3.61), whatever the tools listed.
 	cfg.Set("tools.plan_create.enabled", len(set.Tools) > 0)
+	// A command as root, once approved in a dialog showing it: inua's
+	// pinentry when it is beside this program, else the system's.
+	elevated := set.Elevated && slices.Contains(set.Tools, "bash")
+	cfg.Set("tools.bash.elevation.enabled", elevated)
+	if p := pinentryBeside(); elevated && p != "" {
+		cfg.Set("tools.bash.elevation.dialog", p)
+	}
 	if set.MaxSteps > 0 {
 		cfg.Set("max_steps", set.MaxSteps)
 	}

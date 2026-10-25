@@ -368,6 +368,11 @@ tools = ["web_search", "url_fetch", "bash"]
 # process and closing a window always ask.
 ask_before_changes = true
 
+# With "bash": let a command run as root (sudo) once you approve it in a
+# dialog that shows the command and takes your password, which goes to
+# sudo alone. Off, commands run as you.
+elevated_commands = false
+
 # Console Runtime API: turn on in Settings → AI, which also creates and
 # copies its token. The token stays in the Secret Service (inua-keyring
 # keeps it in pass); inua-assistant --serve-token also prints it.

@@ -1874,6 +1874,39 @@ ApplicationWindow settings {
                         valign: center;
                       }
                     }
+
+                    Separator {}
+
+                    // Elevated commands: as root, each once approved in a
+                    // dialog that shows it (Mister Morph's, through sudo).
+                    Box {
+                      styles ["row"]
+                      spacing: 16;
+
+                      Box {
+                        orientation: vertical;
+                        hexpand: true;
+                        valign: center;
+
+                        Label {
+                          styles ["title"]
+                          label:  _("As administrator");
+                          xalign: 0;
+                        }
+
+                        Label {
+                          styles ["sub"]
+                          label:  _("A command as root, once you approve it in a dialog that shows it, with your password");
+                          xalign: 0;
+                          wrap: true;
+                        }
+                      }
+
+                      Switch ai_admin {
+                        name: "ai_admin";
+                        valign: center;
+                      }
+                    }
                   }
                 }
 

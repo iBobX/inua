@@ -30,7 +30,7 @@ func Format(c Config) string {
 		c.Dock.Enable, q(c.Dock.Position), c.Dock.Autohide, c.Dock.Size, c.Dock.Drawer, list(c.Dock.Pinned),
 		c.Voice.Enable, c.Voice.PushToTalk, q(c.Voice.Engine), q(c.Voice.Show),
 		c.Assistant.Enable, q(c.Assistant.Profile), list(c.Assistant.Fallback), q(c.Assistant.Decision), q(c.Assistant.Transcription),
-		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges,
+		list(c.Assistant.Tools), c.Assistant.AskBeforeChanges, c.Assistant.ElevatedCommands,
 		c.Assistant.ServeEnable, q(c.Assistant.ServeListen), aiProfiles(c.Assistant.Profiles),
 		q(c.Keyring.Folder), c.Keyring.Notify, q(c.Keyring.Untrusted), c.Keyring.LockAfter,
 		c.MCP.Enable, q(c.MCP.Policy),
@@ -508,6 +508,11 @@ tools = %s
 # Ask before changing anything (Wi-Fi, volume, windows …). Power, ending a
 # process and closing a window always ask.
 ask_before_changes = %t
+
+# With "bash": let a command run as root (sudo) once you approve it in a
+# dialog that shows the command and takes your password, which goes to
+# sudo alone. Off, commands run as you.
+elevated_commands = %t
 
 # Console Runtime API: turn on in Settings → AI, which also creates and
 # copies its token. The token stays in the Secret Service (inua-keyring
