@@ -1,6 +1,6 @@
 // Command inua-games runs one of inua's light games, each its own app
 // with its own window: inua-games minesweeper | space-pinball |
-// small-fortune.
+// small-fortune | chinese-checkers.
 package main
 
 import (

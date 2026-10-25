@@ -276,7 +276,7 @@ func TestAISeat(t *testing.T) {
 			return 0, nil
 		}})
 	x.do(func() {
-		if !x.SetSeat(1, AI, 0, "fast") || !x.Start() {
+		if !x.SetSeat(1, AI, 0, "fast", "") || !x.Start() {
 			t.Fatal("no AI seat")
 		}
 		if x.Seats[1].Name != "fast" {

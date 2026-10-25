@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/lyricat/inua/internal/games/gameweb"
+	"github.com/lyricat/inua/internal/i18n"
 )
 
 // web is the page visitors play on.
@@ -62,6 +63,30 @@ func (h *Host) Port() int {
 // URLs are the addresses visitors open, one for each of this computer's
 // addresses on the local network, with the code.
 func (h *Host) URLs() []string { return gameweb.URLs(h.Port(), h.Code) }
+
+// Unserve takes the lobby off the network: every browser is sent away,
+// their seats open again, and the server stops. Called where the Host
+// lives, before a game.
+func (h *Host) Unserve() {
+	if h.srv == nil || h.Game != nil {
+		return
+	}
+	for c := range h.clients {
+		c.Bye(i18n.T("The host closed the game to the network."))
+	}
+	h.clients = map[*gameweb.Client]bool{}
+	for _, s := range h.Seats {
+		if s.Kind == Visitor {
+			if s.gone != nil {
+				s.gone.Stop()
+			}
+			s.Kind, s.Name, s.key, s.conn, s.gone, s.Here = Open, "", "", nil, nil, false
+		}
+	}
+	go h.srv.http.Close()
+	h.srv = nil
+	h.changed()
+}
 
 // Close stops the game: the timers, every browser, the server. Called
 // where the Host lives.

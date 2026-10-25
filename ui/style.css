@@ -1872,6 +1872,11 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .fortune-compendium-section > .fortune-kicker { margin-bottom: 12px; }
 .fortune-compendium-rules { font-size: 13px; line-height: 1.5; color: @t1; }
 .fortune-option { font-size: 13px; color: @t1; }
+/* Chinese checkers: whose turn under PLAYERS, theirs lit in the list, and
+   Start with why it cannot beside it. */
+.checkers-turn { margin: 2px 0 8px; font-size: 14px; color: @t0; }
+.fortune-player.checkers-now { box-shadow: inset 2px 0 0 @accent; padding-left: 8px; }
+.checkers-foot { margin-top: 16px; }
 .settings button.fortune-start { min-height: 40px; padding: 0 24px; font-weight: 500; }
 .fortune-setup > button.fortune-start { margin-top: 16px; }
 

@@ -360,7 +360,7 @@ files adds them (Music) or plays them (Video).
 
 ## Games
 
-Three offline games, each with its own launcher in the dock's Play
+Four games, each with its own launcher in the dock's Play
 section, run by `inua-games NAME`. Every window has its rules behind ⓘ,
 its keys along the bottom, and New game (N). Best scores are kept in
 `~/.local/share/inua/games.json`.
@@ -370,6 +370,7 @@ its keys along the bottom, and New game (N). Best scores are kept in
 | **Minesweeper** (`minesweeper`) | 9×9, 16×16 or 30×16. The first square is always safe; right-click flags; click a number to open around it. |
 | **Space Pinball** (`space-pinball`) | After the Windows table: missions and ranks, a hyperspace ramp, multiball, a skill shot, nudge and tilt. P pauses, M mutes (sound through `pw-cat`). |
 | **Small Fortune** (`small-fortune`) | A property game for two to four: people at the screen, people in a browser, and computer players. |
+| **Chinese Checkers** (`chinese-checkers`) | Stern-Halma for two, three, four or six, alone or in teams: people at the screen, people in a browser, the computer and the AI. |
 
 ### Small Fortune
 
@@ -415,3 +416,32 @@ in.
 
 Games are kept in memory; the network is used only for a game opened to
 it, and when the AI plays.
+
+### Chinese Checkers
+
+The star of 121 holes; each player's ten marbles start in a point and
+race to the point across. A marble steps into a neighbouring hole, or
+hops over a neighbouring marble (anyone's) into the hole beyond, as many
+hops in a row as it can. You are home when every hole of your goal is
+filled, some with your own marbles: a marble left there by someone else
+counts as filled. Click a marble of yours, then where it goes; the holes
+it can reach are ringed.
+
+Before a game, choose how many play (two, three, four or six) and who
+plays each seat: someone at this screen, an open seat for a browser, the
+computer (Ume plays easy, Take normal, Matsu hard), or the AI with a
+profile of Settings → AI, as in Small Fortune. Put seats in the same team
+to play as partners: a team wins when all its players are home, and a
+player home moves a partner's marbles in their turn. **Stay out of other
+points** (on by default) lets a marble cross another player's point but
+not stop in it, so no one can wall a goal in.
+
+**On the network.** With **On the network** set, the setup shows a link
+with a join code and its QR code (port 7342); browsers that join take the
+open seats in order, and **Send away** turns one away. The game shows in
+the browser in 3D, with the same rules. When no seat is played at this
+screen, the host only hosts: the first to join from a browser sets the
+game up (the seats, the teams, the rule), starts it, and in a game may
+start it again or go back to setting it up; if they leave, the next
+visitor does. Someone gone for 15 seconds has the computer play for them
+until they come back.

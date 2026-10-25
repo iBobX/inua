@@ -149,7 +149,20 @@ func fit(n int) int {
 
 // HostLeads reports whether the host's screen sets the game up: when
 // people play at it. Otherwise the lead visitor does (Lead).
-func (h *Host) HostLeads() bool { return len(h.opt.Local) > 0 }
+func (h *Host) HostLeads() bool {
+	return slices.ContainsFunc(h.Seats, func(s *Seat) bool { return s.Kind == Local })
+}
+
+// SetAI lets the user's AI play seats, asking with choose one of profiles;
+// nil, it cannot.
+func (h *Host) SetAI(choose func(ctx context.Context, profile, instructions, state string, options []string) (int, error), profiles []string) {
+	h.opt.Choose, h.opt.Profiles = choose, profiles
+	h.ai = nil
+	if choose != nil {
+		h.ai = checkersai.New(choose, h.opt.Run, h.opt.Seed)
+	}
+	h.lobby()
+}
 
 // Lead is the visitor's seat that sets the game up when the host only
 // hosts: the one who came first of those here; -1 for none, or when the
@@ -209,15 +222,21 @@ func (h *Host) freeTeam() int {
 	}
 }
 
-// SetSeat sets who plays a seat no person sits in: open for a visitor, the
-// computer at a level, or the AI asking a profile.
-func (h *Host) SetSeat(seat int, kind SeatKind, level checkersai.Level, profile string) bool {
+// SetSeat sets who plays a seat no visitor sits in: a person at the host's
+// screen (named name), open for a visitor, the computer at a level, or
+// the AI asking a profile.
+func (h *Host) SetSeat(seat int, kind SeatKind, level checkersai.Level, profile, name string) bool {
 	if h.Game != nil || seat < 0 || seat >= len(h.Seats) {
 		return false
 	}
 	s := h.Seats[seat]
-	if s.Kind == Local || s.Kind == Visitor || (kind != Open && kind != Computer && kind != AI) || level > checkersai.Hard {
+	if s.Kind == Visitor || kind == Visitor || kind > AI || level > checkersai.Hard {
 		return false
+	}
+	if kind == Local {
+		s.Name = cleanName(name)
+	} else if s.Kind == Local {
+		s.Name = ""
 	}
 	if kind == AI && h.opt.Choose == nil {
 		return false
@@ -571,7 +590,9 @@ func (h *Host) fromLead(c *gameweb.Client, m inMsg) {
 	case "players":
 		h.SetPlayers(m.Players)
 	case "seat":
-		h.SetSeat(m.Index, kindOf(m.Kind), checkersai.Level(m.Level), m.Profile)
+		if kind := kindOf(m.Kind); kind != Local { // people at the host's screen are the host's to seat
+			h.SetSeat(m.Index, kind, checkersai.Level(m.Level), m.Profile, "")
+		}
 	case "team":
 		h.SetTeam(m.Index, m.Team)
 	case "rules":
