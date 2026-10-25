@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/lyricat/inua/internal/games"
+	"github.com/lyricat/inua/internal/games/gameweb"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -203,17 +204,17 @@ func (h *Host) seatMsgs() []seatMsg {
 	return out
 }
 
-func (h *Host) lobbyMsg(c *client) lobbyMsg {
+func (h *Host) lobbyMsg(c *gameweb.Client) lobbyMsg {
 	s := h.opt.Settings
 	city := games.FortuneCities[max(0, min(len(games.FortuneCities)-1, s.City))]
-	return lobbyMsg{T: "lobby", Seats: h.seatMsgs(), You: c.seat, Room: h.Room(), Rivals: s.Rivals + len(s.AIs),
+	return lobbyMsg{T: "lobby", Seats: h.seatMsgs(), You: c.Seat, Room: h.Room(), Rivals: s.Rivals + len(s.AIs),
 		City: i18n.T(city.Name), Rounds: cmp.Or(s.Rounds, games.DefaultFortune.Rounds), Cash: cmp.Or(s.Cash, games.DefaultFortune.Cash), Text: webTexts()}
 }
 
-func (h *Host) startMsg(c *client) startMsg {
+func (h *Host) startMsg(c *gameweb.Client) startMsg {
 	g := h.Game
 	city := games.FortuneCities[g.City]
-	m := startMsg{T: "start", You: c.seat, City: city.ID, CityName: i18n.T(city.Name), Local: city.Local,
+	m := startMsg{T: "start", You: c.Seat, City: city.ID, CityName: i18n.T(city.Name), Local: city.Local,
 		Rounds: g.Rounds, OneDie: g.OneDie, Players: h.seatMsgs(), HandMax: games.HandMax, Text: webTexts(),
 		Size: games.ArtBoard * games.MapK, Band: games.TrackBand, Print: h.opt.Print != nil, Art: h.opt.Art != nil}
 	if h.opt.Pieces != nil {
@@ -245,7 +246,7 @@ func (h *Host) startMsg(c *client) startMsg {
 	return m
 }
 
-func (h *Host) stateMsg(c *client) stateMsg {
+func (h *Host) stateMsg(c *gameweb.Client) stateMsg {
 	g := h.Game
 	v := g.View()
 	m := stateMsg{T: "state", Round: g.Round, Turn: g.Turn, Phase: phaseNames[g.Phase], Dice: g.Dice, Pot: g.Pot,
@@ -258,7 +259,7 @@ func (h *Host) stateMsg(c *client) stateMsg {
 	for sq := range games.Board {
 		m.Rent = append(m.Rent, g.Rent(sq))
 	}
-	me := c.seat
+	me := c.Seat
 	if me < 0 || me >= len(g.Players) {
 		return m
 	}
@@ -289,10 +290,10 @@ func (h *Host) stateMsg(c *client) stateMsg {
 	return m
 }
 
-func (h *Host) eventsMsg(c *client, events []games.FortuneEvent) eventsMsg {
+func (h *Host) eventsMsg(c *gameweb.Client, events []games.FortuneEvent) eventsMsg {
 	m := eventsMsg{T: "events"}
 	for _, e := range events {
-		m.Events = append(m.Events, e.For(c.seat))
+		m.Events = append(m.Events, e.For(c.Seat))
 	}
 	return m
 }

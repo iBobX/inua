@@ -21,6 +21,7 @@ import (
 
 	"github.com/lyricat/inua/internal/games"
 	"github.com/lyricat/inua/internal/games/fortuneai"
+	"github.com/lyricat/inua/internal/games/gameweb"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
@@ -42,8 +43,8 @@ type Seat struct {
 	// visitor away; the computer plays their seat to the end.
 	Here, Kicked bool
 
-	key  string  // a visitor's, to come back with
-	conn *client // a visitor's browser, while connected
+	key  string          // a visitor's, to come back with
+	conn *gameweb.Client // a visitor's browser, while connected
 	gone *time.Timer
 }
 
@@ -108,7 +109,7 @@ type Host struct {
 	Code    string  // what visitors join with
 	Seats   []*Seat // the people, local first, then visitors; at Start, the computer players
 	Game    *games.Fortune
-	clients map[*client]bool
+	clients map[*gameweb.Client]bool
 	cpu     *time.Timer // the computer's next move, paced to the board
 	closed  bool
 	srv     *server
@@ -125,7 +126,7 @@ var AwayAfter = 15 * time.Second
 
 // NewHost opens a lobby with the people at the host's screen.
 func NewHost(opt Options) *Host {
-	h := &Host{opt: opt, Code: newCode(), clients: map[*client]bool{}}
+	h := &Host{opt: opt, Code: newCode(), clients: map[*gameweb.Client]bool{}}
 	for _, name := range opt.Local[:min(len(opt.Local), MaxPlayers)] {
 		h.Seats = append(h.Seats, &Seat{Name: name, Kind: Local, Here: true})
 	}
@@ -189,7 +190,7 @@ func (h *Host) Start() bool {
 	}
 	h.changed()
 	for c := range h.clients {
-		c.send(h.startMsg(c))
+		c.Send(h.startMsg(c))
 	}
 	h.Flush()
 	return true
@@ -214,8 +215,8 @@ func (h *Host) Restart() bool {
 		}
 	}
 	for c := range h.clients { // their seats, where they are now
-		if c.seat >= 0 && c.seat < len(old) {
-			c.seat = slices.Index(h.Seats, old[c.seat])
+		if c.Seat >= 0 && c.Seat < len(old) {
+			c.Seat = slices.Index(h.Seats, old[c.Seat])
 		}
 	}
 	h.Game = nil
@@ -230,7 +231,7 @@ func (h *Host) Kick(seat int) {
 	}
 	s := h.Seats[seat]
 	if s.conn != nil {
-		s.conn.bye(i18n.T("The host sent you away."))
+		s.conn.Bye(i18n.T("The host sent you away."))
 	}
 	if s.gone != nil {
 		s.gone.Stop()
@@ -306,9 +307,9 @@ func (h *Host) Flush() {
 	}
 	for c := range h.clients {
 		if len(events) > 0 {
-			c.send(h.eventsMsg(c, events))
+			c.Send(h.eventsMsg(c, events))
 		}
-		c.send(h.stateMsg(c))
+		c.Send(h.stateMsg(c))
 	}
 	h.changed()
 	if h.opt.AI != nil {
@@ -361,51 +362,51 @@ func (h *Host) changed() {
 // lobby tells everyone in it who is there.
 func (h *Host) lobby() {
 	for c := range h.clients {
-		c.send(h.lobbyMsg(c))
+		c.Send(h.lobbyMsg(c))
 	}
 	h.changed()
 }
 
 // join seats a browser: back in its seat with its key, else in the lobby
 // as a new visitor while there is room, else to watch.
-func (h *Host) join(c *client, m joinMsg) {
+func (h *Host) join(c *gameweb.Client, m joinMsg) {
 	if m.Code != h.Code {
-		c.bye(i18n.T("That is not this game's code."))
+		c.Bye(i18n.T("That is not this game's code."))
 		return
 	}
-	c.seat = -1
+	c.Seat = -1
 	for i, s := range h.Seats {
 		if m.Key != "" && s.key == m.Key {
 			if s.conn != nil && s.conn != c { // the same seat in another tab: this one now
-				s.conn.bye(i18n.T("Your seat was taken up in another window."))
+				s.conn.Bye(i18n.T("Your seat was taken up in another window."))
 				delete(h.clients, s.conn)
 			}
-			c.seat = i
+			c.Seat = i
 		}
 	}
-	if c.seat < 0 && h.Room() > 0 && strings.TrimSpace(m.Name) != "" {
+	if c.Seat < 0 && h.Room() > 0 && strings.TrimSpace(m.Name) != "" {
 		h.Seats = append(h.Seats, &Seat{Name: cleanName(m.Name), Kind: Visitor, key: newKey()})
-		c.seat = len(h.Seats) - 1
+		c.Seat = len(h.Seats) - 1
 	}
 	h.clients[c] = true
 	key := ""
-	if c.seat >= 0 {
-		s := h.Seats[c.seat]
+	if c.Seat >= 0 {
+		s := h.Seats[c.Seat]
 		s.conn, s.Here, key = c, true, s.key
 		if s.gone != nil {
 			s.gone.Stop()
 			s.gone = nil
 		}
 	}
-	c.send(helloMsg{T: "hello", Key: key, Seat: c.seat})
+	c.Send(helloMsg{T: "hello", Key: key, Seat: c.Seat})
 	if h.Game == nil {
 		h.lobby()
 		return
 	}
-	c.send(h.startMsg(c))
-	c.send(h.stateMsg(c))
-	if c.seat >= 0 && h.Game.Players[c.seat].Away {
-		h.Game.SetAway(c.seat, false)
+	c.Send(h.startMsg(c))
+	c.Send(h.stateMsg(c))
+	if c.Seat >= 0 && h.Game.Players[c.Seat].Away {
+		h.Game.SetAway(c.Seat, false)
 		h.Flush()
 	}
 	h.changed()
@@ -413,21 +414,21 @@ func (h *Host) join(c *client, m joinMsg) {
 
 // leave forgets a browser gone: out of the lobby, or, in a game, its seat
 // to the computer once it has been gone AwayAfter.
-func (h *Host) leave(c *client) {
+func (h *Host) leave(c *gameweb.Client) {
 	if !h.clients[c] {
 		return
 	}
 	delete(h.clients, c)
-	if c.seat < 0 || c.seat >= len(h.Seats) || h.Seats[c.seat].conn != c {
+	if c.Seat < 0 || c.Seat >= len(h.Seats) || h.Seats[c.Seat].conn != c {
 		return
 	}
-	s := h.Seats[c.seat]
+	s := h.Seats[c.Seat]
 	s.conn, s.Here = nil, false
 	if h.Game == nil {
-		h.removeSeat(c.seat)
+		h.removeSeat(c.Seat)
 		return
 	}
-	seat := c.seat
+	seat := c.Seat
 	s.gone = time.AfterFunc(AwayAfter, func() {
 		h.opt.Run(func() {
 			if s.gone != nil && !s.Here && !h.closed {
@@ -444,8 +445,8 @@ func (h *Host) leave(c *client) {
 func (h *Host) removeSeat(seat int) {
 	h.Seats = append(h.Seats[:seat], h.Seats[seat+1:]...)
 	for c := range h.clients {
-		if c.seat > seat {
-			c.seat--
+		if c.Seat > seat {
+			c.Seat--
 		}
 	}
 	h.lobby()

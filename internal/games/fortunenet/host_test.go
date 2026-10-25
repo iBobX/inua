@@ -355,16 +355,6 @@ func TestFortuneNetPage(t *testing.T) {
 	}
 }
 
-// Visitors are given this computer's addresses on the network, not its
-// containers' bridges.
-func TestFortuneNetBridges(t *testing.T) {
-	for name, want := range map[string]bool{"docker0": true, "br-3f2a": true, "veth12": true, "virbr0": true, "wlan0": false, "enp3s0": false, "tailscale0": false} {
-		if bridge(name) != want {
-			t.Errorf("%s: bridge %v", name, !want)
-		}
-	}
-}
-
 // The game's pictures, by the names the page may ask for, each drawn
 // once; and its icons, from the shell's own.
 func TestFortuneNetArt(t *testing.T) {
