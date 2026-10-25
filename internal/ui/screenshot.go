@@ -572,6 +572,10 @@ func (s *shellUI) takeHovered(sf *shotSurface) {
 // the drawer with it first; or with Record on, starts recording r.
 func (s *shellUI) takeShot(sf *shotSurface, r shell.Rect) {
 	sh := &s.shot
+	if s.portalShare(sf, r) { // to share, not to save
+		s.closeCapture("")
+		return
+	}
 	if sh.record {
 		args := recordArgs(sf, r)
 		s.closeShot("")

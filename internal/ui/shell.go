@@ -350,6 +350,9 @@ func Run(opts Options) int {
 			if req.Op == "call" && req.Target == "password" {
 				return s.askPassword(ctx, req) // waits for the user, off the main loop
 			}
+			if req.Op == "call" && req.Target == "share" {
+				return s.askShare(ctx, req) // as the password
+			}
 			resp, err := gtkx.Call(2*time.Second, func() ipc.Response { return s.request(req) })
 			if err != nil {
 				return ipc.Response{Error: err.Error()}
