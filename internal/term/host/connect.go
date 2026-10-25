@@ -10,7 +10,9 @@ import (
 )
 
 // Connect reaches the host on its socket, starting one (inua-termd) when
-// none runs: in a session of its own, so it outlives the client.
+// none runs: in a session of its own, so it outlives the client, and in a
+// systemd scope of its own, so stopping the unit of whoever started it
+// (inua-termd serve's) does not end it.
 func Connect(onOutput func(pane int, b []byte), onEvent func(Message)) (*Client, error) {
 	path := SocketPath()
 	if c, err := Dial(path, onOutput, onEvent); err == nil {
@@ -42,6 +44,12 @@ func startHostProcess() error {
 	}
 	defer null.Close()
 	cmd := exec.Command(exe)
+	if run, ok := scopeRunner(); ok {
+		// systemd-run --scope moves itself into a new scope and then
+		// becomes inua-termd, which keeps this environment.
+		cmd = exec.Command(run, "--user", "--scope", "--collect", "--quiet",
+			"--description=inua-term host", "--", exe)
+	}
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = null, null, null
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
@@ -49,6 +57,19 @@ func startHostProcess() error {
 	}
 	go cmd.Wait() // reaped if it ends while this one runs
 	return nil
+}
+
+// scopeRunner is systemd-run, when it and a user manager to ask are there.
+func scopeRunner() (string, bool) {
+	dir := os.Getenv("XDG_RUNTIME_DIR")
+	if dir == "" {
+		return "", false
+	}
+	if _, err := os.Stat(filepath.Join(dir, "systemd", "private")); err != nil {
+		return "", false
+	}
+	run, err := exec.LookPath("systemd-run")
+	return run, err == nil
 }
 
 // Program finds one of inua-term's programs (inua-term, inua-termd): this
