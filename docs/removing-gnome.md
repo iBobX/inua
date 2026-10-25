@@ -56,6 +56,26 @@ at login, look for `pam_gnome_keyring.so auto_start` in
 `/etc/pam.d/greetd`: removing `auto_start` from that line (sudo) stops PAM
 from starting it.
 
+## SSH keys
+
+GNOME's ssh agent comes from the `gcr` package, not from gnome-keyring,
+so it keeps running after the keyring is replaced. It sets
+`SSH_AUTH_SOCK` to `/run/user/UID/gcr/ssh`, and the first time a program
+uses a key it asks for the key's passphrase in GNOME's own dialog
+(gcr-prompter), which looks like a GTK pinentry. It can do this right
+after login, when something touches the key. Turn it off and log out
+and in again:
+
+```sh
+systemctl --user disable --now gcr-ssh-agent.socket gcr-ssh-agent.service
+```
+
+ssh then uses OpenSSH's `ssh-agent` (its user socket is on by default),
+or gpg-agent's when gpg-agent has `enable-ssh-support`, which asks for
+passphrases through `inua-pinentry`, in inua's dialog. A program that
+runs ssh without a terminal asks in inua's dialog too once
+`SSH_ASKPASS` is `inua-askpass` (see [features.md](features.md#passwords)).
+
 ## Before `apt autoremove`
 
 `apt autoremove` removes packages that were installed only as a

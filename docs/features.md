@@ -382,10 +382,15 @@ closes. See docs/feat/pass.md.
 `inua-keyring` is a Secret Service (what apps use through libsecret:
 browsers' keys, Wi-Fi passwords, the assistant's API keys) that keeps
 every secret in pass, under `inua-keyring/` in the password store, so
-they are gpg-encrypted and synced like the rest. `inua keyring import`
-copies gnome-keyring's items (`-n` lists them first), `inua keyring
-enable` lets D-Bus start inua-keyring instead of gnome-keyring, and
-`inua keyring status` says who serves now. gpg asks for the passphrase,
+they are gpg-encrypted and synced like the rest. `inua keyring replace`
+moves from gnome-keyring in one step: it copies its items, lets D-Bus
+start inua-keyring, and turns gnome-keyring's systemd units off (they
+start it at login, before D-Bus is asked, and it would keep the
+name). The steps alone: `inua keyring import` copies gnome-keyring's
+items (`-n` lists them first), `inua keyring enable` lets D-Bus start
+inua-keyring instead of gnome-keyring, and `inua keyring status` says
+who serves now. GNOME's ssh agent (gcr) is separate; see
+[removing-gnome.md](removing-gnome.md#ssh-keys). gpg asks for the passphrase,
 through inua's dialog, when a secret is read and gpg-agent has not
 cached it. Every secret handed out is logged with the program and PID
 that read it and recorded in `~/.local/state/inua/keyring-access.jsonl`
