@@ -1,12 +1,16 @@
 package portalconf
 
 import (
+	"cmp"
 	"fmt"
+	"net"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/godbus/dbus/v5"
 
+	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/portal"
 )
 
@@ -14,7 +18,7 @@ import (
 const DirEnv = "XDG_DESKTOP_PORTAL_DIR"
 
 // Apply gives the running session the directory, or takes it away, when
-// that session is inua's (the shell serves), and restarts the frontend,
+// that session is inua's (the shell runs), and restarts the frontend,
 // which reads its backends only when it starts. It says what it did.
 func (d Dirs) Apply(on bool) (string, error) {
 	conn, err := dbus.ConnectSessionBus()
@@ -22,7 +26,7 @@ func (d Dirs) Apply(on bool) (string, error) {
 		return "", err
 	}
 	conn.BusObject().Call("org.freedesktop.DBus.ReloadConfig", 0) // the service files
-	inua := HasOwner(conn, portal.ShellName)
+	inua := HasOwner(conn, portal.ShellName) || shellRuns()
 	conn.Close()
 	if !inua {
 		return "This is not an inua session; the change takes effect in the next one.", nil
@@ -37,6 +41,17 @@ func (d Dirs) Apply(on bool) (string, error) {
 		}
 	}
 	return "Restarted xdg-desktop-portal; apps started from now on see the change.", nil
+}
+
+// shellRuns is whether the shell answers on its control socket: a shell
+// from before the portals takes no portal name, yet the session is inua's.
+func shellRuns() bool {
+	conn, err := net.Dial("unix", ipc.SocketPath(cmp.Or(os.Getenv("INUA_INSTANCE"), "default")))
+	if err != nil {
+		return false
+	}
+	conn.Close()
+	return true
 }
 
 // RestartXdph restarts xdg-desktop-portal-hyprland, which reads its
