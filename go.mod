@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/modelcontextprotocol/go-sdk v1.4.0
-	github.com/quailyquaily/mistermorph v0.3.61
+	github.com/quailyquaily/mistermorph v0.3.62
 	github.com/yuin/goldmark v1.7.16
 	golang.org/x/image v0.47.0
 	golang.org/x/sys v0.49.0
