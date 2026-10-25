@@ -126,7 +126,7 @@ func TestConfigureVoxtype(t *testing.T) {
 	for _, c := range []struct {
 		current string
 		changed bool
-	}{{"", true}, {want, false}, {"/home/me/clean.sh", false}, {"'/old/inua' call -n 'default' voice type -", true}} {
+	}{{"", true}, {"null", true}, {want, false}, {"/home/me/clean.sh", false}, {"'/old/inua' call -n 'default' voice type -", true}} {
 		os.WriteFile(current, []byte(c.current+"\n"), 0o644)
 		os.Remove(calls)
 		changed, err := ConfigureVoxtype(context.Background(), want)

@@ -151,7 +151,11 @@ func ConfigureVoxtype(ctx context.Context, command string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("voxtype config get: %w", err)
 	}
-	switch now := strings.TrimSpace(string(out)); {
+	now := strings.TrimSpace(string(out))
+	if now == "null" { // unset
+		now = ""
+	}
+	switch {
 	case now == command:
 		return false, nil
 	case now != "" && !strings.Contains(now, " voice type -"):
