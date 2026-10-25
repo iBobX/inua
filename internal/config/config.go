@@ -831,7 +831,7 @@ func Default() Config {
 			{Action: "shot-area-silent", Keys: "Print", Replaces: []string{"Print"}},
 			{Action: "shot-area", Keys: "CTRL+Print", Replaces: []string{"CTRL+Print"}},
 		},
-		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch", "bash"}, AskBeforeChanges: true, ServeListen: "127.0.0.1:8794",
+		Assistant: Assistant{Enable: true, Profile: "openai", Tools: []string{"web_search", "url_fetch", "bash"}, AskBeforeChanges: true, ElevatedCommands: true, ServeListen: "127.0.0.1:8794",
 			Profiles: []AIProfile{{Name: "openai", Provider: "openai", Model: "gpt-5.2"}}},
 		Keyring: Keyring{Folder: "inua-keyring", Untrusted: "allow"},
 		MCP:     MCP{Policy: "ask"},

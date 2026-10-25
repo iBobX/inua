@@ -59,7 +59,7 @@ processes, closing windows, shell commands and reading files ask every
 time.
 
 With **As administrator** (Settings → AI, under Run commands;
-`elevated_commands` in `[assistant]`, off by default), a shell command
+`elevated_commands` in `[assistant]`, on by default), a shell command
 may run as root: it asks first, and a dialog (inua's pinentry, or the
 system's) shows the exact command and takes your password, which goes
 to sudo alone, never to the model. Declined, or unanswered within two
