@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"maps"
 	"strings"
 	"sync"
@@ -13,6 +14,7 @@ import (
 	"github.com/godbus/dbus/v5"
 	"github.com/godbus/dbus/v5/introspect"
 
+	"github.com/lyricat/inua/internal/portal"
 	"github.com/lyricat/inua/internal/proc"
 )
 
@@ -157,6 +159,19 @@ func (s *Service) Serve(ctx context.Context) error {
 			return fmt.Errorf("%s is already served by another process (%s)", name, owner(s.conn, name))
 		}
 		defer s.conn.ReleaseName(name)
+	}
+	// The portal's Secret, for sandboxed apps (docs/portals.md).
+	if !s.foreign {
+		if unexport, err := portal.Export(s.conn, s.PortalSecret()); err != nil {
+			log.Printf("portal: %v", err)
+		} else {
+			defer unexport()
+			if err := portal.Own(s.conn, portal.KeyringName); err != nil {
+				log.Printf("portal: %v", err)
+			} else {
+				defer s.conn.ReleaseName(portal.KeyringName)
+			}
+		}
 	}
 	for {
 		select {

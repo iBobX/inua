@@ -48,6 +48,11 @@ inua keyring status     # should say inua-keyring serves
 
 Log out and in again, and check that your apps still have their logins.
 
+Flatpak apps keep their secrets through the portal, which gnome-keyring
+serves too. `inua portals enable Secret` has inua-keyring serve it
+([portals](portals.md)); the secrets `inua keyring replace` copied are
+theirs.
+
 You can then leave the gnome-keyring package installed: nothing starts
 it, and it is small. Removing it (`gnome-keyring`, `libpam-gnome-keyring`)
 also removes any app whose package depends on it. Proton VPN is one. Check
