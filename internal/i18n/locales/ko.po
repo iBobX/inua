@@ -32,7 +32,7 @@ msgstr "inua 어시스턴트"
 
 #: cmd/inua-assistant/transcribe.go:49
 msgid "No profile turns speech into text. Turn on Voice for one in Settings → AI."
-msgstr ""
+msgstr "음성을 텍스트로 바꾸는 프로필이 없습니다. 설정 → AI에서 하나의 '음성'을 켜 주세요."
 
 #: cmd/inua-disk-usage/main.go:104
 msgid "%d files, %.1f s"
@@ -1906,7 +1906,7 @@ msgstr "편집하다"
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
 #: internal/termui/guide.go:161
-#: internal/ui/voice.go:331
+#: internal/ui/voice_page.go:216
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:684
@@ -3315,7 +3315,7 @@ msgid "Installed"
 msgstr "설치됨"
 
 #: internal/appui/sysmon.go:994
-#: internal/ui/voice_models.go:181
+#: internal/ui/voice_models.go:152
 msgid "In use"
 msgstr "사용 중"
 
@@ -3346,6 +3346,7 @@ msgid "GRAPHICS"
 msgstr "그래픽"
 
 #: internal/appui/sysmon.go:1004
+#: internal/ui/voice_page.go:230
 msgid "Card"
 msgstr "카드"
 
@@ -3659,6 +3660,7 @@ msgstr "사용 중"
 #: internal/ui/settings_ai.go:268
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
+#: internal/ui/voice_page.go:347
 msgid "None"
 msgstr "없음"
 
@@ -4077,7 +4079,7 @@ msgid "Replace the installed %s?"
 msgstr "설치된 %s을(를) 바꿀까요?"
 
 #: internal/appui/workshop_manager.go:154
-#: internal/ui/voice.go:330
+#: internal/ui/voice_page.go:215
 #: ui/vm.ui:1279
 msgid "Install"
 msgstr "설치"
@@ -4174,34 +4176,34 @@ msgstr "(대답 없음)"
 
 #: internal/assistantui/assistantui.go:522
 msgid "Voice input records with pw-cat, from PipeWire (pipewire-bin on Debian and Ubuntu, pipewire on Arch, pipewire-utils on Fedora)"
-msgstr ""
+msgstr "음성 입력은 PipeWire의 pw-cat으로 녹음합니다 (Debian과 Ubuntu에서는 pipewire-bin, Arch에서는 pipewire, Fedora에서는 pipewire-utils)"
 
 #: internal/assistantui/assistantui.go:524
 #: internal/ui/settings_ai.go:727
 #: ui/assistant.ui:193
 msgid "Voice input"
-msgstr ""
+msgstr "음성 입력"
 
 #: internal/assistantui/assistantui.go:532
 #: internal/assistantui/assistantui.go:596
 msgid "Cannot record: %s"
-msgstr ""
+msgstr "녹음할 수 없습니다: %s"
 
 #: internal/assistantui/assistantui.go:546
 msgid "Stop and transcribe"
-msgstr ""
+msgstr "멈추고 텍스트로 변환"
 
 #: internal/assistantui/assistantui.go:598
 msgid "The assistant is not set up."
-msgstr ""
+msgstr "도우미가 설정되지 않았습니다."
 
 #: internal/assistantui/assistantui.go:602
 msgid "Cannot transcribe: %s"
-msgstr ""
+msgstr "텍스트로 변환할 수 없습니다: %s"
 
 #: internal/assistantui/assistantui.go:614
 msgid "No speech was heard."
-msgstr ""
+msgstr "말소리가 들리지 않았습니다."
 
 #: internal/assistantui/assistantui.go:688
 msgid "Don't"
@@ -4280,6 +4282,7 @@ msgstr "KDE Connect, GSConnect 또는 Valent를 실행하는 기기가 이 네�
 #: internal/connectui/window.go:384
 #: internal/remoteui/window.go:269
 #: internal/termui/prefsweb.go:164
+#: internal/ui/voice_models.go:232
 #: internal/vmui/window.go:1822
 #: internal/vmui/window.go:1927
 #: internal/vmui/window.go:1946
@@ -9689,11 +9692,11 @@ msgid "Pick a colour"
 msgstr "색상을 선택하세요"
 
 #: internal/hyprconf/keys.go:40
-#: internal/ui/voice.go:308
+#: internal/ui/voice_page.go:199
 #: ui/bar.ui:164
 #: ui/settings.ui:6242
 msgid "Dictation"
-msgstr ""
+msgstr "받아쓰기"
 
 #: internal/i18n/time.go:8
 msgid "February"
@@ -10971,7 +10974,8 @@ msgid "User name"
 msgstr "사용자 이름"
 
 #: internal/mailui/welcome.go:589
-#: internal/ui/voice.go:336
+#: internal/ui/voice_page.go:227
+#: internal/ui/voice_page.go:263
 msgid "Change"
 msgstr "변경"
 
@@ -11044,7 +11048,7 @@ msgid "Fetching your mail"
 msgstr "메일을 가져오는 중"
 
 #: internal/mailui/welcome.go:726
-#: internal/ui/voice.go:484
+#: internal/ui/voice_page.go:416
 msgid "Ready"
 msgstr "준비됨"
 
@@ -12042,29 +12046,30 @@ msgstr "아무것도 하지 않음"
 
 #: internal/shell/status.go:40
 msgid "Dictation: no AI profile turns speech into text. Click to set it up"
-msgstr ""
+msgstr "받아쓰기: 음성을 텍스트로 바꾸는 AI 프로필이 없습니다. 클릭하여 설정"
 
 #: internal/shell/status.go:42
 msgid "Dictation: not installed. Click to set it up"
-msgstr ""
+msgstr "받아쓰기: 설치되지 않았습니다. 클릭하여 설정"
 
 #: internal/shell/status.go:44
 msgid "Dictation: voxtype is not running. Click to start it"
-msgstr ""
+msgstr "받아쓰기: voxtype가 실행 중이 아닙니다. 클릭하여 시작"
 
 #: internal/shell/status.go:46
 msgid "Listening… Click to stop"
-msgstr ""
+msgstr "듣는 중… 클릭하면 멈춥니다"
 
 #: internal/shell/status.go:48
-#: internal/ui/dictation.go:140
+#: internal/ui/dictation.go:156
+#: internal/ui/voice_page.go:414
 #: ui/assistant.ui:172
 msgid "Transcribing…"
-msgstr ""
+msgstr "텍스트로 변환 중…"
 
 #: internal/shell/status.go:50
 msgid "Dictation: click and talk"
-msgstr ""
+msgstr "받아쓰기: 클릭하고 말하세요"
 
 #: internal/shell/status.go:101
 #: internal/ui/settings_wifi.go:283
@@ -13468,10 +13473,6 @@ msgstr "블루투스가 꺼져 있습니다."
 msgid "No devices paired yet"
 msgstr "아직 페어링된 기기가 없습니다"
 
-#: internal/ui/dictation.go:184
-msgid "Listening…"
-msgstr ""
-
 #: internal/ui/dock.go:450
 msgid "New Window"
 msgstr "새 창"
@@ -14030,11 +14031,11 @@ msgstr "응답에 사용할 프로필과 같음"
 
 #: internal/ui/settings_ai.go:278
 msgid "Turn on Voice for a profile of OpenAI, Groq or a compatible server, with a speech-to-text model, for the assistant window's microphone"
-msgstr ""
+msgstr "도우미 창의 마이크를 쓰려면 OpenAI, Groq 또는 호환 서버의 프로필에서 '음성'을 켜고 음성 인식 모델을 쓰세요"
 
 #: internal/ui/settings_ai.go:280
 msgid "The profile that turns what you say to the assistant window's microphone into text"
-msgstr ""
+msgstr "도우미 창의 마이크에 말한 것을 텍스트로 바꾸는 프로필"
 
 #: internal/ui/settings_ai.go:283
 msgid "Then, when it fails: %s"
@@ -14086,7 +14087,7 @@ msgstr "결정"
 
 #: internal/ui/settings_ai.go:517
 msgid "Voice"
-msgstr ""
+msgstr "음성"
 
 #: internal/ui/settings_ai.go:524
 msgid "Abilities"
@@ -14123,15 +14124,15 @@ msgstr "이 프로필 삭제"
 
 #: internal/ui/settings_ai.go:626
 msgid "the server's address: http://127.0.0.1:11434/v1"
-msgstr ""
+msgstr "서버 주소: http://127.0.0.1:11434/v1"
 
 #: internal/ui/settings_ai.go:662
 msgid "Turns voice input into text, with a speech-to-text model (gpt-4o-mini-transcribe, whisper-large-v3-turbo …)"
-msgstr ""
+msgstr "음성 인식 모델(gpt-4o-mini-transcribe, whisper-large-v3-turbo 등)로 음성 입력을 텍스트로 바꿉니다"
 
 #: internal/ui/settings_ai.go:664
 msgid "Only OpenAI, Groq and the OpenAI-compatible servers transcribe speech"
-msgstr ""
+msgstr "음성을 텍스트로 바꿀 수 있는 것은 OpenAI, Groq와 OpenAI 호환 서버뿐입니다"
 
 #: internal/ui/settings_ai.go:668
 msgid "This provider makes quick choices only"
@@ -14160,7 +14161,7 @@ msgstr "빠른 선택 담당. "
 
 #: internal/ui/settings_ai.go:698
 msgid "Transcribes voice input. "
-msgstr ""
+msgstr "음성 입력을 텍스트로 바꿉니다. "
 
 #: internal/ui/settings_ai.go:703
 msgid "The saved keys cannot be read: %s"
@@ -14240,7 +14241,7 @@ msgstr "게임의 AI 플레이어처럼 목록에서 빠르게 고르기만 합�
 
 #: internal/ui/settings_ai.go:1135
 msgid "Only turns voice input into text, for the assistant window's microphone. It cannot chat or run tasks."
-msgstr ""
+msgstr "도우미 창의 마이크를 위해 음성 입력을 텍스트로 바꾸기만 합니다. 대화나 작업은 할 수 없습니다."
 
 #: internal/ui/settings_ai.go:1137
 msgid "Neither chats nor makes quick choices: inua does not use it."
@@ -14248,7 +14249,7 @@ msgstr "채팅도 빠른 선택도 하지 않습니다. inua는 이 프로필을
 
 #: internal/ui/settings_ai.go:1140
 msgid "Also turns voice input into text."
-msgstr ""
+msgstr "음성 입력을 텍스트로 바꿀 수도 있습니다."
 
 #: internal/ui/settings_ai.go:1152
 msgid "Search models"
@@ -14320,15 +14321,15 @@ msgstr "모델이 올바른 항목을 고르지 않았습니다"
 
 #: internal/ui/settings_bench.go:79
 msgid "Transcription (voice input)"
-msgstr ""
+msgstr "텍스트 변환(음성 입력)"
 
 #: internal/ui/settings_bench.go:79
 msgid "The model turns speech into text"
-msgstr ""
+msgstr "모델이 음성을 텍스트로 바꿉니다"
 
 #: internal/ui/settings_bench.go:79
 msgid "The model did not turn speech into text"
-msgstr ""
+msgstr "모델이 음성을 텍스트로 바꾸지 못했습니다"
 
 #: internal/ui/settings_bench.go:130
 #: internal/ui/settings_bench.go:214
@@ -14698,7 +14699,7 @@ msgid "the dialog could not be shown"
 msgstr "대화 상자를 표시할 수 없음"
 
 #: internal/ui/settings_keyring.go:383
-#: internal/ui/voice.go:424
+#: internal/ui/voice_page.go:410
 msgid "Looking…"
 msgstr "확인하는 중…"
 
@@ -15038,287 +15039,329 @@ msgstr "inua는 업그레이드할 수 없습니다."
 msgid "Could not upgrade: %s"
 msgstr "업그레이드할 수 없음: %s"
 
-#: internal/ui/voice.go:192
+#: internal/ui/voice.go:206
 msgid "Dictation did not work"
-msgstr ""
+msgstr "받아쓰기가 되지 않았습니다"
 
-#: internal/ui/voice.go:225
-msgid "Under the window you type in"
-msgstr ""
-
-#: internal/ui/voice.go:225
-msgid "In the screen's corner"
-msgstr ""
-
-#: internal/ui/voice.go:225
-msgid "In the bar only"
-msgstr ""
-
-#: internal/ui/voice.go:230
-msgid "voxtype, on this machine"
-msgstr ""
-
-#: internal/ui/voice.go:230
-msgid "An AI profile (Voice input in Settings → AI)"
-msgstr ""
-
-#: internal/ui/voice.go:307
-msgid "DICTATION"
-msgstr ""
-
-#: internal/ui/voice.go:307
-msgid "Talk, and the words are typed where you are"
-msgstr ""
-
-#: internal/ui/voice.go:308
-msgid "A microphone in the bar, and a shortcut to talk"
-msgstr ""
-
-#: internal/ui/voice.go:309
-msgid "Push to talk"
-msgstr ""
-
-#: internal/ui/voice.go:309
-msgid "The shortcut records while it is held; off, it starts and stops"
-msgstr ""
-
-#: internal/ui/voice.go:310
-msgid "Show it"
-msgstr ""
-
-#: internal/ui/voice.go:310
-msgid "A card with the waveform, then the words; the bar's microphone shows it too"
-msgstr ""
-
-#: internal/ui/voice.go:319
-msgid "ENGINE"
-msgstr ""
-
-#: internal/ui/voice.go:319
-msgid "What turns your speech into text"
-msgstr ""
-
-#: internal/ui/voice.go:321
-msgid "Engine"
-msgstr ""
-
-#: internal/ui/voice.go:321
-msgid "voxtype keeps the recording on this machine; an AI profile sends it to its provider"
-msgstr ""
-
-#: internal/ui/voice.go:329
-msgid "voxtype.io"
-msgstr ""
-
-#: internal/ui/voice.go:332
-msgid "AI Settings"
-msgstr ""
-
-#: internal/ui/voice.go:339
-msgid "Typing"
-msgstr ""
-
-#: internal/ui/voice.go:414
-msgid "No profile turns speech into text"
-msgstr ""
-
-#: internal/ui/voice.go:415
-msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
-msgstr ""
-
-#: internal/ui/voice.go:417
-msgid "pw-cat is not installed"
-msgstr ""
-
-#: internal/ui/voice.go:417
-msgid "Dictation records with PipeWire's pw-cat (pipewire-bin)"
-msgstr ""
-
-#: internal/ui/voice.go:419
-msgid "voxtype is not installed"
-msgstr ""
-
-#: internal/ui/voice.go:420
-msgid "Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with a speech model for your language; others are a choice away"
-msgstr ""
-
-#: internal/ui/voice.go:422
-msgid "The daemon is not running"
-msgstr ""
-
-#: internal/ui/voice.go:422
-msgid "voxtype is installed; its user service is stopped"
-msgstr ""
-
-#: internal/ui/voice.go:429
-msgid "Click the microphone in the bar, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:431
-msgid "Click the microphone in the bar, or hold %s, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:433
-msgid "Click the microphone in the bar, or press %s, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:446
-msgid "Profile"
-msgstr ""
-
-#: internal/ui/voice.go:447
-msgid "%s; the recording goes to its provider"
-msgstr ""
-
-#: internal/ui/voice.go:451
-msgid "wtype types the words into the window"
-msgstr ""
-
-#: internal/ui/voice.go:453
-msgid "The words are pasted through the clipboard; with wtype installed, they are typed"
-msgstr ""
-
-#: internal/ui/voice.go:480
-msgid "Listening"
-msgstr ""
-
-#: internal/ui/voice.go:482
-msgid "Transcribing"
-msgstr ""
-
-#: internal/ui/voice.go:494
-msgid "Installing voxtype…"
-msgstr ""
-
-#: internal/ui/voice.go:494
-msgid "Downloading…"
-msgstr ""
-
-#: internal/ui/voice.go:503
-#: internal/ui/voice_models.go:235
-msgid "Downloading voxtype %s… %s"
-msgstr ""
-
-#: internal/ui/voice.go:505
-msgid "Downloading a speech model… %s"
-msgstr ""
-
-#: internal/ui/voice.go:507
-msgid "Downloading a speech model…"
-msgstr ""
-
-#: internal/ui/voice.go:509
-msgid "Starting its service…"
-msgstr ""
-
-#: internal/ui/voice.go:519
-msgid "voxtype was not installed: %s"
-msgstr ""
-
-#: internal/ui/voice.go:537
-msgid "voxtype did not start: %s"
-msgstr ""
-
-#: internal/ui/voice.go:572
+#: internal/ui/voice.go:252
 msgid "dictation types with wtype, which is not installed"
-msgstr ""
+msgstr "받아쓰기는 wtype으로 입력하는데 설치되어 있지 않습니다"
 
-#: internal/ui/voice.go:582
+#: internal/ui/voice.go:262
 msgid "no window has the focus to type into"
-msgstr ""
-
-#: internal/ui/voice_models.go:40
-msgid "OpenAI's open Whisper, run here: many languages; the .en models English alone"
-msgstr ""
-
-#: internal/ui/voice_models.go:41
-msgid "NVIDIA's Parakeet: English (v2), or 25 European languages (v3)"
-msgstr ""
-
-#: internal/ui/voice_models.go:42
-msgid "Small and quick: English, and base-zh, base-ja, tiny-ko, tiny-ar for those languages"
-msgstr ""
-
-#: internal/ui/voice_models.go:43
-msgid "Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"
-msgstr ""
+msgstr "입력할 포커스된 창이 없습니다"
 
 #: internal/ui/voice_models.go:44
-msgid "Alibaba's Paraformer: Chinese (zh) or English (en)"
-msgstr ""
+msgid "OpenAI's open Whisper: many languages; the .en models English alone"
+msgstr "OpenAI의 공개 모델 Whisper: 여러 언어. .en 모델은 영어만"
 
 #: internal/ui/voice_models.go:45
-msgid "Dolphin: Eastern languages"
-msgstr ""
+msgid "NVIDIA's Parakeet: English, or 25 European languages (v3)"
+msgstr "NVIDIA의 Parakeet: 영어 또는 유럽 25개 언어(v3)"
 
 #: internal/ui/voice_models.go:46
-msgid "Meta's Omnilingual: more than 1,600 languages"
-msgstr ""
+msgid "Small and quick, a model a language"
+msgstr "작고 빠르며 언어마다 모델이 있습니다"
 
 #: internal/ui/voice_models.go:47
-msgid "Cohere's Transcribe"
-msgstr ""
+msgid "Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"
+msgstr "Alibaba의 SenseVoice: 중국어, 광둥어, 영어, 일본어, 한국어"
 
 #: internal/ui/voice_models.go:48
-msgid "Whisper on Intel's processors and NPUs (OpenVINO)"
-msgstr ""
+msgid "Alibaba's Paraformer: Chinese or English"
+msgstr "Alibaba의 Paraformer: 중국어 또는 영어"
 
-#: internal/ui/voice_models.go:68
-msgid "Speech model"
-msgstr ""
+#: internal/ui/voice_models.go:49
+msgid "Dolphin: English and Chinese"
+msgstr "Dolphin: 영어와 중국어"
 
-#: internal/ui/voice_models.go:78
-#: internal/ui/voice_models.go:183
-msgid "Use"
-msgstr ""
+#: internal/ui/voice_models.go:50
+msgid "Meta's Omnilingual: more than 1,600 languages"
+msgstr "Meta의 Omnilingual: 1,600개가 넘는 언어"
 
-#: internal/ui/voice_models.go:80
+#: internal/ui/voice_models.go:51
+msgid "Cohere's Transcribe: 14 languages"
+msgstr "Cohere의 Transcribe: 14개 언어"
+
+#: internal/ui/voice_models.go:52
+msgid "Whisper on Intel's processors and NPUs"
+msgstr "Intel 프로세서와 NPU에서 돌아가는 Whisper"
+
+#: internal/ui/voice_models.go:66
+msgid "Speech models"
+msgstr "음성 모델"
+
+#: internal/ui/voice_models.go:77
 msgid "More engines"
-msgstr ""
+msgstr "다른 엔진"
 
-#: internal/ui/voice_models.go:80
-msgid "SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's build for them (about 46 MB); your models stay"
-msgstr ""
+#: internal/ui/voice_models.go:77
+msgid "SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's fuller build (46 MB); your models stay"
+msgstr "SenseVoice, Paraformer, Parakeet, Moonshine 등은 voxtype의 전체 빌드(46 MB)에 들어 있습니다. 모델은 그대로 남습니다"
 
-#: internal/ui/voice_models.go:82
+#: internal/ui/voice_models.go:79
+#: internal/ui/voice_models.go:95
 msgid "Get them"
-msgstr ""
+msgstr "받기"
 
-#: internal/ui/voice_models.go:140
-msgid "%s (in use)"
-msgstr ""
+#: internal/ui/voice_models.go:154
+msgid "Downloaded"
+msgstr "다운로드됨"
 
-#: internal/ui/voice_models.go:142
-msgid "%s (downloaded)"
-msgstr ""
+#: internal/ui/voice_models.go:164
+msgid "Delete its files; it can be downloaded again"
+msgstr "파일을 삭제합니다. 나중에 다시 다운로드할 수 있습니다"
 
-#: internal/ui/voice_models.go:185
+#: internal/ui/voice_models.go:171
+msgid "Use"
+msgstr "사용"
+
+#: internal/ui/voice_models.go:173
 msgid "Download and use"
-msgstr ""
+msgstr "다운로드하여 사용"
 
 #: internal/ui/voice_models.go:198
-msgid "Getting %s…"
-msgstr ""
+msgid "many languages"
+msgstr "여러 언어"
 
-#: internal/ui/voice_models.go:203
-msgid "Downloading %s…"
-msgstr ""
+#: internal/ui/voice_models.go:200
+msgid "%s languages"
+msgstr "%s개 언어"
 
-#: internal/ui/voice_models.go:205
-msgid "Downloading %s… %s"
-msgstr ""
+#: internal/ui/voice_models.go:202
+msgid "%d language"
+msgid_plural "%d languages"
+msgstr[0] "%d개 언어"
 
-#: internal/ui/voice_models.go:215
+#: internal/ui/voice_models.go:237
+#: internal/ui/voice_models.go:266
+#: internal/ui/voice_page.go:566
+msgid "Downloading…"
+msgstr "다운로드 중…"
+
+#: internal/ui/voice_models.go:239
+msgid "Downloading… %s"
+msgstr "다운로드 중… %s"
+
+#: internal/ui/voice_models.go:251
 msgid "%s is not in use: %s"
-msgstr ""
+msgstr "%s을(를) 사용하지 않습니다: %s"
 
-#: internal/ui/voice_models.go:229
-msgid "Getting voxtype's other engines…"
-msgstr ""
-
-#: internal/ui/voice_models.go:242
+#: internal/ui/voice_models.go:280
 msgid "voxtype's other engines did not come: %s"
-msgstr ""
+msgstr "voxtype의 다른 엔진을 받지 못했습니다: %s"
+
+#: internal/ui/voice_page.go:82
+msgid "At the top of your window"
+msgstr "창의 위쪽"
+
+#: internal/ui/voice_page.go:82
+msgid "In the screen's corner"
+msgstr "화면 모서리"
+
+#: internal/ui/voice_page.go:82
+msgid "Off: the bar's microphone alone"
+msgstr "끔: 바의 마이크만"
+
+#: internal/ui/voice_page.go:140
+msgid "Not changed: %s"
+msgstr "바뀌지 않았습니다: %s"
+
+#: internal/ui/voice_page.go:198
+msgid "DICTATION"
+msgstr "받아쓰기"
+
+#: internal/ui/voice_page.go:198
+msgid "Talk, and the words are typed where you are"
+msgstr "말하면 지금 있는 곳에 글자가 입력됩니다"
+
+#: internal/ui/voice_page.go:199
+msgid "A microphone in the bar, and a shortcut to talk"
+msgstr "바의 마이크와 말하기 단축키"
+
+#: internal/ui/voice_page.go:214
+msgid "voxtype.io"
+msgstr "voxtype.io"
+
+#: internal/ui/voice_page.go:217
+msgid "AI Settings"
+msgstr "AI 설정"
+
+#: internal/ui/voice_page.go:220
+msgid "Shortcut"
+msgstr "단축키"
+
+#: internal/ui/voice_page.go:225
+msgid "Hold"
+msgstr "길게 누르기"
+
+#: internal/ui/voice_page.go:225
+msgid "Press"
+msgstr "누르기"
+
+#: internal/ui/voice_page.go:230
+msgid "The waveform as you talk, then the words"
+msgstr "말하는 동안 파형, 그다음 글자"
+
+#: internal/ui/voice_page.go:238
+msgid "Microphone"
+msgstr "마이크"
+
+#: internal/ui/voice_page.go:250
+msgid "Test"
+msgstr "테스트"
+
+#: internal/ui/voice_page.go:254
+msgid "ENGINE"
+msgstr "엔진"
+
+#: internal/ui/voice_page.go:254
+msgid "What turns your speech into text"
+msgstr "음성을 텍스트로 바꾸는 것"
+
+#: internal/ui/voice_page.go:256
+msgid "Runs"
+msgstr "실행 위치"
+
+#: internal/ui/voice_page.go:258
+msgid "On this computer"
+msgstr "이 컴퓨터에서"
+
+#: internal/ui/voice_page.go:258
+msgid "With an AI profile"
+msgstr "AI 프로필로"
+
+#: internal/ui/voice_page.go:261
+msgid "Profile"
+msgstr "프로필"
+
+#: internal/ui/voice_page.go:266
+msgid "Typing"
+msgstr "입력"
+
+#: internal/ui/voice_page.go:356
+msgid "Hold it to talk; Escape drops what you said"
+msgstr "누르고 있는 동안 말하기. Esc로 말한 내용을 버립니다"
+
+#: internal/ui/voice_page.go:358
+msgid "Press it to start and again to end; Escape drops what you said"
+msgstr "눌러서 시작하고 다시 눌러 끝냅니다. Esc로 말한 내용을 버립니다"
+
+#: internal/ui/voice_page.go:365
+msgid "The recording goes to the AI profile's provider"
+msgstr "녹음은 AI 프로필의 제공자에게 보내집니다"
+
+#: internal/ui/voice_page.go:367
+msgid "voxtype turns it into text here; the recording stays on this computer"
+msgstr "voxtype가 여기서 텍스트로 바꿉니다. 녹음은 이 컴퓨터에 남습니다"
+
+#: internal/ui/voice_page.go:378
+msgid "The words are typed where you are"
+msgstr "글자가 지금 있는 곳에 입력됩니다"
+
+#: internal/ui/voice_page.go:381
+msgid "The words are pasted where you are, and your clipboard put back; to have them typed, install wtype:"
+msgstr "글자는 지금 있는 곳에 붙여 넣고 클립보드는 되돌려 놓습니다. 직접 입력하려면 wtype을 설치하세요:"
+
+#: internal/ui/voice_page.go:397
+msgid "Installing voxtype…"
+msgstr "voxtype 설치 중…"
+
+#: internal/ui/voice_page.go:399
+msgid "No AI profile turns speech into text"
+msgstr "음성을 텍스트로 바꾸는 AI 프로필이 없습니다"
+
+#: internal/ui/voice_page.go:400
+msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
+msgstr "설정 → AI에서 프로필의 '음성'을 켜고 '음성 입력'으로 고르세요"
+
+#: internal/ui/voice_page.go:402
+msgid "pw-cat is not installed"
+msgstr "pw-cat가 설치되어 있지 않습니다"
+
+#: internal/ui/voice_page.go:403
+msgid "Dictation records with PipeWire's pw-cat: %s"
+msgstr "받아쓰기는 PipeWire의 pw-cat으로 녹음합니다: %s"
+
+#: internal/ui/voice_page.go:405
+msgid "voxtype is not installed"
+msgstr "voxtype가 설치되어 있지 않습니다"
+
+#: internal/ui/voice_page.go:406
+msgid "Install downloads voxtype %s and a speech model for your language from GitHub, about %d MB, and checks them before they run"
+msgstr "'설치'는 GitHub에서 voxtype %s과 사용하는 언어의 음성 모델을 내려받고(약 %d MB) 실행하기 전에 확인합니다"
+
+#: internal/ui/voice_page.go:408
+msgid "voxtype is not running"
+msgstr "voxtype가 실행 중이 아닙니다"
+
+#: internal/ui/voice_page.go:408
+msgid "It is installed; its service is stopped"
+msgstr "설치되어 있지만 서비스가 멈춰 있습니다"
+
+#: internal/ui/voice_page.go:412
+msgid "Listening…"
+msgstr "듣는 중…"
+
+#: internal/ui/voice_page.go:412
+msgid "Escape drops what you said"
+msgstr "Esc로 말한 내용을 버립니다"
+
+#: internal/ui/voice_page.go:420
+msgid "Click the microphone in the bar, and talk"
+msgstr "바의 마이크를 클릭하고 말하세요"
+
+#: internal/ui/voice_page.go:422
+msgid "Hold %s, or click the microphone in the bar, and talk"
+msgstr "%s 키를 누르고 있거나 바의 마이크를 클릭하고 말하세요"
+
+#: internal/ui/voice_page.go:424
+msgid "Press %s, or click the microphone in the bar, and talk"
+msgstr "%s 키를 누르거나 바의 마이크를 클릭하고 말하세요"
+
+#: internal/ui/voice_page.go:490
+msgid "PipeWire has no microphone"
+msgstr "PipeWire에 마이크가 없습니다"
+
+#: internal/ui/voice_page.go:509
+msgid "The system's input, which dictation records from"
+msgstr "시스템의 입력 장치로, 받아쓰기가 여기서 녹음합니다"
+
+#: internal/ui/voice_page.go:531
+msgid "Say something…"
+msgstr "무언가 말해 보세요…"
+
+#: internal/ui/voice_page.go:552
+msgid "It hears you."
+msgstr "잘 들립니다."
+
+#: internal/ui/voice_page.go:554
+msgid "It heard nothing: is it the right one, or muted?"
+msgstr "아무것도 들리지 않았습니다. 맞는 마이크인가요, 음소거되어 있나요?"
+
+#: internal/ui/voice_page.go:575
+msgid "Downloading voxtype %s… %s"
+msgstr "voxtype %s 다운로드 중… %s"
+
+#: internal/ui/voice_page.go:577
+msgid "Downloading a speech model… %s"
+msgstr "음성 모델 다운로드 중… %s"
+
+#: internal/ui/voice_page.go:579
+msgid "Downloading a speech model…"
+msgstr "음성 모델 다운로드 중…"
+
+#: internal/ui/voice_page.go:581
+msgid "Starting its service…"
+msgstr "서비스를 시작하는 중…"
+
+#: internal/ui/voice_page.go:591
+msgid "voxtype was not installed: %s"
+msgstr "voxtype을 설치하지 못했습니다: %s"
+
+#: internal/ui/voice_page.go:609
+msgid "voxtype did not start: %s"
+msgstr "voxtype이 시작되지 않았습니다: %s"
 
 #: internal/viewerui/app.go:36
 #: internal/viewerui/app.go:700
@@ -16271,7 +16314,7 @@ msgstr "나에게 무엇을 해야 할지 묻거나 말해주세요"
 
 #: ui/assistant.ui:181
 msgid "Discard the recording"
-msgstr ""
+msgstr "녹음 버리기"
 
 #: ui/bar.ui:82
 msgid "Stop recording"
@@ -16522,7 +16565,7 @@ msgstr "지금 재생 중"
 
 #: ui/dictation.ui:69
 msgid "Drop the recording"
-msgstr ""
+msgstr "녹음 버리기"
 
 #: ui/disk.ui:86
 msgid "Choose a folder…"
@@ -17633,7 +17676,7 @@ msgstr "정해진 목록에서 고르는 프로필 (게임의 AI 플레이어처
 
 #: ui/settings.ui:2425
 msgid "Voice input with"
-msgstr ""
+msgstr "음성 입력에 사용"
 
 #: ui/settings.ui:2467
 #: ui/settings.ui:3008

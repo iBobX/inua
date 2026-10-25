@@ -32,7 +32,7 @@ msgstr "l’assistant d’inua"
 
 #: cmd/inua-assistant/transcribe.go:49
 msgid "No profile turns speech into text. Turn on Voice for one in Settings → AI."
-msgstr ""
+msgstr "Aucun profil ne transforme la voix en texte. Activez Voix pour l'un d'eux dans Paramètres → AI."
 
 #: cmd/inua-disk-usage/main.go:104
 msgid "%d files, %.1f s"
@@ -1911,7 +1911,7 @@ msgstr "Modifier"
 #: internal/games/fortune.go:65
 #: internal/gamesui/fortune_menu.go:174
 #: internal/termui/guide.go:161
-#: internal/ui/voice.go:331
+#: internal/ui/voice_page.go:216
 #: ui/clock.ui:339
 #: ui/clock.ui:406
 #: ui/vm.ui:684
@@ -3336,7 +3336,7 @@ msgid "Installed"
 msgstr "Installé"
 
 #: internal/appui/sysmon.go:994
-#: internal/ui/voice_models.go:181
+#: internal/ui/voice_models.go:152
 msgid "In use"
 msgstr "En cours d'utilisation"
 
@@ -3367,6 +3367,7 @@ msgid "GRAPHICS"
 msgstr "GRAPHIQUES"
 
 #: internal/appui/sysmon.go:1004
+#: internal/ui/voice_page.go:230
 msgid "Card"
 msgstr "Carte"
 
@@ -3680,6 +3681,7 @@ msgstr "EN UTILISATION"
 #: internal/ui/settings_ai.go:268
 #: internal/ui/settings_keyring.go:572
 #: internal/ui/shortcuts.go:150
+#: internal/ui/voice_page.go:347
 msgid "None"
 msgstr "Aucun"
 
@@ -4098,7 +4100,7 @@ msgid "Replace the installed %s?"
 msgstr "Remplacer %s installée ?"
 
 #: internal/appui/workshop_manager.go:154
-#: internal/ui/voice.go:330
+#: internal/ui/voice_page.go:215
 #: ui/vm.ui:1279
 msgid "Install"
 msgstr "Installer"
@@ -4195,34 +4197,34 @@ msgstr "(pas de réponse)"
 
 #: internal/assistantui/assistantui.go:522
 msgid "Voice input records with pw-cat, from PipeWire (pipewire-bin on Debian and Ubuntu, pipewire on Arch, pipewire-utils on Fedora)"
-msgstr ""
+msgstr "La saisie vocale enregistre avec pw-cat, de PipeWire (pipewire-bin sur Debian et Ubuntu, pipewire sur Arch, pipewire-utils sur Fedora)"
 
 #: internal/assistantui/assistantui.go:524
 #: internal/ui/settings_ai.go:727
 #: ui/assistant.ui:193
 msgid "Voice input"
-msgstr ""
+msgstr "Saisie vocale"
 
 #: internal/assistantui/assistantui.go:532
 #: internal/assistantui/assistantui.go:596
 msgid "Cannot record: %s"
-msgstr ""
+msgstr "Impossible d'enregistrer : %s"
 
 #: internal/assistantui/assistantui.go:546
 msgid "Stop and transcribe"
-msgstr ""
+msgstr "Arrêter et transcrire"
 
 #: internal/assistantui/assistantui.go:598
 msgid "The assistant is not set up."
-msgstr ""
+msgstr "L'assistant n'est pas configuré."
 
 #: internal/assistantui/assistantui.go:602
 msgid "Cannot transcribe: %s"
-msgstr ""
+msgstr "Impossible de transcrire : %s"
 
 #: internal/assistantui/assistantui.go:614
 msgid "No speech was heard."
-msgstr ""
+msgstr "Aucune parole n'a été entendue."
 
 #: internal/assistantui/assistantui.go:688
 msgid "Don't"
@@ -4301,6 +4303,7 @@ msgstr "Les appareils avec KDE Connect, GSConnect ou Valent trouvent cet ordinat
 #: internal/connectui/window.go:384
 #: internal/remoteui/window.go:269
 #: internal/termui/prefsweb.go:164
+#: internal/ui/voice_models.go:232
 #: internal/vmui/window.go:1822
 #: internal/vmui/window.go:1927
 #: internal/vmui/window.go:1946
@@ -9740,11 +9743,11 @@ msgid "Pick a colour"
 msgstr "Choisissez une couleur"
 
 #: internal/hyprconf/keys.go:40
-#: internal/ui/voice.go:308
+#: internal/ui/voice_page.go:199
 #: ui/bar.ui:164
 #: ui/settings.ui:6242
 msgid "Dictation"
-msgstr ""
+msgstr "Dictée"
 
 #: internal/i18n/time.go:8
 msgid "February"
@@ -11030,7 +11033,8 @@ msgid "User name"
 msgstr "Nom d'utilisateur"
 
 #: internal/mailui/welcome.go:589
-#: internal/ui/voice.go:336
+#: internal/ui/voice_page.go:227
+#: internal/ui/voice_page.go:263
 msgid "Change"
 msgstr "Modifier"
 
@@ -11106,7 +11110,7 @@ msgid "Fetching your mail"
 msgstr "Récupération de votre courrier"
 
 #: internal/mailui/welcome.go:726
-#: internal/ui/voice.go:484
+#: internal/ui/voice_page.go:416
 msgid "Ready"
 msgstr "Prêt"
 
@@ -12110,29 +12114,30 @@ msgstr "Ne rien faire"
 
 #: internal/shell/status.go:40
 msgid "Dictation: no AI profile turns speech into text. Click to set it up"
-msgstr ""
+msgstr "Dictée : aucun profil d'IA ne transforme la voix en texte. Cliquez pour la configurer"
 
 #: internal/shell/status.go:42
 msgid "Dictation: not installed. Click to set it up"
-msgstr ""
+msgstr "Dictée : non installée. Cliquez pour la configurer"
 
 #: internal/shell/status.go:44
 msgid "Dictation: voxtype is not running. Click to start it"
-msgstr ""
+msgstr "Dictée : voxtype ne tourne pas. Cliquez pour le démarrer"
 
 #: internal/shell/status.go:46
 msgid "Listening… Click to stop"
-msgstr ""
+msgstr "À l'écoute… Cliquez pour arrêter"
 
 #: internal/shell/status.go:48
-#: internal/ui/dictation.go:140
+#: internal/ui/dictation.go:156
+#: internal/ui/voice_page.go:414
 #: ui/assistant.ui:172
 msgid "Transcribing…"
-msgstr ""
+msgstr "Transcription…"
 
 #: internal/shell/status.go:50
 msgid "Dictation: click and talk"
-msgstr ""
+msgstr "Dictée : cliquez et parlez"
 
 #: internal/shell/status.go:101
 #: internal/ui/settings_wifi.go:283
@@ -13546,10 +13551,6 @@ msgstr "Le Bluetooth est désactivé."
 msgid "No devices paired yet"
 msgstr "Aucun appareil associé pour l’instant"
 
-#: internal/ui/dictation.go:184
-msgid "Listening…"
-msgstr ""
-
 #: internal/ui/dock.go:450
 msgid "New Window"
 msgstr "Nouvelle fenêtre"
@@ -14114,11 +14115,11 @@ msgstr "Le profil de réponse"
 
 #: internal/ui/settings_ai.go:278
 msgid "Turn on Voice for a profile of OpenAI, Groq or a compatible server, with a speech-to-text model, for the assistant window's microphone"
-msgstr ""
+msgstr "Pour le micro de la fenêtre de l'assistant, activez Voix pour un profil OpenAI, Groq ou d'un serveur compatible, avec un modèle de transcription"
 
 #: internal/ui/settings_ai.go:280
 msgid "The profile that turns what you say to the assistant window's microphone into text"
-msgstr ""
+msgstr "Le profil qui transforme en texte ce que vous dites au micro de la fenêtre de l'assistant"
 
 #: internal/ui/settings_ai.go:283
 msgid "Then, when it fails: %s"
@@ -14170,7 +14171,7 @@ msgstr "Décision"
 
 #: internal/ui/settings_ai.go:517
 msgid "Voice"
-msgstr ""
+msgstr "Voix"
 
 #: internal/ui/settings_ai.go:524
 msgid "Abilities"
@@ -14207,15 +14208,15 @@ msgstr "Supprimer ce profil"
 
 #: internal/ui/settings_ai.go:626
 msgid "the server's address: http://127.0.0.1:11434/v1"
-msgstr ""
+msgstr "l'adresse du serveur : http://127.0.0.1:11434/v1"
 
 #: internal/ui/settings_ai.go:662
 msgid "Turns voice input into text, with a speech-to-text model (gpt-4o-mini-transcribe, whisper-large-v3-turbo …)"
-msgstr ""
+msgstr "Transforme la saisie vocale en texte, avec un modèle de transcription (gpt-4o-mini-transcribe, whisper-large-v3-turbo…)"
 
 #: internal/ui/settings_ai.go:664
 msgid "Only OpenAI, Groq and the OpenAI-compatible servers transcribe speech"
-msgstr ""
+msgstr "Seuls OpenAI, Groq et les serveurs compatibles OpenAI transcrivent la voix"
 
 #: internal/ui/settings_ai.go:668
 msgid "This provider makes quick choices only"
@@ -14244,7 +14245,7 @@ msgstr "Fait les choix rapides. "
 
 #: internal/ui/settings_ai.go:698
 msgid "Transcribes voice input. "
-msgstr ""
+msgstr "Transcrit la saisie vocale. "
 
 #: internal/ui/settings_ai.go:703
 msgid "The saved keys cannot be read: %s"
@@ -14324,7 +14325,7 @@ msgstr "Ne fait que des choix rapides dans une liste (oui ou non, un parmi quelq
 
 #: internal/ui/settings_ai.go:1135
 msgid "Only turns voice input into text, for the assistant window's microphone. It cannot chat or run tasks."
-msgstr ""
+msgstr "Transforme seulement la saisie vocale en texte, pour le micro de la fenêtre de l'assistant. Il ne peut ni discuter ni accomplir de tâches."
 
 #: internal/ui/settings_ai.go:1137
 msgid "Neither chats nor makes quick choices: inua does not use it."
@@ -14332,7 +14333,7 @@ msgstr "Ne discute pas et ne fait pas de choix rapides : inua ne l'utilise pas."
 
 #: internal/ui/settings_ai.go:1140
 msgid "Also turns voice input into text."
-msgstr ""
+msgstr "Transforme aussi la saisie vocale en texte."
 
 #: internal/ui/settings_ai.go:1152
 msgid "Search models"
@@ -14404,15 +14405,15 @@ msgstr "Le modèle n'a pas choisi la bonne option"
 
 #: internal/ui/settings_bench.go:79
 msgid "Transcription (voice input)"
-msgstr ""
+msgstr "Transcription (saisie vocale)"
 
 #: internal/ui/settings_bench.go:79
 msgid "The model turns speech into text"
-msgstr ""
+msgstr "Le modèle transforme la voix en texte"
 
 #: internal/ui/settings_bench.go:79
 msgid "The model did not turn speech into text"
-msgstr ""
+msgstr "Le modèle n'a pas transformé la voix en texte"
 
 #: internal/ui/settings_bench.go:130
 #: internal/ui/settings_bench.go:214
@@ -14783,7 +14784,7 @@ msgid "the dialog could not be shown"
 msgstr "la boîte de dialogue n’a pas pu s’afficher"
 
 #: internal/ui/settings_keyring.go:383
-#: internal/ui/voice.go:424
+#: internal/ui/voice_page.go:410
 msgid "Looking…"
 msgstr "Vérification…"
 
@@ -15127,287 +15128,330 @@ msgstr "Inua n'a pas pu mettre à niveau"
 msgid "Could not upgrade: %s"
 msgstr "Impossible de mettre à niveau : %s"
 
-#: internal/ui/voice.go:192
+#: internal/ui/voice.go:206
 msgid "Dictation did not work"
-msgstr ""
+msgstr "La dictée n'a pas fonctionné"
 
-#: internal/ui/voice.go:225
-msgid "Under the window you type in"
-msgstr ""
-
-#: internal/ui/voice.go:225
-msgid "In the screen's corner"
-msgstr ""
-
-#: internal/ui/voice.go:225
-msgid "In the bar only"
-msgstr ""
-
-#: internal/ui/voice.go:230
-msgid "voxtype, on this machine"
-msgstr ""
-
-#: internal/ui/voice.go:230
-msgid "An AI profile (Voice input in Settings → AI)"
-msgstr ""
-
-#: internal/ui/voice.go:307
-msgid "DICTATION"
-msgstr ""
-
-#: internal/ui/voice.go:307
-msgid "Talk, and the words are typed where you are"
-msgstr ""
-
-#: internal/ui/voice.go:308
-msgid "A microphone in the bar, and a shortcut to talk"
-msgstr ""
-
-#: internal/ui/voice.go:309
-msgid "Push to talk"
-msgstr ""
-
-#: internal/ui/voice.go:309
-msgid "The shortcut records while it is held; off, it starts and stops"
-msgstr ""
-
-#: internal/ui/voice.go:310
-msgid "Show it"
-msgstr ""
-
-#: internal/ui/voice.go:310
-msgid "A card with the waveform, then the words; the bar's microphone shows it too"
-msgstr ""
-
-#: internal/ui/voice.go:319
-msgid "ENGINE"
-msgstr ""
-
-#: internal/ui/voice.go:319
-msgid "What turns your speech into text"
-msgstr ""
-
-#: internal/ui/voice.go:321
-msgid "Engine"
-msgstr ""
-
-#: internal/ui/voice.go:321
-msgid "voxtype keeps the recording on this machine; an AI profile sends it to its provider"
-msgstr ""
-
-#: internal/ui/voice.go:329
-msgid "voxtype.io"
-msgstr ""
-
-#: internal/ui/voice.go:332
-msgid "AI Settings"
-msgstr ""
-
-#: internal/ui/voice.go:339
-msgid "Typing"
-msgstr ""
-
-#: internal/ui/voice.go:414
-msgid "No profile turns speech into text"
-msgstr ""
-
-#: internal/ui/voice.go:415
-msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
-msgstr ""
-
-#: internal/ui/voice.go:417
-msgid "pw-cat is not installed"
-msgstr ""
-
-#: internal/ui/voice.go:417
-msgid "Dictation records with PipeWire's pw-cat (pipewire-bin)"
-msgstr ""
-
-#: internal/ui/voice.go:419
-msgid "voxtype is not installed"
-msgstr ""
-
-#: internal/ui/voice.go:420
-msgid "Install downloads voxtype %s from its GitHub releases into ~/.local/bin, checks it, and starts it with a speech model for your language; others are a choice away"
-msgstr ""
-
-#: internal/ui/voice.go:422
-msgid "The daemon is not running"
-msgstr ""
-
-#: internal/ui/voice.go:422
-msgid "voxtype is installed; its user service is stopped"
-msgstr ""
-
-#: internal/ui/voice.go:429
-msgid "Click the microphone in the bar, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:431
-msgid "Click the microphone in the bar, or hold %s, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:433
-msgid "Click the microphone in the bar, or press %s, and talk"
-msgstr ""
-
-#: internal/ui/voice.go:446
-msgid "Profile"
-msgstr ""
-
-#: internal/ui/voice.go:447
-msgid "%s; the recording goes to its provider"
-msgstr ""
-
-#: internal/ui/voice.go:451
-msgid "wtype types the words into the window"
-msgstr ""
-
-#: internal/ui/voice.go:453
-msgid "The words are pasted through the clipboard; with wtype installed, they are typed"
-msgstr ""
-
-#: internal/ui/voice.go:480
-msgid "Listening"
-msgstr ""
-
-#: internal/ui/voice.go:482
-msgid "Transcribing"
-msgstr ""
-
-#: internal/ui/voice.go:494
-msgid "Installing voxtype…"
-msgstr ""
-
-#: internal/ui/voice.go:494
-msgid "Downloading…"
-msgstr ""
-
-#: internal/ui/voice.go:503
-#: internal/ui/voice_models.go:235
-msgid "Downloading voxtype %s… %s"
-msgstr ""
-
-#: internal/ui/voice.go:505
-msgid "Downloading a speech model… %s"
-msgstr ""
-
-#: internal/ui/voice.go:507
-msgid "Downloading a speech model…"
-msgstr ""
-
-#: internal/ui/voice.go:509
-msgid "Starting its service…"
-msgstr ""
-
-#: internal/ui/voice.go:519
-msgid "voxtype was not installed: %s"
-msgstr ""
-
-#: internal/ui/voice.go:537
-msgid "voxtype did not start: %s"
-msgstr ""
-
-#: internal/ui/voice.go:572
+#: internal/ui/voice.go:252
 msgid "dictation types with wtype, which is not installed"
-msgstr ""
+msgstr "la dictée tape avec wtype, qui n'est pas installé"
 
-#: internal/ui/voice.go:582
+#: internal/ui/voice.go:262
 msgid "no window has the focus to type into"
-msgstr ""
-
-#: internal/ui/voice_models.go:40
-msgid "OpenAI's open Whisper, run here: many languages; the .en models English alone"
-msgstr ""
-
-#: internal/ui/voice_models.go:41
-msgid "NVIDIA's Parakeet: English (v2), or 25 European languages (v3)"
-msgstr ""
-
-#: internal/ui/voice_models.go:42
-msgid "Small and quick: English, and base-zh, base-ja, tiny-ko, tiny-ar for those languages"
-msgstr ""
-
-#: internal/ui/voice_models.go:43
-msgid "Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"
-msgstr ""
+msgstr "aucune fenêtre n'a le focus pour y taper"
 
 #: internal/ui/voice_models.go:44
-msgid "Alibaba's Paraformer: Chinese (zh) or English (en)"
-msgstr ""
+msgid "OpenAI's open Whisper: many languages; the .en models English alone"
+msgstr "Whisper, ouvert, d'OpenAI : de nombreuses langues ; les modèles .en l'anglais seul"
 
 #: internal/ui/voice_models.go:45
-msgid "Dolphin: Eastern languages"
-msgstr ""
+msgid "NVIDIA's Parakeet: English, or 25 European languages (v3)"
+msgstr "Parakeet, de NVIDIA : l'anglais, ou 25 langues européennes (v3)"
 
 #: internal/ui/voice_models.go:46
-msgid "Meta's Omnilingual: more than 1,600 languages"
-msgstr ""
+msgid "Small and quick, a model a language"
+msgstr "Petit et rapide, un modèle par langue"
 
 #: internal/ui/voice_models.go:47
-msgid "Cohere's Transcribe"
-msgstr ""
+msgid "Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"
+msgstr "SenseVoice, d'Alibaba : chinois, cantonais, anglais, japonais et coréen"
 
 #: internal/ui/voice_models.go:48
-msgid "Whisper on Intel's processors and NPUs (OpenVINO)"
-msgstr ""
+msgid "Alibaba's Paraformer: Chinese or English"
+msgstr "Paraformer, d'Alibaba : chinois ou anglais"
 
-#: internal/ui/voice_models.go:68
-msgid "Speech model"
-msgstr ""
+#: internal/ui/voice_models.go:49
+msgid "Dolphin: English and Chinese"
+msgstr "Dolphin : anglais et chinois"
 
-#: internal/ui/voice_models.go:78
-#: internal/ui/voice_models.go:183
-msgid "Use"
-msgstr ""
+#: internal/ui/voice_models.go:50
+msgid "Meta's Omnilingual: more than 1,600 languages"
+msgstr "Omnilingual, de Meta : plus de 1 600 langues"
 
-#: internal/ui/voice_models.go:80
+#: internal/ui/voice_models.go:51
+msgid "Cohere's Transcribe: 14 languages"
+msgstr "Transcribe, de Cohere : 14 langues"
+
+#: internal/ui/voice_models.go:52
+msgid "Whisper on Intel's processors and NPUs"
+msgstr "Whisper sur les processeurs et NPU d'Intel"
+
+#: internal/ui/voice_models.go:66
+msgid "Speech models"
+msgstr "Modèles vocaux"
+
+#: internal/ui/voice_models.go:77
 msgid "More engines"
-msgstr ""
+msgstr "Plus de moteurs"
 
-#: internal/ui/voice_models.go:80
-msgid "SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's build for them (about 46 MB); your models stay"
-msgstr ""
+#: internal/ui/voice_models.go:77
+msgid "SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's fuller build (46 MB); your models stay"
+msgstr "SenseVoice, Paraformer, Parakeet, Moonshine et d'autres viennent avec la version complète de voxtype (46 Mo) ; vos modèles restent"
 
-#: internal/ui/voice_models.go:82
+#: internal/ui/voice_models.go:79
+#: internal/ui/voice_models.go:95
 msgid "Get them"
-msgstr ""
+msgstr "Les obtenir"
 
-#: internal/ui/voice_models.go:140
-msgid "%s (in use)"
-msgstr ""
+#: internal/ui/voice_models.go:154
+msgid "Downloaded"
+msgstr "Téléchargé"
 
-#: internal/ui/voice_models.go:142
-msgid "%s (downloaded)"
-msgstr ""
+#: internal/ui/voice_models.go:164
+msgid "Delete its files; it can be downloaded again"
+msgstr "Supprimer ses fichiers ; il peut être téléchargé de nouveau"
 
-#: internal/ui/voice_models.go:185
+#: internal/ui/voice_models.go:171
+msgid "Use"
+msgstr "Utiliser"
+
+#: internal/ui/voice_models.go:173
 msgid "Download and use"
-msgstr ""
+msgstr "Télécharger et utiliser"
 
 #: internal/ui/voice_models.go:198
-msgid "Getting %s…"
-msgstr ""
+msgid "many languages"
+msgstr "de nombreuses langues"
 
-#: internal/ui/voice_models.go:203
-msgid "Downloading %s…"
-msgstr ""
+#: internal/ui/voice_models.go:200
+msgid "%s languages"
+msgstr "%s langues"
 
-#: internal/ui/voice_models.go:205
-msgid "Downloading %s… %s"
-msgstr ""
+#: internal/ui/voice_models.go:202
+msgid "%d language"
+msgid_plural "%d languages"
+msgstr[0] "%d langue"
+msgstr[1] "%d langues"
 
-#: internal/ui/voice_models.go:215
+#: internal/ui/voice_models.go:237
+#: internal/ui/voice_models.go:266
+#: internal/ui/voice_page.go:566
+msgid "Downloading…"
+msgstr "Téléchargement…"
+
+#: internal/ui/voice_models.go:239
+msgid "Downloading… %s"
+msgstr "Téléchargement… %s"
+
+#: internal/ui/voice_models.go:251
 msgid "%s is not in use: %s"
-msgstr ""
+msgstr "%s n'est pas utilisé : %s"
 
-#: internal/ui/voice_models.go:229
-msgid "Getting voxtype's other engines…"
-msgstr ""
-
-#: internal/ui/voice_models.go:242
+#: internal/ui/voice_models.go:280
 msgid "voxtype's other engines did not come: %s"
-msgstr ""
+msgstr "Les autres moteurs de voxtype ne sont pas venus : %s"
+
+#: internal/ui/voice_page.go:82
+msgid "At the top of your window"
+msgstr "En haut de votre fenêtre"
+
+#: internal/ui/voice_page.go:82
+msgid "In the screen's corner"
+msgstr "Dans le coin de l'écran"
+
+#: internal/ui/voice_page.go:82
+msgid "Off: the bar's microphone alone"
+msgstr "Désactivée : le micro de la barre seul"
+
+#: internal/ui/voice_page.go:140
+msgid "Not changed: %s"
+msgstr "Non modifié : %s"
+
+#: internal/ui/voice_page.go:198
+msgid "DICTATION"
+msgstr "DICTÉE"
+
+#: internal/ui/voice_page.go:198
+msgid "Talk, and the words are typed where you are"
+msgstr "Parlez, et les mots sont tapés là où vous êtes"
+
+#: internal/ui/voice_page.go:199
+msgid "A microphone in the bar, and a shortcut to talk"
+msgstr "Un micro dans la barre, et un raccourci pour parler"
+
+#: internal/ui/voice_page.go:214
+msgid "voxtype.io"
+msgstr "voxtype.io"
+
+#: internal/ui/voice_page.go:217
+msgid "AI Settings"
+msgstr "Paramètres de l'IA"
+
+#: internal/ui/voice_page.go:220
+msgid "Shortcut"
+msgstr "Raccourci"
+
+#: internal/ui/voice_page.go:225
+msgid "Hold"
+msgstr "Maintenir"
+
+#: internal/ui/voice_page.go:225
+msgid "Press"
+msgstr "Appuyer"
+
+#: internal/ui/voice_page.go:230
+msgid "The waveform as you talk, then the words"
+msgstr "La forme d'onde pendant que vous parlez, puis les mots"
+
+#: internal/ui/voice_page.go:238
+msgid "Microphone"
+msgstr "Micro"
+
+#: internal/ui/voice_page.go:250
+msgid "Test"
+msgstr "Tester"
+
+#: internal/ui/voice_page.go:254
+msgid "ENGINE"
+msgstr "MOTEUR"
+
+#: internal/ui/voice_page.go:254
+msgid "What turns your speech into text"
+msgstr "Ce qui transforme votre voix en texte"
+
+#: internal/ui/voice_page.go:256
+msgid "Runs"
+msgstr "Fonctionne"
+
+#: internal/ui/voice_page.go:258
+msgid "On this computer"
+msgstr "Sur cet ordinateur"
+
+#: internal/ui/voice_page.go:258
+msgid "With an AI profile"
+msgstr "Avec un profil d'IA"
+
+#: internal/ui/voice_page.go:261
+msgid "Profile"
+msgstr "Profil"
+
+#: internal/ui/voice_page.go:266
+msgid "Typing"
+msgstr "Saisie"
+
+#: internal/ui/voice_page.go:356
+msgid "Hold it to talk; Escape drops what you said"
+msgstr "Maintenez-le pour parler ; Échap abandonne ce que vous avez dit"
+
+#: internal/ui/voice_page.go:358
+msgid "Press it to start and again to end; Escape drops what you said"
+msgstr "Appuyez pour commencer et de nouveau pour finir ; Échap abandonne ce que vous avez dit"
+
+#: internal/ui/voice_page.go:365
+msgid "The recording goes to the AI profile's provider"
+msgstr "L'enregistrement part chez le fournisseur du profil d'IA"
+
+#: internal/ui/voice_page.go:367
+msgid "voxtype turns it into text here; the recording stays on this computer"
+msgstr "voxtype le transforme en texte ici ; l'enregistrement reste sur cet ordinateur"
+
+#: internal/ui/voice_page.go:378
+msgid "The words are typed where you are"
+msgstr "Les mots sont tapés là où vous êtes"
+
+#: internal/ui/voice_page.go:381
+msgid "The words are pasted where you are, and your clipboard put back; to have them typed, install wtype:"
+msgstr "Les mots sont collés là où vous êtes, et le presse-papiers remis ; pour qu'ils soient tapés, installez wtype :"
+
+#: internal/ui/voice_page.go:397
+msgid "Installing voxtype…"
+msgstr "Installation de voxtype…"
+
+#: internal/ui/voice_page.go:399
+msgid "No AI profile turns speech into text"
+msgstr "Aucun profil d'IA ne transforme la voix en texte"
+
+#: internal/ui/voice_page.go:400
+msgid "Turn on Voice for a profile in Settings → AI, and choose it for Voice input"
+msgstr "Activez Voix pour un profil dans Paramètres → AI, et choisissez-le pour Saisie vocale"
+
+#: internal/ui/voice_page.go:402
+msgid "pw-cat is not installed"
+msgstr "pw-cat n'est pas installé"
+
+#: internal/ui/voice_page.go:403
+msgid "Dictation records with PipeWire's pw-cat: %s"
+msgstr "La dictée enregistre avec pw-cat, de PipeWire : %s"
+
+#: internal/ui/voice_page.go:405
+msgid "voxtype is not installed"
+msgstr "voxtype n'est pas installé"
+
+#: internal/ui/voice_page.go:406
+msgid "Install downloads voxtype %s and a speech model for your language from GitHub, about %d MB, and checks them before they run"
+msgstr "Installer télécharge voxtype %s et un modèle vocal pour votre langue depuis GitHub, environ %d Mo, et les vérifie avant qu'ils ne tournent"
+
+#: internal/ui/voice_page.go:408
+msgid "voxtype is not running"
+msgstr "voxtype ne tourne pas"
+
+#: internal/ui/voice_page.go:408
+msgid "It is installed; its service is stopped"
+msgstr "Il est installé ; son service est arrêté"
+
+#: internal/ui/voice_page.go:412
+msgid "Listening…"
+msgstr "À l'écoute…"
+
+#: internal/ui/voice_page.go:412
+msgid "Escape drops what you said"
+msgstr "Échap abandonne ce que vous avez dit"
+
+#: internal/ui/voice_page.go:420
+msgid "Click the microphone in the bar, and talk"
+msgstr "Cliquez sur le micro de la barre, et parlez"
+
+#: internal/ui/voice_page.go:422
+msgid "Hold %s, or click the microphone in the bar, and talk"
+msgstr "Maintenez %s, ou cliquez sur le micro de la barre, et parlez"
+
+#: internal/ui/voice_page.go:424
+msgid "Press %s, or click the microphone in the bar, and talk"
+msgstr "Appuyez sur %s, ou cliquez sur le micro de la barre, et parlez"
+
+#: internal/ui/voice_page.go:490
+msgid "PipeWire has no microphone"
+msgstr "PipeWire n'a pas de micro"
+
+#: internal/ui/voice_page.go:509
+msgid "The system's input, which dictation records from"
+msgstr "L'entrée du système, d'où la dictée enregistre"
+
+#: internal/ui/voice_page.go:531
+msgid "Say something…"
+msgstr "Dites quelque chose…"
+
+#: internal/ui/voice_page.go:552
+msgid "It hears you."
+msgstr "Il vous entend."
+
+#: internal/ui/voice_page.go:554
+msgid "It heard nothing: is it the right one, or muted?"
+msgstr "Il n'a rien entendu : est-ce le bon, ou est-il coupé ?"
+
+#: internal/ui/voice_page.go:575
+msgid "Downloading voxtype %s… %s"
+msgstr "Téléchargement de voxtype %s… %s"
+
+#: internal/ui/voice_page.go:577
+msgid "Downloading a speech model… %s"
+msgstr "Téléchargement d'un modèle vocal… %s"
+
+#: internal/ui/voice_page.go:579
+msgid "Downloading a speech model…"
+msgstr "Téléchargement d'un modèle vocal…"
+
+#: internal/ui/voice_page.go:581
+msgid "Starting its service…"
+msgstr "Démarrage de son service…"
+
+#: internal/ui/voice_page.go:591
+msgid "voxtype was not installed: %s"
+msgstr "voxtype n'a pas été installé : %s"
+
+#: internal/ui/voice_page.go:609
+msgid "voxtype did not start: %s"
+msgstr "voxtype n'a pas démarré : %s"
 
 #: internal/viewerui/app.go:36
 #: internal/viewerui/app.go:700
@@ -16365,7 +16409,7 @@ msgstr "Demandez ou dites-moi quoi faire"
 
 #: ui/assistant.ui:181
 msgid "Discard the recording"
-msgstr ""
+msgstr "Abandonner l'enregistrement"
 
 #: ui/bar.ui:82
 msgid "Stop recording"
@@ -16616,7 +16660,7 @@ msgstr "En cours de lecture"
 
 #: ui/dictation.ui:69
 msgid "Drop the recording"
-msgstr ""
+msgstr "Abandonner l'enregistrement"
 
 #: ui/disk.ui:86
 msgid "Choose a folder…"
@@ -17727,7 +17771,7 @@ msgstr "Le profil qui choisit dans une liste fixe, comme un joueur IA dans les j
 
 #: ui/settings.ui:2425
 msgid "Voice input with"
-msgstr ""
+msgstr "Saisie vocale avec"
 
 #: ui/settings.ui:2467
 #: ui/settings.ui:3008
