@@ -49,6 +49,9 @@ type window struct {
 	detGen   uint64
 	flashes  uint64
 	closing  bool // asked to close while operations ran
+
+	foot footer  // the picker's footer, hidden in Files' windows
+	pick *picker // the request, when the window picks for an app
 }
 
 func (a *App) newWindow() *window {
@@ -84,6 +87,16 @@ func (a *App) newWindow() *window {
 	var keysButton, jobCancel gtk.Button
 	ui.Get("keys_button", &keysButton)
 	ui.Get("job_cancel", &jobCancel)
+	f := &w.foot
+	ui.Get("picker_foot", &f.foot)
+	ui.Get("picker_space", &f.space)
+	ui.Get("picker_choices", &f.choices)
+	ui.Get("picker_title", &f.title)
+	ui.Get("picker_error", &f.err)
+	ui.Get("picker_name", &f.name)
+	ui.Get("picker_filter", &f.filter)
+	ui.Get("picker_cancel", &f.cancel)
+	ui.Get("picker_accept", &f.accept)
 	ui.Close()
 
 	if len(a.wins) > 0 {
@@ -207,7 +220,11 @@ func (w *window) closeRequested() bool {
 		w.win.SetVisible(false)
 		return true
 	}
-	w.saveSize()
+	if w.pick != nil {
+		w.pickClosed()
+	} else {
+		w.saveSize()
+	}
 	for _, p := range w.p {
 		p.destroy()
 	}
@@ -267,6 +284,9 @@ func (w *window) setActive(p *pane) {
 }
 
 func (w *window) syncTitle() {
+	if w.pick != nil { // what the app asks for
+		return
+	}
 	p := w.cur()
 	t := i18n.T("Files")
 	switch {
@@ -342,7 +362,9 @@ func (w *window) setDual(on bool) {
 func (w *window) setDetails(on bool) {
 	w.detailsToggle.SetActive(on)
 	w.detailsReveal.SetRevealChild(on)
-	if w.app.settings.Details != on {
+	if w.pick != nil { // the picker's own
+		go w.app.pickMem.SetDetails(on)
+	} else if w.app.settings.Details != on {
 		w.app.settings.Details = on
 		w.app.settings.Touch()
 	}
@@ -362,6 +384,7 @@ func (w *window) setSidebar(on bool) {
 func (w *window) selectionChanged(p *pane) {
 	p.updateStatus()
 	p.syncPreview()
+	w.pickSelectionChanged(p)
 	if p == w.cur() && w.detailsReveal.GetRevealChild() {
 		w.detGen++
 		gen := w.detGen
@@ -403,6 +426,11 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 
 	if w.card != nil {
 		return w.cardKey(keyval, state)
+	}
+	if w.pick != nil {
+		if result, handled := w.pickKey(keyval, state); handled {
+			return result
+		}
 	}
 	switch p.pathStack.GetVisibleChildName() {
 	case "entry":
@@ -679,6 +707,9 @@ func (w *window) item(id, label, key string) menuItem {
 
 // menuItems are the menu's for what is selected in p.
 func (w *window) menuItems(p *pane) []menuItem {
+	if w.pick != nil {
+		return w.pickMenuItems(p)
+	}
 	sel := p.selected()
 	sep := menuItem{}
 	if p.mode == inTrash {

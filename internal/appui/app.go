@@ -32,6 +32,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/hypr"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/portalconf"
 	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
 	layouts "github.com/lyricat/inua/ui"
@@ -205,6 +206,7 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		flags |= gio.GApplicationHandlesOpenValue
 	}
 	quietA11y()
+	restore := gtkx.ForcePortals(portalconf.PickerOn())
 	// The apps' icon theme is in place before the application starts:
 	// GtkApplication's start looks its icon up, which reads the whole
 	// chain of the icon theme set then, and a change after reads the new
@@ -212,6 +214,7 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	// thread of its own, and setting the apps' waits for it to finish: the
 	// view's preparation begins and the style is parsed meanwhile.
 	gtk.Init()
+	restore()
 	c := &Ctx{UIDir: uiDir, cfgPath: config.DefaultPath(), v: v}
 	var icons gobject.Value
 	icons.Init(gobject.TypeStringVal)

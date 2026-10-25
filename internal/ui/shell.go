@@ -35,6 +35,7 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/layershell"
+	"github.com/lyricat/inua/internal/portalconf"
 	"github.com/lyricat/inua/internal/shell"
 	layouts "github.com/lyricat/inua/ui"
 )
@@ -336,10 +337,15 @@ func Run(opts Options) int {
 		return 1
 	}
 
+	// The settings' file choosers through inua's picker, when it is on.
+	restore := gtkx.ForcePortals(portalconf.PickerOn())
 	app := gtk.NewApplication(shell.AppID, gio.GApplicationNonUniqueValue)
 	s := &shellUI{opts: opts, cfg: opts.Config, app: app, bars: map[uintptr]*bar{}}
 	s.pass.slot = make(chan struct{}, 1) // before the control socket serves
-	activate := func(gio.Application) { s.start() }
+	activate := func(gio.Application) {
+		restore() // the display is open
+		s.start()
+	}
 	app.ConnectActivate(&activate)
 	shutdown := func(gio.Application) { s.stopClipboardCapture() }
 	app.ConnectShutdown(&shutdown)

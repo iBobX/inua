@@ -57,21 +57,22 @@ type pane struct {
 	emptyLabel, filterLabel, statusLabel, freeLabel gtk.Label
 	colEmpty                                        gtk.Label
 
-	model    *gtk.StringList
-	sel      *gtk.MultiSelection
-	list     *gtk.ListView
-	grid     *gtk.GridView
-	col      *gtk.ListView    // the folder's own column of the column view
-	trail    []*trailColumn   // the columns of the folders above it
-	preview  *trailColumn     // the column of the folder selected in it
-	rows     map[uintptr]*row // by list item
-	rowOf    map[uintptr]*row // by the row's own widget, for picking
-	names    []string         // what the model holds
-	menu     *popMenu
-	crumbPtr []uintptr
-	tabs     []*tab
-	tab      int // the one shown
-	tabPtrs  []uintptr
+	model      *gtk.StringList
+	sel        *gtk.MultiSelection
+	list       *gtk.ListView
+	grid       *gtk.GridView
+	col        *gtk.ListView    // the folder's own column of the column view
+	trail      []*trailColumn   // the columns of the folders above it
+	preview    *trailColumn     // the column of the folder selected in it
+	termButton *gtk.Button      // the picker has none
+	rows       map[uintptr]*row // by list item
+	rowOf      map[uintptr]*row // by the row's own widget, for picking
+	names      []string         // what the model holds
+	menu       *popMenu
+	crumbPtr   []uintptr
+	tabs       []*tab
+	tab        int // the one shown
+	tabPtrs    []uintptr
 
 	mode   mode
 	dir    string
@@ -154,6 +155,7 @@ func newPane(w *window, n int) *pane {
 	w.click(buttons["edit_path"], func() { w.setActive(p); p.editLocation() })
 	w.click(buttons["copy_path"], func() { w.setActive(p); w.copyFolderPath(p) })
 	w.click(buttons["terminal"], func() { w.setActive(p); w.terminal(p.dir) })
+	p.termButton = buttons["terminal"]
 	w.click(buttons["zoom_in"], func() { w.zoom(1) })
 	w.click(buttons["zoom_out"], func() { w.zoom(-1) })
 	w.click(&p.zoomLevel, func() { w.zoom(0) })
@@ -582,7 +584,7 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 		idx, b := files.Filter(p.all, p.filter)
 		p.shown, best = p.shown[:0], -1
 		for k, i := range idx {
-			if hidden || !p.all[i].Hidden {
+			if (hidden || !p.all[i].Hidden) && p.w.pickShows(&p.all[i]) {
 				if k == b {
 					best = len(p.shown)
 				}
@@ -592,7 +594,7 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 	} else {
 		p.shown = p.shown[:0]
 		for i := range p.all {
-			if hidden || !p.all[i].Hidden {
+			if (hidden || !p.all[i].Hidden) && p.w.pickShows(&p.all[i]) {
 				p.shown = append(p.shown, i)
 			}
 		}
@@ -631,7 +633,7 @@ func (p *pane) refill(sel []string, keepPlace bool) {
 	p.syncView()
 	p.updateStatus()
 	p.w.selectionChanged(p)
-	if p == p.w.cur() && p.w.card == nil && p.pathStack.GetVisibleChildName() == "crumbs" {
+	if p == p.w.cur() && p.w.card == nil && p.pathStack.GetVisibleChildName() == "crumbs" && !p.w.namingFile() {
 		p.focus()
 	}
 	if !parts {
@@ -945,6 +947,8 @@ func (p *pane) activate(pos uint32) {
 	switch {
 	case p.mode == inTrash:
 		return
+	case p.w.pick != nil:
+		p.w.pickActivate(p, i)
 	case e.Dir:
 		p.goTo(p.path(i), true)
 	default:
@@ -1132,7 +1136,21 @@ func (p *pane) updateStatus() {
 		parts = append(parts, i18n.Nf("%d item", "%d items", n, n))
 	}
 	if hidden := len(p.all) - n; hidden > 0 && p.filter == "" {
-		parts = append(parts, i18n.Nf("%d hidden", "%d hidden", hidden, hidden))
+		if pk := p.w.pick; pk != nil {
+			// The picker's filter leaves files out, not hidden.
+			hidden = 0
+			for i := range p.all {
+				if p.all[i].Hidden && p.w.pickShows(&p.all[i]) {
+					hidden++
+				}
+			}
+			if left := len(p.all) - n - hidden; left > 0 {
+				parts = append(parts, i18n.Nf("%d not of this kind", "%d not of this kind", left, left))
+			}
+		}
+		if hidden > 0 {
+			parts = append(parts, i18n.Nf("%d hidden", "%d hidden", hidden, hidden))
+		}
 	}
 	sel := p.selected()
 	if len(sel) > 0 {
@@ -1418,7 +1436,7 @@ func (p *pane) dragContent(v *gtk.Widget, x, y float64) uintptr {
 // dropped copies or moves dropped files into the folder under the
 // pointer, else this pane's folder.
 func (p *pane) dropped(v *gtk.Widget, paths []string, x, y float64, state gdk.ModifierType) {
-	if p.mode == inTrash || len(paths) == 0 {
+	if p.mode == inTrash || len(paths) == 0 || p.w.pick != nil { // the picker chooses, it does not move
 		return
 	}
 	dest := p.dir

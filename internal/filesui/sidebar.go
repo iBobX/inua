@@ -28,7 +28,11 @@ func (w *window) buildSidebar() {
 	w.side = w.side[:0]
 	gtkx.Clear(&w.sidebar)
 
-	title := gtk.NewLabel(i18n.T("Files"))
+	name := i18n.T("Files")
+	if w.pick != nil && w.pick.app != "" {
+		name = w.pick.app // who will get the file
+	}
+	title := gtk.NewLabel(name)
 	title.AddCssClass("index-title")
 	title.SetXalign(0)
 	gtkx.Append(&w.sidebar, &title.Widget)
@@ -51,8 +55,10 @@ func (w *window) buildSidebar() {
 		}
 		w.sideEntry(name, "", pl.Icon, path, func() { w.cur().goTo(path, true) }, nil, extra...)
 	}
-	w.sideEntry(i18n.T("Trash"), "", trashIcon(), trashKey, func() { w.cur().showTrash(true) }, nil,
-		menuItem{label: i18n.T("Empty Trash"), run: func() { w.confirmEmptyTrash() }})
+	if w.pick == nil {
+		w.sideEntry(i18n.T("Trash"), "", trashIcon(), trashKey, func() { w.cur().showTrash(true) }, nil,
+			menuItem{label: i18n.T("Empty Trash"), run: func() { w.confirmEmptyTrash() }})
+	}
 
 	w.sideHead(i18n.T("DEVICES"))
 	w.sideEntry(i18n.T("Computer"), "", "computer", "/", func() { w.cur().goTo("/", true) }, nil)

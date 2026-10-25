@@ -365,7 +365,8 @@ msgstr "Un archivo de %s"
 #: internal/appui/workshop_blocks.go:427
 #: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
-#: internal/filesui/window.go:713
+#: internal/filesui/picker.go:491
+#: internal/filesui/window.go:744
 #: internal/mailui/actions.go:486
 #: internal/shell/wifi.go:62
 #: internal/ui/record.go:163
@@ -1198,10 +1199,10 @@ msgstr "El historial, las ramas y los stashes del proyecto; lo que no se ha envi
 
 #: internal/apps/disk/rules.go:331
 #: internal/filesui/details.go:55
-#: internal/filesui/pane.go:1054
-#: internal/filesui/sidebar.go:54
-#: internal/filesui/tabs.go:94
-#: internal/filesui/window.go:274
+#: internal/filesui/pane.go:1058
+#: internal/filesui/sidebar.go:59
+#: internal/filesui/tabs.go:97
+#: internal/filesui/window.go:294
 #: internal/mailui/window.go:739
 msgid "Trash"
 msgstr "Papelera"
@@ -1757,56 +1758,56 @@ msgstr "Tormenta"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: internal/appui/app.go:66
+#: internal/appui/app.go:67
 #: internal/ui/alarms.go:106
 #: ui/settings.ui:1222
 #: config/apps/io.github.lyricat.Inua.Clock.desktop:3
 msgid "Clock"
 msgstr "Reloj"
 
-#: internal/appui/app.go:67
+#: internal/appui/app.go:68
 #: internal/appui/weather.go:223
 #: internal/ui/agenda.go:320
 #: config/apps/io.github.lyricat.Inua.Weather.desktop:3
 msgid "Weather"
 msgstr "Tiempo"
 
-#: internal/appui/app.go:68
+#: internal/appui/app.go:69
 #: ui/stocks.ui:35
 #: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
 msgid "Stocks"
 msgstr "Bolsa"
 
-#: internal/appui/app.go:69
+#: internal/appui/app.go:70
 #: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
 msgid "Calculator"
 msgstr "Calculadora"
 
-#: internal/appui/app.go:70
+#: internal/appui/app.go:71
 #: ui/bar.ui:52
 #: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
 msgid "Calendar"
 msgstr "Calendario"
 
-#: internal/appui/app.go:71
+#: internal/appui/app.go:72
 #: internal/ui/picker.go:152
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "Selector de color"
 
-#: internal/appui/app.go:72
+#: internal/appui/app.go:73
 #: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
 msgid "System Monitor"
 msgstr "Monitor del sistema"
 
-#: internal/appui/app.go:73
+#: internal/appui/app.go:74
 #: internal/termui/prefsweb.go:64
 #: ui/control.ui:540
 #: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
 msgid "Tailscale"
 msgstr "Tailscale"
 
-#: internal/appui/app.go:74
+#: internal/appui/app.go:75
 #: internal/appui/pass.go:264
 #: internal/appui/pass_otp.go:114
 #: ui/pass.ui:29
@@ -1814,13 +1815,13 @@ msgstr "Tailscale"
 msgid "Pass"
 msgstr "Pass"
 
-#: internal/appui/app.go:75
+#: internal/appui/app.go:76
 #: internal/appui/gpg.go:272
 #: config/apps/io.github.lyricat.Inua.GPG.desktop:3
 msgid "GPG"
 msgstr "GPG"
 
-#: internal/appui/app.go:76
+#: internal/appui/app.go:77
 #: internal/appui/music.go:292
 #: internal/appui/music.go:1103
 #: internal/desktop/defaults.go:41
@@ -1828,7 +1829,7 @@ msgstr "GPG"
 msgid "Music"
 msgstr "Música"
 
-#: internal/appui/app.go:77
+#: internal/appui/app.go:78
 #: internal/appui/video.go:256
 #: internal/appui/video.go:510
 #: internal/desktop/defaults.go:45
@@ -2448,7 +2449,7 @@ msgstr "La copia descifrada va a la papelera, desde donde se puede restaurar; el
 
 #: internal/appui/gpg.go:1537
 #: internal/filesui/cards.go:693
-#: internal/filesui/window.go:754
+#: internal/filesui/window.go:785
 #: internal/mailui/picker.go:143
 #: ui/disk.ui:771
 #: ui/settings.ui:214
@@ -2655,7 +2656,7 @@ msgstr "Ocultar"
 #: internal/appui/pass.go:746
 #: internal/appui/pass.go:771
 #: internal/diskui/details.go:581
-#: internal/filesui/window.go:729
+#: internal/filesui/window.go:760
 #: internal/term/settings/settings.go:116
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
@@ -2825,7 +2826,7 @@ msgstr "Ninguna app lo ha leído aún."
 
 #: internal/appui/pass.go:1213
 #: internal/appui/sysmon.go:972
-#: internal/filesui/pane.go:1526
+#: internal/filesui/pane.go:1544
 #: internal/ui/settings_keyring.go:508
 #: internal/ui/shotdrawer.go:327
 msgid "Jan 2 15:04"
@@ -2872,6 +2873,7 @@ msgstr "No es una imagen que esta app lea (PNG o JPEG)."
 
 #: internal/appui/pass_otp.go:189
 #: internal/filesui/cards.go:497
+#: internal/filesui/picker.go:372
 msgid "Replace"
 msgstr "Reemplazar"
 
@@ -4001,6 +4003,7 @@ msgstr "Bloque desconocido %q"
 #: internal/appui/workshop.go:990
 #: internal/connectui/window.go:429
 #: internal/diskui/dialog.go:92
+#: internal/filesui/appchooser.go:107
 #: internal/filesui/archive.go:49
 #: internal/filesui/archive.go:309
 #: internal/filesui/cards.go:347
@@ -4009,6 +4012,7 @@ msgstr "Bloque desconocido %q"
 #: internal/filesui/cards.go:451
 #: internal/filesui/cards.go:489
 #: internal/filesui/cards.go:588
+#: internal/filesui/picker.go:371
 #: internal/filesui/remote.go:159
 #: internal/filesui/remote.go:219
 #: internal/filesui/remotesetup.go:152
@@ -4035,7 +4039,8 @@ msgstr "Bloque desconocido %q"
 #: ui/clock.ui:244
 #: ui/clock.ui:454
 #: ui/connectreply.ui:49
-#: ui/files.ui:155
+#: ui/files.ui:159
+#: ui/files.ui:242
 #: ui/gpg.ui:1252
 #: ui/gpg.ui:1469
 #: ui/gpg.ui:1563
@@ -5187,9 +5192,9 @@ msgstr "%s quitó %s: %s liberados."
 
 #: internal/diskui/window.go:327
 #: internal/filesui/cards.go:682
-#: internal/filesui/sidebar.go:41
-#: internal/filesui/tabs.go:96
-#: internal/filesui/window.go:278
+#: internal/filesui/sidebar.go:45
+#: internal/filesui/tabs.go:99
+#: internal/filesui/window.go:298
 msgid "Home"
 msgstr "Carpeta personal"
 
@@ -5200,7 +5205,7 @@ msgstr "Escaneando…"
 
 #: internal/diskui/window.go:361
 #: internal/filesui/remote.go:266
-#: internal/filesui/sidebar.go:68
+#: internal/filesui/sidebar.go:74
 msgid "%s free of %s"
 msgstr "%s libres de %s"
 
@@ -5238,7 +5243,7 @@ msgid "%s in %s files · %s"
 msgstr "%s en %s archivos · %s"
 
 #: internal/diskui/window.go:557
-#: internal/filesui/pane.go:1524
+#: internal/filesui/pane.go:1542
 msgid "15:04"
 msgstr "15:04"
 
@@ -5280,7 +5285,7 @@ msgstr[0] "%d elemento más"
 msgstr[1] "%d elementos más"
 
 #: internal/diskui/window.go:871
-#: internal/filesui/pane.go:806
+#: internal/filesui/pane.go:808
 msgid "This folder is empty."
 msgstr "Esta carpeta está vacía."
 
@@ -5310,29 +5315,51 @@ msgid_plural "%s in %d folders · %s safe to delete"
 msgstr[0] "%s en %d carpeta · %s se pueden borrar"
 msgstr[1] "%s en %d carpetas · %s se pueden borrar"
 
-#: internal/filesui/app.go:75
+#: internal/filesui/app.go:86
 #: internal/filesui/cards.go:689
 #: internal/filesui/remote.go:371
 #: internal/filesui/sidebar.go:31
-#: internal/filesui/window.go:93
-#: internal/filesui/window.go:271
+#: internal/filesui/window.go:106
+#: internal/filesui/window.go:291
 #: ui/gpg.ui:445
 #: ui/gpg.ui:810
 #: config/apps/io.github.lyricat.Inua.Files.desktop:3
 msgid "Files"
 msgstr "Archivos"
 
-#: internal/filesui/app.go:238
+#: internal/filesui/app.go:259
 msgid "%s is plugged in."
 msgstr "%s está conectado."
 
-#: internal/filesui/app.go:316
+#: internal/filesui/app.go:337
 msgid "There are no files on the clipboard."
 msgstr "No hay archivos en el portapapeles."
 
-#: internal/filesui/app.go:370
+#: internal/filesui/app.go:391
 msgid "Nothing to undo."
 msgstr "No hay nada que deshacer."
+
+#: internal/filesui/appchooser.go:63
+msgid "Choose an app"
+msgstr ""
+
+#: internal/filesui/appchooser.go:65
+#: internal/filesui/openwith.go:166
+msgid "Open “%s” with"
+msgstr "Abrir “%s” con"
+
+#: internal/filesui/appchooser.go:67
+msgid "Open the link with"
+msgstr ""
+
+#: internal/filesui/appchooser.go:81
+msgid "%s asks which app to use."
+msgstr ""
+
+#: internal/filesui/appchooser.go:87
+#: internal/filesui/openwith.go:175
+msgid "Find an app"
+msgstr "Buscar una aplicación"
 
 #: internal/filesui/archive.go:50
 msgid "Compress"
@@ -5470,7 +5497,7 @@ msgstr "«%s» está protegido"
 #: internal/filesui/jobs.go:150
 #: internal/filesui/jobs.go:152
 #: internal/filesui/jobs.go:154
-#: internal/filesui/pane.go:1132
+#: internal/filesui/pane.go:1136
 msgid "%d item"
 msgid_plural "%d items"
 msgstr[0] "%d elemento"
@@ -5536,9 +5563,9 @@ msgid "They do not go to the trash, and this cannot be undone."
 msgstr "No van a la Papelera y no se puede deshacer."
 
 #: internal/filesui/cards.go:452
-#: internal/filesui/sidebar.go:55
-#: internal/filesui/window.go:686
-#: internal/filesui/window.go:692
+#: internal/filesui/sidebar.go:60
+#: internal/filesui/window.go:717
+#: internal/filesui/window.go:723
 #: internal/shell/commands.go:32
 #: ui/filespane.ui:272
 msgid "Empty Trash"
@@ -5578,7 +5605,7 @@ msgid "A folder “%s” is already in %s"
 msgstr "Ya hay una carpeta “%s” en %s"
 
 #: internal/filesui/cards.go:505
-#: ui/files.ui:261
+#: ui/files.ui:340
 msgid "Do the same for the rest"
 msgstr "Hacer lo mismo con el resto"
 
@@ -5732,17 +5759,17 @@ msgid "Copy / move to the other pane"
 msgstr "Copiar / mover al otro panel"
 
 #: internal/filesui/cards.go:698
-#: internal/filesui/window.go:715
+#: internal/filesui/window.go:746
 msgid "Open with…"
 msgstr "Abrir con…"
 
 #: internal/filesui/cards.go:699
-#: internal/filesui/window.go:768
+#: internal/filesui/window.go:799
 msgid "Bookmark"
 msgstr "Añadir marcador"
 
 #: internal/filesui/cards.go:700
-#: internal/filesui/window.go:701
+#: internal/filesui/window.go:732
 msgid "Terminal here"
 msgstr "Terminal aquí"
 
@@ -5761,7 +5788,7 @@ msgid "Next / previous tab"
 msgstr "Pestaña siguiente / anterior"
 
 #: internal/filesui/cards.go:705
-#: internal/filesui/window.go:718
+#: internal/filesui/window.go:749
 msgid "Middle click"
 msgstr "Clic central"
 
@@ -5774,7 +5801,8 @@ msgid "List / grid / columns"
 msgstr "Lista / cuadrícula / columnas"
 
 #: internal/filesui/cards.go:707
-#: internal/filesui/window.go:706
+#: internal/filesui/picker.go:504
+#: internal/filesui/window.go:737
 msgid "Hidden files"
 msgstr "Archivos ocultos"
 
@@ -5787,7 +5815,7 @@ msgid "Sidebar"
 msgstr "Barra lateral"
 
 #: internal/filesui/cards.go:710
-#: internal/filesui/window.go:760
+#: internal/filesui/window.go:791
 msgid "Details"
 msgstr "Detalles"
 
@@ -5800,7 +5828,8 @@ msgid "New window, close it"
 msgstr "Nueva ventana, cerrarla"
 
 #: internal/filesui/cards.go:713
-#: internal/filesui/window.go:707
+#: internal/filesui/picker.go:505
+#: internal/filesui/window.go:738
 msgid "Reload"
 msgstr "Recargar"
 
@@ -5975,10 +6004,6 @@ msgstr "Enlace roto"
 msgid "%s could not be opened: %v"
 msgstr "No se pudo abrir %s: %v"
 
-#: internal/filesui/openwith.go:166
-msgid "Open “%s” with"
-msgstr "Abrir “%s” con"
-
 #: internal/filesui/openwith.go:168
 msgid "Open %d file with"
 msgid_plural "Open %d files with"
@@ -5989,86 +6014,138 @@ msgstr[1] "Abrir %d archivos con"
 msgid "Always open %s with it"
 msgstr "Abrir siempre %s con ella"
 
-#: internal/filesui/openwith.go:175
-msgid "Find an app"
-msgstr "Buscar una aplicación"
-
-#: internal/filesui/pane.go:367
+#: internal/filesui/pane.go:369
 msgid "%s → %s"
 msgstr "%s → %s"
 
-#: internal/filesui/pane.go:495
+#: internal/filesui/pane.go:497
 msgid "%s free"
 msgstr "%s libres"
 
-#: internal/filesui/pane.go:790
+#: internal/filesui/pane.go:792
 msgid "You may not read this folder."
 msgstr "No tiene permiso para leer esta carpeta."
 
-#: internal/filesui/pane.go:792
+#: internal/filesui/pane.go:794
 msgid "This folder does not exist."
 msgstr "Esta carpeta no existe."
 
-#: internal/filesui/pane.go:794
+#: internal/filesui/pane.go:796
 msgid "This folder cannot be read: %v"
 msgstr "No se puede leer esta carpeta: %v"
 
-#: internal/filesui/pane.go:796
+#: internal/filesui/pane.go:798
 msgid "Nothing here matches “%s”."
 msgstr "Nada aquí coincide con “%s”."
 
-#: internal/filesui/pane.go:798
+#: internal/filesui/pane.go:800
 msgid "Type to search below this folder."
 msgstr "Escriba para buscar dentro de esta carpeta."
 
-#: internal/filesui/pane.go:800
+#: internal/filesui/pane.go:802
 msgid "Nothing below this folder matches “%s”."
 msgstr "Nada dentro de esta carpeta coincide con “%s”."
 
-#: internal/filesui/pane.go:802
+#: internal/filesui/pane.go:804
 msgid "The trash is empty."
 msgstr "La Papelera está vacía."
 
-#: internal/filesui/pane.go:804
+#: internal/filesui/pane.go:806
 msgid "Only hidden files: %d of them (Ctrl+H shows them)."
 msgid_plural "Only hidden files: %d of them (Ctrl+H shows them)."
 msgstr[0] "Solo archivos ocultos: %d (Ctrl+H los muestra)."
 msgstr[1] "Solo archivos ocultos: %d (Ctrl+H los muestra)."
 
-#: internal/filesui/pane.go:987
+#: internal/filesui/pane.go:991
 msgid "%s does not exist."
 msgstr "%s no existe."
 
-#: internal/filesui/pane.go:1088
+#: internal/filesui/pane.go:1092
 msgid "SEARCH"
 msgstr "BÚSQUEDA"
 
-#: internal/filesui/pane.go:1130
+#: internal/filesui/pane.go:1134
 msgid "%d found"
 msgid_plural "%d found"
 msgstr[0] "%d encontrado"
 msgstr[1] "%d encontrados"
 
-#: internal/filesui/pane.go:1135
+#: internal/filesui/pane.go:1148
+msgid "%d not of this kind"
+msgid_plural "%d not of this kind"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/filesui/pane.go:1152
 msgid "%d hidden"
 msgid_plural "%d hidden"
 msgstr[0] "%d oculto"
 msgstr[1] "%d ocultos"
 
-#: internal/filesui/pane.go:1148
+#: internal/filesui/pane.go:1166
 msgid "%d selected"
 msgid_plural "%d selected"
 msgstr[0] "%d seleccionado"
 msgstr[1] "%d seleccionados"
 
-#: internal/filesui/pane.go:1270
+#: internal/filesui/pane.go:1288
 msgid "done"
 msgstr "listo"
 
-#: internal/filesui/pane.go:1528
+#: internal/filesui/pane.go:1546
 #: internal/ui/shotdrawer.go:329
 msgid "Jan 2 2006"
 msgstr "2 Jan 2006"
+
+#: internal/filesui/picker.go:250
+#: internal/filesui/picker.go:340
+msgid "Files cannot be saved in this folder."
+msgstr ""
+
+#: internal/filesui/picker.go:305
+msgid "Choose a file."
+msgstr ""
+
+#: internal/filesui/picker.go:354
+msgid "Type a name to save under."
+msgstr ""
+
+#: internal/filesui/picker.go:356
+msgid "There is no such folder."
+msgstr ""
+
+#: internal/filesui/picker.go:358
+msgid "A folder has this name."
+msgstr ""
+
+#: internal/filesui/picker.go:360
+msgid "A name cannot hold that."
+msgstr ""
+
+#: internal/filesui/picker.go:366
+msgid "Replace “%s”?"
+msgstr ""
+
+#: internal/filesui/picker.go:368
+msgid "Replace %d file?"
+msgid_plural "Replace %d files?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: internal/filesui/picker.go:373
+msgid "A file of the same name is in this folder; the app will write over it."
+msgstr ""
+
+#: internal/filesui/picker.go:497
+#: internal/filesui/window.go:780
+#: internal/termui/wsmenu.go:80
+msgid "Rename…"
+msgstr "Renombrar…"
+
+#: internal/filesui/picker.go:503
+#: internal/filesui/window.go:728
+msgid "New folder…"
+msgstr "Nueva carpeta…"
 
 #: internal/filesui/remote.go:59
 #: internal/remoteui/stream.go:134
@@ -6519,46 +6596,46 @@ msgstr "demasiado largo"
 msgid "Some names cannot be given: they are marked."
 msgstr "Algunos nombres no se pueden dar: están marcados."
 
-#: internal/filesui/sidebar.go:36
+#: internal/filesui/sidebar.go:40
 #: ui/disk.ui:54
 msgid "PLACES"
 msgstr "LUGARES"
 
-#: internal/filesui/sidebar.go:45
+#: internal/filesui/sidebar.go:49
 msgid "Remove from the bookmarks"
 msgstr "Quitar de los marcadores"
 
-#: internal/filesui/sidebar.go:57
+#: internal/filesui/sidebar.go:63
 #: ui/connect.ui:112
 #: ui/tailscale.ui:112
 msgid "DEVICES"
 msgstr "DISPOSITIVOS"
 
-#: internal/filesui/sidebar.go:58
+#: internal/filesui/sidebar.go:64
 #: internal/games/checkersnet/texts.go:30
 msgid "Computer"
 msgstr "Equipo"
 
-#: internal/filesui/sidebar.go:71
+#: internal/filesui/sidebar.go:77
 msgid "%s, locked"
 msgstr "%s, bloqueado"
 
-#: internal/filesui/sidebar.go:82
-#: internal/filesui/sidebar.go:175
+#: internal/filesui/sidebar.go:88
+#: internal/filesui/sidebar.go:181
 msgid "Eject"
 msgstr "Expulsar"
 
-#: internal/filesui/sidebar.go:146
-#: internal/filesui/window.go:718
+#: internal/filesui/sidebar.go:152
+#: internal/filesui/window.go:749
 msgid "Open in a new tab"
 msgstr "Abrir en una pestaña nueva"
 
-#: internal/filesui/sidebar.go:147
-#: internal/filesui/window.go:719
+#: internal/filesui/sidebar.go:153
+#: internal/filesui/window.go:750
 msgid "Open in a new window"
 msgstr "Abrir en una ventana nueva"
 
-#: internal/filesui/tabs.go:136
+#: internal/filesui/tabs.go:139
 msgid "Close the tab (Ctrl+W)"
 msgstr "Cerrar la pestaña (Ctrl+W)"
 
@@ -6582,120 +6659,111 @@ msgstr "Activa Ejecutar comandos en Configuración → AI para que el asistente 
 msgid "Asked the assistant to tidy %s."
 msgstr "Se pidió al asistente que ordene %s."
 
-#: internal/filesui/window.go:689
+#: internal/filesui/window.go:720
 msgid "Restore"
 msgstr "Restaurar"
 
-#: internal/filesui/window.go:690
-#: internal/filesui/window.go:755
+#: internal/filesui/window.go:721
+#: internal/filesui/window.go:786
 msgid "Delete for good…"
 msgstr "Eliminar para siempre…"
 
-#: internal/filesui/window.go:697
-msgid "New folder…"
-msgstr "Nueva carpeta…"
-
-#: internal/filesui/window.go:698
+#: internal/filesui/window.go:729
 msgid "New file…"
 msgstr "Nuevo archivo…"
 
-#: internal/filesui/window.go:699
+#: internal/filesui/window.go:730
 #: internal/term/settings/settings.go:117
 #: internal/termui/paste.go:297
 msgid "Paste"
 msgstr "Pegar"
 
-#: internal/filesui/window.go:702
-#: internal/filesui/window.go:734
+#: internal/filesui/window.go:733
+#: internal/filesui/window.go:765
 msgid "Tidy with AI…"
 msgstr "Ordenar con IA…"
 
-#: internal/filesui/window.go:703
+#: internal/filesui/window.go:734
 msgid "Copy the folder's path"
 msgstr "Copiar la ruta de la carpeta"
 
-#: internal/filesui/window.go:721
+#: internal/filesui/window.go:752
 msgid "Open in the other pane"
 msgstr "Abrir en el otro panel"
 
-#: internal/filesui/window.go:725
+#: internal/filesui/window.go:756
 msgid "Show in its folder"
 msgstr "Mostrar en su carpeta"
 
-#: internal/filesui/window.go:728
+#: internal/filesui/window.go:759
 msgid "Cut"
 msgstr "Cortar"
 
-#: internal/filesui/window.go:730
+#: internal/filesui/window.go:761
 msgid "Copy the path"
 msgstr "Copiar la ruta"
 
-#: internal/filesui/window.go:733
+#: internal/filesui/window.go:764
 msgid "Paste into the folder"
 msgstr "Pegar en la carpeta"
 
-#: internal/filesui/window.go:738
+#: internal/filesui/window.go:769
 msgid "Extract here"
 msgstr "Extraer aquí"
 
-#: internal/filesui/window.go:740
+#: internal/filesui/window.go:771
 msgid "Compress…"
 msgstr "Comprimir…"
 
-#: internal/filesui/window.go:743
+#: internal/filesui/window.go:774
 msgid "Copy to the other pane"
 msgstr "Copiar al otro panel"
 
-#: internal/filesui/window.go:744
+#: internal/filesui/window.go:775
 msgid "Move to the other pane"
 msgstr "Mover al otro panel"
 
-#: internal/filesui/window.go:749
-#: internal/termui/wsmenu.go:80
-msgid "Rename…"
-msgstr "Renombrar…"
-
-#: internal/filesui/window.go:751
+#: internal/filesui/window.go:782
 msgid "Rename %d item…"
 msgid_plural "Rename %d items…"
 msgstr[0] "Renombrar %d elemento…"
 msgstr[1] "Renombrar %d elementos…"
 
-#: internal/filesui/window.go:766
+#: internal/filesui/window.go:797
 msgid "Remove the bookmark"
 msgstr "Quitar el marcador"
 
-#: internal/filesui/window.go:821
+#: internal/filesui/window.go:852
 msgid "Cut %d item: paste to move it."
 msgid_plural "Cut %d items: paste to move them."
 msgstr[0] "Se cortó %d elemento: péguelo para moverlo."
 msgstr[1] "Se cortaron %d elementos: péguelos para moverlos."
 
-#: internal/filesui/window.go:823
+#: internal/filesui/window.go:854
 msgid "Copied %d item."
 msgid_plural "Copied %d items."
 msgstr[0] "Se copió %d elemento."
 msgstr[1] "Se copiaron %d elementos."
 
-#: internal/filesui/window.go:831
+#: internal/filesui/window.go:862
 msgid "Copied %d path."
 msgid_plural "Copied %d paths."
 msgstr[0] "Se copió %d ruta."
 msgstr[1] "Se copiaron %d rutas."
 
-#: internal/filesui/window.go:913
+#: internal/filesui/window.go:944
 msgid "Bookmarked %s."
 msgstr "Se añadió %s a los marcadores."
 
-#: internal/filesui/window.go:915
+#: internal/filesui/window.go:946
 msgid "Removed the bookmark of %s."
 msgstr "Se quitó el marcador de %s."
 
-#: internal/filesui/window.go:940
+#: internal/filesui/window.go:971
 msgid "Copied %s."
 msgstr "Se copió %s."
 
-#: internal/filesui/window.go:969
+#: internal/filesui/window.go:1000
 msgid "No terminal was found: install xdg-terminal-exec or set $TERMINAL."
 msgstr "No se encontró ningún terminal: instale xdg-terminal-exec o defina $TERMINAL."
 
@@ -17114,19 +17182,19 @@ msgstr "[¿SE PUEDE BORRAR?]"
 msgid "Clean it with:"
 msgstr "Límpialo con:"
 
-#: ui/files.ui:57
+#: ui/files.ui:61
 msgid "Hidden files (Ctrl+H)"
 msgstr "Archivos ocultos (Ctrl+H)"
 
-#: ui/files.ui:67
+#: ui/files.ui:71
 msgid "Two panes (F3)"
 msgstr "Dos paneles (F3)"
 
-#: ui/files.ui:77
+#: ui/files.ui:81
 msgid "Details (Space)"
 msgstr "Detalles (Espacio)"
 
-#: ui/files.ui:92
+#: ui/files.ui:96
 msgid "Keys (Ctrl+?)"
 msgstr "Teclas (Ctrl+?)"
 

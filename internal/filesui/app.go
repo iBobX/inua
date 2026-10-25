@@ -22,6 +22,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/files"
 	"github.com/lyricat/inua/internal/apps/files/disks"
 	"github.com/lyricat/inua/internal/apps/files/fm1"
+	"github.com/lyricat/inua/internal/apps/files/pick"
 	"github.com/lyricat/inua/internal/apps/files/remote"
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
@@ -59,6 +60,16 @@ type App struct {
 	archiveOpts files.ArchiveOptions // and its options, never a password
 	renameRule  files.RenameRule     // renaming many: the way used last
 	undos       []files.Undo
+
+	// The picker (picker.go): the folders it remembers, the pickers open,
+	// the hold on the process while they are and lingerMs after, and the
+	// first window of a start by D-Bus, kept hidden.
+	Portal    bool // started by D-Bus for the portal (-portal)
+	pickMem   *pick.Memory
+	pickers   int
+	holding   bool
+	lingerGen int
+	spare     *window
 }
 
 // New makes the app; Register gives it to appui once it holds its name.
@@ -88,6 +99,15 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.settings = files.LoadSettings()
 	w := a.newWindow()
 	a.watchDevices()
+	if a.Portal {
+		// No window until a picker or a folder is asked for; the process
+		// goes lingerMs after, with nothing asked.
+		c.StartHidden = true
+		a.spare = w
+		a.c.App.Hold()
+		a.holding = true
+		a.linger()
+	}
 	return &w.win
 }
 
@@ -101,6 +121,7 @@ func (a *App) Open(args []string) {
 	folders, items := fm1.Split(args)
 	w := a.wins[0]
 	switch {
+	case a.spare != nil: // started for a picker: the spare waits for a folder
 	case len(folders) > 0:
 		w.open(folders[0])
 		a.ShowFoldersNow(folders[1:])
@@ -142,7 +163,7 @@ func (a *App) ShowItemProperties(paths []string) {
 // ShowFoldersNow opens a window on each folder.
 func (a *App) ShowFoldersNow(paths []string) {
 	for _, p := range paths {
-		w := a.newWindow()
+		w := a.takeSpare()
 		w.win.Present()
 		w.open(p)
 	}
@@ -162,7 +183,7 @@ func (a *App) ShowItemsNow(paths []string) []*window {
 	}
 	var out []*window
 	for _, d := range order {
-		w := a.newWindow()
+		w := a.takeSpare()
 		w.win.Present()
 		w.reveal(byDir[d])
 		out = append(out, w)

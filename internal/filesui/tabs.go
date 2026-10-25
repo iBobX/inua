@@ -29,6 +29,9 @@ func (p *pane) saveTab() {
 // newTab opens key in a new tab after the current one, shown at once when
 // show, else left behind it (a folder opened with the middle button).
 func (p *pane) newTab(key string, show bool) {
+	if p.w.pick != nil { // one folder at a time
+		return
+	}
 	p.saveTab()
 	t := &tab{key: key}
 	at := p.tab + 1

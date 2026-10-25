@@ -1,11 +1,8 @@
 # Picker: inua's file chooser
 
-*A design, not yet built.*
-
-Apps that choose a file to open or a place to save get GTK's file
-chooser. inua's own apps (Viewer, Music, the VM window, Workshop) show
-it through `gtk.FileDialog`, and other apps get it through the
-`xdg-desktop-portal-gtk` backend. It is GTK3 or GTK4 depending on the
+Without the picker, apps that choose a file to open or a place to save
+get GTK's file chooser: inua's own apps through `gtk.FileDialog`, other
+apps through the `xdg-desktop-portal-gtk` backend. It is GTK3 or GTK4 depending on the
 path, does not take inua's look, and works differently from Files:
 
 - typing starts a location entry that completes paths, rather than
@@ -42,11 +39,13 @@ app ──► xdg-desktop-portal ──► org.freedesktop.impl.portal.FileChoos
 ```
 
 inua-files serves `org.freedesktop.impl.portal.FileChooser` on the
-session bus under `org.freedesktop.impl.portal.desktop.inua`. The process
-that already serves Files' windows serves the picker too: the folder
-reading, icons, thumbnails, drives and remote disks are already loaded.
-When it is not running, D-Bus starts it from a service file, with no
-window.
+session bus under `org.freedesktop.impl.portal.desktop.inua.files`; the
+shell serves inua's other interfaces under `.inua` (`docs/portals.md`).
+The process that already serves Files' windows serves the picker too:
+the folder reading, icons, thumbnails, drives and remote disks are
+already loaded. When it is not running, D-Bus starts it from a service
+file, `inua-files -portal`, with no window: its first window is built
+hidden and kept for the first folder the user opens.
 
 | Method | Options read | Results |
 | --- | --- | --- |
@@ -67,47 +66,22 @@ nothing for us. The backend sees only plain paths.
 
 ### Being the backend
 
-`inua-files -picker` makes the picker the session's file chooser, and
-`-picker=false` takes it back, as `-default` does for the file manager.
-It writes:
-
-- `inua.portal` (`DBusName=org.freedesktop.impl.portal.desktop.inua`,
-  `Interfaces=org.freedesktop.impl.portal.FileChooser`) where
-  `xdg-desktop-portal` reads backends;
-- `~/.config/xdg-desktop-portal/hyprland-portals.conf`, which replaces
-  the system's `hyprland-portals.conf`, so it repeats its default:
-
-  ```ini
-  [preferred]
-  default=hyprland;gtk
-  org.freedesktop.impl.portal.FileChooser=inua;gtk
-  ```
-
-  The `gtk` after `inua` keeps file choosers working when inua-files is
-  not installed;
-- a D-Bus service file for the name in `~/.local/share/dbus-1/services`;
-
-and then restarts `xdg-desktop-portal` (`systemctl --user`), which reads
-its backends only at start. `scripts/install.sh` asks whether to run it,
-as it does for the keyring.
+`inua-files -picker` makes the picker the session's file chooser and app
+chooser, and `-picker=false` takes them back, as `-default` does for the
+file manager: it is `inua portals enable FileChooser AppChooser`
+(`docs/portals.md`), which writes `inua-files.portal`, the config lines
+and the D-Bus service file, and restarts `xdg-desktop-portal` in an inua
+session.
 
 ### inua's own apps
 
-`gtk.FileDialog` only goes through the portal inside a sandbox, so
-inua's apps would keep GTK's dialog. They ask the portal instead,
-through `internal/picker`, which has no GTK: it calls
-`org.freedesktop.portal.FileChooser` with godbus, waits for the
-`Response` signal on the request and returns the paths. The apps call it
-on a goroutine and bring the answer back with `gtkx.Post`. When there is
-no portal, they fall back to `gtk.FileDialog`, so they still work outside
-an inua session. The five calls today:
-
-| App | Asks |
-| --- | --- |
-| Viewer | One file to open (images, PDFs, …) |
-| Music | Files or a folder to add |
-| VM | A Windows ISO |
-| Workshop | An app's folder; files a block asks for |
+`gtk.FileDialog` goes through the portal only inside a sandbox, or when
+`GDK_DEBUG=portals` is set as GTK starts. With FileChooser on, inua's
+apps and the shell set it before GTK opens its display and take it out
+of the environment after (`gtkx.ForcePortals`), so their twenty-odd file
+dialogs (Viewer, Music, Mail, the VM window, Workshop, Settings…) get the
+picker without a change, and the programs they start do not inherit it.
+Without the picker, they keep GTK's dialog.
 
 ## Window
 
@@ -149,14 +123,13 @@ Saving puts the name in the footer, as an entry before the buttons:
 
 ### Where it opens
 
-The window floats, centred over the window that asked. `parent_window`
-is `wayland:HANDLE` (xdg-foreign) or `x11:XID`, which Hyprland cannot
-turn into a window for us, so the picker takes Hyprland's active window
-when the request arrives (the app the user has just clicked in), and
-places itself on that window's workspace and monitor through
-`internal/hypr`. The window rule in `config/hypr/inua.conf` gets the
-picker's class, so it floats from its first frame. `modal` cannot be
-enforced across processes; the picker stays above its parent instead.
+The window floats over the window that asked: `parent_window` is
+`wayland:HANDLE`, an xdg-foreign handle, which GDK takes as the picker's
+parent (`gtkx.SetForeignParent`), so Hyprland places it as that app's
+dialog. Its class is `org.freedesktop.impl.portal.desktop.inua.files`,
+which the window rule for the portal's dialogs in
+`config/hypr/inua.conf` floats and centres when there is no parent (an
+X11 app's `x11:XID`). `modal` is not enforced across processes.
 
 ### The folder it starts in
 
@@ -179,7 +152,7 @@ As Files, except for these:
 | Enter | A folder: open it. A file: choose it (with several selected, all of them when `multiple`) |
 | Ctrl+Enter | Choose what is selected, a folder too; with nothing selected, the folder shown (choosing a folder, saving several) |
 | Letters | Filter this folder (when saving, the name entry has the focus: Tab goes to the list, and typing there filters) |
-| Ctrl+L | A path; a file typed is chosen, a folder opened |
+| Ctrl+L | A path; a folder typed is opened, a file selected in its folder |
 | Ctrl+P | Jump to a folder used before |
 | Ctrl+Shift+N | New folder, here (what an app's "save in a new folder" needs) |
 | F2 | Rename |
@@ -208,32 +181,35 @@ manage. The list's menu has only what the keys above do.
   answers with its URI.
 - A folder that cannot be written (a read-only drive, another user's
   folder) greys out *Save* and says why under the footer.
-- `SaveFiles`: no entry; the footer lists how many files, and a name
-  already in the chosen folder is asked about once for all of them.
+- `SaveFiles`: no entry; the folder selected, else the one shown, is
+  chosen, and the names already in it are asked about once for all of
+  them.
 
 ## Filters
 
 A portal filter is a name and a list of patterns: globs (`*.jpg`) and
 MIME types (`image/*`, `application/pdf`). A file matches when its name
 matches a glob, ignoring case, or its type (GIO's content type, already
-read for icons) is or derives from a MIME type. Matching runs with the
-folder's reading, on the pane's goroutines, so a big folder does not wait
-on it.
+read for icons, from the name, once for each extension) is or derives
+from a MIME type (`g_content_type_is_a`). Choosing a folder lists no
+files. The status line counts the files left out apart from the hidden
+ones (*"3 not of this kind"*).
 
 ## Architecture
 
 | Package | What |
 | --- | --- |
 | `internal/apps/files/pick` | The request without GTK: options read from the portal's variants, filters and matching, the folder it starts in, the remembered folders, the save name (extensions, paths typed, conflicts), the answer |
-| `internal/apps/files/portal` | `org.freedesktop.impl.portal.FileChooser` and `Request`: serving them and handing each request to the UI, as `fm1` does |
-| `internal/picker` | The client for inua's apps: the portal call, else `gtk.FileDialog` |
-| `internal/filesui` | The picker window: `window` in a pick mode (one pane, the footer, no operations), `picker.go` for the footer and the answer |
-| `cmd/inua-files` | Owning the portal name, `-picker` |
-| `ui/files.blp`, `ui/style.css` | The footer (`window.files.picker`) |
+| `internal/apps/files/chooser` | `org.freedesktop.impl.portal.FileChooser` and `AppChooser`: serving them (the requests through `internal/portal`) and handing each to the UI, the answer back as the portal's results |
+| `internal/filesui` | The picker window: `window` in a pick mode (one pane, the footer, no operations), `picker.go` for the footer, the keys and the answer; `appchooser.go` for the app chooser |
+| `internal/gtkx` | The parent from another program (`SetForeignParent`), the window's own class (`SetAppID`), `ForcePortals` |
+| `cmd/inua-files` | Serving the portal names, `-picker`, `-portal` |
+| `ui/files.blp`, `ui/style.css` | The footer (`picker_foot`) |
 
-The process: as now, it ends with its last window; started by the
-portal, it waits 10 minutes after its last picker before it ends, so the
-next request is fast. To be measured, as `docs/performance.md` says.
+The process: as before, it ends with its last window, but a picker holds
+it, and it stays 10 minutes after its last picker so the next is quick.
+Started by D-Bus, it goes 10 minutes after its start with nothing asked.
+Start-up is yet to be measured, as `docs/performance.md` says.
 
 ## Tests
 
@@ -243,21 +219,21 @@ next request is fast. To be measured, as `docs/performance.md` says.
   order above; save names (the extension kept when renamed, changed with
   the filter, paths typed, a missing folder, a name taken); the answer's
   URIs (spaces and non-ASCII escaped).
-- `portal`: a second process on a private bus (`internal/dbustest`)
-  calls each method, cancels, and calls `Close` while a request is open.
-- `picker`: against a fake frontend on a private bus: an answer, a
-  cancel, no portal.
-- By hand, in a nested Hyprland: Firefox's and Chromium's open and save,
-  a Flatpak app, a GTK app with `GDK_DEBUG=portals`, each of inua's five
-  dialogs, a remote disk as the place, two requests at once, the app
-  closed while its picker is open.
+- `chooser`: a client on a private bus (`internal/dbustest`) calls
+  each method with a fake picker: the answer's URIs, choices and filter,
+  a cancel, `Close` while a request is open, and the app chooser with a
+  new list while it is open.
+- By hand, on GTK's Broadway backend with a fake HOME and a private bus
+  (`inua-files -portal`, requests sent with `gdbus`): opening pictures
+  through a filter with the app's choices, a click and Enter; saving with
+  the stem typed over, and a name taken asking *Replace*; choosing a
+  folder with Ctrl+Enter; `Close` from the frontend closing the window;
+  the app chooser's list, its update and finding by typing.
+- Not yet run: in a real inua session, with Firefox, Chromium, a Flatpak
+  app and inua's own dialogs; a remote disk as the place; the linger.
 
 ## Open questions
 
-- Does Ubuntu 26.04's `xdg-desktop-portal` read backends from
-  `~/.local/share/xdg-desktop-portal/portals`, or only from
-  `/usr/share`? If only there, `-picker` needs sudo for one file, and
-  the install script places it.
 - Firefox uses the portal for its file chooser only with
   `widget.use-xdg-desktop-portal.file-picker = 1` outside Flatpak. Do we
   set it, document it, or leave it?

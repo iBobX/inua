@@ -1,6 +1,7 @@
 package gtkx
 
 import (
+	"strings"
 	"sync"
 
 	"codeberg.org/puregotk/purego"
@@ -9,20 +10,17 @@ import (
 
 // GDK's Wayland calls, which puregotk does not bind.
 var wl struct {
-	once  sync.Once
-	ok    bool
-	typ   func() uintptr
-	isA   func(instance, typ uintptr) bool
-	setID func(toplevel uintptr, id string) bool
+	once      sync.Once
+	ok        bool
+	typ       func() uintptr
+	isA       func(instance, typ uintptr) bool
+	setID     func(toplevel uintptr, id string) bool
+	transient func(toplevel uintptr, handle string) bool
 }
 
-// SetAppID gives a window an application ID of its own on Wayland (the
-// compositor's class for it), in place of its application's: Hyprland's
-// rules then tell it from the app's other windows. GDK passes it on only
-// once the window's toplevel is made, so call it right after Present:
-// the compositor maps the window, and applies its rules, at its first
-// frame. Elsewhere (X11, Broadway) it does nothing.
-func SetAppID(w *gtk.Window, id string) {
+// toplevel realizes w and runs f with its GdkWaylandToplevel; elsewhere
+// (X11, Broadway) it does nothing.
+func toplevel(w *gtk.Window, f func(t uintptr)) {
 	wl.once.Do(func() {
 		gtk, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
 		if err != nil {
@@ -37,6 +35,7 @@ func SetAppID(w *gtk.Window, id string) {
 		}
 		purego.RegisterLibFunc(&wl.typ, gtk, "gdk_wayland_toplevel_get_type")
 		purego.RegisterLibFunc(&wl.setID, gtk, "gdk_wayland_toplevel_set_application_id")
+		purego.RegisterLibFunc(&wl.transient, gtk, "gdk_wayland_toplevel_set_transient_for_exported")
 		purego.RegisterLibFunc(&wl.isA, gobj, "g_type_check_instance_is_a")
 		wl.ok = true
 	})
@@ -50,6 +49,30 @@ func SetAppID(w *gtk.Window, id string) {
 	}
 	defer s.Unref() // GetSurface takes a reference
 	if wl.isA(s.GoPointer(), wl.typ()) {
-		wl.setID(s.GoPointer(), id)
+		f(s.GoPointer())
 	}
+}
+
+// SetAppID gives a window an application ID of its own on Wayland (the
+// compositor's class for it), in place of its application's: Hyprland's
+// rules then tell it from the app's other windows. GDK passes it on only
+// once the window's toplevel is made, so call it right after Present:
+// the compositor maps the window, and applies its rules, at its first
+// frame. Elsewhere (X11, Broadway) it does nothing.
+func SetAppID(w *gtk.Window, id string) {
+	toplevel(w, func(t uintptr) { wl.setID(t, id) })
+}
+
+// SetForeignParent puts a window over another program's: the parent a
+// portal names ("wayland:HANDLE", exported through xdg-foreign), so the
+// compositor places it as that window's dialog. It reports whether the
+// handle was one GDK took; call it right after Present, as SetAppID.
+func SetForeignParent(w *gtk.Window, parent string) bool {
+	handle, ok := strings.CutPrefix(parent, "wayland:")
+	if !ok || handle == "" {
+		return false
+	}
+	took := false
+	toplevel(w, func(t uintptr) { took = wl.transient(t, handle) })
+	return took
 }
