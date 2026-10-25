@@ -63,8 +63,8 @@ so it keeps running after the keyring is replaced. It sets
 `SSH_AUTH_SOCK` to `/run/user/UID/gcr/ssh`, and the first time a program
 uses a key it asks for the key's passphrase in GNOME's own dialog
 (gcr-prompter), which looks like a GTK pinentry. It can do this right
-after login, when something touches the key. Turn it off and log out
-and in again:
+after login, when something touches the key. The install script offers
+to turn it off; by hand, turn it off and log out and in again:
 
 ```sh
 systemctl --user disable --now gcr-ssh-agent.socket gcr-ssh-agent.service

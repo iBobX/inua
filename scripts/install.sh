@@ -8,8 +8,9 @@
 # with `inua init` (never replacing your files), and, with sudo, adds the
 # Inua login session. Where inua replaces something you have, it asks
 # first, and the answer defaults to yes for gpg's pinentry (inua-pinentry)
-# and the keyring apps keep secrets in (inua-keyring, in pass), and for
-# Omarchy's shell (Quickshell, with inua-shell). With inua-pinentry chosen,
+# and the keyring apps keep secrets in (inua-keyring, in pass), for GNOME's
+# ssh agent (gcr, turned off for OpenSSH's), and for Omarchy's shell
+# (Quickshell, with inua-shell). With inua-pinentry chosen,
 # where update-alternatives keeps the system's pinentry (Debian, Ubuntu), it
 # offers to make it that too (sudo, yes). With no login manager it
 # offers greetd + tuigreet (yes), while GDM, SDDM, LightDM … are kept
@@ -343,6 +344,22 @@ elif PATH="$prefix/bin:$PATH" "$prefix/bin/inua" keyring replace </dev/null; the
     done_ "inua-keyring keeps apps' secrets in pass"
 else
     note "the keyring was not replaced (above); try again with: inua keyring replace"
+fi
+
+# GNOME's ssh agent (gcr) takes SSH_AUTH_SOCK over OpenSSH's at login, and
+# asks for an ssh key's passphrase in GNOME's own dialog (gcr-prompter),
+# right after login when something touches the key. Turned off, ssh uses
+# OpenSSH's ssh-agent from the next login.
+if [ "$(systemctl --user is-enabled gcr-ssh-agent.socket 2>/dev/null)" = enabled ] &&
+    systemctl --user cat ssh-agent.socket >/dev/null 2>&1; then
+    if ask "Turn off GNOME's ssh agent (gcr), so ssh uses OpenSSH's ssh-agent?" y; then
+        if systemctl --user disable --now gcr-ssh-agent.socket gcr-ssh-agent.service >/dev/null 2>&1 &&
+            systemctl --user enable ssh-agent.socket >/dev/null 2>&1; then
+            done_ "GNOME's ssh agent is off; ssh uses OpenSSH's ssh-agent from your next login"
+        else
+            note "GNOME's ssh agent is still on; by hand: systemctl --user disable --now gcr-ssh-agent.socket gcr-ssh-agent.service"
+        fi
+    fi
 fi
 
 # --- the login session ------------------------------------------------------
