@@ -12,6 +12,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
@@ -95,6 +97,15 @@ func (s *shellUI) applyVoiceState() {
 	s.dictationState(st)
 	s.showVoice()
 	s.handOverVoxtype(st)
+	// While it records, Escape drops it and its keys end it.
+	if recording := st.Available && st.Status == "recording"; recording != s.svc.inSubmap {
+		s.svc.inSubmap = recording
+		if recording {
+			s.dispatchSubmap(hyprconf.DictationSubmap)
+		} else {
+			s.dispatchSubmap("reset")
+		}
+	}
 }
 
 // dictationEngine turns speech into text: voxtype's daemon (system.Voice)
@@ -148,9 +159,13 @@ func (s *shellUI) followVoice() {
 	s.applyVoiceState()
 	go e.Run(ctx, func(st system.VoiceState) {
 		s.update(func(x *shell.System) {
-			if ctx.Err() == nil { // not from an engine since stopped
-				x.Voice = st
+			if ctx.Err() != nil { // from an engine since stopped
+				return
 			}
+			if !st.Available && x.Voice.Available && time.Now().Before(v.voxtypeQuiet) {
+				return // inua restarting voxtype: back in a moment
+			}
+			x.Voice = st
 		})
 	})
 }
@@ -169,6 +184,7 @@ func (s *shellUI) handOverVoxtype(st system.VoiceState) {
 		return
 	}
 	v.voxtypeSet = true
+	v.voxtypeQuiet = time.Now().Add(15 * time.Second) // it may restart it
 	command := system.VoxtypeHandsOver(helper, s.opts.Instance)
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -540,6 +556,18 @@ func (s *shellUI) voiceStartDaemon() {
 	}()
 }
 
+// spaced ends a dictation with a space, so the next one does not run on,
+// unless it ends in a space already or in a script written without them
+// (Chinese, Japanese).
+func spaced(text string) string {
+	r, _ := utf8.DecodeLastRuneInString(text)
+	if text == "" || unicode.IsSpace(r) || unicode.In(r, unicode.Han, unicode.Hiragana, unicode.Katakana) ||
+		r >= 0x3000 && r <= 0x303f || r >= 0xff00 && r <= 0xffef { // CJK and full-width punctuation
+		return text
+	}
+	return text + " "
+}
+
 // dictationTyper puts dictation's words into the focused window: typed by
 // wtype when there is one; else pasted, as the clipboard history pastes
 // (Ctrl+V, Ctrl+Shift+V in a terminal), and the clipboard's text put back,
@@ -560,6 +588,7 @@ type hyprNow struct {
 
 func (t dictationTyper) typeText(text string) error {
 	t.heard(text)
+	text = spaced(text)
 	if _, err := exec.LookPath("wtype"); err == nil {
 		return exec.Command("wtype", "--", text).Run()
 	}

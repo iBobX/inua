@@ -100,6 +100,25 @@ func ShortcutCommand(c config.Config, sc config.Shortcut) string {
 // ALT+Escape leaves it should inua fail to.
 const RecordSubmap = "inua-record"
 
+// DictationSubmap is the submap while dictation records: Escape drops the
+// recording and dictation's keys end it; the shell leaves it when the
+// recording ends, or SUPER+CTRL+ALT+Escape does.
+const DictationSubmap = "inua-dictation"
+
+// dictationKeys are dictation's keys while it is on, "" when it is off or
+// has none.
+func dictationKeys(c config.Config) string {
+	if !c.Voice.Enable {
+		return ""
+	}
+	for _, sc := range c.Shortcuts {
+		if sc.Action == "voice" {
+			return sc.Keys
+		}
+	}
+	return ""
+}
+
 // Modifier order in key strings ("SUPER+CTRL+ALT+SHIFT+key").
 var modOrder = []string{"SUPER", "CTRL", "ALT", "SHIFT"}
 
@@ -236,6 +255,18 @@ func renderShortcuts(b *strings.Builder, c config.Config) {
 		fmt.Fprintf(b, "bind = %s, %s, exec, %s\n", mods, key, strings.ReplaceAll(cmd, "#", "##"))
 	}
 	fmt.Fprintf(b, "\n# While inua's settings window records a shortcut, no other is active.\nsubmap = %s\nbind = SUPER CTRL ALT, Escape, submap, reset\nsubmap = reset\n", RecordSubmap)
+	if c.Voice.Enable {
+		fmt.Fprintf(b, "\n# While dictation records: Escape drops it, its keys end it.\nsubmap = %s\nbind = , Escape, exec, inua call voice cancel\n", DictationSubmap)
+		if k := dictationKeys(c); k != "" {
+			mods, key := splitKeys(k)
+			if c.Voice.PushToTalk {
+				fmt.Fprintf(b, "bindr = %s, %s, exec, inua call voice stop\n", mods, key)
+			} else {
+				fmt.Fprintf(b, "bind = %s, %s, exec, inua call voice stop\n", mods, key)
+			}
+		}
+		b.WriteString("bind = SUPER CTRL ALT, Escape, submap, reset\nsubmap = reset\n")
+	}
 }
 
 // luaKeys are the ways keys can be written in a Lua bind ("SUPER + SHIFT +
@@ -297,4 +328,11 @@ func renderShortcutsLua(b *strings.Builder, c config.Config) {
 			luaString(luaKeys(sc.Keys)[0]), luaString(cmd), luaString(shortcutLabel(sc)))
 	}
 	fmt.Fprintf(b, "\n-- While inua's settings window records a shortcut, no other is active.\nhl.define_submap(%s, function()\n    hl.bind(\"SUPER + CTRL + ALT + Escape\", hl.dsp.submap(\"reset\"))\nend)\n", luaString(RecordSubmap))
+	if c.Voice.Enable {
+		fmt.Fprintf(b, "\n-- While dictation records: Escape drops it, its keys end it.\nhl.define_submap(%s, function()\n    hl.bind(\"Escape\", hl.dsp.exec_cmd(\"inua call voice cancel\"))\n", luaString(DictationSubmap))
+		if k := dictationKeys(c); k != "" {
+			fmt.Fprintf(b, "    hl.bind(%s, hl.dsp.exec_cmd(\"inua call voice stop\"))\n", luaString(luaKeys(k)[0]))
+		}
+		b.WriteString("    hl.bind(\"SUPER + CTRL + ALT + Escape\", hl.dsp.submap(\"reset\"))\nend)\n")
+	}
 }

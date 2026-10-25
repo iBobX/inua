@@ -223,9 +223,22 @@ func TestRenderDictation(t *testing.T) {
 			t.Errorf("push to talk: missing %q", want)
 		}
 	}
+	// While it records: Escape drops it, the keys (released) end it.
+	want := "submap = " + DictationSubmap + "\nbind = , Escape, exec, inua call voice cancel\nbindr = SUPER SHIFT, V, exec, inua call voice stop\nbind = SUPER CTRL ALT, Escape, submap, reset\nsubmap = reset\n"
+	if !strings.Contains(got, want) {
+		t.Errorf("submap: missing\n%s", want)
+	}
+	if lua := RenderLua(c, Devices{}); !strings.Contains(lua, `hl.define_submap("`+DictationSubmap+`"`) || !strings.Contains(lua, `hl.bind("Escape", hl.dsp.exec_cmd("inua call voice cancel"))`) {
+		t.Errorf("lua submap:\n%s", lua)
+	}
 	c.Voice.PushToTalk = false
-	if got := Render(c, Devices{}); !strings.Contains(got, "bind = SUPER SHIFT, V, exec, inua call voice toggle\n") {
+	got = Render(c, Devices{})
+	if !strings.Contains(got, "bind = SUPER SHIFT, V, exec, inua call voice toggle\n") || !strings.Contains(got, "bind = SUPER SHIFT, V, exec, inua call voice stop\n") {
 		t.Errorf("toggle:\n%s", got)
+	}
+	c.Voice.Enable = false
+	if got := Render(c, Devices{}); strings.Contains(got, DictationSubmap) {
+		t.Errorf("off: the submap is there")
 	}
 }
 

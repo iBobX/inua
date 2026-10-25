@@ -30,6 +30,10 @@ type services struct {
 	// is told to hand them over (system.ConfigureVoxtype) once it runs.
 	typer      dictationTyper
 	voxtypeSet bool
+	// voxtypeQuiet is until when voxtype going away is inua restarting it
+	// (a model, its other engines, its hand-over), not to be shown.
+	voxtypeQuiet time.Time
+	inSubmap     bool // hyprconf.DictationSubmap, while it records
 
 	volume     *shell.Setter
 	brightness *shell.Setter

@@ -111,31 +111,79 @@ func TestCompiledEngines(t *testing.T) {
 }
 
 // voxtype hands its words to inua, unless the user has a post-process
-// command of their own; a set one is not set again.
+// command of their own, and leaves notifying and its hotkey to inua; what
+// is set already is not set again, nor the daemon restarted for it.
 func TestConfigureVoxtype(t *testing.T) {
 	home, bin := t.TempDir(), t.TempDir()
+	keys := filepath.Join(home, "keys")
+	os.Mkdir(keys, 0o755)
 	t.Setenv("HOME", home)
 	t.Setenv("PATH", bin+":/usr/bin:/bin")
-	calls, current := filepath.Join(home, "calls"), filepath.Join(home, "current")
-	os.WriteFile(filepath.Join(bin, "voxtype"), []byte("#!/bin/sh\necho \"voxtype $*\" >>"+calls+"\n[ \"$2\" = get ] && cat "+current+"\nexit 0\n"), 0o755)
+	calls := filepath.Join(home, "calls")
+	// A voxtype whose config is a file a key.
+	os.WriteFile(filepath.Join(bin, "voxtype"), []byte(`#!/bin/sh
+case "$2" in
+get) cat "`+keys+`/$3" 2>/dev/null || echo null ;;
+set) echo "set $3" >>"`+calls+`"; printf '%s\n' "$4" >"`+keys+`/$3" ;;
+esac
+`), 0o755)
 	os.WriteFile(filepath.Join(bin, "systemctl"), []byte("#!/bin/sh\necho \"systemctl $*\" >>"+calls+"\n"), 0o755)
 	want := VoxtypeHandsOver("/opt/inua's/inua", "default")
 	if want != `'/opt/inua'\''s/inua' call -n 'default' voice type -` {
 		t.Errorf("command %s", want)
 	}
-	for _, c := range []struct {
-		current string
-		changed bool
-	}{{"", true}, {"null", true}, {want, false}, {"/home/me/clean.sh", false}, {"'/old/inua' call -n 'default' voice type -", true}} {
-		os.WriteFile(current, []byte(c.current+"\n"), 0o644)
+	run := func() string {
 		os.Remove(calls)
-		changed, err := ConfigureVoxtype(context.Background(), want)
-		if err != nil || changed != c.changed {
-			t.Errorf("%q: changed %v (%v)", c.current, changed, err)
+		if _, err := ConfigureVoxtype(context.Background(), want); err != nil {
+			t.Fatal(err)
 		}
-		got, _ := os.ReadFile(calls)
-		if c.changed != strings.Contains(string(got), "systemctl --user restart voxtype.service") {
-			t.Errorf("%q: ran\n%s", c.current, got)
+		b, _ := os.ReadFile(calls)
+		return string(b)
+	}
+	if got := run(); got != "set output.notification.on_transcription\nset hotkey.enabled\nset output.post_process.command\nset output.post_process.fallback_on_empty\nsystemctl --user restart voxtype.service\n" {
+		t.Errorf("first:\n%s", got)
+	}
+	if got := run(); got != "" {
+		t.Errorf("again:\n%s", got)
+	}
+	// A command of the user's own stays; the rest is inua's still.
+	os.WriteFile(filepath.Join(keys, "output.post_process.command"), []byte("/home/me/clean.sh\n"), 0o644)
+	os.WriteFile(filepath.Join(keys, "hotkey.enabled"), []byte("true\n"), 0o644)
+	if got := run(); got != "set hotkey.enabled\nsystemctl --user restart voxtype.service\n" {
+		t.Errorf("own command:\n%s", got)
+	}
+	if b, _ := os.ReadFile(filepath.Join(keys, "output.post_process.command")); string(b) != "/home/me/clean.sh\n" {
+		t.Errorf("the user's command became %q", b)
+	}
+}
+
+// A model's files go, and only they: Whisper's file, another engine's
+// folder, nothing for a name that would leave the models folder.
+func TestDeleteVoxtypeModel(t *testing.T) {
+	data := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", data)
+	dir := filepath.Join(data, "voxtype", "models")
+	os.MkdirAll(filepath.Join(dir, "sensevoice-small"), 0o755)
+	os.WriteFile(filepath.Join(dir, "sensevoice-small", "model.onnx"), nil, 0o644)
+	os.WriteFile(filepath.Join(dir, "ggml-base.en.bin"), nil, 0o644)
+	os.WriteFile(filepath.Join(data, "keep"), nil, 0o644)
+	for _, m := range []VoxtypeModel{{Engine: "whisper", Name: "base.en", Arg: "base.en"}, {Engine: "sensevoice", Name: "small", Arg: "sensevoice-small"}} {
+		if err := DeleteVoxtypeModel(m); err != nil {
+			t.Fatal(err)
 		}
+	}
+	if left, _ := os.ReadDir(dir); len(left) != 0 {
+		t.Errorf("left %v", left)
+	}
+	for _, arg := range []string{"..", "../keep", "", "base.en"} {
+		if DeleteVoxtypeModel(VoxtypeModel{Engine: "parakeet", Name: arg, Arg: arg}) == nil {
+			t.Errorf("deleted %q", arg)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(data, "keep")); err != nil {
+		t.Error("deleted what is not a model")
+	}
+	if mb, langs := voxtypeInfo("sensevoice", "small", "sensevoice-small"); mb != 239 || langs != "zh/en/ja/ko/yue" {
+		t.Errorf("sensevoice small: %d %q", mb, langs)
 	}
 }

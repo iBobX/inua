@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"slices"
 	"strings"
 )
@@ -17,6 +19,8 @@ import (
 type VoxtypeModel struct {
 	Engine, Name, Arg string
 	Installed         bool
+	MB                int    // its download, 0 when not known
+	Langs             string // "zh/en/ja", "en"; "*" for many; "" when not known
 }
 
 // VoxtypeCatalog is what the program at hand can do: the engines compiled
@@ -56,7 +60,9 @@ func VoxtypeModels(ctx context.Context) (VoxtypeCatalog, error) {
 	c.Models = map[string][]VoxtypeModel{}
 	for engine, e := range raw.Engines {
 		for _, m := range e.Models {
-			c.Models[engine] = append(c.Models[engine], VoxtypeModel{Engine: engine, Name: m.Name, Arg: m.DownloadArg, Installed: m.Installed})
+			vm := VoxtypeModel{Engine: engine, Name: m.Name, Arg: m.DownloadArg, Installed: m.Installed}
+			vm.MB, vm.Langs = voxtypeInfo(engine, m.Name, m.DownloadArg)
+			c.Models[engine] = append(c.Models[engine], vm)
 		}
 	}
 	if out, err = exec.CommandContext(ctx, bin, "info", "engines").Output(); err != nil {
@@ -72,6 +78,62 @@ func VoxtypeModels(ctx context.Context) (VoxtypeCatalog, error) {
 	_, onnx := voxtypeSums[voxtypeVariant()]
 	c.More = onnx && strings.Contains(voxtypeVariant(), "onnx") && len(c.Engines) == 1
 	return c, nil
+}
+
+// voxtypeInfo is a model's size and languages (voxtypeModelInfo), by its
+// name or its folder.
+func voxtypeInfo(engine, name, arg string) (int, string) {
+	for _, k := range []string{name, arg} {
+		if i, ok := voxtypeModelInfo[[2]string{engine, k}]; ok {
+			return i.MB, i.Langs
+		}
+	}
+	return 0, ""
+}
+
+// VoxtypeStartSize is the download InstallVoxtype makes for lang, in MB:
+// the program and its first model.
+func VoxtypeStartSize(lang string) int {
+	variant := voxtypeVariant()
+	engine, arg := VoxtypeStartModel(lang, strings.Contains(variant, "onnx"))
+	mb, _ := voxtypeInfo(engine, arg, arg)
+	if strings.Contains(variant, "onnx") {
+		return mb + 46
+	}
+	return mb + 19
+}
+
+// voxtypeModelsDir is where voxtype keeps its models.
+func voxtypeModelsDir() string {
+	data := os.Getenv("XDG_DATA_HOME")
+	if data == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return ""
+		}
+		data = filepath.Join(home, ".local", "share")
+	}
+	return filepath.Join(data, "voxtype", "models")
+}
+
+// DeleteVoxtypeModel removes a downloaded model's files: Whisper's
+// ggml-NAME.bin, the other engines' folder, named as their download
+// (voxtype has no command for it). Only a file or folder of that name in
+// voxtype's models folder goes.
+func DeleteVoxtypeModel(m VoxtypeModel) error {
+	dir := voxtypeModelsDir()
+	if dir == "" || m.Arg == "" || strings.ContainsAny(m.Arg, "/\\") || m.Arg == "." || m.Arg == ".." {
+		return fmt.Errorf("no files of %s to delete", m.Name)
+	}
+	name := m.Arg
+	if m.Engine == "whisper" {
+		name = "ggml-" + m.Arg + ".bin"
+	}
+	path := filepath.Join(dir, name)
+	if _, err := os.Lstat(path); err != nil {
+		return fmt.Errorf("no files of %s in %s", m.Name, dir)
+	}
+	return os.RemoveAll(path)
 }
 
 // compiledEngines reads `voxtype info engines`: a line for each engine,
@@ -139,36 +201,54 @@ func VoxtypeHandsOver(inua, instance string) string {
 }
 
 // ConfigureVoxtype has voxtype hand its transcriptions to inua (command,
-// VoxtypeHandsOver) and not notify them, unless a post-process command of
-// the user's own is set, and restarts the daemon when that changed. It
-// reports whether it did.
+// VoxtypeHandsOver), unless a post-process command of the user's own is
+// set, and leaves to inua what inua does: no notification of the words
+// (the card shows them), no hotkey of its own (inua's shortcut drives it,
+// and voxtype's own reads keyboards it cannot open). It restarts the
+// daemon when anything changed, and reports whether it did.
 func ConfigureVoxtype(ctx context.Context, command string) (bool, error) {
 	bin := VoxtypePath()
 	if bin == "" {
 		return false, errors.New("voxtype is not installed")
 	}
-	out, err := exec.CommandContext(ctx, bin, "config", "get", "output.post_process.command").Output()
-	if err != nil {
-		return false, fmt.Errorf("voxtype config get: %w", err)
-	}
-	now := strings.TrimSpace(string(out))
-	if now == "null" { // unset
-		now = ""
-	}
-	switch {
-	case now == command:
-		return false, nil
-	case now != "" && !strings.Contains(now, " voice type -"):
-		return false, nil // the user's own
-	}
-	for _, kv := range [][]string{
-		{"output.post_process.command", command},
-		{"output.post_process.fallback_on_empty", "false"},
-		{"output.notification.on_transcription", "false"}, // inua's card shows the words
-	} {
-		if err := runStep(ctx, bin, "config", "set", kv[0], kv[1]); err != nil {
-			return false, fmt.Errorf("voxtype config set %s: %w", kv[0], err)
+	get := func(key string) (string, error) {
+		out, err := exec.CommandContext(ctx, bin, "config", "get", key).Output()
+		if err != nil {
+			return "", fmt.Errorf("voxtype config get %s: %w", key, err)
 		}
+		v := strings.TrimSpace(string(out))
+		if v == "null" { // unset
+			v = ""
+		}
+		return v, nil
+	}
+	want := [][2]string{
+		{"output.notification.on_transcription", "false"},
+		{"hotkey.enabled", "false"},
+	}
+	now, err := get("output.post_process.command")
+	if err != nil {
+		return false, err
+	}
+	if now == "" || strings.Contains(now, " voice type -") { // not the user's own
+		want = append(want, [2]string{"output.post_process.command", command}, [2]string{"output.post_process.fallback_on_empty", "false"})
+	}
+	changed := false
+	for _, kv := range want {
+		v, err := get(kv[0])
+		if err != nil {
+			return changed, err
+		}
+		if v == kv[1] {
+			continue
+		}
+		if err := runStep(ctx, bin, "config", "set", kv[0], kv[1]); err != nil {
+			return changed, fmt.Errorf("voxtype config set %s: %w", kv[0], err)
+		}
+		changed = true
+	}
+	if !changed {
+		return false, nil
 	}
 	return true, runStep(ctx, "systemctl", "--user", "restart", "voxtype.service")
 }
