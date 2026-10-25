@@ -30,7 +30,7 @@ Format Go with `gofmt` and follow standard naming: exported identifiers start wi
 
 Services and state must not import GTK. GTK calls run on the main thread; background results come back through the existing `gtkx.Post` or `gtkx.Call`. Windows, workspaces and focus follow the compositor's state. Implement the needed behaviour directly; do not add wrappers that only rename, or duplicate state.
 
-Text the user reads is translatable: in Go through `internal/i18n` (`i18n.T`, `i18n.Tf`, `i18n.Nf`, `i18n.M`), in Blueprint as `_("…")`; run `make i18n` and commit `po/inua.pot` and the catalogs with the change. See `docs/i18n.md`.
+Text the user reads is translatable: in Go through `internal/i18n` (`i18n.T`, `i18n.Tf`, `i18n.Nf`, `i18n.M`), in Blueprint as `_("…")`; run `make i18n` and commit `po/inua.pot` and the catalogs with the change. See `docs/i18n.md`. Run `make i18n` before every commit that touches a `.go` or `.blp` file, even one that adds no text: the catalogs record each string's file and line, so moving code shifts them, and CI fails when the committed catalogs differ from what `make i18n` writes.
 
 Icons: when an icon is needed, use the SVG from Phosphor Icons (https://phosphoricons.com, MIT, the regular weight) by default. The shell's own icons are listed in `scripts/phosphor-icons.sh`, which copies them into `ui/icons/` under the freedesktop name the shell asks for (`NAME-symbolic.svg`); add a line to its list, run it, and commit the SVG. Use another source only when Phosphor has nothing fitting, and say so.
 
