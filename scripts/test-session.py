@@ -28,6 +28,9 @@ class SessionTest(unittest.TestCase):
         # inua records how it was called; `inua config hyprland` passes.
         self.calls = self.home / "inua-calls"
         self.executable("inua", f'#!/bin/sh\necho "$*" >> "{self.calls}"\nexit 0\n')
+        # Never the user's systemd: systemctl records how it was called.
+        self.systemctl = self.home / "systemctl-calls"
+        self.executable("systemctl", f'#!/bin/sh\necho "$*" >> "{self.systemctl}"\nexit 0\n')
         self.executable("start-hyprland", '#!/bin/sh\nprintf "argc=%s\\nXDG_CONFIG_HOME=%s\\n" "$#" "${XDG_CONFIG_HOME-}"\nexit 17\n')
 
     def executable(self, name, content):
@@ -66,7 +69,26 @@ class SessionTest(unittest.TestCase):
     def test_config_is_checked_for_the_shell(self):
         result = self.launch()
         self.assertEqual(result.returncode, 17, result.stderr)
-        self.assertEqual(self.calls.read_text().splitlines(), [f"config hyprland {self.config}", "config apply"])
+        self.assertEqual(self.calls.read_text().splitlines(), [f"config hyprland {self.config}", "config apply", "portals dir"])
+
+    def test_portal_directory_given_to_frontend(self):
+        portals = self.home / ".local/share/inua/portals"
+        self.executable("inua", f'#!/bin/sh\n[ "$1" = portals ] && echo "{portals}"\nexit 0\n')
+        result = self.launch()
+        self.assertEqual(result.returncode, 17, result.stderr)
+        self.assertEqual(self.systemctl.read_text().splitlines(), [
+            f"--user set-environment XDG_DESKTOP_PORTAL_DIR={portals}",
+            "--user try-restart xdg-desktop-portal.service",
+        ])
+
+    def test_no_portal_directory_takes_it_away(self):
+        self.executable("inua", '#!/bin/sh\n[ "$1" = portals ] && exit 1\nexit 0\n')
+        result = self.launch()
+        self.assertEqual(result.returncode, 17, result.stderr)
+        self.assertEqual(self.systemctl.read_text().splitlines(), [
+            "--user unset-environment XDG_DESKTOP_PORTAL_DIR",
+            "--user try-restart xdg-desktop-portal.service",
+        ])
 
     def test_config_without_shell_does_not_start_compositor(self):
         self.executable("inua", '#!/bin/sh\necho "hyprland.conf does not start inua-shell"\nexit 1\n')
