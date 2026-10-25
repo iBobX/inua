@@ -346,6 +346,7 @@ func (s *shellUI) lockMarker() string {
 }
 
 func (s *shellUI) markLocked(on bool) {
+	s.portalLocked(on)
 	if s.lockMarker() == "" {
 		return
 	}

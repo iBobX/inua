@@ -48,6 +48,8 @@ type shooter struct {
 	dragging *shotSurface // the area being dragged out is on this one
 	x0, y0   float64
 	sel      shell.Rect
+
+	portal *portalShot // an app waiting for what is taken (portal_shot.go)
 }
 
 // shotSurface is the tool on one monitor.
@@ -299,6 +301,7 @@ func (s *shellUI) openShot(mode string) {
 				log.Printf("screenshot: %v", err)
 				removeShotFiles(surfaces, "")
 				s.shotShown()
+				s.portalShotClosed()
 				return
 			}
 			s.showShot(surfaces, mode)
@@ -584,6 +587,10 @@ func (s *shellUI) takeShot(sf *shotSurface, r shell.Rect) {
 		log.Printf("screenshot: %v", err)
 		return
 	}
+	if s.portalTake(file, px) { // for the app that asked, not the folder
+		s.closeCapture("")
+		return
+	}
 	s.closeCapture("")
 	silent := sh.silentNext
 	sh.silentNext = false
@@ -639,6 +646,7 @@ func (s *shellUI) closeCapture(keep string) {
 	removeShotFiles(sh.surfaces, keep)
 	sh.open, sh.surfaces, sh.dragging, sh.record = false, nil, nil, false
 	s.shotShown()
+	s.portalShotClosed()
 }
 
 // hideForShot hides the password dialog's private details before a

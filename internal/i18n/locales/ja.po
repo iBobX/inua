@@ -54,7 +54,9 @@ msgstr "このコマンドを管理者として実行するには、パスワー
 
 #: cmd/inua-askpass/main.go:152
 #: internal/assistantui/assistantui.go:688
-#: internal/ui/askpass.go:425
+#: internal/ui/askpass.go:434
+#: internal/ui/portal_ask.go:60
+#: internal/ui/portal_ask.go:80
 #: internal/ui/settings_bluetooth.go:407
 #: internal/workshop/session.go:406
 msgid "Allow"
@@ -125,7 +127,7 @@ msgstr "「%s」 · %s"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:317
+#: internal/ui/control.go:318
 #: internal/ui/lock.go:247
 msgid "Monday, January 2"
 msgstr "1月2日 Monday"
@@ -379,7 +381,7 @@ msgstr "開く"
 
 #: internal/apps/connect/share.go:129
 #: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
+#: internal/ui/screenshot.go:816
 msgid "Show in Folder"
 msgstr "フォルダ内で表示"
 
@@ -1475,7 +1477,7 @@ msgid "Receipt or booking"
 msgstr "領収書・予約"
 
 #: internal/apps/mail/sort.go:60
-#: internal/ui/notify.go:446
+#: internal/ui/notify.go:454
 msgid "Notification"
 msgstr "通知"
 
@@ -1782,7 +1784,7 @@ msgid "Calendar"
 msgstr "カレンダー"
 
 #: internal/appui/app.go:71
-#: internal/ui/picker.go:148
+#: internal/ui/picker.go:152
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "カラーピッカー"
@@ -2078,10 +2080,10 @@ msgstr "%s 作成"
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:398
-#: internal/ui/askpass.go:466
-#: internal/ui/askpass.go:470
-#: internal/ui/askpass.go:472
+#: internal/ui/askpass.go:407
+#: internal/ui/askpass.go:475
+#: internal/ui/askpass.go:479
+#: internal/ui/askpass.go:481
 #: internal/ui/settings_about.go:233
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
@@ -2250,7 +2252,7 @@ msgstr "削除…"
 #: internal/gamesui/checkers.go:673
 #: internal/mailui/welcome.go:480
 #: internal/term/web/strings.go:35
-#: internal/ui/askpass.go:555
+#: internal/ui/askpass.go:564
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:893
 msgid "Copied"
@@ -2632,7 +2634,7 @@ msgid "Show"
 msgstr "表示"
 
 #: internal/appui/pass.go:742
-#: internal/ui/notify.go:402
+#: internal/ui/notify.go:410
 #: internal/ui/passwords.go:622
 msgid "Hide"
 msgstr "ヒデ"
@@ -2644,7 +2646,7 @@ msgstr "ヒデ"
 #: internal/term/settings/settings.go:116
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
-#: internal/ui/askpass.go:216
+#: internal/ui/askpass.go:225
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:896
 #: ui/disk.ui:697
@@ -2765,7 +2767,7 @@ msgid "None: an app reading it is asked about first."
 msgstr "なし。読もうとするアプリは先に確認します。"
 
 #: internal/appui/pass.go:1190
-#: internal/ui/askpass.go:389
+#: internal/ui/askpass.go:398
 #: internal/ui/settings_keyring.go:624
 msgid "Flatpak: %s"
 msgstr "Flatpak: %s"
@@ -2946,6 +2948,7 @@ msgstr "検索できませんでした: %s"
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
 #: internal/ui/dock.go:486
+#: internal/ui/portal_ask.go:80
 msgid "Quit"
 msgstr "やめる"
 
@@ -3999,9 +4002,10 @@ msgstr "不明な部品 %q"
 #: internal/termui/paste.go:295
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
-#: internal/ui/askpass.go:285
-#: internal/ui/askpass.go:430
-#: internal/ui/askpass.go:434
+#: internal/ui/askpass.go:294
+#: internal/ui/askpass.go:439
+#: internal/ui/askpass.go:443
+#: internal/ui/portal_ask.go:168
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
@@ -4025,7 +4029,7 @@ msgstr "キャンセル"
 
 #: internal/appui/workshop.go:995
 #: internal/term/web/strings.go:73
-#: internal/ui/askpass.go:284
+#: internal/ui/askpass.go:293
 #: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "わかりました"
@@ -11124,7 +11128,7 @@ msgid "The indexes and the messages opened: a copy of the servers', so clearing 
 msgstr "インデックスと開いたメッセージ：サーバーのコピーなので、消しても失うものはありません。次回起動時に再取得します。"
 
 #: internal/mailui/settings.go:688
-#: internal/ui/notify.go:404
+#: internal/ui/notify.go:412
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
 #: ui/gpg.ui:1011
@@ -11972,7 +11976,7 @@ msgstr "サスペンド、最初にロック"
 
 #: internal/shell/commands.go:29
 #: internal/termui/restart.go:44
-#: internal/ui/control.go:517
+#: internal/ui/control.go:518
 #: ui/control.ui:172
 msgid "Restart"
 msgstr "再起動"
@@ -12031,7 +12035,7 @@ msgid "Screenshot Window"
 msgstr "スクリーンショットウィンドウ"
 
 #: internal/shell/commands.go:35
-#: internal/ui/screenshot.go:453
+#: internal/ui/screenshot.go:456
 #: ui/screenshot.ui:151
 msgid "Click a window"
 msgstr "ウィンドウをクリックする"
@@ -12041,7 +12045,7 @@ msgid "Screenshot Screen"
 msgstr "スクリーンショット画面"
 
 #: internal/shell/commands.go:36
-#: internal/ui/screenshot.go:454
+#: internal/ui/screenshot.go:457
 #: ui/screenshot.ui:176
 msgid "Click a screen"
 msgstr "画面をクリックします"
@@ -12071,7 +12075,7 @@ msgid "All of them"
 msgstr "それらすべて"
 
 #: internal/shell/commands.go:40
-#: internal/ui/notify.go:847
+#: internal/ui/notify.go:855
 #: ui/center.ui:71
 #: ui/control.ui:477
 msgid "Focus"
@@ -12197,7 +12201,7 @@ msgid "Find apps, windows and answers"
 msgstr "アプリ、ウィンドウ、および回答を見つける"
 
 #: internal/shell/dock.go:312
-#: internal/ui/screenshot.go:802
+#: internal/ui/screenshot.go:810
 #: ui/settings.ui:1906
 msgid "Screenshot"
 msgstr "スクリーンショット"
@@ -12342,13 +12346,13 @@ msgid "Performance"
 msgstr "パフォーマンス"
 
 #: internal/shell/power.go:24
-#: internal/ui/control.go:515
+#: internal/ui/control.go:516
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr "サスペンド"
 
 #: internal/shell/power.go:26
-#: internal/ui/control.go:516
+#: internal/ui/control.go:517
 #: ui/control.ui:148
 msgid "Hibernate"
 msgstr "ハイバネート"
@@ -13269,7 +13273,7 @@ msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "bash、zsh、fish がプロンプトに印を付け、コマンドを記憶できるようにします"
 
 #: internal/termui/prefs.go:123
-#: internal/ui/notify.go:316
+#: internal/ui/notify.go:324
 #: ui/bar.ui:134
 #: ui/settings.ui:3275
 msgid "Notifications"
@@ -13462,197 +13466,198 @@ msgstr "アラーム · %02d:%02d"
 msgid "Snooze"
 msgstr "スヌーズ"
 
-#: internal/ui/askpass.go:76
+#: internal/ui/askpass.go:79
 msgid "password: want one JSON request"
 msgstr "パスワード: 1 つの JSON リクエストが必要です"
 
-#: internal/ui/askpass.go:126
+#: internal/ui/askpass.go:135
 msgid "not ok"
 msgstr "ダメだ"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Passphrase Required"
 msgstr "パスフレーズが必要です"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Confirm"
 msgstr "確認"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Message"
 msgstr "メッセージ"
 
-#: internal/ui/askpass.go:244
+#: internal/ui/askpass.go:253
 msgid "Unlock OpenPGP Key"
 msgstr "OpenPGP 鍵のロック解除"
 
-#: internal/ui/askpass.go:260
+#: internal/ui/askpass.go:269
 msgid "Passphrase"
 msgstr "パスフレーズ"
 
-#: internal/ui/askpass.go:348
-#: internal/ui/askpass.go:351
+#: internal/ui/askpass.go:357
+#: internal/ui/askpass.go:360
 #: internal/workshop/session.go:406
 msgid "Let %s do this?"
 msgstr "%s にこれを許可しますか？"
 
-#: internal/ui/askpass.go:349
+#: internal/ui/askpass.go:358
 msgid "The assistant needs this to answer you. Deny, and it will say it could not."
 msgstr "アシスタントが回答するのに必要です。拒否すると、できなかったと伝えます。"
 
-#: internal/ui/askpass.go:352
+#: internal/ui/askpass.go:361
 msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
 msgstr "AI エージェントが、デスクトップで inua のツールを使おうとしています。今回だけか、このセッションのあいだ許可できます。"
 
-#: internal/ui/askpass.go:354
+#: internal/ui/askpass.go:363
 msgid "Let programs at this path read every secret?"
 msgstr "このパスのプログラムにすべてのシークレットの読み取りを許可しますか？"
 
-#: internal/ui/askpass.go:355
+#: internal/ui/askpass.go:364
 msgid "Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust."
 msgstr "このパスのプログラムは、更新された後も含め、確認なしですべてのシークレットを読み取ります。「設定」または inua keyring allow で今追加したばかりで、信頼できる場所の場合のみ許可してください。"
 
-#: internal/ui/askpass.go:357
+#: internal/ui/askpass.go:366
 msgid "Trust the list of apps again?"
 msgstr "アプリの一覧をもう一度信頼しますか？"
 
-#: internal/ui/askpass.go:358
+#: internal/ui/askpass.go:367
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] "秘密を信頼するアプリの一覧が inua-keyring の外で変更されました。設定でいま頼んだ場合だけ、もう一度信頼してください。%d 個のアプリが確認なしで秘密を読めるようになります。"
 
-#: internal/ui/askpass.go:361
+#: internal/ui/askpass.go:370
 msgid "%s has changed since you allowed it"
 msgstr "%s は許可した時から変わっています"
 
-#: internal/ui/askpass.go:362
+#: internal/ui/askpass.go:371
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr "プログラムが許可したものと違います。更新していないなら拒否してください。"
 
-#: internal/ui/askpass.go:364
+#: internal/ui/askpass.go:373
 msgid "Allow %s to read a secret?"
 msgstr "%s に秘密の読み取りを許可しますか？"
 
-#: internal/ui/askpass.go:365
+#: internal/ui/askpass.go:374
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr "この秘密についてはまだ信頼されていません。「常に許可」にすると、今後は確認なしで読めます。"
 
-#: internal/ui/askpass.go:368
+#: internal/ui/askpass.go:377
 msgid "It can only be allowed once: %s."
 msgstr "一度だけ許可できます: %s。"
 
-#: internal/ui/askpass.go:378
+#: internal/ui/askpass.go:387
 msgid "<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>パス<span alpha='55%'>]</span>"
 
-#: internal/ui/askpass.go:379
+#: internal/ui/askpass.go:388
 msgid "PATH"
 msgstr "パス"
 
-#: internal/ui/askpass.go:397
+#: internal/ui/askpass.go:406
 msgid "Changed since you allowed it"
 msgstr "許可した時から変わっています"
 
-#: internal/ui/askpass.go:400
+#: internal/ui/askpass.go:409
 msgid "%s · as %s"
 msgstr "%s · %s として"
 
-#: internal/ui/askpass.go:419
+#: internal/ui/askpass.go:428
+#: internal/ui/portal_ask.go:60
 #: internal/ui/settings_bluetooth.go:408
 msgid "Deny"
 msgstr "拒否"
 
-#: internal/ui/askpass.go:420
-#: internal/ui/askpass.go:438
+#: internal/ui/askpass.go:429
+#: internal/ui/askpass.go:447
 msgid "Allow once"
 msgstr "今回だけ許可"
 
-#: internal/ui/askpass.go:421
+#: internal/ui/askpass.go:430
 msgid "Always allow"
 msgstr "常に許可"
 
-#: internal/ui/askpass.go:428
+#: internal/ui/askpass.go:437
 msgid "Allow for this session"
 msgstr "このセッション中は許可"
 
-#: internal/ui/askpass.go:431
+#: internal/ui/askpass.go:440
 msgid "Trust"
 msgstr "信頼する"
 
-#: internal/ui/askpass.go:435
+#: internal/ui/askpass.go:444
 msgid "Allow every secret"
 msgstr "すべてを許可"
 
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:463
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr "inua-keyring が %s にシークレットを渡せるよう、パスフレーズを入力してください。"
 
-#: internal/ui/askpass.go:456
+#: internal/ui/askpass.go:465
 msgid "Enter the passphrase so %s can use this key."
 msgstr "%s がこの鍵を使えるよう、パスフレーズを入力してください。"
 
-#: internal/ui/askpass.go:458
+#: internal/ui/askpass.go:467
 msgid "Enter the passphrase to use this key."
 msgstr "この鍵を使うには、パスフレーズを入力してください。"
 
-#: internal/ui/askpass.go:470
+#: internal/ui/askpass.go:479
 msgid "%s · expired %s"
 msgstr "%s · %s に期限切れ"
 
-#: internal/ui/askpass.go:472
+#: internal/ui/askpass.go:481
 msgid "%s · expires %s"
 msgstr "%s · %s に期限切れ予定"
 
-#: internal/ui/askpass.go:487
+#: internal/ui/askpass.go:496
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr "対象"
 
-#: internal/ui/askpass.go:489
+#: internal/ui/askpass.go:498
 msgid "SECRET"
 msgstr "シークレット"
 
-#: internal/ui/askpass.go:492
+#: internal/ui/askpass.go:501
 msgid "ACTION"
 msgstr "操作"
 
-#: internal/ui/askpass.go:574
+#: internal/ui/askpass.go:583
 msgid "Encryption subkey"
 msgstr "暗号化用サブ鍵"
 
-#: internal/ui/askpass.go:576
+#: internal/ui/askpass.go:585
 msgid "Signing subkey"
 msgstr "署名用サブ鍵"
 
-#: internal/ui/askpass.go:578
+#: internal/ui/askpass.go:587
 msgid "Authentication subkey"
 msgstr "認証用サブ鍵"
 
-#: internal/ui/askpass.go:580
+#: internal/ui/askpass.go:589
 msgid "Subkey"
 msgstr "サブ鍵"
 
-#: internal/ui/askpass.go:582
+#: internal/ui/askpass.go:591
 msgid "Primary key"
 msgstr "主鍵"
 
-#: internal/ui/askpass.go:629
+#: internal/ui/askpass.go:638
 msgid "Show the private details (Ctrl+H)"
 msgstr "個人情報を表示 (Ctrl+H)"
 
-#: internal/ui/askpass.go:632
+#: internal/ui/askpass.go:641
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "個人情報を隠す: 鍵の所有者、フィンガープリント、pass のエントリ (Ctrl+H)"
 
-#: internal/ui/askpass.go:691
+#: internal/ui/askpass.go:700
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "画面の録画中または共有中は隠しています。"
 
-#: internal/ui/askpass.go:694
+#: internal/ui/askpass.go:703
 msgid "Hidden for the screenshot."
 msgstr "スクリーンショットのため隠しています。"
 
-#: internal/ui/askpass.go:745
+#: internal/ui/askpass.go:754
 msgid "The passphrases do not match."
 msgstr "パスフレーズが一致しません。"
 
@@ -13737,35 +13742,39 @@ msgstr "[%s に %s からコピー]"
 msgid "[COPIED %s]"
 msgstr "[%s にコピー]"
 
-#: internal/ui/control.go:294
+#: internal/ui/control.go:295
 msgid "inua control center"
 msgstr "イヌアコントロールセンター"
 
-#: internal/ui/control.go:516
+#: internal/ui/control.go:517
 msgid "Hibernate?"
 msgstr "ハイバネートしますか?"
 
-#: internal/ui/control.go:517
+#: internal/ui/control.go:518
 msgid "Restart?"
 msgstr "再起動しますか?"
 
-#: internal/ui/control.go:518
+#: internal/ui/control.go:519
 #: ui/control.ui:196
 msgid "Shut down"
 msgstr "シャットダウン"
 
-#: internal/ui/control.go:518
+#: internal/ui/control.go:519
 msgid "Shut down?"
 msgstr "シャットダウンしますか？"
 
-#: internal/ui/control.go:519
+#: internal/ui/control.go:520
 #: ui/control.ui:220
 msgid "Log out"
 msgstr "ログアウト"
 
-#: internal/ui/control.go:519
+#: internal/ui/control.go:520
 msgid "Log out?"
 msgstr "ログアウトしますか？"
+
+#: internal/ui/control.go:557
+msgid "%s is busy. %s"
+msgstr ""
 
 #: internal/ui/control_detail.go:92
 msgid "Settings…"
@@ -13905,24 +13914,24 @@ msgstr "パスワードが間違っています"
 msgid "The password could not be checked"
 msgstr "パスワードが確認できませんでした"
 
-#: internal/ui/notify.go:318
+#: internal/ui/notify.go:326
 msgid "Notifications (Focus is on)"
 msgstr "通知（集中モードが有効）"
 
-#: internal/ui/notify.go:634
-#: internal/ui/notify.go:825
+#: internal/ui/notify.go:642
+#: internal/ui/notify.go:833
 msgid "inua notifications"
 msgstr "inua通知"
 
-#: internal/ui/notify.go:847
+#: internal/ui/notify.go:855
 msgid "Focus is on"
 msgstr "集中モードが有効"
 
-#: internal/ui/notify.go:890
+#: internal/ui/notify.go:898
 msgid "Show less"
 msgstr "表示を少なくする"
 
-#: internal/ui/notify.go:892
+#: internal/ui/notify.go:900
 msgid "%d more"
 msgstr "%d 詳細"
 
@@ -14085,11 +14094,11 @@ msgstr "Esc で閉じる"
 msgid "Copied secrets are cleared after %d seconds · Enter copies the password"
 msgstr "コピーした秘密は %d 秒後に消えます · Enter でパスワードをコピー"
 
-#: internal/ui/picker.go:143
+#: internal/ui/picker.go:147
 msgid "Colour copied"
 msgstr "色をコピーしました"
 
-#: internal/ui/picker.go:145
+#: internal/ui/picker.go:149
 msgid "Colour picked"
 msgstr "色が選ばれました"
 
@@ -14109,6 +14118,30 @@ msgstr "パスワードを確認することができなかった。"
 #: internal/ui/polkit.go:268
 msgid "Sorry, that didn't work. Try again."
 msgstr "申し訳ありませんが、うまくいきませんでした。もう一度やり直してください。"
+
+#: internal/ui/portal_ask.go:51
+msgid "An app"
+msgstr ""
+
+#: internal/ui/portal_ask.go:78
+msgid "%s is running in the background"
+msgstr ""
+
+#: internal/ui/portal_ask.go:79
+msgid "It has no window open."
+msgstr ""
+
+#: internal/ui/portal_ask.go:166
+msgid "Set as background?"
+msgstr ""
+
+#: internal/ui/portal_ask.go:167
+msgid "%s asks to make %s the background."
+msgstr ""
+
+#: internal/ui/portal_ask.go:168
+msgid "Set as background"
+msgstr ""
 
 #: internal/ui/record.go:69
 msgid "Recording needs wf-recorder"
@@ -14130,43 +14163,43 @@ msgstr "録音が保存されました"
 msgid "Screen recording"
 msgstr "画面記録"
 
-#: internal/ui/screenshot.go:434
+#: internal/ui/screenshot.go:437
 msgid "inua screenshot"
 msgstr "イヌアのスクリーンショット"
 
-#: internal/ui/screenshot.go:452
+#: internal/ui/screenshot.go:455
 msgid "Drag to take an area"
 msgstr "ドラッグして領域を取得します"
 
-#: internal/ui/screenshot.go:455
+#: internal/ui/screenshot.go:458
 msgid "Click to copy a colour"
 msgstr "クリックして色をコピーします"
 
-#: internal/ui/screenshot.go:459
+#: internal/ui/screenshot.go:462
 msgid "Drag to record an area"
 msgstr "ドラッグして領域を記録する"
 
-#: internal/ui/screenshot.go:460
+#: internal/ui/screenshot.go:463
 msgid "Click a window to record"
 msgstr "ウィンドウをクリックして記録する"
 
-#: internal/ui/screenshot.go:461
+#: internal/ui/screenshot.go:464
 msgid "Click a screen to record"
 msgstr "画面をクリックして記録する"
 
-#: internal/ui/screenshot.go:796
+#: internal/ui/screenshot.go:804
 msgid "Screenshot saved and copied"
 msgstr "スクリーンショットの保存とコピー"
 
-#: internal/ui/screenshot.go:797
+#: internal/ui/screenshot.go:805
 msgid "Screenshot saved"
 msgstr "スクリーンショットが保存されました"
 
-#: internal/ui/screenshot.go:798
+#: internal/ui/screenshot.go:806
 msgid "Screenshot copied"
 msgstr "スクリーンショットがコピーされました"
 
-#: internal/ui/screenshot.go:799
+#: internal/ui/screenshot.go:807
 msgid "Screenshot taken"
 msgstr "撮影されたスクリーンショット"
 

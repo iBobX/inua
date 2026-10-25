@@ -190,6 +190,7 @@ func (s *shellUI) withdrawNote(id uint32) {
 	nt := &s.notes
 	removed := nt.c.Remove(id)
 	s.dropBanner(id)
+	s.forgetPortalNote(id)
 	if nt.srv != nil {
 		nt.srv.Closed(id, notify.Closed)
 	}
@@ -229,6 +230,9 @@ func (s *shellUI) invokeNote(n notify.Notification, key string) {
 		s.recordingNoteAction(n, key)
 	case n.Entry == updateEntry:
 		s.updateNoteAction(n, key)
+	case n.Entry == backgroundEntry:
+		s.backgroundNoteAction(n, key)
+	case s.invokePortalNote(n, key): // answered through the portal
 	case nt.srv != nil:
 		nt.srv.Invoke(n.ID, key, activationToken())
 	}
@@ -247,6 +251,8 @@ func (s *shellUI) dismissNote(id uint32) {
 	s.stopAlarmSound(id)
 	nt.c.Remove(id)
 	s.dropBanner(id)
+	s.forgetPortalNote(id)
+	s.backgroundNoteGone(id)
 	if nt.srv != nil {
 		nt.srv.Closed(id, notify.Dismissed)
 	}
@@ -261,6 +267,8 @@ func (s *shellUI) clearNotes(ids []uint32) {
 	nt := &s.notes
 	for _, id := range ids {
 		s.dropBanner(id)
+		s.forgetPortalNote(id)
+		s.backgroundNoteGone(id)
 		if nt.srv != nil {
 			nt.srv.Closed(id, notify.Dismissed)
 		}

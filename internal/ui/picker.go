@@ -130,6 +130,7 @@ func (s *shellUI) pickColor(sf *shotSurface) {
 	c := sf.colorAt(sf.px, sf.py)
 	col := colors.Color{R: c.R, G: c.G, B: c.B}
 	hex := col.Hex()
+	forApp := s.portalColor(c) // an app asked: it gets the colour, not the clipboard
 	s.closeShot("")
 	var data colors.Data
 	if err := store.Load(colors.StoreName, &data); err != nil {
@@ -138,6 +139,9 @@ func (s *shellUI) pickColor(sf *shotSurface) {
 	data.Add(hex)
 	if err := store.Save(colors.StoreName, data); err != nil {
 		log.Printf("color: %v", err)
+	}
+	if forApp {
+		return
 	}
 	copied := copyText(hex) == nil
 	summary := i18n.T("Colour copied")

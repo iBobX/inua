@@ -16,6 +16,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
+	"github.com/lyricat/inua/internal/portal"
 	"github.com/lyricat/inua/internal/shell"
 	"github.com/lyricat/inua/internal/system"
 )
@@ -549,7 +550,15 @@ func (s *shellUI) powerAction(name string) {
 	if ask := powerLabel[name][1]; ask != "" && c.armed != name {
 		s.disarmPower()
 		c.armed = name
-		c.powerLabels[name].SetText(i18n.T(ask))
+		text := i18n.T(ask)
+		if endsSession(name) {
+			// Apps holding the session through the portal say so first.
+			if names := s.holdingLogout(); len(names) > 0 {
+				text = i18n.Tf("%s is busy. %s", strings.Join(names, ", "), text)
+			}
+			s.portalSessionState(portal.SessionQueryEnd)
+		}
+		c.powerLabels[name].SetText(text)
 		c.powerLabels[name].GetParent().GetParent().AddCssClass("armed")
 		c.armGen++
 		glib.TimeoutAdd(4000, &s.onPowerDisarm, c.armGen)
@@ -560,8 +569,16 @@ func (s *shellUI) powerAction(name string) {
 	s.doPower(name)
 }
 
+// endsSession is whether a power action ends the session.
+func endsSession(name string) bool {
+	return name == "reboot" || name == "poweroff" || name == "logout"
+}
+
 // doPower suspends or hibernates (locking first), restarts, shuts down or logs out.
 func (s *shellUI) doPower(name string) {
+	if endsSession(name) {
+		s.portalSessionState(portal.SessionEnding)
+	}
 	switch name {
 	case "suspend", "hibernate":
 		if err := s.lockScreen(); err != nil {
@@ -587,6 +604,9 @@ func (s *shellUI) disarmPower() {
 	c := &s.control
 	if c.armed == "" {
 		return
+	}
+	if endsSession(c.armed) {
+		s.portalSessionState(portal.SessionRunning)
 	}
 	if l := c.powerLabels[c.armed]; l != nil {
 		l.SetText(i18n.T(powerLabel[c.armed][0]))

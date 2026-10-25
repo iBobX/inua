@@ -180,6 +180,7 @@ func (s *shellUI) applyConfig(c config.Config) {
 		s.showVoice()        // push to talk, the engine section
 		go s.applyHyprland() // the push-to-talk binds follow the settings
 	}
+	s.syncPortalSettings()
 	if old.Style.Theme != c.Style.Theme || old.Background != c.Background || old.Dir != c.Dir {
 		s.loadWallpaper()
 	}
@@ -244,6 +245,7 @@ func (s *shellUI) reload() ipc.Response {
 		// The user's theme or icon set may have changed on disk.
 		s.loadStyles()
 		s.loadWallpaper()
+		s.syncPortalSettings()
 	}
 	s.applyHyprland()
 	msg := fmt.Sprintf("reloaded %s", s.opts.ConfigPath)

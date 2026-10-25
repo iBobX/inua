@@ -98,6 +98,7 @@ type shellUI struct {
 	recording recorder
 	lock      locker
 	auth      authAgent   // the polkit agent
+	portals   portals     // inua's portal backend (docs/portals.md)
 	pass      passPrompts // gpg's passphrases (inua-pinentry)
 	alarms    alarms
 	settings  settings
@@ -470,6 +471,7 @@ func (s *shellUI) start() {
 	if s.layer { // elsewhere (GNOME) the desktop has its own agent
 		s.startPolkit()
 	}
+	s.startPortals()
 	if s.cfg.Bar.Tray {
 		s.startTray()
 	}
@@ -672,6 +674,7 @@ func (s *shellUI) apply(snap hypr.Snapshot) {
 	s.renderDocks()
 	s.launcher.st.SetSnapshot(snap)
 	s.syncLauncher()
+	s.syncPortalApps()
 	if !s.overview.st.Open {
 		s.saveOverviewHistory()
 		return

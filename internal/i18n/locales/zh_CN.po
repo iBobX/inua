@@ -54,7 +54,9 @@ msgstr "输入你的密码，以管理员身份运行这条命令：\n\n%s"
 
 #: cmd/inua-askpass/main.go:152
 #: internal/assistantui/assistantui.go:688
-#: internal/ui/askpass.go:425
+#: internal/ui/askpass.go:434
+#: internal/ui/portal_ask.go:60
+#: internal/ui/portal_ask.go:80
 #: internal/ui/settings_bluetooth.go:407
 #: internal/workshop/session.go:406
 msgid "Allow"
@@ -125,7 +127,7 @@ msgstr "“%s” · %s"
 
 #: internal/apps/calendar/calendar.go:69
 #: internal/appui/clock.go:218
-#: internal/ui/control.go:317
+#: internal/ui/control.go:318
 #: internal/ui/lock.go:247
 msgid "Monday, January 2"
 msgstr "1月2日 Monday"
@@ -379,7 +381,7 @@ msgstr "打开"
 
 #: internal/apps/connect/share.go:129
 #: internal/ui/record.go:163
-#: internal/ui/screenshot.go:808
+#: internal/ui/screenshot.go:816
 msgid "Show in Folder"
 msgstr "在文件夹中显示"
 
@@ -1475,7 +1477,7 @@ msgid "Receipt or booking"
 msgstr "收据或预订"
 
 #: internal/apps/mail/sort.go:60
-#: internal/ui/notify.go:446
+#: internal/ui/notify.go:454
 msgid "Notification"
 msgstr "通知"
 
@@ -1782,7 +1784,7 @@ msgid "Calendar"
 msgstr "日历"
 
 #: internal/appui/app.go:71
-#: internal/ui/picker.go:148
+#: internal/ui/picker.go:152
 #: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
 msgid "Color Picker"
 msgstr "取色器"
@@ -2078,10 +2080,10 @@ msgstr "创建于 %s"
 #: internal/appui/gpg.go:602
 #: internal/appui/gpg.go:624
 #: internal/shell/notify.go:32
-#: internal/ui/askpass.go:398
-#: internal/ui/askpass.go:466
-#: internal/ui/askpass.go:470
-#: internal/ui/askpass.go:472
+#: internal/ui/askpass.go:407
+#: internal/ui/askpass.go:475
+#: internal/ui/askpass.go:479
+#: internal/ui/askpass.go:481
 #: internal/ui/settings_about.go:233
 #: internal/ui/settings_keyring.go:640
 #: internal/ui/settings_keyring.go:674
@@ -2250,7 +2252,7 @@ msgstr "删除…"
 #: internal/gamesui/checkers.go:673
 #: internal/mailui/welcome.go:480
 #: internal/term/web/strings.go:35
-#: internal/ui/askpass.go:555
+#: internal/ui/askpass.go:564
 #: internal/viewerui/app.go:548
 #: internal/vmui/window.go:893
 msgid "Copied"
@@ -2632,7 +2634,7 @@ msgid "Show"
 msgstr "显示"
 
 #: internal/appui/pass.go:742
-#: internal/ui/notify.go:402
+#: internal/ui/notify.go:410
 #: internal/ui/passwords.go:622
 msgid "Hide"
 msgstr "隐藏"
@@ -2644,7 +2646,7 @@ msgstr "隐藏"
 #: internal/term/settings/settings.go:116
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
-#: internal/ui/askpass.go:216
+#: internal/ui/askpass.go:225
 #: internal/ui/passwords.go:627
 #: internal/vmui/window.go:896
 #: ui/disk.ui:697
@@ -2765,7 +2767,7 @@ msgid "None: an app reading it is asked about first."
 msgstr "无：读取它的应用会先询问。"
 
 #: internal/appui/pass.go:1190
-#: internal/ui/askpass.go:389
+#: internal/ui/askpass.go:398
 #: internal/ui/settings_keyring.go:624
 msgid "Flatpak: %s"
 msgstr "Flatpak：%s"
@@ -2946,6 +2948,7 @@ msgstr "无法搜索:%s"
 #: internal/appui/sysmon.go:52
 #: internal/appui/sysmon.go:52
 #: internal/ui/dock.go:486
+#: internal/ui/portal_ask.go:80
 msgid "Quit"
 msgstr "退出"
 
@@ -3999,9 +4002,10 @@ msgstr "未知的组件 %q"
 #: internal/termui/paste.go:295
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
-#: internal/ui/askpass.go:285
-#: internal/ui/askpass.go:430
-#: internal/ui/askpass.go:434
+#: internal/ui/askpass.go:294
+#: internal/ui/askpass.go:439
+#: internal/ui/askpass.go:443
+#: internal/ui/portal_ask.go:168
 #: internal/ui/settings_bluetooth.go:402
 #: internal/ui/settings_bluetooth.go:405
 #: internal/ui/settings_bluetooth.go:411
@@ -4025,7 +4029,7 @@ msgstr "取消"
 
 #: internal/appui/workshop.go:995
 #: internal/term/web/strings.go:73
-#: internal/ui/askpass.go:284
+#: internal/ui/askpass.go:293
 #: internal/ui/settings_card.go:624
 msgid "OK"
 msgstr "好的"
@@ -11124,7 +11128,7 @@ msgid "The indexes and the messages opened: a copy of the servers', so clearing 
 msgstr "索引和打开过的邮件：这是服务器内容的副本，清除不会丢失任何东西。邮件会在下次启动时重新获取。"
 
 #: internal/mailui/settings.go:688
-#: internal/ui/notify.go:404
+#: internal/ui/notify.go:412
 #: ui/colorpicker.ui:93
 #: ui/gpg.ui:508
 #: ui/gpg.ui:1011
@@ -11972,7 +11976,7 @@ msgstr "暂停，先锁定"
 
 #: internal/shell/commands.go:29
 #: internal/termui/restart.go:44
-#: internal/ui/control.go:517
+#: internal/ui/control.go:518
 #: ui/control.ui:172
 msgid "Restart"
 msgstr "重启"
@@ -12031,7 +12035,7 @@ msgid "Screenshot Window"
 msgstr "截图窗口"
 
 #: internal/shell/commands.go:35
-#: internal/ui/screenshot.go:453
+#: internal/ui/screenshot.go:456
 #: ui/screenshot.ui:151
 msgid "Click a window"
 msgstr "单击窗口"
@@ -12041,7 +12045,7 @@ msgid "Screenshot Screen"
 msgstr "屏幕截图"
 
 #: internal/shell/commands.go:36
-#: internal/ui/screenshot.go:454
+#: internal/ui/screenshot.go:457
 #: ui/screenshot.ui:176
 msgid "Click a screen"
 msgstr "单击屏幕"
@@ -12071,7 +12075,7 @@ msgid "All of them"
 msgstr "他们全部"
 
 #: internal/shell/commands.go:40
-#: internal/ui/notify.go:847
+#: internal/ui/notify.go:855
 #: ui/center.ui:71
 #: ui/control.ui:477
 msgid "Focus"
@@ -12197,7 +12201,7 @@ msgid "Find apps, windows and answers"
 msgstr "查找应用程序、窗口和答案"
 
 #: internal/shell/dock.go:312
-#: internal/ui/screenshot.go:802
+#: internal/ui/screenshot.go:810
 #: ui/settings.ui:1906
 msgid "Screenshot"
 msgstr "截图"
@@ -12342,13 +12346,13 @@ msgid "Performance"
 msgstr "性能"
 
 #: internal/shell/power.go:24
-#: internal/ui/control.go:515
+#: internal/ui/control.go:516
 #: ui/control.ui:124
 msgid "Suspend"
 msgstr "挂起"
 
 #: internal/shell/power.go:26
-#: internal/ui/control.go:516
+#: internal/ui/control.go:517
 #: ui/control.ui:148
 msgid "Hibernate"
 msgstr "休眠"
@@ -13269,7 +13273,7 @@ msgid "bash, zsh and fish mark their prompts, so the commands are remembered"
 msgstr "让 bash、zsh 和 fish 标记提示符，以便记住命令"
 
 #: internal/termui/prefs.go:123
-#: internal/ui/notify.go:316
+#: internal/ui/notify.go:324
 #: ui/bar.ui:134
 #: ui/settings.ui:3275
 msgid "Notifications"
@@ -13462,197 +13466,198 @@ msgstr "闹钟 · %02d:%02d"
 msgid "Snooze"
 msgstr "稍后提醒"
 
-#: internal/ui/askpass.go:76
+#: internal/ui/askpass.go:79
 msgid "password: want one JSON request"
 msgstr "密码：想要一个JSON请求"
 
-#: internal/ui/askpass.go:126
+#: internal/ui/askpass.go:135
 msgid "not ok"
 msgstr "不行"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Passphrase Required"
 msgstr "需要密码"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Confirm"
 msgstr "确认"
 
-#: internal/ui/askpass.go:242
+#: internal/ui/askpass.go:251
 msgid "Message"
 msgstr "留言"
 
-#: internal/ui/askpass.go:244
+#: internal/ui/askpass.go:253
 msgid "Unlock OpenPGP Key"
 msgstr "解锁 OpenPGP 密钥"
 
-#: internal/ui/askpass.go:260
+#: internal/ui/askpass.go:269
 msgid "Passphrase"
 msgstr "密码"
 
-#: internal/ui/askpass.go:348
-#: internal/ui/askpass.go:351
+#: internal/ui/askpass.go:357
+#: internal/ui/askpass.go:360
 #: internal/workshop/session.go:406
 msgid "Let %s do this?"
 msgstr "允许 %s 这样做？"
 
-#: internal/ui/askpass.go:349
+#: internal/ui/askpass.go:358
 msgid "The assistant needs this to answer you. Deny, and it will say it could not."
 msgstr "助手需要这样做才能回答你。拒绝的话，它会说明没能做到。"
 
-#: internal/ui/askpass.go:352
+#: internal/ui/askpass.go:361
 msgid "An AI agent asks to use inua's tools on your desktop. Allow it once, or for the rest of its session."
 msgstr "一个 AI 代理请求在你的桌面上使用 inua 的工具。可以允许一次，或在它本次会话期间一直允许。"
 
-#: internal/ui/askpass.go:354
+#: internal/ui/askpass.go:363
 msgid "Let programs at this path read every secret?"
 msgstr "允许此路径下的程序读取所有密钥？"
 
-#: internal/ui/askpass.go:355
+#: internal/ui/askpass.go:364
 msgid "Any program at this path will read every secret without asking, even after it changes. Allow only if you just added it in Settings or with inua keyring allow, and only for a place you trust."
 msgstr "此路径下的任何程序都会不经询问读取所有密钥，即使程序更新之后也是如此。只有在你刚刚于“设置”中或用 inua keyring allow 添加它，并且信任这个位置时才允许。"
 
-#: internal/ui/askpass.go:357
+#: internal/ui/askpass.go:366
 msgid "Trust the list of apps again?"
 msgstr "再次信任这份应用列表？"
 
-#: internal/ui/askpass.go:358
+#: internal/ui/askpass.go:367
 msgid "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d app read secrets without asking."
 msgid_plural "The list of apps trusted with your secrets was changed outside inua-keyring. Trust it again only if you just asked for it in Settings: it lets %d apps read secrets without asking."
 msgstr[0] "受信任读取机密的应用列表在 inua-keyring 之外被修改。只有在你刚刚于设置中请求时才再次信任它：它让 %d 个应用无需询问即可读取机密。"
 
-#: internal/ui/askpass.go:361
+#: internal/ui/askpass.go:370
 msgid "%s has changed since you allowed it"
 msgstr "%s 自你允许后已改变"
 
-#: internal/ui/askpass.go:362
+#: internal/ui/askpass.go:371
 msgid "Its program is not the one you allowed. If you did not update it, deny."
 msgstr "它的程序不是你允许的那个。如果你没有更新它，请拒绝。"
 
-#: internal/ui/askpass.go:364
+#: internal/ui/askpass.go:373
 msgid "Allow %s to read a secret?"
 msgstr "允许 %s 读取一个机密？"
 
-#: internal/ui/askpass.go:365
+#: internal/ui/askpass.go:374
 msgid "It is not trusted with this secret yet. Always allow lets it read the secret from now on without asking."
 msgstr "它尚未获准读取这个机密。“始终允许”让它今后无需询问即可读取。"
 
-#: internal/ui/askpass.go:368
+#: internal/ui/askpass.go:377
 msgid "It can only be allowed once: %s."
 msgstr "只能允许一次：%s。"
 
-#: internal/ui/askpass.go:378
+#: internal/ui/askpass.go:387
 msgid "<span alpha='55%'>[</span>PATH<span alpha='55%'>]</span>"
 msgstr "<span alpha='55%'>[</span>路径<span alpha='55%'>]</span>"
 
-#: internal/ui/askpass.go:379
+#: internal/ui/askpass.go:388
 msgid "PATH"
 msgstr "路径"
 
-#: internal/ui/askpass.go:397
+#: internal/ui/askpass.go:406
 msgid "Changed since you allowed it"
 msgstr "自你允许后已改变"
 
-#: internal/ui/askpass.go:400
+#: internal/ui/askpass.go:409
 msgid "%s · as %s"
 msgstr "%s · 当时为 %s"
 
-#: internal/ui/askpass.go:419
+#: internal/ui/askpass.go:428
+#: internal/ui/portal_ask.go:60
 #: internal/ui/settings_bluetooth.go:408
 msgid "Deny"
 msgstr "拒绝"
 
-#: internal/ui/askpass.go:420
-#: internal/ui/askpass.go:438
+#: internal/ui/askpass.go:429
+#: internal/ui/askpass.go:447
 msgid "Allow once"
 msgstr "允许一次"
 
-#: internal/ui/askpass.go:421
+#: internal/ui/askpass.go:430
 msgid "Always allow"
 msgstr "始终允许"
 
-#: internal/ui/askpass.go:428
+#: internal/ui/askpass.go:437
 msgid "Allow for this session"
 msgstr "本次会话内允许"
 
-#: internal/ui/askpass.go:431
+#: internal/ui/askpass.go:440
 msgid "Trust"
 msgstr "信任"
 
-#: internal/ui/askpass.go:435
+#: internal/ui/askpass.go:444
 msgid "Allow every secret"
 msgstr "允许读取所有密钥"
 
-#: internal/ui/askpass.go:454
+#: internal/ui/askpass.go:463
 msgid "Enter the passphrase so inua-keyring can give %s its secret."
 msgstr "输入密码短语，让 inua-keyring 把密钥项交给 %s。"
 
-#: internal/ui/askpass.go:456
+#: internal/ui/askpass.go:465
 msgid "Enter the passphrase so %s can use this key."
 msgstr "输入密码短语，让 %s 使用此密钥。"
 
-#: internal/ui/askpass.go:458
+#: internal/ui/askpass.go:467
 msgid "Enter the passphrase to use this key."
 msgstr "输入密码短语以使用此密钥。"
 
-#: internal/ui/askpass.go:470
+#: internal/ui/askpass.go:479
 msgid "%s · expired %s"
 msgstr "%s · 已于 %s 过期"
 
-#: internal/ui/askpass.go:472
+#: internal/ui/askpass.go:481
 msgid "%s · expires %s"
 msgstr "%s · %s 过期"
 
-#: internal/ui/askpass.go:487
+#: internal/ui/askpass.go:496
 #: ui/polkit.ui:566
 msgid "FOR"
 msgstr "用于"
 
-#: internal/ui/askpass.go:489
+#: internal/ui/askpass.go:498
 msgid "SECRET"
 msgstr "密钥项"
 
-#: internal/ui/askpass.go:492
+#: internal/ui/askpass.go:501
 msgid "ACTION"
 msgstr "操作"
 
-#: internal/ui/askpass.go:574
+#: internal/ui/askpass.go:583
 msgid "Encryption subkey"
 msgstr "加密子密钥"
 
-#: internal/ui/askpass.go:576
+#: internal/ui/askpass.go:585
 msgid "Signing subkey"
 msgstr "签名子密钥"
 
-#: internal/ui/askpass.go:578
+#: internal/ui/askpass.go:587
 msgid "Authentication subkey"
 msgstr "认证子密钥"
 
-#: internal/ui/askpass.go:580
+#: internal/ui/askpass.go:589
 msgid "Subkey"
 msgstr "子密钥"
 
-#: internal/ui/askpass.go:582
+#: internal/ui/askpass.go:591
 msgid "Primary key"
 msgstr "主密钥"
 
-#: internal/ui/askpass.go:629
+#: internal/ui/askpass.go:638
 msgid "Show the private details (Ctrl+H)"
 msgstr "显示隐私信息（Ctrl+H）"
 
-#: internal/ui/askpass.go:632
+#: internal/ui/askpass.go:641
 msgid "Hide the private details: the key's owner, its fingerprint and the pass entry (Ctrl+H)"
 msgstr "隐藏隐私信息：密钥所有者、指纹和 pass 条目（Ctrl+H）"
 
-#: internal/ui/askpass.go:691
+#: internal/ui/askpass.go:700
 msgid "Hidden while the screen is being recorded or shared."
 msgstr "屏幕正在录制或共享，已隐藏。"
 
-#: internal/ui/askpass.go:694
+#: internal/ui/askpass.go:703
 msgid "Hidden for the screenshot."
 msgstr "为截图已隐藏。"
 
-#: internal/ui/askpass.go:745
+#: internal/ui/askpass.go:754
 msgid "The passphrases do not match."
 msgstr "密码短语不匹配。"
 
@@ -13737,35 +13742,39 @@ msgstr "[复制于 %s，来自 %s]"
 msgid "[COPIED %s]"
 msgstr "[复制于 %s]"
 
-#: internal/ui/control.go:294
+#: internal/ui/control.go:295
 msgid "inua control center"
 msgstr "inua控制中心"
 
-#: internal/ui/control.go:516
+#: internal/ui/control.go:517
 msgid "Hibernate?"
 msgstr "休眠？"
 
-#: internal/ui/control.go:517
+#: internal/ui/control.go:518
 msgid "Restart?"
 msgstr "重新启动？"
 
-#: internal/ui/control.go:518
+#: internal/ui/control.go:519
 #: ui/control.ui:196
 msgid "Shut down"
 msgstr "关闭"
 
-#: internal/ui/control.go:518
+#: internal/ui/control.go:519
 msgid "Shut down?"
 msgstr "确认关机？"
 
-#: internal/ui/control.go:519
+#: internal/ui/control.go:520
 #: ui/control.ui:220
 msgid "Log out"
 msgstr "退出"
 
-#: internal/ui/control.go:519
+#: internal/ui/control.go:520
 msgid "Log out?"
 msgstr "确认退出登录？"
+
+#: internal/ui/control.go:557
+msgid "%s is busy. %s"
+msgstr ""
 
 #: internal/ui/control_detail.go:92
 msgid "Settings…"
@@ -13905,24 +13914,24 @@ msgstr "密码错误"
 msgid "The password could not be checked"
 msgstr "无法检查密码"
 
-#: internal/ui/notify.go:318
+#: internal/ui/notify.go:326
 msgid "Notifications (Focus is on)"
 msgstr "通知（专注模式已开启）"
 
-#: internal/ui/notify.go:634
-#: internal/ui/notify.go:825
+#: internal/ui/notify.go:642
+#: internal/ui/notify.go:833
 msgid "inua notifications"
 msgstr "inua通知"
 
-#: internal/ui/notify.go:847
+#: internal/ui/notify.go:855
 msgid "Focus is on"
 msgstr "专注模式已开启"
 
-#: internal/ui/notify.go:890
+#: internal/ui/notify.go:898
 msgid "Show less"
 msgstr "显示较少"
 
-#: internal/ui/notify.go:892
+#: internal/ui/notify.go:900
 msgid "%d more"
 msgstr "%d更多"
 
@@ -14085,11 +14094,11 @@ msgstr "Esc 关闭"
 msgid "Copied secrets are cleared after %d seconds · Enter copies the password"
 msgstr "复制的机密 %d 秒后清除 · Enter 复制密码"
 
-#: internal/ui/picker.go:143
+#: internal/ui/picker.go:147
 msgid "Colour copied"
 msgstr "颜色已复制"
 
-#: internal/ui/picker.go:145
+#: internal/ui/picker.go:149
 msgid "Colour picked"
 msgstr "颜色挑选"
 
@@ -14109,6 +14118,30 @@ msgstr "无法检查密码。"
 #: internal/ui/polkit.go:268
 msgid "Sorry, that didn't work. Try again."
 msgstr "抱歉，这不起作用。再试一次。"
+
+#: internal/ui/portal_ask.go:51
+msgid "An app"
+msgstr ""
+
+#: internal/ui/portal_ask.go:78
+msgid "%s is running in the background"
+msgstr ""
+
+#: internal/ui/portal_ask.go:79
+msgid "It has no window open."
+msgstr ""
+
+#: internal/ui/portal_ask.go:166
+msgid "Set as background?"
+msgstr ""
+
+#: internal/ui/portal_ask.go:167
+msgid "%s asks to make %s the background."
+msgstr ""
+
+#: internal/ui/portal_ask.go:168
+msgid "Set as background"
+msgstr ""
 
 #: internal/ui/record.go:69
 msgid "Recording needs wf-recorder"
@@ -14130,43 +14163,43 @@ msgstr "录屏已保存"
 msgid "Screen recording"
 msgstr "屏幕录制"
 
-#: internal/ui/screenshot.go:434
+#: internal/ui/screenshot.go:437
 msgid "inua screenshot"
 msgstr "inua截图"
 
-#: internal/ui/screenshot.go:452
+#: internal/ui/screenshot.go:455
 msgid "Drag to take an area"
 msgstr "拖动以选取一个区域"
 
-#: internal/ui/screenshot.go:455
+#: internal/ui/screenshot.go:458
 msgid "Click to copy a colour"
 msgstr "单击复制颜色"
 
-#: internal/ui/screenshot.go:459
+#: internal/ui/screenshot.go:462
 msgid "Drag to record an area"
 msgstr "拖动记录区域"
 
-#: internal/ui/screenshot.go:460
+#: internal/ui/screenshot.go:463
 msgid "Click a window to record"
 msgstr "点击窗口进行录制"
 
-#: internal/ui/screenshot.go:461
+#: internal/ui/screenshot.go:464
 msgid "Click a screen to record"
 msgstr "点击屏幕进行录制"
 
-#: internal/ui/screenshot.go:796
+#: internal/ui/screenshot.go:804
 msgid "Screenshot saved and copied"
 msgstr "屏幕截图已保存并复制"
 
-#: internal/ui/screenshot.go:797
+#: internal/ui/screenshot.go:805
 msgid "Screenshot saved"
 msgstr "屏幕截图已保存"
 
-#: internal/ui/screenshot.go:798
+#: internal/ui/screenshot.go:806
 msgid "Screenshot copied"
 msgstr "截图已复制"
 
-#: internal/ui/screenshot.go:799
+#: internal/ui/screenshot.go:807
 msgid "Screenshot taken"
 msgstr "截图"
 

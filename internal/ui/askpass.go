@@ -42,6 +42,9 @@ type passPrompts struct {
 type passDialog struct {
 	q    pinentry.Request
 	done chan ipc.Response
+	// denyFirst focuses Cancel, so Enter on a question that just appeared
+	// denies (the portal's access questions).
+	denyFirst bool
 
 	win                          gtk.Window
 	title, message, prompt, info gtk.Label
@@ -81,6 +84,13 @@ func (s *shellUI) askPassword(ctx context.Context, req ipc.Request) ipc.Response
 	default:
 		return ipc.Response{Error: "password: unknown mode " + req.Function}
 	}
+	return s.askDialog(ctx, &passDialog{q: q, done: make(chan ipc.Response, 1)})
+}
+
+// askDialog shows d when the dialog on screen is answered, and waits for
+// its answer, or for ctx to end, which closes it.
+func (s *shellUI) askDialog(ctx context.Context, d *passDialog) ipc.Response {
+	q := d.q
 	p := &s.pass
 	select {
 	case p.slot <- struct{}{}: // one at a time
@@ -88,7 +98,6 @@ func (s *shellUI) askPassword(ctx context.Context, req ipc.Request) ipc.Response
 		return ipc.Response{Error: "cancelled"}
 	}
 	defer func() { <-p.slot }()
-	d := &passDialog{q: q, done: make(chan ipc.Response, 1)}
 	gtkx.Post(func() { s.openPass(d) })
 	var timeout <-chan time.Time
 	if q.Timeout > 0 {
@@ -324,7 +333,7 @@ func (s *shellUI) openPass(d *passDialog) {
 		d.text.GrabFocus()
 	case getpin:
 		d.password.GrabFocus()
-	case q.Mode == pinentry.Approve:
+	case q.Mode == pinentry.Approve || d.denyFirst:
 		cancel.GrabFocus() // Enter on a dialog that just appeared denies
 	default:
 		ok.GrabFocus()
