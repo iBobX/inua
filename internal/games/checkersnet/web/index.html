@@ -1,1 +1,70 @@
-<!doctype html><title>Chinese Checkers</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Chinese Checkers</title>
+<link rel="stylesheet" href="checkers.css">
+<script type="importmap">
+{"imports": {"three": "./vendor/three/three.module.min.js", "three/addons/OrbitControls.js": "./vendor/three/OrbitControls.js"}}
+</script>
+</head>
+<body>
+
+<main id="join" class="screen">
+  <div class="join-card">
+    <h1 class="title"><span class="seal">星</span><span data-t="title">Chinese Checkers</span></h1>
+    <p id="lobby-sub" class="sub" hidden></p>
+    <form id="join-form" hidden>
+      <label for="name" data-t="name">Your name</label>
+      <input id="name" maxlength="20" autocomplete="nickname" required>
+      <input id="code" maxlength="6" autocomplete="off" placeholder="CODE" hidden>
+      <div class="row">
+        <button type="submit" class="primary" data-t="joinButton">Join</button>
+        <button type="button" id="watch-button" class="quiet" data-t="watch">Watch</button>
+      </div>
+    </form>
+    <section id="lobby" hidden>
+      <h3 class="kicker" data-t="players">PLAYERS</h3>
+      <ul id="seats"></ul>
+      <h3 class="kicker" data-t="setup">THE GAME</h3>
+      <div id="setup"></div>
+      <p id="lobby-note" class="note"></p>
+    </section>
+    <p id="notice" class="note"></p>
+  </div>
+</main>
+
+<main id="game" class="screen" hidden>
+  <div id="stage">
+    <div id="board" tabindex="0"></div>
+    <div id="slip"><p id="slip-line"></p><p><span id="slip-turn"></span><span id="slip-round"></span></p></div>
+    <p id="rotate-hint" data-t="rotate">Drag to turn the board, scroll to come closer.</p>
+    <div id="over" class="overlay" hidden>
+      <h2 id="over-title"></h2>
+      <p class="note" data-t="over">The game is over.</p>
+      <ol id="standings"></ol>
+      <div id="over-acts" class="row acts" hidden>
+        <button type="button" class="primary" data-act="restart" data-t="restart">New game</button>
+        <button type="button" class="quiet" data-act="lobby" data-t="toLobby">Set up again</button>
+      </div>
+    </div>
+  </div>
+  <aside id="panel">
+    <header>
+      <div class="stat"><span class="kicker" data-t="round">ROUND</span><b id="round">—</b></div>
+      <span id="me" class="note"></span>
+    </header>
+    <section><h3 class="kicker" data-t="players">PLAYERS</h3><ul id="players"></ul></section>
+    <section id="log-section"><h3 class="kicker" data-t="happened">WHAT HAPPENED</h3><ul id="log"></ul></section>
+    <div id="lead-acts" class="row acts" hidden>
+      <button type="button" class="quiet" data-act="restart" data-t="restart">New game</button>
+      <button type="button" class="quiet" data-act="lobby" data-t="toLobby">Set up again</button>
+    </div>
+  </aside>
+</main>
+
+<script type="module" src="checkers.js"></script>
+</body>
+</html>
