@@ -3,7 +3,10 @@ package ui
 import (
 	"cmp"
 	"context"
+	"fmt"
 	"slices"
+	"strings"
+	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
@@ -13,20 +16,21 @@ import (
 	"github.com/lyricat/inua/internal/system"
 )
 
-// voxtypePicker is the Dictation page's choice of voxtype's speech model:
-// one of its engines, one of that engine's models (those downloaded
-// marked), and Use, which downloads it if need be; and, on a build with
-// Whisper alone, a row to get the one with every engine.
-type voxtypePicker struct {
-	row, moreRow    gtk.Box
-	hint            gtk.Label
-	engine, model   gtk.DropDown
-	use, more       gtk.Button
-	catalog         system.VoxtypeCatalog
-	loaded, loading bool
-	engines         []string // the engine drop-down's, as voxtype names them
-	models          []system.VoxtypeModel
-	filling         bool // the drop-downs being set, not chosen
+// voxtypeModels is the Dictation page's list of voxtype's speech models:
+// an engine to show (Whisper, SenseVoice …) and a row a model, its size,
+// its languages and whether it is downloaded or in use, with Download,
+// Use and Delete; a download's progress shows in its row. On a build with
+// Whisper alone, a row offers the one with every engine.
+type voxtypeModels struct {
+	head, list, moreRow gtk.Box
+	hint                gtk.Label
+	filter              gtk.DropDown
+	more                gtk.Button
+	catalog             system.VoxtypeCatalog
+	loaded, loading     bool
+	engines             []string // the filter's, as voxtype names them
+	busy, progress      string   // the model being got (an Arg), how far
+	upgrading           bool
 }
 
 // voxtypeEngineNames are voxtype's engines as their makers write them.
@@ -35,184 +39,216 @@ var voxtypeEngineNames = map[string]string{
 	"paraformer": "Paraformer", "dolphin": "Dolphin", "omnilingual": "Omnilingual", "cohere": "Cohere", "openvino": "OpenVINO",
 }
 
-// voxtypeEngineHints say what each of voxtype's engines is for.
+// voxtypeEngineHints say who made each engine and what it is good at.
 var voxtypeEngineHints = map[string]string{
-	"whisper":     i18n.M("OpenAI's open Whisper, run here: many languages; the .en models English alone"),
-	"parakeet":    i18n.M("NVIDIA's Parakeet: English (v2), or 25 European languages (v3)"),
-	"moonshine":   i18n.M("Small and quick: English, and base-zh, base-ja, tiny-ko, tiny-ar for those languages"),
+	"whisper":     i18n.M("OpenAI's open Whisper: many languages; the .en models English alone"),
+	"parakeet":    i18n.M("NVIDIA's Parakeet: English, or 25 European languages (v3)"),
+	"moonshine":   i18n.M("Small and quick, a model a language"),
 	"sensevoice":  i18n.M("Alibaba's SenseVoice: Chinese, Cantonese, English, Japanese and Korean"),
-	"paraformer":  i18n.M("Alibaba's Paraformer: Chinese (zh) or English (en)"),
-	"dolphin":     i18n.M("Dolphin: Eastern languages"),
+	"paraformer":  i18n.M("Alibaba's Paraformer: Chinese or English"),
+	"dolphin":     i18n.M("Dolphin: English and Chinese"),
 	"omnilingual": i18n.M("Meta's Omnilingual: more than 1,600 languages"),
-	"cohere":      i18n.M("Cohere's Transcribe"),
-	"openvino":    i18n.M("Whisper on Intel's processors and NPUs (OpenVINO)"),
+	"cohere":      i18n.M("Cohere's Transcribe: 14 languages"),
+	"openvino":    i18n.M("Whisper on Intel's processors and NPUs"),
 }
 
-// buildVoxtypePicker adds the picker's rows to the engine section.
-func (s *shellUI) buildVoxtypePicker(body *gtk.Box, button func(*gtk.Box, string, *func(gtk.Button)) gtk.Button) {
-	p := &s.settings.voice.pick
-	if s.onVoxtypeEngine == nil {
-		s.onVoxtypeEngine = func(uintptr, uintptr, uintptr) {
-			if !p.filling {
-				s.fillVoxtypeModels("")
+func (s *shellUI) buildVoxtypeModels(body *gtk.Box) {
+	m := &s.settings.voice.models
+	if s.onVoxtypeFilter == nil {
+		s.onVoxtypeFilter = func(uintptr, uintptr, uintptr) {
+			if !s.settings.voice.filling {
+				s.fillVoxtypeModels()
 			}
 		}
-		s.onVoxtypeModel = func(uintptr, uintptr, uintptr) {
-			if !p.filling {
-				s.showVoxtypeUse()
-			}
-		}
-		s.onVoxtypeUse = func(gtk.Button) { s.useVoxtypeModel() }
+		s.onVoxtypeRow = func(b gtk.Button) { s.voxtypeModelAction(b.GetName()) }
 		s.onVoxtypeMore = func(gtk.Button) { s.upgradeVoxtype() }
 	}
-	row, hint := displayRow(i18n.T("Speech model"), " ")
-	p.row, p.hint = *row, *hint
-	p.engine = *gtk.NewDropDownFromStrings(nil)
-	p.model = *gtk.NewDropDownFromStrings(nil)
-	for _, d := range []*gtk.DropDown{&p.engine, &p.model} {
-		d.SetValign(gtk.AlignCenterValue)
-		gtkx.Append(row, &d.Widget)
-	}
-	gtkx.ConnectNotify(&p.engine, "selected", &s.onVoxtypeEngine)
-	gtkx.ConnectNotify(&p.model, "selected", &s.onVoxtypeModel)
-	p.use = button(row, i18n.T("Use"), &s.onVoxtypeUse)
+	row, hint := displayRow(i18n.T("Speech models"), " ")
+	m.head, m.hint = *row, *hint
+	m.filter = *gtk.NewDropDownFromStrings(nil)
+	m.filter.SetValign(gtk.AlignCenterValue)
+	gtkx.ConnectNotify(&m.filter, "selected", &s.onVoxtypeFilter)
+	gtkx.Append(row, &m.filter.Widget)
 	gtkx.Append(body, &row.Widget)
-	row, _ = displayRow(i18n.T("More engines"), i18n.T("SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's build for them (about 46 MB); your models stay"))
-	p.moreRow = *row
-	p.more = button(row, i18n.T("Get them"), &s.onVoxtypeMore)
+	m.list = *gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	m.list.AddCssClass("rows")
+	m.list.AddCssClass("voxtype-models")
+	gtkx.Append(body, &m.list.Widget)
+	row, _ = displayRow(i18n.T("More engines"), i18n.T("SenseVoice, Paraformer, Parakeet, Moonshine and others come with voxtype's fuller build (46 MB); your models stay"))
+	m.moreRow = *row
+	m.more = voiceButton(row, i18n.T("Get them"), &s.onVoxtypeMore)
 	gtkx.Append(body, &row.Widget)
 }
 
-// showVoxtypePicker shows the picker while voxtype is the engine and up,
+// showVoxtypeModels shows the list while voxtype is the engine and up,
 // asking voxtype for its catalog the first time.
-func (s *shellUI) showVoxtypePicker(on bool) {
-	st := &s.settings.voice
-	p := &st.pick
-	p.row.SetVisible(on && p.loaded)
-	p.moreRow.SetVisible(on && p.loaded && p.catalog.More && !st.busy)
-	for _, w := range []*gtk.Widget{&p.engine.Widget, &p.model.Widget, &p.use.Widget, &p.more.Widget} {
-		w.SetSensitive(!st.busy)
+func (s *shellUI) showVoxtypeModels(on bool) {
+	v := &s.settings.voice
+	m := &v.models
+	m.head.SetVisible(on && m.loaded)
+	m.list.SetVisible(on && m.loaded)
+	m.moreRow.SetVisible(on && m.loaded && m.catalog.More)
+	m.more.SetSensitive(m.busy == "" && !m.upgrading)
+	if m.upgrading {
+		m.more.SetLabel(m.progress)
+	} else {
+		m.more.SetLabel(i18n.T("Get them"))
 	}
-	if !on || p.loaded || p.loading {
+	if !on || m.loaded || m.loading {
 		return
 	}
-	p.loading = true
+	m.loading = true
 	go func() {
 		c, err := system.VoxtypeModels(context.Background())
 		gtkx.Post(func() {
-			p.loading = false
+			m.loading = false
 			if err != nil {
-				st.setStatus(err.Error())
+				v.setStatus(err.Error())
 				return
 			}
-			p.catalog, p.loaded = c, true
-			p.engines = c.Engines
-			names := make([]string, len(p.engines))
-			for i, e := range p.engines {
+			m.catalog, m.loaded = c, true
+			m.engines = c.Engines
+			names := make([]string, len(m.engines))
+			for i, e := range m.engines {
 				names[i] = cmp.Or(voxtypeEngineNames[e], e)
 			}
-			p.filling = true
+			v.filling = true
 			list := gtk.NewStringList(names)
-			p.engine.SetModel(list)
+			m.filter.SetModel(list)
 			list.Unref()
-			p.engine.SetSelected(uint32(max(0, slices.Index(p.engines, c.Engine))))
-			p.filling = false
-			s.fillVoxtypeModels(c.Model)
+			m.filter.SetSelected(uint32(max(0, slices.Index(m.engines, c.Engine))))
+			v.filling = false
+			s.fillVoxtypeModels()
 			s.showVoice()
 		})
 	}()
 }
 
-// fillVoxtypeModels lists the chosen engine's models, choosing want (an
-// Arg), else the one in use, else the first downloaded, else the first.
-func (s *shellUI) fillVoxtypeModels(want string) {
-	p := &s.settings.voice.pick
-	i := int(p.engine.GetSelected())
-	if i < 0 || i >= len(p.engines) {
+// fillVoxtypeModels lists the chosen engine's models, a row each.
+func (s *shellUI) fillVoxtypeModels() {
+	m := &s.settings.voice.models
+	i := int(m.filter.GetSelected())
+	if i < 0 || i >= len(m.engines) {
 		return
 	}
-	engine := p.engines[i]
-	p.models = p.catalog.Models[engine]
-	labels := make([]string, len(p.models))
-	for j, m := range p.models {
-		switch {
-		case engine == p.catalog.Engine && m.Arg == p.catalog.Model:
-			labels[j] = i18n.Tf("%s (in use)", m.Name)
-		case m.Installed:
-			labels[j] = i18n.Tf("%s (downloaded)", m.Name)
-		default:
-			labels[j] = m.Name
+	engine := m.engines[i]
+	m.hint.SetText(i18n.T(voxtypeEngineHints[engine]))
+	for c := m.list.GetFirstChild(); c != nil; c = m.list.GetFirstChild() {
+		m.list.Remove(c)
+	}
+	for _, model := range m.catalog.Models[engine] {
+		inUse := engine == m.catalog.Engine && model.Arg == m.catalog.Model
+		facts := []string{}
+		if model.MB > 0 {
+			facts = append(facts, sizeText(model.MB))
 		}
+		if l := langsText(model.Langs); l != "" {
+			facts = append(facts, l)
+		}
+		switch {
+		case m.busy == model.Arg:
+			facts = append(facts, m.progress)
+		case inUse:
+			facts = append(facts, i18n.T("In use"))
+		case model.Installed:
+			facts = append(facts, i18n.T("Downloaded"))
+		}
+		row, _ := displayRow(model.Name, strings.Join(facts, " · "))
+		if inUse {
+			row.AddCssClass("in-use")
+		}
+		if !inUse && model.Installed {
+			del := gtk.NewButtonFromIconName("user-trash-symbolic")
+			del.AddCssClass("plain")
+			del.SetValign(gtk.AlignCenterValue)
+			del.SetTooltipText(i18n.T("Delete its files; it can be downloaded again"))
+			del.SetName("delete:" + model.Arg)
+			del.SetSensitive(m.busy == "" && !m.upgrading)
+			del.ConnectClicked(&s.onVoxtypeRow)
+			gtkx.Append(row, &del.Widget)
+		}
+		if !inUse {
+			label := i18n.T("Use")
+			if !model.Installed {
+				label = i18n.T("Download and use")
+			}
+			b := voiceButton(row, label, &s.onVoxtypeRow)
+			b.SetName("use:" + model.Arg)
+			b.SetSensitive(m.busy == "" && !m.upgrading)
+		}
+		gtkx.Append(&m.list, &row.Widget)
 	}
-	pick := slices.IndexFunc(p.models, func(m system.VoxtypeModel) bool { return m.Arg == want })
-	if pick < 0 && engine == p.catalog.Engine {
-		pick = slices.IndexFunc(p.models, func(m system.VoxtypeModel) bool { return m.Arg == p.catalog.Model })
-	}
-	if pick < 0 {
-		pick = max(0, slices.IndexFunc(p.models, func(m system.VoxtypeModel) bool { return m.Installed }))
-	}
-	p.filling = true
-	list := gtk.NewStringList(labels)
-	p.model.SetModel(list)
-	list.Unref()
-	p.model.SetSelected(uint32(pick))
-	p.filling = false
-	p.hint.SetText(i18n.T(voxtypeEngineHints[engine]))
-	s.showVoxtypeUse()
 }
 
-// chosen is the model the drop-downs show, if any.
-func (p *voxtypePicker) chosen() (system.VoxtypeModel, bool) {
-	i := int(p.model.GetSelected())
-	if i < 0 || i >= len(p.models) {
-		return system.VoxtypeModel{}, false
+// sizeText is a download's size: "239 MB", "2.6 GB".
+func sizeText(mb int) string {
+	if mb >= 1000 {
+		return fmt.Sprintf("%.1f GB", float64(mb)/1000)
 	}
-	return p.models[i], true
+	return fmt.Sprintf("%d MB", mb)
 }
 
-// showVoxtypeUse labels Use for the model chosen: in use already,
-// downloaded (Use), or to download first.
-func (s *shellUI) showVoxtypeUse() {
-	p := &s.settings.voice.pick
-	m, ok := p.chosen()
-	inUse := ok && m.Engine == p.catalog.Engine && m.Arg == p.catalog.Model
-	switch {
-	case inUse:
-		p.use.SetLabel(i18n.T("In use"))
-	case ok && m.Installed:
-		p.use.SetLabel(i18n.T("Use"))
+// langsText says a model's languages: their codes, a count when there are
+// many, "many languages" for Whisper's.
+func langsText(langs string) string {
+	switch codes := strings.Split(langs, "/"); {
+	case langs == "":
+		return ""
+	case langs == "*":
+		return i18n.T("many languages")
+	case strings.HasSuffix(langs, "+ langs"):
+		return i18n.Tf("%s languages", strings.TrimSuffix(langs, " langs"))
+	case len(codes) > 5:
+		return i18n.Nf("%d language", "%d languages", len(codes), len(codes))
 	default:
-		p.use.SetLabel(i18n.T("Download and use"))
+		return strings.ToUpper(strings.Join(codes, " "))
 	}
-	p.use.SetSensitive(ok && !inUse && !s.settings.voice.busy)
 }
 
-// useVoxtypeModel downloads the chosen model if need be and has voxtype
-// use it, saying how far it is; then the catalog is asked for again.
-func (s *shellUI) useVoxtypeModel() {
-	st := &s.settings.voice
-	m, ok := st.pick.chosen()
-	if !ok || st.busy {
+// voxtypeModelAction does what a model's button says ("use:ARG",
+// "delete:ARG").
+func (s *shellUI) voxtypeModelAction(name string) {
+	v := &s.settings.voice
+	m := &v.models
+	what, arg, _ := strings.Cut(name, ":")
+	i := int(m.filter.GetSelected())
+	if m.busy != "" || i < 0 || i >= len(m.engines) {
 		return
 	}
-	st.busy, st.busyTitle, st.progress = true, i18n.Tf("Getting %s…", m.Name), " "
-	st.setStatus("")
-	s.showVoice()
+	j := slices.IndexFunc(m.catalog.Models[m.engines[i]], func(x system.VoxtypeModel) bool { return x.Arg == arg })
+	if j < 0 {
+		return
+	}
+	model := m.catalog.Models[m.engines[i]][j]
+	v.setStatus("")
+	if what == "delete" {
+		if err := system.DeleteVoxtypeModel(model); err != nil {
+			v.setStatus(err.Error())
+		}
+		m.loaded = false
+		s.showVoice()
+		return
+	}
+	m.busy, m.progress = model.Arg, i18n.T("Starting…")
+	s.svc.voxtypeQuiet = time.Now().Add(20 * time.Second) // it restarts voxtype
+	s.fillVoxtypeModels()
 	go func() {
-		err := system.UseVoxtypeModel(context.Background(), m, func(file string, pct float64) {
-			text := i18n.Tf("Downloading %s…", file)
+		err := system.UseVoxtypeModel(context.Background(), model, func(file string, pct float64) {
+			text := i18n.T("Downloading…")
 			if pct >= 0 {
-				text = i18n.Tf("Downloading %s… %s", file, shell.Percent(pct/100))
+				text = i18n.Tf("Downloading… %s", shell.Percent(pct/100))
 			}
 			gtkx.Post(func() {
-				st.progress = text
-				s.showVoice()
+				if m.progress != text {
+					m.progress = text
+					s.fillVoxtypeModels()
+				}
 			})
 		})
 		gtkx.Post(func() {
-			st.busy, st.pick.loaded = false, false
+			m.busy, m.loaded = "", false
 			if err != nil {
-				st.setStatus(i18n.Tf("%s is not in use: %s", m.Name, err.Error()))
+				v.setStatus(i18n.Tf("%s is not in use: %s", model.Name, err.Error()))
 			}
 			s.showVoice()
 		})
@@ -220,26 +256,28 @@ func (s *shellUI) useVoxtypeModel() {
 }
 
 // upgradeVoxtype puts voxtype's build with every engine in place of the
-// Whisper-only one.
+// Whisper-only one, saying how far on its button.
 func (s *shellUI) upgradeVoxtype() {
-	st := &s.settings.voice
-	if st.busy {
+	v := &s.settings.voice
+	m := &v.models
+	if m.upgrading || m.busy != "" {
 		return
 	}
-	st.busy, st.busyTitle, st.progress = true, i18n.T("Getting voxtype's other engines…"), " "
-	st.setStatus("")
+	m.upgrading, m.progress = true, i18n.T("Downloading…")
+	v.setStatus("")
+	s.svc.voxtypeQuiet = time.Now().Add(20 * time.Second)
 	s.showVoice()
 	go func() {
 		err := system.UpgradeVoxtype(context.Background(), func(done float64) {
 			gtkx.Post(func() {
-				st.progress = i18n.Tf("Downloading voxtype %s… %s", system.VoxtypeVersion, shell.Percent(done))
+				m.progress = shell.Percent(done)
 				s.showVoice()
 			})
 		})
 		gtkx.Post(func() {
-			st.busy, st.pick.loaded = false, false
+			m.upgrading, m.loaded = false, false
 			if err != nil {
-				st.setStatus(i18n.Tf("voxtype's other engines did not come: %s", err.Error()))
+				v.setStatus(i18n.Tf("voxtype's other engines did not come: %s", err.Error()))
 			}
 			s.showVoice()
 		})

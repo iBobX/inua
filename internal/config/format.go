@@ -474,7 +474,7 @@ push_to_talk = %t
 engine = %s
 
 # Where a card shows the dictation as it goes (listening, the waveform,
-# then the words): "window", at the foot of the focused window; "corner",
+# then the words): "window", at the top of the focused window; "corner",
 # the screen's bottom right; "off", the bar's microphone alone.
 show = %s
 

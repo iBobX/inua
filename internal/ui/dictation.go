@@ -9,6 +9,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/assistant/record"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/layershell"
@@ -33,6 +34,9 @@ type dictationCard struct {
 	started time.Time // when the recording began
 	gen     uintptr   // the latest showing; older timeouts do nothing
 	held    bool      // words or an error, which go on their own time
+	// levels is the microphone read for the waveform while an engine
+	// records that has no level of its own (voxtype records itself).
+	levels *record.Recorder
 
 	onCancel                         func(gtk.Button)
 	onTick, onHide, onGone, onRegion glib.SourceFunc
@@ -41,7 +45,7 @@ type dictationCard struct {
 const (
 	dictationTick   = 50   // ms, the waveform's sampling
 	dictationHeard  = 1800 // ms the words heard stay
-	dictationFailed = 5000 // ms why they did not
+	dictationFailed = 8000 // ms why they did not, unless closed
 	dictationFade   = 200  // ms, the revealer's
 )
 
@@ -66,10 +70,14 @@ func (s *shellUI) ensureDictationCard() *dictationCard {
 	d.wave.Widget.AddCssClass("dictation-wave")
 	d.wave.Widget.SetHexpand(true)
 	d.waveIn.Append(d.wave.Widget)
+	// ✕ drops a recording, or closes the card on the words or an error.
 	d.onCancel = func(gtk.Button) {
-		if e := s.svc.dictation; e != nil {
+		if e := s.svc.dictation; e != nil && d.status == "recording" {
 			e.Cancel()
+			return
 		}
+		d.gen++
+		glib.TimeoutAdd(0, &d.onHide, d.gen)
 	}
 	d.cancel.ConnectClicked(&d.onCancel)
 	d.onTick = func(uintptr) bool {
@@ -80,6 +88,8 @@ func (s *shellUI) ensureDictationCard() *dictationCard {
 		d.time.SetText(fmt.Sprintf("%d:%02d", n/60, n%60))
 		if l, ok := s.svc.dictation.(interface{ Level() float64 }); ok {
 			d.wave.Add(l.Level())
+		} else if d.levels != nil {
+			d.wave.Add(d.levels.Level())
 		}
 		return true
 	}
@@ -122,6 +132,10 @@ func (s *shellUI) dictationState(st system.VoiceState) {
 	d := &s.dictation
 	was := d.status
 	d.status = st.Status
+	if st.Status != "recording" && d.levels != nil {
+		d.levels.Cancel()
+		d.levels = nil
+	}
 	if s.cfg.Voice.Show == "off" || !s.layer || was == st.Status {
 		return
 	}
@@ -131,13 +145,15 @@ func (s *shellUI) dictationState(st system.VoiceState) {
 		d.started = time.Now()
 		d.wave.Clear()
 		d.time.SetText("0:00")
-		_, levels := s.svc.dictation.(interface{ Level() float64 })
-		s.dictationShow(true, levels, "", "")
+		if _, ok := s.svc.dictation.(interface{ Level() float64 }); !ok {
+			d.levels, _ = record.Start() // only for the waveform; none, no waveform
+		}
+		s.dictationShow("recording", "")
 		s.placeDictation() // anew each recording: the window, or the setting, may have changed
 		glib.TimeoutAdd(dictationTick, &d.onTick, 0)
 	case "transcribing":
 		if d.win != nil {
-			s.dictationShow(false, false, i18n.T("Transcribing…"), "")
+			s.dictationShow("transcribing", i18n.T("Transcribing…"))
 		}
 	default:
 		if d.win != nil && d.win.GetVisible() && !d.held && (was == "recording" || was == "transcribing") {
@@ -150,18 +166,18 @@ func (s *shellUI) dictationState(st system.VoiceState) {
 // dictationHeard shows the words a dictation typed, for a moment.
 func (s *shellUI) dictationHeard(text string) {
 	if d := &s.dictation; d.win != nil && d.win.GetVisible() {
-		s.dictationShow(false, false, text, "heard")
+		s.dictationShow("heard", text)
 		d.gen++
 		glib.TimeoutAdd(dictationHeard, &d.onHide, d.gen)
 	}
 }
 
 // dictationFailed says why a dictation came to nothing: on its card when
-// there is one, else as a notification. The window it was for keeps the
-// focus either way.
+// there is one, selectable, until ✕ or a while; else as a notification.
+// The window it was for keeps the focus either way.
 func (s *shellUI) dictationFailed(err error) {
 	if d := &s.dictation; s.cfg.Voice.Show != "off" && d.win != nil && d.win.GetVisible() {
-		s.dictationShow(false, false, err.Error(), "failed")
+		s.dictationShow("failed", err.Error())
 		d.gen++
 		glib.TimeoutAdd(dictationFailed, &d.onHide, d.gen)
 		return
@@ -169,24 +185,25 @@ func (s *shellUI) dictationFailed(err error) {
 	s.dictationNote(err)
 }
 
-// dictationShow lays the card out: recording (the mark, the time and,
-// when the engine has levels, the waveform; ✕ to drop it), or a line of
-// text in a class ("heard", "failed"). Shown again, it is placed again.
-func (s *shellUI) dictationShow(recording, levels bool, text, class string) {
+// dictationShow lays the card out for a stage: "recording" (the mark, the
+// time, the waveform, ✕ to drop it), "transcribing" (the waveform faded,
+// the text pulsing), "heard" (the words), "failed" (why, selectable, ✕ to
+// close it). Shown again, it is placed again.
+func (s *shellUI) dictationShow(stage, text string) {
 	d := &s.dictation
+	recording := stage == "recording"
 	d.mark.SetVisible(recording)
-	d.time.SetVisible(recording || class == "")
-	d.waveIn.SetVisible(recording && levels)
-	d.cancel.SetVisible(recording)
-	d.state.SetVisible(!recording || !levels)
+	d.time.SetVisible(recording)
+	d.waveIn.SetVisible(recording || stage == "transcribing")
+	toggle(d.wave.Widget, "settled", !recording)
+	d.cancel.SetVisible(recording || stage == "failed")
+	d.state.SetVisible(!recording)
 	d.state.SetText(text)
-	if recording && !levels {
-		d.state.SetText(i18n.T("Listening…"))
+	d.state.SetSelectable(stage == "failed")
+	for _, c := range []string{"heard", "failed", "working"} {
+		toggle(&d.state.Widget, c, c == stage || c == "working" && stage == "transcribing")
 	}
-	for _, c := range []string{"heard", "failed"} {
-		toggle(&d.state.Widget, c, c == class)
-	}
-	d.held = class != ""
+	d.held = stage == "heard" || stage == "failed"
 	d.gen++ // a hide still to come is stale
 	if !d.win.GetVisible() && !recording {
 		s.placeDictation()
@@ -215,16 +232,20 @@ func (s *shellUI) placeDictation() {
 			}
 			var min, nat, mb, nb int32
 			d.win.Measure(gtk.OrientationHorizontalValue, -1, &min, &nat, &mb, &nb)
-			layershell.SetAnchor(w, layershell.EdgeBottom, true)
+			// At the top of the window, over its title and toolbar, not
+			// at its foot, where a prompt or a message box is; else in the
+			// corner.
+			layershell.SetAnchor(w, layershell.EdgeTop, at.window)
+			layershell.SetAnchor(w, layershell.EdgeBottom, !at.window)
 			layershell.SetAnchor(w, layershell.EdgeLeft, at.window)
 			layershell.SetAnchor(w, layershell.EdgeRight, !at.window)
 			layershell.SetMargin(w, layershell.EdgeLeft, 0)
-			layershell.SetMargin(w, layershell.EdgeBottom, 0)
+			layershell.SetMargin(w, layershell.EdgeTop, 0)
 			if at.window {
-				// The card's foot 16 px over the window's, its shadow
-				// margin (32) below that.
+				// The card 8 px into the window, its shadow margin (32)
+				// around it.
 				layershell.SetMargin(w, layershell.EdgeLeft, int32(max(0, at.centre-int(nat)/2)))
-				layershell.SetMargin(w, layershell.EdgeBottom, int32(max(0, at.below-16)))
+				layershell.SetMargin(w, layershell.EdgeTop, int32(max(0, at.top+8-32)))
 			}
 			d.win.SetVisible(true)
 			d.win.Present()
@@ -235,12 +256,12 @@ func (s *shellUI) placeDictation() {
 }
 
 // hyprPlace is where the focused window is on its monitor, in the
-// monitor's logical pixels: its centre from the left edge and the room
-// under it; window false when the card goes in the corner.
+// monitor's logical pixels: its centre from the left edge and its top;
+// window false when the card goes in the corner.
 type hyprPlace struct {
-	monitor       string
-	window        bool
-	centre, below int
+	monitor     string
+	window      bool
+	centre, top int
 }
 
 // activePlace asks Hyprland for the focused window and its monitor.
@@ -273,13 +294,9 @@ func activePlace(client interface {
 		if !inWindow || win.Size[0] == 0 || m.Scale <= 0 {
 			return p
 		}
-		h := float64(m.Height) / m.Scale
-		if m.Transform%2 == 1 { // turned a quarter: its height is its width
-			h = float64(m.Width) / m.Scale
-		}
 		p.window = true
 		p.centre = win.At[0] - m.X + win.Size[0]/2
-		p.below = int(h) - (win.At[1] - m.Y + win.Size[1])
+		p.top = win.At[1] - m.Y
 		return p
 	}
 	return hyprPlace{}

@@ -530,14 +530,16 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.26);
 }
 .osd-card image { color: @t1; }
-/* Dictation's card: the red mark and the time as the bar's recorder, the
-   waveform in red, then the state or the words heard. */
-.dictation-card .rec-mark { animation: rec-pulse 1.6s ease-in-out infinite; }
+/* Dictation's card: the red mark (steady: the bar's microphone is what
+   pulses) and the time, the waveform in red, faded while the words are
+   made; then the state, the words heard, or why not. */
 .dictation-time { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; font-feature-settings: "tnum"; color: @t0; }
 .dictation-wave { color: @danger; }
 .dictation-state { color: @t1; }
 .dictation-state.heard { color: @t0; }
 .dictation-state.failed { color: @danger; }
+.dictation-state.working { animation: rec-pulse 1.2s ease-in-out infinite; }
+.dictation-wave.settled { opacity: 0.35; }
 .dictation-card button.plain { min-width: 24px; min-height: 24px; }
 .osd-card levelbar trough { min-height: 2px; padding: 0; border: none; border-radius: 0; background: @line; }
 .osd-card levelbar block { min-height: 2px; border: none; border-radius: 0; }
@@ -898,6 +900,12 @@ window.settings { background: @app; font-size: 14px; }
 }
 .settings .keycap.waiting { border-color: @accent; color: @accent; }
 .settings .keycap.unset { color: @t2; border-style: dashed; background: transparent; }
+/* Dictation's page: its status mark, filled when it is ready and red
+   while it listens; the microphone test's waveform; the model in use. */
+.settings .dictation-status .mark.on { background: @accent; border-color: @accent; }
+.settings .dictation-status .mark.listening { background: @danger; border-color: @danger; }
+.settings .dictation-wave { color: @accent; }
+.settings .voxtype-models > .row.in-use .title { color: @accent; }
 /* The keys are the button that records new ones. */
 .settings button.keys {
   min-height: 0; padding: 0; border: none; border-radius: 2px;

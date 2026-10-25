@@ -220,7 +220,7 @@ type Voice struct {
 	Show string `toml:"show"`
 }
 
-// VoiceShows are where dictation's card shows: at the foot of the focused
+// VoiceShows are where dictation's card shows: at the top of the focused
 // window, in the screen's corner, or not at all (the bar's microphone
 // alone).
 var VoiceShows = []string{"window", "corner", "off"}

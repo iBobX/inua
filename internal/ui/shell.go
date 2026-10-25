@@ -155,17 +155,21 @@ type shellUI struct {
 	onDisplayDrop          func(uintptr, uintptr, uintptr)
 	onPowerDrop            func(uintptr, uintptr, uintptr) // the Power page's drop-downs
 	onVoiceSwitch          func(gtk.Switch, bool) bool
+	onVoiceMode            func(gtk.ToggleButton)
+	onVoiceRuns            func(gtk.ToggleButton)
+	onVoiceShow            func(uintptr, uintptr, uintptr)
+	onVoiceMic             func(uintptr, uintptr, uintptr)
+	onVoiceMicTest         func(gtk.Button)
+	onVoiceMicTick         glib.SourceFunc
+	onVoiceKeys            func(gtk.Button)
 	onVoiceSetup           func(gtk.Button)
 	onVoiceInstall         func(gtk.Button)
 	onVoiceSite            func(gtk.Button)
 	onVoiceAI              func(gtk.Button)
-	onVoiceEngine          func(uintptr, uintptr, uintptr)
-	onVoiceShow            func(uintptr, uintptr, uintptr)
-	onVoxtypeEngine        func(uintptr, uintptr, uintptr)
-	onVoxtypeModel         func(uintptr, uintptr, uintptr)
-	onVoxtypeUse           func(gtk.Button)
-	onVoxtypeMore          func(gtk.Button)
 	onVoiceStart           func(gtk.Button)
+	onVoxtypeFilter        func(uintptr, uintptr, uintptr)
+	onVoxtypeRow           func(gtk.Button)
+	onVoxtypeMore          func(gtk.Button)
 	onDisplaySwitch        func(gtk.Switch, bool) bool
 	onDisplayButton        func(gtk.Button)
 	onBluetoothSwitch      func(gtk.Switch, bool) bool

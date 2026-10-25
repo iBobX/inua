@@ -122,49 +122,62 @@ out of the way rather than raising itself over the windows.
 ## Dictation
 
 Talk, and the words are typed into whichever window has the focus.
-Settings → Dictation (`[voice] enable` in config.toml) turns it on: a
-microphone shows in the bar, and Super+Shift+V records while it is held,
-or starts and stops a recording with `push_to_talk = false`. A click on
-the microphone starts a recording and another ends it; it breathes in the
-accent while it records, and shows an hourglass while the words are
-turned into text. Off, inua neither listens for it nor binds the keys.
-`inua call voice start|stop|toggle|cancel` drives it from scripts.
+Settings → Devices → Dictation (`[voice] enable` in config.toml) turns
+it on: a microphone shows in the bar, and the shortcut (Super+Shift+V)
+records while it is held (**Hold**), or starts and ends a recording
+(**Press**, `push_to_talk = false`); **Change** opens the shortcut in
+Settings → Shortcuts. A click on the microphone starts a recording and
+another ends it. While it records, Escape drops it (a Hyprland submap
+holds Escape and the shortcut until it ends; Super+Ctrl+Alt+Escape
+leaves it should inua not). Off, inua neither listens for it nor binds
+the keys. `inua call voice start|stop|toggle|cancel` drives it from
+scripts.
 
-Two engines turn the speech into text (`[voice] engine`):
+The page's first line says how dictation is, with its mark: ready
+(filled), listening (red), or what is missing and the one thing to do
+about it. **Microphone** chooses PipeWire's default input, and **Test**
+records a few seconds and says whether it heard anything.
 
-- **voxtype** (the default), the [voxtype](https://voxtype.io) daemon,
-  on this machine; the recording never leaves it. When voxtype is not
-  installed, the page's **Install** downloads its release for this
-  processor (version pinned in inua) from GitHub into `~/.local/bin`:
-  the build with every engine (Whisper, SenseVoice, Paraformer, Parakeet,
-  Moonshine …), or Whisper's alone on a processor without AVX2. It
-  refuses the file unless its SHA-256 is the one inua carries, then has
-  voxtype download a model for the language in use (SenseVoice for
-  Chinese, Japanese and Korean; Whisper otherwise) and set up and start
-  its user service. **Speech model** picks the engine and the model,
-  downloading it with its progress shown; a Whisper-only voxtype offers
-  **More engines**, the fuller build in its place. **Start** starts a
-  stopped daemon. voxtype hands each transcription to inua
-  (`output.post_process.command` = `inua call voice type -`; a command of
-  the user's own is left alone), which types it as it types the AI
-  engine's, below.
-- **An AI profile** (`engine = "ai"`): the shell records the microphone
-  (pw-cat) and `inua-assistant --transcribe` turns it into text with the
-  profile chosen for Voice input in Settings → AI, whose provider gets
-  the recording.
+**Runs** chooses what turns the speech into text (`[voice] engine`):
+
+- **On this computer** (the default): the [voxtype](https://voxtype.io)
+  daemon; the recording never leaves the machine. When voxtype is not
+  installed, **Install** downloads its release for this processor
+  (version pinned in inua) from GitHub into `~/.local/bin`, with the
+  size said first: the build with every engine (Whisper, SenseVoice,
+  Paraformer, Parakeet, Moonshine …), or Whisper's alone on a processor
+  without AVX2. It refuses the file unless its SHA-256 is the one inua
+  carries, then has voxtype download a model for the language in use
+  (SenseVoice for Chinese, Japanese and Korean; Whisper otherwise) and
+  set up and start its user service. **Speech models** lists an
+  engine's models with their size and languages: Download and use,
+  Use, or delete one's files (voxtype 1.1.1's sizes, from its source by
+  `scripts/voxtype-models.py`); a download's progress shows in its row.
+  A Whisper-only voxtype offers **More engines**, the fuller build in
+  its place. **Start** starts a stopped daemon. inua has voxtype hand
+  each transcription to it (`output.post_process.command` = `inua call
+  voice type -`; a command of the user's own is left alone), and leaves
+  voxtype's own hotkey and notification off.
+- **With an AI profile** (`engine = "ai"`): the shell records the
+  microphone (pw-cat) and `inua-assistant --transcribe` turns it into
+  text with the profile chosen for Voice input in Settings → AI, whose
+  provider gets the recording.
 
 Either way inua types the words with `wtype`, or, without it, pastes them
 (Ctrl+V; Ctrl+Shift+V in a terminal) and puts the clipboard's text back;
-neither copy goes into the clipboard history.
+neither copy goes into the clipboard history, and the page gives the
+command that installs wtype. Each dictation ends with a space (not after
+Chinese or Japanese), so the next does not run on.
 
 While it listens the bar's microphone is red and pulsing, and a small
-card shows the dictation as it goes ([voice] show): a red mark, the time
-and the waveform (the AI engine's; voxtype's says "Listening…"), with ✕
-to drop it, then "Transcribing…", then the words for a moment, or why
-there are none. It sits at the foot of the window you type in (`show =
-"window"`, the default), or in the screen's bottom right corner
-(`"corner"`); `"off"` leaves the bar's microphone alone, and errors go to
-a notification. The card never takes the keyboard.
+card shows the dictation as it goes (**Card**, `[voice] show`): a red
+mark, the time and the waveform, with ✕ to drop it; then the waveform
+faded and "Transcribing…"; then the words for a moment, or why there are
+none, selectable, until ✕. It sits at the top of the window you type in
+(`show = "window"`, the default: not at its foot, where a prompt or a
+message box is), or in the screen's bottom right corner (`"corner"`);
+`"off"` leaves the bar's microphone alone, and errors go to a
+notification. The card never takes the keyboard.
 
 When the engine is not ready, the microphone is slashed and a click opens
 Settings → Dictation, which says what is missing.
