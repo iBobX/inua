@@ -26,6 +26,10 @@ type services struct {
 	dictation dictationEngine
 	voiceStop context.CancelFunc
 	voiceRun  string
+	// typer types dictation's words, whichever engine heard them; voxtype
+	// is told to hand them over (system.ConfigureVoxtype) once it runs.
+	typer      dictationTyper
+	voxtypeSet bool
 
 	volume     *shell.Setter
 	brightness *shell.Setter

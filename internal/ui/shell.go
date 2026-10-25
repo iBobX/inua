@@ -923,7 +923,7 @@ func (s *shellUI) request(req ipc.Request) ipc.Response {
 	case "media":
 		return s.mediaRequest(req.Function)
 	case "voice":
-		return s.voiceRequest(req.Function)
+		return s.voiceRequest(req.Function, req.Args)
 	case "notifications":
 		switch req.Function {
 		case "list":

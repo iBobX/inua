@@ -70,8 +70,13 @@ func TestInstallVoxtype(t *testing.T) {
 		t.Errorf("VoxtypePath = %q, want %q", VoxtypePath(), dest)
 	}
 	got, _ := os.ReadFile(calls)
-	_, model := VoxtypeStartModel("zh_CN", strings.Contains(voxtypeVariant(), "onnx"))
-	want := "voxtype setup --download --model " + model + " --activate --progress-format json\nvoxtype setup systemd\nsystemctl --user enable --now voxtype.service\n"
+	engine, model := VoxtypeStartModel("zh_CN", strings.Contains(voxtypeVariant(), "onnx"))
+	want := "voxtype setup --download --model " + model + " --activate --progress-format json\n" +
+		"voxtype config set engine " + engine + "\nvoxtype config set " + engine + ".model " + model + "\n"
+	if engine == "whisper" {
+		want += "voxtype config set whisper.language auto\n"
+	}
+	want += "voxtype setup systemd\nsystemctl --user enable --now voxtype.service\n"
 	if string(got) != want {
 		t.Errorf("ran:\n%s\nwant:\n%s", got, want)
 	}
@@ -102,5 +107,35 @@ func TestCompiledEngines(t *testing.T) {
 	out := "Transcription engines\n  compiled  whisper ● active\n            parakeet\n  compiled  sensevoice\n\nSwitch with: voxtype config set engine <NAME>\n"
 	if got := compiledEngines(out); !slices.Equal(got, []string{"whisper", "sensevoice"}) {
 		t.Errorf("%v", got)
+	}
+}
+
+// voxtype hands its words to inua, unless the user has a post-process
+// command of their own; a set one is not set again.
+func TestConfigureVoxtype(t *testing.T) {
+	home, bin := t.TempDir(), t.TempDir()
+	t.Setenv("HOME", home)
+	t.Setenv("PATH", bin+":/usr/bin:/bin")
+	calls, current := filepath.Join(home, "calls"), filepath.Join(home, "current")
+	os.WriteFile(filepath.Join(bin, "voxtype"), []byte("#!/bin/sh\necho \"voxtype $*\" >>"+calls+"\n[ \"$2\" = get ] && cat "+current+"\nexit 0\n"), 0o755)
+	os.WriteFile(filepath.Join(bin, "systemctl"), []byte("#!/bin/sh\necho \"systemctl $*\" >>"+calls+"\n"), 0o755)
+	want := VoxtypeHandsOver("/opt/inua's/inua", "default")
+	if want != `'/opt/inua'\''s/inua' call -n 'default' voice type -` {
+		t.Errorf("command %s", want)
+	}
+	for _, c := range []struct {
+		current string
+		changed bool
+	}{{"", true}, {want, false}, {"/home/me/clean.sh", false}, {"'/old/inua' call -n 'default' voice type -", true}} {
+		os.WriteFile(current, []byte(c.current+"\n"), 0o644)
+		os.Remove(calls)
+		changed, err := ConfigureVoxtype(context.Background(), want)
+		if err != nil || changed != c.changed {
+			t.Errorf("%q: changed %v (%v)", c.current, changed, err)
+		}
+		got, _ := os.ReadFile(calls)
+		if c.changed != strings.Contains(string(got), "systemctl --user restart voxtype.service") {
+			t.Errorf("%q: ran\n%s", c.current, got)
+		}
 	}
 }

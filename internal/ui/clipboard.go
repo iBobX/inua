@@ -149,18 +149,28 @@ func (s *shellUI) bindClipboardHandlers() {
 }
 
 // startClipboardCapture records what is copied, when the settings say so:
+// inuaHelper is the inua command beside the running inua-shell, which runs
+// what has no GTK: the clipboard's capture, voxtype's hand-over.
+func inuaHelper() (string, error) {
+	exe, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+	helper := filepath.Join(filepath.Dir(strings.TrimSuffix(exe, " (deleted)")), "inua")
+	if _, err := os.Stat(helper); err != nil {
+		return "", err
+	}
+	return helper, nil
+}
+
 // wl-paste --watch runs `inua clipboard capture` (no GTK) for each new
 // selection, and the panel reads the history it writes.
 func (s *shellUI) startClipboardCapture() {
 	if !s.cfg.Clipboard.Enable || s.clipboard.watcher != nil {
 		return
 	}
-	exe, err := os.Executable()
+	helper, err := inuaHelper()
 	if err != nil {
-		return
-	}
-	helper := filepath.Join(filepath.Dir(strings.TrimSuffix(exe, " (deleted)")), "inua")
-	if _, err := os.Stat(helper); err != nil {
 		log.Printf("clipboard: capture helper unavailable: %v", err)
 		return
 	}

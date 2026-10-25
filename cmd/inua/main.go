@@ -1,7 +1,7 @@
 // Command inua is the shell's command line: it controls a running shell and
 // inspects Hyprland. The GTK4 shell itself is cmd/inua-shell.
 //
-//	inua call [-n instance] <target> <function> [args...]   control a running shell
+//	inua call [-n instance] <target> <function> [args...]   control a running shell ("-": an argument from stdin)
 //	inua show [-n instance]                                  list what call accepts
 //	inua hypr dump | watch                           inspect Hyprland state
 //	inua config check [path] | path                  check the settings file
@@ -93,7 +93,7 @@ func main() {
 
 func usage() {
 	fmt.Fprintln(os.Stderr, `usage:
-  inua call [-n instance] <target> <function> [args...]
+  inua call [-n instance] <target> <function> [args...]   ("-" reads an argument from stdin)
   inua show [-n instance]
   inua hypr dump|watch
   inua config check [path] | path
@@ -146,6 +146,15 @@ func cmdControl(op string, args []string) error {
 		req.Target, req.Function, req.Args = rest[0], rest[1], rest[2:]
 	default:
 		usage()
+	}
+	for i, arg := range req.Args {
+		if arg == "-" { // the argument is stdin: dictation's words, from voxtype
+			b, err := io.ReadAll(io.LimitReader(os.Stdin, 1<<20))
+			if err != nil {
+				return err
+			}
+			req.Args[i] = string(b)
+		}
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

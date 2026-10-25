@@ -108,10 +108,13 @@ func InstallVoxtype(ctx context.Context, lang string, progress func(step Voxtype
 		return err
 	}
 	progress(VoxtypeModelDownloading, -1)
-	_, arg := VoxtypeStartModel(lang, strings.Contains(variant, "onnx"))
+	engine, arg := VoxtypeStartModel(lang, strings.Contains(variant, "onnx"))
 	if err := downloadModel(ctx, dest, arg, func(_ string, pct float64) {
 		progress(VoxtypeModelDownloading, max(pct, -100)/100)
 	}); err != nil {
+		return fmt.Errorf("the model: %w", err)
+	}
+	if err := activateModel(ctx, dest, engine, arg, arg); err != nil { // no start model is Moonshine's
 		return fmt.Errorf("the model: %w", err)
 	}
 	progress(VoxtypeService, 0)

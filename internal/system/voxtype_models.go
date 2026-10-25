@@ -99,7 +99,79 @@ func UseVoxtypeModel(ctx context.Context, m VoxtypeModel, progress func(file str
 	if err := downloadModel(ctx, bin, m.Arg, progress); err != nil {
 		return err
 	}
+	if err := activateModel(ctx, bin, m.Engine, m.Name, m.Arg); err != nil {
+		return err
+	}
 	return runStep(ctx, "systemctl", "--user", "restart", "voxtype.service")
+}
+
+// activateModel makes voxtype use a model: its engine, and the model as
+// that engine's config names it (Moonshine's short name, the others' Arg).
+// --activate does not do it for every engine (SenseVoice's download leaves
+// the config as it was), so it is set here. A multilingual Whisper model
+// listens for any language; an English one, English.
+func activateModel(ctx context.Context, bin, engine, name, arg string) error {
+	value := arg
+	if engine == "moonshine" {
+		value = name
+	}
+	sets := [][]string{{"engine", engine}, {engine + ".model", value}}
+	if engine == "whisper" {
+		lang := "auto"
+		if strings.HasSuffix(arg, ".en") {
+			lang = "en"
+		}
+		sets = append(sets, []string{"whisper.language", lang})
+	}
+	for _, kv := range sets {
+		if err := runStep(ctx, bin, "config", "set", kv[0], kv[1]); err != nil {
+			return fmt.Errorf("voxtype config set %s: %w", kv[0], err)
+		}
+	}
+	return nil
+}
+
+// VoxtypeHandsOver is voxtype's post-process command that hands each
+// transcription to inua (`inua call voice type -`), which types it as it
+// types the AI engine's; the daemon then outputs nothing itself.
+func VoxtypeHandsOver(inua, instance string) string {
+	return shellQuote(inua) + " call -n " + shellQuote(instance) + " voice type -"
+}
+
+// ConfigureVoxtype has voxtype hand its transcriptions to inua (command,
+// VoxtypeHandsOver) and not notify them, unless a post-process command of
+// the user's own is set, and restarts the daemon when that changed. It
+// reports whether it did.
+func ConfigureVoxtype(ctx context.Context, command string) (bool, error) {
+	bin := VoxtypePath()
+	if bin == "" {
+		return false, errors.New("voxtype is not installed")
+	}
+	out, err := exec.CommandContext(ctx, bin, "config", "get", "output.post_process.command").Output()
+	if err != nil {
+		return false, fmt.Errorf("voxtype config get: %w", err)
+	}
+	switch now := strings.TrimSpace(string(out)); {
+	case now == command:
+		return false, nil
+	case now != "" && !strings.Contains(now, " voice type -"):
+		return false, nil // the user's own
+	}
+	for _, kv := range [][]string{
+		{"output.post_process.command", command},
+		{"output.post_process.fallback_on_empty", "false"},
+		{"output.notification.on_transcription", "false"}, // inua's card shows the words
+	} {
+		if err := runStep(ctx, bin, "config", "set", kv[0], kv[1]); err != nil {
+			return false, fmt.Errorf("voxtype config set %s: %w", kv[0], err)
+		}
+	}
+	return true, runStep(ctx, "systemctl", "--user", "restart", "voxtype.service")
+}
+
+// shellQuote quotes s for sh, which runs voxtype's post-process command.
+func shellQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
 }
 
 // downloadModel runs voxtype's download with --activate, reading its

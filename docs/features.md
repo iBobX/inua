@@ -144,13 +144,18 @@ Two engines turn the speech into text (`[voice] engine`):
   its user service. **Speech model** picks the engine and the model,
   downloading it with its progress shown; a Whisper-only voxtype offers
   **More engines**, the fuller build in its place. **Start** starts a
-  stopped daemon. voxtype types the words itself.
+  stopped daemon. voxtype hands each transcription to inua
+  (`output.post_process.command` = `inua call voice type -`; a command of
+  the user's own is left alone), which types it as it types the AI
+  engine's, below.
 - **An AI profile** (`engine = "ai"`): the shell records the microphone
   (pw-cat) and `inua-assistant --transcribe` turns it into text with the
   profile chosen for Voice input in Settings → AI, whose provider gets
-  the recording. inua then types the words with `wtype`, or, without it,
-  pastes them (Ctrl+V; Ctrl+Shift+V in a terminal) and puts the
-  clipboard's text back.
+  the recording.
+
+Either way inua types the words with `wtype`, or, without it, pastes them
+(Ctrl+V; Ctrl+Shift+V in a terminal) and puts the clipboard's text back;
+neither copy goes into the clipboard history.
 
 While it listens the bar's microphone is red and pulsing, and a small
 card shows the dictation as it goes ([voice] show): a red mark, the time

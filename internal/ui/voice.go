@@ -32,7 +32,7 @@ import (
 // shortcut behind it, the Dictation page of the settings. Recording and transcription are the voxtype
 // daemon's; inua drives it and says what it is doing. voiceRequest answers
 // `inua call voice …`, which scripts and the settings can drive too.
-func (s *shellUI) voiceRequest(fn string) ipc.Response {
+func (s *shellUI) voiceRequest(fn string, args []string) ipc.Response {
 	if !s.cfg.Voice.Enable {
 		return ipc.Response{Error: "dictation is off (Settings → Dictation)"}
 	}
@@ -50,6 +50,15 @@ func (s *shellUI) voiceRequest(fn string) ipc.Response {
 		err = v.Stop()
 	case "cancel":
 		err = v.Cancel()
+	case "type": // voxtype's words (its post-process command): typed as the AI's are
+		text := strings.TrimSpace(strings.Join(args, " "))
+		if text != "" {
+			go func() {
+				if err := s.svc.typer.typeText(text); err != nil {
+					gtkx.Post(func() { s.dictationFailed(err) })
+				}
+			}()
+		}
 	default:
 		return ipc.Response{Error: "unknown function voice " + fn}
 	}
@@ -68,7 +77,7 @@ func (s *shellUI) bindVoiceHandlers() {
 			s.showSettingsPage("voice")
 			return
 		}
-		if r := s.voiceRequest("toggle"); r.Error != "" {
+		if r := s.voiceRequest("toggle", nil); r.Error != "" {
 			log.Printf("voice: %s", r.Error)
 		}
 	}
@@ -85,6 +94,7 @@ func (s *shellUI) applyVoiceState() {
 	}
 	s.dictationState(st)
 	s.showVoice()
+	s.handOverVoxtype(st)
 }
 
 // dictationEngine turns speech into text: voxtype's daemon (system.Voice)
@@ -119,7 +129,10 @@ func (s *shellUI) followVoice() {
 		v.voiceStop()
 		v.voiceStop, v.dictation = nil, nil
 	}
-	v.voiceRun = want
+	v.voiceRun, v.voxtypeSet = want, false
+	v.typer = dictationTyper{history: s.clipboard.path,
+		hypr:  func() hyprNow { return hyprNow{s.client, s.hyprLua} },
+		heard: func(text string) { gtkx.Post(func() { s.dictationHeard(text) }) }}
 	s.sys.Voice = system.VoiceState{}
 	if want == "" {
 		s.applyVoiceState()
@@ -127,10 +140,7 @@ func (s *shellUI) followVoice() {
 	}
 	var e dictationEngine = v.voice
 	if s.cfg.Voice.Engine == "ai" {
-		t := dictationTyper{history: s.clipboard.path,
-			hypr:  func() hyprNow { return hyprNow{s.client, s.hyprLua} },
-			heard: func(text string) { gtkx.Post(func() { s.dictationHeard(text) }) }}
-		e = &system.Dictation{Profile: profile, Assistant: "inua-assistant", Type: t.typeText,
+		e = &system.Dictation{Profile: profile, Assistant: "inua-assistant", Type: v.typer.typeText,
 			Failed: func(err error) { gtkx.Post(func() { s.dictationFailed(err) }) }}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -143,6 +153,32 @@ func (s *shellUI) followVoice() {
 			}
 		})
 	})
+}
+
+// handOverVoxtype has voxtype, once it is up, hand its words to inua to
+// type (`inua call voice type -`) rather than type them itself, which it
+// cannot without wtype or the session's Wayland in its service.
+func (s *shellUI) handOverVoxtype(st system.VoiceState) {
+	v := &s.svc
+	if v.voxtypeSet || !st.Available || s.cfg.Voice.Engine != "voxtype" {
+		return
+	}
+	helper, err := inuaHelper()
+	if err != nil {
+		log.Printf("dictation: no inua beside inua-shell to hand voxtype's words to: %v", err)
+		return
+	}
+	v.voxtypeSet = true
+	command := system.VoxtypeHandsOver(helper, s.opts.Instance)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if changed, err := system.ConfigureVoxtype(ctx, command); err != nil {
+			log.Printf("dictation: voxtype's hand-over: %v", err)
+		} else if changed {
+			log.Printf("dictation: voxtype hands its words to %s", command)
+		}
+	}()
 }
 
 // dictationNote says why a dictation came to nothing, as a notification.
