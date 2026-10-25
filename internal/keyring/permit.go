@@ -60,9 +60,10 @@ var errDenied = dbus.NewError("org.freedesktop.DBus.Error.AccessDenied", []any{"
 // pending is a question on its way; reads of the same process and item
 // wait for its answer.
 type pending struct {
-	done chan struct{}
-	ans  Answer
-	dec  string
+	done   chan struct{}
+	ans    Answer
+	dec    string
+	joined int // the reads waiting for it besides the one asking
 }
 
 // identify finds who a client is. With the pidfd the bus gives, the
@@ -147,6 +148,7 @@ func (s *Service) ask(who, key string, q Question) (string, bool, *dbus.Error) {
 	s.mu.Lock()
 	p := s.pending[who+"\n"+key]
 	if p != nil {
+		p.joined++
 		s.mu.Unlock()
 		<-p.done
 	} else {

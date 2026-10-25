@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/lyricat/inua/internal/dbustest"
 )
@@ -17,6 +18,7 @@ type asker struct {
 	ans  Answer
 	qs   []Question
 	hold chan struct{} // when set, answers once it is closed
+	svc  *Service      // the service it answers
 }
 
 func (a *asker) ask(ctx context.Context, q Question) (Answer, error) {
@@ -47,6 +49,7 @@ func serveTrust(t *testing.T, a *asker) (addr string, s *Store, trustPath string
 		svc.Trust = NewTrust(trustPath, svc.store.TrustKey)
 		if a != nil {
 			svc.Ask = a.ask
+			a.svc = svc
 		}
 		svc.OnRead = func(r Access, _ bool) {
 			mu.Lock()
@@ -157,8 +160,9 @@ func TestOneQuestion(t *testing.T) {
 			errs <- err
 		})
 	}
-	for a.asked() == 0 {
-		// wait for the question
+	// The question asked, and the other two reads waiting for it.
+	for a.asked() == 0 || a.svc.joined() < 2 {
+		time.Sleep(time.Millisecond)
 	}
 	close(a.hold)
 	wg.Wait()
@@ -311,4 +315,14 @@ func TestAllowPath(t *testing.T) {
 	if err := DisallowPath(conn, "/opt/app/bin/*"); err != nil || len(ReadPaths(trustPath)) != 0 {
 		t.Errorf("disallow: %v %+v", err, ReadPaths(trustPath))
 	}
+}
+
+// joined counts the reads waiting for questions already asked.
+func (s *Service) joined() (n int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, p := range s.pending {
+		n += p.joined
+	}
+	return n
 }
