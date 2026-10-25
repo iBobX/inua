@@ -311,6 +311,10 @@ screen: it is a web app in the theme's colours.
   please do it.", "Wait, let me think." …) and your own, added there and
   kept in the browser: tapping a snippet sends it, with Enter.
   Its Info tab says what the pane's connection says.
+- **Uploading**: the panel's Files tab sends files from the phone to
+  the computer, up to 100 MB each, into the folder pasted images
+  go to (`$XDG_RUNTIME_DIR/inua/term-paste`, gone at logout), and types
+  their paths in the pane, quoted, for an agent or a command to take.
 - Scrolling goes as a phone's lists do: the finger moves the history by
   the pixel, a swipe glides on, and the ends stretch. A program on the
   alternate screen (Claude Code's fullscreen mode, vim, less) scrolls

@@ -301,6 +301,8 @@ view-refresh                          arrow-clockwise
 agent-shell                           terminal
 # inua-term: the actions, from column 1's head
 open-menu                             list
+# inua-term's web page: a file from the phone, uploaded, its path typed
+term-upload                           paperclip
 # inua-term: a pane's checkout, in its head: a branch, a linked worktree's
 term-git-branch                       git-branch
 term-git-worktree                     git-fork

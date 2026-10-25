@@ -190,6 +190,10 @@
   #psnips .snip .del { width:44px; display:flex; align-items:center; justify-content:center; }
   #psnips .snip .icon { width:15px; height:15px; }
   #psnips .add { width:100%; margin-top:10px; font:12.5px var(--sans); color:var(--t1); }
+  /* Files: one button that uploads, and what becomes of them. */
+  #pfiles .add { width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px; font:12.5px var(--sans); color:var(--t1); }
+  #pfiles .add .icon { width:15px; height:15px; }
+  #pfiles .note { margin:10px 2px 0; font:12px var(--sans); color:var(--t2); line-height:1.45; }
   #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
   #panel .grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; }
   #panel button { height:40px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:12px var(--mono); }
@@ -301,9 +305,14 @@
       <button id="paneltoggle" class="barbtn" data-ta="Key panel"><span class="icon" style="--i:url(/icons/view-app-grid-symbolic.svg)"></span></button>
     </div>
     <div id="panel" hidden>
-      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="snips" data-t="SNIPPETS">SNIPPETS</button><button data-p="info" data-t="INFO">INFO</button></div>
+      <div class="ptabs"><button data-p="keys" class="on" data-t="KEYS">KEYS</button><button data-p="snips" data-t="SNIPPETS">SNIPPETS</button><button data-p="files" data-t="FILES">FILES</button><button data-p="info" data-t="INFO">INFO</button></div>
       <div id="pkeys"></div>
       <div id="psnips" hidden></div>
+      <div id="pfiles" hidden>
+        <button id="upload" class="add"><span class="icon" style="--i:url(/icons/term-upload-symbolic.svg)"></span><span data-t="Upload files">Upload files</span></button>
+        <input type="file" id="uploadfile" multiple hidden>
+        <p class="note" data-t="Up to 100 MB each, kept on the computer until you log out. Their paths are typed in the pane.">Up to 100 MB each, kept on the computer until you log out. Their paths are typed in the pane.</p>
+      </div>
       <div id="pinfo" hidden></div>
     </div>
   </section>
@@ -1702,6 +1711,7 @@ for (const b of document.querySelectorAll(".ptabs button")) {
     $("pkeys").hidden = panelTab !== "keys";
     $("pinfo").hidden = panelTab !== "info";
     $("psnips").hidden = panelTab !== "snips";
+    $("pfiles").hidden = panelTab !== "files";
     info();
   };
 }
@@ -1729,6 +1739,41 @@ $("paneltoggle").onclick = () => {
   if (panelOpen) { showPanel(false); return; }
   showKeyboard(false);
   showPanel(true);
+};
+
+// ---- Files from the phone ----
+
+// A file chosen here goes to the computer's paste folder, as an image
+// pasted in the window does, and its path is typed in the pane shown.
+const maxUpload = 100 << 20;
+// shellPath is a path for a shell's command line, as the window quotes a
+// pasted file's: in single quotes when it has more than letters, digits
+// and ./_-+:@%,=.
+function shellPath(p) {
+  return /^[A-Za-z0-9./_\-+:@%,=]+$/.test(p) ? p : "'" + p.replaceAll("'", "'\\''") + "'";
+}
+$("upload").addEventListener("pointerdown", e => e.preventDefault());  // the keyboard stays
+$("upload").onclick = () => { if (cur) $("uploadfile").click(); };
+$("uploadfile").onchange = async () => {
+  const files = [...$("uploadfile").files], pane = cur;
+  $("uploadfile").value = "";
+  if (!files.length || !pane) return;
+  const paths = [];
+  let failed = false;
+  const fail = text => { failed = true; oops(text); };
+  $("upload").classList.add("on");
+  for (const [i, f] of files.entries()) {
+    if (f.size > maxUpload) { fail(Tf("%s is over 100 MB", f.name)); continue; }
+    status(files.length > 1 ? Tf("Uploading %s (%d of %d)…", f.name, i + 1, files.length) : Tf("Uploading %s…", f.name));
+    try {
+      const r = await fetch(`/upload?t=${encodeURIComponent(token)}&name=${encodeURIComponent(f.name)}`, { method: "POST", body: f });
+      if (r.ok) paths.push((await r.json()).path);
+      else fail(r.status === 413 ? Tf("%s is over 100 MB", f.name) : Tf("Could not upload %s", f.name));
+    } catch (e) { fail(Tf("Could not upload %s", f.name)); }
+  }
+  $("upload").classList.remove("on");
+  if (!failed && connected) status("");
+  if (paths.length && cur === pane && term) term.paste(paths.map(shellPath).join(" "));
 };
 
 // ---- The visible area ----

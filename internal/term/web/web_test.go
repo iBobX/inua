@@ -26,6 +26,7 @@ func isolate(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("XDG_CONFIG_HOME", dir)
 	t.Setenv("HOME", dir)
+	t.Setenv("XDG_RUNTIME_DIR", filepath.Join(dir, "run"))
 }
 
 func page(t *testing.T) string {

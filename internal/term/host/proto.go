@@ -201,6 +201,16 @@ func SocketPath() string {
 	return filepath.Join(dir, "inua", "term.sock")
 }
 
+// PasteDir is where files given to a pane are kept, for their paths to be
+// typed: images pasted in the window, files uploaded from the web page.
+// $XDG_RUNTIME_DIR/inua/term-paste goes with the session.
+func PasteDir() string {
+	if dir := os.Getenv("XDG_RUNTIME_DIR"); dir != "" {
+		return filepath.Join(dir, "inua", "term-paste")
+	}
+	return filepath.Join(os.TempDir(), "inua-term-paste")
+}
+
 // WriteFrame writes a frame: its kind, then the payload's parts. A
 // client that relays frames (inua-term serve's) uses it with ReadFrame.
 func WriteFrame(w io.Writer, kind byte, payload ...[]byte) error {

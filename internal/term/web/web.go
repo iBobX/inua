@@ -52,6 +52,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/icon-512.png", s.appIcon(512))
 	mux.HandleFunc("/look.json", s.withToken(s.look))
 	mux.HandleFunc("/manifest.webmanifest", s.withToken(s.manifest))
+	mux.HandleFunc("/upload", s.withToken(s.upload))
 	mux.HandleFunc("/ws", s.withToken(s.bridge))
 	return mux
 }

@@ -20,6 +20,7 @@ import (
 
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/internal/term/vt"
 )
 
@@ -118,17 +119,14 @@ func (p *termPane) pasteImage(mime string) {
 	}()
 }
 
-// saveImage writes the clipboard's image of type mime to
-// $XDG_RUNTIME_DIR/inua/term-paste/, which goes with the session.
+// saveImage writes the clipboard's image of type mime to host.PasteDir,
+// which goes with the session.
 func saveImage(mime string) (string, error) {
 	out, err := exec.Command("wl-paste", "--no-newline", "--type", mime).Output()
 	if err != nil {
 		return "", fmt.Errorf("wl-paste: %w", err)
 	}
-	dir := filepath.Join(os.Getenv("XDG_RUNTIME_DIR"), "inua", "term-paste")
-	if os.Getenv("XDG_RUNTIME_DIR") == "" {
-		dir = filepath.Join(os.TempDir(), "inua-term-paste")
-	}
+	dir := host.PasteDir()
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err
 	}
