@@ -139,7 +139,7 @@ func (s *shellUI) openAgenda() {
 	s.showAgenda()
 	s.agendaWeather()
 	a.win.Present()
-	s.dropFromBar(&a.drop, func(b *bar) *gtk.Widget { return &b.clockButton.Widget }) // after Present, so it drops
+	s.dropFromBar(&a.drop, nil, func(b *bar) *gtk.Widget { return &b.clockButton.Widget }) // after Present, so it drops
 	s.refocusPointer()
 	for _, b := range s.bars {
 		b.clockButton.AddCssClass("open")
@@ -179,7 +179,7 @@ func (s *shellUI) buildAgenda() {
 	ui.Get("next", &next)
 	ui.Get("back_today", &today)
 	ui.Close()
-	a.drop.attach(&a.backdrop, &a.card.Widget)
+	a.drop.attach(&a.backdrop, &a.card.Widget, false)
 
 	prev.SetName("prev")
 	next.SetName("next")

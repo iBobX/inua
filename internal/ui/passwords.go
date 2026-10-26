@@ -60,6 +60,7 @@ type passwordsPanel struct {
 	openGen uintptr           // drops a forget timer from an earlier close
 	filling bool              // the search is set from Go
 	clip    gtkx.SecretClip
+	drop    drop // the card hangs from the bar, and goes back up on close
 }
 
 func (s *shellUI) bindPasswordsHandlers() {
@@ -122,9 +123,12 @@ func (s *shellUI) bindPasswordsHandlers() {
 		}
 	}
 	s.onPasswordsBackdrop = func(_ gtk.GestureClick, _ int32, x, y float64) {
+		if !p.open { // going back up
+			return
+		}
 		hit := p.backdrop.Pick(x, y, gtk.PickDefaultValue)
 		if hit != nil {
-			outside := hit.GoPointer() == p.backdrop.GoPointer()
+			outside := hit.GoPointer() == p.backdrop.GoPointer() || p.drop.canvas != nil && hit.GoPointer() == p.drop.canvas.GoPointer()
 			hit.Unref()
 			if outside {
 				s.closePasswords()
@@ -132,6 +136,9 @@ func (s *shellUI) bindPasswordsHandlers() {
 		}
 	}
 	s.onPasswordsKey = func(_ gtk.EventControllerKey, key, _ uint32, _ gdk.ModifierType) bool {
+		if !p.open { // going back up
+			return true
+		}
 		switch key {
 		case keyEscape:
 			s.closePasswords()
@@ -188,6 +195,7 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 	s.closeCenter()
 	s.closeAgenda()
 	s.closeClipboard()
+	p.drop.finish() // the last window, still going back up
 	p.win = gtk.NewApplicationWindow(s.app)
 	p.win.AddCssClass("clipboard-panel")
 	p.win.AddCssClass("passwords-panel")
@@ -239,6 +247,7 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 	gtkx.Append(p.backdrop, &card.Widget)
 	p.win.SetChild(&p.backdrop.Widget)
 	p.backdrop.Unref()
+	p.drop.attach(p.backdrop, &card.Widget, false)
 	click := gtk.NewGestureClick()
 	click.ConnectPressed(&s.onPasswordsBackdrop)
 	p.backdrop.AddController(&click.EventController)
@@ -277,6 +286,7 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 	}
 	s.readPasswordsStore()
 	p.win.Present()
+	s.dropFromBar(&p.drop, mon, func(b *bar) *gtk.Widget { return &b.passwords.Widget }) // after Present, so it drops
 	p.search.GrabFocus()
 	p.search.SelectRegion(0, -1) // typing starts a new search; Enter keeps this one
 	p.timer = glib.TimeoutAdd(1000, &s.onPasswordsTick, 0)
@@ -295,8 +305,12 @@ func (s *shellUI) closePasswords() {
 		glib.SourceRemove(p.timer)
 		p.timer = 0
 	}
-	p.win.Destroy()
-	p.win.Unref()
+	win := p.win
+	p.drop.close(func() {
+		p.drop.detach()
+		win.Destroy()
+		win.Unref()
+	})
 	p.win, p.search, p.list, p.scroll, p.status, p.backdrop = nil, nil, nil, nil, nil, nil
 	p.otpCode, p.otpLeft = nil, nil
 	clear(p.reveal)

@@ -20,11 +20,11 @@ import (
 // wobbling, and goes back up into it. The card moves into a canvas as big
 // as the window, which draws the bar's glass for it: the card's box, arcs
 // that join it to the bar, and one outline round both with the bar's
-// lower edge, whose own border is off meanwhile (.joined). A card aligned
-// to the end is flush with the bar's end instead, its side going on from
-// the bar's, with no arc there (.joined-end squares the bar's corner). The card itself
-// is .hanging, with no background of its own, and the canvas places it,
-// stretched, clipped at the bar's edge. The drop outlives the windows:
+// lower edge, whose own border is off meanwhile (.joined). A flush card
+// is flush with the bar's end instead, its side going on from the bar's,
+// with no arc there (.joined-end squares the bar's corner). The card
+// itself is .hanging, with no background of its own, and the canvas
+// places it, stretched, clipped at the bar's edge. The drop outlives the windows:
 // each window gives it its backdrop and card when built.
 type drop struct {
 	canvas   *gtk.Widget
@@ -56,9 +56,11 @@ type drop struct {
 	onTickDone glib.DestroyNotify
 }
 
-// attach takes a newly built window's backdrop and the card in it.
-func (d *drop) attach(backdrop *gtk.Box, card *gtk.Widget) {
+// attach takes a newly built window's backdrop and the card in it; a
+// flush card is flush with the bar's end.
+func (d *drop) attach(backdrop *gtk.Box, card *gtk.Widget, flush bool) {
 	d.backdrop, d.card, d.canvas, d.bar = backdrop, card, nil, nil
+	d.end = flush
 	d.hanging, d.moving, d.back, d.gone = false, false, false, nil
 	if d.onTick == nil {
 		d.onTick = func(uintptr, uintptr, uintptr) bool { return d.step() }
@@ -108,7 +110,6 @@ func (d *drop) hang(s *shellUI, b *bar, island [4]float32, under float64) bool {
 	}
 	d.corner = float64(s.cfg.Style.Radius)
 	d.border = !b.compact // a compact bar has none
-	d.end = d.card.GetHalign() == gtk.AlignEndValue
 	d.bar = &b.win.Widget
 	d.bar.AddCssClass("joined")
 	if d.end {
@@ -162,6 +163,14 @@ func (d *drop) close(gone func()) {
 		d.opening, d.u = false, 0
 		d.gone = gone
 		d.start()
+	}
+}
+
+// finish ends a close still going, at once.
+func (d *drop) finish() {
+	if gone := d.gone; gone != nil {
+		d.gone, d.moving = nil, false
+		gone()
 	}
 }
 
@@ -229,7 +238,7 @@ func (d *drop) allocate(_ *gtk.Widget, _, _ int) {
 		// the bar.
 		d.x = d.right - 1 - d.w
 	} else {
-		room := d.radius + shell.DropFlare
+		room := d.radius + d.corner // the arc's
 		d.x = math.Round(max(d.left+room, min(d.under-d.w/2, d.right-room-d.w)))
 	}
 	n := d.now()
@@ -311,7 +320,7 @@ type dropShape struct {
 func (d *drop) shape(l, r, b float64) dropShape {
 	g := dropShape{l: l, r: r, y: d.y, bottom: b, il: d.left, ir: d.right, radius: d.radius, end: d.end}
 	g.round = min(d.corner, (r-l)/2, (b-d.y)/2)
-	arc := min(shell.DropFlare, b-d.y-g.round)
+	arc := min(d.corner, b-d.y-g.round) // as round as the corners
 	g.left = max(0, min(arc, l-(d.left+d.radius)))
 	g.right = max(0, min(arc, d.right-d.radius-r))
 	if d.end {
@@ -417,14 +426,17 @@ func hangingRect(x, y, w, h, round float64) *gsk.RoundedRect {
 	return (*gsk.RoundedRect)(unsafe.Pointer(v))
 }
 
-// dropFromBar hangs d's card from the lower edge of the bar on the
-// focused monitor, where the panel opens, under that bar's button, and
-// drops it. The panel's window covers the monitor from its corner, as the
+// dropFromBar hangs d's card from the lower edge of the bar on mon (nil:
+// the focused monitor), where the panel opens, under that bar's button,
+// and drops it. The panel's window covers the monitor from its corner, as the
 // bar does, so the bar's coordinates are the window's. Without a bar the
 // card shows as a card of its own.
-func (s *shellUI) dropFromBar(d *drop, button func(*bar) *gtk.Widget) {
+func (s *shellUI) dropFromBar(d *drop, mon *gdk.Monitor, button func(*bar) *gtk.Widget) {
+	if mon == nil {
+		mon = s.focusedMonitor()
+	}
 	var on *bar
-	if mon := s.focusedMonitor(); mon != nil && s.layer {
+	if mon != nil && s.layer {
 		for _, b := range s.bars {
 			if b.mon.GoPointer() == mon.GoPointer() {
 				on = b

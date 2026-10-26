@@ -169,7 +169,7 @@ func (s *shellUI) openControl() {
 	s.applyControl()
 	s.applyBrightness()
 	c.win.Present()
-	s.dropFromBar(&c.drop, func(b *bar) *gtk.Widget { return &b.status.Widget }) // after Present, so it drops
+	s.dropFromBar(&c.drop, nil, func(b *bar) *gtk.Widget { return &b.status.Widget }) // after Present, so it drops
 	s.refocusPointer()
 	for _, b := range s.bars {
 		b.status.AddCssClass("open")
@@ -200,7 +200,7 @@ func (s *shellUI) buildControl() {
 	ui.Get("control", &c.win)
 	ui.Get("backdrop", &c.backdrop)
 	ui.Get("card", &c.card)
-	c.drop.attach(&c.backdrop, &c.card.Widget)
+	c.drop.attach(&c.backdrop, &c.card.Widget, true)
 	ui.Get("cc_bat_icon", &c.batIcon)
 	ui.Get("cc_bat_label", &c.batLabel)
 	ui.Get("wifi", &c.wifi)

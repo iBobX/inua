@@ -15,9 +15,6 @@ const (
 	DropCloseMS = 300
 )
 
-// DropFlare is the size of the arcs that join a hanging panel to the bar.
-const DropFlare = 14.0
-
 // Drop is the panel at a moment: the share of its height out of the bar,
 // and how it is stretched, about where its top edge meets the bar.
 type Drop struct {
