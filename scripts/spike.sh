@@ -96,6 +96,13 @@ for i in json.load(sys.stdin):
 		sleep 0.2
 	done
 	[ -n "${sig:-}" ] || fail "nested Hyprland did not start (log: $log/hyprland.log)"
+	# Starting, Hyprland gives D-Bus and systemd its display; give them the
+	# outer session's back, or what they start (file dialogs, the portals)
+	# opens in the nested window, and after it closes, nowhere.
+	local outer=(WAYLAND_DISPLAY="$WAYLAND_DISPLAY")
+	[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && outer+=(HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_INSTANCE_SIGNATURE")
+	sleep 1
+	dbus-update-activation-environment --systemd "${outer[@]}" >/dev/null 2>&1 || true
 	export HYPRLAND_INSTANCE_SIGNATURE=$sig WAYLAND_DISPLAY=$sock INUA_INSTANCE=${INUA_INSTANCE:-nested}
 
 	step "Starting $BIN in it"

@@ -81,3 +81,30 @@ func HasOwner(conn *dbus.Conn, name string) bool {
 	conn.BusObject().Call("org.freedesktop.DBus.NameHasOwner", 0, name).Store(&has)
 	return has
 }
+
+// activationEnv are the variables naming the session's display and
+// compositor.
+var activationEnv = []string{"WAYLAND_DISPLAY", "HYPRLAND_INSTANCE_SIGNATURE"}
+
+// ActivationDisplay gives D-Bus and the user's systemd this process's
+// display, so what they start (inua-files for a file chooser,
+// xdg-desktop-portal-hyprland) opens on it: a nested Hyprland gives them
+// its own as it starts, and they keep it after it is gone.
+func ActivationDisplay(conn *dbus.Conn) error {
+	env := map[string]string{}
+	var assign []string
+	for _, k := range activationEnv {
+		if v := os.Getenv(k); v != "" {
+			env[k] = v
+			assign = append(assign, k+"="+v)
+		}
+	}
+	if len(env) == 0 {
+		return nil
+	}
+	if err := conn.BusObject().Call("org.freedesktop.DBus.UpdateActivationEnvironment", 0, env).Err; err != nil {
+		return err
+	}
+	return conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1").
+		Call("org.freedesktop.systemd1.Manager.SetEnvironment", 0, assign).Err
+}

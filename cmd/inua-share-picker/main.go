@@ -3,16 +3,21 @@
 // app asks to share the screen, the shell's screenshot tool opens for
 // choosing a screen, a window or an area, and this prints the choice as
 // xdph reads it (docs/portals.md). It prints nothing when the user
-// cancels, which xdph takes as no.
+// cancels, which xdph takes as no. With no shell running, as in a plain
+// Hyprland session reading the same xdph.conf, xdph's own picker asks.
 package main
 
 import (
 	"cmp"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"net"
 	"os"
+	"os/exec"
 	"strings"
+	"syscall"
 
 	"github.com/lyricat/inua/internal/ipc"
 )
@@ -31,6 +36,9 @@ func main() {
 	instance := cmp.Or(os.Getenv("INUA_INSTANCE"), "default")
 	resp, err := ipc.Call(context.Background(), ipc.SocketPath(instance), ipc.Request{Op: "call", Target: "share", Function: "pick"})
 	if err != nil {
+		if op := (*net.OpError)(nil); errors.As(err, &op) && op.Op == "dial" {
+			hyprlandPicker()
+		}
 		fmt.Fprintln(os.Stderr, "inua-share-picker:", err)
 		os.Exit(1)
 	}
@@ -40,6 +48,18 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println(sel)
+}
+
+// hyprlandPicker runs xdph's own picker in this process's place, with
+// the same arguments (--allow-token) and environment; it returns only
+// when there is none.
+func hyprlandPicker() {
+	path, err := exec.LookPath("hyprland-share-picker")
+	if err != nil {
+		return
+	}
+	err = syscall.Exec(path, append([]string{path}, os.Args[1:]...), os.Environ())
+	fmt.Fprintln(os.Stderr, "inua-share-picker:", err)
 }
 
 // Selection is the shell's choice as xdph reads it: "[SELECTION]", the

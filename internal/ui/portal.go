@@ -14,6 +14,7 @@ import (
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/portal"
+	"github.com/lyricat/inua/internal/portalconf"
 	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/system"
 	"github.com/lyricat/inua/internal/wallgen"
@@ -36,6 +37,15 @@ func (s *shellUI) startPortals() {
 	if err != nil {
 		log.Printf("portals: %v", err)
 		return
+	}
+	// The session's own shell (a nested one has its instance) puts back
+	// the display a nested Hyprland left, before apps ask for a dialog.
+	if s.layer && s.opts.Instance == "default" {
+		go func() {
+			if err := portalconf.ActivationDisplay(conn); err != nil {
+				log.Printf("portals: the display for D-Bus and systemd: %v", err)
+			}
+		}()
 	}
 	p := &s.portals
 	p.settings = portal.NewSettings(conn)

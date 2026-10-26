@@ -108,6 +108,17 @@ picker (ScreenCast, below). `inua-files -picker` turns FileChooser and
 AppChooser on (`-picker=false` off). The code is `internal/portalconf`,
 without GTK.
 
+### The display
+
+D-Bus and the user's systemd start inua-files, inua-keyring and
+xdg-desktop-portal-hyprland with their activation environment. Hyprland
+writes its `WAYLAND_DISPLAY` and `HYPRLAND_INSTANCE_SIGNATURE` there as
+it starts, a nested one too, and what they started after it then opened
+on a display gone with the nested window ("Failed to open display").
+The session's shell (instance `default`) writes its own back as it
+starts (`portalconf.ActivationDisplay`), and `scripts/spike.sh nested`
+writes the outer session's back once its Hyprland is up.
+
 ## Serving a request
 
 Every method that waits for the user takes a `handle` and exports
@@ -219,6 +230,10 @@ pixels on the output). A window is named by the handle xdph lists for its
 address in `XDPH_WINDOW_SHARING_LIST`
 (`HANDLE[HC>]CLASS[HT>]TITLE[HE>]ADDRESS[HA>]`). Cancelled, it prints
 nothing, which xdph takes as no.
+
+With no shell to ask (a plain Hyprland session reads the same
+`xdph.conf`), it runs xdph's own `hyprland-share-picker` in its place,
+with the same arguments.
 
 ### FileChooser
 
