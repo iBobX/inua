@@ -16,176 +16,170 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
           <class name="backdrop"/>
         </style>
         <child>
-          <object class="GtkRevealer" id="reveal">
+          <object class="GtkBox" id="card">
+            <style>
+              <class name="card"/>
+            </style>
             <property name="halign">3</property>
             <property name="valign">1</property>
             <property name="hexpand">true</property>
             <property name="margin-top">42</property>
-            <property name="transition-type">5</property>
-            <property name="transition-duration">260</property>
+            <property name="orientation">1</property>
+            <property name="spacing">12</property>
+            <property name="width-request">340</property>
             <child>
-              <object class="GtkBox" id="card">
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <style>
+                      <class name="mark"/>
+                    </style>
+                    <property name="valign">3</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <style>
+                      <class name="tag"/>
+                    </style>
+                    <property name="label" translatable="yes">[CALENDAR]</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="today">
+                    <style>
+                      <class name="readout"/>
+                    </style>
+                    <property name="hexpand">true</property>
+                    <property name="xalign">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
                 <style>
-                  <class name="card"/>
+                  <class name="agenda-month-bar"/>
                 </style>
-                <property name="orientation">1</property>
-                <property name="spacing">12</property>
-                <property name="width-request">340</property>
+                <property name="spacing">2</property>
+                <child>
+                  <object class="GtkLabel" id="month">
+                    <style>
+                      <class name="readout"/>
+                    </style>
+                    <property name="hexpand">true</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="back_today">
+                    <style>
+                      <class name="link"/>
+                    </style>
+                    <property name="label" translatable="yes">Today</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="prev">
+                    <style>
+                      <class name="plain"/>
+                    </style>
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Previous month</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="next">
+                    <style>
+                      <class name="plain"/>
+                    </style>
+                    <property name="icon-name">go-next-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Next month</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkGrid" id="grid">
+                <style>
+                  <class name="agenda-grid"/>
+                </style>
+                <property name="column-homogeneous">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="weather">
+                <style>
+                  <class name="agenda-weather"/>
+                </style>
+                <property name="tooltip-text" translatable="yes">Open Weather</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="spacing">10</property>
+                    <property name="orientation">1</property>
+                    <property name="spacing">12</property>
                     <child>
                       <object class="GtkBox">
-                        <style>
-                          <class name="mark"/>
-                        </style>
-                        <property name="valign">3</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <style>
-                          <class name="tag"/>
-                        </style>
-                        <property name="label" translatable="yes">[CALENDAR]</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="today">
-                        <style>
-                          <class name="readout"/>
-                        </style>
-                        <property name="hexpand">true</property>
-                        <property name="xalign">1</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <style>
-                      <class name="agenda-month-bar"/>
-                    </style>
-                    <property name="spacing">2</property>
-                    <child>
-                      <object class="GtkLabel" id="month">
-                        <style>
-                          <class name="readout"/>
-                        </style>
-                        <property name="hexpand">true</property>
-                        <property name="xalign">0</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="back_today">
-                        <style>
-                          <class name="link"/>
-                        </style>
-                        <property name="label" translatable="yes">Today</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="prev">
-                        <style>
-                          <class name="plain"/>
-                        </style>
-                        <property name="icon-name">go-previous-symbolic</property>
-                        <property name="tooltip-text" translatable="yes">Previous month</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="next">
-                        <style>
-                          <class name="plain"/>
-                        </style>
-                        <property name="icon-name">go-next-symbolic</property>
-                        <property name="tooltip-text" translatable="yes">Next month</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkGrid" id="grid">
-                    <style>
-                      <class name="agenda-grid"/>
-                    </style>
-                    <property name="column-homogeneous">true</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="weather">
-                    <style>
-                      <class name="agenda-weather"/>
-                    </style>
-                    <property name="tooltip-text" translatable="yes">Open Weather</property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="orientation">1</property>
                         <property name="spacing">12</property>
                         <child>
+                          <object class="GtkImage" id="weather_icon">
+                            <property name="pixel-size">30</property>
+                            <property name="valign">3</property>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkBox">
-                            <property name="spacing">12</property>
+                            <property name="orientation">1</property>
+                            <property name="valign">3</property>
+                            <property name="hexpand">true</property>
                             <child>
-                              <object class="GtkImage" id="weather_icon">
-                                <property name="pixel-size">30</property>
-                                <property name="valign">3</property>
+                              <object class="GtkLabel" id="weather_temp">
+                                <style>
+                                  <class name="agenda-weather-temp"/>
+                                </style>
+                                <property name="xalign">0</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkBox">
-                                <property name="orientation">1</property>
-                                <property name="valign">3</property>
-                                <property name="hexpand">true</property>
-                                <child>
-                                  <object class="GtkLabel" id="weather_temp">
-                                    <style>
-                                      <class name="agenda-weather-temp"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="weather_text">
-                                    <style>
-                                      <class name="agenda-weather-text"/>
-                                    </style>
-                                    <property name="xalign">0</property>
-                                    <property name="ellipsize">3</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="orientation">1</property>
-                                <property name="valign">3</property>
-                                <child>
-                                  <object class="GtkLabel" id="weather_place">
-                                    <style>
-                                      <class name="readout"/>
-                                    </style>
-                                    <property name="xalign">1</property>
-                                    <property name="ellipsize">3</property>
-                                    <property name="max-width-chars">18</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="weather_range">
-                                    <style>
-                                      <class name="agenda-weather-text"/>
-                                    </style>
-                                    <property name="xalign">1</property>
-                                  </object>
-                                </child>
+                              <object class="GtkLabel" id="weather_text">
+                                <style>
+                                  <class name="agenda-weather-text"/>
+                                </style>
+                                <property name="xalign">0</property>
+                                <property name="ellipsize">3</property>
                               </object>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkBox" id="weather_days">
-                            <property name="homogeneous">true</property>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
+                            <property name="valign">3</property>
+                            <child>
+                              <object class="GtkLabel" id="weather_place">
+                                <style>
+                                  <class name="readout"/>
+                                </style>
+                                <property name="xalign">1</property>
+                                <property name="ellipsize">3</property>
+                                <property name="max-width-chars">18</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="weather_range">
+                                <style>
+                                  <class name="agenda-weather-text"/>
+                                </style>
+                                <property name="xalign">1</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="weather_days">
+                        <property name="homogeneous">true</property>
                       </object>
                     </child>
                   </object>

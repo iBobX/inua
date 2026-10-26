@@ -1,0 +1,442 @@
+package ui
+
+import (
+	"math"
+	"time"
+	"unsafe"
+
+	"codeberg.org/puregotk/puregotk/v4/gdk"
+	"codeberg.org/puregotk/puregotk/v4/glib"
+	"codeberg.org/puregotk/puregotk/v4/graphene"
+	"codeberg.org/puregotk/puregotk/v4/gsk"
+	"codeberg.org/puregotk/puregotk/v4/gtk"
+
+	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/shell"
+)
+
+// drop hangs a card from the bar (shell.DropAt) as one piece with it: the
+// card comes down out of the bar's lower edge, soft, stretching and
+// wobbling, and goes back up into it. The card moves into a canvas as big
+// as the window, which draws the bar's glass for it: the card's box, arcs
+// that join it to the bar, and one outline round both with the bar's
+// lower edge, whose own border is off meanwhile (.joined). A card aligned
+// to the end is flush with the bar's end instead, its side going on from
+// the bar's, with no arc there (.joined-end squares the bar's corner). The card itself
+// is .hanging, with no background of its own, and the canvas places it,
+// stretched, clipped at the bar's edge. The drop outlives the windows:
+// each window gives it its backdrop and card when built.
+type drop struct {
+	canvas   *gtk.Widget
+	backdrop *gtk.Box
+	card     *gtk.Widget
+	bar      *gtk.Widget // the window of the bar it hangs from
+
+	// Where it hangs, in the window's coordinates: the bar's island ends
+	// at left and right and its lower edge is at y, with corners of
+	// radius; border is whether it has a border; corner is the card's.
+	left, right, y float64
+	radius, corner float64
+	border         bool
+	end            bool    // flush with the bar's end
+	under          float64 // the middle of the button it hangs under
+	x, w, h        float64 // the card's box, at rest
+	glass, line    gdk.RGBA
+
+	hanging bool
+	moving  bool
+	opening bool
+	back    bool    // closing while it opened: the opening's frames backwards
+	u       float64 // how far through, 0 to 1
+	last    time.Time
+	tick    uint32
+	gone    func() // when it has closed
+
+	onTick     gtk.TickCallback
+	onTickDone glib.DestroyNotify
+}
+
+// attach takes a newly built window's backdrop and the card in it.
+func (d *drop) attach(backdrop *gtk.Box, card *gtk.Widget) {
+	d.backdrop, d.card, d.canvas, d.bar = backdrop, card, nil, nil
+	d.hanging, d.moving, d.back, d.gone = false, false, false, nil
+	if d.onTick == nil {
+		d.onTick = func(uintptr, uintptr, uintptr) bool { return d.step() }
+		d.onTickDone = func(uintptr) { d.tick = 0 }
+	}
+}
+
+// detach gives the window its card back to go with it, and the bar its
+// border.
+func (d *drop) detach() {
+	if d.bar != nil {
+		d.bar.RemoveCssClass("joined")
+		d.bar.RemoveCssClass("joined-end")
+	}
+	if d.canvas != nil {
+		d.card.Unparent()
+		gtkx.ForgetCanvas(d.canvas)
+	}
+	d.canvas, d.backdrop, d.card, d.bar = nil, nil, nil, nil
+}
+
+// hang moves the card into a canvas, to hang from the bar b under the
+// button whose middle is at under.
+func (d *drop) hang(s *shellUI, b *bar, island [4]float32, under float64) bool {
+	if !d.colors(b.win.HasCssClass("empty")) {
+		return false
+	}
+	d.canvas = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: d.snapshot, Allocate: d.allocate})
+	d.canvas.SetHexpand(true)
+	d.canvas.SetVexpand(true)
+	d.card.Ref()
+	d.backdrop.Remove(d.card)
+	d.card.SetParent(d.canvas)
+	d.card.Unref()
+	d.backdrop.Append(d.canvas)
+	d.card.SetMarginTop(0)
+	d.card.SetMarginEnd(0)
+	d.card.AddCssClass("hanging")
+	d.backdrop.AddCssClass("hanging")
+
+	d.left, d.right = float64(island[0]), float64(island[0]+island[2])
+	d.y = float64(island[1] + island[3])
+	d.under = under
+	d.radius = float64(s.cfg.Style.Radius)
+	if !b.edgeGaps {
+		d.radius = 0 // flush: square
+	}
+	d.corner = float64(s.cfg.Style.Radius)
+	d.border = !b.compact // a compact bar has none
+	d.end = d.card.GetHalign() == gtk.AlignEndValue
+	d.bar = &b.win.Widget
+	d.bar.AddCssClass("joined")
+	if d.end {
+		d.bar.AddCssClass("joined-end")
+	}
+	d.hanging = true
+	return true
+}
+
+// colors reads the bar's glass (empty, an empty workspace's) and border
+// from the theme.
+func (d *drop) colors(empty bool) bool {
+	sc := d.backdrop.GetStyleContext()
+	glass := "glass"
+	if empty {
+		glass = "glass_empty"
+	}
+	if !sc.LookupColor(glass, &d.glass) || !sc.LookupColor("line", &d.line) {
+		return false
+	}
+	d.line.Alpha *= 0.9 // as the island's: alpha(@line, 0.9)
+	return true
+}
+
+// open drops the card; with animations off it hangs there at once.
+func (d *drop) open() {
+	if !d.hanging {
+		return
+	}
+	d.opening = true
+	if !gtk.SettingsGetDefault().GetPropertyGtkEnableAnimations() {
+		d.u = 1
+		return
+	}
+	d.u = 0
+	d.start()
+}
+
+// close draws the card back up and calls gone when it is out of sight; a
+// drop still opening goes back the way it came.
+func (d *drop) close(gone func()) {
+	switch {
+	case !d.hanging || !gtk.SettingsGetDefault().GetPropertyGtkEnableAnimations():
+		gone()
+	case d.moving && d.opening:
+		d.opening, d.back = false, true
+		d.gone = gone
+	case d.moving:
+		d.gone = gone
+	default:
+		d.opening, d.u = false, 0
+		d.gone = gone
+		d.start()
+	}
+}
+
+func (d *drop) start() {
+	d.moving = true
+	d.last = time.Now()
+	if d.tick == 0 {
+		d.tick = d.canvas.AddTickCallback(&d.onTick, 0, &d.onTickDone)
+	}
+	d.canvas.QueueAllocate()
+}
+
+// step moves the drop on a frame.
+func (d *drop) step() bool {
+	now := time.Now()
+	dt := float64(now.Sub(d.last).Milliseconds())
+	d.last = now
+	switch {
+	case d.opening:
+		d.u += dt / shell.DropOpenMS
+	case d.back: // as fast as a close
+		d.u -= dt / shell.DropCloseMS
+	default:
+		d.u += dt / shell.DropCloseMS
+	}
+	d.canvas.QueueAllocate()
+	switch {
+	case d.opening && d.u >= 1:
+		d.u, d.moving = 1, false
+		return false
+	case !d.opening && d.moving && (d.back && d.u <= 0 || !d.back && d.u >= 1):
+		d.u, d.moving = 0, false // drawn out of sight first, then gone
+	case !d.opening && !d.moving:
+		if gone := d.gone; gone != nil {
+			d.gone = nil
+			gone()
+		}
+		return false
+	}
+	return true
+}
+
+// now is the card's shape now.
+func (d *drop) now() shell.Drop {
+	if !d.moving {
+		if d.opening {
+			return shell.Drop{Shown: 1, ScaleX: 1, ScaleY: 1}
+		}
+		return shell.Drop{ScaleX: 1, ScaleY: 1}
+	}
+	return shell.DropAt(d.u, d.opening || d.back)
+}
+
+// allocate places the card at its natural size, flush with the bar's end
+// or under its button, with room for the arcs inside the bar, as far up
+// in the bar as it has not yet come out, and stretched about where it
+// meets the bar.
+func (d *drop) allocate(_ *gtk.Widget, _, _ int) {
+	var w, h int32
+	d.card.Measure(gtk.OrientationHorizontalValue, -1, nil, &w, nil, nil)
+	d.card.Measure(gtk.OrientationVerticalValue, w, nil, &h, nil, nil)
+	d.w, d.h = float64(w), float64(h)
+	if d.end {
+		// Its outline, just outside it, on the bar's border, just inside
+		// the bar.
+		d.x = d.right - 1 - d.w
+	} else {
+		room := d.radius + shell.DropFlare
+		d.x = math.Round(max(d.left+room, min(d.under-d.w/2, d.right-room-d.w)))
+	}
+	n := d.now()
+	at := d.anchor()
+	t := gsk.NewTransform().
+		Translate(&graphene.Point{X: float32(at), Y: float32(d.y)}).
+		Scale(float32(n.ScaleX), float32(n.ScaleY)).
+		Translate(&graphene.Point{X: float32(d.x - at), Y: float32(-d.h * (1 - n.Shown))})
+	d.card.Allocate(w, h, -1, t)
+	d.canvas.QueueDraw() // the glass follows the card
+}
+
+// anchor is where the card stretches from along the bar: its middle, or
+// its end, which stays on the bar's.
+func (d *drop) anchor() float64 {
+	if d.end {
+		return d.x + d.w
+	}
+	return d.x + d.w/2
+}
+
+func (d *drop) snapshot(_ *gtk.Widget, s *gtk.Snapshot) {
+	if !d.hanging {
+		return
+	}
+	n := d.now()
+	at := d.anchor()
+	l, r := at+(d.x-at)*n.ScaleX, at+(d.x+d.w-at)*n.ScaleX
+	b := d.y + d.h*n.Shown*n.ScaleY
+	cw, ch := float32(d.canvas.GetWidth()), float32(d.canvas.GetHeight())
+	stroke := gsk.NewStroke(1)
+	defer stroke.Free()
+	if b-d.y < 0.5 {
+		if d.border {
+			edge := barEdge(d)
+			s.AppendStroke(edge, stroke, &d.line)
+			edge.Unref()
+		}
+		return
+	}
+	g := d.shape(l, r, b)
+
+	// The shadow, round the card's box, neither over the bar nor under
+	// the glass: the arcs would be darker than the bar and the card.
+	fill := g.glass()
+	below := rect(0, float32(d.y), cw, ch)
+	s.PushClip(below)
+	s.PushMask(gsk.MaskModeInvertedAlphaValue)
+	s.AppendFill(fill, gsk.FillRuleWindingValue, &gdk.RGBA{Alpha: 1})
+	s.Pop()
+	shadow := gdk.RGBA{Alpha: 0.32}
+	s.AppendOutsetShadow(hangingRect(l, d.y, r-l, b-d.y, g.round), &shadow, 0, 8, 0, 28)
+	s.Pop()
+	s.Pop()
+	s.AppendFill(fill, gsk.FillRuleWindingValue, &d.glass)
+	fill.Unref()
+	if d.border {
+		edge := g.outline()
+		s.AppendStroke(edge, stroke, &d.line)
+		edge.Unref()
+	}
+	s.PushClip(below)
+	d.canvas.SnapshotChild(d.card, s)
+	s.Pop()
+}
+
+// dropShape is the outline the canvas draws: the card's box from l to r
+// and down to bottom, joined to the bar's edge at y by arcs of left and
+// right, inside the island from il to ir with corners of radius; or flush
+// with its end (end), where the island's corner is square.
+type dropShape struct {
+	l, r, y, bottom float64
+	left, right     float64 // the arcs' sizes
+	round           float64 // the card's lower corners
+	il, ir, radius  float64
+	end             bool
+}
+
+func (d *drop) shape(l, r, b float64) dropShape {
+	g := dropShape{l: l, r: r, y: d.y, bottom: b, il: d.left, ir: d.right, radius: d.radius, end: d.end}
+	g.round = min(d.corner, (r-l)/2, (b-d.y)/2)
+	arc := min(shell.DropFlare, b-d.y-g.round)
+	g.left = max(0, min(arc, l-(d.left+d.radius)))
+	g.right = max(0, min(arc, d.right-d.radius-r))
+	if d.end {
+		g.right = 0
+	}
+	return g
+}
+
+// glass is the shape's inside: the card's box and the arcs, up to the
+// bar's edge.
+func (g dropShape) glass() *gsk.Path {
+	pb := gsk.NewPathBuilder()
+	pb.MoveTo(f32(g.l-g.left), f32(g.y))
+	arc(pb, g.l-g.left, g.y+g.left, g.left, 270, 360)
+	pb.LineTo(f32(g.l), f32(g.bottom-g.round))
+	arc(pb, g.l+g.round, g.bottom-g.round, g.round, 180, 90)
+	pb.LineTo(f32(g.r-g.round), f32(g.bottom))
+	arc(pb, g.r-g.round, g.bottom-g.round, g.round, 90, 0)
+	pb.LineTo(f32(g.r), f32(g.y+g.right))
+	arc(pb, g.r+g.right, g.y+g.right, g.right, 180, 270)
+	pb.Close()
+	return pb.FreeToPath()
+}
+
+// outline is the border round the bar's island and the card as one: the
+// island's lower corners and edge, down each arc, round the card. It runs
+// half a pixel outside the glass, so its pixels are whole.
+func (g dropShape) outline() *gsk.Path {
+	pb := gsk.NewPathBuilder()
+	g.barStart(pb)
+	pb.LineTo(f32(g.l-g.left), f32(g.y-0.5))
+	pb.LineTo(f32(g.l-g.left), f32(g.y+0.5))
+	arc(pb, g.l-g.left, g.y+g.left, g.left-0.5, 270, 360)
+	pb.LineTo(f32(g.l-0.5), f32(g.bottom-g.round))
+	arc(pb, g.l+g.round, g.bottom-g.round, g.round+0.5, 180, 90)
+	pb.LineTo(f32(g.r-g.round), f32(g.bottom+0.5))
+	arc(pb, g.r-g.round, g.bottom-g.round, g.round+0.5, 90, 0)
+	if g.end { // up into the bar's side, which goes on from here
+		pb.LineTo(f32(g.r+0.5), f32(g.y))
+		return pb.FreeToPath()
+	}
+	pb.LineTo(f32(g.r+0.5), f32(g.y+g.right))
+	arc(pb, g.r+g.right, g.y+g.right, g.right-0.5, 180, 270)
+	pb.LineTo(f32(g.r+g.right), f32(g.y-0.5))
+	g.barEnd(pb)
+	return pb.FreeToPath()
+}
+
+// barStart starts at the island's lower left corner, round it; barEnd
+// goes along to the lower right corner and round it.
+func (g dropShape) barStart(pb *gsk.PathBuilder) {
+	if g.radius < 1 { // square
+		pb.MoveTo(f32(g.il), f32(g.y-0.5))
+		return
+	}
+	pb.MoveTo(f32(g.il+0.5), f32(g.y-g.radius))
+	arc(pb, g.il+g.radius, g.y-g.radius, g.radius-0.5, 180, 90)
+}
+
+func (g dropShape) barEnd(pb *gsk.PathBuilder) {
+	if g.end || g.radius < 1 { // square
+		pb.LineTo(f32(g.ir), f32(g.y-0.5))
+		return
+	}
+	pb.LineTo(f32(g.ir-g.radius), f32(g.y-0.5))
+	arc(pb, g.ir-g.radius, g.y-g.radius, g.radius-0.5, 90, 0)
+}
+
+// barEdge is the island's lower edge alone, while nothing hangs from it.
+func barEdge(d *drop) *gsk.Path {
+	g := dropShape{y: d.y, il: d.left, ir: d.right, radius: d.radius, end: d.end}
+	pb := gsk.NewPathBuilder()
+	g.barStart(pb)
+	g.barEnd(pb)
+	return pb.FreeToPath()
+}
+
+// arc goes round the circle about cx, cy from angle a0 to a1, in degrees
+// clockwise from the right as the screen's y runs down, as a cubic; a
+// quarter at most. It does nothing for a radius under half a pixel.
+func arc(pb *gsk.PathBuilder, cx, cy, r, a0, a1 float64) {
+	if r < 0.5 {
+		return
+	}
+	t0, t1 := a0*math.Pi/180, a1*math.Pi/180
+	k := 4.0 / 3 * math.Tan((t1-t0)/4) * r
+	x0, y0 := cx+r*math.Cos(t0), cy+r*math.Sin(t0)
+	x1, y1 := cx+r*math.Cos(t1), cy+r*math.Sin(t1)
+	pb.LineTo(f32(x0), f32(y0))
+	pb.CubicTo(f32(x0-k*math.Sin(t0)), f32(y0+k*math.Cos(t0)), f32(x1+k*math.Sin(t1)), f32(y1-k*math.Cos(t1)), f32(x1), f32(y1))
+}
+
+func f32(v float64) float32 { return float32(v) }
+
+// hangingRect is the card's box with its lower corners rounded, for its
+// shadow. As with graphene_rect_t (rect), puregotk declares
+// GskRoundedRect with pointer fields; the C struct is twelve floats: the
+// bounds, then each corner's width and height from the top left round.
+func hangingRect(x, y, w, h, round float64) *gsk.RoundedRect {
+	r := float32(round)
+	v := new([12]float32)
+	*v = [12]float32{float32(x), float32(y), float32(w), float32(h), 0, 0, 0, 0, r, r, r, r}
+	return (*gsk.RoundedRect)(unsafe.Pointer(v))
+}
+
+// dropFromBar hangs d's card from the lower edge of the bar on the
+// focused monitor, where the panel opens, under that bar's button, and
+// drops it. The panel's window covers the monitor from its corner, as the
+// bar does, so the bar's coordinates are the window's. Without a bar the
+// card shows as a card of its own.
+func (s *shellUI) dropFromBar(d *drop, button func(*bar) *gtk.Widget) {
+	var on *bar
+	if mon := s.focusedMonitor(); mon != nil && s.layer {
+		for _, b := range s.bars {
+			if b.mon.GoPointer() == mon.GoPointer() {
+				on = b
+			}
+		}
+	}
+	var r, br graphene.Rect
+	if on == nil || !on.island.ComputeBounds(&on.win.Widget, &r) || !button(on).ComputeBounds(&on.win.Widget, &br) {
+		return
+	}
+	b := *(*[4]float32)(unsafe.Pointer(&br))
+	if d.hang(s, on, *(*[4]float32)(unsafe.Pointer(&r)), float64(b[0]+b[2]/2)) {
+		d.open()
+	}
+}

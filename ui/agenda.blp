@@ -10,131 +10,128 @@ ApplicationWindow agenda {
   Box backdrop {
     styles ["backdrop"]
 
-    Revealer reveal {
+    // Go hangs the card from the bar's edge and drops it from there
+    // (drop.go).
+    Box card {
+      styles ["card"]
       halign: center;
       valign: start;
       hexpand: true;
       margin-top: 42;
-      transition-type: slide_down;
-      transition-duration: 260;
+      orientation: vertical;
+      spacing: 12;
+      width-request: 340;
 
-      Box card {
-        styles ["card"]
-        orientation: vertical;
-        spacing: 12;
-        width-request: 340;
+      // The head, as the notification center's: mark, tag, and today.
+      Box {
+        spacing: 10;
 
-        // The head, as the notification center's: mark, tag, and today.
         Box {
-          spacing: 10;
+          styles ["mark"]
+          valign: center;
+        }
+
+        Label {
+          styles ["tag"]
+          label:  _("[CALENDAR]");
+        }
+
+        Label today {
+          styles ["readout"]
+          hexpand: true;
+          xalign: 1;
+        }
+      }
+
+      // The month shown, and its way back and forth.
+      Box {
+        styles ["agenda-month-bar"]
+        spacing: 2;
+
+        Label month {
+          styles ["readout"]
+          hexpand: true;
+          xalign: 0;
+        }
+
+        Button back_today {
+          styles ["link"]
+          label:  _("Today");
+        }
+
+        Button prev {
+          styles ["plain"]
+          icon-name: "go-previous-symbolic";
+          tooltip-text:  _("Previous month");
+        }
+
+        Button next {
+          styles ["plain"]
+          icon-name: "go-next-symbolic";
+          tooltip-text:  _("Next month");
+        }
+      }
+
+      Grid grid {
+        styles ["agenda-grid"]
+        column-homogeneous: true;
+      }
+
+      // The weather at the Weather app's place: now, then the next days.
+      // A click opens the app.
+      Button weather {
+        styles ["agenda-weather"]
+        tooltip-text:  _("Open Weather");
+
+        Box {
+          orientation: vertical;
+          spacing: 12;
 
           Box {
-            styles ["mark"]
-            valign: center;
-          }
-
-          Label {
-            styles ["tag"]
-            label:  _("[CALENDAR]");
-          }
-
-          Label today {
-            styles ["readout"]
-            hexpand: true;
-            xalign: 1;
-          }
-        }
-
-        // The month shown, and its way back and forth.
-        Box {
-          styles ["agenda-month-bar"]
-          spacing: 2;
-
-          Label month {
-            styles ["readout"]
-            hexpand: true;
-            xalign: 0;
-          }
-
-          Button back_today {
-            styles ["link"]
-            label:  _("Today");
-          }
-
-          Button prev {
-            styles ["plain"]
-            icon-name: "go-previous-symbolic";
-            tooltip-text:  _("Previous month");
-          }
-
-          Button next {
-            styles ["plain"]
-            icon-name: "go-next-symbolic";
-            tooltip-text:  _("Next month");
-          }
-        }
-
-        Grid grid {
-          styles ["agenda-grid"]
-          column-homogeneous: true;
-        }
-
-        // The weather at the Weather app's place: now, then the next days.
-        // A click opens the app.
-        Button weather {
-          styles ["agenda-weather"]
-          tooltip-text:  _("Open Weather");
-
-          Box {
-            orientation: vertical;
             spacing: 12;
 
+            Image weather_icon {
+              pixel-size: 30;
+              valign: center;
+            }
+
             Box {
-              spacing: 12;
+              orientation: vertical;
+              valign: center;
+              hexpand: true;
 
-              Image weather_icon {
-                pixel-size: 30;
-                valign: center;
+              Label weather_temp {
+                styles ["agenda-weather-temp"]
+                xalign: 0;
               }
 
-              Box {
-                orientation: vertical;
-                valign: center;
-                hexpand: true;
-
-                Label weather_temp {
-                  styles ["agenda-weather-temp"]
-                  xalign: 0;
-                }
-
-                Label weather_text {
-                  styles ["agenda-weather-text"]
-                  xalign: 0;
-                  ellipsize: end;
-                }
-              }
-
-              Box {
-                orientation: vertical;
-                valign: center;
-
-                Label weather_place {
-                  styles ["readout"]
-                  xalign: 1;
-                  ellipsize: end;
-                  max-width-chars: 18;
-                }
-
-                Label weather_range {
-                  styles ["agenda-weather-text"]
-                  xalign: 1;
-                }
+              Label weather_text {
+                styles ["agenda-weather-text"]
+                xalign: 0;
+                ellipsize: end;
               }
             }
 
-            Box weather_days {
-              homogeneous: true;
+            Box {
+              orientation: vertical;
+              valign: center;
+
+              Label weather_place {
+                styles ["readout"]
+                xalign: 1;
+                ellipsize: end;
+                max-width-chars: 18;
+              }
+
+              Label weather_range {
+                styles ["agenda-weather-text"]
+                xalign: 1;
+              }
             }
+          }
+
+          Box weather_days {
+            homogeneous: true;
           }
         }
       }

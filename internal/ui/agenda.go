@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
-	"codeberg.org/puregotk/puregotk/v4/glib"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/calendar"
@@ -32,7 +31,8 @@ type agenda struct {
 
 	win      gtk.ApplicationWindow
 	backdrop gtk.Box
-	reveal   gtk.Revealer
+	card     gtk.Box
+	drop     drop
 	refs     gtkx.Scope
 
 	today, month gtk.Label
@@ -88,7 +88,7 @@ func (s *shellUI) bindAgendaHandlers() {
 		if hit == nil {
 			return
 		}
-		outside := hit.GoPointer() == a.backdrop.GoPointer()
+		outside := hit.GoPointer() != a.card.GoPointer() && !hit.IsAncestor(&a.card.Widget)
 		hit.Unref()
 		if outside {
 			s.closeAgenda()
@@ -103,6 +103,7 @@ func (s *shellUI) bindAgendaHandlers() {
 	}
 	s.onAgendaGone = func(uintptr) bool {
 		a := &s.agenda
+		a.drop.detach()
 		a.win.Destroy()
 		a.refs.Release()
 		a.open, a.closing = false, false
@@ -138,7 +139,7 @@ func (s *shellUI) openAgenda() {
 	s.showAgenda()
 	s.agendaWeather()
 	a.win.Present()
-	a.reveal.SetRevealChild(true) // after Present, so it slides in
+	s.dropFromBar(&a.drop, func(b *bar) *gtk.Widget { return &b.clockButton.Widget }) // after Present, so it drops
 	s.refocusPointer()
 	for _, b := range s.bars {
 		b.clockButton.AddCssClass("open")
@@ -151,11 +152,10 @@ func (s *shellUI) closeAgenda() {
 		return
 	}
 	a.closing = true
-	a.reveal.SetRevealChild(false)
+	a.drop.close(func() { s.onAgendaGone(0) })
 	for _, b := range s.bars {
 		b.clockButton.RemoveCssClass("open")
 	}
-	glib.TimeoutAdd(revealMS, &s.onAgendaGone, 0)
 }
 
 func (s *shellUI) buildAgenda() {
@@ -163,7 +163,7 @@ func (s *shellUI) buildAgenda() {
 	ui := s.load("agenda.ui", &a.refs)
 	ui.Get("agenda", &a.win)
 	ui.Get("backdrop", &a.backdrop)
-	ui.Get("reveal", &a.reveal)
+	ui.Get("card", &a.card)
 	ui.Get("today", &a.today)
 	ui.Get("month", &a.month)
 	ui.Get("grid", &a.grid)
@@ -179,6 +179,7 @@ func (s *shellUI) buildAgenda() {
 	ui.Get("next", &next)
 	ui.Get("back_today", &today)
 	ui.Close()
+	a.drop.attach(&a.backdrop, &a.card.Widget)
 
 	prev.SetName("prev")
 	next.SetName("next")

@@ -21,7 +21,7 @@ import (
 	"github.com/lyricat/inua/internal/system"
 )
 
-// revealMS matches transition-duration in control.blp.
+// revealMS matches transition-duration in center.blp.
 const revealMS = 260
 
 // control is the control center. Like the launcher, its window (control.ui)
@@ -33,7 +33,8 @@ type control struct {
 
 	win      gtk.ApplicationWindow
 	backdrop gtk.Box
-	reveal   gtk.Revealer
+	card     gtk.Box
+	drop     drop
 	refs     gtkx.Scope
 
 	batIcon                          gtk.Image
@@ -98,7 +99,7 @@ func (s *shellUI) bindControlHandlers() {
 		if hit == nil {
 			return
 		}
-		outside := hit.GoPointer() == c.backdrop.GoPointer()
+		outside := hit.GoPointer() != c.card.GoPointer() && !hit.IsAncestor(&c.card.Widget)
 		hit.Unref() // Pick returned a new reference
 		if outside {
 			s.closeControl()
@@ -125,6 +126,7 @@ func (s *shellUI) bindControlHandlers() {
 	}
 	s.onControlGone = func(uintptr) bool {
 		c := &s.control
+		c.drop.detach()
 		c.win.Destroy()
 		c.refs.Release()
 		c.open, c.closing = false, false
@@ -167,7 +169,7 @@ func (s *shellUI) openControl() {
 	s.applyControl()
 	s.applyBrightness()
 	c.win.Present()
-	c.reveal.SetRevealChild(true) // after Present, so it slides in
+	s.dropFromBar(&c.drop, func(b *bar) *gtk.Widget { return &b.status.Widget }) // after Present, so it drops
 	s.refocusPointer()
 	for _, b := range s.bars {
 		b.status.AddCssClass("open")
@@ -186,11 +188,10 @@ func (s *shellUI) closeControl() {
 		return
 	}
 	c.closing = true
-	c.reveal.SetRevealChild(false)
+	c.drop.close(func() { s.onControlGone(0) })
 	for _, b := range s.bars {
 		b.status.RemoveCssClass("open")
 	}
-	glib.TimeoutAdd(revealMS, &s.onControlGone, 0)
 }
 
 func (s *shellUI) buildControl() {
@@ -198,7 +199,8 @@ func (s *shellUI) buildControl() {
 	ui := s.load("control.ui", &c.refs)
 	ui.Get("control", &c.win)
 	ui.Get("backdrop", &c.backdrop)
-	ui.Get("reveal", &c.reveal)
+	ui.Get("card", &c.card)
+	c.drop.attach(&c.backdrop, &c.card.Widget)
 	ui.Get("cc_bat_icon", &c.batIcon)
 	ui.Get("cc_bat_label", &c.batLabel)
 	ui.Get("wifi", &c.wifi)
@@ -497,7 +499,7 @@ func (s *shellUI) controlAction(name string) {
 	case "screenshot":
 		s.closeControl()
 		go func() {
-			time.Sleep(revealMS*time.Millisecond + 150*time.Millisecond) // out of the picture first
+			time.Sleep((shell.DropCloseMS + 150) * time.Millisecond) // out of the picture first
 			run(s.cfg.Control.Screenshot)
 		}()
 	default:

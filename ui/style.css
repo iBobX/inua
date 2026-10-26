@@ -373,6 +373,13 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
   padding: 14px 16px 16px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
 }
+/* Hanging from the bar (drop.go): the drop draws the card's glass and
+   border as one with the bar's, and the bar's own lower border while it
+   hangs; nothing dims behind it, so it is the bar's glass to the eye too. */
+.control .backdrop.hanging, .agenda .backdrop.hanging { background: none; }
+.control .card.hanging, .agenda .card.hanging { background: none; border-color: transparent; box-shadow: none; }
+.bar.joined .island { border-bottom-color: transparent; }
+.bar.joined-end .island { border-bottom-right-radius: 0; }
 
 /* The display icon brightens with the screen, and glows in the accent as
    it nears full. */

@@ -176,8 +176,14 @@ bar, over a full-screen backdrop that closes it on a click.
   to the screen's foot (the notification center, the clipboard history)
   is in a `GtkRevealer` that slides in from the right edge when it opens
   and back out however it closes (`revealMS`); the window goes once it is
-  out. The control center and the agenda, as tall as their content,
-  slide down from the bar the same way.
+  out.
+- **A panel under a bar button hangs from the bar.** The control center
+  and the agenda, as tall as their content, are one piece of glass with
+  the bar: the bar's glass and border, no border or seam where they meet,
+  joined by concave arcs; a panel at the bar's end goes on flush from its
+  side instead. Opening, it drops out of the bar's edge, soft: it falls
+  faster and faster, stretches, and wobbles still; closing, the bar draws
+  it back up (`drop.go`, `shell.DropAt`). Nothing dims behind it.
 
 ## Controls
 
