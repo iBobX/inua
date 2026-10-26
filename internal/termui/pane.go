@@ -160,25 +160,42 @@ func (p *termPane) drawRun(w *gtk.Widget, s *gtk.Snapshot, r vt.Run, cw, ch floa
 // Japanese one, a symbol's) at its own cells, in the middle of them, so
 // what follows it and the cursor stay where the engine counts them.
 func (p *termPane) drawText(w *gtk.Widget, s *gtk.Snapshot, text string, cells int, font *pango.FontDescription, fg *gdk.RGBA, cw float32) {
+	// The font's advance is fractional at a fractional scale (7.2 pixels,
+	// say) and a cell whole ones: ASCII is spaced out (or in) to a cell a
+	// character, or it drifts from the cursor and from the runs after it.
+	m := w.CreatePangoLayout("M")
+	m.SetFontDescription(font)
+	var adv, mh int32
+	m.GetSize(&adv, &mh)
+	base := m.GetBaseline()
+	m.Unref()
+	var attrs *pango.AttrList
+	if spacing := int32(cw*float32(pango.SCALE)) - adv; spacing != 0 {
+		attrs = pango.NewAttrList()
+		attrs.Insert(pango.AttrLetterSpacingNew(spacing))
+		defer attrs.Unref()
+	}
 	cs, ok := cellClusters(text, cells)
 	if isASCII(text) || !ok {
 		l := w.CreatePangoLayout(text)
 		l.SetFontDescription(font)
+		if ok {
+			l.SetAttributes(attrs)
+		}
 		s.AppendLayout(l, fg)
 		l.Unref()
 		return
 	}
 	// Each piece on the terminal font's baseline: a layout with another
 	// font in it has that font's, lower.
-	m := w.CreatePangoLayout("M")
-	m.SetFontDescription(font)
-	base := m.GetBaseline()
-	m.Unref()
 	// put draws text from cell x; centred over span cells when span > 0,
 	// an advance wider than them starting at their left edge.
 	put := func(text string, x, span int) {
 		l := w.CreatePangoLayout(text)
 		l.SetFontDescription(font)
+		if span == 0 {
+			l.SetAttributes(attrs)
+		}
 		left := float32(x) * cw
 		if span > 0 {
 			var lw, lh int32
