@@ -26,7 +26,4 @@ func TestCheckersHoles(t *testing.T) {
 	if (&checkers{}).holeAt(games.Vec{X: 1, Y: 1}) != -1 {
 		t.Error("a hole in the corner of the canvas")
 	}
-	if n := neighbours(games.HoleAt(games.Hole{})); len(n) != 6 {
-		t.Errorf("the middle has %d neighbours", len(n))
-	}
 }

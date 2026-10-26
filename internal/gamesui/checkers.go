@@ -119,6 +119,7 @@ const (
 	ckSide   = 760.0
 	ckMarble = 0.36 // a marble's radius, in gaps
 	ckStep   = 0.17 // seconds a step or a hop takes
+	ckStar   = 7.8  // the board's star, from its middle to a tip, in gaps: a little past the holes
 )
 
 func (p *checkers) theme() string { return "washi" }
@@ -857,10 +858,10 @@ func (p *checkers) note(e games.CheckersEvent) {
 		switch {
 		case e.Owner != e.Player:
 			line = i18n.Tf("%s moved %s's marble", name(e.Player), name(e.Owner))
-		case hops > 1 || !slices.Contains(neighbours(e.Path[0]), e.Path[1]):
+		case hops > 1:
 			line = i18n.Tf("%s hopped %d times", name(e.Player), hops)
 		default:
-			return // a step: not worth a line
+			line = i18n.Tf("%s moved", name(e.Player))
 		}
 	case games.CkPass:
 		line = i18n.Tf("%s could not move", name(e.Player))
@@ -881,19 +882,6 @@ func (p *checkers) note(e games.CheckersEvent) {
 		p.log.Remove(p.log.GetLastChild())
 		p.logLines--
 	}
-}
-
-// neighbours are the holes next to h.
-func neighbours(h int) []int {
-	var out []int
-	x, y := games.StarXY(h)
-	for o := range games.StarHoles {
-		ox, oy := games.StarXY(o)
-		if d := math.Hypot(x-ox, y-oy); d > 0.5 && d < 1.5 {
-			out = append(out, o)
-		}
-	}
-	return out
 }
 
 // winners says who won: a player, or a team's players.
@@ -950,7 +938,14 @@ func (p *checkers) refresh() {
 		p.turn.SetText(i18n.Tf("%s's turn", turn.Name))
 	}
 	gtkx.Clear(&p.players)
-	for _, i := range g.Standings() {
+	order := make([]int, len(g.Players)) // in the order of play; the standings once it is over
+	for i := range order {
+		order[i] = i
+	}
+	if g.Over {
+		order = g.Standings()
+	}
+	for _, i := range order {
 		pl := g.Players[i]
 		s := p.host.Seats[i]
 		row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
@@ -1007,7 +1002,7 @@ func (p *checkers) paint(pn pen) {
 		for i := range 12 {
 			rr := r
 			if i%2 == 1 {
-				rr = r * 0.58
+				rr = r / math.Sqrt(3)
 			}
 			a := p.angle + float64(i)*math.Pi/6 - math.Pi/2
 			x, y := cx+rr*math.Cos(a), cx+rr*math.Sin(a)
@@ -1020,24 +1015,25 @@ func (p *checkers) paint(pn pen) {
 		pn.Close()
 	}
 	pn.Alpha(col.t0, 0.08)
-	star(9.6*ckUnit + 6)
+	star(ckStar*ckUnit + 6)
 	pn.Fill()
 	pn.Color(col.surface)
-	star(9.6 * ckUnit)
+	star(ckStar * ckUnit)
 	pn.FillKeep()
 	pn.Alpha(col.line, 0.9)
 	pn.Width(1.5)
 	pn.Stroke()
-	// Each point in its player's colour, faintly.
-	for i, pl := range p.g.Players {
-		c := hexColor(checkersnet.MarbleColors[pl.Start])
-		for _, h := range games.CornerHoles(pl.Start) {
-			x, y := p.at(h)
-			pn.Alpha(c, 0.13)
-			pn.Circle(x, y, 0.62*ckUnit)
-			pn.Fill()
-		}
-		_ = i
+	// Each player's point in their colour, faintly: the star's tip and the
+	// two inner corners beside it.
+	for _, pl := range p.g.Players {
+		a := p.angle + float64(pl.Start)*math.Pi/3 - math.Pi/2
+		r, ri := ckStar*ckUnit, ckStar*ckUnit/math.Sqrt(3)
+		pn.MoveTo(cx+r*math.Cos(a), cx+r*math.Sin(a))
+		pn.LineTo(cx+ri*math.Cos(a+math.Pi/6), cx+ri*math.Sin(a+math.Pi/6))
+		pn.LineTo(cx+ri*math.Cos(a-math.Pi/6), cx+ri*math.Sin(a-math.Pi/6))
+		pn.Close()
+		pn.Alpha(hexColor(checkersnet.MarbleColors[pl.Start]), 0.14)
+		pn.Fill()
 	}
 	// The last move's way.
 	if len(p.g.Last) > 1 && p.moving == nil {
