@@ -3,6 +3,7 @@ package mailui
 import (
 	"context"
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -671,18 +672,38 @@ func (w *window) voice(x *acct) []string {
 
 // --- suggestions ---
 
-// contacts are the people of every account's mail kept, for the
-// composer's suggestions.
+// contacts are the people of every account's mail kept and of its
+// address book, for the composer's suggestions.
 func (w *window) contacts() []mail.Contact {
 	var items []mail.Item
+	var book []mail.Address
 	for _, x := range w.accts {
 		for _, r := range []mail.Role{mail.RoleInbox, mail.RoleSent, mail.RoleArchive} {
 			if name := x.s.Role(r); name != "" {
 				items = append(items, x.s.Items(name)...)
 			}
 		}
+		book = append(book, x.book...)
 	}
-	return mail.Contacts(items, w.mine, time.Now())
+	return mail.WithBook(mail.Contacts(items, w.mine, time.Now()), book, w.mine)
+}
+
+// readBook gives the composer an account's address book: the cache's at
+// once, then the server's. An account with none, or signed in before
+// inua asked for the contacts, goes without.
+func (w *window) readBook(x *acct) {
+	go func() {
+		if b := x.s.CachedBook(); len(b) > 0 {
+			gtkx.Post(func() { x.book = b; w.bookChanged() })
+		}
+		b, err := x.s.SyncBook(w.ctx)
+		switch {
+		case err == nil:
+			gtkx.Post(func() { x.book = b; w.bookChanged() })
+		case !errors.Is(err, mail.ErrNoBook) && !errors.Is(err, mail.ErrSignInAgain) && w.ctx.Err() == nil:
+			log.Printf("mail: %s's address book: %v", x.s.Acc.ID, err)
+		}
+	}()
 }
 
 // typedPart is the address being typed in a field: after the last comma.

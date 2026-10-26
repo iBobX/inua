@@ -326,6 +326,7 @@ disk-agent                            robot
 disk-cache                            broom
 # Mail: a conversation's actions
 mail-archive                          archive
+mail-contacts                         address-book
 mail-starred                          star
 mail-starred-fill                     fill/star-fill
 mail-attachment                       file

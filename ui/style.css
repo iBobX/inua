@@ -3640,6 +3640,42 @@ window.mail listview.mail-conversations > row {
 window.mail listview.mail-conversations > row:hover { background: alpha(@accent, 0.05); }
 window.mail listview.mail-conversations > row:selected { background: alpha(@accent, 0.09); color: @t0; }
 window.mail .mail-row { padding: 11px 16px 11px 6px; }
+/* Contacts: the people in the list's place, the one chosen in the
+   reader with their addresses and the conversations with them. */
+window.mail listview.mail-people { background: transparent; }
+window.mail listview.mail-people > row {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  transition: background 120ms ease-out;
+}
+window.mail listview.mail-people > row:hover { background: alpha(@accent, 0.05); }
+window.mail listview.mail-people > row:selected { background: alpha(@accent, 0.09); color: @t0; }
+window.mail .mail-person-row { padding: 9px 16px; }
+window.mail .mail-person-row .mail-person-name { color: @t0; }
+window.mail .mail-person-head { margin-bottom: 18px; }
+window.mail .mail-person-addr { padding: 6px 0; border-bottom: 1px solid alpha(@line, 0.4); }
+window.mail .mail-person-addr button.outlined { min-height: 30px; padding: 0 14px; }
+window.mail .mail-person-section {
+  margin: 28px 0 6px;
+  font-family: "Geist Mono", "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: @t2;
+}
+window.mail .mail-person-conv { border-bottom: 1px solid alpha(@line, 0.4); }
+window.mail .mail-person-conv .mail-when { margin-top: 8px; }
+/* A conversation with them: a click opens it. */
+window.mail button.mail-person-open {
+  min-height: 0;
+  padding: 7px 8px;
+  margin-left: -8px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+}
+window.mail button.mail-person-open:hover { background: alpha(@accent, 0.07); }
 /* The gutter at a row's left, at its middle: unread, the star, files,
    one above the other in places of one size. The star shows while the
    pointer is on the row, and always, filled, when starred; files always

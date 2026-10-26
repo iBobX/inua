@@ -23,6 +23,7 @@ import (
 type Endpoint struct {
 	AuthURL, TokenURL string
 	UserInfo          string // where the account's profile is read with its token; "" for none
+	Book              string // the account's address book over CardDAV, %s its address; "" for none
 	Scopes            []string
 	Extra             url.Values // more for the authorization page
 	Client            OAuthClient
@@ -58,7 +59,8 @@ func (s Settings) Endpoint(p Provider) (Endpoint, error) {
 			AuthURL:  "https://accounts.google.com/o/oauth2/v2/auth",
 			TokenURL: "https://oauth2.googleapis.com/token",
 			UserInfo: "https://openidconnect.googleapis.com/v1/userinfo",
-			Scopes:   []string{"https://mail.google.com/", "openid", "email", "profile"},
+			Book:     GoogleBook,
+			Scopes:   []string{"https://mail.google.com/", "https://www.googleapis.com/auth/carddav", "openid", "email", "profile"},
 			Extra:    url.Values{"access_type": {"offline"}, "prompt": {"consent"}},
 			Client:   c,
 			secret:   s.keyringSecret(Google, c),

@@ -4,6 +4,9 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"golang.org/x/text/collate"
+	"golang.org/x/text/language"
 )
 
 // Contact is someone the user exchanges mail with, for the composer's
@@ -56,6 +59,11 @@ func Contacts(items []Item, mine func(string) bool, now time.Time) []Contact {
 	for _, c := range byAddr {
 		out = append(out, *c)
 	}
+	sortContacts(out)
+	return out
+}
+
+func sortContacts(out []Contact) {
 	slices.SortFunc(out, func(a, b Contact) int {
 		switch {
 		case a.Score > b.Score:
@@ -65,7 +73,39 @@ func Contacts(items []Item, mine func(string) bool, now time.Time) []Contact {
 		}
 		return strings.Compare(a.Addr, b.Addr)
 	})
-	return out
+}
+
+// WithBook adds the people of the user's address books to the contacts
+// of their mail: the name the book gives is the one shown, and being in
+// the book weighs as much as a message from them a couple of months ago.
+func WithBook(cs []Contact, book []Address, mine func(string) bool) []Contact {
+	if len(book) == 0 {
+		return cs
+	}
+	at := map[string]int{}
+	for i, c := range cs {
+		at[strings.ToLower(c.Addr)] = i
+	}
+	counted := map[string]bool{} // the same address in two books counts once
+	for _, a := range book {
+		k := strings.ToLower(strings.TrimSpace(a.Addr))
+		if k == "" || counted[k] || mine(a.Addr) {
+			continue
+		}
+		counted[k] = true
+		i, ok := at[k]
+		if !ok {
+			i = len(cs)
+			at[k] = i
+			cs = append(cs, Contact{Address: Address{Addr: a.Addr}})
+		}
+		cs[i].Score += 0.6
+		if a.Name != "" {
+			cs[i].Name = a.Name
+		}
+	}
+	sortContacts(cs)
+	return cs
 }
 
 // Suggest is the contacts matching what is being typed: a word of the
@@ -90,4 +130,83 @@ func Suggest(cs []Contact, typed string, n int) []Contact {
 		}
 	}
 	return out
+}
+
+// Person is someone in the user's address books: a name, and every
+// address the books give them.
+type Person struct {
+	Name  string
+	Addrs []string
+}
+
+// People gathers address books' addresses by name, in the names' order;
+// someone with no name goes by their address. The user's own addresses
+// are left out.
+func People(book []Address, mine func(string) bool) []Person {
+	byName := map[string]*Person{}
+	seen := map[string]bool{}
+	for _, a := range book {
+		addr := strings.TrimSpace(a.Addr)
+		k := strings.ToLower(addr)
+		if k == "" || seen[k] || mine(addr) {
+			continue
+		}
+		seen[k] = true
+		name := strings.TrimSpace(a.Name)
+		key := strings.ToLower(name)
+		if name == "" {
+			key = k
+		}
+		p := byName[key]
+		if p == nil {
+			p = &Person{Name: name}
+			byName[key] = p
+		}
+		p.Addrs = append(p.Addrs, addr)
+	}
+	out := make([]Person, 0, len(byName))
+	for _, p := range byName {
+		out = append(out, *p)
+	}
+	// Accents and case aside (Élodie among the E's).
+	col := collate.New(language.Und, collate.IgnoreCase, collate.IgnoreDiacritics)
+	slices.SortFunc(out, func(a, b Person) int {
+		if c := col.CompareString(a.Title(), b.Title()); c != 0 {
+			return c
+		}
+		return strings.Compare(a.Addrs[0], b.Addrs[0])
+	})
+	return out
+}
+
+// Title is how the person is named: their name, else their address.
+func (p Person) Title() string {
+	if p.Name != "" {
+		return p.Name
+	}
+	return p.Addrs[0]
+}
+
+// Match says whether the person is what is being typed: a word of the
+// name starts with it, or an address holds it.
+func (p Person) Match(typed string) bool {
+	typed = strings.ToLower(strings.TrimSpace(typed))
+	if typed == "" {
+		return true
+	}
+	name := strings.ToLower(p.Name)
+	if strings.HasPrefix(name, typed) {
+		return true
+	}
+	for _, w := range strings.Fields(name) {
+		if strings.HasPrefix(w, typed) {
+			return true
+		}
+	}
+	for _, a := range p.Addrs {
+		if strings.Contains(strings.ToLower(a), typed) {
+			return true
+		}
+	}
+	return false
 }

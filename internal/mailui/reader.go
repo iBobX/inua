@@ -32,6 +32,11 @@ func (w *window) openConversation(c *mail.Conversation) {
 		w.unsent = false
 		w.drawSide()
 	}
+	if w.view.kind == viewPeople {
+		// Nobody chosen while it shows: choosing them again goes back.
+		w.person = ""
+		w.peopleSel.UnselectAll()
+	}
 	w.dropWebs(func(k mail.Key) bool {
 		return slices.ContainsFunc(c.Messages, func(m mail.Item) bool { return m.Key() == k })
 	})

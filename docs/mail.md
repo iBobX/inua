@@ -41,7 +41,11 @@ inua-mail --check FILE.eml    the phishing checks on a message
   (conversations tagged REPLY whose newest message is not yours: only
   the assistant's sorting tags REPLY, so it is empty with sorting off);
   *Starred*; *Unsent* when drafts are kept (the drafts in the reader, a
-  click on one opens it); then each account in a panel of its own: its
+  click on one opens it); *Contacts* when an account has an address book
+  (a Google account's contacts: the people in the list's place, by name,
+  the search narrowing them; the one chosen in the reader, with *Write*
+  for each address and the conversations with them kept on this
+  computer, a click on one opening it); then each account in a panel of its own: its
   photo (a Google account's) or initial, its name and address, then its
   mailboxes in the same order for every account (Inbox, Drafts, Sent,
   Archive, Spam, Trash), the others behind *N more folders*. A click on
@@ -230,10 +234,13 @@ tenant = "common"               # or your organization's
 ```
 
 - **Google**: in the Google Cloud console, create a project, enable the
-  Gmail API, set up the OAuth consent screen (add yourself as a test
+  Gmail API and the Google Contacts CardDAV API, set up the OAuth consent screen (add yourself as a test
   user; Gmail's scope is restricted, so an unverified app serves up to
   100 test users), then create an OAuth client of the type *Desktop
-  app*. Scopes: `https://mail.google.com/`, `openid`, `email`.
+  app*. Scopes: `https://mail.google.com/`,
+  `https://www.googleapis.com/auth/carddav`, `openid`, `email`,
+  `profile`. Without the CardDAV API, the account goes without its
+  contacts.
 - **Microsoft**: in the Azure portal, *App registrations* → *New
   registration*, accounts in any organizational directory and personal
   Microsoft accounts; under *Authentication* add the platform *Mobile and
@@ -276,7 +283,10 @@ the subject, the text and the files attached (*Attach…*, or drop files
 on the window). Typing in To, Cc or Bcc
 suggests the people you mail, under the field: those you write to
 first, then those who write to you, lists and automated senders left
-out; Tab or Enter takes the first, ↓ goes into the list. A reply quotes what it answers
+out, then the rest of a Google account's contacts (read over CardDAV,
+never changed; the name they give is the one shown); Tab or Enter takes
+the first, ↓ goes into the list. A Google account signed in before inua
+asked for the contacts goes without them until it signs in again. A reply quotes what it answers
 under your signature and keeps the conversation's headers; Reply all
 leaves your own addresses out; Forward attaches the original's files.
 

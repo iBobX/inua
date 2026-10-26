@@ -254,3 +254,16 @@ func (s *Store) Dir() string { return s.dir }
 func (s *Store) AvatarPath(account string) string {
 	return filepath.Join(s.dir, url.PathEscape(account), "avatar")
 }
+
+// Book reads an account's address book as last read; an empty one when
+// there is none.
+func (s *Store) Book(account string) (*Book, error) {
+	b := &Book{}
+	err := s.read(filepath.Join(s.dir, url.PathEscape(account), "book.json"), b)
+	return b, err
+}
+
+// SaveBook keeps an account's address book.
+func (s *Store) SaveBook(account string, b *Book) error {
+	return s.write(filepath.Join(s.dir, url.PathEscape(account), "book.json"), b)
+}

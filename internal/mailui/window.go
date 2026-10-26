@@ -33,6 +33,7 @@ const (
 	viewReply                   // conversations tagged REPLY
 	viewStarred                 // conversations with a starred message
 	viewBox                     // one mailbox of one account
+	viewPeople                  // the address books' people, in the list's place
 )
 
 type view struct {
@@ -55,13 +56,14 @@ const (
 type acct struct {
 	s            *mail.Session
 	boxes        []mail.Mailbox
-	state        string    // what is wrong, in words; "" when fine
-	detail       string    // the error itself, shown on hover
-	busy         bool      // connecting or syncing the first time
-	syncing      int       // syncs running
-	last         time.Time // the last sync that ended well
-	more         bool      // its other folders are shown
-	askedPicture bool      // its provider was asked for the photo its sign-in did not give
+	state        string         // what is wrong, in words; "" when fine
+	detail       string         // the error itself, shown on hover
+	busy         bool           // connecting or syncing the first time
+	syncing      int            // syncs running
+	last         time.Time      // the last sync that ended well
+	more         bool           // its other folders are shown
+	askedPicture bool           // its provider was asked for the photo its sign-in did not give
+	book         []mail.Address // its address book, for the composer's suggestions
 	synced       map[string]bool
 	stop         context.CancelFunc // its IDLE
 }
@@ -143,6 +145,13 @@ type window struct {
 	sidebarForPanel bool                      // the panel hid the sidebar
 	assistOpen      bool                      // the assistant's panel is open
 	unsent          bool                      // the reader shows the drafts on this computer
+	peopleModel     *gtk.StringList           // the Contacts view's people, by their first address
+	peopleSel       *gtk.SingleSelection
+	peopleList      *gtk.ListView
+	personRows      map[uintptr]*personRow
+	people          []mail.Person // the people listed, through the search
+	peopleKeys      []string      // their keys, as in the model
+	person          string        // the key of the person chosen; "" for none
 	panelBtns       []uintptr
 	panelSum        *gtk.Label           // the summary as it comes
 	quickBuf        *gtk.TextBuffer      // the quick reply's text, for the assistant to write into
@@ -213,6 +222,7 @@ func openWindow(c *appui.Ctx) *window {
 	w.list = gtk.NewListView(w.sel, &f.ListItemFactory)
 	w.list.AddCssClass("mail-conversations")
 	w.listScroll.SetChild(&w.list.Widget)
+	w.setupPeople()
 
 	w.h.click(&w.compose, func() { w.newComposer(mail.Draft{}, nil) })
 	w.h.click(&w.settingsButton, func() { w.showSettings("") })
@@ -334,6 +344,7 @@ func (w *window) acct(id string) *acct {
 // connect lists an account's mailboxes, syncs its inbox and Sent, then
 // waits for new mail in IDLE.
 func (w *window) connect(x *acct) {
+	w.readBook(x)
 	x.syncing++
 	go func() {
 		boxes, err := x.s.Mailboxes(w.ctx)
@@ -563,6 +574,9 @@ func (w *window) drawSide() {
 		btn := w.sideButton(i18n.T("Unsent"), "mail-outbox-symbolic", len(ds), w.unsent)
 		w.sideBtns = append(w.sideBtns, w.h.click(btn, w.showUnsent))
 	}
+	if w.hasBook() {
+		w.sideItem(i18n.T("Contacts"), "mail-contacts-symbolic", 0, view{kind: viewPeople})
+	}
 	for _, x := range w.accts {
 		xx := x
 		// A panel of its own: who, then the account's mailboxes.
@@ -760,8 +774,24 @@ func (w *window) setView(v view) {
 	if w.unsent {
 		w.leaveUnsent()
 	}
+	people := (v.kind == viewPeople) != (w.view.kind == viewPeople)
+	if w.view.kind == viewPeople {
+		w.leavePeople()
+	}
 	w.view = v
 	w.found, w.asked = nil, ""
+	if people {
+		// A search of mail is not one of people, nor the other way.
+		w.search.SetText("")
+		w.query, w.parsed = "", mail.Query{}
+		w.say(&w.searchNote, "")
+		w.filters.SetVisible(v.kind != viewPeople)
+		if v.kind == viewPeople {
+			w.search.SetPlaceholderText(i18n.T("Search contacts"))
+		} else {
+			w.search.SetPlaceholderText(i18n.T("Search, or ask in a sentence"))
+		}
+	}
 	if v.kind == viewReply {
 		w.filter = filterAll
 		w.syncFilters()
@@ -792,6 +822,9 @@ func (w *window) syncFilters() {
 
 // conversations are a view's conversations, before the filter.
 func (w *window) conversations(v view) []*mail.Conversation {
+	if v.kind == viewPeople {
+		return nil
+	}
 	var items, joining []mail.Item
 	for _, x := range w.accts {
 		if v.kind == viewBox && v.account != x.s.Acc.ID {
@@ -845,6 +878,10 @@ func (w *window) mine(addr string) bool {
 // the search, changing the model by one splice.
 func (w *window) refresh() {
 	if len(w.accts) == 0 {
+		return
+	}
+	if w.view.kind == viewPeople {
+		w.refreshPeople()
 		return
 	}
 	all := w.conversations(w.view)
@@ -1386,6 +1423,10 @@ func (w *window) searchChanged() {
 	}
 	w.query, w.found, w.asked = text, nil, ""
 	w.say(&w.searchNote, "")
+	if w.view.kind == viewPeople {
+		w.refresh()
+		return
+	}
 	if mail.Looks(text) {
 		w.parsed = mail.Query{}
 		w.say(&w.searchNote, i18n.T("Press Enter to ask the assistant to search for this."))
@@ -1401,6 +1442,10 @@ func (w *window) searchChanged() {
 func (w *window) searchEntered() {
 	text := strings.TrimSpace(w.search.GetText())
 	if text == "" {
+		return
+	}
+	if w.view.kind == viewPeople {
+		w.movePerson(0) // the first found, or the one chosen
 		return
 	}
 	if mail.Looks(text) && w.asked != text && w.settings.AI() {
@@ -1471,7 +1516,11 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 	if focus := w.win.GetFocus(); focus != nil && editing(focus) {
 		if keyval == uint32(gdk.KEY_Escape) && focus.GoPointer() == w.search.GoPointer() {
 			w.search.SetText("")
-			w.list.GrabFocus()
+			if w.view.kind == viewPeople {
+				w.peopleList.GrabFocus()
+			} else {
+				w.list.GrabFocus()
+			}
 			return true
 		}
 		return false
@@ -1535,6 +1584,10 @@ func editing(wd *gtk.Widget) bool {
 
 // move chooses the next or the previous conversation.
 func (w *window) move(d int) {
+	if w.view.kind == viewPeople && w.open == nil {
+		w.movePerson(d)
+		return
+	}
 	if len(w.convs) == 0 {
 		return
 	}

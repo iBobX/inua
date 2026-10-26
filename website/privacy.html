@@ -53,31 +53,33 @@
     <p>When you add a Gmail or Google Workspace account to inua Mail, you sign in on Google’s own page in your browser, and Google asks whether you allow inua Mail to access your account. inua Mail asks for these permissions:</p>
     <ul>
       <li><strong>Read, compose, send and manage your mail</strong> (<code>https://mail.google.com/</code>), so that inua Mail can show your mailboxes and conversations, keep them in sync, send the messages you write, and carry out what you ask of it, such as archiving, deleting, starring, moving or marking messages read.</li>
+      <li><strong>Your contacts</strong> (<code>https://www.googleapis.com/auth/carddav</code>), so that while you type an address inua Mail can suggest the people in your Google Contacts by their names. inua Mail only reads them: it never adds, changes or deletes a contact.</li>
       <li><strong>Your email address, name and profile picture</strong> (<code>openid</code>, <code>email</code>, <code>profile</code>), so that inua Mail can name the account and show its picture in the sidebar.</li>
     </ul>
 
     <h3>How the data is used</h3>
-    <p>inua Mail uses your Google data only to provide the features of a mail app that you can see and use: reading, searching, writing, sending and organising your own mail. It connects directly from your computer to Google’s servers (<code>imap.gmail.com</code> and <code>smtp.gmail.com</code>). Your mail never passes through a server of ours.</p>
+    <p>inua Mail uses your Google data only to provide the features of a mail app that you can see and use: reading, searching, writing, sending and organising your own mail. It connects directly from your computer to Google’s servers (<code>imap.gmail.com</code> and <code>smtp.gmail.com</code> for mail, <code>www.googleapis.com</code> for contacts). Your mail never passes through a server of ours.</p>
 
     <h3>What is kept, and where</h3>
     <p>Everything inua Mail keeps is stored on your computer, in your own user folders:</p>
     <ul>
       <li><strong>A copy of your messages</strong>, so they open quickly and while you are offline: in <code>~/.cache/inua/mail/</code>. It is a cache of what is on Google’s servers and can be deleted at any time.</li>
       <li><strong>Your profile picture</strong>, downloaded from Google: in the same cache folder.</li>
+      <li><strong>The names and email addresses of your contacts</strong>, for the suggestions, without their other details: in the same cache folder. It is a copy of your Google Contacts, read again each time inua Mail connects.</li>
       <li><strong>Drafts</strong> you have not sent yet: in <code>~/.local/share/inua/mail/drafts/</code>.</li>
       <li><strong>Your account’s settings</strong> (its name, address and servers, never a password or token): in <code>~/.config/inua/mail.toml</code>.</li>
       <li><strong>The sign-in token</strong> Google issues to inua Mail (a refresh token), so that you do not have to sign in every time: in your desktop’s keyring (the Secret Service, such as inua-keyring or GNOME Keyring), or, when no keyring is running, in a file only your user can read.</li>
     </ul>
-    <p>Suggestions of people to write to come from the addresses in your own messages; inua Mail does not use Google’s Contacts.</p>
+    <p>Suggestions of people to write to come from the addresses in your own messages and from your Google Contacts. Contacts are never sent to the assistant or anywhere else.</p>
 
     <h3>How your data is protected</h3>
     <ul>
-      <li><strong>Encrypted in transit.</strong> inua Mail reaches Google only over encrypted connections: IMAP over TLS (<code>imap.gmail.com</code>, port 993), SMTP over TLS (<code>smtp.gmail.com</code>, port 465), and HTTPS to sign in and renew its access. It never falls back to an unencrypted connection: if one cannot be made, nothing is sent.</li>
+      <li><strong>Encrypted in transit.</strong> inua Mail reaches Google only over encrypted connections: IMAP over TLS (<code>imap.gmail.com</code>, port 993), SMTP over TLS (<code>smtp.gmail.com</code>, port 465), and HTTPS to sign in, renew its access and read your contacts. It never falls back to an unencrypted connection: if one cannot be made, nothing is sent.</li>
       <li><strong>The sign-in token, encrypted at rest.</strong> The refresh token is kept in your desktop’s keyring, which encrypts it: inua-keyring with your GPG key, GNOME Keyring with your login password. It is never written to a settings file or a log. Only when no keyring is running does inua Mail keep it in a file that only your user account can read (<code>~/.local/share/inua/mail-secrets.json</code>, permissions 0600); that file is not encrypted, so running a keyring is recommended.</li>
       <li><strong>Readable by your user account only.</strong> The folders that hold your cached mail and drafts are created so that only your user account can open them (permissions 0700, their files 0600); other users of the computer cannot read them. A file is written whole and then moved into place, so a half-written copy is never left behind.</li>
       <li><strong>Encryption of the disk.</strong> The cached copy of your mail is protected by these permissions, not encrypted by inua Mail. To protect it if your computer is lost or stolen, use full-disk encryption (such as LUKS, offered by Linux installers).</li>
       <li><strong>Nowhere else.</strong> There is no server of ours, no backup and no copy anywhere but your computer. inua Mail’s log records its connections and errors, not the content of your messages.</li>
-      <li><strong>Removed with the account.</strong> Removing an account in inua Mail deletes its cached mail, its picture and its sign-in token from your computer; revoking access at Google stops inua Mail at once.</li>
+      <li><strong>Removed with the account.</strong> Removing an account in inua Mail deletes its cached mail, its contacts, its picture and its sign-in token from your computer; revoking access at Google stops inua Mail at once.</li>
       <li><strong>Open to review.</strong> All the code that handles your data is public at <a href="https://github.com/lyricat/inua">github.com/lyricat/inua</a>. Security problems can be reported at <a href="https://github.com/lyricat/inua/issues">github.com/lyricat/inua/issues</a>.</li>
     </ul>
 
