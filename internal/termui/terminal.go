@@ -503,6 +503,9 @@ func (p *termPane) drain() {
 	ops := p.pending
 	p.pending, p.scheduled = nil, false
 	p.mu.Unlock()
+	if p.closed { // its engine is freed; this was posted before the close
+		return
+	}
 	all := false
 	for _, op := range ops {
 		if op.cols == 0 {
