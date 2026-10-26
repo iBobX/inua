@@ -557,8 +557,8 @@ msgstr ""
 #: internal/apps/disk/rules.go:43
 #: internal/games/checkersnet/host.go:326
 #: internal/games/checkersnet/texts.go:31
-#: internal/gamesui/checkers.go:431
-#: internal/gamesui/checkers.go:526
+#: internal/gamesui/checkers.go:428
+#: internal/gamesui/checkers.go:523
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune_ai.go:199
 #: internal/mailui/panel.go:51
@@ -2253,6 +2253,7 @@ msgstr ""
 #: internal/appui/gpg.go:883
 #: internal/appui/tailscale.go:469
 #: internal/diskui/details.go:578
+#: internal/gamesui/checkers.go:672
 #: internal/mailui/welcome.go:480
 #: internal/term/web/strings.go:35
 #: internal/ui/askpass.go:555
@@ -5369,7 +5370,7 @@ msgstr ""
 
 #: internal/filesui/archive.go:131
 #: internal/games/checkersnet/texts.go:34
-#: internal/gamesui/checkers.go:431
+#: internal/gamesui/checkers.go:428
 msgid "Normal"
 msgstr ""
 
@@ -6773,34 +6774,34 @@ msgstr ""
 
 #: internal/games/checkersnet/texts.go:22
 #: internal/games/fortunenet/texts.go:32
-#: internal/gamesui/checkers.go:163
-#: internal/gamesui/checkers.go:236
+#: internal/gamesui/checkers.go:169
+#: internal/gamesui/checkers.go:242
 #: internal/gamesui/fortune.go:252
 #: internal/gamesui/fortune.go:408
 msgid "PLAYERS"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:23
-#: internal/gamesui/checkers.go:305
+#: internal/gamesui/checkers.go:311
 msgid "THE GAME"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:24
 #: internal/games/fortunenet/texts.go:34
-#: internal/gamesui/checkers.go:193
+#: internal/gamesui/checkers.go:199
 #: internal/gamesui/fortune.go:276
 msgid "WHAT HAPPENED"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:25
 #: internal/games/fortunenet/texts.go:35
-#: internal/gamesui/checkers.go:124
+#: internal/gamesui/checkers.go:130
 #: internal/gamesui/fortune.go:208
 msgid "ROUND"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:26
-#: internal/gamesui/checkers.go:250
+#: internal/gamesui/checkers.go:256
 msgid "%d players"
 msgstr ""
 
@@ -6815,7 +6816,7 @@ msgstr ""
 
 #: internal/games/checkersnet/texts.go:29
 #: internal/games/fortunenet/texts.go:28
-#: internal/gamesui/checkers.go:456
+#: internal/gamesui/checkers.go:453
 #: internal/gamesui/fortune_host.go:130
 msgid "in a browser"
 msgstr ""
@@ -6825,18 +6826,18 @@ msgid "the default profile"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:33
-#: internal/gamesui/checkers.go:431
+#: internal/gamesui/checkers.go:428
 msgid "Easy"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:35
-#: internal/gamesui/checkers.go:431
+#: internal/gamesui/checkers.go:428
 msgid "Hard"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:36
-#: internal/gamesui/checkers.go:434
-#: internal/gamesui/checkers.go:903
+#: internal/gamesui/checkers.go:431
+#: internal/gamesui/checkers.go:963
 msgid "Team %s"
 msgstr ""
 
@@ -6845,29 +6846,29 @@ msgid "sets up the game"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:39
-#: internal/gamesui/checkers.go:912
+#: internal/gamesui/checkers.go:972
 msgid "away, the computer plays"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:40
-#: internal/gamesui/checkers.go:335
+#: internal/gamesui/checkers.go:341
 msgid "Stay out of other points"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:41
-#: internal/gamesui/checkers.go:335
+#: internal/gamesui/checkers.go:341
 msgid "A marble may cross another player's point, but not stop in it."
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:42
-#: internal/gamesui/checkers.go:359
+#: internal/gamesui/checkers.go:356
 #: internal/gamesui/fortune_host.go:231
 msgid "Start the game"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:43
-#: internal/gamesui/checkers.go:179
-#: internal/gamesui/checkers.go:219
+#: internal/gamesui/checkers.go:185
+#: internal/gamesui/checkers.go:225
 #: internal/gamesui/fortune.go:322
 #: internal/gamesui/fortune.go:1140
 #: ui/game.ui:76
@@ -6875,25 +6876,25 @@ msgid "New game"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:44
-#: internal/gamesui/checkers.go:181
+#: internal/gamesui/checkers.go:187
 msgid "Set up again"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:45
 #: internal/games/fortunenet/texts.go:47
-#: internal/gamesui/checkers.go:883
-#: internal/gamesui/checkers.go:890
+#: internal/gamesui/checkers.go:943
+#: internal/gamesui/checkers.go:950
 #: internal/gamesui/fortune_board.go:1113
 msgid "%s's turn"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:46
-#: internal/gamesui/checkers.go:881
+#: internal/gamesui/checkers.go:941
 msgid "Your turn: pick one of your marbles."
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:47
-#: internal/gamesui/checkers.go:886
+#: internal/gamesui/checkers.go:946
 msgid "You are home: move %s's marbles."
 msgstr ""
 
@@ -6906,12 +6907,12 @@ msgid "home"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:50
-#: internal/gamesui/checkers.go:910
+#: internal/gamesui/checkers.go:970
 msgid "#%d home"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:51
-#: internal/gamesui/checkers.go:907
+#: internal/gamesui/checkers.go:967
 msgid "%d to go"
 msgstr ""
 
@@ -6924,44 +6925,44 @@ msgid "%s moved"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:54
-#: internal/gamesui/checkers.go:801
+#: internal/gamesui/checkers.go:861
 msgid "%s hopped %d times"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:55
-#: internal/gamesui/checkers.go:799
+#: internal/gamesui/checkers.go:859
 msgid "%s moved %s's marble"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:56
-#: internal/gamesui/checkers.go:806
+#: internal/gamesui/checkers.go:866
 msgid "%s could not move"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:57
-#: internal/gamesui/checkers.go:808
+#: internal/gamesui/checkers.go:868
 msgid "%s is home"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:58
-#: internal/gamesui/checkers.go:846
+#: internal/gamesui/checkers.go:906
 msgid "%s wins"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:59
-#: internal/gamesui/checkers.go:852
+#: internal/gamesui/checkers.go:912
 msgid "%s win"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:60
-#: internal/gamesui/checkers.go:850
+#: internal/gamesui/checkers.go:910
 #: internal/gamesui/fortune.go:562
 msgid "%s and %s"
 msgstr ""
 
 #: internal/games/checkersnet/texts.go:61
-#: internal/gamesui/checkers.go:812
-#: internal/gamesui/checkers.go:879
+#: internal/gamesui/checkers.go:872
+#: internal/gamesui/checkers.go:939
 msgid "No one got home in time: a draw."
 msgstr ""
 
@@ -7017,7 +7018,7 @@ msgid "You"
 msgstr ""
 
 #: internal/games/fortune.go:329
-#: internal/gamesui/checkers.go:561
+#: internal/gamesui/checkers.go:558
 #: internal/gamesui/fortune.go:644
 #: internal/gamesui/fortune_host.go:44
 msgid "Player %d"
@@ -9401,89 +9402,98 @@ msgstr ""
 msgid "click one of your marbles, then where it goes  ·  Escape puts it back  ·  N new game"
 msgstr ""
 
-#: internal/gamesui/checkers.go:336
+#: internal/gamesui/checkers.go:342
 #: internal/gamesui/fortune.go:468
 msgid "On the network"
 msgstr ""
 
-#: internal/gamesui/checkers.go:336
+#: internal/gamesui/checkers.go:342
 msgid "Others join from a browser on this network, with the link or the QR code."
 msgstr ""
 
-#: internal/gamesui/checkers.go:430
+#: internal/gamesui/checkers.go:427
 msgid "At this screen"
 msgstr ""
 
-#: internal/gamesui/checkers.go:430
+#: internal/gamesui/checkers.go:427
 msgid "Open: someone in a browser"
 msgstr ""
 
-#: internal/gamesui/checkers.go:431
-#: internal/gamesui/checkers.go:431
-#: internal/gamesui/checkers.go:431
+#: internal/gamesui/checkers.go:428
+#: internal/gamesui/checkers.go:428
+#: internal/gamesui/checkers.go:428
 msgid "Computer · %s"
 msgstr ""
 
-#: internal/gamesui/checkers.go:458
+#: internal/gamesui/checkers.go:455
 msgid "in a browser · sets up the game"
 msgstr ""
 
-#: internal/gamesui/checkers.go:460
+#: internal/gamesui/checkers.go:457
 #: internal/gamesui/fortune_host.go:134
 msgid "Send away"
 msgstr ""
 
-#: internal/gamesui/checkers.go:494
+#: internal/gamesui/checkers.go:491
 msgid "No one plays at this screen: the first to join from a browser sets the game up, and may start it."
 msgstr ""
 
-#: internal/gamesui/checkers.go:528
+#: internal/gamesui/checkers.go:525
 #: internal/gamesui/fortune.go:416
 #: internal/gamesui/fortune.go:653
 msgid "Open seat"
 msgstr ""
 
-#: internal/gamesui/checkers.go:536
+#: internal/gamesui/checkers.go:533
 #: internal/gamesui/fortune.go:641
 #: internal/gamesui/fortune_host.go:130
 msgid "at this screen"
 msgstr ""
 
-#: internal/gamesui/checkers.go:538
+#: internal/gamesui/checkers.go:535
 msgid "the computer"
 msgstr ""
 
-#: internal/gamesui/checkers.go:542
+#: internal/gamesui/checkers.go:539
 msgid "Asking the AI…"
 msgstr ""
 
-#: internal/gamesui/checkers.go:546
+#: internal/gamesui/checkers.go:543
 msgid "the AI of Settings → AI"
 msgstr ""
 
-#: internal/gamesui/checkers.go:549
+#: internal/gamesui/checkers.go:546
 msgid "the computer, unless the game is on the network"
 msgstr ""
 
-#: internal/gamesui/checkers.go:551
+#: internal/gamesui/checkers.go:548
 msgid "waiting for someone to join"
 msgstr ""
 
-#: internal/gamesui/checkers.go:590
+#: internal/gamesui/checkers.go:587
 msgid "no profile of Settings → AI makes decisions"
 msgstr ""
 
-#: internal/gamesui/checkers.go:644
+#: internal/gamesui/checkers.go:643
+#: internal/gamesui/fortune.go:210
+msgid "JOIN CODE"
+msgstr ""
+
+#: internal/gamesui/checkers.go:652
+msgid "Scan the code, or open the link in a browser on this network."
+msgstr ""
+
+#: internal/gamesui/checkers.go:673
+#: internal/gamesui/checkers.go:676
+msgid "Copy link"
+msgstr ""
+
+#: internal/gamesui/checkers.go:700
 msgid "This computer is on no network a browser could reach it from."
 msgstr ""
 
-#: internal/gamesui/checkers.go:653
-#: internal/gamesui/checkers.go:921
+#: internal/gamesui/checkers.go:981
 msgid "Join code %s"
-msgstr ""
-
-#: internal/gamesui/fortune.go:210
-msgid "JOIN CODE"
 msgstr ""
 
 #: internal/gamesui/fortune.go:412
@@ -19295,11 +19305,11 @@ msgstr ""
 msgid "date;event;month;schedule;"
 msgstr ""
 
-#: config/apps/io.github.lyricat.Inua.ChineseCheckers.desktop:4
+#: config/apps/io.github.lyricat.Inua.ChineseCheckers.desktop:10
 msgid "Race your marbles across the star, alone or in teams, here or from a browser"
 msgstr ""
 
-#: config/apps/io.github.lyricat.Inua.ChineseCheckers.desktop:8
+#: config/apps/io.github.lyricat.Inua.ChineseCheckers.desktop:20
 msgid "games;board;checkers;halma;marbles;"
 msgstr ""
 

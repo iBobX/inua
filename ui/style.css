@@ -1877,6 +1877,14 @@ button.shot-record:checked { background: alpha(@danger, 0.1); border-color: alph
 .checkers-turn { margin: 2px 0 8px; font-size: 14px; color: @t0; }
 .fortune-player.checkers-now { box-shadow: inset 2px 0 0 @accent; padding-left: 8px; }
 .checkers-foot { margin-top: 16px; }
+/* How others join: the QR code framed on white, the code to type large
+   in mono, the link in mono, wrapping anywhere. */
+.checkers-join { margin: 4px 0 18px; padding-top: 16px; border-top: 1px solid alpha(@line, 0.6); }
+.checkers-qr { padding: 6px; background: #ffffff; border: 1px solid @line; border-radius: 3px; }
+.checkers-code { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 26px; font-weight: 500; letter-spacing: 0.12em; color: @t0; margin-bottom: 4px; }
+.checkers-link { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; color: @t1; margin-top: 8px; }
+.checkers-link-more { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11px; color: @t2; margin-top: 10px; }
+.settings button.checkers-copy { margin-top: 8px; min-height: 30px; padding: 0 12px; }
 .settings button.fortune-start { min-height: 40px; padding: 0 24px; font-weight: 500; }
 .fortune-setup > button.fortune-start { margin-top: 16px; }
 

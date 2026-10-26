@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"codeberg.org/puregotk/puregotk/v4/gtk"
+	"codeberg.org/puregotk/puregotk/v4/pango"
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/qrcode"
 
@@ -48,15 +49,20 @@ type checkers struct {
 	round *gtk.Label
 
 	// The setup.
-	counts                   []*gtk.ToggleButton
-	seatBox                  gtk.Box
-	rows                     []seatRow
-	filling                  bool
-	noParking, network       *gtk.Switch
-	start                    *gtk.Button
-	why, linkLabel, linkMore gtk.Label
-	qrCanvas                 *canvas
-	qr                       interface {
+	counts              []*gtk.ToggleButton
+	seatBox             gtk.Box
+	rows                []seatRow
+	filling             bool
+	noParking, network  *gtk.Switch
+	start               *gtk.Button
+	why                 gtk.Label
+	join                *gtk.Box // the link, its QR code and the code, on the network
+	joinCode, linkLabel gtk.Label
+	linkMore, joinNote  gtk.Label
+	copyLink            *gtk.Button
+	onCopy              func(gtk.Button)
+	qrCanvas            *canvas
+	qr                  interface {
 		GetWidth() int
 		GetHeight() int
 		Get(x, y int) bool
@@ -335,21 +341,12 @@ func (p *checkers) setupPage() *gtk.Box {
 	option(0, i18n.T("Stay out of other points"), i18n.T("A marble may cross another player's point, but not stop in it."), &p.noParking, &p.onRule)
 	option(1, i18n.T("On the network"), i18n.T("Others join from a browser on this network, with the link or the QR code."), &p.network, &p.onNetwork)
 	gtkx.Append(right, &grid.Widget)
-	p.qrCanvas = newCanvas(qrSide, qrSide, p.paintQR)
-	p.qrCanvas.area.SetSizeRequest(qrSide, qrSide)
-	p.qrCanvas.area.SetFocusable(false)
-	p.qrCanvas.area.SetHalign(gtk.AlignStartValue)
-	p.qrCanvas.area.SetVisible(false)
-	gtkx.Append(right, &p.qrCanvas.area.Widget)
-	for _, l := range []*gtk.Label{&p.linkLabel, &p.linkMore} {
-		*l = *gtk.NewLabel("")
-		l.SetSelectable(true)
-		l.SetXalign(0)
-		l.SetWrap(true)
-		gtkx.Append(right, &l.Widget)
-	}
-	p.linkLabel.AddCssClass("fortune-card-title")
-	p.linkMore.AddCssClass("fortune-city-sub")
+	gtkx.Append(right, &p.joinBlock().Widget)
+	p.joinNote = *gtk.NewLabel("")
+	p.joinNote.AddCssClass("fortune-city-sub")
+	p.joinNote.SetWrap(true)
+	p.joinNote.SetXalign(0)
+	gtkx.Append(right, &p.joinNote.Widget)
 	gtkx.Append(cols, &right.Widget)
 	gtkx.Append(page, &cols.Widget)
 
@@ -447,7 +444,7 @@ func (p *checkers) fill() {
 		r.name.SetXalign(0)
 		r.sub.SetXalign(0)
 		r.sub.AddCssClass("fortune-city-sub")
-		r.sub.SetWrap(true)
+		text.SetSizeRequest(150, -1)
 		gtkx.Append(text, &r.name.Widget)
 		gtkx.Append(text, &r.sub.Widget)
 		gtkx.Append(r.box, &text.Widget)
@@ -627,21 +624,80 @@ func (p *checkers) serve(on bool) {
 	p.fill()
 }
 
-// showLink shows the link and its QR code while the lobby is on the
-// network.
+// joinBlock is how others join, while the game is on the network: the
+// QR code, beside it the join code to type and the link to open or copy,
+// and the computer's other addresses under them.
+func (p *checkers) joinBlock() *gtk.Box {
+	p.join = gtk.NewBox(gtk.OrientationHorizontalValue, 18)
+	p.join.AddCssClass("checkers-join")
+	p.join.SetVisible(false)
+	p.qrCanvas = newCanvas(ckQR, ckQR, p.paintQR)
+	p.qrCanvas.area.SetSizeRequest(ckQR, ckQR)
+	p.qrCanvas.area.SetFocusable(false)
+	p.qrCanvas.area.SetValign(gtk.AlignStartValue)
+	p.qrCanvas.area.SetHexpand(false)
+	p.qrCanvas.area.AddCssClass("checkers-qr")
+	gtkx.Append(p.join, &p.qrCanvas.area.Widget)
+	text := gtk.NewBox(gtk.OrientationVerticalValue, 2)
+	text.SetHexpand(true)
+	k := gtk.NewLabel(i18n.T("JOIN CODE"))
+	k.AddCssClass("kicker")
+	k.SetXalign(0)
+	gtkx.Append(text, &k.Widget)
+	p.joinCode = *gtk.NewLabel("")
+	p.joinCode.AddCssClass("checkers-code")
+	p.joinCode.SetSelectable(true)
+	p.joinCode.SetXalign(0)
+	gtkx.Append(text, &p.joinCode.Widget)
+	sub := gtk.NewLabel(i18n.T("Scan the code, or open the link in a browser on this network."))
+	sub.AddCssClass("fortune-city-sub")
+	sub.SetWrap(true)
+	sub.SetXalign(0)
+	gtkx.Append(text, &sub.Widget)
+	link := func(l *gtk.Label, class string) {
+		*l = *gtk.NewLabel("")
+		l.AddCssClass(class)
+		l.SetSelectable(true)
+		l.SetXalign(0)
+		l.SetWrap(true)
+		l.SetWrapMode(pango.WrapCharValue) // a link has no spaces to break at
+		gtkx.Append(text, &l.Widget)
+	}
+	link(&p.linkLabel, "checkers-link")
+	p.onCopy = func(gtk.Button) {
+		if urls := p.host.URLs(); len(urls) > 0 {
+			clip := p.f.win.GetClipboard()
+			clip.SetText(urls[0])
+			clip.Unref()
+			p.copyLink.SetLabel(i18n.T("Copied"))
+			time.AfterFunc(1500*time.Millisecond, func() { gtkx.Post(func() { p.copyLink.SetLabel(i18n.T("Copy link")) }) })
+		}
+	}
+	p.copyLink = button(i18n.T("Copy link"), &p.onCopy)
+	p.copyLink.SetHalign(gtk.AlignStartValue)
+	p.copyLink.AddCssClass("checkers-copy")
+	gtkx.Append(text, &p.copyLink.Widget)
+	link(&p.linkMore, "checkers-link-more")
+	gtkx.Append(p.join, &text.Widget)
+	return p.join
+}
+
+// ckQR is the QR code's side.
+const ckQR = 132
+
+// showLink shows how to join while the lobby is on the network.
 func (p *checkers) showLink() {
 	urls := []string{}
 	if p.host.Port() != 0 {
 		urls = p.host.URLs()
 	}
 	on := len(urls) > 0
-	p.qrCanvas.area.SetVisible(on)
+	p.join.SetVisible(on)
+	p.joinNote.SetText("")
 	p.qr = nil
-	p.linkLabel.SetText("")
-	p.linkMore.SetText("")
 	if !on {
 		if p.host.Port() != 0 {
-			p.linkMore.SetText(i18n.T("This computer is on no network a browser could reach it from."))
+			p.joinNote.SetText(i18n.T("This computer is on no network a browser could reach it from."))
 		}
 		return
 	}
@@ -649,23 +705,23 @@ func (p *checkers) showLink() {
 		p.qr = m
 	}
 	p.qrCanvas.redraw()
-	p.linkLabel.SetText(urls[0])
-	more := i18n.Tf("Join code %s", p.host.Code)
-	if len(urls) > 1 {
-		more += "\n" + strings.Join(urls[1:], "\n")
-	}
-	p.linkMore.SetText(more)
+	p.joinCode.SetText(p.host.Code)
+	// No hyphen where a link breaks: it would read as part of it.
+	plain := func(s string) string { return `<span insert_hyphens="false">` + html.EscapeString(s) + `</span>` }
+	p.linkLabel.SetMarkup(plain(urls[0]))
+	p.linkMore.SetMarkup(plain(strings.Join(urls[1:], "\n")))
+	p.linkMore.SetVisible(len(urls) > 1)
 }
 
 func (p *checkers) paintQR(pn pen) {
 	pn.Color(white)
-	pn.Rect(0, 0, qrSide, qrSide)
+	pn.Rect(0, 0, ckQR, ckQR)
 	pn.Fill()
 	m := p.qr
 	if m == nil {
 		return
 	}
-	k := qrSide / float64(m.GetWidth())
+	k := ckQR / float64(m.GetWidth())
 	pn.Color(color.NRGBA{0x1F, 0x1B, 0x17, 255})
 	for y := range m.GetHeight() {
 		for x := range m.GetWidth() {
@@ -759,6 +815,10 @@ func (p *checkers) holeAt(at games.Vec) int {
 // play shows the queued moves, one after another, then the game as it is.
 func (p *checkers) play() {
 	p.cv.animate(func(dt float64) bool {
+		if p.g == nil { // back to the setup meanwhile
+			p.queue, p.moving = nil, nil
+			return false
+		}
 		if p.moving == nil {
 			for len(p.queue) > 0 {
 				e := p.queue[0]
