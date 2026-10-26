@@ -105,6 +105,7 @@ func (a *App) openAppChooser(r chooser.AppRequest, ch chan<- string) *appChooser
 	buttons := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 	buttons.SetHalign(gtk.AlignEndValue)
 	cancel := gtk.NewButtonWithLabel(i18n.T("Cancel"))
+	cancel.AddCssClass("outlined")
 	a.h.click(cancel, func() { c.finish("") })
 	c.ptrs = append(c.ptrs, cancel.GoPointer())
 	gtkx.Append(buttons, &cancel.Widget)

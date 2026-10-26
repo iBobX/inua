@@ -89,7 +89,7 @@ func (a *App) newWindow() *window {
 	ui.Get("job_cancel", &jobCancel)
 	f := &w.foot
 	ui.Get("picker_foot", &f.foot)
-	ui.Get("picker_space", &f.space)
+	ui.Get("picker_name_row", &f.nameRow)
 	ui.Get("picker_choices", &f.choices)
 	ui.Get("picker_title", &f.title)
 	ui.Get("picker_error", &f.err)

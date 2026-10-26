@@ -42,11 +42,11 @@ type pickResult struct {
 
 // footer is the picker's part of the window's layout.
 type footer struct {
-	foot, space, choices gtk.Box
-	title, err           gtk.Label
-	name                 gtk.Entry
-	filter               gtk.DropDown
-	cancel, accept       gtk.Button
+	foot, nameRow, choices gtk.Box
+	title, err             gtk.Label
+	name                   gtk.Entry
+	filter                 gtk.DropDown
+	cancel, accept         gtk.Button
 }
 
 // lingerMs is how long the process stays after its last picker, so the
@@ -145,8 +145,7 @@ func (w *window) setupPicker() {
 	w.detailsToggle.SetActive(details)
 
 	if r.Kind == pick.Save {
-		f.name.SetVisible(true)
-		f.space.SetVisible(false)
+		f.nameRow.SetVisible(true)
 		f.name.SetText(r.SaveName())
 		w.enter(&f.name, func() { w.pickAccept(false) })
 	}

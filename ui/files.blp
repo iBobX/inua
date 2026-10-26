@@ -143,32 +143,41 @@ ApplicationWindow files {
         }
       }
 
-      // The picker's footer (docs/picker.md), across the window: what the
-      // app asks for, the name to save under, the app's filter and choices,
-      // Cancel and the action; an error under them. Files' own windows
-      // leave it hidden.
+      // The picker's footer (docs/picker.md), across the window: the name
+      // to save under on a row of its own; then what the app asks for, the
+      // app's filter and choices, Cancel and the action; an error under
+      // them. Files' own windows leave it hidden.
       Box picker_foot {
         styles ["files-picker-foot"]
         orientation: vertical;
-        spacing: 6;
+        spacing: 10;
         visible: false;
+
+        Box picker_name_row {
+          spacing: 10;
+          visible: false;
+
+          Label {
+            styles ["files-picker-label"]
+            label: _("Name");
+            xalign: 0;
+            mnemonic-widget: picker_name;
+          }
+
+          Entry picker_name {
+            hexpand: true;
+          }
+        }
 
         Box {
           spacing: 10;
 
           Label picker_title {
             styles ["files-picker-title"]
+            hexpand: true;
+            xalign: 0;
             ellipsize: end;
-            max-width-chars: 28;
-          }
-
-          Entry picker_name {
-            hexpand: true;
-            visible: false;
-          }
-
-          Box picker_space {
-            hexpand: true;
+            max-width-chars: 40;
           }
 
           DropDown picker_filter {
@@ -182,6 +191,7 @@ ApplicationWindow files {
           }
 
           Button picker_cancel {
+            styles ["outlined"]
             label: _("Cancel");
             valign: center;
           }

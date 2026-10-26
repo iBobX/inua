@@ -100,10 +100,12 @@ Without the picker, they keep GTK's dialog.
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Saving puts the name in the footer, as an entry before the buttons:
+Saving puts the name on a row of its own above the buttons, the whole
+width of the window:
 
 ```
-│ Save as [scan-0412|.pdf         ]  [PDF ▾]   Cancel  [ Save ] │
+│ Name    [scan-0412|.pdf                                     ] │
+│ Save    [PDF ▾]                              Cancel  [ Save ] │
 ```
 
 - The title is the request's title, else *Open a file*, *Open files*,

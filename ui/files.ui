@@ -198,8 +198,29 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                   <class name="files-picker-foot"/>
                 </style>
                 <property name="orientation">1</property>
-                <property name="spacing">6</property>
+                <property name="spacing">10</property>
                 <property name="visible">false</property>
+                <child>
+                  <object class="GtkBox" id="picker_name_row">
+                    <property name="spacing">10</property>
+                    <property name="visible">false</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <style>
+                          <class name="files-picker-label"/>
+                        </style>
+                        <property name="label" translatable="yes">Name</property>
+                        <property name="xalign">0</property>
+                        <property name="mnemonic-widget">picker_name</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="picker_name">
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkBox">
                     <property name="spacing">10</property>
@@ -208,19 +229,10 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                         <style>
                           <class name="files-picker-title"/>
                         </style>
+                        <property name="hexpand">true</property>
+                        <property name="xalign">0</property>
                         <property name="ellipsize">3</property>
-                        <property name="max-width-chars">28</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="picker_name">
-                        <property name="hexpand">true</property>
-                        <property name="visible">false</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="picker_space">
-                        <property name="hexpand">true</property>
+                        <property name="max-width-chars">40</property>
                       </object>
                     </child>
                     <child>
@@ -239,6 +251,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
                     </child>
                     <child>
                       <object class="GtkButton" id="picker_cancel">
+                        <style>
+                          <class name="outlined"/>
+                        </style>
                         <property name="label" translatable="yes">Cancel</property>
                         <property name="valign">3</property>
                       </object>
