@@ -83,6 +83,7 @@ type settings struct {
 	about    aboutSettings     // the About page
 	keyring  keyringSettings   // the Keyring page
 	apps     appsSettings      // the Default Apps page
+	portals  portalsSettings   // its [DIALOGS]
 	displays displaysSettings  // the Displays page
 	bt       bluetoothSettings // the Bluetooth page
 	wifi     wifiSettings      // the Wi-Fi page
@@ -471,6 +472,7 @@ func (s *shellUI) openSettings() {
 	s.getAboutSettings(ui)
 	s.getKeyringSettings(ui)
 	s.getAppsSettings(ui)
+	s.getPortalsSettings(ui)
 	s.getDisplaySettings(ui)
 	s.getWifiSettings(ui)
 	s.getBluetoothSettings(ui)

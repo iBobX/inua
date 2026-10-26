@@ -37,8 +37,8 @@ if [ -t 1 ]; then
 else
     bold= dim= green= yellow= red= blue= off=
 fi
-steps=6
-[ -n "${INUA_NO_SESSION:-}" ] && steps=5
+steps=7
+[ -n "${INUA_NO_SESSION:-}" ] && steps=6
 step=0
 heading() { step=$((step + 1)); printf "\n${bold}${blue}[%d/%d]${off} ${bold}%s${off}\n" "$step" "$steps" "$*"; }
 say() { printf "      %s\n" "$*"; }
@@ -341,6 +341,7 @@ elif told=no; ! have gpg || ! setup_store; then
 elif [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ ! -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]; then
     note "no desktop session here; in one, run: inua keyring replace"
 elif PATH="$prefix/bin:$PATH" "$prefix/bin/inua" keyring replace </dev/null; then
+    secret=yes
     done_ "inua-keyring keeps apps' secrets in pass"
 else
     note "the keyring was not replaced (above); try again with: inua keyring replace"
@@ -360,6 +361,37 @@ if [ "$(systemctl --user is-enabled gcr-ssh-agent.socket 2>/dev/null)" = enabled
             note "GNOME's ssh agent is still on; by hand: systemctl --user disable --now gcr-ssh-agent.socket gcr-ssh-agent.service"
         fi
     fi
+fi
+
+# --- the portals --------------------------------------------------------------
+
+heading "Turning on inua's dialogs"
+
+# inua portals (docs/portals.md): apps' file chooser, screen share picker,
+# notifications and the rest through inua, in inua's sessions only. Once:
+# a later install keeps what was turned off since. Secret only when
+# inua-keyring is the keyring, else its requests would go unanswered.
+if [ ! -x "$prefix/bin/inua" ]; then
+    :
+elif "$prefix/bin/inua" portals dir >/dev/null 2>&1; then
+    done_ "inua's dialogs are on as you left them; see: inua portals status"
+elif ask "Use inua's file chooser, share picker and other dialogs for all apps?" y; then
+    if [ "${secret:-}" = yes ]; then
+        set --
+    else
+        set -- Settings Notification Inhibit Screenshot Access Background Wallpaper FileChooser AppChooser SharePicker
+    fi
+    # Without a desktop session, enable writes the files and the next inua
+    # session reads them; restarting the frontend is all that fails.
+    PATH="$prefix/bin:$PATH" "$prefix/bin/inua" portals enable "$@" >/dev/null 2>&1 || true
+    if "$prefix/bin/inua" portals dir >/dev/null 2>&1; then
+        done_ "apps ask inua to open files and share the screen; off again in Settings, Default Apps, or with: inua portals disable"
+        have firefox && note "Firefox asks the portal for files only with widget.use-xdg-desktop-portal.file-picker = 1 in about:config"
+    else
+        note "inua's dialogs are not on; try: inua portals enable"
+    fi
+else
+    say "apps keep GTK's dialogs; to change that later: inua portals enable"
 fi
 
 # --- the login session ------------------------------------------------------

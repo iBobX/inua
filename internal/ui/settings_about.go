@@ -94,6 +94,7 @@ func (s *shellUI) getAboutSettings(ui *gtkx.Builder) {
 			s.showKeyringReads() // what was read since it was last shown
 		case page == "apps":
 			s.showDefaultApps() // apps installed or chosen elsewhere since
+			s.showPortals()     // inua portals run since, a backend started
 		}
 	}
 	gtkx.ConnectNotify(&s.settings.pages, "visible-child-name", &s.onSettingsPage)

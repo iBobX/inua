@@ -108,6 +108,17 @@ picker (ScreenCast, below). `inua-files -picker` turns FileChooser and
 AppChooser on (`-picker=false` off). The code is `internal/portalconf`,
 without GTK.
 
+Settings, Default Apps, [DIALOGS] does the same a row at a time: open
+and save (FileChooser, AppChooser), the share picker, the shell's
+interfaces, and Secret, each with a switch and whether it is on, from
+the next inua session, and running.
+
+`scripts/install.sh` turns them on once, after asking (yes without a
+terminal): all of them, Secret only when `inua keyring replace` made
+inua-keyring the keyring, else that interface's requests would go
+unanswered. A later install, `inua upgrade` too, keeps what was turned
+off since: with any interface on it leaves them.
+
 ### The display
 
 D-Bus and the user's systemd start inua-files, inua-keyring and

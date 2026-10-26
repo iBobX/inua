@@ -1559,6 +1559,50 @@ ApplicationWindow settings {
                   margin-top: 8;
                 }
               }
+
+              // [DIALOGS]: what answers when an app asks the desktop
+              // (xdg-desktop-portal), a switch a group (settings_portals.go).
+              Box {
+                styles ["section"]
+                orientation: vertical;
+
+                Box {
+                  styles ["section-head"]
+                  spacing: 10;
+
+                  Box {
+                    styles ["mark"]
+                    valign: center;
+                  }
+
+                  Label {
+                    styles ["section-label"]
+                    use-markup: true;
+                    label:  _("<span alpha='55%'>[</span>DIALOGS<span alpha='55%'>]</span>");
+                  }
+
+                  Label {
+                    styles ["section-meta"]
+                    label:  _("What apps show when they ask the desktop");
+                    hexpand: true;
+                    xalign: 0;
+                    ellipsize: end;
+                  }
+                }
+
+                Box portal_rows {
+                  styles ["section-body"]
+                  orientation: vertical;
+                }
+
+                Label {
+                  styles ["sub"]
+                  label:  _("Through xdg-desktop-portal, in inua's sessions only; apps started from now on see a change. Also: inua portals status.");
+                  xalign: 0;
+                  wrap: true;
+                  margin-top: 8;
+                }
+              }
             }
           };
 
