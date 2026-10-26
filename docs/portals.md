@@ -110,8 +110,8 @@ without GTK.
 
 Settings, Default Apps, [DIALOGS] does the same a row at a time: open
 and save (FileChooser, AppChooser), the share picker, the shell's
-interfaces, and Secret, each with a switch and whether it is on, from
-the next inua session, and running.
+interfaces, and Secret, each with a switch; under it a line only when
+it is on from the next inua session, or on and not served.
 
 `scripts/install.sh` turns them on once, after asking (yes without a
 terminal): all of them, Secret only when `inua keyring replace` made

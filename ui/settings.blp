@@ -1550,14 +1550,6 @@ ApplicationWindow settings {
                   styles ["section-body"]
                   orientation: vertical;
                 }
-
-                Label {
-                  styles ["sub"]
-                  label:  _("Saved where other apps read them too: ~/.config/mimeapps.list, and for the terminal xdg-terminals.list and the launcher's terminal.");
-                  xalign: 0;
-                  wrap: true;
-                  margin-top: 8;
-                }
               }
 
               // [DIALOGS]: what answers when an app asks the desktop
@@ -1593,14 +1585,6 @@ ApplicationWindow settings {
                 Box portal_rows {
                   styles ["section-body"]
                   orientation: vertical;
-                }
-
-                Label {
-                  styles ["sub"]
-                  label:  _("Through xdg-desktop-portal, in inua's sessions only; apps started from now on see a change. Also: inua portals status.");
-                  xalign: 0;
-                  wrap: true;
-                  margin-top: 8;
                 }
               }
             }

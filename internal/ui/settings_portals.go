@@ -17,25 +17,26 @@ import (
 // portalGroup is a row of the Default Apps page's [DIALOGS]: interfaces
 // inua portals turns on together, and the process that serves them.
 type portalGroup struct {
-	name, about, off string
-	ifaces           []string
-	bus              string // the backend's bus name; "" for the share picker, the shell's
-	activated        bool   // D-Bus starts it at a request
+	name, about string
+	ifaces      []string
+	bus         string // the backend's bus name; the shell's for the share picker
+	activated   bool   // D-Bus starts it at a request
 }
 
 var portalGroups = []portalGroup{
-	{name: i18n.M("Open and save"), about: i18n.M("inua's file chooser and Open With, for every app"), off: i18n.M("Off: GTK's file chooser"),
+	{name: i18n.M("Open and save"), about: i18n.M("inua's file chooser and Open With, for every app"),
 		ifaces: []string{"FileChooser", "AppChooser"}, bus: portal.FilesName, activated: true},
-	{name: i18n.M("Share the screen"), about: i18n.M("Choose a screen, a window or an area with inua's screenshot tool"), off: i18n.M("Off: Hyprland's picker"),
+	{name: i18n.M("Share the screen"), about: i18n.M("Choose a screen, a window or an area with inua's screenshot tool"),
 		ifaces: []string{portalconf.SharePicker}, bus: portal.ShellName},
-	{name: i18n.M("Notifications and the rest"), about: i18n.M("Apps' notifications, screenshots, staying awake, running in the background, the theme and the wallpaper"), off: i18n.M("Off: GTK's"),
+	{name: i18n.M("Notifications and the rest"), about: i18n.M("Apps' notifications, screenshots, the theme and more"),
 		ifaces: []string{"Settings", "Notification", "Inhibit", "Screenshot", "Access", "Background", "Wallpaper"}, bus: portal.ShellName},
-	{name: i18n.M("Secrets"), about: i18n.M("Passwords of sandboxed apps, kept by inua-keyring"), off: i18n.M("Off: the keyring's own, if it has one"),
+	{name: i18n.M("Secrets"), about: i18n.M("Passwords of sandboxed apps, kept by inua-keyring"),
 		ifaces: []string{"Secret"}, bus: portal.KeyringName, activated: true},
 }
 
 // portalsSettings is [DIALOGS]: a switch a portalGroup, and under its
-// text whether it is on, from when, and whether its process runs. Read
+// text, only when the switch alone would mislead, that it is on from the
+// next session or not served. Read
 // off the main thread each time the page is shown; a switch turns its
 // group on or off as inua portals does.
 type portalsSettings struct {
@@ -76,7 +77,9 @@ func (s *shellUI) getPortalsSettings(ui *gtkx.Builder) {
 		gtkx.Append(text, &sub.Widget)
 		state := gtk.NewLabel("")
 		state.AddCssClass("sub")
+		state.AddCssClass("warn-text")
 		state.SetXalign(0)
+		state.SetVisible(false)
 		state.SetWrap(true)
 		gtkx.Append(text, &state.Widget)
 		gtkx.Append(row, &text.Widget)
@@ -123,6 +126,7 @@ func (s *shellUI) fillPortals(states []portalState) {
 		p.switches[i].SetActive(ps.on)
 		p.switches[i].SetSensitive(!p.busy)
 		p.states[i].SetText(ps.status)
+		p.states[i].SetVisible(ps.status != "")
 	}
 }
 
@@ -140,17 +144,14 @@ func readPortals() []portalState {
 	out := make([]portalState, len(portalGroups))
 	for i, g := range portalGroups {
 		on := slices.ContainsFunc(g.ifaces, func(i string) bool { return slices.Contains(enabled, i) })
-		ps := portalState{on: on, status: i18n.T(g.off)}
+		ps := portalState{on: on}
 		switch {
 		case !on:
 		case !reads:
 			ps.status = i18n.T("On from the next inua session")
-		case conn != nil && portalconf.HasOwner(conn, g.bus):
-			ps.status = i18n.T("On, running")
-		case g.activated:
-			ps.status = i18n.T("On, starts when an app asks")
+		case g.activated, conn == nil, portalconf.HasOwner(conn, g.bus):
 		default:
-			ps.status = i18n.T("On, but the shell does not serve it: restart the shell")
+			ps.status = i18n.T("Not served: restart the shell")
 		}
 		out[i] = ps
 	}
