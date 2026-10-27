@@ -291,6 +291,13 @@ link, pasted. The browser keeps the last good token and tries it first,
 so a home-screen app made from an old link gets in by itself; a page
 left open when New link is made goes to the question.
 
+`serve` speaks plain HTTP. On this computer and on Tailscale, whose link
+is encrypted, that is safe; from any other address, the token, the keys
+typed and the screens cross the network as they are. The page says so
+when it came over `http://` from neither (it cannot see a proxy's TLS,
+only its own address): Overview's Connection shows Encryption: none,
+and a passphrase card says what is typed there is not encrypted.
+
 - **Agents**: every agent by its state (needs you, working, done, idle),
   with where it runs; **Workspaces**: the workspaces, then a workspace's
   sessions and their panes; **Overview**: the agents in numbers, the connection, and the settings.
