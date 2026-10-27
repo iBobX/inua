@@ -26,6 +26,7 @@ type bar struct {
 	wallpaper   *gtk.ApplicationWindow // this monitor's background, if inua draws it
 	dock        *dock                  // this monitor's dock, if shown
 	win         gtk.ApplicationWindow
+	frame       gtk.Overlay // the island, and the panel hanging from it
 	island      gtk.CenterBox
 	workspaces  gtk.Box
 	title       gtk.Label
@@ -51,6 +52,13 @@ type bar struct {
 	refs        gtkx.Scope
 	edgeGaps    bool
 	compact     bool
+	height      int32 // the window's, by its density
+
+	// held counts the panels hanging from the bar (drop.go), whose
+	// window is grown down over the monitor meanwhile; pressHeld is
+	// whether the last press came while one did, and was the panel's.
+	held      int
+	pressHeld bool
 
 	// The workspaces this bar shows, and their buttons by id, owned by the
 	// workspaces box. Buttons are kept across updates so a focus change
@@ -110,6 +118,21 @@ func (s *shellUI) dropBar(b *bar) {
 	if s.tray.menu != nil {
 		s.tray.menu.Popdown() // it may hang off this bar
 	}
+	// A panel hanging from the bar goes with it.
+	if s.control.drop.host == b {
+		s.closeControl()
+	}
+	if s.agenda.drop.host == b {
+		s.closeAgenda()
+	}
+	if s.passwords.drop.host == b {
+		s.closePasswords()
+	}
+	for _, d := range []*drop{&s.control.drop, &s.agenda.drop, &s.passwords.drop} {
+		if d.host == b {
+			d.finish()
+		}
+	}
 	delete(s.bars, b.mon.GoPointer())
 	dropWallpaper(b)
 	dropDock(b)
@@ -122,6 +145,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	b := &bar{mon: mon, ws: map[int]*gtk.Button{}, fresh: map[int]bool{}}
 	ui := s.load("bar.ui", &b.refs)
 	ui.Get("bar", &b.win)
+	ui.Get("frame", &b.frame)
 	ui.Get("island", &b.island)
 	ui.Get("workspaces", &b.workspaces)
 	overviewClick := gtk.NewGestureClick()
@@ -181,6 +205,7 @@ func (s *shellUI) newBar(mon *gdk.Monitor) *bar {
 	motion.ConnectLeave(&s.onBarLeave)
 	b.win.AddController(&motion.EventController)
 	click := gtk.NewGestureClick()
+	click.ConnectPressed(&s.onBarPressed)
 	click.ConnectReleased(&s.onBarReleased)
 	b.win.AddController(&click.EventController)
 	scroll := gtk.NewEventControllerScroll(gtk.EventControllerScrollVerticalValue | gtk.EventControllerScrollDiscreteValue)
@@ -273,8 +298,42 @@ func (b *bar) setDensity(density string) {
 	// A mapped GTK4 Layer Shell surface does not resize from its child's
 	// size request alone. Updating the toplevel default size reconfigures
 	// the surface and its automatically calculated exclusive zone as well.
-	b.win.SetDefaultSize(-1, height)
+	b.height = height
+	if b.held == 0 {
+		b.win.SetDefaultSize(-1, height)
+	}
 	b.win.QueueResize()
+}
+
+// hold grows the bar's window down over its monitor for a panel to hang
+// in, on layer and with the keyboard, the space it keeps from windows
+// as it was.
+func (b *bar) hold(layer layershell.Layer) {
+	b.held++
+	w := b.win.GoPointer()
+	layershell.SetLayer(w, layer)
+	layershell.SetKeyboardMode(w, layershell.KeyboardExclusive)
+	if b.held > 1 {
+		return
+	}
+	layershell.SetExclusiveZone(w, b.win.GetHeight())
+	var r gdk.Rectangle
+	b.mon.GetGeometry(&r)
+	b.win.SetDefaultSize(-1, r.Height)
+	b.win.QueueResize()
+}
+
+// release gives the bar its own size back once no panel hangs from it.
+func (b *bar) release() {
+	if b.held--; b.held > 0 {
+		return
+	}
+	w := b.win.GoPointer()
+	layershell.SetKeyboardMode(w, layershell.KeyboardNone)
+	layershell.SetLayer(w, layershell.LayerTop)
+	b.win.SetDefaultSize(-1, b.height)
+	b.win.QueueResize()
+	layershell.AutoExclusiveZone(w)
 }
 
 func (b *bar) setClock(s *shellUI, now time.Time) {

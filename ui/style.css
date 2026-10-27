@@ -22,7 +22,7 @@ window.bar, window.launcher, window.control, window.agenda, window.banners, wind
 
 /* Shared pieces. */
 
-.tag, .kicker, .readout, .bar .clock, .bar .numeric, .mono-entry,
+.tag, .kicker, .readout, .bar .island .clock, .bar .island .numeric, .mono-entry,
 .swatch label {
   font-family: "Geist Mono", "IBM Plex Mono", "JetBrains Mono", monospace;
   font-feature-settings: "tnum";
@@ -125,17 +125,17 @@ button.image-button { padding-left: 0; padding-right: 0; }
 .bar.flush .island { border-radius: 0; }
 /* An empty workspace's islands: the glass taken twice, lighter. */
 .bar.empty .island { background: @glass_empty; }
-.bar.compact .clock { font-size: 11px; }
-.bar.compact .workspaces button.focused { min-width: 14px; }
-.bar.compact button.status,
-.bar.compact button.clipboard,
-.bar.compact button.passwords,
-.bar.compact button.notes,
-.bar.compact button.clock-button,
-.bar.compact .tray button { min-height: 0; padding: 1px 6px; margin: 1px 0; }
-.bar.compact .tray button { padding-left: 4px; padding-right: 4px; }
-.bar .title { color: @t1; }
-.bar .clock {
+.bar.compact .island .clock { font-size: 11px; }
+.bar.compact .island .workspaces button.focused { min-width: 14px; }
+.bar.compact .island button.status,
+.bar.compact .island button.clipboard,
+.bar.compact .island button.passwords,
+.bar.compact .island button.notes,
+.bar.compact .island button.clock-button,
+.bar.compact .island .tray button { min-height: 0; padding: 1px 6px; margin: 1px 0; }
+.bar.compact .island .tray button { padding-left: 4px; padding-right: 4px; }
+.bar .island .title { color: @t1; }
+.bar .island .clock {
   color: @t0; /* not the button's colour it sits in */
   font-size: 12px;
   font-weight: 500;
@@ -145,7 +145,7 @@ button.image-button { padding-left: 0; padding-right: 0; }
 /* The clock is a button that opens the calendar panel, styled with the
    status and bell buttons below. */
 /* While recording: a red square and the time so far. */
-.bar button.rec {
+.bar .island button.rec {
   min-height: 0;
   padding: 2px 8px;
   border: 1px solid alpha(@danger, 0.5);
@@ -154,17 +154,17 @@ button.image-button { padding-left: 0; padding-right: 0; }
   box-shadow: none;
   color: @danger;
 }
-.bar button.rec:hover { background: alpha(@danger, 0.18); }
+.bar .island button.rec:hover { background: alpha(@danger, 0.18); }
 .rec-mark { min-width: 7px; min-height: 7px; border-radius: 1px; background: @danger; }
-.bar button.rec .rec-mark { animation: rec-pulse 1.6s ease-in-out infinite; }
+.bar .island button.rec .rec-mark { animation: rec-pulse 1.6s ease-in-out infinite; }
 @keyframes rec-pulse { 50% { opacity: 0.35; } }
-.bar .numeric { font-size: 11px; color: @t1; }
-.bar image { color: @t1; }
+.bar .island .numeric { font-size: 11px; color: @t1; }
+.bar .island image, box.bar image { color: @t1; }
 
 /* Workspaces are dots: dim for one that exists, brighter for one shown on
    another monitor; the focused one stretches into an accent pill. The
    labels (names) are for the tooltip and accessibility, not drawn. */
-.bar .workspaces button {
+.bar .island .workspaces button {
   min-height: 6px;
   min-width: 6px;
   padding: 0;
@@ -178,14 +178,14 @@ button.image-button { padding-left: 0; padding-right: 0; }
   transition: min-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
               background 180ms ease-out;
 }
-.bar .workspaces button:hover { background: @t1; }
+.bar .island .workspaces button:hover { background: @t1; }
 /* Shown on its monitor, but another monitor has focus. */
-.bar .workspaces button.active { background: @t1; }
-.bar .workspaces button.focused { min-width: 18px; background: @accent; }
-.bar .workspaces button.urgent { background: @danger; }
+.bar .island .workspaces button.active { background: @t1; }
+.bar .island .workspaces button.focused { min-width: 18px; background: @accent; }
+.bar .island .workspaces button.urgent { background: @danger; }
 
 /* min-width: 0 too, else GTK's icon buttons are wider than the bell. */
-.bar button.status, .bar button.passwords, .bar button.clipboard, .bar button.notes, .bar button.voice, .bar button.clock-button, .bar .tray button {
+.bar .island button.status, .bar .island button.passwords, .bar .island button.clipboard, .bar .island button.notes, .bar .island button.voice, .bar .island button.clock-button, .bar .island .tray button {
   min-width: 0;
   min-height: 0;
   padding: 3px 8px;
@@ -198,20 +198,20 @@ button.image-button { padding-left: 0; padding-right: 0; }
 }
 /* The icon buttons among them are as tall as the others and wider, about
    0.618:1: 24px (a 16px icon, 3px padding, 1px border) by 38px. */
-.bar button.passwords, .bar button.clipboard, .bar button.notes, .bar button.voice, .bar .tray button { padding: 3px 10px; }
+.bar .island button.passwords, .bar .island button.clipboard, .bar .island button.notes, .bar .island button.voice, .bar .island .tray button { padding: 3px 10px; }
 /* .hover: the pointer is in a button's reach past the island (up to the
    screen's edge); see bar.endReach and clockReach. */
-.bar button.passwords:hover, .bar button.passwords.hover, .bar button.clipboard:hover, .bar button.clipboard.hover, .bar button.status:hover, .bar button.status.hover, .bar button.notes:hover, .bar button.notes.hover, .bar button.voice:hover, .bar button.voice.hover, .bar button.clock-button:hover, .bar button.clock-button.hover, .bar .tray button:hover { background: alpha(@accent, 0.09); }
+.bar .island button.passwords:hover, .bar .island button.passwords.hover, .bar .island button.clipboard:hover, .bar .island button.clipboard.hover, .bar .island button.status:hover, .bar .island button.status.hover, .bar .island button.notes:hover, .bar .island button.notes.hover, .bar .island button.voice:hover, .bar .island button.voice.hover, .bar .island button.clock-button:hover, .bar .island button.clock-button.hover, .bar .island .tray button:hover { background: alpha(@accent, 0.09); }
 /* Its panel is open: the selection style. */
-.bar button.passwords.open, .bar button.clipboard.open, .bar button.status.open, .bar button.notes.open, .bar button.clock-button.open { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
+.bar .island button.passwords.open, .bar .island button.clipboard.open, .bar .island button.status.open, .bar .island button.notes.open, .bar .island button.clock-button.open { background: alpha(@accent, 0.09); border-color: alpha(@accent, 0.38); }
 
 /* Dictation's microphone. While it listens it is red on a red ground,
    pulsing, as the screen recorder's button is; while the words are turned
    into text, the hourglass pulses. */
-.bar button.voice.recording { background: alpha(@danger, 0.12); }
-.bar button.voice.recording:hover { background: alpha(@danger, 0.18); }
-.bar button.voice.recording image { color: @danger; animation: rec-pulse 1.6s ease-in-out infinite; }
-.bar button.voice.transcribing image { animation: rec-pulse 0.9s ease-in-out infinite; }
+.bar .island button.voice.recording { background: alpha(@danger, 0.12); }
+.bar .island button.voice.recording:hover { background: alpha(@danger, 0.18); }
+.bar .island button.voice.recording image { color: @danger; animation: rec-pulse 1.6s ease-in-out infinite; }
+.bar .island button.voice.transcribing image { animation: rec-pulse 0.9s ease-in-out infinite; }
 
 /* --- launcher -------------------------------------------------------- */
 
@@ -513,7 +513,7 @@ button.agenda-weather .agenda-weather-day image { color: @t1; }
 /* The bell opens the notification center (styled with the status button
    above); the square beside it marks unread notifications. */
 /* On the bell's corner, so the button keeps its size. */
-.bar .unread { min-width: 5px; min-height: 5px; border-radius: 1px; background: @accent; }
+.bar .island .unread { min-width: 5px; min-height: 5px; border-radius: 1px; background: @accent; }
 
 /* A notification: the app's icon and name in a mono label, the summary,
    the body, then its actions. Banners are cards of their own; in the

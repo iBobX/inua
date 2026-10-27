@@ -247,7 +247,6 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 	gtkx.Append(p.backdrop, &card.Widget)
 	p.win.SetChild(&p.backdrop.Widget)
 	p.backdrop.Unref()
-	p.drop.attach(p.backdrop, &card.Widget, false)
 	click := gtk.NewGestureClick()
 	click.ConnectPressed(&s.onPasswordsBackdrop)
 	p.backdrop.AddController(&click.EventController)
@@ -255,6 +254,7 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 	keys.SetPropagationPhase(gtk.PhaseCaptureValue)
 	keys.ConnectKeyPressed(&s.onPasswordsKey)
 	p.win.AddController(&keys.EventController)
+	p.drop.attach(&p.win.Window, &keys.EventController, p.backdrop, &card.Widget, layershell.LayerTop, false)
 	if s.layer {
 		w := p.win.GoPointer()
 		layershell.InitForWindow(w)
@@ -285,8 +285,7 @@ func (s *shellUI) openPasswords(mon *gdk.Monitor) {
 		s.decryptPassword(p.selected)
 	}
 	s.readPasswordsStore()
-	p.win.Present()
-	s.dropFromBar(&p.drop, mon, func(b *bar) *gtk.Widget { return &b.passwords.Widget }) // after Present, so it drops
+	s.dropFromBar(&p.drop, mon, func(b *bar) *gtk.Widget { return &b.passwords.Widget })
 	p.search.GrabFocus()
 	p.search.SelectRegion(0, -1) // typing starts a new search; Enter keeps this one
 	p.timer = glib.TimeoutAdd(1000, &s.onPasswordsTick, 0)

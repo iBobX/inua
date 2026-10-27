@@ -12,6 +12,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/gtkx"
+	"github.com/lyricat/inua/internal/layershell"
 	"github.com/lyricat/inua/internal/shell"
 )
 
@@ -26,10 +27,20 @@ import (
 // itself is .hanging, with no background of its own, and the canvas
 // places it, stretched, clipped at the bar's edge. The drop outlives the windows:
 // each window gives it its backdrop and card when built.
+//
+// The backdrop hangs inside the bar's window, which grows down over the
+// monitor meanwhile (bar.hold): one surface, which the compositor blurs
+// as one, with no seam where the card meets the bar. The panel's own
+// window, never shown then, has it back to go with it; without a bar the
+// card shows in that window instead.
 type drop struct {
+	win      *gtk.Window
+	keys     *gtk.EventController // the panel's, on the window it shows in
+	layer    layershell.Layer     // the bar's while it hangs from it
 	canvas   *gtk.Widget
 	backdrop *gtk.Box
 	card     *gtk.Widget
+	host     *bar
 	bar      *gtk.Widget // the window of the bar it hangs from
 
 	// Where it hangs, in the window's coordinates: the bar's island ends
@@ -56,10 +67,12 @@ type drop struct {
 	onTickDone glib.DestroyNotify
 }
 
-// attach takes a newly built window's backdrop and the card in it; a
-// flush card is flush with the bar's end.
-func (d *drop) attach(backdrop *gtk.Box, card *gtk.Widget, flush bool) {
-	d.backdrop, d.card, d.canvas, d.bar = backdrop, card, nil, nil
+// attach takes a newly built window, its keys' controller, its backdrop
+// and the card in it, to hang on layer; a flush card is flush with the
+// bar's end.
+func (d *drop) attach(win *gtk.Window, keys *gtk.EventController, backdrop *gtk.Box, card *gtk.Widget, layer layershell.Layer, flush bool) {
+	d.win, d.keys, d.layer = win, keys, layer
+	d.backdrop, d.card, d.canvas, d.bar, d.host = backdrop, card, nil, nil, nil
 	d.end = flush
 	d.hanging, d.moving, d.back, d.gone = false, false, false, nil
 	if d.onTick == nil {
@@ -79,7 +92,38 @@ func (d *drop) detach() {
 		d.card.Unparent()
 		gtkx.ForgetCanvas(d.canvas)
 	}
-	d.canvas, d.backdrop, d.card, d.bar = nil, nil, nil, nil
+	if b := d.host; b != nil {
+		b.win.RemoveController(d.keys)
+		d.backdrop.Ref()
+		b.frame.RemoveOverlay(&d.backdrop.Widget)
+		for _, c := range d.win.GetCssClasses() {
+			d.backdrop.RemoveCssClass(c)
+		}
+		d.win.SetChild(&d.backdrop.Widget)
+		d.backdrop.Unref()
+		b.release()
+	}
+	d.canvas, d.backdrop, d.card, d.bar, d.host = nil, nil, nil, nil, nil
+	d.win, d.keys = nil, nil
+}
+
+// moveTo moves the backdrop into the bar b's window, with the panel's
+// classes for its style, and the keys with it.
+func (d *drop) moveTo(b *bar) {
+	d.backdrop.Ref()
+	d.win.SetChild(nil)
+	for _, c := range d.win.GetCssClasses() {
+		if c != "background" { // GTK's, for a window's own
+			d.backdrop.AddCssClass(c)
+		}
+	}
+	b.hold(d.layer)
+	b.frame.AddOverlay(&d.backdrop.Widget)
+	d.backdrop.Unref()
+	d.keys.Ref()
+	d.win.RemoveController(d.keys)
+	b.win.AddController(d.keys)
+	d.host = b
 }
 
 // hang moves the card into a canvas, to hang from the bar b under the
@@ -88,6 +132,7 @@ func (d *drop) hang(s *shellUI, b *bar, island [4]float32, under float64) bool {
 	if !d.colors(b.win.HasCssClass("empty")) {
 		return false
 	}
+	d.moveTo(b)
 	d.canvas = gtkx.NewCanvas(&gtkx.Canvas{Snapshot: d.snapshot, Allocate: d.allocate})
 	d.canvas.SetHexpand(true)
 	d.canvas.SetVexpand(true)
@@ -428,9 +473,8 @@ func hangingRect(x, y, w, h, round float64) *gsk.RoundedRect {
 
 // dropFromBar hangs d's card from the lower edge of the bar on mon (nil:
 // the focused monitor), where the panel opens, under that bar's button,
-// and drops it. The panel's window covers the monitor from its corner, as the
-// bar does, so the bar's coordinates are the window's. Without a bar the
-// card shows as a card of its own.
+// and drops it, in the bar's window. Without a bar the panel's own window
+// shows, and the card as a card of its own.
 func (s *shellUI) dropFromBar(d *drop, mon *gdk.Monitor, button func(*bar) *gtk.Widget) {
 	if mon == nil {
 		mon = s.focusedMonitor()
@@ -444,11 +488,12 @@ func (s *shellUI) dropFromBar(d *drop, mon *gdk.Monitor, button func(*bar) *gtk.
 		}
 	}
 	var r, br graphene.Rect
-	if on == nil || !on.island.ComputeBounds(&on.win.Widget, &r) || !button(on).ComputeBounds(&on.win.Widget, &br) {
-		return
+	if on != nil && on.island.ComputeBounds(&on.win.Widget, &r) && button(on).ComputeBounds(&on.win.Widget, &br) {
+		b := *(*[4]float32)(unsafe.Pointer(&br))
+		if d.hang(s, on, *(*[4]float32)(unsafe.Pointer(&r)), float64(b[0]+b[2]/2)) {
+			d.open()
+			return
+		}
 	}
-	b := *(*[4]float32)(unsafe.Pointer(&br))
-	if d.hang(s, on, *(*[4]float32)(unsafe.Pointer(&r)), float64(b[0]+b[2]/2)) {
-		d.open()
-	}
+	d.win.Present()
 }

@@ -135,6 +135,7 @@ type shellUI struct {
 	onControlItem          func(gtk.Button)
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
+	onBarPressed           func(gtk.GestureClick, int32, float64, float64)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
 	onBarScroll            func(gtk.EventControllerScroll, float64, float64) bool
 	onWorkspaceScroll      func(gtk.EventControllerScroll, float64, float64) bool
@@ -513,7 +514,9 @@ func (s *shellUI) bindHandlers() {
 		}
 	}
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
-		if b := s.barOf(c.GetWidget()); b != nil {
+		if b := s.barOf(c.GetWidget()); b != nil && b.held > 0 {
+			s.onBarLeave(c) // the panel over it has the pointer
+		} else if b != nil {
 			end, _ := b.endReach(x, y)
 			toggle(&b.passwords.Widget, "hover", end == "passwords")
 			toggle(&b.clipboard.Widget, "hover", end == "clipboard")
@@ -530,9 +533,16 @@ func (s *shellUI) bindHandlers() {
 			}
 		}
 	}
+	// While a panel hangs from the bar, its window's clicks are the
+	// panel's, the one that closes it too.
+	s.onBarPressed = func(g gtk.GestureClick, _ int32, _, _ float64) {
+		if b := s.barOf(g.GetWidget()); b != nil {
+			b.pressHeld = b.held > 0
+		}
+	}
 	s.onBarReleased = func(g gtk.GestureClick, _ int32, x, y float64) {
 		b := s.barOf(g.GetWidget())
-		if b == nil {
+		if b == nil || b.pressHeld || b.held > 0 {
 			return
 		}
 		// The buttons take their own clicks; those around them are theirs too.
@@ -557,7 +567,7 @@ func (s *shellUI) bindHandlers() {
 	// marks as hovered, adjusts the volume.
 	s.onBarScroll = func(c gtk.EventControllerScroll, _, dy float64) bool {
 		b := s.barOf(c.GetWidget())
-		if b == nil || dy == 0 || !b.status.HasCssClass("hover") {
+		if b == nil || b.held > 0 || dy == 0 || !b.status.HasCssClass("hover") {
 			return false
 		}
 		s.stepVolume(int(dy))
