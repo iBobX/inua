@@ -122,6 +122,7 @@ type window struct {
 	judged          map[mail.Key]*aiText
 	actErr          string // an action's error, said on the conversation
 	folded          map[mail.Key]bool
+	details         map[mail.Key]bool // messages whose details are open
 	quotes          map[mail.Key]bool
 	checks          map[mail.Key]bool       // the phishing checks unfolded
 	answers         map[mail.Key]*aiText    // an invitation's answer: busy, sent (text), or why not
@@ -188,7 +189,7 @@ func openWindow(c *appui.Ctx) *window {
 		c: c, h: newHub(), win: &gtk.ApplicationWindow{}, rows: map[uintptr]*convRow{},
 		store: mail.NewStore(), secrets: mail.NewSecrets(), drafts: mail.NewDrafts(),
 		reading: map[mail.Key]*reading{}, sumState: map[string]*aiText{}, ideas: map[string]*aiText{},
-		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
+		judged: map[mail.Key]*aiText{}, folded: map[mail.Key]bool{}, details: map[mail.Key]bool{}, quotes: map[mail.Key]bool{}, checks: map[mail.Key]bool{},
 		answers: map[mail.Key]*aiText{}, fileSums: map[string]*aiText{}, quick: map[string]*quickReply{}, avatars: map[string]*gdk.Texture{}, avatarAsked: map[string]bool{},
 		bimi: map[string]*gdk.Texture{}, bimiAsked: map[string]bool{},
 		site: map[string]*gdk.Texture{}, siteAsked: map[string]bool{},

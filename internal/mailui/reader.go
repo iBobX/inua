@@ -368,6 +368,12 @@ func (w *window) drawBar(c *mail.Conversation) {
 		item(i18n.T("Open in browser"), func() { w.openHTML(m) })
 		break
 	}
+	newestIt := c.Latest()
+	if x != nil {
+		if x.s.HasRaw(newestIt.Mailbox, newestIt.UID) {
+			item(i18n.T("Show source"), func() { w.showSource(newestIt) })
+		}
+	}
 	item(i18n.T("Keys"), w.showKeys)
 	pop.SetChild(&box.Widget)
 	more.SetPopover(pop)
@@ -511,41 +517,27 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 	if !open {
 		box.AddCssClass("folded")
 	}
-	head := gtk.NewButton()
-	head.AddCssClass("mail-message-head")
-	hb := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
 	date := gtk.NewLabel(i18n.Time(it.Date.Local(), "Mon Jan 2, 15:04"))
 	date.AddCssClass("mail-date")
 	date.SetValign(gtk.AlignStartValue)
 	if open {
-		gtkx.Append(hb, w.senderMark(it.From, 34, w.verified(it)))
-		who := gtk.NewBox(gtk.OrientationVerticalValue, 2)
-		who.SetHexpand(true)
-		top := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
-		from := gtk.NewLabel(it.From.Short())
-		from.AddCssClass("mail-from")
-		gtkx.Append(top, &from.Widget) // whole: the address gives way first
-		if it.From.Name != "" {
-			addr := gtk.NewLabel(it.From.Addr)
-			addr.AddCssClass("mail-from-addr")
-			addr.SetEllipsize(3)
-			addr.SetXalign(0)
-			gtkx.Append(top, &addr.Widget)
-		}
-		gtkx.Append(who, &top.Widget)
-		to := gtk.NewLabel(w.toLine(it))
-		to.AddCssClass("mail-to")
-		to.SetXalign(0)
-		to.SetEllipsize(3)
-		gtkx.Append(who, &to.Widget)
-		gtkx.Append(hb, &who.Widget)
-	} else {
+		w.drawOpenHead(box, it, rd, newest, date)
+	}
+	head := gtk.NewButton()
+	head.AddCssClass("mail-message-head")
+	hb := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	if !open {
 		gtkx.Append(hb, w.senderMark(it.From, 24, w.verified(it)))
 		from := gtk.NewLabel(it.From.Short())
 		from.AddCssClass("mail-from")
 		from.SetValign(gtk.AlignCenterValue)
+		from.SetVisible(!stacked) // a stack's sender is the same each time
 		gtkx.Append(hb, &from.Widget)
-		snip := gtk.NewLabel(it.Snippet)
+		line := it.Snippet
+		if stacked {
+			line = it.Subject // an issue is told by its subject
+		}
+		snip := gtk.NewLabel(line)
 		snip.AddCssClass("mail-to")
 		snip.SetXalign(0)
 		snip.SetHexpand(true)
@@ -560,18 +552,24 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 		}
 		date.SetValign(gtk.AlignCenterValue)
 	}
-	gtkx.Append(hb, &date.Widget)
-	head.SetChild(&hb.Widget)
-	if !newest {
-		head.SetTooltipText(i18n.T("Fold or unfold"))
-		w.readerBtns = append(w.readerBtns, w.h.click(head, func() { w.folded[k] = !open; w.lastDrawn = ""; w.drawReader() }))
-	} else {
-		head.SetCanTarget(false)
-	}
-	gtkx.Append(box, &head.Widget)
 	if !open {
+		gtkx.Append(hb, &date.Widget)
+		head.SetChild(&hb.Widget)
+		head.SetTooltipText(i18n.T("Unfold"))
+		w.readerBtns = append(w.readerBtns, w.h.click(head, func() {
+			w.folded[k] = true
+			if stacked && !w.settings.Reading.KeepUnread {
+				w.markItemsSeen([]mail.Item{it})
+			}
+			w.lastDrawn = ""
+			w.drawReader()
+		}))
+		gtkx.Append(box, &head.Widget)
 		gtkx.Append(&w.reader, &box.Widget)
 		return
+	}
+	if w.details[k] && rd != nil && rd.m != nil {
+		w.drawDetails(box, it, rd.m)
 	}
 	switch {
 	case rd == nil || rd.loading:
@@ -586,6 +584,82 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 		w.drawBody(box, it, rd.m)
 	}
 	gtkx.Append(&w.reader, &box.Widget)
+}
+
+// drawOpenHead heads an open message: the sender's face and name, each
+// opening their card; "to …", opening the details; the date, which folds
+// an older message again.
+func (w *window) drawOpenHead(box *gtk.Box, it mail.Item, rd *reading, newest bool, date *gtk.Label) {
+	k := it.Key()
+	hb := gtk.NewBox(gtk.OrientationHorizontalValue, 12)
+	hb.AddCssClass("mail-message-head")
+	from := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
+	name := gtk.NewLabel(it.From.Short())
+	name.AddCssClass("mail-from")
+	gtkx.Append(from, &name.Widget) // whole: the address gives way first
+	if it.From.Name != "" {
+		addr := gtk.NewLabel(it.From.Addr)
+		addr.AddCssClass("mail-from-addr")
+		addr.SetEllipsize(3)
+		addr.SetXalign(0)
+		gtkx.Append(from, &addr.Widget)
+	}
+	card := w.personButton(it.From, &from.Widget, w.verified(it))
+	card.SetHalign(gtk.AlignStartValue)
+	face := gtk.NewButton()
+	face.AddCssClass("mail-plain")
+	face.AddCssClass("mail-face-btn")
+	face.SetValign(gtk.AlignStartValue)
+	face.SetChild(w.senderMark(it.From, 34, w.verified(it)))
+	face.SetTooltipText(it.From.String())
+	w.readerBtns = append(w.readerBtns, w.h.click(face, func() { card.Popup() }))
+	gtkx.Append(hb, &face.Widget)
+	who := gtk.NewBox(gtk.OrientationVerticalValue, 0)
+	gtkx.Append(who, &card.Widget)
+	to := gtk.NewButton()
+	to.AddCssClass("mail-plain")
+	to.AddCssClass("mail-to-btn")
+	to.SetHalign(gtk.AlignStartValue)
+	tb := gtk.NewBox(gtk.OrientationHorizontalValue, 4)
+	tl := gtk.NewLabel(w.toLine(it))
+	if tl.GetText() == "" {
+		tl.SetText(i18n.T("details"))
+	}
+	tl.AddCssClass("mail-to")
+	tl.SetEllipsize(3)
+	gtkx.Append(tb, &tl.Widget)
+	arrow := "pan-down-symbolic"
+	if w.details[k] {
+		arrow = "pan-up-symbolic"
+	}
+	img := gtk.NewImageFromIconName(arrow)
+	img.SetPixelSize(12)
+	img.AddCssClass("mail-to")
+	gtkx.Append(tb, &img.Widget)
+	to.SetChild(&tb.Widget)
+	to.SetTooltipText(i18n.T("Show the details"))
+	if w.details[k] {
+		to.SetTooltipText(i18n.T("Hide the details"))
+	}
+	to.SetSensitive(rd != nil && rd.m != nil)
+	w.readerBtns = append(w.readerBtns, w.h.click(to, func() { w.details[k] = !w.details[k]; w.lastDrawn = ""; w.drawReader() }))
+	gtkx.Append(who, &to.Widget)
+	gtkx.Append(hb, &who.Widget)
+	if newest {
+		date.SetHexpand(true)
+		date.SetXalign(1)
+		gtkx.Append(hb, &date.Widget)
+	} else {
+		fold := gtk.NewButton()
+		fold.AddCssClass("mail-message-head")
+		fold.SetHexpand(true)
+		date.SetHalign(gtk.AlignEndValue)
+		fold.SetChild(&date.Widget)
+		fold.SetTooltipText(i18n.T("Fold"))
+		w.readerBtns = append(w.readerBtns, w.h.click(fold, func() { w.folded[k] = false; w.lastDrawn = ""; w.drawReader() }))
+		gtkx.Append(hb, &fold.Widget)
+	}
+	gtkx.Append(box, &hb.Widget)
 }
 
 func (w *window) toLine(it mail.Item) string {
@@ -829,9 +903,15 @@ func (w *window) openHTML(m *mail.Message) {
 
 // saveFile asks where to keep an attachment, and writes it there.
 func (w *window) saveFile(a mail.Attachment) {
+	w.saveData(i18n.T("Save the attachment"), a.Name, a.Data)
+}
+
+// saveData asks where to keep data, in Downloads at first, as name, and
+// writes it there.
+func (w *window) saveData(title, name string, data []byte) {
 	d := gtk.NewFileDialog()
-	d.SetTitle(i18n.T("Save the attachment"))
-	d.SetInitialName(mail.SafeName(a.Name))
+	d.SetTitle(title)
+	d.SetInitialName(mail.SafeName(name))
 	if home, err := os.UserHomeDir(); err == nil {
 		f := gio.FileNewForPath(filepath.Join(home, "Downloads"))
 		d.SetInitialFolder(f)
@@ -848,8 +928,8 @@ func (w *window) saveFile(a mail.Attachment) {
 		if p == "" {
 			return
 		}
-		if err := os.WriteFile(p, a.Data, 0o644); err != nil {
-			w.actErr = i18n.Tf("Could not save %s: %v", a.Name, err)
+		if err := os.WriteFile(p, data, 0o644); err != nil {
+			w.actErr = i18n.Tf("Could not save %s: %v", name, err)
 			w.drawReader()
 		}
 	})

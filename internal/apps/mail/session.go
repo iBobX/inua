@@ -486,6 +486,12 @@ func (s *Session) Raw(mailbox string, uid uint32) ([]byte, bool) {
 	return s.store.Raw(s.Acc.ID, mailbox, uid)
 }
 
+// HasRaw says whether a message is kept on this computer, without
+// reading it.
+func (s *Session) HasRaw(mailbox string, uid uint32) bool {
+	return s.store.HasRaw(s.Acc.ID, mailbox, uid)
+}
+
 // SetFlag sets or clears a flag: in the index at once, then on the
 // server; the index goes back if the server refuses.
 func (s *Session) SetFlag(ctx context.Context, mailbox string, uids []uint32, flag string, on bool) error {

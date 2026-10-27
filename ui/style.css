@@ -3886,6 +3886,35 @@ window.mail .mail-date {
   font-size: 11px;
   color: @t2;
 }
+/* A message's people: the face and the name open their card, "to …"
+   the details, in the text's own look. */
+window.mail button.mail-plain.mail-face-btn { padding: 0; border-radius: 50%; }
+window.mail button.mail-plain.mail-to-btn { padding: 0; }
+window.mail button.mail-plain.mail-to-btn:hover .mail-to { color: @t1; }
+window.mail menubutton.mail-person-btn > button { padding: 0; }
+window.mail menubutton.mail-person-btn > button:checked,
+window.mail button.mail-plain.mail-face-btn:active,
+window.mail button.mail-plain.mail-to-btn:active { background: transparent; box-shadow: none; }
+window.mail menubutton.mail-person-btn > button:hover .mail-from { text-decoration-line: underline; text-decoration-color: alpha(@t2, 0.5); }
+window.mail .mail-details {
+  padding: 10px 12px;
+  border: 1px solid alpha(@line, 0.6);
+  border-radius: 3px;
+  background: alpha(@surface, 0.5);
+}
+window.mail .mail-details-name { font-size: 12px; color: @t2; }
+window.mail .mail-details-value { font-size: 12.5px; color: @t1; }
+window.mail .mail-details-value.readout { font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 11.5px; }
+window.mail .mail-details flowboxchild { padding: 0; }
+window.mail .mail-details-links { margin-top: -4px; }
+/* A person's card: who, then what is done with them. */
+window.mail popover.mail-card .mail-card-head { padding: 8px 10px 10px; margin-bottom: 4px; border-bottom: 1px solid alpha(@line, 0.55); }
+/* A message's source, as it came. */
+window.mail-source { background: @app; }
+window.mail-source .mail-source-bar { padding: 10px 14px; border-bottom: 1px solid alpha(@line, 0.55); }
+window.mail-source .mail-source-bar button.outlined { min-height: 30px; padding: 0 14px; }
+window.mail-source .mail-source-note { padding: 6px 16px; font-size: 12px; color: @warn; }
+window.mail-source textview.mail-source-text, window.mail-source textview.mail-source-text text { background: @app; color: @t1; font-family: "Geist Mono", "IBM Plex Mono", monospace; font-size: 12px; }
 window.mail .mail-loading { color: @t2; font-size: 13px; }
 window.mail .mail-text { font-size: 14px; color: @t0; }
 window.mail .mail-text, window.mail .mail-quoted { line-height: 1.3; }

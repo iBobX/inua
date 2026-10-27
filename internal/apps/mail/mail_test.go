@@ -1369,6 +1369,48 @@ func TestSyncReadsAuth(t *testing.T) {
 	}
 }
 
+// A message's details: who, when, who mailed and signed it, its list;
+// what says nothing is left out.
+func TestDetails(t *testing.T) {
+	raw := msg("n1@blog.com", "Blog <letters@blog.com>", "This week", "Hello",
+		"Sender: bounce@mailer.net",
+		"Reply-To: Blog <letters@blog.com>",
+		"Cc: Ben <ben@x.org>",
+		"Return-Path: <bounce-77@mailer.net>",
+		"List-Id: Blog weekly <weekly.blog.com>",
+		"Authentication-Results: mx.example.com; spf=pass smtp.mailfrom=mailer.net; dkim=pass header.i=@blog.com; dmarc=pass header.from=blog.com",
+		"DKIM-Signature: v=1; a=rsa-sha256; d=mailer.net; s=k1; b=x")
+	m, err := Parse([]byte(strings.ReplaceAll(raw, "\n", "\r\n")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]string{}
+	for _, d := range Details(m) {
+		v := d.Text
+		for _, a := range d.People {
+			v += a.Addr + " "
+		}
+		got[d.Name] = strings.TrimSpace(v)
+	}
+	for name, want := range map[string]string{
+		"From": "letters@blog.com", "Sent by": "bounce@mailer.net", "To": "me@example.com", "Cc": "ben@x.org",
+		"Mailed by": "mailer.net", "Signed by": "blog.com", "Checks": "SPF pass · DKIM pass · DMARC pass",
+		"List": "Blog weekly <weekly.blog.com>", "Message-ID": "<n1@blog.com>", "Subject": "This week",
+	} {
+		if got[name] != want {
+			t.Errorf("%s: %q, want %q", name, got[name], want)
+		}
+	}
+	for _, name := range []string{"Reply to", "Bcc"} {
+		if _, ok := got[name]; ok {
+			t.Errorf("%s shown: %q", name, got[name])
+		}
+	}
+	if !strings.Contains(got["Date"], "2026") {
+		t.Errorf("date %q", got["Date"])
+	}
+}
+
 // An HTML message whose start is all its style sheet still has a
 // snippet: its part is read further; one indexed without it before gets
 // it at the next sync.

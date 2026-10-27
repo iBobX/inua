@@ -93,14 +93,25 @@ inua-mail --check FILE.eml    the phishing checks on a message
 - **The conversation**: a bar of its actions stays over it: reply, reply
   all and forward; archive, trash, spam, move, star and unread; ⋯ for
   showing the newest message as text or formatted, opening it in the
-  browser, and the keys. Under the subject, the assistant's offers as
+  browser, its source, and the keys. Under the subject, the assistant's offers as
   chips (*Summarize*, *Reply ideas*). It reads in a column no wider
   than a line is comfortable to follow (720 pixels, grown with the
   text), in the middle of a wider pane; its text is at the size
   Settings → Reading → *Text size* says, 85% to 150%, formatted mail
   zoomed to it. Each message is headed by its
   sender's face, name and address, who it went to and when; older
-  ones fold to a line (a click opens one); quoted text and signatures
+  ones fold to a line (a click opens one, a click on its date folds it
+  again). A click on the face or the name opens the sender's card:
+  their name and address, *Write*, *Copy address*, *Their
+  conversations* (the address searched) and *Always load pictures* (or
+  *Ask before loading pictures*). A click on "to …" opens the details
+  as the header has them: from, sent by, reply to, to, cc, bcc (each
+  person opening their card), the date to the second, the subject, the
+  server that mailed it (`Return-Path`) and the domain that signed it
+  (DKIM, as your provider found it), the SPF, DKIM and DMARC checks,
+  its list (`List-Id`) and its Message-ID; *Source* shows the message
+  as it came, in a window of its own (the first 2 MB; *Copy*, and
+  *Save…* as an `.eml`). Quoted text and signatures
   wait behind •••; attachments are cards: a click opens one (images and
   PDFs in Viewer, the rest with the desktop's app), *Save…* keeps it.
 

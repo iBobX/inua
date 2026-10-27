@@ -344,6 +344,7 @@ mail-folder                           folder-simple
 mail-all-inboxes                      stack
 mail-outbox                           tray-arrow-up
 mail-news                             newspaper
+mail-source                           file-code
 sidebar-show                          sidebar-simple
 disk-choose                           cursor-click
 disk-locate                           crosshair
