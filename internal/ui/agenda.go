@@ -83,6 +83,9 @@ func (s *shellUI) bindAgendaHandlers() {
 		}
 	}
 	s.onAgendaPressed = func(g gtk.GestureClick, _ int32, x, y float64) {
+		if s.barClick(s.barUnder(g.GetWidget()), x, y) {
+			return // an entry on the bar, or the bar beside them
+		}
 		a := &s.agenda
 		hit := a.backdrop.Pick(x, y, gtk.PickDefaultValue)
 		if hit == nil {

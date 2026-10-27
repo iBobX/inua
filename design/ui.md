@@ -166,6 +166,11 @@ What a top bar button opens (the notification center, the clipboard
 history, passwords, the control center, the agenda) is a card below the
 bar, over a full-screen backdrop that closes it on a click.
 
+- **The bar stays live.** While one is open, the bar's buttons still show
+  hover, and a click on another one closes the open card and opens that
+  one's; a click on the open one's own button closes it, and one elsewhere
+  on the bar closes it too.
+
 - **A drop shadow.** Every such card casts `0 8px 28px` at 32% black
   (`.center .card`), and a notification banner a lighter one. It is the
   one place a shadow is allowed: a surface floating over windows, not a

@@ -507,6 +507,33 @@ func (s *shellUI) barOf(w *gtk.Widget) *bar {
 	return nil
 }
 
+// overIsland reports whether y, in the bar's window or in a window over
+// the whole monitor (both start at its corner), is on the bar: above the
+// island's lower edge, up to the screen's.
+func (b *bar) overIsland(y float64) bool {
+	var r graphene.Rect
+	if !b.win.GetVisible() || !b.island.ComputeBounds(&b.win.Widget, &r) {
+		return false
+	}
+	f := *(*[4]float32)(unsafe.Pointer(&r))
+	return y < float64(f[1]+f[3])
+}
+
+// hover marks the entry whose reach x, y is in as hovered (as overIsland
+// places them), and none off the bar.
+func (b *bar) hover(x, y float64) {
+	end, clock := "", false
+	if b.overIsland(y) {
+		end, _ = b.endReach(x, y)
+		clock, _ = b.clockReach(x, y)
+	}
+	toggle(&b.passwords.Widget, "hover", end == "passwords")
+	toggle(&b.clipboard.Widget, "hover", end == "clipboard")
+	toggle(&b.notes.Widget, "hover", end == "notes")
+	toggle(&b.status.Widget, "hover", end == "status")
+	toggle(&b.clockButton.Widget, "hover", clock && end == "")
+}
+
 // endButtons are the bar's toggle buttons at its end, left to right, as
 // shown, with their names.
 func (b *bar) endButtons() (names []string, rects []shell.Rect) {

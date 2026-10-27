@@ -122,7 +122,10 @@ func (s *shellUI) bindPasswordsHandlers() {
 			s.copyPassword(p.values[arg])
 		}
 	}
-	s.onPasswordsBackdrop = func(_ gtk.GestureClick, _ int32, x, y float64) {
+	s.onPasswordsBackdrop = func(g gtk.GestureClick, _ int32, x, y float64) {
+		if s.barClick(s.barUnder(g.GetWidget()), x, y) {
+			return // an entry on the bar, or the bar beside them
+		}
 		if !p.open { // going back up
 			return
 		}

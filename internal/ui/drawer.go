@@ -88,6 +88,9 @@ func (s *shellUI) bindDrawerHandlers() {
 		}
 	}
 	s.onDrawerBackdrop = func(g gtk.GestureClick, _ int32, x, y float64) {
+		if s.barClick(s.barUnder(g.GetWidget()), x, y) {
+			return // an entry on the bar, or the bar beside them
+		}
 		p := s.dockState.drawer
 		if p == nil {
 			return
@@ -405,6 +408,7 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	keys := gtk.NewEventControllerKey()
 	keys.ConnectKeyPressed(&s.onDrawerKey)
 	p.win.AddController(&keys.EventController)
+	s.followBar(&p.win.Widget)
 
 	w := p.win.GoPointer()
 	layershell.InitForWindow(w)

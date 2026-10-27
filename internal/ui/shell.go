@@ -26,6 +26,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gio"
 	"codeberg.org/puregotk/puregotk/v4/glib"
+	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/config"
@@ -135,6 +136,8 @@ type shellUI struct {
 	onControlItem          func(gtk.Button)
 	onBarMotion            func(gtk.EventControllerMotion, float64, float64)
 	onBarLeave             func(gtk.EventControllerMotion)
+	onPanelMotion          func(gtk.EventControllerMotion, float64, float64)
+	onPanelLeave           func(gtk.EventControllerMotion)
 	onBarPressed           func(gtk.GestureClick, int32, float64, float64)
 	onBarReleased          func(gtk.GestureClick, int32, float64, float64)
 	onBarScroll            func(gtk.EventControllerScroll, float64, float64) bool
@@ -505,6 +508,70 @@ func (s *shellUI) restartClock() {
 	s.onClock(s.clockGen)
 }
 
+// barClick answers a press at x, y of a panel's window that covers the
+// bar b (the bar's own, a panel hanging in it): an entry there opens its
+// panel, the one open giving way, or closes its own; elsewhere on the bar
+// the panels close. It reports whether the press was on the bar.
+func (s *shellUI) barClick(b *bar, x, y float64) bool {
+	if b == nil || !b.overIsland(y) {
+		return false
+	}
+	end, _ := b.endReach(x, y)
+	clock, _ := b.clockReach(x, y)
+	switch {
+	case end == "passwords":
+		s.onPasswordsButton(b.passwords)
+	case end == "clipboard":
+		s.onClipboardButton(b.clipboard)
+	case end == "notes":
+		s.toggleCenter()
+	case end == "status":
+		s.controlAction("status")
+	case clock:
+		s.toggleAgenda()
+	default:
+		s.closeControl()
+		s.closeAgenda()
+		s.closePasswords()
+		s.closeCenter()
+		s.closeClipboard()
+		s.closeDrawer()
+	}
+	return true
+}
+
+// barUnder is the bar of the monitor w's window is on.
+func (s *shellUI) barUnder(w *gtk.Widget) *bar {
+	native := w.GetNative()
+	if native == nil {
+		return nil
+	}
+	defer (&gobject.Object{Ptr: native.Ptr}).Unref() // GetNative returned a new reference
+	surface := native.GetSurface()
+	if surface == nil {
+		return nil
+	}
+	mon := gdk.DisplayGetDefault().GetMonitorAtSurface(surface)
+	if mon == nil {
+		return nil
+	}
+	for _, b := range s.bars {
+		if b.mon.GoPointer() == mon.GoPointer() {
+			return b
+		}
+	}
+	return nil
+}
+
+// followBar passes a panel's pointer over the bar on to it (onPanelMotion).
+func (s *shellUI) followBar(w *gtk.Widget) {
+	motion := gtk.NewEventControllerMotion()
+	motion.ConnectEnter(&s.onPanelMotion)
+	motion.ConnectMotion(&s.onPanelMotion)
+	motion.ConnectLeave(&s.onPanelLeave)
+	w.AddController(&motion.EventController)
+}
+
 func (s *shellUI) bindHandlers() {
 	s.onMonitorsChanged = func(_ uintptr, _, removed, added uint32, _ uintptr) {
 		log.Printf("monitors: %d removed, %d added", removed, added)
@@ -513,28 +580,31 @@ func (s *shellUI) bindHandlers() {
 			s.loadWallpaper() // drawn for the largest monitor, which may be another
 		}
 	}
+	// The entries' reaches show hovered, a panel open or not.
 	s.onBarMotion = func(c gtk.EventControllerMotion, x, y float64) {
-		if b := s.barOf(c.GetWidget()); b != nil && b.held > 0 {
-			s.onBarLeave(c) // the panel over it has the pointer
-		} else if b != nil {
-			end, _ := b.endReach(x, y)
-			toggle(&b.passwords.Widget, "hover", end == "passwords")
-			toggle(&b.clipboard.Widget, "hover", end == "clipboard")
-			toggle(&b.notes.Widget, "hover", end == "notes")
-			toggle(&b.status.Widget, "hover", end == "status")
-			clock, _ := b.clockReach(x, y)
-			toggle(&b.clockButton.Widget, "hover", clock && end == "")
+		if b := s.barOf(c.GetWidget()); b != nil {
+			b.hover(x, y)
 		}
 	}
 	s.onBarLeave = func(c gtk.EventControllerMotion) {
 		if b := s.barOf(c.GetWidget()); b != nil {
-			for _, w := range []*gtk.Widget{&b.passwords.Widget, &b.clipboard.Widget, &b.notes.Widget, &b.status.Widget, &b.clockButton.Widget} {
-				toggle(w, "hover", false)
-			}
+			b.hover(-1, -1)
+		}
+	}
+	// A panel over the whole monitor, the bar too, passes the pointer on
+	// to the bar under it (barClick).
+	s.onPanelMotion = func(c gtk.EventControllerMotion, x, y float64) {
+		if b := s.barUnder(c.GetWidget()); b != nil {
+			b.hover(x, y)
+		}
+	}
+	s.onPanelLeave = func(c gtk.EventControllerMotion) {
+		if b := s.barUnder(c.GetWidget()); b != nil {
+			b.hover(-1, -1)
 		}
 	}
 	// While a panel hangs from the bar, its window's clicks are the
-	// panel's, the one that closes it too.
+	// panel's (barClick for those on the bar).
 	s.onBarPressed = func(g gtk.GestureClick, _ int32, _, _ float64) {
 		if b := s.barOf(g.GetWidget()); b != nil {
 			b.pressHeld = b.held > 0

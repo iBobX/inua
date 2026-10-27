@@ -116,7 +116,10 @@ func (s *shellUI) bindClipboardHandlers() {
 		}
 	}
 	s.onClipboardLeave = func(gtk.EventControllerMotion) { s.hideClipboardDetail() }
-	s.onClipboardBackdrop = func(_ gtk.GestureClick, _ int32, x, y float64) {
+	s.onClipboardBackdrop = func(g gtk.GestureClick, _ int32, x, y float64) {
+		if s.barClick(s.barUnder(g.GetWidget()), x, y) {
+			return // an entry on the bar, or the bar beside them
+		}
 		c := &s.clipboard
 		hit := c.backdrop.Pick(x, y, gtk.PickDefaultValue)
 		if hit != nil {
@@ -334,6 +337,7 @@ func (s *shellUI) openClipboard(mon *gdk.Monitor) {
 	keys.SetPropagationPhase(gtk.PhaseCaptureValue)
 	keys.ConnectKeyPressed(&s.onClipboardKey)
 	c.win.AddController(&keys.EventController)
+	s.followBar(&c.win.Widget)
 	if s.layer {
 		w := c.win.GoPointer()
 		layershell.InitForWindow(w)
