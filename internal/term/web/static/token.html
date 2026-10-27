@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="inua-term">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<title>inua-term</title>
+<style>
+  @font-face { font-family:"Geist Mono"; font-weight:400; src:local("Geist Mono"), url(/vendor/geist-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family:"IBM Plex Sans"; font-weight:400; src:local("IBM Plex Sans"), url(/vendor/ibm-plex-sans-latin-400-normal.woff2) format("woff2"); }
+  /* inua's tokens (design/ui.md), yoru's, then the window's theme. */
+  :root {
+    --app:#0B1012; --panel:#0D1315; --surface:#121A1C;
+    --t0:#E7E4DA; --t1:#B3B6AF; --t2:#7F8F8C; --line:#243134;
+    --accent:#9FC3C9; --danger:#E0694F;
+    --sans:"Zen Kaku Gothic New", "Noto Sans CJK JP", system-ui, sans-serif;
+    --title:"IBM Plex Sans", "Zen Kaku Gothic New", system-ui, sans-serif;
+    --mono:"Geist Mono", "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  :root { {{.Tokens}} }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; height:100%; background:var(--app); color:var(--t0); font:14px var(--sans); }
+  button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; touch-action:manipulation; }
+  /* The card of index.html's questions, alone on the page, near its top
+     where a phone's keyboard leaves it in view; the line's text is 16 px,
+     or an iPhone zooms in on it. */
+  .card-over { display:flex; justify-content:center; padding:calc(env(safe-area-inset-top) + 56px) 16px 16px; }
+  form { width:100%; max-width:420px; margin:0; padding:16px; background:var(--panel); border:1px solid var(--line); border-radius:4px; }
+  .q { font:15px var(--title); color:var(--t0); margin-bottom:12px; }
+  .desc { font:12.5px var(--sans); color:var(--t1); line-height:1.45; overflow-wrap:anywhere; margin:-4px 0 12px; }
+  input { width:100%; height:40px; padding:0 10px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t0); font:16px var(--mono); outline:none; }
+  input:focus { border-color:color-mix(in srgb, var(--accent) 60%, transparent); }
+  .err { min-height:18px; margin-top:6px; font:12px var(--sans); color:var(--danger); }
+  .btns { display:flex; justify-content:flex-end; margin-top:4px; }
+  .btns button { min-height:36px; padding:0 14px; border:1px solid var(--accent); border-radius:2px; background:var(--accent); color:var(--app); font:13px var(--sans); }
+</style>
+</head>
+<body>
+<div class="card-over">
+  <form id="f" autocomplete="off">
+    <div class="q">{{.Question}}</div>
+    <div class="desc">{{.Where}}</div>
+    <input id="t" name="t" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="{{.Question}}">
+    <div class="err">{{if .Wrong}}{{.WrongText}}{{end}}</div>
+    <div class="btns"><button>{{.Open}}</button></div>
+  </form>
+</div>
+<script>
+// The token goes in the address as t=…, the rest of it (a pane) kept. A
+// token the page was opened with before is tried first: a home-screen app
+// made with an old link gets in without asking.
+const query = new URLSearchParams(location.search);
+function go(token) { query.set("t", token); location.replace("/?" + query); }
+let kept = null;
+try { kept = localStorage.getItem("token"); } catch (e) {}
+if (kept && kept !== query.get("t")) go(kept);
+else if (kept) try { localStorage.removeItem("token"); } catch (e) {}  // it was tried: gone
+document.getElementById("t").focus();
+document.getElementById("f").onsubmit = e => {
+  e.preventDefault();
+  // The whole link, pasted, gives its token.
+  let t = document.getElementById("t").value.trim();
+  const m = t.match(/[?&]t=([^&#\s]+)/);
+  if (m) t = decodeURIComponent(m[1]);
+  if (t) go(t);
+};
+</script>
+</body>
+</html>

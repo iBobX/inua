@@ -416,6 +416,9 @@ const pref = {
   keys: store.get("keys") ? store.get("keys") !== "0" : touchScreen,  // a computer has the keys
 };
 function setPref(k, v) { pref[k] = v; store.set({ font: "tfont" }[k] || k, typeof v === "boolean" ? (v ? "1" : "0") : v); applyLook(); }
+// The token, kept: a page opened without it (a home-screen app made with
+// an old link) takes it from here.
+store.set("token", token);
 const lookReady = fetch("/look.json?t=" + token).then(r => r.json()).then(l => { look = l; applyLook(); }).catch(() => {});
 const css = name => getComputedStyle(document.documentElement).getPropertyValue("--" + name).trim();
 const themeOf = name => look.themes.find(t => t.name === name);
@@ -530,6 +533,8 @@ function connect() {
     veil(T("OFFLINE · RECONNECTING"));
     clearTimeout(retryTimer);
     retryTimer = setTimeout(connect, Math.min(1000 * 2 ** retries++, 5000));
+    // The token no longer right (a new link made): the page asks for it.
+    fetch("/look.json?t=" + token, { cache: "no-store" }).then(r => { if (r.status === 403) location.reload(); }).catch(() => {});
   };
 }
 // alive checks the connection: a ping the host answers, else a new one.

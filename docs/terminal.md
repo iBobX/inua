@@ -285,7 +285,11 @@ kept in `term-web-token` in inua's configuration folder (`~/.config/inua`,
 `~/Library/Application Support/inua` on a Mac), readable by you alone.
 The page is a client of the host, as the window is, and starts the host
 when none runs. Open the link on the phone, or add it to the home
-screen: it is a web app in the theme's colours.
+screen: it is a web app in the theme's colours. Opened without its
+token, or with an old one, the page asks for it: the token or the whole
+link, pasted. The browser keeps the last good token and tries it first,
+so a home-screen app made from an old link gets in by itself; a page
+left open when New link is made goes to the question.
 
 - **Agents**: every agent by its state (needs you, working, done, idle),
   with where it runs; **Workspaces**: the workspaces, then a workspace's

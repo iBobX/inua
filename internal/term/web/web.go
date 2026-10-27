@@ -11,6 +11,8 @@ import (
 	"crypto/subtle"
 	"embed"
 	"encoding/json"
+	"fmt"
+	"html/template"
 	"image/png"
 	"io/fs"
 	"log"
@@ -19,10 +21,12 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
 
+	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/term/host"
 	"github.com/lyricat/inua/ui"
@@ -89,7 +93,7 @@ func (s *Server) page(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !s.tokenOK(r) {
-		http.Error(w, "forbidden", http.StatusForbidden)
+		askToken(w, r.URL.Query().Has("t"))
 		return
 	}
 	b, err := static.ReadFile("static/index.html")
@@ -104,6 +108,37 @@ func (s *Server) page(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	w.Write(b)
+}
+
+var tokenPage = template.Must(template.ParseFS(static, "static/token.html"))
+
+// cssToken is a theme token as the token page can put it in its style.
+var cssToken = regexp.MustCompile(`^[a-z0-9-]+$`)
+var cssColor = regexp.MustCompile(`^(#[0-9a-fA-F]{3,8}|rgba?\([0-9., %]+\))$`)
+
+// askToken is the page without its token, or with a wrong one (an old
+// link's): a card in the window's theme asks for it, the token or the
+// whole link.
+func askToken(w http.ResponseWriter, wrong bool) {
+	cfg, set := settingsNow()
+	var tokens strings.Builder
+	for k, v := range config.ThemeColors(cfg.ThemeCSS(windowTheme(cfg, set), readUI)) {
+		if cssToken.MatchString(k) && cssColor.MatchString(v) {
+			fmt.Fprintf(&tokens, "--%s:%s; ", k, v)
+		}
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	w.WriteHeader(http.StatusForbidden)
+	tokenPage.Execute(w, map[string]any{
+		"Lang":      i18n.Lang(),
+		"Tokens":    template.CSS(tokens.String()),
+		"Question":  i18n.T("The Web Terminal's token"),
+		"Where":     i18n.T("It is in the link the computer gives: in inua-term's Terminal Settings, Web Terminal, Link. Paste the whole link or the part after t=."),
+		"Wrong":     wrong,
+		"WrongText": i18n.T("That token is not right. The link may be an old one, from before New link."),
+		"Open":      i18n.T("Open"),
+	})
 }
 
 var iconName = regexp.MustCompile(`^[a-z0-9-]+\.svg$`)

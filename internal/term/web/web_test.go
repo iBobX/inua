@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"image/png"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -154,6 +155,23 @@ func TestToken(t *testing.T) {
 	}
 	if r := get(t, s.URL+"/icons/..%2fui.go"); r.StatusCode != http.StatusNotFound {
 		t.Errorf("an icon outside the icons: %d", r.StatusCode)
+	}
+}
+
+// Without the token, or with a wrong one, the page is a card that asks
+// for it, saying so when it was wrong, and nothing of the terminals.
+func TestAskToken(t *testing.T) {
+	s := server(t)
+	for path, wrong := range map[string]bool{"/": false, "/?t=wrong": true} {
+		r := get(t, s.URL+path)
+		b, _ := io.ReadAll(r.Body)
+		body := string(b)
+		if r.StatusCode != http.StatusForbidden || !strings.Contains(body, `<form id="f"`) || strings.Contains(body, "window.INUA") {
+			t.Errorf("%s: %d, not the token card:\n%s", path, r.StatusCode, body)
+		}
+		if got := strings.Contains(body, "That token is not right"); got != wrong {
+			t.Errorf("%s: says the token is wrong: %v, want %v", path, got, wrong)
+		}
 	}
 }
 
