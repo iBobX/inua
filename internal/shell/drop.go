@@ -11,8 +11,8 @@ import "math"
 
 // DropOpenMS and DropCloseMS are how long the drop takes each way.
 const (
-	DropOpenMS  = 620
-	DropCloseMS = 300
+	DropOpenMS  = 460
+	DropCloseMS = 220
 )
 
 // Drop is the panel at a moment: the share of its height out of the bar,
@@ -23,7 +23,7 @@ type Drop struct {
 }
 
 const (
-	dropGather  = 0.14 // it swells a little first
+	dropGather  = 0.08 // it swells a little first
 	dropLand    = 0.52 // then falls, and lands here
 	dropSwell   = 0.05
 	dropStretch = 0.06 // the most it stretches, as a share of its size

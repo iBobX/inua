@@ -59,6 +59,7 @@ type drop struct {
 	opening bool
 	back    bool    // closing while it opened: the opening's frames backwards
 	u       float64 // how far through, 0 to 1
+	waited  int     // frames waited for the bar to grow
 	last    time.Time
 	tick    uint32
 	gone    func() // when it has closed
@@ -222,17 +223,24 @@ func (d *drop) finish() {
 func (d *drop) start() {
 	d.moving = true
 	d.last = time.Now()
+	d.waited = 0
 	if d.tick == 0 {
 		d.tick = d.canvas.AddTickCallback(&d.onTick, 0, &d.onTickDone)
 	}
 	d.canvas.QueueAllocate()
 }
 
-// step moves the drop on a frame.
+// step moves the drop on a frame. Its time starts once the bar's window
+// has grown to hold it, and a slow frame moves it on one frame's time at
+// most, so it starts from the bar and never jumps.
 func (d *drop) step() bool {
 	now := time.Now()
-	dt := float64(now.Sub(d.last).Milliseconds())
+	dt := min(float64(now.Sub(d.last).Milliseconds()), 34)
 	d.last = now
+	if d.host != nil && float64(d.canvas.GetHeight()) <= d.y+1 && d.waited < 12 {
+		d.waited++
+		return true
+	}
 	switch {
 	case d.opening:
 		d.u += dt / shell.DropOpenMS
