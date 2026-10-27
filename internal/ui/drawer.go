@@ -23,16 +23,14 @@ import (
 )
 
 // The dock's drawer: a button at the dock's end (dock.drawer) that opens
-// a card of inua's light apps above it. The card is in a full-screen
-// overlay, like the control center's, so it slides up and back down
-// whichever way it closes: a click outside, Escape, the button again, or
-// an app started. The dock stays up while it is open.
+// a card of inua's light apps above it, as a Dock folder opens on macOS
+// (bubble.go). The card is in a full-screen overlay, like the control
+// center's, so it grows out of the button and back into it whichever way
+// it closes: a click outside, Escape, the button again, or an app
+// started. The dock stays up while it is open.
 
 // drawerColumns is how many apps a row of the drawer holds.
 const drawerColumns = 6
-
-// drawerRevealMS matches the revealer's transition below.
-const drawerRevealMS = 220
 
 // assistantApp is the assistant's desktop entry, in the drawer when the
 // assistant is on.
@@ -49,7 +47,8 @@ type drawerPanel struct {
 	bar      *bar   // whose dock it opened from
 	win      gtk.ApplicationWindow
 	backdrop *gtk.Box // borrowed from win
-	reveal   *gtk.Revealer
+	card     *gtk.Box // borrowed from bubble
+	bubble   *bubble
 	closing  bool
 	then     func() // a shell tool to open once the drawer is gone
 }
@@ -97,7 +96,7 @@ func (s *shellUI) bindDrawerHandlers() {
 		if hit == nil {
 			return
 		}
-		outside := hit.GoPointer() == p.backdrop.GoPointer()
+		outside := hit.GoPointer() != p.card.GoPointer() && !hit.IsAncestor(&p.card.Widget)
 		hit.Unref() // Pick returned a new reference
 		if !outside {
 			return
@@ -136,6 +135,7 @@ func (s *shellUI) bindDrawerHandlers() {
 	s.onDrawerGone = func(uintptr) bool {
 		if p := s.dockState.drawer; p != nil && p.closing {
 			s.dockState.drawer = nil
+			p.bubble.forget()
 			p.win.Destroy()
 			s.renderDocks() // a workshop app installed or removed meanwhile: its button
 			s.hideDocksSoon()
@@ -244,9 +244,10 @@ func (s *shellUI) toggleDrawer(b *bar, kind string) {
 			s.closeDrawer()
 			return
 		}
-		// The other drawer, or opened again while sliding away: that one
-		// goes now.
+		// The other drawer, or opened again while going: that one goes
+		// now.
 		s.dockState.drawer = nil
+		p.bubble.forget()
 		p.win.Destroy()
 	}
 	if s.dockState.menu != nil {
@@ -320,7 +321,7 @@ func (s *shellUI) drawerContent(kind string) *gtk.Box {
 	return content
 }
 
-// openDrawer slides the launcher out from the dock edge, beside its button.
+// openDrawer opens the drawer beside its button, out of the dock.
 func (s *shellUI) openDrawer(b *bar, kind string) {
 	d := b.dock
 	if d == nil {
@@ -339,10 +340,6 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	backdrop := gtk.NewBox(gtk.OrientationVerticalValue, 0)
 	backdrop.SetHexpand(true)
 	backdrop.SetVexpand(true)
-	reveal := gtk.NewRevealer()
-	reveal.SetTransitionDuration(drawerRevealMS)
-	reveal.SetHalign(gtk.AlignStartValue)
-	reveal.SetValign(gtk.AlignStartValue)
 	// The card scrolls once the groups are taller than the room between
 	// the bar and the dock.
 	card := gtk.NewBox(gtk.OrientationVerticalValue, 0)
@@ -355,14 +352,9 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	scroll.SetChild(&content.Widget)
 	content.Unref()
 	gtkx.Append(card, &scroll.Widget)
-	reveal.SetChild(&card.Widget)
-	gtkx.Append(backdrop, &reveal.Widget)
-	p.win.SetChild(&backdrop.Widget)
-	backdrop.Unref()
-	card.Unref()
-	p.backdrop, p.reveal = backdrop, reveal
 
-	// Beside the drawer button: the dock is centred along its edge.
+	// The arrow's tip by the drawer button: the dock is centred along its
+	// edge.
 	var geo gdk.Rectangle
 	b.mon.GetGeometry(&geo)
 	barH := int32(0) // the bar takes the top of the screen
@@ -371,62 +363,41 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	}
 	dockW, dockH := int32(d.win.GetWidth()), int32(d.win.GetHeight())
 	// The tallest the card may be: the screen less the bar, the dock
-	// when it is at the top or bottom, and a gap.
+	// when it is at the top or bottom, the arrow and a gap.
 	room := geo.Height - barH - 2*drawerGap
-	if d.position == "top" || d.position == "bottom" || d.position == "" {
-		room -= dockH + 2
+	if !d.vertical {
+		room -= dockH + bubbleGap + bubbleArrow
 	}
 	var cardSize, contentSize gtk.Requisition
 	card.GetPreferredSize(nil, &cardSize)
 	content.GetPreferredSize(nil, &contentSize)
 	if cardSize.Height > room { // scroll the rest
 		scroll.SetMaxContentHeight(max(120, room-(cardSize.Height-contentSize.Height)))
-		card.GetPreferredSize(nil, &cardSize)
 	}
 	var r graphene.Rect
 	var f [4]float32
-	hasBounds := button.ComputeBounds(&d.win.Widget, &r)
-	if hasBounds {
+	if button.ComputeBounds(&d.win.Widget, &r) {
 		f = *(*[4]float32)(unsafe.Pointer(&r))
 	}
-	position := d.position
-	switch position {
+	W, H := float64(geo.Width), float64(geo.Height)
+	alongX := (W-float64(dockW))/2 + float64(f[0]+f[2]/2)
+	// A dock on a side is centred in the height the bar leaves.
+	alongY := float64(barH) + (H-float64(barH+dockH))/2 + float64(f[1]+f[3]/2)
+	side, tipX, tipY := "bottom", alongX, H-float64(dockH)-bubbleGap
+	switch d.position {
 	case "left":
-		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideRightValue)
-		reveal.SetMarginStart(dockW + 2)
-		y := float32(geo.Height-cardSize.Height) / 2
-		if hasBounds { // the dock is centred on its edge
-			y = (float32(geo.Height)-float32(dockH))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
-		}
-		reveal.SetMarginTop(barH + clampDrawerOffset(y-float32(barH), geo.Height-barH, cardSize.Height))
+		side, tipX, tipY = "left", float64(dockW)+bubbleGap, alongY
 	case "right":
-		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideLeftValue)
-		x := geo.Width - dockW - cardSize.Width - 2
-		reveal.SetMarginStart(max(0, x))
-		y := float32(geo.Height-cardSize.Height) / 2
-		if hasBounds { // the dock is centred on its edge
-			y = (float32(geo.Height)-float32(dockH))/2 + f[1] + f[3]/2 - float32(cardSize.Height)/2
-		}
-		reveal.SetMarginTop(barH + clampDrawerOffset(y-float32(barH), geo.Height-barH, cardSize.Height))
-	case "top":
-		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideDownValue)
-		x := float32(geo.Width-cardSize.Width) / 2
-		if hasBounds {
-			x = (float32(geo.Width)-float32(dockW))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
-		}
-		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
-		reveal.SetMarginTop(barH + dockH + 2) // the dock sits under the bar
-	default: // bottom
-		reveal.SetTransitionType(gtk.RevealerTransitionTypeSlideUpValue)
-		reveal.SetValign(gtk.AlignEndValue)
-		reveal.SetVexpand(true) // so that it has the room to sit at the end
-		x := float32(geo.Width-cardSize.Width) / 2
-		if hasBounds {
-			x = (float32(geo.Width)-float32(dockW))/2 + f[0] + f[2]/2 - float32(cardSize.Width)/2
-		}
-		reveal.SetMarginStart(clampDrawerOffset(x, geo.Width, cardSize.Width))
-		reveal.SetMarginBottom(dockH + 2)
+		side, tipX, tipY = "right", W-float64(dockW)-bubbleGap, alongY
+	case "top": // the dock sits under the bar
+		side, tipY = "top", float64(barH+dockH)+bubbleGap
 	}
+	p.bubble = newBubble(&card.Widget, side, tipX, tipY, float64(barH+drawerGap), float64(s.cfg.Style.Radius*3/2)) // the dock's corners (shell.Corners)
+	card.Unref()
+	backdrop.Append(p.bubble.canvas)
+	p.win.SetChild(&backdrop.Widget)
+	backdrop.Unref()
+	p.backdrop, p.card = backdrop, card
 
 	click := gtk.NewGestureClick()
 	click.ConnectPressed(&s.onDrawerBackdrop)
@@ -447,7 +418,7 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	layershell.SetMonitor(w, b.mon.GoPointer())
 	s.dockState.drawer = p
 	p.win.Present()
-	reveal.SetRevealChild(true) // after Present, so it slides in
+	p.bubble.open() // after Present, so it grows in
 	// So that a second click on the button, the pointer unmoved, closes it.
 	s.refocusPointer()
 }
@@ -465,17 +436,17 @@ func (s *shellUI) overDockButton(b *bar, btn *gtk.Button, x, y float64) bool {
 	var geo gdk.Rectangle
 	b.mon.GetGeometry(&geo)
 	dockW, dockH := float64(d.win.GetWidth()), float64(d.win.GetHeight())
-	var ox, oy float64 // the dock window's corner
+	barH := 0.0
+	if s.cfg.Bar.Enable {
+		barH = float64(b.win.GetHeight())
+	}
+	var ox, oy float64 // the dock window's corner; on a side, centred under the bar
 	switch d.position {
 	case "left":
-		ox, oy = 0, (float64(geo.Height)-dockH)/2
+		ox, oy = 0, barH+(float64(geo.Height)-barH-dockH)/2
 	case "right":
-		ox, oy = float64(geo.Width)-dockW, (float64(geo.Height)-dockH)/2
+		ox, oy = float64(geo.Width)-dockW, barH+(float64(geo.Height)-barH-dockH)/2
 	case "top":
-		barH := 0.0
-		if s.cfg.Bar.Enable {
-			barH = float64(b.win.GetHeight())
-		}
 		ox, oy = (float64(geo.Width)-dockW)/2, barH
 	default: // bottom
 		ox, oy = (float64(geo.Width)-dockW)/2, float64(geo.Height)-dockH
@@ -487,21 +458,15 @@ func (s *shellUI) overDockButton(b *bar, btn *gtk.Button, x, y float64) bool {
 // drawerGap is the least space between the drawer and the screen's edges.
 const drawerGap = 8
 
-// clampDrawerOffset keeps a card inside a monitor with a small breathing edge.
-func clampDrawerOffset(offset float32, extent, card int32) int32 {
-	maxOffset := max(0, extent-card-8)
-	return max(8, min(int32(offset), maxOffset))
-}
-
-// closeDrawer slides the drawer away; the window goes when it is down.
+// closeDrawer shrinks the drawer back into its button; the window goes
+// when it has.
 func (s *shellUI) closeDrawer() {
 	p := s.dockState.drawer
 	if p == nil || p.closing {
 		return
 	}
 	p.closing = true
-	p.reveal.SetRevealChild(false)
-	glib.TimeoutAdd(drawerRevealMS, &s.onDrawerGone, 0)
+	p.bubble.close(func() { s.onDrawerGone(0) })
 }
 
 // drawerRequest answers `inua call drawer toggle|open|close` with the

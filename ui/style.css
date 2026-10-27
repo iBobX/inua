@@ -686,14 +686,8 @@ button.link:hover { color: @t0; }
 .dock button.dock-drawer image { color: @t1; }
 .dock button.dock-drawer:hover .drawer-frame { transform: translateY(-4px); border-color: alpha(@accent, 0.5); }
 .dock button.dock-item.dock-drawer:hover image { color: @accent; transform: none; }
-.drawer-overlay .drawer {
-  margin: 0 14px 6px; /* room for the shadow inside the revealer */
-  padding: 6px 12px 12px;
-  background: @app; /* not blurred: opaque */
-  border: 1px solid @line;
-  border-radius: 4px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
-}
+/* Its glass, border, arrow and shadow are drawn round it (bubble.go). */
+.drawer-overlay .drawer { padding: 8px 12px 12px; }
 .drawer-title {
   margin: 10px 4px 6px;
   font-family: "Geist Mono", "IBM Plex Mono", monospace;
