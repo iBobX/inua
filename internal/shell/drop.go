@@ -26,7 +26,7 @@ const (
 	dropGather  = 0.08 // it swells a little first
 	dropLand    = 0.52 // then falls, and lands here
 	dropSwell   = 0.05
-	dropStretch = 0.06 // the most it stretches, as a share of its size
+	dropStretch = 0.03 // the most it stretches, as a share of its size
 )
 
 // DropAt is the panel at u (0 to 1) of the way through opening (or
