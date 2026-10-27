@@ -296,8 +296,9 @@ link is encrypted, that is safe; from any other address, the token, the
 keys typed and the screens cross the network as they are. The page cannot
 tell which (a Tailscale address looks like others; a proxy's TLS is not
 its own): when it came over `http://` from anywhere but this computer,
-Overview's Connection shows Encryption: plain HTTP, and a passphrase card
-says what is typed there may not be encrypted.
+each page's head has a warning mark at its start (a tap shows
+Overview), Overview's Connection shows Encryption: plain HTTP, and a
+passphrase card says the connection may not be encrypted.
 
 - **Agents**: every agent by its state (needs you, working, done, idle),
   with where it runs; **Workspaces**: the workspaces, then a workspace's

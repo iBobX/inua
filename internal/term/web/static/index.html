@@ -42,9 +42,14 @@
 
   /* A page's head: one line, as the window's column heads: the title
      (IBM Plex Sans 15 px) and a mono readout at the end. */
-  header { display:grid; grid-template-columns:36px 1fr 36px; align-items:center; gap:8px; height:calc(env(safe-area-inset-top) + 44px); padding:env(safe-area-inset-top) 8px 0; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
+  header { display:grid; grid-template-columns:minmax(36px,1fr) minmax(0,auto) minmax(36px,1fr); align-items:center; gap:8px; height:calc(env(safe-area-inset-top) + 44px); padding:env(safe-area-inset-top) 8px 0; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); flex:none; }
   header .h1 { grid-column:2; min-width:0; text-align:center; font:15px var(--title); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   header button.plain { grid-column:1; grid-row:1; }
+  /* Not encrypted, perhaps: a warning spot at the head's start, as a
+     browser's address bar has, after the back button when one shows. */
+  header button.plain.unsafe { color:var(--warn); }
+  header button.plain.unsafe .icon { width:16px; height:16px; }
+  header:has(> button.plain:not([hidden]):not(.act):not(.unsafe)) .unsafe { margin-left:36px; }
   #tab-term { padding-top:env(safe-area-inset-top); }
   /* Room above the phone's gesture bar, while neither the keyboard nor
      the panel is there to take it. */
@@ -53,7 +58,7 @@
   button.plain { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--t1); border-radius:2px; flex:none; }
   button.plain:active { background:color-mix(in srgb, var(--accent) 9%, transparent); }
   /* An action at the head's end (New workspace, New session). */
-  header button.plain.act { grid-column:3; }
+  header button.plain.act { grid-column:3; justify-self:end; }
 
   /* A question with a line to type (a folder, a name; gpg's passphrase):
      a card over the dimmed page, near its top, where a phone's keyboard
@@ -365,7 +370,7 @@
   <form autocomplete="off">
     <div class="q"></div>
     <div class="desc"></div>
-    <div class="plain" hidden data-t="This connection may not be encrypted: unless Tailscale or a VPN carries it, what you type here crosses the network as it is.">This connection may not be encrypted: unless Tailscale or a VPN carries it, what you type here crosses the network as it is.</div>
+    <div class="plain" hidden data-t="This connection may not be encrypted.">This connection may not be encrypted.</div>
     <div class="prompt"></div>
     <input type="password" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
     <div class="err"></div>
@@ -500,6 +505,16 @@ const plain = (() => {
   const h = location.hostname.replace(/^\[|\]$/g, "").toLowerCase();
   return !(h === "localhost" || h.endsWith(".localhost") || h === "::1" || /^127\./.test(h));
 })();
+// The warning spot, in each page's head; a tap shows Overview's
+// Connection, which says it in words.
+if (plain) for (const h of document.querySelectorAll("header")) {
+  const b = el("button", "plain unsafe");
+  b.setAttribute("aria-label", T("This connection may not be encrypted."));
+  b.title = b.getAttribute("aria-label");
+  b.append(icon("dialog-warning"));
+  b.onclick = () => { overPage = null; show("over"); render(); };
+  h.prepend(b);
+}
 function status(text) {
   for (const n of document.querySelectorAll(".notice")) { n.textContent = text; n.hidden = !text; }
 }
@@ -961,7 +976,7 @@ function renderOver() {
   box.append(section(T("Connection"), connected && !plain ? "s-on" : "s-warn"));
   box.append(line(T("Host"), connected ? T("CONNECTED") : T("OFFLINE"), { sub: location.host }));
   if (plain) box.append(line(T("Encryption"), T("PLAIN HTTP"), { mark: "s-warn",
-    sub: T("Unless Tailscale or a VPN carries it, the token, what you type and what the terminals show cross the network as they are.") }));
+    sub: T("Not encrypted, unless over Tailscale or a VPN.") }));
   if (connected) {
     box.append(line(T("Round trip"), rtt ? Tf("%d MS", Math.round(rtt)) : "…"));
     box.append(line(T("Received"), bytes(received),
