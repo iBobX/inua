@@ -194,6 +194,19 @@
   #pfiles .add { width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px; font:12.5px var(--sans); color:var(--t1); }
   #pfiles .add .icon { width:15px; height:15px; }
   #pfiles .note { margin:10px 2px 0; font:12px var(--sans); color:var(--t2); line-height:1.45; }
+  /* The computer's folders, to download from: where, then its entries
+     between hairlines, a tap on a file keeping it on the phone. */
+  #pfiles .where { display:flex; align-items:center; gap:8px; }
+  #pfiles .where button { width:40px; flex:none; display:flex; align-items:center; justify-content:center; }
+  #pfiles .where .icon, #pfiles .fe .icon { width:15px; height:15px; }
+  #pfiles .where button:disabled { opacity:.4; }
+  #pfiles .where .path { flex:1; min-width:0; padding:4px 2px; font:11px var(--mono); color:var(--t1); overflow-wrap:anywhere; }
+  #pfiles .fe { display:flex; align-items:center; gap:10px; min-height:40px; padding:0 2px; color:var(--t1); border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+  #pfiles .fe:active { background:color-mix(in srgb, var(--accent) 6%, transparent); }
+  #pfiles .fe .name { flex:1; min-width:0; font:13px var(--sans); color:var(--t0); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #pfiles .fe .size { font:11px var(--mono); color:var(--t2); font-variant-numeric:tabular-nums; flex:none; }
+  #pfiles .fe.dir .name { color:var(--t1); }
+  #pfiles .none { padding:12px 2px; font:12px var(--sans); color:var(--t2); }
   #panel .kicker { font:10.5px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--t2); margin:10px 2px 6px; }
   #panel .grid { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; }
   #panel button { height:40px; border:1px solid var(--line); border-radius:2px; background:var(--surface); color:var(--t1); font:12px var(--mono); }
@@ -312,6 +325,9 @@
         <button id="upload" class="add"><span class="icon" style="--i:url(/icons/term-upload-symbolic.svg)"></span><span data-t="Upload files">Upload files</span></button>
         <input type="file" id="uploadfile" multiple hidden>
         <p class="note" data-t="Up to 100 MB each, kept on the computer until you log out. Their paths are typed in the pane.">Up to 100 MB each, kept on the computer until you log out. Their paths are typed in the pane.</p>
+        <div class="kicker" data-t="Download">Download</div>
+        <div class="where"><button id="fileup" data-ta="Up a folder"><span class="icon" style="--i:url(/icons/go-up-symbolic.svg)"></span></button><div class="path" id="filewhere"></div><button id="filego" data-ta="Go to a folder or a file"><span class="icon" style="--i:url(/icons/document-edit-symbolic.svg)"></span></button></div>
+        <div id="filelist"></div>
       </div>
       <div id="pinfo" hidden></div>
     </div>
@@ -1713,6 +1729,7 @@ for (const b of document.querySelectorAll(".ptabs button")) {
     $("psnips").hidden = panelTab !== "snips";
     $("pfiles").hidden = panelTab !== "files";
     info();
+    browse();
   };
 }
 
@@ -1725,7 +1742,7 @@ function showPanel(open) {
   panelOpen = open;
   $("panel").hidden = !open;
   $("panel").style.height = keyboardHeight + "px";
-  if (open) info();
+  if (open) { info(); browse(); }
   $("paneltoggle").classList.toggle("on", open);
   viewport();
 }
@@ -1775,6 +1792,67 @@ $("uploadfile").onchange = async () => {
   if (!failed && connected) status("");
   if (paths.length && cur === pane && term) term.paste(paths.map(shellPath).join(" "));
 };
+
+// ---- Files from the computer ----
+
+// The Files tab lists a folder of the computer's, at first the folder the
+// pane is in: a tap on a folder goes in, one on a file downloads it.
+let browsed = { pane: 0, dir: "" }, browsing = 0;
+function browse() {
+  if (!panelOpen || panelTab !== "files" || !cur) return;
+  if (browsed.pane !== cur) {
+    const p = paneMap.get(cur);
+    browsed = { pane: cur, dir: (p && p.dir) || INUA.home || "/" };
+  }
+  goTo(browsed.dir);
+}
+async function listed(dir) {
+  const r = await fetch(`/files?t=${encodeURIComponent(token)}&dir=${encodeURIComponent(dir)}`);
+  return r.ok ? r.json() : null;
+}
+async function goTo(dir) {
+  const n = ++browsing;
+  let l = null;
+  try { l = await listed(dir); } catch (e) {}
+  if (n !== browsing) return;
+  if (!l) { oops(Tf("Could not open %s", home(dir))); return; }
+  browsed.dir = l.dir;
+  $("filewhere").textContent = home(l.dir);
+  $("fileup").disabled = l.dir === "/";
+  const box = $("filelist");
+  box.textContent = "";
+  if (!l.entries.length) box.append(el("div", "none", T("Nothing here")));
+  for (const e of l.entries) {
+    const path = (l.dir === "/" ? "" : l.dir) + "/" + e.name;
+    const row = el("div", e.dir ? "fe dir" : "fe");
+    row.append(icon(e.dir ? "folder" : "text-x-generic"), el("span", "name", e.name));
+    if (!e.dir) row.append(el("span", "size", bytes(e.size)));
+    row.addEventListener("pointerdown", ev => ev.preventDefault());
+    row.onclick = () => e.dir ? goTo(path) : download(path);
+    box.append(row);
+  }
+}
+// download hands a file to the browser, which keeps it as a download.
+function download(path) {
+  const a = el("a");
+  a.href = `/download?t=${encodeURIComponent(token)}&path=${encodeURIComponent(path)}`;
+  a.download = path.slice(path.lastIndexOf("/") + 1);
+  document.body.append(a);
+  a.click();
+  a.remove();
+}
+for (const id of ["fileup", "filego"]) $(id).addEventListener("pointerdown", e => e.preventDefault());
+$("fileup").onclick = () => goTo(browsed.dir.replace(/\/[^/]*$/, "") || "/");
+// A path typed: a folder is listed, a file downloaded (one an agent named).
+$("filego").onclick = () => ask(T("Go to a folder or a file"), home(browsed.dir) + "/", T("Go"), async text => {
+  const path = folder(text).replace(/(.)\/+$/, "$1");
+  try {
+    if (await listed(path)) { goTo(path); return; }
+    const r = await fetch(`/download?t=${encodeURIComponent(token)}&path=${encodeURIComponent(path)}`, { method: "HEAD" });
+    if (r.ok) { download(path); return; }
+  } catch (e) {}
+  return Tf("Nothing at %s", home(path));
+});
 
 // ---- The visible area ----
 

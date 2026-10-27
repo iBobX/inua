@@ -315,6 +315,10 @@ screen: it is a web app in the theme's colours.
   the computer, up to 100 MB each, into the folder pasted images
   go to (`$XDG_RUNTIME_DIR/inua/term-paste`, gone at logout), and types
   their paths in the pane, quoted, for an agent or a command to take.
+- **Downloading**: under Upload, the Files tab lists the folder the pane
+  is in (hidden files left out); a tap on a folder goes in, the arrow goes
+  up, and a tap on a file keeps it on the phone. The pencil takes a
+  path: a folder is listed, a file (one an agent named) downloaded.
 - Scrolling goes as a phone's lists do: the finger moves the history by
   the pixel, a swipe glides on, and the ends stretch. A program on the
   alternate screen (Claude Code's fullscreen mode, vim, less) scrolls
