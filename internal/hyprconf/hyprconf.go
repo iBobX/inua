@@ -99,6 +99,16 @@ windowrule {
     float = yes
     center = yes
 }
+
+# A panel from the bar (the control center, the calendar, the passwords)
+# hangs inside the bar's surface, which grows down over the screen while
+# it does: animated, Hyprland would stretch the bar's last frame over the
+# change.
+layerrule {
+    name = inua-bar-still
+    match:namespace = ^inua-bar$
+    no_anim = on
+}
 `
 
 // Path is inua.conf for the settings file at configPath: both live under
@@ -254,6 +264,16 @@ hl.window_rule({
     match = { class = "^(xdg-desktop-portal-gtk|xdg-desktop-portal-gnome|org\\.freedesktop\\.impl\\.portal\\..+)$" },
     float = true,
     center = true,
+})
+
+-- A panel from the bar (the control center, the calendar, the passwords)
+-- hangs inside the bar's surface, which grows down over the screen while
+-- it does: animated, Hyprland would stretch the bar's last frame over the
+-- change.
+hl.layer_rule({
+    name = "inua-bar-still",
+    match = { namespace = "^inua-bar$" },
+    no_anim = true,
 })
 `
 
