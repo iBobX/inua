@@ -59,6 +59,12 @@ type bar struct {
 	// whether the last press came while one did, and was the panel's.
 	held      int
 	pressHeld bool
+	// zone is the space the bar keeps from windows at its own size, kept
+	// while its window grows and until it has shrunk back (onShrunk).
+	zone         int32
+	shrink       uint32 // onShrunk's tick, while the window shrinks
+	onShrunk     gtk.TickCallback
+	onShrunkDone glib.DestroyNotify
 
 	// The workspaces this bar shows, and their buttons by id, owned by the
 	// workspaces box. Buttons are kept across updates so a focus change
@@ -316,7 +322,13 @@ func (b *bar) hold(layer layershell.Layer) {
 	if b.held > 1 {
 		return
 	}
-	layershell.SetExclusiveZone(w, b.win.GetHeight())
+	if b.shrink != 0 { // still tall from the last panel: its zone
+		b.win.RemoveTickCallback(b.shrink)
+		b.shrink = 0
+	} else {
+		b.zone = b.win.GetHeight()
+	}
+	layershell.SetExclusiveZone(w, b.zone)
 	var r gdk.Rectangle
 	b.mon.GetGeometry(&r)
 	b.win.SetDefaultSize(-1, r.Height)
@@ -324,6 +336,10 @@ func (b *bar) hold(layer layershell.Layer) {
 }
 
 // release gives the bar its own size back once no panel hangs from it.
+// The space it keeps from windows follows its size again only once the
+// window has shrunk: the size comes a frame or more later, and a zone as
+// tall as the monitor, with the dock's, leaves Hyprland no room for
+// windows, which it aborts on.
 func (b *bar) release() {
 	if b.held--; b.held > 0 {
 		return
@@ -333,7 +349,21 @@ func (b *bar) release() {
 	layershell.SetLayer(w, layershell.LayerTop)
 	b.win.SetDefaultSize(-1, b.height)
 	b.win.QueueResize()
-	layershell.AutoExclusiveZone(w)
+	if b.onShrunk == nil {
+		b.onShrunk = func(uintptr, uintptr, uintptr) bool {
+			var r gdk.Rectangle
+			b.mon.GetGeometry(&r)
+			if b.win.GetHeight() >= r.Height/2 {
+				return true
+			}
+			layershell.AutoExclusiveZone(b.win.GoPointer())
+			return false
+		}
+		b.onShrunkDone = func(uintptr) { b.shrink = 0 }
+	}
+	if b.shrink == 0 {
+		b.shrink = b.win.AddTickCallback(&b.onShrunk, 0, &b.onShrunkDone)
+	}
 }
 
 func (b *bar) setClock(s *shellUI, now time.Time) {
