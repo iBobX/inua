@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -87,6 +88,46 @@ func Args(pid int) []string {
 	}
 	args, _ := arguments(pid)
 	return args
+}
+
+// Env is one variable of a process's environment, as it started; "" when
+// it is not set, or the process has gone or belongs to someone else.
+func Env(pid int, key string) string {
+	if pid <= 0 {
+		return ""
+	}
+	b, err := os.ReadFile(filepath.Join(root, strconv.Itoa(pid), "environ"))
+	if err != nil {
+		return ""
+	}
+	for _, kv := range strings.Split(string(b), "\x00") {
+		if v, ok := strings.CutPrefix(kv, key+"="); ok {
+			return v
+		}
+	}
+	return ""
+}
+
+// OwnedByRoot reports whether a process belongs to root: a setuid program
+// (sudo) as it runs, which no program of the user's can pass for.
+func OwnedByRoot(pid int) bool {
+	if pid <= 0 {
+		return false
+	}
+	info, err := os.Stat(filepath.Join(root, strconv.Itoa(pid)))
+	if err != nil {
+		return false
+	}
+	st, ok := info.Sys().(*syscall.Stat_t)
+	return ok && st.Uid == 0
+}
+
+// UseRoot reads processes from dir, a fake /proc, until the function it
+// gives back is called: for the tests of packages that read processes.
+func UseRoot(dir string) (restore func()) {
+	old := root
+	root = dir
+	return func() { root = old }
 }
 
 // Exe is the full path of a process's program; "" when it has gone or

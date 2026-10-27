@@ -34,6 +34,15 @@ type Response struct {
 // HandlerFunc serves one request. It runs on its own goroutine.
 type HandlerFunc func(context.Context, Request) Response
 
+type peerKey struct{}
+
+// Peer is the process that sent the request a handler serves (its
+// context's); 0 when it cannot be told.
+func Peer(ctx context.Context) int {
+	pid, _ := ctx.Value(peerKey{}).(int)
+	return pid
+}
+
 // SocketPath returns the socket for a shell instance name, in the runtime
 // directory (internal/rundir).
 func SocketPath(instance string) string {
@@ -99,7 +108,7 @@ func serveConn(ctx context.Context, conn net.Conn, h HandlerFunc) {
 		// The request's context ends when the caller hangs up: a request
 		// waiting for the user (a passphrase) is given up then.
 		conn.SetReadDeadline(time.Time{})
-		rctx, cancel := context.WithCancel(ctx)
+		rctx, cancel := context.WithCancel(context.WithValue(ctx, peerKey{}, peerPid(conn)))
 		go func() {
 			conn.Read(make([]byte, 1))
 			cancel()

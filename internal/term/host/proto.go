@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/lyricat/inua/internal/pinentry"
 	"github.com/lyricat/inua/internal/term/model"
 )
 
@@ -89,10 +90,13 @@ type Message struct {
 	// Web, in a hello: the client is a web page (inua-termd serve's), one
 	// the passphrases gpg asks for are relayed to (secrets.go).
 	Web bool `json:"web,omitempty"`
-	// Secret is what gpg asks (secret: inua-pinentry's request; the
-	// host's event to the pages); Asked names one (answer, withdraw).
-	Secret *Secret `json:"secret,omitempty"`
-	Asked  int     `json:"asked,omitempty"`
+	// Ask is the question inua-pinentry or inua-askpass asks (secret);
+	// the host makes Secret of it, from the asking process (asker.Vouch),
+	// for the pages (secret, the host's event). Asked names one (answer,
+	// withdraw).
+	Ask    *pinentry.Request `json:"ask,omitempty"`
+	Secret *Secret           `json:"secret,omitempty"`
+	Asked  int               `json:"asked,omitempty"`
 	// Answer is a page's: AnswerOK (with Pin for a passphrase), AnswerNo
 	// or AnswerCancel; Pin goes on in the reply to the secret.
 	Answer string  `json:"answer,omitempty"`

@@ -321,6 +321,23 @@ open; gpg-agent's `enable-ssh-support` asks through `inua-pinentry`).
 With no shell running, it runs another askpass (ksshaskpass,
 lxqt-openssh-askpass, ssh-askpass).
 
+Who asks is read from the asking process, not taken from what it sends:
+any program of yours can reach the shell's socket and the terminal host's,
+and could otherwise ask as sudo, for a command of its choosing, and be
+given the password. The dialog and the pages show a question only from
+inua's own `inua-askpass`, `inua-pinentry` and `inua-assistant`, as
+installed (beside the program asking, on `PATH`, or in `/usr/local/bin`
+or `/usr/bin`). `inua-askpass`'s
+question is made again from its command line and the program that ran it:
+the administrator's "Run as Administrator?" only when that is sudo itself
+(setuid, so root's), with the command sudo runs; anything else is named as
+what it is. `inua-pinentry`'s is gpg's words when gpg-agent ran it; run by
+anything else, it names that program and nothing gpg would have said. Only
+`inua-termd serve`'s pages are asked on the phone. gpg-agent itself asks
+whatever a program of yours tells it to (`gpg-connect-agent
+GET_PASSPHRASE`): that question is gpg's, and shown as such. On macOS
+processes are not told apart, and questions are shown as they come.
+
 ## Clipboard history
 
 The clipboard button in the top bar (or a shortcut set for "Clipboard

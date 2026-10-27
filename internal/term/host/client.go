@@ -7,6 +7,7 @@ import (
 	"net"
 	"sync"
 
+	"github.com/lyricat/inua/internal/pinentry"
 	"github.com/lyricat/inua/internal/term/model"
 )
 
@@ -146,12 +147,12 @@ func (c *Client) call(m Message) (Message, error) {
 	return r, nil
 }
 
-// AskSecret asks the web pages open what gpg asks (secrets.go), and
+// AskSecret asks the web pages open what q asks (secrets.go), and
 // waits: the answer (AnswerOK with the passphrase, AnswerNo or
 // AnswerCancel), or "" when no page is open to ask. Closing the client
 // takes the question back.
-func (c *Client) AskSecret(s Secret) (answer, pin string, err error) {
-	r, err := c.call(Message{Type: MsgSecret, Secret: &s})
+func (c *Client) AskSecret(q pinentry.Request) (answer, pin string, err error) {
+	r, err := c.call(Message{Type: MsgSecret, Ask: &q})
 	switch {
 	case r.Error == ErrNoPage:
 		return "", "", nil

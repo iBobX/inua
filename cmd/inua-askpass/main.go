@@ -12,18 +12,16 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"slices"
 	"strconv"
-	"strings"
 	"time"
 
+	"github.com/lyricat/inua/internal/asker"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/keyring"
 	"github.com/lyricat/inua/internal/passask"
 	"github.com/lyricat/inua/internal/pinentry"
-	"github.com/lyricat/inua/internal/proc"
 )
 
 // fallbacks are the askpass programs run without a shell, the first found.
@@ -39,15 +37,10 @@ func main() {
 	}
 	cfg, _, _ := config.Load(config.DefaultPath())
 	i18n.Init(cfg.Language)
-	q, yesNo := question(strings.Join(os.Args[1:], " "), os.Getenv("SSH_ASKPASS_PROMPT"))
 	// Who asks: ssh, sudo or git, and what runs it; for sudo, the command
-	// it runs as root (Mister Morph names the assistant's).
-	if asker := os.Getppid(); asker > 1 {
-		q.App, q.Chain = proc.Name(asker), proc.Chain(proc.Parent(asker), 8)
-		if cmd, ok := sudoCommand(q.App, proc.Args(asker)); ok {
-			asRoot(&q, cmp.Or(os.Getenv(passask.ElevateCommandEnv), cmd))
-		}
-	}
+	// it runs as root. The shell and the terminal host make the question
+	// again from this process, not from what it sends (internal/asker).
+	q, yesNo := asker.Question(os.Args[1:], os.Getenv("SSH_ASKPASS_PROMPT"), os.Getenv(asker.ElevateCommandEnv), os.Getppid())
 	deadline := time.Now().Add(time.Hour) // the user takes their time
 	if s, err := strconv.ParseInt(os.Getenv(passask.ElevateDeadlineEnv), 10, 64); err == nil && s > 0 {
 		deadline = time.Unix(s, 0)
@@ -71,38 +64,6 @@ func main() {
 	fmt.Print(out)
 }
 
-// question is what the dialog asks for prompt, the asker's words, and
-// kind, SSH_ASKPASS_PROMPT; yesNo when the answer is to be typed "yes"
-// (ssh asking whether to trust a host's key).
-func question(prompt, kind string) (q pinentry.Request, yesNo bool) {
-	prompt = strings.TrimSpace(prompt)
-	q.Desc = prompt
-	lower := strings.ToLower(prompt)
-	switch {
-	case kind == "none":
-		q.Mode = pinentry.Message
-	case kind == "confirm":
-		q.Mode, q.OK, q.Cancel = pinentry.Confirm, i18n.T("Yes"), i18n.T("No")
-	case strings.Contains(lower, "(yes/no"):
-		// "Are you sure you want to continue connecting
-		// (yes/no/[fingerprint])?", asked as a secret.
-		q.Mode, q.OK, q.Cancel = pinentry.Confirm, i18n.T("Yes"), i18n.T("No")
-		yesNo = true
-		if i := strings.LastIndex(lower, " (yes/no"); i > 0 { // the buttons say it
-			q.Desc = prompt[:i] + "?"
-		}
-	case strings.HasPrefix(lower, "username"): // git's "Username for 'https://…':"
-		q.Mode, q.Visible = pinentry.GetPin, true
-		q.Title, q.Prompt = i18n.T("User Name Required"), i18n.T("User name")
-	case strings.Contains(lower, "password"): // "user@host's password:", sudo's
-		q.Mode = pinentry.GetPin
-		q.Title, q.Prompt = i18n.T("Password Required"), i18n.T("Password")
-	default: // "Enter passphrase for key '…':", "Enter PIN for …"
-		q.Mode = pinentry.GetPin
-	}
-	return q, yesNo
-}
-
 // morphMarker is the line telling Mister Morph why an approval did not
 // come: timed out (late) or declined; "" for a failure, which it reports
 // as such.
@@ -114,42 +75,6 @@ func morphMarker(late bool, r passask.Reply) string {
 		return ""
 	}
 	return passask.ElevateDeclined
-}
-
-// sudoValued are sudo's options that take a value: -u USER, -g GROUP …
-var sudoValued = "ugpChDrtUTR"
-
-// sudoCommand is the command sudo (name, run with args) runs as root,
-// without sudo's own options; ok when name is sudo and it runs one.
-func sudoCommand(name string, args []string) (string, bool) {
-	if (name != "sudo" && name != "sudo-rs") || len(args) < 2 {
-		return "", false
-	}
-	rest := args[1:]
-	for len(rest) > 0 && strings.HasPrefix(rest[0], "-") {
-		opt := rest[0]
-		rest = rest[1:]
-		switch {
-		case opt == "--":
-			return strings.Join(rest, " "), len(rest) > 0
-		case strings.HasPrefix(opt, "--"):
-			if !strings.Contains(opt, "=") && slices.Contains([]string{"--user", "--group", "--prompt", "--close-from", "--host", "--chdir", "--role", "--type", "--other-user", "--command-timeout", "--chroot"}, opt) && len(rest) > 0 {
-				rest = rest[1:]
-			}
-		case len(opt) == 2 && strings.ContainsRune(sudoValued, rune(opt[1])) && len(rest) > 0:
-			rest = rest[1:] // "-u root": its value follows
-		}
-	}
-	return strings.Join(rest, " "), len(rest) > 0
-}
-
-// asRoot makes q sudo's question: the password, to run cmd as
-// administrator, the command shown.
-func asRoot(q *pinentry.Request, cmd string) {
-	q.Mode, q.Visible = pinentry.GetPin, false
-	q.Title = i18n.T("Run as Administrator?")
-	q.Desc = i18n.Tf("Enter your password to run this command as administrator:\n\n%s", cmd)
-	q.Prompt, q.OK = i18n.T("Password"), i18n.T("Allow")
 }
 
 // answer is what to print for r, a line, and whether to exit 0: the text

@@ -241,7 +241,8 @@ func (h *Host) serveConn(conn net.Conn) {
 		h.mu.Unlock()
 		return
 	}
-	c.web = hello.Web
+	// A page is inua-termd serve's: no other program answers what is asked.
+	c.web = hello.Web && isPage(conn)
 	h.clients[c] = true
 	h.mu.Unlock()
 	go c.write()

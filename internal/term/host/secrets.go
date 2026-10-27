@@ -1,9 +1,52 @@
 package host
 
+import (
+	"cmp"
+	"net"
+
+	"github.com/lyricat/inua/internal/asker"
+	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/pinentry"
+)
+
 // The passphrases gpg asks for, relayed to the web pages: inua-pinentry
 // asks the shell's dialog and, through the host, every page open (a
 // phone's), and the first answer wins. The host keeps a question only
 // while it waits; a passphrase passes through it, never kept or logged.
+// Who asks is told from the asking process (internal/asker), and only
+// inua-termd serve's pages are asked.
+
+// vouch makes a question say who really asks (asker.Vouch); isPage tells
+// whether a client saying it is a page is inua-termd serve. Tests replace
+// them: the test is neither.
+var (
+	vouch  = asker.Vouch
+	isPage = func(conn net.Conn) bool { return asker.Is(peerPid(conn), asker.Termd) }
+)
+
+// SecretFor is what the pages show of q: a passphrase, a yes or no, or a
+// note. A new passphrase (asked twice), an answer to be seen while typed
+// (a user name) and approvals are the desktop's alone.
+func SecretFor(q pinentry.Request) (Secret, bool) {
+	switch {
+	case q.Repeat != "" || q.Visible:
+		return Secret{}, false
+	case q.Mode != pinentry.GetPin && q.Mode != pinentry.Confirm && q.Mode != pinentry.Message:
+		return Secret{}, false
+	}
+	who := cmp.Or(q.App, "gpg")
+	title := i18n.Tf("%s asks for your passphrase", who)
+	if q.Mode != pinentry.GetPin {
+		title = i18n.Tf("%s asks", who)
+	}
+	if q.Keyring {
+		title = i18n.Tf("inua-keyring asks for your passphrase, for %s", who)
+	}
+	return Secret{
+		Mode: string(q.Mode), Title: title, Desc: q.Desc, Prompt: q.Prompt, Error: q.Error,
+		OK: q.OK, Cancel: q.Cancel, NotOK: q.NotOK,
+	}, true
+}
 
 // Secret is what gpg asks: a passphrase (Mode "getpin"), or a yes or no
 // ("confirm"), or a note to read ("message"); the texts as the page shows
@@ -45,8 +88,18 @@ type asked struct {
 func (h *Host) handleSecrets(c *client, m Message) bool {
 	switch m.Type {
 	case MsgSecret:
-		if m.Secret == nil {
-			c.message(Message{Type: MsgReply, ID: m.ID, Error: "no secret"})
+		if m.Ask == nil {
+			c.message(Message{Type: MsgReply, ID: m.ID, Error: "no question"})
+			return true
+		}
+		q := *m.Ask
+		if err := vouch(peerPid(c.conn), &q); err != nil {
+			c.message(Message{Type: MsgReply, ID: m.ID, Error: err.Error()})
+			return true
+		}
+		s, ok := SecretFor(q)
+		if !ok {
+			c.message(Message{Type: MsgReply, ID: m.ID, Error: "not for the pages"})
 			return true
 		}
 		h.mu.Lock()
@@ -57,7 +110,6 @@ func (h *Host) handleSecrets(c *client, m Message) bool {
 			return true
 		}
 		h.secretIDs++
-		s := *m.Secret
 		s.ID = h.secretIDs
 		h.asked[s.ID] = &asked{s: s, asker: c, id: m.ID}
 		h.mu.Unlock()

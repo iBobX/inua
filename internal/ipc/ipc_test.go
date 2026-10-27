@@ -3,7 +3,10 @@ package ipc
 import (
 	"context"
 	"net"
+	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -14,7 +17,10 @@ func TestRoundTrip(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
 	go func() {
-		done <- Serve(ctx, path, func(_ context.Context, r Request) Response {
+		done <- Serve(ctx, path, func(ctx context.Context, r Request) Response {
+			if r.Target == "peer" {
+				return Response{OK: true, Result: strconv.Itoa(Peer(ctx))}
+			}
 			if r.Target != "launcher" {
 				return Response{Error: "no target " + r.Target}
 			}
@@ -43,6 +49,15 @@ func TestRoundTrip(t *testing.T) {
 	}
 	if _, err := Call(cctx, path, Request{Op: "call", Target: "nope"}); err == nil || !strings.Contains(err.Error(), "no target") {
 		t.Fatalf("expected handler error, got %v", err)
+	}
+
+	// The handler knows who called: on Linux, this process.
+	want := "0"
+	if runtime.GOOS == "linux" {
+		want = strconv.Itoa(os.Getpid())
+	}
+	if resp, err := Call(cctx, path, Request{Op: "call", Target: "peer"}); err != nil || resp.Result != want {
+		t.Errorf("peer %q (%v), want %s", resp.Result, err, want)
 	}
 
 	// A second server on the same live socket must refuse to start.

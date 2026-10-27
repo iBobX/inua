@@ -5,7 +5,6 @@
 package passask
 
 import (
-	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -16,7 +15,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/asker"
 	"github.com/lyricat/inua/internal/ipc"
 	"github.com/lyricat/inua/internal/keyring"
 	"github.com/lyricat/inua/internal/pinentry"
@@ -28,7 +27,7 @@ import (
 // command to approve and when to give up (Unix seconds) in the
 // environment, and a line on stderr when it was not approved.
 const (
-	ElevateCommandEnv  = "MISTERMORPH_ELEVATE_COMMAND"
+	ElevateCommandEnv  = asker.ElevateCommandEnv
 	ElevateDeadlineEnv = "MISTERMORPH_ELEVATE_DEADLINE"
 	ElevateDeclined    = "mistermorph: administrator approval was declined"
 	ElevateTimedOut    = "mistermorph: administrator approval timed out"
@@ -52,8 +51,8 @@ func Ask(ctx context.Context, sock string, q pinentry.Request) Reply {
 	desk := make(chan Reply, 1)
 	go func() { desk <- askShell(ctx, sock, q) }()
 	pages := make(chan Reply, 1)
-	if s, ok := ForPages(q); ok {
-		go func() { pages <- askPages(ctx, s) }()
+	if _, ok := host.SecretFor(q); ok {
+		go func() { pages <- askPages(ctx, q) }()
 	}
 	var failed Reply
 	for desk != nil || pages != nil {
@@ -98,35 +97,10 @@ func askShell(ctx context.Context, sock string, q pinentry.Request) Reply {
 	return r
 }
 
-// ForPages is what the web terminal's pages show of q: a passphrase, a
-// yes or no, or a note. A new passphrase (asked twice), an answer to be
-// seen while typed (a user name) and inua-keyring's approvals are the
-// desktop's alone.
-func ForPages(q pinentry.Request) (host.Secret, bool) {
-	switch {
-	case q.Repeat != "" || q.Visible:
-		return host.Secret{}, false
-	case q.Mode != pinentry.GetPin && q.Mode != pinentry.Confirm && q.Mode != pinentry.Message:
-		return host.Secret{}, false
-	}
-	who := cmp.Or(q.App, "gpg")
-	title := i18n.Tf("%s asks for your passphrase", who)
-	if q.Mode != pinentry.GetPin {
-		title = i18n.Tf("%s asks", who)
-	}
-	if q.Keyring {
-		title = i18n.Tf("inua-keyring asks for your passphrase, for %s", who)
-	}
-	return host.Secret{
-		Mode: string(q.Mode), Title: title, Desc: q.Desc, Prompt: q.Prompt, Error: q.Error,
-		OK: q.OK, Cancel: q.Cancel, NotOK: q.NotOK,
-	}, true
-}
-
 // askPages asks the web terminal's pages open, through its host; none
 // when no host runs or no page is open. ctx ending takes the question
 // back.
-func askPages(ctx context.Context, s host.Secret) Reply {
+func askPages(ctx context.Context, q pinentry.Request) Reply {
 	c, err := host.Dial(host.SocketPath(), nil, nil)
 	if err != nil {
 		return Reply{none: true}
@@ -134,7 +108,7 @@ func askPages(ctx context.Context, s host.Secret) Reply {
 	stop := context.AfterFunc(ctx, func() { c.Close() })
 	defer stop()
 	defer c.Close()
-	answer, pin, err := c.AskSecret(s)
+	answer, pin, err := c.AskSecret(q)
 	switch {
 	case err != nil || answer == "":
 		return Reply{none: true}

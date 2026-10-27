@@ -13,6 +13,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 	"codeberg.org/puregotk/puregotk/v4/pango"
 
+	"github.com/lyricat/inua/internal/asker"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/ipc"
@@ -83,6 +84,12 @@ func (s *shellUI) askPassword(ctx context.Context, req ipc.Request) ipc.Response
 	case pinentry.GetPin, pinentry.Confirm, pinentry.Message, pinentry.Approve:
 	default:
 		return ipc.Response{Error: "password: unknown mode " + req.Function}
+	}
+	// Who asks, from the asking process, not from what it says: any
+	// program of the user's reaches this socket.
+	if err := asker.Vouch(ipc.Peer(ctx), &q); err != nil {
+		log.Printf("password: not asked: %v", err)
+		return ipc.Response{Error: "password: " + err.Error()}
 	}
 	return s.askDialog(ctx, &passDialog{q: q, done: make(chan ipc.Response, 1)})
 }
