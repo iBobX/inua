@@ -245,7 +245,7 @@ type Process struct {
 	State     byte // R running, S sleeping, D waiting on a disk, T stopped, Z a zombie, …
 	Threads   int
 	Ticks     uint64 // user and system time, in clock ticks
-	RSS       uint64 // resident memory, bytes
+	Mem       uint64 // resident memory of its own, not the shared libraries' and files': bytes
 	CPU       float64
 }
 
@@ -286,6 +286,23 @@ func ParseStat(line string) (Stat, bool) {
 	return st, true
 }
 
+// ownPages is a /proc/PID/statm line's resident pages less its shared
+// ones: the memory only this process holds (RssAnon). Resident counts
+// every library in full in each process using it, which makes each GTK
+// app look three times its cost.
+func ownPages(line string) uint64 {
+	f := strings.Fields(line)
+	if len(f) < 3 {
+		return 0
+	}
+	res, _ := strconv.ParseUint(f[1], 10, 64)
+	shared, _ := strconv.ParseUint(f[2], 10, 64)
+	if shared > res {
+		return 0
+	}
+	return res - shared
+}
+
 // pageSize is the size of a memory page.
 var pageSize = uint64(os.Getpagesize())
 
@@ -312,7 +329,10 @@ func ReadProcesses() []Process {
 			continue
 		}
 		p := Process{PID: pid, PPID: st.PPID, Name: st.Name, State: st.State, Threads: st.Threads,
-			Ticks: st.Ticks, RSS: st.RSSPages * pageSize, UID: -1}
+			Ticks: st.Ticks, Mem: st.RSSPages * pageSize, UID: -1}
+		if b, err := os.ReadFile(filepath.Join(dir, "statm")); err == nil {
+			p.Mem = ownPages(string(b)) * pageSize
+		}
 		if fi, err := os.Stat(dir); err == nil {
 			if s, ok := fi.Sys().(*syscall.Stat_t); ok {
 				p.UID = int(s.Uid)
@@ -346,7 +366,7 @@ func Sort(ps []Process, by string) {
 	slices.SortStableFunc(ps, func(a, b Process) int {
 		switch by {
 		case "memory":
-			return cmpDesc(float64(a.RSS), float64(b.RSS))
+			return cmpDesc(float64(a.Mem), float64(b.Mem))
 		case "name":
 			if c := strings.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name)); c != 0 {
 				return c
@@ -356,7 +376,7 @@ func Sort(ps []Process, by string) {
 		if c := cmpDesc(a.CPU, b.CPU); c != 0 {
 			return c
 		}
-		return cmpDesc(float64(a.RSS), float64(b.RSS))
+		return cmpDesc(float64(a.Mem), float64(b.Mem))
 	})
 }
 

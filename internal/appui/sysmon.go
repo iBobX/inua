@@ -568,7 +568,7 @@ func (a *sysmonApp) showProcesses() {
 		cpu.SetSizeRequest(52, -1)
 		cpu.SetXalign(1)
 		gtkx.Append(inner, &cpu.Widget)
-		mem := gtk.NewLabel(sysmon.Bytes(p.RSS))
+		mem := gtk.NewLabel(sysmon.Bytes(p.Mem))
 		mem.AddCssClass("readout")
 		mem.SetSizeRequest(68, -1)
 		mem.SetXalign(1)
@@ -826,7 +826,7 @@ func (a *sysmonApp) showDetail() {
 		cpu = fmt.Sprintf("%.1f%%", p.CPU)
 	}
 	set("cell:CPU", cpu)
-	set("cell:MEMORY", sysmon.Bytes(d.RSS))
+	set("cell:MEMORY", sysmon.Bytes(d.Anon))
 	set("cell:THREADS", strconv.Itoa(d.Threads))
 	parent := strconv.Itoa(d.PPID)
 	if d.Parent != "" {

@@ -275,10 +275,12 @@ hex, RGB and HSL. `inua call screenshot color` picks one without the app.
 
 - **Overview:** each core, memory, the GPU, network, disks and the
   battery, with their last minute.
-- **Processes:** sorted and filtered; each opens to its CPU, memory,
-  threads, command, open files and disk traffic, and can be paused,
-  resumed, asked to quit or ended, alone or with its children. Another
-  user's processes ask for an administrator's password.
+- **Processes:** sorted and filtered, with each one's own memory (the
+  shared libraries, which every app counts in full, left out); each
+  opens to its CPU, memory, threads, command, open files and disk
+  traffic, and can be paused, resumed, asked to quit or ended, alone or
+  with its children. Another user's processes ask for an administrator's
+  password.
 - **System:** the computer, processor, memory, graphics and storage.
 
 ### Pass

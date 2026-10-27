@@ -657,7 +657,7 @@ func infoTools(d Desktop) []Tool {
 					if t, ok := byPID[p.PID]; ok && p.Ticks >= t {
 						cpu = float64(p.Ticks-t) / 100 / span.Seconds() * 100 // 100 ticks a second
 					}
-					out = append(out, proc{p.PID, p.Name, p.User, float64(int(cpu*10)) / 10, float64(p.RSS >> 20)})
+					out = append(out, proc{p.PID, p.Name, p.User, float64(int(cpu*10)) / 10, float64(p.Mem >> 20)})
 				}
 				if str(a, "by") == "memory" {
 					slices.SortFunc(out, func(x, y proc) int { return cmp.Compare(y.MemoryMB, x.MemoryMB) })

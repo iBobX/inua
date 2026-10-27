@@ -42,7 +42,7 @@ func TestStat(t *testing.T) {
 		st.PPID != 1 || st.Threads != 30 || st.Start != 99 {
 		t.Errorf("%+v %v", st, ok)
 	}
-	ps := []Process{{PID: 1, Ticks: 150, RSS: 10}, {PID: 2, Ticks: 50, RSS: 30}, {PID: 3, Ticks: 9}}
+	ps := []Process{{PID: 1, Ticks: 150, Mem: 10}, {PID: 2, Ticks: 50, Mem: 30}, {PID: 3, Ticks: 9}}
 	SetCPU(ps, map[int]uint64{1: 100, 2: 50}, 2*time.Second)
 	if ps[0].CPU != 25 || ps[1].CPU != 0 || ps[2].CPU != 0 {
 		t.Errorf("CPU %v %v %v", ps[0].CPU, ps[1].CPU, ps[2].CPU)
@@ -206,5 +206,24 @@ func TestSensorsAndGPUs(t *testing.T) {
 	g := ReadGPUs()
 	if len(g) != 1 || g[0].Driver != "amdgpu" || g[0].Busy != 37 || g[0].VRAMTotal != 4194304 {
 		t.Errorf("gpus %+v", g)
+	}
+}
+
+func TestOwnMemory(t *testing.T) {
+	Root = t.TempDir()
+	defer func() { Root = "/" }()
+	write := func(p, s string) {
+		os.MkdirAll(filepath.Join(Root, filepath.Dir(p)), 0o755)
+		os.WriteFile(filepath.Join(Root, p), []byte(s), 0o644)
+	}
+	// 33,000 pages resident, 25,000 of them the libraries': 8,000 its own.
+	stat := "7 (calc) S 1 7 7 0 -1 0 0 0 0 0 1 1 0 0 20 0 4 0 99 0 33000 0 0"
+	write("proc/7/stat", stat+"\n")
+	write("proc/7/statm", "300000 33000 25000 100 0 9000 0\n")
+	write("proc/8/stat", strings.Replace(stat, "(calc)", "(old)", 1)+"\n") // no statm: resident
+	ps := ReadProcesses()
+	Sort(ps, "name")
+	if len(ps) != 2 || ps[0].Mem != 8000*pageSize || ps[1].Mem != 33000*pageSize {
+		t.Errorf("%+v", ps)
 	}
 }
