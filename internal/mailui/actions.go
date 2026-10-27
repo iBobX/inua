@@ -538,8 +538,17 @@ func (w *window) leaveUnsent() {
 
 var notifyConn *dbus.Conn
 
-// notifyNew says new mail came, when the window is not in front.
+// notifyNew says new mail came, when the window is not in front;
+// newsletters wait without a word.
 func (w *window) notifyNew(x *acct, inbox string, uids []uint32) {
+	uids = slices.DeleteFunc(slices.Clone(uids), func(u uint32) bool {
+		for _, it := range x.s.Items(inbox) {
+			if it.UID == u {
+				return mail.IsNews(*it.Envelope)
+			}
+		}
+		return false
+	})
 	var newest *mail.Item
 	for _, it := range x.s.Items(inbox) {
 		for _, u := range uids {

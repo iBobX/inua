@@ -32,6 +32,7 @@ const (
 	viewInboxes viewKind = iota // every account's inbox
 	viewReply                   // conversations tagged REPLY
 	viewStarred                 // conversations with a starred message
+	viewNews                    // the inboxes' newsletters, kept out of them
 	viewBox                     // one mailbox of one account
 	viewPeople                  // the address books' people, in the list's place
 )
@@ -559,17 +560,20 @@ func (w *window) drawSide() {
 		}
 		return
 	}
+	news := w.newsUnread()
 	unread := 0
 	for _, x := range w.accts {
 		for _, b := range x.boxes {
 			if b.Role == mail.RoleInbox {
-				unread += b.Unread
+				unread += max(0, b.Unread-news[x.s.Acc.ID])
 			}
 		}
 	}
 	w.sideItem(i18n.T("All inboxes"), "mail-all-inboxes-symbolic", unread, view{kind: viewInboxes})
 	w.sideItem(i18n.T("Needs reply"), "mail-reply-symbolic", len(w.conversations(view{kind: viewReply})), view{kind: viewReply})
 	w.sideItem(i18n.T("Starred"), "mail-starred-symbolic", 0, view{kind: viewStarred})
+	// Newsletters wait here, uncounted: they are read when there is time.
+	w.sideItem(i18n.T("Newsletters"), "mail-news-symbolic", 0, view{kind: viewNews})
 	if ds, _ := w.drafts.List(); len(ds) > 0 {
 		btn := w.sideButton(i18n.T("Unsent"), "mail-outbox-symbolic", len(ds), w.unsent)
 		w.sideBtns = append(w.sideBtns, w.h.click(btn, w.showUnsent))
@@ -655,6 +659,9 @@ func (w *window) drawSide() {
 			n := 0
 			if b.Role != mail.RoleSent && b.Role != mail.RoleTrash && b.Role != mail.RoleJunk && b.Role != mail.RoleArchive {
 				n = b.Unread
+			}
+			if b.Role == mail.RoleInbox {
+				n = max(0, n-news[x.s.Acc.ID])
 			}
 			w.sideItemIn(panel, boxName(b), boxIcon(b), n, view{kind: viewBox, account: x.s.Acc.ID, mailbox: b.Name})
 		}
@@ -837,7 +844,7 @@ func (w *window) conversations(v view) []*mail.Conversation {
 		}
 		sent := x.s.Role(mail.RoleSent)
 		switch v.kind {
-		case viewInboxes, viewReply:
+		case viewInboxes, viewReply, viewNews:
 			items = append(items, x.s.Items(x.s.Role(mail.RoleInbox))...)
 		case viewStarred:
 			for _, r := range []mail.Role{mail.RoleInbox, mail.RoleArchive, mail.RoleSent} {
@@ -860,10 +867,33 @@ func (w *window) conversations(v view) []*mail.Conversation {
 		}
 	}
 	cs := mail.Group(items, joining)
-	if v.kind == viewReply {
+	switch {
+	case v.kind == viewReply:
 		cs = slices.DeleteFunc(cs, func(c *mail.Conversation) bool { return c.Tag() != mail.TagReply || w.lastMine(c) })
+	case v.kind == viewNews:
+		// A sender's issues stack, read as one.
+		cs = mail.Stack(slices.DeleteFunc(cs, func(c *mail.Conversation) bool { return !c.News(w.mine) }))
+	case v.kind == viewInboxes || (v.kind == viewBox && w.isInbox(v)):
+		// Newsletters are not mail to answer: they wait in their place.
+		cs = slices.DeleteFunc(cs, func(c *mail.Conversation) bool { return c.News(w.mine) })
 	}
 	return cs
+}
+
+// newsUnread counts each account's unread newsletters in its inbox, which
+// its inbox's count leaves out.
+func (w *window) newsUnread() map[string]int {
+	n := map[string]int{}
+	for _, c := range w.conversations(view{kind: viewNews}) {
+		for _, m := range c.Messages {
+			if !m.Has(mail.Seen) {
+				if x := w.acct(m.Account); x != nil && m.Mailbox == x.s.Role(mail.RoleInbox) {
+					n[m.Account]++
+				}
+			}
+		}
+	}
+	return n
 }
 
 // lastMine says whether the user wrote a conversation's newest message.
@@ -999,6 +1029,8 @@ func (w *window) emptyText() string {
 		return i18n.T("Nothing waits for your reply")
 	case w.view.kind == viewStarred:
 		return i18n.T("No starred conversation")
+	case w.view.kind == viewNews:
+		return i18n.T("No newsletter")
 	case w.filter == filterUnread:
 		return i18n.T("All read")
 	case w.view.kind == viewInboxes || (w.view.kind == viewBox && w.isInbox(w.view)):
@@ -1616,7 +1648,7 @@ func (w *window) move(d int) {
 func (w *window) drawStatus() {
 	syncing, down := 0, 0
 	var last time.Time
-	unread := 0
+	unread, news := 0, w.newsUnread()
 	var why []string // each account down: who, what is wrong, the error
 	for _, x := range w.accts {
 		syncing += x.syncing
@@ -1629,7 +1661,7 @@ func (w *window) drawStatus() {
 		}
 		for _, b := range x.boxes {
 			if b.Role == mail.RoleInbox {
-				unread += b.Unread
+				unread += max(0, b.Unread-news[x.s.Acc.ID])
 			}
 		}
 	}
@@ -1783,7 +1815,7 @@ func (w *window) isInbox(v view) bool {
 // sideCounts redraws the index when its counts changed (a sync, an
 // action, a reply sent), and the readout.
 func (w *window) sideCounts() {
-	sig := fmt.Sprint(len(w.conversations(view{kind: viewReply})))
+	sig := fmt.Sprint(len(w.conversations(view{kind: viewReply})), w.newsUnread())
 	for _, x := range w.accts {
 		for _, b := range x.boxes {
 			sig += fmt.Sprintf("/%d", b.Unread)

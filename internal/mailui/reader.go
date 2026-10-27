@@ -44,7 +44,11 @@ func (w *window) openConversation(c *mail.Conversation) {
 	w.readerStack.SetVisibleChildName("read")
 	w.readerScroll.GetVadjustment().SetValue(0)
 	if !w.settings.Reading.KeepUnread {
-		w.markRead(c)
+		if c.Stacked() {
+			w.markItemsSeen([]mail.Item{c.Latest()}) // the others when unfolded
+		} else {
+			w.markRead(c)
+		}
 	}
 	w.drawReader()
 }
@@ -54,10 +58,13 @@ func (w *window) openConversation(c *mail.Conversation) {
 func (w *window) load(c *mail.Conversation) {
 	type box struct{ account, mailbox string }
 	groups := map[box][]uint32{}
-	for _, it := range c.Messages {
+	for i, it := range c.Messages {
 		k := it.Key()
 		if rd := w.reading[k]; rd != nil && (rd.m != nil || rd.loading) {
 			continue
+		}
+		if c.Stacked() && i < len(c.Messages)-1 && !w.folded[k] {
+			continue // an issue folded: read when unfolded
 		}
 		if w.acct(it.Account) == nil {
 			continue
@@ -137,13 +144,20 @@ func (w *window) markAllRead() {
 // markSeen marks conversations' unread messages read, on the server too,
 // a mailbox at a time.
 func (w *window) markSeen(cs []*mail.Conversation) {
-	byBox := map[[2]string][]uint32{}
+	var items []mail.Item
 	for _, c := range cs {
-		for _, m := range c.Messages {
-			if !m.Has(mail.Seen) {
-				k := [2]string{m.Account, m.Mailbox}
-				byBox[k] = append(byBox[k], m.UID)
-			}
+		items = append(items, c.Messages...)
+	}
+	w.markItemsSeen(items)
+}
+
+// markItemsSeen marks messages read, on the server too.
+func (w *window) markItemsSeen(items []mail.Item) {
+	byBox := map[[2]string][]uint32{}
+	for _, m := range items {
+		if !m.Has(mail.Seen) {
+			k := [2]string{m.Account, m.Mailbox}
+			byBox[k] = append(byBox[k], m.UID)
 		}
 	}
 	for k, uids := range byBox {
@@ -233,10 +247,13 @@ func (w *window) drawReader() {
 	}
 	w.drawWarning(c)
 	last := len(c.Messages) - 1
-	for i, m := range c.Messages {
-		w.drawMessage(m, i == last)
+	for i := range c.Messages {
+		if c.Stacked() {
+			i = last - i // a newsletter's newest issue first, the older ones under it
+		}
+		w.drawMessage(c.Messages[i], i == last)
 	}
-	if !w.isDraft(c.Latest()) {
+	if !w.isDraft(c.Latest()) && !c.Stacked() {
 		w.drawQuick(c)
 	}
 	w.drawPanel()
@@ -485,7 +502,8 @@ func (w *window) drawMessage(it mail.Item, newest bool) {
 	k := it.Key()
 	rd := w.reading[k]
 	open := newest || w.folded[k] // folded holds "unfolded by the user" for older ones
-	if !newest && !it.Has(mail.Seen) {
+	stacked := w.open != nil && w.open.Stacked()
+	if !newest && !it.Has(mail.Seen) && !stacked {
 		open = true
 	}
 	box := gtk.NewBox(gtk.OrientationVerticalValue, 14)

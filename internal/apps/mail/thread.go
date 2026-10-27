@@ -30,8 +30,42 @@ type Conversation struct {
 // Latest is the newest message.
 func (c *Conversation) Latest() Item { return c.Messages[len(c.Messages)-1] }
 
-// Subject is the first message's subject without Re: and Fwd:.
-func (c *Conversation) Subject() string { return BaseSubject(c.Messages[0].Subject) }
+// Subject is the first message's subject without Re: and Fwd:; a
+// stack's, its newest issue's.
+func (c *Conversation) Subject() string {
+	if c.Stacked() {
+		return BaseSubject(c.Latest().Subject)
+	}
+	return BaseSubject(c.Messages[0].Subject)
+}
+
+// stackID starts a stack's ID; the sender's address follows.
+const stackID = "stack:"
+
+// Stacked says whether a conversation is a sender's issues, stacked.
+func (c *Conversation) Stacked() bool { return strings.HasPrefix(c.ID, stackID) }
+
+// Stack puts conversations from one sender into one, as a newsletter's
+// issues are read: its messages oldest first, the newest stack first.
+func Stack(cs []*Conversation) []*Conversation {
+	bySender := map[string]*Conversation{}
+	var out []*Conversation
+	for _, c := range cs {
+		key := strings.ToLower(c.Latest().From.Addr)
+		s := bySender[key]
+		if s == nil {
+			s = &Conversation{ID: stackID + key}
+			bySender[key] = s
+			out = append(out, s)
+		}
+		s.Messages = append(s.Messages, c.Messages...)
+	}
+	for _, s := range out {
+		slices.SortStableFunc(s.Messages, func(a, b Item) int { return a.Date.Compare(b.Date) })
+	}
+	slices.SortStableFunc(out, func(a, b *Conversation) int { return b.Latest().Date.Compare(a.Latest().Date) })
+	return out
+}
 
 // Unread counts the messages not seen.
 func (c *Conversation) Unread() int {
@@ -62,6 +96,20 @@ func (c *Conversation) Tag() Tag {
 		}
 	}
 	return ""
+}
+
+// News says whether a conversation is a newsletter's: the user wrote
+// none of it, and its newest message is one (IsNews).
+func (c *Conversation) News(mine func(addr string) bool) bool {
+	if len(c.Messages) == 0 {
+		return false
+	}
+	for _, m := range c.Messages {
+		if mine != nil && mine(m.From.Addr) {
+			return false
+		}
+	}
+	return IsNews(*c.Latest().Envelope)
 }
 
 // People are the senders, newest first, each once; mine are left out

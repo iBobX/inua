@@ -2,6 +2,7 @@ package mail
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/lyricat/inua/internal/i18n"
@@ -67,6 +68,10 @@ var noReply = []string{"noreply", "no-reply", "donotreply", "do-not-reply", "not
 var receiptWords = []string{"receipt", "invoice", "your order", "order confirmation", "booking", "reservation", "payment received",
 	"rechnung", "facture", "factura", "领收", "发票", "订单", "領収書", "請求書", "ご注文"}
 
+// noticeWords in a subject make list mail a service's notice, not a
+// newsletter: a sign-in code, a security alert, a statement.
+var noticeWords = regexp.MustCompile(`(?i)\b(codes?|sign[ -]?in|log[ -]?in|security|password|passcode|verif(y|ication)|statements?|alert|incident|one-time|otp)\b|验证码|驗證碼|認証|ログイン|セキュリティ|パスワード|인증`)
+
 // Rules sorts a message without the assistant when its headers settle
 // it; false when they do not. mine says whether the user's own message is
 // the conversation's last; user is the account's address. Whether a
@@ -74,7 +79,7 @@ var receiptWords = []string{"receipt", "invoice", "your order", "order confirmat
 // here: the assistant's sorting decides it.
 func Rules(e Envelope, mine bool, user string) (Tag, bool) {
 	local, _, _ := strings.Cut(strings.ToLower(e.From.Addr), "@")
-	automated := e.Auto || containsAny(local, noReply)
+	automated := e.Auto || containsAny(local, noReply) || noticeWords.MatchString(e.Subject)
 	subject := strings.ToLower(e.Subject)
 	switch {
 	case mine:
@@ -87,6 +92,20 @@ func Rules(e Envelope, mine bool, user string) (Tag, bool) {
 		return TagNotice, true
 	}
 	return TagNone, false
+}
+
+// IsNews says whether a message is a newsletter's, not a person's nor a
+// service's notification: as the user sorted it, else as the rules have
+// it now (a tag they set before may be out of date), else as the
+// assistant sorted it.
+func IsNews(e Envelope) bool {
+	if e.TagByUser {
+		return e.Tag == TagNews
+	}
+	if t, ok := Rules(e, false, ""); ok {
+		return t == TagNews
+	}
+	return e.Tag == TagNews
 }
 
 func containsAny(s string, words []string) bool {

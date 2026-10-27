@@ -788,6 +788,9 @@ func TestSortRules(t *testing.T) {
 		{Envelope{From: Address{Addr: "noreply@shop.com"}, Subject: "Your order #12"}, false, TagReceipt, true},
 		{Envelope{From: Address{Addr: "news@blog.com"}, Bulk: true}, false, TagNews, true},
 		{Envelope{From: Address{Addr: "notifications@github.com"}, Bulk: true}, false, TagNotice, true},
+		{Envelope{From: Address{Addr: "info@account.netflix.com"}, Subject: "Netflix: Your sign-in code", Bulk: true}, false, TagNotice, true},
+		{Envelope{From: Address{Addr: "team@hf.co"}, Subject: "[Hugging Face] Security incident update", Bulk: true}, false, TagNotice, true},
+		{Envelope{From: Address{Addr: "news@blog.com"}, Subject: "Unicode tricks this week", Bulk: true}, false, TagNews, true},
 		{Envelope{From: Address{Addr: "ana@x"}, Subject: "Lunch?"}, false, TagNone, false},                                         // not to the user
 		{Envelope{From: Address{Addr: "ana@x"}, To: []Address{{Addr: "Me@x"}}, Snippet: "Free on Friday?"}, false, TagNone, false}, // the assistant decides
 		{Envelope{From: Address{Addr: "ana@x"}, To: []Address{{Addr: "me@x"}}, Snippet: "Here it is."}, false, TagNone, false},
@@ -796,6 +799,62 @@ func TestSortRules(t *testing.T) {
 		if got, ok := Rules(c.e, c.mine, "me@x"); got != c.want || ok != c.ok {
 			t.Errorf("%+v: %q %v", c.e, got, ok)
 		}
+	}
+}
+
+// A newsletter's conversation is list mail from a sender that is not a
+// service, sorted otherwise by no one, that the user never answered.
+func TestNews(t *testing.T) {
+	news := func(id string, at int, refs ...string) Item {
+		it := env(id, "letters@blog.com", "This week", at, refs...)
+		it.Bulk = true
+		return it
+	}
+	mine := func(addr string) bool { return addr == "me@x" }
+	letter := &Conversation{Messages: []Item{news("<1>", 1)}}
+	if !letter.News(mine) {
+		t.Error("a newsletter is not news")
+	}
+	notice := env("<2>", "notifications@github.com", "CI failed", 2)
+	notice.Bulk = true
+	person := env("<3>", "ana@x", "Lunch?", 3)
+	answered := &Conversation{Messages: []Item{news("<4>", 4), env("<5>", "me@x", "Re: This week", 5, "<4>")}}
+	for name, c := range map[string]*Conversation{
+		"a service's notification": {Messages: []Item{notice}},
+		"a person's mail":          {Messages: []Item{person}},
+		"one the user answered":    answered,
+		"none":                     {},
+	} {
+		if c.News(mine) {
+			t.Errorf("%s is news", name)
+		}
+	}
+	// The user's sorting comes first; the assistant's where the rules
+	// settle nothing.
+	sorted := news("<6>", 6)
+	sorted.Tag, sorted.TagByUser = TagFYI, true
+	tagged := person
+	tagged.Envelope = &Envelope{From: person.From, Tag: TagNews}
+	if IsNews(*sorted.Envelope) || !IsNews(*tagged.Envelope) {
+		t.Error("a sorted message's tag is not followed")
+	}
+	stale := news("<7>", 7)
+	stale.Subject, stale.Tag = "Your sign-in code", TagNews
+	if IsNews(*stale.Envelope) {
+		t.Error("a tag the rules set before is followed")
+	}
+}
+
+// A sender's newsletters stack: one conversation, its newest issue's
+// subject, the newest stack first.
+func TestStack(t *testing.T) {
+	a1, b1, a2 := env("<a1>", "Weekly@blog.com", "Issue 1", 1), env("<b1>", "news@shop.com", "Sale", 2), env("<a2>", "weekly@blog.com", "Issue 2", 3)
+	cs := Stack(Group([]Item{a1, b1, a2}, nil))
+	if len(cs) != 2 || cs[0].ID != "stack:weekly@blog.com" || len(cs[0].Messages) != 2 || cs[1].ID != "stack:news@shop.com" {
+		t.Fatalf("stacks %+v", cs)
+	}
+	if !cs[0].Stacked() || cs[0].Subject() != "Issue 2" || cs[0].Messages[0].Subject != "Issue 1" {
+		t.Errorf("a stack: %v %q %q", cs[0].Stacked(), cs[0].Subject(), cs[0].Messages[0].Subject)
 	}
 }
 
