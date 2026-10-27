@@ -465,7 +465,7 @@ func (w *window) failed(x *acct, err error) {
 	case errors.Is(err, mail.ErrSignInAgain), errors.Is(err, mail.ErrAuth):
 		x.state = i18n.T("Signed out")
 	case errors.Is(err, mail.ErrNoClient):
-		x.state = err.Error()
+		x.state = i18n.T("No client ID") // what to do about it, on hover
 	default:
 		x.state = offline(err)
 	}
@@ -614,10 +614,15 @@ func (w *window) drawSide() {
 			mark.AddCssClass("down")
 			mark.SetValign(gtk.AlignCenterValue)
 			gtkx.Append(st, &mark.Widget)
+			// Its text never widens the index, as the foot's: two lines
+			// at most, the whole of it on hover.
 			l := gtk.NewLabel(x.state)
 			l.SetXalign(0)
 			l.SetWrap(true)
 			l.SetWrapMode(2) // word_char
+			l.SetLines(2)
+			l.SetEllipsize(3) // end
+			l.SetMaxWidthChars(1)
 			l.SetHexpand(true)
 			gtkx.Append(st, &l.Widget)
 			// Signing in again, whatever kept it offline: it connects
