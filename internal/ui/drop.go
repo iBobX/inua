@@ -400,13 +400,15 @@ func (g dropShape) glass() *gsk.Path {
 
 // outline is the border round the bar's island and the card as one: the
 // island's lower corners and edge, down each arc, round the card. It runs
-// half a pixel outside the glass, so its pixels are whole.
+// half a pixel inside the island, as the island's own border does, and
+// half a pixel outside the card, so its pixels are whole; each arc, half
+// a pixel up and out, goes from the one line into the other without a
+// step.
 func (g dropShape) outline() *gsk.Path {
 	pb := gsk.NewPathBuilder()
 	g.barStart(pb)
-	pb.LineTo(f32(g.l-g.left), f32(g.y-0.5))
-	pb.LineTo(f32(g.l-g.left), f32(g.y+0.5))
-	arc(pb, g.l-g.left, g.y+g.left, g.left-0.5, 270, 360)
+	pb.LineTo(f32(g.l-g.left-0.5), f32(g.y-0.5))
+	arc(pb, g.l-g.left-0.5, g.y+g.left-0.5, g.left, 270, 360)
 	pb.LineTo(f32(g.l-0.5), f32(g.bottom-g.round))
 	arc(pb, g.l+g.round, g.bottom-g.round, g.round+0.5, 180, 90)
 	pb.LineTo(f32(g.r-g.round), f32(g.bottom+0.5))
@@ -415,9 +417,9 @@ func (g dropShape) outline() *gsk.Path {
 		pb.LineTo(f32(g.r+0.5), f32(g.y))
 		return pb.FreeToPath()
 	}
-	pb.LineTo(f32(g.r+0.5), f32(g.y+g.right))
-	arc(pb, g.r+g.right, g.y+g.right, g.right-0.5, 180, 270)
-	pb.LineTo(f32(g.r+g.right), f32(g.y-0.5))
+	pb.LineTo(f32(g.r+0.5), f32(g.y+g.right-0.5))
+	arc(pb, g.r+g.right+0.5, g.y+g.right-0.5, g.right, 180, 270)
+	pb.LineTo(f32(g.r+g.right+0.5), f32(g.y-0.5))
 	g.barEnd(pb)
 	return pb.FreeToPath()
 }
