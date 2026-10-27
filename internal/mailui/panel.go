@@ -304,9 +304,17 @@ func (w *window) panelSafety(c *mail.Conversation) {
 		gtkx.Append(ai, &loader("").Widget)
 	case a.err != "":
 		w.panelError(ai, a.err)
-		w.panelLink(ai, i18n.T("Try again"), func() { w.askJudge(k) })
+		w.panelButton(ai, i18n.T("Try again"), func() { w.askJudge(k) }).SetHalign(gtk.AlignStartValue)
 	case a.judge != nil:
-		verdictLine(ai, a.judge.Verdict, i18n.T("AI"))
+		row := verdictLine(ai, a.judge.Verdict, i18n.T("AI"))
+		// Asking again is at the verdict it changes, out of the reading's way.
+		again := gtk.NewButtonFromIconName("view-refresh-symbolic")
+		again.AddCssClass("mail-plain")
+		again.AddCssClass("mail-again")
+		again.SetValign(gtk.AlignCenterValue)
+		again.SetTooltipText(i18n.T("Ask again"))
+		w.panelBtns = append(w.panelBtns, w.h.click(again, func() { w.askJudge(k) }))
+		gtkx.Append(row, &again.Widget)
 		for _, r := range a.judge.Reasons {
 			row := gtk.NewBox(gtk.OrientationHorizontalValue, 8)
 			row.AddCssClass("mail-safety-reason")
@@ -331,7 +339,6 @@ func (w *window) panelSafety(c *mail.Conversation) {
 			l.SetMaxWidthChars(34)
 			gtkx.Append(ai, &l.Widget)
 		}
-		w.panelLink(ai, i18n.T("Ask again"), func() { w.askJudge(k) })
 	default:
 		w.panelNote(ai, a.text)
 	}
@@ -339,8 +346,8 @@ func (w *window) panelSafety(c *mail.Conversation) {
 }
 
 // verdictLine is a verdict as a coloured mark and its name, with who
-// gave it.
-func verdictLine(box *gtk.Box, v mail.Verdict, by string) {
+// gave it; its row, for what goes at its end.
+func verdictLine(box *gtk.Box, v mail.Verdict, by string) *gtk.Box {
 	row := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	row.AddCssClass("mail-verdict")
 	row.AddCssClass(v.ID())
@@ -359,6 +366,7 @@ func verdictLine(box *gtk.Box, v mail.Verdict, by string) {
 	who.SetEllipsize(3)
 	gtkx.Append(row, &who.Widget)
 	gtkx.Append(box, &row.Widget)
+	return row
 }
 
 // drawChecks lists the checks: each its mark, its question and what it

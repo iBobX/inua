@@ -22,11 +22,11 @@ inua-mail --check FILE.eml    the phishing checks on a message
 │                  │ ALL UNREAD FILES REPLY   │───────────────────────────────│
 │ All inboxes   3  │ ■ A Ana Souza     18:06  │ The Q3 report                 │
 │ Needs reply   1  │ ★   The Q3 report     3  │ (✦ Summarize) (✦ Reply ideas) │
-│ Starred          │ ▤   Thanks! Can you se…  │ (A) Ana Souza  ana@studio.dev │
-│ ┌ A Ana Souza    │     before Friday.       │     to me, Ben    Tue 18:06   │
+│ Starred          │     Thanks! Can you se…  │ (A) Ana Souza  ana@studio.dev │
+│ ┌ A Ana Souza    │     before Friday.     ▤ │     to me, Ben    Tue 18:06   │
 │ Inbox         3  │   H Hetzner Online  Sun  │ Thanks! Can you send the …    │
 │ Drafts · Sent    │     Your invoice R00214  │ [PDF q3-draft.pdf · Save…]    │
-│ 1 more folder    │ ▤   Thanks for your o…   │ ┌ Reply to Ana…             ┐ │
+│ 1 more folder    │     Thanks for your … ▤  │ ┌ Reply to Ana…             ┐ │
 │ ■ Up to date [⚙] │                          │ └───────────────────────────┘ │
 └──────────────────┴──────────────────────────┴───────────────────────────────┘
 ```
@@ -63,11 +63,12 @@ inua-mail --check FILE.eml    the phishing checks on a message
 - **The list**: a conversation once, by its newest message: at its left
   edge a column of marks, one above the other (the square for unread;
   the star, filled when starred and shown on hover otherwise, a click
-  stars or unstars; ▤ when files are attached), then the face of who
+  stars or unstars), then the face of who
   wrote (where accounts mix, as in *All inboxes*, the account's photo or
   initial at its corner), and beside it, each line starting at one edge,
   who wrote and when, the subject and how many messages, the text in one
-  to three lines (Settings → Reading → *Preview*, two at first), and
+  to three lines (Settings → Reading → *Preview*, two at first; EMPTY
+  PREVIEW when it has none) with ▤ at its end when files are attached, and
   SUSPICIOUS under a message the phishing checks doubt. A face is the
   photo of one of your own accounts; else, for a message your provider
   found passing DMARC for the sender's domain, the logo that domain

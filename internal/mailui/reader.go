@@ -746,6 +746,7 @@ func (w *window) drawBody(box *gtk.Box, it mail.Item, m *mail.Message) {
 		flow := gtk.NewFlowBox()
 		flow.AddCssClass("mail-files")
 		flow.SetSelectionMode(gtk.SelectionNoneValue)
+		flow.SetHomogeneous(true) // the cards line up, each as wide as the widest
 		flow.SetMaxChildrenPerLine(3)
 		flow.SetColumnSpacing(8)
 		flow.SetRowSpacing(8)
@@ -772,6 +773,7 @@ func (w *window) fileCard(it mail.Item, m *mail.Message, a mail.Attachment) *gtk
 	card.AddCssClass("mail-file")
 	open := gtk.NewButton()
 	open.AddCssClass("mail-file-open")
+	open.SetHexpand(true) // the actions at the card's right edge, however wide
 	open.SetTooltipText(i18n.Tf("Open %s", a.Name))
 	ob := gtk.NewBox(gtk.OrientationHorizontalValue, 10)
 	if a.Image() && a.Size() < 20<<20 {
@@ -810,16 +812,17 @@ func (w *window) fileCard(it mail.Item, m *mail.Message, a mail.Attachment) *gtk
 	w.readerBtns = append(w.readerBtns, w.h.click(open, func() { w.openFile(a) }))
 	gtkx.Append(card, &open.Widget)
 	if a.HasText() && w.settings.AI() {
-		sum := gtk.NewButtonWithLabel(i18n.T("Sum up"))
+		sum := gtk.NewButtonFromIconName("applications-science-symbolic")
 		sum.AddCssClass("mail-file-save")
-		sum.SetTooltipText(i18n.T("The assistant reads it and sums it up"))
+		sum.SetTooltipText(i18n.T("Sum up: the assistant reads it and sums it up"))
 		s := w.fileSums[fileKey(it, a)]
 		sum.SetSensitive(s == nil || (!s.busy && s.err != ""))
 		w.readerBtns = append(w.readerBtns, w.h.click(sum, func() { w.sumUpFile(it, m, a) }))
 		gtkx.Append(card, &sum.Widget)
 	}
-	save := gtk.NewButtonWithLabel(i18n.T("Save…"))
+	save := gtk.NewButtonFromIconName("document-save-symbolic")
 	save.AddCssClass("mail-file-save")
+	save.SetTooltipText(i18n.T("Save…"))
 	w.readerBtns = append(w.readerBtns, w.h.click(save, func() { w.saveFile(a) }))
 	gtkx.Append(card, &save.Widget)
 	return card

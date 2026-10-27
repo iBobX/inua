@@ -1,6 +1,7 @@
 package mailui
 
 import (
+	"cmp"
 	"context"
 	"crypto/tls"
 	"errors"
@@ -1146,7 +1147,7 @@ func (w *window) setupRow(item uintptr) {
 	li := gtk.ListItemNewFromInternalPtr(item)
 	r := &convRow{item: item}
 	// A gutter of the row's marks, one above the other: unread, the star
-	// (to click; always there when starred), files. Then the sender's
+	// (to click; always there when starred). Then the sender's
 	// initial, then a column whose lines all start at one edge: who and
 	// when, the subject, the preview, the tags.
 	r.box = *gtk.NewBox(gtk.OrientationHorizontalValue, 8)
@@ -1171,11 +1172,8 @@ func (w *window) setupRow(item uintptr) {
 		}
 	}))
 	gtkx.Append(gutter, &r.star.Widget)
-	r.clip = *gtk.NewImageFromIconName("mail-attachment-symbolic")
-	r.clip.AddCssClass("mail-row-clip")
-	r.clip.SetPixelSize(14)
-	r.clip.SetValign(gtk.AlignCenterValue)
-	gtkx.Append(gutter, &r.clip.Widget)
+	// The third place, where the clip was, keeps the star at the middle.
+	gtkx.Append(gutter, &gtk.NewBox(gtk.OrientationHorizontalValue, 0).Widget)
 	gtkx.Append(&r.box, &gutter.Widget)
 	r.face = *newFace(rowFace)
 	r.face.box.AddCssClass("mail-row-face")
@@ -1239,9 +1237,18 @@ func (w *window) setupRow(item uintptr) {
 	r.count = *label("mail-n", false)
 	gtkx.Append(mid, &r.count.Widget)
 	gtkx.Append(col, &mid.Widget)
+	// The preview, and at its end the clip when files are attached: the
+	// text gives way to it.
+	low := gtk.NewBox(gtk.OrientationHorizontalValue, 6)
 	r.snippet = *label("mail-snippet", true)
 	r.snippet.SetWrapMode(2) // word_char
-	gtkx.Append(col, &r.snippet.Widget)
+	gtkx.Append(low, &r.snippet.Widget)
+	r.clip = *gtk.NewImageFromIconName("mail-attachment-symbolic")
+	r.clip.AddCssClass("mail-row-clip")
+	r.clip.SetPixelSize(14)
+	r.clip.SetValign(gtk.AlignEndValue)
+	gtkx.Append(low, &r.clip.Widget)
+	gtkx.Append(col, &low.Widget)
 	r.tag = *label("mail-tag", false)
 	r.tag.AddCssClass("suspicious")
 	r.tag.SetText(i18n.T("SUSPICIOUS"))
@@ -1310,8 +1317,10 @@ func (w *window) fillRow(r *convRow) {
 	if n := len(c.Messages); n > 1 {
 		r.count.SetText(fmt.Sprint(n))
 	}
-	r.snippet.SetText(latest.Snippet)
-	r.snippet.SetVisible(latest.Snippet != "")
+	// A message with no text to show says so, so every row has its
+	// three lines.
+	r.snippet.SetText(cmp.Or(latest.Snippet, i18n.T("EMPTY PREVIEW")))
+	setClass(&r.snippet.Widget, "empty", latest.Snippet == "")
 	// The preview in as many lines as the settings say; a wrapping label
 	// takes the row's width, not its text's.
 	lines := w.settings.Reading.Lines()
@@ -1336,14 +1345,9 @@ func (w *window) fillRow(r *convRow) {
 	setClass(&r.mark.Widget, "on", unread)
 	j := w.judgment(latest.Key())
 	r.tag.SetVisible(j != nil && j.Verdict == mail.Suspicious)
-	// Hidden in its place, which stays.
-	if c.Attach() {
-		r.clip.SetOpacity(1)
-		r.clip.SetTooltipText(i18n.T("With files attached"))
-	} else {
-		r.clip.SetOpacity(0)
-		r.clip.SetTooltipText("")
-	}
+	// Only with files: without, the preview has the whole line.
+	r.clip.SetVisible(c.Attach())
+	r.clip.SetTooltipText(i18n.T("With files attached"))
 	starred := c.Starred()
 	setClass(&r.star.Widget, "on", starred)
 	if starred {
