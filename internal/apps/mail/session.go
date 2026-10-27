@@ -333,15 +333,24 @@ func (s *Session) LoadOlder(ctx context.Context, mailbox string) (int, error) {
 }
 
 // keepLocal carries into a synced index what the server does not keep
-// and may have changed while it synced: the tags and the summaries.
+// and may have changed while it synced: the tags, the summaries, and a
+// snippet filled from a message read.
 func keepLocal(work, now *Index) {
 	if work.Validity != now.Validity {
 		return // started over: the old UIDs mean other messages
 	}
 	work.Summary = now.Summary
 	for i := range work.Messages {
-		if e := now.Find(work.Messages[i].UID); e != nil && e.Tag != "" {
-			work.Messages[i].Tag, work.Messages[i].TagByUser = e.Tag, e.TagByUser
+		w := &work.Messages[i]
+		e := now.Find(w.UID)
+		if e == nil {
+			continue
+		}
+		if e.Tag != "" {
+			w.Tag, w.TagByUser = e.Tag, e.TagByUser
+		}
+		if w.Snippet == "" && e.Snippet != "" { // filled from the message read meanwhile
+			w.Snippet, w.SnippetRead = e.Snippet, true
 		}
 	}
 }
@@ -399,6 +408,9 @@ func (s *Session) Messages(ctx context.Context, mailbox string, uids []uint32) [
 		switch {
 		case ok:
 			out[i].Message, out[i].Err = Parse(raw)
+			if out[i].Err == nil {
+				s.fillSnippet(mailbox, u, out[i].Message)
+			}
 		case err != nil:
 			out[i].Err = err
 		default:
@@ -406,6 +418,24 @@ func (s *Session) Messages(ctx context.Context, mailbox string, uids []uint32) [
 		}
 	}
 	return out
+}
+
+// fillSnippet gives a message read in full the snippet its index lacks
+// (its text began past what a sync reads).
+func (s *Session) fillSnippet(mailbox string, uid uint32, m *Message) {
+	sn := Snippet(cleanText(m.Text), 200)
+	if sn == "" {
+		return
+	}
+	filled := false
+	s.edit(mailbox, []uint32{uid}, func(e *Envelope) {
+		if e.Snippet == "" {
+			e.Snippet, e.SnippetRead, filled = sn, true, true
+		}
+	})
+	if filled {
+		s.save(mailbox)
+	}
 }
 
 // PrefetchCount and PrefetchMax bound what Prefetch keeps ahead: the
@@ -441,6 +471,9 @@ func (s *Session) Prefetch(ctx context.Context, mailbox string) (int, error) {
 		got, err := c.FetchMany(mailbox, missing)
 		for u, raw := range got {
 			s.store.SaveRaw(s.Acc.ID, mailbox, u, raw)
+			if m, err := Parse(raw); err == nil {
+				s.fillSnippet(mailbox, u, m)
+			}
 			n++
 		}
 		return err

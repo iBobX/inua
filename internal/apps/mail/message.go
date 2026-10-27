@@ -84,9 +84,13 @@ type Envelope struct {
 	// AuthRead says Verified was read from the provider's
 	// Authentication-Results: a message indexed before it was kept has it
 	// read at a sync (Conn.Sync).
-	AuthRead  bool `json:"ar,omitempty"`
-	Tag       Tag  `json:"t,omitempty"`  // the sorting's (7.2)
-	TagByUser bool `json:"tu,omitempty"` // the user set it
+	AuthRead bool `json:"ar,omitempty"`
+	// SnippetRead says the snippet was looked for as it is now (an HTML
+	// part's start past its style sheet): one indexed before has it read
+	// again at a sync when it has none (Conn.Sync).
+	SnippetRead bool `json:"sr,omitempty"`
+	Tag         Tag  `json:"t,omitempty"`  // the sorting's (7.2)
+	TagByUser   bool `json:"tu,omitempty"` // the user set it
 }
 
 // Has says whether the message carries flag.

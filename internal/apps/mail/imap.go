@@ -352,6 +352,11 @@ func (c *Conn) Sync(mailbox string, x *Index, first int) (SyncResult, error) {
 		} else if n > 0 {
 			res.Changed = true
 		}
+		if n, err := c.readSnippets(x); err != nil {
+			return res, err
+		} else if n > 0 {
+			res.Changed = true
+		}
 	}
 	// The new ones.
 	var set imap.NumSet
@@ -481,7 +486,7 @@ func (c *Conn) envelopes(set imap.NumSet, above uint32) ([]Envelope, error) {
 		}
 		// The first is the user's provider's: the ones below came with the mail.
 		e.Verified = Verified(h.Get("Authentication-Results"), Domain(e.From.Addr))
-		e.AuthRead = true
+		e.AuthRead, e.SnippetRead = true, true
 		var text *imap.BodyStructureSinglePart
 		var path []int
 		if m.BodyStructure != nil {
@@ -497,28 +502,109 @@ func (c *Conn) envelopes(set imap.NumSet, above uint32) ([]Envelope, error) {
 			textOf[i] = text
 		}
 	}
-	// Snippets: the start of each text part, a fetch per part path.
-	for k, idx := range parts {
-		var uids []imap.UID
-		byUID := map[uint32]int{}
-		for _, i := range idx {
-			uids = append(uids, imap.UID(out[i].UID))
-			byUID[out[i].UID] = i
-		}
-		sec := &imap.FetchItemBodySection{Part: paths[k], Peek: true, Partial: &imap.SectionPartial{Offset: 0, Size: 2048}}
-		msgs, err := c.c.Fetch(imap.UIDSetNum(uids...), &imap.FetchOptions{UID: true, BodySection: []*imap.FetchItemBodySection{sec}}).Collect()
-		if err != nil {
-			continue // snippets are not worth failing the sync for
-		}
-		for _, m := range msgs {
-			i, ok := byUID[uint32(m.UID)]
-			if !ok {
-				continue
+	c.snippets(out, parts, paths, textOf)
+	return out, nil
+}
+
+// snippetSize is how much of a text part a snippet is read from;
+// htmlSnippetSize, of an HTML part whose start was all its style sheet.
+const (
+	snippetSize     = 2048
+	htmlSnippetSize = 32 << 10
+)
+
+// snippets reads the start of each text part (parts: a path's messages
+// in out), a fetch per part path, and makes their snippets; an HTML part
+// that gave none is read again, further.
+func (c *Conn) snippets(out []Envelope, parts map[string][]int, paths map[string][]int, textOf map[int]*imap.BodyStructureSinglePart) {
+	again := map[string][]int{}
+	read := func(parts map[string][]int, size uint32) {
+		for k, idx := range parts {
+			var uids []imap.UID
+			byUID := map[uint32]int{}
+			for _, i := range idx {
+				uids = append(uids, imap.UID(out[i].UID))
+				byUID[out[i].UID] = i
 			}
-			out[i].Snippet = snippetOf(m.FindBodySection(sec), textOf[i])
+			sec := &imap.FetchItemBodySection{Part: paths[k], Peek: true, Partial: &imap.SectionPartial{Offset: 0, Size: int64(size)}}
+			msgs, err := c.c.Fetch(imap.UIDSetNum(uids...), &imap.FetchOptions{UID: true, BodySection: []*imap.FetchItemBodySection{sec}}).Collect()
+			if err != nil {
+				continue // snippets are not worth failing the sync for
+			}
+			for _, m := range msgs {
+				i, ok := byUID[uint32(m.UID)]
+				if !ok {
+					continue
+				}
+				b := m.FindBodySection(sec)
+				out[i].Snippet = snippetOf(b, textOf[i])
+				if out[i].Snippet == "" && size < htmlSnippetSize && len(b) >= int(size) && strings.EqualFold(textOf[i].Subtype, "html") {
+					again[k] = append(again[k], i)
+				}
+			}
 		}
 	}
-	return out, nil
+	read(parts, snippetSize)
+	if len(again) > 0 {
+		read(again, htmlSnippetSize)
+	}
+}
+
+// snippetBatch is how many messages a sync reads the snippets of again,
+// for those indexed without one before HTML was read further.
+const snippetBatch = 300
+
+// readSnippets reads again the snippets x's messages indexed before
+// lacked; it says how many it looked at.
+func (c *Conn) readSnippets(x *Index) (int, error) {
+	var set imap.UIDSet
+	var batch []uint32
+	for i := range x.Messages {
+		e := &x.Messages[i]
+		switch {
+		case e.SnippetRead:
+		case e.Snippet != "":
+			e.SnippetRead = true // nothing to read again
+		case len(batch) < snippetBatch:
+			set.AddNum(imap.UID(e.UID))
+			batch = append(batch, e.UID)
+		}
+	}
+	if len(batch) == 0 {
+		return 0, nil
+	}
+	msgs, err := c.c.Fetch(set, &imap.FetchOptions{UID: true, BodyStructure: &imap.FetchItemBodyStructure{Extended: true}}).Collect()
+	if err != nil {
+		return 0, err
+	}
+	var out []Envelope
+	parts, paths := map[string][]int{}, map[string][]int{}
+	textOf := map[int]*imap.BodyStructureSinglePart{}
+	for _, m := range msgs {
+		if m.BodyStructure == nil {
+			continue
+		}
+		if path, text := textPart(m.BodyStructure); text != nil {
+			i := len(out)
+			out = append(out, Envelope{UID: uint32(m.UID)})
+			k := fmt.Sprint(path)
+			parts[k] = append(parts[k], i)
+			paths[k] = path
+			textOf[i] = text
+		}
+	}
+	c.snippets(out, parts, paths, textOf)
+	for _, e := range out {
+		if f := x.Find(e.UID); f != nil {
+			f.Snippet = e.Snippet
+		}
+	}
+	for _, u := range batch {
+		if f := x.Find(u); f != nil {
+			f.SnippetRead = true // found or not, looked for as it is now
+		}
+	}
+	return len(batch), nil
 }
 
 func envelopeOf(m *imapclient.FetchMessageBuffer) Envelope {

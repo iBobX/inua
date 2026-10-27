@@ -1309,3 +1309,39 @@ func TestSyncReadsAuth(t *testing.T) {
 		t.Errorf("verified: %v", got)
 	}
 }
+
+// An HTML message whose start is all its style sheet still has a
+// snippet: its part is read further; one indexed without it before gets
+// it at the next sync.
+func TestSnippetPastStyle(t *testing.T) {
+	s := newIMAP(t)
+	style := "<html><head><style>" + strings.Repeat(".a{color:red}\n", 400) + "</style></head><body><p>New sign-in to your account</p></body></html>"
+	raw := "From: Spotify <no-reply@spotify.com>\nTo: me@example.com\nSubject: New sign-in\nDate: Mon, 13 Oct 2026 10:00:00 +0000\nMessage-ID: <sp1@spotify.com>\n" +
+		"Content-Type: text/html; charset=utf-8\n\n" + style + "\n"
+	s.put(t, "INBOX", raw)
+	sess := s.session(t)
+	ctx := context.Background()
+	if _, err := sess.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	snippet := func() (string, bool) {
+		sess.imu.Lock()
+		defer sess.imu.Unlock()
+		e := sess.index("INBOX").Messages[0]
+		return e.Snippet, e.SnippetRead
+	}
+	if sn, ok := snippet(); sn != "New sign-in to your account" || !ok {
+		t.Fatalf("snippet %q, read %v", sn, ok)
+	}
+	// As an index from before: none, not read.
+	sess.imu.Lock()
+	x := sess.index("INBOX")
+	x.Messages[0].Snippet, x.Messages[0].SnippetRead = "", false
+	sess.imu.Unlock()
+	if _, err := sess.Sync(ctx, "INBOX"); err != nil {
+		t.Fatal(err)
+	}
+	if sn, ok := snippet(); sn != "New sign-in to your account" || !ok {
+		t.Errorf("read again: %q, read %v", sn, ok)
+	}
+}
