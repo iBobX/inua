@@ -239,6 +239,7 @@
   .line .label.mono { font:11px var(--mono); letter-spacing:.06em; }
   .line .label .sub { display:block; font-size:12px; color:var(--t2); margin-top:2px; }
   .line .readout { font:12px var(--mono); color:var(--t1); font-variant-numeric:tabular-nums; text-align:right; }
+  .line .readout.marked { display:flex; align-items:center; gap:8px; }
   .line.go:active { background:color-mix(in srgb, var(--accent) 6%, transparent); }
 
   /* A number: the digits in mono, − and + as cells behind hairlines. */
@@ -975,8 +976,11 @@ function renderOver() {
 
   box.append(section(T("Connection"), connected && !plain ? "s-on" : "s-warn"));
   box.append(line(T("Host"), connected ? T("CONNECTED") : T("OFFLINE"), { sub: location.host }));
-  if (plain) box.append(line(T("Encryption"), T("PLAIN HTTP"), { mark: "s-warn",
-    sub: T("Not encrypted, unless over Tailscale or a VPN.") }));
+  if (plain) {
+    const v = el("span", "readout marked", T("PLAIN HTTP"));
+    v.prepend(el("span", "mark s-warn"));
+    box.append(line(T("Encryption"), v, { sub: T("Not encrypted, unless over Tailscale or a VPN.") }));
+  }
   if (connected) {
     box.append(line(T("Round trip"), rtt ? Tf("%d MS", Math.round(rtt)) : "…"));
     box.append(line(T("Received"), bytes(received),
