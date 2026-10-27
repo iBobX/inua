@@ -310,6 +310,10 @@ env = SUDO_ASKPASS, /usr/local/bin/inua-askpass   # its full path (which inua-as
 env = GIT_ASKPASS, inua-askpass                   # HTTPS user names and passwords
 ```
 
+In inua-term's shells `SUDO_ASKPASS` is `inua-askpass` beside it when the
+session names none, so an agent's `sudo -A` there asks without the line
+above; a sudo typed in the pane still asks in it.
+
 ssh uses it only without a terminal and with a display (`DISPLAY`, which
 XWayland sets); `SSH_ASKPASS_REQUIRE=prefer` asks in the dialog from a
 terminal too. A passphrase, a password and a PIN are asked hidden, a git

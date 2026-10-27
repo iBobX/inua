@@ -39,15 +39,40 @@ func (h *Host) shell() string {
 	return cmp.Or(h.shellProg, os.Getenv("SHELL"), "/bin/sh")
 }
 
-// shellEnv is the host's environment for a pane's shell.
-func shellEnv(shell string) []string {
+// ShellEnviron is the environment for a pane's shell (and the quick
+// terminal's): the program's own, without the host's variables, and
+// ShellEnv. sudo asks through inua-askpass, installed beside it, when
+// nothing else is named: an agent's sudo -A, or one with no terminal.
+func ShellEnviron(shell string) []string {
 	var env []string
+	askpass := true
 	for _, e := range os.Environ() {
+		if strings.HasPrefix(e, "SUDO_ASKPASS=") {
+			askpass = e == "SUDO_ASKPASS="
+			if askpass {
+				continue
+			}
+		}
 		if !strings.HasPrefix(e, "INUA_TERM_") && !strings.HasPrefix(e, "SHELL=") {
 			env = append(env, e)
 		}
 	}
+	if self, err := executable(); askpass && err == nil {
+		// sudo does not search PATH: its full path.
+		if p := filepath.Join(filepath.Dir(self), "inua-askpass"); isProgram(p) {
+			env = append(env, "SUDO_ASKPASS="+p)
+		}
+	}
 	return append(append(env, "SHELL="+shell), ShellEnv...)
+}
+
+// executable is the program running, beside which inua's others are.
+var executable = os.Executable
+
+// isProgram is whether path is a file that runs.
+func isProgram(path string) bool {
+	fi, err := os.Stat(path)
+	return err == nil && fi.Mode().IsRegular() && fi.Mode()&0o111 != 0
 }
 
 // tell sends every client a message.
@@ -126,7 +151,7 @@ func (h *Host) startIn(dir string, size int) (int, error) {
 		p.mu.Unlock()
 	}
 	sh := h.shell()
-	argv, env := []string{sh}, shellEnv(sh)
+	argv, env := []string{sh}, ShellEnviron(sh)
 	if h.ShellDir != "" {
 		argv, env = shellint.Wrap(argv, env, h.ShellDir)
 	}
@@ -262,7 +287,7 @@ func (h *Host) run(argv []string, dir string) (int, error) {
 	if dir == "" {
 		dir = home
 	}
-	pane, err := h.start(argv, dir, shellEnv(h.shell()), 80, 24, 0, 0)
+	pane, err := h.start(argv, dir, ShellEnviron(h.shell()), 80, 24, 0, 0)
 	if err != nil {
 		return 0, err
 	}

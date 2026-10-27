@@ -993,3 +993,41 @@ func TestSizeLastLooked(t *testing.T) {
 	}
 	want("the phone's connection gone", 120, 30)
 }
+
+// A pane's sudo asks through inua-askpass, beside the host, unless the
+// session names another askpass; never a missing one.
+func TestShellEnvironAskpass(t *testing.T) {
+	dir := t.TempDir()
+	old := executable
+	executable = func() (string, error) { return filepath.Join(dir, "inua-termd"), nil }
+	t.Cleanup(func() { executable = old })
+	askpass := filepath.Join(dir, "inua-askpass")
+	get := func() []string {
+		var got []string
+		for _, e := range ShellEnviron("/bin/zsh") {
+			if strings.HasPrefix(e, "SUDO_ASKPASS=") {
+				got = append(got, e)
+			}
+		}
+		return got
+	}
+
+	t.Setenv("SUDO_ASKPASS", "")
+	if got := get(); len(got) != 0 {
+		t.Errorf("no inua-askpass: %v", got)
+	}
+	if err := os.WriteFile(askpass, []byte("#!/bin/sh\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if got := get(); !slices.Equal(got, []string{"SUDO_ASKPASS=" + askpass}) {
+		t.Errorf("empty: %v", got)
+	}
+	os.Unsetenv("SUDO_ASKPASS")
+	if got := get(); !slices.Equal(got, []string{"SUDO_ASKPASS=" + askpass}) {
+		t.Errorf("unset: %v", got)
+	}
+	t.Setenv("SUDO_ASKPASS", "/usr/bin/ssh-askpass")
+	if got := get(); !slices.Equal(got, []string{"SUDO_ASKPASS=/usr/bin/ssh-askpass"}) {
+		t.Errorf("named: %v", got)
+	}
+}

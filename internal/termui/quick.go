@@ -3,7 +3,6 @@ package termui
 import (
 	"log"
 	"os"
-	"strings"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -86,7 +85,7 @@ func (a *App) startQuick() {
 	if sh == "" {
 		sh = "/bin/sh"
 	}
-	argv, env := QuickCommand, quickEnv(sh)
+	argv, env := QuickCommand, host.ShellEnviron(sh)
 	if len(argv) == 0 {
 		argv = []string{sh}
 		if err := shellint.Install(shellint.Dir()); err == nil {
@@ -128,18 +127,6 @@ func (a *App) startQuick() {
 			a.win.Close()
 		}
 	})
-}
-
-// quickEnv is the shell's environment: inua-term's own, as a pane of the
-// host's has it, without the host's variables.
-func quickEnv(shell string) []string {
-	var env []string
-	for _, e := range os.Environ() {
-		if !strings.HasPrefix(e, "INUA_TERM_") && !strings.HasPrefix(e, "SHELL=") {
-			env = append(env, e)
-		}
-	}
-	return append(append(env, "SHELL="+shell), host.ShellEnv...)
 }
 
 // quickWrote does what the host does for a pane: its program's
