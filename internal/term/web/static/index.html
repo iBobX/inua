@@ -365,7 +365,7 @@
   <form autocomplete="off">
     <div class="q"></div>
     <div class="desc"></div>
-    <div class="plain" hidden data-t="This connection is not encrypted: what you type here crosses the network as it is.">This connection is not encrypted: what you type here crosses the network as it is.</div>
+    <div class="plain" hidden data-t="This connection may not be encrypted: unless Tailscale or a VPN carries it, what you type here crosses the network as it is.">This connection may not be encrypted: unless Tailscale or a VPN carries it, what you type here crosses the network as it is.</div>
     <div class="prompt"></div>
     <input type="password" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
     <div class="err"></div>
@@ -492,15 +492,13 @@ function veil(text) {
   $("veil").classList.toggle("gone", !text);
 }
 // plain is whether the page came over plain HTTP from another computer:
-// what crosses the network is not encrypted, unless on Tailscale, whose
-// own link is. The page cannot see a proxy's TLS behind it, only its own.
+// what crosses the network may not be encrypted. A Tailscale address
+// cannot be told from another one (100.64.0.0/10 is carriers' too), nor
+// a proxy's TLS behind it, so only this computer's own is safe.
 const plain = (() => {
   if (location.protocol !== "http:") return false;
   const h = location.hostname.replace(/^\[|\]$/g, "").toLowerCase();
-  if (h === "localhost" || h.endsWith(".localhost") || h === "::1" || /^127\./.test(h)) return false;
-  if (h.endsWith(".ts.net") || h.startsWith("fd7a:115c:a1e0:")) return false;
-  const m = /^100\.(\d+)\.\d+\.\d+$/.exec(h);  // Tailscale's 100.64.0.0/10
-  return !(m && m[1] >= 64 && m[1] < 128);
+  return !(h === "localhost" || h.endsWith(".localhost") || h === "::1" || /^127\./.test(h));
 })();
 function status(text) {
   for (const n of document.querySelectorAll(".notice")) { n.textContent = text; n.hidden = !text; }
@@ -962,8 +960,8 @@ function renderOver() {
 
   box.append(section(T("Connection"), connected && !plain ? "s-on" : "s-warn"));
   box.append(line(T("Host"), connected ? T("CONNECTED") : T("OFFLINE"), { sub: location.host }));
-  if (plain) box.append(line(T("Encryption"), T("NONE"), { mark: "s-warn",
-    sub: T("Plain HTTP: the token, what you type and what the terminals show cross the network as they are.") }));
+  if (plain) box.append(line(T("Encryption"), T("PLAIN HTTP"), { mark: "s-warn",
+    sub: T("Unless Tailscale or a VPN carries it, the token, what you type and what the terminals show cross the network as they are.") }));
   if (connected) {
     box.append(line(T("Round trip"), rtt ? Tf("%d MS", Math.round(rtt)) : "…"));
     box.append(line(T("Received"), bytes(received),
