@@ -2089,9 +2089,9 @@ msgstr "%s에서 페어링을 요청합니다. 이 키가 표시될 때만 페�
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
 #: internal/term/web/strings.go:29
-#: internal/termui/keys.go:273
-#: internal/termui/keys.go:401
-#: internal/termui/paste.go:295
+#: internal/termui/keys.go:268
+#: internal/termui/keys.go:396
+#: internal/termui/paste.go:337
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:301
@@ -2718,10 +2718,11 @@ msgstr "폴더 열기"
 
 #: internal/desktop/defaults.go:39
 #: internal/term/web/strings.go:101
-#: internal/termui/app.go:110
-#: internal/termui/app.go:146
-#: internal/termui/app.go:340
-#: internal/termui/app.go:342
+#: internal/termui/app.go:114
+#: internal/termui/app.go:150
+#: internal/termui/app.go:350
+#: internal/termui/app.go:352
+#: internal/termui/menubar.go:40
 #: internal/termui/quick.go:29
 #: internal/termui/quick.go:47
 #: internal/termui/quick.go:145
@@ -2982,7 +2983,7 @@ msgstr "복사됨"
 #: internal/lightui/pass.go:747
 #: internal/lightui/pass.go:772
 #: internal/mailui/details.go:222
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:118
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:232
@@ -3346,7 +3347,7 @@ msgstr[0] "%d개 항목"
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
 #: internal/term/web/strings.go:89
-#: internal/termui/keys.go:403
+#: internal/termui/keys.go:398
 msgid "Rename"
 msgstr "이름 바꾸기"
 
@@ -3461,7 +3462,7 @@ msgstr[0] "… 그 외 %d개"
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
 #: internal/term/web/strings.go:30
-#: internal/termui/keys.go:275
+#: internal/termui/keys.go:270
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:132
 #: internal/ui/settings_wifi_details.go:62
@@ -3626,6 +3627,7 @@ msgid "Terminal here"
 msgstr "여기에서 터미널 열기"
 
 #: internal/filesui/cards.go:702
+#: internal/termui/menubar.go:44
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
@@ -3688,7 +3690,7 @@ msgstr "새로 고침"
 #: internal/filesui/cards.go:717
 #: internal/mailui/picker.go:130
 #: internal/mailui/reader.go:377
-#: internal/termui/palette.go:198
+#: internal/termui/palette.go:213
 msgid "Keys"
 msgstr "단축키"
 
@@ -4559,8 +4561,8 @@ msgid "New file…"
 msgstr "새 파일…"
 
 #: internal/filesui/window.go:730
-#: internal/term/settings/settings.go:117
-#: internal/termui/paste.go:297
+#: internal/term/settings/settings.go:119
+#: internal/termui/paste.go:339
 msgid "Paste"
 msgstr "붙여넣기"
 
@@ -7981,7 +7983,7 @@ msgstr "포커스 온 또는 오프"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:310
-#: internal/term/settings/settings.go:123
+#: internal/term/settings/settings.go:125
 #: internal/term/web/strings.go:96
 #: ui/control.ui:58
 #: ui/settings.ui:30
@@ -8308,6 +8310,7 @@ msgid "Remove %s"
 msgstr "%s 제거"
 
 #: internal/lightui/clock.go:403
+#: internal/termui/menubar.go:42
 #: ui/pass.ui:252
 msgid "Edit"
 msgstr "편집하다"
@@ -9192,6 +9195,7 @@ msgstr "검색할 수 없습니다: %s"
 
 #: internal/lightui/sysmon.go:53
 #: internal/lightui/sysmon.go:53
+#: internal/termui/menubar.go:34
 #: internal/ui/dock.go:486
 #: internal/ui/portal_ask.go:80
 msgid "Quit"
@@ -12782,107 +12786,107 @@ msgstr "따뜻한 종이 위의 흙빛"
 msgid "The classic, on cream"
 msgstr "고전, 크림색 바탕"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:102
 msgid "New session in this workspace"
 msgstr "이 작업 공간에 새 세션"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:103
 #: internal/term/web/strings.go:70
 #: internal/termui/columns.go:157
 msgid "New workspace"
 msgstr "새 작업 공간"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:104
 msgid "Split right"
 msgstr "오른쪽으로 분할"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:105
 msgid "Split down"
 msgstr "아래로 분할"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:106
 msgid "Close pane"
 msgstr "창 닫기"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:107
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "그 방향의 창과 바꾸기 (이어서 화살표)"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:108
 msgid "Zoom pane / back"
 msgstr "창 확대 / 되돌리기"
 
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:109
 msgid "Equalize"
 msgstr "균등하게"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:110
 msgid "Next layout"
 msgstr "다음 배치"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:111
 msgid "Previous session"
 msgstr "이전 세션"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:112
 msgid "Next session"
 msgstr "다음 세션"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:113
 msgid "Next agent that needs you"
 msgstr "응답이 필요한 다음 에이전트"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:114
 msgid "Next agent that needs you or is idle"
 msgstr "응답을 기다리거나 쉬고 있는 다음 에이전트"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:115
 msgid "Every agent"
 msgstr "모든 에이전트"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:116
 msgid "Fold the workspaces"
 msgstr "작업 공간 접기"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:117
 msgid "Fold the sessions"
 msgstr "세션 접기"
 
-#: internal/term/settings/settings.go:118
+#: internal/term/settings/settings.go:120
 msgid "Search the scrollback"
 msgstr "스크롤백 검색"
 
-#: internal/term/settings/settings.go:119
+#: internal/term/settings/settings.go:121
 msgid "Copy mode"
 msgstr "복사 모드"
 
-#: internal/term/settings/settings.go:120
+#: internal/term/settings/settings.go:122
 #: internal/term/web/strings.go:90
-#: internal/termui/keys.go:375
+#: internal/termui/keys.go:370
 msgid "Rename the session"
 msgstr "세션 이름 바꾸기"
 
-#: internal/term/settings/settings.go:121
+#: internal/term/settings/settings.go:123
 msgid "Every action by name"
 msgstr "모든 동작을 이름으로"
 
-#: internal/term/settings/settings.go:122
+#: internal/term/settings/settings.go:124
 msgid "Show the keys"
 msgstr "키 보기"
 
-#: internal/term/settings/settings.go:124
+#: internal/term/settings/settings.go:126
 msgid "Restart the terminal host"
 msgstr "터미널 호스트 다시 시작"
 
-#: internal/term/settings/settings.go:125
+#: internal/term/settings/settings.go:127
 msgid "Font larger"
 msgstr "글자 크게"
 
-#: internal/term/settings/settings.go:126
+#: internal/term/settings/settings.go:128
 msgid "Font smaller"
 msgstr "글자 작게"
 
-#: internal/term/settings/settings.go:127
+#: internal/term/settings/settings.go:129
 msgid "Font size as set"
 msgstr "설정한 글자 크기"
 
@@ -13177,6 +13181,7 @@ msgid "Session %d"
 msgstr "세션 %d"
 
 #: internal/term/web/strings.go:97
+#: internal/termui/menubar.go:41
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "셸"
@@ -13346,7 +13351,7 @@ msgid "Your login shell (%s)"
 msgstr "로그인 셸 (%s)"
 
 #: internal/termui/columns.go:156
-#: internal/termui/palette.go:98
+#: internal/termui/palette.go:113
 msgid "Actions"
 msgstr "동작"
 
@@ -13387,90 +13392,98 @@ msgstr "터미널을 둘러싼 창의 모양입니다. inua의 테마를 따르�
 msgid "Keep these choices; the settings change them later"
 msgstr "이 선택을 유지합니다. 나중에 설정에서 바꿀 수 있습니다"
 
-#: internal/termui/keys.go:262
+#: internal/termui/keys.go:257
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "%s을(를) 닫을까요?"
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:258
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "“%s” 작업 중입니다. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:265
+#: internal/termui/keys.go:260
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "응답을 기다리고 있습니다: %s. 창을 닫으면 끝납니다."
 
-#: internal/termui/keys.go:306
+#: internal/termui/keys.go:301
 msgid "Choose the workspace's folder"
 msgstr "작업 공간의 폴더 선택"
 
-#: internal/termui/palette.go:19
+#: internal/termui/menubar.go:43
+msgid "View"
+msgstr ""
+
+#: internal/termui/menubar.go:45
+msgid "Help"
+msgstr ""
+
+#: internal/termui/palette.go:20
 msgid "Focus the pane in that direction"
 msgstr "그 방향의 창으로 이동"
 
-#: internal/termui/palette.go:20
+#: internal/termui/palette.go:21
 msgid "Resize the focused pane"
 msgstr "선택한 창 크기 조절"
 
-#: internal/termui/palette.go:21
+#: internal/termui/palette.go:22
 msgid "Session 1…8 / the last session"
 msgstr "세션 1…8 / 마지막 세션"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:23
 msgid "Previous / next session"
 msgstr "이전 / 다음 세션"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:24
 msgid "Workspace 1…9"
 msgstr "작업 공간 1…9"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:25
 msgid "Paste the primary selection"
 msgstr "기본 선택 붙여 넣기"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:26
 msgid "Scroll a page"
 msgstr "한 페이지 이동"
 
-#: internal/termui/palette.go:26
+#: internal/termui/palette.go:27
 msgid "Scroll to the top / the bottom"
 msgstr "맨 위 / 맨 아래로"
 
-#: internal/termui/palette.go:27
+#: internal/termui/palette.go:28
 msgid "Scroll to the previous / next prompt"
 msgstr "이전 / 다음 프롬프트로"
 
-#: internal/termui/palette.go:100
+#: internal/termui/palette.go:115
 msgid "Find an action"
 msgstr "동작 찾기"
 
-#: internal/termui/palette.go:212
+#: internal/termui/palette.go:227
 msgid "Change them in the settings."
 msgstr "설정에서 바꿀 수 있습니다."
 
-#: internal/termui/palette.go:214
+#: internal/termui/palette.go:229
 msgid "Change them in the settings (%s)."
 msgstr "설정에서 바꿀 수 있습니다 (%s)."
 
-#: internal/termui/paste.go:245
+#: internal/termui/paste.go:287
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "%d줄을 붙여 넣을까요?"
 
-#: internal/termui/paste.go:249
+#: internal/termui/paste.go:291
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "이 프로그램은 줄바꿈을 Enter로 받으므로, 붙여 넣는 즉시 각 줄이 실행됩니다."
 
-#: internal/termui/paste.go:251
+#: internal/termui/paste.go:293
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "텍스트에 붙여 넣기의 끝을 나타내는 표시가 있어, 그 뒤의 내용은 입력한 것처럼 실행됩니다."
 
-#: internal/termui/paste.go:268
+#: internal/termui/paste.go:310
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "외 %d줄"
 
-#: internal/termui/paste.go:296
+#: internal/termui/paste.go:338
 msgid "Paste as one line"
 msgstr "한 줄로 붙여 넣기"
 

@@ -180,6 +180,15 @@ func getPaths(name string) []string {
 		return g
 	}
 
+	// inua: a macOS app bundle carries the libraries, in
+	// Contents/Frameworks beside Contents/MacOS. The packages' init asks
+	// for them, before main could set PUREGOTK_LIB_FOLDER.
+	if fw := bundleFrameworks(); fw != "" {
+		if g := findSos(fw, name); len(g) > 0 {
+			return g
+		}
+	}
+
 	// fallback to lookup a path if no env var is found
 	gp, ok := paths[runtime.GOOS+"_"+runtime.GOARCH]
 	if ok {
@@ -199,6 +208,30 @@ func getPaths(name string) []string {
 	}
 
 	panic(fmt.Sprintf("Path for library: %s not found. Please set the path to this library shared object file manually with env variable: %s or PUREGOTK_LIB_FOLDER. Or make sure pkg-config is setup correctly", strings.ToLower(name), ev))
+}
+
+// bundleFrameworks is the Frameworks folder of the macOS app bundle this
+// program runs from (Contents/MacOS/NAME), or "".
+func bundleFrameworks() string {
+	if runtime.GOOS != "darwin" {
+		return ""
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		return ""
+	}
+	if exe, err = filepath.EvalSymlinks(exe); err != nil {
+		return ""
+	}
+	dir := filepath.Dir(exe)
+	if filepath.Base(dir) != "MacOS" {
+		return ""
+	}
+	fw := filepath.Join(filepath.Dir(dir), "Frameworks")
+	if fi, err := os.Stat(fw); err != nil || !fi.IsDir() {
+		return ""
+	}
+	return fw
 }
 
 // hasSuffix tests whether the string s ends with suffix.

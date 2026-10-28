@@ -360,10 +360,44 @@ to the home screen as an app; Android installs one only over HTTPS
 
 ## On macOS
 
-The host runs on a Mac too, for the page: `inua-termd serve` (with
-`--tailscale` for a phone on the tailnet) starts it when none runs, and
-the phone or a browser shows its terminals. The window, inua-term, is
-GTK on Linux and is not on a Mac. From source, on the Mac:
+The window runs on a Mac as `inua-term.app`, a self-contained app: GTK
+and the libraries it loads, the host and the engine are inside it, so
+nothing needs installing. A release has it as
+`inua-term-VERSION-macos-arm64.dmg`, signed and notarized; drag it to
+Applications. It is the same window, with a Mac's ways:
+
+- The window's keys are on Command, Control stays the programs': ⌘T a
+  new session, ⌘N a new workspace, ⌘D and ⇧⌘D split, ⌘W closes the pane,
+  ⌘C and ⌘V copy and paste, ⌘F searches, ⌘, the settings, ⌘= ⌘- ⌘0 the
+  font, ⇧⌘P every action. The fixed keys follow: ⌘⌥ and an arrow moves
+  the focus, ⌘⌃ and one resizes, ⌘1…9 shows a session, ⇧⌘1…9 a
+  workspace, ⌘-click opens a link. A chord in term.toml writes Command
+  as `super`, as Ghostty does; the keys show ⌘ ⌥ ⌃ ⇧.
+- The system's fonts: the window's text in the system font, the
+  terminal in Menlo unless term.toml names another.
+- The menu bar has the window's actions: Terminal (Settings, Quit),
+  Shell, Edit, View, Window, Help.
+- A pasted image is read through GTK (there is no wl-paste) and pasted
+  as a PNG file's path.
+
+Closing the window quits the app; the host keeps the sessions, as on
+Linux. To build the app on a Mac, with Go, Zig 0.16 and Homebrew's
+`gtk4`, `librsvg` and `adwaita-icon-theme`:
+
+```
+scripts/macos-app.sh                   build/macos/inua-term.app and its .dmg
+```
+
+It copies GTK and what it loads into `Contents/Frameworks` and rewrites
+each reference to the copy beside it, signs everything (ad hoc, or with
+with a Developer ID named in `MACOS_SIGN_IDENTITY`), and
+checks that nothing points outside the bundle. CI builds it on every
+change and starts it once (`INUA_TERM_SMOKE=1` quits after the first
+frame), failing if any library came from Homebrew instead.
+
+The host runs on a Mac on its own too, for the page: `inua-termd serve`
+(with `--tailscale` for a phone on the tailnet) starts it when none runs,
+and the phone or a browser shows its terminals. From source, on the Mac:
 
 ```
 scripts/libghostty.sh                  bin/libinua-vt.dylib (Zig 0.16)

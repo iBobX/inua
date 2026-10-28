@@ -16,6 +16,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 	"unsafe"
@@ -291,7 +292,11 @@ func (c *Ctx) loadStyle() {
 	}
 	themeCSS := cfg.ThemeCSS(theme, c.ReadUI)
 	c.Colors = config.ThemeColors(themeCSS)
-	c.css.LoadFromString(themeCSS + style.Glass(cfg.Style.Transparency) + style.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale) + style.Corners(cfg.Style.Radius))
+	css := themeCSS + style.Glass(cfg.Style.Transparency) + style.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale) + style.Corners(cfg.Style.Radius)
+	if runtime.GOOS == "darwin" {
+		css = style.SystemFonts(css) // a Mac has none of the styles' fonts
+	}
+	c.css.LoadFromString(css)
 	if p := cfg.CSSPath(); p != "" {
 		if b, err := os.ReadFile(p); err == nil {
 			c.userCSS.LoadFromString(string(b))

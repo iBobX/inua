@@ -1,0 +1,72 @@
+package termui
+
+import (
+	"codeberg.org/puregotk/puregotk/v4/gio"
+
+	"github.com/lyricat/inua/internal/i18n"
+	"github.com/lyricat/inua/internal/term/settings"
+)
+
+// menuBar gives a Mac's menu bar the window's actions, as the command
+// palette has them, in the menus a Mac app has. The keys stay the
+// window's own (chord): the menus show none, so a chord never runs twice.
+func (a *App) menuBar() {
+	a.onMenuItem = func(act gio.SimpleAction, _ uintptr) {
+		switch name := act.GetName(); name {
+		case "quit":
+			a.c.App.Quit()
+		default:
+			a.do(name, a.focusedPane())
+		}
+	}
+	add := func(name string) {
+		act := gio.NewSimpleAction(name, nil)
+		act.ConnectActivate(&a.onMenuItem)
+		a.c.App.AddAction(act)
+		act.Unref()
+	}
+	label := map[string]string{}
+	for _, act := range settings.Actions {
+		label[act.Name] = i18n.T(act.Label)
+		add(act.Name)
+	}
+	add("quit")
+	label["quit"] = i18n.T("Quit")
+	bar := gio.NewMenu()
+	for _, m := range []struct {
+		title   string
+		actions [][]string // sections
+	}{
+		{i18n.T("Terminal"), [][]string{{"settings"}, {"restart_host"}, {"quit"}}},
+		{i18n.T("Shell"), [][]string{{"new_session", "new_workspace"}, {"split_right", "split_down", "close_pane"}, {"rename"}}},
+		{i18n.T("Edit"), [][]string{{"copy", "paste"}, {"find", "copy_mode"}}},
+		{i18n.T("View"), [][]string{{"zoom", "equalize", "next_layout", "swap"}, {"fold_workspaces", "fold_sessions"}, {"font_larger", "font_smaller", "font_reset"}}},
+		{i18n.T("Window"), [][]string{{"previous_session", "next_session"}, {"next_waiting", "next_idle", "agents"}}},
+		{i18n.T("Help"), [][]string{{"palette", "keys"}}},
+	} {
+		menu := gio.NewMenu()
+		for _, section := range m.actions {
+			sec := gio.NewMenu()
+			for _, name := range section {
+				sec.Append(label[name], "app."+name)
+			}
+			menu.AppendSection("", &sec.MenuModel)
+			sec.Unref()
+		}
+		bar.AppendSubmenu(m.title, &menu.MenuModel)
+		menu.Unref()
+	}
+	a.c.App.SetMenubar(&bar.MenuModel)
+	bar.Unref()
+	a.win.SetShowMenubar(true)
+}
+
+// focusedPane is the pane that has the keys, or nil.
+func (a *App) focusedPane() *termPane {
+	for _, t := range a.tiles {
+		if p := t.pane; p != nil && p.widget.HasFocus() {
+			return p
+		}
+	}
+	return nil
+}

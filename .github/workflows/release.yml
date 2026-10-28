@@ -1,5 +1,6 @@
 # Builds the Linux releases (amd64, arm64) with GoReleaser and publishes
 # them on GitHub when a version is tagged: git tag v0.1.2 && git push --tags
+# Then inua-term.app for macOS, when the signing secrets are set.
 name: Release
 
 on:
@@ -48,3 +49,72 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # inua-mail's Google sign-in (docs/mail.md, "OAuth client IDs")
           INUA_GOOGLE_CLIENT_SECRET: ${{ secrets.INUA_GOOGLE_CLIENT_SECRET }}
+
+  # inua-term.app for macOS (docs/terminal.md, "On macOS"): built on a Mac,
+  # signed and notarized (docs/macos-signing.md), and its .dmg added to
+  # the release the job above made. Without the signing secrets it is
+  # left out.
+  macos:
+    needs: release
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+    steps:
+      - name: Signing secrets
+        id: secrets
+        run: |
+          if [ -n "$MACOS_CERT_P12" ]; then echo "set=1" >>"$GITHUB_OUTPUT"; else echo "no signing secrets: no macOS app"; fi
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.set
+      - uses: actions/setup-go@v5
+        if: steps.secrets.outputs.set
+        with:
+          go-version: stable
+          check-latest: true
+      - uses: mlugg/setup-zig@v2
+        if: steps.secrets.outputs.set
+        with:
+          version: 0.16.0
+      - name: GTK for the app
+        if: steps.secrets.outputs.set
+        run: brew install gtk4 librsvg adwaita-icon-theme
+      # The Developer ID certificate, in a keychain of the job's own.
+      - name: Signing identity
+        if: steps.secrets.outputs.set
+        env:
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          kc=$RUNNER_TEMP/signing.keychain-db
+          pw=$(openssl rand -hex 16)
+          security create-keychain -p "$pw" "$kc"
+          security set-keychain-settings -lut 3600 "$kc"
+          security unlock-keychain -p "$pw" "$kc"
+          echo "$MACOS_CERT_P12" | base64 --decode >"$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$kc" -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
+          rm "$RUNNER_TEMP/cert.p12"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$pw" "$kc" >/dev/null
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+      - name: inua-term.app
+        if: steps.secrets.outputs.set
+        env:
+          MACOS_SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+        run: scripts/macos-app.sh "${GITHUB_REF_NAME#v}"
+      - name: Notarize
+        if: steps.secrets.outputs.set
+        env:
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          key=$RUNNER_TEMP/notary.p8
+          echo "$NOTARY_KEY_P8" | base64 --decode >"$key"
+          dmg=$(ls build/macos/*.dmg)
+          xcrun notarytool submit "$dmg" --wait --key "$key" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID"
+          rm "$key"
+          xcrun stapler staple "$dmg"
+      - name: Add it to the release
+        if: steps.secrets.outputs.set
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" build/macos/*.dmg

@@ -94,3 +94,29 @@ jobs:
         run: brew install bash
       - name: The host's tests
         run: go test ./cmd/inua-termd ./internal/term/agent ./internal/term/host ./internal/term/layout ./internal/term/model ./internal/term/pty ./internal/term/settings ./internal/term/shellint ./internal/term/vt ./internal/term/web ./internal/term/webterm
+      # The window, as inua-term.app (docs/terminal.md, "On macOS"): built
+      # with GTK inside it, nothing loaded from Homebrew, and it draws.
+      - name: GTK for the app
+        run: brew install gtk4 librsvg adwaita-icon-theme
+      - name: The window's tests
+        run: go test ./internal/termui ./cmd/inua-term ./internal/style
+      - name: inua-term.app
+        run: scripts/macos-app.sh
+      - name: The app starts, on its own libraries
+        run: |
+          # Its standard error goes to its log once it starts: both read.
+          home=$(mktemp -d)
+          out=$(INUA_TERM_SMOKE=1 HOME=$home DYLD_PRINT_LIBRARIES=1 \
+            perl -e 'alarm 120; exec @ARGV' build/macos/inua-term.app/Contents/MacOS/inua-term 2>&1)
+          out="$out
+          $(cat "$home/.local/state/inua/term.log" 2>/dev/null)"
+          echo "$out" | grep -v 'dyld' || true
+          if echo "$out" | grep 'dyld.*\(/opt/homebrew\|/usr/local\)'; then
+            echo "loaded from Homebrew, not the bundle" >&2
+            exit 1
+          fi
+          echo "$out" | grep -q 'a frame drawn'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inua-term-macos
+          path: build/macos/*.dmg

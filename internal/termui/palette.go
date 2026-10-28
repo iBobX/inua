@@ -2,6 +2,7 @@ package termui
 
 import (
 	"strings"
+	"unicode/utf8"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
@@ -16,37 +17,51 @@ import (
 
 // fixedKeys are the keys the settings do not change.
 var fixedKeys = []struct{ keys, label string }{
-	{"Ctrl Alt ←↑→↓", i18n.M("Focus the pane in that direction")},
-	{"Ctrl Shift Super ←↑→↓", i18n.M("Resize the focused pane")},
-	{"Alt 1…8 / Alt 9", i18n.M("Session 1…8 / the last session")},
-	{"Ctrl PgUp / PgDn", i18n.M("Previous / next session")},
-	{"Ctrl Shift 1…9", i18n.M("Workspace 1…9")},
-	{"Shift Insert", i18n.M("Paste the primary selection")},
-	{"Shift PgUp / PgDn", i18n.M("Scroll a page")},
-	{"Shift Home / End", i18n.M("Scroll to the top / the bottom")},
-	{"Ctrl Shift PgUp / PgDn", i18n.M("Scroll to the previous / next prompt")},
+	{keycaps(modNames(focusMods) + "←↑→↓"), i18n.M("Focus the pane in that direction")},
+	{keycaps(modNames(resizeMods) + "←↑→↓"), i18n.M("Resize the focused pane")},
+	{keycaps(modNames(sessionMods)+"1…8") + " / " + keycaps(modNames(sessionMods)+"9"), i18n.M("Session 1…8 / the last session")},
+	{keycaps("ctrl+PgUp") + " / " + keycaps("ctrl+PgDn"), i18n.M("Previous / next session")},
+	{keycaps(modNames(workspaceMods) + "1…9"), i18n.M("Workspace 1…9")},
+	{keycaps("shift+Insert"), i18n.M("Paste the primary selection")},
+	{keycaps("shift+PgUp") + " / " + keycaps("shift+PgDn"), i18n.M("Scroll a page")},
+	{keycaps("shift+Home") + " / " + keycaps("shift+End"), i18n.M("Scroll to the top / the bottom")},
+	{keycaps("ctrl+shift+PgUp") + " / " + keycaps("ctrl+shift+PgDn"), i18n.M("Scroll to the previous / next prompt")},
 }
 
-// keycaps writes a chord as the keys show it: "Ctrl Shift T".
+// modNames is modifiers as a chord names them, each with its "+":
+// "ctrl+alt+".
+func modNames(m gdk.ModifierType) string {
+	var b strings.Builder
+	for _, n := range modOrder {
+		if m&n.mask != 0 {
+			b.WriteString(n.name + "+")
+		}
+	}
+	return b.String()
+}
+
+// keycaps writes a chord as the keys show it: "Ctrl Shift T", "⌘⇧T" on a
+// Mac.
 func keycaps(chord string) string {
 	if chord == "" {
 		return ""
 	}
 	names := map[string]string{
-		"ctrl": "Ctrl", "shift": "Shift", "alt": "Alt", "super": "Super",
 		"equal": "=", "minus": "-", "bracketleft": "[", "bracketright": "]", "slash": "/",
 		"comma": ",", "space": "Space", "backslash": "\\", "period": ".",
 		"return": "Enter", "page_up": "PgUp", "page_down": "PgDn", "grave": "`",
 	}
 	parts := strings.Split(chord, "+")
 	for i, p := range parts {
-		if n, ok := names[p]; ok {
+		if n, ok := capNames[p]; ok {
 			parts[i] = n
-		} else {
+		} else if n, ok := names[p]; ok {
+			parts[i] = n
+		} else if p != "" && p[0] < utf8.RuneSelf {
 			parts[i] = strings.ToUpper(p[:1]) + p[1:]
 		}
 	}
-	return strings.Join(parts, " ")
+	return strings.Join(parts, capSep)
 }
 
 // sheetFrame is an empty sheet over the window, Escape closing it; close

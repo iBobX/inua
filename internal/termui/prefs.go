@@ -164,7 +164,7 @@ func (a *App) openSettings() {
 		if pr.recording == "" {
 			return false
 		}
-		return pr.press(a, keyval, keycode, state)
+		return pr.press(a, keyval, keycode, keyMods(state))
 	}
 	keys.ConnectKeyPressed(&pr.onKey)
 	pr.win.AddController(&keys.EventController)

@@ -2089,9 +2089,9 @@ msgstr "%s がペアリングを求めています。このキーが表示され
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
 #: internal/term/web/strings.go:29
-#: internal/termui/keys.go:273
-#: internal/termui/keys.go:401
-#: internal/termui/paste.go:295
+#: internal/termui/keys.go:268
+#: internal/termui/keys.go:396
+#: internal/termui/paste.go:337
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:301
@@ -2718,10 +2718,11 @@ msgstr "フォルダーを開く"
 
 #: internal/desktop/defaults.go:39
 #: internal/term/web/strings.go:101
-#: internal/termui/app.go:110
-#: internal/termui/app.go:146
-#: internal/termui/app.go:340
-#: internal/termui/app.go:342
+#: internal/termui/app.go:114
+#: internal/termui/app.go:150
+#: internal/termui/app.go:350
+#: internal/termui/app.go:352
+#: internal/termui/menubar.go:40
 #: internal/termui/quick.go:29
 #: internal/termui/quick.go:47
 #: internal/termui/quick.go:145
@@ -2982,7 +2983,7 @@ msgstr "コピーしました"
 #: internal/lightui/pass.go:747
 #: internal/lightui/pass.go:772
 #: internal/mailui/details.go:222
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:118
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:232
@@ -3346,7 +3347,7 @@ msgstr[0] "%d 項目"
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
 #: internal/term/web/strings.go:89
-#: internal/termui/keys.go:403
+#: internal/termui/keys.go:398
 msgid "Rename"
 msgstr "名前を変更"
 
@@ -3461,7 +3462,7 @@ msgstr[0] "…ほか %d 件"
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
 #: internal/term/web/strings.go:30
-#: internal/termui/keys.go:275
+#: internal/termui/keys.go:270
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:132
 #: internal/ui/settings_wifi_details.go:62
@@ -3626,6 +3627,7 @@ msgid "Terminal here"
 msgstr "ここで端末を開く"
 
 #: internal/filesui/cards.go:702
+#: internal/termui/menubar.go:44
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
@@ -3688,7 +3690,7 @@ msgstr "再読み込み"
 #: internal/filesui/cards.go:717
 #: internal/mailui/picker.go:130
 #: internal/mailui/reader.go:377
-#: internal/termui/palette.go:198
+#: internal/termui/palette.go:213
 msgid "Keys"
 msgstr "キー"
 
@@ -4559,8 +4561,8 @@ msgid "New file…"
 msgstr "新規ファイル…"
 
 #: internal/filesui/window.go:730
-#: internal/term/settings/settings.go:117
-#: internal/termui/paste.go:297
+#: internal/term/settings/settings.go:119
+#: internal/termui/paste.go:339
 msgid "Paste"
 msgstr "貼り付け"
 
@@ -7981,7 +7983,7 @@ msgstr "フォーカスのオンまたはオフ"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:310
-#: internal/term/settings/settings.go:123
+#: internal/term/settings/settings.go:125
 #: internal/term/web/strings.go:96
 #: ui/control.ui:58
 #: ui/settings.ui:30
@@ -8308,6 +8310,7 @@ msgid "Remove %s"
 msgstr "%sを削除します"
 
 #: internal/lightui/clock.go:403
+#: internal/termui/menubar.go:42
 #: ui/pass.ui:252
 msgid "Edit"
 msgstr "編集"
@@ -9192,6 +9195,7 @@ msgstr "検索できませんでした: %s"
 
 #: internal/lightui/sysmon.go:53
 #: internal/lightui/sysmon.go:53
+#: internal/termui/menubar.go:34
 #: internal/ui/dock.go:486
 #: internal/ui/portal_ask.go:80
 msgid "Quit"
@@ -12782,107 +12786,107 @@ msgstr "温かみのある紙に土の色合い"
 msgid "The classic, on cream"
 msgstr "定番、クリーム色の地で"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:102
 msgid "New session in this workspace"
 msgstr "このワークスペースに新しいセッション"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:103
 #: internal/term/web/strings.go:70
 #: internal/termui/columns.go:157
 msgid "New workspace"
 msgstr "新しいワークスペース"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:104
 msgid "Split right"
 msgstr "右に分割"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:105
 msgid "Split down"
 msgstr "下に分割"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:106
 msgid "Close pane"
 msgstr "ペインを閉じる"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:107
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "その方向のペインと入れ替える（続けて矢印）"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:108
 msgid "Zoom pane / back"
 msgstr "ペインを最大化 / 戻す"
 
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:109
 msgid "Equalize"
 msgstr "均等にする"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:110
 msgid "Next layout"
 msgstr "次のレイアウト"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:111
 msgid "Previous session"
 msgstr "前のセッション"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:112
 msgid "Next session"
 msgstr "次のセッション"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:113
 msgid "Next agent that needs you"
 msgstr "応答を待つ次のエージェント"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:114
 msgid "Next agent that needs you or is idle"
 msgstr "対応待ちまたは待機中の次のエージェント"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:115
 msgid "Every agent"
 msgstr "すべてのエージェント"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:116
 msgid "Fold the workspaces"
 msgstr "ワークスペースを折りたたむ"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:117
 msgid "Fold the sessions"
 msgstr "セッションを折りたたむ"
 
-#: internal/term/settings/settings.go:118
+#: internal/term/settings/settings.go:120
 msgid "Search the scrollback"
 msgstr "スクロールバックを検索"
 
-#: internal/term/settings/settings.go:119
+#: internal/term/settings/settings.go:121
 msgid "Copy mode"
 msgstr "コピーモード"
 
-#: internal/term/settings/settings.go:120
+#: internal/term/settings/settings.go:122
 #: internal/term/web/strings.go:90
-#: internal/termui/keys.go:375
+#: internal/termui/keys.go:370
 msgid "Rename the session"
 msgstr "セッション名を変更"
 
-#: internal/term/settings/settings.go:121
+#: internal/term/settings/settings.go:123
 msgid "Every action by name"
 msgstr "すべての操作を名前で"
 
-#: internal/term/settings/settings.go:122
+#: internal/term/settings/settings.go:124
 msgid "Show the keys"
 msgstr "キー一覧を表示"
 
-#: internal/term/settings/settings.go:124
+#: internal/term/settings/settings.go:126
 msgid "Restart the terminal host"
 msgstr "ターミナルホストを再起動"
 
-#: internal/term/settings/settings.go:125
+#: internal/term/settings/settings.go:127
 msgid "Font larger"
 msgstr "文字を大きく"
 
-#: internal/term/settings/settings.go:126
+#: internal/term/settings/settings.go:128
 msgid "Font smaller"
 msgstr "文字を小さく"
 
-#: internal/term/settings/settings.go:127
+#: internal/term/settings/settings.go:129
 msgid "Font size as set"
 msgstr "設定どおりの文字サイズ"
 
@@ -13177,6 +13181,7 @@ msgid "Session %d"
 msgstr "セッション %d"
 
 #: internal/term/web/strings.go:97
+#: internal/termui/menubar.go:41
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "シェル"
@@ -13346,7 +13351,7 @@ msgid "Your login shell (%s)"
 msgstr "ログインシェル（%s）"
 
 #: internal/termui/columns.go:156
-#: internal/termui/palette.go:98
+#: internal/termui/palette.go:113
 msgid "Actions"
 msgstr "操作"
 
@@ -13387,90 +13392,98 @@ msgstr "ターミナルを囲むウィンドウの見た目です。inua のテ�
 msgid "Keep these choices; the settings change them later"
 msgstr "この選択のままにします。あとで設定から変えられます"
 
-#: internal/termui/keys.go:262
+#: internal/termui/keys.go:257
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "%s を閉じますか？"
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:258
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "「%s」の作業中です。ペインを閉じると終了します。"
 
-#: internal/termui/keys.go:265
+#: internal/termui/keys.go:260
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "応答を待っています: %s。ペインを閉じると終了します。"
 
-#: internal/termui/keys.go:306
+#: internal/termui/keys.go:301
 msgid "Choose the workspace's folder"
 msgstr "ワークスペースのフォルダを選ぶ"
 
-#: internal/termui/palette.go:19
+#: internal/termui/menubar.go:43
+msgid "View"
+msgstr ""
+
+#: internal/termui/menubar.go:45
+msgid "Help"
+msgstr ""
+
+#: internal/termui/palette.go:20
 msgid "Focus the pane in that direction"
 msgstr "その方向のペインへ移動"
 
-#: internal/termui/palette.go:20
+#: internal/termui/palette.go:21
 msgid "Resize the focused pane"
 msgstr "選択中のペインの大きさを変える"
 
-#: internal/termui/palette.go:21
+#: internal/termui/palette.go:22
 msgid "Session 1…8 / the last session"
 msgstr "セッション 1…8 / 最後のセッション"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:23
 msgid "Previous / next session"
 msgstr "前 / 次のセッション"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:24
 msgid "Workspace 1…9"
 msgstr "ワークスペース 1…9"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:25
 msgid "Paste the primary selection"
 msgstr "プライマリ選択を貼り付け"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:26
 msgid "Scroll a page"
 msgstr "1 ページ移動"
 
-#: internal/termui/palette.go:26
+#: internal/termui/palette.go:27
 msgid "Scroll to the top / the bottom"
 msgstr "先頭 / 末尾へ"
 
-#: internal/termui/palette.go:27
+#: internal/termui/palette.go:28
 msgid "Scroll to the previous / next prompt"
 msgstr "前 / 次のプロンプトへ"
 
-#: internal/termui/palette.go:100
+#: internal/termui/palette.go:115
 msgid "Find an action"
 msgstr "操作を探す"
 
-#: internal/termui/palette.go:212
+#: internal/termui/palette.go:227
 msgid "Change them in the settings."
 msgstr "設定で変更できます。"
 
-#: internal/termui/palette.go:214
+#: internal/termui/palette.go:229
 msgid "Change them in the settings (%s)."
 msgstr "設定で変更できます（%s）。"
 
-#: internal/termui/paste.go:245
+#: internal/termui/paste.go:287
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "%d 行を貼り付けますか？"
 
-#: internal/termui/paste.go:249
+#: internal/termui/paste.go:291
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "このプログラムは改行を Enter として受け取るため、貼り付けた時点で各行が実行されます。"
 
-#: internal/termui/paste.go:251
+#: internal/termui/paste.go:293
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "テキストに貼り付けの終わりを示す印が含まれているため、その後ろは入力されたものとして実行されます。"
 
-#: internal/termui/paste.go:268
+#: internal/termui/paste.go:310
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "ほか %d 行"
 
-#: internal/termui/paste.go:296
+#: internal/termui/paste.go:338
 msgid "Paste as one line"
 msgstr "1 行にして貼り付け"
 

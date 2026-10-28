@@ -27,6 +27,11 @@ and put the patch below back.
   from the libraries panics when called, as calling the nil function did.
 - `GetPaths` remembers each library's paths: every generated file's init
   asked again, each time a handful of stat calls.
+- `GetPaths` looks in a macOS app bundle's `Contents/Frameworks` first,
+  when the program runs from its `Contents/MacOS` (`bundleFrameworks`):
+  inua-term.app carries GTK there (docs/terminal.md, "On macOS"), and the
+  packages' init asks for the libraries before `main` could set
+  `PUREGOTK_LIB_FOLDER`.
 
 Measured (docs/performance.md): the packages' init went from ~385 ms to
 ~220 ms; what is left is loading GTK and its libraries (~100 ms) and the

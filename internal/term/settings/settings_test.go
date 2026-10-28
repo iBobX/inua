@@ -142,3 +142,38 @@ func TestShells(t *testing.T) {
 		t.Errorf("shells %q, want %q", got, want)
 	}
 }
+
+// The Mac's chords are for actions that exist, each chord once with the
+// rest of the defaults, each named in the order chordName writes.
+func TestMacKeys(t *testing.T) {
+	keys := map[string]string{}
+	for _, a := range Actions {
+		keys[a.Name] = a.Keys
+	}
+	for name, k := range macKeys {
+		if _, ok := keys[name]; !ok {
+			t.Errorf("macKeys: no action %q", name)
+		}
+		keys[name] = k
+	}
+	order := []string{"ctrl", "shift", "alt", "super"}
+	seen := map[string]string{}
+	for name, k := range keys {
+		if k == "" {
+			continue
+		}
+		if other, ok := seen[k]; ok {
+			t.Errorf("%s is both %s's and %s's", k, name, other)
+		}
+		seen[k] = name
+		parts := strings.Split(k, "+")
+		last := -1
+		for _, p := range parts[:len(parts)-1] {
+			i := slices.Index(order, p)
+			if i <= last {
+				t.Errorf("%s: %q out of order", name, k)
+			}
+			last = i
+		}
+	}
+}

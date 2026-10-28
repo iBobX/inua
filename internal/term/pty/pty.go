@@ -117,3 +117,9 @@ func (p *PTY) Wait() (int, error) {
 
 // Close closes the terminal; the program gets SIGHUP.
 func (p *PTY) Close() error { return p.master.Close() }
+
+// IsTerminal says whether fd is a terminal.
+func IsTerminal(fd int) bool {
+	_, err := unix.IoctlGetTermios(fd, getTermios)
+	return err == nil
+}

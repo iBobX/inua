@@ -23,7 +23,7 @@ func (p *termPane) trackMouse() {
 		if !p.barDrag {
 			p.barHovered(p.inBar(x))
 		}
-		p.hoverLink(c.GetCurrentEventState()&gdk.ControlMaskValue != 0)
+		p.hoverLink(keyMods(c.GetCurrentEventState())&linkMods != 0)
 		if p.reporting(0) && !p.barDrag {
 			p.report(vt.MouseMotion, p.held(), 0)
 		}
@@ -45,9 +45,10 @@ func (p *termPane) trackMouse() {
 		if kind != gdk.ButtonPressValue && kind != gdk.ButtonReleaseValue {
 			return false
 		}
-		state := e.GetModifierState()
-		// Ctrl+click opens a link, before selecting or the program.
-		if kind == gdk.ButtonPressValue && state&gdk.ControlMaskValue != 0 && gdk.ButtonEventNewFromInternalPtr(ev).GetButton() == 1 {
+		state := keyMods(e.GetModifierState())
+		// Ctrl+click (Command+click on a Mac) opens a link, before
+		// selecting or the program.
+		if kind == gdk.ButtonPressValue && state&linkMods != 0 && gdk.ButtonEventNewFromInternalPtr(ev).GetButton() == 1 {
 			p.hoverLink(true)
 			if p.hover != nil {
 				p.openLink(p.hover.URI)

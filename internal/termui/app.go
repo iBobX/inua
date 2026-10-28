@@ -2,8 +2,10 @@ package termui
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"sync"
 
 	"codeberg.org/puregotk/puregotk/v4/gdk"
@@ -85,6 +87,8 @@ type App struct {
 
 	onSheetEsc    func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onPaletteFind func(uintptr, uintptr)
+	onMenuItem    func(gio.SimpleAction, uintptr) // the Mac's menu bar (menubar.go)
+	onSmoke       gtk.TickCallback
 	onPaletteRun  func(gtk.SearchEntry)
 	onPaletteRow  func(gtk.ListBox, uintptr)
 	onPaletteKey  func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
@@ -153,6 +157,12 @@ func (a *App) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	}
 	a.win.ConnectCloseRequest(&a.onClose)
 	a.windowKeys()
+	if runtime.GOOS == "darwin" {
+		a.menuBar()
+	}
+	if os.Getenv("INUA_TERM_SMOKE") != "" {
+		a.smokeTest()
+	}
 	a.startTicks()
 	a.startBlink()
 	// An agent in the pane shown is looked at while the window is active.
@@ -452,3 +462,18 @@ var (
 	errNoHost  = errors.New("no host")
 	errNoSizes = errors.New("the host does not tell sizes")
 )
+
+// smokeTest quits once the window has drawn a frame, saying so: CI's
+// check that the app starts where no one looks at it (INUA_TERM_SMOKE).
+func (a *App) smokeTest() {
+	ticks := 0
+	a.onSmoke = func(uintptr, uintptr, uintptr) bool {
+		if ticks++; ticks < 2 { // the second frame: the first was drawn
+			return true
+		}
+		fmt.Println("inua-term: a frame drawn") // stdout: stderr may be the log
+		a.c.App.Quit()
+		return false
+	}
+	a.win.AddTickCallback(&a.onSmoke, 0, &noDestroy)
+}

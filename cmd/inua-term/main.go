@@ -10,11 +10,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/sys/unix"
-
 	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/logfile"
 	"github.com/lyricat/inua/internal/term/host"
+	"github.com/lyricat/inua/internal/term/pty"
 	"github.com/lyricat/inua/internal/termui"
 )
 
@@ -29,6 +28,7 @@ func main() {
 			os.Exit(integration(os.Args[2:]))
 		}
 	}
+	bundleEnv()
 	// -e runs the rest as a command, as terminals do (xdg-terminal-exec).
 	var command []string
 	for i, a := range os.Args[1:] {
@@ -49,7 +49,7 @@ func main() {
 	}
 	flag.Parse()
 	if *quick {
-		if _, err := unix.IoctlGetTermios(2, unix.TCGETS); err != nil {
+		if !pty.IsTerminal(2) {
 			logfile.To("term.log")
 		}
 		termui.QuickCommand = command
@@ -63,7 +63,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	if _, err := unix.IoctlGetTermios(2, unix.TCGETS); err != nil {
+	if !pty.IsTerminal(2) {
 		logfile.To("term.log") // no terminal to tell: the dock's, the drawer's
 	}
 	termui.Register()

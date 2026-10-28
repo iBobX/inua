@@ -9,9 +9,11 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"slices"
 	"strings"
 
@@ -139,15 +141,38 @@ var firstKeys = map[string]string{
 // defaults now: Ghostty's tab and window.
 var secondKeys = map[string]string{"new_session": "ctrl+shift+t", "new_workspace": "ctrl+shift+n"}
 
+// macKeys are the default chords on macOS, on Command ("super") as a
+// Mac app's and Ghostty's there; Control stays the programs'. Ctrl+` is
+// kept: Command+` is the system's, between an app's windows.
+var macKeys = map[string]string{
+	"new_session": "super+t", "new_workspace": "super+n",
+	"split_right": "super+d", "split_down": "shift+super+d", "close_pane": "super+w",
+	"swap": "shift+super+x", "zoom": "shift+super+return", "equalize": "ctrl+super+equal",
+	"next_layout": "shift+super+l", "previous_session": "shift+super+bracketleft",
+	"next_session": "shift+super+bracketright", "next_waiting": "shift+super+j",
+	"agents": "shift+super+a", "fold_workspaces": "shift+super+b", "fold_sessions": "shift+super+s",
+	"copy": "super+c", "paste": "super+v", "find": "super+f", "copy_mode": "shift+super+space",
+	"rename": "shift+super+r", "palette": "shift+super+p", "keys": "shift+super+slash",
+	"settings": "super+comma", "font_larger": "super+equal", "font_smaller": "super+minus",
+	"font_reset": "super+0",
+}
+
 // Default is the settings without a file.
 func Default() Settings {
 	keys := map[string]string{}
 	for _, a := range Actions {
 		keys[a.Name] = a.Keys
 	}
+	// The font: Geist Mono as the shell's; on a Mac, the system's
+	// monospace, which every Mac has.
+	font := "Geist Mono"
+	if runtime.GOOS == "darwin" {
+		maps.Copy(keys, macKeys)
+		font = "Menlo"
+	}
 	return Settings{
 		Version:  Version,
-		Font:     Font{Family: "Geist Mono", Size: 11},
+		Font:     Font{Family: font, Size: 11},
 		Cursor:   Cursor{Style: "block"},
 		Terminal: Terminal{CopyOnSelect: true, Scrollback: 10000, Replay: 4},
 		Shell:    Shell{Integration: true},

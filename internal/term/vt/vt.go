@@ -71,7 +71,7 @@ var ErrMissing = errors.New("vt: " + Library + " not found (scripts/libghostty.s
 // Paths are where the library is looked for, in order: $INUA_VT_LIB,
 // beside the executable, ../lib/inua beside it (an installed prefix),
 // then lib/inua beside it (a release's archive, unpacked and run where
-// it is).
+// it is), then ../Frameworks (a macOS app bundle's).
 func Paths() []string {
 	var paths []string
 	if p := os.Getenv("INUA_VT_LIB"); p != "" {
@@ -82,7 +82,8 @@ func Paths() []string {
 		paths = append(paths,
 			filepath.Join(dir, Library),
 			filepath.Join(dir, "..", "lib", "inua", Library),
-			filepath.Join(dir, "lib", "inua", Library))
+			filepath.Join(dir, "lib", "inua", Library),
+			filepath.Join(dir, "..", "Frameworks", Library))
 	}
 	return paths
 }

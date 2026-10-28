@@ -2094,9 +2094,9 @@ msgstr "%s pide emparejarse. Empareja solo si muestra esta clave:"
 #: internal/mailui/dialog.go:92
 #: internal/remoteui/window.go:811
 #: internal/term/web/strings.go:29
-#: internal/termui/keys.go:273
-#: internal/termui/keys.go:401
-#: internal/termui/paste.go:295
+#: internal/termui/keys.go:268
+#: internal/termui/keys.go:396
+#: internal/termui/paste.go:337
 #: internal/termui/restart.go:42
 #: internal/termui/wsmenu.go:149
 #: internal/ui/askpass.go:301
@@ -2723,10 +2723,11 @@ msgstr "Abre carpetas"
 
 #: internal/desktop/defaults.go:39
 #: internal/term/web/strings.go:101
-#: internal/termui/app.go:110
-#: internal/termui/app.go:146
-#: internal/termui/app.go:340
-#: internal/termui/app.go:342
+#: internal/termui/app.go:114
+#: internal/termui/app.go:150
+#: internal/termui/app.go:350
+#: internal/termui/app.go:352
+#: internal/termui/menubar.go:40
 #: internal/termui/quick.go:29
 #: internal/termui/quick.go:47
 #: internal/termui/quick.go:145
@@ -2989,7 +2990,7 @@ msgstr "Copiado"
 #: internal/lightui/pass.go:747
 #: internal/lightui/pass.go:772
 #: internal/mailui/details.go:222
-#: internal/term/settings/settings.go:116
+#: internal/term/settings/settings.go:118
 #: internal/term/web/strings.go:36
 #: internal/termui/prefsweb.go:90
 #: internal/ui/askpass.go:232
@@ -3358,7 +3359,7 @@ msgstr[1] "%d elementos"
 #: internal/filesui/cards.go:692
 #: internal/filesui/renamemany.go:38
 #: internal/term/web/strings.go:89
-#: internal/termui/keys.go:403
+#: internal/termui/keys.go:398
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -3475,7 +3476,7 @@ msgstr[1] "… y %d más"
 #: internal/filesui/cards.go:716
 #: internal/mailui/welcome.go:156
 #: internal/term/web/strings.go:30
-#: internal/termui/keys.go:275
+#: internal/termui/keys.go:270
 #: internal/termui/wsmenu.go:151
 #: internal/ui/settings_bench.go:132
 #: internal/ui/settings_wifi_details.go:62
@@ -3640,6 +3641,7 @@ msgid "Terminal here"
 msgstr "Terminal aquí"
 
 #: internal/filesui/cards.go:702
+#: internal/termui/menubar.go:44
 #: ui/screenshot.ui:162
 #: ui/shotdrawer.ui:122
 msgid "Window"
@@ -3702,7 +3704,7 @@ msgstr "Recargar"
 #: internal/filesui/cards.go:717
 #: internal/mailui/picker.go:130
 #: internal/mailui/reader.go:377
-#: internal/termui/palette.go:198
+#: internal/termui/palette.go:213
 msgid "Keys"
 msgstr "Teclas"
 
@@ -4586,8 +4588,8 @@ msgid "New file…"
 msgstr "Nuevo archivo…"
 
 #: internal/filesui/window.go:730
-#: internal/term/settings/settings.go:117
-#: internal/termui/paste.go:297
+#: internal/term/settings/settings.go:119
+#: internal/termui/paste.go:339
 msgid "Paste"
 msgstr "Pegar"
 
@@ -8018,7 +8020,7 @@ msgstr "Enfoque activado o desactivado"
 #: internal/mailui/picker.go:154
 #: internal/shell/commands.go:33
 #: internal/shell/dock.go:310
-#: internal/term/settings/settings.go:123
+#: internal/term/settings/settings.go:125
 #: internal/term/web/strings.go:96
 #: ui/control.ui:58
 #: ui/settings.ui:30
@@ -8345,6 +8347,7 @@ msgid "Remove %s"
 msgstr "Eliminar %s"
 
 #: internal/lightui/clock.go:403
+#: internal/termui/menubar.go:42
 #: ui/pass.ui:252
 msgid "Edit"
 msgstr "Editar"
@@ -9241,6 +9244,7 @@ msgstr "No se pudo buscar: %s"
 
 #: internal/lightui/sysmon.go:53
 #: internal/lightui/sysmon.go:53
+#: internal/termui/menubar.go:34
 #: internal/ui/dock.go:486
 #: internal/ui/portal_ask.go:80
 msgid "Quit"
@@ -12853,107 +12857,107 @@ msgstr "Tonos terrosos sobre papel cálido"
 msgid "The classic, on cream"
 msgstr "El clásico, sobre crema"
 
-#: internal/term/settings/settings.go:100
+#: internal/term/settings/settings.go:102
 msgid "New session in this workspace"
 msgstr "Nueva sesión en este espacio"
 
-#: internal/term/settings/settings.go:101
+#: internal/term/settings/settings.go:103
 #: internal/term/web/strings.go:70
 #: internal/termui/columns.go:157
 msgid "New workspace"
 msgstr "Nuevo espacio de trabajo"
 
-#: internal/term/settings/settings.go:102
+#: internal/term/settings/settings.go:104
 msgid "Split right"
 msgstr "Dividir a la derecha"
 
-#: internal/term/settings/settings.go:103
+#: internal/term/settings/settings.go:105
 msgid "Split down"
 msgstr "Dividir hacia abajo"
 
-#: internal/term/settings/settings.go:104
+#: internal/term/settings/settings.go:106
 msgid "Close pane"
 msgstr "Cerrar el panel"
 
-#: internal/term/settings/settings.go:105
+#: internal/term/settings/settings.go:107
 msgid "Swap with the pane in a direction (then an arrow)"
 msgstr "Intercambiar con el panel de una dirección (luego una flecha)"
 
-#: internal/term/settings/settings.go:106
+#: internal/term/settings/settings.go:108
 msgid "Zoom pane / back"
 msgstr "Ampliar el panel / volver"
 
-#: internal/term/settings/settings.go:107
+#: internal/term/settings/settings.go:109
 msgid "Equalize"
 msgstr "Igualar"
 
-#: internal/term/settings/settings.go:108
+#: internal/term/settings/settings.go:110
 msgid "Next layout"
 msgstr "Siguiente disposición"
 
-#: internal/term/settings/settings.go:109
+#: internal/term/settings/settings.go:111
 msgid "Previous session"
 msgstr "Sesión anterior"
 
-#: internal/term/settings/settings.go:110
+#: internal/term/settings/settings.go:112
 msgid "Next session"
 msgstr "Sesión siguiente"
 
-#: internal/term/settings/settings.go:111
+#: internal/term/settings/settings.go:113
 msgid "Next agent that needs you"
 msgstr "Siguiente agente que te necesita"
 
-#: internal/term/settings/settings.go:112
+#: internal/term/settings/settings.go:114
 msgid "Next agent that needs you or is idle"
 msgstr "Siguiente agente que te necesita o está inactivo"
 
-#: internal/term/settings/settings.go:113
+#: internal/term/settings/settings.go:115
 msgid "Every agent"
 msgstr "Todos los agentes"
 
-#: internal/term/settings/settings.go:114
+#: internal/term/settings/settings.go:116
 msgid "Fold the workspaces"
 msgstr "Plegar los espacios de trabajo"
 
-#: internal/term/settings/settings.go:115
+#: internal/term/settings/settings.go:117
 msgid "Fold the sessions"
 msgstr "Plegar las sesiones"
 
-#: internal/term/settings/settings.go:118
+#: internal/term/settings/settings.go:120
 msgid "Search the scrollback"
 msgstr "Buscar en el historial"
 
-#: internal/term/settings/settings.go:119
+#: internal/term/settings/settings.go:121
 msgid "Copy mode"
 msgstr "Modo de copia"
 
-#: internal/term/settings/settings.go:120
+#: internal/term/settings/settings.go:122
 #: internal/term/web/strings.go:90
-#: internal/termui/keys.go:375
+#: internal/termui/keys.go:370
 msgid "Rename the session"
 msgstr "Renombrar la sesión"
 
-#: internal/term/settings/settings.go:121
+#: internal/term/settings/settings.go:123
 msgid "Every action by name"
 msgstr "Todas las acciones por nombre"
 
-#: internal/term/settings/settings.go:122
+#: internal/term/settings/settings.go:124
 msgid "Show the keys"
 msgstr "Mostrar las teclas"
 
-#: internal/term/settings/settings.go:124
+#: internal/term/settings/settings.go:126
 msgid "Restart the terminal host"
 msgstr "Reiniciar el anfitrión del terminal"
 
-#: internal/term/settings/settings.go:125
+#: internal/term/settings/settings.go:127
 msgid "Font larger"
 msgstr "Letra más grande"
 
-#: internal/term/settings/settings.go:126
+#: internal/term/settings/settings.go:128
 msgid "Font smaller"
 msgstr "Letra más pequeña"
 
-#: internal/term/settings/settings.go:127
+#: internal/term/settings/settings.go:129
 msgid "Font size as set"
 msgstr "Tamaño de letra configurado"
 
@@ -13248,6 +13252,7 @@ msgid "Session %d"
 msgstr "Sesión %d"
 
 #: internal/term/web/strings.go:97
+#: internal/termui/menubar.go:41
 #: internal/termui/prefs.go:120
 msgid "Shell"
 msgstr "Shell"
@@ -13419,7 +13424,7 @@ msgid "Your login shell (%s)"
 msgstr "Tu shell de inicio de sesión (%s)"
 
 #: internal/termui/columns.go:156
-#: internal/termui/palette.go:98
+#: internal/termui/palette.go:113
 msgid "Actions"
 msgstr "Acciones"
 
@@ -13460,92 +13465,100 @@ msgstr "El aspecto de la ventana alrededor de los terminales. Sigue el tema de i
 msgid "Keep these choices; the settings change them later"
 msgstr "Conservar estas opciones; los ajustes las cambian después"
 
-#: internal/termui/keys.go:262
+#: internal/termui/keys.go:257
 #: internal/termui/wsmenu.go:135
 msgid "Close %s?"
 msgstr "¿Cerrar %s?"
 
-#: internal/termui/keys.go:263
+#: internal/termui/keys.go:258
 msgid "It is working on “%s”; closing the pane ends it."
 msgstr "Está trabajando en «%s»; cerrar el panel lo termina."
 
-#: internal/termui/keys.go:265
+#: internal/termui/keys.go:260
 msgid "It is waiting for you: %s. Closing the pane ends it."
 msgstr "Te está esperando: %s. Cerrar el panel lo termina."
 
-#: internal/termui/keys.go:306
+#: internal/termui/keys.go:301
 msgid "Choose the workspace's folder"
 msgstr "Elige la carpeta del espacio de trabajo"
 
-#: internal/termui/palette.go:19
+#: internal/termui/menubar.go:43
+msgid "View"
+msgstr ""
+
+#: internal/termui/menubar.go:45
+msgid "Help"
+msgstr ""
+
+#: internal/termui/palette.go:20
 msgid "Focus the pane in that direction"
 msgstr "Enfocar el panel en esa dirección"
 
-#: internal/termui/palette.go:20
+#: internal/termui/palette.go:21
 msgid "Resize the focused pane"
 msgstr "Redimensionar el panel enfocado"
 
-#: internal/termui/palette.go:21
+#: internal/termui/palette.go:22
 msgid "Session 1…8 / the last session"
 msgstr "Sesión 1…8 / la última sesión"
 
-#: internal/termui/palette.go:22
+#: internal/termui/palette.go:23
 msgid "Previous / next session"
 msgstr "Sesión anterior / siguiente"
 
-#: internal/termui/palette.go:23
+#: internal/termui/palette.go:24
 msgid "Workspace 1…9"
 msgstr "Espacio de trabajo 1…9"
 
-#: internal/termui/palette.go:24
+#: internal/termui/palette.go:25
 msgid "Paste the primary selection"
 msgstr "Pegar la selección primaria"
 
-#: internal/termui/palette.go:25
+#: internal/termui/palette.go:26
 msgid "Scroll a page"
 msgstr "Desplazar una página"
 
-#: internal/termui/palette.go:26
+#: internal/termui/palette.go:27
 msgid "Scroll to the top / the bottom"
 msgstr "Ir al principio / al final"
 
-#: internal/termui/palette.go:27
+#: internal/termui/palette.go:28
 msgid "Scroll to the previous / next prompt"
 msgstr "Ir al aviso anterior / siguiente"
 
-#: internal/termui/palette.go:100
+#: internal/termui/palette.go:115
 msgid "Find an action"
 msgstr "Buscar una acción"
 
-#: internal/termui/palette.go:212
+#: internal/termui/palette.go:227
 msgid "Change them in the settings."
 msgstr "Cámbialas en los ajustes."
 
-#: internal/termui/palette.go:214
+#: internal/termui/palette.go:229
 msgid "Change them in the settings (%s)."
 msgstr "Cámbialas en los ajustes (%s)."
 
-#: internal/termui/paste.go:245
+#: internal/termui/paste.go:287
 msgid "Paste %d line?"
 msgid_plural "Paste %d lines?"
 msgstr[0] "¿Pegar %d línea?"
 msgstr[1] "¿Pegar %d líneas?"
 
-#: internal/termui/paste.go:249
+#: internal/termui/paste.go:291
 msgid "The program here takes a line break as Enter, so each line would run as soon as it is pasted."
 msgstr "Este programa toma un salto de línea como Intro, así que cada línea se ejecutaría en cuanto se pegue."
 
-#: internal/termui/paste.go:251
+#: internal/termui/paste.go:293
 msgid "The text holds the mark that ends a paste, so what follows it would run as if typed."
 msgstr "El texto contiene la marca que termina un pegado, así que lo que sigue se ejecutaría como si se escribiera."
 
-#: internal/termui/paste.go:268
+#: internal/termui/paste.go:310
 msgid "and %d more line"
 msgid_plural "and %d more lines"
 msgstr[0] "y %d línea más"
 msgstr[1] "y %d líneas más"
 
-#: internal/termui/paste.go:296
+#: internal/termui/paste.go:338
 msgid "Paste as one line"
 msgstr "Pegar en una línea"
 

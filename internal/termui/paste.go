@@ -1,6 +1,7 @@
 package termui
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -103,10 +104,55 @@ var (
 // for programs that take images as files. (An agent that reads the
 // clipboard itself, as Claude Code on Ctrl+V, gets that key as typed.)
 // The bytes are wl-paste's, as the Files app reads the clipboard, off
-// the main thread.
+// the main thread; without wl-paste (on a Mac), GTK's texture of the
+// image, as PNG.
 func (p *termPane) pasteImage(mime string) {
+	if _, err := exec.LookPath("wl-paste"); err != nil {
+		clip := p.clipboard(false)
+		clip.ReadTextureAsync(nil, &p.onImage, 0)
+		clip.Unref()
+		return
+	}
+	p.saveImage(func() ([]byte, string, error) {
+		out, err := exec.Command("wl-paste", "--no-newline", "--type", mime).Output()
+		if err != nil {
+			return nil, "", fmt.Errorf("wl-paste: %w", err)
+		}
+		return out, mime, nil
+	})
+}
+
+// imageRead takes the clipboard's image as GTK read it, and saves it as
+// PNG.
+func (p *termPane) imageRead(result uintptr) {
+	clip := p.clipboard(false)
+	tex, err := clip.ReadTextureFinish(&gio.AsyncResultBase{Ptr: result})
+	clip.Unref()
+	if err != nil || tex == nil {
+		log.Printf("term: paste image: %v", err)
+		return
+	}
+	png := tex.SaveToPngBytes()
+	tex.Unref()
+	if png == nil {
+		return
+	}
+	var n uint
+	data := png.GetData(&n)
+	b := bytes.Clone(unsafe.Slice((*byte)(unsafe.Add(unsafe.Pointer(nil), data)), n))
+	png.Unref()
+	p.saveImage(func() ([]byte, string, error) { return b, "image/png", nil })
+}
+
+// saveImage writes the image read gives to a file, off the main thread,
+// and pastes its path.
+func (p *termPane) saveImage(read func() ([]byte, string, error)) {
 	go func() {
-		path, err := saveImage(mime)
+		b, mime, err := read()
+		path := ""
+		if err == nil {
+			path, err = writeImage(b, mime)
+		}
 		gtkx.Post(func() {
 			if err != nil {
 				log.Printf("term: paste image: %v", err)
@@ -119,13 +165,9 @@ func (p *termPane) pasteImage(mime string) {
 	}()
 }
 
-// saveImage writes the clipboard's image of type mime to host.PasteDir,
-// which goes with the session.
-func saveImage(mime string) (string, error) {
-	out, err := exec.Command("wl-paste", "--no-newline", "--type", mime).Output()
-	if err != nil {
-		return "", fmt.Errorf("wl-paste: %w", err)
-	}
+// writeImage writes an image of type mime to host.PasteDir, which goes
+// with the session.
+func writeImage(out []byte, mime string) (string, error) {
 	dir := host.PasteDir()
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", err

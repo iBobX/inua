@@ -125,6 +125,7 @@ type termPane struct {
 	onSheetPaste                      func(gtk.Button)
 	onSheetKey                        func(gtk.EventControllerKey, uint32, uint32, gdk.ModifierType) bool
 	onText, onFiles                   [2]gio.AsyncReadyCallback // the clipboard's, the primary selection's
+	onImage                           gio.AsyncReadyCallback    // the clipboard's image, read by GTK
 	onMiddle                          func(gtk.GestureClick, int32, float64, float64)
 	onDrop                            func(gtk.DropTarget, uintptr, float64, float64) bool
 	onScroll                          func(gtk.EventControllerScroll, float64, float64) bool
@@ -171,6 +172,7 @@ func newTermPane(be backend, cols, rows int, sc scheme.Scheme, warn string, look
 		p.onText[i] = func(_, result, _ uintptr) { p.clipRead(primary, result) }
 		p.onFiles[i] = func(_, result, _ uintptr) { p.filesRead(primary, result) }
 	}
+	p.onImage = func(_, result, _ uintptr) { p.imageRead(result) }
 	p.im = gtk.NewIMMulticontext()
 	p.im.SetClientWidget(p.widget)
 	keys := gtk.NewEventControllerKey()
@@ -367,11 +369,12 @@ func (p *termPane) key(c *gtk.EventControllerKey, keyval, keycode uint32, state 
 	if action == vt.Press {
 		p.stopGlide()
 	}
+	state = keyMods(state)
 	var layout uint32
 	var consumed gdk.ModifierType
 	if ev := gobj.currentEvent(c.GoPointer()); ev != 0 { // borrowed, no reference taken
 		ke := gdk.KeyEventNewFromInternalPtr(ev)
-		consumed = ke.GetConsumedModifiers()
+		consumed = keyMods(ke.GetConsumedModifiers())
 		layout = ke.GetLayout()
 	}
 	// The key without modifiers: the window's chords match it, and the
@@ -727,7 +730,7 @@ func (p *termPane) callbacks() []any {
 		&p.onMiddle, &p.onScroll, &p.onDecelerate, &p.onDrop, &p.onMotion, &p.onLeave, &p.onRaw,
 		&p.onGlide, &p.onFindChanged, &p.onFindKey, &p.onFindUp, &p.onFindDown,
 		&p.onFindClose, &p.onSheetKey, &p.onSheetCancel, &p.onSheetOneLine,
-		&p.onSheetPaste, &p.onText[0], &p.onText[1], &p.onFiles[0], &p.onFiles[1],
+		&p.onSheetPaste, &p.onText[0], &p.onText[1], &p.onFiles[0], &p.onFiles[1], &p.onImage,
 	}
 }
 

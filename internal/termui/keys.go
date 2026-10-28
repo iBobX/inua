@@ -19,11 +19,10 @@ import (
 // so Ctrl+Shift+1 is "1" whatever Shift makes of it on the layout.
 
 // chord does the window's action for a chord of the settings' keys
-// (term.toml [keys]), or the fixed ones: Ctrl+Alt with an arrow moves the
-// focus, Ctrl+Shift+Super with one resizes, an arrow after the swap key
-// swaps; Alt+1…9 shows a session, Ctrl+Shift+1…9 a workspace, and
-// Ctrl+PgUp and PgDn step through the sessions. false leaves the key to
-// the pane.
+// (term.toml [keys]), or the fixed ones (focusMods and the others, per
+// system): an arrow moves the focus or resizes, an arrow after the swap
+// key swaps, a digit shows a session or a workspace, and Ctrl+PgUp and
+// PgDn step through the sessions. false leaves the key to the pane.
 func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bool {
 	held := state & (gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.AltMaskValue | gdk.SuperMaskValue)
 	if a.swapping {
@@ -35,10 +34,10 @@ func (a *App) chord(p *termPane, base, keyval uint32, state gdk.ModifierType) bo
 	}
 	if d, ok := arrow(keyval); ok {
 		switch held {
-		case gdk.ControlMaskValue | gdk.AltMaskValue:
+		case focusMods:
 			a.layoutOp(host.OpFocus, host.Message{Direction: int(d)})
 			return true
-		case gdk.ControlMaskValue | gdk.ShiftMaskValue | gdk.SuperMaskValue:
+		case resizeMods:
 			a.layoutOp(host.OpResize, host.Message{Direction: int(d), Step: 0.05})
 			return true
 		}
@@ -81,7 +80,7 @@ func (a *App) windowKeys() {
 		if !a.win.GetDisplay().TranslateKey(keycode, 0, int32(layout), &base, nil, nil, nil) {
 			base = keyval
 		}
-		return a.chord(nil, base, keyval, state)
+		return a.chord(nil, base, keyval, keyMods(state))
 	}
 	keys.ConnectKeyPressed(&a.onWindowKey)
 	a.win.AddController(&keys.EventController)
@@ -89,18 +88,14 @@ func (a *App) windowKeys() {
 
 // chordName is a key as term.toml writes it: "ctrl+shift+t".
 func chordName(base uint32, held gdk.ModifierType) string {
-	var b strings.Builder
-	for _, m := range []struct {
-		mask gdk.ModifierType
-		name string
-	}{{gdk.ControlMaskValue, "ctrl"}, {gdk.ShiftMaskValue, "shift"}, {gdk.AltMaskValue, "alt"}, {gdk.SuperMaskValue, "super"}} {
-		if held&m.mask != 0 {
-			b.WriteString(m.name + "+")
-		}
-	}
-	b.WriteString(strings.ToLower(gdk.KeyvalName(gdk.KeyvalToLower(base))))
-	return b.String()
+	return modNames(held) + strings.ToLower(gdk.KeyvalName(gdk.KeyvalToLower(base)))
 }
+
+// modOrder is the modifiers in the order a chord names them.
+var modOrder = []struct {
+	mask gdk.ModifierType
+	name string
+}{{gdk.ControlMaskValue, "ctrl"}, {gdk.ShiftMaskValue, "shift"}, {gdk.AltMaskValue, "alt"}, {gdk.SuperMaskValue, "super"}}
 
 // keymapOf is the settings' keys by chord.
 func keymapOf(keys map[string]string) map[string]string {
@@ -199,9 +194,9 @@ func (a *App) nthChord(base uint32, held gdk.ModifierType) bool {
 		return false
 	}
 	switch held {
-	case gdk.AltMaskValue:
+	case sessionMods:
 		a.nthSession(int(k - '1'))
-	case gdk.ControlMaskValue | gdk.ShiftMaskValue:
+	case workspaceMods:
 		a.nthWorkspace(int(k - '1'))
 	default:
 		return false
