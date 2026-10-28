@@ -22,11 +22,11 @@ var wl struct {
 // (X11, Broadway) it does nothing.
 func toplevel(w *gtk.Window, f func(t uintptr)) {
 	wl.once.Do(func() {
-		gtk, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		gtk, err := Open("libgtk-4.so.1")
 		if err != nil {
 			return
 		}
-		gobj, err := purego.Dlopen("libgobject-2.0.so.0", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		gobj, err := Open("libgobject-2.0.so.0")
 		if err != nil {
 			return
 		}

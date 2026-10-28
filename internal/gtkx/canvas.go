@@ -38,7 +38,7 @@ var canvases struct {
 func canvasType() types.GType {
 	c := &canvases
 	c.once.Do(func() {
-		h, err := purego.Dlopen("libgobject-2.0.so.0", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		h, err := Open("libgobject-2.0.so.0")
 		if err != nil {
 			panic("gtkx: " + err.Error())
 		}

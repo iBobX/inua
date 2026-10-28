@@ -21,7 +21,7 @@ var preedit struct {
 func PreeditString(im *gtk.IMContext) (string, int) {
 	p := &preedit
 	p.once.Do(func() {
-		h, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		h, err := Open("libgtk-4.so.1")
 		if err != nil {
 			panic("gtkx: " + err.Error())
 		}

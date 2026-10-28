@@ -33,11 +33,11 @@ func PassInputBut(w *gtk.Window, x, y, width, height int) {
 func passInput(w *gtk.Window, keep *regionRect) {
 	p := &inputRegion
 	p.once.Do(func() {
-		cairo, err := purego.Dlopen("libcairo.so.2", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		cairo, err := Open("libcairo.so.2")
 		if err != nil {
 			panic("gtkx: " + err.Error())
 		}
-		gtk4, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		gtk4, err := Open("libgtk-4.so.1")
 		if err != nil {
 			panic("gtkx: " + err.Error())
 		}

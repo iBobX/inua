@@ -28,7 +28,7 @@ var gobj struct {
 
 func loadGObject() {
 	gobj.once.Do(func() {
-		g, err := purego.Dlopen("libgtk-4.so.1", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+		g, err := gtkx.Open("libgtk-4.so.1")
 		if err != nil {
 			panic("termui: " + err.Error())
 		}
