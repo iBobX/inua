@@ -107,7 +107,7 @@ glib-compile-schemas "$res/share/glib-2.0/schemas"
 # what the Phosphor set lacks, and hicolor's index.
 mkdir -p "$res/share/icons/Adwaita" "$res/share/icons/hicolor"
 cp "$brew/share/icons/Adwaita/index.theme" "$res/share/icons/Adwaita/"
-cp -R "$brew/share/icons/Adwaita/symbolic" "$res/share/icons/Adwaita/"
+cp -RL "$brew/share/icons/Adwaita/symbolic" "$res/share/icons/Adwaita/" # links as files: some lead out of what is copied
 cp "$brew/share/icons/hicolor/index.theme" "$res/share/icons/hicolor/"
 
 # The app's icon, from its SVG.
@@ -158,6 +158,11 @@ for f in "$contents"/MacOS/* "$fw"/*.dylib "$fw"/loaders/*.so; do
 		bad=1
 	fi
 done
+# Nor may a link lead nowhere: codesign refuses the bundle then.
+if find -L "$app" -type l | grep .; then
+	echo "macos-app: broken links in the bundle" >&2
+	bad=1
+fi
 [ $bad = 0 ]
 
 # Signing, inside out: the libraries, the programs, the bundle.
@@ -170,7 +175,7 @@ for f in "$fw"/loaders/*.so "$fw"/*.dylib "$contents"/MacOS/inua-termd "$content
 	"${sign[@]}" "$f"
 done
 "${sign[@]}" "$app"
-codesign --verify --strict --deep "$app"
+codesign --verify --strict --deep --verbose=4 "$app"
 
 # The disk image: the app and a link to Applications.
 dmg=$out/inua-term-$version-macos-$arch.dmg
