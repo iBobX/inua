@@ -147,10 +147,13 @@ cat >"$contents/Info.plist" <<EOF
 </plist>
 EOF
 
-# Nothing may point outside the bundle but the system's own.
+# Nothing may point outside the bundle but the system's own. A library's
+# own name (otool -D) is not a reference: the engine's stays @rpath/…, as
+# Zig leaves no room in its header to rename it, and it is opened by path.
 bad=0
 for f in "$contents"/MacOS/* "$fw"/*.dylib "$fw"/loaders/*.so; do
-	if otool -L "$f" | awk 'NR>1 {print $1}' | grep -v '^@loader_path/\|^/usr/lib/\|^/System/'; then
+	self=$(otool -D "$f" | awk 'NR>1 {print $1}')
+	if otool -L "$f" | awk -v self="$self" 'NR>1 && $1 != self {print $1}' | grep -v '^@loader_path/\|^/usr/lib/\|^/System/'; then
 		echo "macos-app: $f points outside the bundle" >&2
 		bad=1
 	fi
