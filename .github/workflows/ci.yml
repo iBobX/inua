@@ -107,7 +107,7 @@ jobs:
           # Its standard error goes to its log once it starts: both read.
           home=$(mktemp -d)
           out=$(INUA_TERM_SMOKE=1 HOME=$home DYLD_PRINT_LIBRARIES=1 \
-            perl -e 'alarm 120; exec @ARGV' build/macos/inua-term.app/Contents/MacOS/inua-term 2>&1) || code=$?
+            /usr/bin/perl -e 'alarm 120; exec @ARGV' build/macos/inua-term.app/Contents/MacOS/inua-term 2>&1) || code=$?
           out="$out
           $(cat "$home/.local/state/inua/term.log" 2>/dev/null)"
           echo "$out" | grep -v 'dyld' || true
