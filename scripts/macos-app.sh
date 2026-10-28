@@ -15,10 +15,10 @@
 # loaders, GSettings schemas and icons go in Contents/Resources, which
 # inua-term points GTK at when it starts (cmd/inua-term/bundle_darwin.go).
 #
-# Signing: with MACOS_SIGN_IDENTITY set ("Developer ID Application: …",
+# Signing: with APPLE_CODESIGN_IDENTITY set ("Developer ID Application: …",
 # in the keychain), every file is signed with it, the hardened runtime
 # and a timestamp, the libraries first; without it, ad hoc, to run on
-# this Mac. Notarizing is the release job's (docs/macos-signing.md).
+# this Mac. Notarizing is the release job's (docs/apple_signing_linux.md).
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -158,8 +158,8 @@ done
 [ $bad = 0 ]
 
 # Signing, inside out: the libraries, the programs, the bundle.
-if [ -n "${MACOS_SIGN_IDENTITY:-}" ]; then
-	sign=(codesign --force --options runtime --timestamp --sign "$MACOS_SIGN_IDENTITY")
+if [ -n "${APPLE_CODESIGN_IDENTITY:-}" ]; then
+	sign=(codesign --force --options runtime --timestamp --sign "$APPLE_CODESIGN_IDENTITY")
 else
 	sign=(codesign --force --sign -)
 fi
@@ -178,7 +178,7 @@ cp -R "$app" "$stage/"
 ln -s /Applications "$stage/Applications"
 hdiutil create -volname inua-term -srcfolder "$stage" -ov -format UDZO "$dmg" >/dev/null
 rm -rf "$stage"
-if [ -n "${MACOS_SIGN_IDENTITY:-}" ]; then
-	codesign --force --timestamp --sign "$MACOS_SIGN_IDENTITY" "$dmg"
+if [ -n "${APPLE_CODESIGN_IDENTITY:-}" ]; then
+	codesign --force --timestamp --sign "$APPLE_CODESIGN_IDENTITY" "$dmg"
 fi
 du -sh "$app" "$dmg"

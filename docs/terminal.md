@@ -390,8 +390,10 @@ scripts/macos-app.sh                   build/macos/inua-term.app and its .dmg
 
 It copies GTK and what it loads into `Contents/Frameworks` and rewrites
 each reference to the copy beside it, signs everything (ad hoc, or with
-with a Developer ID named in `MACOS_SIGN_IDENTITY`), and
-checks that nothing points outside the bundle. CI builds it on every
+a Developer ID named in `APPLE_CODESIGN_IDENTITY`), and checks that
+nothing points outside the bundle. A tagged release signs and notarizes
+it when the Apple secrets are set
+([apple_signing_linux.md](apple_signing_linux.md)). CI builds it on every
 change and starts it once (`INUA_TERM_SMOKE=1` quits after the first
 frame), failing if any library came from Homebrew instead.
 
