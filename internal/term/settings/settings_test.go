@@ -56,7 +56,8 @@ x = 1
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.Font.Size != 11 || s.Cursor.Style != "block" || s.Keys["zoom"] != "ctrl+shift+return" || s.Keys["copy"] != "ctrl+shift+c" || s.Look.Scheme != "" || s.Web.Port != 7681 {
+	d := Default()
+	if s.Font.Size != 11 || s.Cursor.Style != "block" || s.Keys["zoom"] != d.Keys["zoom"] || s.Keys["copy"] != d.Keys["copy"] || s.Look.Scheme != "" || s.Web.Port != 7681 {
 		t.Errorf("defaults back: %+v", s)
 	}
 	if len(w) != 7 || !strings.Contains(strings.Join(w, "\n"), "unknown setting colors") {
@@ -86,22 +87,24 @@ settings = "ctrl+shift+comma"
 	if err != nil || len(w) > 0 {
 		t.Fatalf("load: %v %q", err, w)
 	}
-	if s.Version != Version || s.Keys["split_right"] != "ctrl+shift+o" || s.Keys["settings"] != "ctrl+comma" || s.Keys["zoom"] != "ctrl+shift+m" {
+	d := Default()
+	if s.Version != Version || s.Keys["split_right"] != d.Keys["split_right"] || s.Keys["settings"] != d.Keys["settings"] || s.Keys["zoom"] != "ctrl+shift+m" {
 		t.Errorf("keys %+v", s.Keys)
 	}
 }
 
-// A file of the second version: a new session moves to Ctrl+Shift+N and a
-// new workspace loses its chord, when both kept their defaults; a file
-// that changed either keeps both.
+// A file of the second version: a new session and a new workspace take
+// the defaults now (on Linux, Ctrl+Shift+N and none), when both kept
+// their old ones; a file that changed either keeps both.
 func TestSecondVersion(t *testing.T) {
 	dir := t.TempDir()
+	d := Default()
 	for _, c := range []struct {
 		keys               string
 		session, workspace string
 	}{
-		{"new_session = \"ctrl+shift+t\"\nnew_workspace = \"ctrl+shift+n\"", "ctrl+shift+n", ""},
-		{"", "ctrl+shift+n", ""}, // no keys: the defaults
+		{"new_session = \"ctrl+shift+t\"\nnew_workspace = \"ctrl+shift+n\"", d.Keys["new_session"], d.Keys["new_workspace"]},
+		{"", d.Keys["new_session"], d.Keys["new_workspace"]}, // no keys: the defaults
 		{"new_session = \"ctrl+shift+y\"\nnew_workspace = \"ctrl+shift+n\"", "ctrl+shift+y", "ctrl+shift+n"},
 		{"new_session = \"\"\nnew_workspace = \"ctrl+shift+n\"", "", "ctrl+shift+n"},
 	} {
