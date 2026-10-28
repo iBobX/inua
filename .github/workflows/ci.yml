@@ -107,10 +107,14 @@ jobs:
           # Its standard error goes to its log once it starts: both read.
           home=$(mktemp -d)
           out=$(INUA_TERM_SMOKE=1 HOME=$home DYLD_PRINT_LIBRARIES=1 \
-            perl -e 'alarm 120; exec @ARGV' build/macos/inua-term.app/Contents/MacOS/inua-term 2>&1)
+            perl -e 'alarm 120; exec @ARGV' build/macos/inua-term.app/Contents/MacOS/inua-term 2>&1) || code=$?
           out="$out
           $(cat "$home/.local/state/inua/term.log" 2>/dev/null)"
           echo "$out" | grep -v 'dyld' || true
+          if [ -n "${code:-}" ]; then
+            echo "inua-term ended with $code" >&2
+            exit 1
+          fi
           if echo "$out" | grep 'dyld.*\(/opt/homebrew\|/usr/local\)'; then
             echo "loaded from Homebrew, not the bundle" >&2
             exit 1
