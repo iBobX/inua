@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"log"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/pass"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/keyring"
@@ -37,7 +38,7 @@ const (
 )
 
 type passApp struct {
-	c        *Ctx
+	c        *appui.Ctx
 	prefs    pass.Prefs
 	stores   []string
 	store    pass.Store
@@ -117,11 +118,11 @@ type passApp struct {
 	onChosen       gio.AsyncReadyCallback
 }
 
-func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *passApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = &gtk.ApplicationWindow{}
 	a.reveal, a.values = map[string]bool{}, map[string]string{}
-	a.keyring = c.config().Keyring.Folder
+	a.keyring = c.Config().Keyring.Folder
 	var addStore, editCancel, editSave, retry, dlgCancel, otpCancel gtk.Button
 	ui := c.Load("pass.ui")
 	ui.Get("pass", a.win)
@@ -296,7 +297,7 @@ func (a *passApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return a.win
 }
 
-func (a *passApp) themeChanged() {}
+func (a *passApp) ThemeChanged() {}
 
 // --- stores ---
 

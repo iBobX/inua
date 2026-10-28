@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"log"
@@ -11,12 +11,13 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/calendar"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
 
 type calendarApp struct {
-	c        *Ctx
+	c        *appui.Ctx
 	data     calendar.Data
 	shown    time.Time // the month shown, its first day
 	selected time.Time // the day chosen
@@ -32,7 +33,7 @@ type calendarApp struct {
 	onMidnight glib.SourceFunc
 }
 
-func (a *calendarApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *calendarApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	win := &gtk.ApplicationWindow{}
 	buttons := map[string]*gtk.Button{}
@@ -91,7 +92,7 @@ func (a *calendarApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *calendarApp) themeChanged() {}
+func (a *calendarApp) ThemeChanged() {}
 
 func dayOf(t time.Time) time.Time {
 	y, m, d := t.Date()

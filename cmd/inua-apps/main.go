@@ -13,6 +13,7 @@ import (
 	"os"
 
 	"github.com/lyricat/inua/internal/appui"
+	"github.com/lyricat/inua/internal/lightui"
 )
 
 func main() {
@@ -27,6 +28,9 @@ func main() {
 	if flag.NArg() < 1 || (flag.Arg(0) != "workshop" && flag.Arg(0) != "music" && flag.NArg() > 2) {
 		flag.Usage()
 		os.Exit(2)
+	}
+	if flag.Arg(0) == "workshop" {
+		os.Exit(lightui.RunWorkshop(flag.Args()[1:], *uiDir))
 	}
 	os.Exit(appui.Run(flag.Arg(0), flag.Args()[1:], *uiDir))
 }

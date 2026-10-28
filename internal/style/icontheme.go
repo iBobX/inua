@@ -1,4 +1,4 @@
-package shell
+package style
 
 import (
 	"crypto/sha256"

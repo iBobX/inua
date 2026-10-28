@@ -5,7 +5,7 @@
 inua is a Hyprland desktop shell written in Go and GTK4. Read `README.md` and `docs/architecture.md` first.
 
 - `cmd/`: entry points for the shell, the command line, the light apps, the games, the assistant and the keyring service.
-- `internal/shell`, `internal/apps`, `internal/games`: state and logic without GTK; their views are in `internal/ui`, `internal/appui` and `internal/gamesui`.
+- `internal/shell`, `internal/apps`, `internal/games`: state and logic without GTK; their views are in `internal/ui`, `internal/lightui` (run by `internal/appui`) and `internal/gamesui`.
 - `internal/hypr`, `internal/system` and others: Hyprland IPC, D-Bus and system services.
 - `ui/`: Blueprint layouts, the generated `.ui` files, CSS, themes and icons.
 - `config/`: sample configuration and desktop entries; `scripts/`: build and session tools; `website/`: the static website.
@@ -43,7 +43,7 @@ A light app's window should be up with its content about a second after launch. 
 - Show real content in the first frame or soon after it, never placeholder numbers (System Monitor's first sample came from readings microseconds apart).
 - Long lists use `GtkListView`/`GtkGridView` with a factory; fill an empty view a screenful first and the rest in parts (`filesui` `refill`), and change a model with one `Splice` per change, not item by item.
 - Desktop-theme icons (files, other apps) come from a `GtkIconTheme` of the desktop's alone, as Files does; everything else from the Phosphor set.
-- Do not write files at every start when their content has not changed (`shell.IconTheme` keeps a sum).
+- Do not write files at every start when their content has not changed (`style.IconTheme` keeps a sum).
 - Check a start-up change by measuring it: temporary marks at the first frame and when the content shows, the old and the new build in turns in a nested session, medians of several launches; keep the marks out of commits.
 
 ## Testing

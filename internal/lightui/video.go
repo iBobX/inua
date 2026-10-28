@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"log"
@@ -18,6 +18,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/music"
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/apps/video"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gst"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -32,7 +33,7 @@ import (
 const controlsLinger = 2 * time.Second
 
 type videoApp struct {
-	c   *Ctx
+	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
 	player   *gst.Player
@@ -88,9 +89,9 @@ type videoApp struct {
 	onNotice   glib.SourceFunc
 }
 
-func (a *videoApp) themeChanged() {}
+func (a *videoApp) ThemeChanged() {}
 
-func (a *videoApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *videoApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = &gtk.ApplicationWindow{}
 	a.speed = 1
@@ -253,7 +254,7 @@ func (a *videoApp) build(c *Ctx) *gtk.ApplicationWindow {
 		go a.events(a.player)
 		go a.frames(a.player)
 	}
-	a.mp, a.mpConn = serveMPRIS("inua.video", i18n.T("Video"), IDBase+".Video", mpris.Handler{
+	a.mp, a.mpConn = serveMPRIS("inua.video", i18n.T("Video"), appui.IDBase+".Video", mpris.Handler{
 		Raise:     func() { gtkx.Post(func() { a.win.Present() }) },
 		PlayPause: func() { gtkx.Post(a.playOrPause) },
 		Play:      func() { gtkx.Post(func() { a.setPlaying(true) }) },
@@ -279,7 +280,7 @@ func (a *videoApp) build(c *Ctx) *gtk.ApplicationWindow {
 }
 
 // open takes the file of a start.
-func (a *videoApp) open(args []string) {
+func (a *videoApp) Open(args []string) {
 	if len(args) > 0 {
 		a.load(args[0])
 	}

@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"errors"

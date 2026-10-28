@@ -18,6 +18,7 @@ import (
 	"github.com/lyricat/inua/internal/notify"
 	"github.com/lyricat/inua/internal/rundir"
 	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/style"
 )
 
 // styles are the CSS providers the shell keeps, so settings can change
@@ -65,7 +66,7 @@ func (s *shellUI) loadStyles() {
 // more.
 func (s *shellUI) loadBase() {
 	// The theme defines the colour tokens style.css uses.
-	s.styles.base.LoadFromString(s.cfg.ThemeCSS(s.theme(), s.readUI) + shell.Glass(s.cfg.Style.Transparency) + shell.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale) + shell.Corners(s.cfg.Style.Radius))
+	s.styles.base.LoadFromString(s.cfg.ThemeCSS(s.theme(), s.readUI) + style.Glass(s.cfg.Style.Transparency) + style.ScaleText(s.readUI("style.css"), s.cfg.Style.TextScale) + style.Corners(s.cfg.Style.Radius))
 }
 
 // loadWallpaper styles the wallpaper windows from the settings: the picture

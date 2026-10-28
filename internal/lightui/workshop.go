@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gobject"
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/config"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -26,8 +27,8 @@ import (
 // tree after a render (same place, type and id) are kept, so inputs keep
 // their focus and text, and lists their scroll.
 
-// runWorkshop runs `inua-apps workshop [--dev] ID|DIR`.
-func runWorkshop(args []string, uiDir string) int {
+// RunWorkshop runs `inua-apps workshop [--dev] ID|DIR`.
+func RunWorkshop(args []string, uiDir string) int {
 	dev := false
 	args = slices.DeleteFunc(slices.Clone(args), func(a string) bool {
 		if a == "--dev" {
@@ -37,7 +38,7 @@ func runWorkshop(args []string, uiDir string) int {
 		return false
 	})
 	if len(args) == 0 && !dev { // the Workshop app: the apps installed
-		return run("workshop", IDBase+".Workshop", i18n.M("Workshop"), &workshopApp{manager: true}, false, nil, uiDir)
+		return appui.RunView("workshop", appui.IDBase+".Workshop", i18n.M("Workshop"), &workshopApp{manager: true}, false, nil, uiDir)
 	}
 	if len(args) != 1 {
 		fmt.Fprintln(os.Stderr, "usage: inua-apps workshop [[--dev] ID|DIR]")
@@ -48,7 +49,7 @@ func runWorkshop(args []string, uiDir string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 2
 	}
-	return run("workshop", m.AppID(), m.Name, &workshopApp{m: m, dev: dev}, false, nil, uiDir)
+	return appui.RunView("workshop", m.AppID(), m.Name, &workshopApp{m: m, dev: dev}, false, nil, uiDir)
 }
 
 // wsNode is a building block as drawn: its node, its outermost widget,
@@ -77,7 +78,7 @@ type wsNode struct {
 }
 
 type workshopApp struct {
-	c   *Ctx
+	c   *appui.Ctx
 	m   workshop.Manifest
 	dev bool
 	// manager is the Workshop app itself, drawn with the same blocks:
@@ -116,9 +117,9 @@ type workshopApp struct {
 	onFileOpened, onFileSaved, onFilesOpened gio.AsyncReadyCallback
 }
 
-func (a *workshopApp) themeChanged() {}
+func (a *workshopApp) ThemeChanged() {}
 
-func (a *workshopApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *workshopApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = gtk.NewApplicationWindow(c.App)
 	a.win.SetDefaultSize(int32(a.m.Width), int32(a.m.Height))

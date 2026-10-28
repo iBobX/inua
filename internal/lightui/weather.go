@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"context"
@@ -15,6 +15,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/store"
 	"github.com/lyricat/inua/internal/apps/weather"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -23,7 +24,7 @@ import (
 const refreshEvery = 15 * time.Minute
 
 type weatherApp struct {
-	c    *Ctx
+	c    *appui.Ctx
 	data weather.Data
 	http *http.Client
 	temp map[int]float64 // each place's temperature now, for the list
@@ -50,7 +51,7 @@ type weatherApp struct {
 	onTick                     glib.SourceFunc
 }
 
-func (a *weatherApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *weatherApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.http = &http.Client{Timeout: 15 * time.Second}
 	a.temp = map[int]float64{}
@@ -133,7 +134,7 @@ func (a *weatherApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *weatherApp) themeChanged() {}
+func (a *weatherApp) ThemeChanged() {}
 
 func (a *weatherApp) save() {
 	if err := store.Save(weather.StoreName, a.data); err != nil {

@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"crypto/rand"
@@ -18,6 +18,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/clock"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -29,7 +30,7 @@ const alarmSound = "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga
 var timerPresets = []int{1, 3, 5, 10, 15, 30}
 
 type clockApp struct {
-	c    *Ctx
+	c    *appui.Ctx
 	data clock.Data
 	mod  time.Time // the store file's time when last read
 
@@ -77,7 +78,7 @@ type clockApp struct {
 	onTick, onReshow glib.SourceFunc
 }
 
-func (a *clockApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *clockApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	win := &gtk.ApplicationWindow{}
 	var alarmPicker, timerPicker, days, presets gtk.Box
@@ -170,9 +171,9 @@ func (a *clockApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *clockApp) themeChanged() {}
+func (a *clockApp) ThemeChanged() {}
 
-func (a *clockApp) showPage(name string) {
+func (a *clockApp) ShowPage(name string) {
 	if a.pages.GetChildByName(name) != nil {
 		a.pages.SetVisibleChildName(name)
 	}

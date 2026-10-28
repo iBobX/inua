@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"strconv"
@@ -11,6 +11,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/calc"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -64,7 +65,7 @@ var calcSciKeys = [][]struct{ label, input string }{
 	{{"sin⁻¹", "asin("}, {"cos⁻¹", "acos("}, {"tan⁻¹", "atan("}},
 }
 
-func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *calcApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	win := &gtk.ApplicationWindow{}
 	ui := c.Load("calculator.ui")
 	ui.Get("calculator", win)
@@ -153,7 +154,7 @@ func (a *calcApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *calcApp) themeChanged() {}
+func (a *calcApp) ThemeChanged() {}
 
 // typed turns a key press into input.
 func (a *calcApp) typed(keyval uint32, state gdk.ModifierType) bool {

@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"context"
@@ -21,6 +21,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/sysmon"
 	"github.com/lyricat/inua/internal/apps/tailscale"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -67,7 +68,7 @@ type tsDetail struct {
 }
 
 type tailscaleApp struct {
-	c                      *Ctx
+	c                      *appui.Ctx
 	client                 *tailscale.Client
 	user                   string
 	pages                  gtk.Stack
@@ -104,7 +105,7 @@ type tailscaleApp struct {
 	panel                  sidePanel
 }
 
-func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *tailscaleApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.client = tailscale.NewClient("")
 	if u, err := user.Current(); err == nil {
@@ -224,9 +225,9 @@ func (a *tailscaleApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *tailscaleApp) themeChanged() {}
+func (a *tailscaleApp) ThemeChanged() {}
 
-func (a *tailscaleApp) showPage(name string) {
+func (a *tailscaleApp) ShowPage(name string) {
 	if a.pages.GetChildByName(name) != nil {
 		a.pages.SetVisibleChildName(name)
 	}

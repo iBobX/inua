@@ -69,7 +69,7 @@ msgid "“%s” · %s"
 msgstr "「%s」 · %s"
 
 #: internal/apps/calendar/calendar.go:69
-#: internal/appui/clock.go:218
+#: internal/lightui/clock.go:219
 #: internal/ui/control.go:322
 #: internal/ui/lock.go:247
 msgid "Monday, January 2"
@@ -106,9 +106,9 @@ msgid "Sun"
 msgstr "週日"
 
 #: internal/apps/clock/clock.go:69
-#: internal/appui/weather.go:357
 #: internal/config/strftime.go:50
 #: internal/i18n/time.go:11
+#: internal/lightui/weather.go:358
 #: internal/mailui/window.go:1414
 #: internal/shell/notify.go:28
 #: internal/ui/agenda.go:353
@@ -158,7 +158,7 @@ msgid "Weekends"
 msgstr "週末"
 
 #: internal/apps/clock/clock.go:112
-#: internal/appui/weather.go:359
+#: internal/lightui/weather.go:360
 #: ui/agenda.ui:80
 #: ui/calendar.ui:39
 msgid "Today"
@@ -305,11 +305,11 @@ msgid "A file from %s"
 msgstr "來自 %s 的檔案"
 
 #: internal/apps/connect/share.go:129
-#: internal/appui/workshop_blocks.go:427
-#: internal/appui/workshop_manager.go:63
 #: internal/filesui/cards.go:678
 #: internal/filesui/picker.go:490
 #: internal/filesui/window.go:744
+#: internal/lightui/workshop_blocks.go:427
+#: internal/lightui/workshop_manager.go:63
 #: internal/mailui/actions.go:486
 #: internal/mailui/people.go:297
 #: internal/shell/wifi.go:62
@@ -1623,8 +1623,8 @@ msgid "%d h %d min"
 msgstr "%[1]d h %[2]d 最小值"
 
 #: internal/apps/sysmon/sysmon.go:424
-#: internal/appui/clock.go:156
 #: internal/filesui/jobs.go:168
+#: internal/lightui/clock.go:157
 msgid "%d min"
 msgstr "%d分鐘"
 
@@ -1667,8 +1667,8 @@ msgid "%d mo ago"
 msgstr "%d 個月前"
 
 #: internal/apps/tailscale/status.go:187
-#: internal/appui/gpg.go:362
-#: internal/appui/gpg.go:602
+#: internal/lightui/gpg.go:363
+#: internal/lightui/gpg.go:603
 msgid "expired %s"
 msgstr "已過期 %s"
 
@@ -1694,9 +1694,9 @@ msgid "Waiting for approval"
 msgstr "等待批准"
 
 #: internal/apps/tailscale/status.go:273
-#: internal/appui/tailscale.go:152
 #: internal/filesui/remote.go:170
 #: internal/filesui/remotesetup.go:418
+#: internal/lightui/tailscale.go:153
 #: internal/mailui/window.go:644
 #: internal/shell/bluetooth.go:38
 #: internal/shell/status.go:158
@@ -1756,2406 +1756,10 @@ msgid "Thunderstorm"
 msgstr "雷暴"
 
 #: internal/apps/weather/weather.go:214
-#: internal/appui/sysmon.go:1082
+#: internal/lightui/sysmon.go:1083
 #: internal/vmui/window.go:2335
 msgid "Unknown"
 msgstr "未知"
-
-#: internal/appui/app.go:67
-#: internal/ui/alarms.go:106
-#: ui/settings.ui:1222
-#: config/apps/io.github.lyricat.Inua.Clock.desktop:3
-msgid "Clock"
-msgstr "時鐘"
-
-#: internal/appui/app.go:68
-#: internal/appui/weather.go:223
-#: internal/ui/agenda.go:323
-#: config/apps/io.github.lyricat.Inua.Weather.desktop:3
-msgid "Weather"
-msgstr "天氣"
-
-#: internal/appui/app.go:69
-#: ui/stocks.ui:35
-#: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
-msgid "Stocks"
-msgstr "股票"
-
-#: internal/appui/app.go:70
-#: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
-msgid "Calculator"
-msgstr "計算機"
-
-#: internal/appui/app.go:71
-#: ui/bar.ui:55
-#: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
-msgid "Calendar"
-msgstr "日曆"
-
-#: internal/appui/app.go:72
-#: internal/ui/picker.go:152
-#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
-msgid "Color Picker"
-msgstr "取色器"
-
-#: internal/appui/app.go:73
-#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
-msgid "System Monitor"
-msgstr "系統監視器"
-
-#: internal/appui/app.go:74
-#: internal/termui/prefsweb.go:64
-#: ui/control.ui:536
-#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
-msgid "Tailscale"
-msgstr "Tailscale"
-
-#: internal/appui/app.go:75
-#: internal/appui/pass.go:264
-#: internal/appui/pass_otp.go:114
-#: ui/pass.ui:29
-#: config/apps/io.github.lyricat.Inua.Pass.desktop:3
-msgid "Pass"
-msgstr "Pass"
-
-#: internal/appui/app.go:76
-#: internal/appui/gpg.go:272
-#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
-msgid "GPG"
-msgstr "GPG"
-
-#: internal/appui/app.go:77
-#: internal/appui/music.go:292
-#: internal/appui/music.go:1103
-#: internal/desktop/defaults.go:41
-#: config/apps/io.github.lyricat.Inua.Music.desktop:3
-msgid "Music"
-msgstr "音樂"
-
-#: internal/appui/app.go:78
-#: internal/appui/video.go:256
-#: internal/appui/video.go:510
-#: internal/desktop/defaults.go:45
-#: config/apps/io.github.lyricat.Inua.Video.desktop:3
-msgid "Video"
-msgstr "影片"
-
-#: internal/appui/calculator.go:52
-#: internal/appui/gpg.go:1529
-#: internal/appui/pass.go:948
-#: internal/diskui/details.go:528
-#: internal/filesui/cards.go:435
-#: internal/mailui/actions.go:216
-#: internal/term/web/strings.go:43
-#: internal/ui/clipboard.go:503
-#: internal/vmui/window.go:1996
-#: internal/vmui/window.go:2002
-#: internal/vmui/window.go:2015
-#: internal/vmui/window.go:2027
-#: ui/clock.ui:231
-#: ui/gpg.ui:1572
-#: ui/pass.ui:263
-msgid "Delete"
-msgstr "刪除"
-
-#: internal/appui/calculator.go:56
-msgid "Change sign"
-msgstr "改變符號"
-
-#: internal/appui/calculator.go:239
-msgid "Error"
-msgstr "錯誤"
-
-#: internal/appui/calculator.go:273
-msgid "No calculations yet"
-msgstr "尚未計算"
-
-#: internal/appui/calculator.go:295
-msgid "Use %s"
-msgstr "使用%s"
-
-#: internal/appui/calendar.go:131
-#: internal/ui/agenda.go:228
-msgid "January 2006"
-msgstr "2006年1月"
-
-#: internal/appui/calendar.go:133
-#: internal/ui/agenda.go:241
-msgid "WK"
-msgstr "週"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Su"
-msgstr "日"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Mo"
-msgstr "一"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Tu"
-msgstr "二"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "We"
-msgstr "三"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Th"
-msgstr "四"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Fr"
-msgstr "五"
-
-#: internal/appui/calendar.go:138
-#: internal/appui/clock.go:148
-#: internal/ui/agenda.go:242
-msgid "Sa"
-msgstr "六"
-
-#: internal/appui/clock.go:145
-msgid "HRS"
-msgstr "小時"
-
-#: internal/appui/clock.go:145
-msgid "MIN"
-msgstr "分鐘"
-
-#: internal/appui/clock.go:145
-msgid "SEC"
-msgstr "秒"
-
-#: internal/appui/clock.go:259
-msgid "Day"
-msgstr "日"
-
-#: internal/appui/clock.go:262
-msgid "Night"
-msgstr "夜晚"
-
-#: internal/appui/clock.go:337
-msgid "No city by that name"
-msgstr "沒有同名的城市"
-
-#: internal/appui/clock.go:369
-#: internal/appui/weather.go:246
-msgid "Remove %s"
-msgstr "刪除 %s"
-
-#: internal/appui/clock.go:402
-#: ui/pass.ui:252
-msgid "Edit"
-msgstr "編輯"
-
-#: internal/appui/clock.go:491
-#: internal/games/fortune.go:65
-#: internal/gamesui/fortune_menu.go:174
-#: internal/termui/guide.go:161
-#: internal/ui/voice_page.go:190
-#: ui/clock.ui:339
-#: ui/clock.ui:406
-#: ui/vm.ui:684
-#: ui/vm.ui:2261
-#: ui/vm.ui:2283
-msgid "Start"
-msgstr "開始"
-
-#: internal/appui/clock.go:492
-#: ui/music.ui:332
-msgid "Reset"
-msgstr "重設"
-
-#: internal/appui/clock.go:496
-#: internal/assistantui/assistantui.go:482
-#: internal/ui/alarms.go:108
-#: ui/disk.ui:179
-#: ui/mail-compose.ui:375
-#: ui/vm.ui:694
-#: ui/vm.ui:1433
-#: ui/vm.ui:1779
-#: ui/vm.ui:2134
-#: ui/vm.ui:2156
-#: ui/vm.ui:2865
-#: ui/vm.ui:2887
-msgid "Stop"
-msgstr "停止"
-
-#: internal/appui/clock.go:497
-#: internal/appui/clock.go:506
-#: ui/clock.ui:329
-msgid "Lap"
-msgstr "計次"
-
-#: internal/appui/clock.go:545
-msgid "LAP %d"
-msgstr "第 %d 次"
-
-#: internal/appui/clock.go:565
-#: internal/appui/clock.go:575
-#: internal/appui/sysmon.go:55
-#: internal/appui/sysmon.go:55
-#: ui/clock.ui:463
-msgid "Pause"
-msgstr "暫停"
-
-#: internal/appui/clock.go:568
-#: internal/appui/clock.go:576
-msgid "ENDS AT %s"
-msgstr "結束於 %s"
-
-#: internal/appui/clock.go:581
-#: internal/appui/sysmon.go:870
-#: internal/appui/sysmon.go:870
-#: internal/vmui/window.go:2465
-msgid "Resume"
-msgstr "繼續"
-
-#: internal/appui/clock.go:582
-#: internal/gamesui/pinball.go:241
-msgid "PAUSED"
-msgstr "暫停"
-
-#: internal/appui/clock.go:593
-msgid "Timer done"
-msgstr "定時器完成"
-
-#: internal/appui/clock.go:594
-msgid "Your timer has ended."
-msgstr "您的計時器已結束。"
-
-#: internal/appui/colorpicker.go:120
-msgid "HEX"
-msgstr "HEX"
-
-#: internal/appui/colorpicker.go:120
-msgid "RGB"
-msgstr "RGB"
-
-#: internal/appui/colorpicker.go:120
-msgid "HSL"
-msgstr "HSL"
-
-#: internal/appui/colorpicker.go:134
-msgid "Copy %s"
-msgstr "複製 %s"
-
-#: internal/appui/colorpicker.go:139
-msgid "No colour yet. Pick one from anywhere on the screen."
-msgstr "還沒有顏色。從螢幕上的任意位置選擇一個。"
-
-#: internal/appui/gpg.go:144
-msgid "1 year"
-msgstr "1 年"
-
-#: internal/appui/gpg.go:144
-msgid "2 years"
-msgstr "2 年"
-
-#: internal/appui/gpg.go:144
-msgid "5 years"
-msgstr "5 年"
-
-#: internal/appui/gpg.go:144
-#: internal/mailui/settings.go:530
-#: internal/shell/idle.go:162
-#: ui/settings.ui:4125
-msgid "Never"
-msgstr "永不過期"
-
-#: internal/appui/gpg.go:317
-msgid "The keyring cannot be read: %s"
-msgstr "無法讀取金鑰環：%s"
-
-#: internal/appui/gpg.go:359
-msgid "created %s"
-msgstr "建立於 %s"
-
-#: internal/appui/gpg.go:359
-#: internal/appui/gpg.go:362
-#: internal/appui/gpg.go:364
-#: internal/appui/gpg.go:602
-#: internal/appui/gpg.go:624
-#: internal/shell/notify.go:32
-#: internal/ui/askpass.go:414
-#: internal/ui/askpass.go:482
-#: internal/ui/askpass.go:486
-#: internal/ui/askpass.go:488
-#: internal/ui/settings_about.go:234
-#: internal/ui/settings_keyring.go:640
-#: internal/ui/settings_keyring.go:674
-msgid "Jan 2, 2006"
-msgstr "2006年1月2日"
-
-#: internal/appui/gpg.go:364
-msgid "expires %s"
-msgstr "%s 過期"
-
-#: internal/appui/gpg.go:378
-#: internal/appui/gpg.go:775
-msgid "signs only"
-msgstr "僅簽章"
-
-#: internal/appui/gpg.go:388
-msgid "revoked"
-msgstr "已撤銷"
-
-#: internal/appui/gpg.go:390
-msgid "expired"
-msgstr "已過期"
-
-#: internal/appui/gpg.go:392
-msgid "disabled"
-msgstr "已停用"
-
-#: internal/appui/gpg.go:394
-#: internal/appui/gpg.go:608
-#: internal/appui/gpg.go:748
-msgid "yours"
-msgstr "你的"
-
-#: internal/appui/gpg.go:396
-msgid "verified"
-msgstr "已驗證"
-
-#: internal/appui/gpg.go:398
-msgid "partly verified"
-msgstr "部分驗證"
-
-#: internal/appui/gpg.go:400
-msgid "not verified"
-msgstr "未驗證"
-
-#: internal/appui/gpg.go:463
-#: ui/gpg.ui:305
-msgid "Encrypt to your key as well, so you can open it later"
-msgstr "也加密給你的金鑰，以便你之後能打開"
-
-#: internal/appui/gpg.go:465
-msgid "This key only signs; it cannot be encrypted to"
-msgstr "這個金鑰僅用於簽章，不能作為加密對象"
-
-#: internal/appui/gpg.go:516
-msgid "Take off"
-msgstr "移除"
-
-#: internal/appui/gpg.go:526
-msgid "%d recipient"
-msgid_plural "%d recipients"
-msgstr[0] "%d 個收件人"
-
-#: internal/appui/gpg.go:529
-#: ui/gpg.ui:118
-msgid "Name, address or key ID"
-msgstr "姓名、地址或金鑰 ID"
-
-#: internal/appui/gpg.go:531
-msgid "Add another"
-msgstr "再新增"
-
-#: internal/appui/gpg.go:580
-msgid "%d more: type to narrow them down"
-msgid_plural "%d more: type to narrow them down"
-msgstr[0] "還有 %d 個：輸入以縮小範圍"
-
-#: internal/appui/gpg.go:623
-msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
-msgstr "這個金鑰已於 %s 過期，gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
-
-#: internal/appui/gpg.go:626
-#: internal/appui/gpg.go:791
-msgid "%s revoked this key; ask for their new one."
-msgstr "%s 已撤銷這個金鑰；請向對方要新的。"
-
-#: internal/appui/gpg.go:628
-msgid "This key cannot encrypt."
-msgstr "這個金鑰不能加密。"
-
-#: internal/appui/gpg.go:638
-msgid "No key matches. Import theirs on the Keys tab."
-msgstr "沒有符合的金鑰。請在「金鑰」頁匯入對方的金鑰。"
-
-#: internal/appui/gpg.go:640
-msgid "Already added."
-msgstr "已經新增了。"
-
-#: internal/appui/gpg.go:643
-msgid "Your keyring is empty. Import their key on the Keys tab."
-msgstr "金鑰環是空的。請在「金鑰」頁匯入對方的金鑰。"
-
-#: internal/appui/gpg.go:645
-msgid "Every key is chosen."
-msgstr "所有金鑰都已選上。"
-
-#: internal/appui/gpg.go:700
-msgid "MY KEYS"
-msgstr "我的金鑰"
-
-#: internal/appui/gpg.go:700
-msgid "OTHERS"
-msgstr "他人的"
-
-#: internal/appui/gpg.go:700
-msgid "INVALID KEYS"
-msgstr "無效金鑰"
-
-#: internal/appui/gpg.go:717
-msgid "%d key"
-msgid_plural "%d keys"
-msgstr[0] "%d 個金鑰"
-
-#: internal/appui/gpg.go:785
-msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
-msgstr "延長後可再次使用。無論如何請保留：它能打開加密給它的內容。"
-
-#: internal/appui/gpg.go:787
-msgid "Keep it: it opens what was encrypted to it."
-msgstr "請保留：它能打開加密給它的內容。"
-
-#: internal/appui/gpg.go:789
-msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
-msgstr "gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
-
-#: internal/appui/gpg.go:812
-msgid "Copy fingerprint"
-msgstr "複製指紋"
-
-#: internal/appui/gpg.go:813
-msgid "Copy public key"
-msgstr "複製公鑰"
-
-#: internal/appui/gpg.go:815
-msgid "Encrypt to…"
-msgstr "加密給…"
-
-#: internal/appui/gpg.go:818
-msgid "Extend 2 years"
-msgstr "延長 2 年"
-
-#: internal/appui/gpg.go:823
-#: ui/disk.ui:781
-#: ui/vm.ui:391
-#: ui/vm.ui:1536
-#: ui/vm.ui:1582
-#: ui/vm.ui:1960
-#: ui/vm.ui:2625
-#: ui/vm.ui:2671
-msgid "Delete…"
-msgstr "刪除…"
-
-#: internal/appui/gpg.go:883
-#: internal/appui/tailscale.go:469
-#: internal/diskui/details.go:578
-#: internal/gamesui/checkers.go:673
-#: internal/mailui/welcome.go:480
-#: internal/term/web/strings.go:35
-#: internal/ui/askpass.go:571
-#: internal/viewerui/app.go:548
-#: internal/vmui/window.go:893
-msgid "Copied"
-msgstr "已複製"
-
-#: internal/appui/gpg.go:886
-msgid "Copied; taken off the clipboard in 45 seconds"
-msgstr "已複製；45 秒後從剪貼簿移除"
-
-#: internal/appui/gpg.go:939
-msgid "Fingerprint copied"
-msgstr "已複製指紋"
-
-#: internal/appui/gpg.go:951
-msgid "Public key copied"
-msgstr "已複製公鑰"
-
-#: internal/appui/gpg.go:1019
-msgid "Files to encrypt"
-msgstr "要加密的檔案"
-
-#: internal/appui/gpg.go:1019
-msgid "Files to decrypt"
-msgstr "要解密的檔案"
-
-#: internal/appui/gpg.go:1019
-msgid "Key file to import"
-msgstr "要匯入的金鑰檔案"
-
-#: internal/appui/gpg.go:1085
-msgid "Leave it out"
-msgstr "移除"
-
-#: internal/appui/gpg.go:1120
-msgid "Saved to %s"
-msgstr "已儲存到 %s"
-
-#: internal/appui/gpg.go:1136
-msgid "Add someone to encrypt to."
-msgstr "請新增加密對象。"
-
-#: internal/appui/gpg.go:1150
-#: internal/appui/gpg.go:1276
-msgid "Choose or drop files first."
-msgstr "請先選擇或拖入檔案。"
-
-#: internal/appui/gpg.go:1161
-msgid "Type a message first."
-msgstr "請先輸入訊息。"
-
-#: internal/appui/gpg.go:1166
-msgid "Encrypting…"
-msgstr "正在加密…"
-
-#: internal/appui/gpg.go:1198
-#: internal/games/checkersnet/texts.go:37
-#: internal/games/fortunenet/texts.go:29
-msgid "you"
-msgstr "你"
-
-#: internal/appui/gpg.go:1203
-msgid "For %s"
-msgstr "給 %s"
-
-#: internal/appui/gpg.go:1205
-msgid "signed"
-msgstr "已簽章"
-
-#: internal/appui/gpg.go:1222
-msgid "written in %s"
-msgstr "已寫入 %s"
-
-#: internal/appui/gpg.go:1226
-msgid "Move to Trash…"
-msgstr "移到垃圾桶…"
-
-#: internal/appui/gpg.go:1250
-msgid "%s moved to the trash"
-msgstr "已將 %s 移到垃圾桶"
-
-#: internal/appui/gpg.go:1285
-msgid "Paste a message first."
-msgstr "請先貼上訊息。"
-
-#: internal/appui/gpg.go:1292
-msgid "Decrypting… gpg may ask for your passphrase."
-msgstr "正在解密… gpg 可能會詢問密碼短語。"
-
-#: internal/appui/gpg.go:1341
-msgid "Not signed: who sent it is not known"
-msgstr "未簽章：不知道是誰傳送的"
-
-#: internal/appui/gpg.go:1349
-msgid "Signed by %s"
-msgstr "由 %s 簽章"
-
-#: internal/appui/gpg.go:1352
-msgid "Jan 2, 2006 15:04"
-msgstr "2006年1月2日 15:04"
-
-#: internal/appui/gpg.go:1356
-msgid "The signature by %s does not match: it was changed after signing"
-msgstr "%s 的簽章不符：簽章後被改動過"
-
-#: internal/appui/gpg.go:1360
-msgid "Signed by a key not in your keyring, so it cannot be checked"
-msgstr "簽章所用的金鑰不在你的金鑰環裡，無法核對"
-
-#: internal/appui/gpg.go:1364
-msgid "Signed by %s, with a key that is no longer valid"
-msgstr "由 %s 簽章，所用的金鑰已失效"
-
-#: internal/appui/gpg.go:1382
-msgid "Encrypted to %s"
-msgstr "加密給 %s"
-
-#: internal/appui/gpg.go:1398
-#: ui/gpg.ui:1280
-msgid "Import"
-msgstr "匯入"
-
-#: internal/appui/gpg.go:1408
-msgid "No key found in it."
-msgstr "裡面沒有金鑰。"
-
-#: internal/appui/gpg.go:1413
-msgid "Import %d key"
-msgid_plural "Import %d keys"
-msgstr[0] "匯入 %d 個金鑰"
-
-#: internal/appui/gpg.go:1425
-msgid "new"
-msgstr "新的"
-
-#: internal/appui/gpg.go:1428
-msgid "holds a secret key"
-msgstr "含私鑰"
-
-#: internal/appui/gpg.go:1430
-msgid "updates one you have"
-msgstr "更新已有的"
-
-#: internal/appui/gpg.go:1455
-msgid "Importing…"
-msgstr "正在匯入…"
-
-#: internal/appui/gpg.go:1466
-msgid "%d key imported"
-msgid_plural "%d keys imported"
-msgstr[0] "已匯入 %d 個金鑰"
-
-#: internal/appui/gpg.go:1479
-msgid "Give a name and an address."
-msgstr "請填寫姓名和地址。"
-
-#: internal/appui/gpg.go:1483
-msgid "That address has no @."
-msgstr "這個地址沒有 @。"
-
-#: internal/appui/gpg.go:1489
-msgid "Creating… gpg asks for a passphrase for the new key."
-msgstr "正在建立… gpg 會為新金鑰詢問密碼短語。"
-
-#: internal/appui/gpg.go:1503
-msgid "Your key is created"
-msgstr "金鑰已建立"
-
-#: internal/appui/gpg.go:1526
-msgid "Delete the key of %s?"
-msgstr "刪除 %s 的金鑰？"
-
-#: internal/appui/gpg.go:1528
-msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
-msgstr "它會從金鑰環中移除。之後它簽章的訊息會顯示為由不在金鑰環中的金鑰簽章；重新匯入即可恢復。"
-
-#: internal/appui/gpg.go:1535
-msgid "Move %s to the trash?"
-msgstr "把 %s 移到垃圾桶？"
-
-#: internal/appui/gpg.go:1536
-msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
-msgstr "解密出的副本會移到垃圾桶，可從那裡復原；加密檔案保留。"
-
-#: internal/appui/gpg.go:1537
-#: internal/filesui/cards.go:693
-#: internal/filesui/window.go:785
-#: internal/mailui/picker.go:143
-#: ui/disk.ui:771
-#: ui/settings.ui:214
-#: ui/settings.ui:621
-msgid "Move to Trash"
-msgstr "移到垃圾桶"
-
-#: internal/appui/gpg.go:1553
-msgid "Key deleted"
-msgstr "已刪除金鑰"
-
-#: internal/appui/gpg.go:1563
-msgid "Extending… gpg asks for your passphrase."
-msgstr "正在延長… gpg 會詢問你的密碼短語。"
-
-#: internal/appui/gpg.go:1572
-msgid "Extended by 2 years"
-msgstr "已延長 2 年"
-
-#: internal/appui/media.go:54
-msgid "GStreamer is not installed: install its plugins (on Ubuntu gstreamer1.0-plugins-base, -good, -bad, -ugly and gstreamer1.0-libav)."
-msgstr "未安裝 GStreamer：請安裝它的外掛（Ubuntu 上為 gstreamer1.0-plugins-base、-good、-bad、-ugly 和 gstreamer1.0-libav）。"
-
-#: internal/appui/music.go:177
-#: ui/music.ui:323
-msgid "Presets"
-msgstr "預設集"
-
-#: internal/appui/music.go:485
-msgid "Cannot play %s: %s"
-msgstr "無法播放 %s：%s"
-
-#: internal/appui/music.go:559
-#: ui/music.ui:86
-msgid "Nothing playing"
-msgstr "未在播放"
-
-#: internal/appui/music.go:609
-msgid "MONO"
-msgstr "單聲道"
-
-#: internal/appui/music.go:611
-msgid "STEREO"
-msgstr "立體聲"
-
-#: internal/appui/music.go:678
-msgid "PRE"
-msgstr "前級"
-
-#: internal/appui/music.go:787
-#: ui/music.ui:270
-msgid "Repeat: off (R)"
-msgstr "重複：關 (R)"
-
-#: internal/appui/music.go:790
-msgid "Repeat: the playlist (R)"
-msgstr "重複：整個播放清單 (R)"
-
-#: internal/appui/music.go:792
-msgid "Repeat: this track (R)"
-msgstr "重複：這首 (R)"
-
-#: internal/appui/music.go:1015
-msgid "%d track"
-msgid_plural "%d tracks"
-msgstr[0] "%d 首"
-
-#: internal/appui/music.go:1102
-#: internal/appui/sysmon.go:793
-msgid "Open files"
-msgstr "開啟文件"
-
-#: internal/appui/music.go:1102
-#: ui/music.ui:424
-msgid "Add files"
-msgstr "加入檔案"
-
-#: internal/appui/music.go:1106
-#: ui/music.ui:434
-msgid "Add a folder"
-msgstr "加入資料夾"
-
-#: internal/appui/music.go:1109
-msgid "Load a playlist"
-msgstr "載入播放清單"
-
-#: internal/appui/music.go:1110
-msgid "Playlists"
-msgstr "播放清單"
-
-#: internal/appui/music.go:1113
-msgid "Save the playlist"
-msgstr "儲存播放清單"
-
-#: internal/appui/music.go:1114
-msgid "Playlist"
-msgstr "播放清單"
-
-#: internal/appui/pass.go:345
-msgid "A password store: a folder with a .gpg-id"
-msgstr "密碼庫：含有 .gpg-id 的資料夾"
-
-#: internal/appui/pass.go:353
-msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
-msgstr "%s 不是密碼庫：沒有 .gpg-id（pass init 可以建立）。"
-
-#: internal/appui/pass.go:373
-msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
-msgstr "沒有密碼庫。pass init 你的GPG金鑰ID 會在 ~/.password-store 建立一個；也可以在下方加入其他資料夾。"
-
-#: internal/appui/pass.go:400
-msgid "The store is empty. + makes an entry."
-msgstr "密碼庫是空的。+ 可新增項目。"
-
-#: internal/appui/pass.go:403
-#: internal/appui/pass.go:802
-#: internal/appui/pass.go:874
-#: internal/appui/pass.go:1133
-msgid "Choose an entry."
-msgstr "選擇一個項目。"
-
-#: internal/appui/pass.go:409
-msgid "Top level"
-msgstr "頂層"
-
-#: internal/appui/pass.go:417
-#: internal/ui/settings.go:790
-#: internal/ui/settings.go:817
-msgid "%d entry"
-msgid_plural "%d entries"
-msgstr[0] "%d 筆"
-
-#: internal/appui/pass.go:422
-msgid "Right-click to rename or move"
-msgstr "右鍵點擊以重新命名或移動"
-
-#: internal/appui/pass.go:485
-#: internal/ui/passwords.go:484
-msgid "Nothing matches. Each word is looked for in the whole path."
-msgstr "沒有符合項目。每個詞都會在整個路徑中尋找。"
-
-#: internal/appui/pass.go:487
-msgid "And %d more: another word narrows them."
-msgid_plural "And %d more: another word narrows them."
-msgstr[0] "還有 %d 個：再加一個詞可縮小範圍。"
-
-#: internal/appui/pass.go:633
-msgid "Decrypting %s"
-msgstr "正在解密 %s"
-
-#: internal/appui/pass.go:689
-#: internal/appui/pass_otp.go:188
-msgid "Replace the one-time code"
-msgstr "替換一次性驗證碼"
-
-#: internal/appui/pass.go:691
-#: internal/appui/pass_otp.go:191
-#: ui/pass.ui:230
-#: ui/pass.ui:670
-msgid "Add a one-time code"
-msgstr "新增一次性驗證碼"
-
-#: internal/appui/pass.go:696
-#: internal/ui/passwords.go:557
-msgid "USERNAME"
-msgstr "使用者名稱"
-
-#: internal/appui/pass.go:699
-#: internal/ui/passwords.go:560
-msgid "PASSWORD"
-msgstr "密碼"
-
-#: internal/appui/pass.go:704
-#: internal/appui/pass.go:756
-#: internal/ui/passwords.go:563
-#: internal/ui/passwords.go:566
-#: ui/pass.ui:802
-msgid "ONE-TIME CODE"
-msgstr "一次性驗證碼"
-
-#: internal/appui/pass.go:711
-#: internal/ui/passwords.go:573
-msgid "NOTES"
-msgstr "備註"
-
-#: internal/appui/pass.go:740
-#: internal/mailui/formatted.go:184
-#: internal/term/desktop/desktop_linux.go:42
-#: internal/ui/passwords.go:640
-#: internal/vmui/window.go:2709
-#: internal/vmui/window.go:2710
-msgid "Show"
-msgstr "顯示"
-
-#: internal/appui/pass.go:742
-#: internal/ui/notify.go:410
-#: internal/ui/passwords.go:638
-msgid "Hide"
-msgstr "隱藏"
-
-#: internal/appui/pass.go:746
-#: internal/appui/pass.go:771
-#: internal/diskui/details.go:581
-#: internal/filesui/window.go:760
-#: internal/mailui/details.go:222
-#: internal/term/settings/settings.go:116
-#: internal/term/web/strings.go:36
-#: internal/termui/prefsweb.go:90
-#: internal/ui/askpass.go:232
-#: internal/ui/passwords.go:643
-#: internal/vmui/window.go:896
-#: ui/disk.ui:697
-#: ui/gpg.ui:661
-#: ui/gpg.ui:907
-#: ui/settings.ui:3136
-#: ui/vm.ui:638
-msgid "Copy"
-msgstr "複製"
-
-#: internal/appui/pass.go:785
-#: internal/appui/pass_otp.go:246
-#: internal/ui/passwords.go:657
-msgid "%d second left"
-msgid_plural "%d seconds left"
-msgstr[0] "剩 %d 秒"
-
-#: internal/appui/pass.go:930
-msgid "Rename or move the category “%s”"
-msgstr "重新命名或移動類別「%s」"
-
-#: internal/appui/pass.go:931
-msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
-msgstr "新路徑。換個名字即重新命名；放到另一個類別下的路徑，即連同所有項目移動過去。"
-
-#: internal/appui/pass.go:932
-#: internal/appui/pass.go:936
-#: internal/term/web/strings.go:65
-msgid "Move"
-msgstr "移動"
-
-#: internal/appui/pass.go:934
-msgid "Rename or move “%s”"
-msgstr "重新命名或移動「%s」"
-
-#: internal/appui/pass.go:935
-msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
-msgstr "新路徑。第一段是類別：改它即移動項目，改其餘部分即重新命名。"
-
-#: internal/appui/pass.go:938
-#: ui/pass.ui:137
-msgid "New entry"
-msgstr "新增項目"
-
-#: internal/appui/pass.go:939
-msgid "Its path: the first part is its category. Its content comes next."
-msgstr "路徑：第一段是類別。接著填寫內容。"
-
-#: internal/appui/pass.go:944
-#: internal/termui/guide.go:163
-#: ui/vm.ui:3285
-msgid "Next"
-msgstr "下一步"
-
-#: internal/appui/pass.go:946
-msgid "Delete “%s”?"
-msgstr "刪除「%s」？"
-
-#: internal/appui/pass.go:947
-msgid "pass removes its file; a git store keeps it in its history."
-msgstr "pass 會刪除它的檔案；git 管理的密碼庫會在歷史中保留。"
-
-#: internal/appui/pass.go:983
-#: internal/appui/pass.go:1013
-#: internal/mailui/reader.go:548
-#: internal/mailui/reader.go:793
-#: internal/viewerui/app.go:790
-msgid "FILE"
-msgstr "文件"
-
-#: internal/appui/pass.go:1009
-msgid "CATEGORY"
-msgstr "類別"
-
-#: internal/appui/pass.go:1010
-#: internal/filesui/columns.go:176
-msgid "NAME"
-msgstr "名稱"
-
-#: internal/appui/pass.go:1023
-msgid "and %d more"
-msgid_plural "and %d more"
-msgstr[0] "還有 %d 個"
-
-#: internal/appui/pass.go:1067
-msgid "That is where it is."
-msgstr "它已經在那裡了。"
-
-#: internal/appui/pass.go:1069
-msgid "A category cannot move into itself."
-msgstr "類別不能移動到自身內部。"
-
-#: internal/appui/pass.go:1071
-msgid "That path is already in the store."
-msgstr "這個路徑已經在密碼庫裡了。"
-
-#: internal/appui/pass.go:1073
-msgid "It is no longer in the store."
-msgstr "它已經不在密碼庫裡了。"
-
-#: internal/appui/pass.go:1075
-msgid "Each part of the path needs a name, without a leading dot."
-msgstr "路徑的每一段都要有名字，且不能以點開頭。"
-
-#: internal/appui/pass.go:1182
-msgid "TRUSTED APPS"
-msgstr "受信任的應用程式"
-
-#: internal/appui/pass.go:1182
-#: internal/appui/workshop_manager.go:50
-#: internal/ui/settings_keyring.go:551
-msgid "%d app"
-msgid_plural "%d apps"
-msgstr[0] "%d 個應用程式"
-
-#: internal/appui/pass.go:1184
-msgid "None: an app reading it is asked about first."
-msgstr "無：讀取它的應用程式會先詢問。"
-
-#: internal/appui/pass.go:1190
-#: internal/ui/askpass.go:405
-#: internal/ui/settings_keyring.go:624
-msgid "Flatpak: %s"
-msgstr "Flatpak：%s"
-
-#: internal/appui/pass.go:1195
-#: internal/appui/pass.go:1217
-#: internal/ui/settings_keyring.go:469
-#: internal/ui/settings_keyring.go:477
-#: internal/ui/settings_keyring.go:629
-#: internal/vmui/window.go:1591
-msgid "%s · %s"
-msgstr "%s · %s"
-
-#: internal/appui/pass.go:1198
-#: internal/appui/workshop_manager.go:115
-#: internal/connectui/window.go:560
-#: internal/mailui/actions.go:422
-#: internal/mailui/compose.go:474
-#: internal/ui/settings_ai.go:583
-#: internal/ui/settings_keyring.go:645
-#: internal/ui/settings_keyring.go:679
-#: internal/vmui/window.go:1976
-#: ui/stocks.ui:292
-msgid "Remove"
-msgstr "移除"
-
-#: internal/appui/pass.go:1202
-#: internal/ui/settings_keyring.go:649
-msgid "Stop trusting it: it is asked about at its next read"
-msgstr "不再信任：它下次讀取時會詢問"
-
-#: internal/appui/pass.go:1207
-msgid "LAST READS"
-msgstr "最近讀取"
-
-#: internal/appui/pass.go:1209
-msgid "No app has read it yet."
-msgstr "尚無應用程式讀取過它。"
-
-#: internal/appui/pass.go:1213
-#: internal/appui/sysmon.go:972
-#: internal/filesui/pane.go:1544
-#: internal/ui/settings_keyring.go:508
-#: internal/ui/shotdrawer.go:327
-msgid "Jan 2 15:04"
-msgstr "1月2日 15:04"
-
-#: internal/appui/pass.go:1215
-msgid "%s · %d times"
-msgid_plural "%s · %d times"
-msgstr[0] "%s · %d 次"
-
-#: internal/appui/pass.go:1227
-#: internal/ui/settings_keyring.go:694
-msgid "trusted"
-msgstr "已信任"
-
-#: internal/appui/pass.go:1229
-#: internal/ui/settings_keyring.go:696
-msgid "allowed once"
-msgstr "允許一次"
-
-#: internal/appui/pass.go:1231
-#: internal/ui/settings_keyring.go:698
-msgid "allowed, and trusted from now on"
-msgstr "已允許，今後信任"
-
-#: internal/appui/pass.go:1233
-#: internal/ui/settings_keyring.go:700
-msgid "denied"
-msgstr "已拒絕"
-
-#: internal/appui/pass.go:1235
-#: internal/ui/settings_keyring.go:702
-msgid "allowed: no one to ask"
-msgstr "已允許：無人可詢問"
-
-#: internal/appui/pass.go:1237
-msgid "read"
-msgstr "已讀取"
-
-#: internal/appui/pass_otp.go:101
-msgid "It is not an image this app reads (PNG or JPEG)."
-msgstr "這不是本應用程式能讀取的圖片（PNG 或 JPEG）。"
-
-#: internal/appui/pass_otp.go:189
-#: internal/filesui/cards.go:497
-#: internal/filesui/picker.go:371
-msgid "Replace"
-msgstr "替換"
-
-#: internal/appui/pass_otp.go:192
-#: internal/appui/workshop_manager.go:88
-#: ui/connect.ui:966
-#: ui/pass.ui:871
-#: ui/remote.ui:1053
-msgid "Add"
-msgstr "新增"
-
-#: internal/appui/pass_otp.go:265
-msgid "Reading the screen needs grim."
-msgstr "讀取螢幕需要 grim。"
-
-#: internal/appui/pass_otp.go:269
-msgid "Selecting an area needs slurp."
-msgstr "選取區域需要 slurp。"
-
-#: internal/appui/pass_otp.go:273
-msgid "No area was chosen."
-msgstr "沒有選取區域。"
-
-#: internal/appui/pass_otp.go:288
-#: internal/appui/pass_otp.go:326
-msgid "The screen could not be read."
-msgstr "無法讀取螢幕。"
-
-#: internal/appui/pass_otp.go:338
-msgid "An image with a QR code"
-msgstr "含 QR 碼的圖片"
-
-#: internal/appui/pass_otp.go:340
-#: internal/desktop/defaults.go:48
-#: internal/ui/settings.go:927
-msgid "Images"
-msgstr "影像"
-
-#: internal/appui/pass_otp.go:361
-msgid "Reading the QR code…"
-msgstr "正在讀取 QR 碼…"
-
-#: internal/appui/stocks.go:274
-msgid "Search for a symbol to add it."
-msgstr "搜尋符號來加入它。"
-
-#: internal/appui/stocks.go:281
-#: internal/mailui/window.go:981
-msgid "Loading %s…"
-msgstr "正在載入%s…"
-
-#: internal/appui/stocks.go:294
-msgid "%s could not be read.\n%s"
-msgstr "無法讀取 %[1]s。\n%[2]s"
-
-#: internal/appui/stocks.go:317
-msgid "Previous close"
-msgstr "前收盤價"
-
-#: internal/appui/stocks.go:319
-msgid "Range start"
-msgstr "範圍起始"
-
-#: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:99
-msgid "High"
-msgstr "高"
-
-#: internal/appui/stocks.go:322
-#: internal/ui/settings_ai.go:99
-msgid "Low"
-msgstr "低"
-
-#: internal/appui/stocks.go:328
-msgid "As of %s"
-msgstr "更新於 %s"
-
-#: internal/appui/stocks.go:328
-msgid "Jan 2, 15:04"
-msgstr "1月2日 15:04"
-
-#: internal/appui/stocks.go:404
-msgid "Nothing by that name"
-msgstr "沒有任何叫這個名字的東西"
-
-#: internal/appui/stocks.go:406
-#: internal/appui/weather.go:472
-msgid "Could not search: %s"
-msgstr "無法搜尋:%s"
-
-#: internal/appui/sysmon.go:52
-#: internal/appui/sysmon.go:52
-#: internal/ui/dock.go:486
-#: internal/ui/portal_ask.go:80
-msgid "Quit"
-msgstr "退出"
-
-#: internal/appui/sysmon.go:52
-msgid "Asks it to quit. It can save its work first."
-msgstr "要求其退出。它可以先保存其工作。"
-
-#: internal/appui/sysmon.go:53
-#: internal/appui/sysmon.go:53
-msgid "Interrupt"
-msgstr "中斷"
-
-#: internal/appui/sysmon.go:53
-msgid "As Ctrl+C in a terminal."
-msgstr "作為終端機中的Ctrl+C。"
-
-#: internal/appui/sysmon.go:54
-#: internal/appui/sysmon.go:54
-msgid "Hang Up"
-msgstr "掛斷"
-
-#: internal/appui/sysmon.go:54
-msgid "As closing its terminal. Many services reload instead."
-msgstr "如關閉其終端機。許多服務會重新載入。"
-
-#: internal/appui/sysmon.go:55
-msgid "Stops it running until it is resumed."
-msgstr "停止其運作直至其恢復。"
-
-#: internal/appui/sysmon.go:56
-#: internal/appui/sysmon.go:56
-msgid "Force Quit"
-msgstr "強制退出"
-
-#: internal/appui/sysmon.go:56
-msgid "Ends it at once. Work it has not saved is lost."
-msgstr "立即結束。未儲存的工作將會遺失。"
-
-#: internal/appui/sysmon.go:57
-msgid "Quit with Children"
-msgstr "帶孩子戒菸"
-
-#: internal/appui/sysmon.go:57
-#: internal/appui/sysmon.go:58
-msgid "Quit All"
-msgstr "全部退出"
-
-#: internal/appui/sysmon.go:58
-msgid "Quit All by Name"
-msgstr "按名稱退出全部"
-
-#: internal/appui/sysmon.go:142
-#: internal/appui/sysmon.go:727
-#: ui/sysmon.ui:84
-msgid "CPU"
-msgstr "CPU"
-
-#: internal/appui/sysmon.go:144
-#: internal/appui/sysmon.go:727
-#: internal/appui/sysmon.go:788
-#: internal/appui/sysmon.go:992
-msgid "MEMORY"
-msgstr "內存"
-
-#: internal/appui/sysmon.go:146
-msgid "GPU"
-msgstr "GPU"
-
-#: internal/appui/sysmon.go:148
-#: internal/appui/sysmon.go:1038
-#: internal/shell/dock.go:286
-#: internal/shell/dock.go:328
-msgid "NETWORK"
-msgstr "網路"
-
-#: internal/appui/sysmon.go:149
-#: internal/ui/settings_card.go:526
-msgid "DISK"
-msgstr "磁碟"
-
-#: internal/appui/sysmon.go:151
-msgid "BATTERY"
-msgstr "電池"
-
-#: internal/appui/sysmon.go:391
-msgid "%d threads"
-msgstr "%d 螺紋"
-
-#: internal/appui/sysmon.go:396
-msgid "load %.2f %.2f %.2f"
-msgstr "負載 %.2[1]f %.2[2]f %.2[3]f"
-
-#: internal/appui/sysmon.go:406
-msgid "CPU %d: %.0f%%"
-msgstr "CPU %[1]d:%.0[2]f%%"
-
-#: internal/appui/sysmon.go:415
-msgid "of %s · cache %s"
-msgstr "%[1]s·快取%[2]s"
-
-#: internal/appui/sysmon.go:417
-msgid " · swap %s of %s"
-msgstr "·將%[1]s 換成%[2]s"
-
-#: internal/appui/sysmon.go:432
-msgid " · video memory %s of %s"
-msgstr "·顯存%[1]s之%[2]s"
-
-#: internal/appui/sysmon.go:444
-msgid "↑ %s · received %s, sent %s"
-msgstr "↑ %[1]s·收到%[2]s,發送%[3]s"
-
-#: internal/appui/sysmon.go:451
-msgid "of %s on / · %s free"
-msgstr "%[1]s上/·%[2]s免費"
-
-#: internal/appui/sysmon.go:453
-msgid " · read %s · write %s"
-msgstr "·讀%[1]s ·寫%[2]s"
-
-#: internal/appui/sysmon.go:469
-msgid "health %.0f%%"
-msgstr "健康%.0f%%"
-
-#: internal/appui/sysmon.go:474
-msgid "UP %s"
-msgstr "上%s"
-
-#: internal/appui/sysmon.go:536
-msgid "%d PROCESSES"
-msgstr "%d過程"
-
-#: internal/appui/sysmon.go:538
-msgid "%d OF %d PROCESSES"
-msgstr "%[2]d過程的%[1]d"
-
-#: internal/appui/sysmon.go:542
-msgid "No process matches."
-msgstr "沒有進程比對。"
-
-#: internal/appui/sysmon.go:578
-msgid "Details and the ways to end %s"
-msgstr "詳情及結束方式%s"
-
-#: internal/appui/sysmon.go:606
-msgid "Not sent: an administrator's password is needed."
-msgstr "未發送：需要管理員密碼。"
-
-#: internal/appui/sysmon.go:650
-msgid "Process %d has ended."
-msgstr "進程%d已經結束。"
-
-#: internal/appui/sysmon.go:727
-msgid "THREADS"
-msgstr "螺紋"
-
-#: internal/appui/sysmon.go:743
-msgid "END OR PAUSE"
-msgstr "結束或暫停"
-
-#: internal/appui/sysmon.go:784
-msgid "PROCESS"
-msgstr "過程"
-
-#: internal/appui/sysmon.go:785
-msgid "Parent"
-msgstr "家長"
-
-#: internal/appui/sysmon.go:785
-#: internal/filesui/remote.go:178
-#: internal/filesui/remotesetup.go:45
-#: internal/filesui/remotesetup.go:54
-#: internal/filesui/remotesetup.go:60
-#: internal/filesui/remotesetup.go:66
-msgid "User"
-msgstr "用戶"
-
-#: internal/appui/sysmon.go:785
-msgid "State"
-msgstr "狀態"
-
-#: internal/appui/sysmon.go:785
-msgid "Started"
-msgstr "開始"
-
-#: internal/appui/sysmon.go:785
-msgid "CPU time"
-msgstr "CPU時間"
-
-#: internal/appui/sysmon.go:785
-msgid "Priority"
-msgstr "優先權"
-
-#: internal/appui/sysmon.go:785
-msgid "Unit"
-msgstr "單位"
-
-#: internal/appui/sysmon.go:789
-msgid "Resident"
-msgstr "居民"
-
-#: internal/appui/sysmon.go:789
-msgid "Private"
-msgstr "私人"
-
-#: internal/appui/sysmon.go:789
-msgid "Shared"
-msgstr "分享"
-
-#: internal/appui/sysmon.go:789
-msgid "Swapped out"
-msgstr "Swapped out"
-
-#: internal/appui/sysmon.go:789
-msgid "Peak"
-msgstr "Peak"
-
-#: internal/appui/sysmon.go:792
-#: internal/filesui/details.go:51
-#: internal/mailui/window.go:246
-#: internal/term/web/strings.go:52
-msgid "FILES"
-msgstr "FILES"
-
-#: internal/appui/sysmon.go:793
-msgid "Command"
-msgstr "Command"
-
-#: internal/appui/sysmon.go:793
-#: internal/filesui/kinds.go:38
-#: internal/ui/settings_keyring.go:326
-msgid "Program"
-msgstr "程序"
-
-#: internal/appui/sysmon.go:793
-#: internal/filesui/kinds.go:34
-#: internal/filesui/remotesetup.go:47
-#: internal/filesui/remotesetup.go:53
-#: internal/filesui/remotesetup.go:68
-#: internal/filesui/remotesetup.go:75
-#: internal/filesui/remotesetup.go:83
-#: internal/viewerui/app.go:792
-#: ui/vm.ui:322
-msgid "Folder"
-msgstr "Folder"
-
-#: internal/appui/sysmon.go:793
-msgid "Disk read"
-msgstr "Disk read"
-
-#: internal/appui/sysmon.go:793
-msgid "Disk written"
-msgstr "磁碟寫入"
-
-#: internal/appui/sysmon.go:807
-msgid "PID %d · %s"
-msgstr "PID %[1]d·%[2]s"
-
-#: internal/appui/sysmon.go:809
-msgid "PID %d · ENDED"
-msgstr "PID %d·已結束"
-
-#: internal/appui/sysmon.go:820
-#: internal/appui/sysmon.go:1103
-#: internal/appui/sysmon.go:1110
-msgid "Not readable: not your process"
-msgstr "不可讀：不是您的進程"
-
-#: internal/appui/sysmon.go:843
-msgid "%s · %s ago"
-msgstr "%[1]s · %[2]s 前"
-
-#: internal/appui/sysmon.go:843
-#: internal/ui/settings_keyring.go:298
-msgid "Jan 2 15:04:05"
-msgstr "1月2日 15:04:05"
-
-#: internal/appui/sysmon.go:846
-msgid "nice %d"
-msgstr "不錯的%d"
-
-#: internal/appui/sysmon.go:870
-msgid "It is paused. Lets it go on."
-msgstr "已暫停。就讓它繼續吧。"
-
-#: internal/appui/sysmon.go:874
-msgid "Also its %d child process, the youngest first."
-msgid_plural "Also its %d child processes, the youngest first."
-msgstr[0] "也是其%d子進程，最小的第一個。"
-
-#: internal/appui/sysmon.go:877
-msgid "All %d processes named %s."
-msgstr "所有名為%[2]s的%[1]d進程。"
-
-#: internal/appui/sysmon.go:899
-msgid "This process has ended."
-msgstr "過程已經結束。"
-
-#: internal/appui/sysmon.go:930
-msgid "Asked %s to quit."
-msgstr "要求%s退出。"
-
-#: internal/appui/sysmon.go:932
-msgid "Interrupted %s."
-msgstr "中斷%s。"
-
-#: internal/appui/sysmon.go:934
-msgid "Hung up on %s."
-msgstr "掛斷%s。"
-
-#: internal/appui/sysmon.go:936
-msgid "Ended %s."
-msgstr "結束%s。"
-
-#: internal/appui/sysmon.go:938
-msgid "Paused %s."
-msgstr "暫停%s。"
-
-#: internal/appui/sysmon.go:940
-msgid "Resumed %s."
-msgstr "恢復%s。"
-
-#: internal/appui/sysmon.go:944
-msgid "Asked %s and its %d child to quit."
-msgid_plural "Asked %s and its %d children to quit."
-msgstr[0] "要求%[1]s及其子%[2]d退出。"
-
-#: internal/appui/sysmon.go:947
-msgid "Asked %d processes named %s to quit."
-msgstr "要求名為 %[2]s 的 %[1]d 程序退出。"
-
-#: internal/appui/sysmon.go:965
-msgid "COMPUTER"
-msgstr "計算機"
-
-#: internal/appui/sysmon.go:966
-#: internal/appui/sysmon.go:978
-#: internal/shell/cardterm.go:113
-#: internal/ui/settings_ai.go:497
-msgid "Model"
-msgstr "模型"
-
-#: internal/appui/sysmon.go:967
-#: internal/appui/tailscale.go:630
-#: internal/connectui/window.go:547
-#: internal/filesui/archive.go:76
-#: internal/filesui/remotesetup.go:226
-#: internal/filesui/renamemany.go:168
-#: internal/ui/settings_ai.go:486
-#: internal/viewerui/app.go:791
-#: ui/connect.ui:290
-#: ui/files.ui:212
-#: ui/gpg.ui:1342
-#: ui/settings.ui:5011
-#: ui/sysmon.ui:96
-msgid "Name"
-msgstr "名稱"
-
-#: internal/appui/sysmon.go:968
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:566
-#: internal/diskui/window.go:329
-#: internal/ui/settings.go:531
-#: ui/vm.ui:2977
-msgid "System"
-msgstr "系統"
-
-#: internal/appui/sysmon.go:969
-#: internal/shell/cardterm.go:136
-msgid "Kernel"
-msgstr "內核"
-
-#: internal/appui/sysmon.go:972
-msgid "%s · since %s"
-msgstr "%[1]s·自%[2]s"
-
-#: internal/appui/sysmon.go:974
-msgid "Up"
-msgstr "向上"
-
-#: internal/appui/sysmon.go:977
-msgid "PROCESSOR"
-msgstr "處理器"
-
-#: internal/appui/sysmon.go:979
-msgid "Cores"
-msgstr "核心"
-
-#: internal/appui/sysmon.go:979
-msgid "%s, %s"
-msgstr "%[1]s,%[2]s"
-
-#: internal/appui/sysmon.go:979
-msgid "%d core"
-msgid_plural "%d cores"
-msgstr[0] "%d核心"
-
-#: internal/appui/sysmon.go:979
-msgid "%d thread"
-msgid_plural "%d threads"
-msgstr[0] "%d螺紋"
-
-#: internal/appui/sysmon.go:982
-msgid "up to %s"
-msgstr "高達%s"
-
-#: internal/appui/sysmon.go:985
-msgid "now %s"
-msgstr "現%s"
-
-#: internal/appui/sysmon.go:988
-msgid "Speed"
-msgstr "速度"
-
-#: internal/appui/sysmon.go:993
-#: internal/appui/workshop_manager.go:50
-msgid "Installed"
-msgstr "已安裝"
-
-#: internal/appui/sysmon.go:994
-#: internal/ui/voice_models.go:152
-msgid "In use"
-msgstr "使用中"
-
-#: internal/appui/sysmon.go:995
-msgid "Cache"
-msgstr "快取"
-
-#: internal/appui/sysmon.go:995
-msgid "%s · given back when needed"
-msgstr "%s·需要時回饋"
-
-#: internal/appui/sysmon.go:996
-msgid "Free"
-msgstr "免費"
-
-#: internal/appui/sysmon.go:998
-msgid "Swap"
-msgstr "交換"
-
-#: internal/appui/sysmon.go:998
-#: internal/appui/sysmon.go:1010
-#: internal/appui/sysmon.go:1024
-msgid "%s of %s"
-msgstr "%[1]s 之 %[2]s"
-
-#: internal/appui/sysmon.go:1002
-msgid "GRAPHICS"
-msgstr "圖形"
-
-#: internal/appui/sysmon.go:1004
-#: internal/ui/voice_page.go:204
-msgid "Card"
-msgstr "卡"
-
-#: internal/appui/sysmon.go:1005
-msgid "Driver"
-msgstr "驅動程式"
-
-#: internal/appui/sysmon.go:1007
-msgid "Busy"
-msgstr "忙"
-
-#: internal/appui/sysmon.go:1010
-msgid "Video memory"
-msgstr "視訊記憶體"
-
-#: internal/appui/sysmon.go:1016
-msgid "STORAGE"
-msgstr "存儲"
-
-#: internal/appui/sysmon.go:1040
-msgid "wired"
-msgstr "有線"
-
-#: internal/appui/sysmon.go:1042
-#: ui/control.ui:273
-#: ui/settings.ui:5119
-#: ui/settings.ui:5195
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: internal/appui/sysmon.go:1044
-msgid "down"
-msgstr "下"
-
-#: internal/appui/sysmon.go:1046
-msgid "up"
-msgstr "向上"
-
-#: internal/appui/sysmon.go:1050
-#: internal/appui/tailscale.go:632
-msgid "Addresses"
-msgstr "地址"
-
-#: internal/appui/sysmon.go:1053
-msgid "Hardware"
-msgstr "硬體"
-
-#: internal/appui/sysmon.go:1056
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:569
-msgid "Traffic"
-msgstr "交通"
-
-#: internal/appui/sysmon.go:1056
-msgid "received %s · sent %s"
-msgstr "收到%[1]s·發送%[2]s"
-
-#: internal/appui/sysmon.go:1062
-msgid "SENSORS"
-msgstr "感測器"
-
-#: internal/appui/sysmon.go:1081
-msgid "Charging"
-msgstr "充電中"
-
-#: internal/appui/sysmon.go:1081
-msgid "Discharging"
-msgstr "放電"
-
-#: internal/appui/sysmon.go:1081
-msgid "Full"
-msgstr "滿"
-
-#: internal/appui/sysmon.go:1082
-msgid "Not charging"
-msgstr "未充電"
-
-#: internal/appui/sysmon.go:1089
-msgid "%.1f s"
-msgstr "%.1fs"
-
-#: internal/appui/tailscale.go:40
-msgid "Use Tailscale DNS"
-msgstr "使用 Tailscale DNS"
-
-#: internal/appui/tailscale.go:40
-msgid "MagicDNS names and the tailnet's DNS settings."
-msgstr "MagicDNS名稱和尾網的DNS設定。"
-
-#: internal/appui/tailscale.go:43
-msgid "Use subnet routes"
-msgstr "使用子網路由"
-
-#: internal/appui/tailscale.go:43
-msgid "Reach the networks other devices offer."
-msgstr "到達其他設備提供的網路。"
-
-#: internal/appui/tailscale.go:48
-msgid "Block incoming connections"
-msgstr "阻止傳入連接"
-
-#: internal/appui/tailscale.go:48
-msgid "Other devices cannot reach this one; it can still reach them."
-msgstr "其他設備無法到達該設備；它仍然可以到達他們。"
-
-#: internal/appui/tailscale.go:53
-msgid "Offer as exit node"
-msgstr "作為出口節點"
-
-#: internal/appui/tailscale.go:53
-msgid "Others may send their traffic through this device, once the admin approves."
-msgstr "一旦管理員批准，其他人就可以透過該設備發送他們的流量。"
-
-#: internal/appui/tailscale.go:56
-msgid "Tailscale SSH"
-msgstr "Tailscale SSH"
-
-#: internal/appui/tailscale.go:56
-msgid "Let the tailnet's SSH rules reach this device's SSH server."
-msgstr "讓尾網的SSH規則到達該設備的SSH伺服器。"
-
-#: internal/appui/tailscale.go:152
-msgid "Disconnected."
-msgstr "斷開連線。"
-
-#: internal/appui/tailscale.go:164
-msgid "Local network reachable through the exit node."
-msgstr "本地網路可經由出口節點到達。"
-
-#: internal/appui/tailscale.go:164
-msgid "Local network goes through the exit node too."
-msgstr "本地網路也經過出口節點。"
-
-#: internal/appui/tailscale.go:169
-msgid "%s on."
-msgstr "%s上。"
-
-#: internal/appui/tailscale.go:169
-msgid "%s off."
-msgstr "%s 關閉。"
-
-#: internal/appui/tailscale.go:303
-msgid "Not changed: allow this app to manage Tailscale first."
-msgstr "未改變：允許該應用程式首先管理Tailscale。"
-
-#: internal/appui/tailscale.go:305
-msgid "Tailscale is not running."
-msgstr "Tailscale沒有運行。"
-
-#: internal/appui/tailscale.go:347
-#: internal/shell/status.go:99
-#: internal/shell/status.go:116
-#: internal/shell/status.go:131
-msgid "Unavailable"
-msgstr "無法使用"
-
-#: internal/appui/tailscale.go:358
-msgid "%d of %d devices online"
-msgstr "%[1]d %[2]d 設備在線"
-
-#: internal/appui/tailscale.go:371
-msgid "Tailscale's service is not running."
-msgstr "Tailscale的服務未運作。"
-
-#: internal/appui/tailscale.go:371
-msgid "Start…"
-msgstr "開始…"
-
-#: internal/appui/tailscale.go:372
-msgid "Started Tailscale."
-msgstr "開始Tailscale。"
-
-#: internal/appui/tailscale.go:376
-msgid "This device is logged out of its tailnet."
-msgstr "該設備已從其尾網註銷。"
-
-#: internal/appui/tailscale.go:376
-msgid "Log In"
-msgstr "登入"
-
-#: internal/appui/tailscale.go:379
-msgid "An admin of the tailnet has to approve this device."
-msgstr "尾網的管理員必須批准該設備。"
-
-#: internal/appui/tailscale.go:379
-#: internal/appui/tailscale.go:666
-msgid "Admin Console"
-msgstr "管理控制台"
-
-#: internal/appui/tailscale.go:382
-msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
-msgstr "若要從此處更改 Tailscale，請允許一次；它要求輸入管理員密碼。"
-
-#: internal/appui/tailscale.go:382
-msgid "Allow…"
-msgstr "允許…"
-
-#: internal/appui/tailscale.go:384
-msgid "This app may now manage Tailscale."
-msgstr "該應用程式現在可以管理Tailscale。"
-
-#: internal/appui/tailscale.go:416
-msgid "No device matches."
-msgstr "沒有設備匹配。"
-
-#: internal/appui/tailscale.go:418
-msgid "No other devices in the tailnet yet."
-msgstr "尾網中還沒有其他設備。"
-
-#: internal/appui/tailscale.go:435
-msgid "exit node in use"
-msgstr "出口節點使用中"
-
-#: internal/appui/tailscale.go:437
-msgid "exit node"
-msgstr "出口節點"
-
-#: internal/appui/tailscale.go:447
-msgid "Details, ping, exit node and sending files"
-msgstr "詳情、ping、出口節點及發送文件"
-
-#: internal/appui/tailscale.go:507
-msgid "Copy IP"
-msgstr "複製IP"
-
-#: internal/appui/tailscale.go:507
-msgid "Copy Name"
-msgstr "複製名稱"
-
-#: internal/appui/tailscale.go:507
-#: ui/connect.ui:621
-msgid "Ping"
-msgstr "Ping"
-
-#: internal/appui/tailscale.go:515
-#: internal/appui/tailscale.go:577
-msgid "Use as Exit Node"
-msgstr "用作出口節點"
-
-#: internal/appui/tailscale.go:524
-msgid "DEVICE"
-msgstr "設備"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:563
-#: internal/appui/tailscale.go:631
-msgid "MagicDNS"
-msgstr "MagicDNS"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:564
-msgid "IPv4"
-msgstr "IPv4"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:565
-msgid "IPv6"
-msgstr "IPv6"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:567
-msgid "Status"
-msgstr "狀態"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:568
-#: internal/term/web/strings.go:32
-msgid "Connection"
-msgstr "連接"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:570
-msgid "Key expires"
-msgstr "密鑰過期"
-
-#: internal/appui/tailscale.go:525
-#: internal/appui/tailscale.go:571
-msgid "Tags"
-msgstr "標籤"
-
-#: internal/appui/tailscale.go:528
-msgid "SEND FILES"
-msgstr "傳送文件"
-
-#: internal/appui/tailscale.go:544
-msgid "NO LONGER IN THE TAILNET"
-msgstr "不再在尾網上"
-
-#: internal/appui/tailscale.go:566
-msgid "%s · host name %s"
-msgstr "%[1]s·主機名稱%[2]s"
-
-#: internal/appui/tailscale.go:572
-msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
-msgstr "將檔案拖曳到該面板上以使用Taildrop將它們傳送到%s。他們等待它直到被保存。"
-
-#: internal/appui/tailscale.go:575
-msgid "Stop Using as Exit Node"
-msgstr "停止用作出口節點"
-
-#: internal/appui/tailscale.go:584
-msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
-msgstr "透過此設備發送流量"
-
-#: internal/appui/tailscale.go:594
-msgid "IN USE"
-msgstr "使用中"
-
-#: internal/appui/tailscale.go:601
-#: internal/termui/prefs.go:283
-#: internal/ui/settings_ai.go:271
-#: internal/ui/settings_keyring.go:572
-#: internal/ui/shortcuts.go:150
-#: internal/ui/voice_page.go:314
-msgid "None"
-msgstr "無"
-
-#: internal/appui/tailscale.go:601
-msgid "Traffic goes out from this device as usual."
-msgstr "流量照常從該設備發出。"
-
-#: internal/appui/tailscale.go:609
-msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
-msgstr "尾網中沒有設備願意作為出口節點。在其中之一上啟用 Offer 作為出口節點，然後在管理控制台中批准它。"
-
-#: internal/appui/tailscale.go:616
-msgid "Allow local network access"
-msgstr "允許本地網路存取"
-
-#: internal/appui/tailscale.go:617
-msgid "Reach printers and other devices on this network while the exit node carries the rest."
-msgstr "到達該網路上的印表機和其他設備，而出口節點承載其餘設備。"
-
-#: internal/appui/tailscale.go:628
-#: ui/tailscale.ui:170
-msgid "THIS DEVICE"
-msgstr "該裝置"
-
-#: internal/appui/tailscale.go:635
-msgid "Tailnet"
-msgstr "Tailscale 網路"
-
-#: internal/appui/tailscale.go:637
-msgid "SETTINGS"
-msgstr "設定"
-
-#: internal/appui/tailscale.go:646
-msgid "RECEIVED FILES"
-msgstr "收到的文件"
-
-#: internal/appui/tailscale.go:649
-msgid "Files sent to this device show here once this app may manage Tailscale."
-msgstr "一旦此應用程式可以管理 Tailscale，傳送到此裝置的檔案就會顯示在此。"
-
-#: internal/appui/tailscale.go:653
-msgid "None waiting. Files other devices send with Taildrop show here."
-msgstr "無人等待。其他裝置使用 Taildrop 傳送的檔案顯示在此。"
-
-#: internal/appui/tailscale.go:658
-msgid "Save to Downloads"
-msgstr "儲存到下載"
-
-#: internal/appui/tailscale.go:661
-msgid "ACCOUNT"
-msgstr "帳戶"
-
-#: internal/appui/tailscale.go:662
-#: internal/shell/commands.go:31
-msgid "Log Out"
-msgstr "登出"
-
-#: internal/appui/tailscale.go:664
-msgid "Sure?"
-msgstr "確定？"
-
-#: internal/appui/tailscale.go:749
-msgid "No exit node: traffic goes out from this device."
-msgstr "無出口節點：流量從該設備流出。"
-
-#: internal/appui/tailscale.go:751
-#: internal/appui/tailscale.go:762
-msgid "Traffic now goes through %s."
-msgstr "流量現在經過%s。"
-
-#: internal/appui/tailscale.go:760
-msgid "Stopped using %s as exit node."
-msgstr "停止使用 %s 作為出口節點。"
-
-#: internal/appui/tailscale.go:782
-msgid "Logged out."
-msgstr "已註銷。"
-
-#: internal/appui/tailscale.go:805
-msgid "Pinging %s…"
-msgstr "ping %s…"
-
-#: internal/appui/tailscale.go:819
-msgid "%s did not answer"
-msgstr "%s 未接聽"
-
-#: internal/appui/tailscale.go:822
-msgid "%s answered in %.0f ms"
-msgstr "%[1]s 以 %.0[2]f 毫秒回答"
-
-#: internal/appui/tailscale.go:823
-msgid "Direct, %s"
-msgstr "直接,%s"
-
-#: internal/appui/tailscale.go:825
-msgid "Relayed through %s"
-msgstr "透過 %s 中繼"
-
-#: internal/appui/tailscale.go:841
-msgid "Sending %s to %s…"
-msgstr "發送 %[1]s 至 %[2]s..."
-
-#: internal/appui/tailscale.go:866
-msgid "Sent %s to %s."
-msgstr "將%[1]s傳送至%[2]s。"
-
-#: internal/appui/tailscale.go:903
-msgid "Saved %s to %s."
-msgstr "將 %[1]s 儲存到 %[2]s。"
-
-#: internal/appui/tailscale.go:914
-msgid "Opening the login page…"
-msgstr "正在開啟登入頁面…"
-
-#: internal/appui/tailscale.go:941
-msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
-msgstr "此會話中沒有執行密碼提示(polkit 代理);在終端機中執行: sudo %s"
-
-#: internal/appui/tailscale.go:943
-msgid "not done: no administrator's password was given"
-msgstr "未完成：未給予管理者密碼"
-
-#: internal/appui/video.go:305
-msgid "Resumed at %s"
-msgstr "從 %s 繼續"
-
-#: internal/appui/video.go:394
-msgid "Playing a video"
-msgstr "正在播放影片"
-
-#: internal/appui/video.go:417
-msgid "Cannot play it: %s"
-msgstr "無法播放：%s"
-
-#: internal/appui/video.go:529
-#: internal/connectui/window.go:387
-#: internal/mailui/settings.go:563
-#: internal/shell/notify.go:44
-#: internal/shell/status.go:103
-#: internal/shell/status.go:118
-#: internal/shell/status.go:137
-#: internal/shell/status.go:152
-#: internal/termui/prefsweb.go:128
-#: internal/ui/settings_bluetooth.go:214
-#: internal/ui/settings_displays.go:294
-#: internal/ui/settings_displays.go:412
-#: internal/ui/settings_wifi.go:285
-#: ui/remote.ui:359
-#: ui/settings.ui:5876
-msgid "Off"
-msgstr "關閉"
-
-#: internal/appui/video.go:575
-msgid "Speed %s×"
-msgstr "速度 %s×"
-
-#: internal/appui/video.go:684
-msgid "Open a video"
-msgstr "開啟影片"
-
-#: internal/appui/video.go:692
-msgid "Videos"
-msgstr "影片"
-
-#: internal/appui/weather.go:255
-msgid "Add a city to see its weather."
-msgstr "新增城市以查看其天氣。"
-
-#: internal/appui/weather.go:255
-#: ui/clock.ui:122
-#: ui/weather.ui:95
-msgid "Add a city"
-msgstr "新增城市"
-
-#: internal/appui/weather.go:261
-msgid "Reading the weather…"
-msgstr "讀取天氣…"
-
-#: internal/appui/weather.go:273
-msgid "The weather could not be read.\n%s"
-msgstr "無法讀取天氣。\n%s"
-
-#: internal/appui/weather.go:273
-#: internal/mailui/panel.go:307
-#: internal/ui/passwords.go:530
-#: ui/mail-compose.ui:456
-#: ui/pass.ui:375
-msgid "Try again"
-msgstr "再試一次"
-
-#: internal/appui/weather.go:322
-msgid "H %s   L %s"
-msgstr "H %[1]s L %[2]s"
-
-#: internal/appui/weather.go:331
-msgid "NOW"
-msgstr "現在"
-
-#: internal/appui/weather.go:394
-msgid "FEELS LIKE"
-msgstr "體感溫度"
-
-#: internal/appui/weather.go:395
-msgid "HUMIDITY"
-msgstr "濕度"
-
-#: internal/appui/weather.go:396
-msgid "WIND"
-msgstr "風"
-
-#: internal/appui/weather.go:397
-msgid "RAIN"
-msgstr "雨"
-
-#: internal/appui/weather.go:402
-msgid "SUNRISE"
-msgstr "日出"
-
-#: internal/appui/weather.go:403
-msgid "SUNSET"
-msgstr "日落"
-
-#: internal/appui/weather.go:425
-msgid "UPDATED %s · OPEN-METEO"
-msgstr "更新了 %s·OPEN-METEO"
-
-#: internal/appui/weather.go:470
-msgid "No place by that name"
-msgstr "沒有叫這個名字的地方"
-
-#: internal/appui/workshop.go:40
-#: config/apps/io.github.lyricat.Inua.Workshop.desktop:3
-msgid "Workshop"
-msgstr "工坊"
-
-#: internal/appui/workshop.go:208
-msgid "Starting %s…"
-msgstr "正在啟動 %s…"
-
-#: internal/appui/workshop.go:221
-msgid "%s could not start"
-msgstr "%s 無法啟動"
-
-#: internal/appui/workshop.go:232
-msgid "It ended without an error."
-msgstr "它已結束，沒有錯誤。"
-
-#: internal/appui/workshop.go:236
-msgid "%s stopped"
-msgstr "%s 已停止"
-
-#: internal/appui/workshop.go:287
-msgid "Start again"
-msgstr "重新啟動"
-
-#: internal/appui/workshop.go:293
-msgid "It starts again by itself when a file of it changes."
-msgstr "它的檔案改變時會自動重新啟動。"
-
-#: internal/appui/workshop.go:697
-msgid "Unknown building block %q"
-msgstr "未知的元件 %q"
-
-#: internal/appui/workshop.go:990
-#: internal/connectui/window.go:429
-#: internal/diskui/dialog.go:92
-#: internal/filesui/appchooser.go:107
-#: internal/filesui/archive.go:49
-#: internal/filesui/archive.go:309
-#: internal/filesui/cards.go:347
-#: internal/filesui/cards.go:396
-#: internal/filesui/cards.go:434
-#: internal/filesui/cards.go:451
-#: internal/filesui/cards.go:489
-#: internal/filesui/cards.go:588
-#: internal/filesui/picker.go:370
-#: internal/filesui/remote.go:159
-#: internal/filesui/remote.go:219
-#: internal/filesui/remotesetup.go:152
-#: internal/filesui/renamemany.go:37
-#: internal/games/fortunenet/texts.go:76
-#: internal/gamesui/fortune_host.go:236
-#: internal/mailui/dialog.go:92
-#: internal/remoteui/window.go:811
-#: internal/term/web/strings.go:29
-#: internal/termui/keys.go:273
-#: internal/termui/keys.go:401
-#: internal/termui/paste.go:295
-#: internal/termui/restart.go:42
-#: internal/termui/wsmenu.go:149
-#: internal/ui/askpass.go:301
-#: internal/ui/askpass.go:446
-#: internal/ui/askpass.go:450
-#: internal/ui/portal_ask.go:168
-#: internal/ui/settings_bluetooth.go:402
-#: internal/ui/settings_bluetooth.go:405
-#: internal/ui/settings_bluetooth.go:411
-#: internal/ui/settings_wifi.go:440
-#: internal/vmui/dialog.go:91
-#: ui/clock.ui:244
-#: ui/clock.ui:454
-#: ui/connectreply.ui:49
-#: ui/files.ui:159
-#: ui/files.ui:257
-#: ui/gpg.ui:1252
-#: ui/gpg.ui:1469
-#: ui/gpg.ui:1563
-#: ui/pass.ui:495
-#: ui/pass.ui:631
-#: ui/pass.ui:862
-#: ui/polkit.ui:741
-#: ui/remote.ui:1044
-#: ui/vm.ui:3264
-msgid "Cancel"
-msgstr "取消"
-
-#: internal/appui/workshop.go:995
-#: internal/term/web/strings.go:81
-#: internal/ui/askpass.go:300
-#: internal/ui/settings_card.go:624
-msgid "OK"
-msgstr "好的"
-
-#: internal/appui/workshop_blocks.go:438
-#: internal/mailui/settings.go:645
-#: internal/mailui/welcome.go:823
-#: internal/term/web/strings.go:93
-#: internal/ui/settings_ai.go:530
-#: ui/clock.ui:252
-#: ui/connect.ui:420
-#: ui/pass.ui:504
-msgid "Save"
-msgstr "儲存"
-
-#: internal/appui/workshop_manager.go:60
-msgid "Uses: %s"
-msgstr "使用：%s"
-
-#: internal/appui/workshop_manager.go:64
-#: internal/mailui/settings.go:468
-#: ui/vm.ui:2579
-msgid "Remove…"
-msgstr "移除…"
-
-#: internal/appui/workshop_manager.go:70
-msgid "No workshop apps yet"
-msgstr "還沒有工坊應用程式"
-
-#: internal/appui/workshop_manager.go:70
-msgid "Install one below, or write your own."
-msgstr "在下面安裝一個，或自己寫一個。"
-
-#: internal/appui/workshop_manager.go:82
-msgid "Broken"
-msgstr "已損壞"
-
-#: internal/appui/workshop_manager.go:82
-msgid "Their app.toml could not be read"
-msgstr "無法讀取它們的 app.toml"
-
-#: internal/appui/workshop_manager.go:89
-msgid "From a folder"
-msgstr "從資料夾"
-
-#: internal/appui/workshop_manager.go:89
-msgid "A folder with an app.toml; it is copied."
-msgstr "含有 app.toml 的資料夾；會被複製。"
-
-#: internal/appui/workshop_manager.go:90
-#: ui/settings.ui:915
-msgid "Choose…"
-msgstr "選擇…"
-
-#: internal/appui/workshop_manager.go:91
-msgid "From git"
-msgstr "從 git"
-
-#: internal/appui/workshop_manager.go:91
-msgid "In a terminal: inua workshop install URL"
-msgstr "在終端機中：inua workshop install URL"
-
-#: internal/appui/workshop_manager.go:92
-msgid "Write your own"
-msgstr "自己寫一個"
-
-#: internal/appui/workshop_manager.go:92
-msgid "inua workshop new DIR makes one; inua workshop dev DIR runs it, again on every save. The guide is docs/workshop.md in inua."
-msgstr "inua workshop new DIR 建立一個；inua workshop dev DIR 執行它，每次儲存都會重新執行。指南是 inua 中的 docs/workshop.md。"
-
-#: internal/appui/workshop_manager.go:115
-msgid "Remove %s?"
-msgstr "移除 %s？"
-
-#: internal/appui/workshop_manager.go:115
-msgid "Its folder and launcher entry go to the trash; its data stays."
-msgstr "它的資料夾和啟動器項目會移到垃圾桶；資料保留。"
-
-#: internal/appui/workshop_manager.go:122
-msgid "Removed %s."
-msgstr "已移除 %s。"
-
-#: internal/appui/workshop_manager.go:134
-msgid "A workshop app: a folder with an app.toml"
-msgstr "工坊應用程式：含有 app.toml 的資料夾"
-
-#: internal/appui/workshop_manager.go:144
-msgid "nothing beyond what every app has"
-msgstr "除了每個應用程式都有的以外沒有其他"
-
-#: internal/appui/workshop_manager.go:148
-msgid "It runs %s, as you, with your files, like any program you start. It uses: %s."
-msgstr "它會以你的身分、帶著你的檔案執行 %s，和你啟動的任何程式一樣。它使用：%s。"
-
-#: internal/appui/workshop_manager.go:149
-msgid "Install %s?"
-msgstr "安裝 %s？"
-
-#: internal/appui/workshop_manager.go:151
-msgid "Replace the installed %s?"
-msgstr "取代已安裝的 %s？"
-
-#: internal/appui/workshop_manager.go:154
-#: internal/ui/voice_page.go:189
-#: ui/vm.ui:1279
-msgid "Install"
-msgstr "安裝"
-
-#: internal/appui/workshop_manager.go:164
-msgid "Installed %s; the launcher and the dock's drawer list it."
-msgstr "已安裝 %s；啟動器和 Dock 的抽屜裡會列出它。"
 
 #: internal/asker/asker.go:142
 #: internal/asker/asker.go:146
@@ -4277,6 +1881,21 @@ msgstr "%s 從這裡回答"
 #: internal/assistantui/assistantui.go:384
 msgid "Could not start the Console endpoint: %s"
 msgstr "無法啟動控制台端點：%s"
+
+#: internal/assistantui/assistantui.go:482
+#: internal/lightui/clock.go:497
+#: internal/ui/alarms.go:108
+#: ui/disk.ui:179
+#: ui/mail-compose.ui:375
+#: ui/vm.ui:694
+#: ui/vm.ui:1433
+#: ui/vm.ui:1779
+#: ui/vm.ui:2134
+#: ui/vm.ui:2156
+#: ui/vm.ui:2865
+#: ui/vm.ui:2887
+msgid "Stop"
+msgstr "停止"
 
 #: internal/assistantui/assistantui.go:489
 msgid "✕ Not done: %s"
@@ -4414,6 +2033,24 @@ msgstr "正在啟動……"
 msgid "The service is starting."
 msgstr "服務正在啟動。"
 
+#: internal/connectui/window.go:387
+#: internal/lightui/video.go:530
+#: internal/mailui/settings.go:563
+#: internal/shell/notify.go:44
+#: internal/shell/status.go:103
+#: internal/shell/status.go:118
+#: internal/shell/status.go:137
+#: internal/shell/status.go:152
+#: internal/termui/prefsweb.go:128
+#: internal/ui/settings_bluetooth.go:214
+#: internal/ui/settings_displays.go:294
+#: internal/ui/settings_displays.go:412
+#: internal/ui/settings_wifi.go:285
+#: ui/remote.ui:359
+#: ui/settings.ui:5876
+msgid "Off"
+msgstr "關閉"
+
 #: internal/connectui/window.go:388
 msgid "Share the clipboard and files with your phone, see its notifications and battery here, and use it as a touchpad or a remote."
 msgstr "與手機分享剪貼簿和檔案，在這裡查看它的通知和電量，並把它當作觸控板或遙控器使用。"
@@ -4429,6 +2066,59 @@ msgstr "裝置已不在。"
 #: internal/connectui/window.go:427
 msgid "%s asks to pair. Pair only if it shows this key:"
 msgstr "%s 請求配對。僅在它顯示此金鑰時才配對："
+
+#: internal/connectui/window.go:429
+#: internal/diskui/dialog.go:92
+#: internal/filesui/appchooser.go:107
+#: internal/filesui/archive.go:49
+#: internal/filesui/archive.go:309
+#: internal/filesui/cards.go:347
+#: internal/filesui/cards.go:396
+#: internal/filesui/cards.go:434
+#: internal/filesui/cards.go:451
+#: internal/filesui/cards.go:489
+#: internal/filesui/cards.go:588
+#: internal/filesui/picker.go:370
+#: internal/filesui/remote.go:159
+#: internal/filesui/remote.go:219
+#: internal/filesui/remotesetup.go:152
+#: internal/filesui/renamemany.go:37
+#: internal/games/fortunenet/texts.go:76
+#: internal/gamesui/fortune_host.go:236
+#: internal/lightui/workshop.go:991
+#: internal/mailui/dialog.go:92
+#: internal/remoteui/window.go:811
+#: internal/term/web/strings.go:29
+#: internal/termui/keys.go:273
+#: internal/termui/keys.go:401
+#: internal/termui/paste.go:295
+#: internal/termui/restart.go:42
+#: internal/termui/wsmenu.go:149
+#: internal/ui/askpass.go:301
+#: internal/ui/askpass.go:446
+#: internal/ui/askpass.go:450
+#: internal/ui/portal_ask.go:168
+#: internal/ui/settings_bluetooth.go:402
+#: internal/ui/settings_bluetooth.go:405
+#: internal/ui/settings_bluetooth.go:411
+#: internal/ui/settings_wifi.go:440
+#: internal/vmui/dialog.go:91
+#: ui/clock.ui:244
+#: ui/clock.ui:454
+#: ui/connectreply.ui:49
+#: ui/files.ui:159
+#: ui/files.ui:257
+#: ui/gpg.ui:1252
+#: ui/gpg.ui:1469
+#: ui/gpg.ui:1563
+#: ui/pass.ui:495
+#: ui/pass.ui:631
+#: ui/pass.ui:862
+#: ui/polkit.ui:741
+#: ui/remote.ui:1044
+#: ui/vm.ui:3264
+msgid "Cancel"
+msgstr "取消"
 
 #: internal/connectui/window.go:430
 msgid "Accept on %s if it shows this key:"
@@ -4455,9 +2145,38 @@ msgstr "傳送檔案"
 msgid "Asked %s to connect."
 msgstr "已請求 %s 連接。"
 
+#: internal/connectui/window.go:547
+#: internal/filesui/archive.go:76
+#: internal/filesui/remotesetup.go:226
+#: internal/filesui/renamemany.go:168
+#: internal/lightui/sysmon.go:968
+#: internal/lightui/tailscale.go:631
+#: internal/ui/settings_ai.go:486
+#: internal/viewerui/app.go:791
+#: ui/connect.ui:290
+#: ui/files.ui:212
+#: ui/gpg.ui:1342
+#: ui/settings.ui:5011
+#: ui/sysmon.ui:96
+msgid "Name"
+msgstr "名稱"
+
 #: internal/connectui/window.go:552
 msgid "What it runs: systemctl suspend"
 msgstr "執行的內容：systemctl suspend"
+
+#: internal/connectui/window.go:560
+#: internal/lightui/pass.go:1199
+#: internal/lightui/workshop_manager.go:115
+#: internal/mailui/actions.go:422
+#: internal/mailui/compose.go:474
+#: internal/ui/settings_ai.go:583
+#: internal/ui/settings_keyring.go:645
+#: internal/ui/settings_keyring.go:679
+#: internal/vmui/window.go:1976
+#: ui/stocks.ui:292
+msgid "Remove"
+msgstr "移除"
 
 #: internal/convert/convert.go:97
 msgid "millimetres"
@@ -5017,12 +2736,34 @@ msgid "Super+Return, and apps that run in a terminal"
 msgstr "Super+Return，以及在終端中執行的應用程式"
 
 #: internal/desktop/defaults.go:41
+#: internal/lightui/apps.go:30
+#: internal/lightui/music.go:293
+#: internal/lightui/music.go:1104
+#: config/apps/io.github.lyricat.Inua.Music.desktop:3
+msgid "Music"
+msgstr "音樂"
+
+#: internal/desktop/defaults.go:41
 msgid "Opens audio files"
 msgstr "開啟音訊檔案"
 
 #: internal/desktop/defaults.go:45
+#: internal/lightui/apps.go:31
+#: internal/lightui/video.go:257
+#: internal/lightui/video.go:511
+#: config/apps/io.github.lyricat.Inua.Video.desktop:3
+msgid "Video"
+msgstr "影片"
+
+#: internal/desktop/defaults.go:45
 msgid "Opens video files"
 msgstr "開啟影片檔案"
+
+#: internal/desktop/defaults.go:48
+#: internal/lightui/pass_otp.go:340
+#: internal/ui/settings.go:927
+msgid "Images"
+msgstr "影像"
 
 #: internal/desktop/defaults.go:48
 msgid "Opens pictures"
@@ -5185,6 +2926,24 @@ msgstr "%s。此動作無法復原。"
 msgid "Delete %s for good?"
 msgstr "永久刪除 %s？"
 
+#: internal/diskui/details.go:528
+#: internal/filesui/cards.go:435
+#: internal/lightui/calculator.go:53
+#: internal/lightui/gpg.go:1530
+#: internal/lightui/pass.go:949
+#: internal/mailui/actions.go:216
+#: internal/term/web/strings.go:43
+#: internal/ui/clipboard.go:503
+#: internal/vmui/window.go:1996
+#: internal/vmui/window.go:2002
+#: internal/vmui/window.go:2015
+#: internal/vmui/window.go:2027
+#: ui/clock.ui:231
+#: ui/gpg.ui:1572
+#: ui/pass.ui:263
+msgid "Delete"
+msgstr "刪除"
+
 #: internal/diskui/details.go:552
 #: internal/ui/settings_bench.go:197
 #: internal/ui/settings_bench.go:342
@@ -5205,6 +2964,37 @@ msgstr "輸入密碼後以 root 執行。"
 #: internal/diskui/details.go:562
 msgid "Runs in %s."
 msgstr "在 %s 中執行。"
+
+#: internal/diskui/details.go:578
+#: internal/gamesui/checkers.go:673
+#: internal/lightui/gpg.go:884
+#: internal/lightui/tailscale.go:470
+#: internal/mailui/welcome.go:480
+#: internal/term/web/strings.go:35
+#: internal/ui/askpass.go:571
+#: internal/viewerui/app.go:548
+#: internal/vmui/window.go:893
+msgid "Copied"
+msgstr "已複製"
+
+#: internal/diskui/details.go:581
+#: internal/filesui/window.go:760
+#: internal/lightui/pass.go:747
+#: internal/lightui/pass.go:772
+#: internal/mailui/details.go:222
+#: internal/term/settings/settings.go:116
+#: internal/term/web/strings.go:36
+#: internal/termui/prefsweb.go:90
+#: internal/ui/askpass.go:232
+#: internal/ui/passwords.go:643
+#: internal/vmui/window.go:896
+#: ui/disk.ui:697
+#: ui/gpg.ui:661
+#: ui/gpg.ui:907
+#: ui/settings.ui:3136
+#: ui/vm.ui:638
+msgid "Copy"
+msgstr "複製"
 
 #: internal/diskui/details.go:596
 msgid "Cleans %s, %s now."
@@ -5241,6 +3031,15 @@ msgstr "%s 移除了 %s：釋放了 %s。"
 #: internal/filesui/window.go:298
 msgid "Home"
 msgstr "家目錄"
+
+#: internal/diskui/window.go:329
+#: internal/lightui/sysmon.go:969
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:567
+#: internal/ui/settings.go:531
+#: ui/vm.ui:2977
+msgid "System"
+msgstr "系統"
 
 #: internal/diskui/window.go:357
 #: internal/diskui/window.go:553
@@ -5634,6 +3433,12 @@ msgstr "保留兩者"
 msgid "Merge"
 msgstr "合併"
 
+#: internal/filesui/cards.go:497
+#: internal/filesui/picker.go:371
+#: internal/lightui/pass_otp.go:189
+msgid "Replace"
+msgstr "替換"
+
 #: internal/filesui/cards.go:500
 msgid "“%s” is already in %s"
 msgstr "「%s」已在 %s 中"
@@ -5774,6 +3579,16 @@ msgstr "複製 / 剪下 / 貼上"
 #: internal/filesui/cards.go:691
 msgid "Copy the paths (none selected: the folder's)"
 msgstr "複製路徑（未選取時複製資料夾路徑）"
+
+#: internal/filesui/cards.go:693
+#: internal/filesui/window.go:785
+#: internal/lightui/gpg.go:1538
+#: internal/mailui/picker.go:143
+#: ui/disk.ui:771
+#: ui/settings.ui:214
+#: ui/settings.ui:621
+msgid "Move to Trash"
+msgstr "移到垃圾桶"
 
 #: internal/filesui/cards.go:694
 msgid "Delete for good"
@@ -5935,9 +3750,21 @@ msgstr "資料夾"
 msgid "Columns"
 msgstr "欄位"
 
+#: internal/filesui/columns.go:176
+#: internal/lightui/pass.go:1011
+msgid "NAME"
+msgstr "名稱"
+
 #: internal/filesui/details.go:50
 msgid "FOLDERS"
 msgstr "資料夾"
+
+#: internal/filesui/details.go:51
+#: internal/lightui/sysmon.go:793
+#: internal/mailui/window.go:246
+#: internal/term/web/strings.go:52
+msgid "FILES"
+msgstr "FILES"
 
 #: internal/filesui/details.go:52
 msgid "SIZE OF THE FILES"
@@ -6032,6 +3859,24 @@ msgstr[0] "已將 %d 項移至垃圾箱（Ctrl+Z 可還原）。"
 msgid "Broken link"
 msgstr "損壞的連結"
 
+#: internal/filesui/kinds.go:34
+#: internal/filesui/remotesetup.go:47
+#: internal/filesui/remotesetup.go:53
+#: internal/filesui/remotesetup.go:68
+#: internal/filesui/remotesetup.go:75
+#: internal/filesui/remotesetup.go:83
+#: internal/lightui/sysmon.go:794
+#: internal/viewerui/app.go:792
+#: ui/vm.ui:322
+msgid "Folder"
+msgstr "Folder"
+
+#: internal/filesui/kinds.go:38
+#: internal/lightui/sysmon.go:794
+#: internal/ui/settings_keyring.go:326
+msgid "Program"
+msgstr "程序"
+
 #: internal/filesui/openwith.go:107
 #: internal/filesui/openwith.go:112
 #: internal/filesui/openwith.go:129
@@ -6120,6 +3965,14 @@ msgstr[0] "已選 %d 項"
 msgid "done"
 msgstr "完成"
 
+#: internal/filesui/pane.go:1544
+#: internal/lightui/pass.go:1214
+#: internal/lightui/sysmon.go:973
+#: internal/ui/settings_keyring.go:508
+#: internal/ui/shotdrawer.go:327
+msgid "Jan 2 15:04"
+msgstr "1月2日 15:04"
+
 #: internal/filesui/pane.go:1546
 #: internal/ui/shotdrawer.go:329
 msgid "Jan 2 2006"
@@ -6200,6 +4053,15 @@ msgstr "需要金鑰 ID 和金鑰本身。"
 #: internal/mailui/welcome.go:535
 msgid "Sign in to %s"
 msgstr "登入 %s"
+
+#: internal/filesui/remote.go:178
+#: internal/filesui/remotesetup.go:45
+#: internal/filesui/remotesetup.go:54
+#: internal/filesui/remotesetup.go:60
+#: internal/filesui/remotesetup.go:66
+#: internal/lightui/sysmon.go:786
+msgid "User"
+msgstr "用戶"
 
 #: internal/filesui/remote.go:181
 msgid "Keys for %s"
@@ -6935,6 +4797,12 @@ msgstr "困難"
 msgid "Team %s"
 msgstr "%s 隊"
 
+#: internal/games/checkersnet/texts.go:37
+#: internal/games/fortunenet/texts.go:29
+#: internal/lightui/gpg.go:1199
+msgid "you"
+msgstr "你"
+
 #: internal/games/checkersnet/texts.go:38
 msgid "sets up the game"
 msgstr "負責設定遊戲"
@@ -7082,6 +4950,19 @@ msgstr "機會"
 #: internal/gamesui/fortune_panel.go:365
 msgid "Card Shop"
 msgstr "卡牌商店"
+
+#: internal/games/fortune.go:65
+#: internal/gamesui/fortune_menu.go:174
+#: internal/lightui/clock.go:492
+#: internal/termui/guide.go:161
+#: internal/ui/voice_page.go:190
+#: ui/clock.ui:339
+#: ui/clock.ui:406
+#: ui/vm.ui:684
+#: ui/vm.ui:2261
+#: ui/vm.ui:2283
+msgid "Start"
+msgstr "開始"
 
 #: internal/games/fortune.go:66
 #: internal/gamesui/fortune_menu.go:183
@@ -9912,6 +7793,11 @@ msgstr "任務點亮：%s。射擊發射坡道以接受它。"
 msgid "Hit the three yellow mission targets to light a mission; the hyperspace ramp is on the left."
 msgstr "擊中三個黃色任務目標即可點亮任務；超空間坡道位於左側。"
 
+#: internal/gamesui/pinball.go:241
+#: internal/lightui/clock.go:583
+msgid "PAUSED"
+msgstr "暫停"
+
 #: internal/gamesui/pinball.go:242
 msgid "P or any control plays on"
 msgstr "P或任意控製播放"
@@ -10260,6 +8146,2120 @@ msgstr "上午"
 #: internal/keyring/portal.go:96
 msgid "Passwords of %s"
 msgstr ""
+
+#: internal/lightui/apps.go:16
+#: internal/ui/alarms.go:106
+#: ui/settings.ui:1222
+#: config/apps/io.github.lyricat.Inua.Clock.desktop:3
+msgid "Clock"
+msgstr "時鐘"
+
+#: internal/lightui/apps.go:17
+#: internal/lightui/weather.go:224
+#: internal/ui/agenda.go:323
+#: config/apps/io.github.lyricat.Inua.Weather.desktop:3
+msgid "Weather"
+msgstr "天氣"
+
+#: internal/lightui/apps.go:18
+#: ui/stocks.ui:35
+#: config/apps/io.github.lyricat.Inua.Stocks.desktop:3
+msgid "Stocks"
+msgstr "股票"
+
+#: internal/lightui/apps.go:19
+#: config/apps/io.github.lyricat.Inua.Calculator.desktop:3
+msgid "Calculator"
+msgstr "計算機"
+
+#: internal/lightui/apps.go:20
+#: ui/bar.ui:55
+#: config/apps/io.github.lyricat.Inua.Calendar.desktop:3
+msgid "Calendar"
+msgstr "日曆"
+
+#: internal/lightui/apps.go:21
+#: internal/ui/picker.go:152
+#: config/apps/io.github.lyricat.Inua.ColorPicker.desktop:3
+msgid "Color Picker"
+msgstr "取色器"
+
+#: internal/lightui/apps.go:22
+#: config/apps/io.github.lyricat.Inua.SystemMonitor.desktop:3
+msgid "System Monitor"
+msgstr "系統監視器"
+
+#: internal/lightui/apps.go:23
+#: internal/termui/prefsweb.go:64
+#: ui/control.ui:536
+#: config/apps/io.github.lyricat.Inua.Tailscale.desktop:3
+msgid "Tailscale"
+msgstr "Tailscale"
+
+#: internal/lightui/apps.go:24
+#: internal/lightui/pass.go:265
+#: internal/lightui/pass_otp.go:114
+#: ui/pass.ui:29
+#: config/apps/io.github.lyricat.Inua.Pass.desktop:3
+msgid "Pass"
+msgstr "Pass"
+
+#: internal/lightui/apps.go:25
+#: internal/lightui/gpg.go:273
+#: config/apps/io.github.lyricat.Inua.GPG.desktop:3
+msgid "GPG"
+msgstr "GPG"
+
+#: internal/lightui/calculator.go:57
+msgid "Change sign"
+msgstr "改變符號"
+
+#: internal/lightui/calculator.go:240
+msgid "Error"
+msgstr "錯誤"
+
+#: internal/lightui/calculator.go:274
+msgid "No calculations yet"
+msgstr "尚未計算"
+
+#: internal/lightui/calculator.go:296
+msgid "Use %s"
+msgstr "使用%s"
+
+#: internal/lightui/calendar.go:132
+#: internal/ui/agenda.go:228
+msgid "January 2006"
+msgstr "2006年1月"
+
+#: internal/lightui/calendar.go:134
+#: internal/ui/agenda.go:241
+msgid "WK"
+msgstr "週"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Su"
+msgstr "日"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Mo"
+msgstr "一"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Tu"
+msgstr "二"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "We"
+msgstr "三"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Th"
+msgstr "四"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Fr"
+msgstr "五"
+
+#: internal/lightui/calendar.go:139
+#: internal/lightui/clock.go:149
+#: internal/ui/agenda.go:242
+msgid "Sa"
+msgstr "六"
+
+#: internal/lightui/clock.go:146
+msgid "HRS"
+msgstr "小時"
+
+#: internal/lightui/clock.go:146
+msgid "MIN"
+msgstr "分鐘"
+
+#: internal/lightui/clock.go:146
+msgid "SEC"
+msgstr "秒"
+
+#: internal/lightui/clock.go:260
+msgid "Day"
+msgstr "日"
+
+#: internal/lightui/clock.go:263
+msgid "Night"
+msgstr "夜晚"
+
+#: internal/lightui/clock.go:338
+msgid "No city by that name"
+msgstr "沒有同名的城市"
+
+#: internal/lightui/clock.go:370
+#: internal/lightui/weather.go:247
+msgid "Remove %s"
+msgstr "刪除 %s"
+
+#: internal/lightui/clock.go:403
+#: ui/pass.ui:252
+msgid "Edit"
+msgstr "編輯"
+
+#: internal/lightui/clock.go:493
+#: ui/music.ui:332
+msgid "Reset"
+msgstr "重設"
+
+#: internal/lightui/clock.go:498
+#: internal/lightui/clock.go:507
+#: ui/clock.ui:329
+msgid "Lap"
+msgstr "計次"
+
+#: internal/lightui/clock.go:546
+msgid "LAP %d"
+msgstr "第 %d 次"
+
+#: internal/lightui/clock.go:566
+#: internal/lightui/clock.go:576
+#: internal/lightui/sysmon.go:56
+#: internal/lightui/sysmon.go:56
+#: ui/clock.ui:463
+msgid "Pause"
+msgstr "暫停"
+
+#: internal/lightui/clock.go:569
+#: internal/lightui/clock.go:577
+msgid "ENDS AT %s"
+msgstr "結束於 %s"
+
+#: internal/lightui/clock.go:582
+#: internal/lightui/sysmon.go:871
+#: internal/lightui/sysmon.go:871
+#: internal/vmui/window.go:2465
+msgid "Resume"
+msgstr "繼續"
+
+#: internal/lightui/clock.go:594
+msgid "Timer done"
+msgstr "定時器完成"
+
+#: internal/lightui/clock.go:595
+msgid "Your timer has ended."
+msgstr "您的計時器已結束。"
+
+#: internal/lightui/colorpicker.go:121
+msgid "HEX"
+msgstr "HEX"
+
+#: internal/lightui/colorpicker.go:121
+msgid "RGB"
+msgstr "RGB"
+
+#: internal/lightui/colorpicker.go:121
+msgid "HSL"
+msgstr "HSL"
+
+#: internal/lightui/colorpicker.go:135
+msgid "Copy %s"
+msgstr "複製 %s"
+
+#: internal/lightui/colorpicker.go:140
+msgid "No colour yet. Pick one from anywhere on the screen."
+msgstr "還沒有顏色。從螢幕上的任意位置選擇一個。"
+
+#: internal/lightui/gpg.go:145
+msgid "1 year"
+msgstr "1 年"
+
+#: internal/lightui/gpg.go:145
+msgid "2 years"
+msgstr "2 年"
+
+#: internal/lightui/gpg.go:145
+msgid "5 years"
+msgstr "5 年"
+
+#: internal/lightui/gpg.go:145
+#: internal/mailui/settings.go:530
+#: internal/shell/idle.go:162
+#: ui/settings.ui:4125
+msgid "Never"
+msgstr "永不過期"
+
+#: internal/lightui/gpg.go:318
+msgid "The keyring cannot be read: %s"
+msgstr "無法讀取金鑰環：%s"
+
+#: internal/lightui/gpg.go:360
+msgid "created %s"
+msgstr "建立於 %s"
+
+#: internal/lightui/gpg.go:360
+#: internal/lightui/gpg.go:363
+#: internal/lightui/gpg.go:365
+#: internal/lightui/gpg.go:603
+#: internal/lightui/gpg.go:625
+#: internal/shell/notify.go:32
+#: internal/ui/askpass.go:414
+#: internal/ui/askpass.go:482
+#: internal/ui/askpass.go:486
+#: internal/ui/askpass.go:488
+#: internal/ui/settings_about.go:234
+#: internal/ui/settings_keyring.go:640
+#: internal/ui/settings_keyring.go:674
+msgid "Jan 2, 2006"
+msgstr "2006年1月2日"
+
+#: internal/lightui/gpg.go:365
+msgid "expires %s"
+msgstr "%s 過期"
+
+#: internal/lightui/gpg.go:379
+#: internal/lightui/gpg.go:776
+msgid "signs only"
+msgstr "僅簽章"
+
+#: internal/lightui/gpg.go:389
+msgid "revoked"
+msgstr "已撤銷"
+
+#: internal/lightui/gpg.go:391
+msgid "expired"
+msgstr "已過期"
+
+#: internal/lightui/gpg.go:393
+msgid "disabled"
+msgstr "已停用"
+
+#: internal/lightui/gpg.go:395
+#: internal/lightui/gpg.go:609
+#: internal/lightui/gpg.go:749
+msgid "yours"
+msgstr "你的"
+
+#: internal/lightui/gpg.go:397
+msgid "verified"
+msgstr "已驗證"
+
+#: internal/lightui/gpg.go:399
+msgid "partly verified"
+msgstr "部分驗證"
+
+#: internal/lightui/gpg.go:401
+msgid "not verified"
+msgstr "未驗證"
+
+#: internal/lightui/gpg.go:464
+#: ui/gpg.ui:305
+msgid "Encrypt to your key as well, so you can open it later"
+msgstr "也加密給你的金鑰，以便你之後能打開"
+
+#: internal/lightui/gpg.go:466
+msgid "This key only signs; it cannot be encrypted to"
+msgstr "這個金鑰僅用於簽章，不能作為加密對象"
+
+#: internal/lightui/gpg.go:517
+msgid "Take off"
+msgstr "移除"
+
+#: internal/lightui/gpg.go:527
+msgid "%d recipient"
+msgid_plural "%d recipients"
+msgstr[0] "%d 個收件人"
+
+#: internal/lightui/gpg.go:530
+#: ui/gpg.ui:118
+msgid "Name, address or key ID"
+msgstr "姓名、地址或金鑰 ID"
+
+#: internal/lightui/gpg.go:532
+msgid "Add another"
+msgstr "再新增"
+
+#: internal/lightui/gpg.go:581
+msgid "%d more: type to narrow them down"
+msgid_plural "%d more: type to narrow them down"
+msgstr[0] "還有 %d 個：輸入以縮小範圍"
+
+#: internal/lightui/gpg.go:624
+msgid "This key expired on %s, so gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "這個金鑰已於 %s 過期，gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
+
+#: internal/lightui/gpg.go:627
+#: internal/lightui/gpg.go:792
+msgid "%s revoked this key; ask for their new one."
+msgstr "%s 已撤銷這個金鑰；請向對方要新的。"
+
+#: internal/lightui/gpg.go:629
+msgid "This key cannot encrypt."
+msgstr "這個金鑰不能加密。"
+
+#: internal/lightui/gpg.go:639
+msgid "No key matches. Import theirs on the Keys tab."
+msgstr "沒有符合的金鑰。請在「金鑰」頁匯入對方的金鑰。"
+
+#: internal/lightui/gpg.go:641
+msgid "Already added."
+msgstr "已經新增了。"
+
+#: internal/lightui/gpg.go:644
+msgid "Your keyring is empty. Import their key on the Keys tab."
+msgstr "金鑰環是空的。請在「金鑰」頁匯入對方的金鑰。"
+
+#: internal/lightui/gpg.go:646
+msgid "Every key is chosen."
+msgstr "所有金鑰都已選上。"
+
+#: internal/lightui/gpg.go:701
+msgid "MY KEYS"
+msgstr "我的金鑰"
+
+#: internal/lightui/gpg.go:701
+msgid "OTHERS"
+msgstr "他人的"
+
+#: internal/lightui/gpg.go:701
+msgid "INVALID KEYS"
+msgstr "無效金鑰"
+
+#: internal/lightui/gpg.go:718
+msgid "%d key"
+msgid_plural "%d keys"
+msgstr[0] "%d 個金鑰"
+
+#: internal/lightui/gpg.go:786
+msgid "Extend it to use it again. Keep it either way: it opens what was encrypted to it."
+msgstr "延長後可再次使用。無論如何請保留：它能打開加密給它的內容。"
+
+#: internal/lightui/gpg.go:788
+msgid "Keep it: it opens what was encrypted to it."
+msgstr "請保留：它能打開加密給它的內容。"
+
+#: internal/lightui/gpg.go:790
+msgid "gpg cannot encrypt to it. Ask %s for an updated key, then import it."
+msgstr "gpg 無法用它加密。請向 %s 要一份更新後的金鑰，然後匯入。"
+
+#: internal/lightui/gpg.go:813
+msgid "Copy fingerprint"
+msgstr "複製指紋"
+
+#: internal/lightui/gpg.go:814
+msgid "Copy public key"
+msgstr "複製公鑰"
+
+#: internal/lightui/gpg.go:816
+msgid "Encrypt to…"
+msgstr "加密給…"
+
+#: internal/lightui/gpg.go:819
+msgid "Extend 2 years"
+msgstr "延長 2 年"
+
+#: internal/lightui/gpg.go:824
+#: ui/disk.ui:781
+#: ui/vm.ui:391
+#: ui/vm.ui:1536
+#: ui/vm.ui:1582
+#: ui/vm.ui:1960
+#: ui/vm.ui:2625
+#: ui/vm.ui:2671
+msgid "Delete…"
+msgstr "刪除…"
+
+#: internal/lightui/gpg.go:887
+msgid "Copied; taken off the clipboard in 45 seconds"
+msgstr "已複製；45 秒後從剪貼簿移除"
+
+#: internal/lightui/gpg.go:940
+msgid "Fingerprint copied"
+msgstr "已複製指紋"
+
+#: internal/lightui/gpg.go:952
+msgid "Public key copied"
+msgstr "已複製公鑰"
+
+#: internal/lightui/gpg.go:1020
+msgid "Files to encrypt"
+msgstr "要加密的檔案"
+
+#: internal/lightui/gpg.go:1020
+msgid "Files to decrypt"
+msgstr "要解密的檔案"
+
+#: internal/lightui/gpg.go:1020
+msgid "Key file to import"
+msgstr "要匯入的金鑰檔案"
+
+#: internal/lightui/gpg.go:1086
+msgid "Leave it out"
+msgstr "移除"
+
+#: internal/lightui/gpg.go:1121
+msgid "Saved to %s"
+msgstr "已儲存到 %s"
+
+#: internal/lightui/gpg.go:1137
+msgid "Add someone to encrypt to."
+msgstr "請新增加密對象。"
+
+#: internal/lightui/gpg.go:1151
+#: internal/lightui/gpg.go:1277
+msgid "Choose or drop files first."
+msgstr "請先選擇或拖入檔案。"
+
+#: internal/lightui/gpg.go:1162
+msgid "Type a message first."
+msgstr "請先輸入訊息。"
+
+#: internal/lightui/gpg.go:1167
+msgid "Encrypting…"
+msgstr "正在加密…"
+
+#: internal/lightui/gpg.go:1204
+msgid "For %s"
+msgstr "給 %s"
+
+#: internal/lightui/gpg.go:1206
+msgid "signed"
+msgstr "已簽章"
+
+#: internal/lightui/gpg.go:1223
+msgid "written in %s"
+msgstr "已寫入 %s"
+
+#: internal/lightui/gpg.go:1227
+msgid "Move to Trash…"
+msgstr "移到垃圾桶…"
+
+#: internal/lightui/gpg.go:1251
+msgid "%s moved to the trash"
+msgstr "已將 %s 移到垃圾桶"
+
+#: internal/lightui/gpg.go:1286
+msgid "Paste a message first."
+msgstr "請先貼上訊息。"
+
+#: internal/lightui/gpg.go:1293
+msgid "Decrypting… gpg may ask for your passphrase."
+msgstr "正在解密… gpg 可能會詢問密碼短語。"
+
+#: internal/lightui/gpg.go:1342
+msgid "Not signed: who sent it is not known"
+msgstr "未簽章：不知道是誰傳送的"
+
+#: internal/lightui/gpg.go:1350
+msgid "Signed by %s"
+msgstr "由 %s 簽章"
+
+#: internal/lightui/gpg.go:1353
+msgid "Jan 2, 2006 15:04"
+msgstr "2006年1月2日 15:04"
+
+#: internal/lightui/gpg.go:1357
+msgid "The signature by %s does not match: it was changed after signing"
+msgstr "%s 的簽章不符：簽章後被改動過"
+
+#: internal/lightui/gpg.go:1361
+msgid "Signed by a key not in your keyring, so it cannot be checked"
+msgstr "簽章所用的金鑰不在你的金鑰環裡，無法核對"
+
+#: internal/lightui/gpg.go:1365
+msgid "Signed by %s, with a key that is no longer valid"
+msgstr "由 %s 簽章，所用的金鑰已失效"
+
+#: internal/lightui/gpg.go:1383
+msgid "Encrypted to %s"
+msgstr "加密給 %s"
+
+#: internal/lightui/gpg.go:1399
+#: ui/gpg.ui:1280
+msgid "Import"
+msgstr "匯入"
+
+#: internal/lightui/gpg.go:1409
+msgid "No key found in it."
+msgstr "裡面沒有金鑰。"
+
+#: internal/lightui/gpg.go:1414
+msgid "Import %d key"
+msgid_plural "Import %d keys"
+msgstr[0] "匯入 %d 個金鑰"
+
+#: internal/lightui/gpg.go:1426
+msgid "new"
+msgstr "新的"
+
+#: internal/lightui/gpg.go:1429
+msgid "holds a secret key"
+msgstr "含私鑰"
+
+#: internal/lightui/gpg.go:1431
+msgid "updates one you have"
+msgstr "更新已有的"
+
+#: internal/lightui/gpg.go:1456
+msgid "Importing…"
+msgstr "正在匯入…"
+
+#: internal/lightui/gpg.go:1467
+msgid "%d key imported"
+msgid_plural "%d keys imported"
+msgstr[0] "已匯入 %d 個金鑰"
+
+#: internal/lightui/gpg.go:1480
+msgid "Give a name and an address."
+msgstr "請填寫姓名和地址。"
+
+#: internal/lightui/gpg.go:1484
+msgid "That address has no @."
+msgstr "這個地址沒有 @。"
+
+#: internal/lightui/gpg.go:1490
+msgid "Creating… gpg asks for a passphrase for the new key."
+msgstr "正在建立… gpg 會為新金鑰詢問密碼短語。"
+
+#: internal/lightui/gpg.go:1504
+msgid "Your key is created"
+msgstr "金鑰已建立"
+
+#: internal/lightui/gpg.go:1527
+msgid "Delete the key of %s?"
+msgstr "刪除 %s 的金鑰？"
+
+#: internal/lightui/gpg.go:1529
+msgid "It goes from your keyring. Messages it signed then show as signed by a key not in your keyring; importing it again brings that back."
+msgstr "它會從金鑰環中移除。之後它簽章的訊息會顯示為由不在金鑰環中的金鑰簽章；重新匯入即可恢復。"
+
+#: internal/lightui/gpg.go:1536
+msgid "Move %s to the trash?"
+msgstr "把 %s 移到垃圾桶？"
+
+#: internal/lightui/gpg.go:1537
+msgid "The decrypted copy goes to the trash, where it can be restored from; the encrypted file stays."
+msgstr "解密出的副本會移到垃圾桶，可從那裡復原；加密檔案保留。"
+
+#: internal/lightui/gpg.go:1554
+msgid "Key deleted"
+msgstr "已刪除金鑰"
+
+#: internal/lightui/gpg.go:1564
+msgid "Extending… gpg asks for your passphrase."
+msgstr "正在延長… gpg 會詢問你的密碼短語。"
+
+#: internal/lightui/gpg.go:1573
+msgid "Extended by 2 years"
+msgstr "已延長 2 年"
+
+#: internal/lightui/media.go:54
+msgid "GStreamer is not installed: install its plugins (on Ubuntu gstreamer1.0-plugins-base, -good, -bad, -ugly and gstreamer1.0-libav)."
+msgstr "未安裝 GStreamer：請安裝它的外掛（Ubuntu 上為 gstreamer1.0-plugins-base、-good、-bad、-ugly 和 gstreamer1.0-libav）。"
+
+#: internal/lightui/music.go:178
+#: ui/music.ui:323
+msgid "Presets"
+msgstr "預設集"
+
+#: internal/lightui/music.go:486
+msgid "Cannot play %s: %s"
+msgstr "無法播放 %s：%s"
+
+#: internal/lightui/music.go:560
+#: ui/music.ui:86
+msgid "Nothing playing"
+msgstr "未在播放"
+
+#: internal/lightui/music.go:610
+msgid "MONO"
+msgstr "單聲道"
+
+#: internal/lightui/music.go:612
+msgid "STEREO"
+msgstr "立體聲"
+
+#: internal/lightui/music.go:679
+msgid "PRE"
+msgstr "前級"
+
+#: internal/lightui/music.go:788
+#: ui/music.ui:270
+msgid "Repeat: off (R)"
+msgstr "重複：關 (R)"
+
+#: internal/lightui/music.go:791
+msgid "Repeat: the playlist (R)"
+msgstr "重複：整個播放清單 (R)"
+
+#: internal/lightui/music.go:793
+msgid "Repeat: this track (R)"
+msgstr "重複：這首 (R)"
+
+#: internal/lightui/music.go:1016
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] "%d 首"
+
+#: internal/lightui/music.go:1103
+#: internal/lightui/sysmon.go:794
+msgid "Open files"
+msgstr "開啟文件"
+
+#: internal/lightui/music.go:1103
+#: ui/music.ui:424
+msgid "Add files"
+msgstr "加入檔案"
+
+#: internal/lightui/music.go:1107
+#: ui/music.ui:434
+msgid "Add a folder"
+msgstr "加入資料夾"
+
+#: internal/lightui/music.go:1110
+msgid "Load a playlist"
+msgstr "載入播放清單"
+
+#: internal/lightui/music.go:1111
+msgid "Playlists"
+msgstr "播放清單"
+
+#: internal/lightui/music.go:1114
+msgid "Save the playlist"
+msgstr "儲存播放清單"
+
+#: internal/lightui/music.go:1115
+msgid "Playlist"
+msgstr "播放清單"
+
+#: internal/lightui/pass.go:346
+msgid "A password store: a folder with a .gpg-id"
+msgstr "密碼庫：含有 .gpg-id 的資料夾"
+
+#: internal/lightui/pass.go:354
+msgid "%s is not a password store: it has no .gpg-id (pass init makes one)."
+msgstr "%s 不是密碼庫：沒有 .gpg-id（pass init 可以建立）。"
+
+#: internal/lightui/pass.go:374
+msgid "No password store. pass init YOUR-GPG-KEY-ID makes one in ~/.password-store; another folder can be added below."
+msgstr "沒有密碼庫。pass init 你的GPG金鑰ID 會在 ~/.password-store 建立一個；也可以在下方加入其他資料夾。"
+
+#: internal/lightui/pass.go:401
+msgid "The store is empty. + makes an entry."
+msgstr "密碼庫是空的。+ 可新增項目。"
+
+#: internal/lightui/pass.go:404
+#: internal/lightui/pass.go:803
+#: internal/lightui/pass.go:875
+#: internal/lightui/pass.go:1134
+msgid "Choose an entry."
+msgstr "選擇一個項目。"
+
+#: internal/lightui/pass.go:410
+msgid "Top level"
+msgstr "頂層"
+
+#: internal/lightui/pass.go:418
+#: internal/ui/settings.go:790
+#: internal/ui/settings.go:817
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] "%d 筆"
+
+#: internal/lightui/pass.go:423
+msgid "Right-click to rename or move"
+msgstr "右鍵點擊以重新命名或移動"
+
+#: internal/lightui/pass.go:486
+#: internal/ui/passwords.go:484
+msgid "Nothing matches. Each word is looked for in the whole path."
+msgstr "沒有符合項目。每個詞都會在整個路徑中尋找。"
+
+#: internal/lightui/pass.go:488
+msgid "And %d more: another word narrows them."
+msgid_plural "And %d more: another word narrows them."
+msgstr[0] "還有 %d 個：再加一個詞可縮小範圍。"
+
+#: internal/lightui/pass.go:634
+msgid "Decrypting %s"
+msgstr "正在解密 %s"
+
+#: internal/lightui/pass.go:690
+#: internal/lightui/pass_otp.go:188
+msgid "Replace the one-time code"
+msgstr "替換一次性驗證碼"
+
+#: internal/lightui/pass.go:692
+#: internal/lightui/pass_otp.go:191
+#: ui/pass.ui:230
+#: ui/pass.ui:670
+msgid "Add a one-time code"
+msgstr "新增一次性驗證碼"
+
+#: internal/lightui/pass.go:697
+#: internal/ui/passwords.go:557
+msgid "USERNAME"
+msgstr "使用者名稱"
+
+#: internal/lightui/pass.go:700
+#: internal/ui/passwords.go:560
+msgid "PASSWORD"
+msgstr "密碼"
+
+#: internal/lightui/pass.go:705
+#: internal/lightui/pass.go:757
+#: internal/ui/passwords.go:563
+#: internal/ui/passwords.go:566
+#: ui/pass.ui:802
+msgid "ONE-TIME CODE"
+msgstr "一次性驗證碼"
+
+#: internal/lightui/pass.go:712
+#: internal/ui/passwords.go:573
+msgid "NOTES"
+msgstr "備註"
+
+#: internal/lightui/pass.go:741
+#: internal/mailui/formatted.go:184
+#: internal/term/desktop/desktop_linux.go:42
+#: internal/ui/passwords.go:640
+#: internal/vmui/window.go:2709
+#: internal/vmui/window.go:2710
+msgid "Show"
+msgstr "顯示"
+
+#: internal/lightui/pass.go:743
+#: internal/ui/notify.go:410
+#: internal/ui/passwords.go:638
+msgid "Hide"
+msgstr "隱藏"
+
+#: internal/lightui/pass.go:786
+#: internal/lightui/pass_otp.go:246
+#: internal/ui/passwords.go:657
+msgid "%d second left"
+msgid_plural "%d seconds left"
+msgstr[0] "剩 %d 秒"
+
+#: internal/lightui/pass.go:931
+msgid "Rename or move the category “%s”"
+msgstr "重新命名或移動類別「%s」"
+
+#: internal/lightui/pass.go:932
+msgid "Its new path. Another name renames it; a path under another category moves it there, with all its entries."
+msgstr "新路徑。換個名字即重新命名；放到另一個類別下的路徑，即連同所有項目移動過去。"
+
+#: internal/lightui/pass.go:933
+#: internal/lightui/pass.go:937
+#: internal/term/web/strings.go:65
+msgid "Move"
+msgstr "移動"
+
+#: internal/lightui/pass.go:935
+msgid "Rename or move “%s”"
+msgstr "重新命名或移動「%s」"
+
+#: internal/lightui/pass.go:936
+msgid "Its new path. The first part is its category: change it to move the entry, the rest to rename it."
+msgstr "新路徑。第一段是類別：改它即移動項目，改其餘部分即重新命名。"
+
+#: internal/lightui/pass.go:939
+#: ui/pass.ui:137
+msgid "New entry"
+msgstr "新增項目"
+
+#: internal/lightui/pass.go:940
+msgid "Its path: the first part is its category. Its content comes next."
+msgstr "路徑：第一段是類別。接著填寫內容。"
+
+#: internal/lightui/pass.go:945
+#: internal/termui/guide.go:163
+#: ui/vm.ui:3285
+msgid "Next"
+msgstr "下一步"
+
+#: internal/lightui/pass.go:947
+msgid "Delete “%s”?"
+msgstr "刪除「%s」？"
+
+#: internal/lightui/pass.go:948
+msgid "pass removes its file; a git store keeps it in its history."
+msgstr "pass 會刪除它的檔案；git 管理的密碼庫會在歷史中保留。"
+
+#: internal/lightui/pass.go:984
+#: internal/lightui/pass.go:1014
+#: internal/mailui/reader.go:548
+#: internal/mailui/reader.go:793
+#: internal/viewerui/app.go:790
+msgid "FILE"
+msgstr "文件"
+
+#: internal/lightui/pass.go:1010
+msgid "CATEGORY"
+msgstr "類別"
+
+#: internal/lightui/pass.go:1024
+msgid "and %d more"
+msgid_plural "and %d more"
+msgstr[0] "還有 %d 個"
+
+#: internal/lightui/pass.go:1068
+msgid "That is where it is."
+msgstr "它已經在那裡了。"
+
+#: internal/lightui/pass.go:1070
+msgid "A category cannot move into itself."
+msgstr "類別不能移動到自身內部。"
+
+#: internal/lightui/pass.go:1072
+msgid "That path is already in the store."
+msgstr "這個路徑已經在密碼庫裡了。"
+
+#: internal/lightui/pass.go:1074
+msgid "It is no longer in the store."
+msgstr "它已經不在密碼庫裡了。"
+
+#: internal/lightui/pass.go:1076
+msgid "Each part of the path needs a name, without a leading dot."
+msgstr "路徑的每一段都要有名字，且不能以點開頭。"
+
+#: internal/lightui/pass.go:1183
+msgid "TRUSTED APPS"
+msgstr "受信任的應用程式"
+
+#: internal/lightui/pass.go:1183
+#: internal/lightui/workshop_manager.go:50
+#: internal/ui/settings_keyring.go:551
+msgid "%d app"
+msgid_plural "%d apps"
+msgstr[0] "%d 個應用程式"
+
+#: internal/lightui/pass.go:1185
+msgid "None: an app reading it is asked about first."
+msgstr "無：讀取它的應用程式會先詢問。"
+
+#: internal/lightui/pass.go:1191
+#: internal/ui/askpass.go:405
+#: internal/ui/settings_keyring.go:624
+msgid "Flatpak: %s"
+msgstr "Flatpak：%s"
+
+#: internal/lightui/pass.go:1196
+#: internal/lightui/pass.go:1218
+#: internal/ui/settings_keyring.go:469
+#: internal/ui/settings_keyring.go:477
+#: internal/ui/settings_keyring.go:629
+#: internal/vmui/window.go:1591
+msgid "%s · %s"
+msgstr "%s · %s"
+
+#: internal/lightui/pass.go:1203
+#: internal/ui/settings_keyring.go:649
+msgid "Stop trusting it: it is asked about at its next read"
+msgstr "不再信任：它下次讀取時會詢問"
+
+#: internal/lightui/pass.go:1208
+msgid "LAST READS"
+msgstr "最近讀取"
+
+#: internal/lightui/pass.go:1210
+msgid "No app has read it yet."
+msgstr "尚無應用程式讀取過它。"
+
+#: internal/lightui/pass.go:1216
+msgid "%s · %d times"
+msgid_plural "%s · %d times"
+msgstr[0] "%s · %d 次"
+
+#: internal/lightui/pass.go:1228
+#: internal/ui/settings_keyring.go:694
+msgid "trusted"
+msgstr "已信任"
+
+#: internal/lightui/pass.go:1230
+#: internal/ui/settings_keyring.go:696
+msgid "allowed once"
+msgstr "允許一次"
+
+#: internal/lightui/pass.go:1232
+#: internal/ui/settings_keyring.go:698
+msgid "allowed, and trusted from now on"
+msgstr "已允許，今後信任"
+
+#: internal/lightui/pass.go:1234
+#: internal/ui/settings_keyring.go:700
+msgid "denied"
+msgstr "已拒絕"
+
+#: internal/lightui/pass.go:1236
+#: internal/ui/settings_keyring.go:702
+msgid "allowed: no one to ask"
+msgstr "已允許：無人可詢問"
+
+#: internal/lightui/pass.go:1238
+msgid "read"
+msgstr "已讀取"
+
+#: internal/lightui/pass_otp.go:101
+msgid "It is not an image this app reads (PNG or JPEG)."
+msgstr "這不是本應用程式能讀取的圖片（PNG 或 JPEG）。"
+
+#: internal/lightui/pass_otp.go:192
+#: internal/lightui/workshop_manager.go:88
+#: ui/connect.ui:966
+#: ui/pass.ui:871
+#: ui/remote.ui:1053
+msgid "Add"
+msgstr "新增"
+
+#: internal/lightui/pass_otp.go:265
+msgid "Reading the screen needs grim."
+msgstr "讀取螢幕需要 grim。"
+
+#: internal/lightui/pass_otp.go:269
+msgid "Selecting an area needs slurp."
+msgstr "選取區域需要 slurp。"
+
+#: internal/lightui/pass_otp.go:273
+msgid "No area was chosen."
+msgstr "沒有選取區域。"
+
+#: internal/lightui/pass_otp.go:288
+#: internal/lightui/pass_otp.go:326
+msgid "The screen could not be read."
+msgstr "無法讀取螢幕。"
+
+#: internal/lightui/pass_otp.go:338
+msgid "An image with a QR code"
+msgstr "含 QR 碼的圖片"
+
+#: internal/lightui/pass_otp.go:361
+msgid "Reading the QR code…"
+msgstr "正在讀取 QR 碼…"
+
+#: internal/lightui/stocks.go:275
+msgid "Search for a symbol to add it."
+msgstr "搜尋符號來加入它。"
+
+#: internal/lightui/stocks.go:282
+#: internal/mailui/window.go:981
+msgid "Loading %s…"
+msgstr "正在載入%s…"
+
+#: internal/lightui/stocks.go:295
+msgid "%s could not be read.\n%s"
+msgstr "無法讀取 %[1]s。\n%[2]s"
+
+#: internal/lightui/stocks.go:318
+msgid "Previous close"
+msgstr "前收盤價"
+
+#: internal/lightui/stocks.go:320
+msgid "Range start"
+msgstr "範圍起始"
+
+#: internal/lightui/stocks.go:323
+#: internal/ui/settings_ai.go:99
+msgid "High"
+msgstr "高"
+
+#: internal/lightui/stocks.go:323
+#: internal/ui/settings_ai.go:99
+msgid "Low"
+msgstr "低"
+
+#: internal/lightui/stocks.go:329
+msgid "As of %s"
+msgstr "更新於 %s"
+
+#: internal/lightui/stocks.go:329
+msgid "Jan 2, 15:04"
+msgstr "1月2日 15:04"
+
+#: internal/lightui/stocks.go:405
+msgid "Nothing by that name"
+msgstr "沒有任何叫這個名字的東西"
+
+#: internal/lightui/stocks.go:407
+#: internal/lightui/weather.go:473
+msgid "Could not search: %s"
+msgstr "無法搜尋:%s"
+
+#: internal/lightui/sysmon.go:53
+#: internal/lightui/sysmon.go:53
+#: internal/ui/dock.go:486
+#: internal/ui/portal_ask.go:80
+msgid "Quit"
+msgstr "退出"
+
+#: internal/lightui/sysmon.go:53
+msgid "Asks it to quit. It can save its work first."
+msgstr "要求其退出。它可以先保存其工作。"
+
+#: internal/lightui/sysmon.go:54
+#: internal/lightui/sysmon.go:54
+msgid "Interrupt"
+msgstr "中斷"
+
+#: internal/lightui/sysmon.go:54
+msgid "As Ctrl+C in a terminal."
+msgstr "作為終端機中的Ctrl+C。"
+
+#: internal/lightui/sysmon.go:55
+#: internal/lightui/sysmon.go:55
+msgid "Hang Up"
+msgstr "掛斷"
+
+#: internal/lightui/sysmon.go:55
+msgid "As closing its terminal. Many services reload instead."
+msgstr "如關閉其終端機。許多服務會重新載入。"
+
+#: internal/lightui/sysmon.go:56
+msgid "Stops it running until it is resumed."
+msgstr "停止其運作直至其恢復。"
+
+#: internal/lightui/sysmon.go:57
+#: internal/lightui/sysmon.go:57
+msgid "Force Quit"
+msgstr "強制退出"
+
+#: internal/lightui/sysmon.go:57
+msgid "Ends it at once. Work it has not saved is lost."
+msgstr "立即結束。未儲存的工作將會遺失。"
+
+#: internal/lightui/sysmon.go:58
+msgid "Quit with Children"
+msgstr "帶孩子戒菸"
+
+#: internal/lightui/sysmon.go:58
+#: internal/lightui/sysmon.go:59
+msgid "Quit All"
+msgstr "全部退出"
+
+#: internal/lightui/sysmon.go:59
+msgid "Quit All by Name"
+msgstr "按名稱退出全部"
+
+#: internal/lightui/sysmon.go:143
+#: internal/lightui/sysmon.go:728
+#: ui/sysmon.ui:84
+msgid "CPU"
+msgstr "CPU"
+
+#: internal/lightui/sysmon.go:145
+#: internal/lightui/sysmon.go:728
+#: internal/lightui/sysmon.go:789
+#: internal/lightui/sysmon.go:993
+msgid "MEMORY"
+msgstr "內存"
+
+#: internal/lightui/sysmon.go:147
+msgid "GPU"
+msgstr "GPU"
+
+#: internal/lightui/sysmon.go:149
+#: internal/lightui/sysmon.go:1039
+#: internal/shell/dock.go:286
+#: internal/shell/dock.go:328
+msgid "NETWORK"
+msgstr "網路"
+
+#: internal/lightui/sysmon.go:150
+#: internal/ui/settings_card.go:526
+msgid "DISK"
+msgstr "磁碟"
+
+#: internal/lightui/sysmon.go:152
+msgid "BATTERY"
+msgstr "電池"
+
+#: internal/lightui/sysmon.go:392
+msgid "%d threads"
+msgstr "%d 螺紋"
+
+#: internal/lightui/sysmon.go:397
+msgid "load %.2f %.2f %.2f"
+msgstr "負載 %.2[1]f %.2[2]f %.2[3]f"
+
+#: internal/lightui/sysmon.go:407
+msgid "CPU %d: %.0f%%"
+msgstr "CPU %[1]d:%.0[2]f%%"
+
+#: internal/lightui/sysmon.go:416
+msgid "of %s · cache %s"
+msgstr "%[1]s·快取%[2]s"
+
+#: internal/lightui/sysmon.go:418
+msgid " · swap %s of %s"
+msgstr "·將%[1]s 換成%[2]s"
+
+#: internal/lightui/sysmon.go:433
+msgid " · video memory %s of %s"
+msgstr "·顯存%[1]s之%[2]s"
+
+#: internal/lightui/sysmon.go:445
+msgid "↑ %s · received %s, sent %s"
+msgstr "↑ %[1]s·收到%[2]s,發送%[3]s"
+
+#: internal/lightui/sysmon.go:452
+msgid "of %s on / · %s free"
+msgstr "%[1]s上/·%[2]s免費"
+
+#: internal/lightui/sysmon.go:454
+msgid " · read %s · write %s"
+msgstr "·讀%[1]s ·寫%[2]s"
+
+#: internal/lightui/sysmon.go:470
+msgid "health %.0f%%"
+msgstr "健康%.0f%%"
+
+#: internal/lightui/sysmon.go:475
+msgid "UP %s"
+msgstr "上%s"
+
+#: internal/lightui/sysmon.go:537
+msgid "%d PROCESSES"
+msgstr "%d過程"
+
+#: internal/lightui/sysmon.go:539
+msgid "%d OF %d PROCESSES"
+msgstr "%[2]d過程的%[1]d"
+
+#: internal/lightui/sysmon.go:543
+msgid "No process matches."
+msgstr "沒有進程比對。"
+
+#: internal/lightui/sysmon.go:579
+msgid "Details and the ways to end %s"
+msgstr "詳情及結束方式%s"
+
+#: internal/lightui/sysmon.go:607
+msgid "Not sent: an administrator's password is needed."
+msgstr "未發送：需要管理員密碼。"
+
+#: internal/lightui/sysmon.go:651
+msgid "Process %d has ended."
+msgstr "進程%d已經結束。"
+
+#: internal/lightui/sysmon.go:728
+msgid "THREADS"
+msgstr "螺紋"
+
+#: internal/lightui/sysmon.go:744
+msgid "END OR PAUSE"
+msgstr "結束或暫停"
+
+#: internal/lightui/sysmon.go:785
+msgid "PROCESS"
+msgstr "過程"
+
+#: internal/lightui/sysmon.go:786
+msgid "Parent"
+msgstr "家長"
+
+#: internal/lightui/sysmon.go:786
+msgid "State"
+msgstr "狀態"
+
+#: internal/lightui/sysmon.go:786
+msgid "Started"
+msgstr "開始"
+
+#: internal/lightui/sysmon.go:786
+msgid "CPU time"
+msgstr "CPU時間"
+
+#: internal/lightui/sysmon.go:786
+msgid "Priority"
+msgstr "優先權"
+
+#: internal/lightui/sysmon.go:786
+msgid "Unit"
+msgstr "單位"
+
+#: internal/lightui/sysmon.go:790
+msgid "Resident"
+msgstr "居民"
+
+#: internal/lightui/sysmon.go:790
+msgid "Private"
+msgstr "私人"
+
+#: internal/lightui/sysmon.go:790
+msgid "Shared"
+msgstr "分享"
+
+#: internal/lightui/sysmon.go:790
+msgid "Swapped out"
+msgstr "Swapped out"
+
+#: internal/lightui/sysmon.go:790
+msgid "Peak"
+msgstr "Peak"
+
+#: internal/lightui/sysmon.go:794
+msgid "Command"
+msgstr "Command"
+
+#: internal/lightui/sysmon.go:794
+msgid "Disk read"
+msgstr "Disk read"
+
+#: internal/lightui/sysmon.go:794
+msgid "Disk written"
+msgstr "磁碟寫入"
+
+#: internal/lightui/sysmon.go:808
+msgid "PID %d · %s"
+msgstr "PID %[1]d·%[2]s"
+
+#: internal/lightui/sysmon.go:810
+msgid "PID %d · ENDED"
+msgstr "PID %d·已結束"
+
+#: internal/lightui/sysmon.go:821
+#: internal/lightui/sysmon.go:1104
+#: internal/lightui/sysmon.go:1111
+msgid "Not readable: not your process"
+msgstr "不可讀：不是您的進程"
+
+#: internal/lightui/sysmon.go:844
+msgid "%s · %s ago"
+msgstr "%[1]s · %[2]s 前"
+
+#: internal/lightui/sysmon.go:844
+#: internal/ui/settings_keyring.go:298
+msgid "Jan 2 15:04:05"
+msgstr "1月2日 15:04:05"
+
+#: internal/lightui/sysmon.go:847
+msgid "nice %d"
+msgstr "不錯的%d"
+
+#: internal/lightui/sysmon.go:871
+msgid "It is paused. Lets it go on."
+msgstr "已暫停。就讓它繼續吧。"
+
+#: internal/lightui/sysmon.go:875
+msgid "Also its %d child process, the youngest first."
+msgid_plural "Also its %d child processes, the youngest first."
+msgstr[0] "也是其%d子進程，最小的第一個。"
+
+#: internal/lightui/sysmon.go:878
+msgid "All %d processes named %s."
+msgstr "所有名為%[2]s的%[1]d進程。"
+
+#: internal/lightui/sysmon.go:900
+msgid "This process has ended."
+msgstr "過程已經結束。"
+
+#: internal/lightui/sysmon.go:931
+msgid "Asked %s to quit."
+msgstr "要求%s退出。"
+
+#: internal/lightui/sysmon.go:933
+msgid "Interrupted %s."
+msgstr "中斷%s。"
+
+#: internal/lightui/sysmon.go:935
+msgid "Hung up on %s."
+msgstr "掛斷%s。"
+
+#: internal/lightui/sysmon.go:937
+msgid "Ended %s."
+msgstr "結束%s。"
+
+#: internal/lightui/sysmon.go:939
+msgid "Paused %s."
+msgstr "暫停%s。"
+
+#: internal/lightui/sysmon.go:941
+msgid "Resumed %s."
+msgstr "恢復%s。"
+
+#: internal/lightui/sysmon.go:945
+msgid "Asked %s and its %d child to quit."
+msgid_plural "Asked %s and its %d children to quit."
+msgstr[0] "要求%[1]s及其子%[2]d退出。"
+
+#: internal/lightui/sysmon.go:948
+msgid "Asked %d processes named %s to quit."
+msgstr "要求名為 %[2]s 的 %[1]d 程序退出。"
+
+#: internal/lightui/sysmon.go:966
+msgid "COMPUTER"
+msgstr "計算機"
+
+#: internal/lightui/sysmon.go:967
+#: internal/lightui/sysmon.go:979
+#: internal/shell/cardterm.go:113
+#: internal/ui/settings_ai.go:497
+msgid "Model"
+msgstr "模型"
+
+#: internal/lightui/sysmon.go:970
+#: internal/shell/cardterm.go:136
+msgid "Kernel"
+msgstr "內核"
+
+#: internal/lightui/sysmon.go:973
+msgid "%s · since %s"
+msgstr "%[1]s·自%[2]s"
+
+#: internal/lightui/sysmon.go:975
+msgid "Up"
+msgstr "向上"
+
+#: internal/lightui/sysmon.go:978
+msgid "PROCESSOR"
+msgstr "處理器"
+
+#: internal/lightui/sysmon.go:980
+msgid "Cores"
+msgstr "核心"
+
+#: internal/lightui/sysmon.go:980
+msgid "%s, %s"
+msgstr "%[1]s,%[2]s"
+
+#: internal/lightui/sysmon.go:980
+msgid "%d core"
+msgid_plural "%d cores"
+msgstr[0] "%d核心"
+
+#: internal/lightui/sysmon.go:980
+msgid "%d thread"
+msgid_plural "%d threads"
+msgstr[0] "%d螺紋"
+
+#: internal/lightui/sysmon.go:983
+msgid "up to %s"
+msgstr "高達%s"
+
+#: internal/lightui/sysmon.go:986
+msgid "now %s"
+msgstr "現%s"
+
+#: internal/lightui/sysmon.go:989
+msgid "Speed"
+msgstr "速度"
+
+#: internal/lightui/sysmon.go:994
+#: internal/lightui/workshop_manager.go:50
+msgid "Installed"
+msgstr "已安裝"
+
+#: internal/lightui/sysmon.go:995
+#: internal/ui/voice_models.go:152
+msgid "In use"
+msgstr "使用中"
+
+#: internal/lightui/sysmon.go:996
+msgid "Cache"
+msgstr "快取"
+
+#: internal/lightui/sysmon.go:996
+msgid "%s · given back when needed"
+msgstr "%s·需要時回饋"
+
+#: internal/lightui/sysmon.go:997
+msgid "Free"
+msgstr "免費"
+
+#: internal/lightui/sysmon.go:999
+msgid "Swap"
+msgstr "交換"
+
+#: internal/lightui/sysmon.go:999
+#: internal/lightui/sysmon.go:1011
+#: internal/lightui/sysmon.go:1025
+msgid "%s of %s"
+msgstr "%[1]s 之 %[2]s"
+
+#: internal/lightui/sysmon.go:1003
+msgid "GRAPHICS"
+msgstr "圖形"
+
+#: internal/lightui/sysmon.go:1005
+#: internal/ui/voice_page.go:204
+msgid "Card"
+msgstr "卡"
+
+#: internal/lightui/sysmon.go:1006
+msgid "Driver"
+msgstr "驅動程式"
+
+#: internal/lightui/sysmon.go:1008
+msgid "Busy"
+msgstr "忙"
+
+#: internal/lightui/sysmon.go:1011
+msgid "Video memory"
+msgstr "視訊記憶體"
+
+#: internal/lightui/sysmon.go:1017
+msgid "STORAGE"
+msgstr "存儲"
+
+#: internal/lightui/sysmon.go:1041
+msgid "wired"
+msgstr "有線"
+
+#: internal/lightui/sysmon.go:1043
+#: ui/control.ui:273
+#: ui/settings.ui:5119
+#: ui/settings.ui:5195
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: internal/lightui/sysmon.go:1045
+msgid "down"
+msgstr "下"
+
+#: internal/lightui/sysmon.go:1047
+msgid "up"
+msgstr "向上"
+
+#: internal/lightui/sysmon.go:1051
+#: internal/lightui/tailscale.go:633
+msgid "Addresses"
+msgstr "地址"
+
+#: internal/lightui/sysmon.go:1054
+msgid "Hardware"
+msgstr "硬體"
+
+#: internal/lightui/sysmon.go:1057
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:570
+msgid "Traffic"
+msgstr "交通"
+
+#: internal/lightui/sysmon.go:1057
+msgid "received %s · sent %s"
+msgstr "收到%[1]s·發送%[2]s"
+
+#: internal/lightui/sysmon.go:1063
+msgid "SENSORS"
+msgstr "感測器"
+
+#: internal/lightui/sysmon.go:1082
+msgid "Charging"
+msgstr "充電中"
+
+#: internal/lightui/sysmon.go:1082
+msgid "Discharging"
+msgstr "放電"
+
+#: internal/lightui/sysmon.go:1082
+msgid "Full"
+msgstr "滿"
+
+#: internal/lightui/sysmon.go:1083
+msgid "Not charging"
+msgstr "未充電"
+
+#: internal/lightui/sysmon.go:1090
+msgid "%.1f s"
+msgstr "%.1fs"
+
+#: internal/lightui/tailscale.go:41
+msgid "Use Tailscale DNS"
+msgstr "使用 Tailscale DNS"
+
+#: internal/lightui/tailscale.go:41
+msgid "MagicDNS names and the tailnet's DNS settings."
+msgstr "MagicDNS名稱和尾網的DNS設定。"
+
+#: internal/lightui/tailscale.go:44
+msgid "Use subnet routes"
+msgstr "使用子網路由"
+
+#: internal/lightui/tailscale.go:44
+msgid "Reach the networks other devices offer."
+msgstr "到達其他設備提供的網路。"
+
+#: internal/lightui/tailscale.go:49
+msgid "Block incoming connections"
+msgstr "阻止傳入連接"
+
+#: internal/lightui/tailscale.go:49
+msgid "Other devices cannot reach this one; it can still reach them."
+msgstr "其他設備無法到達該設備；它仍然可以到達他們。"
+
+#: internal/lightui/tailscale.go:54
+msgid "Offer as exit node"
+msgstr "作為出口節點"
+
+#: internal/lightui/tailscale.go:54
+msgid "Others may send their traffic through this device, once the admin approves."
+msgstr "一旦管理員批准，其他人就可以透過該設備發送他們的流量。"
+
+#: internal/lightui/tailscale.go:57
+msgid "Tailscale SSH"
+msgstr "Tailscale SSH"
+
+#: internal/lightui/tailscale.go:57
+msgid "Let the tailnet's SSH rules reach this device's SSH server."
+msgstr "讓尾網的SSH規則到達該設備的SSH伺服器。"
+
+#: internal/lightui/tailscale.go:153
+msgid "Disconnected."
+msgstr "斷開連線。"
+
+#: internal/lightui/tailscale.go:165
+msgid "Local network reachable through the exit node."
+msgstr "本地網路可經由出口節點到達。"
+
+#: internal/lightui/tailscale.go:165
+msgid "Local network goes through the exit node too."
+msgstr "本地網路也經過出口節點。"
+
+#: internal/lightui/tailscale.go:170
+msgid "%s on."
+msgstr "%s上。"
+
+#: internal/lightui/tailscale.go:170
+msgid "%s off."
+msgstr "%s 關閉。"
+
+#: internal/lightui/tailscale.go:304
+msgid "Not changed: allow this app to manage Tailscale first."
+msgstr "未改變：允許該應用程式首先管理Tailscale。"
+
+#: internal/lightui/tailscale.go:306
+msgid "Tailscale is not running."
+msgstr "Tailscale沒有運行。"
+
+#: internal/lightui/tailscale.go:348
+#: internal/shell/status.go:99
+#: internal/shell/status.go:116
+#: internal/shell/status.go:131
+msgid "Unavailable"
+msgstr "無法使用"
+
+#: internal/lightui/tailscale.go:359
+msgid "%d of %d devices online"
+msgstr "%[1]d %[2]d 設備在線"
+
+#: internal/lightui/tailscale.go:372
+msgid "Tailscale's service is not running."
+msgstr "Tailscale的服務未運作。"
+
+#: internal/lightui/tailscale.go:372
+msgid "Start…"
+msgstr "開始…"
+
+#: internal/lightui/tailscale.go:373
+msgid "Started Tailscale."
+msgstr "開始Tailscale。"
+
+#: internal/lightui/tailscale.go:377
+msgid "This device is logged out of its tailnet."
+msgstr "該設備已從其尾網註銷。"
+
+#: internal/lightui/tailscale.go:377
+msgid "Log In"
+msgstr "登入"
+
+#: internal/lightui/tailscale.go:380
+msgid "An admin of the tailnet has to approve this device."
+msgstr "尾網的管理員必須批准該設備。"
+
+#: internal/lightui/tailscale.go:380
+#: internal/lightui/tailscale.go:667
+msgid "Admin Console"
+msgstr "管理控制台"
+
+#: internal/lightui/tailscale.go:383
+msgid "To change Tailscale from here, allow it once; it asks for an administrator's password."
+msgstr "若要從此處更改 Tailscale，請允許一次；它要求輸入管理員密碼。"
+
+#: internal/lightui/tailscale.go:383
+msgid "Allow…"
+msgstr "允許…"
+
+#: internal/lightui/tailscale.go:385
+msgid "This app may now manage Tailscale."
+msgstr "該應用程式現在可以管理Tailscale。"
+
+#: internal/lightui/tailscale.go:417
+msgid "No device matches."
+msgstr "沒有設備匹配。"
+
+#: internal/lightui/tailscale.go:419
+msgid "No other devices in the tailnet yet."
+msgstr "尾網中還沒有其他設備。"
+
+#: internal/lightui/tailscale.go:436
+msgid "exit node in use"
+msgstr "出口節點使用中"
+
+#: internal/lightui/tailscale.go:438
+msgid "exit node"
+msgstr "出口節點"
+
+#: internal/lightui/tailscale.go:448
+msgid "Details, ping, exit node and sending files"
+msgstr "詳情、ping、出口節點及發送文件"
+
+#: internal/lightui/tailscale.go:508
+msgid "Copy IP"
+msgstr "複製IP"
+
+#: internal/lightui/tailscale.go:508
+msgid "Copy Name"
+msgstr "複製名稱"
+
+#: internal/lightui/tailscale.go:508
+#: ui/connect.ui:621
+msgid "Ping"
+msgstr "Ping"
+
+#: internal/lightui/tailscale.go:516
+#: internal/lightui/tailscale.go:578
+msgid "Use as Exit Node"
+msgstr "用作出口節點"
+
+#: internal/lightui/tailscale.go:525
+msgid "DEVICE"
+msgstr "設備"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:564
+#: internal/lightui/tailscale.go:632
+msgid "MagicDNS"
+msgstr "MagicDNS"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:565
+msgid "IPv4"
+msgstr "IPv4"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:566
+msgid "IPv6"
+msgstr "IPv6"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:568
+msgid "Status"
+msgstr "狀態"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:569
+#: internal/term/web/strings.go:32
+msgid "Connection"
+msgstr "連接"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:571
+msgid "Key expires"
+msgstr "密鑰過期"
+
+#: internal/lightui/tailscale.go:526
+#: internal/lightui/tailscale.go:572
+msgid "Tags"
+msgstr "標籤"
+
+#: internal/lightui/tailscale.go:529
+msgid "SEND FILES"
+msgstr "傳送文件"
+
+#: internal/lightui/tailscale.go:545
+msgid "NO LONGER IN THE TAILNET"
+msgstr "不再在尾網上"
+
+#: internal/lightui/tailscale.go:567
+msgid "%s · host name %s"
+msgstr "%[1]s·主機名稱%[2]s"
+
+#: internal/lightui/tailscale.go:573
+msgid "Drop files on this panel to send them to %s with Taildrop. They wait on it until saved."
+msgstr "將檔案拖曳到該面板上以使用Taildrop將它們傳送到%s。他們等待它直到被保存。"
+
+#: internal/lightui/tailscale.go:576
+msgid "Stop Using as Exit Node"
+msgstr "停止用作出口節點"
+
+#: internal/lightui/tailscale.go:585
+msgid "SEND THIS DEVICE'S TRAFFIC THROUGH"
+msgstr "透過此設備發送流量"
+
+#: internal/lightui/tailscale.go:595
+msgid "IN USE"
+msgstr "使用中"
+
+#: internal/lightui/tailscale.go:602
+#: internal/termui/prefs.go:283
+#: internal/ui/settings_ai.go:271
+#: internal/ui/settings_keyring.go:572
+#: internal/ui/shortcuts.go:150
+#: internal/ui/voice_page.go:314
+msgid "None"
+msgstr "無"
+
+#: internal/lightui/tailscale.go:602
+msgid "Traffic goes out from this device as usual."
+msgstr "流量照常從該設備發出。"
+
+#: internal/lightui/tailscale.go:610
+msgid "No device in the tailnet offers to be an exit node. Turn on Offer as Exit Node on one, then approve it in the admin console."
+msgstr "尾網中沒有設備願意作為出口節點。在其中之一上啟用 Offer 作為出口節點，然後在管理控制台中批准它。"
+
+#: internal/lightui/tailscale.go:617
+msgid "Allow local network access"
+msgstr "允許本地網路存取"
+
+#: internal/lightui/tailscale.go:618
+msgid "Reach printers and other devices on this network while the exit node carries the rest."
+msgstr "到達該網路上的印表機和其他設備，而出口節點承載其餘設備。"
+
+#: internal/lightui/tailscale.go:629
+#: ui/tailscale.ui:170
+msgid "THIS DEVICE"
+msgstr "該裝置"
+
+#: internal/lightui/tailscale.go:636
+msgid "Tailnet"
+msgstr "Tailscale 網路"
+
+#: internal/lightui/tailscale.go:638
+msgid "SETTINGS"
+msgstr "設定"
+
+#: internal/lightui/tailscale.go:647
+msgid "RECEIVED FILES"
+msgstr "收到的文件"
+
+#: internal/lightui/tailscale.go:650
+msgid "Files sent to this device show here once this app may manage Tailscale."
+msgstr "一旦此應用程式可以管理 Tailscale，傳送到此裝置的檔案就會顯示在此。"
+
+#: internal/lightui/tailscale.go:654
+msgid "None waiting. Files other devices send with Taildrop show here."
+msgstr "無人等待。其他裝置使用 Taildrop 傳送的檔案顯示在此。"
+
+#: internal/lightui/tailscale.go:659
+msgid "Save to Downloads"
+msgstr "儲存到下載"
+
+#: internal/lightui/tailscale.go:662
+msgid "ACCOUNT"
+msgstr "帳戶"
+
+#: internal/lightui/tailscale.go:663
+#: internal/shell/commands.go:31
+msgid "Log Out"
+msgstr "登出"
+
+#: internal/lightui/tailscale.go:665
+msgid "Sure?"
+msgstr "確定？"
+
+#: internal/lightui/tailscale.go:750
+msgid "No exit node: traffic goes out from this device."
+msgstr "無出口節點：流量從該設備流出。"
+
+#: internal/lightui/tailscale.go:752
+#: internal/lightui/tailscale.go:763
+msgid "Traffic now goes through %s."
+msgstr "流量現在經過%s。"
+
+#: internal/lightui/tailscale.go:761
+msgid "Stopped using %s as exit node."
+msgstr "停止使用 %s 作為出口節點。"
+
+#: internal/lightui/tailscale.go:783
+msgid "Logged out."
+msgstr "已註銷。"
+
+#: internal/lightui/tailscale.go:806
+msgid "Pinging %s…"
+msgstr "ping %s…"
+
+#: internal/lightui/tailscale.go:820
+msgid "%s did not answer"
+msgstr "%s 未接聽"
+
+#: internal/lightui/tailscale.go:823
+msgid "%s answered in %.0f ms"
+msgstr "%[1]s 以 %.0[2]f 毫秒回答"
+
+#: internal/lightui/tailscale.go:824
+msgid "Direct, %s"
+msgstr "直接,%s"
+
+#: internal/lightui/tailscale.go:826
+msgid "Relayed through %s"
+msgstr "透過 %s 中繼"
+
+#: internal/lightui/tailscale.go:842
+msgid "Sending %s to %s…"
+msgstr "發送 %[1]s 至 %[2]s..."
+
+#: internal/lightui/tailscale.go:867
+msgid "Sent %s to %s."
+msgstr "將%[1]s傳送至%[2]s。"
+
+#: internal/lightui/tailscale.go:904
+msgid "Saved %s to %s."
+msgstr "將 %[1]s 儲存到 %[2]s。"
+
+#: internal/lightui/tailscale.go:915
+msgid "Opening the login page…"
+msgstr "正在開啟登入頁面…"
+
+#: internal/lightui/tailscale.go:942
+msgid "No password prompt is running in this session (a polkit agent); run in a terminal: sudo %s"
+msgstr "此會話中沒有執行密碼提示(polkit 代理);在終端機中執行: sudo %s"
+
+#: internal/lightui/tailscale.go:944
+msgid "not done: no administrator's password was given"
+msgstr "未完成：未給予管理者密碼"
+
+#: internal/lightui/video.go:306
+msgid "Resumed at %s"
+msgstr "從 %s 繼續"
+
+#: internal/lightui/video.go:395
+msgid "Playing a video"
+msgstr "正在播放影片"
+
+#: internal/lightui/video.go:418
+msgid "Cannot play it: %s"
+msgstr "無法播放：%s"
+
+#: internal/lightui/video.go:576
+msgid "Speed %s×"
+msgstr "速度 %s×"
+
+#: internal/lightui/video.go:685
+msgid "Open a video"
+msgstr "開啟影片"
+
+#: internal/lightui/video.go:693
+msgid "Videos"
+msgstr "影片"
+
+#: internal/lightui/weather.go:256
+msgid "Add a city to see its weather."
+msgstr "新增城市以查看其天氣。"
+
+#: internal/lightui/weather.go:256
+#: ui/clock.ui:122
+#: ui/weather.ui:95
+msgid "Add a city"
+msgstr "新增城市"
+
+#: internal/lightui/weather.go:262
+msgid "Reading the weather…"
+msgstr "讀取天氣…"
+
+#: internal/lightui/weather.go:274
+msgid "The weather could not be read.\n%s"
+msgstr "無法讀取天氣。\n%s"
+
+#: internal/lightui/weather.go:274
+#: internal/mailui/panel.go:307
+#: internal/ui/passwords.go:530
+#: ui/mail-compose.ui:456
+#: ui/pass.ui:375
+msgid "Try again"
+msgstr "再試一次"
+
+#: internal/lightui/weather.go:323
+msgid "H %s   L %s"
+msgstr "H %[1]s L %[2]s"
+
+#: internal/lightui/weather.go:332
+msgid "NOW"
+msgstr "現在"
+
+#: internal/lightui/weather.go:395
+msgid "FEELS LIKE"
+msgstr "體感溫度"
+
+#: internal/lightui/weather.go:396
+msgid "HUMIDITY"
+msgstr "濕度"
+
+#: internal/lightui/weather.go:397
+msgid "WIND"
+msgstr "風"
+
+#: internal/lightui/weather.go:398
+msgid "RAIN"
+msgstr "雨"
+
+#: internal/lightui/weather.go:403
+msgid "SUNRISE"
+msgstr "日出"
+
+#: internal/lightui/weather.go:404
+msgid "SUNSET"
+msgstr "日落"
+
+#: internal/lightui/weather.go:426
+msgid "UPDATED %s · OPEN-METEO"
+msgstr "更新了 %s·OPEN-METEO"
+
+#: internal/lightui/weather.go:471
+msgid "No place by that name"
+msgstr "沒有叫這個名字的地方"
+
+#: internal/lightui/workshop.go:41
+#: config/apps/io.github.lyricat.Inua.Workshop.desktop:3
+msgid "Workshop"
+msgstr "工坊"
+
+#: internal/lightui/workshop.go:209
+msgid "Starting %s…"
+msgstr "正在啟動 %s…"
+
+#: internal/lightui/workshop.go:222
+msgid "%s could not start"
+msgstr "%s 無法啟動"
+
+#: internal/lightui/workshop.go:233
+msgid "It ended without an error."
+msgstr "它已結束，沒有錯誤。"
+
+#: internal/lightui/workshop.go:237
+msgid "%s stopped"
+msgstr "%s 已停止"
+
+#: internal/lightui/workshop.go:288
+msgid "Start again"
+msgstr "重新啟動"
+
+#: internal/lightui/workshop.go:294
+msgid "It starts again by itself when a file of it changes."
+msgstr "它的檔案改變時會自動重新啟動。"
+
+#: internal/lightui/workshop.go:698
+msgid "Unknown building block %q"
+msgstr "未知的元件 %q"
+
+#: internal/lightui/workshop.go:996
+#: internal/term/web/strings.go:81
+#: internal/ui/askpass.go:300
+#: internal/ui/settings_card.go:624
+msgid "OK"
+msgstr "好的"
+
+#: internal/lightui/workshop_blocks.go:438
+#: internal/mailui/settings.go:645
+#: internal/mailui/welcome.go:823
+#: internal/term/web/strings.go:93
+#: internal/ui/settings_ai.go:530
+#: ui/clock.ui:252
+#: ui/connect.ui:420
+#: ui/pass.ui:504
+msgid "Save"
+msgstr "儲存"
+
+#: internal/lightui/workshop_manager.go:60
+msgid "Uses: %s"
+msgstr "使用：%s"
+
+#: internal/lightui/workshop_manager.go:64
+#: internal/mailui/settings.go:468
+#: ui/vm.ui:2579
+msgid "Remove…"
+msgstr "移除…"
+
+#: internal/lightui/workshop_manager.go:70
+msgid "No workshop apps yet"
+msgstr "還沒有工坊應用程式"
+
+#: internal/lightui/workshop_manager.go:70
+msgid "Install one below, or write your own."
+msgstr "在下面安裝一個，或自己寫一個。"
+
+#: internal/lightui/workshop_manager.go:82
+msgid "Broken"
+msgstr "已損壞"
+
+#: internal/lightui/workshop_manager.go:82
+msgid "Their app.toml could not be read"
+msgstr "無法讀取它們的 app.toml"
+
+#: internal/lightui/workshop_manager.go:89
+msgid "From a folder"
+msgstr "從資料夾"
+
+#: internal/lightui/workshop_manager.go:89
+msgid "A folder with an app.toml; it is copied."
+msgstr "含有 app.toml 的資料夾；會被複製。"
+
+#: internal/lightui/workshop_manager.go:90
+#: ui/settings.ui:915
+msgid "Choose…"
+msgstr "選擇…"
+
+#: internal/lightui/workshop_manager.go:91
+msgid "From git"
+msgstr "從 git"
+
+#: internal/lightui/workshop_manager.go:91
+msgid "In a terminal: inua workshop install URL"
+msgstr "在終端機中：inua workshop install URL"
+
+#: internal/lightui/workshop_manager.go:92
+msgid "Write your own"
+msgstr "自己寫一個"
+
+#: internal/lightui/workshop_manager.go:92
+msgid "inua workshop new DIR makes one; inua workshop dev DIR runs it, again on every save. The guide is docs/workshop.md in inua."
+msgstr "inua workshop new DIR 建立一個；inua workshop dev DIR 執行它，每次儲存都會重新執行。指南是 inua 中的 docs/workshop.md。"
+
+#: internal/lightui/workshop_manager.go:115
+msgid "Remove %s?"
+msgstr "移除 %s？"
+
+#: internal/lightui/workshop_manager.go:115
+msgid "Its folder and launcher entry go to the trash; its data stays."
+msgstr "它的資料夾和啟動器項目會移到垃圾桶；資料保留。"
+
+#: internal/lightui/workshop_manager.go:122
+msgid "Removed %s."
+msgstr "已移除 %s。"
+
+#: internal/lightui/workshop_manager.go:134
+msgid "A workshop app: a folder with an app.toml"
+msgstr "工坊應用程式：含有 app.toml 的資料夾"
+
+#: internal/lightui/workshop_manager.go:144
+msgid "nothing beyond what every app has"
+msgstr "除了每個應用程式都有的以外沒有其他"
+
+#: internal/lightui/workshop_manager.go:148
+msgid "It runs %s, as you, with your files, like any program you start. It uses: %s."
+msgstr "它會以你的身分、帶著你的檔案執行 %s，和你啟動的任何程式一樣。它使用：%s。"
+
+#: internal/lightui/workshop_manager.go:149
+msgid "Install %s?"
+msgstr "安裝 %s？"
+
+#: internal/lightui/workshop_manager.go:151
+msgid "Replace the installed %s?"
+msgstr "取代已安裝的 %s？"
+
+#: internal/lightui/workshop_manager.go:154
+#: internal/ui/voice_page.go:189
+#: ui/vm.ui:1279
+msgid "Install"
+msgstr "安裝"
+
+#: internal/lightui/workshop_manager.go:164
+msgid "Installed %s; the launcher and the dock's drawer list it."
+msgstr "已安裝 %s；啟動器和 Dock 的抽屜裡會列出它。"
 
 #: internal/mailui/actions.go:121
 msgid "The server did not move it: %v"

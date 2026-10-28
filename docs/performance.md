@@ -89,7 +89,7 @@ is parsed while it runs, and the apps' theme is set after.
 
 **The icons, written at every start.** Each app deleted and wrote again
 its 218 Phosphor icons (~33 ms). They are now written only when the set,
-the user's overlay or the theme's details change (`shell.IconTheme`,
+the user's overlay or the theme's details change (`style.IconTheme`,
 a sum of them kept beside the theme), and a new set goes into place whole,
 so another app starting meanwhile never reads it half written.
 

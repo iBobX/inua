@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"fmt"
@@ -15,6 +15,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/apps/gpg"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/pinentry"
@@ -25,7 +26,7 @@ import (
 // a message or files decrypted as they come, saying who it was for and
 // who signed it, and the keyring, to import keys and create one's own.
 type gpgApp struct {
-	c    *Ctx
+	c    *appui.Ctx
 	win  *gtk.ApplicationWindow
 	keys []gpg.Key
 	mine []gpg.Key // the user's keys that can sign and encrypt
@@ -96,7 +97,7 @@ type gpgApp struct {
 	clipReading               bool
 }
 
-func (a *gpgApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *gpgApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = &gtk.ApplicationWindow{}
 	var encCompose, decIn, impPage, toBox gtk.Box
@@ -295,10 +296,10 @@ func (a *gpgApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return a.win
 }
 
-func (a *gpgApp) themeChanged() {}
+func (a *gpgApp) ThemeChanged() {}
 
 // showPage opens a tab: `inua-apps gpg encrypt|decrypt|keys`.
-func (a *gpgApp) showPage(name string) {
+func (a *gpgApp) ShowPage(name string) {
 	if name == "encrypt" || name == "decrypt" || name == "keys" {
 		a.pages.SetVisibleChildName(name)
 	}

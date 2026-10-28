@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"fmt"
@@ -20,6 +20,7 @@ import (
 	"github.com/lyricat/inua/internal/apps/chart"
 	"github.com/lyricat/inua/internal/apps/music"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gst"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
@@ -34,7 +35,7 @@ import (
 const spectrumBands = 20
 
 type musicApp struct {
-	c   *Ctx
+	c   *appui.Ctx
 	win *gtk.ApplicationWindow
 
 	pl      *music.Playlist
@@ -94,9 +95,9 @@ type musicApp struct {
 	onSave     glib.SourceFunc
 }
 
-func (a *musicApp) themeChanged() { a.drawCurve() }
+func (a *musicApp) ThemeChanged() { a.drawCurve() }
 
-func (a *musicApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *musicApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.win = &gtk.ApplicationWindow{}
 	a.pl, a.loaded, a.status, a.selected = music.NewPlaylist(), -1, "Stopped", -1
@@ -289,7 +290,7 @@ func (a *musicApp) build(c *Ctx) *gtk.ApplicationWindow {
 	go a.discoverLoop(a.discover)
 	a.showRows()
 	a.showTrack()
-	a.mp, a.mpConn = serveMPRIS("inua.music", i18n.T("Music"), IDBase+".Music", mpris.Handler{
+	a.mp, a.mpConn = serveMPRIS("inua.music", i18n.T("Music"), appui.IDBase+".Music", mpris.Handler{
 		Raise:     func() { gtkx.Post(func() { a.win.Present() }) },
 		PlayPause: func() { gtkx.Post(a.playPause) },
 		Play:      func() { gtkx.Post(a.play) },
@@ -317,7 +318,7 @@ func (a *musicApp) build(c *Ctx) *gtk.ApplicationWindow {
 }
 
 // open takes the files of a start: added, the first of them played.
-func (a *musicApp) open(args []string) {
+func (a *musicApp) Open(args []string) {
 	if len(args) > 0 {
 		a.add(args, true)
 	}

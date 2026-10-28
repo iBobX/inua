@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"log"
@@ -13,6 +13,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/colors"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -21,7 +22,7 @@ import (
 // color) and adds to the history; the app shows the history and reads it
 // again when it changes.
 type colorApp struct {
-	c        *Ctx
+	c        *appui.Ctx
 	data     colors.Data
 	mod      time.Time
 	current  string // the colour shown, "#rrggbb"
@@ -33,7 +34,7 @@ type colorApp struct {
 	onTick   glib.SourceFunc
 }
 
-func (a *colorApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *colorApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	win := &gtk.ApplicationWindow{}
 	var pick, clear gtk.Button
@@ -71,7 +72,7 @@ func (a *colorApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *colorApp) themeChanged() {}
+func (a *colorApp) ThemeChanged() {}
 
 func (a *colorApp) load() {
 	a.data = colors.Data{}

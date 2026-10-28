@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"bytes"
@@ -19,6 +19,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/stocks"
 	"github.com/lyricat/inua/internal/apps/store"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -27,7 +28,7 @@ import (
 const quotesEvery = time.Minute
 
 type stocksApp struct {
-	c                         *Ctx
+	c                         *appui.Ctx
 	data                      stocks.Data
 	http                      *http.Client
 	quotes                    map[string]stocks.Quote // 1D, for the list
@@ -51,7 +52,7 @@ type stocksApp struct {
 	onTick                   glib.SourceFunc
 }
 
-func (a *stocksApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *stocksApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.http = &http.Client{Timeout: 15 * time.Second}
 	a.quotes = map[string]stocks.Quote{}
@@ -133,7 +134,7 @@ func (a *stocksApp) build(c *Ctx) *gtk.ApplicationWindow {
 }
 
 // themeChanged draws the chart again in the new colours.
-func (a *stocksApp) themeChanged() { a.drawChart() }
+func (a *stocksApp) ThemeChanged() { a.drawChart() }
 
 func (a *stocksApp) save() {
 	if err := store.Save(stocks.StoreName, a.data); err != nil {

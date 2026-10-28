@@ -9,7 +9,7 @@ import (
 	"codeberg.org/puregotk/puregotk/v4/gtk"
 
 	"github.com/lyricat/inua/internal/rundir"
-	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/style"
 	layouts "github.com/lyricat/inua/ui"
 )
 
@@ -109,7 +109,7 @@ func (s *shellUI) writeIconTheme(name, overlay string) error {
 	if err != nil {
 		return err
 	}
-	t := shell.IconTheme{
+	t := style.IconTheme{
 		Name:     name,
 		Comment:  "Icons for inua-shell (written by inua-shell)",
 		Inherits: ic.system,

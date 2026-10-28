@@ -1,9 +1,8 @@
-// Package appui runs inua's light apps: Clock, Weather, Stocks,
-// Calculator, Calendar, Color Picker, System Monitor, Tailscale, Pass,
-// GPG, Music and Video, and those of other programs (Files, Viewer, the assistant, the
-// games). Each runs as its own process with its own application ID, so
-// the launcher, the dock and the compositor see it as an app, but in the
-// shell's look: the theme and style from inua's settings, followed as
+// Package appui runs inua's light apps: those of inua-apps (internal/lightui)
+// and those of other programs (Files, Viewer, Mail, the terminal, the
+// assistant, the games). Each runs as its own process with its own
+// application ID, so the launcher, the dock and the compositor see it as
+// an app, but in the shell's look: the theme and style from inua's settings, followed as
 // they change, and the shell's icons.
 package appui
 
@@ -34,52 +33,24 @@ import (
 	"github.com/lyricat/inua/internal/i18n"
 	"github.com/lyricat/inua/internal/portalconf"
 	"github.com/lyricat/inua/internal/rundir"
-	"github.com/lyricat/inua/internal/shell"
+	"github.com/lyricat/inua/internal/style"
 	layouts "github.com/lyricat/inua/ui"
 )
 
 // IDBase prefixes the apps' application IDs; the shell's is IDBase itself.
 const IDBase = "io.github.lyricat.Inua"
 
-// view is one app's window and logic.
-type view interface {
-	// build makes the window from its layout; called once, on activate.
-	build(c *Ctx) *gtk.ApplicationWindow
-	// themeChanged runs after the theme's colours change.
-	themeChanged()
-}
-
-// pager is a view with pages that `inua-apps NAME PAGE` can open.
-type pager interface{ showPage(name string) }
-
-// opener is a view that opens files: `inua-apps NAME FILE…`.
-type opener interface{ open(args []string) }
-
-// Apps are the light apps by command name, with their application ID
-// suffix and window title. A many-windowed app runs once for each start
-// (as Viewer, registered by inua-viewer, does); the others bring their
-// window forward when started again.
+// Apps are the light apps by command name, as registered: their
+// application ID suffix and window title. A many-windowed app runs once
+// for each start (as Viewer, registered by inua-viewer, does); the others
+// bring their window forward when started again.
 var Apps = map[string]struct {
 	ID, Title string
-	make      func() view
+	make      func() View
 	many      bool
-}{
-	"clock":          {"Clock", i18n.M("Clock"), func() view { return &clockApp{} }, false},
-	"weather":        {"Weather", i18n.M("Weather"), func() view { return &weatherApp{} }, false},
-	"stocks":         {"Stocks", i18n.M("Stocks"), func() view { return &stocksApp{} }, false},
-	"calculator":     {"Calculator", i18n.M("Calculator"), func() view { return &calcApp{} }, false},
-	"calendar":       {"Calendar", i18n.M("Calendar"), func() view { return &calendarApp{} }, false},
-	"color-picker":   {"ColorPicker", i18n.M("Color Picker"), func() view { return &colorApp{} }, false},
-	"system-monitor": {"SystemMonitor", i18n.M("System Monitor"), func() view { return &sysmonApp{} }, false},
-	"tailscale":      {"Tailscale", i18n.M("Tailscale"), func() view { return &tailscaleApp{} }, false},
-	"pass":           {"Pass", i18n.M("Pass"), func() view { return &passApp{} }, false},
-	"gpg":            {"GPG", i18n.M("GPG"), func() view { return &gpgApp{} }, false},
-	"music":          {"Music", i18n.M("Music"), func() view { return &musicApp{} }, false},
-	"video":          {"Video", i18n.M("Video"), func() view { return &videoApp{} }, false},
-}
+}{}
 
-// View is a light app's window from another package: cmd/inua-assistant
-// registers one so that inua-apps never links what it needs.
+// View is a light app's window and logic.
 type View interface {
 	// Build makes the window from its layout; called once, on activate.
 	Build(c *Ctx) *gtk.ApplicationWindow
@@ -90,6 +61,10 @@ type View interface {
 // Opener is a View that takes the arguments of its first start.
 type Opener interface{ Open(args []string) }
 
+// Pager is a View with pages that a start's first argument opens:
+// `inua-apps NAME PAGE`.
+type Pager interface{ ShowPage(name string) }
+
 // Preparer is a View with work to begin before the application starts,
 // such as on a thread of its own while GTK starts: Prepare runs once, on
 // the main thread, before Build.
@@ -99,32 +74,9 @@ type Preparer interface{ Prepare(c *Ctx) }
 // theme: the name of a built-in theme ("washi"), or "" for the shell's.
 type Themed interface{ Theme() string }
 
-type external struct{ v View }
-
-func (e external) theme() string {
-	if t, ok := e.v.(Themed); ok {
-		return t.Theme()
-	}
-	return ""
-}
-
-func (e external) prepare(c *Ctx) {
-	if p, ok := e.v.(Preparer); ok {
-		p.Prepare(c)
-	}
-}
-
-func (e external) build(c *Ctx) *gtk.ApplicationWindow { return e.v.Build(c) }
-func (e external) themeChanged()                       { e.v.ThemeChanged() }
-func (e external) open(args []string) {
-	if o, ok := e.v.(Opener); ok {
-		o.Open(args)
-	}
-}
-
 // opensFiles are the apps (by name) that take files while they run:
 // started again with files, the running one gets them (its Opener).
-var opensFiles = map[string]bool{"music": true, "video": true}
+var opensFiles = map[string]bool{}
 
 // RegisterOpener is Register for a View that opens files (an Opener): a
 // start with files hands them to the app already running.
@@ -133,7 +85,7 @@ func RegisterOpener(name, id, title string, make func() View) {
 	opensFiles[name] = true
 }
 
-// Register adds a light app from another package, for Run.
+// Register adds a light app, for Run.
 func Register(name, id, title string, make func() View) { register(name, id, title, make, false) }
 
 // RegisterMany adds a light app whose every start runs on its own, as
@@ -144,9 +96,9 @@ func RegisterMany(name, id, title string, make func() View) { register(name, id,
 func register(name, id, title string, make func() View, many bool) {
 	Apps[name] = struct {
 		ID, Title string
-		make      func() view
+		make      func() View
 		many      bool
-	}{id, title, func() view { return external{make()} }, many}
+	}{id, title, make, many}
 }
 
 // Ctx is what the views share: the application, the layouts and the
@@ -164,7 +116,7 @@ type Ctx struct {
 	css       *gtk.CssProvider
 	userCSS   *gtk.CssProvider
 	win       *gtk.ApplicationWindow
-	v         view
+	v         View
 	onTick    glib.SourceFunc
 	open      func(gio.Application, uintptr, int32, string)
 	activate  func(gio.Application)
@@ -177,11 +129,6 @@ type Ctx struct {
 // same app brings its window forward instead, unless the app has many.
 // args are a page to open, or files for an opener.
 func Run(name string, args []string, uiDir string) int {
-	cfg, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
-	i18n.Init(cfg.Language)
-	if name == "workshop" {
-		return runWorkshop(args, uiDir)
-	}
 	a, ok := Apps[name]
 	if !ok {
 		names := make([]string, 0, len(Apps))
@@ -191,12 +138,21 @@ func Run(name string, args []string, uiDir string) int {
 		fmt.Fprintf(os.Stderr, "unknown app %q (%s)\n", name, strings.Join(names, ", "))
 		return 2
 	}
-	return run(name, IDBase+"."+a.ID, a.Title, a.make(), a.many, args, uiDir)
+	return RunView(name, IDBase+"."+a.ID, a.Title, a.make(), a.many, args, uiDir)
+}
+
+// RunView runs v as the app named name, with its application ID and
+// title, until its window closes: for an app known only once started, as
+// a workshop app is.
+func RunView(name, appID, title string, v View, many bool, args []string, uiDir string) int {
+	cfg, _, _ := config.Load(config.DefaultPath()) // a broken file leaves the defaults
+	i18n.Init(cfg.Language)
+	return run(name, appID, title, v, many, args, uiDir)
 }
 
 // run runs view v as the app named name, with its application ID and
 // title, until its window closes.
-func run(name, appID, title string, v view, many bool, args []string, uiDir string) int {
+func run(name, appID, title string, v View, many bool, args []string, uiDir string) int {
 	flags := gio.GApplicationDefaultFlagsValue
 	if many {
 		flags = gio.GApplicationNonUniqueValue
@@ -221,8 +177,8 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 	gtk.SettingsGetDefault().GetProperty("gtk-icon-theme-name", &icons)
 	c.gtkIcons = icons.GetString()
 	icons.Unset()
-	if p, ok := v.(interface{ prepare(*Ctx) }); ok {
-		p.prepare(c)
+	if p, ok := v.(Preparer); ok {
+		p.Prepare(c)
 	}
 	c.loadStyle()
 	c.loadIcons()
@@ -235,7 +191,7 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 			c.win.Present()
 			return
 		}
-		c.win = c.v.build(c)
+		c.win = c.v.Build(c)
 		c.win.SetApplication(app)
 		c.win.SetTitle(i18n.T(title))
 		c.win.AddCssClass("app")
@@ -244,10 +200,10 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 		if !c.StartHidden {
 			c.win.Present()
 		}
-		if o, ok := c.v.(opener); ok && !opened {
-			o.open(args)
-		} else if p, ok := c.v.(pager); ok && len(args) > 0 {
-			p.showPage(args[0])
+		if o, ok := c.v.(Opener); ok && !opened {
+			o.Open(args)
+		} else if p, ok := c.v.(Pager); ok && len(args) > 0 {
+			p.ShowPage(args[0])
 		}
 		c.onTick = func(uintptr) bool {
 			c.followConfig()
@@ -275,8 +231,8 @@ func run(name, appID, title string, v view, many bool, args []string, uiDir stri
 			first := c.win == nil
 			opened = true
 			c.activate(app.Application)
-			if o, ok := c.v.(opener); ok {
-				o.open(paths)
+			if o, ok := c.v.(Opener); ok {
+				o.Open(paths)
 			}
 			if !first {
 				bringHere()
@@ -311,7 +267,8 @@ func (c *Ctx) Load(name string) *gtkx.Builder {
 	return b
 }
 
-func (c *Ctx) config() config.Config {
+// Config is inua's settings as the file has them now, else the defaults.
+func (c *Ctx) Config() config.Config {
 	cfg, _, err := config.Load(c.cfgPath)
 	if err != nil {
 		return config.Default()
@@ -321,7 +278,7 @@ func (c *Ctx) config() config.Config {
 
 // loadStyle loads the theme, the shell's style and the user's.
 func (c *Ctx) loadStyle() {
-	cfg := c.config()
+	cfg := c.Config()
 	if c.css == nil {
 		c.css, c.userCSS = gtk.NewCssProvider(), gtk.NewCssProvider()
 		d := gdk.DisplayGetDefault()
@@ -329,12 +286,12 @@ func (c *Ctx) loadStyle() {
 		gtk.StyleContextAddProviderForDisplay(d, c.userCSS, uint32(gtk.STYLE_PROVIDER_PRIORITY_USER))
 	}
 	theme := cmp.Or(cfg.Style.Theme, "yoru")
-	if t, ok := c.v.(interface{ theme() string }); ok && t.theme() != "" {
-		theme = t.theme() // an app with a look of its own
+	if t, ok := c.v.(Themed); ok && t.Theme() != "" {
+		theme = t.Theme() // an app with a look of its own
 	}
 	themeCSS := cfg.ThemeCSS(theme, c.ReadUI)
 	c.Colors = config.ThemeColors(themeCSS)
-	c.css.LoadFromString(themeCSS + shell.Glass(cfg.Style.Transparency) + shell.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale) + shell.Corners(cfg.Style.Radius))
+	c.css.LoadFromString(themeCSS + style.Glass(cfg.Style.Transparency) + style.ScaleText(c.ReadUI("style.css"), cfg.Style.TextScale) + style.Corners(cfg.Style.Radius))
 	if p := cfg.CSSPath(); p != "" {
 		if b, err := os.ReadFile(p); err == nil {
 			c.userCSS.LoadFromString(string(b))
@@ -349,7 +306,7 @@ func (c *Ctx) loadStyle() {
 // changed, and has the view take the new colours.
 func (c *Ctx) ReloadStyle() {
 	c.loadStyle()
-	c.v.themeChanged()
+	c.v.ThemeChanged()
 }
 
 // followConfig reloads the style when inua's settings change.
@@ -360,7 +317,7 @@ func (c *Ctx) followConfig() {
 	}
 	c.loadStyle()
 	c.loadIcons()
-	c.v.themeChanged()
+	c.v.ThemeChanged()
 }
 
 // loadIcons draws the apps' own icons from the Phosphor set inua ships
@@ -373,7 +330,7 @@ func (c *Ctx) followConfig() {
 // What shows the desktop's icons (Files' files and apps) looks them up in
 // DesktopIcons.
 func (c *Ctx) loadIcons() {
-	cfg := c.config()
+	cfg := c.Config()
 	overlay := cfg.IconSetDir()
 	// Named by the set, so an app of another inua build (another set)
 	// running at the same time does not write its icons over these.
@@ -407,7 +364,7 @@ func (c *Ctx) loadIcons() {
 // it names one, else the desktop's, the XDG settings portal's, else
 // GTK's, else Adwaita.
 func (c *Ctx) DesktopIcons() string {
-	if name := c.config().Style.AppIcons; name != "system" && name != "" {
+	if name := c.Config().Style.AppIcons; name != "system" && name != "" {
 		return name
 	}
 	if c.desktop == "" {
@@ -487,7 +444,7 @@ func (c *Ctx) writeIconTheme(dir, name, overlay string) error {
 	if err != nil {
 		return err
 	}
-	t := shell.IconTheme{
+	t := style.IconTheme{
 		Name:     name,
 		Comment:  "Icons for inua's light apps (written by inua-apps)",
 		Inherits: "Adwaita",
@@ -512,103 +469,4 @@ func bringHere() {
 	if err := hypr.NewClient(paths).BringHere(ctx, os.Getpid()); err != nil {
 		log.Printf("bringing the window here: %v", err)
 	}
-}
-
-// sidePanel is a panel sliding in at a window's right, which widens the
-// window. A floating window keeps the size and place it grew to, so once
-// the panel has slid away, Hyprland is asked to put the window back: its
-// size from before, and its place from before, moved by as much as it was
-// moved while the panel showed.
-type sidePanel struct {
-	win    *gtk.ApplicationWindow
-	rev    *gtk.Revealer
-	want   bool
-	before *hypr.Rect // the window before the panel, while it shows
-	grown  *hypr.Rect // and once the panel showed
-	// onRevealed outlives the window, like every signal handler.
-	onRevealed func(uintptr, uintptr, uintptr)
-}
-
-func (p *sidePanel) init(win *gtk.ApplicationWindow, rev *gtk.Revealer) {
-	p.win, p.rev = win, rev
-	p.onRevealed = func(uintptr, uintptr, uintptr) {
-		before := p.before
-		if before == nil {
-			return
-		}
-		shown, grown := p.rev.GetChildRevealed(), p.grown
-		go func() {
-			c, err := hyprClient()
-			if err != nil {
-				return
-			}
-			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-			defer cancel()
-			now, err := c.WindowOf(ctx, os.Getpid())
-			if err != nil {
-				log.Printf("panel: %v", err)
-				return
-			}
-			if shown {
-				gtkx.Post(func() {
-					if p.before == before {
-						p.grown = &now
-					}
-				})
-				return
-			}
-			r := *before
-			if grown != nil { // moved since it grew
-				r.X += now.X - grown.X
-				r.Y += now.Y - grown.Y
-			}
-			if err := c.PlaceWindow(ctx, os.Getpid(), r); err != nil {
-				log.Printf("panel: %v", err)
-			}
-		}()
-		if !shown {
-			p.before, p.grown = nil, nil
-		}
-	}
-	gtkx.ConnectNotify(rev, "child-revealed", &p.onRevealed)
-}
-
-// open shows the panel, once the window's place before it is known.
-func (p *sidePanel) open() {
-	if p.want {
-		return
-	}
-	p.want = true
-	go func() {
-		var before *hypr.Rect
-		if c, err := hyprClient(); err == nil {
-			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-			if r, err := c.WindowOf(ctx, os.Getpid()); err == nil {
-				before = &r
-			}
-			cancel()
-		}
-		gtkx.Post(func() {
-			if !p.want {
-				return
-			}
-			if p.before == nil {
-				p.before, p.grown = before, nil
-			}
-			p.rev.SetRevealChild(true)
-		})
-	}()
-}
-
-func (p *sidePanel) close() {
-	p.want = false
-	p.rev.SetRevealChild(false)
-}
-
-func hyprClient() (*hypr.Client, error) {
-	paths, err := hypr.PathsFromEnv()
-	if err != nil {
-		return nil, err // not in Hyprland
-	}
-	return hypr.NewClient(paths), nil
 }

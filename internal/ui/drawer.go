@@ -395,7 +395,7 @@ func (s *shellUI) openDrawer(b *bar, kind string) {
 	case "top": // the dock sits under the bar
 		side, tipY = "top", float64(barH+dockH)+bubbleGap
 	}
-	p.bubble = newBubble(&card.Widget, side, tipX, tipY, float64(barH+drawerGap), float64(s.cfg.Style.Radius*3/2)) // the dock's corners (shell.Corners)
+	p.bubble = newBubble(&card.Widget, side, tipX, tipY, float64(barH+drawerGap), float64(s.cfg.Style.Radius*3/2)) // the dock's corners (style.Corners)
 	card.Unref()
 	backdrop.Append(p.bubble.canvas)
 	p.win.SetChild(&backdrop.Widget)

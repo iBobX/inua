@@ -1,4 +1,4 @@
-package appui
+package lightui
 
 import (
 	"bytes"
@@ -18,6 +18,7 @@ import (
 
 	"github.com/lyricat/inua/internal/apps/chart"
 	"github.com/lyricat/inua/internal/apps/sysmon"
+	"github.com/lyricat/inua/internal/appui"
 	"github.com/lyricat/inua/internal/gtkx"
 	"github.com/lyricat/inua/internal/i18n"
 )
@@ -77,7 +78,7 @@ type detailView struct {
 }
 
 type sysmonApp struct {
-	c                          *Ctx
+	c                          *appui.Ctx
 	pages                      gtk.Stack
 	detailReveal               gtk.Revealer
 	meters, procs, detail, sys gtk.Box
@@ -113,7 +114,7 @@ type sysmonApp struct {
 	uid                        int
 }
 
-func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
+func (a *sysmonApp) Build(c *appui.Ctx) *gtk.ApplicationWindow {
 	a.c = c
 	a.uid = os.Getuid()
 	win := &gtk.ApplicationWindow{}
@@ -226,13 +227,13 @@ func (a *sysmonApp) build(c *Ctx) *gtk.ApplicationWindow {
 	return win
 }
 
-func (a *sysmonApp) themeChanged() {
+func (a *sysmonApp) ThemeChanged() {
 	for _, m := range []*meter{a.cpu, a.mem, a.gpu, a.net} {
 		a.drawChart(m)
 	}
 }
 
-func (a *sysmonApp) showPage(name string) {
+func (a *sysmonApp) ShowPage(name string) {
 	if a.pages.GetChildByName(name) != nil {
 		a.pages.SetVisibleChildName(name)
 	}
