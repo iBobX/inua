@@ -839,6 +839,52 @@ func (c *Conn) Delete(mailbox string, uids []uint32) error {
 	return c.expunge(uids)
 }
 
+// DeletePermanently deletes messages for good from any mailbox. Outside
+// the Trash they are moved there and deleted from it: on Gmail, deleting
+// in a label only takes the label off. Without MOVE and UIDPLUS, or
+// without a Trash, they are deleted where they are.
+func (c *Conn) DeletePermanently(mailbox string, uids []uint32, trash string) error {
+	if trash == "" || trash == mailbox || !c.c.Caps().Has(imap.CapMove) || !c.c.Caps().Has(imap.CapUIDPlus) {
+		return c.Delete(mailbox, uids)
+	}
+	if err := c.selectBox(mailbox); err != nil {
+		return err
+	}
+	d, err := c.c.Move(uidSet(uids), trash).Wait()
+	if err != nil {
+		return err
+	}
+	moved, ok := d.DestUIDs.(imap.UIDSet)
+	if !ok {
+		return fmt.Errorf("the server did not say where the messages went in %s", trash)
+	}
+	nums, ok := moved.Nums()
+	if !ok {
+		return fmt.Errorf("the server did not say where the messages went in %s", trash)
+	}
+	in := make([]uint32, len(nums))
+	for i, u := range nums {
+		in[i] = uint32(u)
+	}
+	return c.Delete(trash, in)
+}
+
+// Empty deletes every message in a mailbox for good.
+func (c *Conn) Empty(mailbox string) error {
+	if err := c.fresh(mailbox); err != nil {
+		return err
+	}
+	if c.c.Mailbox().NumMessages == 0 {
+		return nil
+	}
+	var all imap.UIDSet
+	all.AddRange(1, 0) // 1:*
+	if err := c.c.Store(all, &imap.StoreFlags{Op: imap.StoreFlagsAdd, Silent: true, Flags: []imap.Flag{imap.FlagDeleted}}, nil).Close(); err != nil {
+		return err
+	}
+	return c.c.Expunge().Close()
+}
+
 func (c *Conn) expunge(uids []uint32) error {
 	set := uidSet(uids)
 	if err := c.c.Store(set, &imap.StoreFlags{Op: imap.StoreFlagsAdd, Silent: true, Flags: []imap.Flag{imap.FlagDeleted}}, nil).Close(); err != nil {

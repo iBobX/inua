@@ -1446,3 +1446,46 @@ func TestSnippetPastStyle(t *testing.T) {
 		t.Errorf("read again: %q, read %v", sn, ok)
 	}
 }
+
+func TestDeletePermanently(t *testing.T) {
+	srv := newIMAP(t, "Trash")
+	srv.put(t, "INBOX", msg("a@x", "Ben <ben@x.org>", "Hello", "Hi"))
+	srv.put(t, "INBOX", msg("b@x", "Ben <ben@x.org>", "Again", "Hi"))
+	srv.put(t, "Trash", msg("c@x", "Ben <ben@x.org>", "Old", "Hi"))
+	ctx := context.Background()
+	s := srv.session(t)
+	if _, err := s.Mailboxes(ctx); err != nil {
+		t.Fatal(err)
+	}
+	s.Sync(ctx, "INBOX")
+	s.Sync(ctx, "Trash")
+	count := func(box string) int {
+		other := srv.session(t)
+		other.Mailboxes(ctx)
+		if _, err := other.Sync(ctx, box); err != nil {
+			t.Fatal(err)
+		}
+		return len(other.Items(box))
+	}
+
+	// From the inbox, by way of the Trash: gone from both.
+	hello := s.Items("INBOX")[1]
+	if err := s.DeletePermanently(ctx, "INBOX", []uint32{hello.UID}); err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Items("INBOX")) != 1 || count("INBOX") != 1 || count("Trash") != 1 {
+		t.Fatalf("after deleting: inbox %d on the server %d, trash %d", len(s.Items("INBOX")), count("INBOX"), count("Trash"))
+	}
+
+	// Emptying takes what came after the last sync too.
+	srv.put(t, "Trash", msg("d@x", "Ben <ben@x.org>", "New", "Hi"))
+	if err := s.Empty(ctx, "Trash"); err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Items("Trash")) != 0 || count("Trash") != 0 {
+		t.Fatalf("after emptying: %d listed, %d on the server", len(s.Items("Trash")), count("Trash"))
+	}
+	if count("INBOX") != 1 {
+		t.Fatal("emptying the Trash touched the inbox")
+	}
+}

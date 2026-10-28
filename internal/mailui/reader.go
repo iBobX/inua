@@ -374,6 +374,7 @@ func (w *window) drawBar(c *mail.Conversation) {
 			item(i18n.T("Show source"), func() { w.showSource(newestIt) })
 		}
 	}
+	item(i18n.T("Permanently Delete"), w.deletePermanently)
 	item(i18n.T("Keys"), w.showKeys)
 	pop.SetChild(&box.Widget)
 	more.SetPopover(pop)

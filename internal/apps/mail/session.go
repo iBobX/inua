@@ -588,6 +588,47 @@ func (s *Session) Delete(ctx context.Context, mailbox string, uids []uint32) err
 	return nil
 }
 
+// DeletePermanently deletes messages for good, from any mailbox: those
+// outside the Trash by way of it (Conn.DeletePermanently).
+func (s *Session) DeletePermanently(ctx context.Context, mailbox string, uids []uint32) error {
+	trash := s.Role(RoleTrash)
+	before := s.take(mailbox, uids)
+	err := s.Do(ctx, func(c *Conn) error { return c.DeletePermanently(mailbox, uids, trash) })
+	if err != nil {
+		s.restore(mailbox, before)
+		return err
+	}
+	s.store.DropRaw(s.Acc.ID, mailbox, uids...)
+	s.save(mailbox)
+	return nil
+}
+
+// Empty deletes every message in a mailbox for good, those not fetched
+// yet too.
+func (s *Session) Empty(ctx context.Context, mailbox string) error {
+	s.imu.Lock()
+	x := s.index(mailbox)
+	before, older := x.Messages, x.Older
+	x.Messages, x.Older = nil, false
+	s.imu.Unlock()
+	err := s.Do(ctx, func(c *Conn) error { return c.Empty(mailbox) })
+	if err != nil {
+		s.imu.Lock()
+		x := s.index(mailbox)
+		x.Older = older
+		x.Put(before...)
+		s.imu.Unlock()
+		return err
+	}
+	uids := make([]uint32, len(before))
+	for i, e := range before {
+		uids[i] = e.UID
+	}
+	s.store.DropRaw(s.Acc.ID, mailbox, uids...)
+	s.save(mailbox)
+	return nil
+}
+
 // edit changes messages in the index and returns them as they were.
 func (s *Session) edit(mailbox string, uids []uint32, f func(*Envelope)) []Envelope {
 	s.imu.Lock()

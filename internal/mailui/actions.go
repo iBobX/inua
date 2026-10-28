@@ -197,7 +197,7 @@ func (w *window) spam() {
 }
 
 // trash moves the open conversation to the Trash; in the Trash, it asks,
-// then deletes it for good.
+// then deletes it permanently.
 func (w *window) trash() { w.trashConv(w.open) }
 
 func (w *window) trashConv(c *mail.Conversation) {
@@ -210,25 +210,39 @@ func (w *window) trashConv(c *mail.Conversation) {
 		return
 	}
 	if latest.Mailbox == x.s.Role(mail.RoleTrash) || x.s.Role(mail.RoleTrash) == "" {
-		n := len(c.Messages)
-		w.confirm(i18n.T("Delete for good?"), c.Subject(),
-			i18n.Nf("Its %d message is deleted from the server. This cannot be undone.", "Its %d messages are deleted from the server. This cannot be undone.", n, n),
-			i18n.T("Delete"), true, func() { w.deleteConv(c) })
+		w.deletePermanentlyConv(c)
 		return
 	}
 	w.moveConv(c, roleOf(mail.RoleTrash), "", i18n.T("Moved to Trash"))
 }
 
+// deletePermanently asks, then deletes the open conversation for good,
+// from whatever folder it is in.
+func (w *window) deletePermanently() { w.deletePermanentlyConv(w.open) }
+
+func (w *window) deletePermanentlyConv(c *mail.Conversation) {
+	if c == nil {
+		return
+	}
+	n := len(c.Messages)
+	w.confirm(i18n.T("Permanently Delete?"), c.Subject(),
+		i18n.Nf("Its %d message is deleted from the server, not moved to the Trash. This cannot be undone.", "Its %d messages are deleted from the server, not moved to the Trash. This cannot be undone.", n, n),
+		i18n.T("Permanently Delete"), true, func() { w.deleteConv(c) })
+}
+
+// deleteConv deletes a conversation for good; the user's Sent stays when
+// it is seen from elsewhere.
 func (w *window) deleteConv(c *mail.Conversation) {
-	for k, uids := range w.byBox(c) {
+	for k, uids := range w.byBox(c, mail.RoleSent) {
 		x := w.acct(k[0])
 		mailbox, uids := k[1], uids
 		go func() {
-			err := x.s.Delete(w.ctx, mailbox, uids)
+			err := x.s.DeletePermanently(w.ctx, mailbox, uids)
 			gtkx.Post(func() {
 				if err != nil {
 					w.actErr = i18n.Tf("The server did not delete it: %v", err)
 				}
+				w.counted(x, mailbox)
 				w.refresh()
 			})
 		}()
@@ -238,6 +252,39 @@ func (w *window) deleteConv(c *mail.Conversation) {
 	} else {
 		w.refresh()
 	}
+}
+
+// emptyBox asks, then deletes every message in the mailbox shown (the
+// Trash or Spam) for good, those not fetched yet too.
+func (w *window) emptyBox() {
+	v := w.view
+	x := w.acct(v.account)
+	if v.kind != viewBox || x == nil {
+		return
+	}
+	title, done := i18n.T("Empty the Trash?"), i18n.T("Empty Trash")
+	if v.mailbox == x.s.Role(mail.RoleJunk) {
+		title, done = i18n.T("Empty Spam?"), i18n.T("Empty Spam")
+	}
+	w.confirm(title, x.s.Acc.Address,
+		i18n.T("Every message in it is permanently deleted from the server. This cannot be undone."),
+		done, true, func() {
+			w.commitPending()
+			go func() {
+				err := x.s.Empty(w.ctx, v.mailbox)
+				gtkx.Post(func() {
+					if err != nil {
+						w.say(&w.listError, i18n.Tf("The server did not empty it: %v", err))
+					}
+					if w.open != nil && w.open.Latest().Account == x.s.Acc.ID && w.open.Latest().Mailbox == v.mailbox {
+						w.open, w.openID = nil, ""
+						w.readerStack.SetVisibleChildName("empty")
+					}
+					w.counted(x, v.mailbox)
+					w.refresh()
+				})
+			}()
+		})
 }
 
 // star stars the newest message, or unstars the conversation.

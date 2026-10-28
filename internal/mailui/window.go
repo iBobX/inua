@@ -145,6 +145,7 @@ type window struct {
 	pics            map[string]*pic           // pictures, by where they come from and the width drawn
 	picsDue         bool                      // a redraw for pictures is coming
 	markAll         *gtk.Button               // marks the list read; shown while it has unread mail
+	empty           *gtk.Button               // empties the Trash or Spam shown
 	sidebarForPanel bool                      // the panel hid the sidebar
 	assistOpen      bool                      // the assistant's panel is open
 	unsent          bool                      // the reader shows the drafts on this computer
@@ -265,6 +266,13 @@ func openWindow(c *appui.Ctx) *window {
 	w.markAll.SetVisible(false)
 	w.h.click(w.markAll, w.markAllRead)
 	w.filters.Append(&w.markAll.Widget) // kept: shown when the list has unread mail
+	w.empty = gtk.NewButtonWithLabel(i18n.T("EMPTY"))
+	w.empty.AddCssClass("mail-filter")
+	w.empty.AddCssClass("mail-mark-all")
+	w.empty.SetTooltipText(i18n.T("Permanently delete every message here"))
+	w.empty.SetVisible(false)
+	w.h.click(w.empty, w.emptyBox)
+	w.filters.Append(&w.empty.Widget) // kept: shown in the Trash and Spam
 	w.syncFilters()
 
 	w.loadSettings()
@@ -971,6 +979,7 @@ func (w *window) refresh() {
 		}
 	}
 	w.markAll.SetVisible(unread && w.query == "")
+	w.empty.SetVisible(w.emptiable() && len(all) > 0 && w.query == "")
 	loading, what := w.loadingView()
 	w.listProgress.SetVisible(loading && len(cs) > 0)
 	switch {
@@ -989,6 +998,15 @@ func (w *window) refresh() {
 	}
 	w.nearEnd()
 	w.sideCounts()
+}
+
+// emptiable says whether the list shows an account's Trash or Spam.
+func (w *window) emptiable() bool {
+	x := w.acct(w.view.account)
+	if w.view.kind != viewBox || x == nil {
+		return false
+	}
+	return w.view.mailbox == x.s.Role(mail.RoleTrash) || w.view.mailbox == x.s.Role(mail.RoleJunk)
 }
 
 // loadingView says whether what the list shows is still being fetched
@@ -1590,6 +1608,8 @@ func (w *window) key(keyval uint32, state gdk.ModifierType) bool {
 		return false
 	case keyval == uint32(gdk.KEY_e) || keyval == uint32(gdk.KEY_y):
 		w.archive()
+	case keyval == uint32(gdk.KEY_Delete) && state&gdk.ShiftMaskValue != 0:
+		w.deletePermanently()
 	case keyval == uint32(gdk.KEY_d) || keyval == uint32(gdk.KEY_Delete):
 		w.trash()
 	case keyval == uint32(gdk.KEY_s):

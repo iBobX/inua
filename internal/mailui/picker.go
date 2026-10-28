@@ -141,6 +141,7 @@ func (w *window) showKeys() {
 		{"F", i18n.T("Forward")},
 		{"E", i18n.T("Archive")},
 		{"D  Delete", i18n.T("Move to Trash")},
+		{"Shift+Delete", i18n.T("Permanently Delete")},
 		{"!", i18n.T("Move to Spam")},
 		{"V", i18n.T("Move to a folder")},
 		{"S", i18n.T("Star or unstar")},

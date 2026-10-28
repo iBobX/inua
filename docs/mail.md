@@ -94,7 +94,7 @@ inua-mail --check FILE.eml    the phishing checks on a message
 - **The conversation**: a bar of its actions stays over it: reply, reply
   all and forward; archive, trash, spam, move, star and unread; ⋯ for
   showing the newest message as text or formatted, opening it in the
-  browser, its source, and the keys. Under the subject, the assistant's offers as
+  browser, its source, *Permanently Delete*, and the keys. Under the subject, the assistant's offers as
   chips (*Summarize*, *Reply ideas*). It reads in a column no wider
   than a line is comfortable to follow (720 pixels, grown with the
   text), in the middle of a wider pane; its text is at the size
@@ -132,6 +132,14 @@ goes, so an undo never reaches it. The next conversation opens in its
 place. `v` moves to any folder: a short list, narrowed as you type,
 Enter takes the first.
 
+**Permanently Delete.** *Permanently Delete* in ⋯, or `Shift+Delete`,
+deletes a conversation from the server after asking, from whatever
+folder it is in, not moved to the Trash; there is no undo. Outside the
+Trash its messages are moved there and deleted from it, since on Gmail
+deleting in a label only takes the label off. In the Trash and in Spam,
+*EMPTY* beside the filters deletes every message in it permanently,
+those not fetched yet too.
+
 **Quick reply.** Under a conversation, a field answers its newest
 message without a window: it quotes what it answers, under your
 signature, and sends with `Ctrl+Enter` after the same five seconds to
@@ -140,7 +148,8 @@ take it back. *Open in a window* moves what you wrote to the composer.
 Keys (`?` lists them): `j`/`k` or the arrows choose a conversation, `/`
 or `Ctrl+F` searches, `c` composes; on a conversation `r` replies, `a`
 replies to all, `f` forwards, `e` archives, `d` or Delete moves it to
-the Trash (in the Trash: deletes it, after asking), `v` moves it, `s`
+the Trash (in the Trash: deletes it permanently, after asking),
+`Shift+Delete` deletes it permanently from any folder, `v` moves it, `s`
 stars, `u` marks it unread, `!` moves it to Spam, `z` undoes the last
 move, `F9` hides or shows the sidebar, `Ctrl+,` opens the settings. In the composer and the quick reply,
 `Ctrl+Enter` sends; in the composer, `Ctrl+J` opens AI's panel, goes
